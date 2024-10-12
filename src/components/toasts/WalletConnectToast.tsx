@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { toast } from 'sonner-native';
 import { globalColors } from '@/design-system';
+import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { fontWithWidth } from '@/styles';
@@ -48,15 +49,24 @@ const EmptyComponent = () => {
   return <View style={styles.zeroDimensions} />;
 };
 
+const TOAST_HEIGHT = 48;
+
+const TEXT_LINE_HEIGHT = typeHierarchy.text['17pt'].lineHeight;
+const TEXT_PADDING_VERTICAL = 16;
+const TOTAL_TEXT_HEIGHT = TEXT_LINE_HEIGHT + TEXT_PADDING_VERTICAL * 2;
+const TEXT_Y_OFFSET = (TOAST_HEIGHT - TOTAL_TEXT_HEIGHT) / 2;
+
 const conditionalStyles = StyleSheet.create({
   title: {
     alignSelf: 'center',
     color: globalColors.white100,
-    fontSize: 17,
+    fontSize: typeHierarchy.text['17pt'].fontSize,
     ...fontWithWidth(font.weight.bold),
-    letterSpacing: 0.37,
+    letterSpacing: typeHierarchy.text['17pt'].letterSpacing,
+    lineHeight: TEXT_LINE_HEIGHT,
+    marginTop: TEXT_Y_OFFSET,
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: TEXT_PADDING_VERTICAL,
     textAlign: 'center',
   },
   titleShadow: {
@@ -65,13 +75,15 @@ const conditionalStyles = StyleSheet.create({
     textShadowRadius: 20,
   },
   toast: {
+    alignItems: 'center',
     backgroundColor: globalColors.grey100,
     borderCurve: 'continuous',
-    borderRadius: 40,
+    borderRadius: TOAST_HEIGHT / 2,
     gap: 0,
+    height: TOAST_HEIGHT,
+    justifyContent: 'center',
     marginHorizontal: 'auto',
     overflow: 'hidden',
-    padding: 0,
   },
   toastBorderDark: {
     borderColor: 'rgba(245, 248, 255, 0.1)',
@@ -106,12 +118,12 @@ const styles = StyleSheet.create({
   toastContent: {
     alignItems: 'center',
     gap: 0,
+    height: TOAST_HEIGHT,
     justifyContent: 'center',
-    marginVertical: -2,
   },
   toastDark: {
     ...conditionalStyles.toast,
-    ...conditionalStyles.toastBorderDark,
+    ...(IS_IOS ? conditionalStyles.toastBorderDark : {}),
   },
   toastLight: conditionalStyles.toast,
   title: {
