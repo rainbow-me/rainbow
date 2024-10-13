@@ -3,7 +3,7 @@ import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
-import { Block, Network as EthersNetwork, StaticJsonRpcProvider, TransactionRequest, TransactionResponse } from '@ethersproject/providers';
+import { Block, StaticJsonRpcProvider, TransactionRequest, TransactionResponse } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
@@ -99,16 +99,6 @@ export type NewTransactionNonNullable = {
  * @desc web3 http instance
  */
 export let web3Provider: StaticJsonRpcProvider = null as unknown as StaticJsonRpcProvider;
-
-/**
- * @desc Sets a different web3 provider.
- * @param network The network to set.
- * @return A promise that resolves with an Ethers Network when the provider is ready.
- */
-export const web3SetHttpProvider = async (chainId: ChainId): Promise<EthersNetwork> => {
-  web3Provider = await getProvider({ chainId });
-  return web3Provider.ready;
-};
 
 /**
  * @desc Checks if the given network is a Layer 2.
