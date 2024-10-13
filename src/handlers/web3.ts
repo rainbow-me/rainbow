@@ -282,15 +282,11 @@ export async function estimateGasWithPadding(
   txPayload: TransactionRequest,
   contractCallEstimateGas: Contract['estimateGas'][string] | null = null,
   callArguments: unknown[] | null = null,
-  provider: StaticJsonRpcProvider | null = null,
+  provider: StaticJsonRpcProvider,
   paddingFactor = 1.1
 ): Promise<string | null> {
   try {
-    const p = provider || web3Provider;
-    if (!p) {
-      return null;
-    }
-
+    const p = provider;
     const txPayloadToEstimate: TransactionRequest & { gas?: string } = {
       ...txPayload,
     };
