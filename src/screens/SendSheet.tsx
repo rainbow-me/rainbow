@@ -401,7 +401,8 @@ export default function SendSheet() {
 
   const onSubmit = useCallback(
     async ({ ens }: OnSubmitProps = {}) => {
-      if (!selected) return;
+      if (!selected || !currentProvider) return;
+
       const wallet = await performanceTracking.getState().executeFn({
         fn: loadWallet,
         operation: TimeToSignOperation.KeychainRead,

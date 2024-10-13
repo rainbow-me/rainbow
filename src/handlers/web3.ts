@@ -686,7 +686,7 @@ export const estimateGasLimit = async (
     amount: number;
   },
   addPadding = false,
-  provider: StaticJsonRpcProvider | undefined = undefined,
+  provider: StaticJsonRpcProvider,
   chainId: ChainId = ChainId.mainnet
 ): Promise<string | null> => {
   const estimateGasData = await buildTransaction({ address, amount, asset, recipient }, provider, chainId);
