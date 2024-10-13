@@ -254,17 +254,12 @@ export const toChecksumAddress = (address: string): string | null => {
 /**
  * @desc estimate gas limit
  * @param estimateGasData The transaction request to use for the estimate.
- * @param provider If specified, a provider to use instead of the cached
- * `web3Provider`.
+ * @param provider
  * @return The gas limit, or `null` if an error occurs.
  */
-export const estimateGas = async (
-  estimateGasData: TransactionRequest,
-  provider: StaticJsonRpcProvider | null = null
-): Promise<string | null> => {
+export const estimateGas = async (estimateGasData: TransactionRequest, provider: StaticJsonRpcProvider): Promise<string | null> => {
   try {
-    const p = provider || web3Provider;
-    const gasLimit = await p?.estimateGas(estimateGasData);
+    const gasLimit = await provider.estimateGas(estimateGasData);
     return gasLimit?.toString() ?? null;
   } catch (error) {
     return null;
