@@ -263,8 +263,7 @@ export const estimateGas = async (estimateGasData: TransactionRequest, provider:
  * defaulting to `null`.
  * @param callArguments Arbitrary arguments passed as the first parameters
  * of `contractCallEstimateGas`, if provided.
- * @param provider The provider to use. If none is specified, the cached
- * `web3Provider` is used instead.
+ * @param provider The provider to use.
  * @param paddingFactor The padding applied to the gas limit.
  * @return The gas estimation as a string, or `null` if estimation failed
  */
@@ -358,14 +357,6 @@ export const toWei = (ether: string): string => {
 };
 
 /**
- * @desc get transaction info
- * @param hash The transaction hash.
- * @return The corresponding `TransactionResponse`, or `null` if one could not
- * be found.
- */
-export const getTransaction = async (hash: string): Promise<TransactionResponse | null> => web3Provider?.getTransaction(hash) ?? null;
-
-/**
  * get transaction gas params depending on network
  * @returns - object with `gasPrice` or `maxFeePerGas` and `maxPriorityFeePerGas`
  */
@@ -436,8 +427,6 @@ export const resolveUnstoppableDomain = async (domain: string): Promise<string |
 /**
  * @desc Resolves a name or address to an Ethereum hex-formatted address.
  * @param nameOrAddress The name or address to resolve.
- * @param provider If provided, a provider to use instead of the cached
- * `web3Provider`.
  * @return The address, or null if one could not be resolved.
  */
 export const resolveNameOrAddress = async (nameOrAddress: string): Promise<string | null> => {
@@ -668,8 +657,7 @@ export const buildTransaction = async (
  * transaction.
  * @param addPadding Whether or not to add padding to the gas limit, defaulting
  * to `false`.
- * @param provider If provided, a provider to use instead of the default
- * cached `web3Provider`.
+ * @param provider
  * @param chainId The chainId to use, defaulting to `ChainId.mainnet`.
  * @returns The estimated gas limit.
  */
