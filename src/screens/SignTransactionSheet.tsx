@@ -25,7 +25,7 @@ import { useAccountSettings, useGas, useSwitchWallet, useWallets } from '@/hooks
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { IS_IOS } from '@/env';
-import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
+import { estimateGasWithPadding, toHex } from '@/handlers/web3';
 import { GasSpeedButton } from '@/components/gas';
 import { RainbowError, logger } from '@/logger';
 import {
@@ -324,17 +324,13 @@ export const SignTransactionSheet = () => {
       if (!chainId) {
         return;
       }
-      const providerToUse = provider || getProvider({ chainId });
-      if (!providerToUse) {
-        return;
-      }
       const existingWallet = await performanceTracking.getState().executeFn({
         fn: loadWallet,
         screen: SCREEN_FOR_REQUEST_SOURCE[source],
         operation: TimeToSignOperation.KeychainRead,
       })({
         address: toChecksumAddress(accountInfo.address),
-        provider: providerToUse,
+        provider,
         timeTracking: {
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.Authentication,
@@ -353,7 +349,7 @@ export const SignTransactionSheet = () => {
           operation: TimeToSignOperation.BroadcastTransaction,
         })({
           existingWallet,
-          provider: providerToUse,
+          provider,
           transaction: txPayloadUpdated,
         });
       } else {
@@ -363,7 +359,7 @@ export const SignTransactionSheet = () => {
           operation: TimeToSignOperation.SignTransaction,
         })({
           existingWallet,
-          provider: providerToUse,
+          provider,
           transaction: txPayloadUpdated,
         });
       }
@@ -480,18 +476,13 @@ export const SignTransactionSheet = () => {
     const message = transactionDetails?.payload?.params.find((p: string) => !isAddress(p));
     let response = null;
 
-    const providerToUse = provider || getProvider({ chainId });
-    if (!providerToUse) {
-      return;
-    }
-
     const existingWallet = await performanceTracking.getState().executeFn({
       fn: loadWallet,
       screen: SCREEN_FOR_REQUEST_SOURCE[source],
       operation: TimeToSignOperation.KeychainRead,
     })({
       address: accountInfo.address,
-      provider: providerToUse,
+      provider,
       timeTracking: {
         screen: SCREEN_FOR_REQUEST_SOURCE[source],
         operation: TimeToSignOperation.Authentication,
