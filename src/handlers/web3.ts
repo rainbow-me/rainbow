@@ -366,14 +366,6 @@ export const toWei = (ether: string): string => {
 export const getTransaction = async (hash: string): Promise<TransactionResponse | null> => web3Provider?.getTransaction(hash) ?? null;
 
 /**
- * @desc get address transaction count
- * @param address The address to check.
- * @return The transaction count, or `null` if it could not be found.
- */
-export const getTransactionCount = async (address: string): Promise<number | null> =>
-  web3Provider?.getTransactionCount(address, 'pending') ?? null;
-
-/**
  * get transaction gas params depending on network
  * @returns - object with `gasPrice` or `maxFeePerGas` and `maxPriorityFeePerGas`
  */
