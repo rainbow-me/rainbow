@@ -3,7 +3,7 @@ import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
-import { Block, StaticJsonRpcProvider, TransactionRequest, TransactionResponse } from '@ethersproject/providers';
+import { Block, StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
@@ -94,11 +94,6 @@ type TransactionDetailsReturned = {
 export type NewTransactionNonNullable = {
   [key in keyof NewTransaction]-?: NonNullable<NewTransaction[key]>;
 };
-
-/**
- * @desc web3 http instance
- */
-export let web3Provider: StaticJsonRpcProvider = null as unknown as StaticJsonRpcProvider;
 
 /**
  * @desc Checks if the given network is a Layer 2.
