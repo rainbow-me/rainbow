@@ -3,11 +3,12 @@ import { generateMnemonic } from 'bip39';
 import { default as LibWallet } from 'ethereumjs-wallet';
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import { loadString, publicAccessControlOptions, saveString } from '../model/keychain';
+import { ChainId } from '@/chains/types';
 import { loadWallet } from '../model/wallet';
 import { signingWalletAddress, signingWallet as signingWalletKeychain } from '../utils/keychainConstants';
 import { EthereumAddress } from '@/entities';
 import AesEncryptor from '@/handlers/aesEncryption';
-import { addHexPrefix } from '@/handlers/web3';
+import { addHexPrefix, getProvider } from '@/handlers/web3';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger, RainbowError } from '@/logger';
 
@@ -70,7 +71,8 @@ export async function createSignature(address: EthereumAddress, privateKey: stri
   logger.debug('[signingWallet]: Creating a signature');
   const publicKeyForTheSigningWallet = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
 
-  const mainWallet = privateKey ? new Wallet(privateKey) : await loadWallet({ address, showErrorIfNotLoaded: false });
+  const provider = getProvider({ chainId: ChainId.mainnet });
+  const mainWallet = privateKey ? new Wallet(privateKey) : await loadWallet({ address, provider, showErrorIfNotLoaded: false });
   if (mainWallet) {
     const signatureForSigningWallet = await mainWallet.signMessage(publicKeyForTheSigningWallet);
 

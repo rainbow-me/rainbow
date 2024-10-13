@@ -498,7 +498,7 @@ export const SignTransactionSheet = () => {
           fn: signPersonalMessage,
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.SignTransaction,
-        })(message, existingWallet);
+        })(message, provider, existingWallet);
         break;
       case SIGN_TYPED_DATA_V4:
       case SIGN_TYPED_DATA:
@@ -506,7 +506,7 @@ export const SignTransactionSheet = () => {
           fn: signTypedDataMessage,
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.SignTransaction,
-        })(message, existingWallet);
+        })(message, provider, existingWallet);
         break;
       default:
         break;
