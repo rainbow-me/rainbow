@@ -158,8 +158,7 @@ export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number })
  * cached provider.
  * @param payload The payload, including a method and parameters, based on
  * the Ethers.js `StaticJsonRpcProvider.send` arguments.
- * @param provider The provider to use. If `null`, the current cached web3
- * provider is used.
+ * @param provider The provider to use
  * @return The response from the `StaticJsonRpcProvider.send` call.
  */
 export const sendRpcCall = async (
@@ -167,8 +166,8 @@ export const sendRpcCall = async (
     method: string;
     params: unknown[];
   },
-  provider: StaticJsonRpcProvider | null = null
-): Promise<unknown> => (provider || web3Provider)?.send(payload.method, payload.params);
+  provider: StaticJsonRpcProvider
+): Promise<unknown> => provider.send(payload.method, payload.params);
 
 /**
  * @desc check if hex string
