@@ -257,7 +257,6 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
             pathname,
             query,
           });
-          console.log('unhandled deeplink');
         }
       }
     }
