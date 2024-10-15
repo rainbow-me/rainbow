@@ -24,9 +24,26 @@ export const useBrowserHistoryStore = createRainbowStore<BrowserHistoryStore>(
 
     addRecent: (site: Site) => {
       set(state => {
-        let newRecents = [site, ...state.recents];
+        let url = site.url;
+
+        if (url.startsWith('https://e.spindlembed.com/v1/redirect?')) {
+          try {
+            const urlObj = new URL(url);
+            const redirectUrl = urlObj.searchParams.get('redirect_url');
+            if (redirectUrl) {
+              url = decodeURIComponent(redirectUrl);
+            }
+          } catch (error) {
+            console.error('Error parsing redirect URL:', error);
+          }
+        }
+
+        const normalizedUrl = normalizeUrlForRecents(url);
+        const updatedSite = { ...site, url: normalizedUrl };
+
+        const newRecents = [updatedSite, ...state.recents.filter(s => s.url !== normalizedUrl)];
         if (newRecents.length > MAX_RECENT_SIZE) {
-          newRecents = newRecents.slice(0, MAX_RECENT_SIZE);
+          return { recents: newRecents.slice(0, MAX_RECENT_SIZE) };
         }
         return { recents: newRecents };
       });
