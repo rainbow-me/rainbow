@@ -363,7 +363,7 @@ export async function initListeners() {
 
   client.on('session_proposal', onSessionProposal);
   client.on('session_request', onSessionRequest);
-  // Temporarilly disabling this since there's a bug on the WC side
+  // Temporarily disabling this since there's a bug on the WC side
   // client.on('session_authenticate', onSessionAuthenticate);
   client.on('session_delete', () => {
     logger.debug(`[walletConnect]: session_delete`, {}, logger.DebugContext.walletconnect);
