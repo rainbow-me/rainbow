@@ -18,17 +18,17 @@ export const SwapBackground = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
   const animatedTopColor = useDerivedValue(() => {
-    if (IS_TEST) return getColorValueForThemeWorklet(DEFAULT_BACKGROUND_COLOR, isDarkMode, true);
+    if (IS_TEST) return getColorValueForThemeWorklet(DEFAULT_BACKGROUND_COLOR, isDarkMode);
     return withTiming(
-      getColorValueForThemeWorklet(internalSelectedInputAsset.value?.tintedBackgroundColor || DEFAULT_BACKGROUND_COLOR, isDarkMode, true),
+      getColorValueForThemeWorklet(internalSelectedInputAsset.value?.tintedBackgroundColor || DEFAULT_BACKGROUND_COLOR, isDarkMode),
       TIMING_CONFIGS.slowFadeConfig
     );
   });
 
   const animatedBottomColor = useDerivedValue(() => {
-    if (IS_TEST) return getColorValueForThemeWorklet(DEFAULT_BACKGROUND_COLOR, isDarkMode, true);
+    if (IS_TEST) return getColorValueForThemeWorklet(DEFAULT_BACKGROUND_COLOR, isDarkMode);
     return withTiming(
-      getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.tintedBackgroundColor || DEFAULT_BACKGROUND_COLOR, isDarkMode, true),
+      getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.tintedBackgroundColor || DEFAULT_BACKGROUND_COLOR, isDarkMode),
       TIMING_CONFIGS.slowFadeConfig
     );
   });

@@ -90,7 +90,7 @@ export const FlipButton = () => {
     return {
       shadowColor: isDarkMode
         ? globalColors.grey100
-        : getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.mixedShadowColor, false, true),
+        : getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.mixedShadowColor, false),
     };
   });
 
@@ -162,7 +162,7 @@ const SpinnerComponent = () => {
 
   const animatedColor = useDerivedValue(() => {
     return withTiming(
-      getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
+      getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode),
       TIMING_CONFIGS.slowFadeConfig
     );
   });

@@ -444,6 +444,11 @@ export const getUniqueIdNetwork = (address: EthereumAddress, network: Network) =
 
 export const getUniqueId = (address: EthereumAddress, chainId: ChainId) => `${address}_${chainId}`;
 
+export const getUniqueIdWorklet = (address: EthereumAddress, chainId: ChainId) => {
+  'worklet';
+  return `${address}_${chainId}`;
+};
+
 export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: AddressOrEth; chainId: ChainId } => {
   const parts = uniqueId.split('_');
 

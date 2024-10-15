@@ -2,12 +2,11 @@ import { TokenSearchResult, useTokenSearch } from '@/__swaps__/screens/Swap/reso
 import { AddressOrEth } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
-import { addHexPrefix } from '@/__swaps__/utils/hex';
-import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
+import { addHexPrefix } from '@/handlers/web3';
+import { isLowerCaseMatch, filterList } from '@/utils';
+import { getUniqueIdWorklet } from '@/utils/ethereumUtils';
 import { useFavorites } from '@/resources/favorites';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { filterList } from '@/utils';
 import { isAddress } from '@ethersproject/address';
 import { rankings } from 'match-sorter';
 import { useCallback, useMemo, useState } from 'react';
@@ -348,10 +347,7 @@ export function useSearchCurrencyLists() {
         chainId: state.toChainId,
         favorite: true,
         mainnetAddress: favToken.networks?.[ChainId.mainnet]?.address || favToken.mainnet_address,
-        uniqueId: getStandardizedUniqueIdWorklet({
-          address: (favToken.networks[state.toChainId]?.address || favToken.address) as AddressOrEth,
-          chainId: state.toChainId,
-        }),
+        uniqueId: getUniqueIdWorklet(favToken.networks[state.toChainId]?.address || favToken.address, state.toChainId),
       })) as SearchAsset[];
   }, [favorites, state.toChainId]);
 

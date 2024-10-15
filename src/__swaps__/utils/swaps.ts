@@ -33,12 +33,13 @@ import {
   powWorklet,
   roundWorklet,
   toFixedWorklet,
-} from '../safe-math/SafeMath';
-import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
+} from '@/safe-math/SafeMath';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
 import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
-import { convertAmountToRawAmount } from './numbers';
+import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { chainsName } from '@/chains';
+import { getUniqueIdWorklet } from '@/utils/ethereumUtils';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -51,14 +52,14 @@ export type ResponseByTheme<T> = {
   dark: T;
 };
 
-export const getColorValueForTheme = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = false) => {
+export const getColorValueForTheme = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean) => {
   if (!values) {
     return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
   }
   return isDarkMode ? values.dark : values.light;
 };
 
-export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = true) => {
+export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean) => {
   'worklet';
 
   if (!values) {
@@ -534,11 +535,6 @@ const ETH_COLORS: Colors = {
   shadow: undefined,
 };
 
-export const getStandardizedUniqueIdWorklet = ({ address, chainId }: { address: AddressOrEth; chainId: ChainId }) => {
-  'worklet';
-  return `${address}_${chainId}`;
-};
-
 export const parseAssetAndExtend = ({
   asset,
   insertUserAssetBalance,
@@ -552,7 +548,7 @@ export const parseAssetAndExtend = ({
     colors: (isAssetEth ? ETH_COLORS : asset.colors) as TokenColors,
   });
 
-  const uniqueId = getStandardizedUniqueIdWorklet({ address: asset.address, chainId: asset.chainId });
+  const uniqueId = getUniqueIdWorklet(asset.address, asset.chainId);
   const balance = insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(uniqueId)?.balance || asset.balance : asset.balance;
 
   return {
