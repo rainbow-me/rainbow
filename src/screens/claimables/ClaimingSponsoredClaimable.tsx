@@ -56,6 +56,7 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
             chainId: claimable.chainId,
             asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
             amount: claimable.value.claimAsset.amount,
+            usdValue: claimable.value.usd,
             errorMessage: ErrorMessages.CLAIM_API_CALL_FAILED,
           });
           logger.error(new RainbowError(`[ClaimSponsoredClaimable]: ${ErrorMessages.CLAIM_API_CALL_FAILED}`));
@@ -73,6 +74,7 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
             chainId: claimable.chainId,
             asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
             amount: claimable.value.claimAsset.amount,
+            usdValue: claimable.value.usd,
             errorMessage: ErrorMessages.CLAIM_API_CALL_FAILED,
           });
           logger.error(new RainbowError(`[ClaimSponsoredClaimable]: ${ErrorMessages.CLAIM_API_CALL_FAILED}`));
@@ -89,6 +91,7 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
           chainId: claimable.chainId,
           asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
           errorMessage: ErrorMessages.CLAIM_API_UNSUCCESSFUL_RESPONSE,
         });
         logger.error(new RainbowError(`[ClaimSponsoredClaimable]: ${ErrorMessages.CLAIM_API_UNSUCCESSFUL_RESPONSE}`));
@@ -107,6 +110,7 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
           chainId: claimable.chainId,
           asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
         });
 
         // Immediately remove the claimable from cached data
@@ -122,6 +126,7 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
         chainId: claimable.chainId,
         asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
         amount: claimable.value.claimAsset.amount,
+        usdValue: claimable.value.usd,
         errorMessage: ErrorMessages.UNHANDLED_ERROR,
       });
       logger.error(new RainbowError(`[ClaimSponsoredClaimable]: ${ErrorMessages.UNHANDLED_ERROR}`), {
@@ -138,6 +143,7 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
           chainId: claimable.chainId,
           asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
           errorMessage: ErrorMessages.UNREACHABLE_CLAIM_STATE,
         });
         logger.error(new RainbowError(`[ClaimSponsoredClaimable]: ${ErrorMessages.UNREACHABLE_CLAIM_STATE}`));

@@ -610,6 +610,7 @@ export type EventProperties = {
       address: string;
     };
     amount: string;
+    usdValue: number;
   };
 
   [event.claimClaimableFailed]: {
@@ -621,6 +622,7 @@ export type EventProperties = {
       address: string;
     };
     amount: string;
+    usdValue: number;
     errorMessage: string;
   };
 
@@ -633,5 +635,6 @@ export type EventProperties = {
       address: string;
     };
     amount: string;
+    usdValue: number;
   };
 };
