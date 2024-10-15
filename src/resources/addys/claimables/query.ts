@@ -32,7 +32,7 @@ export type ClaimablesArgs = {
 // Query Key
 
 export const claimablesQueryKey = ({ address, currency }: ClaimablesArgs) =>
-  createQueryKey('claimables', { address, currency }, { persisterVersion: 3 });
+  createQueryKey('claimables', { address, currency }, { persisterVersion: 4 });
 
 type ClaimablesQueryKey = ReturnType<typeof claimablesQueryKey>;
 
