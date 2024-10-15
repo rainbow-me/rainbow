@@ -5,6 +5,7 @@ import store from '@/redux/store';
 import { walletConnectOnSessionRequest, walletConnectRemovePendingRedirect, walletConnectSetPendingRedirect } from '@/redux/walletconnect';
 
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
+import { showWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { defaultConfig } from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
 import { delay } from '@/utils/delay';
@@ -289,6 +290,7 @@ const walletConnectURICache = new Set();
 function handleWalletConnect(uri?: string, connector?: string) {
   if (!uri) {
     logger.debug(`[handleWalletConnect]: skipping uri empty`);
+    showWalletConnectToast({ isTransactionRequest: true });
     return;
   }
 
@@ -312,6 +314,8 @@ function handleWalletConnect(uri?: string, connector?: string) {
     // make sure we don't handle this again
     walletConnectURICache.add(cacheKey);
 
+    showWalletConnectToast();
+
     if (parsedUri.version === 1) {
       store.dispatch(walletConnectSetPendingRedirect());
       store.dispatch(
@@ -333,6 +337,7 @@ function handleWalletConnect(uri?: string, connector?: string) {
     logger.debug(`[handleWalletConnect]: handling fallback`, { uri });
     // This is when we get focused by WC due to a signing request
     // Don't add this URI to cache
+    showWalletConnectToast({ isTransactionRequest: true });
     setHasPendingDeeplinkPendingRedirect(true);
     store.dispatch(walletConnectSetPendingRedirect());
   }
