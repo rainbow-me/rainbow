@@ -1,10 +1,52 @@
-import { ParsedAddressAsset } from '@/entities';
+import { ParsedAsset } from '@/__swaps__/types/assets';
+import {
+  GasFeeParamsBySpeed,
+  LegacyGasFeeParamsBySpeed,
+  LegacyTransactionGasParamAmounts,
+  ParsedAddressAsset,
+  TransactionGasParamAmounts,
+} from '@/entities';
+import { SwapMetadata } from '@/raps/references';
 import { TransactionClaimableTxPayload } from '@/screens/claimables/ClaimingTransactionClaimable';
 import { Signer } from '@ethersproject/abstract-signer';
+import { CrosschainQuote } from '@rainbow-me/swaps';
+import { Address } from 'viem';
+
+interface Gas {
+  gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
+  gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
+}
+
+type SwapData = {
+  amount?: string | null;
+  sellAmount: string;
+  buyAmount?: string;
+  permit?: boolean;
+  chainId: number;
+  toChainId?: number;
+  requiresApprove?: boolean;
+  meta?: SwapMetadata;
+  assetToSell: ParsedAsset;
+  assetToBuy: ParsedAsset;
+  nonce?: number;
+  flashbots?: boolean;
+  address?: Address;
+} & Gas;
+
+export type CrosschainSwapActionParameters = SwapData & { quote: CrosschainQuote };
+
+export interface UnlockActionParameters {
+  fromAddress: Address;
+  assetToUnlock: ParsedAsset;
+  contractAddress: Address;
+  chainId: number;
+  gas: Gas;
+}
 
 export interface ClaimTransactionClaimableActionParameters {
   claimTx: TransactionClaimableTxPayload;
   asset: ParsedAddressAsset;
+  gas?: Gas;
 }
 
 export interface RapActionTransaction {
@@ -13,17 +55,26 @@ export interface RapActionTransaction {
 
 export type RapActionParameterMap = {
   claimTransactionClaimableAction: ClaimTransactionClaimableActionParameters;
+  crosschainSwapAction: CrosschainSwapActionParameters;
+  unlockAction: UnlockActionParameters;
 };
 
-export type RapParameters = {
-  type: 'claimTransactionClaimableRap';
-  claimTransactionClaimableActionParameters: ClaimTransactionClaimableActionParameters;
-};
+export type RapParameters =
+  | {
+      type: 'claimTransactionClaimableRap';
+      claimTransactionClaimableActionParameters: ClaimTransactionClaimableActionParameters;
+      crosschainSwapActionParameters: CrosschainSwapActionParameters;
+    }
+  | {
+      type: 'crosschainSwapRap';
+      crosschainSwapActionParameters: CrosschainSwapActionParameters;
+    };
 
 export interface RapAction<T extends RapActionTypes> {
   parameters: RapActionParameterMap[T];
   transaction: RapActionTransaction;
   type: T;
+  shouldExpedite?: boolean;
 }
 
 export interface Rap {
@@ -32,12 +83,15 @@ export interface Rap {
 
 export enum rapActions {
   claimTransactionClaimableAction = 'claimTransactionClaimableAction',
+  crosschainSwapAction = 'crosschainSwapAction',
+  unlockAction = 'unlockAction',
 }
 
 export type RapActionTypes = keyof typeof rapActions;
 
 export enum rapTypes {
   claimTransactionClaimableRap = 'claimTransactionClaimableRap',
+  crosschainSwapRap = 'crosschainSwapRap',
 }
 
 export type RapTypes = keyof typeof rapTypes;
@@ -52,6 +106,7 @@ export interface ActionProps<T extends RapActionTypes> {
   nonceToUse: number | undefined;
   parameters: RapActionParameterMap[T];
   wallet: Signer;
+  shouldExpedite?: boolean;
 }
 
 export interface RapResponse {

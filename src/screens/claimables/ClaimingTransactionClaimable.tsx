@@ -9,12 +9,15 @@ import { needsL1SecurityFeeChains } from '@/chains';
 import { logger, RainbowError } from '@/logger';
 import { ClaimingClaimableSharedUI, ClaimStatus } from './ClaimingClaimableSharedUI';
 import { TransactionRequest } from '@ethersproject/providers';
-import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { convertAmountToNativeDisplayWorklet, convertAmountToRawAmount } from '@/__swaps__/utils/numbers';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
 import { walletExecuteRap } from '@/rapsV2/execute';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { queryClient } from '@/react-query';
+import { ETH_ADDRESS, getCrosschainQuote, QuoteParams } from '@rainbow-me/swaps';
+import { buildQuoteParams } from '@/__swaps__/utils/swaps';
+import { useNativeAsset } from '@/utils/ethereumUtils';
 
 // supports legacy and new gas types
 export type TransactionClaimableTxPayload = TransactionRequest &
@@ -51,6 +54,8 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
   >();
   const [txPayload, setTxPayload] = useState<TransactionClaimableTxPayload | undefined>();
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
+
+  const nativeNetworkAsset = useNativeAsset({ chainId: 8453 });
 
   const queryKey = claimablesQueryKey({ address: accountAddress, currency: nativeCurrency });
 
@@ -162,9 +167,72 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
         return;
       }
 
+      // source?: Source;
+      // chainId: number;
+      // fromAddress: EthereumAddress;
+      // sellTokenAddress: EthereumAddress;
+      // buyTokenAddress: EthereumAddress;
+      // sellAmount?: BigNumberish;
+      // buyAmount?: BigNumberish;
+      // slippage: number;
+      // destReceiver?: EthereumAddress;
+      // refuel?: boolean;
+      // feePercentageBasisPoints?: number;
+      // toChainId?: number;
+      // currency: string;
+
+      // const params = buildQuoteParams({
+      //   currentAddress: accountAddress,
+      //   inputAmount: maxAdjustedInputAmount,
+      //   inputAsset: claimable.asset,
+      //   lastTypedInput: lastTypedInputParam,
+      //   outputAmount,
+      //   outputAsset: internalSelectedOutputAsset.value,
+      // });
+
+      const params: QuoteParams = {
+        chainId: claimable.chainId,
+        fromAddress: accountAddress,
+        sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
+        // buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : outputAsset.address,
+        buyTokenAddress: ETH_ADDRESS,
+        sellAmount: convertAmountToRawAmount(0.00001, claimable.asset.decimals),
+        slippage: 0.5,
+        refuel: false,
+        toChainId: 8453,
+        currency: nativeCurrency,
+      };
+
+      const swapData = {
+        amount: claimable.value.claimAsset.amount,
+        sellAmount: convertAmountToRawAmount(0.00001, claimable.asset.decimals),
+        buyAmount: undefined,
+        // permit?: boolean;
+        chainId: claimable.chainId,
+        toChainId: 8453,
+        // requiresApprove?: boolean;
+        // meta?: SwapMetadata;
+        assetToSell: claimable.asset,
+        assetToBuy: nativeNetworkAsset,
+        // nonce?: number;
+        // flashbots?: boolean;
+        address: accountAddress,
+      };
+
+      const quote = await getCrosschainQuote(params);
+      console.log(claimable.value.claimAsset.amount);
+      console.log('quote', quote);
+      if (!quote || 'error' in quote) {
+        haptics.notificationError();
+        setClaimStatus('error');
+        logger.error(new RainbowError('[ClaimingTransactionClaimable]: quote error'));
+        return;
+      }
+
       const { errorMessage } = await walletExecuteRap(wallet, {
         type: 'claimTransactionClaimableRap',
         claimTransactionClaimableActionParameters: { claimTx: txPayload, asset: claimable.asset },
+        crosschainSwapActionParameters: { ...swapData, quote },
       });
 
       if (errorMessage) {
