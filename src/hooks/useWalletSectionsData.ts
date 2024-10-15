@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
@@ -16,6 +16,8 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import { useClaimables } from '@/resources/addys/claimables/query';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
+import { analyticsV2 } from '@/analytics';
+import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 
 export default function useWalletSectionsData({
   type,
@@ -39,6 +41,27 @@ export default function useWalletSectionsData({
   });
   const { data: positions } = usePositions({ address: accountAddress, currency: nativeCurrency });
   const { data: claimables } = useClaimables({ address: accountAddress, currency: nativeCurrency });
+
+  // claimables analytics
+  useEffect(() => {
+    let totalUSDValue = 0;
+    const claimablesUSDValues: {
+      [key: string]: number;
+    } = {};
+
+    claimables?.forEach(claimable => {
+      const attribute = `${claimable.analyticsId}USDValue`;
+      totalUSDValue += claimable.value.usd;
+
+      if (claimablesUSDValues[attribute] !== undefined) {
+        claimablesUSDValues[attribute] += claimable.value.usd;
+      } else {
+        claimablesUSDValues[attribute] = claimable.value.usd;
+      }
+    });
+
+    analyticsV2.identify({ claimablesAmount: claimables?.length ?? 0, claimablesUSDValue: totalUSDValue, ...claimablesUSDValues });
+  }, [claimables]);
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
