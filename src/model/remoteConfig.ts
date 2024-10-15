@@ -176,9 +176,9 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   idfa_check_enabled: true,
   rewards_enabled: true,
 
-  degen_mode: false,
-  featured_results: false,
-  claimables: false,
+  degen_mode: true,
+  featured_results: true,
+  claimables: true,
   nfts_enabled: true,
 };
 
