@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, MotiView } from 'moti';
 import * as i18n from '@/languages';
 import { Image, InteractionManager, PixelRatio, ScrollView } from 'react-native';
@@ -8,11 +8,11 @@ import { Transaction } from '@ethersproject/transactions';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { SheetActionButton } from '@/components/sheet';
 import { Bleed, Box, Columns, Inline, Inset, Stack, Text, globalColors, useBackgroundColor, useForegroundColor } from '@/design-system';
-import { NewTransaction, TransactionStatus } from '@/entities';
+import { NewTransaction, ParsedAddressAsset, TransactionStatus } from '@/entities';
 import { useNavigation } from '@/navigation';
 
 import { useTheme } from '@/theme';
-import { deviceUtils } from '@/utils';
+import { deviceUtils, ethereumUtils } from '@/utils';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
@@ -25,7 +25,7 @@ import { useAccountSettings, useGas, useSwitchWallet, useWallets } from '@/hooks
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { IS_IOS } from '@/env';
-import { estimateGasWithPadding, toHex } from '@/handlers/web3';
+import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { GasSpeedButton } from '@/components/gas';
 import { RainbowError, logger } from '@/logger';
 import {
@@ -42,6 +42,7 @@ import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { loadWallet, sendTransaction, signPersonalMessage, signTransaction, signTypedDataMessage } from '@/model/wallet';
 
 import { analyticsV2 as analytics } from '@/analytics';
+import { getOnchainAssetBalance } from '@/handlers/assets';
 import { maybeSignUri } from '@/handlers/imgix';
 import { isAddress } from '@ethersproject/address';
 import { hexToNumber, isHex } from 'viem';
@@ -68,7 +69,6 @@ import { useCalculateGasLimit } from '@/hooks/useCalculateGasLimit';
 import { useTransactionSetup } from '@/hooks/useTransactionSetup';
 import { useHasEnoughBalance } from '@/hooks/useHasEnoughBalance';
 import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
-import { useProviderSetup } from '@/hooks/useProviderSetup';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
 import { toChecksumAddress } from 'ethereumjs-util';
@@ -107,13 +107,30 @@ export const SignTransactionSheet = () => {
 
   const addressToUse = specifiedAddress ?? accountAddress;
 
-  const { provider, nativeAsset } = useProviderSetup(chainId, addressToUse);
+  const provider = getProvider({ chainId });
+  const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | null>(null);
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
   const isPersonalSignRequest = isPersonalSign(transactionDetails.payload.method);
 
   const label = useForegroundColor('label');
   const surfacePrimary = useBackgroundColor('surfacePrimary');
+
+  useEffect(() => {
+    const fetchNativeAsset = async () => {
+      const asset = await ethereumUtils.getNativeAssetForNetwork({ chainId, address: addressToUse });
+      if (asset) {
+        const balance = await getOnchainAssetBalance(asset, addressToUse, chainId, provider);
+        if (balance) {
+          const assetWithOnchainBalance: ParsedAddressAsset = { ...asset, balance };
+          setNativeAsset(assetWithOnchainBalance);
+        } else {
+          setNativeAsset(asset);
+        }
+      }
+    };
+    fetchNativeAsset();
+  }, [addressToUse, chainId, provider]);
 
   const formattedDappUrl = useMemo(() => {
     try {
