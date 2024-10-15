@@ -196,7 +196,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
         sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
         // buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : outputAsset.address,
         buyTokenAddress: ETH_ADDRESS,
-        sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
+        sellAmount: convertAmountToRawAmount(0.00001, claimable.asset.decimals),
         slippage: 0.5,
         refuel: false,
         toChainId: 8453,
@@ -205,7 +205,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
 
       const swapData = {
         amount: claimable.value.claimAsset.amount,
-        sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
+        sellAmount: convertAmountToRawAmount(0.00001, claimable.asset.decimals),
         buyAmount: undefined,
         // permit?: boolean;
         chainId: claimable.chainId,
