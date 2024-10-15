@@ -47,6 +47,9 @@ export interface UserAssetsState {
   setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
   setSearchQuery: (query: string) => void;
   setUserAssets: (userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) => void;
+
+  hiddenAssets: Set<UniqueId>;
+  setHiddenAssets: (uniqueIds: UniqueId[]) => void;
 }
 
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
@@ -329,6 +332,26 @@ export const createUserAssetsStore = (address: Address | string) =>
               userAssets: userAssetsMap,
             };
         }),
+
+      hiddenAssets: new Set<UniqueId>(),
+
+      setHiddenAssets: (uniqueIds: UniqueId[]) => {
+        // if the uniqueId was already hidden, remove it from the set
+        // otherwise, add it to the set
+
+        set(prev => {
+          const hiddenAssets = new Set(prev.hiddenAssets);
+          uniqueIds.forEach(uniqueId => {
+            if (hiddenAssets.has(uniqueId)) {
+              hiddenAssets.delete(uniqueId);
+            } else {
+              hiddenAssets.add(uniqueId);
+            }
+          });
+
+          return { hiddenAssets };
+        });
+      },
     }),
     {
       storageKey: `userAssets_${address}`,
@@ -353,8 +376,11 @@ function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
   const { stores } = storeManager.getState();
   let store = stores.get(accountAddress);
 
+  console.log({ address, store });
+
   if (!store) {
     store = createUserAssetsStore(accountAddress);
+    console.log({ store });
     storeManager.setState(state => ({
       stores: new Map(state.stores).set(accountAddress, store as UserAssetsStoreType),
     }));
@@ -364,15 +390,15 @@ function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
 }
 
 export const userAssetsStore = {
-  getState: () => getOrCreateStore().getState(),
-  setState: (partial: Partial<UserAssetsState> | ((state: UserAssetsState) => Partial<UserAssetsState>)) =>
-    getOrCreateStore().setState(partial),
+  getState: (address?: Address | string) => getOrCreateStore(address).getState(),
+  setState: (partial: Partial<UserAssetsState> | ((state: UserAssetsState) => Partial<UserAssetsState>), address?: Address | string) =>
+    getOrCreateStore(address).setState(partial),
 };
 
 export function useUserAssetsStore<T>(selector: (state: UserAssetsState) => T) {
   const address = useSelector((state: AppState) => state.settings.accountAddress);
   const store = getOrCreateStore(address);
-  return useStore(store, useCallback(selector, []));
+  return useStore(store, useCallback(selector, [selector]));
 }
 
 function getCurrentSearchCache(): Map<string, UniqueId[]> | undefined {

@@ -452,12 +452,10 @@ export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: A
     return { address: parts[0] as AddressOrEth, chainId: ChainId.mainnet };
   }
 
-  // If the unique ID contains '_', the last part is the network and the rest is the address
-  const network = parts[1] as Network; // Assuming the last part is a valid Network enum value
-  const address = parts[0] as AddressOrEth;
-  const chainId = chainsIdByName[network];
+  const [address, chainIdOrNetwork] = parts;
+  const chainId = isNaN(+chainIdOrNetwork) ? chainsIdByName[chainIdOrNetwork] : +chainIdOrNetwork;
 
-  return { address, chainId };
+  return { address: address as AddressOrEth, chainId };
 };
 
 const calculateL1FeeOptimism = async (
