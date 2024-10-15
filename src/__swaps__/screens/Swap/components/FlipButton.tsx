@@ -8,7 +8,7 @@ import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/d
 import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
+import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SwapAssetType } from '@/__swaps__/types/swap';
