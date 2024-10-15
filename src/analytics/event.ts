@@ -8,6 +8,7 @@ import { FiatProviderName } from '@/entities/f2c';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
+import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
 
 /**
  * All events, used by `analytics.track()`
@@ -143,6 +144,8 @@ export const event = {
 
   // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
+  browserAddFavorite: 'browser.add_favorite',
+  browserTapFavorite: 'browser.tap_favorite',
 
   performanceTimeToSign: 'performance.time_to_sign',
   performanceTimeToSignOperation: 'performance.time_to_sign.operation',
@@ -575,6 +578,8 @@ export type EventProperties = {
     hasClickedBefore: boolean;
     index: number;
   };
+  [event.browserAddFavorite]: FavoritedSite;
+  [event.browserTapFavorite]: FavoritedSite;
 
   [event.performanceTimeToSign]: {
     screen: Screen;
