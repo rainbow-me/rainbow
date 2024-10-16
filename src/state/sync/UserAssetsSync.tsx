@@ -11,8 +11,6 @@ export const UserAssetsSync = function UserAssetsSync() {
 
   const isSwapsOpen = useSwapsStore(state => state.isSwapsOpen);
 
-  console.log('accountAddress', accountAddress);
-
   useUserAssets(
     {
       address: accountAddress,

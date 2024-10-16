@@ -16,6 +16,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import { useClaimables } from '@/resources/addys/claimables/query';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 export default function useWalletSectionsData({
   type,
@@ -52,13 +53,15 @@ export default function useWalletSectionsData({
   const remoteConfig = useRemoteConfig();
   const experimentalConfig = useExperimentalConfig();
 
-  const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
+  const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
+
+  const { pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
 
   const { isCoinListEdited } = useCoinListEdited();
 
   const walletSections = useMemo(() => {
     const accountInfo = {
-      hiddenCoins,
+      hiddenAssets,
       isCoinListEdited,
       isLoadingUserAssets,
       language,
@@ -96,7 +99,7 @@ export default function useWalletSectionsData({
       briefSectionsData,
     };
   }, [
-    hiddenCoins,
+    hiddenAssets,
     isCoinListEdited,
     isLoadingUserAssets,
     language,

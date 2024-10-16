@@ -13,6 +13,7 @@ import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { NativeCurrencyKey } from '@/entities';
 import { ChainId } from '@/chains/types';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -144,8 +145,7 @@ const MemoizedBalanceCoinRow = React.memo(
 MemoizedBalanceCoinRow.displayName = 'MemoizedBalanceCoinRow';
 
 export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
-  const { theme, nativeCurrencySymbol, navigate, nativeCurrency, hiddenCoins, pinnedCoins, toggleSelectedCoin, isCoinListEdited } =
-    extendedState;
+  const { theme, nativeCurrencySymbol, navigate, nativeCurrency, pinnedCoins, toggleSelectedCoin, isCoinListEdited } = extendedState;
 
   const onPress = useCallback(() => {
     toggleSelectedCoin(uniqueId);
@@ -156,7 +156,9 @@ export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: {
   const maybeCallback = useRef<null | (() => void)>(null);
   maybeCallback.current = isCoinListEdited ? onPress : null;
 
-  const isHidden = hiddenCoins[uniqueId];
+  const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
+
+  const isHidden = hiddenAssets.has(uniqueId);
   const isPinned = pinnedCoins[uniqueId];
 
   return (

@@ -39,8 +39,9 @@ import { EthereumAddress, RainbowToken } from '@/entities';
 import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
 import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
 import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
-import { userAssetsStore } from '@/state/assets/userAssets';
+// import { userAssetsStore } from '@/state/assets/userAssets';
 import { UniqueId } from '@/__swaps__/types/assets';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 export default async function runMigrations() {
   // get current version
@@ -686,7 +687,6 @@ export default async function runMigrations() {
           return acc;
         }, []);
 
-        console.log(hiddenAssets);
         userAssetsStore.getState(address).setHiddenAssets(hiddenAssets);
       }
     }
@@ -706,6 +706,6 @@ export default async function runMigrations() {
     // @ts-expect-error
     await migrations[i].apply(null);
     logger.debug(`[runMigrations]: Migration ${i} completed succesfully`);
-    // await setMigrationVersion(i + 1);
+    await setMigrationVersion(i + 1);
   }
 }

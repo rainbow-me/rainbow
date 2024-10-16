@@ -34,7 +34,6 @@ export type ExtendedState = {
   nativeCurrency: NativeCurrencyKey;
   navigate: any;
   isCoinListEdited: boolean;
-  hiddenCoins: BooleanMap;
   pinnedCoins: BooleanMap;
   toggleSelectedCoin: (id: string) => void;
   setIsCoinListEdited: SetterOrUpdater<boolean>;
@@ -129,14 +128,13 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   const theme = useTheme();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
-  const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins, toggleSelectedCoin } = useCoinListEditOptions();
+  const { pinnedCoinsObj: pinnedCoins, toggleSelectedCoin } = useCoinListEditOptions();
 
   const { navigate } = useNavigation();
 
   const mergedExtendedState = useMemo<ExtendedState>(() => {
     return {
       ...extendedState,
-      hiddenCoins,
       isCoinListEdited,
       nativeCurrency,
       nativeCurrencySymbol,
@@ -153,7 +151,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     nativeCurrencySymbol,
     nativeCurrency,
     pinnedCoins,
-    hiddenCoins,
     toggleSelectedCoin,
     isCoinListEdited,
     setIsCoinListEdited,

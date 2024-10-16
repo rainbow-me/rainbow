@@ -41,7 +41,7 @@ const ONLY_NFTS_CONTENT = [{ type: 'ETH_CARD', uid: 'eth-card' }];
 
 const sortedAssetsSelector = (state: any) => state.sortedAssets;
 const accountBalanceDisplaySelector = (state: any) => state.accountBalanceDisplay;
-const hiddenCoinsSelector = (state: any) => state.hiddenCoins;
+const hiddenAssetsSelector = (state: any) => state.hiddenAssets;
 const isCoinListEditedSelector = (state: any) => state.isCoinListEdited;
 const isLoadingUserAssetsSelector = (state: any) => state.isLoadingUserAssets;
 const isLoadingBalanceSelector = (state: any) => state.isLoadingBalance;
@@ -162,10 +162,10 @@ const withBriefBalanceSection = (
   nativeCurrency: NativeCurrencyKey,
   isCoinListEdited: boolean,
   pinnedCoins: any,
-  hiddenCoins: any,
+  hiddenAssets: any,
   collectibles: any
 ) => {
-  const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenCoins);
+  const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);
 
   const hasTokens = briefAssets?.length;
   const hasNFTs = collectibles?.length;
@@ -275,7 +275,7 @@ const briefBalanceSectionSelector = createSelector(
     nativeCurrencySelector,
     isCoinListEditedSelector,
     pinnedCoinsSelector,
-    hiddenCoinsSelector,
+    hiddenAssetsSelector,
     uniqueTokensSelector,
   ],
   withBriefBalanceSection

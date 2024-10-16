@@ -53,10 +53,11 @@ export interface UserAssetsState {
 }
 
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
-type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalances' | 'idsByChain' | 'userAssets'> & {
+type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalances' | 'idsByChain' | 'userAssets' | 'hiddenAssets'> & {
   chainBalances: Array<[ChainId, number]>;
   idsByChain: Array<[UserAssetFilter, UniqueId[]]>;
   userAssets: Array<[UniqueId, ParsedSearchAsset]>;
+  hiddenAssets: UniqueId[];
 };
 
 function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: number) {
@@ -66,6 +67,7 @@ function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: num
       chainBalances: state.chainBalances ? Array.from(state.chainBalances.entries()) : [],
       idsByChain: state.idsByChain ? Array.from(state.idsByChain.entries()) : [],
       userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
+      hiddenAssets: state.hiddenAssets ? Array.from(state.hiddenAssets.values()) : [],
     };
 
     return JSON.stringify({
@@ -116,12 +118,22 @@ function deserializeUserAssetsState(serializedState: string) {
     logger.error(new RainbowError(`[userAssetsStore]: Failed to convert userAssets from user assets storage`), { error });
   }
 
+  let hiddenAssets = new Set<UniqueId>();
+  try {
+    if (state.hiddenAssets) {
+      hiddenAssets = new Set(state.hiddenAssets);
+    }
+  } catch (error) {
+    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert hiddenAssets from user assets storage`), { error });
+  }
+
   return {
     state: {
       ...state,
       chainBalances,
       idsByChain,
       userAssets: userAssetsData,
+      hiddenAssets,
     },
     version,
   };
@@ -336,19 +348,22 @@ export const createUserAssetsStore = (address: Address | string) =>
       hiddenAssets: new Set<UniqueId>(),
 
       setHiddenAssets: (uniqueIds: UniqueId[]) => {
-        // if the uniqueId was already hidden, remove it from the set
-        // otherwise, add it to the set
-
         set(prev => {
           const hiddenAssets = new Set(prev.hiddenAssets);
+          console.log('Current hidden assets:', Array.from(hiddenAssets));
+          console.log('Setting hidden assets:', uniqueIds);
+
           uniqueIds.forEach(uniqueId => {
             if (hiddenAssets.has(uniqueId)) {
+              console.log('Removing hidden asset:', uniqueId);
               hiddenAssets.delete(uniqueId);
             } else {
+              console.log('Adding hidden asset:', uniqueId);
               hiddenAssets.add(uniqueId);
             }
           });
 
+          console.log('Updated hidden assets:', Array.from(hiddenAssets));
           return { hiddenAssets };
         });
       },
@@ -376,11 +391,8 @@ function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
   const { stores } = storeManager.getState();
   let store = stores.get(accountAddress);
 
-  console.log({ address, store });
-
   if (!store) {
     store = createUserAssetsStore(accountAddress);
-    console.log({ store });
     storeManager.setState(state => ({
       stores: new Map(state.stores).set(accountAddress, store as UserAssetsStoreType),
     }));
