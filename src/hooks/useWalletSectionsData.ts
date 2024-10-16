@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
@@ -18,6 +18,34 @@ import { useClaimables } from '@/resources/addys/claimables/query';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
+import { analyticsV2 } from '@/analytics';
+import { Claimable } from '@/resources/addys/claimables/types';
+import { throttle } from 'lodash';
+
+// user properties analytics for claimables that executes at max once every 2 min
+const throttledClaimablesAnalytics = throttle(
+  (claimables: Claimable[]) => {
+    let totalUSDValue = 0;
+    const claimablesUSDValues: {
+      [key: string]: number;
+    } = {};
+
+    claimables.forEach(claimable => {
+      const attribute = `${claimable.analyticsId}USDValue`;
+      totalUSDValue += claimable.value.usd;
+
+      if (claimablesUSDValues[attribute] !== undefined) {
+        claimablesUSDValues[attribute] += claimable.value.usd;
+      } else {
+        claimablesUSDValues[attribute] = claimable.value.usd;
+      }
+    });
+
+    analyticsV2.identify({ claimablesAmount: claimables.length, claimablesUSDValue: totalUSDValue, ...claimablesUSDValues });
+  },
+  2 * 60 * 1000,
+  { trailing: false }
+);
 
 export default function useWalletSectionsData({
   type,
@@ -41,6 +69,16 @@ export default function useWalletSectionsData({
   });
   const { data: positions } = usePositions({ address: accountAddress, currency: nativeCurrency });
   const { data: claimables } = useClaimables({ address: accountAddress, currency: nativeCurrency });
+
+  // claimables analytics
+  useEffect(() => {
+    if (claimables?.length) {
+      throttledClaimablesAnalytics(claimables);
+    }
+    return () => {
+      throttledClaimablesAnalytics.cancel();
+    };
+  }, [claimables]);
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -111,6 +149,8 @@ export default function useWalletSectionsData({
     pinnedCoins,
     sendableUniqueTokens,
     sortedAssets,
+    totalBalance,
+    hiddenBalance,
     accountWithBalance?.balances,
     isWalletEthZero,
     hiddenTokens,
