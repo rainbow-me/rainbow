@@ -50,7 +50,7 @@ export const SwapCoinIconTextFallback = ({ asset, height, width, style }: SwapCo
 
   const backgroundColor = useAnimatedStyle(() => {
     return {
-      backgroundColor: getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true),
+      backgroundColor: getColorValueForThemeWorklet(asset.value?.color, isDarkMode),
     };
   });
 
@@ -61,7 +61,7 @@ export const SwapCoinIconTextFallback = ({ asset, height, width, style }: SwapCo
   const animatedFontSize = useAnimatedStyle(() => {
     return {
       fontSize: buildFallbackFontSize(formattedSymbol.value, width),
-      color: getColorValueForThemeWorklet(asset.value?.textColor, isDarkMode, true),
+      color: getColorValueForThemeWorklet(asset.value?.textColor, isDarkMode),
     };
   });
 

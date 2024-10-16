@@ -13,7 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { supportedNativeCurrencies } from '@/references';
 import { Bleed, Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { equalWorklet } from '@/safe-math/SafeMath';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import {
   CUSTOM_KEYBOARD_HEIGHT,

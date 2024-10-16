@@ -1,7 +1,7 @@
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { weiToGwei } from '@/__swaps__/utils/ethereum';
+import { weiToGwei } from '@/parsers';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
-import { add, formatNumber } from '@/__swaps__/utils/numbers';
+import { add, formatNumber } from '@/helpers/utilities';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenu } from '@/components/context-menu';
@@ -217,7 +217,7 @@ export function ReviewGasButton() {
 
   const animatedBorderColor = useAnimatedStyle(() => {
     return {
-      borderColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
+      borderColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode),
     };
   });
 

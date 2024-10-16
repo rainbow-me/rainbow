@@ -606,17 +606,11 @@ const formatEstimatedNetworkFee = (
   };
 };
 
-const formatTotalRegistrationCost = (wei: string, nativeCurrency: any, nativeAssetPrice: any, skipDecimals = false) => {
+const formatTotalRegistrationCost = (wei: string, nativeCurrency: any, nativeAssetPrice: any) => {
   const networkFeeInEth = fromWei(wei);
   const eth = handleSignificantDecimals(networkFeeInEth, 3);
 
-  const { amount, display } = convertAmountAndPriceToNativeDisplay(
-    networkFeeInEth,
-    nativeAssetPrice,
-    nativeCurrency,
-    undefined,
-    skipDecimals
-  );
+  const { amount, display } = convertAmountAndPriceToNativeDisplay(networkFeeInEth, nativeAssetPrice, nativeCurrency);
 
   return {
     amount,
@@ -651,13 +645,11 @@ const formatRentPrice = (rentPrice: BigNumberish, duration: number, nativeCurren
   const rentPricePerYear = getRentPricePerYear(rentPriceInETH, duration);
   const rentPricePerYearInWei = divide(rentPrice.toString(), duration);
 
-  const { amount, display } = convertAmountAndPriceToNativeDisplay(rentPriceInETH, nativeAssetPrice, nativeCurrency, undefined, true);
+  const { amount, display } = convertAmountAndPriceToNativeDisplay(rentPriceInETH, nativeAssetPrice, nativeCurrency);
   const { display: displayPerYear, amount: amountPerYear } = convertAmountAndPriceToNativeDisplay(
     rentPricePerYear,
     nativeAssetPrice,
-    nativeCurrency,
-    undefined,
-    true
+    nativeCurrency
   );
 
   return {

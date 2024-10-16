@@ -2,12 +2,7 @@ import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/Animated
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
-import {
-  convertRawAmountToBalance,
-  convertRawAmountToBalanceWorklet,
-  handleSignificantDecimals,
-  multiply,
-} from '@/__swaps__/utils/numbers';
+import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSignificantDecimals, multiply } from '@/helpers/utilities';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';

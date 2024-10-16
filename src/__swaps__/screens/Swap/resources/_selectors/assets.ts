@@ -1,7 +1,7 @@
 import { ParsedAssetsDict, ParsedAssetsDictByChain, ParsedUserAsset, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
-import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
-import { add } from '@/__swaps__/utils/numbers';
+import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
+import { add } from '@/helpers/utilities';
 
 // selectors
 export function selectorFilterByUserChains<T>({
@@ -59,8 +59,8 @@ export function selectUserAssetAddressMapByChainId(assets: ParsedAssetsDictByCha
 // selector generators
 export function selectUserAssetWithUniqueId(uniqueId: UniqueId) {
   return (assets: ParsedAssetsDictByChain) => {
-    const { chain } = deriveAddressAndChainWithUniqueId(uniqueId);
-    return assets?.[chain]?.[uniqueId];
+    const { chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
+    return assets?.[chainId]?.[uniqueId];
   };
 }
 

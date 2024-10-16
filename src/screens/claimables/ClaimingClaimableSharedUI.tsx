@@ -14,7 +14,7 @@ import { chainsLabel } from '@/chains';
 import { useNavigation } from '@/navigation';
 import { TextColor } from '@/design-system/color/palettes';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { debounce } from 'lodash';

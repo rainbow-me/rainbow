@@ -35,7 +35,7 @@ export const useSwapInputStyles = ({
 
   const bgColor = useDerivedValue(() => {
     return isDarkMode
-      ? opacityWorklet(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode, true), 0.08)
+      ? opacityWorklet(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode), 0.08)
       : opacityWorklet(globalColors.white100, 0.8);
   });
 
@@ -46,9 +46,9 @@ export const useSwapInputStyles = ({
   const strokeColor = useDerivedValue(() => {
     return isDarkMode
       ? opacityWorklet(
-          getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode, true) === ETH_COLOR_DARK
+          getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode) === ETH_COLOR_DARK
             ? ETH_COLOR_DARK_ACCENT
-            : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode, true),
+            : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode),
           0.06
         )
       : globalColors.white100;
@@ -56,7 +56,7 @@ export const useSwapInputStyles = ({
 
   const expandedStrokeColor = useDerivedValue(() => {
     return isDarkMode
-      ? opacityWorklet(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode, true), 0.1)
+      ? opacityWorklet(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode), 0.1)
       : globalColors.white100;
   });
 
@@ -78,7 +78,7 @@ export const useSwapInputStyles = ({
         otherInputProgress.value === NavigationSteps.SEARCH_FOCUSED
           ? withTiming(0, TIMING_CONFIGS.fadeConfig)
           : withTiming(1, TIMING_CONFIGS.fadeConfig),
-      shadowColor: isDarkMode ? 'transparent' : getColorValueForThemeWorklet(asset.value?.mixedShadowColor, isDarkMode, true),
+      shadowColor: isDarkMode ? 'transparent' : getColorValueForThemeWorklet(asset.value?.mixedShadowColor, isDarkMode),
       transform: [
         {
           translateY: withSpring(getContainerStyleTranslateY(progress, bottomInput), SPRING_CONFIGS.keyboardConfig),
