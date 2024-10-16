@@ -442,9 +442,7 @@ async function parseEthereumUrl(data: string) {
 
 export const getUniqueIdNetwork = (address: EthereumAddress, network: Network) => `${address}_${network}`;
 
-export const getUniqueId = (address: EthereumAddress, chainId: ChainId) => `${address}_${chainId}`;
-
-export const getUniqueIdWorklet = (address: EthereumAddress, chainId: ChainId) => {
+export const getUniqueId = (address: EthereumAddress, chainId: ChainId) => {
   'worklet';
   return `${address}_${chainId}`;
 };

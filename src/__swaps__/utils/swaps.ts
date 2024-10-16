@@ -39,7 +39,7 @@ import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { chainsName } from '@/chains';
-import { getUniqueIdWorklet } from '@/utils/ethereumUtils';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -548,7 +548,7 @@ export const parseAssetAndExtend = ({
     colors: (isAssetEth ? ETH_COLORS : asset.colors) as TokenColors,
   });
 
-  const uniqueId = getUniqueIdWorklet(asset.address, asset.chainId);
+  const uniqueId = getUniqueId(asset.address, asset.chainId);
   const balance = insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(uniqueId)?.balance || asset.balance : asset.balance;
 
   return {

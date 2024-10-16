@@ -3,7 +3,7 @@ import { ChainId } from '@/chains/types';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { addHexPrefix } from '@/handlers/web3';
 import { isLowerCaseMatch, filterList } from '@/utils';
-import { getUniqueIdWorklet } from '@/utils/ethereumUtils';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import { useFavorites } from '@/resources/favorites';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { isAddress } from '@ethersproject/address';
@@ -346,7 +346,7 @@ export function useSearchCurrencyLists() {
         chainId: state.toChainId,
         favorite: true,
         mainnetAddress: favToken.networks?.[ChainId.mainnet]?.address || favToken.mainnet_address,
-        uniqueId: getUniqueIdWorklet(favToken.networks[state.toChainId]?.address || favToken.address, state.toChainId),
+        uniqueId: getUniqueId(favToken.networks[state.toChainId]?.address || favToken.address, state.toChainId),
       })) as SearchAsset[];
   }, [favorites, state.toChainId]);
 

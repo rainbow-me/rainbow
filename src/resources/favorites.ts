@@ -1,6 +1,6 @@
 import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId, Network } from '@/chains/types';
-import { getUniqueIdWorklet } from '@/utils/ethereumUtils';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import { NativeCurrencyKeys, RainbowToken } from '@/entities';
 import { createQueryKey, queryClient } from '@/react-query';
 import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
@@ -34,7 +34,7 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
     );
 
     if (externalAsset) {
-      const uniqueId = getUniqueIdWorklet(externalAsset?.networks[chainId]?.address, chainId);
+      const uniqueId = getUniqueId(externalAsset?.networks[chainId]?.address, chainId);
       newFavoritesMeta[uniqueId] = {
         ...externalAsset,
         chainId,
@@ -54,10 +54,10 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
   const ethIsFavorited = addresses.includes(ETH_ADDRESS);
   const wethIsFavorited = addresses.includes(WETH_ADDRESS);
   if (newFavoritesMeta) {
-    const WETH_uniqueId = getUniqueIdWorklet(WETH_ADDRESS, ChainId.mainnet);
+    const WETH_uniqueId = getUniqueId(WETH_ADDRESS, ChainId.mainnet);
     if (newFavoritesMeta[WETH_uniqueId] && ethIsFavorited) {
       const favorite = newFavoritesMeta[WETH_uniqueId];
-      const uniqueId = getUniqueIdWorklet(ETH_ADDRESS, ChainId.mainnet);
+      const uniqueId = getUniqueId(ETH_ADDRESS, ChainId.mainnet);
       newFavoritesMeta[uniqueId] = {
         ...favorite,
         address: ETH_ADDRESS,
@@ -117,7 +117,7 @@ export async function refreshFavorites() {
 export async function toggleFavorite(address: string, chainId = ChainId.mainnet) {
   const favorites = queryClient.getQueryData<Record<UniqueId, RainbowToken>>(favoritesQueryKey);
   const lowercasedAddress = address.toLowerCase() as AddressOrEth;
-  const uniqueId = getUniqueIdWorklet(lowercasedAddress, chainId);
+  const uniqueId = getUniqueId(lowercasedAddress, chainId);
   if (Object.keys(favorites || {}).includes(uniqueId)) {
     queryClient.setQueryData(favoritesQueryKey, omit(favorites, uniqueId));
   } else {

@@ -8,7 +8,7 @@ import { SearchAsset } from '@/__swaps__/types/search';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { getChainColorWorklet } from '@/__swaps__/utils/swaps';
-import { getUniqueIdWorklet } from '@/utils/ethereumUtils';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import { analyticsV2 } from '@/analytics';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -100,10 +100,7 @@ export const TokenToBuyList = () => {
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
       runOnUI(() => {
-        if (
-          internalSelectedInputAsset.value &&
-          getUniqueIdWorklet(token.address, token.chainId) !== internalSelectedOutputAsset.value?.uniqueId
-        ) {
+        if (internalSelectedInputAsset.value && getUniqueId(token.address, token.chainId) !== internalSelectedOutputAsset.value?.uniqueId) {
           isQuoteStale.value = 1;
           isFetching.value = true;
         }
