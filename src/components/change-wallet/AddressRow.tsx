@@ -23,8 +23,6 @@ import { toChecksumAddress } from '@/handlers/web3';
 import { IS_IOS, IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { useForegroundColor } from '@/design-system';
-import { convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
-import { useAccountSettings } from '@/hooks';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -121,21 +119,8 @@ interface AddressRowProps {
 
 export default function AddressRow({ contextMenuActions, data, editMode, onPress }: AddressRowProps) {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
-  const { nativeCurrency } = useAccountSettings();
 
-  const {
-    address,
-    balances,
-    hiddenBalances,
-    color: accountColor,
-    ens,
-    image: accountImage,
-    isSelected,
-    isReadOnly,
-    isLedger,
-    label,
-    walletId,
-  } = data;
+  const { address, balances, color: accountColor, ens, image: accountImage, isSelected, isReadOnly, isLedger, label, walletId } = data;
 
   const { colors, isDarkMode } = useTheme();
 
@@ -146,8 +131,8 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
       return lang.t('wallet.change_wallet.loading_balance');
     }
 
-    return convertAmountToNativeDisplay(subtract(balances.totalBalanceAmount, hiddenBalances), nativeCurrency);
-  }, [balances, hiddenBalances, nativeCurrency]);
+    return balances.balancesMinusHiddenBalances;
+  }, [balances]);
 
   const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(label), [label]);
 

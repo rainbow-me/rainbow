@@ -4,8 +4,11 @@ import useWalletBalances from './useWalletBalances';
 import useWalletsHiddenBalances from './useWalletsHiddenBalances';
 import useWallets from './useWallets';
 import { Address } from 'viem';
+import { convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
+import { useAccountSettings } from '.';
 
 export default function useWalletsWithBalancesAndNames() {
+  const { nativeCurrency } = useAccountSettings();
   const { walletNames, wallets } = useWallets();
   const { balances } = useWalletBalances(wallets || {});
   const { hiddenBalances } = useWalletsHiddenBalances(wallets || {});
@@ -19,12 +22,16 @@ export default function useWalletsWithBalancesAndNames() {
             ...account,
             balances: balances[lowerCaseAddress],
             hiddenBalances: hiddenBalances[lowerCaseAddress] ?? '0',
+            balancesMinusHiddenBalances: convertAmountToNativeDisplay(
+              subtract(balances[lowerCaseAddress]?.totalBalanceAmount, hiddenBalances[lowerCaseAddress] ?? '0'),
+              nativeCurrency
+            ),
             ens: walletNames[account.address],
           };
         });
         return { ...wallet, addresses: updatedAccounts };
       }),
-    [balances, hiddenBalances, walletNames, wallets]
+    [balances, hiddenBalances, nativeCurrency, walletNames, wallets]
   );
 
   return walletsWithBalancesAndNames;
