@@ -83,8 +83,7 @@ const updateNotificationSubscriptionWithRetry = async ({
     return true;
   } else if (subscriptionResponse.shouldRetry) {
     // retry with an updated FCM token
-    await saveFCMToken();
-    const refreshedFirebaseToken = await getFCMToken();
+    const refreshedFirebaseToken = await saveFCMToken();
     if (!refreshedFirebaseToken) return false;
 
     const subscriptionRetryResponse = await updateNotificationSubscription({
@@ -113,8 +112,7 @@ export const publishWalletSettings = async ({
 
     // refresh the FCM token if not found
     if (!firebaseToken) {
-      await saveFCMToken();
-      firebaseToken = await getFCMToken();
+      firebaseToken = await saveFCMToken();
       if (!firebaseToken) return;
     }
 
