@@ -66,6 +66,10 @@ const BACKEND_NETWORKS_QUERY = `
         }
         swap {
           enabled
+          swap
+          swapExactOutput
+          bridge
+          bridgeExactOutput
         }
         addys {
           approvals
