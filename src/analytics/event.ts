@@ -8,6 +8,7 @@ import { FiatProviderName } from '@/entities/f2c';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
+import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
 
 /**
  * All events, used by `analytics.track()`
@@ -143,6 +144,8 @@ export const event = {
 
   // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
+  browserAddFavorite: 'browser.add_favorite',
+  browserTapFavorite: 'browser.tap_favorite',
 
   performanceTimeToSign: 'performance.time_to_sign',
   performanceTimeToSignOperation: 'performance.time_to_sign.operation',
@@ -150,6 +153,11 @@ export const event = {
   addFavoriteToken: 'add_favorite_token',
   watchWallet: 'watch_wallet',
   watchedWalletCohort: 'watched_wallet_cohort',
+
+  // claimables
+  claimClaimableSucceeded: 'claim_claimable.succeeded',
+  claimClaimableFailed: 'claim_claimable.failed',
+  claimablePanelOpened: 'claimable_panel.opened',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -570,6 +578,8 @@ export type EventProperties = {
     hasClickedBefore: boolean;
     index: number;
   };
+  [event.browserAddFavorite]: FavoritedSite;
+  [event.browserTapFavorite]: FavoritedSite;
 
   [event.performanceTimeToSign]: {
     screen: Screen;
@@ -594,5 +604,42 @@ export type EventProperties = {
   [event.watchedWalletCohort]: {
     numWatchedWallets: number;
     watchedWalletsAddresses: string[];
+  };
+
+  [event.claimClaimableSucceeded]: {
+    claimableId: string;
+    claimableType: 'transaction' | 'sponsored';
+    chainId: ChainId;
+    asset: {
+      symbol: string;
+      address: string;
+    };
+    amount: string;
+    usdValue: number;
+  };
+
+  [event.claimClaimableFailed]: {
+    claimableId: string;
+    claimableType: 'transaction' | 'sponsored';
+    chainId: ChainId;
+    asset: {
+      symbol: string;
+      address: string;
+    };
+    amount: string;
+    usdValue: number;
+    errorMessage: string;
+  };
+
+  [event.claimablePanelOpened]: {
+    claimableId: string;
+    claimableType: 'transaction' | 'sponsored';
+    chainId: ChainId;
+    asset: {
+      symbol: string;
+      address: string;
+    };
+    amount: string;
+    usdValue: number;
   };
 };

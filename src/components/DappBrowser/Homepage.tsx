@@ -228,6 +228,14 @@ const Favorites = ({ goToUrl, tabId }: { goToUrl: (url: string) => void; tabId: 
     reinitializeGridSort();
   }, [favoriteDapps.length, reinitializeGridSort, tabId]);
 
+  const onPressFavorite = useCallback(
+    (dapp: FavoritedSite) => {
+      analyticsV2.track(analyticsV2.event.browserTapFavorite, dapp);
+      goToUrl(dapp.url);
+    },
+    [goToUrl]
+  );
+
   return (
     <Box gap={20} style={styles.favoritesContainer}>
       <Inline alignVertical="center" space="6px">
@@ -251,7 +259,7 @@ const Favorites = ({ goToUrl, tabId }: { goToUrl: (url: string) => void; tabId: 
             {favoriteDapps.map(dapp =>
               dapp ? (
                 <Draggable activationTolerance={DEVICE_WIDTH} activeScale={1.06} id={dapp.url} key={dapp.url}>
-                  <Logo goToUrl={goToUrl} key={`${dapp.url}-${dapp.name}`} site={dapp} />
+                  <Logo onPress={onPressFavorite} key={`${dapp.url}-${dapp.name}`} site={dapp} />
                 </Draggable>
               ) : null
             )}
@@ -260,7 +268,7 @@ const Favorites = ({ goToUrl, tabId }: { goToUrl: (url: string) => void; tabId: 
       ) : (
         <Box flexDirection="row" flexWrap="wrap" gap={LOGO_PADDING} style={styles.favoritesGrid}>
           {favoriteDapps.length > 0
-            ? favoriteDapps.map(dapp => <Logo goToUrl={goToUrl} key={`${dapp.url}-${dapp.name}`} site={dapp} />)
+            ? favoriteDapps.map(dapp => <Logo onPress={onPressFavorite} key={`${dapp.url}-${dapp.name}`} site={dapp} />)
             : Array(4)
                 .fill(null)
                 .map((_, index) => <PlaceholderLogo key={index} />)}
@@ -636,7 +644,7 @@ export const PlaceholderCard = memo(function PlaceholderCard() {
   );
 });
 
-export const Logo = memo(function Logo({ goToUrl, site }: { goToUrl: (url: string) => void; site: FavoritedSite }) {
+const Logo = memo(function Logo({ onPress, site }: { onPress: (site: FavoritedSite) => void; site: FavoritedSite }) {
   const { isDarkMode } = useColorMode();
 
   const imageOrFallback = useMemo(() => {
@@ -693,7 +701,7 @@ export const Logo = memo(function Logo({ goToUrl, site }: { goToUrl: (url: strin
 
   return (
     <View style={{ width: LOGO_SIZE }}>
-      <ButtonPressAnimation onPress={() => goToUrl(site.url)}>
+      <ButtonPressAnimation onPress={() => onPress(site)}>
         <Stack alignHorizontal="center">
           <Box>{imageOrFallback}</Box>
           <Bleed bottom="10px" horizontal="8px">

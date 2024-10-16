@@ -45,6 +45,7 @@ import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetr
 import { PerformanceTracking } from '@/performance/tracking';
 import { ChainId } from '@/chains/types';
 import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
@@ -363,7 +364,8 @@ export async function initListeners() {
 
   client.on('session_proposal', onSessionProposal);
   client.on('session_request', onSessionRequest);
-  client.on('session_authenticate', onSessionAuthenticate);
+  // Temporarily disabling this since there's a bug on the WC side
+  // client.on('session_authenticate', onSessionAuthenticate);
   client.on('session_delete', () => {
     logger.debug(`[walletConnect]: session_delete`, {}, logger.DebugContext.walletconnect);
 
@@ -571,6 +573,8 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
       },
     };
 
+    hideWalletConnectToast();
+
     /**
      * We might see this at any point in the app, so only use `replace`
      * sometimes if the user is already looking at the approval sheet.
@@ -603,7 +607,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
 
   logger.debug(`[walletConnect]: session_request method`, { method, params }, logger.DebugContext.walletconnect);
 
-  // we allow eth sign for connections but we dont want to support actual singing
+  // we allow eth sign for connections but we dont want to support actual signing
   if (method === RPCMethod.Sign) {
     await client.respondSessionRequest({
       topic,
