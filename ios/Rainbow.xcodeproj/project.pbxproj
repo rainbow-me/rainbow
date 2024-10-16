@@ -70,7 +70,6 @@
 		B5CE8FFF29A5758100EB1EFA /* pooly@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5CE8FFD29A5758100EB1EFA /* pooly@3x.png */; };
 		B5D7F2F029E8D41E003D6A54 /* finiliar@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5D7F2EE29E8D41D003D6A54 /* finiliar@3x.png */; };
 		B5D7F2F129E8D41E003D6A54 /* finiliar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5D7F2EF29E8D41E003D6A54 /* finiliar@2x.png */; };
-		B614E81509614492E871E338 /* libPods-SelectTokenIntent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 65461177F9DA4D2AF8FDE532 /* libPods-SelectTokenIntent.a */; };
 		C04D10F025AFC8C1003BEF7A /* Extras.json in Resources */ = {isa = PBXBuildFile; fileRef = C04D10EF25AFC8C1003BEF7A /* Extras.json */; };
 		C1038325273C2D0C00B18210 /* PriceWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF75272BA7AA00FF5C78 /* PriceWidgetView.swift */; };
 		C1038337273C5C4200B18210 /* PriceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF62272BA6EF00FF5C78 /* PriceWidget.swift */; };
@@ -279,8 +278,6 @@
 		6B24FBC9AFF649E6E37FF985 /* Pods-PriceWidgetExtension.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.localrelease.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.localrelease.xcconfig"; sourceTree = "<group>"; };
 		933E17FCCFBF5FB66A730E0B /* libPods-SelectTokenIntent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SelectTokenIntent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		98AED33BAB4247CEBEF8464D /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
-		9A012A7A01CE319F103A71A9 /* Pods-ImageNotification.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.localrelease.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.localrelease.xcconfig"; sourceTree = "<group>"; };
-		9BE4E795B009DE2D95F873F7 /* Pods-Rainbow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.debug.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.debug.xcconfig"; sourceTree = "<group>"; };
 		9DEADFA4826D4D0BAA950D21 /* libRNFIRMessaging.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFIRMessaging.a; sourceTree = "<group>"; };
 		9E9F7E918EFBFBAF381621C7 /* Pods-Rainbow.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.staging.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.staging.xcconfig"; sourceTree = "<group>"; };
 		A4277D9E23CBD1910042BAF4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -345,7 +342,6 @@
 		C1C61A6C272C9C8D00E5C0B3 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		C1C61A81272CBDA100E5C0B3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		C1C61A902731A05700E5C0B3 /* RainbowTokenList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowTokenList.swift; sourceTree = "<group>"; };
-		C1D44EFF1CD97D9376360388 /* Pods-ImageNotification.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.debug.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.debug.xcconfig"; sourceTree = "<group>"; };
 		C1EB012E2731B68400830E70 /* TokenDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenDetails.swift; sourceTree = "<group>"; };
 		C97EAD8B2BD6C6DF00322D53 /* RCTDeviceUUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDeviceUUID.m; sourceTree = "<group>"; };
 		C97EAD8C2BD6C6DF00322D53 /* RCTDeviceUUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDeviceUUID.h; sourceTree = "<group>"; };
@@ -1127,26 +1123,21 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseABTesting/FirebaseABTesting_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCore/FirebaseCore_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCoreExtension/FirebaseCoreExtension_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCoreInternal/FirebaseCoreInternal_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseInstallations/FirebaseInstallations_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseRemoteConfig/FirebaseRemoteConfig_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleDataTransport/GoogleDataTransport_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleUtilities/GoogleUtilities_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/PromisesObjC/FBLPromises_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/nanopb/nanopb_Privacy.bundle",
+			inputFileListPaths = (
 			);
-			name = "[CP] Copy Pods Resources";
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-ImageNotification-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension-resources.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		24E3DE0C1A318179029F909F /* [CP] Check Pods Manifest.lock */ = {
@@ -1434,7 +1425,7 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/PromisesObjC/FBLPromises_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/nanopb/nanopb_Privacy.bundle",
 			);
-			name = "[CP] Embed Pods Frameworks";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseABTesting_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCore_Privacy.bundle",
