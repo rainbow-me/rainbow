@@ -133,6 +133,8 @@ const ScaleButton = forwardRef(function ScaleButton(
   });
 
   return (
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     <View style={[sx.overflow, wrapperStyle]} testID={testID} ref={ref}>
       <View style={{ margin: -overflowMargin }}>
         <AnimatedRawButton exclusive={exclusive} hitSlop={-overflowMargin} onGestureEvent={gestureHandler} rippleColor={transparentColor}>
@@ -198,6 +200,8 @@ const SimpleScaleButton = forwardRef(function SimpleScaleButton(
       testID={testID}
       transformOrigin={transformOrigin}
       disallowInterruption={disallowInterruption}
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       ref={ref}
     >
       {children}
@@ -238,6 +242,8 @@ export default forwardRef(function ButtonPressAnimation(
 
   const ButtonElement = reanimatedButton ? ScaleButton : SimpleScaleButton;
   return disabled ? (
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     <View onLayout={onLayout} style={[sx.overflow, style]} ref={ref}>
       {children}
     </View>
