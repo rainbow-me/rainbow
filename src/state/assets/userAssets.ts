@@ -405,12 +405,21 @@ export const userAssetsStore = {
   getState: (address?: Address | string) => getOrCreateStore(address).getState(),
   setState: (partial: Partial<UserAssetsState> | ((state: UserAssetsState) => Partial<UserAssetsState>), address?: Address | string) =>
     getOrCreateStore(address).setState(partial),
+  subscribe: (
+    selector: (state: UserAssetsState) => Partial<UserAssetsState>,
+    listener: (state: UserAssetsState, prevState: UserAssetsState) => void,
+    options?: {
+      equalityFn?: (a: UserAssetsState, b: UserAssetsState) => boolean;
+      fireImmediately?: boolean;
+    },
+    address?: Address | string
+  ) => getOrCreateStore(address).subscribe(selector, listener, options),
 };
 
 export function useUserAssetsStore<T>(selector: (state: UserAssetsState) => T) {
   const address = useSelector((state: AppState) => state.settings.accountAddress);
   const store = getOrCreateStore(address);
-  return useStore(store, useCallback(selector, [selector]));
+  return useStore(store, selector);
 }
 
 function getCurrentSearchCache(): Map<string, UniqueId[]> | undefined {
