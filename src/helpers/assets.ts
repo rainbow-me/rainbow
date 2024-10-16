@@ -124,7 +124,13 @@ export const buildCoinsList = (
 };
 
 // TODO make it better
-export const buildBriefCoinsList = (sortedAssets: any, nativeCurrency: any, isCoinListEdited: any, pinnedCoins: any, hiddenAssets: any) => {
+export const buildBriefCoinsList = (
+  sortedAssets: any,
+  nativeCurrency: any,
+  isCoinListEdited: any,
+  pinnedCoins: any,
+  hiddenAssets: Set<UniqueId>
+) => {
   const { assets, smallBalancesValue, totalBalancesValue } = buildCoinsList(
     sortedAssets,
     nativeCurrency,

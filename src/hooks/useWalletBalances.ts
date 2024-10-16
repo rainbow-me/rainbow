@@ -6,11 +6,8 @@ import { useAddysSummary } from '@/resources/summary/summary';
 import { useQueries } from '@tanstack/react-query';
 import { fetchPositions, positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';
-import { add, convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
+import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { queryClient } from '@/react-query';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsQueryKey, UserAssetsResult } from '@/resources/assets/UserAssetsQuery';
-import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 
 const QUERY_CONFIG = {
   staleTime: 1000 * 60 * 2, // 2 minutes
@@ -29,32 +26,6 @@ export type WalletBalance = {
 export type WalletBalanceResult = {
   balances: Record<Address, WalletBalance>;
   isLoading: boolean;
-};
-
-const getHiddenAssetBalance = ({
-  address,
-  nativeCurrency,
-  connectedToHardhat,
-}: {
-  address: Address;
-  nativeCurrency: NativeCurrencyKey;
-  connectedToHardhat: boolean;
-}) => {
-  const { hiddenAssets } = userAssetsStore.getState(address);
-  const assetData = queryClient.getQueryData<UserAssetsResult>(
-    userAssetsQueryKey({ address, currency: nativeCurrency, connectedToHardhat })
-  );
-
-  return Array.from(hiddenAssets).reduce((acc, uniqueId) => {
-    const asset = assetData?.[uniqueId];
-    let sum = acc;
-    if (asset) {
-      const priceUnit = asset.price?.value ?? 0;
-      const nativeDisplay = convertAmountAndPriceToNativeDisplay(asset?.balance?.amount ?? 0, priceUnit, nativeCurrency);
-      sum = add(sum, nativeDisplay.amount);
-    }
-    return sum;
-  }, '0');
 };
 
 const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {

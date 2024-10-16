@@ -370,7 +370,7 @@ export const createUserAssetsStore = (address: Address | string) =>
     }),
     {
       storageKey: `userAssets_${address}`,
-      version: 0,
+      version: 1,
       serializer: serializeUserAssetsState,
       deserializer: deserializeUserAssetsState,
     }

@@ -9,6 +9,7 @@ import { Claimable } from '@/resources/addys/claimables/types';
 import { add, convertAmountToNativeDisplay } from './utilities';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { IS_TEST } from '@/env';
+import { UniqueId } from '@/__swaps__/types/assets';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -162,7 +163,7 @@ const withBriefBalanceSection = (
   nativeCurrency: NativeCurrencyKey,
   isCoinListEdited: boolean,
   pinnedCoins: any,
-  hiddenAssets: any,
+  hiddenAssets: Set<UniqueId>,
   collectibles: any
 ) => {
   const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);

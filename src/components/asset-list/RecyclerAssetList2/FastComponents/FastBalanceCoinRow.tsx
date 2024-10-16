@@ -145,7 +145,8 @@ const MemoizedBalanceCoinRow = React.memo(
 MemoizedBalanceCoinRow.displayName = 'MemoizedBalanceCoinRow';
 
 export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
-  const { theme, nativeCurrencySymbol, navigate, nativeCurrency, pinnedCoins, toggleSelectedCoin, isCoinListEdited } = extendedState;
+  const { theme, nativeCurrencySymbol, navigate, nativeCurrency, hiddenAssets, pinnedCoins, toggleSelectedCoin, isCoinListEdited } =
+    extendedState;
 
   const onPress = useCallback(() => {
     toggleSelectedCoin(uniqueId);
@@ -155,8 +156,6 @@ export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: {
   // when isCoinListEdited === true and we need to change onPress callback
   const maybeCallback = useRef<null | (() => void)>(null);
   maybeCallback.current = isCoinListEdited ? onPress : null;
-
-  const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
 
   const isHidden = hiddenAssets.has(uniqueId);
   const isPinned = pinnedCoins[uniqueId];
