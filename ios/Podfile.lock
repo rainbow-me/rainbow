@@ -212,7 +212,7 @@ PODS:
   - mobile-wallet-protocol-host (0.1.7):
     - CoinbaseWalletSDK/Host
     - React-Core
-  - MultiplatformBleAdapter (0.1.9)
+  - MultiplatformBleAdapter (0.2.0)
   - nanopb (2.30910.0):
     - nanopb/decode (= 2.30910.0)
     - nanopb/encode (= 2.30910.0)
@@ -1160,9 +1160,28 @@ PODS:
     - React-Core
   - react-native-animateable-text (0.12.1):
     - React-Core
-  - react-native-ble-plx (2.0.3):
-    - MultiplatformBleAdapter (= 0.1.9)
+  - react-native-ble-plx (3.2.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - MultiplatformBleAdapter (= 0.2.0)
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-blur (4.4.0):
     - DoubleConversion
     - glog
@@ -2375,7 +2394,7 @@ SPEC CHECKSUMS:
   MMKV: 817ba1eea17421547e01e087285606eb270a8dcb
   MMKVCore: af055b00e27d88cd92fad301c5fecd1ff9b26dd9
   mobile-wallet-protocol-host: 8ed897dcf4f846d39b35767540e6a695631cab73
-  MultiplatformBleAdapter: 5a6a897b006764392f9cef785e4360f54fb9477d
+  MultiplatformBleAdapter: b1fddd0d499b96b607e00f0faa8e60648343dc1d
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
   Permission-Camera: 9b70902f34a83c10e198d2d01f0e453e58842776
@@ -2409,7 +2428,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 9f68550e7c6839d01411ac8896aea5c868eff63a
   react-native-aes-crypto: d7e87fd02cee7285983c00957a34063dfc4c94b3
   react-native-animateable-text: c95b74a78a13e416e6c4e8b012eea29e14913207
-  react-native-ble-plx: f10240444452dfb2d2a13a0e4f58d7783e92d76e
+  react-native-ble-plx: 08539040709361221aa9f8cada60dc730b9168c5
   react-native-blur: a2acf22fd7bd13621df5e0b1c130b81adea7009c
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
   react-native-cameraroll: b5ce04a1ee4081d7eea921918de979f0b41d8e22
@@ -2506,7 +2525,7 @@ SPEC CHECKSUMS:
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   VisionCamera: 2af28201c3de77245f8c58b7a5274d5979df70df
-  Yoga: 04f1db30bb810187397fa4c37dd1868a27af229c
+  Yoga: 88480008ccacea6301ff7bf58726e27a72931c8d
 
 PODFILE CHECKSUM: 98c3fc206d7041ac7388693bb0753109d1884b57
 

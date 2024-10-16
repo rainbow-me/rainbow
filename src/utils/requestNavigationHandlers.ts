@@ -37,6 +37,7 @@ import { Address } from 'viem';
 import { ChainId } from '@/chains/types';
 import { chainsName, SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
 import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
+import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',
@@ -455,6 +456,9 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
       });
     }
   };
+
+  hideWalletConnectToast();
+
   Navigation.handleAction(Routes.CONFIRM_REQUEST, {
     transactionDetails: request,
     onCancel,

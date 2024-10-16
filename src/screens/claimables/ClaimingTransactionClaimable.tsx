@@ -15,6 +15,17 @@ import { loadWallet } from '@/model/wallet';
 import { walletExecuteRap } from '@/rapsV2/execute';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { queryClient } from '@/react-query';
+import { analyticsV2 } from '@/analytics';
+
+enum ErrorMessages {
+  NO_TX_PAYLOAD = 'Failed to claim claimable due to missing tx payload',
+  GAS_ESTIMATION_FAILURE = 'Failed to estimate gas limit',
+  L1_SECURITY_FEE_ESTIMATION_FAILURE = 'Failed to calculate L1 security fee',
+  RAP_ERROR = 'Failed to claim claimable due to rap error',
+  UNHANDLED_ERROR = 'Failed to claim claimable due to unhandled error',
+  UNREACHABLE_CLAIM_STATE = 'Claim function completed but never resolved status to success or error state',
+  UNREACHABLE_GAS_ESTIMATION_STATE = 'Attempted to estimate gas without a tx payload',
+}
 
 // supports legacy and new gas types
 export type TransactionClaimableTxPayload = TransactionRequest &
@@ -82,7 +93,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
 
   const estimateGas = useCallback(async () => {
     if (!baseTxPayload) {
-      logger.error(new RainbowError('[ClaimingTransactionClaimable]: attempted to estimate gas without a tx payload'));
+      logger.error(new RainbowError(`[ClaimingTransactionClaimable]: ${ErrorMessages.UNREACHABLE_GAS_ESTIMATION_STATE}`));
       return;
     }
 
@@ -93,7 +104,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
 
     if (!gasLimit) {
       updateTxFee(null, null);
-      logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to estimate gas limit'));
+      logger.warn(`[ClaimingTransactionClaimable]: ${ErrorMessages.GAS_ESTIMATION_FAILURE}`);
       return;
     }
 
@@ -110,7 +121,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
 
       if (!l1SecurityFee) {
         updateTxFee(null, null);
-        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to calculate L1 security fee'));
+        logger.error(new RainbowError(`[ClaimingTransactionClaimable]: ${ErrorMessages.L1_SECURITY_FEE_ESTIMATION_FAILURE}`));
         return;
       }
 
@@ -127,7 +138,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
       try {
         estimateGas();
       } catch (e) {
-        logger.warn('[ClaimingTransactionClaimable]: Failed to estimate gas', { error: e });
+        logger.warn(`[ClaimingTransactionClaimable]: ${ErrorMessages.GAS_ESTIMATION_FAILURE}`, { error: e });
       }
     }
   }, [baseTxPayload, estimateGas, selectedGasFee]);
@@ -145,7 +156,16 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
       if (!txPayload) {
         haptics.notificationError();
         setClaimStatus('error');
-        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to missing tx payload'));
+        analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+          claimableType: 'transaction',
+          claimableId: claimable.uniqueId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
+          errorMessage: ErrorMessages.NO_TX_PAYLOAD,
+        });
+        logger.error(new RainbowError(`[ClaimingTransactionClaimable]: ${ErrorMessages.NO_TX_PAYLOAD}`));
         return;
       }
 
@@ -170,7 +190,16 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
       if (errorMessage) {
         haptics.notificationError();
         setClaimStatus('error');
-        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to rap error'), {
+        analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+          claimableType: 'transaction',
+          claimableId: claimable.uniqueId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
+          errorMessage: ErrorMessages.RAP_ERROR,
+        });
+        logger.error(new RainbowError(`[ClaimingTransactionClaimable]: ${ErrorMessages.RAP_ERROR}`), {
           message: errorMessage,
         });
       } else {
@@ -179,12 +208,30 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
 
         // Immediately remove the claimable from cached data
         queryClient.setQueryData(queryKey, (oldData: Claimable[] | undefined) => oldData?.filter(c => c.uniqueId !== claimable.uniqueId));
+
+        analyticsV2.track(analyticsV2.event.claimClaimableSucceeded, {
+          claimableType: 'transaction',
+          claimableId: claimable.uniqueId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
+        });
       }
     },
     onError: e => {
       haptics.notificationError();
       setClaimStatus('error');
-      logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to unhandled error'), {
+      analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+        claimableType: 'transaction',
+        claimableId: claimable.uniqueId,
+        chainId: claimable.chainId,
+        asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+        amount: claimable.value.claimAsset.amount,
+        usdValue: claimable.value.usd,
+        errorMessage: ErrorMessages.UNHANDLED_ERROR,
+      });
+      logger.error(new RainbowError(`[ClaimingTransactionClaimable]: ${ErrorMessages.UNHANDLED_ERROR}`), {
         message: (e as Error)?.message,
       });
     },
@@ -192,9 +239,16 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
       if (claimStatus === 'claiming') {
         haptics.notificationError();
         setClaimStatus('error');
-        logger.error(
-          new RainbowError('[ClaimingTransactionClaimable]: claim function completed but never resolved status to success or error state')
-        );
+        analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+          claimableType: 'transaction',
+          claimableId: claimable.uniqueId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
+          errorMessage: ErrorMessages.UNREACHABLE_CLAIM_STATE,
+        });
+        logger.error(new RainbowError(`[ClaimingTransactionClaimable]: ${ErrorMessages.UNREACHABLE_CLAIM_STATE}`));
       }
     },
     onSettled: () => {

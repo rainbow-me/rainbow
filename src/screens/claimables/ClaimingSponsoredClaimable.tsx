@@ -9,6 +9,14 @@ import { useMutation } from '@tanstack/react-query';
 import { getProvider } from '@/handlers/web3';
 import { useAccountSettings } from '@/hooks';
 import { haptics } from '@/utils';
+import { analyticsV2 } from '@/analytics';
+
+enum ErrorMessages {
+  CLAIM_API_CALL_FAILED = 'Failed to execute sponsored claim api call',
+  CLAIM_API_UNSUCCESSFUL_RESPONSE = 'Sponsored claim api call returned unsuccessful response',
+  UNHANDLED_ERROR = 'Failed to claim claimable due to unhandled error',
+  UNREACHABLE_CLAIM_STATE = 'Claim function completed but never resolved status to success or error state',
+}
 
 export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: SponsoredClaimable }) => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -42,7 +50,16 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
         } catch (e) {
           haptics.notificationError();
           setClaimStatus('error');
-          logger.error(new RainbowError('[ClaimSponsoredClaimable]: failed to execute sponsored claim api call'));
+          analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+            claimableType: 'sponsored',
+            claimableId: claimable.uniqueId,
+            chainId: claimable.chainId,
+            asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+            amount: claimable.value.claimAsset.amount,
+            usdValue: claimable.value.usd,
+            errorMessage: ErrorMessages.CLAIM_API_CALL_FAILED,
+          });
+          logger.error(new RainbowError(`[ClaimSponsoredClaimable]: ${ErrorMessages.CLAIM_API_CALL_FAILED}`));
           return;
         }
       } else {
@@ -51,7 +68,16 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
         } catch (e) {
           haptics.notificationError();
           setClaimStatus('error');
-          logger.error(new RainbowError('[ClaimSponsoredClaimable]: failed to execute sponsored claim api call'));
+          analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+            claimableType: 'sponsored',
+            claimableId: claimable.uniqueId,
+            chainId: claimable.chainId,
+            asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+            amount: claimable.value.claimAsset.amount,
+            usdValue: claimable.value.usd,
+            errorMessage: ErrorMessages.CLAIM_API_CALL_FAILED,
+          });
+          logger.error(new RainbowError(`[ClaimSponsoredClaimable]: ${ErrorMessages.CLAIM_API_CALL_FAILED}`));
           return;
         }
       }
@@ -59,7 +85,16 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
       if (!response.data.payload.success) {
         haptics.notificationError();
         setClaimStatus('error');
-        logger.error(new RainbowError('[ClaimSponsoredClaimable]: sponsored claim api call returned unsuccessful response'));
+        analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+          claimableType: 'sponsored',
+          claimableId: claimable.uniqueId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
+          errorMessage: ErrorMessages.CLAIM_API_UNSUCCESSFUL_RESPONSE,
+        });
+        logger.error(new RainbowError(`[ClaimSponsoredClaimable]: ${ErrorMessages.CLAIM_API_UNSUCCESSFUL_RESPONSE}`));
       } else {
         haptics.notificationSuccess();
 
@@ -69,6 +104,15 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
           setClaimStatus('pending');
         }
 
+        analyticsV2.track(analyticsV2.event.claimClaimableSucceeded, {
+          claimableType: 'sponsored',
+          claimableId: claimable.uniqueId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
+        });
+
         // Immediately remove the claimable from cached data
         queryClient.setQueryData(queryKey, (oldData: Claimable[] | undefined) => oldData?.filter(c => c.uniqueId !== claimable.uniqueId));
       }
@@ -76,7 +120,16 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
     onError: e => {
       haptics.notificationError();
       setClaimStatus('error');
-      logger.error(new RainbowError('[ClaimingSponsoredClaimable]: Failed to claim claimable due to unhandled error'), {
+      analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+        claimableType: 'sponsored',
+        claimableId: claimable.uniqueId,
+        chainId: claimable.chainId,
+        asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+        amount: claimable.value.claimAsset.amount,
+        usdValue: claimable.value.usd,
+        errorMessage: ErrorMessages.UNHANDLED_ERROR,
+      });
+      logger.error(new RainbowError(`[ClaimSponsoredClaimable]: ${ErrorMessages.UNHANDLED_ERROR}`), {
         message: (e as Error)?.message,
       });
     },
@@ -84,9 +137,16 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
       if (claimStatus === 'claiming') {
         haptics.notificationError();
         setClaimStatus('error');
-        logger.error(
-          new RainbowError('[ClaimingSponsoredClaimable]: claim function completed but never resolved status to success or error state')
-        );
+        analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+          claimableType: 'sponsored',
+          claimableId: claimable.uniqueId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
+          errorMessage: ErrorMessages.UNREACHABLE_CLAIM_STATE,
+        });
+        logger.error(new RainbowError(`[ClaimSponsoredClaimable]: ${ErrorMessages.UNREACHABLE_CLAIM_STATE}`));
       }
     },
     onSettled: () => {

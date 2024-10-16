@@ -8,6 +8,7 @@ import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { ExtendedState } from './core/RawRecyclerList';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
+import { analyticsV2 } from '@/analytics';
 
 export const Claimable = React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -32,7 +33,17 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
   return (
     <Box
       as={ButtonPressAnimation}
-      onPress={() => navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable })}
+      onPress={() => {
+        analyticsV2.track(analyticsV2.event.claimablePanelOpened, {
+          claimableType: claimable.type,
+          claimableId: claimable.uniqueId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
+        });
+        navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable });
+      }}
       scaleTo={0.96}
       paddingHorizontal="20px"
       justifyContent="space-between"
