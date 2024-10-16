@@ -49,6 +49,7 @@ export interface UserAssetsState {
   setUserAssets: (userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) => void;
 
   hiddenAssets: Set<UniqueId>;
+  getHiddenAssetsIds: () => UniqueId[];
   setHiddenAssets: (uniqueIds: UniqueId[]) => void;
 }
 
@@ -346,6 +347,8 @@ export const createUserAssetsStore = (address: Address | string) =>
         }),
 
       hiddenAssets: new Set<UniqueId>(),
+
+      getHiddenAssetsIds: () => Array.from(get().hiddenAssets),
 
       setHiddenAssets: (uniqueIds: UniqueId[]) => {
         set(prev => {

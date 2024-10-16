@@ -56,7 +56,7 @@ export default function useCoinListEditOptions() {
 
 export function useCoinListFinishEditingOptions() {
   const { accountAddress } = useAccountSettings();
-  const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
+  const hiddenAssets = useUserAssetsStore(state => state.getHiddenAssetsIds());
   const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
 
   const [selectedItems, setSelectedItems] = useRecoilState(selectedItemsAtom);
@@ -72,7 +72,7 @@ export function useCoinListFinishEditingOptions() {
       return EditAction.none;
     } else if (
       newSelectedCoinsLength > 0 &&
-      difference(Array.from(hiddenAssets), selectedItems).length === hiddenAssets.size - newSelectedCoinsLength
+      difference(hiddenAssets, selectedItems).length === hiddenAssets.length - newSelectedCoinsLength
     ) {
       return EditAction.unhide;
     } else if (

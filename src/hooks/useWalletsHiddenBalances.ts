@@ -23,12 +23,12 @@ const getHiddenAssetBalance = ({
   nativeCurrency: NativeCurrencyKey;
   connectedToHardhat: boolean;
 }) => {
-  const { hiddenAssets } = userAssetsStore.getState(address);
+  const hiddenAssetIds = userAssetsStore.getState(address).getHiddenAssetsIds();
   const assetData = queryClient.getQueryData<UserAssetsResult>(
     userAssetsQueryKey({ address, currency: nativeCurrency, connectedToHardhat })
   );
 
-  const balance = Array.from(hiddenAssets).reduce((acc, uniqueId) => {
+  const balance = hiddenAssetIds.reduce((acc, uniqueId) => {
     const asset = assetData?.[uniqueId];
     let sum = acc;
     if (asset) {
