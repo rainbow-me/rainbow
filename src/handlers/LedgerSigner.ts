@@ -1,7 +1,6 @@
 'use strict';
 
 import AppEth, { ledgerService } from '@ledgerhq/hw-app-eth';
-import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Bytes, hexlify, joinSignature } from '@ethersproject/bytes';
@@ -14,6 +13,7 @@ import { logger, RainbowError } from '@/logger';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { getAddress } from '@ethersproject/address';
+import { getEthApp } from '@/utils/ledger';
 
 function waiter(duration: number): Promise<void> {
   return new Promise(resolve => {
@@ -40,10 +40,9 @@ export class LedgerSigner extends Signer {
     defineReadOnly(
       this,
       '_eth',
-      TransportBLE.open(deviceId).then(
-        transport => {
-          const eth = new AppEth(transport);
-          return eth;
+      getEthApp(deviceId).then(
+        ethApp => {
+          return ethApp;
         },
         error => {
           return Promise.reject(error);

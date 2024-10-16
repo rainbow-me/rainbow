@@ -83,14 +83,14 @@ export const HardwareWalletTxNavigator = () => {
   );
 
   const successCallback = useCallback(() => {
-    logger.debug('[HardwareWalletTxNavigator]: submitting tx', {}, DebugContext.ledger);
+    logger.debug('[HardwareWalletTxNavigator]: submitting tx', {});
     if (!isReady) {
       setReadyForPolling(false);
       setIsReady(true);
       setHardwareTXError(false);
       submit();
     } else {
-      logger.debug('[HardwareWalletTxNavigator]: already submitted', {}, DebugContext.ledger);
+      logger.debug('[HardwareWalletTxNavigator]: already submitted', {});
     }
   }, [isReady, setIsReady, setReadyForPolling, submit]);
 

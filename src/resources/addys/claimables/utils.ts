@@ -27,10 +27,12 @@ export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCu
         chainId: claimable.network,
         name: claimable.name,
         uniqueId: claimable.unique_id,
+        analyticsId: `claimables${claimable.type.replace(/(^|-)([a-z])/g, (_, __, letter) => letter.toUpperCase())}`, // one-two-three -> OneTwoThree
         iconUrl: claimable.dapp.icon_url,
         value: {
           claimAsset: convertRawAmountToBalance(claimable.amount, claimable.asset),
           nativeAsset: convertRawAmountToNativeDisplay(claimable.amount, claimable.asset.decimals, claimable.asset.price.value, currency),
+          usd: claimable.total_usd_value,
         },
       };
 

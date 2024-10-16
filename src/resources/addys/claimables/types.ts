@@ -37,6 +37,7 @@ interface AddysBaseClaimable {
   asset: AddysAsset;
   amount: string;
   dapp: DApp;
+  total_usd_value: number;
 }
 
 interface AddysTransactionClaimable extends AddysBaseClaimable {
@@ -80,10 +81,12 @@ interface BaseClaimable {
   chainId: ChainId;
   name: string;
   uniqueId: string;
+  analyticsId: string;
   iconUrl: string;
   value: {
     claimAsset: { amount: string; display: string };
     nativeAsset: { amount: string; display: string };
+    usd: number;
   };
 }
 

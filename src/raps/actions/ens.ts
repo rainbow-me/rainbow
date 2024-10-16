@@ -1,9 +1,8 @@
 import { Signer } from '@ethersproject/abstract-signer';
-import { captureException } from '@sentry/react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { ENSActionParameters, ENSRap, ENSRapActionType, RapENSAction, RapENSActionParameters } from '@/raps/common';
 import { analytics } from '@/analytics';
-import { ENSRegistrationRecords, NewTransaction, TransactionGasParamAmounts } from '@/entities';
+import { ENSRegistrationRecords, NewTransaction, TransactionGasParamAmounts, TransactionStatus } from '@/entities';
 import { estimateENSTransactionGasLimit, formatRecordsForTransaction } from '@/handlers/ens';
 import { toHex } from '@/handlers/web3';
 import { ENSRegistrationTransactionType, getENSExecutionDetails, REGISTRATION_MODES } from '@/helpers/ens';
@@ -462,7 +461,7 @@ const ensAction = async (
 
   logger.debug(`[raps/ens]: [${actionName}] response`, { data: tx });
 
-  const newTransaction: NewTransaction = {
+  const newTransaction = {
     chainId: ChainId.mainnet,
     data: tx.data,
     ensCommitRegistrationName: type === ENSRegistrationTransactionType.COMMIT ? name : undefined,
@@ -480,8 +479,8 @@ const ensAction = async (
     to: tx?.to,
     value: toHex(tx.value),
     network: Network.mainnet,
-    status: 'pending',
-  };
+    status: TransactionStatus.pending,
+  } satisfies NewTransaction;
 
   logger.debug(`[raps/ens]: [${actionName}] adding new txn`, { data: newTransaction });
 

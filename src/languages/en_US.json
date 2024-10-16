@@ -2135,9 +2135,9 @@
           "failed": "Send Failed"
         },
         "receive": {
-          "pending": "",
+          "pending": "Receiving",
           "confirmed": "Received",
-          "failed": ""
+          "failed": "Receive Failed"
         },
         "withdraw": {
           "pending": "Withdrawing",
@@ -2769,6 +2769,8 @@
       }
     },
     "walletconnect": {
+      "connecting": "Connecting",
+      "loading": "Loading",
       "requests": "Requests",
       "wants_to_connect": "wants to connect to your wallet",
       "wants_to_connect_to_network": "wants to connect to the %{network} network",

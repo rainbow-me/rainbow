@@ -12,7 +12,7 @@ import { getDefaultCheckboxes } from './SendConfirmationSheet';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { AssetTypes, NewTransaction, ParsedAddressAsset, UniqueAsset } from '@/entities';
+import { AssetTypes, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { debouncedFetchSuggestions } from '@/handlers/ens';
 import {
@@ -170,7 +170,7 @@ export default function SendSheet() {
   const [debouncedRecipient] = useDebounce(recipient, 500);
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
-  const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider | undefined>();
+  const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider | undefined>(getProvider({ chainId: ChainId.mainnet }));
   const theme = useTheme();
   const { colors, isDarkMode } = theme;
 
@@ -403,7 +403,6 @@ export default function SendSheet() {
   const onSubmit = useCallback(
     async ({ ens }: OnSubmitProps = {}) => {
       if (!selected) return;
-
       const wallet = await performanceTracking.getState().executeFn({
         fn: loadWallet,
         operation: TimeToSignOperation.KeychainRead,
@@ -574,7 +573,7 @@ export default function SendSheet() {
             txDetails.chainId = currentChainId;
             txDetails.txTo = signableTransaction.to;
             txDetails.type = 'send';
-            txDetails.status = 'pending';
+            txDetails.status = TransactionStatus.pending;
             addNewTransaction({
               address: accountAddress,
               chainId: currentChainId,
