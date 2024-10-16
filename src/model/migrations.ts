@@ -687,6 +687,9 @@ export default async function runMigrations() {
         }, []);
 
         userAssetsStore.getState(address).setHiddenAssets(hiddenAssets);
+
+        // remove the old hidden coins obj storage
+        mmkv.delete('hidden-coins-obj-' + address);
       }
     }
   };

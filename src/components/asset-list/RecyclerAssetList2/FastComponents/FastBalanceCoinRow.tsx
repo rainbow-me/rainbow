@@ -13,7 +13,6 @@ import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { NativeCurrencyKey } from '@/entities';
 import { ChainId } from '@/chains/types';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
