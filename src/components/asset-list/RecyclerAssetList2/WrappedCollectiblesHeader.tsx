@@ -86,23 +86,13 @@ const CollectiblesHeader = () => {
                     ],
                   }
                 : {
-                    actionKey: `${sortCriterion}|${SortDirection.Desc}`,
+                    actionKey: `${sortCriterion}|${nftSortDirection === SortDirection.Asc ? SortDirection.Desc : SortDirection.Asc}`,
                     actionTitle: i18n.t(i18n.l.nfts.sort[sortCriterion]),
                     menuState: 'off',
                   }),
             };
           })}
-          selectItem={actionKey => {
-            const sort = actionKey as NftSort;
-            if (IS_ANDROID) {
-              const [criterion, direction] = parseNftSort(sort);
-              if (criterion !== nftSort) return updateNFTSort(sort);
-              const toggledDirection = direction === SortDirection.Asc ? SortDirection.Desc : SortDirection.Asc;
-              updateNFTSort(`${criterion}|${toggledDirection}`);
-            } else {
-              updateNFTSort(sort);
-            }
-          }}
+          selectItem={updateNFTSort}
           icon={getIconForSortType(nftSort)}
           text={i18n.t(i18n.l.nfts.sort[nftSort])}
         />

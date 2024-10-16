@@ -8,7 +8,7 @@ import { haptics } from '@/utils';
 type ListHeaderMenuProps = {
   selected: NftSort;
   menuItems: MenuConfig['menuItems'];
-  selectItem: (item: string) => void;
+  selectItem: (item: NftSort) => void;
   icon: string;
   text: string;
 };
@@ -23,12 +23,12 @@ export function ListHeaderMenu({ menuItems, selectItem, icon, text }: ListHeader
 
   const onPressMenuItem = ({ nativeEvent: { actionKey: item } }: { nativeEvent: { actionKey: string } }) => {
     haptics.selection();
-    selectItem(item);
+    selectItem(item as NftSort);
   };
 
   return (
     <Bleed space="10px">
-      <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
+      <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} isAnchoredToRight>
         <ButtonPressAnimation style={{ padding: 10 }}>
           <Bleed bottom="2px">
             <Box
