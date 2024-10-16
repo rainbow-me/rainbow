@@ -40,6 +40,7 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
           chainId: claimable.chainId,
           asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
         });
         navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable });
       }}

@@ -162,6 +162,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
           chainId: claimable.chainId,
           asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
           errorMessage: ErrorMessages.NO_TX_PAYLOAD,
         });
         logger.error(new RainbowError(`[ClaimingTransactionClaimable]: ${ErrorMessages.NO_TX_PAYLOAD}`));
@@ -195,6 +196,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
           chainId: claimable.chainId,
           asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
           errorMessage: ErrorMessages.RAP_ERROR,
         });
         logger.error(new RainbowError(`[ClaimingTransactionClaimable]: ${ErrorMessages.RAP_ERROR}`), {
@@ -213,6 +215,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
           chainId: claimable.chainId,
           asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
         });
       }
     },
@@ -225,6 +228,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
         chainId: claimable.chainId,
         asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
         amount: claimable.value.claimAsset.amount,
+        usdValue: claimable.value.usd,
         errorMessage: ErrorMessages.UNHANDLED_ERROR,
       });
       logger.error(new RainbowError(`[ClaimingTransactionClaimable]: ${ErrorMessages.UNHANDLED_ERROR}`), {
@@ -241,6 +245,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
           chainId: claimable.chainId,
           asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
           errorMessage: ErrorMessages.UNREACHABLE_CLAIM_STATE,
         });
         logger.error(new RainbowError(`[ClaimingTransactionClaimable]: ${ErrorMessages.UNREACHABLE_CLAIM_STATE}`));
