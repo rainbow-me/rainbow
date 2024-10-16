@@ -1,5 +1,6 @@
 import { normalizeUrlForRecents } from '@/components/DappBrowser/utils';
 import { createRainbowStore } from '../internal/createRainbowStore';
+import { logger, RainbowError } from '@/logger';
 
 export interface Site {
   name: string;
@@ -34,7 +35,9 @@ export const useBrowserHistoryStore = createRainbowStore<BrowserHistoryStore>(
               url = decodeURIComponent(redirectUrl);
             }
           } catch (error) {
-            console.error('Error parsing redirect URL:', error);
+            logger.error(new RainbowError('[browserHistory] Error parsing redirect URL'), {
+              error,
+            });
           }
         }
 
