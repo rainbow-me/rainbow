@@ -18,7 +18,7 @@ export default function useWalletsWithBalancesAndNames() {
           return {
             ...account,
             balances: balances[lowerCaseAddress],
-            hiddenBalances: hiddenBalances[lowerCaseAddress],
+            hiddenBalances: hiddenBalances[lowerCaseAddress] ?? '0',
             ens: walletNames[account.address],
           };
         });

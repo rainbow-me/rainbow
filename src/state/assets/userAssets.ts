@@ -350,20 +350,14 @@ export const createUserAssetsStore = (address: Address | string) =>
       setHiddenAssets: (uniqueIds: UniqueId[]) => {
         set(prev => {
           const hiddenAssets = new Set(prev.hiddenAssets);
-          console.log('Current hidden assets:', Array.from(hiddenAssets));
-          console.log('Setting hidden assets:', uniqueIds);
-
           uniqueIds.forEach(uniqueId => {
             if (hiddenAssets.has(uniqueId)) {
-              console.log('Removing hidden asset:', uniqueId);
               hiddenAssets.delete(uniqueId);
             } else {
-              console.log('Adding hidden asset:', uniqueId);
               hiddenAssets.add(uniqueId);
             }
           });
 
-          console.log('Updated hidden assets:', Array.from(hiddenAssets));
           return { hiddenAssets };
         });
       },

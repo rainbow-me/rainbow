@@ -7,8 +7,8 @@ import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey, UserAssetsResult } from '@/resources/assets/UserAssetsQuery';
-import { convertAmountAndPriceToNativeDisplay, add } from '@/helpers/utilities';
-import { isEqual } from 'lodash';
+import { convertAmountAndPriceToNativeDisplay, add, isEqual } from '@/helpers/utilities';
+import { isEqual as _isEqual } from 'lodash';
 
 export type WalletBalanceResult = {
   hiddenBalances: Record<Address, string>;
@@ -18,17 +18,18 @@ const getHiddenAssetBalance = ({
   address,
   nativeCurrency,
   connectedToHardhat,
+  data,
 }: {
   address: Address;
   nativeCurrency: NativeCurrencyKey;
   connectedToHardhat: boolean;
+  data?: UserAssetsResult;
 }) => {
   const { hiddenAssets } = userAssetsStore.getState(address);
-  const assetData = queryClient.getQueryData<UserAssetsResult>(
-    userAssetsQueryKey({ address, currency: nativeCurrency, connectedToHardhat })
-  );
+  const assetData =
+    data ?? queryClient.getQueryData<UserAssetsResult>(userAssetsQueryKey({ address, currency: nativeCurrency, connectedToHardhat }));
 
-  return Array.from(hiddenAssets).reduce((acc, uniqueId) => {
+  const balance = Array.from(hiddenAssets).reduce((acc, uniqueId) => {
     const asset = assetData?.[uniqueId];
     let sum = acc;
     if (asset) {
@@ -38,6 +39,8 @@ const getHiddenAssetBalance = ({
     }
     return sum;
   }, '0');
+
+  return balance;
 };
 
 const useWalletsHiddenBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
@@ -51,42 +54,52 @@ const useWalletsHiddenBalances = (wallets: AllRainbowWallets): WalletBalanceResu
   );
 
   const calculateHiddenBalanceForAddress = useCallback(
-    (address: Address) => {
+    (address: Address, data?: UserAssetsResult) => {
       const lowerCaseAddress = address.toLowerCase() as Address;
-      const hiddenAssetBalance = getHiddenAssetBalance({ address, nativeCurrency, connectedToHardhat });
+      const hiddenAssetBalance = getHiddenAssetBalance({ address, nativeCurrency, connectedToHardhat, data });
 
-      console.log('calculateHiddenBalanceForAddress', address, hiddenAssetBalance);
-      setHiddenBalances(prev => ({
-        ...prev,
-        [lowerCaseAddress]: hiddenAssetBalance,
-      }));
+      setHiddenBalances(prev => {
+        const newBalance = hiddenAssetBalance;
+        if (!prev[lowerCaseAddress] || !isEqual(prev[lowerCaseAddress], newBalance)) {
+          return {
+            ...prev,
+            [lowerCaseAddress]: newBalance,
+          };
+        }
+        return prev;
+      });
     },
     [nativeCurrency, connectedToHardhat]
   );
 
   useEffect(() => {
-    allAddresses.forEach(calculateHiddenBalanceForAddress);
+    allAddresses.forEach(address => {
+      calculateHiddenBalanceForAddress(address);
+    });
   }, [allAddresses, calculateHiddenBalanceForAddress]);
 
-  // TODO: This is not working as intended. .subscribe() does not trigger when the value changes.
   useEffect(() => {
-    console.log('Setting up subscriptions for addresses:', allAddresses);
+    const assetSubscriptions = allAddresses.map(address => {
+      return queryClient.getQueryCache().subscribe(event => {
+        if (
+          _isEqual(event.query.queryKey, userAssetsQueryKey({ address, currency: nativeCurrency, connectedToHardhat })) &&
+          event.query.isStale()
+        ) {
+          calculateHiddenBalanceForAddress(address, event.query.state.data);
+        }
+      });
+    });
+
     const subscriptions = allAddresses.map(address => {
-      console.log('Setting up subscription for address:', address);
       return userAssetsStore.subscribe(
-        state => {
-          console.log('Current state for address:', address, state.hiddenAssets);
-          return { hiddenAssets: state.hiddenAssets };
-        },
+        state => ({ hiddenAssets: state.hiddenAssets }),
         (newState, oldState) => {
-          console.log('Checking for changes:', address, oldState, newState);
-          if (!isEqual(oldState.hiddenAssets, newState.hiddenAssets)) {
-            console.log('Detected change in user hidden assets for address:', address);
+          if (!_isEqual(oldState.hiddenAssets, newState.hiddenAssets)) {
             calculateHiddenBalanceForAddress(address);
           }
         },
         {
-          equalityFn: (a, b) => isEqual(a.hiddenAssets, b.hiddenAssets),
+          equalityFn: (a, b) => _isEqual(a.hiddenAssets, b.hiddenAssets),
           fireImmediately: true,
         },
         address
@@ -94,14 +107,12 @@ const useWalletsHiddenBalances = (wallets: AllRainbowWallets): WalletBalanceResu
     });
 
     return () => {
-      console.log('Cleaning up subscriptions');
       subscriptions.forEach(sub => sub());
+      assetSubscriptions.forEach(sub => sub());
     };
-  }, [allAddresses, calculateHiddenBalanceForAddress]);
+  }, [allAddresses, calculateHiddenBalanceForAddress, connectedToHardhat, nativeCurrency]);
 
-  return {
-    hiddenBalances,
-  };
+  return { hiddenBalances };
 };
 
 export default useWalletsHiddenBalances;
