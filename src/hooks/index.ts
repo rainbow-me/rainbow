@@ -71,7 +71,6 @@ export { default as useOpenFamilies } from './useOpenFamilies';
 export { default as usePrevious } from './usePrevious';
 export { default as useRefreshAccountData } from './useRefreshAccountData';
 export { default as useRequests } from './useRequests';
-export { default as useResetAccountState } from './useResetAccountState';
 export { default as useRouteExistsInNavigationState } from './useRouteExistsInNavigationState';
 export { default as useSafeImageUri } from './useSafeImageUri';
 export { default as useScanner } from './useScanner';
