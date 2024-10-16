@@ -11,7 +11,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import WalletTypes from '@/helpers/walletTypes';
 import { useAccountSettings, useAppState, useWallets } from '@/hooks';
-import { requestNotificationPermission } from '@/notifications/permissions';
+import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
 import profileUtils from '@/utils/profileUtils';
 import { abbreviations, deviceUtils } from '@/utils';
 import { Box } from '@/design-system';
@@ -281,7 +281,7 @@ const NotificationsSection = () => {
 
   const requestNotificationPermissions = useCallback(async () => {
     const status = await requestNotificationPermission();
-    const allowed = status === RESULTS.GRANTED || status === RESULTS.LIMITED;
+    const allowed = isNotificationPermissionGranted(status);
     if (allowed) {
       setPermissionStatus(RESULTS.GRANTED);
     } else {

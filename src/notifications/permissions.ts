@@ -10,10 +10,13 @@ import * as i18n from '@/languages';
 
 export const getPermissionStatus = () => messaging().hasPermission();
 
+export const isNotificationPermissionGranted = (status: PermissionStatus): boolean =>
+  status === RESULTS.GRANTED || status === RESULTS.LIMITED;
+
 export const requestNotificationPermission = async (): Promise<PermissionStatus> => {
   const notificationSetting = await requestNotifications(['alert', 'sound', 'badge']);
   const { status } = notificationSetting;
-  const enabled = status === RESULTS.GRANTED || status === RESULTS.LIMITED;
+  const enabled = isNotificationPermissionGranted(status);
   if (enabled) {
     subscribeExistingNotificationsSettings();
   }
@@ -38,7 +41,7 @@ export const checkPushNotificationPermissions = async () => {
             onPress: async () => {
               try {
                 const status = await requestNotificationPermission();
-                const enabled = status === RESULTS.GRANTED || status === RESULTS.LIMITED;
+                const enabled = isNotificationPermissionGranted(status);
                 trackPushNotificationPermissionStatus(enabled ? 'enabled' : 'disabled');
                 await saveFCMToken();
               } catch (error) {

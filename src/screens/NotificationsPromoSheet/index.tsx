@@ -1,7 +1,6 @@
 import React from 'react';
 import * as perms from 'react-native-permissions';
-import { requestNotificationPermission } from '@/notifications/permissions';
-
+import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
 import useAppState from '@/hooks/useAppState';
 import { useNavigation } from '@/navigation/Navigation';
 import { CampaignKey } from '@/components/remote-promo-sheet/localCampaignChecks';
@@ -31,7 +30,7 @@ export function NotificationsPromoSheetInner({
   const { colors } = useTheme();
   const { goBack, navigate } = useNavigation();
 
-  const notificationsEnabled = status === perms.RESULTS.GRANTED || status === perms.RESULTS.LIMITED;
+  const notificationsEnabled = isNotificationPermissionGranted(status);
   const notificationsDenied = status === perms.RESULTS.DENIED;
   const notificationsBlocked = status === perms.RESULTS.BLOCKED;
 
@@ -61,7 +60,7 @@ export function NotificationsPromoSheetInner({
       if (status === perms.RESULTS.BLOCKED) {
         analyticsV2.track(analyticsV2.event.notificationsPromoPermissionsBlocked);
         goBack();
-      } else if (status === perms.RESULTS.GRANTED || status === perms.RESULTS.LIMITED) {
+      } else if (isNotificationPermissionGranted(status)) {
         analyticsV2.track(analyticsV2.event.notificationsPromoPermissionsGranted);
       }
     } else if (notificationsBlocked) {
