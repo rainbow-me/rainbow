@@ -88,7 +88,8 @@ const useWalletsHiddenBalances = (wallets: AllRainbowWallets): WalletBalanceResu
         {
           equalityFn: (a, b) => isEqual(a.hiddenAssets, b.hiddenAssets),
           fireImmediately: true,
-        }
+        },
+        address
       );
     });
 
