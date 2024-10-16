@@ -23,13 +23,17 @@ import { publishWalletSettings } from '@/notifications/settings/firebase';
 export const removeNotificationSettingsForWallet = async (address: string): Promise<void> => {
   const walletSettings = getAllWalletNotificationSettingsFromStorage();
   const globalSettings = getAllGlobalNotificationSettingsFromStorage();
-  const settingsForWallet = walletSettings.find((wallet: WalletNotificationSettings) => wallet.address === address);
+  const settingsForWallet = walletSettings.find(
+    (wallet: WalletNotificationSettings) => wallet.address.toLowerCase() === address.toLowerCase()
+  );
 
   if (!settingsForWallet) {
     return;
   }
 
-  const newWalletSettings = walletSettings.filter((wallet: WalletNotificationSettings) => wallet.address !== address);
+  const newWalletSettings = walletSettings.filter(
+    (wallet: WalletNotificationSettings) => wallet.address.toLowerCase() !== address.toLowerCase()
+  );
 
   publishAndSaveNotificationSettings({ globalSettings, walletSettings: newWalletSettings });
 };
@@ -72,7 +76,7 @@ export async function toggleTopicForWallet(address: string, topic: WalletNotific
   const walletSettings = getAllWalletNotificationSettingsFromStorage();
   const globalSettings = getAllGlobalNotificationSettingsFromStorage();
   const newSettings = walletSettings.map(walletSetting => {
-    if (walletSetting.address !== address) {
+    if (walletSetting.address.toLowerCase() !== address.toLowerCase()) {
       return walletSetting;
     }
     return {
