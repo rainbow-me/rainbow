@@ -400,7 +400,7 @@ export const userAssetsStore = {
   setState: (partial: Partial<UserAssetsState> | ((state: UserAssetsState) => Partial<UserAssetsState>), address?: Address | string) =>
     getOrCreateStore(address).setState(partial),
   subscribe: (
-    selector: (state: UserAssetsState) => Partial<UserAssetsState>,
+    selector: (state: UserAssetsState) => UserAssetsState,
     listener: (state: UserAssetsState, prevState: UserAssetsState) => void,
     options?: {
       equalityFn?: (a: UserAssetsState, b: UserAssetsState) => boolean;

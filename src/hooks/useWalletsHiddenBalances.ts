@@ -92,7 +92,7 @@ const useWalletsHiddenBalances = (wallets: AllRainbowWallets): WalletBalanceResu
 
     const subscriptions = allAddresses.map(address => {
       return userAssetsStore.subscribe(
-        state => ({ hiddenAssets: state.hiddenAssets }),
+        state => state,
         (newState, oldState) => {
           if (!_isEqual(oldState.hiddenAssets, newState.hiddenAssets)) {
             calculateHiddenBalanceForAddress(address);

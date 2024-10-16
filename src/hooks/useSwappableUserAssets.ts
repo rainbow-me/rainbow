@@ -7,6 +7,7 @@ import { EthereumAddress, ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbo
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { ChainId } from '@/chains/types';
 import { supportedSwapChainIds } from '@/chains';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 type SwappableAddresses = Record<ChainId, EthereumAddress[]>;
 
@@ -14,7 +15,7 @@ export const useSwappableUserAssets = (params: { outputCurrency: SwappableAsset 
   const { outputCurrency } = params;
   const { data: sortedAssets } = useSortedUserAssets();
   const assetsInWallet = sortedAssets as SwappableAsset[];
-  const { hiddenCoinsObj } = useCoinListEditOptions();
+  const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
 
   const swappableAssetsRef = useRef<SwappableAddresses>(
     supportedSwapChainIds.reduce((acc, chainId) => {
@@ -25,7 +26,7 @@ export const useSwappableUserAssets = (params: { outputCurrency: SwappableAsset 
 
   const filteredAssetsInWallet = (assetsInWallet || []).filter(asset => {
     // filter out hidden tokens
-    if (hiddenCoinsObj[asset.uniqueId]) return true;
+    if (hiddenAssets.has(asset.uniqueId)) return true;
 
     // filter out networks where swaps are not enabled
     if (supportedSwapChainIds.includes(asset.chainId)) return true;
