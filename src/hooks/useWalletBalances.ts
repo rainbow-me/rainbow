@@ -10,8 +10,9 @@ import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { queryClient } from '@/react-query';
 
 const QUERY_CONFIG = {
-  staleTime: 1000 * 60 * 2, // 2 minutes
+  staleTime: 60_000, // 1 minute
   cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+  refetchInterval: 120_000, // 2 minutes
 };
 
 export type WalletBalance = {

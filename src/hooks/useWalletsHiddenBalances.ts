@@ -18,16 +18,15 @@ const getHiddenAssetBalance = ({
   address,
   nativeCurrency,
   connectedToHardhat,
-  data,
 }: {
   address: Address;
   nativeCurrency: NativeCurrencyKey;
   connectedToHardhat: boolean;
-  data?: UserAssetsResult;
 }) => {
   const { hiddenAssets } = userAssetsStore.getState(address);
-  const assetData =
-    data ?? queryClient.getQueryData<UserAssetsResult>(userAssetsQueryKey({ address, currency: nativeCurrency, connectedToHardhat }));
+  const assetData = queryClient.getQueryData<UserAssetsResult>(
+    userAssetsQueryKey({ address, currency: nativeCurrency, connectedToHardhat })
+  );
 
   const balance = Array.from(hiddenAssets).reduce((acc, uniqueId) => {
     const asset = assetData?.[uniqueId];
@@ -54,9 +53,9 @@ const useWalletsHiddenBalances = (wallets: AllRainbowWallets): WalletBalanceResu
   );
 
   const calculateHiddenBalanceForAddress = useCallback(
-    (address: Address, data?: UserAssetsResult) => {
+    (address: Address) => {
       const lowerCaseAddress = address.toLowerCase() as Address;
-      const hiddenAssetBalance = getHiddenAssetBalance({ address, nativeCurrency, connectedToHardhat, data });
+      const hiddenAssetBalance = getHiddenAssetBalance({ address, nativeCurrency, connectedToHardhat });
 
       setHiddenBalances(prev => {
         const newBalance = hiddenAssetBalance;
@@ -79,15 +78,11 @@ const useWalletsHiddenBalances = (wallets: AllRainbowWallets): WalletBalanceResu
   }, [allAddresses, calculateHiddenBalanceForAddress]);
 
   useEffect(() => {
-    const assetSubscriptions = allAddresses.map(address => {
-      return queryClient.getQueryCache().subscribe(event => {
-        if (
-          _isEqual(event.query.queryKey, userAssetsQueryKey({ address, currency: nativeCurrency, connectedToHardhat })) &&
-          event.query.isStale()
-        ) {
-          calculateHiddenBalanceForAddress(address, event.query.state.data);
-        }
-      });
+    const unsubscribeFromQueryCache = queryClient.getQueryCache().subscribe(event => {
+      const [args, key] = event.query.queryKey;
+      if (key === 'userAssets') {
+        calculateHiddenBalanceForAddress(args.address);
+      }
     });
 
     const subscriptions = allAddresses.map(address => {
@@ -108,7 +103,7 @@ const useWalletsHiddenBalances = (wallets: AllRainbowWallets): WalletBalanceResu
 
     return () => {
       subscriptions.forEach(sub => sub());
-      assetSubscriptions.forEach(sub => sub());
+      unsubscribeFromQueryCache();
     };
   }, [allAddresses, calculateHiddenBalanceForAddress, connectedToHardhat, nativeCurrency]);
 
