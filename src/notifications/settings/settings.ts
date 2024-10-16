@@ -39,11 +39,14 @@ export const removeNotificationSettingsForWallet = async (address: string): Prom
  Also used to batch toggle notifications for a single wallet
  when using the `Allow Notifications` switch in the wallet settings view.
  */
-export async function toggleGroupNotifications(wallets: WalletNotificationSettings[], enableNotifications: boolean): Promise<boolean> {
+export async function toggleGroupNotifications(
+  walletNotificationSettingsToUpdate: WalletNotificationSettings[],
+  enableNotifications: boolean
+): Promise<boolean> {
   const walletSettings = getAllWalletNotificationSettingsFromStorage();
   const globalSettings = getAllGlobalNotificationSettingsFromStorage();
   const toBeUpdated = new Map<string, boolean>();
-  wallets.forEach(entry => {
+  walletNotificationSettingsToUpdate.forEach(entry => {
     toBeUpdated.set(entry.address, true);
   });
 
