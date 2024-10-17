@@ -12,7 +12,7 @@ import {
   removeWalletConnectSessions,
   saveWalletConnectSession,
 } from '../handlers/localstorage/walletconnectSessions';
-import { sendRpcCall } from '../handlers/web3';
+import { getProvider, sendRpcCall } from '../handlers/web3';
 import WalletTypes from '../helpers/walletTypes';
 import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
@@ -488,7 +488,7 @@ const listenOnNewMessages =
                 });
                 const { accountAddress } = getState().settings;
                 logger.debug('WC: Updating session for chainID', { chainId: numericChainId }, logger.DebugContext.walletconnect);
-                await walletConnector.updateSession({
+                walletConnector.updateSession({
                   accounts: [accountAddress],
                   chainId: numericChainId,
                 });
@@ -530,7 +530,8 @@ const listenOnNewMessages =
 
         return;
       } else if (!isSigningMethod(payload.method)) {
-        sendRpcCall(payload)
+        const provider = getProvider({ chainId: ChainId.mainnet });
+        sendRpcCall(payload, provider)
           .then(result => {
             walletConnector.approveRequest({
               id: payload.id,
