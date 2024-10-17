@@ -24,6 +24,8 @@ import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { createClaimClaimableRap } from './claimClaimable';
+import { claimClaimable } from './actions/claimClaimable';
 
 export function createSwapRapByType<T extends RapTypes>(
   type: T,
@@ -36,6 +38,8 @@ export function createSwapRapByType<T extends RapTypes>(
       return createUnlockAndCrosschainSwapRap(swapParameters as RapSwapActionParameters<'crosschainSwap'>);
     case 'swap':
       return createUnlockAndSwapRap(swapParameters as RapSwapActionParameters<'swap'>);
+    case 'claimClaimable':
+      return createClaimClaimableRap(swapParameters as RapSwapActionParameters<'claimClaimable'>);
     default:
       return Promise.resolve({ actions: [] });
   }
@@ -53,6 +57,8 @@ function typeAction<T extends RapActionTypes>(type: T, props: ActionProps<T>) {
       return () => claimBridge(props as ActionProps<'claimBridge'>);
     case 'crosschainSwap':
       return () => crosschainSwap(props as ActionProps<'crosschainSwap'>);
+    case 'claimClaimable':
+      return () => claimClaimable(props as ActionProps<'claimClaimable'>);
     default:
       // eslint-disable-next-line react/display-name
       return () => null;
@@ -128,11 +134,11 @@ const waitForNodeAck = async (hash: string, provider: Signer['provider']): Promi
 export const walletExecuteRap = async (
   wallet: Signer,
   type: RapTypes,
-  parameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimBridge'>
+  parameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimBridge' | 'claimClaimable'>
 ): Promise<{ nonce: number | undefined; errorMessage: string | null }> => {
   // NOTE: We don't care to track claimBridge raps
   const rap =
-    type === 'claimBridge'
+    type === 'claimBridge' || type === 'claimClaimable'
       ? await createSwapRapByType(type, parameters)
       : await performanceTracking.getState().executeFn({
           fn: createSwapRapByType,

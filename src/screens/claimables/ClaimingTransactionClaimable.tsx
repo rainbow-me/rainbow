@@ -12,12 +12,16 @@ import { TransactionRequest } from '@ethersproject/providers';
 import { convertAmountToNativeDisplayWorklet, convertAmountToRawAmount } from '@/__swaps__/utils/numbers';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
-import { walletExecuteRap } from '@/rapsV2/execute';
+import { walletExecuteRap } from '@/raps/execute';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { queryClient } from '@/react-query';
-import { ETH_ADDRESS, getCrosschainQuote, QuoteParams } from '@rainbow-me/swaps';
+import { ETH_ADDRESS, getCrosschainQuote, getQuote, QuoteParams } from '@rainbow-me/swaps';
 import { buildQuoteParams } from '@/__swaps__/utils/swaps';
 import { useNativeAsset } from '@/utils/ethereumUtils';
+import { useMeteorologySuggestion, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
+import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
+import { GasSpeed } from '@/__swaps__/types/gas';
 
 // supports legacy and new gas types
 export type TransactionClaimableTxPayload = TransactionRequest &
@@ -48,6 +52,11 @@ export type TransactionClaimableTxPayload = TransactionRequest &
 export const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionClaimable }) => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const { isGasReady, isSufficientGas, isValidGas, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas();
+  const { data: meteorologyData } = useMeteorologySuggestion({
+    chainId: claimable.chainId,
+    speed: GasSpeed.FAST,
+    enabled: true,
+  });
 
   const [baseTxPayload, setBaseTxPayload] = useState<
     Omit<TransactionClaimableTxPayload, 'gasLimit' | 'maxPriorityFeePerGas' | 'maxFeePerGas'> | undefined
@@ -91,7 +100,18 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
       return;
     }
 
-    const gasParams = parseGasParamsForTransaction(selectedGasFee);
+    if (!meteorologyData?.maxBaseFee || !meteorologyData?.maxPriorityFee) {
+      logger.error(new RainbowError('[ClaimingTransactionClaimable]: incomplete meteorology gas data'));
+      return;
+    }
+
+    const gasParams: TransactionGasParamAmounts = {
+      maxFeePerGas: meteorologyData.maxBaseFee,
+      maxPriorityFeePerGas: meteorologyData.maxPriorityFee,
+    };
+    // const gasFeeParamsBySpeed = getGasSettingsBySpeed(claimable.chainId);
+
+    // const gasParams = parseGasParamsForTransaction(selectedGasFee);
     const updatedTxPayload = { ...baseTxPayload, ...gasParams };
 
     const gasLimit = await estimateGasWithPadding(updatedTxPayload, null, null, provider);
@@ -125,7 +145,17 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
     }
 
     setTxPayload({ ...updatedTxPayload, gasLimit });
-  }, [baseTxPayload, selectedGasFee, provider, claimable.chainId, claimable.action.to, claimable.action.data, updateTxFee, accountAddress]);
+  }, [
+    baseTxPayload,
+    meteorologyData?.maxBaseFee,
+    meteorologyData?.maxPriorityFee,
+    provider,
+    claimable.chainId,
+    claimable.action.to,
+    claimable.action.data,
+    updateTxFee,
+    accountAddress,
+  ]);
 
   useEffect(() => {
     if (baseTxPayload) {
@@ -219,7 +249,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
         address: accountAddress,
       };
 
-      const quote = await getCrosschainQuote(params);
+      const quote = claimable.chainId === 8453 ? await getQuote(params) : await getCrosschainQuote(params);
       console.log(claimable.value.claimAsset.amount);
       console.log('quote', quote);
       if (!quote || 'error' in quote) {
@@ -229,10 +259,34 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
         return;
       }
 
-      const { errorMessage } = await walletExecuteRap(wallet, {
-        type: 'claimTransactionClaimableRap',
-        claimTransactionClaimableActionParameters: { claimTx: txPayload, asset: claimable.asset },
-        crosschainSwapActionParameters: { ...swapData, quote },
+      // const { errorMessage } = await walletExecuteRap(wallet, {
+      //   type: 'claimTransactionClaimableRap',
+      //   claimTransactionClaimableActionParameters: { claimTx: txPayload, asset: claimable.asset },
+      //   crosschainSwapActionParameters: { ...swapData, quote },
+      // });
+
+      const selectedGas = {
+        maxBaseFee: meteorologyData?.maxBaseFee,
+        maxPriorityFee: meteorologyData?.maxPriorityFee,
+      };
+
+      let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
+        | TransactionGasParamAmounts
+        | LegacyTransactionGasParamAmounts;
+
+      gasParams = {
+        maxFeePerGas: selectedGas?.maxBaseFee as string,
+        maxPriorityFeePerGas: selectedGas?.maxPriorityFee as string,
+      };
+      const gasFeeParamsBySpeed = getGasSettingsBySpeed(claimable.chainId);
+
+      const { errorMessage } = await walletExecuteRap(wallet, 'claimClaimable', {
+        ...swapData,
+        gasParams,
+        // @ts-expect-error - collision between old gas types and new
+        gasFeeParamsBySpeed,
+        quote,
+        additionalParams: { claimTx: txPayload },
       });
 
       if (errorMessage) {

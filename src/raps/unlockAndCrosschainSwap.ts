@@ -118,6 +118,7 @@ export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapAc
     assetToBuy,
     gasParams: swapParameters.gasParams,
     gasFeeParamsBySpeed: swapParameters.gasFeeParamsBySpeed,
+    additionalParams: undefined,
   } satisfies RapSwapActionParameters<'crosschainSwap'>);
   actions = actions.concat(swap);
 
