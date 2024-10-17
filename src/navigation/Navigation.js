@@ -129,6 +129,7 @@ function setTopLevelNavigator(navigatorRef) {
 
 export default {
   getActiveOptions,
+  getState: () => TopLevelNavigationRef?.getState(),
   getActiveRoute,
   getActiveRouteName,
   handleAction,
