@@ -15,10 +15,10 @@ export type GlobalNotificationTopics = {
 };
 
 export type NotificationSubscriptionWalletsType = {
-  type: NotificationRelationshipType;
+  type: WalletNotificationRelationshipType;
   chain_id: number;
   address: string;
-  transaction_action_types: NotificationTopicType[];
+  transaction_action_types: WalletNotificationTopicType[];
 };
 
 export type NotificationSubscriptionType = {
