@@ -599,16 +599,6 @@ export const nativeStackDefaultConfigWithoutStatusBar: CoolModalConfigOptions = 
   },
 };
 
-export const exchangeTabNavigatorConfig = {
-  initialLayout: deviceUtils.dimensions,
-  sceneContainerStyle: {
-    backgroundColor: 'transparent',
-  },
-  swipeDistanceMinimum: 0,
-  tabBar: () => null,
-  transparentCard: true,
-};
-
 const BackArrow = styled(Icon).attrs({
   color: colors.themedColors?.appleBlue,
   direction: 'left',

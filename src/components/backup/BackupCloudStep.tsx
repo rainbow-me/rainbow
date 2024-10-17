@@ -11,7 +11,7 @@ import { Text } from '@/components/text';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { analytics } from '@/analytics';
 import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid } from '@/handlers/cloudBackup';
-import { useDimensions, useMagicAutofocus, useWallets } from '@/hooks';
+import { useDimensions, useMagicAutofocus } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { Box, Inset, Stack } from '@/design-system';
@@ -23,9 +23,6 @@ import { usePasswordValidation } from './usePasswordValidation';
 import { TextInput } from 'react-native';
 import { useTheme } from '@/theme';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { SETTINGS_BACKUP_ROUTES } from '@/screens/SettingsSheet/components/Backups/routes';
-import walletTypes from '@/helpers/walletTypes';
 
 type BackupCloudStepParams = {
   BackupCloudStep: {

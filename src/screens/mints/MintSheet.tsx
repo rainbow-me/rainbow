@@ -626,7 +626,6 @@ const MintSheet = () => {
                   />
 
                   <Box width={{ custom: deviceWidth - INSET_OFFSET }}>
-                    {/* @ts-ignore */}
                     <GasSpeedButton
                       fallbackColor={imageColor}
                       marginTop={0}

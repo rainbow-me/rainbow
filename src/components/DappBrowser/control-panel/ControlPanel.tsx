@@ -33,7 +33,6 @@ import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { colors } from '@/styles';
 import { deviceUtils, watchingAlert } from '@/utils';
-import ethereumUtils from '@/utils/ethereumUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { TOP_INSET } from '../Dimensions';
@@ -45,19 +44,17 @@ import { useDispatch } from 'react-redux';
 import store from '@/redux/store';
 import { getDappHost } from '@/utils/connectedApps';
 import WebView from 'react-native-webview';
-import { Navigation, useNavigation } from '@/navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { address } from '@/utils/abbreviations';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { useAppSessionsStore } from '@/state/appSessions';
-import { DEFAULT_TAB_URL, RAINBOW_HOME } from '../constants';
+import { RAINBOW_HOME } from '../constants';
 import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
 import WalletTypes from '@/helpers/walletTypes';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
-import { getRemoteConfig } from '@/model/remoteConfig';
-import { SWAPS_V2, useExperimentalFlag } from '@/config';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
@@ -89,7 +86,7 @@ export const ControlPanel = () => {
   } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
-  const activeTabHost = getDappHost(activeTabUrl || '') || DEFAULT_TAB_URL;
+  const activeTabHost = getDappHost(activeTabUrl || '') || RAINBOW_HOME;
   const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
   const updateActiveSession = useAppSessionsStore(state => state.updateActiveSession);
   const addSession = useAppSessionsStore(state => state.addSession);
@@ -382,8 +379,6 @@ const HomePanel = ({
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
 
-  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2);
-
   const actionButtonList = useMemo(() => {
     const walletIcon = selectedWallet?.IconComponent || <></>;
     const walletLabel = selectedWallet?.label || '';
@@ -444,57 +439,27 @@ const HomePanel = ({
     const valid = await runWalletChecksBeforeSwapOrBridge();
     if (!valid) return;
 
-    const { swaps_v2 } = getRemoteConfig();
-
-    if (swaps_v2 || swapsV2Enabled) {
-      swapsStore.setState({
-        inputAsset: userAssetsStore.getState().getHighestValueEth(),
-      });
-      InteractionManager.runAfterInteractions(() => {
-        navigate(Routes.SWAP);
-      });
-      return;
-    }
-
-    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.mainnet, address: selectedWallet?.uniqueId });
-    Navigation.handleAction(Routes.EXCHANGE_MODAL, {
-      fromDiscover: true,
-      params: {
-        inputAsset: mainnetEth,
-      },
-      screen: Routes.MAIN_EXCHANGE_SCREEN,
+    swapsStore.setState({
+      inputAsset: userAssetsStore.getState().getHighestValueEth(),
     });
-  }, [navigate, runWalletChecksBeforeSwapOrBridge, selectedWallet?.uniqueId, swapsV2Enabled]);
+    InteractionManager.runAfterInteractions(() => {
+      navigate(Routes.SWAP);
+    });
+  }, [navigate, runWalletChecksBeforeSwapOrBridge]);
 
   const handleOnPressBridge = useCallback(async () => {
     const valid = await runWalletChecksBeforeSwapOrBridge();
     if (!valid) return;
 
-    const { swaps_v2 } = getRemoteConfig();
-
-    if (swaps_v2 || swapsV2Enabled) {
-      // TODO: We need to set something in swapsStore that deliniates between a swap and bridge
-      // for now let's just treat it like a normal swap
-      swapsStore.setState({
-        inputAsset: userAssetsStore.getState().getHighestValueEth(),
-      });
-      InteractionManager.runAfterInteractions(() => {
-        navigate(Routes.SWAP);
-      });
-      return;
-    }
-
-    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.mainnet, address: selectedWallet?.uniqueId });
-    Navigation.handleAction(Routes.EXCHANGE_MODAL, {
-      fromDiscover: true,
-      params: {
-        inputAsset: mainnetEth,
-      },
-      screen: Routes.MAIN_EXCHANGE_SCREEN,
+    swapsStore.setState({
+      inputAsset: userAssetsStore.getState().getHighestValueEth(),
     });
-  }, [navigate, runWalletChecksBeforeSwapOrBridge, selectedWallet?.uniqueId, swapsV2Enabled]);
+    InteractionManager.runAfterInteractions(() => {
+      navigate(Routes.SWAP);
+    });
+  }, [navigate, runWalletChecksBeforeSwapOrBridge]);
 
-  const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || DEFAULT_TAB_URL) === RAINBOW_HOME);
+  const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || RAINBOW_HOME) === RAINBOW_HOME);
 
   return (
     <Panel height={isOnHomepage ? HOME_PANEL_FULL_HEIGHT - HOME_PANEL_DAPP_SECTION : HOME_PANEL_FULL_HEIGHT}>

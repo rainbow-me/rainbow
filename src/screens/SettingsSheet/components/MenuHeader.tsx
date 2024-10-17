@@ -104,7 +104,7 @@ const StatusIcon = ({ status, text }: StatusIconProps) => {
       marginTop={{ custom: 8 }}
       marginBottom={{ custom: 16 }}
     >
-      <Text color={{ custom: statusColors[status].color } || 'label (Deprecated)'} size="14px / 19px (Deprecated)" weight="bold">
+      <Text color={{ custom: statusColors[status].color }} size="14px / 19px (Deprecated)" weight="bold">
         {text}
       </Text>
     </Box>

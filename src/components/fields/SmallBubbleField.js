@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
-import { ExchangeInput } from '../exchange';
+import ExchangeInput from '@/components/ExchangeInput';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
+
 const BubbleInput = styled(ExchangeInput).attrs(({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({
   disableTabularNums: true,
   keyboardAppearance: isDarkMode ? 'dark' : 'light',
