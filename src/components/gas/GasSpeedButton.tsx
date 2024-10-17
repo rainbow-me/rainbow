@@ -167,7 +167,7 @@ const GasSpeedButton = ({
   fallbackColor,
   marginBottom = 20,
   marginTop = 18,
-  speeds = [],
+  speeds,
   testID = 'gas-speed-button',
   theme = 'dark',
   canGoBack = true,
