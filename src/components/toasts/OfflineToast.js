@@ -8,7 +8,7 @@ import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 const OfflineToast = () => {
   const isConnected = useInternetStatus();
   const { chainId } = useAccountSettings();
-  const { connectedToHardhat } = useConnectedToHardhatStore;
+  const { connectedToHardhat } = useConnectedToHardhatStore();
   const isMainnet = chainId === ChainId.mainnet && !connectedToHardhat;
   return <Toast icon="offline" isVisible={!isConnected && isMainnet} text={lang.t('button.offline')} />;
 };
