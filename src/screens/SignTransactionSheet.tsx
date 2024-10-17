@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { AnimatePresence, MotiView } from 'moti';
 import * as i18n from '@/languages';
 import { Image, InteractionManager, PixelRatio, ScrollView } from 'react-native';
@@ -8,7 +8,7 @@ import { Transaction } from '@ethersproject/transactions';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { SheetActionButton } from '@/components/sheet';
 import { Bleed, Box, Columns, Inline, Inset, Stack, Text, globalColors, useBackgroundColor, useForegroundColor } from '@/design-system';
-import { NewTransaction, ParsedAddressAsset, TransactionStatus } from '@/entities';
+import { NewTransaction, TransactionStatus } from '@/entities';
 import { useNavigation } from '@/navigation';
 
 import { useTheme } from '@/theme';
@@ -42,7 +42,6 @@ import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { loadWallet, sendTransaction, signPersonalMessage, signTransaction, signTypedDataMessage } from '@/model/wallet';
 
 import { analyticsV2 as analytics } from '@/analytics';
-import { getOnchainAssetBalance } from '@/handlers/assets';
 import { maybeSignUri } from '@/handlers/imgix';
 import { isAddress } from '@ethersproject/address';
 import { hexToNumber, isHex } from 'viem';
@@ -108,29 +107,13 @@ export const SignTransactionSheet = () => {
   const addressToUse = specifiedAddress ?? accountAddress;
 
   const provider = getProvider({ chainId });
-  const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | null>(null);
+  const nativeAsset = ethereumUtils.getNetworkNativeAsset({ chainId });
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
   const isPersonalSignRequest = isPersonalSign(transactionDetails.payload.method);
 
   const label = useForegroundColor('label');
   const surfacePrimary = useBackgroundColor('surfacePrimary');
-
-  useEffect(() => {
-    const fetchNativeAsset = async () => {
-      const asset = await ethereumUtils.getNativeAssetForNetwork({ chainId, address: addressToUse });
-      if (asset) {
-        const balance = await getOnchainAssetBalance(asset, addressToUse, chainId, provider);
-        if (balance) {
-          const assetWithOnchainBalance: ParsedAddressAsset = { ...asset, balance };
-          setNativeAsset(assetWithOnchainBalance);
-        } else {
-          setNativeAsset(asset);
-        }
-      }
-    };
-    fetchNativeAsset();
-  }, [addressToUse, chainId, provider]);
 
   const formattedDappUrl = useMemo(() => {
     try {
