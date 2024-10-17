@@ -2,17 +2,10 @@ import { useMemo } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
 import { AssetListType } from '..';
 import { CellType, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
-import {
-  useCoinListEdited,
-  useCoinListEditOptions,
-  useExternalWalletSectionsData,
-  useOpenFamilies,
-  useOpenSmallBalances,
-  useWalletSectionsData,
-} from '@/hooks';
+import { useCoinListEdited, useExternalWalletSectionsData, useOpenFamilies, useOpenSmallBalances, useWalletSectionsData } from '@/hooks';
 import useOpenPositionCards from '@/hooks/useOpenPositionCards';
-import * as ls from '@/storage';
 import useOpenClaimables from '@/hooks/useOpenClaimables';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const FILTER_TYPES = {
   'ens-profile': [CellType.NFT_SPACE_AFTER, CellType.NFT, CellType.FAMILY_HEADER],
@@ -50,7 +43,7 @@ export default function useMemoBriefSectionData({
   const { isPositionCardsOpen } = useOpenPositionCards();
   const { isClaimablesOpen } = useOpenClaimables();
   const { isCoinListEdited } = useCoinListEdited();
-  const { hiddenCoinsObj } = useCoinListEditOptions();
+  const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const { openFamilies } = useOpenFamilies();
 
   const result = useMemo(() => {
@@ -81,7 +74,7 @@ export default function useMemoBriefSectionData({
         if (data.type === CellType.COIN && !isSmallBalancesOpen && !isCoinListEdited && afterDivider) {
           return false;
         }
-        if (data.type === CellType.COIN && hiddenCoinsObj[(data as CoinExtraData).uniqueId] && !isCoinListEdited) {
+        if (data.type === CellType.COIN && hiddenAssets.has((data as CoinExtraData).uniqueId) && !isCoinListEdited) {
           return false;
         }
 
@@ -120,7 +113,7 @@ export default function useMemoBriefSectionData({
         return { type: cellType, uid };
       });
     return briefSectionsDataFiltered;
-  }, [sectionsDataToUse, type, isCoinListEdited, isSmallBalancesOpen, hiddenCoinsObj, isPositionCardsOpen, isClaimablesOpen, openFamilies]);
+  }, [sectionsDataToUse, type, isCoinListEdited, isSmallBalancesOpen, hiddenAssets, isPositionCardsOpen, isClaimablesOpen, openFamilies]);
   const memoizedResult = useDeepCompareMemo(() => result, [result]);
   const additionalData = useDeepCompareMemo(
     () =>

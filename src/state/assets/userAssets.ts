@@ -47,13 +47,18 @@ export interface UserAssetsState {
   setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
   setSearchQuery: (query: string) => void;
   setUserAssets: (userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) => void;
+
+  hiddenAssets: Set<UniqueId>;
+  getHiddenAssetsIds: () => UniqueId[];
+  setHiddenAssets: (uniqueIds: UniqueId[]) => void;
 }
 
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
-type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalances' | 'idsByChain' | 'userAssets'> & {
+type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalances' | 'idsByChain' | 'userAssets' | 'hiddenAssets'> & {
   chainBalances: Array<[ChainId, number]>;
   idsByChain: Array<[UserAssetFilter, UniqueId[]]>;
   userAssets: Array<[UniqueId, ParsedSearchAsset]>;
+  hiddenAssets: UniqueId[];
 };
 
 function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: number) {
@@ -63,6 +68,7 @@ function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: num
       chainBalances: state.chainBalances ? Array.from(state.chainBalances.entries()) : [],
       idsByChain: state.idsByChain ? Array.from(state.idsByChain.entries()) : [],
       userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
+      hiddenAssets: state.hiddenAssets ? Array.from(state.hiddenAssets.values()) : [],
     };
 
     return JSON.stringify({
@@ -113,12 +119,22 @@ function deserializeUserAssetsState(serializedState: string) {
     logger.error(new RainbowError(`[userAssetsStore]: Failed to convert userAssets from user assets storage`), { error });
   }
 
+  let hiddenAssets = new Set<UniqueId>();
+  try {
+    if (state.hiddenAssets) {
+      hiddenAssets = new Set(state.hiddenAssets);
+    }
+  } catch (error) {
+    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert hiddenAssets from user assets storage`), { error });
+  }
+
   return {
     state: {
       ...state,
       chainBalances,
       idsByChain,
       userAssets: userAssetsData,
+      hiddenAssets,
     },
     version,
   };
@@ -329,10 +345,29 @@ export const createUserAssetsStore = (address: Address | string) =>
               userAssets: userAssetsMap,
             };
         }),
+
+      hiddenAssets: new Set<UniqueId>(),
+
+      getHiddenAssetsIds: () => Array.from(get().hiddenAssets),
+
+      setHiddenAssets: (uniqueIds: UniqueId[]) => {
+        set(prev => {
+          const hiddenAssets = new Set(prev.hiddenAssets);
+          uniqueIds.forEach(uniqueId => {
+            if (hiddenAssets.has(uniqueId)) {
+              hiddenAssets.delete(uniqueId);
+            } else {
+              hiddenAssets.add(uniqueId);
+            }
+          });
+
+          return { hiddenAssets };
+        });
+      },
     }),
     {
       storageKey: `userAssets_${address}`,
-      version: 0,
+      version: 1,
       serializer: serializeUserAssetsState,
       deserializer: deserializeUserAssetsState,
     }
@@ -364,15 +399,24 @@ function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
 }
 
 export const userAssetsStore = {
-  getState: () => getOrCreateStore().getState(),
-  setState: (partial: Partial<UserAssetsState> | ((state: UserAssetsState) => Partial<UserAssetsState>)) =>
-    getOrCreateStore().setState(partial),
+  getState: (address?: Address | string) => getOrCreateStore(address).getState(),
+  setState: (partial: Partial<UserAssetsState> | ((state: UserAssetsState) => Partial<UserAssetsState>), address?: Address | string) =>
+    getOrCreateStore(address).setState(partial),
+  subscribe: (
+    selector: (state: UserAssetsState) => UserAssetsState,
+    listener: (state: UserAssetsState, prevState: UserAssetsState) => void,
+    options?: {
+      equalityFn?: (a: UserAssetsState, b: UserAssetsState) => boolean;
+      fireImmediately?: boolean;
+    },
+    address?: Address | string
+  ) => getOrCreateStore(address).subscribe(selector, listener, options),
 };
 
 export function useUserAssetsStore<T>(selector: (state: UserAssetsState) => T) {
   const address = useSelector((state: AppState) => state.settings.accountAddress);
   const store = getOrCreateStore(address);
-  return useStore(store, useCallback(selector, []));
+  return useStore(store, selector);
 }
 
 function getCurrentSearchCache(): Map<string, UniqueId[]> | undefined {
