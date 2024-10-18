@@ -2,7 +2,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
 // we should move these types since import from redux is not kosher
-import { RequestData, WalletconnectRequestData, removeRequest } from '@/redux/requests';
+import { RequestData, WalletconnectRequestData } from '@/redux/requests';
 import store from '@/redux/store';
 import { InteractionManager } from 'react-native';
 import { SEND_TRANSACTION } from './signingMethods';
@@ -406,7 +406,6 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
         error: null,
       });
     }
-    store.dispatch(removeRequest(request?.requestId));
   };
 
   const onCancel = async (error?: Error) => {
@@ -417,7 +416,6 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
           error: error || 'User cancelled the request',
         });
       }
-      store.dispatch(removeRequest(request?.requestId));
     }
   };
 
