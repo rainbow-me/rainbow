@@ -12,9 +12,7 @@ import WalletConnectCore, { Core } from '@walletconnect/core';
 import { WalletKit, WalletKitTypes, IWalletKit } from '@reown/walletkit';
 import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
-
 import { logger, RainbowError } from '@/logger';
-import { WalletconnectApprovalSheetRouteParams } from '@/redux/walletconnect';
 import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { analyticsV2 as analytics } from '@/analytics';
@@ -34,7 +32,13 @@ import { loadWallet } from '@/model/wallet';
 import * as portal from '@/screens/Portal';
 import * as explain from '@/screens/Explain';
 import { Box } from '@/design-system';
-import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason, RPCMethod, RPCPayload } from '@/walletConnect/types';
+import {
+  AuthRequestAuthenticateSignature,
+  AuthRequestResponseErrorReason,
+  RPCMethod,
+  RPCPayload,
+  WalletconnectApprovalSheetRouteParams,
+} from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProvider } from '@/handlers/web3';
 import { uniq } from 'lodash';
