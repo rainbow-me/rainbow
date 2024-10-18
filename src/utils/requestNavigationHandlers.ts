@@ -1,13 +1,16 @@
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
-// we should move these types since import from redux is not kosher
-import { RequestData, WalletconnectRequestData } from '@/redux/requests';
 import store from '@/redux/store';
 import { InteractionManager } from 'react-native';
 import { SEND_TRANSACTION } from './signingMethods';
 import { handleSessionRequestResponse } from '@/walletConnect';
-import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/walletConnect/types';
+import {
+  RequestData,
+  WalletconnectRequestData,
+  WalletconnectApprovalSheetRouteParams,
+  WalletconnectResultType,
+} from '@/walletConnect/types';
 import { getRequestDisplayDetails } from '@/parsers';
 import { maybeSignUri } from '@/handlers/imgix';
 import { getActiveRoute } from '@/navigation/Navigation';
