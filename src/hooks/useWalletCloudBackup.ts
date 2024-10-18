@@ -1,4 +1,3 @@
-import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import { values } from 'lodash';
 import { useCallback, useMemo } from 'react';
@@ -53,7 +52,7 @@ export default function useWalletCloudBackup() {
       handleNoLatestBackup?: () => void;
       handlePasswordNotFound?: () => void;
       onError?: (error: string) => void;
-      onSuccess?: () => void;
+      onSuccess?: (password: string) => void;
       password: string;
       walletId: string;
     }): Promise<boolean> => {
@@ -134,7 +133,7 @@ export default function useWalletCloudBackup() {
         logger.debug('[useWalletCloudBackup]: backup completed!');
         await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.cloud, updatedBackupFile));
         logger.debug('[useWalletCloudBackup]: backup saved everywhere!');
-        !!onSuccess && onSuccess();
+        !!onSuccess && onSuccess(password);
         return true;
       } catch (e) {
         logger.error(new RainbowError(`[useWalletCloudBackup]: error while trying to save wallet backup state: ${e}`));

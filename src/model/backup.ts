@@ -109,7 +109,7 @@ export async function backupAllWalletsToCloud({
   password: BackupPassword;
   latestBackup: string | null;
   onError?: (message: string) => void;
-  onSuccess?: () => void;
+  onSuccess?: (password: BackupPassword) => void;
   dispatch: any;
 }) {
   let userPIN: string | undefined;
@@ -209,7 +209,7 @@ export async function backupAllWalletsToCloud({
       label: cloudPlatform,
     });
 
-    onSuccess?.();
+    onSuccess?.(password);
   } catch (error: any) {
     const userError = getUserError(error);
     onError?.(userError);
