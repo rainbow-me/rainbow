@@ -67,7 +67,7 @@ export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | '
   flashbots?: boolean;
   quote: QuoteTypeMap[T];
   address?: Address;
-  additionalParams: AdditionalParamsMap[T];
+  additionalParams?: AdditionalParamsMap[T];
 }
 
 export interface RapUnlockActionParameters {

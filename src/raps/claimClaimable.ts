@@ -8,31 +8,23 @@ import { assetNeedsUnlocking } from './actions';
 export async function createClaimClaimableRap(parameters: RapSwapActionParameters<'claimClaimable'>) {
   let actions: RapAction<'claimClaimable' | 'crosschainSwap' | 'unlock' | 'swap'>[] = [];
 
-  // const gas = {
-  //   gas: {
-  //     gasFeeParamsBySpeed: parameters.crosschainSwapActionParameters.gasFeeParamsBySpeed,
-  //     gasParams: parameters.crosschainSwapActionParameters.gasParams,
-  //   },
-  // };
+  const { sellAmount, assetToBuy, quote, chainId, toChainId, assetToSell, meta, gasFeeParamsBySpeed, gasParams, additionalParams } =
+    parameters;
+
+  if (!additionalParams?.claimTx) throw new RainbowError('[raps/claimClaimable]: claimTx is undefined');
 
   const claim = createNewAction('claimClaimable', {
-    claimTx: parameters.additionalParams.claimTx,
-    asset: parameters.assetToSell,
+    claimTx: additionalParams.claimTx,
+    asset: assetToSell,
   });
   actions = actions.concat(claim);
 
-  const { sellAmount, assetToBuy, quote, chainId, toChainId, assetToSell, meta, gasFeeParamsBySpeed, gasParams } = parameters;
-
   const {
     from: accountAddress,
-    sellTokenAddress,
-    buyTokenAddress,
     allowanceTarget,
     allowanceNeeded,
   } = quote as {
     from: Address;
-    sellTokenAddress: Address;
-    buyTokenAddress: Address;
     allowanceTarget: Address;
     allowanceNeeded: boolean;
   };
@@ -62,7 +54,6 @@ export async function createClaimClaimableRap(parameters: RapSwapActionParameter
   }
 
   if (chainId === toChainId) {
-    console.log('SWAP ACTION');
     // create a swap rap
     const swap = createNewAction('swap', {
       chainId: chainId,
@@ -74,7 +65,6 @@ export async function createClaimClaimableRap(parameters: RapSwapActionParameter
       assetToBuy,
       gasParams,
       gasFeeParamsBySpeed,
-      additionalParams: undefined,
     });
     actions = actions.concat(swap);
   } else {
@@ -89,7 +79,6 @@ export async function createClaimClaimableRap(parameters: RapSwapActionParameter
       assetToBuy,
       gasParams,
       gasFeeParamsBySpeed,
-      additionalParams: undefined,
     });
     actions = actions.concat(crosschainSwap);
   }

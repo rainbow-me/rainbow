@@ -3,7 +3,6 @@ import { useAccountSettings, useGas } from '@/hooks';
 import { ethereumUtils, haptics } from '@/utils';
 import { Claimable, TransactionClaimable } from '@/resources/addys/claimables/types';
 import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
-import { parseGasParamsForTransaction } from '@/parsers';
 import { getNextNonce } from '@/state/nonces';
 import { needsL1SecurityFeeChains } from '@/chains';
 import { logger, RainbowError } from '@/logger';
@@ -16,38 +15,34 @@ import { walletExecuteRap } from '@/raps/execute';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { queryClient } from '@/react-query';
 import { ETH_ADDRESS, getCrosschainQuote, getQuote, QuoteParams } from '@rainbow-me/swaps';
-import { buildQuoteParams } from '@/__swaps__/utils/swaps';
 import { useNativeAsset } from '@/utils/ethereumUtils';
-import { useMeteorologySuggestion, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
+import { useMeteorologySuggestion } from '@/__swaps__/utils/meteorology';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '@/__swaps__/types/gas';
 
 // supports legacy and new gas types
-export type TransactionClaimableTxPayload = TransactionRequest &
-  (
-    | {
-        to: string;
-        from: string;
-        nonce: number;
-        gasLimit: string;
-        maxFeePerGas: string;
-        maxPriorityFeePerGas: string;
-        data: string;
-        value: '0x0';
-        chainId: number;
-      }
-    | {
-        to: string;
-        from: string;
-        nonce: number;
-        gasLimit: string;
-        gasPrice: string;
-        data: string;
-        value: '0x0';
-        chainId: number;
-      }
-  );
+export type TransactionClaimableTxPayload = TransactionRequest & {
+  to: string;
+  from: string;
+  nonce: number;
+  gasLimit: string;
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
+  data: string;
+  value: '0x0';
+  chainId: number;
+};
+// | {
+//     to: string;
+//     from: string;
+//     nonce: number;
+//     gasLimit: string;
+//     gasPrice: string;
+//     data: string;
+//     value: '0x0';
+//     chainId: number;
+//   }
 
 export const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionClaimable }) => {
   const { accountAddress, nativeCurrency } = useAccountSettings();

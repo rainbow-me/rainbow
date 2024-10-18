@@ -3,46 +3,17 @@ import { sendTransaction } from '@/model/wallet';
 import { getProvider } from '@/handlers/web3';
 import { RainbowError } from '@/logger';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { LegacyTransactionGasParamAmounts, NewTransaction, TransactionGasParamAmounts, TransactionStatus } from '@/entities';
+import { NewTransaction, TransactionStatus } from '@/entities';
 import { chainsName } from '@/chains';
-import { overrideWithFastSpeedIfNeeded } from '../utils';
 import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 
-export async function claimClaimable({
-  wallet,
-  currentRap,
-  index,
-  parameters,
-  baseNonce,
-  gasParams,
-  gasFeeParamsBySpeed,
-}: ActionProps<'claimClaimable'>): Promise<RapActionResult> {
+export async function claimClaimable({ wallet, parameters }: ActionProps<'claimClaimable'>): Promise<RapActionResult> {
   const { claimTx, asset } = parameters;
 
   const provider = getProvider({ chainId: claimTx.chainId });
 
-  let expeditedTx = claimTx;
-
-  // if (currentRap.actions.length - 1 > index) {
-  //   gasParamsToUse = overrideWithFastSpeedIfNeeded({
-  //     gasParams,
-  //     chainId,
-  //     gasFeeParamsBySpeed,
-  //   });
-  // }
-
-  // if (shouldExpedite && gas) {
-  //   const expeditedGas = overrideWithFastSpeedIfNeeded({
-  //     gasParams: gas.gasParams,
-  //     chainId: claimTx.chainId,
-  //     gasFeeParamsBySpeed: gas.gasFeeParamsBySpeed,
-  //   });
-
-  //   expeditedTx = { ...expeditedTx, ...expeditedGas };
-  // }
-
-  const result = await sendTransaction({ transaction: expeditedTx, existingWallet: wallet, provider });
+  const result = await sendTransaction({ transaction: claimTx, existingWallet: wallet, provider });
 
   if (!result?.result || !!result.error || !result.result.hash) {
     throw new RainbowError('[CLAIM-CLAIMABLE]: failed to execute claim transaction');
