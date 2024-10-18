@@ -38,8 +38,6 @@ export const useCreateBackup = ({ walletId, navigateToRoute }: UseCreateBackupPr
   const latestBackup = useMemo(() => findLatestBackUp(wallets), [wallets]);
   const [loading, setLoading] = useState<useCreateBackupStateType>('none');
 
-  const [password, setPassword] = useState('');
-
   const setLoadingStateWithTimeout = useCallback(
     (state: useCreateBackupStateType, resetInMS = 2500) => {
       setLoading(state);
@@ -49,18 +47,21 @@ export const useCreateBackup = ({ walletId, navigateToRoute }: UseCreateBackupPr
     },
     [setLoading]
   );
-  const onSuccess = useCallback(async () => {
-    const hasSavedPassword = await getLocalBackupPassword();
-    if (!hasSavedPassword) {
-      await saveLocalBackupPassword(password);
-    }
-    analytics.track('Backup Complete', {
-      category: 'backup',
-      label: cloudPlatform,
-    });
-    setLoadingStateWithTimeout('success');
-    fetchBackups();
-  }, [setLoadingStateWithTimeout, fetchBackups, password]);
+  const onSuccess = useCallback(
+    async (password: string) => {
+      const hasSavedPassword = await getLocalBackupPassword();
+      if (!hasSavedPassword && password.trim()) {
+        await saveLocalBackupPassword(password);
+      }
+      analytics.track('Backup Complete', {
+        category: 'backup',
+        label: cloudPlatform,
+      });
+      setLoadingStateWithTimeout('success');
+      fetchBackups();
+    },
+    [setLoadingStateWithTimeout, fetchBackups]
+  );
 
   const onError = useCallback(
     (msg: string) => {
@@ -102,7 +103,7 @@ export const useCreateBackup = ({ walletId, navigateToRoute }: UseCreateBackupPr
 
       await walletCloudBackup({
         onError,
-        onSuccess,
+        onSuccess: (password: string) => onSuccess(password),
         password,
         walletId,
       });
@@ -117,7 +118,6 @@ export const useCreateBackup = ({ walletId, navigateToRoute }: UseCreateBackupPr
   const getPassword = useCallback(async (): Promise<string | null> => {
     const password = await getLocalBackupPassword();
     if (password) {
-      setPassword(password);
       return password;
     }
 
@@ -126,7 +126,6 @@ export const useCreateBackup = ({ walletId, navigateToRoute }: UseCreateBackupPr
         nativeScreen: true,
         step: walletBackupStepTypes.backup_cloud,
         onSuccess: async (password: string) => {
-          setPassword(password);
           resolve(password);
         },
         onCancel: async () => {
