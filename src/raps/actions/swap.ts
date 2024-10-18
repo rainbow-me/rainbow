@@ -1,5 +1,4 @@
 import { Signer } from '@ethersproject/abstract-signer';
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Transaction } from '@ethersproject/transactions';
 import {
   CrosschainQuote,
@@ -56,7 +55,6 @@ export const estimateSwapGasLimit = async ({
   requiresApprove?: boolean;
   quote: Quote;
 }): Promise<string> => {
-  // TODO: MARK - Replace this once we migrate network => chainId
   const provider = getProvider({ chainId });
   if (!provider || !quote) {
     return gasUnits.basic_swap[chainId];
@@ -74,11 +72,7 @@ export const estimateSwapGasLimit = async ({
           from: quote.from,
           value: isWrapNativeAsset ? quote.buyAmount.toString() : '0',
         },
-        getWrappedAssetMethod(
-          isWrapNativeAsset ? 'deposit' : 'withdraw',
-          provider as StaticJsonRpcProvider,
-          chainId as unknown as SwapChainId
-        ),
+        getWrappedAssetMethod(isWrapNativeAsset ? 'deposit' : 'withdraw', provider, chainId as unknown as SwapChainId),
         isWrapNativeAsset ? [] : [quote.buyAmount.toString()],
         provider,
         WRAP_GAS_PADDING
@@ -95,7 +89,7 @@ export const estimateSwapGasLimit = async ({
     // Swap
   } else {
     try {
-      const { params, method, methodArgs } = getQuoteExecutionDetails(quote, { from: quote.from }, provider as StaticJsonRpcProvider);
+      const { params, method, methodArgs } = getQuoteExecutionDetails(quote, { from: quote.from }, provider);
 
       if (requiresApprove) {
         if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
