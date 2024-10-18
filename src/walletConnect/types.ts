@@ -1,8 +1,73 @@
 import { ChainId } from '@/chains/types';
-import { WalletconnectRequestData } from '../redux/requests';
 import { Address } from 'viem';
-import { Verify } from '@walletconnect/types';
+import { SignClientTypes, Verify } from '@walletconnect/types';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
+
+/**
+ * Display details loaded for a request.
+ */
+interface RequestDisplayDetails {
+  /**
+   * Data loaded for the request, depending on the type of request.
+   */
+  request: any;
+
+  /**
+   * The timestamp for the request.
+   */
+  timestampInMs: number;
+}
+
+export interface RequestData {
+  dappName: string;
+  imageUrl: string | undefined;
+  address: string;
+  chainId: ChainId;
+  dappUrl: string;
+  payload: any;
+  displayDetails: RequestDisplayDetails | null | Record<string, never>;
+}
+
+/**
+ * A request stored in state.
+ */
+export interface WalletconnectRequestData extends RequestData {
+  /**
+   * The WalletConnect client ID for the request.
+   */
+  clientId: string;
+
+  /**
+   * The WalletConnect peer ID for the request.
+   */
+  peerId: string;
+
+  /**
+   * The request ID.
+   */
+  requestId: number;
+
+  /**
+   * The URL scheme to use for re-opening the dapp, or null.
+   */
+  dappScheme: string | null;
+
+  /**
+   * The display details loaded for the request.
+   */
+  displayDetails: RequestDisplayDetails | null | Record<string, never>;
+
+  /**
+   * Adds additional data to the request and serves as a notice that this
+   * request originated from a WC v2 session
+   */
+  walletConnectV2RequestValues?: {
+    sessionRequestEvent: SignClientTypes.EventArguments['session_request'];
+    address: string;
+    chainId: number;
+    onComplete?: (type: string) => void;
+  };
+}
 
 /**
  * Represents a WalletConnect result passed to a callback function.

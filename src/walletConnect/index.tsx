@@ -23,8 +23,6 @@ import store from '@/redux/store';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import WalletTypes from '@/helpers/walletTypes';
 import { getRequestDisplayDetails } from '@/parsers/requests';
-import { WalletconnectRequestData, REQUESTS_UPDATE_REQUESTS_TO_APPROVE } from '@/redux/requests';
-import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
 import { IS_DEV, IS_ANDROID, IS_IOS } from '@/env';
@@ -38,6 +36,7 @@ import {
   RPCMethod,
   RPCPayload,
   WalletconnectApprovalSheetRouteParams,
+  WalletconnectRequestData,
 } from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProvider } from '@/handlers/web3';
@@ -510,10 +509,6 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
           try {
             if (namespaces.success) {
               /**
-               * This is equivalent handling of setPendingRequest and
-               * walletConnectApproveSession, since setPendingRequest is only used
-               * within the /redux/walletconnect handlers
-               *
                * WC v2 stores existing _pairings_ itself, so we don't need to persist
                * ourselves
                */
@@ -714,7 +709,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
       return;
     }
 
-    const { nativeCurrency, network } = store.getState().settings;
+    const { nativeCurrency } = store.getState().settings;
     const chainId = Number(event.params.chainId.split(':')[1]);
 
     logger.debug(`[walletConnect]: getting session for topic`, { session });
@@ -755,29 +750,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
         },
       },
     };
-
-    const { requests: pendingRequests } = store.getState().requests;
-
-    if (!pendingRequests[request.requestId]) {
-      const updatedRequests = {
-        ...pendingRequests,
-        [request.requestId]: request,
-      };
-      store.dispatch({
-        payload: updatedRequests,
-        type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE,
-      });
-      saveLocalRequests(updatedRequests, address, network);
-
-      logger.debug(`[walletConnect]: navigating to CONFIRM_REQUEST sheet`, {}, logger.DebugContext.walletconnect);
-
-      handleWalletConnectRequest(request);
-
-      analytics.track(analytics.event.wcShowingSigningRequest, {
-        dappName: request.dappName,
-        dappUrl: request.dappUrl,
-      });
-    }
+    handleWalletConnectRequest(request);
   } else {
     logger.error(new RainbowError(`[walletConnect]: received unsupported session_request RPC method`), {
       method,
