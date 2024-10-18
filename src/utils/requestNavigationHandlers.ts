@@ -394,13 +394,10 @@ export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displ
 
 // Walletconnect
 export const handleWalletConnectRequest = async (request: WalletconnectRequestData) => {
-  const walletConnector = store.getState().walletconnect.walletConnectors[request.peerId];
-
-  // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
-  const chainId = request?.walletConnectV2RequestValues?.chainId || walletConnector?._chainId;
+  const chainId = request?.walletConnectV2RequestValues?.chainId;
+  if (!chainId) return;
   const network = chainsName[chainId];
-  // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
-  const address = request?.walletConnectV2RequestValues?.address || walletConnector?._accounts?.[0];
+  const address = request?.walletConnectV2RequestValues?.address;
 
   const onSuccess = async (result: string) => {
     if (request?.walletConnectV2RequestValues) {
