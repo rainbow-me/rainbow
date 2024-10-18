@@ -98,7 +98,6 @@ export { default as usePendingTransactions } from './usePendingTransactions';
 export { default as useUserAccounts } from './useUserAccounts';
 export { default as useWalletBalances } from './useWalletBalances';
 export { default as useWalletCloudBackup } from './useWalletCloudBackup';
-export { default as useWalletConnectConnections } from './useWalletConnectConnections';
 export { default as useWalletManualBackup } from './useWalletManualBackup';
 export { default as useWallets } from './useWallets';
 export { default as useWalletSectionsData } from './useWalletSectionsData';
