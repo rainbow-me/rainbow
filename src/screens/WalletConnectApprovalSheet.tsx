@@ -37,7 +37,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { Address } from 'viem';
 import { RainbowWallet } from '@/model/wallet';
 import { IS_IOS } from '@/env';
-import { WalletconnectMeta } from '@/redux/walletconnect';
+import { WalletconnectMeta } from '@/walletConnect/types';
 
 type WithThemeProps = {
   theme: ThemeContextProps;

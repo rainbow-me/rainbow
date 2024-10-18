@@ -1,3 +1,50 @@
+import { ChainId } from '@/chains/types';
+import { WalletconnectRequestData } from '../redux/requests';
+import { Address } from 'viem';
+import { Verify } from '@walletconnect/types';
+import { RequestSource } from '@/utils/requestNavigationHandlers';
+
+/**
+ * Represents a WalletConnect result passed to a callback function.
+ */
+export type WalletconnectResultType = 'timedOut' | 'sign' | 'transaction' | 'sign-canceled' | 'transaction-canceled' | 'connect' | 'reject';
+
+export type WalletconnectMeta = {
+  /**
+   * WC v2 introduced multi-chain support, while v1 only supported a single
+   * chain at a time. To avoid confusion, we now send both as an array
+   * `chainIds`. WC v1 will always be an array with length `1`, while v2 can
+   * have more than one.
+   */
+  chainIds: number[];
+  isWalletConnectV2?: boolean;
+  proposedChainId?: number;
+  proposedAddress?: string;
+} & Pick<WalletconnectRequestData, 'dappName' | 'dappScheme' | 'dappUrl' | 'imageUrl' | 'peerId'>;
+
+/**
+ * Route parameters sent to a WalletConnect approval sheet.
+ */
+export interface WalletconnectApprovalSheetRouteParams {
+  callback: (
+    approved: boolean,
+    chainId: ChainId,
+    accountAddress: Address,
+    peerId: WalletconnectRequestData['peerId'],
+    dappScheme: WalletconnectRequestData['dappScheme'],
+    dappName: WalletconnectRequestData['dappName'],
+    dappUrl: WalletconnectRequestData['dappUrl']
+  ) => Promise<unknown>;
+  receivedTimestamp: number;
+  currentChainId?: ChainId;
+  meta?: WalletconnectMeta;
+  timeout?: ReturnType<typeof setTimeout> | null;
+  timedOut?: boolean;
+  failureExplainSheetVariant?: string;
+  verifiedData?: Verify.Context['verified'];
+  source?: RequestSource;
+}
+
 export enum RPCMethod {
   Sign = 'eth_sign',
   PersonalSign = 'personal_sign',

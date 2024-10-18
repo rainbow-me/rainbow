@@ -7,7 +7,7 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 import { ParsedAddressAsset, PendingTransaction, UniqueAsset } from '@/entities';
 import { Claimable } from '@/resources/addys/claimables/types';
-import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/redux/walletconnect';
+import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/walletConnect/types';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
