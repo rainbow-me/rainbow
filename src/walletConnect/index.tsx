@@ -23,7 +23,7 @@ import store from '@/redux/store';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import WalletTypes from '@/helpers/walletTypes';
 import { getRequestDisplayDetails } from '@/parsers/requests';
-import { WalletconnectRequestData, REQUESTS_UPDATE_REQUESTS_TO_APPROVE, removeRequest } from '@/redux/requests';
+import { WalletconnectRequestData, REQUESTS_UPDATE_REQUESTS_TO_APPROVE } from '@/redux/requests';
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
@@ -835,8 +835,6 @@ export async function handleSessionRequestResponse(
     logger.debug(`[walletConnect]: handleSessionRequestResponse reject`, {}, logger.DebugContext.walletconnect);
     await client.respondSessionRequest(payload);
   }
-
-  store.dispatch(removeRequest(sessionRequestEvent.id));
 }
 
 export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthenticate) {
