@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { hiddenTokensLoadState } from '../redux/hiddenTokens';
-import { requestsLoadState } from '../redux/requests';
 import { showcaseTokensLoadState } from '../redux/showcaseTokens';
 import { logger } from '@/logger';
 
@@ -11,7 +10,6 @@ export default function useLoadAccountData() {
     logger.debug('[useLoadAccountData]: Load wallet account data');
     dispatch(showcaseTokensLoadState());
     dispatch(hiddenTokensLoadState());
-    dispatch(requestsLoadState());
   }, [dispatch]);
 
   return loadAccountData;
