@@ -8,7 +8,6 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import AddWalletToCloudBackupStep from '@/components/backup/AddWalletToCloudBackupStep';
 import BackupManuallyStep from './BackupManuallyStep';
 import { getHeightForStep } from '@/navigation/config';
-import { CloudBackupProvider } from './CloudBackupProvider';
 
 type BackupSheetParams = {
   BackupSheet: {
@@ -40,19 +39,17 @@ export default function BackupSheet() {
   }, [step]);
 
   return (
-    <CloudBackupProvider>
-      <BackgroundProvider color="surfaceSecondary">
-        {({ backgroundColor }) => (
-          <SimpleSheet
-            testID={'backup-sheet'}
-            backgroundColor={backgroundColor as string}
-            customHeight={getHeightForStep(step)}
-            scrollEnabled={false}
-          >
-            {renderStep()}
-          </SimpleSheet>
-        )}
-      </BackgroundProvider>
-    </CloudBackupProvider>
+    <BackgroundProvider color="surfaceSecondary">
+      {({ backgroundColor }) => (
+        <SimpleSheet
+          testID={'backup-sheet'}
+          backgroundColor={backgroundColor as string}
+          customHeight={getHeightForStep(step)}
+          scrollEnabled={false}
+        >
+          {renderStep()}
+        </SimpleSheet>
+      )}
+    </BackgroundProvider>
   );
 }

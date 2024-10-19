@@ -1,5 +1,4 @@
 import React from 'react';
-import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import * as lang from '@/languages';
 import { ImgixImage } from '../images';
@@ -21,6 +20,8 @@ import { GoogleDriveUserData, getGoogleAccountUserData, isCloudBackupAvailable, 
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { RainbowError, logger } from '@/logger';
 import { Linking } from 'react-native';
+import { CloudBackupState, useCloudBackupsContext } from './CloudBackupProvider';
+import { BackupTypes } from '@/components/backup/useCreateBackup';
 
 const imageSize = 72;
 
@@ -28,21 +29,9 @@ export default function BackupSheetSectionNoProvider() {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
   const { selectedWallet } = useWallets();
-
-  const { onSubmit, loading } = useCreateBackup({
-    walletId: selectedWallet.id,
-    navigateToRoute: {
-      route: Routes.SETTINGS_SHEET,
-      params: {
-        screen: Routes.SETTINGS_SECTION_BACKUP,
-      },
-    },
-  });
+  const { createBackup, backupState } = useCloudBackupsContext();
 
   const onCloudBackup = async () => {
-    if (loading !== 'none') {
-      return;
-    }
     // NOTE: On Android we need to make sure the user is signed into a Google account before trying to backup
     // otherwise we'll fake backup and it's confusing...
     if (IS_ANDROID) {
@@ -83,7 +72,16 @@ export default function BackupSheetSectionNoProvider() {
       }
     }
 
-    onSubmit({});
+    createBackup({
+      type: BackupTypes.Single,
+      walletId: selectedWallet.id,
+      navigateToRoute: {
+        route: Routes.SETTINGS_SHEET,
+        params: {
+          screen: Routes.SETTINGS_SECTION_BACKUP,
+        },
+      },
+    });
   };
 
   const onManualBackup = async () => {
@@ -117,7 +115,7 @@ export default function BackupSheetSectionNoProvider() {
       </Bleed>
 
       {/* replace this with BackUpMenuButton */}
-      <ButtonPressAnimation scaleTo={0.95} onPress={onCloudBackup}>
+      <ButtonPressAnimation disabled={backupState !== CloudBackupState.Ready} scaleTo={0.95} onPress={onCloudBackup}>
         <Box alignItems="flex-start" justifyContent="flex-start" paddingTop={'24px'} paddingBottom={'36px'} gap={8}>
           <Box justifyContent="center" width="full">
             <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>

@@ -40,21 +40,20 @@ import {
   login,
 } from '@/handlers/cloudBackup';
 import { logger, RainbowError } from '@/logger';
-import { captureException } from '@sentry/react-native';
 import { RainbowAccount, createWallet } from '@/model/wallet';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import showWalletErrorAlert from '@/helpers/support';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { BackUpMenuItem } from './BackUpMenuButton';
 import { checkWalletsForBackupStatus } from '../../utils';
-import { useCloudBackups } from '@/components/backup/CloudBackupProvider';
+import { useCloudBackupsContext } from '@/components/backup/CloudBackupProvider';
 import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
 import { format } from 'date-fns';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { Backup, parseTimestampFromFilename } from '@/model/backup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { BackupTypes } from '@/components/backup/useCreateBackup';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -127,7 +126,7 @@ const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: 
 const ViewWalletBackup = () => {
   const { params } = useRoute<RouteProp<ViewWalletBackupParams, 'ViewWalletBackup'>>();
 
-  const { backups } = useCloudBackups();
+  const { createBackup, backups, backupState } = useCloudBackupsContext();
   const { walletId, title: incomingTitle } = params;
   const creatingWallet = useRef<boolean>();
   const { isDamaged, wallets } = useWallets();
@@ -184,9 +183,6 @@ const ViewWalletBackup = () => {
 
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
-  const { onSubmit, loading } = useCreateBackup({
-    walletId,
-  });
 
   const backupWalletsToCloud = useCallback(async () => {
     if (IS_ANDROID) {
@@ -195,7 +191,10 @@ const ViewWalletBackup = () => {
 
         getGoogleAccountUserData().then((accountDetails: GoogleDriveUserData | undefined) => {
           if (accountDetails) {
-            return onSubmit({});
+            return createBackup({
+              walletId,
+              type: BackupTypes.Single,
+            });
           }
           Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
         });
@@ -226,8 +225,11 @@ const ViewWalletBackup = () => {
       }
     }
 
-    onSubmit({});
-  }, [onSubmit]);
+    return createBackup({
+      walletId,
+      type: BackupTypes.Single,
+    });
+  }, [createBackup, walletId]);
 
   const onNavigateToSecretWarning = useCallback(() => {
     navigate(SETTINGS_BACKUP_ROUTES.SECRET_WARNING, {
@@ -441,7 +443,7 @@ const ViewWalletBackup = () => {
                 title={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
                   cloudPlatformName: cloudPlatform,
                 })}
-                loading={loading}
+                backupState={backupState}
                 onPress={backupWalletsToCloud}
               />
             </Menu>
@@ -462,7 +464,7 @@ const ViewWalletBackup = () => {
                 title={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
                   cloudPlatformName: cloudPlatform,
                 })}
-                loading={loading}
+                backupState={backupState}
                 onPress={backupWalletsToCloud}
               />
             </Menu>
