@@ -16,7 +16,7 @@ import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
 import MenuHeader from '../MenuHeader';
-import { checkWalletsForBackupStatus } from '../../utils';
+import { checkWalletsForBackupStatus, hasManuallyBackedUpWallet } from '../../utils';
 import { Inline, Text, Box, Stack } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
@@ -30,16 +30,15 @@ import { useDispatch } from 'react-redux';
 import { walletsLoadState } from '@/redux/wallets';
 import { RainbowError, logger } from '@/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { BackupTypes, useCreateBackup } from '@/components/backup/useCreateBackup';
+import { BackupTypes } from '@/components/backup/useCreateBackup';
 import { BackUpMenuItem } from './BackUpMenuButton';
 import { format } from 'date-fns';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { Backup, parseTimestampFromFilename } from '@/model/backup';
-import { useCloudBackups } from '@/components/backup/CloudBackupProvider';
+import { useCloudBackupsContext } from '@/components/backup/CloudBackupProvider';
 import { GoogleDriveUserData, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Linking } from 'react-native';
-import { noop } from 'lodash';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -95,14 +94,10 @@ export const WalletsAndBackup = () => {
   const { navigate } = useNavigation();
   const { wallets } = useWallets();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { backups } = useCloudBackups();
   const dispatch = useDispatch();
+  const { backups, backupState, createBackup } = useCloudBackupsContext();
 
   const initializeWallet = useInitializeWallet();
-
-  const { onSubmit, loading } = useCreateBackup({
-    walletId: undefined, // NOTE: This is not used when backing up All wallets
-  });
 
   const { manageCloudBackups } = useManageCloudBackups();
 
@@ -111,7 +106,9 @@ export const WalletsAndBackup = () => {
     privateKey: 0,
   };
 
-  const { allBackedUp, backupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
+  const hasManualBackup = useMemo(() => hasManuallyBackedUpWallet(wallets || {}), [wallets]);
+
+  const { allBackedUp } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const { visibleWallets, lastBackupDate } = useVisibleWallets({ wallets, walletTypeCount });
 
@@ -173,7 +170,7 @@ export const WalletsAndBackup = () => {
 
         getGoogleAccountUserData().then((accountDetails: GoogleDriveUserData | undefined) => {
           if (accountDetails) {
-            return onSubmit({ type: BackupTypes.All });
+            return createBackup({ type: BackupTypes.All });
           }
           Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
         });
@@ -206,8 +203,8 @@ export const WalletsAndBackup = () => {
       }
     }
 
-    onSubmit({ type: BackupTypes.All });
-  }, [onSubmit]);
+    createBackup({ type: BackupTypes.All });
+  }, [createBackup]);
 
   const onViewCloudBackups = useCallback(async () => {
     navigate(SETTINGS_BACKUP_ROUTES.VIEW_CLOUD_BACKUPS, {
@@ -263,8 +260,10 @@ export const WalletsAndBackup = () => {
     [navigate, wallets]
   );
 
+  const backupView = backups.files.length ? WalletBackupTypes.cloud : hasManualBackup ? WalletBackupTypes.manual : undefined;
+
   const renderView = useCallback(() => {
-    switch (backupProvider) {
+    switch (backupView) {
       default:
       case undefined: {
         return (
@@ -297,7 +296,7 @@ export const WalletsAndBackup = () => {
             <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
               <BackUpMenuItem
                 title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
-                loading={loading}
+                backupState={backupState}
                 onPress={backupAllNonBackedUpWalletsTocloud}
               />
             </Menu>
@@ -471,7 +470,7 @@ export const WalletsAndBackup = () => {
                     cloudPlatformName: cloudPlatform,
                   })}
                   icon="􀎽"
-                  loading={loading}
+                  backupState={backupState}
                   onPress={backupAllNonBackedUpWalletsTocloud}
                 />
               </Menu>
@@ -661,7 +660,7 @@ export const WalletsAndBackup = () => {
               >
                 <BackUpMenuItem
                   title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
-                  loading={loading}
+                  backupState={backupState}
                   onPress={backupAllNonBackedUpWalletsTocloud}
                 />
               </Menu>
@@ -671,8 +670,8 @@ export const WalletsAndBackup = () => {
       }
     }
   }, [
-    backupProvider,
-    loading,
+    backupView,
+    backupState,
     backupAllNonBackedUpWalletsTocloud,
     sortedWallets,
     onCreateNewSecretPhrase,

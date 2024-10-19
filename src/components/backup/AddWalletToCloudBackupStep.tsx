@@ -11,14 +11,17 @@ import { useNavigation } from '@/navigation';
 import { useWallets } from '@/hooks';
 import { WalletCountPerType, useVisibleWallets } from '@/screens/SettingsSheet/useVisibleWallets';
 import { format } from 'date-fns';
-import { useCreateBackup } from './useCreateBackup';
 import { login } from '@/handlers/cloudBackup';
+import { useCloudBackupsContext } from './CloudBackupProvider';
+import { BackupTypes } from '@/components/backup/useCreateBackup';
 
 const imageSize = 72;
 
 export default function AddWalletToCloudBackupStep() {
   const { goBack } = useNavigation();
   const { wallets, selectedWallet } = useWallets();
+
+  const { createBackup } = useCloudBackupsContext();
 
   const walletTypeCount: WalletCountPerType = {
     phrase: 0,
@@ -27,20 +30,23 @@ export default function AddWalletToCloudBackupStep() {
 
   const { lastBackupDate } = useVisibleWallets({ wallets, walletTypeCount });
 
-  const { onSubmit } = useCreateBackup({
-    walletId: selectedWallet.id,
-    navigateToRoute: {
-      route: Routes.SETTINGS_SHEET,
-      params: {
-        screen: Routes.SETTINGS_SECTION_BACKUP,
-      },
-    },
-  });
-
   const potentiallyLoginAndSubmit = useCallback(async () => {
     await login();
-    return onSubmit({});
-  }, [onSubmit]);
+    const result = await createBackup({
+      type: BackupTypes.Single,
+      walletId: selectedWallet.id,
+      navigateToRoute: {
+        route: Routes.SETTINGS_SHEET,
+        params: {
+          screen: Routes.SETTINGS_SECTION_BACKUP,
+        },
+      },
+    });
+
+    if (result) {
+      goBack();
+    }
+  }, [createBackup, goBack, selectedWallet.id]);
 
   const onMaybeLater = useCallback(() => goBack(), [goBack]);
 
@@ -70,7 +76,7 @@ export default function AddWalletToCloudBackupStep() {
         <Separator color="separatorSecondary" thickness={1} />
       </Bleed>
 
-      <ButtonPressAnimation scaleTo={0.95} onPress={() => potentiallyLoginAndSubmit().then(success => success && goBack())}>
+      <ButtonPressAnimation scaleTo={0.95} onPress={potentiallyLoginAndSubmit}>
         <Box alignItems="center" justifyContent="center" paddingTop={'24px'} paddingBottom={'24px'}>
           <Box alignItems="center" justifyContent="center" width="full">
             <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>

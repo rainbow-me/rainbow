@@ -1,7 +1,7 @@
 /* eslint-disable no-promise-executor-return */
-import { useCallback, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
 import { backupAllWalletsToCloud, findLatestBackUp, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
-import { useCloudBackups } from './CloudBackupProvider';
+import { CloudBackupState } from '@/components/backup/CloudBackupProvider';
 import { cloudPlatform } from '@/utils/platform';
 import { analytics } from '@/analytics';
 import { useWalletCloudBackup, useWallets } from '@/hooks';
@@ -9,47 +9,67 @@ import Routes from '@/navigation/routesNames';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { Navigation, useNavigation } from '@/navigation';
 import { InteractionManager } from 'react-native';
-import { DelayedAlert } from '../alerts';
+import { DelayedAlert } from '@/components/alerts';
 import { useDispatch } from 'react-redux';
 import { AllRainbowWallets } from '@/model/wallet';
 
-type UseCreateBackupProps = {
-  walletId?: string;
+type SingleWalletBackupProps = {
+  type: BackupTypes.Single;
+  walletId: string;
+};
+
+type AllWalletsBackupProps = {
+  type: BackupTypes.All;
+  walletId?: undefined;
+};
+
+type UseCreateBackupProps = (SingleWalletBackupProps | AllWalletsBackupProps) & {
   navigateToRoute?: {
     route: string;
     params?: any;
   };
 };
 
-export type useCreateBackupStateType = 'none' | 'loading' | 'success' | 'error';
+type ConfirmBackupProps = {
+  password: string;
+} & UseCreateBackupProps;
 
 export enum BackupTypes {
   Single = 'single',
   All = 'all',
 }
 
-export const useCreateBackup = ({ walletId, navigateToRoute }: UseCreateBackupProps) => {
+export const useCreateBackup = ({
+  setBackupState,
+  backupState,
+  syncAndFetchBackups,
+}: {
+  setBackupState: Dispatch<SetStateAction<CloudBackupState>>;
+  backupState: CloudBackupState;
+  syncAndFetchBackups: () => Promise<void>;
+}) => {
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
 
-  const { fetchBackups } = useCloudBackups();
   const walletCloudBackup = useWalletCloudBackup();
   const { wallets } = useWallets();
   const latestBackup = useMemo(() => findLatestBackUp(wallets), [wallets]);
-  const [loading, setLoading] = useState<useCreateBackupStateType>('none');
 
   const setLoadingStateWithTimeout = useCallback(
-    (state: useCreateBackupStateType, resetInMS = 2500) => {
-      setLoading(state);
+    (state: CloudBackupState, failInMs = 10_000) => {
+      setBackupState(state);
       setTimeout(() => {
-        setLoading('none');
-      }, resetInMS);
+        setBackupState(CloudBackupState.Ready);
+      }, failInMs);
     },
-    [setLoading]
+    [setBackupState]
   );
+
   const onSuccess = useCallback(
     async (password: string) => {
+      console.log('onSuccess password: ', password);
       const hasSavedPassword = await getLocalBackupPassword();
+      console.log('hasSavedPassword: ', hasSavedPassword);
       if (!hasSavedPassword && password.trim()) {
         await saveLocalBackupPassword(password);
       }
@@ -57,31 +77,31 @@ export const useCreateBackup = ({ walletId, navigateToRoute }: UseCreateBackupPr
         category: 'backup',
         label: cloudPlatform,
       });
-      setLoadingStateWithTimeout('success');
-      fetchBackups();
+      setLoadingStateWithTimeout(CloudBackupState.Success);
+      syncAndFetchBackups();
     },
-    [setLoadingStateWithTimeout, fetchBackups]
+    [setLoadingStateWithTimeout, syncAndFetchBackups]
   );
 
   const onError = useCallback(
     (msg: string) => {
       InteractionManager.runAfterInteractions(async () => {
         DelayedAlert({ title: msg }, 500);
-        setLoadingStateWithTimeout('error', 5000);
+        setLoadingStateWithTimeout(CloudBackupState.Error);
       });
     },
     [setLoadingStateWithTimeout]
   );
 
   const onConfirmBackup = useCallback(
-    async ({ password, type }: { password: string; type: BackupTypes }) => {
+    async ({ password, type, walletId, navigateToRoute }: ConfirmBackupProps) => {
       analytics.track('Tapped "Confirm Backup"');
-      setLoading('loading');
+      setBackupState(CloudBackupState.InProgress);
 
       if (type === BackupTypes.All) {
         if (!wallets) {
           onError('Error loading wallets. Please try again.');
-          setLoading('error');
+          setBackupState(CloudBackupState.Error);
           return;
         }
         backupAllWalletsToCloud({
@@ -97,7 +117,7 @@ export const useCreateBackup = ({ walletId, navigateToRoute }: UseCreateBackupPr
 
       if (!walletId) {
         onError('Wallet not found. Please try again.');
-        setLoading('error');
+        setBackupState(CloudBackupState.Error);
         return;
       }
 
@@ -112,11 +132,12 @@ export const useCreateBackup = ({ walletId, navigateToRoute }: UseCreateBackupPr
         navigate(navigateToRoute.route, navigateToRoute.params || {});
       }
     },
-    [walletId, walletCloudBackup, onError, onSuccess, navigateToRoute, wallets, latestBackup, dispatch, navigate]
+    [setBackupState, walletCloudBackup, onError, wallets, latestBackup, onSuccess, dispatch, navigate]
   );
 
-  const getPassword = useCallback(async (): Promise<string | null> => {
+  const getPassword = useCallback(async (props: UseCreateBackupProps): Promise<string | null> => {
     const password = await getLocalBackupPassword();
+    console.log('getLocalBackupPassword result: ', password);
     if (password) {
       return password;
     }
@@ -126,31 +147,36 @@ export const useCreateBackup = ({ walletId, navigateToRoute }: UseCreateBackupPr
         nativeScreen: true,
         step: walletBackupStepTypes.backup_cloud,
         onSuccess: async (password: string) => {
-          resolve(password);
+          return resolve(password);
         },
         onCancel: async () => {
-          resolve(null);
+          return resolve(null);
         },
-        walletId,
+        ...props,
       });
     });
-  }, [walletId]);
+  }, []);
 
-  const onSubmit = useCallback(
-    async ({ type = BackupTypes.Single }: { type?: BackupTypes }) => {
-      const password = await getPassword();
+  const createBackup = useCallback(
+    async (props: UseCreateBackupProps) => {
+      if (backupState !== CloudBackupState.Ready) {
+        return false;
+      }
+
+      const password = await getPassword(props);
+      console.log('result of getPassword: ', password);
       if (password) {
         onConfirmBackup({
           password,
-          type,
+          ...props,
         });
         return true;
       }
-      setLoadingStateWithTimeout('error');
+      setLoadingStateWithTimeout(CloudBackupState.Ready);
       return false;
     },
-    [getPassword, onConfirmBackup, setLoadingStateWithTimeout]
+    [backupState, getPassword, onConfirmBackup, setLoadingStateWithTimeout]
   );
 
-  return { onSuccess, onError, onSubmit, loading };
+  return createBackup;
 };

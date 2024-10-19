@@ -1,4 +1,3 @@
-import { useCreateBackupStateType } from '@/components/backup/useCreateBackup';
 import { useTheme } from '@/theme';
 import React, { useState, useMemo, useEffect } from 'react';
 import * as i18n from '@/languages';
@@ -6,15 +5,16 @@ import MenuItem from '../MenuItem';
 import Spinner from '@/components/Spinner';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { useDimensions } from '@/hooks';
+import { CloudBackupState } from '@/components/backup/CloudBackupProvider';
 
 export const BackUpMenuItem = ({
   icon = '􀊯',
-  loading,
+  backupState,
   onPress,
   title,
 }: {
   icon?: string;
-  loading: useCreateBackupStateType;
+  backupState: CloudBackupState;
   title: string;
   onPress: () => void;
 }) => {
@@ -23,17 +23,17 @@ export const BackUpMenuItem = ({
   const [emojiTrigger, setEmojiTrigger] = useState<null | (() => void)>(null);
 
   useEffect(() => {
-    if (loading === 'success') {
+    if (backupState === 'success') {
       for (let i = 0; i < 20; i++) {
         setTimeout(() => {
           emojiTrigger?.();
         }, 100 * i);
       }
     }
-  }, [emojiTrigger, loading]);
+  }, [emojiTrigger, backupState]);
 
   const accentColor = useMemo(() => {
-    switch (loading) {
+    switch (backupState) {
       case 'success':
         return colors.green;
       case 'error':
@@ -41,30 +41,30 @@ export const BackUpMenuItem = ({
       default:
         return undefined;
     }
-  }, [colors, loading]);
+  }, [colors, backupState]);
 
   const titleText = useMemo(() => {
-    switch (loading) {
-      case 'loading':
+    switch (backupState) {
+      case CloudBackupState.InProgress:
         return i18n.t(i18n.l.back_up.cloud.backing_up);
-      case 'success':
+      case CloudBackupState.Success:
         return i18n.t(i18n.l.back_up.cloud.backup_success);
-      case 'error':
+      case CloudBackupState.Error:
         return i18n.t(i18n.l.back_up.cloud.backup_failed);
       default:
         return title;
     }
-  }, [loading, title]);
+  }, [backupState, title]);
   const localIcon = useMemo(() => {
-    switch (loading) {
-      case 'success':
+    switch (backupState) {
+      case CloudBackupState.Success:
         return '􀁢';
-      case 'error':
+      case CloudBackupState.Error:
         return '􀀲';
       default:
         return icon;
     }
-  }, [icon, loading]);
+  }, [icon, backupState]);
 
   return (
     <>
@@ -87,7 +87,7 @@ export const BackUpMenuItem = ({
             testID={'backup-now-button'}
             hasSfSymbol
             leftComponent={
-              loading === 'loading' ? (
+              backupState === CloudBackupState.InProgress ? (
                 <Spinner size={20} color={colors.appleBlue} />
               ) : (
                 <MenuItem.TextIcon icon={localIcon} isLink colorOverride={accentColor} />
