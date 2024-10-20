@@ -214,7 +214,7 @@
     "react-fast-memo": "2.0.1",
     "react-flatten-children": "1.1.2",
     "react-freeze": "1.0.3",
-    "react-native": "0.74.3",
+    "react-native": "0.75.4",
     "react-native-action-sheet": "2.2.0",
     "react-native-actionsheet": "2.4.2",
     "react-native-aes-crypto": "rainbow-me/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b",
@@ -379,7 +379,7 @@
     "ts-migrate": "0.1.26",
     "typescript": "5.1.6",
     "typescript-coverage-report": "0.6.1",
-    "webpack": "5.94.0",
+    "webpack": "5.95.0",
     "webpack-cli": "5.1.4"
   },
   "engines": {
