@@ -8,62 +8,93 @@ import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { IS_TEST } from '@/env';
 import buildTimeNetworks from '@/references/networks.json';
 
-// NOTE: Prefer runtime data from backendNetworksQueryKey, but fallback to buildTimeNetworks if needed
-const backendNetworks = queryClient.getQueryData<BackendNetworksResponse>(backendNetworksQueryKey()) ?? buildTimeNetworks;
+const getBackendNetworks = (): BackendNetworksResponse => {
+  return queryClient.getQueryData<BackendNetworksResponse>(backendNetworksQueryKey()) ?? buildTimeNetworks;
+};
 
-const BACKEND_CHAINS = transformBackendNetworksToChains(backendNetworks.networks);
+const getBackendChains = (): Chain[] => {
+  const backendNetworks = getBackendNetworks();
+  return transformBackendNetworksToChains(backendNetworks.networks);
+};
 
-export const SUPPORTED_CHAINS: Chain[] = IS_TEST ? [...BACKEND_CHAINS, chainHardhat, chainHardhatOptimism] : BACKEND_CHAINS;
+export const getSupportedChains = (): Chain[] => {
+  const backendChains = getBackendChains();
+  return IS_TEST ? [...backendChains, chainHardhat, chainHardhatOptimism] : backendChains;
+};
 
-export const defaultChains: Record<ChainId, Chain> = SUPPORTED_CHAINS.reduce(
-  (acc, chain) => {
-    acc[chain.id] = chain;
-    return acc;
-  },
-  {} as Record<ChainId, Chain>
-);
+export const getDefaultChains = (): Record<ChainId, Chain> => {
+  const supportedChains = getSupportedChains();
+  return supportedChains.reduce(
+    (acc, chain) => {
+      acc[chain.id] = chain;
+      return acc;
+    },
+    {} as Record<ChainId, Chain>
+  );
+};
 
-export const SUPPORTED_CHAIN_IDS = SUPPORTED_CHAINS.map(chain => chain.id);
+export const getSupportedChainIds = (): ChainId[] => {
+  return getSupportedChains().map(chain => chain.id);
+};
 
-export const SUPPORTED_MAINNET_CHAINS: Chain[] = SUPPORTED_CHAINS.filter(chain => !chain.testnet);
+export const getSupportedMainnetChains = (): Chain[] => {
+  return getSupportedChains().filter(chain => !chain.testnet);
+};
 
-export const SUPPORTED_MAINNET_CHAIN_IDS: ChainId[] = SUPPORTED_MAINNET_CHAINS.map(chain => chain.id);
+export const getSupportedMainnetChainIds = (): ChainId[] => {
+  return getSupportedMainnetChains().map(chain => chain.id);
+};
 
-export const needsL1SecurityFeeChains = backendNetworks.networks
-  .filter((backendNetwork: BackendNetwork) => backendNetwork.opStack)
-  .map((backendNetwork: BackendNetwork) => parseInt(backendNetwork.id, 10));
+export const getNeedsL1SecurityFeeChains = (): ChainId[] => {
+  const backendNetworks = getBackendNetworks();
+  return backendNetworks.networks
+    .filter((backendNetwork: BackendNetwork) => backendNetwork.opStack)
+    .map((backendNetwork: BackendNetwork) => parseInt(backendNetwork.id, 10));
+};
 
-export const chainsNativeAsset: Record<number, BackendNetwork['nativeAsset']> = backendNetworks.networks.reduce(
-  (acc, backendNetwork: BackendNetwork) => {
-    acc[parseInt(backendNetwork.id, 10)] = backendNetwork.nativeAsset;
-    return acc;
-  },
-  {} as Record<number, BackendNetwork['nativeAsset']>
-);
+export const getChainsNativeAsset = (): Record<number, BackendNetwork['nativeAsset']> => {
+  const backendNetworks = getBackendNetworks();
+  return backendNetworks.networks.reduce(
+    (acc, backendNetwork: BackendNetwork) => {
+      acc[parseInt(backendNetwork.id, 10)] = backendNetwork.nativeAsset;
+      return acc;
+    },
+    {} as Record<number, BackendNetwork['nativeAsset']>
+  );
+};
 
-export const chainsLabel: Record<number, string> = backendNetworks.networks.reduce(
-  (acc, backendNetwork: BackendNetwork) => {
-    acc[parseInt(backendNetwork.id, 10)] = backendNetwork.label;
-    return acc;
-  },
-  {} as Record<number, string>
-);
+export const getChainsLabel = (): Record<number, string> => {
+  const backendNetworks = getBackendNetworks();
+  return backendNetworks.networks.reduce(
+    (acc, backendNetwork: BackendNetwork) => {
+      acc[parseInt(backendNetwork.id, 10)] = backendNetwork.label;
+      return acc;
+    },
+    {} as Record<number, string>
+  );
+};
 
-export const chainsName: Record<number, string> = backendNetworks.networks.reduce(
-  (acc, backendNetwork: BackendNetwork) => {
-    acc[parseInt(backendNetwork.id, 10)] = backendNetwork.name;
-    return acc;
-  },
-  {} as Record<number, string>
-);
+export const getChainsName = (): Record<number, string> => {
+  const backendNetworks = getBackendNetworks();
+  return backendNetworks.networks.reduce(
+    (acc, backendNetwork: BackendNetwork) => {
+      acc[parseInt(backendNetwork.id, 10)] = backendNetwork.name;
+      return acc;
+    },
+    {} as Record<number, string>
+  );
+};
 
-export const chainsIdByName: Record<string, number> = backendNetworks.networks.reduce(
-  (acc, backendNetwork: BackendNetwork) => {
-    acc[backendNetwork.name] = parseInt(backendNetwork.id, 10);
-    return acc;
-  },
-  {} as Record<string, number>
-);
+export const getChainsIdByName = (): Record<string, number> => {
+  const backendNetworks = getBackendNetworks();
+  return backendNetworks.networks.reduce(
+    (acc, backendNetwork: BackendNetwork) => {
+      acc[backendNetwork.name] = parseInt(backendNetwork.id, 10);
+      return acc;
+    },
+    {} as Record<string, number>
+  );
+};
 
 const defaultGasSpeeds = (chainId: ChainId) => {
   switch (chainId) {
@@ -78,13 +109,16 @@ const defaultGasSpeeds = (chainId: ChainId) => {
   }
 };
 
-export const chainsGasSpeeds: Record<ChainId, string[]> = backendNetworks.networks.reduce(
-  (acc, backendNetwork: BackendNetwork) => {
-    acc[parseInt(backendNetwork.id, 10)] = defaultGasSpeeds(parseInt(backendNetwork.id, 10));
-    return acc;
-  },
-  {} as Record<number, string[]>
-);
+export const getChainsGasSpeeds = (): Record<ChainId, string[]> => {
+  const backendNetworks = getBackendNetworks();
+  return backendNetworks.networks.reduce(
+    (acc, backendNetwork: BackendNetwork) => {
+      acc[parseInt(backendNetwork.id, 10)] = defaultGasSpeeds(parseInt(backendNetwork.id, 10));
+      return acc;
+    },
+    {} as Record<number, string[]>
+  );
+};
 
 const defaultPollingIntervals = (chainId: ChainId) => {
   switch (chainId) {
@@ -98,13 +132,16 @@ const defaultPollingIntervals = (chainId: ChainId) => {
   }
 };
 
-export const chainsSwapPollingInterval: Record<ChainId, number> = backendNetworks.networks.reduce(
-  (acc, backendNetwork: BackendNetwork) => {
-    acc[parseInt(backendNetwork.id, 10)] = defaultPollingIntervals(parseInt(backendNetwork.id, 10));
-    return acc;
-  },
-  {} as Record<number, number>
-);
+export const getChainsSwapPollingInterval = (): Record<ChainId, number> => {
+  const backendNetworks = getBackendNetworks();
+  return backendNetworks.networks.reduce(
+    (acc, backendNetwork: BackendNetwork) => {
+      acc[parseInt(backendNetwork.id, 10)] = defaultPollingIntervals(parseInt(backendNetwork.id, 10));
+      return acc;
+    },
+    {} as Record<number, number>
+  );
+};
 
 const defaultSimplehashNetworks = (chainId: ChainId) => {
   switch (chainId) {
@@ -139,15 +176,19 @@ const defaultSimplehashNetworks = (chainId: ChainId) => {
   }
 };
 
-export const chainsSimplehashNetwork: Record<ChainId, string> = backendNetworks.networks.reduce(
-  (acc, backendNetwork: BackendNetwork) => {
-    acc[parseInt(backendNetwork.id, 10)] = defaultSimplehashNetworks(parseInt(backendNetwork.id, 10));
-    return acc;
-  },
-  {} as Record<number, string>
-);
+export const getChainsSimplehashNetwork = (): Record<ChainId, string> => {
+  const backendNetworks = getBackendNetworks();
+  return backendNetworks.networks.reduce(
+    (acc, backendNetwork: BackendNetwork) => {
+      acc[parseInt(backendNetwork.id, 10)] = defaultSimplehashNetworks(parseInt(backendNetwork.id, 10));
+      return acc;
+    },
+    {} as Record<number, string>
+  );
+};
 
 const filterChainIdsByService = (servicePath: (services: BackendNetworkServices) => boolean): number[] => {
+  const backendNetworks = getBackendNetworks();
   return backendNetworks.networks
     .filter((network: BackendNetwork) => {
       const services = network?.enabledServices;
@@ -201,15 +242,16 @@ export const oldDefaultRPC: { [key in ChainId]?: string } = {
   [ChainId.degen]: process.env.DEGEN_MAINNET_RPC,
 };
 
-const chainsGasUnits = backendNetworks.networks.reduce(
-  (acc, backendNetwork: BackendNetwork) => {
-    acc[parseInt(backendNetwork.id, 10)] = backendNetwork.gasUnits;
-    return acc;
-  },
-  {} as Record<number, BackendNetwork['gasUnits']>
-);
+export const getChainGasUnits = (chainId?: number): BackendNetwork['gasUnits'] => {
+  const backendNetworks = getBackendNetworks();
+  const chainsGasUnits = backendNetworks.networks.reduce(
+    (acc, backendNetwork: BackendNetwork) => {
+      acc[parseInt(backendNetwork.id, 10)] = backendNetwork.gasUnits;
+      return acc;
+    },
+    {} as Record<number, BackendNetwork['gasUnits']>
+  );
 
-export const getChainGasUnits = (chainId?: number) => {
   return (chainId ? chainsGasUnits[chainId] : undefined) || chainsGasUnits[ChainId.mainnet];
 };
 
@@ -218,8 +260,8 @@ export const getChainDefaultRpc = (chainId: ChainId) => {
     case ChainId.mainnet:
       return useConnectedToHardhatStore.getState().connectedToHardhat
         ? 'http://127.0.0.1:8545'
-        : defaultChains[ChainId.mainnet].rpcUrls.default.http[0];
+        : getDefaultChains()[ChainId.mainnet].rpcUrls.default.http[0];
     default:
-      return defaultChains[chainId].rpcUrls.default.http[0];
+      return getDefaultChains()[chainId].rpcUrls.default.http[0];
   }
 };

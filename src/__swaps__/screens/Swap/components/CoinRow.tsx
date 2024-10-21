@@ -17,7 +17,7 @@ import React, { useCallback, useMemo } from 'react';
 import { GestureResponderEvent } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { SwapCoinIcon } from './SwapCoinIcon';
-import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { getSupportedChainIds } from '@/chains';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 
@@ -185,7 +185,7 @@ export function CoinRow({ isFavorite, onPress, output, uniqueId, testID, ...asse
 }
 
 const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId }) => {
-  const supportedChain = SUPPORTED_CHAIN_IDS.includes(chainId);
+  const supportedChain = getSupportedChainIds().includes(chainId);
 
   const handleCopy = useCallback(() => {
     haptics.selection();

@@ -2,7 +2,7 @@ import create from 'zustand';
 import { createStore } from '../internal/createStore';
 import { Network, ChainId } from '@/chains/types';
 import { getProvider } from '@/handlers/web3';
-import { chainsIdByName } from '@/chains';
+import { getChainsIdByName } from '@/chains';
 
 type NonceData = {
   currentNonce?: number;
@@ -82,7 +82,7 @@ export const nonceStore = createStore<CurrentNonceState<Nonces>>(
               if (!newNonces[address]) {
                 newNonces[address] = {} as Record<ChainId, NonceData>;
               }
-              newNonces[address][chainsIdByName[network as Network]] = nonceData;
+              newNonces[address][getChainsIdByName()[network as Network]] = nonceData;
             }
           }
           return {

@@ -14,12 +14,12 @@ import { REFERRER_CLAIM } from '@/references';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { AddressZero } from '@ethersproject/constants';
-import { CrosschainQuote, QuoteError, SwapType, getClaimBridgeQuote } from '@rainbow-me/swaps';
+import { CrosschainQuote, QuoteError, getClaimBridgeQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
 import { ChainId } from '@/chains/types';
-import { chainsName } from '@/chains';
+import { getChainsName } from '@/chains';
 
 // This action is used to bridge the claimed funds to another chain
 export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {
@@ -160,7 +160,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
 
   const typedAssetToBuy: ParsedAddressAsset = {
     ...parameters.assetToBuy,
-    network: chainsName[parameters.assetToBuy.chainId],
+    network: getChainsName()[parameters.assetToBuy.chainId],
     chainId: parameters.assetToBuy.chainId,
     colors: undefined,
     networks: undefined,
@@ -168,7 +168,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   };
   const typedAssetToSell = {
     ...parameters.assetToSell,
-    network: chainsName[parameters.assetToSell.chainId],
+    network: getChainsName()[parameters.assetToSell.chainId],
     chainId: parameters.assetToSell.chainId,
     colors: undefined,
     networks: undefined,
@@ -196,7 +196,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     from: bridgeQuote.from,
     to: bridgeQuote.to as Address,
     hash: swap.hash as TxHash,
-    network: chainsName[parameters.chainId],
+    network: getChainsName()[parameters.chainId],
     nonce: swap.nonce,
     status: TransactionStatus.pending,
     type: 'bridge',

@@ -13,7 +13,7 @@ import { RainbowPositions } from '@/resources/defi/types';
 import { AddysAddressAsset, AddysAsset, ParsedAsset, RainbowAddressAssets } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { ChainId } from '@/chains/types';
-import { chainsIdByName } from '@/chains';
+import { getChainsIdByName } from '@/chains';
 
 const storage = new MMKV();
 
@@ -40,7 +40,7 @@ export const filterPositionsData = (
 
 export function parseAsset({ address, asset }: { address: string; asset: AddysAsset }): ParsedAsset {
   const network = asset?.network;
-  const chainId = chainsIdByName[network];
+  const chainId = getChainsIdByName()[network];
   const mainnetAddress = asset?.networks?.[ChainId.mainnet]?.address;
   const uniqueId = getUniqueId(address, chainId);
 

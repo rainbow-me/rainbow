@@ -30,7 +30,7 @@ import { InfoAlert } from '@/components/info-alert/info-alert';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { ChainId } from '@/chains/types';
-import { chainsLabel, chainsNativeAsset, defaultChains } from '@/chains';
+import { getChainsLabel, getChainsNativeAsset, getDefaultChains } from '@/chains';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { noop } from 'lodash';
 import { RootStackParamList } from '@/navigation/types';
@@ -132,7 +132,7 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
 
               <Box paddingLeft="6px">
                 <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold">
-                  {chainsLabel[availableNetworkChainIds[0]]}
+                  {getChainsLabel()[availableNetworkChainIds[0]]}
                 </Text>
               </Box>
             </Inline>
@@ -229,8 +229,8 @@ export function WalletConnectApprovalSheet() {
    * v2.
    */
   const approvalNetworkInfo = useMemo(() => {
-    const chain = defaultChains[approvalChainId || ChainId.mainnet];
-    const nativeAsset = chainsNativeAsset[chain.id];
+    const chain = getDefaultChains()[approvalChainId || ChainId.mainnet];
+    const nativeAsset = getChainsNativeAsset()[chain.id];
     return {
       chainId: chain.id,
       color: isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary,
@@ -365,7 +365,7 @@ export function WalletConnectApprovalSheet() {
             </Centered>
             <LabelText align="right" numberOfLines={1}>
               {`${
-                type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.name : chainsLabel[chainId]
+                type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.name : getChainsLabel()[chainId]
               } ${type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? '􀁰' : ''}`}
             </LabelText>
           </ButtonPressAnimation>
@@ -406,7 +406,7 @@ export function WalletConnectApprovalSheet() {
                   {type === WalletConnectApprovalSheetType.connect
                     ? lang.t(lang.l.walletconnect.wants_to_connect)
                     : lang.t(lang.l.walletconnect.wants_to_connect_to_network, {
-                        network: chainsLabel[chainId],
+                        network: getChainsLabel()[chainId],
                       })}
                 </Text>
               </Column>

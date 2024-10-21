@@ -12,7 +12,7 @@ import { getDappMetadata } from '@/resources/metadata/dapp';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { BigNumber } from '@ethersproject/bignumber';
 import { ChainId } from '@/chains/types';
-import { chainsNativeAsset, defaultChains, SUPPORTED_CHAIN_IDS } from '@/chains';
+import { getChainsNativeAsset, getDefaultChains, getSupportedChainIds } from '@/chains';
 
 export type ProviderRequestPayload = RequestArguments & {
   id: number;
@@ -162,7 +162,7 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
 
 const isSupportedChainId = (chainId: number | string) => {
   const numericChainId = BigNumber.from(chainId).toNumber();
-  return !!SUPPORTED_CHAIN_IDS.find(chainId => chainId === numericChainId);
+  return !!getSupportedChainIds().find(chainId => chainId === numericChainId);
 };
 const getActiveSession = ({ host }: { host: string }): ActiveSession => {
   const hostSessions = useAppSessionsStore.getState().getActiveSession({ host });
@@ -265,7 +265,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     callbackOptions?: CallbackOptions;
   }): { chainAlreadyAdded: boolean } => {
     const { chainId } = proposedChain;
-    if (defaultChains[Number(chainId)]) {
+    if (getDefaultChains()[Number(chainId)]) {
       // TODO - Open add / switch ethereum chain
       return { chainAlreadyAdded: true };
     } else {
@@ -320,7 +320,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     callbackOptions?: CallbackOptions;
   }) => {
     const { chainId } = proposedChain;
-    const supportedChainId = SUPPORTED_CHAIN_IDS.includes(Number(chainId));
+    const supportedChainId = getSupportedChainIds().includes(Number(chainId));
     if (supportedChainId) {
       const host = getDappHost(callbackOptions?.sender.url) || '';
       const activeSession = getActiveSession({ host });
@@ -343,7 +343,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     onSwitchEthereumChainSupported,
     getProvider,
     getActiveSession,
-    getChainNativeCurrency: chainId => chainsNativeAsset[chainId],
+    getChainNativeCurrency: chainId => getChainsNativeAsset()[chainId],
   });
 
   // @ts-ignore

@@ -18,7 +18,7 @@ import { Network } from '@/chains/types';
 import { useAccountSettings } from '@/hooks';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { chainsIdByName } from '@/chains';
+import { getChainsIdByName } from '@/chains';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
@@ -99,7 +99,7 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   const { colorMode } = useColorMode();
   const theme = useTheme();
   const bgColor = useBackgroundColor('surfaceSecondaryElevated');
-  const chainId = chainsIdByName[offer.network as Network];
+  const chainId = getChainsIdByName()[offer.network as Network];
   const { data: externalAsset } = useExternalToken({
     address: offer.paymentToken.address as AddressOrEth,
     chainId,

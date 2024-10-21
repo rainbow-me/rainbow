@@ -9,7 +9,7 @@ import { AddressOrEth, UniqueId, ZerionAsset } from '@/__swaps__/types/assets';
 import { AddressZero } from '@ethersproject/constants';
 import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
 import { ChainId, ChainName, Network } from '@/chains/types';
-import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { getSupportedChainIds } from '@/chains';
 
 const MAINNET_BALANCE_CHECKER = '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b';
 
@@ -125,6 +125,6 @@ export const fetchHardhatBalancesByChainId = async (
 
   return {
     assets: updatedAssets,
-    chainIdsInResponse: SUPPORTED_CHAIN_IDS,
+    chainIdsInResponse: getSupportedChainIds(),
   };
 };

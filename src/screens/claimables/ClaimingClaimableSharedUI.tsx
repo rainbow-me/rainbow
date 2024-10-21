@@ -10,7 +10,7 @@ import { SponsoredClaimable, TransactionClaimable } from '@/resources/addys/clai
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
 import { FasterImageView } from '@candlefinance/faster-image';
-import { chainsLabel } from '@/chains';
+import { getChainsLabel } from '@/chains';
 import { useNavigation } from '@/navigation';
 import { TextColor } from '@/design-system/color/palettes';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -262,7 +262,7 @@ export const ClaimingClaimableSharedUI = ({
                         <Text color="labelQuaternary" size="13pt" weight="bold">
                           {i18n.t(i18n.l.claimables.panel.amount_to_claim_on_network, {
                             amount: nativeCurrencyGasFeeDisplay,
-                            network: chainsLabel[claimable.chainId],
+                            network: getChainsLabel()[claimable.chainId],
                           })}
                         </Text>
                       </Inline>

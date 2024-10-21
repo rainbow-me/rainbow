@@ -11,7 +11,7 @@ import { fetchHardhatBalances } from './hardhatAssets';
 import { AddysAccountAssetsMeta, AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
 import { Network } from '@/chains/types';
 import { staleBalancesStore } from '@/state/staleBalances';
-import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
+import { getSupportedMainnetChainIds } from '@/chains';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -80,7 +80,7 @@ async function userAssetsQueryFunction({
     const { erroredChainIds, results } = await fetchAndParseUserAssetsForChainIds({
       address,
       currency,
-      chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
+      chainIds: getSupportedMainnetChainIds(),
       staleBalanceParam,
     });
     let parsedSuccessResults = results;

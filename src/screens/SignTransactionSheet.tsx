@@ -72,7 +72,7 @@ import { useProviderSetup } from '@/hooks/useProviderSetup';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { chainsName, defaultChains } from '@/chains';
+import { getChainsName, getDefaultChains } from '@/chains';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -391,7 +391,7 @@ export const SignTransactionSheet = () => {
           from: displayDetails?.request?.from,
           gasLimit,
           hash: sendResult.hash,
-          network: chainsName[chainId] as Network,
+          network: getChainsName()[chainId] as Network,
           nonce: sendResult.nonce,
           to: displayDetails?.request?.to,
           value: sendResult.value.toString(),
@@ -414,7 +414,7 @@ export const SignTransactionSheet = () => {
         dappName: transactionDetails.dappName,
         dappUrl: transactionDetails.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
-        network: chainsName[chainId] as Network,
+        network: getChainsName()[chainId] as Network,
       });
 
       if (!sendInsteadOfSign) {
@@ -447,7 +447,7 @@ export const SignTransactionSheet = () => {
         dappUrl: transactionDetails?.dappUrl,
         formattedDappUrl,
         rpcMethod: req?.method,
-        network: chainsName[chainId] as Network,
+        network: getChainsName()[chainId] as Network,
       });
       // If the user is using a hardware wallet, we don't want to close the sheet on an error
       if (!accountInfo.isHardwareWallet) {
@@ -528,7 +528,7 @@ export const SignTransactionSheet = () => {
         dappName: transactionDetails?.dappName,
         dappUrl: transactionDetails?.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
-        network: chainsName[chainId] as Network,
+        network: getChainsName()[chainId] as Network,
       });
       onSuccessCallback?.(response.result);
 
@@ -716,7 +716,7 @@ export const SignTransactionSheet = () => {
                                     </Bleed>
                                     <Text color="labelQuaternary" size="13pt" weight="semibold">
                                       {`${walletBalance?.display} ${i18n.t(i18n.l.walletconnect.simulation.profile_section.on_network, {
-                                        network: defaultChains[chainId]?.name,
+                                        network: getDefaultChains()[chainId]?.name,
                                       })}`}
                                     </Text>
                                   </Inline>

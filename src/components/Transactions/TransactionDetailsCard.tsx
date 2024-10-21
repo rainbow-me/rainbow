@@ -20,7 +20,7 @@ import {
   CARD_BORDER_WIDTH,
   EXPANDED_CARD_TOP_INSET,
 } from '@/components/Transactions/constants';
-import { chainsName } from '@/chains';
+import { getChainsName } from '@/chains';
 
 interface TransactionDetailsCardProps {
   chainId: ChainId;
@@ -93,7 +93,7 @@ export const TransactionDetailsCard = ({
         </Box>
         <Animated.View style={listStyle}>
           <Stack space="24px">
-            {<TransactionDetailsRow chainId={chainId} detailType="chain" value={chainsName[chainId]} />}
+            {<TransactionDetailsRow chainId={chainId} detailType="chain" value={getChainsName()[chainId]} />}
             {!!(meta?.to?.address || toAddress || showTransferToRow) && (
               <TransactionDetailsRow
                 detailType={isContract ? 'contract' : 'to'}

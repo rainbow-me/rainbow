@@ -62,7 +62,7 @@ import { useConsolidatedTransactions } from '@/resources/transactions/consolidat
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { performanceTracking, TimeToSignOperation, Screens } from '@/state/performance/performance';
 import { ChainId } from '@/chains/types';
-import { chainsLabel } from '@/chains';
+import { getChainsLabel } from '@/chains';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -133,7 +133,7 @@ export function getDefaultCheckboxes({
       checked: false,
       id: 'has-wallet-that-supports',
       label: lang.t('wallet.transaction.checkboxes.has_a_wallet_that_supports', {
-        networkName: chainsLabel[chainId],
+        networkName: getChainsLabel()[chainId],
       }),
     },
   ];
@@ -599,7 +599,7 @@ export const SendConfirmationSheet = () => {
                       onPress={handleL2DisclaimerPress}
                       prominent
                       customText={i18n.t(i18n.l.expanded_state.asset.l2_disclaimer_send, {
-                        network: chainsLabel[asset.chainId],
+                        network: getChainsLabel()[asset.chainId],
                       })}
                       symbol={asset.symbol}
                     />

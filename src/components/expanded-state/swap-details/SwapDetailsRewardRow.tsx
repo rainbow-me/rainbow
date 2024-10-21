@@ -9,14 +9,14 @@ import { ChainBadge } from '@/components/coin-icon';
 import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
 import { ChainId } from '@/chains/types';
-import { chainsNativeAsset } from '@/chains';
+import { getChainsNativeAsset } from '@/chains';
 
 export function SwapDetailsRewardRow({ reward }: { reward: Reward }) {
   const { navigate } = useNavigation();
   const { isDarkMode } = useTheme();
 
   const roundedAmount = Math.round(reward.amount * 1000) / 1000;
-  const nativeAsset = chainsNativeAsset[ChainId.optimism];
+  const nativeAsset = getChainsNativeAsset()[ChainId.optimism];
   const accentColor = isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary;
 
   return (

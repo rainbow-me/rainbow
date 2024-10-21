@@ -34,7 +34,7 @@ import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { RainbowError, logger } from '@/logger';
 import { RewardsActionButton } from '../components/RewardsActionButton';
-import { chainsLabel, chainsName } from '@/chains';
+import { getChainsLabel, getChainsName } from '@/chains';
 
 type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType | 'error' | 'bridge-error';
 type ClaimNetwork = '10' | '8453' | '7777777';
@@ -93,7 +93,7 @@ export const ClaimRewardsPanel = () => {
 const NETWORK_LIST_ITEMS = CLAIM_NETWORKS.map(chainId => {
   return {
     IconComponent: <ChainImage chainId={chainId} size={36} />,
-    label: chainsLabel[chainId],
+    label: getChainsLabel()[chainId],
     uniqueId: chainId.toString(),
     selected: false,
   };
@@ -213,7 +213,7 @@ const ClaimingRewards = ({
       const opEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.optimism });
       const opEth = {
         ...opEth_,
-        chainName: chainsName[ChainId.optimism],
+        chainName: getChainsName()[ChainId.optimism],
       };
 
       // Fetch the native asset from the destination chain
@@ -229,7 +229,7 @@ const ClaimingRewards = ({
       // Add missing properties to match types
       const destinationEth = {
         ...destinationEth_,
-        chainName: chainsName[chainId as ChainId],
+        chainName: getChainsName()[chainId as ChainId],
       };
 
       const selectedGas = {
@@ -340,15 +340,15 @@ const ClaimingRewards = ({
     switch (claimStatus) {
       case 'idle':
         return i18n.t(i18n.l.points.points.claim_on_network, {
-          network: chainId ? chainsLabel[chainId] : '',
+          network: chainId ? getChainsLabel()[chainId] : '',
         });
       case 'claiming':
         return i18n.t(i18n.l.points.points.claiming_on_network, {
-          network: chainId ? chainsLabel[chainId] : '',
+          network: chainId ? getChainsLabel()[chainId] : '',
         });
       case 'success':
         return i18n.t(i18n.l.points.points.claimed_on_network, {
-          network: chainId ? chainsLabel[chainId] : '',
+          network: chainId ? getChainsLabel()[chainId] : '',
         });
       case 'bridge-error':
         return i18n.t(i18n.l.points.points.bridge_error);
@@ -494,7 +494,7 @@ const ClaimingRewards = ({
                   <Box paddingHorizontal="44px">
                     <Text align="center" color="labelQuaternary" size="13pt / 135%" weight="semibold">
                       {i18n.t(i18n.l.points.points.bridge_error_explainer, {
-                        network: chainId ? chainsLabel[chainId] : '',
+                        network: chainId ? getChainsLabel()[chainId] : '',
                       })}
                     </Text>
                   </Box>

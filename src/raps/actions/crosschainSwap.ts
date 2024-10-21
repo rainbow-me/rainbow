@@ -24,7 +24,7 @@ import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { chainsName } from '@/chains';
+import { getChainsName } from '@/chains';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -183,7 +183,7 @@ export const crosschainSwap = async ({
 
   const assetToBuy = {
     ...parameters.assetToBuy,
-    network: chainsName[parameters.assetToBuy.chainId],
+    network: getChainsName()[parameters.assetToBuy.chainId],
     networks: parameters.assetToBuy.networks as Record<string, AddysNetworkDetails>,
     colors: parameters.assetToBuy.colors as TokenColors,
     price: nativePriceForAssetToBuy,
@@ -191,7 +191,7 @@ export const crosschainSwap = async ({
 
   const assetToSell = {
     ...parameters.assetToSell,
-    network: chainsName[parameters.assetToSell.chainId],
+    network: getChainsName()[parameters.assetToSell.chainId],
     networks: parameters.assetToSell.networks as Record<string, AddysNetworkDetails>,
     colors: parameters.assetToSell.colors as TokenColors,
     price: nativePriceForAssetToSell,
@@ -224,7 +224,7 @@ export const crosschainSwap = async ({
     ],
     gasLimit,
     hash: swap.hash as TxHash,
-    network: chainsName[parameters.chainId],
+    network: getChainsName()[parameters.chainId],
     nonce: swap.nonce,
     status: TransactionStatus.pending,
     type: 'swap',

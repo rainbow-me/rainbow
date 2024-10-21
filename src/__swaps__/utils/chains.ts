@@ -2,7 +2,7 @@ import { celo, fantom, harmonyOne, moonbeam } from 'viem/chains';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { chainsNativeAsset } from '@/chains';
+import { getChainsNativeAsset } from '@/chains';
 
 // @ts-expect-error Property '[ChainId.hardhat]' is missing
 export const customChainIdsToAssetNames: Record<ChainId, string> = {
@@ -44,7 +44,7 @@ export const customChainIdsToAssetNames: Record<ChainId, string> = {
 };
 
 export function isNativeAsset(address: AddressOrEth, chainId: ChainId) {
-  return isLowerCaseMatch(chainsNativeAsset[chainId].address, address);
+  return isLowerCaseMatch(getChainsNativeAsset()[chainId].address, address);
 }
 
 export const chainIdToUse = (connectedToHardhat: boolean, connectedToHardhatOp: boolean, activeSessionChainId: number) => {

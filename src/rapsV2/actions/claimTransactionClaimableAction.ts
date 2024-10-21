@@ -4,7 +4,7 @@ import { getProvider } from '@/handlers/web3';
 import { RainbowError } from '@/logger';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { NewTransaction, TransactionStatus } from '@/entities';
-import { chainsName } from '@/chains';
+import { getChainsName } from '@/chains';
 
 export async function claimTransactionClaimable({ parameters, wallet }: ActionProps<'claimTransactionClaimableAction'>) {
   const { claimTx, asset } = parameters;
@@ -23,7 +23,7 @@ export async function claimTransactionClaimable({ parameters, wallet }: ActionPr
     to: result.result.to ?? null,
     chainId: result.result.chainId,
     hash: result.result.hash,
-    network: chainsName[result.result.chainId],
+    network: getChainsName()[result.result.chainId],
     status: TransactionStatus.pending,
     type: 'claim',
     nonce: result.result.nonce,

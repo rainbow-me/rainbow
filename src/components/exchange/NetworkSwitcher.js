@@ -9,21 +9,21 @@ import { Text } from '../text';
 import { padding, position } from '@/styles';
 import { showActionSheetWithOptions } from '@/utils';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/chains';
+import { getChainsLabel, getChainsName, getDefaultChains, supportedSwapChainIds } from '@/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 const networkMenuItems = supportedSwapChainIds
-  .map(chainId => defaultChains[chainId])
+  .map(chainId => getDefaultChains()[chainId])
   .map(chain => ({
     actionKey: chain.id,
-    actionTitle: chainsLabel[chain.id],
+    actionTitle: getChainsLabel()[chain.id],
     icon: {
       iconType: 'ASSET',
       iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
     },
   }));
 
-const androidNetworkMenuItems = supportedSwapChainIds.map(chainId => defaultChains[chainId].id);
+const androidNetworkMenuItems = supportedSwapChainIds.map(chainId => getDefaultChains()[chainId].id);
 
 const NetworkSwitcherv1 = ({
   colors,
@@ -93,7 +93,7 @@ const NetworkSwitcherv1 = ({
               weight={prominent ? 'heavy' : 'bold'}
             >
               {lang.t('expanded_state.swap.network_switcher', {
-                network: chainsName[currentChainId],
+                network: getChainsName()[currentChainId],
               })}
             </Text>
           </Column>

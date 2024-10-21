@@ -10,7 +10,7 @@ import { GasFeeParamsBySpeed } from '@/entities';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { useGas } from '@/hooks';
 import { ChainId } from '@/chains/types';
-import { needsL1SecurityFeeChains } from '@/chains';
+import { getNeedsL1SecurityFeeChains } from '@/chains';
 
 type CalculateGasLimitProps = {
   isMessageRequest: boolean;
@@ -52,7 +52,7 @@ export const useCalculateGasLimit = ({
     } finally {
       logger.debug('WC: Setting gas limit to', { gas: convertHexToString(gas) }, logger.DebugContext.walletconnect);
 
-      const needsL1SecurityFee = needsL1SecurityFeeChains.includes(chainId);
+      const needsL1SecurityFee = getNeedsL1SecurityFeeChains().includes(chainId);
       if (needsL1SecurityFee) {
         const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txPayload, provider || web3Provider);
         updateTxFee(gas, null, l1GasFeeOptimism);

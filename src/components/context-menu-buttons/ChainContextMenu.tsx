@@ -6,7 +6,7 @@ import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { showActionSheetWithOptions } from '@/utils';
 import { ChainId } from '@/chains/types';
-import { chainsLabel, chainsName } from '@/chains';
+import { getChainsLabel, getChainsName } from '@/chains';
 
 interface DefaultButtonOptions {
   iconColor?: TextProps['color'];
@@ -58,10 +58,10 @@ export const ChainContextMenu = ({
     const chainItems = balanceSortedChains.map(chainId => {
       return {
         actionKey: `${chainId}`,
-        actionTitle: chainsLabel[chainId],
+        actionTitle: getChainsLabel()[chainId],
         icon: {
           iconType: 'ASSET',
-          iconValue: `${chainsName[chainId]}Badge${chainId === ChainId.mainnet ? '' : 'NoShadow'}`,
+          iconValue: `${getChainsName()[chainId]}Badge${chainId === ChainId.mainnet ? '' : 'NoShadow'}`,
         },
       };
     });
@@ -111,7 +111,7 @@ export const ChainContextMenu = ({
 
   const displayName = useMemo(() => {
     if (!selectedChainId) return allNetworksText;
-    const name = chainsLabel[selectedChainId];
+    const name = getChainsLabel()[selectedChainId];
     return name.endsWith(' Chain') ? name.slice(0, -6) : name;
   }, [allNetworksText, selectedChainId]);
 
