@@ -23,7 +23,6 @@ import {
   isL2Chain,
   NewTransactionNonNullable,
   resolveNameOrAddress,
-  web3Provider,
 } from '@/handlers/web3';
 import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
 import {
@@ -381,7 +380,7 @@ export default function SendSheet() {
 
   const updateTxFeeForOptimism = useCallback(
     async (updatedGasLimit: string) => {
-      if (!selected) return;
+      if (!selected || !currentProvider) return;
 
       const txData = await buildTransaction(
         {
@@ -394,7 +393,7 @@ export default function SendSheet() {
         currentProvider,
         currentChainId
       );
-      const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txData, currentProvider || web3Provider);
+      const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txData, currentProvider);
       updateTxFee(updatedGasLimit, null, l1GasFeeOptimism);
     },
     [accountAddress, amountDetails.assetAmount, currentChainId, currentProvider, selected, toAddress, updateTxFee]
@@ -402,7 +401,8 @@ export default function SendSheet() {
 
   const onSubmit = useCallback(
     async ({ ens }: OnSubmitProps = {}) => {
-      if (!selected) return;
+      if (!selected || !currentProvider) return;
+
       const wallet = await performanceTracking.getState().executeFn({
         fn: loadWallet,
         operation: TimeToSignOperation.KeychainRead,

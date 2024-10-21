@@ -1,5 +1,5 @@
 import { BigNumberish } from '@ethersproject/bignumber';
-import { Provider, StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
+import { StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { RainbowAddressAssets } from '@/resources/assets/types';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
