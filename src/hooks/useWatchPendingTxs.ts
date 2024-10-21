@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import useAccountSettings from './useAccountSettings';
 import { RainbowTransaction, MinedTransaction, TransactionStatus, FlashbotsStatus } from '@/entities';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
@@ -9,12 +9,11 @@ import { getProvider } from '@/handlers/web3';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { queryClient } from '@/react-query/queryClient';
 import { getTransactionFlashbotStatus } from '@/handlers/transactions';
-import { usePendingTransactionsStore } from '@/state/pendingTransactions';
-import { useNonceStore } from '@/state/nonces';
-import { Address } from 'viem';
-import { nftsQueryKey } from '@/resources/nfts';
-import { getNftSortForAddress } from './useNFTsSortBy';
 import { ChainId } from '@/chains/types';
+import { invalidateAddressNftsQueries } from '@/resources/nfts';
+import { useNonceStore } from '@/state/nonces';
+import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { Address } from 'viem';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
@@ -49,7 +48,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           testnetMode: !!connectedToHardhat,
         })
       );
-      queryClient.invalidateQueries(nftsQueryKey({ address, sortBy: getNftSortForAddress(address) }));
+      invalidateAddressNftsQueries(address);
     },
     [address, connectedToHardhat, nativeCurrency]
   );
