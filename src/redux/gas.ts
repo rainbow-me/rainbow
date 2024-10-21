@@ -122,28 +122,7 @@ const getUpdatedGasFeeParams = (
   l1GasFeeOptimism: BigNumber | null,
   isLegacyGasNetwork: boolean
 ) => {
-  let nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
-
-  switch (chainId) {
-    case ChainId.polygon:
-      nativeTokenPriceUnit = ethereumUtils.getMaticPriceUnit();
-      break;
-    case ChainId.bsc:
-      nativeTokenPriceUnit = ethereumUtils.getBnbPriceUnit();
-      break;
-    case ChainId.avalanche:
-      nativeTokenPriceUnit = ethereumUtils.getAvaxPriceUnit();
-      break;
-    case ChainId.degen:
-      nativeTokenPriceUnit = ethereumUtils.getDegenPriceUnit();
-      break;
-    case ChainId.apechain:
-      nativeTokenPriceUnit = ethereumUtils.getApechainPriceUnit();
-      break;
-    default:
-      nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
-      break;
-  }
+  const nativeTokenPriceUnit = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId });
 
   const gasFeesBySpeed = isLegacyGasNetwork
     ? parseLegacyGasFeesBySpeed(
@@ -205,19 +184,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (dispa
   const { nativeCurrency } = getState().settings;
   const _gasLimit = gasLimit || getDefaultGasLimit(chainId, defaultGasLimit);
 
-  let nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
-
-  switch (chainId) {
-    case ChainId.polygon:
-      nativeTokenPriceUnit = ethereumUtils.getMaticPriceUnit();
-      break;
-    case ChainId.bsc:
-      nativeTokenPriceUnit = ethereumUtils.getBnbPriceUnit();
-      break;
-    default:
-      nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
-      break;
-  }
+  const nativeTokenPriceUnit = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId });
 
   const customGasFees = parseGasFees(
     gasParams,
