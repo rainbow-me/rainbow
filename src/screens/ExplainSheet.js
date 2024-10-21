@@ -83,7 +83,7 @@ const networkExplainer = ({ emoji = '⛽️', chainId, ...props }) => {
 
   try {
     title = lang.t(`explain.${chainName.toLowerCase()}.title`);
-    text = lang.t(`explain.${chainName.toLowerCase()}.text`, { chainName });
+    text = lang.t(`explain.${chainName.toLowerCase()}.text`);
   } catch (e) {
     // do nothing
   }
