@@ -1,3 +1,4 @@
+import { addNewWalletConnectRequest } from '@/state/walletConnectRequests';
 import React from 'react';
 import { InteractionManager } from 'react-native';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
@@ -750,7 +751,17 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
         },
       },
     };
-    handleWalletConnectRequest(request);
+
+    const addedNewRequest = addNewWalletConnectRequest({ accountAddress: address, walletConnectRequest: request });
+    if (addedNewRequest) {
+      logger.debug(`[walletConnect]: navigating to CONFIRM_REQUEST sheet`, {}, logger.DebugContext.walletconnect);
+      handleWalletConnectRequest(request);
+
+      analytics.track(analytics.event.wcShowingSigningRequest, {
+        dappName: request.dappName,
+        dappUrl: request.dappUrl,
+      });
+    }
   } else {
     logger.error(new RainbowError(`[walletConnect]: received unsupported session_request RPC method`), {
       method,

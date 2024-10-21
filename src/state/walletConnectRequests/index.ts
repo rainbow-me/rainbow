@@ -9,26 +9,33 @@ interface RequestsState {
 export interface WalletConnectRequestsState {
   walletConnectRequests: Record<string, RequestsState>;
   addWalletConnectRequest: ({
-    address,
+    accountAddress,
     walletConnectRequest,
   }: {
-    address: string;
+    accountAddress: string;
     walletConnectRequest: WalletconnectRequestData;
   }) => boolean;
+  removeWalletConnectRequest: ({
+    accountAddress,
+    walletConnectRequestId,
+  }: {
+    accountAddress: string;
+    walletConnectRequestId: number;
+  }) => void;
 }
 
 export const walletConnectRequestsStore = createStore<WalletConnectRequestsState>(
   (set, get) => ({
     walletConnectRequests: {},
-    addWalletConnectRequest: ({ address, walletConnectRequest }) => {
+    addWalletConnectRequest: ({ accountAddress, walletConnectRequest }) => {
       const { walletConnectRequests: currentWalletConnectRequests } = get();
-      const addressWalletConnectRequests = currentWalletConnectRequests[address] || {};
+      const addressWalletConnectRequests = currentWalletConnectRequests[accountAddress] || {};
       const requestAlreadyExists = addressWalletConnectRequests[walletConnectRequest.requestId];
       if (requestAlreadyExists) return false;
       set({
         walletConnectRequests: {
           ...currentWalletConnectRequests,
-          [address]: {
+          [accountAddress]: {
             ...addressWalletConnectRequests,
             [walletConnectRequest.requestId]: walletConnectRequest,
           },
@@ -48,12 +55,12 @@ export const walletConnectRequestsStore = createStore<WalletConnectRequestsState
 export const useWalletConnectRequestsStore = create(walletConnectRequestsStore);
 
 export const addNewWalletConnectRequest = ({
-  address,
+  accountAddress,
   walletConnectRequest,
 }: {
-  address: string;
+  accountAddress: string;
   walletConnectRequest: WalletconnectRequestData;
 }): boolean => {
   const { addWalletConnectRequest } = walletConnectRequestsStore.getState();
-  return addWalletConnectRequest({ address, walletConnectRequest });
+  return addWalletConnectRequest({ accountAddress, walletConnectRequest });
 };
