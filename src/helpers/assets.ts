@@ -7,6 +7,7 @@ import { getUniqueTokenFormat, getUniqueTokenType } from '@/utils';
 import * as i18n from '@/languages';
 import { UniqueAsset } from '@/entities';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
+import { UniqueId } from '@/__swaps__/types/assets';
 
 const COINS_TO_SHOW = 5;
 
@@ -25,7 +26,13 @@ const getTotal = (assets: any) =>
     return add(acc, balance);
   }, 0);
 
-export const buildCoinsList = (sortedAssets: any, nativeCurrency: any, isCoinListEdited: any, pinnedCoins: any, hiddenCoins: any) => {
+export const buildCoinsList = (
+  sortedAssets: any,
+  nativeCurrency: any,
+  isCoinListEdited: any,
+  pinnedCoins: any,
+  hiddenCoins: Set<UniqueId>
+) => {
   if (!sortedAssets.length) {
     return {
       assets: [],
@@ -41,7 +48,7 @@ export const buildCoinsList = (sortedAssets: any, nativeCurrency: any, isCoinLis
 
   // separate into standard, pinned, small balances, hidden assets
   sortedAssets?.forEach((asset: any) => {
-    if (!!hiddenCoins && hiddenCoins[asset.uniqueId]) {
+    if (hiddenCoins.has(asset.uniqueId)) {
       hiddenAssets.push({
         isCoin: true,
         isHidden: true,
@@ -117,13 +124,19 @@ export const buildCoinsList = (sortedAssets: any, nativeCurrency: any, isCoinLis
 };
 
 // TODO make it better
-export const buildBriefCoinsList = (sortedAssets: any, nativeCurrency: any, isCoinListEdited: any, pinnedCoins: any, hiddenCoins: any) => {
+export const buildBriefCoinsList = (
+  sortedAssets: any,
+  nativeCurrency: any,
+  isCoinListEdited: any,
+  pinnedCoins: any,
+  hiddenAssets: Set<UniqueId>
+) => {
   const { assets, smallBalancesValue, totalBalancesValue } = buildCoinsList(
     sortedAssets,
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
-    hiddenCoins
+    hiddenAssets
   );
   const briefAssets = [];
   if (assets) {
@@ -155,10 +168,6 @@ export const buildBriefCoinsList = (sortedAssets: any, nativeCurrency: any, isCo
 
   return { briefAssets, totalBalancesValue };
 };
-
-interface Dictionary<T> {
-  [index: string]: T;
-}
 
 export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: any[] = []) => {
   let rows: any = [];

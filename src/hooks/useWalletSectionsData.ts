@@ -16,6 +16,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import { useClaimables } from '@/resources/addys/claimables/query';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { analyticsV2 } from '@/analytics';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { throttle } from 'lodash';
@@ -90,13 +91,15 @@ export default function useWalletSectionsData({
   const remoteConfig = useRemoteConfig();
   const experimentalConfig = useExperimentalConfig();
 
-  const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
+  const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
+
+  const { pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
 
   const { isCoinListEdited } = useCoinListEdited();
 
   const walletSections = useMemo(() => {
     const accountInfo = {
-      hiddenCoins,
+      hiddenAssets,
       isCoinListEdited,
       isLoadingUserAssets,
       language,
@@ -105,8 +108,8 @@ export default function useWalletSectionsData({
       pinnedCoins,
       sendableUniqueTokens,
       sortedAssets,
-      accountBalanceDisplay: accountWithBalance?.balances?.totalBalanceDisplay,
-      isLoadingBalance: !accountWithBalance?.balances,
+      accountBalanceDisplay: accountWithBalance?.balancesMinusHiddenBalances,
+      isLoadingBalance: !accountWithBalance?.balancesMinusHiddenBalances,
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...isWalletEthZero,
       hiddenTokens,
@@ -134,7 +137,7 @@ export default function useWalletSectionsData({
       briefSectionsData,
     };
   }, [
-    hiddenCoins,
+    hiddenAssets,
     isCoinListEdited,
     isLoadingUserAssets,
     language,
@@ -143,6 +146,7 @@ export default function useWalletSectionsData({
     pinnedCoins,
     sendableUniqueTokens,
     sortedAssets,
+    accountWithBalance?.balancesMinusHiddenBalances,
     accountWithBalance?.balances,
     isWalletEthZero,
     hiddenTokens,
