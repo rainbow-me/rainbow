@@ -10,13 +10,7 @@ interface RequestsState {
 export interface WalletConnectRequestsState {
   walletConnectRequests: RequestsState;
   addWalletConnectRequest: ({ walletConnectRequest }: { walletConnectRequest: WalletconnectRequestData }) => boolean;
-  removeWalletConnectRequest: ({
-    accountAddress,
-    walletConnectRequestId,
-  }: {
-    accountAddress: string;
-    walletConnectRequestId: number;
-  }) => void;
+  removeWalletConnectRequest: ({ walletConnectRequestId }: { walletConnectRequestId: number }) => void;
 }
 
 export const walletConnectRequestsStore = createStore<WalletConnectRequestsState>(
@@ -34,16 +28,12 @@ export const walletConnectRequestsStore = createStore<WalletConnectRequestsState
       });
       return true;
     },
-    removeWalletConnectRequest: ({ accountAddress, walletConnectRequestId }) => {
+    removeWalletConnectRequest: ({ walletConnectRequestId }) => {
       const { walletConnectRequests: currentWalletConnectRequests } = get();
-      const addressWalletConnectRequests = currentWalletConnectRequests[accountAddress] || {};
-      const updatedRequests = omitFlatten(addressWalletConnectRequests, [walletConnectRequestId]);
+      const updatedRequests = omitFlatten(currentWalletConnectRequests, [walletConnectRequestId]);
       set({
         walletConnectRequests: {
-          ...currentWalletConnectRequests,
-          [accountAddress]: {
-            ...updatedRequests,
-          },
+          ...updatedRequests,
         },
       });
     },
@@ -63,13 +53,7 @@ export const addNewWalletConnectRequest = ({ walletConnectRequest }: { walletCon
   return addWalletConnectRequest({ walletConnectRequest });
 };
 
-export const removeWalletConnectRequest = ({
-  accountAddress,
-  walletConnectRequestId,
-}: {
-  accountAddress: string;
-  walletConnectRequestId: number;
-}): void => {
+export const removeWalletConnectRequest = ({ walletConnectRequestId }: { walletConnectRequestId: number }): void => {
   const { removeWalletConnectRequest: removeWCRequest } = walletConnectRequestsStore.getState();
-  removeWCRequest({ accountAddress, walletConnectRequestId });
+  removeWCRequest({ walletConnectRequestId });
 };
