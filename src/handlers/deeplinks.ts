@@ -2,8 +2,6 @@ import URL from 'url-parse';
 import { parseUri } from '@walletconnect/utils';
 
 import store from '@/redux/store';
-import { walletConnectOnSessionRequest, walletConnectRemovePendingRedirect, walletConnectSetPendingRedirect } from '@/redux/walletconnect';
-
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { showWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { defaultConfig } from '@/config/experimental';
@@ -316,19 +314,7 @@ function handleWalletConnect(uri?: string, connector?: string) {
 
     showWalletConnectToast();
 
-    if (parsedUri.version === 1) {
-      store.dispatch(walletConnectSetPendingRedirect());
-      store.dispatch(
-        walletConnectOnSessionRequest(uri, connector, (status: any, dappScheme: any) => {
-          logger.debug(`[walletConnectOnSessionRequest] callback`, {
-            status,
-            dappScheme,
-          });
-          const type = status === 'approved' ? 'connect' : status;
-          store.dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
-        })
-      );
-    } else if (parsedUri.version === 2) {
+    if (parsedUri.version === 2) {
       logger.debug(`[handleWalletConnect]: handling v2`, { uri });
       setHasPendingDeeplinkPendingRedirect(true);
       pairWalletConnect({ uri, connector });
@@ -339,6 +325,5 @@ function handleWalletConnect(uri?: string, connector?: string) {
     // Don't add this URI to cache
     showWalletConnectToast({ isTransactionRequest: true });
     setHasPendingDeeplinkPendingRedirect(true);
-    store.dispatch(walletConnectSetPendingRedirect());
   }
 }

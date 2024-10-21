@@ -1,4 +1,4 @@
-import { addHours, differenceInMinutes, isPast } from 'date-fns';
+import { addHours, differenceInMinutes } from 'date-fns';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -9,7 +9,6 @@ import { RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { removeRequest } from '@/redux/requests';
 import styled from '@/styled-thing';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 
@@ -65,19 +64,9 @@ const RequestCoinRow = ({ item, ...props }) => {
     }
   }, [colors, item]);
 
-  const handleExpiredRequests = useCallback(() => {
-    if (isPast(expiresAt)) {
-      dispatch(removeRequest(item.requestId));
-    }
-  }, [dispatch, expiresAt, item.requestId]);
-
   const handlePressOpen = useCallback(() => {
     handleWalletConnectRequest(item);
   }, [item]);
-
-  useEffect(() => {
-    handleExpiredRequests();
-  }, [expiresAt, handleExpiredRequests]);
 
   const overridenItem = useMemo(
     () => ({
