@@ -50,13 +50,13 @@ export async function backendNetworksQueryFunction({
 // ///////////////////////////////////////////////
 // Query Hook
 
-export function useBackendNetworks(
-  config: QueryConfigWithSelect<BackendNetworksResponse, Error, BackendNetworksResponse, BackendNetworksQueryKey> = {}
+export function useBackendNetworks<TSelectResult = BackendNetworksResponse>(
+  config: QueryConfigWithSelect<BackendNetworksResponse, Error, TSelectResult, BackendNetworksQueryKey> = {}
 ) {
   return useQuery(backendNetworksQueryKey(), backendNetworksQueryFunction, {
     ...config,
-    cacheTime: 1000 * 60 * 60 * 24, // 24 hours
-    staleTime: 1000 * 60 * 15, // 15 minutes
+    refetchInterval: 60_000,
+    staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,
   });
 }
 

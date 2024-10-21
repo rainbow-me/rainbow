@@ -1,28 +1,34 @@
 import { Chain } from 'viem/chains';
-import { queryClient } from '@/react-query';
-import { backendNetworksQueryKey, BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
+import { BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
 import { ChainId, BackendNetwork, BackendNetworkServices, chainHardhat, chainHardhatOptimism } from './types';
 import { transformBackendNetworksToChains } from './utils/backendNetworks';
 import { gasUtils } from '@/utils';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { IS_TEST } from '@/env';
 import buildTimeNetworks from '@/references/networks.json';
+import { backendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+
+const backendNetworks = backendNetworksStore.getState().backendNetworks;
 
 const getBackendNetworks = (): BackendNetworksResponse => {
-  return queryClient.getQueryData<BackendNetworksResponse>(backendNetworksQueryKey()) ?? buildTimeNetworks;
+  'worklet';
+  return backendNetworks.value ?? buildTimeNetworks;
 };
 
 const getBackendChains = (): Chain[] => {
+  'worklet';
   const backendNetworks = getBackendNetworks();
   return transformBackendNetworksToChains(backendNetworks.networks);
 };
 
 export const getSupportedChains = (): Chain[] => {
+  'worklet';
   const backendChains = getBackendChains();
   return IS_TEST ? [...backendChains, chainHardhat, chainHardhatOptimism] : backendChains;
 };
 
 export const getDefaultChains = (): Record<ChainId, Chain> => {
+  'worklet';
   const supportedChains = getSupportedChains();
   return supportedChains.reduce(
     (acc, chain) => {
@@ -34,18 +40,22 @@ export const getDefaultChains = (): Record<ChainId, Chain> => {
 };
 
 export const getSupportedChainIds = (): ChainId[] => {
+  'worklet';
   return getSupportedChains().map(chain => chain.id);
 };
 
 export const getSupportedMainnetChains = (): Chain[] => {
+  'worklet';
   return getSupportedChains().filter(chain => !chain.testnet);
 };
 
 export const getSupportedMainnetChainIds = (): ChainId[] => {
+  'worklet';
   return getSupportedMainnetChains().map(chain => chain.id);
 };
 
 export const getNeedsL1SecurityFeeChains = (): ChainId[] => {
+  'worklet';
   const backendNetworks = getBackendNetworks();
   return backendNetworks.networks
     .filter((backendNetwork: BackendNetwork) => backendNetwork.opStack)
@@ -53,6 +63,7 @@ export const getNeedsL1SecurityFeeChains = (): ChainId[] => {
 };
 
 export const getChainsNativeAsset = (): Record<number, BackendNetwork['nativeAsset']> => {
+  'worklet';
   const backendNetworks = getBackendNetworks();
   return backendNetworks.networks.reduce(
     (acc, backendNetwork: BackendNetwork) => {
@@ -64,6 +75,7 @@ export const getChainsNativeAsset = (): Record<number, BackendNetwork['nativeAss
 };
 
 export const getChainsLabel = (): Record<number, string> => {
+  'worklet';
   const backendNetworks = getBackendNetworks();
   return backendNetworks.networks.reduce(
     (acc, backendNetwork: BackendNetwork) => {
@@ -75,6 +87,7 @@ export const getChainsLabel = (): Record<number, string> => {
 };
 
 export const getChainsName = (): Record<number, string> => {
+  'worklet';
   const backendNetworks = getBackendNetworks();
   return backendNetworks.networks.reduce(
     (acc, backendNetwork: BackendNetwork) => {
@@ -86,6 +99,7 @@ export const getChainsName = (): Record<number, string> => {
 };
 
 export const getChainsIdByName = (): Record<string, number> => {
+  'worklet';
   const backendNetworks = getBackendNetworks();
   return backendNetworks.networks.reduce(
     (acc, backendNetwork: BackendNetwork) => {
@@ -97,6 +111,7 @@ export const getChainsIdByName = (): Record<string, number> => {
 };
 
 const defaultGasSpeeds = (chainId: ChainId) => {
+  'worklet';
   switch (chainId) {
     case ChainId.bsc:
     case ChainId.goerli:
@@ -110,6 +125,7 @@ const defaultGasSpeeds = (chainId: ChainId) => {
 };
 
 export const getChainsGasSpeeds = (): Record<ChainId, string[]> => {
+  'worklet';
   const backendNetworks = getBackendNetworks();
   return backendNetworks.networks.reduce(
     (acc, backendNetwork: BackendNetwork) => {
@@ -121,6 +137,7 @@ export const getChainsGasSpeeds = (): Record<ChainId, string[]> => {
 };
 
 const defaultPollingIntervals = (chainId: ChainId) => {
+  'worklet';
   switch (chainId) {
     case ChainId.polygon:
       return 2_000;
@@ -133,6 +150,7 @@ const defaultPollingIntervals = (chainId: ChainId) => {
 };
 
 export const getChainsSwapPollingInterval = (): Record<ChainId, number> => {
+  'worklet';
   const backendNetworks = getBackendNetworks();
   return backendNetworks.networks.reduce(
     (acc, backendNetwork: BackendNetwork) => {
@@ -144,6 +162,7 @@ export const getChainsSwapPollingInterval = (): Record<ChainId, number> => {
 };
 
 const defaultSimplehashNetworks = (chainId: ChainId) => {
+  'worklet';
   switch (chainId) {
     case ChainId.apechain:
       return 'apechain';
@@ -177,6 +196,7 @@ const defaultSimplehashNetworks = (chainId: ChainId) => {
 };
 
 export const getChainsSimplehashNetwork = (): Record<ChainId, string> => {
+  'worklet';
   const backendNetworks = getBackendNetworks();
   return backendNetworks.networks.reduce(
     (acc, backendNetwork: BackendNetwork) => {
@@ -188,6 +208,7 @@ export const getChainsSimplehashNetwork = (): Record<ChainId, string> => {
 };
 
 const filterChainIdsByService = (servicePath: (services: BackendNetworkServices) => boolean): number[] => {
+  'worklet';
   const backendNetworks = getBackendNetworks();
   return backendNetworks.networks
     .filter((network: BackendNetwork) => {
@@ -219,30 +240,8 @@ export const supportedFlashbotsChainIds = [ChainId.mainnet];
 
 export const shouldDefaultToFastGasChainIds = [ChainId.mainnet, ChainId.polygon, ChainId.goerli];
 
-export const oldDefaultRPC: { [key in ChainId]?: string } = {
-  [ChainId.mainnet]: process.env.ETH_MAINNET_RPC,
-  [ChainId.optimism]: process.env.OPTIMISM_MAINNET_RPC,
-  [ChainId.arbitrum]: process.env.ARBITRUM_MAINNET_RPC,
-  [ChainId.polygon]: process.env.POLYGON_MAINNET_RPC,
-  [ChainId.base]: process.env.BASE_MAINNET_RPC,
-  [ChainId.zora]: process.env.ZORA_MAINNET_RPC,
-  [ChainId.bsc]: process.env.BSC_MAINNET_RPC,
-  [ChainId.sepolia]: process.env.ETH_SEPOLIA_RPC,
-  [ChainId.holesky]: process.env.ETH_HOLESKY_RPC,
-  [ChainId.optimismSepolia]: process.env.OPTIMISM_SEPOLIA_RPC,
-  [ChainId.bscTestnet]: process.env.BSC_TESTNET_RPC,
-  [ChainId.arbitrumSepolia]: process.env.ARBITRUM_SEPOLIA_RPC,
-  [ChainId.baseSepolia]: process.env.BASE_SEPOLIA_RPC,
-  [ChainId.zoraSepolia]: process.env.ZORA_SEPOLIA_RPC,
-  [ChainId.avalanche]: process.env.AVALANCHE_MAINNET_RPC,
-  [ChainId.avalancheFuji]: process.env.AVALANCHE_FUJI_RPC,
-  [ChainId.blast]: process.env.BLAST_MAINNET_RPC,
-  [ChainId.blastSepolia]: process.env.BLAST_SEPOLIA_RPC,
-  [ChainId.polygonAmoy]: process.env.POLYGON_AMOY_RPC,
-  [ChainId.degen]: process.env.DEGEN_MAINNET_RPC,
-};
-
 export const getChainGasUnits = (chainId?: number): BackendNetwork['gasUnits'] => {
+  'worklet';
   const backendNetworks = getBackendNetworks();
   const chainsGasUnits = backendNetworks.networks.reduce(
     (acc, backendNetwork: BackendNetwork) => {
@@ -256,6 +255,7 @@ export const getChainGasUnits = (chainId?: number): BackendNetwork['gasUnits'] =
 };
 
 export const getChainDefaultRpc = (chainId: ChainId) => {
+  'worklet';
   switch (chainId) {
     case ChainId.mainnet:
       return useConnectedToHardhatStore.getState().connectedToHardhat
