@@ -10,7 +10,6 @@ import gas from './gas';
 import hiddenTokens from './hiddenTokens';
 import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
-import requests from './requests';
 import settings from './settings';
 import showcaseTokens from './showcaseTokens';
 import swap from './swap';
@@ -27,7 +26,6 @@ export default combineReducers({
   hiddenTokens,
   imageMetadata,
   keyboardHeight,
-  requests,
   settings,
   showcaseTokens,
   swap,
