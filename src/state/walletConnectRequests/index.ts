@@ -8,14 +8,8 @@ interface RequestsState {
 }
 
 export interface WalletConnectRequestsState {
-  walletConnectRequests: Record<string, RequestsState>;
-  addWalletConnectRequest: ({
-    accountAddress,
-    walletConnectRequest,
-  }: {
-    accountAddress: string;
-    walletConnectRequest: WalletconnectRequestData;
-  }) => boolean;
+  walletConnectRequests: RequestsState;
+  addWalletConnectRequest: ({ walletConnectRequest }: { walletConnectRequest: WalletconnectRequestData }) => boolean;
   removeWalletConnectRequest: ({
     accountAddress,
     walletConnectRequestId,
@@ -28,18 +22,14 @@ export interface WalletConnectRequestsState {
 export const walletConnectRequestsStore = createStore<WalletConnectRequestsState>(
   (set, get) => ({
     walletConnectRequests: {},
-    addWalletConnectRequest: ({ accountAddress, walletConnectRequest }) => {
+    addWalletConnectRequest: ({ walletConnectRequest }) => {
       const { walletConnectRequests: currentWalletConnectRequests } = get();
-      const addressWalletConnectRequests = currentWalletConnectRequests[accountAddress] || {};
-      const requestAlreadyExists = addressWalletConnectRequests[walletConnectRequest.requestId];
+      const requestAlreadyExists = currentWalletConnectRequests[walletConnectRequest.requestId];
       if (requestAlreadyExists) return false;
       set({
         walletConnectRequests: {
           ...currentWalletConnectRequests,
-          [accountAddress]: {
-            ...addressWalletConnectRequests,
-            [walletConnectRequest.requestId]: walletConnectRequest,
-          },
+          [walletConnectRequest.requestId]: walletConnectRequest,
         },
       });
       return true;
@@ -68,15 +58,9 @@ export const walletConnectRequestsStore = createStore<WalletConnectRequestsState
 
 export const useWalletConnectRequestsStore = create(walletConnectRequestsStore);
 
-export const addNewWalletConnectRequest = ({
-  accountAddress,
-  walletConnectRequest,
-}: {
-  accountAddress: string;
-  walletConnectRequest: WalletconnectRequestData;
-}): boolean => {
+export const addNewWalletConnectRequest = ({ walletConnectRequest }: { walletConnectRequest: WalletconnectRequestData }): boolean => {
   const { addWalletConnectRequest } = walletConnectRequestsStore.getState();
-  return addWalletConnectRequest({ accountAddress, walletConnectRequest });
+  return addWalletConnectRequest({ walletConnectRequest });
 };
 
 export const removeWalletConnectRequest = ({
