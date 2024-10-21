@@ -494,6 +494,17 @@ export const explainers = (params, theme) => {
       text: BLAST_EXPLAINER,
       title: lang.t('explain.blast.title'),
     },
+    apechain: {
+      emoji: '⛽️',
+      extraHeight: 144,
+      logo: <ChainBadge chainId={ChainId.apechain} marginBottom={8} position="relative" size="large" />,
+      readMoreLink: buildRainbowLearnUrl({
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
+        query: {
+          campaign: 'explain',
+        },
+      }),
+    },
     failed_wc_connection: {
       emoji: '😵',
       extraHeight: -50,
