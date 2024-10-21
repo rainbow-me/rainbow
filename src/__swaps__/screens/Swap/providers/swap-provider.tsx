@@ -331,7 +331,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       performanceTracking.getState().executeFn({
         fn: () => {
           const { routes, index } = Navigation.getState();
-          if (routes[index - 1].name === Routes.EXPANDED_ASSET_SHEET) {
+          if (index === 0 || routes[index - 1].name === Routes.EXPANDED_ASSET_SHEET) {
             Navigation.handleAction(Routes.WALLET_SCREEN, {});
           } else {
             Navigation.goBack();
