@@ -121,6 +121,8 @@ const DEGEN_EXPLAINER = lang.t('explain.degen.text');
 
 const BLAST_EXPLAINER = lang.t('explain.blast.text');
 
+const APECHAIN_EXPLAINER = lang.t('explain.apechain.text');
+
 const ZORA_EXPLAINER = lang.t('explain.zora.text');
 
 const SWAP_RESET_EXPLAINER = `Rainbow doesn’t have the ability to swap across networks yet, but we’re on it. For now, Rainbow will match networks between selected tokens.`;
@@ -504,6 +506,8 @@ export const explainers = (params, theme) => {
           campaign: 'explain',
         },
       }),
+      text: APECHAIN_EXPLAINER,
+      title: lang.t('explain.apechain.title'),
     },
     failed_wc_connection: {
       emoji: '😵',
