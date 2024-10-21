@@ -48,7 +48,7 @@ import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { chainsLabel } from '@/chains';
+import { getChainsLabel } from '@/chains';
 import { ChainId } from '@/chains/types';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
@@ -325,7 +325,7 @@ export function ReviewPanel() {
 
   const unknown = i18n.t(i18n.l.swap.unknown);
 
-  const chainName = useDerivedValue(() => chainsLabel[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]);
+  const chainName = useDerivedValue(() => getChainsLabel()[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]);
 
   const minReceivedOrMaxSoldLabel = useDerivedValue(() => {
     const isInputBasedTrade = lastTypedInput.value === 'inputAmount' || lastTypedInput.value === 'inputNativeValue';

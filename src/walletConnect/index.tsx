@@ -44,7 +44,7 @@ import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
 import { PerformanceTracking } from '@/performance/tracking';
 import { ChainId } from '@/chains/types';
-import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { getSupportedChainIds } from '@/chains';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
@@ -447,7 +447,7 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
 
     // we already checked for eip155 namespace above
     const chainIds = chains?.map(chain => parseInt(chain.split('eip155:')[1]));
-    const supportedChainIds = chainIds.filter(chainId => SUPPORTED_CHAIN_IDS.includes(chainId));
+    const supportedChainIds = chainIds.filter(chainId => getSupportedChainIds().includes(chainId));
 
     const peerMeta = proposer.metadata;
     const metadata = await fetchDappMetadata({ url: peerMeta.url, status: true });
@@ -488,7 +488,7 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
           const supportedEvents = requiredNamespaces?.eip155?.events || SUPPORTED_SESSION_EVENTS;
 
           /** @see https://chainagnostic.org/CAIPs/caip-2 */
-          const caip2ChainIds = SUPPORTED_CHAIN_IDS.map(id => `eip155:${id}`);
+          const caip2ChainIds = getSupportedChainIds().map(id => `eip155:${id}`);
           const namespaces = getApprovedNamespaces({
             proposal: proposal.params,
             supportedNamespaces: {

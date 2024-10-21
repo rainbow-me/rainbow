@@ -25,7 +25,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { ChainId } from '@/chains/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/chains';
+import { getChainsLabel, getChainsName, getDefaultChains, supportedSwapChainIds } from '@/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 const NOOP = () => null;
@@ -95,7 +95,7 @@ const AvailableNetworksv2 = ({
             address: newAsset.address as AddressOrEth,
             type: newAsset.type as AssetType,
             chainId: asset.chainId,
-            chainName: chainsName[asset.chainId],
+            chainName: getChainsName()[asset.chainId],
             isNativeAsset: false,
             native: {},
           },
@@ -103,7 +103,7 @@ const AvailableNetworksv2 = ({
             ...newAsset,
             uniqueId,
             chainId: asset.chainId,
-            chainName: chainsName[asset.chainId],
+            chainName: getChainsName()[asset.chainId],
             address: newAsset.address as AddressOrEth,
             highLiquidity: newAsset.highLiquidity ?? false,
             isRainbowCurated: newAsset.isRainbowCurated ?? false,
@@ -134,7 +134,7 @@ const AvailableNetworksv2 = ({
       }
 
       newAsset.uniqueId = getUniqueId(asset.address, chainId);
-      newAsset.type = chainsName[chainId];
+      newAsset.type = getChainsName()[chainId];
 
       navigate(Routes.EXCHANGE_MODAL, {
         params: {
@@ -168,10 +168,10 @@ const AvailableNetworksv2 = ({
 
   const networkMenuItems = supportedSwapChainIds
     .filter(chainId => chainId !== ChainId.mainnet)
-    .map(chainId => defaultChains[chainId])
+    .map(chainId => getDefaultChains()[chainId])
     .map(chain => ({
       actionKey: chain.id,
-      actionTitle: chainsLabel[chain.id],
+      actionTitle: getChainsLabel()[chain.id],
       icon: {
         iconType: 'ASSET',
         iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
@@ -236,7 +236,7 @@ const AvailableNetworksv2 = ({
                           availableNetworks: availableChainIds?.length,
                         })
                       : lang.t('expanded_state.asset.available_networkv2', {
-                          availableNetwork: chainsName[availableChainIds[0]],
+                          availableNetwork: getChainsName()[availableChainIds[0]],
                         })}
                   </Text>
                 </Box>

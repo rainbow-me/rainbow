@@ -40,7 +40,7 @@ import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { queryClient } from '@/react-query/queryClient';
 import { ChainId, Network } from '@/chains/types';
-import { chainsName } from '@/chains';
+import { getChainsName } from '@/chains';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -315,7 +315,7 @@ export default function CurrencySelectModal() {
     (item: any) => {
       if (type === CurrencySelectionTypes.output && currentChainId && currentChainId !== ChainId.mainnet) {
         const currentL2WalletAssets = assetsInWallet.filter(
-          ({ network }) => network && network?.toLowerCase() === chainsName[currentChainId]?.toLowerCase()
+          ({ network }) => network && network?.toLowerCase() === getChainsName()[currentChainId]?.toLowerCase()
         );
         if (currentL2WalletAssets?.length < 1) {
           Keyboard.dismiss();
@@ -364,7 +364,7 @@ export default function CurrencySelectModal() {
             ...newAsset,
             decimals: item?.networks?.[currentChainId]?.decimals || item.decimals,
             address: item?.address || item?.networks?.[currentChainId]?.address,
-            network: chainsName[currentChainId],
+            network: getChainsName()[currentChainId],
             ...externalAsset,
           };
         }

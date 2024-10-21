@@ -33,7 +33,7 @@ import { Verify } from '@walletconnect/types';
 import { RequestSource, handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { ChainId } from '@/chains/types';
 import { Address } from 'viem';
-import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { getSupportedChainIds } from '@/chains';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -477,7 +477,7 @@ const listenOnNewMessages =
         // @ts-expect-error "_chainId" is private.
         const currentChainId = Number(walletConnector._chainId);
         const numericChainId = Number(convertHexToString(chainId));
-        if (SUPPORTED_CHAIN_IDS.includes(numericChainId)) {
+        if (getSupportedChainIds().includes(numericChainId)) {
           dispatch(walletConnectSetPendingRedirect());
           Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
             callback: async (approved: boolean) => {

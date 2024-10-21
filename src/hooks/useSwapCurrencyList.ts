@@ -19,7 +19,7 @@ import { useFavorites } from '@/resources/favorites';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { logger } from '@/logger';
 import { ChainId, Network } from '@/chains/types';
-import { chainsName } from '@/chains';
+import { getChainsName } from '@/chains';
 
 type swapCurrencyListType =
   | 'verifiedAssets'
@@ -205,7 +205,7 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = ChainId.mainne
                   },
                 },
                 symbol,
-                network: chainsName[chainId],
+                network: getChainsName()[chainId],
                 uniqueId,
               } as RainbowToken,
             ];

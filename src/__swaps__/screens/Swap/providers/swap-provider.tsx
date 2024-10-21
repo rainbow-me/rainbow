@@ -50,13 +50,13 @@ import { CrosschainQuote, Quote, QuoteError, SwapType } from '@rainbow-me/swaps'
 import { IS_IOS } from '@/env';
 import { Address } from 'viem';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
-import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { chainsNativeAsset, supportedFlashbotsChainIds } from '@/chains';
+import { getChainsNativeAsset, supportedFlashbotsChainIds } from '@/chains';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -748,7 +748,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (hasEnoughFundsForGas.value === false) {
-      const nativeCurrency = chainsNativeAsset[sellAsset?.chainId || ChainId.mainnet];
+      const nativeCurrency = getChainsNativeAsset()[sellAsset?.chainId || ChainId.mainnet];
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
         disabled: true,

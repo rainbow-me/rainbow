@@ -15,7 +15,7 @@ import { greaterThan } from '@/__swaps__/utils/numbers';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
-import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { getSupportedChainIds } from '@/chains';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const addysHttp = new RainbowFetchClient({
@@ -113,7 +113,7 @@ async function userAssetsQueryFunction({
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
     {}) as ParsedAssetsDictByChain;
   try {
-    const url = `/${SUPPORTED_CHAIN_IDS.join(',')}/${address}/assets`;
+    const url = `/${getSupportedChainIds().join(',')}/${address}/assets`;
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
       params: {
         currency: currency.toLowerCase(),

@@ -27,7 +27,7 @@ import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { ChainId } from '@/chains/types';
-import { chainsGasSpeeds } from '@/chains';
+import { getChainsGasSpeeds } from '@/chains';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { ParsedAddressAsset } from '@/entities';
@@ -388,7 +388,7 @@ const GasSpeedButton = ({
 
   const speedOptions = useMemo(() => {
     if (speeds) return speeds;
-    return chainsGasSpeeds[chainId];
+    return getChainsGasSpeeds()[chainId];
   }, [chainId, speeds]);
 
   const menuConfig = useMemo(() => {

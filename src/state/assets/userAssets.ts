@@ -8,7 +8,7 @@ import { useStore } from 'zustand';
 import { useCallback } from 'react';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { ChainId } from '@/chains/types';
-import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { getSupportedChainIds } from '@/chains';
 import { useSelector } from 'react-redux';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
@@ -20,7 +20,7 @@ const getDefaultCacheKeys = (): Set<string> => {
   const queryKeysToPreserve = new Set<string>();
   queryKeysToPreserve.add('all');
 
-  for (const chainId of SUPPORTED_CHAIN_IDS) {
+  for (const chainId of getSupportedChainIds()) {
     queryKeysToPreserve.add(`${chainId}`);
   }
   return queryKeysToPreserve;
@@ -281,7 +281,7 @@ export const createUserAssetsStore = (address: Address | string) =>
           });
 
           // Ensure all supported chains are in the map with a fallback value of 0
-          SUPPORTED_CHAIN_IDS.forEach(chainId => {
+          getSupportedChainIds().forEach(chainId => {
             if (!unsortedChainBalances.has(chainId)) {
               unsortedChainBalances.set(chainId, 0);
               idsByChain.set(chainId, []);

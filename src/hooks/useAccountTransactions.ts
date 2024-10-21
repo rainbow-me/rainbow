@@ -10,7 +10,7 @@ import { RainbowTransaction } from '@/entities';
 import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { nonceStore } from '@/state/nonces';
 import { ChainId } from '@/chains/types';
-import { SUPPORTED_CHAIN_IDS, SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
+import { getSupportedChainIds, getSupportedMainnetChainIds } from '@/chains';
 
 export const NOE_PAGE = 30;
 
@@ -43,7 +43,7 @@ export default function useAccountTransactions() {
           }
           return latestTxMap;
         },
-        new Map(SUPPORTED_CHAIN_IDS.map(chainId => [chainId, null as RainbowTransaction | null]))
+        new Map(getSupportedChainIds().map(chainId => [chainId, null as RainbowTransaction | null]))
       );
     watchForPendingTransactionsReportedByRainbowBackend({
       currentAddress: accountAddress,
@@ -61,7 +61,7 @@ export default function useAccountTransactions() {
     const { setNonce } = nonceStore.getState();
     const { setPendingTransactions, pendingTransactions: storePendingTransactions } = pendingTransactionsStore.getState();
     const pendingTransactions = storePendingTransactions[currentAddress] || [];
-    for (const chainId of SUPPORTED_MAINNET_CHAIN_IDS) {
+    for (const chainId of getSupportedMainnetChainIds()) {
       const latestTxConfirmedByBackend = latestTransactions.get(chainId);
       if (latestTxConfirmedByBackend) {
         const latestNonceConfirmedByBackend = latestTxConfirmedByBackend.nonce || 0;

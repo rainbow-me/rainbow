@@ -38,7 +38,7 @@ import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from
 import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
 import { convertAmountToRawAmount } from './numbers';
-import { chainsName } from '@/chains';
+import { getChainsName } from '@/chains';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -363,7 +363,7 @@ export const slippageInBipsToStringWorklet = (slippageInBips: number) => {
 export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
   return slippageInBipsToString(
     // NOTE: JSON.parse doesn't type the result as a Record<ChainName, number>
-    (config.default_slippage_bips as unknown as Record<string, number>)[chainsName[chainId]] || DEFAULT_SLIPPAGE_BIPS[chainId]
+    (config.default_slippage_bips as unknown as Record<string, number>)[getChainsName()[chainId]] || DEFAULT_SLIPPAGE_BIPS[chainId]
   );
 };
 
@@ -371,7 +371,7 @@ export const getDefaultSlippageWorklet = (chainId: ChainId, config: RainbowConfi
   'worklet';
 
   return slippageInBipsToStringWorklet(
-    (config.default_slippage_bips as unknown as { [key: string]: number })[chainsName[chainId]] || DEFAULT_SLIPPAGE_BIPS[chainId]
+    (config.default_slippage_bips as unknown as { [key: string]: number })[getChainsName()[chainId]] || DEFAULT_SLIPPAGE_BIPS[chainId]
   );
 };
 

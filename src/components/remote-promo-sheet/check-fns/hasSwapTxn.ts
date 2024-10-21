@@ -1,5 +1,5 @@
 import type { EthereumAddress, RainbowTransaction } from '@/entities';
-import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
+import { getSupportedMainnetChainIds } from '@/chains';
 import { queryClient } from '@/react-query/queryClient';
 import store from '@/redux/store';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
@@ -16,7 +16,7 @@ export const hasSwapTxn = async (): Promise<boolean> => {
   const paginatedTransactionsKey = consolidatedTransactionsQueryKey({
     address: accountAddress,
     currency: nativeCurrency,
-    chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
+    chainIds: getSupportedMainnetChainIds(),
   });
   const queryData = queryClient.getQueryData<PaginatedTransactions>(paginatedTransactionsKey);
   const pages = queryData?.pages || [];

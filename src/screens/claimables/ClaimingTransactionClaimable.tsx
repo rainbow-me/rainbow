@@ -5,7 +5,7 @@ import { Claimable, TransactionClaimable } from '@/resources/addys/claimables/ty
 import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { getNextNonce } from '@/state/nonces';
-import { needsL1SecurityFeeChains } from '@/chains';
+import { getNeedsL1SecurityFeeChains } from '@/chains';
 import { logger, RainbowError } from '@/logger';
 import { ClaimingClaimableSharedUI, ClaimStatus } from './ClaimingClaimableSharedUI';
 import { TransactionRequest } from '@ethersproject/providers';
@@ -108,7 +108,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
       return;
     }
 
-    if (needsL1SecurityFeeChains.includes(claimable.chainId)) {
+    if (getNeedsL1SecurityFeeChains().includes(claimable.chainId)) {
       const l1SecurityFee = await ethereumUtils.calculateL1FeeOptimism(
         {
           to: claimable.action.to,

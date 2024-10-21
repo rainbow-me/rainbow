@@ -38,7 +38,7 @@ import { ethUnits } from '@/references';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { ChainId } from '@/chains/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { chainsSwapPollingInterval, meteorologySupportedChainIds, needsL1SecurityFeeChains } from '@/chains';
+import { getChainsSwapPollingInterval, meteorologySupportedChainIds, getNeedsL1SecurityFeeChains } from '@/chains';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { addBuffer } from '@/helpers/utilities';
 
@@ -375,7 +375,7 @@ export const gasPricesStartPolling =
               } else {
                 try {
                   // OP chains have an additional fee we need to load
-                  if (needsL1SecurityFeeChains.includes(chainId)) {
+                  if (getNeedsL1SecurityFeeChains().includes(chainId)) {
                     dataIsReady = l1GasFeeOptimism !== null;
                   }
                   const meteorologyGasParams = await getMeteorologyGasParams(chainId);
@@ -511,7 +511,7 @@ export const gasPricesStartPolling =
       }
     };
 
-    const pollingInterval = chainsSwapPollingInterval[chainId];
+    const pollingInterval = getChainsSwapPollingInterval()[chainId];
     watchGasPrices(chainId, pollingInterval);
   };
 
@@ -547,7 +547,7 @@ export const gasUpdateTxFee =
       const { defaultGasLimit, gasLimit, gasFeeParamsBySpeed, selectedGasFee, chainId, currentBlockParams } = getState().gas;
 
       const { nativeCurrency } = getState().settings;
-      if (isEmpty(gasFeeParamsBySpeed) || (needsL1SecurityFeeChains.includes(chainId) && l1GasFeeOptimism === null)) {
+      if (isEmpty(gasFeeParamsBySpeed) || (getNeedsL1SecurityFeeChains().includes(chainId) && l1GasFeeOptimism === null)) {
         // if fee prices not ready, we need to store the gas limit for future calculations
         // the rest is as the initial state value
         if (updatedGasLimit) {

@@ -23,7 +23,7 @@ import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { ChainId, Network } from '@/chains/types';
-import { chainsIdByName } from '@/chains';
+import { getChainsIdByName } from '@/chains';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -134,7 +134,7 @@ export default function DiscoverSearch() {
           network === Network.optimism;
         }
         const contractAddress = query.split('/')[1];
-        navigateToMintCollection(contractAddress, chainsIdByName[network]);
+        navigateToMintCollection(contractAddress, getChainsIdByName()[network]);
       }
     };
     checkAndHandleMint(searchQuery);

@@ -3,7 +3,7 @@ import { AddysClaimable, Claimable } from './types';
 import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, greaterThan } from '@/helpers/utilities';
 import { parseAsset } from '@/resources/assets/assets';
 import { Network } from '@/chains/types';
-import { chainsName } from '@/chains';
+import { getChainsName } from '@/chains';
 
 export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCurrencyKey): Claimable[] => {
   return claimables
@@ -20,7 +20,7 @@ export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCu
           address: claimable.asset.asset_code,
           asset: {
             ...claimable.asset,
-            network: chainsName[claimable.network] as Network,
+            network: getChainsName()[claimable.network] as Network,
             transferable: claimable.asset.transferable ?? false,
           },
         }),

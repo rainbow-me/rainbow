@@ -23,7 +23,7 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useAccountSettings } from '@/hooks';
 import { Network } from '@/chains/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { chainsIdByName } from '@/chains';
+import { getChainsIdByName } from '@/chains';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 export const CELL_HORIZONTAL_PADDING = 7;
@@ -68,7 +68,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
   const { colorMode } = useColorMode();
   const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
-  const offerChainId = chainsIdByName[offer.network as Network];
+  const offerChainId = getChainsIdByName()[offer.network as Network];
   const { data: externalAsset } = useExternalToken({
     address: offer.paymentToken.address as AddressOrEth,
     chainId: offerChainId,

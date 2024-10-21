@@ -52,7 +52,7 @@ import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { ethUnits } from '@/references';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
-import { chainsIdByName, chainsNativeAsset, defaultChains, getChainDefaultRpc } from '@/chains';
+import { getChainsIdByName, getChainsNativeAsset, getDefaultChains, getChainDefaultRpc } from '@/chains';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -94,7 +94,7 @@ export function NFTSingleOfferSheet() {
   } = useLegacyNFTs({ address: accountAddress });
 
   const { offer } = params as { offer: NftOffer };
-  const offerChainId = chainsIdByName[offer.network as Network];
+  const offerChainId = getChainsIdByName()[offer.network as Network];
   const { data: externalAsset } = useExternalToken({
     address: offer.paymentToken.address,
     chainId: offerChainId,
@@ -164,7 +164,7 @@ export function NFTSingleOfferSheet() {
   const feesPercentage = Math.floor(offer.feesPercentage * 10) / 10;
   const royaltiesPercentage = Math.floor(offer.royaltiesPercentage * 10) / 10;
 
-  const chain = defaultChains[offerChainId];
+  const chain = getDefaultChains()[offerChainId];
 
   useEffect(() => {
     setParams({ longFormHeight: height });
@@ -431,7 +431,7 @@ export function NFTSingleOfferSheet() {
   if (!isAccepting) {
     if (insufficientEth) {
       buttonLabel = lang.t('button.confirm_exchange.insufficient_token', {
-        tokenName: chainsNativeAsset[offerChainId].symbol,
+        tokenName: getChainsNativeAsset()[offerChainId].symbol,
       });
     } else {
       buttonLabel = i18n.t(i18n.l.nft_offers.single_offer_sheet.hold_to_sell);

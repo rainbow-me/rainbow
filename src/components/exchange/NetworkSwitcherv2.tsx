@@ -8,7 +8,7 @@ import { position } from '@rainbow-me/styles';
 import { useTheme } from '@/theme';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { ChainId } from '@/chains/types';
-import { chainsLabel, defaultChains, supportedSwapChainIds } from '@/chains';
+import { getChainsLabel, getDefaultChains, supportedSwapChainIds } from '@/chains';
 
 const NetworkSwitcherv2 = ({
   currentChainId,
@@ -22,11 +22,11 @@ const NetworkSwitcherv2 = ({
   const { colors } = useTheme();
   const scrollViewRef = useRef<ScrollView>(null);
   const networkMenuItems = useMemo(() => {
-    return Object.values(defaultChains)
+    return Object.values(getDefaultChains())
       .filter(chain => supportedSwapChainIds.includes(chain.id))
       .map(chain => ({
         chainId: chain.id,
-        title: chainsLabel[chain.id],
+        title: getChainsLabel()[chain.id],
       }));
   }, []);
 

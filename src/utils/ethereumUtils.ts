@@ -50,11 +50,11 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { ChainId, Network } from '@/chains/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { chainsIdByName, chainsName, chainsNativeAsset, defaultChains, getChainGasUnits } from '@/chains';
+import { getChainsIdByName, getChainsName, getChainsNativeAsset, getDefaultChains, getChainGasUnits } from '@/chains';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }) => {
-  const nativeAssetAddress = chainsNativeAsset[chainId].address;
+  const nativeAssetAddress = getChainsNativeAsset()[chainId].address;
   const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, chainId);
   return getAccountAsset(nativeAssetUniqueId);
 };
@@ -73,7 +73,7 @@ export const getNativeAssetForNetwork = async ({
 
   // If the asset is on a different wallet, or not available in this wallet
   if (differentWallet || !nativeAsset) {
-    const chainNativeAsset = chainsNativeAsset[chainId];
+    const chainNativeAsset = getChainsNativeAsset()[chainId];
     const mainnetAddress = chainNativeAsset?.address || ETH_ADDRESS;
     const nativeAssetAddress = chainNativeAsset.address as AddressOrEth;
 
@@ -88,7 +88,7 @@ export const getNativeAssetForNetwork = async ({
       // @ts-ignore
       nativeAsset = {
         ...externalAsset,
-        network: chainsName[chainId],
+        network: getChainsName()[chainId],
         uniqueId: getUniqueId(chainNativeAsset.address, chainId),
         address: chainNativeAsset.address,
         decimals: chainNativeAsset.decimals,
@@ -176,7 +176,7 @@ const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
 
 export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
   const { nativeCurrency } = store.getState().settings;
-  const address = (chainsNativeAsset[chainId]?.address || ETH_ADDRESS) as AddressOrEth;
+  const address = (getChainsNativeAsset()[chainId]?.address || ETH_ADDRESS) as AddressOrEth;
 
   const { data: nativeAsset } = useExternalToken({
     address,
@@ -278,8 +278,8 @@ const getDataString = (func: string, arrVals: string[]) => {
  */
 function getEtherscanHostForNetwork({ chainId }: { chainId: ChainId }): string {
   const base_host = 'etherscan.io';
-  const blockExplorer = defaultChains[chainId]?.blockExplorers?.default?.url;
-  const network = chainsName[chainId];
+  const blockExplorer = getDefaultChains()[chainId]?.blockExplorers?.default?.url;
+  const network = getChainsName()[chainId];
 
   if (network && isTestnetChain({ chainId })) {
     return `${network}.${base_host}`;
@@ -354,29 +354,29 @@ export const getFirstTransactionTimestamp = async (address: EthereumAddress): Pr
 };
 
 function getBlockExplorer({ chainId }: { chainId: ChainId }) {
-  return defaultChains[chainId]?.blockExplorers?.default.name || 'etherscan';
+  return getDefaultChains()[chainId]?.blockExplorers?.default.name || 'etherscan';
 }
 
 function openAddressInBlockExplorer({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
-  const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
+  const explorer = getDefaultChains()[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/address/${address}`);
 }
 
 function openTokenEtherscanURL({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
   if (!isString(address)) return;
-  const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
+  const explorer = getDefaultChains()[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/token/${address}`);
 }
 
 function openNftInBlockExplorer({ contractAddress, tokenId, chainId }: { contractAddress: string; tokenId: string; chainId: ChainId }) {
-  const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
+  const explorer = getDefaultChains()[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/token/${contractAddress}?a=${tokenId}`);
 }
 
 function openTransactionInBlockExplorer({ hash, chainId }: { hash: string; chainId: ChainId }) {
   const normalizedHash = hash.replace(/-.*/g, '');
   if (!isString(hash)) return;
-  const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
+  const explorer = getDefaultChains()[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/tx/${normalizedHash}`);
 }
 
@@ -392,14 +392,14 @@ async function parseEthereumUrl(data: string) {
   const functionName = ethUrl.function_name;
   let asset = null;
   const chainId = (ethUrl.chain_id as ChainId) || ChainId.mainnet;
-  const network = chainsName[chainId];
+  const network = getChainsName()[chainId];
   let address: any = null;
   let nativeAmount: any = null;
   const { nativeCurrency } = store.getState().settings;
 
   if (!functionName) {
     // Send native asset
-    const chainId = chainsIdByName[network];
+    const chainId = getChainsIdByName()[network];
     asset = getNetworkNativeAsset({ chainId });
 
     // @ts-ignore
@@ -455,7 +455,7 @@ export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: A
   // If the unique ID contains '_', the last part is the network and the rest is the address
   const network = parts[1] as Network; // Assuming the last part is a valid Network enum value
   const address = parts[0] as AddressOrEth;
-  const chainId = chainsIdByName[network];
+  const chainId = getChainsIdByName()[network];
 
   return { address, chainId };
 };

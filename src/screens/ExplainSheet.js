@@ -24,7 +24,7 @@ import * as i18n from '@/languages';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ChainId } from '@/chains/types';
-import { chainsLabel } from '@/chains';
+import { getChainsLabel } from '@/chains';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -79,7 +79,7 @@ const FLOOR_PRICE_EXPLAINER = lang.t('explain.floor_price.text');
 const gasExplainer = network => lang.t('explain.gas.text', { networkName: network });
 
 const availableNetworksExplainer = (tokenSymbol, chainIds) => {
-  const readableNetworks = chainIds?.map(chainId => chainsLabel[chainId])?.join(', ');
+  const readableNetworks = chainIds?.map(chainId => getChainsLabel()[chainId])?.join(', ');
 
   return lang.t('explain.available_networks.text', {
     tokenSymbol: tokenSymbol,
@@ -211,7 +211,7 @@ export const explainers = (params, theme) => {
       title: params?.inputToken
         ? lang.t(`explain.output_disabled.${params?.isCrosschainSwap ? 'title_crosschain' : 'title'}`, {
             inputToken: params?.inputToken,
-            fromNetwork: chainsLabel[fromChainId],
+            fromNetwork: getChainsLabel()[fromChainId],
           })
         : lang.t('explain.output_disabled.title_empty'),
 
@@ -219,11 +219,11 @@ export const explainers = (params, theme) => {
         ? lang.t(`explain.output_disabled.${params?.isBridgeSwap ? 'text_bridge' : 'text_crosschain'}`, {
             inputToken: params?.inputToken,
             outputToken: params?.outputToken,
-            fromNetwork: chainsLabel[fromChainId],
-            toNetwork: chainsLabel[toChainId],
+            fromNetwork: getChainsLabel()[fromChainId],
+            toNetwork: getChainsLabel()[toChainId],
           })
         : lang.t('explain.output_disabled.text', {
-            fromNetwork: chainsLabel[fromChainId],
+            fromNetwork: getChainsLabel()[fromChainId],
             inputToken: params?.inputToken,
             outputToken: params?.outputToken,
           }),
@@ -251,9 +251,9 @@ export const explainers = (params, theme) => {
         />
       ),
       extraHeight: 2,
-      text: gasExplainer(chainsLabel[chainId]),
+      text: gasExplainer(getChainsLabel()[chainId]),
       title: lang.t('explain.gas.title', {
-        networkName: chainsLabel[chainId],
+        networkName: getChainsLabel()[chainId],
       }),
     },
     ens_primary_name: {
@@ -534,14 +534,14 @@ export const explainers = (params, theme) => {
     },
     swapResetInputs: {
       button: {
-        label: `Continue with ${chainsLabel[chainId]}`,
+        label: `Continue with ${getChainsLabel()[chainId]}`,
         bgColor: colors?.networkColors[chainId] && colors?.alpha(colors?.networkColors[chainId], 0.06),
         textColor: colors?.networkColors?.[chainId],
       },
       emoji: '🔐',
       extraHeight: -90,
       text: SWAP_RESET_EXPLAINER,
-      title: `Switching to ${chainsLabel[chainId]}`,
+      title: `Switching to ${getChainsLabel()[chainId]}`,
       logo:
         chainId !== ChainId.mainnet ? (
           <ChainBadge chainId={chainId} marginBottom={8} position="relative" size="large" />

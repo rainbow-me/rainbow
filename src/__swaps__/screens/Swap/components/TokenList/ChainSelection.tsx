@@ -18,7 +18,7 @@ import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { showActionSheetWithOptions } from '@/utils';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { chainsLabel, chainsName } from '@/chains';
+import { getChainsLabel, getChainsName } from '@/chains';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -48,10 +48,10 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
 
   const chainName = useDerivedValue(() => {
     return output
-      ? chainsLabel[selectedOutputChainId.value]
+      ? getChainsLabel()[selectedOutputChainId.value]
       : inputListFilter.value === 'all'
         ? allText
-        : chainsLabel[inputListFilter.value as ChainId];
+        : getChainsLabel()[inputListFilter.value as ChainId];
   });
 
   const handleSelectChain = useCallback(
@@ -78,11 +78,11 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
     const supportedChains = balanceSortedChainList.map(chainId => {
       return {
         actionKey: `${chainId}`,
-        actionTitle: chainsLabel[chainId],
+        actionTitle: getChainsLabel()[chainId],
         icon: {
           iconType: 'ASSET',
           // NOTE: chainsName[chainId] for mainnet is 'mainnet' and we need it to be 'ethereum'
-          iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${chainsName[chainId]}BadgeNoShadow`,
+          iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${getChainsName()[chainId]}BadgeNoShadow`,
         },
       };
     });

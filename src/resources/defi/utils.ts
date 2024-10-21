@@ -14,7 +14,7 @@ import {
 import { add, convertAmountToNativeDisplay, convertRawAmountToNativeDisplay, subtract } from '@/helpers/utilities';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ethereumUtils } from '@/utils';
-import { chainsIdByName } from '@/chains';
+import { getChainsIdByName } from '@/chains';
 
 export const parsePosition = (position: Position, currency: NativeCurrencyKey): RainbowPosition => {
   let totalDeposits = '0';
@@ -135,7 +135,7 @@ export const parsePositions = (data: AddysPositionsResponse, currency: NativeCur
 
   parsedPositions.forEach(({ deposits }) => {
     deposits.forEach(({ asset }) => {
-      const uniqueId = ethereumUtils.getUniqueId(asset.asset_code.toLowerCase(), chainsIdByName[asset.network]);
+      const uniqueId = ethereumUtils.getUniqueId(asset.asset_code.toLowerCase(), getChainsIdByName()[asset.network]);
       positionTokens.push(uniqueId);
     });
   });

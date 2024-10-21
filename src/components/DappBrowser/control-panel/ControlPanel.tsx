@@ -62,7 +62,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
 import { ChainId } from '@/chains/types';
-import { chainsLabel, defaultChains } from '@/chains';
+import { getChainsLabel, getDefaultChains } from '@/chains';
 
 const PAGES = {
   HOME: 'home',
@@ -183,12 +183,12 @@ export const ControlPanel = () => {
   const { testnetsEnabled } = store.getState().settings;
 
   const allNetworkItems = useMemo(() => {
-    return Object.values(defaultChains)
+    return Object.values(getDefaultChains())
       .filter(({ testnet }) => testnetsEnabled || !testnet)
       .map(chain => {
         return {
           IconComponent: <ChainImage chainId={chain.id} size={36} />,
-          label: chainsLabel[chain.id],
+          label: getChainsLabel()[chain.id],
           secondaryLabel: i18n.t(
             isConnected && chain.id === currentChainId
               ? i18n.l.dapp_browser.control_panel.connected

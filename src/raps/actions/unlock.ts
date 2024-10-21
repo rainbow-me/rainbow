@@ -20,7 +20,7 @@ import { overrideWithFastSpeedIfNeeded } from './../utils';
 import { toHex } from '@/__swaps__/utils/hex';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
-import { chainsName } from '@/chains';
+import { getChainsName } from '@/chains';
 
 export const getAssetRawAllowance = async ({
   owner,
@@ -270,7 +270,7 @@ export const unlock = async ({
   const transaction = {
     asset: {
       ...assetToUnlock,
-      network: chainsName[assetToUnlock.chainId],
+      network: getChainsName()[assetToUnlock.chainId],
       colors: assetToUnlock.colors as TokenColors,
     } as ParsedAsset,
     data: approval.data,
@@ -279,7 +279,7 @@ export const unlock = async ({
     from: parameters.fromAddress,
     to: assetAddress,
     hash: approval.hash as TxHash,
-    network: chainsName[chainId],
+    network: getChainsName()[chainId],
     chainId: approval.chainId,
     nonce: approval.nonce,
     status: TransactionStatus.pending,

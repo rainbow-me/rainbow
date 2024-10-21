@@ -8,7 +8,7 @@ import { promiseUtils } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
-import { chainsIdByName, chainsName } from '@/chains';
+import { getChainsIdByName, getChainsName } from '@/chains';
 import { analyticsV2 } from '@/analytics';
 
 export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 4 });
@@ -23,7 +23,7 @@ const getUniqueId = (address: AddressOrEth, chainId: ChainId) => getStandardized
 async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
   const favoritesMetadata: Record<UniqueId, RainbowToken> = {};
   const newFavoritesMeta: Record<UniqueId, RainbowToken> = {};
-  const network = chainsName[chainId];
+  const network = getChainsName()[chainId];
 
   // Map addresses to an array of promises returned by fetchExternalToken
   const fetchPromises: Promise<void>[] = addresses.map(async address => {
@@ -96,7 +96,7 @@ export async function refreshFavorites() {
 
   const updatedMetadataByNetwork = await Promise.all(
     Object.entries(favoritesByNetwork).map(async ([network, networkFavorites]) =>
-      fetchMetadata(networkFavorites, chainsIdByName[network as Network])
+      fetchMetadata(networkFavorites, getChainsIdByName()[network as Network])
     )
   );
 
