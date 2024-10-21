@@ -20963,6 +20963,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-addon-api@npm:^5.0.0":
+  version: 5.1.0
+  resolution: "node-addon-api@npm:5.1.0"
+  dependencies:
+    node-gyp: "npm:latest"
+  checksum: 10c0/0eb269786124ba6fad9df8007a149e03c199b3e5a3038125dfb3e747c2d5113d406a4e33f4de1ea600aa2339be1f137d55eba1a73ee34e5fff06c52a5c296d1d
+  languageName: node
+  linkType: hard
+
 "node-addon-api@npm:^6.1.0":
   version: 6.1.0
   resolution: "node-addon-api@npm:6.1.0"
@@ -25075,14 +25084,14 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   linkType: hard
 
 "secp256k1@npm:^4.0.1":
-  version: 4.0.3
-  resolution: "secp256k1@npm:4.0.3"
+  version: 4.0.4
+  resolution: "secp256k1@npm:4.0.4"
   dependencies:
-    elliptic: "npm:^6.5.4"
-    node-addon-api: "npm:^2.0.0"
+    elliptic: "npm:^6.5.7"
+    node-addon-api: "npm:^5.0.0"
     node-gyp: "npm:latest"
     node-gyp-build: "npm:^4.2.0"
-  checksum: 10c0/de0a0e525a6f8eb2daf199b338f0797dbfe5392874285a145bb005a72cabacb9d42c0197d0de129a1a0f6094d2cc4504d1f87acb6a8bbfb7770d4293f252c401
+  checksum: 10c0/cf7a74343566d4774c64332c07fc2caf983c80507f63be5c653ff2205242143d6320c50ee4d793e2b714a56540a79e65a8f0056e343b25b0cdfed878bc473fd8
   languageName: node
   linkType: hard
 
