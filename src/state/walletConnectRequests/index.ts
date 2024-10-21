@@ -1,5 +1,6 @@
 import { WalletconnectRequestData } from '@/walletConnect/types';
 import { createStore } from '../internal/createStore';
+import { omitFlatten } from '@/helpers/utilities';
 import create from 'zustand';
 
 interface RequestsState {
@@ -43,6 +44,19 @@ export const walletConnectRequestsStore = createStore<WalletConnectRequestsState
       });
       return true;
     },
+    removeWalletConnectRequest: ({ accountAddress, walletConnectRequestId }) => {
+      const { walletConnectRequests: currentWalletConnectRequests } = get();
+      const addressWalletConnectRequests = currentWalletConnectRequests[accountAddress] || {};
+      const updatedRequests = omitFlatten(addressWalletConnectRequests, [walletConnectRequestId]);
+      set({
+        walletConnectRequests: {
+          ...currentWalletConnectRequests,
+          [accountAddress]: {
+            ...updatedRequests,
+          },
+        },
+      });
+    },
   }),
   {
     persist: {
@@ -63,4 +77,15 @@ export const addNewWalletConnectRequest = ({
 }): boolean => {
   const { addWalletConnectRequest } = walletConnectRequestsStore.getState();
   return addWalletConnectRequest({ accountAddress, walletConnectRequest });
+};
+
+export const removeWalletConnectRequest = ({
+  accountAddress,
+  walletConnectRequestId,
+}: {
+  accountAddress: string;
+  walletConnectRequestId: number;
+}): void => {
+  const { removeWalletConnectRequest: removeWCRequest } = walletConnectRequestsStore.getState();
+  removeWCRequest({ accountAddress, walletConnectRequestId });
 };
