@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useRoute } from '@react-navigation/native';
-import lang from 'i18n-js';
+import * as lang from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { Linking, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,7 +20,6 @@ import { cloudPlatformAccountName } from '@/utils/platform';
 import { useTheme } from '@/theme';
 import { isL2Chain } from '@/handlers/web3';
 import { IS_ANDROID } from '@/env';
-import * as i18n from '@/languages';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ChainId } from '@/chains/types';
@@ -76,6 +75,35 @@ const SENDING_FUNDS_TO_CONTRACT = lang.t('explain.sending_to_contract.text');
 
 const FLOOR_PRICE_EXPLAINER = lang.t('explain.floor_price.text');
 
+const networkExplainer = ({ emoji = '⛽️', chainId, ...props }) => {
+  const chainName = chainsLabel[chainId];
+
+  let title = lang.t(`explain.default_network_explainer.title`, { chainName });
+  let text = lang.t(`explain.default_network_explainer.text`, { chainName });
+
+  try {
+    title = lang.t(`explain.${chainName.toLowerCase()}.title`);
+    text = lang.t(`explain.${chainName.toLowerCase()}.text`, { chainName });
+  } catch (e) {
+    // do nothing
+  }
+
+  return {
+    emoji,
+    title,
+    text,
+    logo: <ChainBadge chainId={chainId} marginBottom={8} position="relative" size="large" />,
+    extraHeight: IS_ANDROID ? 120 : 144,
+    readMoreLink: buildRainbowLearnUrl({
+      url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
+      query: {
+        campaign: 'explain',
+      },
+    }),
+    ...props,
+  };
+};
+
 const gasExplainer = network => lang.t('explain.gas.text', { networkName: network });
 
 const availableNetworksExplainer = (tokenSymbol, chainIds) => {
@@ -104,26 +132,6 @@ const MAX_BASE_FEE_EXPLAINER = lang.t('explain.max_base_fee.text');
 const MINER_TIP_EXPLAINER = lang.t('explain.miner_tip.text');
 
 const VERIFIED_EXPLAINER = lang.t('explain.verified.text');
-
-const OPTIMISM_EXPLAINER = lang.t('explain.optimism.text');
-
-const ARBITRUM_EXPLAINER = lang.t('explain.arbitrum.text');
-
-const POLYGON_EXPLAINER = lang.t('explain.polygon.text');
-
-const BSC_EXPLAINER = lang.t('explain.bsc.text');
-
-const BASE_EXPLAINER = lang.t('explain.base.text');
-
-const AVALANCHE_EXPLAINER = lang.t('explain.avalanche.text');
-
-const DEGEN_EXPLAINER = lang.t('explain.degen.text');
-
-const BLAST_EXPLAINER = lang.t('explain.blast.text');
-
-const APECHAIN_EXPLAINER = lang.t('explain.apechain.text');
-
-const ZORA_EXPLAINER = lang.t('explain.zora.text');
 
 const SWAP_RESET_EXPLAINER = `Rainbow doesn’t have the ability to swap across networks yet, but we’re on it. For now, Rainbow will match networks between selected tokens.`;
 
@@ -166,8 +174,8 @@ export const explainers = (params, theme) => {
   return {
     op_rewards_airdrop_timing: {
       emoji: '📦',
-      title: i18n.t(i18n.l.rewards.op.airdrop_timing.title),
-      text: i18n.t(i18n.l.rewards.op.airdrop_timing.text),
+      title: lang.t(lang.l.rewards.op.airdrop_timing.title),
+      text: lang.t(lang.l.rewards.op.airdrop_timing.text),
       extraHeight: IS_ANDROID ? -65 : 10,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/OP-rewards-with-Rainbow',
@@ -178,34 +186,34 @@ export const explainers = (params, theme) => {
     },
     op_rewards_amount_distributed: {
       emoji: '💰',
-      title: i18n.t(i18n.l.rewards.op.amount_distributed.title),
-      text: i18n.t(i18n.l.rewards.op.amount_distributed.text),
+      title: lang.t(lang.l.rewards.op.amount_distributed.title),
+      text: lang.t(lang.l.rewards.op.amount_distributed.text),
       extraHeight: IS_ANDROID ? -110 : -65,
     },
     op_rewards_bridge: {
       emoji: '🌉',
-      title: i18n.t(i18n.l.rewards.op.bridge.title, {
+      title: lang.t(lang.l.rewards.op.bridge.title, {
         percent: params?.percent || 0,
       }),
-      text: i18n.t(i18n.l.rewards.op.bridge.text, {
+      text: lang.t(lang.l.rewards.op.bridge.text, {
         percent: params?.percent || 0,
       }),
       extraHeight: IS_ANDROID ? -65 : 10,
     },
     op_rewards_swap: {
       emoji: '🔀',
-      title: i18n.t(i18n.l.rewards.op.swap.title, {
+      title: lang.t(lang.l.rewards.op.swap.title, {
         percent: params?.percent || 0,
       }),
-      text: i18n.t(i18n.l.rewards.op.swap.text, {
+      text: lang.t(lang.l.rewards.op.swap.text, {
         percent: params?.percent || 0,
       }),
       extraHeight: IS_ANDROID ? -65 : 10,
     },
     op_rewards_position: {
       emoji: '🏆',
-      title: i18n.t(i18n.l.rewards.op.position.title),
-      text: i18n.t(i18n.l.rewards.op.position.text),
+      title: lang.t(lang.l.rewards.op.position.title),
+      text: lang.t(lang.l.rewards.op.position.text),
       extraHeight: IS_ANDROID ? -110 : -65,
     },
     output_disabled: {
@@ -379,136 +387,6 @@ export const explainers = (params, theme) => {
         </Text>
       ),
     },
-    optimism: {
-      emoji: '⛽️',
-      extraHeight: 150,
-      logo: <ChainBadge chainId={ChainId.optimism} marginBottom={8} position="relative" size="large" />,
-      readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
-        query: {
-          campaign: 'explain',
-        },
-      }),
-      text: OPTIMISM_EXPLAINER,
-      title: lang.t('explain.optimism.title'),
-    },
-    arbitrum: {
-      emoji: '⛽️',
-      extraHeight: 144,
-      logo: <ChainBadge chainId={ChainId.arbitrum} marginBottom={8} position="relative" size="large" />,
-      readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
-        query: {
-          campaign: 'explain',
-        },
-      }),
-      text: ARBITRUM_EXPLAINER,
-      title: lang.t('explain.arbitrum.title'),
-    },
-    polygon: {
-      emoji: '⛽️',
-      extraHeight: 120,
-      logo: <ChainBadge chainId={ChainId.polygon} marginBottom={8} position="relative" size="large" />,
-      readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
-        query: {
-          campaign: 'explain',
-        },
-      }),
-      text: POLYGON_EXPLAINER,
-      title: lang.t('explain.polygon.title'),
-    },
-    bsc: {
-      emoji: '⛽️',
-      extraHeight: IS_ANDROID ? 120 : 160,
-      logo: <ChainBadge chainId={ChainId.bsc} marginBottom={8} position="relative" size="large" />,
-      readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
-        query: {
-          campaign: 'explain',
-        },
-      }),
-      text: BSC_EXPLAINER,
-      title: lang.t('explain.bsc.title'),
-    },
-    zora: {
-      emoji: '⛽️',
-      extraHeight: 144,
-      logo: <ChainBadge chainId={ChainId.zora} marginBottom={8} position="relative" size="large" />,
-      readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
-        query: {
-          campaign: 'explain',
-        },
-      }),
-      text: ZORA_EXPLAINER,
-      title: lang.t('explain.zora.title'),
-    },
-    base: {
-      emoji: '⛽️',
-      extraHeight: 144,
-      logo: <ChainBadge chainId={ChainId.base} marginBottom={8} position="relative" size="large" />,
-      readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
-        query: {
-          campaign: 'explain',
-        },
-      }),
-      text: BASE_EXPLAINER,
-      title: lang.t('explain.base.title'),
-    },
-    avalanche: {
-      emoji: '⛽️',
-      extraHeight: 144,
-      logo: <ChainBadge chainId={ChainId.avalanche} marginBottom={8} position="relative" size="large" />,
-      readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
-        query: {
-          campaign: 'explain',
-        },
-      }),
-      text: AVALANCHE_EXPLAINER,
-      title: lang.t('explain.avalanche.title'),
-    },
-    degen: {
-      emoji: '⛽️',
-      extraHeight: 144,
-      logo: <ChainBadge chainId={ChainId.degen} marginBottom={8} position="relative" size="large" />,
-      readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
-        query: {
-          campaign: 'explain',
-        },
-      }),
-      text: DEGEN_EXPLAINER,
-      title: lang.t('explain.degen.title'),
-    },
-    blast: {
-      emoji: '⛽️',
-      extraHeight: 144,
-      logo: <ChainBadge chainId={ChainId.blast} marginBottom={8} position="relative" size="large" />,
-      readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
-        query: {
-          campaign: 'explain',
-        },
-      }),
-      text: BLAST_EXPLAINER,
-      title: lang.t('explain.blast.title'),
-    },
-    apechain: {
-      emoji: '⛽️',
-      extraHeight: 144,
-      logo: <ChainBadge chainId={ChainId.apechain} marginBottom={8} position="relative" size="large" />,
-      readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
-        query: {
-          campaign: 'explain',
-        },
-      }),
-      text: APECHAIN_EXPLAINER,
-      title: lang.t('explain.apechain.title'),
-    },
     failed_wc_connection: {
       emoji: '😵',
       extraHeight: -50,
@@ -566,8 +444,8 @@ export const explainers = (params, theme) => {
     },
     f2cSemiSupportedAssetPurchased: {
       emoji: '🎉',
-      title: i18n.t(i18n.l.wallet.add_cash_v2.explain_sheet.semi_supported.title),
-      text: i18n.t(i18n.l.wallet.add_cash_v2.explain_sheet.semi_supported.title),
+      title: lang.t(lang.l.wallet.add_cash_v2.explain_sheet.semi_supported.title),
+      text: lang.t(lang.l.wallet.add_cash_v2.explain_sheet.semi_supported.title),
       extraHeight: -80,
     },
     insufficientLiquidity: {
@@ -1011,6 +889,10 @@ const ExplainSheet = () => {
   }, [params, type]);
 
   const explainSheetConfig = useMemo(() => {
+    if (type === 'network') {
+      return networkExplainer({ chainId: params.chainId });
+    }
+
     return explainers(params, theme)[type];
   }, [theme, params, type]);
   const handleClose = useCallback(() => {
