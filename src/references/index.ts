@@ -53,24 +53,9 @@ export const POAP_BASE_URL = 'https://poap.website/';
 
 export const ETH_ADDRESS = 'eth';
 export const ETH_SYMBOL = 'ETH';
-export const ARBITRUM_ETH_ADDRESS = AddressZero;
-export const OPTIMISM_ETH_ADDRESS = AddressZero;
-export const ZORA_ETH_ADDRESS = AddressZero;
-export const BASE_ETH_ADDRESS = AddressZero;
 export const BNB_BSC_ADDRESS = AddressZero;
-export const BNB_MAINNET_ADDRESS = '0xb8c77482e45f1f44de1745f52c74426c631bdd52';
 export const MATIC_MAINNET_ADDRESS = '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
 export const MATIC_POLYGON_ADDRESS = '0x0000000000000000000000000000000000001010';
-export const DEGEN_CHAIN_DEGEN_ADDRESS = AddressZero;
-export const AVAX_AVALANCHE_ADDRESS = AddressZero;
-export const WAVAX_AVALANCHE_ADDRESS = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7';
-export const BLAST_ETH_ADDRESS = AddressZero;
-export const DAI_AVALANCHE_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
-export const USDC_AVALANCHE_ADDRESS = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
-export const WBTC_AVALANCHE_ADDRESS = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
-export const APECOIN_MAINNET_ADDRESS = '0x4d224452801aced8b2f0aebe155379bb5d594381';
-export const APECOIN_ARBITRUM_ADDRESS = '0x7f9FBf9bDd3F4105C478b996B648FE6e828a1e98';
-export const APECOIN_APECHAIN_ADDRESS = AddressZero;
 
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 export const WETH_POLYGON_ADDRESS = '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619';
@@ -83,17 +68,10 @@ export const WBNB_BSC_ADDRESS = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c';
 export const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
 export const USDC_ADDRESS = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
 export const USDC_POLYGON_ADDRESS = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
-export const USDT_ADDRESS = '0xdac17f958d2ee523a2206206994597c13d831ec7';
-export const TUSD_ADDRESS = '0x0000000000085d4780b73119b644ae5ecd22b376';
-export const BUSD_ADDRESS = '0x4fabb145d64652a948d72533023f6e7a623c7c53';
-export const SUSD_ADDRESS = '0x57ab1ec28d129707052df4df418d58a2d46d5f51';
-export const GUSD_ADDRESS = '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd';
 export const SOCKS_ADDRESS = '0x23b608675a2b2fb1890d3abbd85c5775c51691d5';
 export const WBTC_ADDRESS = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
 export const DOG_ADDRESS = '0xbaac2b4491727d78d2b78815144570b9f2fe8899';
 export const OP_ADDRESS = '0x4200000000000000000000000000000000000042';
-
-export const BASE_DEGEN_ADDRESS = '0x4ed4e862860bed51a9570b96d89af5e1b0efefed';
 
 export const TRANSFER_EVENT_TOPIC_LENGTH = 3;
 export const TRANSFER_EVENT_KECCAK = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
