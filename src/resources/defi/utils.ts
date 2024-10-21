@@ -17,7 +17,7 @@ import { ethereumUtils } from '@/utils';
 import { chainsIdByName } from '@/chains';
 
 export const parsePosition = (position: Position, currency: NativeCurrencyKey): RainbowPosition => {
-  let totalOmittedFromTotals = '0';
+  let totalLocked = '0';
 
   let totalDeposits = '0';
   const parsedDeposits = position.deposits?.map((deposit): RainbowDeposit => {
@@ -32,7 +32,7 @@ export const parsePosition = (position: Position, currency: NativeCurrencyKey): 
         );
 
         if (deposit.omit_from_total) {
-          totalOmittedFromTotals = add(totalOmittedFromTotals, nativeDisplay.amount);
+          totalLocked = add(totalLocked, nativeDisplay.amount);
         }
         totalDeposits = add(totalDeposits, nativeDisplay.amount);
 
@@ -58,7 +58,7 @@ export const parsePosition = (position: Position, currency: NativeCurrencyKey): 
         );
 
         if (borrow.omit_from_total) {
-          totalOmittedFromTotals = subtract(totalOmittedFromTotals, nativeDisplay.amount);
+          totalLocked = subtract(totalLocked, nativeDisplay.amount);
         }
 
         totalBorrows = add(totalBorrows, nativeDisplay.amount);
@@ -76,7 +76,7 @@ export const parsePosition = (position: Position, currency: NativeCurrencyKey): 
     const nativeDisplay = convertRawAmountToNativeDisplay(claim.quantity, claim.asset.decimals, claim.asset.price?.value!, currency);
 
     if (claim.omit_from_total) {
-      totalOmittedFromTotals = add(totalOmittedFromTotals, nativeDisplay.amount);
+      totalLocked = add(totalLocked, nativeDisplay.amount);
     }
     totalClaimables = add(totalClaimables, nativeDisplay.amount);
 
@@ -92,7 +92,7 @@ export const parsePosition = (position: Position, currency: NativeCurrencyKey): 
       amount: subtract(add(totalDeposits, totalClaimables), totalBorrows),
       display: convertAmountToNativeDisplay(subtract(add(totalDeposits, totalClaimables), totalBorrows), currency),
     },
-    totalOmittedFromTotals,
+    totalLocked,
     borrows: {
       amount: totalBorrows,
       display: convertAmountToNativeDisplay(totalBorrows, currency),
@@ -153,7 +153,7 @@ export const parsePositions = (data: AddysPositionsResponse, currency: NativeCur
 
   const positionsTotals = parsedPositions.reduce(
     (acc, position) => ({
-      totalOmittedFromTotals: add(acc.totalOmittedFromTotals, position.totals.totalOmittedFromTotals),
+      totalLocked: add(acc.totalLocked, position.totals.totalLocked),
       borrows: {
         amount: add(acc.borrows.amount, position.totals.borrows.amount),
         display: convertAmountToNativeDisplay(add(acc.borrows.amount, position.totals.borrows.amount), currency),
@@ -168,7 +168,7 @@ export const parsePositions = (data: AddysPositionsResponse, currency: NativeCur
       },
     }),
     {
-      totalOmittedFromTotals: '0',
+      totalLocked: '0',
       borrows: { amount: '0', display: '0' },
       claimables: { amount: '0', display: '0' },
       deposits: { amount: '0', display: '0' },
@@ -176,21 +176,12 @@ export const parsePositions = (data: AddysPositionsResponse, currency: NativeCur
   );
 
   const totalAmount = subtract(add(positionsTotals.deposits.amount, positionsTotals.claimables.amount), positionsTotals.borrows.amount);
-  const omittedTotal = subtract(totalAmount, positionsTotals.totalOmittedFromTotals);
 
   return {
     totals: {
       total: {
         amount: totalAmount,
         display: convertAmountToNativeDisplay(totalAmount, currency),
-      },
-      /**
-       * omittedTotal is the total WITHOUT the positions that are omitted
-       * used for the total wallet balance, the position card still shows the normal total
-       */
-      omittedTotal: {
-        amount: omittedTotal,
-        display: convertAmountToNativeDisplay(omittedTotal, currency),
       },
       ...positionsTotals,
     },
