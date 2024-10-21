@@ -36,7 +36,6 @@ jest.mock('react-native', () => ({
 jest.mock('@react-native-firebase/messaging', () => ({}));
 
 jest.mock('@/redux/store');
-jest.mock('@/redux/requests');
 jest.mock('@/navigation/Navigation', () => ({
   handleAction: jest.fn(),
 }));
