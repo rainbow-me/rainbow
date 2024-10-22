@@ -130,6 +130,10 @@ export interface BackendNetworkServices {
   };
   swap: {
     enabled: boolean;
+    swap: boolean;
+    swapExactOutput: boolean;
+    bridge: boolean;
+    bridgeExactOutput: boolean;
   };
   addys: {
     approvals: boolean;
