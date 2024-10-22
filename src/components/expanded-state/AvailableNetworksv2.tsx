@@ -1,8 +1,8 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import Divider from '@/components/Divider';
-import ChainBadge from '@/components/coin-icon/ChainBadge';
+import Divider from '../Divider';
+import ChainBadge from '../coin-icon/ChainBadge';
 import { Box, Inline, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -26,7 +26,6 @@ import { InteractionManager } from 'react-native';
 import { ChainId } from '@/chains/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { getChainsLabel, getChainsName, getDefaultChains, supportedSwapChainIds } from '@/chains';
-import { isL2Chain } from '@/handlers/web3';
 
 const NOOP = () => null;
 
@@ -56,13 +55,6 @@ const AvailableNetworksv2 = ({
       overflow: 'hidden',
     },
   };
-
-  const availableChainIds = useMemo(() => {
-    // we dont want to show mainnet
-    return Object.keys(networks)
-      .filter(chainId => Number(chainId) !== ChainId.mainnet)
-      .map(chainId => Number(chainId));
-  }, [networks]);
 
   const { updateInputCurrency } = useSwapCurrencyHandlers({
     shouldUpdate: true,
@@ -162,6 +154,13 @@ const AvailableNetworksv2 = ({
     [convertAssetAndNavigate]
   );
 
+  const availableChainIds = useMemo(() => {
+    // we dont want to show mainnet
+    return Object.keys(networks)
+      .filter(chainId => Number(chainId) !== ChainId.mainnet)
+      .map(chainId => Number(chainId));
+  }, [networks]);
+
   const handlePressButton = useCallback(() => {
     convertAssetAndNavigate(availableChainIds[0]);
   }, [availableChainIds, convertAssetAndNavigate]);
@@ -170,11 +169,11 @@ const AvailableNetworksv2 = ({
     .filter(chainId => chainId !== ChainId.mainnet)
     .map(chainId => getDefaultChains()[chainId])
     .map(chain => ({
-      actionKey: chain.id,
+      actionKey: `${chain.id}`,
       actionTitle: getChainsLabel()[chain.id],
       icon: {
         iconType: 'ASSET',
-        iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
+        iconValue: `${getChainsName()[chain.id]}Badge${chain.id === ChainId.mainnet ? '' : 'NoShadow'}`,
       },
     }));
 

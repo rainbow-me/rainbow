@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { estimateGas, web3Provider, toHex } from '@/handlers/web3';
+import { estimateGas, toHex } from '@/handlers/web3';
 import { convertHexToString, omitFlatten } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { ethereumUtils } from '@/utils';
@@ -15,7 +15,7 @@ import { getNeedsL1SecurityFeeChains } from '@/chains';
 type CalculateGasLimitProps = {
   isMessageRequest: boolean;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed;
-  provider: StaticJsonRpcProvider | null;
+  provider: StaticJsonRpcProvider;
   req: any;
   updateTxFee: ReturnType<typeof useGas>['updateTxFee'];
   chainId: ChainId;
@@ -54,7 +54,7 @@ export const useCalculateGasLimit = ({
 
       const needsL1SecurityFee = getNeedsL1SecurityFeeChains().includes(chainId);
       if (needsL1SecurityFee) {
-        const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txPayload, provider || web3Provider);
+        const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txPayload, provider);
         updateTxFee(gas, null, l1GasFeeOptimism);
       } else {
         updateTxFee(gas, null);

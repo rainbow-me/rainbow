@@ -203,7 +203,7 @@ export const estimateSwapGasLimit = async ({
   requiresApprove?: boolean;
   tradeDetails: Quote | null;
 }): Promise<string | number> => {
-  const provider = await getProvider({ chainId });
+  const provider = getProvider({ chainId });
   if (!provider || !tradeDetails) {
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
@@ -270,7 +270,7 @@ export const estimateCrosschainSwapGasLimit = async ({
   requiresApprove?: boolean;
   tradeDetails: CrosschainQuote;
 }): Promise<string | number> => {
-  const provider = await getProvider({ chainId });
+  const provider = getProvider({ chainId });
   if (!provider || !tradeDetails) {
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }

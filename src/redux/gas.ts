@@ -137,6 +137,9 @@ const getUpdatedGasFeeParams = (
     case ChainId.degen:
       nativeTokenPriceUnit = ethereumUtils.getDegenPriceUnit();
       break;
+    case ChainId.apechain:
+      nativeTokenPriceUnit = ethereumUtils.getApechainPriceUnit();
+      break;
     default:
       nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
       break;
@@ -341,7 +344,6 @@ export const gasPricesStartPolling =
               const meteorologySupportsChainId = meteorologySupportedChainIds.includes(chainId);
               if (!meteorologySupportsChainId) {
                 const adjustedGasFees = await getProviderGasPrices({ chainId });
-
                 if (!adjustedGasFees) return;
 
                 const gasFeeParamsBySpeed = parseL2GasPrices(adjustedGasFees);
