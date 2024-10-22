@@ -67,7 +67,7 @@ interface WalletInitialized {
 interface TransactionRequestParam {
   transaction: TransactionRequest;
   existingWallet?: Signer;
-  provider?: StaticJsonRpcProvider;
+  provider: StaticJsonRpcProvider;
 }
 
 interface MessageTypeProperty {
@@ -261,7 +261,7 @@ export const loadWallet = async <S extends Screen>({
 }: {
   address?: EthereumAddress;
   showErrorIfNotLoaded?: boolean;
-  provider?: Provider;
+  provider: Provider;
   timeTracking?: ExecuteFnParamsWithoutFn<S>;
 }): Promise<null | Wallet | LedgerSigner> => {
   const addressToUse = address || (await loadAddress());
@@ -293,7 +293,7 @@ export const loadWallet = async <S extends Screen>({
   if (isHardwareWalletKey(privateKey)) {
     const index = privateKey?.split('/')[1];
     const deviceId = privateKey?.split('/')[0];
-    if (typeof index !== undefined && deviceId && provider) {
+    if (typeof index !== undefined && deviceId) {
       return new LedgerSigner(provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
     }
   } else if (privateKey) {
@@ -401,8 +401,8 @@ export const signTransaction = async ({
 
 export const signPersonalMessage = async (
   message: string | Uint8Array,
-  existingWallet?: Signer,
-  provider?: Provider
+  provider: Provider,
+  existingWallet?: Signer
 ): Promise<null | {
   result?: string;
   error?: any;
@@ -449,8 +449,8 @@ export const signPersonalMessage = async (
 
 export const signTypedDataMessage = async (
   message: string | TypedData,
-  existingWallet?: Signer,
-  provider?: Provider
+  provider: Provider,
+  existingWallet?: Signer
 ): Promise<null | {
   result?: string;
   error?: any;
