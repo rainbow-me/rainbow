@@ -14,8 +14,6 @@ import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { deviceUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
-import { useSelector } from 'react-redux';
-import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import FeesPanel from '@/components/FeesPanel';
 import FeesPanelTabs from '@/components/FeesPanelTabs';
 
@@ -43,7 +41,6 @@ export default function CustomGasState({ asset }) {
   const colorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
   const { selectedGasFee, currentBlockParams, chainId } = useGas();
   const [canGoBack, setCanGoBack] = useState(true);
-  const { tradeDetails } = useSelector(state => state.swap);
 
   const validateGasParams = useRef(null);
   useAndroidDisableGesturesOnFocus();
@@ -100,7 +97,6 @@ export default function CustomGasState({ asset }) {
           theme="dark"
           validateGasParams={validateGasParams}
           marginTop={19}
-          crossChainServiceTime={getCrosschainSwapServiceTime(tradeDetails)}
         />
       </Column>
     </SlackSheet>

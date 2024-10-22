@@ -1,6 +1,6 @@
 import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId, Network } from '@/chains/types';
-import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import { NativeCurrencyKeys, RainbowToken } from '@/entities';
 import { createQueryKey, queryClient } from '@/react-query';
 import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
@@ -14,8 +14,6 @@ import { analyticsV2 } from '@/analytics';
 export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 4 });
 
 const DEFAULT_FAVORITES = [DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS];
-
-const getUniqueId = (address: AddressOrEth, chainId: ChainId) => getStandardizedUniqueIdWorklet({ address, chainId });
 
 /**
  * Returns a map of the given `addresses` to their corresponding `RainbowToken` metadata.

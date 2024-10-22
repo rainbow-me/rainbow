@@ -11,7 +11,7 @@ import {
   sumWorklet,
   toFixedWorklet,
   toScaledIntegerWorklet,
-} from '@/__swaps__/safe-math/SafeMath';
+} from '@/safe-math/SafeMath';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
 import { ParsedAddressAsset } from '@/entities';

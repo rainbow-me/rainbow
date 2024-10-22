@@ -10,7 +10,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import { ethereumUtils, watchingAlert } from '@/utils';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
-import assetInputTypes from '@/helpers/assetInputTypes';
+import { SwapAssetType } from '@/__swaps__/types/swap';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
@@ -19,7 +19,7 @@ import { chainsIdByName, chainsName } from '@/chains';
 type SwapActionButtonProps = {
   asset: RainbowToken;
   color: string;
-  inputType: 'in' | 'out';
+  inputType: SwapAssetType;
   label?: string;
   weight?: string;
 };
@@ -68,7 +68,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, weight =
       userAsset,
     });
 
-    if (inputType === assetInputTypes.in) {
+    if (inputType === SwapAssetType.inputAsset) {
       swapsStore.setState({ inputAsset: userAsset || parsedAsset });
 
       const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork({ chainId });
