@@ -1,21 +1,32 @@
 import { QueryFunction, useQuery } from '@tanstack/react-query';
-import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
+import { QueryConfigWithSelect, createQueryKey, queryClient } from '@/react-query';
 import { fetchSimpleHashNFTListing } from '@/resources/nfts/simplehash';
 import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { UniqueAsset } from '@/entities';
 import { arcClient } from '@/graphql';
+import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 import { createSelector } from 'reselect';
-import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { ChainId } from '@/chains/types';
 
 const NFTS_STALE_TIME = 600000; // 10 minutes
 const NFTS_CACHE_TIME_EXTERNAL = 3600000; // 1 hour
 const NFTS_CACHE_TIME_INTERNAL = 604800000; // 1 week
 
-export const nftsQueryKey = ({ address, sortBy }: { address: string; sortBy: NftCollectionSortCriterion }) =>
-  createQueryKey('nfts', { address, sortBy }, { persisterVersion: 4 });
+export const nftsQueryKey = ({
+  address,
+  sortBy,
+  sortDirection,
+}: {
+  address: string;
+  sortBy: NftCollectionSortCriterion;
+  sortDirection: SortDirection;
+}) => createQueryKey('nfts', { address, sortBy, sortDirection }, { persisterVersion: 1 });
+
+export const invalidateAddressNftsQueries = (address: string) => {
+  queryClient.invalidateQueries(createQueryKey('nfts', { address }));
+};
 
 export const nftListingQueryKey = ({
   contractAddress,
@@ -53,8 +64,8 @@ interface NFTData {
 type NFTQueryKey = ReturnType<typeof nftsQueryKey>;
 
 const fetchNFTData: QueryFunction<NFTData, NFTQueryKey> = async ({ queryKey }) => {
-  const [{ address, sortBy }] = queryKey;
-  const queryResponse = await arcClient.getNFTs({ walletAddress: address, sortBy });
+  const [{ address, sortBy, sortDirection }] = queryKey;
+  const queryResponse = await arcClient.getNFTs({ walletAddress: address, sortBy, sortDirection });
 
   const nfts = queryResponse?.nftsV2?.map(nft => simpleHashNFTToUniqueAsset(nft, address));
 
@@ -77,15 +88,17 @@ const FALLBACK_DATA: NFTData = { nfts: [], nftsMap: {} };
 export function useLegacyNFTs<TSelected = NFTData>({
   address,
   sortBy = NftCollectionSortCriterion.MostRecent,
+  sortDirection = SortDirection.Desc,
   config,
 }: {
   address: string;
   sortBy?: NftCollectionSortCriterion;
+  sortDirection?: SortDirection;
   config?: QueryConfigWithSelect<NFTData, unknown, TSelected, NFTQueryKey>;
 }) {
   const isImportedWallet = useSelector((state: AppState) => isImportedWalletSelector(state, address));
 
-  const { data, error, isLoading, isInitialLoading } = useQuery(nftsQueryKey({ address, sortBy }), fetchNFTData, {
+  const { data, error, isLoading, isInitialLoading } = useQuery(nftsQueryKey({ address, sortBy, sortDirection }), fetchNFTData, {
     cacheTime: isImportedWallet ? NFTS_CACHE_TIME_INTERNAL : NFTS_CACHE_TIME_EXTERNAL,
     enabled: !!address,
     retry: 3,

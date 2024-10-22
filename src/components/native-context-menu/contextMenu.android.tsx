@@ -1,6 +1,8 @@
-import { MenuView } from '@react-native-menu/menu';
-import React, { useMemo } from 'react';
+import { MenuView, NativeActionEvent } from '@react-native-menu/menu';
+import React, { PropsWithChildren, useMemo } from 'react';
 import { useLatestCallback } from '@/hooks';
+import { NativeMenuComponentProps } from '@react-native-menu/menu/lib/typescript/src/types';
+import { MenuConfig } from './contextMenu';
 
 export default function ContextMenuAndroid({
   children,
@@ -9,16 +11,19 @@ export default function ContextMenuAndroid({
   onPressMenuItem,
   shouldOpenOnLongPress,
   style,
-  testID,
-}) {
+}: PropsWithChildren<{
+  menuConfig: MenuConfig;
+  isAnchoredToRight?: boolean;
+  onPressMenuItem: (event: { nativeEvent: { actionKey: string } }) => void;
+  shouldOpenOnLongPress?: boolean;
+  style?: NativeMenuComponentProps['style'];
+}>) {
   const actions = useMemo(() => {
     const items = [];
 
     if (menuTitle) {
       items.push({
-        attributes: {
-          disabled: true,
-        },
+        attributes: { disabled: true },
         id: 'title',
         title: menuTitle,
       });
@@ -29,13 +34,13 @@ export default function ContextMenuAndroid({
         ...(menuItems || []).map(item => ({
           id: item.actionKey,
           image: item.icon?.iconValue,
-          title: item.actionTitle || item.menuTitle,
+          title: item.actionTitle || item.menuTitle || '',
           ...(item.menuTitle && {
             titleColor: 'black',
             subactions: item.menuItems.map(item => ({
               id: item.actionKey,
               image: item.icon?.iconValue,
-              title: item.actionTitle,
+              title: item.actionTitle || '',
             })),
           }),
         }))
@@ -45,12 +50,9 @@ export default function ContextMenuAndroid({
     return items;
   }, [menuItems, menuTitle]);
 
-  const onPressAction = useLatestCallback(
-    ({ nativeEvent: { event } }) => {
-      return onPressMenuItem({ nativeEvent: { actionKey: event } });
-    },
-    [onPressMenuItem]
-  );
+  const onPressAction = useLatestCallback<({ nativeEvent }: NativeActionEvent) => void>(({ nativeEvent: { event } }) => {
+    return onPressMenuItem({ nativeEvent: { actionKey: event } });
+  });
 
   return (
     <MenuView
@@ -59,7 +61,6 @@ export default function ContextMenuAndroid({
       onPressAction={onPressAction}
       shouldOpenOnLongPress={shouldOpenOnLongPress}
       style={style}
-      testID={testID}
     >
       {children}
     </MenuView>
