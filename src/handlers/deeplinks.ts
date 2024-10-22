@@ -274,9 +274,8 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
  * already handled.
  *
  * In the case of WC, we don't want this to happen because we'll try to connect
- * to a session that's either already active or expired. In WC v1, we handled
- * this using `walletConnectUris` state in Redux. We now handle this here,
- * before we even reach application code.
+ * to a session that's either already active or expired.
+ * We handle this here, before we even reach application code.
  *
  * Important: dapps also use deeplinks to re-focus the user to our app, where
  * the socket connections then take over. So those URIs are always the same,
