@@ -3,7 +3,6 @@ import currency from 'currency.js';
 import { isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@/references';
 import { divWorklet, lessThanWorklet, orderOfMagnitudeWorklet, powWorklet } from '@/safe-math/SafeMath';
-import { buffer } from 'node:stream/consumers';
 
 type BigNumberish = number | string | BigNumber;
 
@@ -283,18 +282,11 @@ export const convertRawAmountToNativeDisplay = (
 
 /**
  * @worklet
- * @desc convert from raw amount to balance object
+ * @desc convert from raw amount to decimal format
  */
-export const convertRawAmountToBalanceWorklet = (value: number | string, asset: { decimals: number; symbol?: string }, buffer?: number) => {
+export const convertRawAmountToDecimalFormatWorklet = (value: number | string, decimals = 18): string => {
   'worklet';
-  const decimals = asset?.decimals ?? 18;
-
-  const assetBalance = convertRawAmountToDecimalFormatWorklet(value, decimals);
-
-  return {
-    amount: assetBalance,
-    display: convertAmountToBalanceDisplayWorklet(assetBalance, asset, buffer),
-  };
+  return divWorklet(value, powWorklet(10, decimals));
 };
 
 /**
@@ -309,6 +301,22 @@ export const convertAmountToBalanceDisplayWorklet = (
   const decimals = asset?.decimals ?? 18;
   const display = handleSignificantDecimalsWorklet(value, decimals, buffer);
   return `${display} ${asset?.symbol || ''}`;
+};
+
+/**
+ * @worklet
+ * @desc convert from raw amount to balance object
+ */
+export const convertRawAmountToBalanceWorklet = (value: number | string, asset: { decimals: number; symbol?: string }, buffer?: number) => {
+  'worklet';
+  const decimals = asset?.decimals ?? 18;
+
+  const assetBalance = convertRawAmountToDecimalFormatWorklet(value, decimals);
+
+  return {
+    amount: assetBalance,
+    display: convertAmountToBalanceDisplayWorklet(assetBalance, asset, buffer),
+  };
 };
 
 /**
@@ -438,14 +446,6 @@ export const convertRawAmountToRoundedDecimal = (value: BigNumberish, decimals =
   } else {
     return new BigNumber(value).dividedBy(new BigNumber(10).pow(decimals)).toNumber();
   }
-};
-
-/**
- * @desc convert from raw amount to decimal format
- */
-export const convertRawAmountToDecimalFormatWorklet = (value: number | string, decimals = 18): string => {
-  'worklet';
-  return divWorklet(value, powWorklet(10, decimals));
 };
 
 /**
