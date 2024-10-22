@@ -142,7 +142,7 @@ const getExternalAssetFromCache = (uniqueId: string) => {
 
     return cachedExternalAsset;
   } catch (e) {
-    console.log(e);
+    logger.warn(`[ethereumUtils]: Error retrieving external asset from cache: ${e}`);
   }
 };
 
@@ -159,10 +159,16 @@ const getAccountAsset = (uniqueId: EthereumAddress | undefined): ParsedAddressAs
   return accountAsset;
 };
 
-const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
-  const externalAsset = getExternalAssetFromCache(address);
+const getAssetPrice = (
+  { address, chainId }: { address: EthereumAddress; chainId: ChainId } = {
+    address: ETH_ADDRESS,
+    chainId: ChainId.mainnet,
+  }
+) => {
+  const uniqueId = getUniqueId(address, chainId);
+  const externalAsset = getExternalAssetFromCache(uniqueId);
   const genericPrice = externalAsset?.price?.value;
-  return genericPrice || getAccountAsset(address)?.price?.value || 0;
+  return genericPrice || getAccountAsset(uniqueId)?.price?.value || 0;
 };
 
 export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
@@ -180,7 +186,7 @@ export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
 
 const getPriceOfNativeAssetForNetwork = ({ chainId }: { chainId: ChainId }) => {
   const address = (chainsNativeAsset[chainId]?.address || ETH_ADDRESS) as AddressOrEth;
-  return getAssetPrice(address);
+  return getAssetPrice({ address, chainId });
 };
 
 const getBalanceAmount = (

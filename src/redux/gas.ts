@@ -38,7 +38,7 @@ import { ethUnits } from '@/references';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { ChainId } from '@/chains/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { chainsSwapPollingInterval, meteorologySupportedChainIds, needsL1SecurityFeeChains } from '@/chains';
+import { chainsNativeAsset, chainsSwapPollingInterval, meteorologySupportedChainIds, needsL1SecurityFeeChains } from '@/chains';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { addBuffer } from '@/helpers/utilities';
 
@@ -122,7 +122,13 @@ const getUpdatedGasFeeParams = (
   l1GasFeeOptimism: BigNumber | null,
   isLegacyGasNetwork: boolean
 ) => {
-  const nativeTokenPriceUnit = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId });
+  let nativeTokenPriceUnit = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
+
+  // we want to fetch the specific chain native token if anything but ETH
+  const networkNativeAsset = chainsNativeAsset[chainId];
+  if (networkNativeAsset.symbol.toLowerCase() !== 'eth') {
+    nativeTokenPriceUnit = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId });
+  }
 
   const gasFeesBySpeed = isLegacyGasNetwork
     ? parseLegacyGasFeesBySpeed(
@@ -184,7 +190,13 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (dispa
   const { nativeCurrency } = getState().settings;
   const _gasLimit = gasLimit || getDefaultGasLimit(chainId, defaultGasLimit);
 
-  const nativeTokenPriceUnit = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId });
+  let nativeTokenPriceUnit = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
+
+  // we want to fetch the specific chain native token if anything but ETH
+  const networkNativeAsset = chainsNativeAsset[chainId];
+  if (networkNativeAsset.symbol.toLowerCase() !== 'eth') {
+    nativeTokenPriceUnit = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId });
+  }
 
   const customGasFees = parseGasFees(
     gasParams,

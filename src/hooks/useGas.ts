@@ -67,13 +67,17 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
   const { nativeCurrency } = useAccountSettings();
 
   // keep native assets up to date for gas price calculations
+  // NOTE: We only fetch the native asset for mainnet and chains that don't use ETH as their native token
+  const chainsToFetch = Object.entries(chainsNativeAsset).filter(
+    ([chainId, { symbol }]) => +chainId === ChainId.mainnet || symbol.toLowerCase() !== 'eth'
+  );
   useQueries({
-    queries: Object.entries(chainsNativeAsset).map(([chainId, asset]) => ({
-      queryKey: externalTokenQueryKey({ address: asset.address, chainId: parseInt(chainId, 10), currency: nativeCurrency }),
-      queryFn: () => fetchExternalToken({ address: asset.address, chainId: parseInt(chainId, 10), currency: nativeCurrency }),
+    queries: chainsToFetch.map(([chainId, { address }]) => ({
+      queryKey: externalTokenQueryKey({ address, chainId: parseInt(chainId, 10), currency: nativeCurrency }),
+      queryFn: () => fetchExternalToken({ address, chainId: parseInt(chainId, 10), currency: nativeCurrency }),
       staleTime: EXTERNAL_TOKEN_STALE_TIME,
       cacheTime: EXTERNAL_TOKEN_CACHE_TIME,
-      enabled: !!asset.address,
+      enabled: !!address,
     })),
   });
 
