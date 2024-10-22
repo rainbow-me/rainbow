@@ -36,6 +36,7 @@ import { ChainId } from '@/chains/types';
 import { chainsName, SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
 import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
+import { removeWalletConnectRequest } from '@/state/walletConnectRequests';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',
@@ -409,6 +410,9 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
         error: null,
       });
     }
+    removeWalletConnectRequest({
+      walletConnectRequestId: request.requestId,
+    });
   };
 
   const onCancel = async (error?: Error) => {
@@ -420,6 +424,9 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
         });
       }
     }
+    removeWalletConnectRequest({
+      walletConnectRequestId: request.requestId,
+    });
   };
 
   const onCloseScreen = (canceled: boolean) => {
