@@ -25,6 +25,7 @@ import { ETH_ADDRESS } from '@/references';
 import { isZero } from '@/helpers/utilities';
 import { IS_IOS } from '@/env';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
+import { MenuConfig, MenuActionConfig } from '@/components/native-context-menu/contextMenu';
 
 type UseOnAvatarPressProps = {
   /** Is the avatar selection being used on the wallet or transaction screen? */
@@ -178,7 +179,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     ]
   );
 
-  const avatarContextMenuConfig = {
+  const avatarContextMenuConfig: MenuConfig = {
     menuTitle: '',
     menuItems: [
       isENSProfile &&
@@ -235,7 +236,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
             actionKey: 'removePhoto',
             actionTitle: lang.t('profiles.profile_avatar.remove_photo'),
           },
-    ].filter(x => x),
+    ].filter(Boolean) as readonly MenuActionConfig[],
   };
 
   const avatarActionSheetOptions = avatarContextMenuConfig.menuItems.map(item => item && item.actionTitle).concat(ios ? ['Cancel'] : []);

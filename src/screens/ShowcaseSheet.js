@@ -42,7 +42,9 @@ const LoadingWrapper = styled.View({
 });
 
 export default function ShowcaseScreen() {
-  const { params: { address: addressOrDomain, setIsSearchModeEnabled } = {} } = useRoute();
+  const {
+    params: { address: addressOrDomain },
+  } = useRoute();
 
   const theme = useTheme();
 
@@ -100,9 +102,8 @@ export default function ShowcaseScreen() {
       ...userData,
       address: accountAddress,
       addressOrDomain,
-      setIsSearchModeEnabled,
     }),
-    [userData, accountAddress, addressOrDomain, setIsSearchModeEnabled]
+    [userData, accountAddress, addressOrDomain]
   );
 
   const loading = userData === null || isInitialLoading;
