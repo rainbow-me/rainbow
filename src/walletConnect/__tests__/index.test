@@ -42,7 +42,6 @@ jest.mock('@/navigation/Navigation', () => ({
 jest.mock('@/handlers/imgix');
 jest.mock('@/utils/ethereumUtils');
 jest.mock('@/parsers/requests');
-jest.mock('@/handlers/localstorage/walletconnectRequests');
 jest.mock('@/handlers/appEvents');
 jest.mock('@/notifications/tokens');
 jest.mock('@/model/wallet');
