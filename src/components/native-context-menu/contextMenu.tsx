@@ -18,21 +18,23 @@ import {
  */
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-type IconConfig = { iconType: 'ASSET' | 'SYSTEM' | (string & {}); iconValue: string; iconTint?: string | DynamicColor };
+type IconConfig = { iconType: 'ASSET' | 'SYSTEM' | (string & {}); iconValue: string | undefined; iconTint?: string | DynamicColor };
 
-type MenuActionConfig = Readonly<
-  {
-    actionSubtitle?: string;
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    menuState?: MenuState | (string & {});
-    menuAttributes?: Array<MenuAttributes>;
-    discoverabilityTitle?: string;
-    icon?: IconConfig;
-  } & (
-    | { menuTitle: string; menuItems: Readonly<Array<MenuActionConfig>>; actionKey?: never; actionTitle?: never }
-    | { menuTitle?: never; menuItems?: never; actionKey: string; actionTitle: string }
-  )
->;
+type MenuActionConfig =
+  | false
+  | Readonly<
+      {
+        actionSubtitle?: string;
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        menuState?: MenuState | (string & {});
+        menuAttributes?: Array<MenuAttributes>;
+        discoverabilityTitle?: string;
+        icon?: IconConfig;
+      } & (
+        | { menuTitle: string; menuItems: Readonly<Array<MenuActionConfig>>; actionKey?: never; actionTitle?: never }
+        | { menuTitle?: never; menuItems?: never; actionKey: string; actionTitle: string }
+      )
+    >;
 
 export type MenuConfig = Readonly<{
   menuTitle?: string;
