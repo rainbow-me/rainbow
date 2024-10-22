@@ -224,7 +224,7 @@ const FreezableWebViewComponent = ({
             setTitle(pageTitle, tabId);
           }
           addRecent({
-            url: normalizeUrlForRecents(tabUrl),
+            url: tabUrl,
             name: pageTitle,
             image: logoUrl,
             timestamp: Date.now(),

@@ -89,9 +89,7 @@ const Routes = {
   WALLET_NOTIFICATIONS_SETTINGS: 'WalletNotificationsSettings',
   WALLET_SCREEN: 'WalletScreen',
   WELCOME_SCREEN: 'WelcomeScreen',
-
   SETTINGS_SECTION: 'SettingsSection',
-  SETTINGS_WALLET_NOTIFICATIONS: 'WalletNotificationsSettings',
   SETTINGS_BACKUP_VIEW: 'ViewWalletBackup',
   SETTINGS_SECTION_APP_ICON: 'AppIconSection',
   SETTINGS_SECTION_BACKUP: 'BackupSection',
