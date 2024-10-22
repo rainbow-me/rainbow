@@ -1,7 +1,7 @@
+import { reverse, sortBy, values } from 'lodash';
 import { WalletconnectRequestData } from '@/walletConnect/types';
 import { createStore } from '../internal/createStore';
 import { omitFlatten } from '@/helpers/utilities';
-import create from 'zustand';
 
 interface RequestsState {
   [requestId: number]: WalletconnectRequestData;
@@ -9,6 +9,7 @@ interface RequestsState {
 
 export interface WalletConnectRequestsState {
   walletConnectRequests: RequestsState;
+  getSortedWalletConnectRequests: () => WalletconnectRequestData[];
   addWalletConnectRequest: ({ walletConnectRequest }: { walletConnectRequest: WalletconnectRequestData }) => boolean;
   removeWalletConnectRequest: ({ walletConnectRequestId }: { walletConnectRequestId: number }) => void;
 }
@@ -16,6 +17,11 @@ export interface WalletConnectRequestsState {
 export const walletConnectRequestsStore = createStore<WalletConnectRequestsState>(
   (set, get) => ({
     walletConnectRequests: {},
+    getSortedWalletConnectRequests: () => {
+      const { walletConnectRequests } = get();
+      const sortedRequests = reverse(sortBy(values(walletConnectRequests), 'displayDetails.timestampInMs'));
+      return sortedRequests;
+    },
     addWalletConnectRequest: ({ walletConnectRequest }) => {
       const { walletConnectRequests: currentWalletConnectRequests } = get();
       const requestAlreadyExists = currentWalletConnectRequests[walletConnectRequest.requestId];
@@ -46,7 +52,10 @@ export const walletConnectRequestsStore = createStore<WalletConnectRequestsState
   }
 );
 
-export const useWalletConnectRequestsStore = create(walletConnectRequestsStore);
+export const getSortedWalletConnectRequests = (): WalletconnectRequestData[] => {
+  const { getSortedWalletConnectRequests: getSortedWCRequests } = walletConnectRequestsStore.getState();
+  return getSortedWCRequests();
+};
 
 export const addNewWalletConnectRequest = ({ walletConnectRequest }: { walletConnectRequest: WalletconnectRequestData }): boolean => {
   const { addWalletConnectRequest } = walletConnectRequestsStore.getState();

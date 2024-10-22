@@ -7,7 +7,7 @@ import { useTheme } from '@/theme';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { RainbowTransaction } from '@/entities';
 import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
-import { useWalletConnectRequestsStore } from '@/state/walletConnectRequests';
+import { getSortedWalletConnectRequests } from '@/state/walletConnectRequests';
 import { nonceStore } from '@/state/nonces';
 import { ChainId } from '@/chains/types';
 import { SUPPORTED_CHAIN_IDS, SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
@@ -18,7 +18,7 @@ export default function useAccountTransactions() {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
   const pendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions[accountAddress] || []);
-  const walletConnectRequests = useWalletConnectRequestsStore(state => state.walletConnectRequests[accountAddress] || {});
+  const walletConnectRequests = getSortedWalletConnectRequests();
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useConsolidatedTransactions({
     address: accountAddress,
