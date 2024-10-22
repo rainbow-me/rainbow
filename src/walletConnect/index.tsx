@@ -752,7 +752,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
       },
     };
 
-    const addedNewRequest = addNewWalletConnectRequest({ accountAddress: address, walletConnectRequest: request });
+    const addedNewRequest = addNewWalletConnectRequest({ walletConnectRequest: request });
     if (addedNewRequest) {
       logger.debug(`[walletConnect]: navigating to CONFIRM_REQUEST sheet`, {}, logger.DebugContext.walletconnect);
       handleWalletConnectRequest(request);
