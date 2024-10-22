@@ -1,4 +1,4 @@
-import { addNewWalletConnectRequest } from '@/state/walletConnectRequests';
+import { addNewWalletConnectRequest, removeWalletConnectRequest } from '@/state/walletConnectRequests';
 import React from 'react';
 import { InteractionManager } from 'react-native';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
@@ -819,6 +819,7 @@ export async function handleSessionRequestResponse(
     logger.debug(`[walletConnect]: handleSessionRequestResponse reject`, {}, logger.DebugContext.walletconnect);
     await client.respondSessionRequest(payload);
   }
+  removeWalletConnectRequest({ walletConnectRequestId: sessionRequestEvent.id });
 }
 
 export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthenticate) {

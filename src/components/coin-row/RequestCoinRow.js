@@ -65,7 +65,9 @@ const RequestCoinRow = ({ item, ...props }) => {
 
   const handleExpiredRequests = useCallback(() => {
     if (isPast(expiresAt)) {
-      removeWalletConnectRequest(item.requestId);
+      removeWalletConnectRequest({
+        walletConnectRequestId: item.requestId,
+      });
     }
   }, [expiresAt, item.requestId]);
 
