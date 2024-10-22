@@ -47,6 +47,7 @@ import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, us
 import { useDebouncedCallback } from 'use-debounce';
 import { NavigationSteps } from './useSwapNavigation';
 import { deepEqualWorklet } from '@/worklets/comparisons';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const REMOTE_CONFIG = getRemoteConfig();
 
@@ -77,6 +78,8 @@ export function useSwapInputsController({
   sliderXPosition: SharedValue<number>;
   slippage: SharedValue<string>;
 }) {
+  const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
+
   const percentageToSwap = useDerivedValue(() => {
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
   });
@@ -665,11 +668,15 @@ export function useSwapInputsController({
       if (!didInputAssetChange && !didOutputAssetChange) return;
 
       if (current.assetToSellNetwork !== previous?.assetToSellNetwork) {
-        const previousDefaultSlippage = getDefaultSlippageWorklet(previous?.assetToSellNetwork || ChainId.mainnet, REMOTE_CONFIG);
+        const previousDefaultSlippage = getDefaultSlippageWorklet(
+          previous?.assetToSellNetwork || ChainId.mainnet,
+          REMOTE_CONFIG,
+          backendNetworks
+        );
 
         // If the user has not overridden the default slippage, update it
         if (slippage.value === previousDefaultSlippage) {
-          const newSlippage = getDefaultSlippageWorklet(current.assetToSellNetwork || ChainId.mainnet, REMOTE_CONFIG);
+          const newSlippage = getDefaultSlippageWorklet(current.assetToSellNetwork || ChainId.mainnet, REMOTE_CONFIG, backendNetworks);
           slippage.value = newSlippage;
           runOnJS(setSlippage)(newSlippage);
         }

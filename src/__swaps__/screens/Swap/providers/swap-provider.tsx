@@ -57,6 +57,7 @@ import { performanceTracking, Screens, TimeToSignOperation } from '@/state/perfo
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { getChainsNativeAsset, supportedFlashbotsChainIds } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -135,6 +136,8 @@ interface SwapProviderProps {
 export const SwapProvider = ({ children }: SwapProviderProps) => {
   const { nativeCurrency } = useAccountSettings();
 
+  const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
+
   const isFetching = useSharedValue(false);
   const isQuoteStale = useSharedValue(0); // TODO: Convert this to a boolean
   const isSwapping = useSharedValue(false);
@@ -164,7 +167,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   );
   const configProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
-  const slippage = useSharedValue(getDefaultSlippageWorklet(initialSelectedInputAsset?.chainId || ChainId.mainnet, getRemoteConfig()));
+  const slippage = useSharedValue(
+    getDefaultSlippageWorklet(initialSelectedInputAsset?.chainId || ChainId.mainnet, getRemoteConfig(), backendNetworks)
+  );
 
   const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
 

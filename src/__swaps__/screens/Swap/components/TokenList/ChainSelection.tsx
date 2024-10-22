@@ -18,7 +18,8 @@ import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { showActionSheetWithOptions } from '@/utils';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { getChainsLabel, getChainsName } from '@/chains';
+import { getChainsLabel, getChainsLabelWorklet, getChainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -29,6 +30,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
   const { isDarkMode } = useColorMode();
   const { accentColor: accountColor } = useAccountAccentColor();
   const { selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
+  const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
 
   // chains sorted by balance on output, chains without balance hidden on input
   const { balanceSortedChainList, filter } = useUserAssetsStore(state => ({
@@ -48,10 +50,10 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
 
   const chainName = useDerivedValue(() => {
     return output
-      ? getChainsLabel()[selectedOutputChainId.value]
+      ? getChainsLabelWorklet(backendNetworks)[selectedOutputChainId.value]
       : inputListFilter.value === 'all'
         ? allText
-        : getChainsLabel()[inputListFilter.value as ChainId];
+        : getChainsLabelWorklet(backendNetworks)[inputListFilter.value as ChainId];
   });
 
   const handleSelectChain = useCallback(

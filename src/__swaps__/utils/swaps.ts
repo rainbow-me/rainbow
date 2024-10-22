@@ -38,7 +38,8 @@ import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from
 import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
 import { convertAmountToRawAmount } from './numbers';
-import { getChainsName } from '@/chains';
+import { getChainsName, getChainsNameWorklet } from '@/chains';
+import { BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -367,11 +368,16 @@ export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
   );
 };
 
-export const getDefaultSlippageWorklet = (chainId: ChainId, config: RainbowConfig) => {
+export const getDefaultSlippageWorklet = (
+  chainId: ChainId,
+  config: RainbowConfig,
+  backendNetworks: SharedValue<BackendNetworksResponse>
+) => {
   'worklet';
 
   return slippageInBipsToStringWorklet(
-    (config.default_slippage_bips as unknown as { [key: string]: number })[getChainsName()[chainId]] || DEFAULT_SLIPPAGE_BIPS[chainId]
+    (config.default_slippage_bips as unknown as { [key: string]: number })[getChainsNameWorklet(backendNetworks)[chainId]] ||
+      DEFAULT_SLIPPAGE_BIPS[chainId]
   );
 };
 

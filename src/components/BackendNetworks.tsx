@@ -1,10 +1,10 @@
 import { useBackendNetworks } from '@/resources/metadata/backendNetworks';
-import { backendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const BackendNetworks = () => {
   useBackendNetworks({
     onSuccess(data) {
-      backendNetworksStore.getState().setBackendNetworks(data);
+      useBackendNetworksStore.getState().setBackendNetworks(data);
     },
   });
 
