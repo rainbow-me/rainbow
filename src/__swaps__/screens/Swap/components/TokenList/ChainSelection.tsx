@@ -18,7 +18,7 @@ import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { showActionSheetWithOptions } from '@/utils';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { getChainsLabel, getChainsLabelWorklet, getChainsName } from '@/chains';
+import { getChainsLabelWorklet, getChainsNameWorklet } from '@/chains';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type ChainSelectionProps = {
@@ -80,11 +80,11 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
     const supportedChains = balanceSortedChainList.map(chainId => {
       return {
         actionKey: `${chainId}`,
-        actionTitle: getChainsLabel()[chainId],
+        actionTitle: getChainsLabelWorklet(backendNetworks)[chainId],
         icon: {
           iconType: 'ASSET',
           // NOTE: chainsName[chainId] for mainnet is 'mainnet' and we need it to be 'ethereum'
-          iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${getChainsName()[chainId]}BadgeNoShadow`,
+          iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${getChainsNameWorklet(backendNetworks)[chainId]}BadgeNoShadow`,
         },
       };
     });
