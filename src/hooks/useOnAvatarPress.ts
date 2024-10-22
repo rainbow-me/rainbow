@@ -25,6 +25,7 @@ import { ETH_ADDRESS } from '@/references';
 import { isZero } from '@/helpers/utilities';
 import { IS_IOS } from '@/env';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
+import { MenuConfig } from '@/components/native-context-menu/contextMenu';
 
 type UseOnAvatarPressProps = {
   /** Is the avatar selection being used on the wallet or transaction screen? */
@@ -178,7 +179,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     ]
   );
 
-  const avatarContextMenuConfig = {
+  const avatarContextMenuConfig: MenuConfig = {
     menuTitle: '',
     menuItems: [
       isENSProfile &&
@@ -188,7 +189,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
           actionTitle: lang.t('profiles.profile_avatar.edit_profile'),
           icon: {
             iconType: 'SYSTEM',
-            iconValue: ios ? 'pencil.circle' : null,
+            iconValue: ios ? 'pencil.circle' : undefined,
           },
         },
       isENSProfile && {
@@ -196,7 +197,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
         actionTitle: lang.t('profiles.profile_avatar.view_profile'),
         icon: {
           iconType: 'SYSTEM',
-          iconValue: ios ? 'person.crop.circle' : null,
+          iconValue: ios ? 'person.crop.circle' : undefined,
         },
       },
       !isENSProfile &&
@@ -206,7 +207,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
           actionTitle: lang.t('profiles.profile_avatar.create_profile'),
           icon: {
             iconType: 'SYSTEM',
-            iconValue: ios ? 'person.crop.circle' : null,
+            iconValue: ios ? 'person.crop.circle' : undefined,
           },
         },
       {
@@ -214,7 +215,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
         actionTitle: lang.t('profiles.profile_avatar.choose_from_library'),
         icon: {
           iconType: 'SYSTEM',
-          iconValue: ios ? 'photo.on.rectangle.angled' : null,
+          iconValue: ios ? 'photo.on.rectangle.angled' : undefined,
         },
       },
       !accountImage
