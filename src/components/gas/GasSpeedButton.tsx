@@ -167,7 +167,7 @@ const GasSpeedButton = ({
   fallbackColor,
   marginBottom = 20,
   marginTop = 18,
-  speeds = [],
+  speeds,
   testID = 'gas-speed-button',
   theme = 'dark',
   canGoBack = true,
@@ -328,11 +328,15 @@ const GasSpeedButton = ({
     const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(' ');
     const [estimatedTimeValue = '0', estimatedTimeUnit = 'min'] = estimatedTime;
     const time = parseFloat(estimatedTimeValue).toFixed(0);
-
-    const timeSymbol = estimatedTimeUnit === 'hr' ? '>' : '~';
-    if (!estimatedTime || (time === '0' && estimatedTimeUnit === 'min')) {
+    if (!estimatedTime) {
       return '';
     }
+
+    if (time === '0') {
+      return '< 1 sec';
+    }
+
+    const timeSymbol = estimatedTimeUnit === 'hr' ? '>' : '~';
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;
   }, [
     crossChainServiceTime,

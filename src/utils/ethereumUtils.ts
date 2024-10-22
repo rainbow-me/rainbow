@@ -1,5 +1,5 @@
 import { BigNumberish } from '@ethersproject/bignumber';
-import { Provider, StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
+import { StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { RainbowAddressAssets } from '@/resources/assets/types';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
@@ -38,6 +38,7 @@ import {
   BNB_MAINNET_ADDRESS,
   AVAX_AVALANCHE_ADDRESS,
   DEGEN_CHAIN_DEGEN_ADDRESS,
+  APECOIN_APECHAIN_ADDRESS,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
@@ -207,6 +208,7 @@ const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 const getBnbPriceUnit = () => getAssetPrice(BNB_MAINNET_ADDRESS);
 const getAvaxPriceUnit = () => getAssetPrice(getUniqueId(AVAX_AVALANCHE_ADDRESS, ChainId.avalanche));
 const getDegenPriceUnit = () => getAssetPrice(getUniqueId(DEGEN_CHAIN_DEGEN_ADDRESS, ChainId.degen));
+const getApechainPriceUnit = () => getAssetPrice(getUniqueId(APECOIN_APECHAIN_ADDRESS, ChainId.apechain));
 
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
@@ -525,6 +527,7 @@ export default {
   getBnbPriceUnit,
   getAvaxPriceUnit,
   getDegenPriceUnit,
+  getApechainPriceUnit,
   getNativeAssetForNetwork,
   getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,

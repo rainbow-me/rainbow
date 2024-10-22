@@ -15,6 +15,51 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.43] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.43)
+
+### Added
+
+- Added Apechain Support
+
+## [1.9.42] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.42)
+
+### Added
+
+- Added comments watchdog to PRs in github to monitor spam (#6153)
+- Added functionality to hide send button for assets that are not transferable (#6123)
+- Implemented Zeego dropdown menus (#6143)
+- Added a connecting toast for wallet connect connection sheet (#6197)
+
+### Changed
+
+- Converted our send flow to typescript (#6120)
+- Updated Analytics (#6169, #6186, #6195)
+- Made improvements to wallet connect approval/redirect sheet by converting to typescript (#6167)
+- Migrated wallet connect to use WalletKit (#6163)
+- Improvements to claim button (#6165)
+- Updates to swaps v2 logic (#6171)
+- Bumped walletkit to improve wallet connect connections (#6183)
+- Removed transaction inconsistencies and improved type safety (#6137)
+- Upgraded ledger to allow clear signing with updated firmware versions (#5966)
+- Disabled one click auth on wallet connect (#6201)
+- Enabled new features by default (#6192)
+
+### Fixed
+
+- Fixed CI pods to unlock if pod repo update fails (#6168)
+- Fixed wallet connect v2 changeAccount issues (#6160)
+- Fixed ApprovalSheet not using wallet connect v2 isScam flag (#6162)
+- Fixed a bug with network expansion that caused discrepancies in swaps network switcher dropdown (#6149)
+- Fixed a bug where NFT expanded state would cause a crash (#6115)
+- Fixed an issue with MWP from not prompting if dapp metadata retrieval fails (#6164)
+- Fixed an issue where users couldn’t open last weeks points breakdown from points screen (#6166)
+- Fixed a crash on networks while attempting to connect to wallet connect dapp (#6176)
+- Fixed a bug with claimables where data failed to update on app (#6182)
+- Fixed a padding issue for importing ledger devices (#6187)
+- Fixed a crash happening on swaps and also no local images being displayed (#6196)
+- Fixed an issue with CI artifacts being stored with the same name (#6198)
+- Fixed a bug where the gas button wasn't working to change gas speed (#6208)
+
 ## [1.9.41] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.41)
 
 ### Added

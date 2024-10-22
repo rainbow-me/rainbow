@@ -11,7 +11,6 @@ import { useTheme } from '../theme/ThemeContext';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { IS_TESTING } from 'react-native-dotenv';
 import { logger, RainbowError } from '@/logger';
-import { explorerInit } from '@/redux/explorer';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
@@ -82,7 +81,6 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
         message: e.message,
       });
     }
-    dispatch(explorerInit());
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
   }, [dispatch, setConnectedToHardhat]);
 

@@ -37,7 +37,6 @@ export const estimateCrosschainSwapGasLimit = async ({
   requiresApprove?: boolean;
   quote: CrosschainQuote;
 }): Promise<string> => {
-  // TODO: MARK - Replace this once we migrate network => chainId
   const provider = getProvider({ chainId });
   if (!provider || !quote) {
     return gasUnits.basic_swap[chainId];

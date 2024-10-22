@@ -36,6 +36,10 @@ import DegenBadge from '../../assets/badges/degenBadge.png';
 import DegenBadgeDark from '../../assets/badges/degenBadgeDark.png';
 import DegenBadgeLarge from '../../assets/badges/degenBadgeLarge.png';
 import DegenBadgeLargeDark from '../../assets/badges/degenBadgeLargeDark.png';
+import ApechainBadge from '../../assets/badges/apechainBadge.png';
+import ApechainBadgeDark from '../../assets/badges/apechainBadgeDark.png';
+import ApechainBadgeLarge from '../../assets/badges/apechainBadgeLarge.png';
+import ApechainBadgeLargeDark from '../../assets/badges/apechainBadgeLargeDark.png';
 import { Centered } from '../layout';
 import styled from '@/styled-thing';
 import { position as positions } from '@/styles';
@@ -76,7 +80,9 @@ export default function ChainBadge({
   const source = useMemo(() => {
     let val = null;
     if (size === 'large') {
-      if (chainId === ChainId.arbitrum) {
+      if (chainId === ChainId.apechain) {
+        val = isDarkMode ? ApechainBadgeLargeDark : ApechainBadgeLarge;
+      } else if (chainId === ChainId.arbitrum) {
         val = isDarkMode ? ArbitrumBadgeLargeDark : ArbitrumBadgeLarge;
       } else if (chainId === ChainId.optimism) {
         val = isDarkMode ? OptimismBadgeLargeDark : OptimismBadgeLarge;
@@ -96,7 +102,9 @@ export default function ChainBadge({
         val = isDarkMode ? DegenBadgeLargeDark : DegenBadgeLarge;
       }
     } else {
-      if (chainId === ChainId.arbitrum) {
+      if (chainId === ChainId.apechain) {
+        val = isDarkMode ? ApechainBadgeDark : ApechainBadge;
+      } else if (chainId === ChainId.arbitrum) {
         val = isDarkMode ? ArbitrumBadgeDark : ArbitrumBadge;
       } else if (chainId === ChainId.optimism) {
         val = isDarkMode ? OptimismBadgeDark : OptimismBadge;

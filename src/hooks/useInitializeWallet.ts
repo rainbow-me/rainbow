@@ -10,13 +10,12 @@ import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMet
 import { appStateUpdate } from '../redux/appState';
 import { settingsLoadNetwork, settingsUpdateAccountAddress } from '../redux/settings';
 import { walletsLoadState } from '../redux/wallets';
+import { requestsResetState } from '../redux/requests';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
-import useInitializeAccountData from './useInitializeAccountData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useOpenSmallBalances from './useOpenSmallBalances';
-import useResetAccountState from './useResetAccountState';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
@@ -24,10 +23,9 @@ import { RainbowError, logger } from '@/logger';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
-  const resetAccountState = useResetAccountState();
+
   const loadAccountData = useLoadAccountData();
   const loadGlobalEarlyData = useLoadGlobalEarlyData();
-  const initializeAccountData = useInitializeAccountData();
   const { network } = useAccountSettings();
   const hideSplashScreen = useHideSplashScreen();
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
@@ -61,8 +59,8 @@ export default function useInitializeWallet() {
       try {
         PerformanceTracking.startMeasuring(PerformanceMetrics.useInitializeWallet);
         logger.debug('[useInitializeWallet]: Start wallet setup');
-        await resetAccountState();
-        logger.debug('[useInitializeWallet]: resetAccountState ran ok');
+        dispatch(requestsResetState());
+        logger.debug('[useInitializeWallet]: requestsResetState ran ok');
 
         const isImporting = !!seedPhrase;
         logger.debug(`[useInitializeWallet]: isImporting? ${isImporting}`);
@@ -133,8 +131,6 @@ export default function useInitializeWallet() {
           });
         }
 
-        initializeAccountData();
-
         dispatch(appStateUpdate({ walletReady: true }));
         logger.debug('[useInitializeWallet]: 💰 Wallet initialized');
 
@@ -167,17 +163,7 @@ export default function useInitializeWallet() {
         return null;
       }
     },
-    [
-      dispatch,
-      hideSplashScreen,
-      initializeAccountData,
-      loadAccountData,
-      loadGlobalEarlyData,
-      network,
-      profilesEnabled,
-      resetAccountState,
-      setIsSmallBalancesOpen,
-    ]
+    [dispatch, hideSplashScreen, loadAccountData, loadGlobalEarlyData, network, profilesEnabled, requestsResetState, setIsSmallBalancesOpen]
   );
 
   return initializeWallet;
