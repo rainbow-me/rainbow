@@ -169,7 +169,7 @@ const ContextMenuRenderer = ({
   }
 
   return (
-    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} menuAlignmentOverride="left">
+    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
       {children}
     </ContextMenuButton>
   );

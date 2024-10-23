@@ -23,7 +23,7 @@ import * as keychain from '@/model/keychain';
 import { Navigation } from '@/navigation';
 import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
 import store, { AppDispatch, type AppState } from '@/redux/store';
-import { MainThemeProvider } from '@/theme/ThemeContext';
+import { MainThemeProvider, useTheme } from '@/theme/ThemeContext';
 import { addressKey } from '@/utils/keychainConstants';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
