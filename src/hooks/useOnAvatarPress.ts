@@ -236,7 +236,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
             actionKey: 'removePhoto',
             actionTitle: lang.t('profiles.profile_avatar.remove_photo'),
           },
-    ].filter(x => x),
+    ].filter(Boolean),
   };
 
   const avatarActionSheetOptions = avatarContextMenuConfig.menuItems.map(item => item && item.actionTitle).concat(ios ? ['Cancel'] : []);
