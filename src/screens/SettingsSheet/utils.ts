@@ -21,6 +21,10 @@ export const capitalizeFirstLetter = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
+export const hasManuallyBackedUpWallet = (wallets: WalletsByKey) => {
+  return Object.values(wallets).some(wallet => wallet.backupType === WalletBackupTypes.manual);
+};
+
 export const checkUserDataForBackupProvider = (userData?: BackupUserData): { backupProvider: string | undefined } => {
   let backupProvider: string | undefined = undefined;
 
