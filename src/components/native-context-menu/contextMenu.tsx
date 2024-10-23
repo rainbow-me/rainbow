@@ -18,9 +18,9 @@ import {
  */
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-type IconConfig = { iconType: 'ASSET' | 'SYSTEM' | (string & {}); iconValue: string | undefined; iconTint?: string | DynamicColor };
+type IconConfig = { iconType: 'ASSET' | 'SYSTEM' | (string & {}); iconValue: string; iconTint?: string | DynamicColor };
 
-export type MenuActionConfig = Readonly<
+type MenuActionConfig = Readonly<
   {
     actionSubtitle?: string;
     // eslint-disable-next-line @typescript-eslint/ban-types

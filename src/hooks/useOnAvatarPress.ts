@@ -187,36 +187,24 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
         !isZeroETH && {
           actionKey: 'editProfile',
           actionTitle: lang.t('profiles.profile_avatar.edit_profile'),
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: ios ? 'pencil.circle' : undefined,
-          },
+          ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'pencil.circle' } }),
         },
       isENSProfile && {
         actionKey: 'viewProfile',
         actionTitle: lang.t('profiles.profile_avatar.view_profile'),
-        icon: {
-          iconType: 'SYSTEM',
-          iconValue: ios ? 'person.crop.circle' : undefined,
-        },
+        ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'person.crop.circle' } }),
       },
       !isENSProfile &&
         !isReadOnly &&
         !isZeroETH && {
           actionKey: 'createProfile',
           actionTitle: lang.t('profiles.profile_avatar.create_profile'),
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: ios ? 'person.crop.circle' : undefined,
-          },
+          ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'person.crop.circle' } }),
         },
       {
         actionKey: 'chooseFromLibrary',
         actionTitle: lang.t('profiles.profile_avatar.choose_from_library'),
-        icon: {
-          iconType: 'SYSTEM',
-          iconValue: ios ? 'photo.on.rectangle.angled' : undefined,
-        },
+        ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'photo.on.rectangle.angled' } }),
       },
       !accountImage
         ? ios
