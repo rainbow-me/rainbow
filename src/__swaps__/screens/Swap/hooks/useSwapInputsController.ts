@@ -80,7 +80,12 @@ export function useSwapInputsController({
   const percentageToSwap = useDerivedValue(() => {
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
   });
-
+  useAnimatedReaction(
+    () => internalSelectedOutputAsset.value,
+    (current, previous) => {
+      console.log(current?.address);
+    }
+  );
   const { inputAmount: initialInputAmount, inputNativeValue: initialInputNativeValue } = getInputValuesForSliderPositionWorklet({
     selectedInputAsset: initialSelectedInputAsset,
     percentageToSwap: percentageToSwap.value,
