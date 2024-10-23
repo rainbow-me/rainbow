@@ -16,7 +16,6 @@ export type GlobalNotificationTopics = {
 
 export type NotificationSubscriptionWalletsType = {
   type: WalletNotificationRelationshipType;
-  chain_id: number;
   address: string;
   transaction_action_types: WalletNotificationTopicType[];
 };
