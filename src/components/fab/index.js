@@ -5,4 +5,3 @@ export {
   FloatingActionButtonShadow,
   FabWrapperBottomPosition,
 } from './FloatingActionButton';
-export { default as SendFab } from './SendFab';
