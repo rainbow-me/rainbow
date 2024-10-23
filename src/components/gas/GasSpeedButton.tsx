@@ -29,8 +29,8 @@ import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { ChainId } from '@/chains/types';
 import { chainsGasSpeeds } from '@/chains';
 import { ThemeContextProps, useTheme } from '@/theme';
-import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { ParsedAddressAsset } from '@/entities';
+import { GasSpeed } from '@/__swaps__/types/gas';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 
@@ -355,9 +355,7 @@ const GasSpeedButton = ({
   }, [chainId, navigate]);
 
   const handlePressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => {
-      handlePressSpeedOption(actionKey);
-    },
+    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: GasSpeed } }) => handlePressSpeedOption(actionKey),
     [handlePressSpeedOption]
   );
 
@@ -387,8 +385,6 @@ const GasSpeedButton = ({
 
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions?.map(gasOption => {
-      if (IS_ANDROID) return gasOption;
-
       const totalGwei = add(gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
       const estimatedGwei = add(currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
 
@@ -453,7 +449,7 @@ const GasSpeedButton = ({
           isAnchoredToRight
           isMenuPrimaryAction
           onPressActionSheet={handlePressActionSheet}
-          options={menuConfig.menuItems}
+          options={speedOptions}
           useActionSheetFallback={false}
           wrapNativeComponent={false}
         >
@@ -464,14 +460,12 @@ const GasSpeedButton = ({
 
     return (
       <ContextMenuButton
-        activeOpacity={0}
         enableContextMenu
         isAnchoredToRight
         isMenuPrimaryAction
         menuConfig={menuConfig}
         onPressMenuItem={handlePressMenuItem}
         useActionSheetFallback={false}
-        wrapNativeComponent={false}
       >
         {pager}
       </ContextMenuButton>
@@ -483,6 +477,7 @@ const GasSpeedButton = ({
     handlePressActionSheet,
     handlePressMenuItem,
     menuConfig,
+    speedOptions,
     rawColorForAsset,
     selectedGasFeeOption,
     showGasOptions,

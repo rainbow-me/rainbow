@@ -2,10 +2,12 @@ import React from 'react';
 import { Box, Inline, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
-import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
-import useNftSort from '@/hooks/useNFTsSortBy';
+import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
+import { NftSort, parseNftSort, useNftSort } from '@/hooks/useNFTsSortBy';
+import { colors } from '@/styles';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 const TokenFamilyHeaderHeight = 48;
 
@@ -32,9 +34,9 @@ const getMenuItemIcon = (value: NftCollectionSortCriterion) => {
 };
 
 const CollectiblesHeader = () => {
+  const { nftSort, nftSortDirection, updateNFTSort } = useNftSort();
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
-  const { nftSort, updateNFTSort } = useNftSort();
 
   if (!nftsEnabled) return null;
 
@@ -53,14 +55,44 @@ const CollectiblesHeader = () => {
         </Text>
 
         <ListHeaderMenu
-          selected={nftSort}
-          menuItems={Object.entries(NftCollectionSortCriterion).map(([key, value]) => ({
-            actionKey: value,
-            actionTitle: i18n.t(i18n.l.nfts.sort[value]),
-            icon: { iconType: 'SYSTEM', iconValue: getMenuItemIcon(value) },
-            menuState: nftSort === key ? 'on' : 'off',
-          }))}
-          selectItem={string => updateNFTSort(string as NftCollectionSortCriterion)}
+          selected={`${nftSort}|${nftSortDirection}`}
+          menuItems={Object.values(NftCollectionSortCriterion).map(sortCriterion => {
+            return {
+              icon: { iconType: 'SYSTEM', iconValue: getMenuItemIcon(sortCriterion) },
+              ...(nftSort === sortCriterion && IS_IOS // submenus look weird in android, so it toggles when clicking the same item
+                ? {
+                    menuTitle: i18n.t(i18n.l.nfts.sort[sortCriterion]),
+                    menuPreferredElementSize: 'small',
+                    menuState: 'on',
+                    menuItems: [
+                      {
+                        actionKey: `${sortCriterion}|${SortDirection.Asc}`,
+                        actionTitle: i18n.t(i18n.l.nfts.sort.order.asc),
+                        icon: {
+                          iconType: 'SYSTEM',
+                          iconValue: 'arrow.up.circle',
+                          iconTint: nftSortDirection === SortDirection.Asc ? colors.grey : undefined,
+                        },
+                      },
+                      {
+                        actionKey: `${sortCriterion}|${SortDirection.Desc}`,
+                        actionTitle: i18n.t(i18n.l.nfts.sort.order.desc),
+                        icon: {
+                          iconType: 'SYSTEM',
+                          iconValue: 'arrow.down.circle',
+                          iconTint: nftSortDirection === SortDirection.Desc ? colors.grey : undefined,
+                        },
+                      },
+                    ],
+                  }
+                : {
+                    actionKey: `${sortCriterion}|${nftSortDirection === SortDirection.Asc ? SortDirection.Desc : SortDirection.Asc}`,
+                    actionTitle: i18n.t(i18n.l.nfts.sort[sortCriterion]),
+                    menuState: 'off',
+                  }),
+            };
+          })}
+          selectItem={updateNFTSort}
           icon={getIconForSortType(nftSort)}
           text={i18n.t(i18n.l.nfts.sort[nftSort])}
         />

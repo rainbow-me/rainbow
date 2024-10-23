@@ -14,7 +14,6 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
@@ -135,7 +134,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
   );
 
   const handlePressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => handlePressSpeedOption(actionKey as GasSpeed),
+    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: GasSpeed } }) => handlePressSpeedOption(actionKey),
     [handlePressSpeedOption]
   );
 
@@ -149,8 +148,6 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
 
   const menuConfig = useMemo(() => {
     const menuItems = menuOptions.map(gasOption => {
-      if (IS_ANDROID) return gasOption;
-
       const currentBaseFee = getCachedCurrentBaseFee(chainId);
       const gasSettings = gasOption === GasSpeed.CUSTOM ? customGasSettings : metereologySuggestions.data?.[gasOption];
       const subtitle = getEstimatedFeeRangeInGwei(gasSettings, currentBaseFee);
@@ -176,7 +173,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
           isAnchoredToRight
           isMenuPrimaryAction
           onPressActionSheet={handlePressActionSheet}
-          options={menuConfig.menuItems}
+          options={menuOptions}
           useActionSheetFallback={false}
           wrapNativeComponent={false}
         >
@@ -186,14 +183,11 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
         </ContextMenu>
       ) : (
         <ContextMenuButton
-          activeOpacity={0}
           enableContextMenu
-          isAnchoredToRight
           isMenuPrimaryAction
           menuConfig={menuConfig}
           onPressMenuItem={handlePressMenuItem}
           useActionSheetFallback={false}
-          wrapNativeComponent={false}
         >
           <ButtonPressAnimation scaleTo={0.825} style={{ padding: GAS_BUTTON_HIT_SLOP }}>
             {children}
