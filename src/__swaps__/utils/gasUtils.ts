@@ -4,7 +4,6 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { Contract, ContractInterface } from '@ethersproject/contracts';
 import { serialize } from '@ethersproject/transactions';
 import BigNumber from 'bignumber.js';
-import parseMilliseconds from 'parse-ms';
 
 import { globalColors } from '@/design-system';
 
@@ -30,54 +29,9 @@ import {
 } from '@/helpers/utilities';
 import { addHexPrefix, toHex } from '@/handlers/web3';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
+import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
 
 export const FLASHBOTS_MIN_TIP = 6;
-
-export const buildLocalizedTimeUnitString = ({ plural, short, unit }: { plural?: boolean; short: boolean; unit: string }) => {
-  const length = short ? 'short' : 'long';
-  const plurality = plural ? 'plural' : 'singular';
-
-  return i18n.t(`time.${unit}.${length}.${plurality}`);
-};
-
-const getHighestResolutionUnit = (timeUnitKey?: string, timeUnitValues?: { [key: string]: number }) => {
-  const highestResolutionUnit = timeUnitKey || 'seconds';
-  return {
-    unit: highestResolutionUnit,
-    value: timeUnitValues?.[highestResolutionUnit] || 0,
-  };
-};
-
-/**
- * @desc get time string for minimal unit
- * @param {String} [value='']
- * @param {Boolean} [short=true]
- * @param {Boolean} [plural=false]
- * @return {String}
- */
-export const getMinimalTimeUnitStringForMs = (value: number, plural?: boolean, short = true): string => {
-  const ms = Number(value);
-
-  const { days, hours, minutes, seconds } = parseMilliseconds(Number(ms));
-
-  const times = { days, hours, minutes, seconds };
-  const timeUnitKey = Object.entries(times).find(([, value]) => value !== 0)?.[0];
-
-  const { unit: highestResolutionUnit, value: highestResolutionValue } = getHighestResolutionUnit(timeUnitKey, {
-    days,
-    hours,
-    minutes,
-    seconds,
-  });
-
-  const label = buildLocalizedTimeUnitString({
-    plural,
-    short,
-    unit: highestResolutionUnit,
-  });
-
-  return `${highestResolutionValue} ${label}`;
-};
 
 export const parseGasDataConfirmationTime = ({
   maxBaseFee,
