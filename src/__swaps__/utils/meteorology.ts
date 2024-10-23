@@ -189,7 +189,7 @@ export function useMeteorologySuggestions({ chainId, enabled }: { chainId: Chain
     {
       select: useCallback((data: MeteorologyResult) => selectGasSuggestions(data, flashbots), [flashbots]),
       enabled,
-      notifyOnChangeProps: ['data', 'isLoading'],
+      notifyOnChangeProps: enabled ? ['data', 'isLoading'] : [],
     }
   );
 }
