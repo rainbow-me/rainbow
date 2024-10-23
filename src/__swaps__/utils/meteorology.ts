@@ -57,7 +57,7 @@ export function useMeteorology<Selected = MeteorologyResult>(
     select,
     enabled,
     notifyOnChangeProps = ['data'],
-  }: { select?: (data: MeteorologyResult) => Selected; enabled?: boolean; notifyOnChangeProps?: 'data'[] }
+  }: { select?: (data: MeteorologyResult) => Selected; enabled?: boolean; notifyOnChangeProps?: (keyof ReturnType<typeof useQuery>)[] }
 ) {
   return useQuery(meteorologyQueryKey({ chainId }), meteorologyQueryFunction, {
     select,
@@ -189,7 +189,7 @@ export function useMeteorologySuggestions({ chainId, enabled }: { chainId: Chain
     {
       select: useCallback((data: MeteorologyResult) => selectGasSuggestions(data, flashbots), [flashbots]),
       enabled,
-      notifyOnChangeProps: enabled ? ['data'] : [],
+      notifyOnChangeProps: ['data', 'isLoading'],
     }
   );
 }
@@ -205,7 +205,7 @@ export function useMeteorologySuggestion<Selected = GasSuggestion>({
   speed: GasSpeed;
   enabled?: boolean;
   select?: (d: GasSuggestion | undefined) => Selected;
-  notifyOnChangeProps?: ['data'] | [];
+  notifyOnChangeProps?: (keyof ReturnType<typeof useQuery>)[] | undefined;
 }) {
   const flashbots = useSwapsStore(s => chainId === ChainId.mainnet && s.flashbots);
   return useMeteorology(
