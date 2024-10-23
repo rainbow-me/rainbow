@@ -5,11 +5,11 @@ import { EmptyAssetList } from '@/components/asset-list';
 import { Centered } from '@/components/layout';
 import { NoResults } from '@/components/list';
 import ExchangeAssetList, { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
-import { ExchangeSearchHeight } from '@/components/ExchangeSearch';
 import { Box } from '@/design-system';
 import { NoResultsType } from '@/components/list/NoResults';
 
-export const CurrencySelectModalHeaderHeight = 59;
+const CurrencySelectModalHeaderHeight = 59;
+const SearchHeight = 40;
 
 interface CurrencySelectionListProps {
   keyboardDismissMode?: 'none' | 'interactive' | 'on-drag';
@@ -44,7 +44,7 @@ const CurrencySelectionList: ForwardRefRenderFunction<SectionList, CurrencySelec
           height="full"
           justifyContent="center"
           paddingBottom={{
-            custom: CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
+            custom: CurrencySelectModalHeaderHeight + SearchHeight / 2,
           }}
         >
           {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
