@@ -17,8 +17,8 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { ChainId } from '@/chains/types';
 import { chainsName } from '@/chains';
+import { ChainId } from '@/chains/types';
 
 type swapCurrencyListType =
   | 'verifiedAssets'

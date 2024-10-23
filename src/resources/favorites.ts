@@ -1,6 +1,7 @@
 import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId, Network } from '@/chains/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { chainsIdByName, chainsName } from '@/chains';
 import { NativeCurrencyKeys, RainbowToken } from '@/entities';
 import { createQueryKey, queryClient } from '@/react-query';
 import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
@@ -8,7 +9,6 @@ import { promiseUtils } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
-import { chainsIdByName, chainsName } from '@/chains';
 import { analyticsV2 } from '@/analytics';
 
 export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 4 });
