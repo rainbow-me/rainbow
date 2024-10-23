@@ -34,14 +34,6 @@ export function selectUserAssetsDictByChain(assets: ParsedAssetsDictByChain) {
   return assets;
 }
 
-export function selectUserAssetsListByChainId(assets: ParsedAssetsDictByChain, chainId: ChainId) {
-  const assetsForNetwork = assets?.[chainId];
-
-  return Object.values(assetsForNetwork).sort(
-    (a: ParsedUserAsset, b: ParsedUserAsset) => parseFloat(b?.native?.balance?.amount) - parseFloat(a?.native?.balance?.amount)
-  );
-}
-
 export function selectUserAssetAddressMapByChainId(assets: ParsedAssetsDictByChain) {
   const mapAddresses = (list: ParsedAssetsDict = {}) => Object.values(list).map(i => i.address);
   return {
