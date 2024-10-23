@@ -234,12 +234,8 @@ export const ClaimingClaimableSharedUI = ({
 
   const tokenMenuConfig = useMemo<MenuConfig<string>>(() => {
     const availableTokens = Object.values(tokens)
-      .map(token => {
-        if (chainId in token.networks || initialState) {
-          return { actionKey: token.symbol, actionTitle: token.name };
-        }
-      })
-      .filter((item): item is MenuItem<string> => !!item)
+      .map(token => ({ actionKey: token.symbol, actionTitle: token.name }))
+      .filter(item => (chainId in tokens[item.actionKey].networks && item.actionKey !== tokenToReceive) || initialState)
       .sort((a, b) => (a.actionTitle < b.actionTitle ? 1 : -1));
     return {
       menuItems: [
@@ -247,13 +243,12 @@ export const ClaimingClaimableSharedUI = ({
         ...availableTokens,
       ],
     };
-  }, [chainId, initialState, tokens]);
+  }, [chainId, initialState, tokenToReceive, tokens]);
 
   const onPressTokenMenuItem = useCallback(
     (selection: string) => {
-      if (selection === tokenToReceive) return;
-
       haptics.selection();
+
       if (selection === 'reset') {
         setInitialState(true);
         setTokenToReceive(claimable.asset.symbol);
@@ -263,30 +258,32 @@ export const ClaimingClaimableSharedUI = ({
         setTokenToReceive(selection);
       }
     },
-    [claimable.asset.symbol, claimable.chainId, tokenToReceive]
+    [claimable.asset.symbol, claimable.chainId]
   );
 
   const balanceSortedChainList = useUserAssetsStore(state => state.getBalanceSortedChainList());
 
   const networkMenuConfig = useMemo<MenuConfig<`${ChainId}`>>(() => {
-    const supportedChains = balanceSortedChainList.map(chainId => {
-      return {
-        actionKey: `${chainId}`,
-        actionTitle: chainsLabel[chainId],
-        icon: {
-          iconType: 'ASSET',
-          // NOTE: chainsName[chainId] for mainnet is 'mainnet' and we need it to be 'ethereum'
-          iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${chainsName[chainId]}BadgeNoShadow`,
-        },
-      };
-    });
+    const supportedChains = balanceSortedChainList
+      .map(c => {
+        return {
+          actionKey: `${c}`,
+          actionTitle: chainsLabel[c],
+          icon: {
+            iconType: 'ASSET',
+            // NOTE: chainsName[c] for mainnet is 'mainnet' and we need it to be 'ethereum'
+            iconValue: c === ChainId.mainnet ? 'ethereumBadge' : `${chainsName[c]}BadgeNoShadow`,
+          },
+        };
+      })
+      .filter(item => Number(item.actionKey) !== chainId);
     return {
       menuItems: [
         { actionKey: 'reset', actionTitle: 'Reset', icon: { iconType: 'SYSTEM', iconValue: 'arrow.counterclockwise' } },
         ...supportedChains,
       ],
     };
-  }, [balanceSortedChainList]);
+  }, [balanceSortedChainList, chainId]);
 
   const onPressNetworkMenuItem = useCallback(
     (selection: `${ChainId}`) => {
