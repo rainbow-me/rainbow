@@ -64,6 +64,11 @@ jobs:
   # Job for linting and unit tests
   linting-and-unit-tests:
     runs-on: ["self-hosted"]
+    concurrency: 
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
     needs: install-deps
     steps:
       - name: Checkout repo
@@ -110,6 +115,11 @@ jobs:
   # iOS build and e2e tests
   e2e-ios:
     runs-on: ["self-hosted"]
+    concurrency: 
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
     timeout-minutes: 60
     needs: install-deps
     steps:
