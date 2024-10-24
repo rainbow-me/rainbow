@@ -18,8 +18,8 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { ChainId } from '@/chains/types';
-import { getChainsName } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type swapCurrencyListType =
   | 'verifiedAssets'
@@ -200,7 +200,7 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
                   },
                 },
                 symbol,
-                network: getChainsName()[chainId],
+                network: useBackendNetworksStore.getState().getChainsName()[chainId],
                 uniqueId,
               } as RainbowToken,
             ];

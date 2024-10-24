@@ -21,8 +21,8 @@ import {
   sepolia,
 } from 'viem/chains';
 
-import { ChainId } from '@/chains/types';
-import { getChainsLabel } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const chainIdMap: Record<
   ChainId.mainnet | ChainId.optimism | ChainId.polygon | ChainId.base | ChainId.bsc | ChainId.zora | ChainId.avalanche,
@@ -42,14 +42,21 @@ export const chainLabelMap: Record<
   ChainId.mainnet | ChainId.optimism | ChainId.polygon | ChainId.base | ChainId.bsc | ChainId.zora | ChainId.avalanche,
   string[]
 > = {
-  [ChainId.mainnet]: [getChainsLabel()[goerli.id], getChainsLabel()[sepolia.id], getChainsLabel()[holesky.id]],
-  [ChainId.optimism]: [getChainsLabel()[optimismSepolia.id]],
-  [ChainId.arbitrum]: [getChainsLabel()[arbitrumGoerli.id], getChainsLabel()[arbitrumSepolia.id]],
-  [ChainId.polygon]: [getChainsLabel()[polygonMumbai.id]],
-  [ChainId.base]: [getChainsLabel()[baseSepolia.id]],
-  [ChainId.bsc]: [getChainsLabel()[bscTestnet.id]],
-  [ChainId.zora]: [getChainsLabel()[zoraSepolia.id]],
-  [ChainId.avalanche]: [getChainsLabel()[avalancheFuji.id]],
+  [ChainId.mainnet]: [
+    useBackendNetworksStore.getState().getChainsLabel()[goerli.id],
+    useBackendNetworksStore.getState().getChainsLabel()[sepolia.id],
+    useBackendNetworksStore.getState().getChainsLabel()[holesky.id],
+  ],
+  [ChainId.optimism]: [useBackendNetworksStore.getState().getChainsLabel()[optimismSepolia.id]],
+  [ChainId.arbitrum]: [
+    useBackendNetworksStore.getState().getChainsLabel()[arbitrumGoerli.id],
+    useBackendNetworksStore.getState().getChainsLabel()[arbitrumSepolia.id],
+  ],
+  [ChainId.polygon]: [useBackendNetworksStore.getState().getChainsLabel()[polygonMumbai.id]],
+  [ChainId.base]: [useBackendNetworksStore.getState().getChainsLabel()[baseSepolia.id]],
+  [ChainId.bsc]: [useBackendNetworksStore.getState().getChainsLabel()[bscTestnet.id]],
+  [ChainId.zora]: [useBackendNetworksStore.getState().getChainsLabel()[zoraSepolia.id]],
+  [ChainId.avalanche]: [useBackendNetworksStore.getState().getChainsLabel()[avalancheFuji.id]],
 };
 
 export const sortNetworks = (order: ChainId[], chains: Chain[]) => {

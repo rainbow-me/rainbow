@@ -4,7 +4,7 @@ import { Address } from 'viem';
 import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 
 import { REFERRER, gasUnits, ReferrerType } from '@/references';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { NewTransaction, TransactionDirection, TransactionStatus, TxHash } from '@/entities';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
@@ -24,7 +24,7 @@ import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { getChainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -180,9 +180,11 @@ export const crosschainSwap = async ({
       }
     : parameters.assetToSell.price;
 
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
+
   const assetToBuy = {
     ...parameters.assetToBuy,
-    network: getChainsName()[parameters.assetToBuy.chainId],
+    network: chainsName[parameters.assetToBuy.chainId],
     networks: parameters.assetToBuy.networks as Record<string, AddysNetworkDetails>,
     colors: parameters.assetToBuy.colors as TokenColors,
     price: nativePriceForAssetToBuy,
@@ -190,7 +192,7 @@ export const crosschainSwap = async ({
 
   const assetToSell = {
     ...parameters.assetToSell,
-    network: getChainsName()[parameters.assetToSell.chainId],
+    network: chainsName[parameters.assetToSell.chainId],
     networks: parameters.assetToSell.networks as Record<string, AddysNetworkDetails>,
     colors: parameters.assetToSell.colors as TokenColors,
     price: nativePriceForAssetToSell,
@@ -223,7 +225,7 @@ export const crosschainSwap = async ({
     ],
     gasLimit,
     hash: swap.hash as TxHash,
-    network: getChainsName()[parameters.chainId],
+    network: chainsName[parameters.chainId],
     nonce: swap.nonce,
     status: TransactionStatus.pending,
     type: 'swap',

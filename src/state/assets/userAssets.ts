@@ -7,8 +7,8 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useStore } from 'zustand';
 import { useCallback } from 'react';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { ChainId } from '@/chains/types';
-import { getSupportedChainIds } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useSelector } from 'react-redux';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
@@ -20,7 +20,7 @@ const getDefaultCacheKeys = (): Set<string> => {
   const queryKeysToPreserve = new Set<string>();
   queryKeysToPreserve.add('all');
 
-  for (const chainId of getSupportedChainIds()) {
+  for (const chainId of useBackendNetworksStore.getState().getSupportedChainIds()) {
     queryKeysToPreserve.add(`${chainId}`);
   }
   return queryKeysToPreserve;
@@ -281,12 +281,15 @@ export const createUserAssetsStore = (address: Address | string) =>
           });
 
           // Ensure all supported chains are in the map with a fallback value of 0
-          getSupportedChainIds().forEach(chainId => {
-            if (!unsortedChainBalances.has(chainId)) {
-              unsortedChainBalances.set(chainId, 0);
-              idsByChain.set(chainId, []);
-            }
-          });
+          useBackendNetworksStore
+            .getState()
+            .getSupportedChainIds()
+            .forEach(chainId => {
+              if (!unsortedChainBalances.has(chainId)) {
+                unsortedChainBalances.set(chainId, 0);
+                idsByChain.set(chainId, []);
+              }
+            });
 
           // Sort the existing map by balance in descending order
           const sortedEntries = Array.from(unsortedChainBalances.entries()).sort(([, balanceA], [, balanceB]) => balanceB - balanceA);

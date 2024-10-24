@@ -1,8 +1,8 @@
 import create from 'zustand';
 import { createStore } from '../internal/createStore';
-import { Network, ChainId } from '@/chains/types';
+import { Network, ChainId } from '@/state/backendNetworks/types';
 import { getProvider } from '@/handlers/web3';
-import { getChainsIdByName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type NonceData = {
   currentNonce?: number;
@@ -75,6 +75,7 @@ export const nonceStore = createStore<CurrentNonceState<Nonces>>(
       version: 1,
       migrate: (persistedState: unknown, version: number) => {
         if (version === 0) {
+          const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
           const oldState = persistedState as CurrentNonceState<NoncesV0>;
           const newNonces: CurrentNonceState<Nonces>['nonces'] = {};
           for (const [address, networkNonces] of Object.entries(oldState.nonces)) {
@@ -82,7 +83,7 @@ export const nonceStore = createStore<CurrentNonceState<Nonces>>(
               if (!newNonces[address]) {
                 newNonces[address] = {} as Record<ChainId, NonceData>;
               }
-              newNonces[address][getChainsIdByName()[network as Network]] = nonceData;
+              newNonces[address][chainsIdByName[network as Network]] = nonceData;
             }
           }
           return {

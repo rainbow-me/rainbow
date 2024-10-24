@@ -9,8 +9,8 @@ import { useConsolidatedTransactions } from '@/resources/transactions/consolidat
 import { RainbowTransaction } from '@/entities';
 import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { nonceStore } from '@/state/nonces';
-import { ChainId } from '@/chains/types';
-import { getSupportedChainIds, getSupportedMainnetChainIds } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const NOE_PAGE = 30;
 
@@ -43,7 +43,12 @@ export default function useAccountTransactions() {
           }
           return latestTxMap;
         },
-        new Map(getSupportedChainIds().map(chainId => [chainId, null as RainbowTransaction | null]))
+        new Map(
+          useBackendNetworksStore
+            .getState()
+            .getSupportedChainIds()
+            .map(chainId => [chainId, null as RainbowTransaction | null])
+        )
       );
     watchForPendingTransactionsReportedByRainbowBackend({
       currentAddress: accountAddress,
@@ -61,7 +66,7 @@ export default function useAccountTransactions() {
     const { setNonce } = nonceStore.getState();
     const { setPendingTransactions, pendingTransactions: storePendingTransactions } = pendingTransactionsStore.getState();
     const pendingTransactions = storePendingTransactions[currentAddress] || [];
-    for (const chainId of getSupportedMainnetChainIds()) {
+    for (const chainId of useBackendNetworksStore.getState().getSupportedMainnetChainIds()) {
       const latestTxConfirmedByBackend = latestTransactions.get(chainId);
       if (latestTxConfirmedByBackend) {
         const latestNonceConfirmedByBackend = latestTxConfirmedByBackend.nonce || 0;

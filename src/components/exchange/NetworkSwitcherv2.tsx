@@ -7,8 +7,8 @@ import { Bleed, Box, Columns, Inline, Text } from '@/design-system';
 import { position } from '@rainbow-me/styles';
 import { useTheme } from '@/theme';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { ChainId } from '@/chains/types';
-import { getChainsLabel, getDefaultChains, supportedSwapChainIds } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const NetworkSwitcherv2 = ({
   currentChainId,
@@ -22,11 +22,11 @@ const NetworkSwitcherv2 = ({
   const { colors } = useTheme();
   const scrollViewRef = useRef<ScrollView>(null);
   const networkMenuItems = useMemo(() => {
-    return Object.values(getDefaultChains())
-      .filter(chain => supportedSwapChainIds.includes(chain.id))
+    return Object.values(useBackendNetworksStore.getState().getDefaultChains())
+      .filter(chain => useBackendNetworksStore.getState().getSupportedChainIds().includes(chain.id))
       .map(chain => ({
         chainId: chain.id,
-        title: getChainsLabel()[chain.id],
+        title: useBackendNetworksStore.getState().getChainsLabel()[chain.id],
       }));
   }, []);
 

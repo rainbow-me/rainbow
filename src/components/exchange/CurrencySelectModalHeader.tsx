@@ -8,7 +8,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
-import { getChainsIdByName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const CurrencySelectModalHeaderHeight = 59;
 
@@ -58,7 +58,7 @@ export default function CurrencySelectModalHeader({
           <RainbowCoinIcon
             size={20}
             icon={defaultOutputAsset?.icon_url}
-            chainId={getChainsIdByName()[defaultOutputAsset?.network]}
+            chainId={useBackendNetworksStore.getState().getChainsIdByName()[defaultOutputAsset?.network]}
             colors={defaultOutputAsset?.colors}
             symbol={defaultOutputAsset?.symbol}
             theme={theme}

@@ -39,8 +39,8 @@ import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { queryClient } from '@/react-query/queryClient';
-import { ChainId, Network } from '@/chains/types';
-import { getChainsName } from '@/chains';
+import { ChainId, Network } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -314,8 +314,10 @@ export default function CurrencySelectModal() {
   const checkForRequiredAssets = useCallback(
     (item: any) => {
       if (type === CurrencySelectionTypes.output && currentChainId && currentChainId !== ChainId.mainnet) {
+        const chainsName = useBackendNetworksStore.getState().getChainsName();
+
         const currentL2WalletAssets = assetsInWallet.filter(
-          ({ network }) => network && network?.toLowerCase() === getChainsName()[currentChainId]?.toLowerCase()
+          ({ network }) => network && network?.toLowerCase() === chainsName[currentChainId]?.toLowerCase()
         );
         if (currentL2WalletAssets?.length < 1) {
           Keyboard.dismiss();
@@ -342,6 +344,8 @@ export default function CurrencySelectModal() {
       let newAsset = item;
 
       const selectAsset = async () => {
+        const chainsName = useBackendNetworksStore.getState().getChainsName();
+
         if (!item?.balance) {
           const externalAsset = await queryClient.fetchQuery(
             externalTokenQueryKey({
@@ -364,7 +368,7 @@ export default function CurrencySelectModal() {
             ...newAsset,
             decimals: item?.networks?.[currentChainId]?.decimals || item.decimals,
             address: item?.address || item?.networks?.[currentChainId]?.address,
-            network: getChainsName()[currentChainId],
+            network: chainsName[currentChainId],
             ...externalAsset,
           };
         }

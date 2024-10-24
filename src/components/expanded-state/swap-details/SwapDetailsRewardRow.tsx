@@ -8,15 +8,15 @@ import Routes from '@/navigation/routesNames';
 import { ChainBadge } from '@/components/coin-icon';
 import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
-import { ChainId } from '@/chains/types';
-import { getChainsNativeAsset } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export function SwapDetailsRewardRow({ reward }: { reward: Reward }) {
   const { navigate } = useNavigation();
   const { isDarkMode } = useTheme();
 
   const roundedAmount = Math.round(reward.amount * 1000) / 1000;
-  const nativeAsset = getChainsNativeAsset()[ChainId.optimism];
+  const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[ChainId.optimism];
   const accentColor = isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary;
 
   return (

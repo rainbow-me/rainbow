@@ -5,7 +5,7 @@ import { parseUnits } from '@ethersproject/units';
 import { getProvider } from '@/handlers/web3';
 import { Address, erc20Abi, erc721Abi } from 'viem';
 
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { NewTransaction, TransactionStatus, TxHash } from '@/entities';
 import { addNewTransaction } from '@/state/pendingTransactions';
@@ -20,7 +20,7 @@ import { overrideWithFastSpeedIfNeeded } from './../utils';
 import { toHex } from '@/__swaps__/utils/hex';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
-import { getChainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const getAssetRawAllowance = async ({
   owner,
@@ -267,10 +267,12 @@ export const unlock = async ({
 
   if (!approval) throw new RainbowError('[raps/unlock]: error executeApprove');
 
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
+
   const transaction = {
     asset: {
       ...assetToUnlock,
-      network: getChainsName()[assetToUnlock.chainId],
+      network: chainsName[assetToUnlock.chainId],
       colors: assetToUnlock.colors as TokenColors,
     } as ParsedAsset,
     data: approval.data,
@@ -279,7 +281,7 @@ export const unlock = async ({
     from: parameters.fromAddress,
     to: assetAddress,
     hash: approval.hash as TxHash,
-    network: getChainsName()[chainId],
+    network: chainsName[chainId],
     chainId: approval.chainId,
     nonce: approval.nonce,
     status: TransactionStatus.pending,

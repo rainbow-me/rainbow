@@ -11,7 +11,7 @@ import { useMagicAutofocus, useSwapSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const convertBipsToPercent = (bips: number) => (bips / 100).toString();
 const convertPercentToBips = (percent: number) => (percent * 100).toString();

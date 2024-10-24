@@ -24,7 +24,7 @@ import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextSty
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { inputKeys, SwapAssetType } from '@/__swaps__/types/swap';
 import { getDefaultSlippageWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
@@ -56,8 +56,11 @@ import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './Sync
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { getChainsNativeAsset, supportedFlashbotsChainIds } from '@/chains';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import {
+  useBackendNetworksStore,
+  getFlashbotsSupportedChainIdsWorklet,
+  getChainsNativeAssetWorklet,
+} from '@/state/backendNetworks/backendNetworks';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -137,6 +140,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const { nativeCurrency } = useAccountSettings();
 
   const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
+  const getFlashbotsSupportedChainIds = useBackendNetworksStore(state => state.getFlashbotsSupportedChainIds);
 
   const isFetching = useSharedValue(false);
   const isQuoteStale = useSharedValue(0); // TODO: Convert this to a boolean
@@ -167,9 +171,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   );
   const configProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
-  const slippage = useSharedValue(
-    getDefaultSlippageWorklet(initialSelectedInputAsset?.chainId || ChainId.mainnet, getRemoteConfig(), backendNetworks)
-  );
+  const slippage = useSharedValue(getDefaultSlippageWorklet(initialSelectedInputAsset?.chainId || ChainId.mainnet, getRemoteConfig()));
 
   const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
 
@@ -205,7 +207,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       NotificationManager?.postNotification('rapInProgress');
 
       const provider =
-        parameters.flashbots && supportedFlashbotsChainIds.includes(parameters.chainId)
+        parameters.flashbots && getFlashbotsSupportedChainIds().includes(parameters.chainId)
           ? await getFlashbotsProvider()
           : getProvider({ chainId: parameters.chainId });
       const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
@@ -407,7 +409,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
       const quoteData = q as QuoteTypeMap[typeof type];
-      const flashbots = (SwapSettings.flashbots.value && !!supportedFlashbotsChainIds.includes(inputAsset.chainId)) ?? false;
+      const flashbots =
+        (SwapSettings.flashbots.value && !!getFlashbotsSupportedChainIdsWorklet(backendNetworks).includes(inputAsset.chainId)) ?? false;
 
       const isNativeWrapOrUnwrap = quoteData.swapType === SwapType.wrap || quoteData.swapType === SwapType.unwrap;
 
@@ -760,7 +763,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (hasEnoughFundsForGas.value === false) {
-      const nativeCurrency = getChainsNativeAsset()[sellAsset?.chainId || ChainId.mainnet];
+      const nativeCurrency = getChainsNativeAssetWorklet(backendNetworks)[sellAsset?.chainId || ChainId.mainnet];
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
         disabled: true,

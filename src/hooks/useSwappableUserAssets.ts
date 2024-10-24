@@ -5,8 +5,8 @@ import { ETH_ADDRESS } from '@/references';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { EthereumAddress, ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { ChainId } from '@/chains/types';
-import { supportedSwapChainIds } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type SwappableAddresses = Record<ChainId, EthereumAddress[]>;
 
@@ -17,10 +17,13 @@ export const useSwappableUserAssets = (params: { outputCurrency: SwappableAsset 
   const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const swappableAssetsRef = useRef<SwappableAddresses>(
-    supportedSwapChainIds.reduce((acc, chainId) => {
-      acc[chainId] = [];
-      return acc;
-    }, {} as SwappableAddresses)
+    useBackendNetworksStore
+      .getState()
+      .getSwapSupportedChainIds()
+      .reduce((acc, chainId) => {
+        acc[chainId] = [];
+        return acc;
+      }, {} as SwappableAddresses)
   );
 
   const filteredAssetsInWallet = (assetsInWallet || []).filter(asset => {
@@ -28,7 +31,7 @@ export const useSwappableUserAssets = (params: { outputCurrency: SwappableAsset 
     if (hiddenCoinsObj[asset.uniqueId]) return true;
 
     // filter out networks where swaps are not enabled
-    if (supportedSwapChainIds.includes(asset.chainId)) return true;
+    if (useBackendNetworksStore.getState().getSwapSupportedChainIds().includes(asset.chainId)) return true;
 
     return false;
   });
@@ -59,14 +62,17 @@ export const useSwappableUserAssets = (params: { outputCurrency: SwappableAsset 
 
   const getSwappableAddressesInWallet = useCallback(async () => {
     const walletFilterRequests: Promise<void>[] = [];
-    supportedSwapChainIds.forEach(chainId => {
-      const assetsAddressesOnChain = filteredAssetsInWallet
-        .filter(asset => (asset?.chainId || ChainId.mainnet) === chainId)
-        .map(asset => (asset?.address === ETH_ADDRESS ? ETH_ADDRESS_AGGREGATORS : asset?.address));
-      if (assetsAddressesOnChain.length) {
-        walletFilterRequests.push(getSwappableAddressesForChainId(assetsAddressesOnChain, chainId));
-      }
-    });
+    useBackendNetworksStore
+      .getState()
+      .getSwapSupportedChainIds()
+      .forEach(chainId => {
+        const assetsAddressesOnChain = filteredAssetsInWallet
+          .filter(asset => (asset?.chainId || ChainId.mainnet) === chainId)
+          .map(asset => (asset?.address === ETH_ADDRESS ? ETH_ADDRESS_AGGREGATORS : asset?.address));
+        if (assetsAddressesOnChain.length) {
+          walletFilterRequests.push(getSwappableAddressesForChainId(assetsAddressesOnChain, chainId));
+        }
+      });
     await Promise.all(walletFilterRequests);
   }, [filteredAssetsInWallet, getSwappableAddressesForChainId]);
 

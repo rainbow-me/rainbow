@@ -6,7 +6,7 @@ import { Text as RNText, StyleSheet } from 'react-native';
 import Animated, { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
@@ -18,8 +18,7 @@ import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { showActionSheetWithOptions } from '@/utils';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { getChainsLabelWorklet, getChainsNameWorklet } from '@/chains';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { getChainsLabelWorklet, getChainsNameWorklet, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -49,11 +48,13 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
   }, [accountColor, isDarkMode]);
 
   const chainName = useDerivedValue(() => {
+    const chainLabels = getChainsLabelWorklet(backendNetworks);
+
     return output
-      ? getChainsLabelWorklet(backendNetworks)[selectedOutputChainId.value]
+      ? chainLabels[selectedOutputChainId.value]
       : inputListFilter.value === 'all'
         ? allText
-        : getChainsLabelWorklet(backendNetworks)[inputListFilter.value as ChainId];
+        : chainLabels[inputListFilter.value as ChainId];
   });
 
   const handleSelectChain = useCallback(
@@ -103,7 +104,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
     return {
       menuItems: supportedChains,
     };
-  }, [balanceSortedChainList, output]);
+  }, [backendNetworks, balanceSortedChainList, output]);
 
   const onShowActionSheet = useCallback(() => {
     const chainTitles = menuConfig.menuItems.map(chain => chain.actionTitle);

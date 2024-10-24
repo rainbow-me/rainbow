@@ -9,12 +9,11 @@ import {
   SLIDER_WIDTH,
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
-import { ChainId } from '@/chains/types';
 import { globalColors } from '@/design-system';
 import { ForegroundColor, palettes } from '@/design-system/color/palettes';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
-import { RainbowConfig } from '@/model/remoteConfig';
+import { DEFAULT_CONFIG, RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
 import { supportedNativeCurrencies } from '@/references';
 import { userAssetsStore } from '@/state/assets/userAssets';
@@ -38,8 +37,7 @@ import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from
 import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
 import { convertAmountToRawAmount } from './numbers';
-import { getChainsName, getChainsNameWorklet } from '@/chains';
-import { BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -340,20 +338,6 @@ export const opacityWorklet = (color: string, opacity: number) => {
 //
 // /---- END worklet utils ----/ //
 
-export const DEFAULT_SLIPPAGE_BIPS = {
-  [ChainId.apechain]: 200,
-  [ChainId.arbitrum]: 200,
-  [ChainId.avalanche]: 200,
-  [ChainId.base]: 200,
-  [ChainId.blast]: 200,
-  [ChainId.bsc]: 200,
-  [ChainId.degen]: 200,
-  [ChainId.mainnet]: 100,
-  [ChainId.optimism]: 200,
-  [ChainId.polygon]: 200,
-  [ChainId.zora]: 200,
-};
-
 export const slippageInBipsToString = (slippageInBips: number) => (slippageInBips / 100).toFixed(1);
 
 export const slippageInBipsToStringWorklet = (slippageInBips: number) => {
@@ -362,23 +346,24 @@ export const slippageInBipsToStringWorklet = (slippageInBips: number) => {
 };
 
 export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
-  return slippageInBipsToString(
-    // NOTE: JSON.parse doesn't type the result as a Record<ChainName, number>
-    (config.default_slippage_bips as unknown as Record<string, number>)[getChainsName()[chainId]] || DEFAULT_SLIPPAGE_BIPS[chainId]
+  const amount = +(
+    (config.default_slippage_bips_chainId as unknown as { [key: number]: number })[chainId] ||
+    DEFAULT_CONFIG.default_slippage_bips_chainId[chainId] ||
+    200
   );
+
+  return slippageInBipsToString(amount);
 };
 
-export const getDefaultSlippageWorklet = (
-  chainId: ChainId,
-  config: RainbowConfig,
-  backendNetworks: SharedValue<BackendNetworksResponse>
-) => {
+export const getDefaultSlippageWorklet = (chainId: ChainId, config: RainbowConfig) => {
   'worklet';
-
-  return slippageInBipsToStringWorklet(
-    (config.default_slippage_bips as unknown as { [key: string]: number })[getChainsNameWorklet(backendNetworks)[chainId]] ||
-      DEFAULT_SLIPPAGE_BIPS[chainId]
+  const amount = +(
+    (config.default_slippage_bips_chainId as unknown as { [key: number]: number })[chainId] ||
+    DEFAULT_CONFIG.default_slippage_bips_chainId[chainId] ||
+    200
   );
+
+  return slippageInBipsToStringWorklet(amount);
 };
 
 export type Colors = {

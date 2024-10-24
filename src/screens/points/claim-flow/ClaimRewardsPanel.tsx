@@ -5,7 +5,7 @@ import { Bleed, Box, Text, TextShadow, globalColors, useBackgroundColor, useColo
 import * as i18n from '@/languages';
 import { ListHeader, ListPanel, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
 import { useAccountAccentColor, useAccountProfile, useAccountSettings } from '@/hooks';
 import { safeAreaInsetValues } from '@/utils';
@@ -34,7 +34,7 @@ import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { RainbowError, logger } from '@/logger';
 import { RewardsActionButton } from '../components/RewardsActionButton';
-import { getChainsLabel, getChainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType | 'error' | 'bridge-error';
 type ClaimNetwork = '10' | '8453' | '7777777';
@@ -93,7 +93,7 @@ export const ClaimRewardsPanel = () => {
 const NETWORK_LIST_ITEMS = CLAIM_NETWORKS.map(chainId => {
   return {
     IconComponent: <ChainImage chainId={chainId} size={36} />,
-    label: getChainsLabel()[chainId],
+    label: useBackendNetworksStore.getState().getChainsLabel()[chainId],
     uniqueId: chainId.toString(),
     selected: false,
   };
@@ -209,11 +209,12 @@ const ClaimingRewards = ({
     nonce: number | null;
   }>({
     mutationFn: async () => {
+      const chainsName = useBackendNetworksStore.getState().getChainsName();
       // Fetch the native asset from the origin chain
       const opEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.optimism });
       const opEth = {
         ...opEth_,
-        chainName: getChainsName()[ChainId.optimism],
+        chainName: chainsName[ChainId.optimism],
       };
 
       // Fetch the native asset from the destination chain
@@ -229,7 +230,7 @@ const ClaimingRewards = ({
       // Add missing properties to match types
       const destinationEth = {
         ...destinationEth_,
-        chainName: getChainsName()[chainId as ChainId],
+        chainName: chainsName[chainId as ChainId],
       };
 
       const selectedGas = {
@@ -337,18 +338,19 @@ const ClaimingRewards = ({
   }, [claimStatus]);
 
   const panelTitle = useMemo(() => {
+    const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
     switch (claimStatus) {
       case 'idle':
         return i18n.t(i18n.l.points.points.claim_on_network, {
-          network: chainId ? getChainsLabel()[chainId] : '',
+          network: chainId ? chainsLabel[chainId] : '',
         });
       case 'claiming':
         return i18n.t(i18n.l.points.points.claiming_on_network, {
-          network: chainId ? getChainsLabel()[chainId] : '',
+          network: chainId ? chainsLabel[chainId] : '',
         });
       case 'success':
         return i18n.t(i18n.l.points.points.claimed_on_network, {
-          network: chainId ? getChainsLabel()[chainId] : '',
+          network: chainId ? chainsLabel[chainId] : '',
         });
       case 'bridge-error':
         return i18n.t(i18n.l.points.points.bridge_error);
@@ -494,7 +496,7 @@ const ClaimingRewards = ({
                   <Box paddingHorizontal="44px">
                     <Text align="center" color="labelQuaternary" size="13pt / 135%" weight="semibold">
                       {i18n.t(i18n.l.points.points.bridge_error_explainer, {
-                        network: chainId ? getChainsLabel()[chainId] : '',
+                        network: chainId ? useBackendNetworksStore.getState().getChainsLabel()[chainId] : '',
                       })}
                     </Text>
                   </Box>

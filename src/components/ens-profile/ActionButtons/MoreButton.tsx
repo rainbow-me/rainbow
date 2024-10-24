@@ -11,7 +11,7 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',

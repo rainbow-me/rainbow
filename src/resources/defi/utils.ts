@@ -14,7 +14,7 @@ import {
 import { add, convertAmountToNativeDisplay, convertRawAmountToNativeDisplay, subtract } from '@/helpers/utilities';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ethereumUtils } from '@/utils';
-import { getChainsIdByName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const parsePosition = (position: Position, currency: NativeCurrencyKey): RainbowPosition => {
   let totalLocked = '0';
@@ -144,9 +144,11 @@ export const parsePositions = (data: AddysPositionsResponse, currency: NativeCur
 
   const positionTokens: string[] = [];
 
+  const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
+
   parsedPositions.forEach(({ deposits }) => {
     deposits.forEach(({ asset }) => {
-      const uniqueId = ethereumUtils.getUniqueId(asset.asset_code.toLowerCase(), getChainsIdByName()[asset.network]);
+      const uniqueId = ethereumUtils.getUniqueId(asset.asset_code.toLowerCase(), chainsIdByName[asset.network]);
       positionTokens.push(uniqueId);
     });
   });

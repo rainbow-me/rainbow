@@ -3,7 +3,7 @@ import { createStore } from '../internal/createStore';
 import create from 'zustand';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
 import { nonceStore } from '../nonces';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export interface PendingTransactionsState {
   pendingTransactions: Record<string, RainbowTransaction[]>;

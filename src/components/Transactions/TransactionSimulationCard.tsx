@@ -27,8 +27,8 @@ import {
   rotationConfig,
   timingConfig,
 } from '@/components/Transactions/constants';
-import { ChainId } from '@/chains/types';
-import { getChainsName } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 interface TransactionSimulationCardProps {
   chainId: ChainId;
@@ -271,7 +271,7 @@ export const TransactionSimulationCard = ({
               <Text color="labelQuaternary" size="13pt" weight="semibold">
                 {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.need_more_native, {
                   symbol: walletBalance?.symbol,
-                  network: getChainsName()[chainId],
+                  network: useBackendNetworksStore.getState().getChainsName()[chainId],
                 })}
               </Text>
             ) : (

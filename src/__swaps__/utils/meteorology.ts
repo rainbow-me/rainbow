@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { abs, lessThan, subtract } from '@/helpers/utilities';
 import { gweiToWei } from '@/parsers';

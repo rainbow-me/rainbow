@@ -1,4 +1,4 @@
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { getGlobal, saveGlobal } from './common';
 import { NativeCurrencyKeys } from '@/entities';
 import { Language } from '@/languages';

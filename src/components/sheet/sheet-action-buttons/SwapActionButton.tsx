@@ -16,7 +16,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import exchangeModalTypes from '@/helpers/exchangeModalTypes';
-import { getChainsIdByName, getChainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
@@ -51,7 +51,8 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
         return;
       }
 
-      const chainId = getChainsIdByName()[asset.network];
+      const chainId = useBackendNetworksStore.getState().getChainsIdByName()[asset.network];
+      const chainName = useBackendNetworksStore.getState().getChainsName()[chainId];
       const uniqueId = `${asset.address}_${chainId}`;
       const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 
@@ -62,7 +63,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
           address: asset.address as AddressOrEth,
           type: asset.type as AssetType,
           chainId,
-          chainName: getChainsName()[chainId],
+          chainName,
           isNativeAsset: false,
           native: {},
         },
@@ -70,7 +71,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
           ...asset,
           uniqueId,
           chainId,
-          chainName: getChainsName()[chainId],
+          chainName,
           address: asset.address as AddressOrEth,
           highLiquidity: asset.highLiquidity ?? false,
           isRainbowCurated: asset.isRainbowCurated ?? false,
@@ -96,7 +97,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
               ...nativeAssetForChain,
               uniqueId: `${nativeAssetForChain.address}_${chainId}`,
               chainId,
-              chainName: getChainsName()[chainId],
+              chainName,
               address: nativeAssetForChain.address as AddressOrEth,
               type: nativeAssetForChain.type as AssetType,
               mainnetAddress: nativeAssetForChain.mainnet_address as AddressOrEth,

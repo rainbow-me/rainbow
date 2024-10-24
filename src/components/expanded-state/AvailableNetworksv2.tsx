@@ -23,9 +23,9 @@ import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { getChainsLabel, getChainsName, getDefaultChains, supportedSwapChainIds } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const NOOP = () => null;
 
@@ -80,6 +80,8 @@ const AvailableNetworksv2 = ({
         const uniqueId = `${newAsset.address}_${asset.chainId}`;
         const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 
+        const chainName = useBackendNetworksStore.getState().getChainsName()[asset.chainId];
+
         const parsedAsset = parseSearchAsset({
           assetWithPrice: {
             ...newAsset,
@@ -87,7 +89,7 @@ const AvailableNetworksv2 = ({
             address: newAsset.address as AddressOrEth,
             type: newAsset.type as AssetType,
             chainId: asset.chainId,
-            chainName: getChainsName()[asset.chainId],
+            chainName,
             isNativeAsset: false,
             native: {},
           },
@@ -95,7 +97,7 @@ const AvailableNetworksv2 = ({
             ...newAsset,
             uniqueId,
             chainId: asset.chainId,
-            chainName: getChainsName()[asset.chainId],
+            chainName,
             address: newAsset.address as AddressOrEth,
             highLiquidity: newAsset.highLiquidity ?? false,
             isRainbowCurated: newAsset.isRainbowCurated ?? false,
@@ -126,7 +128,7 @@ const AvailableNetworksv2 = ({
       }
 
       newAsset.uniqueId = getUniqueId(asset.address, chainId);
-      newAsset.type = getChainsName()[chainId];
+      newAsset.type = useBackendNetworksStore.getState().getChainsName()[chainId];
 
       navigate(Routes.EXCHANGE_MODAL, {
         params: {
@@ -165,15 +167,17 @@ const AvailableNetworksv2 = ({
     convertAssetAndNavigate(availableChainIds[0]);
   }, [availableChainIds, convertAssetAndNavigate]);
 
-  const networkMenuItems = supportedSwapChainIds
+  const networkMenuItems = useBackendNetworksStore
+    .getState()
+    .getSupportedChainIds()
     .filter(chainId => chainId !== ChainId.mainnet)
-    .map(chainId => getDefaultChains()[chainId])
+    .map(chainId => useBackendNetworksStore.getState().getDefaultChains()[chainId])
     .map(chain => ({
       actionKey: `${chain.id}`,
-      actionTitle: getChainsLabel()[chain.id],
+      actionTitle: useBackendNetworksStore.getState().getChainsLabel()[chain.id],
       icon: {
         iconType: 'ASSET',
-        iconValue: `${getChainsName()[chain.id]}Badge${chain.id === ChainId.mainnet ? '' : 'NoShadow'}`,
+        iconValue: `${useBackendNetworksStore.getState().getChainsName()[chain.id]}Badge${chain.id === ChainId.mainnet ? '' : 'NoShadow'}`,
       },
     }));
 
@@ -235,7 +239,7 @@ const AvailableNetworksv2 = ({
                           availableNetworks: availableChainIds?.length,
                         })
                       : lang.t('expanded_state.asset.available_networkv2', {
-                          availableNetwork: getChainsName()[availableChainIds[0]],
+                          availableNetwork: useBackendNetworksStore.getState().getChainsName()[availableChainIds[0]],
                         })}
                   </Text>
                 </Box>

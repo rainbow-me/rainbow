@@ -1,5 +1,5 @@
 import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
-import { ChainId, Network } from '@/chains/types';
+import { ChainId, Network } from '@/state/backendNetworks/types';
 import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 import { NativeCurrencyKeys, RainbowToken } from '@/entities';
 import { createQueryKey, queryClient } from '@/react-query';
@@ -8,7 +8,7 @@ import { promiseUtils } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
-import { getChainsIdByName, getChainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { analyticsV2 } from '@/analytics';
 
 export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 4 });
@@ -23,7 +23,7 @@ const getUniqueId = (address: AddressOrEth, chainId: ChainId) => getStandardized
 async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
   const favoritesMetadata: Record<UniqueId, RainbowToken> = {};
   const newFavoritesMeta: Record<UniqueId, RainbowToken> = {};
-  const network = getChainsName()[chainId];
+  const network = useBackendNetworksStore.getState().getChainsName()[chainId];
 
   // Map addresses to an array of promises returned by fetchExternalToken
   const fetchPromises: Promise<void>[] = addresses.map(async address => {
@@ -94,9 +94,11 @@ export async function refreshFavorites() {
     {} as Record<Network, string[]>
   );
 
+  const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
+
   const updatedMetadataByNetwork = await Promise.all(
     Object.entries(favoritesByNetwork).map(async ([network, networkFavorites]) =>
-      fetchMetadata(networkFavorites, getChainsIdByName()[network as Network])
+      fetchMetadata(networkFavorites, chainsIdByName[network as Network])
     )
   );
 

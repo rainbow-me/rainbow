@@ -18,8 +18,8 @@ import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { logger } from '@/logger';
-import { ChainId, Network } from '@/chains/types';
-import { getChainsName } from '@/chains';
+import { ChainId, Network } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type swapCurrencyListType =
   | 'verifiedAssets'
@@ -205,7 +205,7 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = ChainId.mainne
                   },
                 },
                 symbol,
-                network: getChainsName()[chainId],
+                network: useBackendNetworksStore.getState().getChainsName()[chainId],
                 uniqueId,
               } as RainbowToken,
             ];

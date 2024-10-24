@@ -5,7 +5,7 @@ import { ENSRegistrations, ENSRegistrationState, Records, RegistrationParameters
 import { getLocalENSRegistrations, saveLocalENSRegistrations } from '@/handlers/localstorage/accountLocal';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import { omitFlatten } from '@/helpers/utilities';
-import { Network } from '@/chains/types';
+import { Network } from '@/state/backendNetworks/types';
 
 const ENS_REGISTRATION_SET_CHANGED_RECORDS = 'ensRegistration/ENS_REGISTRATION_SET_CHANGED_RECORDS';
 const ENS_REGISTRATION_SET_INITIAL_RECORDS = 'ensRegistration/ENS_REGISTRATION_SET_INITIAL_RECORDS';

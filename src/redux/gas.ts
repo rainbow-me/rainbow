@@ -36,9 +36,9 @@ import {
 } from '@/parsers';
 import { ethUnits } from '@/references';
 import { ethereumUtils, gasUtils } from '@/utils';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { getChainsSwapPollingInterval, meteorologySupportedChainIds, getNeedsL1SecurityFeeChains } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { addBuffer } from '@/helpers/utilities';
 
@@ -341,7 +341,7 @@ export const gasPricesStartPolling =
               const { nativeCurrency } = getState().settings;
 
               let dataIsReady = true;
-              const meteorologySupportsChainId = meteorologySupportedChainIds.includes(chainId);
+              const meteorologySupportsChainId = useBackendNetworksStore.getState().getMeteorologySupportedChainIds().includes(chainId);
               if (!meteorologySupportsChainId) {
                 const adjustedGasFees = await getProviderGasPrices({ chainId });
                 if (!adjustedGasFees) return;
@@ -377,7 +377,7 @@ export const gasPricesStartPolling =
               } else {
                 try {
                   // OP chains have an additional fee we need to load
-                  if (getNeedsL1SecurityFeeChains().includes(chainId)) {
+                  if (useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(chainId)) {
                     dataIsReady = l1GasFeeOptimism !== null;
                   }
                   const meteorologyGasParams = await getMeteorologyGasParams(chainId);
@@ -513,7 +513,7 @@ export const gasPricesStartPolling =
       }
     };
 
-    const pollingInterval = getChainsSwapPollingInterval()[chainId];
+    const pollingInterval = useBackendNetworksStore.getState().getChainsPollingInterval()[chainId];
     watchGasPrices(chainId, pollingInterval);
   };
 
@@ -549,7 +549,10 @@ export const gasUpdateTxFee =
       const { defaultGasLimit, gasLimit, gasFeeParamsBySpeed, selectedGasFee, chainId, currentBlockParams } = getState().gas;
 
       const { nativeCurrency } = getState().settings;
-      if (isEmpty(gasFeeParamsBySpeed) || (getNeedsL1SecurityFeeChains().includes(chainId) && l1GasFeeOptimism === null)) {
+      if (
+        isEmpty(gasFeeParamsBySpeed) ||
+        (useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(chainId) && l1GasFeeOptimism === null)
+      ) {
         // if fee prices not ready, we need to store the gas limit for future calculations
         // the rest is as the initial state value
         if (updatedGasLimit) {

@@ -31,6 +31,7 @@ export interface RainbowConfig extends Record<string, string | boolean | number>
   data_endpoint: string;
   data_origin: string;
   default_slippage_bips: string;
+  default_slippage_bips_chainId: string;
   ethereum_goerli_rpc: string;
   ethereum_mainnet_rpc: string;
   f2c_enabled: boolean;
@@ -112,6 +113,19 @@ export const DEFAULT_CONFIG: RainbowConfig = {
     polygon: 200,
     zora: 200,
   }),
+  default_slippage_bips_chainId: JSON.stringify({
+    '33139': 200,
+    '42161': 200,
+    '43114': 200,
+    '8453': 200,
+    '81457': 200,
+    '56': 200,
+    '666666666': 200,
+    '1': 100,
+    '10': 200,
+    '137': 200,
+    '7777777': 200,
+  }),
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
   ethereum_mainnet_rpc: __DEV__ ? ETHEREUM_MAINNET_RPC_DEV : ETHEREUM_MAINNET_RPC,
   f2c_enabled: true,
@@ -188,7 +202,7 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
     const parameters = remoteConfig().getAll();
     Object.entries(parameters).forEach($ => {
       const [key, entry] = $;
-      if (key === 'default_slippage_bips') {
+      if (key === 'default_slippage_bips' || key === 'default_slippage_bips_chainId') {
         config[key] = JSON.parse(entry.asString());
       } else if (
         key === 'flashbots_enabled' ||

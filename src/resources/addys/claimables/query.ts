@@ -9,7 +9,7 @@ import { parseClaimables } from './utils';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { CLAIMABLES, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
-import { getSupportedChainIds } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const ADDYS_BASE_URL = 'https://addys.p.rainbow.me/v3';
 
@@ -41,7 +41,7 @@ type ClaimablesQueryKey = ReturnType<typeof claimablesQueryKey>;
 
 async function claimablesQueryFunction({ queryKey: [{ address, currency }] }: QueryFunctionArgs<typeof claimablesQueryKey>) {
   try {
-    const url = `/${getSupportedChainIds().join(',')}/${address}/claimables`;
+    const url = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/claimables`;
     const { data } = await addysHttp.get<ConsolidatedClaimablesResponse>(url, {
       params: {
         currency: currency.toLowerCase(),

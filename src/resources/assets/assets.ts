@@ -12,8 +12,8 @@ import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';
 import { AddysAddressAsset, AddysAsset, ParsedAsset, RainbowAddressAssets } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { ChainId } from '@/chains/types';
-import { getChainsIdByName } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const storage = new MMKV();
 
@@ -40,7 +40,7 @@ export const filterPositionsData = (
 
 export function parseAsset({ address, asset }: { address: string; asset: AddysAsset }): ParsedAsset {
   const network = asset?.network;
-  const chainId = getChainsIdByName()[network];
+  const chainId = useBackendNetworksStore.getState().getChainsIdByName()[network];
   const mainnetAddress = asset?.networks?.[ChainId.mainnet]?.address;
   const uniqueId = getUniqueId(address, chainId);
 

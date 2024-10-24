@@ -61,8 +61,8 @@ import { SWAPS_V2, useExperimentalFlag } from '@/config';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
-import { ChainId } from '@/chains/types';
-import { getChainsLabel, getDefaultChains } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const PAGES = {
   HOME: 'home',
@@ -183,12 +183,12 @@ export const ControlPanel = () => {
   const { testnetsEnabled } = store.getState().settings;
 
   const allNetworkItems = useMemo(() => {
-    return Object.values(getDefaultChains())
+    return Object.values(useBackendNetworksStore.getState().getDefaultChains())
       .filter(({ testnet }) => testnetsEnabled || !testnet)
       .map(chain => {
         return {
           IconComponent: <ChainImage chainId={chain.id} size={36} />,
-          label: getChainsLabel()[chain.id],
+          label: useBackendNetworksStore.getState().getChainsLabel()[chain.id],
           secondaryLabel: i18n.t(
             isConnected && chain.id === currentChainId
               ? i18n.l.dapp_browser.control_panel.connected

@@ -1,6 +1,6 @@
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { EthereumAddress } from '@/entities';
-import { getChainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export default function getUrlForTrustIconFallback(address: EthereumAddress, chainId: ChainId): string | null {
   if (!address) return null;
@@ -13,7 +13,7 @@ export default function getUrlForTrustIconFallback(address: EthereumAddress, cha
       networkPath = 'smartchain';
       break;
     default:
-      networkPath = getChainsName()[chainId];
+      networkPath = useBackendNetworksStore.getState().getChainsName()[chainId];
   }
   return `https://rainbowme-res.cloudinary.com/image/upload/assets/${networkPath}/${address}.png`;
 }

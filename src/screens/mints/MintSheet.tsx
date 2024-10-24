@@ -55,8 +55,8 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
-import { ChainId } from '@/chains/types';
-import { getChainsName, getDefaultChains, getChainDefaultRpc } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -247,10 +247,11 @@ const MintSheet = () => {
   // estimate gas limit
   useEffect(() => {
     const estimateMintGas = async () => {
+      const defaultChains = useBackendNetworksStore.getState().getDefaultChains();
       const signer = createWalletClient({
         account: accountAddress,
-        chain: getDefaultChains()[chainId],
-        transport: http(getChainDefaultRpc(chainId)),
+        chain: defaultChains[chainId],
+        transport: http(useBackendNetworksStore.getState().getChainDefaultRpc(chainId)),
       });
       try {
         await getClient()?.actions.mintToken({
@@ -355,11 +356,11 @@ const MintSheet = () => {
     const privateKey = await loadPrivateKey(accountAddress, false);
     // @ts-ignore
     const account = privateKeyToAccount(privateKey);
-    const chain = getDefaultChains()[chainId];
+    const chain = useBackendNetworksStore.getState().getDefaultChains()[chainId];
     const signer = createWalletClient({
       account,
       chain,
-      transport: http(getChainDefaultRpc(chainId)),
+      transport: http(useBackendNetworksStore.getState().getChainDefaultRpc(chainId)),
     });
 
     const feeAddress = getRainbowFeeAddress(chainId);
@@ -376,6 +377,7 @@ const MintSheet = () => {
         wallet: signer!,
         chainId,
         onProgress: (steps: Execute['steps']) => {
+          const chainsName = useBackendNetworksStore.getState().getChainsName();
           steps.forEach(step => {
             if (step.error) {
               logger.error(new RainbowError(`[MintSheet]: Error minting NFT: ${step.error}`));
@@ -389,7 +391,7 @@ const MintSheet = () => {
                   type: 'nft',
                   icon_url: imageUrl,
                   address: mintCollection.id || '',
-                  network: getChainsName()[chainId],
+                  network: chainsName[chainId],
                   name: mintCollection.name || '',
                   decimals: 18,
                   symbol: 'NFT',
@@ -399,7 +401,7 @@ const MintSheet = () => {
                 const paymentAsset = {
                   type: 'nft',
                   address: ETH_ADDRESS,
-                  network: getChainsName()[chainId],
+                  network: chainsName[chainId],
                   name: mintCollection.publicMintInfo?.price?.currency?.name || 'Ethereum',
                   decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
                   symbol: ETH_SYMBOL,
@@ -412,7 +414,7 @@ const MintSheet = () => {
                   to: item.data?.to,
                   from: item.data?.from,
                   hash: item.txHashes[0].txHash,
-                  network: getChainsName()[chainId],
+                  network: chainsName[chainId],
                   nonce,
                   changes: [
                     {
@@ -704,7 +706,7 @@ const MintSheet = () => {
                           <ChainBadge chainId={chainId} position="relative" size="small" forceDark={true} />
                         )}
                         <Text color="labelSecondary" align="right" size="17pt" weight="medium">
-                          {`${getDefaultChains()[chainId].name}`}
+                          {`${useBackendNetworksStore.getState().getDefaultChains()[chainId].name}`}
                         </Text>
                       </Inline>
                     </Inset>

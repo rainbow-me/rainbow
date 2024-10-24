@@ -18,8 +18,8 @@ import { CrosschainQuote, QuoteError, getClaimBridgeQuote } from '@rainbow-me/sw
 import { Address } from 'viem';
 import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
-import { ChainId } from '@/chains/types';
-import { getChainsName } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 // This action is used to bridge the claimed funds to another chain
 export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {
@@ -158,9 +158,11 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     throw new Error('[CLAIM-BRIDGE]: executeCrosschainSwap returned undefined');
   }
 
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
+
   const typedAssetToBuy: ParsedAddressAsset = {
     ...parameters.assetToBuy,
-    network: getChainsName()[parameters.assetToBuy.chainId],
+    network: chainsName[parameters.assetToBuy.chainId],
     chainId: parameters.assetToBuy.chainId,
     colors: undefined,
     networks: undefined,
@@ -168,7 +170,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   };
   const typedAssetToSell = {
     ...parameters.assetToSell,
-    network: getChainsName()[parameters.assetToSell.chainId],
+    network: chainsName[parameters.assetToSell.chainId],
     chainId: parameters.assetToSell.chainId,
     colors: undefined,
     networks: undefined,
@@ -196,7 +198,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     from: bridgeQuote.from,
     to: bridgeQuote.to as Address,
     hash: swap.hash as TxHash,
-    network: getChainsName()[parameters.chainId],
+    network: chainsName[parameters.chainId],
     nonce: swap.nonce,
     status: TransactionStatus.pending,
     type: 'bridge',

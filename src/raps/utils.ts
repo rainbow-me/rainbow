@@ -8,7 +8,7 @@ import { Chain, erc20Abi } from 'viem';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { gasUtils } from '@/utils';
 import { add, greaterThan, multiply } from '@/helpers/utilities';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { gasUnits } from '@/references';
 import { toHexNoLeadingZeros } from '@/handlers/web3';
 

@@ -1,4 +1,4 @@
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { Network as APINetwork } from '@/screens/AddCash/types';
 
 export function convertAPINetworkToInternalChainIds(network: APINetwork): ChainId | undefined {

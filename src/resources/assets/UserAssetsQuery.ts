@@ -9,9 +9,9 @@ import { useQuery } from '@tanstack/react-query';
 import { filterPositionsData, parseAddressAsset } from './assets';
 import { fetchHardhatBalances } from './hardhatAssets';
 import { AddysAccountAssetsMeta, AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
-import { Network } from '@/chains/types';
+import { Network } from '@/state/backendNetworks/types';
 import { staleBalancesStore } from '@/state/staleBalances';
-import { getSupportedMainnetChainIds } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -80,7 +80,7 @@ async function userAssetsQueryFunction({
     const { erroredChainIds, results } = await fetchAndParseUserAssetsForChainIds({
       address,
       currency,
-      chainIds: getSupportedMainnetChainIds(),
+      chainIds: useBackendNetworksStore.getState().getSupportedMainnetChainIds(),
       staleBalanceParam,
     });
     let parsedSuccessResults = results;

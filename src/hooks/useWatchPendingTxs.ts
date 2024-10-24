@@ -9,14 +9,14 @@ import { getProvider } from '@/handlers/web3';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { queryClient } from '@/react-query/queryClient';
 import { getTransactionFlashbotStatus } from '@/handlers/transactions';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { useNonceStore } from '@/state/nonces';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { Address } from 'viem';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { getSupportedMainnetChainIds } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({
@@ -205,11 +205,13 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         queryKey: userAssetsQueryKey({ address, currency: nativeCurrency, connectedToHardhat }),
       });
 
+      const supportedMainnetChainIds = useBackendNetworksStore.getState().getSupportedMainnetChainIds();
+
       await queryClient.refetchQueries({
         queryKey: consolidatedTransactionsQueryKey({
           address,
           currency: nativeCurrency,
-          chainIds: getSupportedMainnetChainIds(),
+          chainIds: supportedMainnetChainIds,
         }),
       });
 
@@ -219,7 +221,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           queryKey: consolidatedTransactionsQueryKey({
             address,
             currency: nativeCurrency,
-            chainIds: getSupportedMainnetChainIds(),
+            chainIds: supportedMainnetChainIds,
           }),
         });
       }, 2000);

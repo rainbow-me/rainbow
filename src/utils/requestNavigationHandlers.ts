@@ -34,8 +34,8 @@ import { noop } from 'lodash';
 import { toUtf8String } from '@ethersproject/strings';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Address } from 'viem';
-import { ChainId } from '@/chains/types';
-import { getChainsName, getSupportedMainnetChainIds } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 
@@ -123,7 +123,7 @@ export const handleMobileWalletProtocolRequest = async ({
         const routeParams: WalletconnectApprovalSheetRouteParams = {
           receivedTimestamp,
           meta: {
-            chainIds: getSupportedMainnetChainIds(),
+            chainIds: useBackendNetworksStore.getState().getSupportedMainnetChainIds(),
             dappName: dappMetadata?.appName || dappMetadata?.appUrl || action.appName || action.appIconUrl || action.appId || '',
             dappUrl: dappMetadata?.appUrl || action.appId || '',
             imageUrl: maybeSignUri(dappMetadata?.iconUrl || action.appIconUrl),
@@ -169,7 +169,10 @@ export const handleMobileWalletProtocolRequest = async ({
       }
 
       if (action.method === 'wallet_switchEthereumChain') {
-        const isSupportedChain = getSupportedMainnetChainIds().includes(BigNumber.from(action.params.chainId).toNumber());
+        const isSupportedChain = useBackendNetworksStore
+          .getState()
+          .getSupportedMainnetChainIds()
+          .includes(BigNumber.from(action.params.chainId).toNumber());
         if (!isSupportedChain) {
           await rejectAction(action, {
             message: 'Unsupported chain',
@@ -301,7 +304,7 @@ export const handleDappBrowserConnectionPrompt = (
     const routeParams: WalletconnectApprovalSheetRouteParams = {
       receivedTimestamp,
       meta: {
-        chainIds: getSupportedMainnetChainIds(),
+        chainIds: useBackendNetworksStore.getState().getSupportedMainnetChainIds(),
         dappName: dappData?.dappName || dappData.dappUrl,
         dappUrl: dappData.dappUrl,
         imageUrl: maybeSignUri(dappData.imageUrl),
@@ -404,7 +407,7 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
 
   // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
   const chainId = request?.walletConnectV2RequestValues?.chainId || walletConnector?._chainId;
-  const network = getChainsName()[chainId];
+  const network = useBackendNetworksStore.getState().getChainsName()[chainId];
   // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
   const address = request?.walletConnectV2RequestValues?.address || walletConnector?._accounts?.[0];
 

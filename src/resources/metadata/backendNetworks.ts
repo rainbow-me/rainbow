@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { QueryConfigWithSelect, QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
-import { BackendNetwork } from '@/chains/types';
+import { BackendNetwork } from '@/state/backendNetworks/types';
 import { BACKEND_NETWORKS_QUERY } from './sharedQueries';
 
 // ///////////////////////////////////////////////

@@ -23,7 +23,6 @@ import contextMenuProps from './exchangeAssetRowContextMenuProps';
 import { TokenSectionTypes } from '@/helpers';
 import { useAndroidScrollViewGestureHandler, usePrevious } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import store from '@/redux/store';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';

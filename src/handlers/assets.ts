@@ -2,13 +2,13 @@ import { Contract } from '@ethersproject/contracts';
 
 import { erc20ABI } from '@/references';
 import { convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
-import { ChainId } from '@/chains/types';
-import { getChainsNativeAsset } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { isLowerCaseMatch } from '@/utils';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 
 export function isNativeAsset(address: AddressOrEth | string, chainId: ChainId) {
-  return isLowerCaseMatch(getChainsNativeAsset()[chainId].address, address);
+  return isLowerCaseMatch(useBackendNetworksStore.getState().getChainsNativeAsset()[chainId].address, address);
 }
 
 export async function getOnchainAssetBalance({ address, decimals, symbol }: any, userAddress: any, chainId: ChainId, provider: any) {

@@ -7,7 +7,6 @@ import {
   QuoteError,
   QuoteParams,
   Source,
-  SwapType,
 } from '@rainbow-me/swaps';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
@@ -34,7 +33,7 @@ import { ethereumUtils } from '@/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { SwappableAsset } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
-import { getChainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const SWAP_POLLING_INTERVAL = 5000;
 
@@ -464,7 +463,7 @@ export default function useSwapDerivedOutputs(type: string) {
       inputTokenName: inputCurrency?.name || '',
       inputTokenSymbol: inputCurrency?.symbol || '',
       liquiditySources: (data.tradeDetails?.protocols as any[]) || [],
-      network: getChainsName()[inputCurrency?.chainId],
+      network: useBackendNetworksStore.getState().getChainsName()[inputCurrency?.chainId],
       outputTokenAddress: outputCurrency?.address || '',
       outputTokenName: outputCurrency?.name || '',
       outputTokenSymbol: outputCurrency?.symbol || '',

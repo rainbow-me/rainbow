@@ -29,8 +29,8 @@ import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { ChainId } from '@/chains/types';
-import { getChainsLabel, getChainsNativeAsset, getDefaultChains } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { noop } from 'lodash';
 import { RootStackParamList } from '@/navigation/types';
@@ -132,7 +132,7 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
 
               <Box paddingLeft="6px">
                 <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold">
-                  {getChainsLabel()[availableNetworkChainIds[0]]}
+                  {useBackendNetworksStore.getState().getChainsLabel()[availableNetworkChainIds[0]]}
                 </Text>
               </Box>
             </Inline>
@@ -229,8 +229,8 @@ export function WalletConnectApprovalSheet() {
    * v2.
    */
   const approvalNetworkInfo = useMemo(() => {
-    const chain = getDefaultChains()[approvalChainId || ChainId.mainnet];
-    const nativeAsset = getChainsNativeAsset()[chain.id];
+    const chain = useBackendNetworksStore.getState().getDefaultChains()[approvalChainId || ChainId.mainnet];
+    const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chain.id];
     return {
       chainId: chain.id,
       color: isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary,
@@ -365,7 +365,9 @@ export function WalletConnectApprovalSheet() {
             </Centered>
             <LabelText align="right" numberOfLines={1}>
               {`${
-                type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.name : getChainsLabel()[chainId]
+                type === WalletConnectApprovalSheetType.connect
+                  ? approvalNetworkInfo.name
+                  : useBackendNetworksStore.getState().getChainsLabel()[chainId]
               } ${type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? '􀁰' : ''}`}
             </LabelText>
           </ButtonPressAnimation>
@@ -406,7 +408,7 @@ export function WalletConnectApprovalSheet() {
                   {type === WalletConnectApprovalSheetType.connect
                     ? lang.t(lang.l.walletconnect.wants_to_connect)
                     : lang.t(lang.l.walletconnect.wants_to_connect_to_network, {
-                        network: getChainsLabel()[chainId],
+                        network: useBackendNetworksStore.getState().getChainsLabel()[chainId],
                       })}
                 </Text>
               </Column>

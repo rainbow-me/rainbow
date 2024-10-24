@@ -1,7 +1,7 @@
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
-import { AddressOrEth, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { AddressOrEth, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
+import { ChainId } from '@/state/backendNetworks/types';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenuButton } from '@/components/context-menu';
@@ -17,7 +17,7 @@ import React, { useCallback, useMemo } from 'react';
 import { GestureResponderEvent } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { SwapCoinIcon } from './SwapCoinIcon';
-import { getSupportedChainIds } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 
@@ -51,7 +51,7 @@ interface InputCoinRowProps {
   nativePriceChange?: string;
   onPress: (asset: ParsedSearchAsset | null) => void;
   output?: false | undefined;
-  uniqueId: string;
+  uniqueId: UniqueId;
   testID?: string;
 }
 
@@ -185,6 +185,7 @@ export function CoinRow({ isFavorite, onPress, output, uniqueId, testID, ...asse
 }
 
 const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId }) => {
+  const getSupportedChainIds = useBackendNetworksStore(state => state.getSupportedChainIds);
   const supportedChain = getSupportedChainIds().includes(chainId);
 
   const handleCopy = useCallback(() => {

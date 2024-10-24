@@ -1,4 +1,4 @@
-import { Network } from '@/chains/types';
+import { Network } from '@/state/backendNetworks/types';
 import { Asset } from '@/entities';
 import { AddressZero } from '@ethersproject/constants';
 
