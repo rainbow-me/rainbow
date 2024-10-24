@@ -10,8 +10,9 @@ import { add, convertAmountToNativeDisplay, subtract } from '@/helpers/utilities
 import { queryClient } from '@/react-query';
 
 const QUERY_CONFIG = {
-  staleTime: 1000 * 60 * 2, // 2 minutes
+  staleTime: 60_000, // 1 minute
   cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+  refetchInterval: 120_000, // 2 minutes
 };
 
 export type WalletBalance = {
@@ -63,7 +64,6 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
     for (const address of allAddresses) {
       const lowerCaseAddress = address.toLowerCase() as Address;
       const assetBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.asset_value?.toString() || '0';
-
       const positionData = queryClient.getQueryData<RainbowPositions | undefined>(positionsQueryKey({ address, currency: nativeCurrency }));
       const positionsBalance = positionData ? subtract(positionData.totals.total.amount, positionData.totals.totalLocked) : '0';
       const totalAccountBalance = add(assetBalance, positionsBalance);

@@ -5,13 +5,16 @@ import { ContextCircleButton } from '../../context-menu';
 import EditAction from '@/helpers/EditAction';
 import { useCoinListEditOptions, useCoinListFinishEditingOptions } from '@/hooks';
 import { ethereumUtils } from '@/utils';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 const emojiSpacing = ios ? '' : '  ';
 
 export default function ChartContextButton({ asset, color }) {
   const { clearSelectedCoins, pushSelectedCoin } = useCoinListEditOptions();
+  const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
 
-  const { currentAction, setHiddenCoins, setPinnedCoins } = useCoinListFinishEditingOptions();
+  const { currentAction, setPinnedCoins } = useCoinListFinishEditingOptions();
 
   useEffect(() => {
     // Ensure this expanded state's asset is always actively inside
@@ -29,13 +32,13 @@ export default function ChartContextButton({ asset, color }) {
         setPinnedCoins();
       } else if (buttonIndex === 1) {
         // 🙈️ Hide
-        setHiddenCoins();
+        setHiddenAssets([getUniqueId(asset.address, asset.chainId)]);
       } else if (buttonIndex === 2 && !asset?.isNativeAsset) {
         // 🔍 View on Etherscan
         ethereumUtils.openTokenEtherscanURL({ address: asset?.address, chainId: asset?.chainId });
       }
     },
-    [asset?.address, asset?.isNativeAsset, asset?.chainId, setHiddenCoins, setPinnedCoins]
+    [asset?.address, asset?.isNativeAsset, asset?.chainId, setHiddenAssets, setPinnedCoins]
   );
 
   const options = useMemo(
