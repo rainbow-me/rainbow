@@ -1,7 +1,6 @@
 import delay from 'delay';
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { walletConnectLoadState } from '../redux/walletconnect';
 import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import { PROFILES, useExperimentalFlag } from '@/config';
@@ -44,12 +43,10 @@ export default function useRefreshAccountData() {
     try {
       const getWalletNames = dispatch(fetchWalletNames());
       const getWalletENSAvatars = profilesEnabled ? dispatch(fetchWalletENSAvatars()) : null;
-      const wc = dispatch(walletConnectLoadState());
       return Promise.all([
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
         getWalletNames,
         getWalletENSAvatars,
-        wc,
       ]);
     } catch (error) {
       logger.error(new RainbowError(`[useRefreshAccountData]: Error refreshing data: ${error}`));

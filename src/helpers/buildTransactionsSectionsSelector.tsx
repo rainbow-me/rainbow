@@ -5,7 +5,7 @@ import { FastTransactionCoinRow, RequestCoinRow } from '../components/coin-row';
 import { thisMonthTimestamp, thisYearTimestamp, todayTimestamp, yesterdayTimestamp } from './transactions';
 import { NativeCurrencyKey, RainbowTransaction, TransactionStatus } from '@/entities';
 import * as i18n from '@/languages';
-import { WalletconnectRequestData } from '@/redux/requests';
+import { WalletconnectRequestData } from '@/walletConnect/types';
 import { ThemeContextProps } from '@/theme';
 import { Contact } from '@/redux/contacts';
 import { SectionListData } from 'react-native';

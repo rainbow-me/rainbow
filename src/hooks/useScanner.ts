@@ -8,7 +8,6 @@ import { parseUri } from '@walletconnect/utils';
 import { Alert } from '../components/alerts';
 import useExperimentalFlag, { PROFILES } from '../config/experimentalHooks';
 import { useNavigation } from '../navigation/Navigation';
-import useWalletConnectConnections from './useWalletConnectConnections';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { analytics } from '@/analytics';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
@@ -23,7 +22,6 @@ import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate, goBack } = useNavigation();
-  const { walletConnectOnSessionRequest } = useWalletConnectConnections();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const enabledVar = useRef<boolean>();
 
@@ -108,16 +106,14 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       onSuccess();
       try {
         const { version } = parseUri(uri);
-        if (version === 1) {
-          await walletConnectOnSessionRequest(uri, connector, () => {});
-        } else if (version === 2) {
+        if (version === 2) {
           await pairWalletConnect({ uri, connector });
         }
       } catch (error) {
         logger.error(new RainbowError(`[useScanner]: Error handling WalletConnect QR code: ${error}`));
       }
     },
-    [goBack, onSuccess, walletConnectOnSessionRequest]
+    [goBack, onSuccess]
   );
 
   const handleScanInvalid = useCallback(

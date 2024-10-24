@@ -36,15 +36,12 @@ jest.mock('react-native', () => ({
 jest.mock('@react-native-firebase/messaging', () => ({}));
 
 jest.mock('@/redux/store');
-jest.mock('@/redux/walletconnect');
-jest.mock('@/redux/requests');
 jest.mock('@/navigation/Navigation', () => ({
   handleAction: jest.fn(),
 }));
 jest.mock('@/handlers/imgix');
 jest.mock('@/utils/ethereumUtils');
 jest.mock('@/parsers/requests');
-jest.mock('@/handlers/localstorage/walletconnectRequests');
 jest.mock('@/handlers/appEvents');
 jest.mock('@/notifications/tokens');
 jest.mock('@/model/wallet');

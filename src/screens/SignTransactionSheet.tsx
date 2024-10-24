@@ -47,7 +47,7 @@ import { isAddress } from '@ethersproject/address';
 import { hexToNumber, isHex } from 'viem';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
-import { RequestData } from '@/redux/requests';
+import { RequestData } from '@/walletConnect/types';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { event } from '@/analytics/event';
 import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';

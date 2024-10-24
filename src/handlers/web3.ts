@@ -149,22 +149,6 @@ export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number })
 };
 
 /**
- * @desc Sends an arbitrary RPC call using a given provider, or the default
- * cached provider.
- * @param payload The payload, including a method and parameters, based on
- * the Ethers.js `StaticJsonRpcProvider.send` arguments.
- * @param provider The provider to use
- * @return The response from the `StaticJsonRpcProvider.send` call.
- */
-export const sendRpcCall = async (
-  payload: {
-    method: string;
-    params: unknown[];
-  },
-  provider: StaticJsonRpcProvider
-): Promise<unknown> => provider.send(payload.method, payload.params);
-
-/**
  * @desc check if hex string
  * @param value The string to check
  * @return Whether or not the string was a hex string.

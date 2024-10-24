@@ -2,14 +2,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { keys } from 'lodash';
 import { accountLocalKeys } from './accountLocal';
 import { getKey } from './common';
-import { walletConnectAccountLocalKeys } from './walletconnectRequests';
 import { logger, RainbowError } from '@/logger';
 import { removeNotificationSettingsForWallet } from '@/notifications/settings';
 import { Network } from '@/chains/types';
 
 export const removeWalletData = async (accountAddress: any) => {
   logger.debug('[localstorage/removeWallet]: removing wallet data', { accountAddress });
-  const allPrefixes = accountLocalKeys.concat(walletConnectAccountLocalKeys);
+  const allPrefixes = accountLocalKeys;
   logger.debug('[localstorage/removeWallet]: all prefixes', { allPrefixes });
   const networks = keys(Network);
   const allKeysWithNetworks = allPrefixes.map(prefix => networks.map(network => getKey(prefix, accountAddress, network)));
