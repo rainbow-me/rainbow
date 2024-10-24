@@ -61,38 +61,14 @@ jobs:
             .yarn/cache
             .yarn/install-state.gz
 
-  lint-and-typecheck:
-    runs-on: ["self-hosted"]
-    needs: install-deps
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Set sanitized branch name
-        id: sanitize
-        run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
-
-      - name: Download Yarn cache
-        uses: actions/download-artifact@v4
-        with:
-          name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
-          path: .yarn
-
-      - name: Remove ESLint cache
-        run: rm -f .eslintcache
-
-      - name: Lint
-        run: yarn lint:ci
-
   # Job for linting and unit tests
-  unit-tests:
+  linting-and-unit-tests:
     runs-on: ["self-hosted"]
     needs: install-deps
     steps:
       - name: Set sanitized branch name
         id: sanitize
         run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
-
       - name: Download Yarn cache
         uses: actions/download-artifact@v4
         with:
@@ -104,6 +80,12 @@ jobs:
 
       - name: Audit CI
         run: yarn audit-ci --config audit-ci.jsonc
+
+      - name: Remove ESLint cache
+        run: rm -f .eslintcache
+
+      - name: Lint
+        run: yarn lint:ci
 
       - name: Unit tests
         run: yarn test
