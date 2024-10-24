@@ -45,7 +45,7 @@ export const fetchTransaction = async ({
       },
     });
 
-    const tx = response?.data?.payload?.transaction || {};
+    const tx = response?.data?.payload?.transaction;
     if (!tx) {
       return null;
     }

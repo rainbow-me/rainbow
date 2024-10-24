@@ -202,6 +202,10 @@ export const meteorologySupportedChainIds = filterChainIdsByService(services => 
 
 export const supportedSwapChainIds = filterChainIdsByService(services => services.swap.enabled);
 
+export const supportedSwapExactOutputChainIds = filterChainIdsByService(services => services.swap.swapExactOutput);
+
+export const supportedBridgeExactOutputChainIds = filterChainIdsByService(services => services.swap.bridgeExactOutput);
+
 export const supportedNotificationsChainIds = filterChainIdsByService(services => services.notifications.enabled);
 
 export const supportedApprovalsChainIds = filterChainIdsByService(services => services.addys.approvals);
