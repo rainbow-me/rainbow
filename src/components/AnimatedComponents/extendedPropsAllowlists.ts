@@ -12,7 +12,6 @@ import Animated from 'react-native-reanimated';
  */
 Animated.addWhitelistedNativeProps({
   defaultValue: true, // AnimatedTextInput
-  text: true, // AnimatedTextInput
 });
 
 /**
