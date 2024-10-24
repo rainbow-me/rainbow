@@ -83,7 +83,7 @@ jobs:
           
       - name: Install dependencies
         run: |
-          yarn install --prefer-offline && yarn setup
+          yarn install && yarn setup
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
@@ -123,7 +123,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn install --prefer-offline && yarn setup
+          yarn install && yarn setup
 
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
