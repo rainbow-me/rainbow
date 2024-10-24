@@ -905,7 +905,6 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
                 marginBottom={0}
                 marginTop={0}
                 testID={`${testID}-gas`}
-                // @ts-expect-error - invalid prop type but fixed in the next PR
                 crossChainServiceTime={getCrosschainSwapServiceTime(tradeDetails as CrosschainQuote)}
               />
             </Row>
