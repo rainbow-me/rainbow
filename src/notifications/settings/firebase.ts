@@ -1,6 +1,5 @@
 import { NOTIFICATIONS_API_KEY } from 'react-native-dotenv';
 import { logger, RainbowError } from '@/logger';
-import { supportedNotificationsChainIds } from '@/chains';
 import {
   GlobalNotificationTopics,
   GlobalNotificationTopicType,
@@ -138,15 +137,12 @@ export const publishWalletSettings = async ({
 
 const parseWalletSettings = (walletSettings: WalletNotificationSettings[]): NotificationSubscriptionWalletsType[] => {
   const enabledWalletSettings = walletSettings.filter(setting => setting.enabled);
-  return enabledWalletSettings.flatMap(setting => {
+  return enabledWalletSettings.map(setting => {
     const topics = Object.keys(setting.topics).filter(topic => !!setting.topics[topic]);
-    return supportedNotificationsChainIds.map(chainId => {
-      return {
-        type: setting.type,
-        chain_id: chainId,
-        address: setting.address.toLowerCase(),
-        transaction_action_types: topics,
-      };
-    });
+    return {
+      type: setting.type,
+      address: setting.address.toLowerCase(),
+      transaction_action_types: topics,
+    };
   });
 };

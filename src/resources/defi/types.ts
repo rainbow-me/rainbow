@@ -33,6 +33,7 @@ export type PositionDapp = {
 
 export type PositionsTotals = {
   totals: NativeDisplay;
+  totalLocked: string;
   borrows: NativeDisplay;
   claimables: NativeDisplay;
   deposits: NativeDisplay;
@@ -112,6 +113,7 @@ export type RainbowPosition = {
 export type RainbowPositions = {
   totals: {
     total: NativeDisplay;
+    totalLocked: string;
     borrows: NativeDisplay;
     claimables: NativeDisplay;
     deposits: NativeDisplay;
