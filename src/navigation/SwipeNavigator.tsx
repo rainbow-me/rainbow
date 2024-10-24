@@ -1,14 +1,15 @@
 import ConditionalWrap from 'conditional-wrap';
-import { LIGHT_SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { LIGHT_SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
 import { ButtonPressAnimation } from '@/components/animations';
-import { TAB_BAR_ICON_SIZE, TabBarIcon } from '@/components/icons/TabBarIcon';
 import { FlexItem } from '@/components/layout';
+import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
+import { TAB_BAR_PILL_HEIGHT, TAB_BAR_PILL_WIDTH } from '@/components/tab-bar/dimensions';
 import { TestnetToast } from '@/components/toasts';
 import { DAPP_BROWSER, POINTS, useExperimentalFlag } from '@/config';
-import { Box, Columns, globalColors, Stack, useForegroundColor, Text, Cover, useColorMode, TextIcon } from '@/design-system';
+import { Box, Columns, globalColors, Stack, useForegroundColor, useColorMode } from '@/design-system';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
-import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions, usePendingTransactions } from '@/hooks';
+import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import RecyclerListViewScrollToTopProvider, {
   useRecyclerListViewScrollToTopContext,
@@ -23,11 +24,10 @@ import { BlurView } from '@react-native-community/blur';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import { MaterialTopTabDescriptorMap } from '@react-navigation/material-top-tabs/lib/typescript/src/types';
 import { NavigationHelpers, ParamListBase, RouteProp } from '@react-navigation/native';
-import React, { memo, useCallback, useMemo, useRef } from 'react';
-import { InteractionManager, StyleSheet, View } from 'react-native';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { InteractionManager, View } from 'react-native';
 import Animated, {
   interpolate,
-  SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -35,9 +35,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT } from '@/components/DappBrowser/constants';
-import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { TextSize } from '@/design-system/components/Text/Text';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -45,171 +43,15 @@ import DiscoverScreen, { discoverScrollToTopFnRef } from '../screens/discover/Di
 import { ScrollPositionContext } from './ScrollPositionContext';
 import SectionListScrollToTopProvider, { useSectionListScrollToTopContext } from './SectionListScrollToTopContext';
 import Routes from './routesNames';
+import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
+import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
 
 export const TAB_BAR_HEIGHT = IS_IOS ? 48 + safeAreaInsetValues.bottom : 54;
 
-const FADE_CONFIG = TIMING_CONFIGS.slowFadeConfig;
-
 const HORIZONTAL_TAB_BAR_INSET = 6;
 const HORIZONTAL_TAB_BAR_INSET_5_TABS = 10;
-const TAB_BAR_PILL_HEIGHT = 36;
-const TAB_BAR_PILL_WIDTH = 72;
 
 const Swipe = createMaterialTopTabNavigator();
-
-const ActivityTabIcon = memo(function ActivityTabIcon({
-  accentColor,
-  index,
-  reanimatedPosition,
-  tabBarIcon,
-}: {
-  accentColor: string;
-  index: number;
-  reanimatedPosition: SharedValue<number>;
-  tabBarIcon: string;
-}) {
-  const { pendingTransactions } = usePendingTransactions();
-
-  const pendingCount = pendingTransactions.length;
-
-  const textSize: TextSize = useMemo(() => {
-    if (pendingCount < 10) {
-      return '15pt';
-    } else if (pendingCount < 20) {
-      return '12pt';
-    } else {
-      return '11pt';
-    }
-  }, [pendingCount]);
-
-  return pendingCount > 0 ? (
-    <Box
-      testID="transactions-pending-tab-icon"
-      width={{ custom: TAB_BAR_ICON_SIZE }}
-      height={{ custom: TAB_BAR_ICON_SIZE }}
-      alignItems="center"
-      justifyContent="center"
-    >
-      <AnimatedSpinner color={accentColor} isLoading requireSrc={require('@/assets/tabSpinner.png')} size={TAB_BAR_ICON_SIZE} />
-      <Cover>
-        <Box width="full" height="full" alignItems="center" justifyContent="center">
-          <Text color={{ custom: accentColor }} size={textSize} weight="heavy" align="center">
-            {pendingCount}
-          </Text>
-        </Box>
-      </Cover>
-    </Box>
-  ) : (
-    <TabBarIcon accentColor={accentColor} icon={tabBarIcon} index={index} reanimatedPosition={reanimatedPosition} />
-  );
-});
-
-const BrowserTabIcon = memo(function BrowserTabIcon({
-  accentColor,
-  index,
-  reanimatedPosition,
-  tabBarIcon,
-}: {
-  accentColor: string;
-  index: number;
-  reanimatedPosition: SharedValue<number>;
-  tabBarIcon: string;
-}) {
-  const { isDarkMode } = useColorMode();
-  const { goBack, goForward } = useBrowserTabBarContext();
-
-  const navState = useBrowserStore(state => state.getActiveTabNavState());
-
-  const showNavButtons = useDerivedValue(() => reanimatedPosition.value === 2 && (navState.canGoBack || navState.canGoForward));
-
-  const navButtonsBackgroundOpacity = useDerivedValue(() => {
-    const navButtonsVisible = reanimatedPosition.value === 2 && (navState.canGoBack || navState.canGoForward);
-    return withTiming(navButtonsVisible ? 1 : 0, FADE_CONFIG);
-  });
-
-  const navButtonsStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: opacityWorklet(accentColor, 0.06 * navButtonsBackgroundOpacity.value),
-      opacity: withTiming(showNavButtons.value ? 1 : 0, FADE_CONFIG),
-      pointerEvents: showNavButtons.value ? 'auto' : 'none',
-    };
-  });
-
-  const animatedBorderStyle = useAnimatedStyle(() => {
-    return {
-      borderColor: opacityWorklet(accentColor, (isDarkMode ? 0.08 : 0.04) * navButtonsBackgroundOpacity.value),
-    };
-  });
-
-  const backButtonStyle = useAnimatedStyle(() => {
-    const disabledOpacity = isDarkMode ? 0.2 : 0.28;
-    return {
-      opacity: withTiming(navState.canGoBack ? 1 : disabledOpacity, FADE_CONFIG),
-      transform: [
-        { translateX: withTiming(showNavButtons.value ? 0 : 16, FADE_CONFIG) },
-        { scale: withTiming(showNavButtons.value ? 1 : 0.75, FADE_CONFIG) },
-      ],
-    };
-  });
-
-  const forwardButtonStyle = useAnimatedStyle(() => {
-    const disabledOpacity = isDarkMode ? 0.2 : 0.28;
-    return {
-      opacity: withTiming(navState.canGoForward ? 1 : disabledOpacity, FADE_CONFIG),
-      transform: [
-        { translateX: withTiming(showNavButtons.value ? 0 : -16, FADE_CONFIG) },
-        { scale: withTiming(showNavButtons.value ? 1 : 0.75, FADE_CONFIG) },
-      ],
-    };
-  });
-
-  const tabIconStyle = useAnimatedStyle(() => {
-    return {
-      opacity: withTiming(showNavButtons.value ? 0 : 1, FADE_CONFIG),
-      pointerEvents: showNavButtons.value ? 'none' : 'auto',
-      transform: [{ scale: withTiming(showNavButtons.value ? 0.75 : 1, FADE_CONFIG) }],
-    };
-  });
-
-  return (
-    <Box
-      testID="dapp-browser-tab-icon"
-      width={{ custom: TAB_BAR_PILL_WIDTH }}
-      height={{ custom: TAB_BAR_PILL_HEIGHT }}
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Animated.View style={[navButtonsStyle, styles.navButtonsPill]}>
-        <ButtonPressAnimation
-          onPress={() => goBack()}
-          scaleTo={0.75}
-          style={[styles.navButton, styles.backButton, { pointerEvents: navState.canGoBack ? 'auto' : 'none' }]}
-        >
-          <Animated.View style={backButtonStyle}>
-            <TextIcon color={{ custom: accentColor }} containerSize={32} size="icon 18px" weight="bold">
-              􀆉
-            </TextIcon>
-          </Animated.View>
-        </ButtonPressAnimation>
-        <ButtonPressAnimation
-          onPress={() => goForward()}
-          scaleTo={0.75}
-          style={[styles.navButton, styles.forwardButton, { pointerEvents: navState.canGoForward ? 'auto' : 'none' }]}
-        >
-          <Animated.View style={forwardButtonStyle}>
-            <TextIcon color={{ custom: accentColor }} containerSize={32} size="icon 18px" weight="bold">
-              􀆊
-            </TextIcon>
-          </Animated.View>
-        </ButtonPressAnimation>
-        <Animated.View style={[animatedBorderStyle, styles.cover, styles.navButtonsBorder]} />
-      </Animated.View>
-      <Animated.View style={[tabIconStyle, styles.cover]}>
-        <TabBarIcon accentColor={accentColor} icon={tabBarIcon} index={index} reanimatedPosition={reanimatedPosition} />
-      </Animated.View>
-    </Box>
-  );
-});
 
 interface TabBarProps {
   descriptors: MaterialTopTabDescriptorMap;
@@ -267,8 +109,8 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
     const shouldUseBrowserStyle = showDappBrowserTab && reanimatedPosition.value === 2;
     return {
       borderTopColor: isDarkMode ? separatorSecondary : LIGHT_SEPARATOR_COLOR,
-      borderTopWidth: withTiming(shouldUseBrowserStyle ? 1 : 0, FADE_CONFIG),
-      opacity: withTiming(shouldUseBrowserStyle ? 1 : 0, FADE_CONFIG),
+      borderTopWidth: withTiming(shouldUseBrowserStyle ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
+      opacity: withTiming(shouldUseBrowserStyle ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
     };
   });
 
@@ -276,14 +118,14 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
     const defaultShadowOpacity = isDarkMode ? 0.2 : 0.04;
     const shadowOpacity = showDappBrowserTab && reanimatedPosition.value === 2 ? 0 : defaultShadowOpacity;
     return {
-      shadowOpacity: withTiming(shadowOpacity, FADE_CONFIG),
+      shadowOpacity: withTiming(shadowOpacity, TIMING_CONFIGS.slowFadeConfig),
     };
   });
 
   const hideForBrowserTabViewStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress.value || 0;
     const opacity = 1 - progress / 75;
-    const pointerEvents = opacity < 1 ? 'none' : 'auto';
+    const pointerEvents = extraWebViewHeight.value > 0 || opacity < 1 ? 'none' : 'auto';
 
     return {
       opacity: opacity * (1 - extraWebViewHeight.value / 48),
@@ -625,42 +467,3 @@ export function SwipeNavigator() {
 //     </Box>
 //   );
 // };
-
-const styles = StyleSheet.create({
-  backButton: {
-    paddingLeft: 1,
-  },
-  cover: {
-    alignItems: 'center',
-    bottom: 0,
-    height: '100%',
-    justifyContent: 'center',
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    width: '100%',
-  },
-  forwardButton: {
-    paddingRight: 1,
-  },
-  navButton: {
-    alignItems: 'center',
-    height: TAB_BAR_PILL_HEIGHT,
-    justifyContent: 'center',
-    width: TAB_BAR_PILL_HEIGHT,
-  },
-  navButtonsBorder: {
-    borderCurve: 'continuous',
-    borderRadius: TAB_BAR_PILL_HEIGHT / 2,
-    borderWidth: THICK_BORDER_WIDTH,
-    overflow: 'hidden',
-    pointerEvents: 'none',
-  },
-  navButtonsPill: {
-    borderRadius: TAB_BAR_PILL_HEIGHT / 2,
-    flexDirection: 'row',
-    height: TAB_BAR_PILL_HEIGHT,
-    width: TAB_BAR_PILL_WIDTH,
-  },
-});
