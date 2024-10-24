@@ -22,12 +22,12 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
-import { ethereumUtils, gasUtils } from '@/utils';
+import { gasUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { ChainId } from '@/chains/types';
-import { chainsGasSpeeds } from '@/chains';
+import { chainsGasSpeeds, chainsNativeAsset } from '@/chains';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { ParsedAddressAsset } from '@/entities';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -346,7 +346,7 @@ const GasSpeedButton = ({
 
   const openGasHelper = useCallback(async () => {
     Keyboard.dismiss();
-    const nativeAsset = await ethereumUtils.getNativeAssetForNetwork({ chainId });
+    const nativeAsset = chainsNativeAsset[chainId];
     navigate(Routes.EXPLAIN_SHEET, {
       chainId,
       type: 'gas',
