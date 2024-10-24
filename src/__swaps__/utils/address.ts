@@ -1,7 +1,7 @@
 import { Address } from 'viem';
 
 import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export function truncateAddress(address?: AddressOrEth) {
   if (!address) return '';

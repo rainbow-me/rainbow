@@ -9,21 +9,21 @@ import { Text } from '../text';
 import { padding, position } from '@/styles';
 import { showActionSheetWithOptions } from '@/utils';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/chains';
+import { getChainsLabel, getChainsName, getDefaultChains, supportedSwapChainIds } from '@/chains';
 import { ChainId } from '@/chains/types';
 
 const networkMenuItems = supportedSwapChainIds
-  .map(chainId => defaultChains[chainId])
+  .map(chainId => getDefaultChains()[chainId])
   .map(chain => ({
     actionKey: `${chain.id}`,
-    actionTitle: chainsLabel[chain.id],
+    actionTitle: getChainsLabel()[chain.id],
     icon: {
       iconType: 'ASSET',
-      iconValue: `${chainsName[chain.id]}Badge${chain.id === ChainId.mainnet ? '' : 'NoShadow'}`,
+      iconValue: `${getChainsName()[chain.id]}Badge${chain.id === ChainId.mainnet ? '' : 'NoShadow'}`,
     },
   }));
 
-const androidNetworkMenuItems = supportedSwapChainIds.map(chainId => defaultChains[chainId].id);
+const androidNetworkMenuItems = supportedSwapChainIds.map(chainId => getDefaultChains()[chainId].id);
 
 const NetworkSwitcherv1 = ({
   colors,
@@ -93,7 +93,7 @@ const NetworkSwitcherv1 = ({
               weight={prominent ? 'heavy' : 'bold'}
             >
               {lang.t('expanded_state.swap.network_switcher', {
-                network: chainsName[currentChainId],
+                network: getChainsName()[currentChainId],
               })}
             </Text>
           </Column>

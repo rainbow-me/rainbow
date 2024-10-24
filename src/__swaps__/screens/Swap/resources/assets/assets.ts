@@ -4,7 +4,7 @@ import { requestMetadata } from '@/graphql';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { SupportedCurrencyKey } from '@/references';
 import { AddressOrEth, AssetMetadata, ParsedAsset, UniqueId } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { chunkArray, createAssetQuery, parseAssetMetadata } from '@/__swaps__/utils/assets';
 import { RainbowError, logger } from '@/logger';
 export const ASSETS_TIMEOUT_DURATION = 10000;

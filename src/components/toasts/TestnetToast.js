@@ -5,13 +5,13 @@ import Toast from './Toast';
 import { useInternetStatus } from '@/hooks';
 import { ChainId } from '@/chains/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { chainsName, chainsNativeAsset } from '@/chains';
+import { getChainsName, getChainsNativeAsset } from '@/chains';
 
 const TestnetToast = ({ chainId }) => {
   const { connectedToHardhat } = useConnectedToHardhatStore();
   const isConnected = useInternetStatus();
-  const nativeAsset = chainsNativeAsset[chainId];
-  const name = chainsName[chainId];
+  const nativeAsset = getChainsNativeAsset()[chainId];
+  const name = getChainsName()[chainId];
   const color = isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary;
   const [visible, setVisible] = useState(chainId !== ChainId.mainnet);
   const [networkName, setNetworkName] = useState(name);

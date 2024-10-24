@@ -24,7 +24,7 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { showActionSheetWithOptions } from '@/utils';
 import { ChainId } from '@/chains/types';
-import { chainsIdByName, chainsLabel, chainsNativeAsset } from '@/chains';
+import { getChainsIdByName, getChainsLabel, getChainsNativeAsset } from '@/chains';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -70,11 +70,11 @@ export default function WalletConnectListItem({ account, chainId, dappIcon, dapp
   }, [wallets, walletNames, account]);
 
   const connectionNetworkInfo = useMemo(() => {
-    const nativeAsset = chainsNativeAsset[chainId];
+    const nativeAsset = getChainsNativeAsset()[chainId];
     return {
       id: chainId,
       color: isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary,
-      name: chainsLabel[chainId],
+      name: getChainsLabel()[chainId],
     };
   }, [chainId, isDarkMode]);
 
@@ -133,7 +133,7 @@ export default function WalletConnectListItem({ account, chainId, dappIcon, dapp
         handlePressChangeWallet();
       } else if (actionKey.indexOf(NETWORK_MENU_ACTION_KEY_FILTER) !== -1) {
         const networkValue = actionKey.replace(NETWORK_MENU_ACTION_KEY_FILTER, '');
-        walletConnectUpdateSessionConnectorByDappUrl(dappUrl, account, chainsIdByName[networkValue]);
+        walletConnectUpdateSessionConnectorByDappUrl(dappUrl, account, getChainsIdByName()[networkValue]);
       }
     },
     [account, dappName, dappUrl, handlePressChangeWallet, walletConnectDisconnectAllByDappUrl, walletConnectUpdateSessionConnectorByDappUrl]

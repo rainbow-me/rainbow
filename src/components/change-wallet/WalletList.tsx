@@ -18,7 +18,7 @@ import { position } from '@/styles';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { Inset, Stack } from '@/design-system';
-import { Network } from '@/chains/types';
+import { Network } from '@/state/backendNetworks/types';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;

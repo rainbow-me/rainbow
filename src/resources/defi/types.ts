@@ -1,5 +1,5 @@
 import { NativeCurrencyKey, ZerionAsset } from '@/entities';
-import { Network } from '@/chains/types';
+import { Network } from '@/state/backendNetworks/types';
 
 export type AddysPositionsResponse =
   | {

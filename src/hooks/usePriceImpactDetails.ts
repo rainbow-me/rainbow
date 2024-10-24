@@ -14,7 +14,7 @@ import {
 
 import { CrosschainQuote, Quote, SwapType } from '@rainbow-me/swaps';
 import { useNativeAsset } from '@/utils/ethereumUtils';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export enum SwapPriceImpactType {
   none = 'none',

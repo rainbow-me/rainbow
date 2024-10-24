@@ -6,7 +6,7 @@ import {
 } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { isNativeAsset } from '@/handlers/assets';
 import { add } from '@/helpers/utilities';
 import { isLowerCaseMatch } from '@/utils';

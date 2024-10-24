@@ -36,7 +36,7 @@ import { Box } from '@/design-system';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';
-import { chainsName, supportedSwapChainIds } from '@/chains';
+import { getChainsName, supportedSwapChainIds } from '@/chains';
 import { ChainId } from '@/chains/types';
 
 const defaultCarouselHeight = 60;
@@ -166,7 +166,7 @@ export default function ChartExpandedState({ asset }) {
             chainId: asset.chainId,
             network: asset.network,
             address: asset.address,
-            mainnetAddress: asset?.networks?.[chainsName[ChainId.mainnet]]?.address,
+            mainnetAddress: asset?.networks?.[getChainsName()[ChainId.mainnet]]?.address,
           }
         : asset;
   }, [asset, genericAsset, hasBalance]);

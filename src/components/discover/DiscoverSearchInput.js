@@ -13,7 +13,7 @@ import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import { deviceUtils } from '@/utils';
 import DiscoverSheetContext from '@/screens/discover/DiscoverScreenContext';
-import { chainsName } from '@/chains';
+import { getChainsName } from '@/chains';
 
 export const ExchangeSearchHeight = 40;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
@@ -132,7 +132,7 @@ const ExchangeSearch = (
   const placeholder = useMemo(() => {
     if (!currentChainId) return placeholderText;
     return lang.t('button.exchange_search_placeholder_network', {
-      network: chainsName[currentChainId],
+      network: getChainsName()[currentChainId],
     });
   }, [currentChainId, placeholderText]);
 

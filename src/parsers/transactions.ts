@@ -21,7 +21,7 @@ import { NewTransaction, RainbowTransactionFee } from '@/entities/transactions/t
 import { parseAddressAsset, parseAsset } from '@/resources/assets/assets';
 import { ParsedAsset } from '@/resources/assets/types';
 
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const TransactionOutTypes = [
   'burn',
