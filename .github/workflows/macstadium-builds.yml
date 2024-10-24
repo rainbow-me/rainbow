@@ -52,7 +52,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn install && yarn setup
+          yarn install --prefer-offline && yarn setup
 
       - name: Version debug
         run: |

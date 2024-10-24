@@ -66,6 +66,12 @@ jobs:
     runs-on: ["self-hosted"]
     needs: install-deps
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up github keys
+        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+        
       - name: Set sanitized branch name
         id: sanitize
         run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
@@ -74,6 +80,10 @@ jobs:
         with:
           name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
           path: .yarn
+          
+      - name: Install dependencies
+        run: |
+          yarn install --prefer-offline && yarn setup
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
@@ -96,6 +106,12 @@ jobs:
     timeout-minutes: 60
     needs: install-deps
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up github keys
+        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+      
       - name: Set sanitized branch name
         id: sanitize
         run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
@@ -104,6 +120,10 @@ jobs:
         with:
           name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
           path: .yarn
+
+      - name: Install dependencies
+        run: |
+          yarn install --prefer-offline && yarn setup
 
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
