@@ -80,7 +80,14 @@ jobs:
         with:
           name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
           path: .yarn
-          
+      - name: Set up ENV vars & scripts
+        env:
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+        run: |
+          source ~/.zshrc
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env && rm -rf rainbow-env
+          eval $CI_SCRIPTS}}      
       - name: Install dependencies
         run: |
           yarn install && yarn setup
@@ -120,7 +127,14 @@ jobs:
         with:
           name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
           path: .yarn
-
+      - name: Set up ENV vars & scripts
+        env:
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+        run: |
+          source ~/.zshrc
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env && rm -rf rainbow-env
+          eval $CI_SCRIPTS}}
       - name: Install dependencies
         run: |
           yarn install && yarn setup
