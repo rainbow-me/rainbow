@@ -66,9 +66,13 @@ jobs:
     runs-on: ["self-hosted"]
     needs: install-deps
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Set sanitized branch name
         id: sanitize
         run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
+
       - name: Download Yarn cache
         uses: actions/download-artifact@v4
         with:
