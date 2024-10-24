@@ -6,7 +6,7 @@ import Animated, { runOnJS, useAnimatedStyle, useDerivedValue } from 'react-nati
 import { SwapInputValuesCaret } from '@/__swaps__/screens/Swap/components/SwapInputValuesCaret';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { equalWorklet } from '@/safe-math/SafeMath';
 
 export function SwapNativeInput({
   nativeInputType,

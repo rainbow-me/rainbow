@@ -42,7 +42,7 @@ import { chainsSwapPollingInterval, meteorologySupportedChainIds, needsL1Securit
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { addBuffer } from '@/helpers/utilities';
 
-const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
+const { CUSTOM, SLOW, NORMAL, FAST, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
 const mutex = new Mutex();
 

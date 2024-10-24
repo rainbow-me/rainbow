@@ -11,7 +11,7 @@ import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { parseUserAsset } from '@/__swaps__/utils/assets';
-import { greaterThan } from '@/__swaps__/utils/numbers';
+import { greaterThan } from '@/helpers/utilities';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';

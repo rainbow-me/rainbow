@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { TextInput } from 'react-native';
-import useMagicAutofocus from './useMagicAutofocus';
+import useMagicAutofocus from '@/hooks/useMagicAutofocus';
 
 export default function useFeesPanelInputRefs() {
   const maxBaseFieldRef = useRef<TextInput | null>(null);

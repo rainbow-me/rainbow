@@ -7,7 +7,7 @@ import {
   toFixedWorklet,
   orderOfMagnitudeWorklet,
   significantDecimalsWorklet,
-} from '../safe-math/SafeMath';
+} from '@/safe-math/SafeMath';
 
 const MAXIMUM_SIGNIFICANT_DECIMALS = 6;
 const STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS = 2;

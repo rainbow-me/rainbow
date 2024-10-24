@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import { MiniButton } from '../buttons';
-import { ExchangeInput } from '../exchange';
+import ExchangeInput from '@/components/ExchangeInput';
 import { Column, Row } from '../layout';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';

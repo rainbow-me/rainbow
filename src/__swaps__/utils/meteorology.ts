@@ -11,8 +11,8 @@ import { MIN_FLASHBOTS_PRIORITY_FEE } from '../screens/Swap/constants';
 import { GasSettings } from '../screens/Swap/hooks/useCustomGas';
 import { getSelectedGasSpeed, useGasSettings } from '../screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '../types/gas';
-import { getMinimalTimeUnitStringForMs } from './time';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
+import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
 
 // Query Types
 

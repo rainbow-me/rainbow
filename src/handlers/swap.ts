@@ -85,8 +85,6 @@ const getCrosschainSwapDefaultGasLimit = (tradeDetails: CrosschainQuote) => trad
 const getCrosschainSwapRainbowDefaultGasLimit = (chainId: ChainId) =>
   ethereumUtils.getBasicSwapGasLimit(Number(chainId)) * EXTRA_GAS_PADDING;
 
-export const getCrosschainSwapServiceTime = (tradeDetails: CrosschainQuote) => tradeDetails?.routes?.[0]?.serviceTime;
-
 export const getDefaultGasLimitForTrade = (tradeDetails: Quote, chainId: ChainId): number => {
   const allowsPermit =
     chainId === ChainId.mainnet && ALLOWS_PERMIT[tradeDetails?.sellTokenAddress?.toLowerCase() as keyof PermitSupportedTokenList];

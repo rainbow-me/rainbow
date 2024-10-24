@@ -12,7 +12,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { GestureHandlerButton } from './GestureHandlerButton';
-import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
 
 export const ExchangeRateBubble = () => {

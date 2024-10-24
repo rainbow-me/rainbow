@@ -13,7 +13,7 @@ import { getDappHost } from '../handleProviderRequest';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserContext } from '../BrowserContext';
-import { DEFAULT_TAB_URL, RAINBOW_HOME } from '../constants';
+import { RAINBOW_HOME } from '../constants';
 
 export const AccountIcon = React.memo(function AccountIcon() {
   const { navigate } = useNavigation();
@@ -23,8 +23,8 @@ export const AccountIcon = React.memo(function AccountIcon() {
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
 
   const { activeTabRef } = useBrowserContext();
-  const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl())) || DEFAULT_TAB_URL;
-  const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || DEFAULT_TAB_URL) === RAINBOW_HOME);
+  const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl())) || RAINBOW_HOME;
+  const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || RAINBOW_HOME) === RAINBOW_HOME);
   const hostSessions = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
   const currentSession = useMemo(
     () =>

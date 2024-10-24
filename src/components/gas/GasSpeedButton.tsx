@@ -17,17 +17,17 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Chain } from '@/handlers/web3';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
-import { useAccountSettings, useColorForAsset, useGas, usePrevious, useSwapCurrencies } from '@/hooks';
+import { useAccountSettings, useColorForAsset, useGas, usePrevious } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
-import { ethereumUtils, gasUtils } from '@/utils';
+import { gasUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { ChainId } from '@/chains/types';
-import { chainsGasSpeeds } from '@/chains';
+import { chainsGasSpeeds, chainsNativeAsset } from '@/chains';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { ParsedAddressAsset } from '@/entities';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -182,8 +182,6 @@ const GasSpeedButton = ({
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const rawColorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
   const [isLongWait, setIsLongWait] = useState(false);
-
-  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFee, selectedGasFeeOption, currentBlockParams } = useGas();
 
@@ -348,21 +346,13 @@ const GasSpeedButton = ({
 
   const openGasHelper = useCallback(async () => {
     Keyboard.dismiss();
-    if (crossChainServiceTime) {
-      navigate(Routes.EXPLAIN_SHEET, {
-        inputCurrency,
-        outputCurrency,
-        type: 'crossChainGas',
-      });
-    } else {
-      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork({ chainId });
-      navigate(Routes.EXPLAIN_SHEET, {
-        chainId,
-        type: 'gas',
-        nativeAsset,
-      });
-    }
-  }, [chainId, crossChainServiceTime, inputCurrency, navigate, outputCurrency]);
+    const nativeAsset = chainsNativeAsset[chainId];
+    navigate(Routes.EXPLAIN_SHEET, {
+      chainId,
+      type: 'gas',
+      nativeAsset,
+    });
+  }, [chainId, navigate]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: GasSpeed } }) => handlePressSpeedOption(actionKey),
