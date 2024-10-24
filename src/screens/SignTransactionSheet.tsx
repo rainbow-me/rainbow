@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { AnimatePresence, MotiView } from 'moti';
 import * as i18n from '@/languages';
 import { Image, InteractionManager, PixelRatio, ScrollView } from 'react-native';
@@ -108,6 +108,8 @@ export const SignTransactionSheet = () => {
 
   const provider = getProvider({ chainId });
   const nativeAsset = ethereumUtils.getNetworkNativeAsset({ chainId });
+
+  const [isAuthorizing, setIsAuthorizing] = useState(false);
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
   const isPersonalSignRequest = isPersonalSign(transactionDetails.payload.method);
@@ -473,6 +475,7 @@ export const SignTransactionSheet = () => {
   ]);
 
   const handleSignMessage = useCallback(async () => {
+    console.log('handleSignMessage: called');
     const message = transactionDetails?.payload?.params.find((p: string) => !isAddress(p));
     let response = null;
 
@@ -553,6 +556,8 @@ export const SignTransactionSheet = () => {
   const { submitFn } = useTransactionSubmission({
     isBalanceEnough,
     accountInfo,
+    isAuthorizing,
+    setIsAuthorizing,
     onConfirm,
     source,
   });
@@ -561,7 +566,10 @@ export const SignTransactionSheet = () => {
 
   const expandedCardBottomInset = EXPANDED_CARD_BOTTOM_INSET + (isMessageRequest ? 0 : GAS_BUTTON_SPACE);
 
-  const canPressConfirm = isMessageRequest || (!!walletBalance?.isLoaded && !!chainId && !!selectedGasFee?.gasFee?.estimatedFee);
+  const canPressConfirm =
+    !isAuthorizing && (isMessageRequest || (!!walletBalance?.isLoaded && !!chainId && !!selectedGasFee?.gasFee?.estimatedFee));
+
+  simulationResult?.simulationError && console.log(JSON.stringify(simulationResult?.simulationError, null, 2));
 
   return (
     <PanGestureHandler enabled={IS_IOS}>
@@ -735,7 +743,9 @@ export const SignTransactionSheet = () => {
                     label={
                       !txSimulationLoading && isBalanceEnough === false
                         ? i18n.t(i18n.l.walletconnect.simulation.buttons.buy_native_token, { symbol: walletBalance?.symbol })
-                        : i18n.t(i18n.l.walletconnect.simulation.buttons.confirm)
+                        : isAuthorizing
+                          ? i18n.t(i18n.l.walletconnect.simulation.buttons.confirming)
+                          : i18n.t(i18n.l.walletconnect.simulation.buttons.confirm)
                     }
                     newShadows
                     onPress={submitFn}
@@ -748,7 +758,7 @@ export const SignTransactionSheet = () => {
                         ? simulationResult?.simulationScanResult === TransactionScanResultType.Warning
                           ? 'orange'
                           : colors.red
-                        : undefined
+                        : colors.alpha(colors.appleBlue, canPressConfirm ? 1 : 0.6)
                     }
                   />
                 </Columns>
