@@ -110,10 +110,10 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
 
   const preferredNetwork = swapsStore(s => s.preferredNetwork);
   const chainId = swapsStore(s => s.inputAsset?.chainId || preferredNetwork || ChainId.mainnet);
-  const metereologySuggestions = useMeteorologySuggestions({ chainId });
+  const { data: metereologySuggestions, isLoading } = useMeteorologySuggestions({ chainId });
   const customGasSettings = useCustomGasSettings(chainId);
 
-  const menuOptions = useMemo(() => [...keys(metereologySuggestions.data), GasSpeed.CUSTOM] as GasSpeed[], [metereologySuggestions.data]);
+  const menuOptions = useMemo(() => [...keys(metereologySuggestions), GasSpeed.CUSTOM] as GasSpeed[], [metereologySuggestions]);
 
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
@@ -149,7 +149,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
   const menuConfig = useMemo(() => {
     const menuItems = menuOptions.map(gasOption => {
       const currentBaseFee = getCachedCurrentBaseFee(chainId);
-      const gasSettings = gasOption === GasSpeed.CUSTOM ? customGasSettings : metereologySuggestions.data?.[gasOption];
+      const gasSettings = gasOption === GasSpeed.CUSTOM ? customGasSettings : metereologySuggestions?.[gasOption];
       const subtitle = getEstimatedFeeRangeInGwei(gasSettings, currentBaseFee);
 
       return {
@@ -160,9 +160,9 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
       };
     });
     return { menuItems, menuTitle: '' };
-  }, [customGasSettings, menuOptions, metereologySuggestions.data, chainId]);
+  }, [customGasSettings, menuOptions, metereologySuggestions, chainId]);
 
-  if (metereologySuggestions.isLoading) return children;
+  if (isLoading) return children;
 
   return (
     <Box alignItems="center" justifyContent="center" style={{ margin: IS_ANDROID ? 0 : -GAS_BUTTON_HIT_SLOP }} testID="gas-speed-pager">

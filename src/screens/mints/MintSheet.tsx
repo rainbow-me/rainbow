@@ -171,7 +171,7 @@ const MintSheet = () => {
     symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
   });
 
-  const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
+  const priceOfEth = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
 
   const nativeMintPriceDisplay = convertAmountToNativeDisplay(parseFloat(multiply(price.amount, quantity)) * priceOfEth, nativeCurrency);
 

@@ -338,9 +338,10 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      type: asset.network,
+      type: 'network',
+      chainId: asset.chainId,
     });
-  }, [asset.network, navigate]);
+  }, [asset.chainId, navigate]);
 
   const isHiddenAsset = useMemo(() => hiddenTokens.includes(fullUniqueId) as boolean, [hiddenTokens, fullUniqueId]);
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId) as boolean, [showcaseTokens, uniqueId]);

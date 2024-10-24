@@ -227,9 +227,10 @@ export default function ChartExpandedState({ asset }) {
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      type: assetWithPrice.network,
+      type: 'network',
+      chainId: assetWithPrice.chainId,
     });
-  }, [assetWithPrice.network, navigate]);
+  }, [assetWithPrice.chainId, navigate]);
 
   const { layout } = useContext(ModalContext) || {};
 

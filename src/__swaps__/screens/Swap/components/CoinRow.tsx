@@ -8,7 +8,7 @@ import { ContextMenuButton } from '@/components/context-menu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
-import { BASE_DEGEN_ADDRESS, DEGEN_CHAIN_DEGEN_ADDRESS, ETH_ADDRESS } from '@/references';
+import { ETH_ADDRESS } from '@/references';
 import { toggleFavorite } from '@/resources/favorites';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
@@ -22,13 +22,6 @@ import { SUPPORTED_CHAIN_IDS } from '@/chains';
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 
 function determineFavoriteAddressAndChain(address: AddressOrEth, mainnetAddress: AddressOrEth | undefined, chainId: ChainId | undefined) {
-  if (address === BASE_DEGEN_ADDRESS && chainId === ChainId.base) {
-    return {
-      addressToFetch: DEGEN_CHAIN_DEGEN_ADDRESS,
-      chainToFetchOn: ChainId.degen,
-    };
-  }
-
   // if no mainnet address, default to fetch the favorite for the address we have and chain we have
   if (!mainnetAddress) {
     return {
