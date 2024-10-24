@@ -64,8 +64,6 @@ jobs:
   # Job for linting and unit tests
   linting-and-unit-tests:
     runs-on: ["self-hosted"]
-    concurrency: 
-      group: ${{ github.workflow }}-${{ github.ref }}
     permissions:
       contents: read
     needs: install-deps
