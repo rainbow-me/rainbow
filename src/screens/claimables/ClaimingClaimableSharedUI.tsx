@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AccentColorProvider, Bleed, Box, Inline, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeader, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
@@ -10,21 +10,250 @@ import { SponsoredClaimable, TransactionClaimable } from '@/resources/addys/clai
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
 import { FasterImageView } from '@candlefinance/faster-image';
-import { chainsLabel, chainsName } from '@/chains';
+import { chainsLabel, chainsName, chainsNativeAsset } from '@/chains';
 import { useNavigation } from '@/navigation';
 import { TextColor } from '@/design-system/color/palettes';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { enableActionsOnReadOnlyWallet } from '@/config';
-import { debounce, set } from 'lodash';
-import { DropdownMenu, MenuConfig, MenuItem } from '@/components/DropdownMenu';
-import { ETH_ADDRESS } from '@rainbow-me/swaps';
-import { DAI_ADDRESS, WBTC_ADDRESS } from '@/references';
+import { debounce } from 'lodash';
+import { DropdownMenu } from '@/components/DropdownMenu';
+import { DAI_ADDRESS, ETH_SYMBOL, WBTC_ADDRESS } from '@/references';
 import { ChainId } from '@/chains/types';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useNativeAsset } from '@/utils/ethereumUtils';
 import { ParsedAddressAsset } from '@/entities';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+
+interface TokenToReceive {
+  networks: Partial<Record<ChainId, { address: string }>>;
+  symbol: string;
+  iconUrl?: string;
+  name: string;
+  isNativeAsset: boolean;
+}
+
+type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
+
+// Types
+interface DropdownState {
+  selectedToken: string | undefined;
+  selectedChain: ChainId | undefined;
+  isInitialState: boolean;
+}
+
+interface UseDropdownMenuProps {
+  claimableAsset: ParsedAddressAsset;
+}
+
+// Custom hook to manage dropdown state and logic
+const useDropdownMenu = ({ claimableAsset }: UseDropdownMenuProps) => {
+  const { nativeCurrency } = useAccountSettings();
+  const balanceSortedChainList = useUserAssetsStore(state => state.getBalanceSortedChainList());
+
+  const [state, setState] = useState<DropdownState>({
+    selectedToken: claimableAsset.symbol,
+    selectedChain: claimableAsset.chainId,
+    isInitialState: true,
+  });
+
+  const { data: dai } = useExternalToken({
+    address: DAI_ADDRESS,
+    chainId: ChainId.mainnet,
+    currency: nativeCurrency,
+  });
+  const { data: wbtc } = useExternalToken({
+    address: WBTC_ADDRESS,
+    chainId: ChainId.mainnet,
+    currency: nativeCurrency,
+  });
+
+  const nativeTokens: TokenMap = useMemo(
+    () =>
+      balanceSortedChainList.reduce<TokenMap>((nativeTokenDict, chainId) => {
+        const nativeToken = chainsNativeAsset[chainId];
+        if (nativeToken) {
+          if (!nativeTokenDict[nativeToken.symbol]) {
+            nativeTokenDict[nativeToken.symbol] = {
+              iconUrl: nativeToken.iconURL,
+              name: nativeToken.name,
+              symbol: nativeToken.symbol,
+              networks: {},
+              isNativeAsset: true,
+            };
+          }
+          nativeTokenDict[nativeToken.symbol].networks[chainId] = { address: nativeToken.address };
+        }
+        return nativeTokenDict;
+      }, {}),
+    [balanceSortedChainList]
+  );
+
+  const tokens: TokenMap = useMemo(
+    () => ({
+      ...nativeTokens,
+      [claimableAsset.symbol]: {
+        iconUrl: claimableAsset.icon_url,
+        name: claimableAsset.name,
+        symbol: claimableAsset.symbol,
+        networks: claimableAsset.networks,
+        isNativeAsset: false,
+      },
+      ...(dai && {
+        [dai.symbol]: {
+          iconUrl: dai.icon_url,
+          name: dai.name,
+          symbol: dai.symbol,
+          networks: dai.networks,
+          isNativeAsset: false,
+        },
+      }),
+      ...(wbtc && {
+        [wbtc.symbol]: {
+          iconUrl: wbtc.icon_url,
+          name: wbtc.name,
+          symbol: wbtc.symbol,
+          networks: wbtc.networks,
+          isNativeAsset: false,
+        },
+      }),
+    }),
+    [claimableAsset, dai, nativeTokens, wbtc]
+  );
+
+  const resetState = useCallback(() => {
+    setState({
+      selectedToken: claimableAsset.symbol,
+      selectedChain: claimableAsset.chainId,
+      isInitialState: true,
+    });
+  }, [claimableAsset.symbol, claimableAsset.chainId]);
+
+  const tokenMenuConfig = useMemo(() => {
+    const availableTokens = Object.values(tokens)
+      .filter(token => {
+        // exclude if token is already selected
+        if (token.symbol === state.selectedToken) {
+          return false;
+        }
+
+        // if token is ETH, include if ANY are true:
+        // 1. ETH is not marked as native asset (this means it's the claimable asset)
+        // 2. it's the initial state
+        // 2. there's no selected chain
+        // 3. the selected chain supports ETH
+        if (token.symbol === ETH_SYMBOL) {
+          return !token.isNativeAsset || state.isInitialState || !state.selectedChain || state.selectedChain in token.networks;
+        }
+
+        // if token is a native asset, include if BOTH are true:
+        // 1. there's a selected chain
+        // 2. the selected chain supports the native asset
+        if (token.isNativeAsset) {
+          return state.selectedChain && state.selectedChain in token.networks;
+        }
+
+        // otherwise (non-native, non-selected token), include if ANY are true:
+        // 1. it's the initial state
+        // 2. there's no selected chain
+        // 3. the selected chain supports the token
+        return state.isInitialState || !state.selectedChain || state.selectedChain in token.networks;
+      })
+      .map(token => ({
+        actionKey: token.symbol,
+        actionTitle: token.name,
+      }))
+      .sort((a, b) => (a.actionTitle < b.actionTitle ? 1 : -1));
+
+    return {
+      menuItems: [
+        {
+          actionKey: 'reset',
+          actionTitle: 'Reset',
+          icon: { iconType: 'SYSTEM', iconValue: 'arrow.counterclockwise' },
+        },
+        ...availableTokens,
+      ],
+    };
+  }, [tokens, state.selectedChain, state.selectedToken, state.isInitialState]);
+
+  const networkMenuConfig = useMemo(() => {
+    const supportedChains = balanceSortedChainList
+      .filter(chainId => chainId !== state.selectedChain)
+      .map(chainId => ({
+        actionKey: `${chainId}`,
+        actionTitle: chainsLabel[chainId],
+        icon: {
+          iconType: 'ASSET',
+          iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${chainsName[chainId]}BadgeNoShadow`,
+        },
+      }));
+
+    return {
+      menuItems: [
+        {
+          actionKey: 'reset',
+          actionTitle: 'Reset',
+          icon: { iconType: 'SYSTEM', iconValue: 'arrow.counterclockwise' },
+        },
+        ...supportedChains,
+      ],
+    };
+  }, [balanceSortedChainList, state.selectedChain]);
+
+  const handleTokenSelection = useCallback(
+    (selection: keyof typeof tokens | 'reset') => {
+      haptics.selection();
+      if (selection === 'reset') {
+        resetState();
+      } else {
+        setState(prev => {
+          const currentChain = prev.selectedChain;
+          const newChain = currentChain && !(currentChain in tokens[selection].networks) ? undefined : currentChain;
+
+          return {
+            ...prev,
+            selectedChain: newChain,
+            selectedToken: selection,
+            isInitialState: false,
+          };
+        });
+      }
+    },
+    [resetState, tokens]
+  );
+
+  const handleNetworkSelection = useCallback(
+    (selection: `${ChainId}` | 'reset') => {
+      haptics.selection();
+      if (selection === 'reset') {
+        resetState();
+      } else {
+        const newChainId = +selection;
+        setState(prev => {
+          const currentToken = prev.selectedToken;
+          const newToken =
+            currentToken && (!tokens[currentToken] || !(newChainId in tokens[currentToken].networks)) ? undefined : currentToken;
+
+          return {
+            selectedChain: newChainId,
+            selectedToken: newToken,
+            isInitialState: false,
+          };
+        });
+      }
+    },
+    [resetState, tokens]
+  );
+
+  return {
+    state,
+    tokenMenuConfig,
+    networkMenuConfig,
+    handleTokenSelection,
+    handleNetworkSelection,
+  };
+};
 
 const BUTTON_WIDTH = deviceUtils.dimensions.width - 52;
 
@@ -34,54 +263,6 @@ export type ClaimStatus =
   | 'pending' // claim has been submitted but we don't have a tx hash
   | 'success' // claim has been submitted and we have a tx hash
   | 'error'; // claim has failed
-
-const DAI_ADDRESS_MAINNET = '0x6b175474e89094c44da98b954eedeac495271d0f';
-const DAI_ADDRESS_BASE = '0x50c5725949a6f0c72e6c4a641f24049a917db0cb';
-const DAI_ADDRESS_OPTIMISM = '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1';
-const DAI_ADDRESS_AVALANCHE = '0xd586e7f844cea2f87f50152665bcbc2c279d8d70';
-const DAI_ADDRESS_ARBITRUM = '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1';
-const DAI_ADDRESS_POLYGON = '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063';
-const DAI_ADDRESS_BSC = '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3';
-
-const WBTC_ADDRESS_MAINNET = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
-const WBTC_ADDRESS_BLAST = '0xf7bc58b8d8f97adc129cfc4c9f45ce3c0e1d2692';
-const WBTC_ADDRESS_OPTIMISM = '0x68f180fcce6836688e9084f035309e29bf0a2095';
-const WBTC_ADDRESS_AVALANCHE = '0x50b7545627a5162f82a992c33b87adc75187b218';
-const WBTC_ADDRESS_ARBITRUM = '0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f';
-const WBTC_ADDRESS_POLYGON = '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6';
-const WBTC_ADDRESS_BSC = '0x0555e30da8f98308edb960aa94c0db47230d2b9c';
-
-type TokenToReceive = Pick<ParsedAddressAsset, 'networks' | 'symbol' | 'icon_url' | 'name'>;
-
-const DAI: TokenToReceive = {
-  networks: {
-    [ChainId.mainnet]: { address: DAI_ADDRESS_MAINNET },
-    [ChainId.avalanche]: { address: DAI_ADDRESS_AVALANCHE },
-    [ChainId.arbitrum]: { address: DAI_ADDRESS_ARBITRUM },
-    [ChainId.bsc]: { address: DAI_ADDRESS_BSC },
-    [ChainId.optimism]: { address: DAI_ADDRESS_OPTIMISM },
-    [ChainId.polygon]: { address: DAI_ADDRESS_POLYGON },
-    [ChainId.base]: { address: DAI_ADDRESS_BASE },
-  },
-  symbol: 'DAI',
-  icon_url: '',
-  name: 'Dai',
-};
-
-const WBTC: TokenToReceive = {
-  networks: {
-    [ChainId.mainnet]: { address: WBTC_ADDRESS_MAINNET },
-    [ChainId.avalanche]: { address: WBTC_ADDRESS_AVALANCHE },
-    [ChainId.arbitrum]: { address: WBTC_ADDRESS_ARBITRUM },
-    [ChainId.bsc]: { address: WBTC_ADDRESS_BSC },
-    [ChainId.optimism]: { address: WBTC_ADDRESS_OPTIMISM },
-    [ChainId.polygon]: { address: WBTC_ADDRESS_POLYGON },
-    [ChainId.blast]: { address: WBTC_ADDRESS_BLAST },
-  },
-  symbol: 'WBTC',
-  icon_url: '',
-  name: 'Wrapped Bitcoin',
-};
 
 export const ClaimingClaimableSharedUI = ({
   claim,
@@ -216,95 +397,9 @@ export const ClaimingClaimableSharedUI = ({
     [claimStatus, claim, goBack, isReadOnlyWallet, setClaimStatus]
   );
 
-  const [tokenToReceive, setTokenToReceive] = useState<string | undefined>(claimable.asset.symbol);
-  const [chainId, setChainId] = useState<ChainId>(claimable.chainId);
-  const [initialState, setInitialState] = useState(true);
-
-  const nativeAsset = useNativeAsset({ chainId });
-
-  const tokens = useMemo(
-    () => ({
-      [DAI.symbol]: DAI,
-      [WBTC.symbol]: WBTC,
-      [claimable.asset.symbol]: claimable.asset,
-      ...(nativeAsset ? { [nativeAsset.symbol]: nativeAsset } : {}),
-    }),
-    [claimable.asset, nativeAsset]
-  );
-
-  const tokenMenuConfig = useMemo<MenuConfig<string>>(() => {
-    const availableTokens = Object.values(tokens)
-      .map(token => ({ actionKey: token.symbol, actionTitle: token.name }))
-      .filter(item => (chainId in tokens[item.actionKey].networks && item.actionKey !== tokenToReceive) || initialState)
-      .sort((a, b) => (a.actionTitle < b.actionTitle ? 1 : -1));
-    return {
-      menuItems: [
-        { actionKey: 'reset', actionTitle: 'Reset', icon: { iconType: 'SYSTEM', iconValue: 'arrow.counterclockwise' } },
-        ...availableTokens,
-      ],
-    };
-  }, [chainId, initialState, tokenToReceive, tokens]);
-
-  const onPressTokenMenuItem = useCallback(
-    (selection: string) => {
-      haptics.selection();
-
-      if (selection === 'reset') {
-        setInitialState(true);
-        setTokenToReceive(claimable.asset.symbol);
-        setChainId(claimable.chainId);
-      } else {
-        setInitialState(false);
-        setTokenToReceive(selection);
-      }
-    },
-    [claimable.asset.symbol, claimable.chainId]
-  );
-
-  const balanceSortedChainList = useUserAssetsStore(state => state.getBalanceSortedChainList());
-
-  const networkMenuConfig = useMemo<MenuConfig<`${ChainId}`>>(() => {
-    const supportedChains = balanceSortedChainList
-      .map(c => {
-        return {
-          actionKey: `${c}`,
-          actionTitle: chainsLabel[c],
-          icon: {
-            iconType: 'ASSET',
-            // NOTE: chainsName[c] for mainnet is 'mainnet' and we need it to be 'ethereum'
-            iconValue: c === ChainId.mainnet ? 'ethereumBadge' : `${chainsName[c]}BadgeNoShadow`,
-          },
-        };
-      })
-      .filter(item => Number(item.actionKey) !== chainId);
-    return {
-      menuItems: [
-        { actionKey: 'reset', actionTitle: 'Reset', icon: { iconType: 'SYSTEM', iconValue: 'arrow.counterclockwise' } },
-        ...supportedChains,
-      ],
-    };
-  }, [balanceSortedChainList, chainId]);
-
-  const onPressNetworkMenuItem = useCallback(
-    (selection: `${ChainId}`) => {
-      const selectedChainId = Number(selection);
-      if (chainId === selectedChainId) return;
-
-      haptics.selection();
-      setChainId(selectedChainId);
-      if (selection === 'reset') {
-        setInitialState(true);
-        setTokenToReceive(claimable.asset.symbol);
-        setChainId(claimable.chainId);
-      } else {
-        setInitialState(false);
-        if (tokenToReceive && !(selectedChainId in tokens[tokenToReceive].networks)) {
-          setTokenToReceive(undefined);
-        }
-      }
-    },
-    [chainId, claimable.asset.symbol, claimable.chainId, tokenToReceive, tokens]
-  );
+  const { state, tokenMenuConfig, networkMenuConfig, handleTokenSelection, handleNetworkSelection } = useDropdownMenu({
+    claimableAsset: { ...claimable.asset, chainId: ChainId.degen },
+  });
 
   return (
     <>
@@ -366,7 +461,7 @@ export const ClaimingClaimableSharedUI = ({
                 <Text align="center" weight="bold" color="labelTertiary" size="17pt">
                   Receive
                 </Text>
-                <DropdownMenu menuConfig={tokenMenuConfig} onPressMenuItem={onPressTokenMenuItem}>
+                <DropdownMenu menuConfig={tokenMenuConfig} onPressMenuItem={handleTokenSelection}>
                   <ButtonPressAnimation>
                     <Box
                       paddingHorizontal={{ custom: 7 }}
@@ -380,8 +475,8 @@ export const ClaimingClaimableSharedUI = ({
                       alignItems="center"
                       justifyContent="center"
                     >
-                      <Text align="center" weight="heavy" color={initialState ? 'labelQuaternary' : 'label'} size="17pt">
-                        {tokenToReceive ? tokens[tokenToReceive].symbol : 'a token'}
+                      <Text align="center" weight="heavy" color={state.isInitialState ? 'labelQuaternary' : 'label'} size="17pt">
+                        {state.selectedToken ? state.selectedToken : 'a token'}
                       </Text>
                       <Text align="center" weight="heavy" color="labelSecondary" size="icon 12px">
                         􀆏
@@ -392,7 +487,7 @@ export const ClaimingClaimableSharedUI = ({
                 <Text align="center" weight="bold" color="labelTertiary" size="17pt">
                   on
                 </Text>
-                <DropdownMenu menuConfig={networkMenuConfig} onPressMenuItem={onPressNetworkMenuItem}>
+                <DropdownMenu menuConfig={networkMenuConfig} onPressMenuItem={handleNetworkSelection}>
                   <ButtonPressAnimation>
                     <Box
                       paddingHorizontal={{ custom: 7 }}
@@ -406,8 +501,8 @@ export const ClaimingClaimableSharedUI = ({
                       alignItems="center"
                       justifyContent="center"
                     >
-                      <Text align="center" weight="heavy" color={initialState ? 'labelQuaternary' : 'label'} size="17pt">
-                        {chainsLabel[chainId]}
+                      <Text align="center" weight="heavy" color={state.isInitialState ? 'labelQuaternary' : 'label'} size="17pt">
+                        {state.selectedChain ? chainsLabel[state.selectedChain] : 'a network'}
                       </Text>
                       <Text align="center" weight="heavy" color="labelSecondary" size="icon 12px">
                         􀆏
