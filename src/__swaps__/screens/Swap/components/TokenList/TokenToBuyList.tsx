@@ -152,11 +152,11 @@ export const TokenToBuyList = () => {
 
   return (
     <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }} testID={'token-to-buy-list'}>
+      <ChainSelection output />
       <FlatList
         keyboardShouldPersistTaps="always"
         ListEmptyComponent={<ListEmpty output />}
         ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
-        ListHeaderComponent={<ChainSelection output />}
         contentContainerStyle={{ paddingBottom: 16 }}
         data={sections}
         getItemLayout={getItemLayout}

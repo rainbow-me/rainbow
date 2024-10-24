@@ -83,27 +83,29 @@ const TokenToSellListComponent = () => {
   });
 
   return (
-    <FlatList
-      ListEmptyComponent={<ListEmpty />}
-      ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
-      ListHeaderComponent={<ChainSelection allText={i18n.t(i18n.l.exchange.all_networks)} output={false} />}
-      contentContainerStyle={{ paddingBottom: 16 }}
-      data={userAssetIds}
-      getItemLayout={getItemLayout}
-      keyExtractor={uniqueId => uniqueId}
-      renderItem={({ item: uniqueId }) => {
-        return <CoinRow onPress={(asset: ParsedSearchAsset | null) => handleSelectToken(asset)} output={false} uniqueId={uniqueId} />;
-      }}
-      renderScrollComponent={props => {
-        return (
-          <Animated.ScrollView
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...props}
-            animatedProps={animatedListProps}
-          />
-        );
-      }}
-      style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
-    />
+    <>
+      <ChainSelection allText={i18n.t(i18n.l.exchange.all_networks)} output={false} />
+      <FlatList
+        ListEmptyComponent={<ListEmpty />}
+        ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
+        contentContainerStyle={{ paddingBottom: 16 }}
+        data={userAssetIds}
+        getItemLayout={getItemLayout}
+        keyExtractor={uniqueId => uniqueId}
+        renderItem={({ item: uniqueId }) => {
+          return <CoinRow onPress={(asset: ParsedSearchAsset | null) => handleSelectToken(asset)} output={false} uniqueId={uniqueId} />;
+        }}
+        renderScrollComponent={props => {
+          return (
+            <Animated.ScrollView
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...props}
+              animatedProps={animatedListProps}
+            />
+          );
+        }}
+        style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
+      />
+    </>
   );
 };
