@@ -19,7 +19,7 @@ import { TAB_VIEW_ROW_HEIGHT } from '../Dimensions';
  * corrective Y transform that offsets it.
  */
 export function useSmoothScrollView() {
-  const { currentlyOpenTabIds, scrollViewOffset } = useBrowserContext();
+  const { currentlyOpenTabIds, scrollViewOffset, tabViewVisible } = useBrowserContext();
 
   const scrollViewHeight = useDerivedValue(() => {
     const height = Math.max(
@@ -41,7 +41,7 @@ export function useSmoothScrollView() {
   });
 
   const jitterCorrection = useDerivedValue(() => {
-    if (IS_ANDROID) return 0;
+    if (IS_ANDROID || !tabViewVisible.value) return 0;
 
     const rawScrollViewHeight =
       Math.ceil(currentlyOpenTabIds.value.length / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + 165 + 28 + (IS_ANDROID ? 35 : 0);
@@ -52,7 +52,7 @@ export function useSmoothScrollView() {
       : scrollViewOffset.value > 0;
 
     const areTabsClosing = rawScrollViewHeight < scrollViewHeight.value;
-    const isCorrectionNeeded = areTabsClosing && isScrolledToEnd;
+    const isCorrectionNeeded = areTabsClosing && isScrolledToEnd && tabViewVisible.value;
     const reversedYJitter = isCorrectionNeeded ? -(scrollViewHeight.value - contentContainerHeight.value) : 0;
 
     return reversedYJitter;

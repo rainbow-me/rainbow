@@ -7,7 +7,7 @@ import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/Gestur
 import { deviceUtils } from '@/utils';
 import { AnimatedBlurView } from '../AnimatedComponents/AnimatedBlurView';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
-import { useBrowserContext } from './BrowserContext';
+import { TabViewGestureStates, useBrowserContext } from './BrowserContext';
 import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { TAB_VIEW_COLUMN_WIDTH } from './Dimensions';
 import { RAINBOW_HOME } from './constants';
@@ -38,7 +38,11 @@ export const CloseTabButton = ({ animatedTabIndex, gestureScale, gestureX, tabId
     animatedTabUrls,
     currentlyBeingClosedTabIds,
     currentlyOpenTabIds,
+    isSwitchingTabs,
     multipleTabsOpen,
+    pendingTabSwitchOffset,
+    tabViewGestureProgress,
+    tabViewGestureState,
     tabViewProgress,
     tabViewVisible,
   } = useBrowserContext();
@@ -46,13 +50,25 @@ export const CloseTabButton = ({ animatedTabIndex, gestureScale, gestureX, tabId
   const { isDarkMode } = useColorMode();
 
   const closeButtonStyle = useAnimatedStyle(() => {
-    const progress = tabViewProgress?.value || 0;
-    const animatedIsActiveTab = animatedActiveTabIndex.value === animatedTabIndex.value;
+    const isRunningEnterTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING;
+    const tabIndex = currentlyOpenTabIds.value.indexOf(tabId);
+    const activeIndex = Math.abs(animatedActiveTabIndex.value);
+    const pendingActiveIndex = activeIndex + pendingTabSwitchOffset.value;
+    const isPendingActiveTab = pendingActiveIndex === tabIndex;
+    const animatedIsActiveTab = isPendingActiveTab || currentlyOpenTabIds.value.length === 0;
+
+    const startOpacity = animatedIsActiveTab || (isSwitchingTabs.value && !isRunningEnterTabViewAnimation) ? 0 : 1;
+    const endOpacity = isSwitchingTabs.value && !isRunningEnterTabViewAnimation ? 0 : 1;
 
     // Switch to using progress-based interpolation when the tab view is
     // entered. This is mainly to avoid showing the close button in the
     // active tab until the tab view animation is near complete.
-    const interpolatedOpacity = interpolate(progress, [0, 80, 100], [animatedIsActiveTab ? 0 : 1, animatedIsActiveTab ? 0 : 1, 1], 'clamp');
+    const interpolatedOpacity = interpolate(
+      isRunningEnterTabViewAnimation ? tabViewGestureProgress.value : tabViewProgress.value,
+      [0, 0, 80, 100],
+      [0, startOpacity, startOpacity, endOpacity],
+      'clamp'
+    );
     const opacity = tabViewVisible.value || !animatedIsActiveTab ? interpolatedOpacity : withTiming(0, TIMING_CONFIGS.fastFadeConfig);
 
     return { opacity };
@@ -125,7 +141,7 @@ export const CloseTabButton = ({ animatedTabIndex, gestureScale, gestureX, tabId
         }
         return closingTabs;
       });
-      closeTabWorklet?.(tabId, storedTabIndex);
+      closeTabWorklet({ tabId, tabIndex: storedTabIndex });
     });
   }, [animatedTabIndex, closeTabWorklet, currentlyBeingClosedTabIds, currentlyOpenTabIds, gestureScale, gestureX, tabId]);
 
@@ -223,11 +239,11 @@ const XIcon = ({ buttonSize, multipleTabsOpen }: { buttonSize: number; multipleT
 
 const styles = StyleSheet.create({
   buttonPressWrapperStyle: {
-    zIndex: 99999999999,
     alignItems: 'center',
     height: '100%',
     justifyContent: 'center',
     width: '100%',
+    zIndex: 99999999999,
   },
   closeButtonStyle: {
     alignItems: 'center',

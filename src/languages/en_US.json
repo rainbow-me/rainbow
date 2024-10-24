@@ -2964,10 +2964,17 @@
       },
       "menus": {
         "favorite": "Favorite",
+        "home": "Home",
         "undo_favorite": "Undo Favorite",
         "remove": "Remove",
         "forward": "Forward",
-        "back": "Back"
+        "back": "Back",
+        "share": "Share",
+        "close_all_tabs": "Close All %{numberOfClosableTabs} Tabs",
+        "close_both_tabs": "Close Both Tabs",
+        "close_this_tab": "Close This Tab",
+        "close_tab": "Close Tab",
+        "new_tab": "New Tab"
       }
     },
     "copy": "Copy",

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { Cover, globalColors } from '@/design-system';
@@ -9,27 +9,42 @@ import { useBrowserContext } from './BrowserContext';
 import { WEBVIEW_HEIGHT, ZOOMED_TAB_BORDER_RADIUS } from './Dimensions';
 import { RAINBOW_HOME } from './constants';
 
-export const WebViewBorder = ({
-  animatedTabIndex,
-  enabled,
-  tabId,
-}: {
-  animatedTabIndex: SharedValue<number>;
-  enabled?: boolean;
-  tabId: string;
-}) => {
-  const { animatedActiveTabIndex, animatedTabUrls, tabViewProgress, tabViewVisible } = useBrowserContext();
+export const WebViewBorder = ({ enabled, tabId }: { enabled?: boolean; tabId: string }) => {
+  const {
+    activeTabId,
+    animatedTabUrls,
+    animatedTabViewBorderRadius,
+    currentlyOpenTabIds,
+    extraWebViewHeight,
+    isSwitchingTabs,
+    tabViewGestureProgress,
+    tabViewProgress,
+    tabViewVisible,
+  } = useBrowserContext();
 
   const webViewBorderStyle = useAnimatedStyle(() => {
     const url = animatedTabUrls.value[tabId] || RAINBOW_HOME;
     const isOnHomepage = url === RAINBOW_HOME;
     const opacity = isOnHomepage ? 0 : 1 - tabViewProgress.value / 100;
 
-    const animatedIsActiveTab = animatedActiveTabIndex.value === animatedTabIndex.value;
-    const borderRadius = interpolate(tabViewProgress.value, [0, 100], [animatedIsActiveTab ? ZOOMED_TAB_BORDER_RADIUS : 30, 30], 'clamp');
+    const animatedIsActiveTab = activeTabId.value === tabId || currentlyOpenTabIds.value.length === 0;
+    const isFullSizeTab = animatedIsActiveTab || isSwitchingTabs.value;
+
+    const borderRadius = interpolate(
+      isSwitchingTabs.value ? tabViewGestureProgress.value : tabViewProgress.value,
+      [0, 0, 100],
+      // eslint-disable-next-line no-nested-ternary
+      [
+        ZOOMED_TAB_BORDER_RADIUS,
+        isFullSizeTab ? ZOOMED_TAB_BORDER_RADIUS : animatedTabViewBorderRadius.value,
+        animatedTabViewBorderRadius.value,
+      ],
+      'clamp'
+    );
 
     return {
       borderRadius: enabled ? borderRadius : 0,
+      height: WEBVIEW_HEIGHT + extraWebViewHeight.value,
       opacity: enabled ? opacity : 0,
       pointerEvents: tabViewVisible.value ? 'auto' : 'none',
     };
@@ -49,7 +64,6 @@ const styles = StyleSheet.create({
     borderCurve: 'continuous',
     borderRadius: 16,
     borderWidth: THICK_BORDER_WIDTH,
-    height: WEBVIEW_HEIGHT,
     overflow: 'hidden',
     width: DEVICE_WIDTH,
   },

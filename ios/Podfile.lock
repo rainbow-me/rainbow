@@ -1182,7 +1182,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-blur (4.4.0):
+  - react-native-blur (4.4.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1301,7 +1301,7 @@ PODS:
     - React-Core
   - react-native-screen-corner-radius (0.2.2):
     - React
-  - react-native-skia (1.3.11):
+  - react-native-skia (1.5.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1661,7 +1661,7 @@ PODS:
     - Firebase/RemoteConfig (= 10.27.0)
     - React-Core
     - RNFBApp
-  - RNFlashList (1.7.0):
+  - RNFlashList (1.7.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1684,7 +1684,7 @@ PODS:
     - Yoga
   - RNFS (2.16.6):
     - React
-  - RNGestureHandler (2.18.1):
+  - RNGestureHandler (2.20.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1730,7 +1730,7 @@ PODS:
     - React-Core
   - RNReactNativeHapticFeedback (2.2.0):
     - React-Core
-  - RNReanimated (3.15.0):
+  - RNReanimated (3.16.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1750,10 +1750,32 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.15.0)
-    - RNReanimated/worklets (= 3.15.0)
+    - RNReanimated/reanimated (= 3.16.1)
+    - RNReanimated/worklets (= 3.16.1)
     - Yoga
-  - RNReanimated/reanimated (3.15.0):
+  - RNReanimated/reanimated (3.16.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNReanimated/reanimated/apple (= 3.16.1)
+    - Yoga
+  - RNReanimated/reanimated/apple (3.16.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1774,7 +1796,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated/worklets (3.15.0):
+  - RNReanimated/worklets (3.16.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2429,7 +2451,7 @@ SPEC CHECKSUMS:
   react-native-aes-crypto: d7e87fd02cee7285983c00957a34063dfc4c94b3
   react-native-animateable-text: c95b74a78a13e416e6c4e8b012eea29e14913207
   react-native-ble-plx: 08539040709361221aa9f8cada60dc730b9168c5
-  react-native-blur: a2acf22fd7bd13621df5e0b1c130b81adea7009c
+  react-native-blur: 30d91a67da86a4d4d924b0c7c36f6e01479a246b
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
   react-native-cameraroll: b5ce04a1ee4081d7eea921918de979f0b41d8e22
   react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
@@ -2449,7 +2471,7 @@ SPEC CHECKSUMS:
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
   react-native-safe-area-context: 851c62c48dce80ccaa5637b6aa5991a1bc36eca9
   react-native-screen-corner-radius: 67064efbb78f2d48f01626713ae8142f6a20f925
-  react-native-skia: 8da84ea9410504bf27f0db229539a43f6caabb6a
+  react-native-skia: dd503e4426d5dcd578a2d11c9261fb591501924b
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
@@ -2492,9 +2514,9 @@ SPEC CHECKSUMS:
   RNFBApp: 1ae7462cddf74a49df206d3418bc0170f8fa53e5
   RNFBMessaging: 85f661b9f16e2b081e6809ef63d3daa4458b9042
   RNFBRemoteConfig: a8325e2d3772127358dd2e7d5e39c9ad3e3379ac
-  RNFlashList: e9b57a5553639f9b528cc50ab53f25831722ed62
+  RNFlashList: e9c5b8fe1b84f9c198cb550eb4cc0c45569fbf42
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
-  RNGestureHandler: efed690b8493a00b99654043daeb1335276ac4a2
+  RNGestureHandler: d965a561d5458dd1e10617602f55726e04e4aac5
   RNImageCropPicker: 771e2ca319d2cf92e04ebf334ece892ee9a6728f
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: 14793d75953d99c6d950090b8e9698b234c5d08c
@@ -2503,7 +2525,7 @@ SPEC CHECKSUMS:
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
   RNReactNativeHapticFeedback: ec56a5f81c3941206fd85625fa669ffc7b4545f9
-  RNReanimated: 45553a3ae29a75a76269595f8554d07d4090e392
+  RNReanimated: af4e059a8fd0fb7a9cdf5ad35ead4699598a9447
   RNRudderSdk: 805d4b7064714f3295bf5f152d3812cc67f67a93
   RNScreens: aa943ad421c3ced3ef5a47ede02b0cbfc43a012e
   RNSentry: 2c78e72aaa6e55d61ce60d98a62f01b666f76513

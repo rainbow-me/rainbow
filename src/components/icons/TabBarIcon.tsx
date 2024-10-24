@@ -7,6 +7,8 @@ import { globalColors } from '@/design-system/color/palettes';
 import { Icon } from '@/components/icons';
 import { useTheme } from '@/theme';
 
+export const TAB_BAR_ICON_SIZE = 28;
+
 type TabBarIconProps = {
   accentColor: string;
   icon: string;
@@ -166,7 +168,7 @@ const TabBarIconContent = React.memo(function TabBarIconContent({
   iconColor,
   innerFillColor,
   innerIconColor,
-  size,
+  size = TAB_BAR_ICON_SIZE,
 }: {
   discoverTabInnerFillColor: AnimatedStyle;
   hasTransparentInnerFill: boolean;
@@ -177,23 +179,23 @@ const TabBarIconContent = React.memo(function TabBarIconContent({
   size: number | undefined;
 }) {
   return (
-    <Box height={{ custom: size || 28 }} width={{ custom: size || 28 }}>
+    <Box height={{ custom: size }} width={{ custom: size }}>
       <Cover alignHorizontal="center" alignVertical="center">
         <MaskedView maskElement={<Icon name={icon + 'InnerFill'} size={size} />}>
-          <Box as={Animated.View} height={{ custom: size || 28 }} style={innerFillColor} width={{ custom: size || 28 }}>
+          <Box as={Animated.View} height={{ custom: size }} style={innerFillColor} width={{ custom: size }}>
             {hasTransparentInnerFill && <Box as={Animated.View} height="full" style={discoverTabInnerFillColor} width="full" />}
           </Box>
         </MaskedView>
       </Cover>
       <Cover alignHorizontal="center" alignVertical="center">
         <MaskedView maskElement={<Icon name={icon} size={size} />}>
-          <Box as={Animated.View} height={{ custom: size || 28 }} style={iconColor} width={{ custom: size || 28 }} />
+          <Box as={Animated.View} height={{ custom: size }} style={iconColor} width={{ custom: size }} />
         </MaskedView>
       </Cover>
       {!hasTransparentInnerFill && (
         <Cover alignHorizontal="center" alignVertical="center">
           <MaskedView maskElement={<Icon name={icon + 'Inner'} size={size} />}>
-            <Box as={Animated.View} height={{ custom: size || 28 }} style={innerIconColor} width={{ custom: size || 28 }}>
+            <Box as={Animated.View} height={{ custom: size }} style={innerIconColor} width={{ custom: size }}>
               <Box as={Animated.View} height="full" style={[iconColor, { opacity: 0.25 }]} width="full" />
             </Box>
           </MaskedView>

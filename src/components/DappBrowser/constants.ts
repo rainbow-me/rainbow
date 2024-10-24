@@ -1,10 +1,14 @@
 import { ImageOptions } from '@candlefinance/faster-image';
 import { CaptureOptions } from 'react-native-view-shot';
+import { globalColors } from '@/design-system';
 
 export const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';
 export const HTTP = 'http://';
 export const HTTPS = 'https://';
 export const RAINBOW_HOME = 'RAINBOW_HOME';
+
+export const HOMEPAGE_BACKGROUND_COLOR_DARK = globalColors.grey100;
+export const HOMEPAGE_BACKGROUND_COLOR_LIGHT = '#F7F7F9';
 
 export const DEFAULT_TAB_URL = RAINBOW_HOME;
 

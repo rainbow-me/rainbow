@@ -19,6 +19,7 @@ export type GestureHandlerButtonProps = {
   buttonPressWrapperStyleIOS?: StyleProp<ViewStyle>;
   children: React.ReactNode;
   disableButtonPressWrapper?: boolean;
+  disableHapticFeedback?: boolean;
   disabled?: boolean;
   longPressDuration?: number;
   longPressRef?: MutableRefObject<LongPressGesture>;
@@ -55,6 +56,7 @@ export function GestureHandlerButton({
   buttonPressWrapperStyleIOS,
   children,
   disableButtonPressWrapper = false,
+  disableHapticFeedback = false,
   disabled = false,
   longPressDuration = LONG_PRESS_DURATION_IN_MS,
   longPressRef,
@@ -115,7 +117,7 @@ export function GestureHandlerButton({
 
   return (
     <ConditionalWrap
-      condition={IS_IOS}
+      condition={IS_IOS && !disableButtonPressWrapper}
       wrap={children => (
         <ButtonPressAnimation
           disabled={disabled}
@@ -123,7 +125,7 @@ export function GestureHandlerButton({
           minLongPressDuration={longPressDuration * 1.2}
           scaleTo={disableButtonPressWrapper ? 1 : scaleTo}
           style={buttonPressWrapperStyleIOS}
-          useLateHaptic={disableButtonPressWrapper}
+          useLateHaptic={disableButtonPressWrapper || disableHapticFeedback}
         >
           {children}
         </ButtonPressAnimation>

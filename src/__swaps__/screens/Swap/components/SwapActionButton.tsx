@@ -20,6 +20,7 @@ import { AnimatedText, Box, Column, Columns, Cover, globalColors, useColorMode, 
 import { IS_IOS } from '@/env';
 import { GestureHandlerButton, GestureHandlerButtonProps } from './GestureHandlerButton';
 import { useSwapContext } from '../providers/swap-provider';
+import { SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 
 function SwapButton({
   asset,
@@ -39,9 +40,9 @@ function SwapButton({
   asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
   borderRadius?: number;
   disableShadow?: boolean;
-  icon?: string | DerivedValue<string | undefined>;
+  icon?: string | SharedOrDerivedValueText;
   iconStyle?: StyleProp<TextStyle>;
-  label: string | DerivedValue<string | undefined>;
+  label: string | SharedOrDerivedValueText;
   outline?: boolean;
   rightIcon?: string;
   small?: boolean;
@@ -244,9 +245,9 @@ export const SwapActionButton = ({
   disableShadow?: boolean;
   holdProgress?: SharedValue<number>;
   hugContent?: boolean;
-  icon?: string | DerivedValue<string | undefined>;
+  icon?: string | SharedOrDerivedValueText;
   iconStyle?: StyleProp<TextStyle>;
-  label: string | DerivedValue<string | undefined>;
+  label: string | SharedOrDerivedValueText;
   longPressDuration?: GestureHandlerButtonProps['longPressDuration'];
   onLongPressEndWorklet?: GestureHandlerButtonProps['onLongPressEndWorklet'];
   onLongPressWorklet?: GestureHandlerButtonProps['onLongPressWorklet'];

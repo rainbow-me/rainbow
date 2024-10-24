@@ -5,6 +5,8 @@ import { Navigation } from './index';
 import { StatusBarHelper } from '@/helpers';
 import { analytics } from '@/analytics';
 import { currentColors } from '@/theme';
+import { useFreezeStore } from '@/state/freezeStore/freezeStore';
+import { POINTS_ROUTES } from '@/screens/points/PointsScreen';
 
 let memState;
 let memRouteName;
@@ -13,7 +15,15 @@ let memPrevRouteName;
 let action = null;
 
 const isOnSwipeScreen = name =>
-  [Routes.WALLET_SCREEN, Routes.DISCOVER_SCREEN, Routes.PROFILE_SCREEN, Routes.POINTS_SCREEN, Routes.DAPP_BROWSER_SCREEN].includes(name);
+  [
+    Routes.WALLET_SCREEN,
+    Routes.DISCOVER_SCREEN,
+    Routes.PROFILE_SCREEN,
+    Routes.POINTS_SCREEN,
+    POINTS_ROUTES.CLAIM_CONTENT,
+    POINTS_ROUTES.REFERRAL_CONTENT,
+    Routes.DAPP_BROWSER_SCREEN,
+  ].includes(name);
 
 export function triggerOnSwipeLayout(newAction) {
   if (isOnSwipeScreen(Navigation.getActiveRoute()?.name)) {
@@ -47,6 +57,8 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.WALLET_SCREEN:
     case Routes.DISCOVER_SCREEN:
     case Routes.POINTS_SCREEN:
+    case POINTS_ROUTES.CLAIM_CONTENT:
+    case POINTS_ROUTES.REFERRAL_CONTENT:
     case Routes.DAPP_BROWSER_SCREEN:
     case Routes.WELCOME_SCREEN:
     case Routes.CHANGE_WALLET_SHEET:
@@ -70,6 +82,8 @@ export function onNavigationStateChange(currentState) {
     NativeModules.MenuViewModule.dismiss();
     setTimeout(NativeModules.MenuViewModule.dismiss, 400);
   }
+
+  useFreezeStore.getState().setActiveRoute(routeName);
 
   if (isOnSwipeScreen(routeName)) {
     action?.();

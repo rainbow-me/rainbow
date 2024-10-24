@@ -1,6 +1,15 @@
-// ⚠️ TODO: Ensure this background color logic isn't too slow
+import { IS_IOS } from '@/env';
+
 export const getWebsiteMetadata = `
   requestAnimationFrame(() => {
+    ${
+      IS_IOS
+        ? `
+    function getActualBackgroundColor() {
+      return undefined;
+    }
+    `
+        : `
     function getActualBackgroundColor() {
       if (document.readyState !== 'interactive' && document.readyState !== 'complete' && !document.styleSheets.length) return undefined;
 
@@ -47,6 +56,8 @@ export const getWebsiteMetadata = `
 
       const traversedColor = traverseElement(document.documentElement) || traverseElement(document.body);
       return traversedColor || '#FFFFFF';
+    }
+    `
     }
 
     const bgColor = getActualBackgroundColor();

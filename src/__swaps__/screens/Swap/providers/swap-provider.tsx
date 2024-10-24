@@ -50,7 +50,7 @@ import { CrosschainQuote, Quote, QuoteError, SwapType } from '@rainbow-me/swaps'
 import { IS_IOS } from '@/env';
 import { Address } from 'viem';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
-import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
@@ -69,6 +69,14 @@ const selectToken = i18n.t(i18n.l.swap.actions.select_token);
 const insufficientFunds = i18n.t(i18n.l.swap.actions.insufficient_funds);
 const insufficient = i18n.t(i18n.l.swap.actions.insufficient);
 const quoteError = i18n.t(i18n.l.swap.actions.quote_error);
+
+type ConfirmButtonProps = {
+  label: string;
+  icon?: string;
+  disabled?: boolean;
+  opacity?: number;
+  type: 'hold' | 'tap';
+};
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -114,13 +122,7 @@ interface SwapContextType {
   SwapNavigation: ReturnType<typeof useSwapNavigation>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
 
-  confirmButtonProps: DerivedValue<{
-    label: string;
-    icon?: string;
-    disabled?: boolean;
-    opacity?: number;
-    type: 'tap' | 'hold';
-  }>;
+  confirmButtonProps: DerivedValue<ConfirmButtonProps>;
   confirmButtonIconStyle: StyleProp<TextStyle>;
 
   hasEnoughFundsForGas: SharedValue<boolean | undefined>;
@@ -688,7 +690,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     []
   );
 
-  const confirmButtonProps: SwapContextType['confirmButtonProps'] = useDerivedValue(() => {
+  const confirmButtonProps = useDerivedValue<ConfirmButtonProps>(() => {
     if (isSwapping.value) {
       return { label: swapping, disabled: true, type: 'hold' };
     }

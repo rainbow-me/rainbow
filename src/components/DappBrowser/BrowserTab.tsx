@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { Freeze } from 'react-freeze';
 import { StyleSheet } from 'react-native';
 import {
@@ -23,20 +23,22 @@ import ViewShot from 'react-native-view-shot';
 import WebView, { WebViewMessageEvent, WebViewNavigation, WebViewProps } from 'react-native-webview';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
-import { useColorMode } from '@/design-system';
+import { globalColors, useColorMode } from '@/design-system';
 import { IS_DEV, IS_IOS } from '@/env';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { Site } from '@/state/browserHistory';
+import { getDappHostname } from '@/utils/connectedApps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { AnimatedFasterImage } from '../AnimatedComponents/AnimatedFasterImage';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { useBrowserContext } from './BrowserContext';
 import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { CloseTabButton } from './CloseTabButton';
+import { WebViewShadows } from './DappBrowserShadows';
 import DappBrowserWebview from './DappBrowserWebview';
-import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, TAB_VIEW_COLUMN_WIDTH, TOP_INSET, WEBVIEW_HEIGHT } from './Dimensions';
+import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, EXTRA_WEBVIEW_HEIGHT, TAB_VIEW_COLUMN_WIDTH, TOP_INSET, WEBVIEW_HEIGHT } from './Dimensions';
 import { ErrorPage } from './ErrorPage';
 import { Homepage } from './Homepage';
 import { WebViewBorder } from './WebViewBorder';
@@ -48,14 +50,13 @@ import {
   USER_AGENT,
   USER_AGENT_APPLICATION_NAME,
 } from './constants';
-import { getDappHost, handleProviderRequestApp } from './handleProviderRequest';
+import { handleProviderRequestApp } from './handleProviderRequest';
 import { useAnimatedTab } from './hooks/useAnimatedTab';
 import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
 import { freezeWebsite, getWebsiteMetadata, unfreezeWebsite } from './scripts';
 import { BrowserTabProps, ScreenshotType } from './types';
-import { normalizeUrlForRecents } from './utils';
 
-export const BrowserTab = React.memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
+export const BrowserTab = memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
   const { isDarkMode } = useColorMode();
   const viewShotRef = useRef<ViewShot | null>(null);
 
@@ -71,11 +72,8 @@ export const BrowserTab = React.memo(function BrowserTab({ addRecent, setLogo, s
   } = useAnimatedTab({ tabId });
 
   return (
-    <>
-      {/* Need to fix some shadow performance issues - disabling shadows for now */}
-      {/* <WebViewShadows gestureScale={gestureScale} isOnHomepage={isOnHomepage} tabIndex={tabIndex}> */}
-
-      <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, zIndexAnimatedStyle]}>
+    <WebViewShadows tabId={tabId} zIndexAnimatedStyle={zIndexAnimatedStyle}>
+      <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, IS_IOS ? {} : zIndexAnimatedStyle]}>
         <Animated.View style={[styles.webViewExpensiveStylesContainer, expensiveAnimatedWebViewStyles]}>
           <ViewShot options={TAB_SCREENSHOT_FILE_FORMAT} ref={viewShotRef}>
             <Animated.View
@@ -94,14 +92,11 @@ export const BrowserTab = React.memo(function BrowserTab({ addRecent, setLogo, s
             </Animated.View>
           </ViewShot>
           <TabScreenshotContainer tabId={tabId} />
-          <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode} tabId={tabId} />
+          <WebViewBorder enabled={IS_IOS && isDarkMode} tabId={tabId} />
         </Animated.View>
         <TabGestureHandlers animatedTabIndex={animatedTabIndex} gestureScale={gestureScale} gestureX={gestureX} tabId={tabId} />
       </Animated.View>
-
-      {/* Need to fix some shadow performance issues - disabling shadows for now */}
-      {/* </WebViewShadows> */}
-    </>
+    </WebViewShadows>
   );
 });
 
@@ -115,12 +110,20 @@ const HomepageOrWebView = ({
 }: {
   addRecent: (recent: Site) => void;
   backgroundColor: SharedValue<string>;
-  setLogo: (logoUrl: string, tabId: string) => void;
-  setTitle: (title: string, tabId: string) => void;
+  setLogo: (logoUrl: string | undefined, tabId: string) => void;
+  setTitle: (title: string | undefined, tabId: string) => void;
   tabId: string;
   viewShotRef: React.RefObject<ViewShot | null>;
 }) => {
   const isOnHomepage = useBrowserStore(state => !state.getTabData?.(tabId)?.url || state.getTabData?.(tabId)?.url === RAINBOW_HOME);
+  const { isDarkMode } = useColorMode();
+
+  // Reset background color when returning to the homepage
+  useEffect(() => {
+    if (isOnHomepage) {
+      backgroundColor.value = isDarkMode ? '#191A1C' : globalColors.white100;
+    }
+  }, [backgroundColor, isDarkMode, isOnHomepage]);
 
   return isOnHomepage ? (
     <Homepage tabId={tabId} />
@@ -148,7 +151,7 @@ const TabScreenshotContainer = ({ tabId }: { tabId: string }) => {
   return <TabScreenshot animatedStyle={animatedScreenshotStyle} screenshotData={screenshotData} />;
 };
 
-const TabScreenshot = React.memo(function TabScreenshot({
+const TabScreenshot = memo(function TabScreenshot({
   animatedStyle,
   screenshotData,
 }: {
@@ -181,12 +184,12 @@ const FreezableWebViewComponent = ({
 }: {
   addRecent: (recent: Site) => void;
   backgroundColor: SharedValue<string>;
-  setLogo: (logoUrl: string, tabId: string) => void;
-  setTitle: (title: string, tabId: string) => void;
+  setLogo: (logoUrl: string | undefined, tabId: string) => void;
+  setTitle: (title: string | undefined, tabId: string) => void;
   tabId: string;
   viewShotRef: React.RefObject<ViewShot | null>;
 }) => {
-  const { activeTabRef, animatedActiveTabIndex, currentlyOpenTabIds, loadProgress, screenshotCaptureRef } = useBrowserContext();
+  const { activeTabRef, loadProgress, resetScrollHandlers, screenshotCaptureRef } = useBrowserContext();
   const { updateTabUrlWorklet } = useBrowserWorkletsContext();
   const { setParams } = useNavigation();
 
@@ -201,8 +204,7 @@ const FreezableWebViewComponent = ({
 
   const handleOnMessage = useCallback(
     (event: Partial<WebViewMessageEvent>) => {
-      const animatedIsActiveTab = currentlyOpenTabIds.value.indexOf(tabId) === animatedActiveTabIndex.value;
-      if (!animatedIsActiveTab) return;
+      if (!useBrowserStore.getState().isTabActive(tabId)) return;
 
       const data = event.nativeEvent?.data as any;
       try {
@@ -210,20 +212,35 @@ const FreezableWebViewComponent = ({
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
         if (!parsedData || (!parsedData.topic && !parsedData.payload)) return;
 
-        if (parsedData.topic === 'websiteMetadata') {
+        if (IS_IOS && parsedData.topic === 'injectedUnderPageBackgroundColor') {
+          const { underPageBackgroundColor } = parsedData.payload;
+
+          if (underPageBackgroundColor && typeof underPageBackgroundColor === 'string') {
+            backgroundColor.value = underPageBackgroundColor;
+          }
+        } else if (parsedData.topic === 'websiteMetadata') {
           const { bgColor, logoUrl, pageTitle } = parsedData.payload;
 
-          if (bgColor && typeof bgColor === 'string') {
+          if (!IS_IOS && bgColor && typeof bgColor === 'string') {
             backgroundColor.value = bgColor;
           }
+
           if (logoUrl && typeof logoUrl === 'string') {
             logoRef.current = logoUrl;
             setLogo(logoUrl, tabId);
+          } else {
+            logoRef.current = null;
+            setLogo(undefined, tabId);
           }
+
           if (pageTitle && typeof pageTitle === 'string') {
             titleRef.current = pageTitle;
             setTitle(pageTitle, tabId);
+          } else {
+            titleRef.current = null;
+            setTitle(undefined, tabId);
           }
+
           addRecent({
             url: tabUrl,
             name: pageTitle,
@@ -232,6 +249,8 @@ const FreezableWebViewComponent = ({
           });
         } else {
           const m = currentMessengerRef.current;
+          if (!m) return;
+
           handleProviderRequestApp({
             messenger: m,
             data: parsedData,
@@ -251,7 +270,7 @@ const FreezableWebViewComponent = ({
         console.error('Error parsing message', e);
       }
     },
-    [addRecent, animatedActiveTabIndex, backgroundColor, currentlyOpenTabIds, setLogo, setTitle, tabId, tabUrl]
+    [addRecent, backgroundColor, setLogo, setTitle, tabId, tabUrl]
   );
 
   const handleOnLoad = useCallback(
@@ -259,25 +278,22 @@ const FreezableWebViewComponent = ({
       if (event.nativeEvent.loading) return;
       const { origin } = new URL(event.nativeEvent.url);
 
-      if (typeof webViewRef !== 'function' && webViewRef?.current) {
-        if (!webViewRef?.current) {
+      if (typeof webViewRef !== 'function' && webViewRef.current) {
+        if (!webViewRef.current) {
           return;
         }
         const messenger = appMessenger(webViewRef.current, tabId, origin);
         currentMessengerRef.current = messenger;
       }
     },
-    [webViewRef, tabId]
+    [tabId, webViewRef]
   );
 
   const handleShouldStartLoadWithRequest = useCallback(
     (request: { url: string }) => {
       if (request.url.startsWith('rainbow://wc') || request.url.startsWith('https://rnbwappdotcom.app.link/')) {
-        Navigation.handleAction(Routes.NO_NEED_WC_SHEET, {
-          cb: () => {
-            activeTabRef.current?.reload();
-          },
-        });
+        Navigation.handleAction(Routes.NO_NEED_WC_SHEET, {});
+        activeTabRef.current?.reload();
         return false;
       }
       return true;
@@ -287,23 +303,23 @@ const FreezableWebViewComponent = ({
 
   const handleOnLoadProgress = useCallback(
     ({ nativeEvent: { progress } }: { nativeEvent: { progress: number } }) => {
-      if (loadProgress) {
+      runOnUI(() => {
         if (loadProgress.value === 1) loadProgress.value = 0;
         loadProgress.value = withTiming(progress, TIMING_CONFIGS.slowestFadeConfig);
-      }
+      })();
     },
     [loadProgress]
   );
 
   const handleNavigationStateChange = useCallback(
     (navState: WebViewNavigation) => {
-      if (navState.navigationType !== 'other' || getDappHost(navState.url) === getDappHost(tabUrl)) {
-        // ⚠️ TODO: Reintegrate canGoBack/canGoForward - we can just set it here now, reliably, because this
-        // function no longer modifies the same URL state that's passed to the WebView's source prop.
-        runOnUI(updateTabUrlWorklet)(navState.url, tabId);
+      if (navState.navigationType !== 'other' || getDappHostname(navState.url) === getDappHostname(tabUrl)) {
+        runOnUI(updateTabUrlWorklet)({ tabId, url: navState.url });
       }
+      useBrowserStore.getState().setNavState({ canGoBack: navState.canGoBack, canGoForward: navState.canGoForward }, tabId);
+      resetScrollHandlers();
     },
-    [tabUrl, updateTabUrlWorklet, tabId]
+    [resetScrollHandlers, tabId, tabUrl, updateTabUrlWorklet]
   );
 
   const handleOnOpenWindow = useCallback(
@@ -319,33 +335,31 @@ const FreezableWebViewComponent = ({
     activeTabRef.current?.reload();
   }, [activeTabRef]);
 
-  // useLayoutEffect seems to more reliably assign the WebView ref correctly
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (isActiveTab) {
-      if (webViewRef?.current) {
+      resetScrollHandlers();
+
+      if (webViewRef.current) {
         activeTabRef.current = webViewRef.current;
         if (titleRef.current) {
           activeTabRef.current.title = titleRef.current;
         }
       }
     }
-  }, [activeTabRef, isActiveTab, isOnHomepage, screenshotCaptureRef, webViewRef]);
+  }, [activeTabRef, isActiveTab, isOnHomepage, resetScrollHandlers, screenshotCaptureRef, webViewRef]);
 
   useEffect(() => {
-    if (isActiveTab) {
-      screenshotCaptureRef.current = viewShotRef.current;
-    }
-  }, [isActiveTab, screenshotCaptureRef, viewShotRef]);
+    if (isActiveTab) screenshotCaptureRef.current = viewShotRef.current;
 
-  useEffect(() => {
-    if (webViewRef?.current) {
+    // Freeze heavy website processes when the WebView is inactive
+    if (webViewRef.current) {
       if (isActiveTab) {
         webViewRef.current.injectJavaScript(unfreezeWebsite);
       } else {
         webViewRef.current.injectJavaScript(freezeWebsite);
       }
     }
-  }, [isActiveTab, webViewRef]);
+  }, [isActiveTab, screenshotCaptureRef, viewShotRef, webViewRef]);
 
   return (
     <Freeze freeze={!isActiveTab}>
@@ -355,6 +369,7 @@ const FreezableWebViewComponent = ({
         onLoadProgress={handleOnLoadProgress}
         onMessage={handleOnMessage}
         onNavigationStateChange={handleNavigationStateChange}
+        onRenderProcessGone={handleOnContentProcessDidTerminate}
         onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
         ref={webViewRef}
         source={{ uri: tabUrl }}
@@ -364,9 +379,13 @@ const FreezableWebViewComponent = ({
   );
 };
 
-const FreezableWebView = React.memo(React.forwardRef(FreezableWebViewComponent));
+const FreezableWebView = memo(React.forwardRef(FreezableWebViewComponent));
 
 const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
+  const { onScrollWebView, onTouchEnd, onTouchMove, onTouchStart } = useBrowserContext();
+
+  const shouldExpandWebView = useBrowserStore(state => state.shouldExpandWebView);
+
   return (
     <DappBrowserWebview
       // eslint-disable-next-line react/jsx-props-no-spreading
@@ -376,22 +395,27 @@ const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
       applicationNameForUserAgent={USER_AGENT_APPLICATION_NAME}
       automaticallyAdjustContentInsets
       automaticallyAdjustsScrollIndicatorInsets={false}
+      contentInset={{ bottom: 0, left: 0, right: 0, top: 0 }}
       decelerationRate="normal"
       fraudulentWebsiteWarningEnabled
       injectedJavaScript={getWebsiteMetadata}
       mediaPlaybackRequiresUserAction
+      onScroll={IS_IOS ? onScrollWebView : undefined}
+      onTouchEnd={IS_IOS ? onTouchEnd : undefined}
+      onTouchMove={IS_IOS ? onTouchMove : undefined}
+      onTouchStart={IS_IOS ? onTouchStart : undefined}
       originWhitelist={['*']}
       ref={ref}
       renderError={() => <ErrorPage />}
       renderLoading={() => <></>}
-      style={styles.webViewStyle}
+      style={[styles.webViewStyle, shouldExpandWebView ? styles.webViewStyleExpanded : {}]}
       userAgent={USER_AGENT[IS_IOS ? 'IOS' : 'ANDROID']}
       webviewDebuggingEnabled={IS_DEV}
     />
   );
 };
 
-const TabWebView = React.memo(React.forwardRef(TabWebViewComponent));
+const TabWebView = memo(React.forwardRef(TabWebViewComponent));
 
 interface TabGestureHandlerProps {
   animatedTabIndex: SharedValue<number>;
@@ -476,7 +500,7 @@ const TabGestureHandlers = ({ animatedTabIndex, gestureScale, gestureX, tabId }:
             }
             return closingTabs;
           });
-          closeTabWorklet(tabId, storedTabIndex);
+          closeTabWorklet({ tabId, tabIndex: storedTabIndex });
         });
       } else {
         gestureScale.value = withTiming(1, TIMING_CONFIGS.tabPressConfig);
@@ -529,15 +553,12 @@ const TabGestureHandlers = ({ animatedTabIndex, gestureScale, gestureX, tabId }:
 };
 
 const styles = StyleSheet.create({
-  backupScreenshotStyleOverrides: {
-    zIndex: -1,
-  },
   gestureHandlersContainer: {
     height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
     width: DEVICE_WIDTH,
   },
   screenshotContainerStyle: {
-    height: WEBVIEW_HEIGHT,
+    height: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
     left: 0,
     position: 'absolute',
     resizeMode: 'contain',
@@ -546,12 +567,12 @@ const styles = StyleSheet.create({
     zIndex: 20000,
   },
   viewShotContainer: {
-    height: WEBVIEW_HEIGHT,
+    height: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
     width: DEVICE_WIDTH,
   },
   webViewContainer: {
     height: WEBVIEW_HEIGHT,
-    overflow: 'hidden',
+    overflow: 'visible',
     pointerEvents: 'box-none',
     position: 'absolute',
     top: TOP_INSET,
@@ -563,7 +584,6 @@ const styles = StyleSheet.create({
     left: 0,
     position: 'absolute',
     overflow: 'hidden',
-    top: 0,
     width: DEVICE_WIDTH,
   },
   webViewStyle: {
@@ -573,6 +593,11 @@ const styles = StyleSheet.create({
     maxHeight: WEBVIEW_HEIGHT,
     minHeight: WEBVIEW_HEIGHT,
     width: DEVICE_WIDTH,
+  },
+  webViewStyleExpanded: {
+    height: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
+    maxHeight: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
+    minHeight: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
   },
   // Need to fix some shadow performance issues - disabling shadows for now
   // webViewContainerShadowLarge: IS_IOS

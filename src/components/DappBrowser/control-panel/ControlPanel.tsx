@@ -32,7 +32,7 @@ import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBala
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { colors } from '@/styles';
-import { deviceUtils, watchingAlert } from '@/utils';
+import { deviceUtils, safeAreaInsetValues, watchingAlert } from '@/utils';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
@@ -202,7 +202,7 @@ export const ControlPanel = () => {
 
   const selectedWallet = allWalletItems.find(item => item.selected);
 
-  const animatedAccentColor = useSharedValue(selectedWallet?.color || globalColors.blue10);
+  const animatedAccentColor = useSharedValue<string | undefined>(selectedWallet?.color || globalColors.blue10);
   const selectedNetworkId = useSharedValue(currentChainId?.toString() || ChainId.mainnet.toString());
   const selectedWalletId = useSharedValue(selectedWallet?.uniqueId || accountAddress);
 
@@ -667,7 +667,17 @@ const ListPanel = ({
         <ScrollView
           contentContainerStyle={controlPanelStyles.listScrollViewContentContainer}
           scrollIndicatorInsets={LIST_SCROLL_INDICATOR_BOTTOM_INSET}
-          style={controlPanelStyles.listScrollView}
+          style={[
+            controlPanelStyles.listScrollView,
+            {
+              height: Math.min(
+                (memoizedItems?.length ?? 0) * 56 +
+                  controlPanelStyles.listScrollViewContentContainer.paddingBottom +
+                  controlPanelStyles.listScrollViewContentContainer.paddingTop,
+                controlPanelStyles.listScrollView.maxHeight
+              ),
+            },
+          ]}
         >
           <Box width="full">
             {memoizedItems?.map(item => (
@@ -764,19 +774,14 @@ const ControlPanelMenuItem = React.memo(function ControlPanelMenuItem({
       selectedItemId.value = uniqueId;
     }
 
-    // const walletColor = PLACEHOLDER_WALLET_ITEMS.find(item => item.uniqueId === uniqueId)?.color;
-    // if (walletColor && animatedAccentColor) {
-    //   animatedAccentColor.value = withTiming(walletColor, TIMING_CONFIGS.slowFadeConfig);
-    // }
-
     onPress?.();
-  }, [/* animatedAccentColor, */ onPress, selectedItemId, uniqueId]);
+  }, [onPress, selectedItemId, uniqueId]);
 
   const selectedStyle = useAnimatedStyle(() => {
     const selected = selectedItemId?.value === uniqueId || variant === 'homePanel';
     return {
       // eslint-disable-next-line no-nested-ternary
-      backgroundColor: selected ? (isDarkMode ? globalColors.white10 : '#FBFCFD') : 'transparent',
+      backgroundColor: selected ? (isDarkMode ? globalColors.white10 : '#F7F7F9') : 'transparent',
       borderColor: selected ? borderColor : 'transparent',
       borderWidth: !selected || IS_ANDROID ? 0 : THICK_BORDER_WIDTH,
       paddingLeft: !selected || IS_ANDROID ? 10 : 10 - THICK_BORDER_WIDTH,
@@ -982,7 +987,7 @@ const ConnectButton = React.memo(function ControlPanelButton({
     return withTiming(isConnected ? red : green, TIMING_CONFIGS.slowerFadeConfig);
   });
 
-  const buttonIcon = useDerivedValue(() => {
+  const buttonIcon = useDerivedValue<string>(() => {
     return isConnected ? '􀋪' : '􀋦';
   });
 
@@ -1193,10 +1198,10 @@ const controlPanelStyles = StyleSheet.create({
     backgroundColor: globalColors.white10,
   },
   menuItemSelectedLight: {
-    backgroundColor: '#FBFCFD',
+    backgroundColor: '#F7F7F9',
   },
   panelContainer: {
-    bottom: 91,
+    bottom: Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30),
     pointerEvents: 'box-none',
     position: 'absolute',
     zIndex: 30000,

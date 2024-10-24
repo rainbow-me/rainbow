@@ -5671,13 +5671,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/blur@npm:4.4.0":
-  version: 4.4.0
-  resolution: "@react-native-community/blur@npm:4.4.0"
+"@react-native-community/blur@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@react-native-community/blur@npm:4.4.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/898a886f0ae176636be87286066d03411ad6d9ac28361f1aae5c40c37d3b42d3f0ecbae4f36ed6cddb645f02e1df3027636a372e479a75880c793482530e53c2
+  checksum: 10c0/f8f3b2e0dc630d93219c5db822a5d283754beedf31b8e481c17bca6f8b2a29d0e24cad4c5013f692f120a3336490dc5b1b3990a68c714c3308151adf92686ad7
   languageName: node
   linkType: hard
 
@@ -6915,9 +6915,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/flash-list@npm:1.7.0":
-  version: 1.7.0
-  resolution: "@shopify/flash-list@npm:1.7.0"
+"@shopify/flash-list@npm:1.7.1":
+  version: 1.7.1
+  resolution: "@shopify/flash-list@npm:1.7.1"
   dependencies:
     recyclerlistview: "npm:4.2.1"
     tslib: "npm:2.6.3"
@@ -6925,13 +6925,13 @@ __metadata:
     "@babel/runtime": "*"
     react: "*"
     react-native: "*"
-  checksum: 10c0/4a4335c02da0053d945b1ed59739d0986b7c1d454fb544bbb19f8df66c601e29412d88f23f2ebb0dadee682967b322d7654d1128043b74f88de1709d6ccbb405
+  checksum: 10c0/18b518fa91a1c55adf369fc754188b0ca4b8f083550ed7d231fd8eb93b6bb92212ae1665e4cfd51de1e94959af386b8e5f0843e8382640ae950f016d271eb6c6
   languageName: node
   linkType: hard
 
-"@shopify/react-native-skia@npm:1.3.11":
-  version: 1.3.11
-  resolution: "@shopify/react-native-skia@npm:1.3.11"
+"@shopify/react-native-skia@npm:1.5.0":
+  version: 1.5.0
+  resolution: "@shopify/react-native-skia@npm:1.5.0"
   dependencies:
     canvaskit-wasm: "npm:0.39.1"
     react-reconciler: "npm:0.27.0"
@@ -6945,8 +6945,8 @@ __metadata:
     react-native-reanimated:
       optional: true
   bin:
-    setup-skia-web: scripts/setup-canvaskit.js
-  checksum: 10c0/b069d05ff1bf3599cc16eadc492614ab55b9e9130ba1aac22d83f19e6b7f37e57260471cf8bda86b9bbdebb71834bf4b83f33da2f7c0b18b31df104015b72fef
+    setup-skia-web: ./scripts/setup-canvaskit.js
+  checksum: 10c0/d55784982bfd04d5c9fdd2b27e80faa10bea558a47d8f091f388d56ac2a98c5328bda63607093ebe43332e64c533b65514354872cdb232c64d39a662a3609f7f
   languageName: node
   linkType: hard
 
@@ -9203,7 +9203,7 @@ __metadata:
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-native-camera-roll/camera-roll": "npm:7.7.0"
     "@react-native-clipboard/clipboard": "npm:1.13.2"
-    "@react-native-community/blur": "npm:4.4.0"
+    "@react-native-community/blur": "npm:4.4.1"
     "@react-native-community/netinfo": "npm:9.0.0"
     "@react-native-firebase/app": "npm:20.1.0"
     "@react-native-firebase/messaging": "npm:20.1.0"
@@ -9222,8 +9222,8 @@ __metadata:
     "@rnx-kit/align-deps": "npm:2.2.4"
     "@rudderstack/rudder-sdk-react-native": "npm:1.12.1"
     "@sentry/react-native": "npm:5.31.1"
-    "@shopify/flash-list": "npm:1.7.0"
-    "@shopify/react-native-skia": "npm:1.3.11"
+    "@shopify/flash-list": "npm:1.7.1"
+    "@shopify/react-native-skia": "npm:1.5.0"
     "@tanstack/query-async-storage-persister": "npm:4.2.1"
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
@@ -9364,7 +9364,7 @@ __metadata:
     react-native-extra-dimensions-android: "npm:1.2.2"
     react-native-fast-image: "npm:8.5.11"
     react-native-fs: "npm:2.16.6"
-    react-native-gesture-handler: "npm:2.18.1"
+    react-native-gesture-handler: "npm:2.20.1"
     react-native-get-random-values: "npm:1.5.0"
     react-native-haptic-feedback: "npm:2.2.0"
     react-native-image-crop-picker: "npm:0.41.2"
@@ -9385,7 +9385,7 @@ __metadata:
     react-native-quick-md5: "npm:3.0.6"
     react-native-radial-gradient: "rainbow-me/react-native-radial-gradient#b99ab59d27dba70364ef516bd5193c37657ba95c"
     react-native-randombytes: "npm:3.5.3"
-    react-native-reanimated: "npm:3.15.0"
+    react-native-reanimated: "npm:3.16.1"
     react-native-redash: "npm:16.3.0"
     react-native-restart: "npm:0.0.22"
     react-native-safe-area-context: "npm:4.11.0"
@@ -9455,7 +9455,7 @@ __metadata:
     webpack-cli: "npm:5.1.4"
     zeego: "npm:1.10.0"
     zod: "npm:3.23.8"
-    zustand: "npm:4.5.4"
+    zustand: "npm:4.5.5"
   languageName: unknown
   linkType: soft
 
@@ -23302,9 +23302,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:2.18.1":
-  version: 2.18.1
-  resolution: "react-native-gesture-handler@npm:2.18.1"
+"react-native-gesture-handler@npm:2.20.1":
+  version: 2.20.1
+  resolution: "react-native-gesture-handler@npm:2.20.1"
   dependencies:
     "@egjs/hammerjs": "npm:^2.0.17"
     hoist-non-react-statics: "npm:^3.3.0"
@@ -23313,7 +23313,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/6c0f69de1f31eb92cf858903223cbe37b5a71b9e943b70a284e564507067539c5381956b0f832a874da5e1185d01a0a56f06f11ea79985973235eaf3d469274b
+  checksum: 10c0/17101b34af9b3a35c4a58b4c8c4aea99b560bf499b134e906381b1e3c0fbd7e91c6232b2acbb7b233a6e2827892b1716795b7ff2c52b84e6b7f935133e0cfb35
   languageName: node
   linkType: hard
 
@@ -23525,9 +23525,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:3.15.0":
-  version: 3.15.0
-  resolution: "react-native-reanimated@npm:3.15.0"
+"react-native-reanimated@npm:3.16.1":
+  version: 3.16.1
+  resolution: "react-native-reanimated@npm:3.16.1"
   dependencies:
     "@babel/plugin-transform-arrow-functions": "npm:^7.0.0-0"
     "@babel/plugin-transform-class-properties": "npm:^7.0.0-0"
@@ -23544,7 +23544,7 @@ __metadata:
     "@babel/core": ^7.0.0-0
     react: "*"
     react-native: "*"
-  checksum: 10c0/86420a616ed7d80404847b584c9fa8f31b516f05401274f32eee908727bcf3fdfa0f09e0b195cd1d11cd0efaa4264ee42d47e2d2000bdab6626f53a795edb6a8
+  checksum: 10c0/18202fce7e96d7cd0dbab2f8938ddf89efa6687e5f17c43ba6548de5563efb270b7b8d7507598be706d5d53224bb12fcfcd70150d15ca5d9fd46cb2c54751d59
   languageName: node
   linkType: hard
 
@@ -27902,16 +27902,7 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:1.2.0":
-  version: 1.2.0
-  resolution: "use-sync-external-store@npm:1.2.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/ac4814e5592524f242921157e791b022efe36e451fe0d4fd4d204322d5433a4fc300d63b0ade5185f8e0735ded044c70bcf6d2352db0f74d097a238cebd2da02
-  languageName: node
-  linkType: hard
-
-"use-sync-external-store@npm:^1.2.0":
+"use-sync-external-store@npm:1.2.2, use-sync-external-store@npm:^1.2.0":
   version: 1.2.2
   resolution: "use-sync-external-store@npm:1.2.2"
   peerDependencies:
@@ -29007,11 +28998,11 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"zustand@npm:4.5.4":
-  version: 4.5.4
-  resolution: "zustand@npm:4.5.4"
+"zustand@npm:4.5.5":
+  version: 4.5.5
+  resolution: "zustand@npm:4.5.5"
   dependencies:
-    use-sync-external-store: "npm:1.2.0"
+    use-sync-external-store: "npm:1.2.2"
   peerDependencies:
     "@types/react": ">=16.8"
     immer: ">=9.0.6"
@@ -29023,6 +29014,6 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
       optional: true
     react:
       optional: true
-  checksum: 10c0/479af491ffa1f1eb2c38b3ba25dc4e14339e8b35a60033d3f6c165b22f8be8163f7e1370015ded9c6e28548cd25af84a73fb40b5fad0bd7882d16ddd5ed613c6
+  checksum: 10c0/d04469d76b29c7e4070da269886de4efdadedd3d3824dc2a06ac4ff62e3b5877f925e927afe7382de651829872b99adec48082f1bd69fe486149be666345e626
   languageName: node
   linkType: hard

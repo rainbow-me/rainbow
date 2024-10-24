@@ -9,16 +9,16 @@ import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { position } from '@/styles';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from './BrowserContext';
-import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
+import { BrowserWorkletsContextType, useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { BrowserButtonShadows } from './DappBrowserShadows';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 
 export const TabViewToolbar = () => {
-  const { tabViewProgress, tabViewVisible } = useBrowserContext();
+  const { extraWebViewHeight, tabViewProgress, tabViewVisible } = useBrowserContext();
   const { newTabWorklet, toggleTabViewWorklet } = useBrowserWorkletsContext();
 
   const barStyle = useAnimatedStyle(() => {
@@ -26,6 +26,9 @@ export const TabViewToolbar = () => {
       opacity: tabViewProgress.value / 75,
       pointerEvents: tabViewVisible?.value ? 'box-none' : 'none',
       transform: [
+        {
+          translateY: extraWebViewHeight.value,
+        },
         {
           scale: interpolate(tabViewProgress.value, [0, 100], [0.95, 1]),
         },
@@ -51,7 +54,6 @@ export const TabViewToolbar = () => {
       >
         <Inline space={{ custom: 14 }}>
           <NewTabButton newTabWorklet={newTabWorklet} />
-          {/* <CloseAllTabsButton /> */}
         </Inline>
         <DoneButton toggleTabViewWorklet={toggleTabViewWorklet} />
       </Box>
@@ -59,7 +61,7 @@ export const TabViewToolbar = () => {
   );
 };
 
-const NewTabButton = ({ newTabWorklet }: { newTabWorklet: (newTabUrl?: string | undefined) => void }) => {
+const NewTabButton = ({ newTabWorklet }: { newTabWorklet: BrowserWorkletsContextType['newTabWorklet'] }) => {
   return <BaseButton onPressWorklet={newTabWorklet} icon="􀅼" iconColor="label" iconSize="icon 20px" width={44} />;
 };
 
@@ -72,24 +74,6 @@ const DoneButton = ({ toggleTabViewWorklet }: { toggleTabViewWorklet: (activeInd
     </BaseButton>
   );
 };
-
-// const CloseAllTabsButton = () => {
-//   const { closeAllTabsWorklet, currentlyOpenTabIds } = useBrowserContext();
-
-//   const buttonStyle = useAnimatedStyle(() => {
-//     const shouldDisplay = currentlyOpenTabIds.value.length > 1;
-//     return {
-//       opacity: withTiming(shouldDisplay ? 1 : 0, TIMING_CONFIGS.slowerFadeConfig),
-//       pointerEvents: shouldDisplay ? 'auto' : 'none',
-//     };
-//   });
-
-//   return (
-//     <Animated.View style={buttonStyle}>
-//       <BaseButton onPressWorklet={closeAllTabsWorklet} icon="􁒊" iconColor="label" iconSize="icon 20px" width={44} />
-//     </Animated.View>
-//   );
-// };
 
 type BaseButtonProps = {
   children?: React.ReactNode;
