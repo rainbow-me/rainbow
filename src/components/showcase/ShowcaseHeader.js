@@ -135,9 +135,6 @@ export function Header() {
   const { handleSetSeedPhrase, handlePressImportButton } = useImportingWallet();
 
   const onWatchAddress = useCallback(() => {
-    if (contextValue?.setIsSearchModeEnabled) {
-      contextValue.setIsSearchModeEnabled(false);
-    }
     handleSetSeedPhrase(contextValue.address);
     handlePressImportButton(color, contextValue.address, contextValue?.data?.profile?.accountSymbol);
   }, [contextValue, handleSetSeedPhrase, handlePressImportButton, color]);

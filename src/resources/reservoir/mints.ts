@@ -17,7 +17,11 @@ const showAlert = () => {
   );
 };
 
-export const navigateToMintCollection = async (contractAddress: EthereumAddress, pricePerMint: BigNumberish, chainId: ChainId) => {
+export const navigateToMintCollection = async (
+  contractAddress: EthereumAddress,
+  pricePerMint: BigNumberish | undefined,
+  chainId: ChainId
+) => {
   logger.debug('[mints]: Navigating to Mint Collection', {
     contractAddress,
     chainId,

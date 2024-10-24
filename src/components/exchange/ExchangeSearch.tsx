@@ -1,10 +1,9 @@
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
-import React, { ForwardRefRenderFunction, MutableRefObject, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { ForwardRefRenderFunction, MutableRefObject, useCallback, useEffect, useMemo, useRef } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import Spinner from '../../assets/chartSpinner.png';
-import DiscoverSheetContext from '../../screens/discover/DiscoverScreenContext';
 import { ClearInputDecorator, Input } from '../inputs';
 import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';
@@ -17,7 +16,6 @@ import { useTheme } from '@/theme';
 import { Box, Text } from '@/design-system';
 import { Source } from 'react-native-fast-image';
 import { IS_TEST } from '@/env';
-import { ChainId } from '@rainbow-me/swaps';
 
 export const ExchangeSearchHeight = 40;
 const DoneButtonWidth = 52;
@@ -132,9 +130,6 @@ const ExchangeSearch: ForwardRefRenderFunction<TextInput, ExchangeSearchProps> =
 
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
-  const { isSearchModeEnabled = true } = useContext(DiscoverSheetContext) ?? {
-    isSearchModeEnabled: true,
-  };
 
   const spinnerTimeout = useRef<NodeJS.Timeout>();
   const { colors } = useTheme();
@@ -173,18 +168,18 @@ const ExchangeSearch: ForwardRefRenderFunction<TextInput, ExchangeSearchProps> =
       borderRadius={ExchangeSearchHeight / 2}
       height={ExchangeSearchHeight}
       shadows={shadows}
-      width={isSearchModeEnabled ? ExchangeSearchWidthFocused : ExchangeSearchWidth}
+      width={ExchangeSearchWidthFocused}
     >
       <Box
         flexDirection="row"
         borderRadius={ExchangeSearchHeight / 2}
         height={{ custom: ExchangeSearchHeight }}
-        paddingLeft={isSearchModeEnabled ? '12px' : undefined}
-        paddingRight={isSearchModeEnabled ? '36px' : undefined}
+        paddingLeft={'12px'}
+        paddingRight={'36px'}
       >
         <BackgroundGradient />
 
-        {isSearchModeEnabled && !IS_TEST && (
+        {!IS_TEST && (
           <>
             <Box as={Animated.View} paddingTop={{ custom: 14 }} style={searchIconStyle}>
               <Text weight="semibold" size="17pt" color={{ custom: colors.alpha(colors.blueGreyDark, 0.6) }}>
@@ -213,7 +208,7 @@ const ExchangeSearch: ForwardRefRenderFunction<TextInput, ExchangeSearchProps> =
         )}
         <SearchInput
           clearTextOnFocus={clearTextOnFocus}
-          isSearchModeEnabled={isSearchModeEnabled}
+          isSearchModeEnabled
           onChangeText={onChangeText}
           onFocus={onFocus}
           placeholder={placeholderText}

@@ -2,12 +2,11 @@ import { useIsFocused } from '@react-navigation/native';
 import React, {
   forwardRef,
   ForwardRefRenderFunction,
+  MutableRefObject,
   ReactElement,
   useCallback,
-  useContext,
   useImperativeHandle,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { InteractionManager, Keyboard, SectionList, SectionListData } from 'react-native';
@@ -16,14 +15,12 @@ import { ButtonPressAnimation } from '../animations';
 import useAccountSettings from '../../hooks/useAccountSettings';
 import FastCurrencySelectionRow from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 import { ContactRow } from '../contacts';
-import DiscoverSheetContext from '../../screens/discover/DiscoverScreenContext';
 import { GradientText } from '../text';
 import { CopyToast, ToastPositionContainer } from '../toasts';
 import contextMenuProps from './exchangeAssetRowContextMenuProps';
 import { TokenSectionTypes } from '@/helpers';
 import { useAndroidScrollViewGestureHandler, usePrevious } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import store from '@/redux/store';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
@@ -115,10 +112,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
   { footerSpacer, keyboardDismissMode = 'none', itemProps, items, onLayout, query, testID, isExchangeList },
   ref
 ) => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { sectionListRef = useRef<SectionList>(null) } = useContext(DiscoverSheetContext) || {
-    sectionListRef: undefined,
-  };
+  const sectionListRef = ref as MutableRefObject<SectionList>;
   useImperativeHandle(ref, () => sectionListRef.current as SectionList);
   const prevQuery = usePrevious(query);
   const { getParent: dangerouslyGetParent, navigate } = useNavigation();

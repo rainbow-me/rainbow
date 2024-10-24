@@ -36,7 +36,7 @@ import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
 import { IS_TEST } from '@/env';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
-import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
+import DiscoverSearchInput from '@/screens/discover/components/DiscoverSearchInput';
 import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { queryClient } from '@/react-query/queryClient';
 import { ChainId, Network } from '@/chains/types';
