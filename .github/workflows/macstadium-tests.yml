@@ -92,7 +92,7 @@ jobs:
           source ~/.zshrc
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
-          eval $CI_SCRIPTS}}      
+          eval $CI_SCRIPTS      
       - name: Install dependencies
         run: |
           yarn install && yarn setup
@@ -144,7 +144,7 @@ jobs:
           source ~/.zshrc
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
-          eval $CI_SCRIPTS}}
+          eval $CI_SCRIPTS
       - name: Install dependencies
         run: |
           yarn install && yarn setup
