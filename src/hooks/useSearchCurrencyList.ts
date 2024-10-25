@@ -100,12 +100,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
 
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
 
-  const isCrosschainSearch = useMemo(() => {
-    if (crosschainSwapsEnabled && !isDiscover) {
-      return true;
-    }
-  }, [crosschainSwapsEnabled, isDiscover]);
-
   const isFavorite = useCallback(
     (address: EthereumAddress) => favoriteAddresses.map(a => a?.toLowerCase()).includes(address?.toLowerCase()),
     [favoriteAddresses]
@@ -339,7 +333,7 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
     };
     doSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searching, searchQuery, searchChainId, isCrosschainSearch]);
+  }, [searching, searchQuery, searchChainId]);
 
   const { colors } = useTheme();
 
