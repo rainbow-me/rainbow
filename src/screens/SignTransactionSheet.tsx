@@ -781,12 +781,7 @@ export const SignTransactionSheet = () => {
                   chainId={chainId}
                   theme={'dark'}
                   marginBottom={0}
-                  asset={undefined}
                   fallbackColor={simulationResult?.simulationError ? colors.red : undefined}
-                  testID={undefined}
-                  showGasOptions={undefined}
-                  validateGasParams={undefined}
-                  crossChainServiceTime={undefined}
                 />
               </Box>
             )}

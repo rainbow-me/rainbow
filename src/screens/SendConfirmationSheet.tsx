@@ -669,18 +669,7 @@ export const SendConfirmationSheet = () => {
               testID="send-confirmation-button"
             />
           </SendButtonWrapper>
-          {isENS && (
-            <GasSpeedButton
-              asset={undefined}
-              fallbackColor={undefined}
-              testID={undefined}
-              showGasOptions={undefined}
-              validateGasParams={undefined}
-              crossChainServiceTime={undefined}
-              chainId={chainId}
-              theme={theme.isDarkMode ? 'dark' : 'light'}
-            />
-          )}
+          {isENS && <GasSpeedButton chainId={chainId} theme={theme.isDarkMode ? 'dark' : 'light'} />}
         </Column>
       </SlackSheet>
     </Container>

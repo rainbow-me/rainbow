@@ -722,7 +722,6 @@ export function NFTSingleOfferSheet() {
                     parentHorizontalPadding={28}
                     showBiometryIcon={!insufficientEth}
                   />
-                  {/* @ts-ignore */}
                   <GasSpeedButton
                     asset={{
                       color: offer.nft.predominantColor || buttonColorFallback,
