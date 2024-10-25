@@ -933,7 +933,7 @@
       },
       "avalanche": {
         "text": "Avalanche is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Avalanche has its own security and consensus mechanisms that differ from Ethereum.",
-        "title": "What's Avalanche"
+        "title": "What's Avalanche?"
       },
       "degen": {
         "text": "Degen Chain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum.",
@@ -944,7 +944,7 @@
         "title": "What's Blast?"
       },
       "apechain": {
-        "text": "ApeChain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum. It significantly enhances ApeCoin's utility, fostering a robust and dynamic economy driven by $APE.",
+        "text": "ApeChain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum.\n\nIt significantly enhances ApeCoin's utility, fostering a robust and dynamic economy driven by $APE.",
         "title": "What's ApeChain?"
       },
       "zora": {
@@ -1342,7 +1342,11 @@
         "MOST_RECENT": "Recent",
         "most_recent": "Recent",
         "FLOOR_PRICE": "Floor Price",
-        "floor_price": "Floor Price"
+        "floor_price": "Floor Price",
+        "order": {
+          "asc": "Ascending order",
+          "desc": "Descending order"
+        }
       },
       "empty": "Collectibles",
       "collect_now": "Collect Now",

@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
 /* 👆 Had to disable this ESLint rule it was false positive on shared Props interface */
-import React, { PropsWithChildren, useCallback, useContext, useMemo } from 'react';
+import React, { forwardRef, PropsWithChildren, useCallback, useContext, useMemo } from 'react';
 import { processColor, requireNativeComponent, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { createNativeWrapper, NativeViewGestureHandlerGestureEvent, RawButtonProps } from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
@@ -62,19 +62,22 @@ const OVERFLOW_MARGIN = 5;
 
 const transparentColor = processColor('transparent');
 
-const ScaleButton = ({
-  children,
-  contentContainerStyle,
-  duration,
-  exclusive,
-  minLongPressDuration,
-  onLongPress,
-  onPress,
-  overflowMargin,
-  scaleTo = 0.86,
-  wrapperStyle,
-  testID,
-}: PropsWithChildren<Props>) => {
+const ScaleButton = forwardRef(function ScaleButton(
+  {
+    children,
+    contentContainerStyle,
+    duration,
+    exclusive,
+    minLongPressDuration,
+    onLongPress,
+    onPress,
+    overflowMargin,
+    scaleTo = 0.86,
+    wrapperStyle,
+    testID,
+  }: PropsWithChildren<Props>,
+  ref
+) {
   const parentScale = useContext(ScaleButtonContext);
   const childScale = useSharedValue(1);
   const scale = parentScale || childScale;
@@ -128,8 +131,11 @@ const ScaleButton = ({
       runOnJS(handleCancel)();
     },
   });
+
   return (
-    <View style={[sx.overflow, wrapperStyle]} testID={testID}>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    <View style={[sx.overflow, wrapperStyle]} testID={testID} ref={ref}>
       <View style={{ margin: -overflowMargin }}>
         <AnimatedRawButton exclusive={exclusive} hitSlop={-overflowMargin} onGestureEvent={gestureHandler} rippleColor={transparentColor}>
           <View style={sx.transparentBackground}>
@@ -141,26 +147,29 @@ const ScaleButton = ({
       </View>
     </View>
   );
-};
+});
 
-const SimpleScaleButton = ({
-  children,
-  duration,
-  exclusive,
-  minLongPressDuration,
-  onLongPress,
-  onLongPressEnded,
-  shouldLongPressHoldPress,
-  isLongPress,
-  hapticType,
-  enableHapticFeedback,
-  onPress,
-  scaleTo,
-  transformOrigin,
-  wrapperStyle,
-  testID,
-  disallowInterruption,
-}: Props) => {
+const SimpleScaleButton = forwardRef(function SimpleScaleButton(
+  {
+    children,
+    duration,
+    exclusive,
+    minLongPressDuration,
+    onLongPress,
+    onLongPressEnded,
+    shouldLongPressHoldPress,
+    isLongPress,
+    hapticType,
+    enableHapticFeedback,
+    onPress,
+    scaleTo,
+    transformOrigin,
+    wrapperStyle,
+    testID,
+    disallowInterruption,
+  }: Props,
+  ref
+) {
   const onNativePress = useCallback(
     ({ nativeEvent: { type } }: any) => {
       if (type === 'longPress') {
@@ -191,43 +200,51 @@ const SimpleScaleButton = ({
       testID={testID}
       transformOrigin={transformOrigin}
       disallowInterruption={disallowInterruption}
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      ref={ref}
     >
       {children}
     </ZoomableButton>
   );
-};
+});
 
-export default function ButtonPressAnimation({
-  backgroundColor = 'transparent',
-  borderRadius = 0,
-  children,
-  contentContainerStyle,
-  disabled,
-  duration = 160,
-  exclusive,
-  minLongPressDuration = 500,
-  onLayout,
-  onLongPress,
-  onLongPressEnded,
-  shouldLongPressHoldPress,
-  onPress,
-  overflowMargin = OVERFLOW_MARGIN,
-  reanimatedButton,
-  scaleTo = 0.86,
-  skipTopMargin,
-  style,
-  testID,
-  transformOrigin,
-  wrapperStyle,
-  hapticType = 'selection',
-  enableHapticFeedback = true,
-  disallowInterruption = false,
-}: Props) {
+export default forwardRef(function ButtonPressAnimation(
+  {
+    backgroundColor = 'transparent',
+    borderRadius = 0,
+    children,
+    contentContainerStyle,
+    disabled,
+    duration = 160,
+    exclusive,
+    minLongPressDuration = 500,
+    onLayout,
+    onLongPress,
+    onLongPressEnded,
+    shouldLongPressHoldPress,
+    onPress,
+    overflowMargin = OVERFLOW_MARGIN,
+    reanimatedButton,
+    scaleTo = 0.86,
+    skipTopMargin,
+    style,
+    testID,
+    transformOrigin,
+    wrapperStyle,
+    hapticType = 'selection',
+    enableHapticFeedback = true,
+    disallowInterruption = false,
+  }: Props,
+  ref
+) {
   const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);
 
   const ButtonElement = reanimatedButton ? ScaleButton : SimpleScaleButton;
   return disabled ? (
-    <View onLayout={onLayout} style={[sx.overflow, style]}>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    <View onLayout={onLayout} style={[sx.overflow, style]} ref={ref}>
       {children}
     </View>
   ) : (
@@ -253,13 +270,14 @@ export default function ButtonPressAnimation({
       transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
       disallowInterruption={disallowInterruption}
+      ref={ref}
     >
       <View onLayout={onLayout} pointerEvents="box-only" style={[sx.overflow, style]}>
         {children}
       </View>
     </ButtonElement>
   );
-}
+});
 
 const sx = StyleSheet.create({
   overflow: {

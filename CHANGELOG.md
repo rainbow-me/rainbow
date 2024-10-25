@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.44] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.44)
+
+### Fixed
+
+- Fixed apechain using mainnet gas prices (#6220)
+
 ## [1.9.43] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.43)
 
 ### Added
