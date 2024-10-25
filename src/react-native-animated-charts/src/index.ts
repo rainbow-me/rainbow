@@ -1,6 +1,3 @@
-import Animated from 'react-native-reanimated';
-Animated.addWhitelistedNativeProps({ text: true });
-
 export { ChartPathProvider } from './charts/linear/ChartPathProvider';
 export { default as ChartDot } from './charts/linear/ChartDot';
 export { ChartYLabel, ChartXLabel } from './charts/linear/ChartLabels';
