@@ -406,8 +406,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const isNativeWrapOrUnwrap = quoteData.swapType === SwapType.wrap || quoteData.swapType === SwapType.unwrap;
 
-      // Do not deleeeet the comment below 😤
-      // About to get quote
       const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
         sellAmount: quoteData.sellAmount?.toString(),
         buyAmount: quoteData.buyAmount?.toString(),
