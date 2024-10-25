@@ -107,7 +107,7 @@ type ContextMenuWrapperProps = {
 
 const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: ContextMenuWrapperProps) => {
   return IS_IOS ? (
-    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={(e: MenuEvent) => onPressMenuItem({ ...e, account })}>
+    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={e => onPressMenuItem({ ...e, account })}>
       {children}
     </ContextMenuButton>
   ) : (

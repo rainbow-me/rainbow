@@ -5,7 +5,6 @@ import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native'
 import { Toaster } from 'sonner-native';
 import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
 import { DeeplinkHandler } from '@/components/DeeplinkHandler';
-import { AppStateChangeHandler } from '@/components/AppStateChangeHandler';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,7 +22,7 @@ import * as keychain from '@/model/keychain';
 import { Navigation } from '@/navigation';
 import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
 import store, { AppDispatch, type AppState } from '@/redux/store';
-import { MainThemeProvider } from '@/theme/ThemeContext';
+import { MainThemeProvider, useTheme } from '@/theme/ThemeContext';
 import { addressKey } from '@/utils/keychainConstants';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
@@ -84,7 +83,6 @@ function App({ walletReady }: AppProps) {
       </View>
       <NotificationsHandler walletReady={walletReady} />
       <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
-      <AppStateChangeHandler walletReady={walletReady} />
       <BackendNetworks />
     </Portal>
   );

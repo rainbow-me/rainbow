@@ -12,7 +12,7 @@ import { NewTransaction, TransactionStatus } from '@/entities';
 import { useNavigation } from '@/navigation';
 
 import { useTheme } from '@/theme';
-import { deviceUtils } from '@/utils';
+import { deviceUtils, ethereumUtils } from '@/utils';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
@@ -47,7 +47,7 @@ import { isAddress } from '@ethersproject/address';
 import { hexToNumber, isHex } from 'viem';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
-import { RequestData } from '@/redux/requests';
+import { RequestData } from '@/walletConnect/types';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { event } from '@/analytics/event';
 import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
@@ -68,7 +68,6 @@ import { useCalculateGasLimit } from '@/hooks/useCalculateGasLimit';
 import { useTransactionSetup } from '@/hooks/useTransactionSetup';
 import { useHasEnoughBalance } from '@/hooks/useHasEnoughBalance';
 import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
-import { useProviderSetup } from '@/hooks/useProviderSetup';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
 import { toChecksumAddress } from 'ethereumjs-util';
@@ -107,7 +106,8 @@ export const SignTransactionSheet = () => {
 
   const addressToUse = specifiedAddress ?? accountAddress;
 
-  const { provider, nativeAsset } = useProviderSetup(chainId, addressToUse);
+  const provider = getProvider({ chainId });
+  const nativeAsset = ethereumUtils.getNetworkNativeAsset({ chainId });
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
   const isPersonalSignRequest = isPersonalSign(transactionDetails.payload.method);
@@ -324,17 +324,13 @@ export const SignTransactionSheet = () => {
       if (!chainId) {
         return;
       }
-      const providerToUse = provider || getProvider({ chainId });
-      if (!providerToUse) {
-        return;
-      }
       const existingWallet = await performanceTracking.getState().executeFn({
         fn: loadWallet,
         screen: SCREEN_FOR_REQUEST_SOURCE[source],
         operation: TimeToSignOperation.KeychainRead,
       })({
         address: toChecksumAddress(accountInfo.address),
-        provider: providerToUse,
+        provider,
         timeTracking: {
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.Authentication,
@@ -353,7 +349,7 @@ export const SignTransactionSheet = () => {
           operation: TimeToSignOperation.BroadcastTransaction,
         })({
           existingWallet,
-          provider: providerToUse,
+          provider,
           transaction: txPayloadUpdated,
         });
       } else {
@@ -363,7 +359,7 @@ export const SignTransactionSheet = () => {
           operation: TimeToSignOperation.SignTransaction,
         })({
           existingWallet,
-          provider: providerToUse,
+          provider,
           transaction: txPayloadUpdated,
         });
       }
@@ -480,18 +476,13 @@ export const SignTransactionSheet = () => {
     const message = transactionDetails?.payload?.params.find((p: string) => !isAddress(p));
     let response = null;
 
-    const providerToUse = provider || getProvider({ chainId });
-    if (!providerToUse) {
-      return;
-    }
-
     const existingWallet = await performanceTracking.getState().executeFn({
       fn: loadWallet,
       screen: SCREEN_FOR_REQUEST_SOURCE[source],
       operation: TimeToSignOperation.KeychainRead,
     })({
       address: accountInfo.address,
-      provider: providerToUse,
+      provider,
       timeTracking: {
         screen: SCREEN_FOR_REQUEST_SOURCE[source],
         operation: TimeToSignOperation.Authentication,
@@ -507,7 +498,7 @@ export const SignTransactionSheet = () => {
           fn: signPersonalMessage,
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.SignTransaction,
-        })(message, existingWallet);
+        })(message, provider, existingWallet);
         break;
       case SIGN_TYPED_DATA_V4:
       case SIGN_TYPED_DATA:
@@ -515,7 +506,7 @@ export const SignTransactionSheet = () => {
           fn: signTypedDataMessage,
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.SignTransaction,
-        })(message, existingWallet);
+        })(message, provider, existingWallet);
         break;
       default:
         break;

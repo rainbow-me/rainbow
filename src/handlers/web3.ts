@@ -3,7 +3,7 @@ import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
-import { Block, Network as EthersNetwork, StaticJsonRpcProvider, TransactionRequest, TransactionResponse } from '@ethersproject/providers';
+import { Block, StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
@@ -96,21 +96,6 @@ export type NewTransactionNonNullable = {
 };
 
 /**
- * @desc web3 http instance
- */
-export let web3Provider: StaticJsonRpcProvider = null as unknown as StaticJsonRpcProvider;
-
-/**
- * @desc Sets a different web3 provider.
- * @param network The network to set.
- * @return A promise that resolves with an Ethers Network when the provider is ready.
- */
-export const web3SetHttpProvider = async (chainId: ChainId): Promise<EthersNetwork> => {
-  web3Provider = await getProvider({ chainId });
-  return web3Provider.ready;
-};
-
-/**
  * @desc Checks if the given network is a Layer 2.
  * @param chainId The network to check.
  * @return Whether or not the network is a L2 network.
@@ -162,23 +147,6 @@ export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number })
 
   return provider;
 };
-
-/**
- * @desc Sends an arbitrary RPC call using a given provider, or the default
- * cached provider.
- * @param payload The payload, including a method and parameters, based on
- * the Ethers.js `StaticJsonRpcProvider.send` arguments.
- * @param provider The provider to use. If `null`, the current cached web3
- * provider is used.
- * @return The response from the `StaticJsonRpcProvider.send` call.
- */
-export const sendRpcCall = async (
-  payload: {
-    method: string;
-    params: unknown[];
-  },
-  provider: StaticJsonRpcProvider | null = null
-): Promise<unknown> => (provider || web3Provider)?.send(payload.method, payload.params);
 
 /**
  * @desc check if hex string
@@ -254,17 +222,12 @@ export const toChecksumAddress = (address: string): string | null => {
 /**
  * @desc estimate gas limit
  * @param estimateGasData The transaction request to use for the estimate.
- * @param provider If specified, a provider to use instead of the cached
- * `web3Provider`.
+ * @param provider
  * @return The gas limit, or `null` if an error occurs.
  */
-export const estimateGas = async (
-  estimateGasData: TransactionRequest,
-  provider: StaticJsonRpcProvider | null = null
-): Promise<string | null> => {
+export const estimateGas = async (estimateGasData: TransactionRequest, provider: StaticJsonRpcProvider): Promise<string | null> => {
   try {
-    const p = provider || web3Provider;
-    const gasLimit = await p?.estimateGas(estimateGasData);
+    const gasLimit = await provider.estimateGas(estimateGasData);
     return gasLimit?.toString() ?? null;
   } catch (error) {
     return null;
@@ -278,8 +241,7 @@ export const estimateGas = async (
  * defaulting to `null`.
  * @param callArguments Arbitrary arguments passed as the first parameters
  * of `contractCallEstimateGas`, if provided.
- * @param provider The provider to use. If none is specified, the cached
- * `web3Provider` is used instead.
+ * @param provider The provider to use.
  * @param paddingFactor The padding applied to the gas limit.
  * @return The gas estimation as a string, or `null` if estimation failed
  */
@@ -287,15 +249,11 @@ export async function estimateGasWithPadding(
   txPayload: TransactionRequest,
   contractCallEstimateGas: Contract['estimateGas'][string] | null = null,
   callArguments: unknown[] | null = null,
-  provider: StaticJsonRpcProvider | null = null,
+  provider: StaticJsonRpcProvider,
   paddingFactor = 1.1
 ): Promise<string | null> {
   try {
-    const p = provider || web3Provider;
-    if (!p) {
-      return null;
-    }
-
+    const p = provider;
     const txPayloadToEstimate: TransactionRequest & { gas?: string } = {
       ...txPayload,
     };
@@ -377,22 +335,6 @@ export const toWei = (ether: string): string => {
 };
 
 /**
- * @desc get transaction info
- * @param hash The transaction hash.
- * @return The corresponding `TransactionResponse`, or `null` if one could not
- * be found.
- */
-export const getTransaction = async (hash: string): Promise<TransactionResponse | null> => web3Provider?.getTransaction(hash) ?? null;
-
-/**
- * @desc get address transaction count
- * @param address The address to check.
- * @return The transaction count, or `null` if it could not be found.
- */
-export const getTransactionCount = async (address: string): Promise<number | null> =>
-  web3Provider?.getTransactionCount(address, 'pending') ?? null;
-
-/**
  * get transaction gas params depending on network
  * @returns - object with `gasPrice` or `maxFeePerGas` and `maxPriorityFeePerGas`
  */
@@ -463,8 +405,6 @@ export const resolveUnstoppableDomain = async (domain: string): Promise<string |
 /**
  * @desc Resolves a name or address to an Ethereum hex-formatted address.
  * @param nameOrAddress The name or address to resolve.
- * @param provider If provided, a provider to use instead of the cached
- * `web3Provider`.
  * @return The address, or null if one could not be resolved.
  */
 export const resolveNameOrAddress = async (nameOrAddress: string): Promise<string | null> => {
@@ -695,8 +635,7 @@ export const buildTransaction = async (
  * transaction.
  * @param addPadding Whether or not to add padding to the gas limit, defaulting
  * to `false`.
- * @param provider If provided, a provider to use instead of the default
- * cached `web3Provider`.
+ * @param provider
  * @param chainId The chainId to use, defaulting to `ChainId.mainnet`.
  * @returns The estimated gas limit.
  */
@@ -713,7 +652,7 @@ export const estimateGasLimit = async (
     amount: number;
   },
   addPadding = false,
-  provider: StaticJsonRpcProvider | undefined = undefined,
+  provider: StaticJsonRpcProvider,
   chainId: ChainId = ChainId.mainnet
 ): Promise<string | null> => {
   const estimateGasData = await buildTransaction({ address, amount, asset, recipient }, provider, chainId);

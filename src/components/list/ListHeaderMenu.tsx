@@ -1,20 +1,14 @@
 import React from 'react';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import ContextMenuButton, { MenuConfig } from '@/components/native-context-menu/contextMenu';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Bleed, Box, Inline, Text, useForegroundColor } from '@/design-system';
+import { NftSort } from '@/hooks/useNFTsSortBy';
 import { haptics } from '@/utils';
-import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
-
-type MenuItem = {
-  actionKey: string;
-  actionTitle: string;
-  menuState?: 'on' | 'off';
-};
 
 type ListHeaderMenuProps = {
-  selected: NftCollectionSortCriterion;
-  menuItems: MenuItem[];
-  selectItem: (item: string) => void;
+  selected: NftSort;
+  menuItems: MenuConfig['menuItems'];
+  selectItem: (item: NftSort) => void;
   icon: string;
   text: string;
 };
@@ -29,12 +23,12 @@ export function ListHeaderMenu({ menuItems, selectItem, icon, text }: ListHeader
 
   const onPressMenuItem = ({ nativeEvent: { actionKey: item } }: { nativeEvent: { actionKey: string } }) => {
     haptics.selection();
-    selectItem(item);
+    selectItem(item as NftSort);
   };
 
   return (
     <Bleed space="10px">
-      <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
+      <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} isAnchoredToRight>
         <ButtonPressAnimation style={{ padding: 10 }}>
           <Bleed bottom="2px">
             <Box

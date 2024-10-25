@@ -329,14 +329,21 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       clearCustomGasSettings(chainId);
       NotificationManager?.postNotification('rapCompleted');
       performanceTracking.getState().executeFn({
-        fn: Navigation.handleAction,
+        fn: () => {
+          const { routes, index } = Navigation.getState();
+          if (index === 0 || routes[index - 1].name === Routes.EXPANDED_ASSET_SHEET) {
+            Navigation.handleAction(Routes.WALLET_SCREEN, {});
+          } else {
+            Navigation.goBack();
+          }
+        },
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.SheetDismissal,
         endOfOperation: true,
         metadata: {
           degenMode: isDegenModeEnabled,
         },
-      })(Routes.PROFILE_SCREEN, {});
+      })();
 
       analyticsV2.track(analyticsV2.event.swapsSubmitted, {
         type,
