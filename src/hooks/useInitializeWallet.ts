@@ -10,7 +10,6 @@ import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMet
 import { appStateUpdate } from '../redux/appState';
 import { settingsLoadNetwork, settingsUpdateAccountAddress } from '../redux/settings';
 import { walletsLoadState } from '../redux/wallets';
-import { requestsResetState } from '../redux/requests';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useLoadAccountData from './useLoadAccountData';
@@ -59,8 +58,6 @@ export default function useInitializeWallet() {
       try {
         PerformanceTracking.startMeasuring(PerformanceMetrics.useInitializeWallet);
         logger.debug('[useInitializeWallet]: Start wallet setup');
-        dispatch(requestsResetState());
-        logger.debug('[useInitializeWallet]: requestsResetState ran ok');
 
         const isImporting = !!seedPhrase;
         logger.debug(`[useInitializeWallet]: isImporting? ${isImporting}`);
@@ -163,7 +160,7 @@ export default function useInitializeWallet() {
         return null;
       }
     },
-    [dispatch, hideSplashScreen, loadAccountData, loadGlobalEarlyData, network, profilesEnabled, requestsResetState, setIsSmallBalancesOpen]
+    [dispatch, hideSplashScreen, loadAccountData, loadGlobalEarlyData, network, profilesEnabled, setIsSmallBalancesOpen]
   );
 
   return initializeWallet;

@@ -3,25 +3,21 @@ import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
 import { Button } from '../buttons';
-import { useWalletConnectConnections } from '@/hooks';
 import { pair as pairWalletConnect } from '@/walletConnect';
 import { parseUri } from '@walletconnect/utils';
 
 export default function EmulatorPasteUriButton() {
   const { result: isEmulator } = useIsEmulator();
-  const { walletConnectOnSessionRequest } = useWalletConnectConnections();
   const { colors } = useTheme();
 
   const handlePastedUri = useCallback(
     uri => {
       const { version } = parseUri(uri);
-      if (version === 1) {
-        walletConnectOnSessionRequest(uri);
-      } else if (version === 2) {
+      if (version === 2) {
         pairWalletConnect({ uri });
       }
     },
-    [pairWalletConnect, walletConnectOnSessionRequest]
+    [pairWalletConnect]
   );
 
   const handlePressPasteSessionUri = useCallback(() => {
