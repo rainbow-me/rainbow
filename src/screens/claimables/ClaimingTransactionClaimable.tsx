@@ -4,9 +4,9 @@ import { ethereumUtils, haptics } from '@/utils';
 import { Claimable, TransactionClaimable } from '@/resources/addys/claimables/types';
 import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { getNextNonce } from '@/state/nonces';
-import { needsL1SecurityFeeChains } from '@/chains';
+import { chainsLabel, needsL1SecurityFeeChains } from '@/chains';
 import { logger, RainbowError } from '@/logger';
-import { ClaimingClaimableSharedUI, ClaimStatus } from './ClaimingClaimableSharedUI';
+import { ClaimingClaimableSharedUI, ClaimStatus, useDropdownMenu } from './ClaimingClaimableSharedUI';
 import { TransactionRequest } from '@ethersproject/providers';
 import { convertAmountToNativeDisplayWorklet, convertAmountToRawAmount } from '@/__swaps__/utils/numbers';
 import { useMutation } from '@tanstack/react-query';
@@ -20,6 +20,11 @@ import { useMeteorologySuggestion } from '@/__swaps__/utils/meteorology';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '@/__swaps__/types/gas';
+import { ClaimButton, ClaimPanel, ClaimValueDisplay, DropdownMenu, GasDetails, SwapDetails } from './ClaimPanel';
+import { ChainId } from '@/chains/types';
+import { Box, Inline, Text } from '@/design-system';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import * as i18n from '@/languages';
 
 // supports legacy and new gas types
 export type TransactionClaimableTxPayload = TransactionRequest & {
@@ -58,6 +63,8 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
   >();
   const [txPayload, setTxPayload] = useState<TransactionClaimableTxPayload | undefined>();
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
+  const [tokenToReceive, setTokenToReceive] = useState<string | undefined>();
+  const [chainId, setChainId] = useState<ChainId | undefined>();
 
   const nativeNetworkAsset = useNativeAsset({ chainId: 8453 });
 
@@ -320,16 +327,48 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
     },
   });
 
+  // return (
+  //   <ClaimingClaimableSharedUI
+  //     claim={claimClaimable}
+  //     claimable={claimable}
+  //     claimStatus={claimStatus}
+  //     hasSufficientFunds={isSufficientGas}
+  //     isGasReady={!!txPayload?.gasLimit}
+  //     isTransactionReady={isTransactionReady}
+  //     nativeCurrencyGasFeeDisplay={nativeCurrencyGasFeeDisplay}
+  //     setClaimStatus={setClaimStatus}
+  //   />
+  // );
+
+  // React.Dispatch<React.SetStateAction<string | undefined>>
+  // React.Dispatch<React.SetStateAction<ChainId | undefined>>
   return (
-    <ClaimingClaimableSharedUI
-      claim={claimClaimable}
-      claimable={claimable}
-      claimStatus={claimStatus}
-      hasSufficientFunds={isSufficientGas}
-      isGasReady={!!txPayload?.gasLimit}
-      isTransactionReady={isTransactionReady}
-      nativeCurrencyGasFeeDisplay={nativeCurrencyGasFeeDisplay}
-      setClaimStatus={setClaimStatus}
-    />
+    <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
+      <Box gap={20} alignItems="center">
+        <ClaimValueDisplay
+          chainId={chainId ?? ChainId.mainnet}
+          iconUrl={claimable.asset.icon_url ?? ''} // FIXME
+          nativeValueDisplay={claimable.value.nativeAsset.display} // FIXME
+          symbol={claimable.asset.symbol} // FIXME
+        />
+        <SwapDetails claimableAsset={claimable.asset} setChainId={setChainId} setToken={setTokenToReceive} />
+      </Box>
+      <Box alignItems="center" width="full">
+        <ClaimButton
+          isTransactionReady={isTransactionReady}
+          isSufficientGas={isSufficientGas}
+          claimType="transaction"
+          claim={claimClaimable}
+          claimStatus={claimStatus}
+          claimValueDisplay={claimable.value.claimAsset.display} // FIXME
+        />
+        <GasDetails
+          chainId={chainId ?? claimable.chainId}
+          claimStatus={claimStatus}
+          isGasReady={isGasReady}
+          nativeValueDisplay={nativeCurrencyGasFeeDisplay}
+        />
+      </Box>
+    </ClaimPanel>
   );
 };

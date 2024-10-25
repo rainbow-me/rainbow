@@ -47,7 +47,7 @@ interface UseDropdownMenuProps {
 }
 
 // Custom hook to manage dropdown state and logic
-const useDropdownMenu = ({ claimableAsset }: UseDropdownMenuProps) => {
+export const useDropdownMenu = ({ claimableAsset }: UseDropdownMenuProps) => {
   const { nativeCurrency } = useAccountSettings();
   const balanceSortedChainList = useUserAssetsStore(state => state.getBalanceSortedChainList());
 
