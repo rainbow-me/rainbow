@@ -314,7 +314,7 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : addCashEnabled ? (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          <BuyActionButton color={color} asset={assetWithPrice} />
+          <BuyActionButton color={color} />
         </SheetActionButtonRow>
       ) : null}
       {!data?.networks && isL2 && (

@@ -7,12 +7,12 @@ import { useWallets } from '@/hooks';
 
 import Routes from '@/navigation/routesNames';
 import { useRoute } from '@react-navigation/native';
-import { useNavigation } from '@/navigation';
+import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
 
-function BuyActionButton({ color: givenColor, asset, ...props }) {
+function BuyActionButton({ color: givenColor, ...props }) {
   const { colors } = useTheme();
   const color = givenColor || colors.paleBlue;
-  const { navigate } = useNavigation();
+  const navigate = useNavigationForNonReadOnlyWallets();
   const { isDamaged } = useWallets();
   const { name: routeName } = useRoute();
 
@@ -22,15 +22,13 @@ function BuyActionButton({ color: givenColor, asset, ...props }) {
       return;
     }
 
-    navigate(Routes.ADD_CASH_SHEET, {
-      asset,
-    });
+    navigate(Routes.ADD_CASH_SHEET);
 
     analyticsV2.track(analyticsV2.event.buyButtonPressed, {
       componentName: 'BuyActionButton',
       routeName,
     });
-  }, [asset, isDamaged, navigate, routeName]);
+  }, [isDamaged, navigate, routeName]);
 
   return <SheetActionButton {...props} color={color} label={`􀍰 ${lang.t('button.buy_eth')}`} onPress={handlePress} weight="bold" />;
 }

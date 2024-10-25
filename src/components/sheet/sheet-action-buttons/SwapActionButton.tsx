@@ -1,13 +1,10 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
-import { useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { RainbowToken } from '@/entities';
-import { useNavigation } from '@/navigation';
-import { enableActionsOnReadOnlyWallet } from '@/config';
-import { ethereumUtils, watchingAlert } from '@/utils';
+import { ethereumUtils } from '@/utils';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
@@ -15,6 +12,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { chainsIdByName, chainsName } from '@/chains';
+import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
@@ -26,17 +24,11 @@ type SwapActionButtonProps = {
 
 function SwapActionButton({ asset, color: givenColor, inputType, label, weight = 'heavy', ...props }: SwapActionButtonProps) {
   const { colors } = useTheme();
-  const { navigate } = useNavigation();
-  const { isReadOnlyWallet } = useWallets();
+  const navigate = useNavigationForNonReadOnlyWallets();
 
   const color = givenColor || colors.swapPurple;
 
   const goToSwap = useCallback(async () => {
-    if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
-      watchingAlert();
-      return;
-    }
-
     const chainId = chainsIdByName[asset.network];
     const uniqueId = `${asset.address}_${chainId}`;
     const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
@@ -125,7 +117,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, weight =
     InteractionManager.runAfterInteractions(() => {
       navigate(Routes.SWAP);
     });
-  }, [asset, inputType, isReadOnlyWallet, navigate]);
+  }, [asset, inputType, navigate]);
 
   return (
     <SheetActionButton
