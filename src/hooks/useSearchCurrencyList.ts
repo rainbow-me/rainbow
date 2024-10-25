@@ -41,7 +41,6 @@ const abcSort = (list: any[], key?: string) => {
 
 const searchCurrencyList = async (searchParams: {
   chainId: number;
-  fromChainId?: number | '';
   searchList: RainbowToken[] | TokenSearchTokenListId;
   query: string;
 }) => {
@@ -217,7 +216,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
         searchList: 'verifiedAssets',
         query: '',
         chainId,
-        fromChainId: '',
       });
       setCrosschainVerifiedAssets(state => ({
         ...state,
@@ -245,7 +243,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
                 searchList: assetType,
                 query: searchQuery,
                 chainId: searchChainId,
-                fromChainId: '',
               })
             )
           );
@@ -257,7 +254,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
                 searchList: assetType,
                 query: searchQuery,
                 chainId: searchChainId,
-                fromChainId: '',
               })
             )
           );
@@ -269,7 +265,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
                 searchList: assetType,
                 query: searchQuery,
                 chainId: searchChainId,
-                fromChainId: '',
               })
             )
           );
