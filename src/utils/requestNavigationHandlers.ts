@@ -1,18 +1,16 @@
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
-// we should move these types since import from redux is not kosher
-import { RequestData, WalletconnectRequestData, removeRequest } from '@/redux/requests';
 import store from '@/redux/store';
-import {
-  WalletconnectApprovalSheetRouteParams,
-  WalletconnectResultType,
-  walletConnectRemovePendingRedirect,
-  walletConnectSendStatus,
-} from '@/redux/walletconnect';
 import { InteractionManager } from 'react-native';
 import { SEND_TRANSACTION } from './signingMethods';
 import { handleSessionRequestResponse } from '@/walletConnect';
+import {
+  RequestData,
+  WalletconnectRequestData,
+  WalletconnectApprovalSheetRouteParams,
+  WalletconnectResultType,
+} from '@/walletConnect/types';
 import { getRequestDisplayDetails } from '@/parsers';
 import { maybeSignUri } from '@/handlers/imgix';
 import { getActiveRoute } from '@/navigation/Navigation';
@@ -38,6 +36,7 @@ import { ChainId } from '@/chains/types';
 import { chainsName, SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
 import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
+import { removeWalletConnectRequest } from '@/state/walletConnectRequests';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',
@@ -399,14 +398,10 @@ export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displ
 
 // Walletconnect
 export const handleWalletConnectRequest = async (request: WalletconnectRequestData) => {
-  const pendingRedirect = store.getState().walletconnect.pendingRedirect;
-  const walletConnector = store.getState().walletconnect.walletConnectors[request.peerId];
-
-  // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
-  const chainId = request?.walletConnectV2RequestValues?.chainId || walletConnector?._chainId;
+  const chainId = request?.walletConnectV2RequestValues?.chainId;
+  if (!chainId) return;
   const network = chainsName[chainId];
-  // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
-  const address = request?.walletConnectV2RequestValues?.address || walletConnector?._accounts?.[0];
+  const address = request?.walletConnectV2RequestValues?.address;
 
   const onSuccess = async (result: string) => {
     if (request?.walletConnectV2RequestValues) {
@@ -414,10 +409,10 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
         result: result,
         error: null,
       });
-    } else {
-      await store.dispatch(walletConnectSendStatus(request?.peerId, request?.requestId, { result }));
     }
-    store.dispatch(removeRequest(request?.requestId));
+    removeWalletConnectRequest({
+      walletConnectRequestId: request.requestId,
+    });
   };
 
   const onCancel = async (error?: Error) => {
@@ -427,27 +422,17 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
           result: null,
           error: error || 'User cancelled the request',
         });
-      } else {
-        await store.dispatch(
-          walletConnectSendStatus(request?.peerId, request?.requestId, {
-            error: error || 'User cancelled the request',
-          })
-        );
       }
-      store.dispatch(removeRequest(request?.requestId));
     }
+    removeWalletConnectRequest({
+      walletConnectRequestId: request.requestId,
+    });
   };
 
   const onCloseScreen = (canceled: boolean) => {
     let type: WalletconnectResultType = request.payload?.method === SEND_TRANSACTION ? 'transaction' : 'sign';
     if (canceled) {
       type = `${type}-canceled`;
-    }
-
-    if (pendingRedirect) {
-      InteractionManager.runAfterInteractions(() => {
-        store.dispatch(walletConnectRemovePendingRedirect(type, request?.dappScheme));
-      });
     }
 
     if (request?.walletConnectV2RequestValues?.onComplete) {
