@@ -297,9 +297,14 @@ const FreezableWebViewComponent = ({
 
   const handleNavigationStateChange = useCallback(
     (navState: WebViewNavigation) => {
-      if (navState.navigationType !== 'other' || getDappHost(navState.url) === getDappHost(tabUrl)) {
+      // NOTE: navState.navigationType is only avaialable on iOS
+      // (This supports SPA url changes on iOS)
+      if ((navState.navigationType && navState.navigationType !== 'other') || getDappHost(navState.url) === getDappHost(tabUrl)) {
         // ⚠️ TODO: Reintegrate canGoBack/canGoForward - we can just set it here now, reliably, because this
         // function no longer modifies the same URL state that's passed to the WebView's source prop.
+        runOnUI(updateTabUrlWorklet)(navState.url, tabId);
+        // If android and the url changed and finished loading, let's update the url
+      } else if (!navState.navigationType && navState.url !== tabUrl && !navState.loading) {
         runOnUI(updateTabUrlWorklet)(navState.url, tabId);
       }
     },
