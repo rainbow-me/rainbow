@@ -9,7 +9,8 @@ import { ethereumUtils } from '@/utils';
 import { swapsStore } from '@/state/swaps/swapsStore';
 
 export const useNativeAssetForChain = ({ inputAsset }: { inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null> }) => {
-  const chainId = useDerivedValue(() => inputAsset.value?.chainId ?? swapsStore.getState().preferredNetwork ?? ChainId.mainnet);
+  const preferredNetwork = swapsStore.getState().preferredNetwork;
+  const chainId = useDerivedValue(() => inputAsset.value?.chainId ?? preferredNetwork ?? ChainId.mainnet);
   const nativeAsset = useSharedValue<ParsedAddressAsset | undefined>(ethereumUtils.getNetworkNativeAsset({ chainId: chainId.value }));
 
   const getNativeAssetForNetwork = useCallback(

@@ -3,7 +3,7 @@ import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
 import { useNavigation } from '../navigation/Navigation';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useAccountProfile, useAccountSettings, useAccountTransactions } from '@/hooks';
+import { useAccountProfile, useAccountSettings } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';

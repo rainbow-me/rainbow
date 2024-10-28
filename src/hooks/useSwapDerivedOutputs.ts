@@ -267,6 +267,7 @@ export default function useSwapDerivedOutputs(type: string) {
   const [refuel, setRefuel] = useState(false);
 
   const inputPrice = useMemo(() => {
+    // NOTE: This is legacy so i'm not going to update it to obj params
     const price = ethereumUtils.getAssetPrice(inputCurrency?.mainnet_address ?? inputCurrency?.address);
     return price !== 0 ? price : inputCurrency?.price?.value;
   }, [inputCurrency]);
