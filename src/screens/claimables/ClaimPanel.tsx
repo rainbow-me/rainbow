@@ -23,7 +23,7 @@ import { DAI_ADDRESS, ETH_SYMBOL, WBTC_ADDRESS } from '@/references';
 
 const BUTTON_WIDTH = deviceUtils.dimensions.width - 52;
 
-interface TokenToReceive {
+export interface TokenToReceive {
   networks: Partial<Record<ChainId, { address: string }>>;
   symbol: string;
   iconUrl?: string;
@@ -35,7 +35,7 @@ type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 
 // Types
 interface DropdownState {
-  selectedToken: string | undefined;
+  selectedToken: TokenToReceive | undefined;
   selectedChain: ChainId | undefined;
   isInitialState: boolean;
 }
@@ -50,14 +50,20 @@ export function SwapDetails({
   setChainId,
 }: {
   claimableAsset: ParsedAddressAsset;
-  setToken: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setToken: React.Dispatch<React.SetStateAction<TokenToReceive | undefined>>;
   setChainId: React.Dispatch<React.SetStateAction<ChainId | undefined>>;
 }) {
   const { nativeCurrency } = useAccountSettings();
   const balanceSortedChainList = useUserAssetsStore(state => state.getBalanceSortedChainList());
 
   const [state, setState] = useState<DropdownState>({
-    selectedToken: claimableAsset.symbol,
+    selectedToken: {
+      iconUrl: claimableAsset.icon_url,
+      name: claimableAsset.name,
+      symbol: claimableAsset.symbol,
+      networks: claimableAsset.networks,
+      isNativeAsset: false,
+    },
     selectedChain: claimableAsset.chainId,
     isInitialState: true,
   });
@@ -128,17 +134,23 @@ export function SwapDetails({
 
   const resetState = useCallback(() => {
     setState({
-      selectedToken: claimableAsset.symbol,
+      selectedToken: {
+        iconUrl: claimableAsset.icon_url,
+        name: claimableAsset.name,
+        symbol: claimableAsset.symbol,
+        networks: claimableAsset.networks,
+        isNativeAsset: false,
+      },
       selectedChain: claimableAsset.chainId,
       isInitialState: true,
     });
-  }, [claimableAsset.symbol, claimableAsset.chainId]);
+  }, [claimableAsset.icon_url, claimableAsset.name, claimableAsset.symbol, claimableAsset.networks, claimableAsset.chainId]);
 
   const tokenMenuConfig = useMemo(() => {
     const availableTokens = Object.values(tokens)
       .filter(token => {
         // exclude if token is already selected
-        if (token.symbol === state.selectedToken) {
+        if (token.symbol === state.selectedToken?.symbol) {
           return false;
         }
 
@@ -212,20 +224,24 @@ export function SwapDetails({
       if (selection === 'reset') {
         resetState();
       } else {
+        const newToken = tokens[selection];
         setState(prev => {
-          const currentChain = prev.selectedChain;
-          const newChain = currentChain && !(currentChain in tokens[selection].networks) ? undefined : currentChain;
+          const currentChainId = prev.selectedChain;
+          const newChainId = currentChainId && !(currentChainId in tokens[selection].networks) ? undefined : currentChainId;
+
+          setToken(newToken);
+          setChainId(newChainId);
 
           return {
             ...prev,
-            selectedChain: newChain,
-            selectedToken: selection,
+            selectedChain: newChainId,
+            selectedToken: newToken,
             isInitialState: false,
           };
         });
       }
     },
-    [resetState, tokens]
+    [resetState, setChainId, setToken, tokens]
   );
 
   const handleNetworkSelection = useCallback(
@@ -238,7 +254,12 @@ export function SwapDetails({
         setState(prev => {
           const currentToken = prev.selectedToken;
           const newToken =
-            currentToken && (!tokens[currentToken] || !(newChainId in tokens[currentToken].networks)) ? undefined : currentToken;
+            currentToken && (!tokens[currentToken.symbol] || !(newChainId in tokens[currentToken.symbol].networks))
+              ? undefined
+              : currentToken;
+
+          setToken(newToken);
+          setChainId(newChainId);
 
           return {
             selectedChain: newChainId,
@@ -248,7 +269,7 @@ export function SwapDetails({
         });
       }
     },
-    [resetState, tokens]
+    [resetState, setChainId, setToken, tokens]
   );
 
   return (
@@ -259,7 +280,7 @@ export function SwapDetails({
       <DropdownMenu
         menuConfig={tokenMenuConfig}
         onPressMenuItem={handleTokenSelection}
-        text={state.selectedToken ?? 'a token'}
+        text={state.selectedToken?.symbol ?? 'a token'}
         muted={state.isInitialState}
       />
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">

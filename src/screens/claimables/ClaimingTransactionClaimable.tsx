@@ -20,7 +20,7 @@ import { useMeteorologySuggestion } from '@/__swaps__/utils/meteorology';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { ClaimButton, ClaimPanel, ClaimValueDisplay, DropdownMenu, GasDetails, SwapDetails } from './ClaimPanel';
+import { ClaimButton, ClaimPanel, ClaimValueDisplay, DropdownMenu, GasDetails, SwapDetails, TokenToReceive } from './ClaimPanel';
 import { ChainId } from '@/chains/types';
 import { Box, Inline, Text } from '@/design-system';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -63,7 +63,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
   >();
   const [txPayload, setTxPayload] = useState<TransactionClaimableTxPayload | undefined>();
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
-  const [tokenToReceive, setTokenToReceive] = useState<string | undefined>();
+  const [tokenToReceive, setTokenToReceive] = useState<TokenToReceive | undefined>();
   const [chainId, setChainId] = useState<ChainId | undefined>();
 
   const nativeNetworkAsset = useNativeAsset({ chainId: 8453 });
@@ -340,8 +340,6 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
   //   />
   // );
 
-  // React.Dispatch<React.SetStateAction<string | undefined>>
-  // React.Dispatch<React.SetStateAction<ChainId | undefined>>
   return (
     <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
       <Box gap={20} alignItems="center">
