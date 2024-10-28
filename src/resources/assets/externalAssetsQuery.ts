@@ -11,12 +11,6 @@ import { AddressOrEth } from '@/__swaps__/types/assets';
 export const EXTERNAL_TOKEN_CACHE_TIME = 1000 * 60 * 60 * 24; // 24 hours
 export const EXTERNAL_TOKEN_STALE_TIME = 1000 * 60; // 1 minute
 
-// need to keep these queried tokens up to date
-//   ETH_ADDRESS,
-// MATIC_MAINNET_ADDRESS,
-// BNB_MAINNET_ADDRESS,
-// OP_ADDRESS
-
 // Types
 type ExternalToken = Pick<Token, 'decimals' | 'iconUrl' | 'name' | 'networks' | 'symbol' | 'colors' | 'price'>;
 export type FormattedExternalAsset = ExternalToken & {

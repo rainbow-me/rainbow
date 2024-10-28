@@ -10,17 +10,7 @@ import { startsWith } from 'lodash';
 import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { isUnstoppableAddressFormat } from '@/helpers/validators';
-import {
-  ARBITRUM_ETH_ADDRESS,
-  ETH_ADDRESS,
-  ethUnits,
-  MATIC_POLYGON_ADDRESS,
-  BNB_BSC_ADDRESS,
-  OPTIMISM_ETH_ADDRESS,
-  smartContractMethods,
-  CRYPTO_KITTIES_NFT_ADDRESS,
-  CRYPTO_PUNKS_NFT_ADDRESS,
-} from '@/references';
+import { ethUnits, smartContractMethods, CRYPTO_KITTIES_NFT_ADDRESS, CRYPTO_PUNKS_NFT_ADDRESS } from '@/references';
 import {
   addBuffer,
   convertAmountToRawAmount,
@@ -35,8 +25,8 @@ import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { ChainId } from '@/chains/types';
-import { defaultChains } from '@/chains';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { defaultChains } from '@/chains';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -488,13 +478,7 @@ export const getTransferTokenTransaction = async (
  */
 export const createSignableTransaction = async (transaction: NewTransactionNonNullable): Promise<TransactionDetailsReturned> => {
   // handle native assets seperately
-  if (
-    transaction.asset.address === ETH_ADDRESS ||
-    transaction.asset.address === ARBITRUM_ETH_ADDRESS ||
-    transaction.asset.address === OPTIMISM_ETH_ADDRESS ||
-    transaction.asset.address === MATIC_POLYGON_ADDRESS ||
-    transaction.asset.address === BNB_BSC_ADDRESS
-  ) {
+  if (isNativeAsset(transaction.asset.address, transaction.chainId)) {
     return getTxDetails(transaction);
   }
   const isNft = transaction.asset.type === AssetType.nft;
