@@ -562,12 +562,41 @@ export const SignTransactionSheet = () => {
     source,
   });
 
+  const canPressConfirm =
+    !isAuthorizing && (isMessageRequest || (!!walletBalance?.isLoaded && !!chainId && !!selectedGasFee?.gasFee?.estimatedFee));
+
+  const primaryActionButtonLabel = useMemo(() => {
+    if (isAuthorizing) {
+      return i18n.t(i18n.l.walletconnect.simulation.buttons.confirming);
+    }
+
+    if (!txSimulationLoading && isBalanceEnough === false) {
+      return i18n.t(i18n.l.walletconnect.simulation.buttons.buy_native_token, { symbol: walletBalance?.symbol });
+    }
+
+    return i18n.t(i18n.l.walletconnect.simulation.buttons.confirm);
+  }, [txSimulationLoading, isBalanceEnough, isAuthorizing, walletBalance]);
+
+  const primaryActionButtonColor = useMemo(() => {
+    let color = colors.appleBlue;
+
+    if (
+      simulationResult?.simulationError ||
+      (simulationResult?.simulationScanResult && simulationResult.simulationScanResult !== TransactionScanResultType.Ok)
+    ) {
+      if (simulationResult?.simulationScanResult === TransactionScanResultType.Warning) {
+        color = colors.orange;
+      } else {
+        color = colors.red;
+      }
+    }
+
+    return colors.alpha(color, canPressConfirm ? 1 : 0.6);
+  }, [colors, simulationResult?.simulationError, simulationResult?.simulationScanResult, canPressConfirm]);
+
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
   const expandedCardBottomInset = EXPANDED_CARD_BOTTOM_INSET + (isMessageRequest ? 0 : GAS_BUTTON_SPACE);
-
-  const canPressConfirm =
-    !isAuthorizing && (isMessageRequest || (!!walletBalance?.isLoaded && !!chainId && !!selectedGasFee?.gasFee?.estimatedFee));
 
   simulationResult?.simulationError && console.log(JSON.stringify(simulationResult?.simulationError, null, 2));
 
@@ -740,26 +769,13 @@ export const SignTransactionSheet = () => {
                     weight="bold"
                   />
                   <SheetActionButton
-                    label={
-                      !txSimulationLoading && isBalanceEnough === false
-                        ? i18n.t(i18n.l.walletconnect.simulation.buttons.buy_native_token, { symbol: walletBalance?.symbol })
-                        : isAuthorizing
-                          ? i18n.t(i18n.l.walletconnect.simulation.buttons.confirming)
-                          : i18n.t(i18n.l.walletconnect.simulation.buttons.confirm)
-                    }
+                    label={primaryActionButtonLabel}
                     newShadows
                     onPress={submitFn}
                     disabled={!canPressConfirm}
                     size="big"
                     weight="heavy"
-                    color={
-                      simulationResult?.simulationError ||
-                      (simulationResult?.simulationScanResult && simulationResult?.simulationScanResult !== TransactionScanResultType.Ok)
-                        ? simulationResult?.simulationScanResult === TransactionScanResultType.Warning
-                          ? 'orange'
-                          : colors.red
-                        : colors.alpha(colors.appleBlue, canPressConfirm ? 1 : 0.6)
-                    }
+                    color={primaryActionButtonColor}
                   />
                 </Columns>
               </Box>
