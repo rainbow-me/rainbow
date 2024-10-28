@@ -237,7 +237,6 @@ function useGasPanelState<
     speed,
     select,
     enabled: !editedSetting,
-    notifyOnChangeProps: !editedSetting && speed !== 'custom' ? ['data'] : [],
   });
 
   if (editedSetting) return editedSetting;
