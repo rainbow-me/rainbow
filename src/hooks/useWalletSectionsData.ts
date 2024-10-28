@@ -1,21 +1,49 @@
-import { useContext, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
 import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
+import { useNftSort } from './useNFTsSortBy';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { useLegacyNFTs } from '@/resources/nfts';
-import useNftSort from './useNFTsSortBy';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { RainbowContext } from '@/helpers/RainbowContext';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import { useClaimables } from '@/resources/addys/claimables/query';
+import { useExperimentalConfig } from '@/config/experimentalHooks';
+import { analyticsV2 } from '@/analytics';
+import { Claimable } from '@/resources/addys/claimables/types';
+import { throttle } from 'lodash';
+
+// user properties analytics for claimables that executes at max once every 2 min
+const throttledClaimablesAnalytics = throttle(
+  (claimables: Claimable[]) => {
+    let totalUSDValue = 0;
+    const claimablesUSDValues: {
+      [key: string]: number;
+    } = {};
+
+    claimables.forEach(claimable => {
+      const attribute = `${claimable.analyticsId}USDValue`;
+      totalUSDValue += claimable.value.usd;
+
+      if (claimablesUSDValues[attribute] !== undefined) {
+        claimablesUSDValues[attribute] += claimable.value.usd;
+      } else {
+        claimablesUSDValues[attribute] = claimable.value.usd;
+      }
+    });
+
+    analyticsV2.identify({ claimablesAmount: claimables.length, claimablesUSDValue: totalUSDValue, ...claimablesUSDValues });
+  },
+  2 * 60 * 1000,
+  { trailing: false }
+);
 
 export default function useWalletSectionsData({
   type,
@@ -26,7 +54,7 @@ export default function useWalletSectionsData({
   const { isLoading: isLoadingUserAssets, data: sortedAssets = [] } = useSortedUserAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
-  const { nftSort } = useNftSort();
+  const { nftSort, nftSortDirection } = useNftSort();
 
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
@@ -36,9 +64,20 @@ export default function useWalletSectionsData({
   } = useLegacyNFTs({
     address: accountAddress,
     sortBy: nftSort,
+    sortDirection: nftSortDirection,
   });
   const { data: positions } = usePositions({ address: accountAddress, currency: nativeCurrency });
   const { data: claimables } = useClaimables({ address: accountAddress, currency: nativeCurrency });
+
+  // claimables analytics
+  useEffect(() => {
+    if (claimables?.length) {
+      throttledClaimablesAnalytics(claimables);
+    }
+    return () => {
+      throttledClaimablesAnalytics.cancel();
+    };
+  }, [claimables]);
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -50,7 +89,7 @@ export default function useWalletSectionsData({
   const { hiddenTokens } = useHiddenTokens();
 
   const remoteConfig = useRemoteConfig();
-  const experimentalConfig = useContext(RainbowContext).config;
+  const experimentalConfig = useExperimentalConfig();
 
   const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
 

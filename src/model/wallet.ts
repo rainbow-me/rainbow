@@ -1,7 +1,7 @@
 import { TransactionRequest } from '@ethersproject/abstract-provider';
 import { arrayify } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
-import { Provider } from '@ethersproject/providers';
+import { Provider, StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 import { signTypedData, SignTypedDataVersion, TypedMessage } from '@metamask/eth-sig-util';
@@ -30,14 +30,7 @@ import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { EthereumAddress } from '@/entities';
 import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
-import {
-  addHexPrefix,
-  isHexString,
-  isHexStringIgnorePrefix,
-  isValidBluetoothDeviceId,
-  isValidMnemonic,
-  web3Provider,
-} from '@/handlers/web3';
+import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
 import { createSignature } from '@/helpers/signingWallet';
 import showWalletErrorAlert from '@/helpers/support';
 import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
@@ -58,6 +51,7 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { ExecuteFnParamsWithoutFn, performanceTracking, Screen } from '@/state/performance/performance';
 import { Network } from '@/chains/types';
+import { WalletBalanceResult } from '@/hooks/useWalletBalances';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -73,7 +67,7 @@ interface WalletInitialized {
 interface TransactionRequestParam {
   transaction: TransactionRequest;
   existingWallet?: Signer;
-  provider?: Provider;
+  provider: StaticJsonRpcProvider;
 }
 
 interface MessageTypeProperty {
@@ -122,6 +116,7 @@ export interface RainbowAccount {
   avatar: null | string;
   color: number;
   visible: boolean;
+  ens?: string;
   image?: string | null;
 }
 
@@ -266,7 +261,7 @@ export const loadWallet = async <S extends Screen>({
 }: {
   address?: EthereumAddress;
   showErrorIfNotLoaded?: boolean;
-  provider?: Provider;
+  provider: Provider;
   timeTracking?: ExecuteFnParamsWithoutFn<S>;
 }): Promise<null | Wallet | LedgerSigner> => {
   const addressToUse = address || (await loadAddress());
@@ -298,11 +293,11 @@ export const loadWallet = async <S extends Screen>({
   if (isHardwareWalletKey(privateKey)) {
     const index = privateKey?.split('/')[1];
     const deviceId = privateKey?.split('/')[0];
-    if (typeof index !== undefined && provider && deviceId) {
+    if (typeof index !== undefined && deviceId) {
       return new LedgerSigner(provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
     }
   } else if (privateKey) {
-    return new Wallet(privateKey, provider || web3Provider);
+    return new Wallet(privateKey, provider);
   }
   if (ios && showErrorIfNotLoaded) {
     showWalletErrorAlert();
@@ -406,8 +401,8 @@ export const signTransaction = async ({
 
 export const signPersonalMessage = async (
   message: string | Uint8Array,
-  existingWallet?: Signer,
-  provider?: Provider
+  provider: Provider,
+  existingWallet?: Signer
 ): Promise<null | {
   result?: string;
   error?: any;
@@ -454,8 +449,8 @@ export const signPersonalMessage = async (
 
 export const signTypedDataMessage = async (
   message: string | TypedData,
-  existingWallet?: Signer,
-  provider?: Provider
+  provider: Provider,
+  existingWallet?: Signer
 ): Promise<null | {
   result?: string;
   error?: any;

@@ -26,7 +26,6 @@ import { InteractionManager } from 'react-native';
 import { ChainId } from '@/chains/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/chains';
-import { isL2Chain } from '@/handlers/web3';
 
 const NOOP = () => null;
 
@@ -56,13 +55,6 @@ const AvailableNetworksv2 = ({
       overflow: 'hidden',
     },
   };
-
-  const availableChainIds = useMemo(() => {
-    // we dont want to show mainnet
-    return Object.keys(networks)
-      .filter(chainId => Number(chainId) !== ChainId.mainnet)
-      .map(chainId => Number(chainId));
-  }, [networks]);
 
   const { updateInputCurrency } = useSwapCurrencyHandlers({
     shouldUpdate: true,
@@ -162,19 +154,26 @@ const AvailableNetworksv2 = ({
     [convertAssetAndNavigate]
   );
 
+  const availableChainIds = useMemo(() => {
+    // we dont want to show mainnet
+    return Object.keys(networks)
+      .filter(chainId => Number(chainId) !== ChainId.mainnet)
+      .map(chainId => Number(chainId));
+  }, [networks]);
+
   const handlePressButton = useCallback(() => {
     convertAssetAndNavigate(availableChainIds[0]);
   }, [availableChainIds, convertAssetAndNavigate]);
 
   const networkMenuItems = supportedSwapChainIds
-    .filter(chainId => chainId !== ChainId.mainnet)
+    .filter(chainId => chainId !== ChainId.mainnet && availableChainIds.includes(chainId))
     .map(chainId => defaultChains[chainId])
     .map(chain => ({
-      actionKey: chain.id,
+      actionKey: `${chain.id}`,
       actionTitle: chainsLabel[chain.id],
       icon: {
         iconType: 'ASSET',
-        iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
+        iconValue: `${chainsName[chain.id]}Badge${chain.id === ChainId.mainnet ? '' : 'NoShadow'}`,
       },
     }));
 

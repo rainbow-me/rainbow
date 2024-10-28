@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { useClaimables } from '@/resources/addys/claimables/query';
@@ -8,6 +8,7 @@ import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { ExtendedState } from './core/RawRecyclerList';
 import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { analyticsV2 } from '@/analytics';
 
 export const Claimable = React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -25,17 +26,24 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
 
   const [claimable] = data;
 
-  const nativeDisplay = useMemo(
-    () => convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true),
-    [claimable.value.nativeAsset.amount, nativeCurrency]
-  );
+  const nativeDisplay = convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true);
 
   if (!claimable) return null;
 
   return (
     <Box
       as={ButtonPressAnimation}
-      onPress={() => navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable })}
+      onPress={() => {
+        analyticsV2.track(analyticsV2.event.claimablePanelOpened, {
+          claimableType: claimable.type,
+          claimableId: claimable.uniqueId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
+        });
+        navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable });
+      }}
       scaleTo={0.96}
       paddingHorizontal="20px"
       justifyContent="space-between"
@@ -43,10 +51,9 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
       flexDirection="row"
     >
       <Inline alignVertical="center" space="12px">
-        <FasterImageView
-          source={{ url: claimable.iconUrl }}
-          style={{ height: 40, width: 40, borderRadius: 11, borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.03)' }}
-        />
+        <Box borderRadius={11} borderWidth={1} borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}>
+          <FasterImageView source={{ url: claimable.iconUrl }} style={{ height: 40, width: 40 }} />
+        </Box>
         <Stack space={{ custom: 11 }}>
           <Text
             weight="semibold"

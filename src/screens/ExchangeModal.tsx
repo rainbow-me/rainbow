@@ -56,9 +56,9 @@ import { ethereumUtils, gasUtils } from '@/utils';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
-import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote, SwapType } from '@rainbow-me/swaps';
 import store from '@/redux/store';
-import { getCrosschainSwapServiceTime, isUnwrapNative, isWrapNative } from '@/handlers/swap';
+import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 import { Wallet } from '@ethersproject/wallet';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
@@ -447,18 +447,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
         } as ParsedAsset;
 
         const isWrapOrUnwrapEth = () => {
-          return (
-            isWrapNative({
-              buyTokenAddress: tradeDetails?.buyTokenAddress,
-              sellTokenAddress: tradeDetails?.sellTokenAddress,
-              chainId: inputCurrency?.chainId || ChainId.mainnet,
-            }) ||
-            isUnwrapNative({
-              buyTokenAddress: tradeDetails?.buyTokenAddress,
-              sellTokenAddress: tradeDetails?.sellTokenAddress,
-              chainId: inputCurrency?.chainId || ChainId.mainnet,
-            })
-          );
+          return tradeDetails.swapType === SwapType.wrap || tradeDetails.swapType === SwapType.unwrap;
         };
 
         const { errorMessage } = await walletExecuteRap(wallet, isCrosschainSwap ? 'crosschainSwap' : 'swap', {
@@ -471,8 +460,6 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
           quote: {
             ...tradeDetails,
             feeInEth: isWrapOrUnwrapEth() ? '0' : tradeDetails.feeInEth,
-            fromChainId: inputCurrency.chainId,
-            toChainId: outputCurrency.chainId,
           },
           amount: inputAmount,
           meta: {
@@ -911,7 +898,6 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
               )}
             </Row>
             <Row height="content">
-              {/* @ts-expect-error - Javascript Component */}
               <GasSpeedButton
                 asset={outputCurrency}
                 chainId={currentChainId}

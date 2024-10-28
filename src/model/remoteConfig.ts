@@ -1,5 +1,3 @@
-import { getChainId, saveChainId } from '@/handlers/localstorage/globalSettings';
-import { web3SetHttpProvider } from '@/handlers/web3';
 import { RainbowError, logger } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
 import { delay } from '@/utils/delay';
@@ -102,16 +100,17 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',
   data_origin: DATA_ORIGIN,
   default_slippage_bips: JSON.stringify({
+    apechain: 200,
     arbitrum: 200,
+    avalanche: 200,
+    base: 200,
+    blast: 200,
+    bsc: 200,
+    degen: 200,
     mainnet: 100,
     optimism: 200,
     polygon: 200,
-    bsc: 200,
-    base: 200,
     zora: 200,
-    avalanche: 200,
-    blast: 200,
-    degen: 200,
   }),
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
   ethereum_mainnet_rpc: __DEV__ ? ETHEREUM_MAINNET_RPC_DEV : ETHEREUM_MAINNET_RPC,
@@ -175,9 +174,9 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   idfa_check_enabled: true,
   rewards_enabled: true,
 
-  degen_mode: false,
-  featured_results: false,
-  claimables: false,
+  degen_mode: true,
+  featured_results: true,
+  claimables: true,
   nfts_enabled: true,
 };
 
@@ -251,9 +250,6 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
     throw e;
   } finally {
     logger.debug(`[remoteConfig]: Current remote config:\n${JSON.stringify(config, null, 2)}`);
-    const currentChainId = await getChainId();
-    web3SetHttpProvider(currentChainId);
-    saveChainId(currentChainId);
   }
 }
 

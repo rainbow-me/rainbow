@@ -1,4 +1,4 @@
-import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
+import { NativeCurrencyKey, RainbowTransaction, TransactionApiResponse } from '@/entities';
 import { createQueryKey, queryClient, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { consolidatedTransactionsQueryFunction, consolidatedTransactionsQueryKey } from './consolidatedTransactions';
@@ -7,7 +7,6 @@ import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { parseTransaction } from '@/parsers/transactions';
 import { RainbowError, logger } from '@/logger';
-import { TransactionApiResponse } from './types';
 import { ChainId } from '@/chains/types';
 import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
 
@@ -46,7 +45,7 @@ export const fetchTransaction = async ({
       },
     });
 
-    const tx = response?.data?.payload?.transaction || {};
+    const tx = response?.data?.payload?.transaction;
     if (!tx) {
       return null;
     }

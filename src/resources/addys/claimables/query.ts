@@ -32,7 +32,7 @@ export type ClaimablesArgs = {
 // Query Key
 
 export const claimablesQueryKey = ({ address, currency }: ClaimablesArgs) =>
-  createQueryKey('claimables', { address, currency }, { persisterVersion: 2 });
+  createQueryKey('claimables', { address, currency }, { persisterVersion: 4 });
 
 type ClaimablesQueryKey = ReturnType<typeof claimablesQueryKey>;
 
@@ -79,6 +79,7 @@ export function useClaimables(
     ...config,
     enabled: !!address && (remoteFlag || localFlag) && !IS_TEST,
     staleTime: 1000 * 60 * 2,
+    refetchInterval: 1000 * 60 * 2,
     cacheTime: 1000 * 60 * 60 * 24,
   });
 }

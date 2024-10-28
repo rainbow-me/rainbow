@@ -63,6 +63,7 @@ export function parseAsset({ address, asset }: { address: string; asset: AddysAs
     symbol: asset?.symbol,
     type: asset?.type,
     uniqueId,
+    transferable: asset?.transferable,
   };
 
   return parsedAsset;

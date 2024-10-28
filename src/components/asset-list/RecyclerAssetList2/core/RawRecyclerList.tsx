@@ -1,4 +1,4 @@
-import React, { LegacyRef, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { LegacyRef, useCallback, useEffect, useMemo, useRef } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { SetterOrUpdater } from 'recoil';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
@@ -22,7 +22,7 @@ import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { useRoute } from '@react-navigation/native';
 import Routes from '@/navigation/routesNames';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { RainbowContext } from '@/helpers/RainbowContext';
+import { useExperimentalConfig } from '@/config/experimentalHooks';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid !== r2.uid;
@@ -57,7 +57,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   type?: AssetListType;
 }) {
   const remoteConfig = useRemoteConfig();
-  const experimentalConfig = useContext(RainbowContext).config;
+  const experimentalConfig = useExperimentalConfig();
   const currentDataProvider = useMemoOne(() => dataProvider.cloneWithRows(briefSectionsData), [briefSectionsData]);
   const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
   const y = useRecyclerAssetListPosition()!;

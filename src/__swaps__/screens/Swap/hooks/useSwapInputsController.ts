@@ -41,7 +41,7 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { triggerHapticFeedback } from '@/screens/points/constants';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote, QuoteError, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
 import { useCallback } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
@@ -475,6 +475,8 @@ export function useSwapInputsController({
       outputAsset: internalSelectedOutputAsset.value,
     });
 
+    const isCrosschainSwap = internalSelectedInputAsset.value?.chainId !== internalSelectedOutputAsset.value?.chainId;
+
     logger.debug(`[useSwapInputsController]: quote params`, {
       data: params,
     });
@@ -494,7 +496,7 @@ export function useSwapInputsController({
 
     try {
       const [quoteResponse, fetchedPrices] = await Promise.all([
-        params.swapType === SwapType.crossChain ? getCrosschainQuote(params) : getQuote(params),
+        isCrosschainSwap ? getCrosschainQuote(params) : getQuote(params),
         fetchAssetPrices({
           inputAsset: internalSelectedInputAsset.value,
           outputAsset: internalSelectedOutputAsset.value,

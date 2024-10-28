@@ -62,7 +62,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
 import { ChainId } from '@/chains/types';
-import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/chains';
+import { chainsLabel, defaultChains } from '@/chains';
 
 const PAGES = {
   HOME: 'home',
@@ -183,8 +183,7 @@ export const ControlPanel = () => {
   const { testnetsEnabled } = store.getState().settings;
 
   const allNetworkItems = useMemo(() => {
-    const chains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]);
-    return chains
+    return Object.values(defaultChains)
       .filter(({ testnet }) => testnetsEnabled || !testnet)
       .map(chain => {
         return {

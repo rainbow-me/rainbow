@@ -1,5 +1,5 @@
 import { BigNumberish } from '@ethersproject/bignumber';
-import { Provider } from '@ethersproject/providers';
+import { StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { RainbowAddressAssets } from '@/resources/assets/types';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
@@ -38,6 +38,7 @@ import {
   BNB_MAINNET_ADDRESS,
   AVAX_AVALANCHE_ADDRESS,
   DEGEN_CHAIN_DEGEN_ADDRESS,
+  APECOIN_APECHAIN_ADDRESS,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
@@ -207,6 +208,7 @@ const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 const getBnbPriceUnit = () => getAssetPrice(BNB_MAINNET_ADDRESS);
 const getAvaxPriceUnit = () => getAssetPrice(getUniqueId(AVAX_AVALANCHE_ADDRESS, ChainId.avalanche));
 const getDegenPriceUnit = () => getAssetPrice(getUniqueId(DEGEN_CHAIN_DEGEN_ADDRESS, ChainId.degen));
+const getApechainPriceUnit = () => getAssetPrice(getUniqueId(APECOIN_APECHAIN_ADDRESS, ChainId.apechain));
 
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
@@ -460,7 +462,10 @@ export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: A
   return { address, chainId };
 };
 
-const calculateL1FeeOptimism = async (tx: RainbowTransaction, provider: Provider): Promise<BigNumberish | undefined> => {
+const calculateL1FeeOptimism = async (
+  tx: RainbowTransaction | TransactionRequest,
+  provider: StaticJsonRpcProvider
+): Promise<BigNumberish | undefined> => {
   const newTx = cloneDeep(tx);
   try {
     if (newTx.value) {
@@ -470,9 +475,7 @@ const calculateL1FeeOptimism = async (tx: RainbowTransaction, provider: Provider
       newTx.nonce = Number(await provider.getTransactionCount(newTx.from));
     }
 
-    // @ts-expect-error operand should be optional
     delete newTx?.chainId;
-    // @ts-expect-error operand should be optional
     delete newTx?.from;
     // @ts-expect-error gas is not in type RainbowTransaction
     delete newTx?.gas;
@@ -526,6 +529,7 @@ export default {
   getBnbPriceUnit,
   getAvaxPriceUnit,
   getDegenPriceUnit,
+  getApechainPriceUnit,
   getNativeAssetForNetwork,
   getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,

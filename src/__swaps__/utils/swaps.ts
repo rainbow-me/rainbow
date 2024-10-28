@@ -9,19 +9,18 @@ import {
   SLIDER_WIDTH,
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
-import { ChainId, ChainName } from '@/chains/types';
-import { isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
+import { ChainId } from '@/chains/types';
 import { globalColors } from '@/design-system';
 import { ForegroundColor, palettes } from '@/design-system/color/palettes';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
 import { RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
-import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
+import { supportedNativeCurrencies } from '@/references';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteParams } from '@rainbow-me/swaps';
 import { swapsStore } from '../../state/swaps/swapsStore';
 import {
   divWorklet,
@@ -341,15 +340,17 @@ export const opacityWorklet = (color: string, opacity: number) => {
 // /---- END worklet utils ----/ //
 
 export const DEFAULT_SLIPPAGE_BIPS = {
-  [ChainId.mainnet]: 100,
-  [ChainId.polygon]: 200,
-  [ChainId.bsc]: 200,
-  [ChainId.optimism]: 200,
-  [ChainId.base]: 200,
-  [ChainId.zora]: 200,
+  [ChainId.apechain]: 200,
   [ChainId.arbitrum]: 200,
   [ChainId.avalanche]: 200,
+  [ChainId.base]: 200,
   [ChainId.blast]: 200,
+  [ChainId.bsc]: 200,
+  [ChainId.degen]: 200,
+  [ChainId.mainnet]: 100,
+  [ChainId.optimism]: 200,
+  [ChainId.polygon]: 200,
+  [ChainId.zora]: 200,
 };
 
 export const slippageInBipsToString = (slippageInBips: number) => (slippageInBips / 100).toFixed(1);
@@ -495,44 +496,6 @@ export const getCrossChainTimeEstimateWorklet = ({
   };
 };
 
-export const isUnwrapEthWorklet = ({
-  buyTokenAddress,
-  chainId,
-  sellTokenAddress,
-}: {
-  chainId: ChainId;
-  sellTokenAddress: string;
-  buyTokenAddress: string;
-}) => {
-  'worklet';
-  if (chainId === ChainId.mainnet) {
-    return isLowerCaseMatchWorklet(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatchWorklet(buyTokenAddress, ETH_ADDRESS);
-  } else {
-    return (
-      isLowerCaseMatchWorklet(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatchWorklet(buyTokenAddress, ETH_ADDRESS_AGGREGATOR)
-    );
-  }
-};
-
-export const isWrapEthWorklet = ({
-  buyTokenAddress,
-  chainId,
-  sellTokenAddress,
-}: {
-  chainId: ChainId;
-  sellTokenAddress: string;
-  buyTokenAddress: string;
-}) => {
-  'worklet';
-  if (chainId === ChainId.mainnet) {
-    return isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId]);
-  } else {
-    return (
-      isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS_AGGREGATOR) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId])
-    );
-  }
-};
-
 export const priceForAsset = ({
   asset,
   assetType,
@@ -651,7 +614,6 @@ export const buildQuoteParams = ({
         : undefined,
     slippage: Number(slippage),
     refuel: false,
-    swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
     toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
     currency: store.getState().settings.nativeCurrency,
   };

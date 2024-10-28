@@ -1,12 +1,12 @@
 // @refresh
-import React, { ReactNode, createContext, useCallback, useContext, useEffect, useRef } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useRef } from 'react';
 import { InteractionManager, NativeModules, StyleProp, TextInput, TextStyle } from 'react-native';
 import {
   AnimatedRef,
   DerivedValue,
-  SharedValue,
   runOnJS,
   runOnUI,
+  SharedValue,
   useAnimatedReaction,
   useAnimatedRef,
   useAnimatedStyle,
@@ -26,7 +26,7 @@ import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/scree
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
-import { clamp, getDefaultSlippageWorklet, isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getFlashbotsProvider, getProvider } from '@/handlers/web3';
@@ -34,7 +34,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import * as i18n from '@/languages';
-import { RainbowError, logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -45,7 +45,7 @@ import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { haptics } from '@/utils';
-import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote, QuoteError, SwapType } from '@rainbow-me/swaps';
 
 import { IS_IOS } from '@/env';
 import { Address } from 'viem';
@@ -228,7 +228,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
       const isDegenModeEnabled = swapsStore.getState().degenMode;
-      const slippage = swapsStore.getState().slippage;
       const isSwappingToPopularAsset = swapsStore.getState().outputAsset?.sectionId === 'popular';
 
       const selectedGas = getSelectedGas(parameters.chainId);
@@ -265,7 +264,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       const gasFeeParamsBySpeed = getGasSettingsBySpeed(parameters.chainId);
-      const selectedGasSpeed = getSelectedGasSpeed(parameters.chainId);
 
       let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
         | TransactionGasParamAmounts
@@ -303,18 +301,26 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         SwapInputController.quoteFetchingInterval.start();
 
         analyticsV2.track(analyticsV2.event.swapsFailed, {
-          createdAt: Date.now(),
           type,
-          parameters,
-          selectedGas,
-          selectedGasSpeed,
-          slippage,
-          bridge: isBridge,
-          errorMessage,
-          inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
-          outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+          isBridge: isBridge,
+          inputAssetSymbol: internalSelectedInputAsset.value?.symbol || '',
+          inputAssetName: internalSelectedInputAsset.value?.name || '',
+          inputAssetAddress: internalSelectedInputAsset.value?.address as AddressOrEth,
+          inputAssetChainId: internalSelectedInputAsset.value?.chainId || ChainId.mainnet,
+          inputAssetAmount: parameters.quote.sellAmount as number,
+          outputAssetSymbol: internalSelectedOutputAsset.value?.symbol || '',
+          outputAssetName: internalSelectedOutputAsset.value?.name || '',
+          outputAssetAddress: internalSelectedOutputAsset.value?.address as AddressOrEth,
+          outputAssetChainId: internalSelectedOutputAsset.value?.chainId || ChainId.mainnet,
+          outputAssetAmount: parameters.quote.buyAmount as number,
+          mainnetAddress: (parameters.assetToBuy.chainId === ChainId.mainnet
+            ? parameters.assetToBuy.address
+            : parameters.assetToSell.mainnetAddress) as AddressOrEth,
+          flashbots: parameters.flashbots ?? false,
+          tradeAmountUSD: parameters.quote.tradeAmountUSD,
           degenMode: isDegenModeEnabled,
           isSwappingToPopularAsset,
+          errorMessage,
         });
 
         if (errorMessage !== 'handled') {
@@ -344,25 +350,40 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       clearCustomGasSettings(chainId);
       NotificationManager?.postNotification('rapCompleted');
       performanceTracking.getState().executeFn({
-        fn: Navigation.handleAction,
+        fn: () => {
+          const { routes, index } = Navigation.getState();
+          if (index === 0 || routes[index - 1].name === Routes.EXPANDED_ASSET_SHEET) {
+            Navigation.handleAction(Routes.WALLET_SCREEN, {});
+          } else {
+            Navigation.goBack();
+          }
+        },
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.SheetDismissal,
         endOfOperation: true,
         metadata: {
           degenMode: isDegenModeEnabled,
         },
-      })(Routes.PROFILE_SCREEN, {});
+      })();
 
       analyticsV2.track(analyticsV2.event.swapsSubmitted, {
-        createdAt: Date.now(),
         type,
-        parameters,
-        selectedGas,
-        selectedGasSpeed,
-        slippage,
-        bridge: isBridge,
-        inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
-        outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+        isBridge: isBridge,
+        inputAssetSymbol: internalSelectedInputAsset.value?.symbol || '',
+        inputAssetName: internalSelectedInputAsset.value?.name || '',
+        inputAssetAddress: internalSelectedInputAsset.value?.address as AddressOrEth,
+        inputAssetChainId: internalSelectedInputAsset.value?.chainId || ChainId.mainnet,
+        inputAssetAmount: parameters.quote.sellAmount as number,
+        outputAssetSymbol: internalSelectedOutputAsset.value?.symbol || '',
+        outputAssetName: internalSelectedOutputAsset.value?.name || '',
+        outputAssetAddress: internalSelectedOutputAsset.value?.address as AddressOrEth,
+        outputAssetChainId: internalSelectedOutputAsset.value?.chainId || ChainId.mainnet,
+        outputAssetAmount: parameters.quote.buyAmount as number,
+        mainnetAddress: (parameters.assetToBuy.chainId === ChainId.mainnet
+          ? parameters.assetToBuy.address
+          : parameters.assetToSell.mainnetAddress) as AddressOrEth,
+        flashbots: parameters.flashbots ?? false,
+        tradeAmountUSD: parameters.quote.tradeAmountUSD,
         degenMode: isDegenModeEnabled,
         isSwappingToPopularAsset,
       });
@@ -404,17 +425,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const quoteData = q as QuoteTypeMap[typeof type];
       const flashbots = (SwapSettings.flashbots.value && !!supportedFlashbotsChainIds.includes(inputAsset.chainId)) ?? false;
 
-      const isNativeWrapOrUnwrap =
-        isWrapEthWorklet({
-          buyTokenAddress: quoteData.buyTokenAddress,
-          sellTokenAddress: quoteData.sellTokenAddress,
-          chainId: inputAsset.chainId,
-        }) ||
-        isUnwrapEthWorklet({
-          buyTokenAddress: quoteData.buyTokenAddress,
-          sellTokenAddress: quoteData.sellTokenAddress,
-          chainId: inputAsset.chainId,
-        });
+      const isNativeWrapOrUnwrap = quoteData.swapType === SwapType.wrap || quoteData.swapType === SwapType.unwrap;
 
       // Do not deleeeet the comment below 😤
       // About to get quote
@@ -429,8 +440,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           buyAmountDisplay: isNativeWrapOrUnwrap ? quoteData.buyAmount : quoteData.buyAmountDisplay,
           sellAmountDisplay: isNativeWrapOrUnwrap ? quoteData.sellAmount : quoteData.sellAmountDisplay,
           feeInEth: isNativeWrapOrUnwrap ? '0' : quoteData.feeInEth,
-          fromChainId: inputAsset.chainId,
-          toChainId: outputAsset.chainId,
         },
         flashbots,
       };

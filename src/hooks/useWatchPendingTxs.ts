@@ -1,6 +1,6 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import useAccountSettings from './useAccountSettings';
-import { RainbowTransaction, MinedTransaction } from '@/entities/transactions/transaction';
+import { RainbowTransaction, MinedTransaction, TransactionStatus, FlashbotsStatus } from '@/entities';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
@@ -9,12 +9,11 @@ import { getProvider } from '@/handlers/web3';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { queryClient } from '@/react-query/queryClient';
 import { getTransactionFlashbotStatus } from '@/handlers/transactions';
-import { usePendingTransactionsStore } from '@/state/pendingTransactions';
-import { useNonceStore } from '@/state/nonces';
-import { Address } from 'viem';
-import { nftsQueryKey } from '@/resources/nfts';
-import { getNftSortForAddress } from './useNFTsSortBy';
 import { ChainId } from '@/chains/types';
+import { invalidateAddressNftsQueries } from '@/resources/nfts';
+import { useNonceStore } from '@/state/nonces';
+import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { Address } from 'viem';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
@@ -49,13 +48,13 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           testnetMode: !!connectedToHardhat,
         })
       );
-      queryClient.invalidateQueries(nftsQueryKey({ address, sortBy: getNftSortForAddress(address) }));
+      invalidateAddressNftsQueries(address);
     },
     [address, connectedToHardhat, nativeCurrency]
   );
 
   const processFlashbotsTransaction = useCallback(async (tx: RainbowTransaction): Promise<RainbowTransaction> => {
-    const flashbotsTxStatus = await getTransactionFlashbotStatus(tx, tx.hash!);
+    const flashbotsTxStatus = await getTransactionFlashbotStatus(tx, tx.hash);
     if (flashbotsTxStatus) {
       const { flashbotsStatus, status, minedAt, title } = flashbotsTxStatus;
 
@@ -65,7 +64,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         minedAt,
         title,
         flashbotsStatus,
-      } as RainbowTransaction;
+      } as MinedTransaction;
     }
     return tx;
   }, []);
@@ -73,7 +72,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   const processSupportedNetworkTransaction = useCallback(
     async (tx: RainbowTransaction) => {
       const transaction = await transactionFetchQuery({
-        hash: tx.hash!,
+        hash: tx.hash,
         chainId: tx.chainId,
         address,
         currency: nativeCurrency,
@@ -94,11 +93,11 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         if (tx.chainId && tx.hash && address) {
           updatedTransaction = await processSupportedNetworkTransaction(updatedTransaction);
           // if flashbots tx and no blockNumber, check if it failed
-          if (!(tx as any).blockNumber && tx.flashbots) {
+          if (tx.flashbots && !('blockNumber' in tx)) {
             updatedTransaction = await processFlashbotsTransaction(updatedTransaction);
           }
         } else {
-          throw new Error('Pending transaction missing chain id');
+          throw new Error('Pending transaction missing chainId, hash, or address');
         }
       } catch (e) {
         logger.error(new RainbowError(`[useWatchPendingTransaction]: Failed to watch transaction`), {
@@ -106,7 +105,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         });
       }
 
-      if (updatedTransaction?.status !== 'pending') {
+      if (updatedTransaction?.status !== TransactionStatus.pending) {
         refreshAssets(tx);
       }
       return updatedTransaction;
@@ -133,7 +132,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           return acc;
         }
         // if tx is flashbots and failed, we want to use the lowest nonce
-        if (tx.flashbots && (tx as any)?.flashbotsStatus === 'FAILED' && tx?.nonce) {
+        if (tx.flashbots && tx?.flashbotsStatus === FlashbotsStatus.FAILED && tx?.nonce) {
           // if we already have a failed flashbots tx, we want to use the lowest nonce
           if (flashbotsTxFailed && tx.nonce < acc.get(tx.chainId)) {
             acc.set(tx.chainId, tx.nonce);
@@ -173,9 +172,12 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 
     processNonces(updatedPendingTransactions);
 
-    const { newPendingTransactions, minedTransactions } = updatedPendingTransactions.reduce(
+    const { newPendingTransactions, minedTransactions } = updatedPendingTransactions.reduce<{
+      newPendingTransactions: RainbowTransaction[];
+      minedTransactions: MinedTransaction[];
+    }>(
       (acc, tx) => {
-        if (tx?.status === 'pending') {
+        if (tx?.status === TransactionStatus.pending) {
           acc.newPendingTransactions.push(tx);
         } else {
           acc.minedTransactions.push(tx as MinedTransaction);
@@ -183,8 +185,8 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         return acc;
       },
       {
-        newPendingTransactions: [] as RainbowTransaction[],
-        minedTransactions: [] as MinedTransaction[],
+        newPendingTransactions: [],
+        minedTransactions: [],
       }
     );
 

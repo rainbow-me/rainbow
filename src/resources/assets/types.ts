@@ -28,7 +28,7 @@ export type AddysAddressAsset = {
 
 export type AddysAsset = {
   asset_code: string;
-  colors: TokenColors;
+  colors?: TokenColors;
   decimals: number;
   icon_url?: string;
   name: string;
@@ -37,6 +37,7 @@ export type AddysAsset = {
   price?: AddysAssetPrice;
   symbol: string;
   type?: string;
+  transferable?: boolean;
 };
 
 export type AddysNetworkDetails = {

@@ -4,6 +4,7 @@ const HARDHAT_CHAIN_ID = 1337;
 const HARDHAT_OP_CHAIN_ID = 1338;
 
 export enum Network {
+  apechain = 'apechain',
   arbitrum = 'arbitrum',
   goerli = 'goerli',
   mainnet = 'mainnet',
@@ -19,6 +20,7 @@ export enum Network {
 }
 
 export enum ChainId {
+  apechain = 33139,
   arbitrum = chain.arbitrum.id,
   arbitrumNova = chain.arbitrumNova.id,
   arbitrumSepolia = chain.arbitrumSepolia.id,
@@ -54,6 +56,7 @@ export enum ChainId {
 }
 
 export enum ChainName {
+  apechain = 'apechain',
   arbitrum = 'arbitrum',
   arbitrumNova = 'arbitrum-nova',
   arbitrumSepolia = 'arbitrum-sepolia',
@@ -122,8 +125,15 @@ export interface BackendNetworkServices {
   meteorology: {
     enabled: boolean;
   };
+  notifications: {
+    enabled: boolean;
+  };
   swap: {
     enabled: boolean;
+    swap: boolean;
+    swapExactOutput: boolean;
+    bridge: boolean;
+    bridgeExactOutput: boolean;
   };
   addys: {
     approvals: boolean;

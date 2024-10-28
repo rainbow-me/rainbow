@@ -1,12 +1,15 @@
 import { Chain } from 'viem/chains';
-
-import backendNetworks from '../references/networks.json';
-
+import { queryClient } from '@/react-query';
+import { backendNetworksQueryKey, BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
 import { ChainId, BackendNetwork, BackendNetworkServices, chainHardhat, chainHardhatOptimism } from './types';
 import { transformBackendNetworksToChains } from './utils/backendNetworks';
 import { gasUtils } from '@/utils';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { IS_TEST } from '@/env';
+import buildTimeNetworks from '@/references/networks.json';
+
+// NOTE: Prefer runtime data from backendNetworksQueryKey, but fallback to buildTimeNetworks if needed
+const backendNetworks = queryClient.getQueryData<BackendNetworksResponse>(backendNetworksQueryKey()) ?? buildTimeNetworks;
 
 const BACKEND_CHAINS = transformBackendNetworksToChains(backendNetworks.networks);
 
@@ -105,6 +108,8 @@ export const chainsSwapPollingInterval: Record<ChainId, number> = backendNetwork
 
 const defaultSimplehashNetworks = (chainId: ChainId) => {
   switch (chainId) {
+    case ChainId.apechain:
+      return 'apechain';
     case ChainId.arbitrum:
       return 'arbitrum';
     case ChainId.avalanche:
@@ -155,6 +160,12 @@ export const meteorologySupportedChainIds = filterChainIdsByService(services => 
 
 export const supportedSwapChainIds = filterChainIdsByService(services => services.swap.enabled);
 
+export const supportedSwapExactOutputChainIds = filterChainIdsByService(services => services.swap.swapExactOutput);
+
+export const supportedBridgeExactOutputChainIds = filterChainIdsByService(services => services.swap.bridgeExactOutput);
+
+export const supportedNotificationsChainIds = filterChainIdsByService(services => services.notifications.enabled);
+
 export const supportedApprovalsChainIds = filterChainIdsByService(services => services.addys.approvals);
 
 export const supportedTransactionsChainIds = filterChainIdsByService(services => services.addys.transactions);
@@ -166,19 +177,6 @@ export const supportedPositionsChainIds = filterChainIdsByService(services => se
 export const supportedTokenSearchChainIds = filterChainIdsByService(services => services.tokenSearch.enabled);
 
 export const supportedNftChainIds = filterChainIdsByService(services => services.nftProxy.enabled);
-
-export const supportedWalletConnectChainIds = [
-  ChainId.arbitrum,
-  ChainId.avalanche,
-  ChainId.base,
-  ChainId.blast,
-  ChainId.bsc,
-  ChainId.degen,
-  ChainId.mainnet,
-  ChainId.optimism,
-  ChainId.polygon,
-  ChainId.zora,
-];
 
 export const supportedFlashbotsChainIds = [ChainId.mainnet];
 

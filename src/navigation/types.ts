@@ -5,7 +5,10 @@ import Routes from '@/navigation/routesNames';
 import { PortalSheetProps } from '@/screens/Portal';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
+import { ParsedAddressAsset, PendingTransaction, UniqueAsset } from '@/entities';
 import { Claimable } from '@/resources/addys/claimables/types';
+import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/walletConnect/types';
+import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -18,6 +21,12 @@ declare global {
 }
 
 export type RootStackParamList = {
+  [Routes.SEND_SHEET]: {
+    asset?: ParsedAddressAsset | UniqueAsset;
+    address?: string;
+    nativeAmount?: string;
+    fromProfile?: boolean;
+  };
   [Routes.CHANGE_WALLET_SHEET]: {
     watchOnly: boolean;
     currentAccountAddress: string;
@@ -25,12 +34,12 @@ export type RootStackParamList = {
   };
   [Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET]: {
     accentColor?: string;
-    tx: Record<string, any>;
+    tx: PendingTransaction;
     type: 'speed_up' | 'cancel';
   };
   [Routes.SPEED_UP_AND_CANCEL_SHEET]: {
     accentColor?: string;
-    tx: Record<string, any>;
+    tx: PendingTransaction;
     type: 'speed_up' | 'cancel';
   };
   [Routes.BACKUP_SHEET]: {
@@ -54,7 +63,10 @@ export type RootStackParamList = {
     [key: string]: any;
   };
   [Routes.PORTAL]: PortalSheetProps;
-  [Routes.WALLET_SCREEN]: any;
+  [Routes.WALLET_SCREEN]: {
+    initialized?: boolean;
+    emptyWallet?: boolean;
+  };
   [Routes.PROFILE_SCREEN]: any;
   [Routes.SWAP_SETTINGS_SHEET]: any;
   [Routes.SWAP_DETAILS_SHEET]: any;
@@ -78,5 +90,11 @@ export type RootStackParamList = {
   };
   [Routes.CLAIM_CLAIMABLE_PANEL]: {
     claimable: Claimable;
+  };
+  [Routes.WALLET_CONNECT_APPROVAL_SHEET]: WalletconnectApprovalSheetRouteParams & {
+    type: WalletConnectApprovalSheetType;
+  };
+  [Routes.WALLET_CONNECT_REDIRECT_SHEET]: {
+    type: WalletconnectResultType;
   };
 };

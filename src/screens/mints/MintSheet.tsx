@@ -26,7 +26,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { ReservoirCollection } from '@/graphql/__generated__/arcDev';
 import { format } from 'date-fns';
-import { NewTransaction } from '@/entities';
+import { NewTransaction, TransactionStatus } from '@/entities';
 import * as i18n from '@/languages';
 import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
@@ -408,7 +408,7 @@ const MintSheet = () => {
 
                 const tx: NewTransaction = {
                   chainId,
-                  status: 'pending',
+                  status: TransactionStatus.pending,
                   to: item.data?.to,
                   from: item.data?.from,
                   hash: item.txHashes[0].txHash,

@@ -12,9 +12,8 @@ import {
   subtract,
 } from '@/helpers/utilities';
 
-import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote, SwapType } from '@rainbow-me/swaps';
 import { useNativeAsset } from '@/utils/ethereumUtils';
-import { isUnwrapNative, isWrapNative } from '@/handlers/swap';
 import { ChainId } from '@/chains/types';
 
 export enum SwapPriceImpactType {
@@ -37,7 +36,7 @@ export default function usePriceImpactDetails(
   const { colors } = useTheme();
 
   const sellChainId = (
-    (tradeDetails as CrosschainQuote)?.fromChainId ? (tradeDetails as CrosschainQuote)?.fromChainId : chainId
+    (tradeDetails as CrosschainQuote)?.sellTokenAsset?.chainId ? (tradeDetails as CrosschainQuote)?.sellTokenAsset?.chainId : chainId
   ) as ChainId;
   const buyChainId = (outputCurrency?.chainId || chainId) as ChainId;
   const sellNativeAsset = useNativeAsset({ chainId: sellChainId });
@@ -45,18 +44,7 @@ export default function usePriceImpactDetails(
 
   const isWrapOrUnwrap = useMemo(() => {
     if (!tradeDetails) return false;
-    return (
-      isWrapNative({
-        buyTokenAddress: tradeDetails?.buyTokenAddress,
-        sellTokenAddress: tradeDetails?.sellTokenAddress,
-        chainId: buyChainId,
-      }) ||
-      isUnwrapNative({
-        buyTokenAddress: tradeDetails?.buyTokenAddress,
-        sellTokenAddress: tradeDetails?.sellTokenAddress,
-        chainId: buyChainId,
-      })
-    );
+    return tradeDetails.swapType === SwapType.wrap || tradeDetails.swapType === SwapType.unwrap;
   }, [buyChainId, tradeDetails]);
 
   const inputNativeAmount = useMemo(() => {

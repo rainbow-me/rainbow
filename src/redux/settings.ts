@@ -22,8 +22,7 @@ import {
   saveNativeCurrency,
   saveTestnetsEnabled,
 } from '@/handlers/localstorage/globalSettings';
-import { web3SetHttpProvider } from '@/handlers/web3';
-import { explorerClearState, explorerInit } from '@/redux/explorer';
+import { getProvider } from '@/handlers/web3';
 import { AppState } from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
 import { Network, ChainId } from '@/chains/types';
@@ -150,7 +149,7 @@ export const settingsLoadState =
 export const settingsLoadNetwork = () => async (dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>) => {
   try {
     const chainId = await getChainId();
-    await web3SetHttpProvider(chainId);
+    getProvider({ chainId });
     dispatch({
       payload: { chainId },
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
@@ -235,7 +234,7 @@ export const settingsUpdateAccountAddress =
   };
 
 export const settingsUpdateNetwork = (chainId: ChainId) => async (dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>) => {
-  await web3SetHttpProvider(chainId);
+  getProvider({ chainId });
   try {
     dispatch({
       payload: { chainId },
@@ -264,13 +263,11 @@ export const settingsChangeLanguage = (language: Language) => async (dispatch: D
 export const settingsChangeNativeCurrency =
   (nativeCurrency: NativeCurrencyKey) =>
   async (dispatch: ThunkDispatch<AppState, unknown, SettingsStateUpdateNativeCurrencySuccessAction>) => {
-    dispatch(explorerClearState());
     try {
       dispatch({
         payload: nativeCurrency,
         type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
       });
-      dispatch(explorerInit());
       saveNativeCurrency(nativeCurrency);
       analytics.identify({ currency: nativeCurrency });
     } catch (error) {
