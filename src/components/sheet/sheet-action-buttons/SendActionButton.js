@@ -13,7 +13,7 @@ function SendActionButton({ asset, color: givenColor, ...props }) {
     () =>
       navigate(Routes.SEND_FLOW, {
         asset,
-        ...(IS_IOS ? { screen: Routes.SEND_SHEET } : {}),
+        ...(IS_IOS ? { screen: Routes.SEND_SHEET, params: { asset } } : {}),
       }),
     [navigate, asset]
   );
