@@ -1,7 +1,7 @@
 import React from 'react';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { ClaimingTransactionClaimable } from './ClaimingTransactionClaimable';
-import { ClaimingSponsoredClaimable } from './ClaimingSponsoredClaimable';
+import { TransactionClaimablePanel } from './components/TransactionClaimablePanel';
+import { SponsoredClaimablePanel } from './components/SponsoredClaimablePanel';
 import { RootStackParamList } from '@/navigation/types';
 
 export const ClaimClaimablePanel = () => {
@@ -10,8 +10,8 @@ export const ClaimClaimablePanel = () => {
   } = useRoute<RouteProp<RootStackParamList, 'ClaimClaimablePanel'>>();
 
   return claimable.type === 'transaction' ? (
-    <ClaimingTransactionClaimable claimable={claimable} />
+    <TransactionClaimablePanel claimable={claimable} />
   ) : (
-    <ClaimingSponsoredClaimable claimable={claimable} />
+    <SponsoredClaimablePanel claimable={claimable} />
   );
 };

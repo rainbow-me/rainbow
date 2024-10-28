@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Claimable, ClaimResponse, SponsoredClaimable } from '@/resources/addys/claimables/types';
-import { ClaimingClaimableSharedUI, ClaimStatus } from './ClaimingClaimableSharedUI';
+import { ClaimStatus } from '../ClaimingClaimableSharedUI';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
 import { ADDYS_BASE_URL, addysHttp, claimablesQueryKey } from '@/resources/addys/claimables/query';
@@ -9,8 +9,11 @@ import { useMutation } from '@tanstack/react-query';
 import { getProvider } from '@/handlers/web3';
 import { useAccountSettings } from '@/hooks';
 import { haptics } from '@/utils';
+import { ClaimPanel } from './ClaimPanel';
+import { ClaimValueDisplay } from './ClaimValueDisplay';
+import { ClaimButton } from './ClaimButton';
 
-export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: SponsoredClaimable }) => {
+export function SponsoredClaimablePanel({ claimable }: { claimable: SponsoredClaimable }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
@@ -96,6 +99,19 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
   });
 
   return (
-    <ClaimingClaimableSharedUI claim={claimClaimable} claimable={claimable} claimStatus={claimStatus} setClaimStatus={setClaimStatus} />
+    <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
+      <ClaimValueDisplay
+        chainId={claimable.asset.chainId}
+        iconUrl={claimable.asset.icon_url} // FIXME
+        nativeValueDisplay={claimable.value.nativeAsset.display}
+        symbol={claimable.asset.symbol}
+      />
+      <ClaimButton
+        claimType="sponsored"
+        claim={claimClaimable}
+        claimStatus={claimStatus}
+        claimValueDisplay={claimable.value.claimAsset.display}
+      />
+    </ClaimPanel>
   );
-};
+}
