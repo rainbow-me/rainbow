@@ -287,7 +287,7 @@ export default function SendSheet() {
         startPollingGasFees(currentChainId);
       });
     }
-  }, [startPollingGasFees, selected?.chainId, prevChainId, currentChainId]);
+  }, [startPollingGasFees, prevChainId, currentChainId]);
 
   // Stop polling when the sheet is unmounted
   useEffect(() => {
