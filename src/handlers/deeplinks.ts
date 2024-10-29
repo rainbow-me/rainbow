@@ -29,8 +29,8 @@ import { queryTokenSearch } from '@/__swaps__/screens/Swap/resources/search/sear
 import { clamp } from '@/__swaps__/utils/swaps';
 import { isAddress } from 'viem';
 import { settingsUpdateAccountAddress } from '@/redux/settings';
-import { queryUserAssets } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { navigateToSwaps, SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
   url: string;
@@ -344,18 +344,14 @@ function handleWalletConnect(uri?: string, connector?: string) {
   }
 }
 
-const isValidAsset = (s: string | undefined): s is UniqueId => {
-  if (!s) return false;
-  const [address, chainId] = s.split('_');
-  return supportedSwapChainIds.includes(parseInt(chainId, 10)) && (address === 'eth' || address.length === 42);
-};
-
-const querySearchAsset = async (uniqueId: string | undefined): Promise<ParsedSearchAsset | undefined> => {
-  if (!isValidAsset(uniqueId)) return;
+const querySwapAsset = async (uniqueId: string | undefined): Promise<ParsedSearchAsset | undefined> => {
+  if (!uniqueId) return undefined;
 
   const { address, chainId } = deriveAddressAndChainWithUniqueId(uniqueId);
+  if (supportedSwapChainIds.includes(parseInt(chainId.toString(), 10))) return undefined;
+  if (address === 'eth' || address.length === 42) return undefined;
 
-  const userAsset = queryUserAssets().then(allUserAssets => allUserAssets[chainId][uniqueId]);
+  const userAsset = userAssetsStore.getState().getUserAsset(uniqueId) || undefined;
 
   const searchAsset = await queryTokenSearch({
     chainId,
@@ -365,10 +361,9 @@ const querySearchAsset = async (uniqueId: string | undefined): Promise<ParsedSea
     list: 'verifiedAssets',
   }).then(res => res[0]);
 
-  // @ts-expect-error aaaa
   if (!searchAsset) return userAsset;
 
-  return parseSearchAsset({ searchAsset, userAsset: await userAsset });
+  return parseSearchAsset({ searchAsset, userAsset });
 };
 
 function isValidGasSpeed(s: string | undefined): s is GasSpeed {
@@ -387,6 +382,11 @@ function setFromWallet(address: string | undefined) {
   }
 }
 
+function isNumbericString(value: string | undefined): value is string {
+  if (!value) return false;
+  return !isNaN(+value);
+}
+
 async function handleSwapsDeeplink(url: string) {
   const { query } = new URL(url, true);
 
@@ -394,20 +394,23 @@ async function handleSwapsDeeplink(url: string) {
 
   const params: SwapsParams = {};
 
-  const inputAsset = querySearchAsset(query.inputAsset);
-  const outputAsset = querySearchAsset(query.outputAsset);
-  params.inputAsset = await inputAsset;
-  params.outputAsset = await outputAsset;
+  const inputAsset = querySwapAsset(query.inputAsset);
+  const outputAsset = querySwapAsset(query.outputAsset);
 
   if ('flashbots' in query) params.flashbots = query.flashbots === 'true';
-  if ('slippage' in query) params.slippage = query.slippage;
+  if ('slippage' in query && isNumbericString(query.slippage)) {
+    params.slippage = query.slippage;
+  }
 
-  if (query.percentageToSell) params.percentageToSell = clamp(+query.percentageToSell, 0, 1);
-  else if (query.inputAmount) params.inputAmount = query.inputAmount;
-  else if (query.outputAmount) params.outputAmount = query.outputAmount;
+  if (isNumbericString(query.percentageToSell)) params.percentageToSell = clamp(+query.percentageToSell, 0, 1);
+  else if (isNumbericString(query.inputAmount)) params.inputAmount = query.inputAmount;
+  else if (isNumbericString(query.outputAmount)) params.outputAmount = query.outputAmount;
 
   const gasSpeed = query.gasSpeed?.toLowerCase();
   if (isValidGasSpeed(gasSpeed)) params.gasSpeed = gasSpeed;
+
+  params.inputAsset = await inputAsset;
+  params.outputAsset = await outputAsset;
 
   navigateToSwaps(params);
 }
