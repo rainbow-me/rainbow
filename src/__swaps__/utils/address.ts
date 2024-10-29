@@ -10,7 +10,7 @@ export function truncateAddress(address?: AddressOrEth) {
 
 export function deriveAddressAndChainWithUniqueId(uniqueId: UniqueId) {
   const fragments = uniqueId.split('_');
-  const address = fragments[0] as Address;
+  const address = fragments[0] as AddressOrEth;
   const chainId = parseInt(fragments[1], 10) as ChainId;
   return {
     address,
