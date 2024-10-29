@@ -188,9 +188,11 @@ async function userAssetsQueryFunctionRetryByChain({
     }
     const parsedRetries = await Promise.all(retries);
     for (const parsedAssets of parsedRetries) {
-      const values = Object.values(parsedAssets);
-      if (values[0]) {
-        cachedUserAssets[values[0].chainId] = parsedAssets;
+      if (parsedAssets) {
+        const values = Object.values(parsedAssets);
+        if (values[0]) {
+          cachedUserAssets[values[0].chainId] = parsedAssets;
+        }
       }
     }
     queryClient.setQueryData(userAssetsQueryKey({ address, currency, testnetMode }), cachedUserAssets);
