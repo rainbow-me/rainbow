@@ -29,6 +29,7 @@ import { queryTokenSearch } from '@/__swaps__/screens/Swap/resources/search/sear
 import { clamp } from '@/__swaps__/utils/swaps';
 import { isAddress } from 'viem';
 import { settingsUpdateAccountAddress } from '@/redux/settings';
+import { queryUserAssets } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { navigateToSwaps, SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { userAssetsStore } from '@/state/assets/userAssets';
 
@@ -348,8 +349,8 @@ const querySwapAsset = async (uniqueId: string | undefined): Promise<ParsedSearc
   if (!uniqueId) return undefined;
 
   const { address, chainId } = deriveAddressAndChainWithUniqueId(uniqueId);
-  if (supportedSwapChainIds.includes(parseInt(chainId.toString(), 10))) return undefined;
-  if (address === 'eth' || address.length === 42) return undefined;
+  if (!supportedSwapChainIds.includes(parseInt(chainId.toString(), 10))) return undefined;
+  if (address !== 'eth' && address.length !== 42) return undefined;
 
   const userAsset = userAssetsStore.getState().getUserAsset(uniqueId) || undefined;
 
@@ -398,9 +399,7 @@ async function handleSwapsDeeplink(url: string) {
   const outputAsset = querySwapAsset(query.outputAsset);
 
   if ('flashbots' in query) params.flashbots = query.flashbots === 'true';
-  if ('slippage' in query && isNumbericString(query.slippage)) {
-    params.slippage = query.slippage;
-  }
+  if ('slippage' in query && isNumbericString(query.slippage)) params.slippage = query.slippage;
 
   if (isNumbericString(query.percentageToSell)) params.percentageToSell = clamp(+query.percentageToSell, 0, 1);
   else if (isNumbericString(query.inputAmount)) params.inputAmount = query.inputAmount;
