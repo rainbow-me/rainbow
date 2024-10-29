@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Claimable, ClaimResponse, SponsoredClaimable } from '@/resources/addys/claimables/types';
-import { ClaimStatus } from '../ClaimingClaimableSharedUI';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
 import { ADDYS_BASE_URL, addysHttp, claimablesQueryKey } from '@/resources/addys/claimables/query';
@@ -12,6 +11,7 @@ import { haptics } from '@/utils';
 import { ClaimPanel } from './ClaimPanel';
 import { ClaimValueDisplay } from './ClaimValueDisplay';
 import { ClaimButton } from './ClaimButton';
+import { ClaimStatus } from '../types';
 
 export function SponsoredClaimablePanel({ claimable }: { claimable: SponsoredClaimable }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();

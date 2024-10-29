@@ -4,7 +4,7 @@ import * as i18n from '@/languages';
 import { ChainId } from '@/chains/types';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { chainsLabel } from '@/chains';
-import { ClaimStatus } from '../ClaimingClaimableSharedUI';
+import { ClaimStatus } from '../types';
 
 export function GasDetails({
   chainId,

@@ -3,7 +3,7 @@ import { deviceUtils } from '@/utils';
 import React, { useMemo } from 'react';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
-import { ClaimStatus } from '../ClaimingClaimableSharedUI';
+import { ClaimStatus } from '../types';
 
 const BUTTON_WIDTH = deviceUtils.dimensions.width - 52;
 

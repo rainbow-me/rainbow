@@ -3,8 +3,8 @@ import { Box } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 import React from 'react';
-import { ClaimStatus } from '../ClaimingClaimableSharedUI';
 import { ClaimPanelHeader } from './ClaimPanelHeader';
+import { ClaimStatus } from '../types';
 
 export function ClaimPanel({ children, claimStatus, iconUrl }: { children: React.ReactNode; claimStatus: ClaimStatus; iconUrl: string }) {
   return (
