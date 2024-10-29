@@ -86,9 +86,6 @@ export const userAssetsSetQueryData = ({ address, currency, userAssets, testnetM
 async function userAssetsQueryFunction({
   queryKey: [{ address, currency, testnetMode }],
 }: QueryFunctionArgs<typeof userAssetsQueryKey>): Promise<ParsedAssetsDictByChain> {
-  if (!address) {
-    return {};
-  }
   if (testnetMode) {
     const { assets, chainIdsInResponse } = await fetchHardhatBalancesByChainId(address);
     const parsedAssets: Array<{
@@ -240,9 +237,9 @@ export function useUserAssets<TSelectResult = UserAssetsResult>(
   config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
   const { connectedToHardhat } = useConnectedToHardhatStore();
-
   return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToHardhat }), userAssetsQueryFunction, {
     ...config,
+    enabled: !!address && !!currency,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
     staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,
   });
