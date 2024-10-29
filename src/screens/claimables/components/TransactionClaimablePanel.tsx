@@ -27,6 +27,7 @@ import { ClaimCustomization } from './ClaimCustomization';
 import { ClaimButton } from './ClaimButton';
 import { GasDetails } from './GasDetails';
 import { ClaimStatus, TokenToReceive, TransactionClaimableTxPayload } from '../types';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 
 export function TransactionClaimablePanel({ claimable }: { claimable: TransactionClaimable }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -42,14 +43,15 @@ export function TransactionClaimablePanel({ claimable }: { claimable: Transactio
   >();
   const [txPayload, setTxPayload] = useState<TransactionClaimableTxPayload | undefined>();
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
-  const [tokenToReceive, setTokenToReceive] = useState<TokenToReceive | undefined>({
+  const [outputToken, setOutputToken] = useState<TokenToReceive | undefined>({
+    address: claimable.asset.address,
     iconUrl: claimable.asset.icon_url,
     name: claimable.asset.name,
     symbol: claimable.asset.symbol,
     networks: claimable.asset.networks,
     isNativeAsset: false,
   });
-  const [chainId, setChainId] = useState<ChainId | undefined>(claimable.chainId);
+  const [outputChainId, setOutputChainId] = useState<ChainId | undefined>(claimable.chainId);
 
   const nativeNetworkAsset = useNativeAsset({ chainId: 8453 });
 
@@ -162,9 +164,18 @@ export function TransactionClaimablePanel({ claimable }: { claimable: Transactio
     true
   );
 
+  const { data: outputAsset } = useExternalToken(
+    {
+      address: (outputToken as TokenToReceive)?.address,
+      chainId: outputChainId!,
+      currency: nativeCurrency,
+    },
+    { enabled: !!(outputToken && outputChainId) }
+  );
+
   const { mutate: claimClaimable } = useMutation({
     mutationFn: async () => {
-      if (!txPayload) {
+      if (!txPayload || !outputAsset || !outputChainId) {
         haptics.notificationError();
         setClaimStatus('error');
         logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to missing tx payload'));
@@ -212,11 +223,12 @@ export function TransactionClaimablePanel({ claimable }: { claimable: Transactio
         fromAddress: accountAddress,
         sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
         // buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : outputAsset.address,
-        buyTokenAddress: ETH_ADDRESS,
+        // buyTokenAddress: outputToken?.address,
+        buyTokenAddress: outputAsset.address ? ETH_ADDRESS : outputAsset.address,
         sellAmount: convertAmountToRawAmount(0.00001, claimable.asset.decimals),
         slippage: 0.5,
         refuel: false,
-        toChainId: 8453,
+        toChainId: outputChainId,
         currency: nativeCurrency,
       };
 
@@ -226,17 +238,19 @@ export function TransactionClaimablePanel({ claimable }: { claimable: Transactio
         buyAmount: undefined,
         // permit?: boolean;
         chainId: claimable.chainId,
-        toChainId: 8453,
+        toChainId: outputChainId,
         // requiresApprove?: boolean;
         // meta?: SwapMetadata;
-        assetToSell: claimable.asset,
-        assetToBuy: nativeNetworkAsset,
+        assetToSell: outputAsset,
+        assetToBuy: outputAsset.isNativeAsset ? { ...outputAsset, address: ETH_ADDRESS } : outputAsset,
         // nonce?: number;
         // flashbots?: boolean;
         address: accountAddress,
       };
-
-      const quote = claimable.chainId === 8453 ? await getQuote(params) : await getCrosschainQuote(params);
+      console.log(outputChainId, 'outputChainId');
+      console.log(outputAsset, 'outputAsset');
+      console.log(claimable.chainId, outputChainId);
+      const quote = claimable.chainId === outputChainId ? await getQuote(params) : await getCrosschainQuote(params);
       console.log(claimable.value.claimAsset.amount);
       console.log('quote', quote);
       if (!quote || 'error' in quote) {
@@ -316,12 +330,12 @@ export function TransactionClaimablePanel({ claimable }: { claimable: Transactio
     <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
       <Box gap={20} alignItems="center">
         <ClaimValueDisplay
-          chainId={chainId ?? ChainId.mainnet}
-          iconUrl={tokenToReceive?.iconUrl} // FIXME
+          chainId={outputChainId}
+          iconUrl={outputToken?.iconUrl}
           nativeValueDisplay={claimable.value.nativeAsset.display} // FIXME
-          symbol={tokenToReceive?.symbol} // FIXME
+          symbol={outputToken?.symbol}
         />
-        <ClaimCustomization claimableAsset={claimable.asset} setChainId={setChainId} setToken={setTokenToReceive} />
+        <ClaimCustomization claimableAsset={claimable.asset} setChainId={setOutputChainId} setToken={setOutputToken} />
       </Box>
       <Box alignItems="center" width="full">
         <ClaimButton
@@ -333,7 +347,7 @@ export function TransactionClaimablePanel({ claimable }: { claimable: Transactio
           claimValueDisplay={claimable.value.claimAsset.display} // FIXME
         />
         <GasDetails
-          chainId={chainId ?? claimable.chainId}
+          chainId={claimable.chainId}
           claimStatus={claimStatus}
           isGasReady={isGasReady}
           nativeValueDisplay={nativeCurrencyGasFeeDisplay}

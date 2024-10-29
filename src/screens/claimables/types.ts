@@ -37,4 +37,5 @@ export interface TokenToReceive {
   iconUrl?: string;
   name: string;
   isNativeAsset: boolean;
+  address: string;
 }

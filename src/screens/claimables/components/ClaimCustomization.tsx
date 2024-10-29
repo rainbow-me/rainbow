@@ -34,6 +34,7 @@ export function ClaimCustomization({
 
   const [state, setState] = useState<DropdownState>({
     selectedToken: {
+      address: claimableAsset.address,
       iconUrl: claimableAsset.icon_url,
       name: claimableAsset.name,
       symbol: claimableAsset.symbol,
@@ -62,6 +63,7 @@ export function ClaimCustomization({
         if (nativeToken) {
           if (!nativeTokenDict[nativeToken.symbol]) {
             nativeTokenDict[nativeToken.symbol] = {
+              address: nativeToken.address,
               iconUrl: nativeToken.iconURL,
               name: nativeToken.name,
               symbol: nativeToken.symbol,
@@ -80,6 +82,7 @@ export function ClaimCustomization({
     () => ({
       ...nativeTokens,
       [claimableAsset.symbol]: {
+        address: claimableAsset.address,
         iconUrl: claimableAsset.icon_url,
         name: claimableAsset.name,
         symbol: claimableAsset.symbol,
@@ -88,6 +91,7 @@ export function ClaimCustomization({
       },
       ...(dai && {
         [dai.symbol]: {
+          address: dai.address,
           iconUrl: dai.icon_url,
           name: dai.name,
           symbol: dai.symbol,
@@ -97,6 +101,7 @@ export function ClaimCustomization({
       }),
       ...(wbtc && {
         [wbtc.symbol]: {
+          address: wbtc.address,
           iconUrl: wbtc.icon_url,
           name: wbtc.name,
           symbol: wbtc.symbol,
@@ -111,6 +116,7 @@ export function ClaimCustomization({
   const resetState = useCallback(() => {
     setState({
       selectedToken: {
+        address: claimableAsset.address,
         iconUrl: claimableAsset.icon_url,
         name: claimableAsset.name,
         symbol: claimableAsset.symbol,
@@ -120,7 +126,14 @@ export function ClaimCustomization({
       selectedChain: claimableAsset.chainId,
       isInitialState: true,
     });
-  }, [claimableAsset.icon_url, claimableAsset.name, claimableAsset.symbol, claimableAsset.networks, claimableAsset.chainId]);
+  }, [
+    claimableAsset.address,
+    claimableAsset.icon_url,
+    claimableAsset.name,
+    claimableAsset.symbol,
+    claimableAsset.networks,
+    claimableAsset.chainId,
+  ]);
 
   const tokenMenuConfig = useMemo(() => {
     const availableTokens = Object.values(tokens)
