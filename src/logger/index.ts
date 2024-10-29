@@ -209,7 +209,7 @@ export class Logger {
   }
 
   debug(message: string, metadata: Metadata = {}, context?: string) {
-    // if (context && !this.debugContextRegexes.find(reg => reg.test(context))) return;
+    if (context && !this.debugContextRegexes.find(reg => reg.test(context))) return;
     this.transport(LogLevel.Debug, message, metadata);
   }
 
