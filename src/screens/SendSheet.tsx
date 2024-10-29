@@ -284,6 +284,7 @@ export default function SendSheet() {
     // belongs to
     if (prevChainId !== currentChainId) {
       InteractionManager.runAfterInteractions(() => {
+        console.log('startPollingGasFees', currentChainId);
         startPollingGasFees(currentChainId);
       });
     }
@@ -293,10 +294,11 @@ export default function SendSheet() {
   useEffect(() => {
     return () => {
       InteractionManager.runAfterInteractions(() => {
+        console.log('stopPollingGasFees', currentChainId);
         stopPollingGasFees();
       });
     };
-  }, [stopPollingGasFees]);
+  }, [currentChainId, stopPollingGasFees]);
 
   useEffect(() => {
     const assetChainId = selected?.chainId;

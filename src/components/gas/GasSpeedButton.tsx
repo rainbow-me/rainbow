@@ -175,15 +175,7 @@ const GasSpeedButton = ({
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const rawColorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
 
-  const {
-    gasFeeParamsBySpeed,
-    updateGasFeeOption,
-    selectedGasFee,
-    selectedGasFeeOption,
-    currentBlockParams,
-    startPollingGasFees,
-    stopPollingGasFees,
-  } = useGas();
+  const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFee, selectedGasFeeOption, currentBlockParams } = useGas();
 
   const [gasPriceReady, setGasPriceReady] = useState(false);
   const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState<{
@@ -452,15 +444,6 @@ const GasSpeedButton = ({
     showGasOptions,
     theme,
   ]);
-
-  // start poll gas price
-  useEffect(() => {
-    startPollingGasFees(chainId);
-
-    return () => {
-      stopPollingGasFees();
-    };
-  }, [chainId, startPollingGasFees, stopPollingGasFees]);
 
   useEffect(() => {
     const gasOptions = speeds || GasSpeedOrder;
