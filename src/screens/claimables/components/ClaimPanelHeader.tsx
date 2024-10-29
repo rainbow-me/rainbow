@@ -17,6 +17,10 @@ export function ClaimPanelHeader({ claimStatus, iconUrl }: { claimStatus: ClaimS
         return i18n.t(i18n.l.claimables.panel.tokens_on_the_way);
       case 'success':
         return i18n.t(i18n.l.claimables.panel.claimed);
+      case 'noQuote':
+        return 'Quote Error';
+      case 'noRoute':
+        return 'No Route Found';
       case 'error':
       default:
         return i18n.t(i18n.l.claimables.panel.claiming_failed);
@@ -32,6 +36,8 @@ export function ClaimPanelHeader({ claimStatus, iconUrl }: { claimStatus: ClaimS
       case 'success':
         return 'green';
       case 'error':
+      case 'noQuote':
+      case 'noRoute':
       default:
         return 'red';
     }

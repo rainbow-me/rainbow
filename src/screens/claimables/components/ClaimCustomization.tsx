@@ -1,6 +1,6 @@
 import { Box, Text } from '@/design-system';
 import { haptics } from '@/utils';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { ChainId } from '@/chains/types';
 import { chainsLabel, chainsName, chainsNativeAsset } from '@/chains';
 import { ParsedAddressAsset } from '@/entities';
@@ -10,40 +10,20 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { DAI_ADDRESS, ETH_SYMBOL, WBTC_ADDRESS } from '@/references';
 import { DropdownMenu } from './DropdownMenu';
 import { TokenToReceive } from '../types';
+import { useClaimContext } from './ClaimContext';
 
 type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 
-// Types
-interface DropdownState {
-  selectedToken: TokenToReceive | undefined;
-  selectedChain: ChainId | undefined;
-  isInitialState: boolean;
-}
-
-export function ClaimCustomization({
-  claimableAsset,
-  setToken,
-  setChainId,
-}: {
-  claimableAsset: ParsedAddressAsset;
-  setToken: React.Dispatch<React.SetStateAction<TokenToReceive | undefined>>;
-  setChainId: React.Dispatch<React.SetStateAction<ChainId | undefined>>;
-}) {
+export function ClaimCustomization({ claimableAsset }: { claimableAsset: ParsedAddressAsset }) {
   const { nativeCurrency } = useAccountSettings();
   const balanceSortedChainList = useUserAssetsStore(state => state.getBalanceSortedChainList());
+  const {
+    outputConfig: { chainId: outputChainId, token: outputToken },
+    setOutputConfig,
+    setQuote,
+  } = useClaimContext();
 
-  const [state, setState] = useState<DropdownState>({
-    selectedToken: {
-      address: claimableAsset.address,
-      iconUrl: claimableAsset.icon_url,
-      name: claimableAsset.name,
-      symbol: claimableAsset.symbol,
-      networks: claimableAsset.networks,
-      isNativeAsset: false,
-    },
-    selectedChain: claimableAsset.chainId,
-    isInitialState: true,
-  });
+  const [isInitialState, setIsInitialState] = useState(true);
 
   const { data: dai } = useExternalToken({
     address: DAI_ADDRESS,
@@ -114,8 +94,8 @@ export function ClaimCustomization({
   );
 
   const resetState = useCallback(() => {
-    setState({
-      selectedToken: {
+    setOutputConfig({
+      token: {
         address: claimableAsset.address,
         iconUrl: claimableAsset.icon_url,
         name: claimableAsset.name,
@@ -123,23 +103,26 @@ export function ClaimCustomization({
         networks: claimableAsset.networks,
         isNativeAsset: false,
       },
-      selectedChain: claimableAsset.chainId,
-      isInitialState: true,
+      chainId: claimableAsset.chainId,
     });
+    setQuote(undefined);
+    setIsInitialState(true);
   }, [
+    setOutputConfig,
     claimableAsset.address,
     claimableAsset.icon_url,
     claimableAsset.name,
     claimableAsset.symbol,
     claimableAsset.networks,
     claimableAsset.chainId,
+    setQuote,
   ]);
 
   const tokenMenuConfig = useMemo(() => {
     const availableTokens = Object.values(tokens)
       .filter(token => {
         // exclude if token is already selected
-        if (token.symbol === state.selectedToken?.symbol) {
+        if (token.symbol === outputToken?.symbol) {
           return false;
         }
 
@@ -149,21 +132,21 @@ export function ClaimCustomization({
         // 2. there's no selected chain
         // 3. the selected chain supports ETH
         if (token.symbol === ETH_SYMBOL) {
-          return !token.isNativeAsset || state.isInitialState || !state.selectedChain || state.selectedChain in token.networks;
+          return !token.isNativeAsset || isInitialState || !outputChainId || outputChainId in token.networks;
         }
 
         // if token is a native asset, include if BOTH are true:
         // 1. there's a selected chain
         // 2. the selected chain supports the native asset
         if (token.isNativeAsset) {
-          return state.selectedChain && state.selectedChain in token.networks;
+          return outputChainId && outputChainId in token.networks;
         }
 
         // otherwise (non-native, non-selected token), include if ANY are true:
         // 1. it's the initial state
         // 2. there's no selected chain
         // 3. the selected chain supports the token
-        return state.isInitialState || !state.selectedChain || state.selectedChain in token.networks;
+        return isInitialState || !outputChainId || outputChainId in token.networks;
       })
       .map(token => ({
         actionKey: token.symbol,
@@ -181,11 +164,11 @@ export function ClaimCustomization({
         ...availableTokens,
       ],
     };
-  }, [tokens, state.selectedChain, state.selectedToken, state.isInitialState]);
+  }, [tokens, outputToken?.symbol, isInitialState, outputChainId]);
 
   const networkMenuConfig = useMemo(() => {
     const supportedChains = balanceSortedChainList
-      .filter(chainId => chainId !== state.selectedChain)
+      .filter(chainId => chainId !== outputChainId)
       .map(chainId => ({
         actionKey: `${chainId}`,
         actionTitle: chainsLabel[chainId],
@@ -205,7 +188,7 @@ export function ClaimCustomization({
         ...supportedChains,
       ],
     };
-  }, [balanceSortedChainList, state.selectedChain]);
+  }, [balanceSortedChainList, outputChainId]);
 
   const handleTokenSelection = useCallback(
     (selection: keyof typeof tokens | 'reset') => {
@@ -214,23 +197,21 @@ export function ClaimCustomization({
         resetState();
       } else {
         const newToken = tokens[selection];
-        setState(prev => {
-          const currentChainId = prev.selectedChain;
+        setOutputConfig(prev => {
+          const currentChainId = prev.chainId;
           const newChainId = currentChainId && !(currentChainId in tokens[selection].networks) ? undefined : currentChainId;
-          console.log('TEST');
-          setToken(newToken);
-          setChainId(newChainId);
 
           return {
             ...prev,
-            selectedChain: newChainId,
-            selectedToken: newToken,
-            isInitialState: false,
+            chainId: newChainId,
+            token: newToken,
           };
         });
+        setQuote(undefined);
+        setIsInitialState(false);
       }
     },
-    [resetState, setChainId, setToken, tokens]
+    [resetState, setOutputConfig, setQuote, tokens]
   );
 
   const handleNetworkSelection = useCallback(
@@ -240,25 +221,23 @@ export function ClaimCustomization({
         resetState();
       } else {
         const newChainId = +selection;
-        setState(prev => {
-          const currentToken = prev.selectedToken;
+        setOutputConfig(prev => {
+          const currentToken = prev.token;
           const newToken =
             currentToken && (!tokens[currentToken.symbol] || !(newChainId in tokens[currentToken.symbol].networks))
               ? undefined
               : currentToken;
 
-          setToken(newToken);
-          setChainId(newChainId);
-
           return {
-            selectedChain: newChainId,
-            selectedToken: newToken,
-            isInitialState: false,
+            chainId: newChainId,
+            token: newToken,
           };
         });
+        setQuote(undefined);
+        setIsInitialState(false);
       }
     },
-    [resetState, setChainId, setToken, tokens]
+    [resetState, setOutputConfig, setQuote, tokens]
   );
 
   return (
@@ -269,8 +248,8 @@ export function ClaimCustomization({
       <DropdownMenu
         menuConfig={tokenMenuConfig}
         onPressMenuItem={handleTokenSelection}
-        text={state.selectedToken?.symbol ?? 'a token'}
-        muted={state.isInitialState}
+        text={outputToken?.symbol ?? 'a token'}
+        muted={isInitialState}
       />
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">
         on
@@ -278,8 +257,8 @@ export function ClaimCustomization({
       <DropdownMenu
         menuConfig={networkMenuConfig}
         onPressMenuItem={handleNetworkSelection}
-        text={state.selectedChain ? chainsLabel[state.selectedChain] : 'a network'}
-        muted={state.isInitialState}
+        text={outputChainId ? chainsLabel[outputChainId] : 'a network'}
+        muted={isInitialState}
       />
     </Box>
   );

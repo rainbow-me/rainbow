@@ -12,7 +12,7 @@ import { loadWallet } from '@/model/wallet';
 import { walletExecuteRap } from '@/raps/execute';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { queryClient } from '@/react-query';
-import { ETH_ADDRESS, getCrosschainQuote, getQuote, QuoteParams } from '@rainbow-me/swaps';
+import { CrosschainQuote, ETH_ADDRESS, getCrosschainQuote, getQuote, Quote, QuoteParams } from '@rainbow-me/swaps';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import { useMeteorologySuggestion } from '@/__swaps__/utils/meteorology';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
@@ -26,8 +26,9 @@ import { ClaimValueDisplay } from './ClaimValueDisplay';
 import { ClaimCustomization } from './ClaimCustomization';
 import { ClaimButton } from './ClaimButton';
 import { GasDetails } from './GasDetails';
-import { ClaimStatus, TokenToReceive, TransactionClaimableTxPayload } from '../types';
+import { TokenToReceive, TransactionClaimableTxPayload } from '../types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { useClaimContext } from './ClaimContext';
 
 export function TransactionClaimablePanel({ claimable }: { claimable: TransactionClaimable }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -38,22 +39,17 @@ export function TransactionClaimablePanel({ claimable }: { claimable: Transactio
     enabled: true,
   });
 
+  const {
+    outputConfig: { chainId: outputChainId, token: outputToken },
+    claimStatus,
+    setClaimStatus,
+  } = useClaimContext();
+
   const [baseTxPayload, setBaseTxPayload] = useState<
     Omit<TransactionClaimableTxPayload, 'gasLimit' | 'maxPriorityFeePerGas' | 'maxFeePerGas'> | undefined
   >();
   const [txPayload, setTxPayload] = useState<TransactionClaimableTxPayload | undefined>();
-  const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
-  const [outputToken, setOutputToken] = useState<TokenToReceive | undefined>({
-    address: claimable.asset.address,
-    iconUrl: claimable.asset.icon_url,
-    name: claimable.asset.name,
-    symbol: claimable.asset.symbol,
-    networks: claimable.asset.networks,
-    isNativeAsset: false,
-  });
-  const [outputChainId, setOutputChainId] = useState<ChainId | undefined>(claimable.chainId);
-
-  const nativeNetworkAsset = useNativeAsset({ chainId: 8453 });
+  const [quote, setQuote] = useState<Quote | CrosschainQuote | undefined>();
 
   const queryKey = claimablesQueryKey({ address: accountAddress, currency: nativeCurrency });
 
@@ -173,9 +169,53 @@ export function TransactionClaimablePanel({ claimable }: { claimable: Transactio
     { enabled: !!(outputToken && outputChainId) }
   );
 
+  const updateQuote = useCallback(async () => {
+    if (!outputAsset || !outputChainId) {
+      return;
+    }
+    const quoteParams: QuoteParams = {
+      chainId: claimable.chainId,
+      fromAddress: accountAddress,
+      sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
+      buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS : outputAsset.address,
+      sellAmount: convertAmountToRawAmount(0.00001, claimable.asset.decimals),
+      slippage: 0.5,
+      refuel: false,
+      toChainId: outputChainId,
+      currency: nativeCurrency,
+    };
+
+    const quote = claimable.chainId === outputChainId ? await getQuote(quoteParams) : await getCrosschainQuote(quoteParams);
+    if (!quote || 'error' in quote) {
+      if (quote?.message === 'no routes found') {
+        setClaimStatus('noRoute');
+      } else {
+        setClaimStatus('noQuote');
+        logger.error(new RainbowError('[ClaimingTransactionClaimable]: failed to get quote'), { quote, quoteParams });
+      }
+      setQuote(undefined);
+    } else {
+      setQuote(quote);
+    }
+  }, [
+    accountAddress,
+    claimable.asset.address,
+    claimable.asset.decimals,
+    claimable.asset.isNativeAsset,
+    claimable.chainId,
+    nativeCurrency,
+    outputAsset,
+    outputChainId,
+    setClaimStatus,
+  ]);
+
+  useEffect(() => {
+    updateQuote();
+  }, [updateQuote]);
+
   const { mutate: claimClaimable } = useMutation({
     mutationFn: async () => {
-      if (!txPayload || !outputAsset || !outputChainId) {
+      if (!txPayload || !outputAsset || !outputChainId || !quote) {
         haptics.notificationError();
         setClaimStatus('error');
         logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to missing tx payload'));
@@ -218,20 +258,6 @@ export function TransactionClaimablePanel({ claimable }: { claimable: Transactio
       //   outputAsset: internalSelectedOutputAsset.value,
       // });
 
-      const params: QuoteParams = {
-        chainId: claimable.chainId,
-        fromAddress: accountAddress,
-        sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
-        // buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : outputAsset.address,
-        // buyTokenAddress: outputToken?.address,
-        buyTokenAddress: outputAsset.address ? ETH_ADDRESS : outputAsset.address,
-        sellAmount: convertAmountToRawAmount(0.00001, claimable.asset.decimals),
-        slippage: 0.5,
-        refuel: false,
-        toChainId: outputChainId,
-        currency: nativeCurrency,
-      };
-
       const swapData = {
         amount: claimable.value.claimAsset.amount,
         sellAmount: convertAmountToRawAmount(0.00001, claimable.asset.decimals),
@@ -250,7 +276,7 @@ export function TransactionClaimablePanel({ claimable }: { claimable: Transactio
       console.log(outputChainId, 'outputChainId');
       console.log(outputAsset, 'outputAsset');
       console.log(claimable.chainId, outputChainId);
-      const quote = claimable.chainId === outputChainId ? await getQuote(params) : await getCrosschainQuote(params);
+
       console.log(claimable.value.claimAsset.amount);
       console.log('quote', quote);
       if (!quote || 'error' in quote) {
@@ -335,7 +361,7 @@ export function TransactionClaimablePanel({ claimable }: { claimable: Transactio
           nativeValueDisplay={claimable.value.nativeAsset.display} // FIXME
           symbol={outputToken?.symbol}
         />
-        <ClaimCustomization claimableAsset={claimable.asset} setChainId={setOutputChainId} setToken={setOutputToken} />
+        <ClaimCustomization claimableAsset={claimable.asset} />
       </Box>
       <Box alignItems="center" width="full">
         <ClaimButton
