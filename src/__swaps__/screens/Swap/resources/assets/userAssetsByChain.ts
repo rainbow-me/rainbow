@@ -63,8 +63,12 @@ async function userAssetsByChainQueryFunction({
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency }))?.state?.data || {}) as ParsedAssetsDictByChain;
   const cachedDataForChain = cachedUserAssets?.[chainId] || {};
   try {
-    const url = `/${chainId}/${address}/assets/?currency=${currency.toLowerCase()}`;
-    const res = await addysHttp.get<AddressAssetsReceivedMessage>(url);
+    const url = `/${chainId}/${address}/assets`;
+    const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
+      params: {
+        currency: currency.toLowerCase(),
+      },
+    });
     const chainIdsInResponse = res?.data?.meta?.chain_ids || [];
     const assets = res?.data?.payload?.assets || [];
     if (assets.length && chainIdsInResponse.length) {
