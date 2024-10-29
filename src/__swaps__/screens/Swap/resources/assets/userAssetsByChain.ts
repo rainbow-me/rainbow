@@ -61,7 +61,7 @@ async function userAssetsByChainQueryFunction({
 }: QueryFunctionArgs<typeof userAssetsByChainQueryKey>): Promise<Record<string, ParsedUserAsset>> {
   const cache = queryClient.getQueryCache();
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency }))?.state?.data || {}) as ParsedAssetsDictByChain;
-  const cachedDataForChain = cachedUserAssets?.[chainId];
+  const cachedDataForChain = cachedUserAssets?.[chainId] || {};
   try {
     const url = `/${chainId}/${address}/assets/?currency=${currency.toLowerCase()}`;
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url);
