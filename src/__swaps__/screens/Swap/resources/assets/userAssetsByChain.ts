@@ -56,7 +56,7 @@ export async function fetchUserAssetsByChain<TSelectData = UserAssetsByChainResu
 // ///////////////////////////////////////////////
 // Query Function
 
-export async function userAssetsByChainQueryFunction({
+async function userAssetsByChainQueryFunction({
   queryKey: [{ address, chainId, currency }],
 }: QueryFunctionArgs<typeof userAssetsByChainQueryKey>): Promise<Record<string, ParsedUserAsset>> {
   const cache = queryClient.getQueryCache();
