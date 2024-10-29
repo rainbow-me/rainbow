@@ -124,12 +124,14 @@ async function userAssetsQueryFunction({
     const chainIdsWithErrorsInResponse = res?.data?.meta?.chain_ids_with_errors || [];
     const assets = res?.data?.payload?.assets || [];
     if (address) {
-      userAssetsQueryFunctionRetryByChain({
-        address,
-        chainIds: chainIdsWithErrorsInResponse,
-        currency,
-        testnetMode,
-      });
+      if (chainIdsWithErrorsInResponse.length) {
+        userAssetsQueryFunctionRetryByChain({
+          address,
+          chainIds: chainIdsWithErrorsInResponse,
+          currency,
+          testnetMode,
+        });
+      }
       if (assets.length && chainIdsInResponse.length) {
         const parsedAssetsDict = await parseUserAssets({
           assets,
