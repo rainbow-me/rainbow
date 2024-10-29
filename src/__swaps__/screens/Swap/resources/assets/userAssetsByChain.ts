@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
 import { Address } from 'viem';
 
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
@@ -11,8 +10,6 @@ import { RainbowError, logger } from '@/logger';
 import { parseUserAssets, userAssetsQueryKey } from './userAssets';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
-
-const USER_ASSETS_REFETCH_INTERVAL = 60000;
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -90,24 +87,3 @@ export async function userAssetsByChainQueryFunction({
 }
 
 type UserAssetsByChainResult = QueryFunctionResult<typeof userAssetsByChainQueryFunction>;
-
-// ///////////////////////////////////////////////
-// Query Hook
-
-export function useUserAssetsByChain<TSelectResult = UserAssetsByChainResult>(
-  { address, chainId, currency }: UserAssetsByChainArgs,
-  config: QueryConfigWithSelect<UserAssetsByChainResult, Error, TSelectResult, UserAssetsByChainQueryKey> = {}
-) {
-  return useQuery(
-    userAssetsByChainQueryKey({
-      address,
-      chainId,
-      currency,
-    }),
-    userAssetsByChainQueryFunction,
-    {
-      ...config,
-      refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
-    }
-  );
-}
