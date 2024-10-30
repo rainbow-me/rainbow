@@ -1,5 +1,6 @@
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { Address } from 'viem';
+import { isEmpty } from 'lodash';
 import { RainbowError, logger } from '@/logger';
 import reduxStore, { AppState } from '@/redux/store';
 import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
@@ -156,7 +157,8 @@ export const createUserAssetsStore = (address: Address | string) =>
         const queryKey = getSearchQueryKey({ filter, searchQuery: inputSearchQuery });
 
         // Use an external function to get the cache to prevent updates in response to changes in the cache
-        const cachedData = getCurrentSearchCache()?.get(queryKey);
+        const currentSearchCache = getCurrentSearchCache();
+        const cachedData = !isEmpty(currentSearchCache) ? getCurrentSearchCache()?.get(queryKey) : [];
 
         // Check if the search results are already cached
         if (cachedData) {
@@ -375,6 +377,6 @@ export function useUserAssetsStore<T>(selector: (state: UserAssetsState) => T) {
   return useStore(store, useCallback(selector, []));
 }
 
-function getCurrentSearchCache(): Map<string, UniqueId[]> | undefined {
+function getCurrentSearchCache(): Map<string, UniqueId[]> {
   return getOrCreateStore().getState().searchCache;
 }
