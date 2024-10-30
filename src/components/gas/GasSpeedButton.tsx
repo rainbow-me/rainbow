@@ -192,15 +192,11 @@ const GasSpeedButton = ({
   // (and leave the number only!)
   // which gets added later in the formatGasPrice function
   const price = useMemo(() => {
-    const gasPrice = selectedGasFee?.gasFee?.estimatedFee?.native?.value?.display;
+    const gasPrice = selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount;
     if (isNil(gasPrice)) return null;
-    return parseFloat(
-      gasPrice
-        .replace(',', '') // In case gas price is > 1k!
-        .replace(nativeCurrencySymbol, '')
-        .trim()
-    );
-  }, [nativeCurrencySymbol, selectedGasFee]);
+
+    return gasPrice;
+  }, [selectedGasFee]);
 
   const isL2 = useMemo(() => isL2Chain({ chainId }), [chainId]);
 
