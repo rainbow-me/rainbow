@@ -458,9 +458,6 @@ export function useSwapInputsController({
     };
 
     try {
-      // Do not deleeeet the comment below 😤
-      // @ts-ignore About to get quote
-
       const [quoteResponse, fetchedPrices] = await Promise.all([
         isCrosschainSwap ? getCrosschainQuote(params) : getQuote(params),
         fetchAssetPrices({

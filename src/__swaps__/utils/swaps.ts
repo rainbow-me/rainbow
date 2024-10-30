@@ -41,6 +41,12 @@ import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { chainsName } from '@/chains';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
+// DO NOT REMOVE THESE COMMENTED ENV VARS
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { IS_APK_BUILD } from 'react-native-dotenv';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import isTestFlight from '@/helpers/isTestFlight';
+
 // /---- 🎨 Color functions 🎨 ----/ //
 //
 export const opacity = (color: string, opacity: number): string => {
@@ -594,7 +600,7 @@ export const buildQuoteParams = ({
 
   const isCrosschainSwap = inputAsset.chainId !== outputAsset.chainId;
 
-  return {
+  const quoteParams: QuoteParams = {
     source: source === 'auto' ? undefined : source,
     chainId: inputAsset.chainId,
     fromAddress: currentAddress,
@@ -613,4 +619,9 @@ export const buildQuoteParams = ({
     toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
     currency: store.getState().settings.nativeCurrency,
   };
+
+  // Do not delete the comment below 😤
+  // @ts-ignore About to get quote
+
+  return quoteParams;
 };
