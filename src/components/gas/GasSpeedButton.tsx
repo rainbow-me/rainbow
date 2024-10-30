@@ -15,7 +15,7 @@ import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Chain } from '@/handlers/web3';
-import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
+import { add, convertAmountToNativeDisplayWorklet, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { useAccountSettings, useColorForAsset, useGas, usePrevious } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -192,13 +192,11 @@ const GasSpeedButton = ({
   // (and leave the number only!)
   // which gets added later in the formatGasPrice function
   const price = useMemo(() => {
-    const gasPrice = selectedGasFee?.gasFee?.estimatedFee?.native?.value?.display;
+    const gasPrice = selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount;
     if (isNil(gasPrice)) return null;
-    return gasPrice
-      .replace(',', '') // In case gas price is > 1k!
-      .replace(nativeCurrencySymbol, '')
-      .trim();
-  }, [nativeCurrencySymbol, selectedGasFee]);
+
+    return gasPrice;
+  }, [selectedGasFee]);
 
   const isL2 = useMemo(() => isL2Chain({ chainId }), [chainId]);
 
@@ -215,24 +213,9 @@ const GasSpeedButton = ({
         return 0;
       }
       !gasPriceReady && setGasPriceReady(true);
-      // L2's are very cheap,
-      // so let's default to the last 2 significant decimals
-      if (isLegacyGasNetwork) {
-        const numAnimatedValue = Number.parseFloat(animatedValue);
-        if (numAnimatedValue < 0.01) {
-          return `${nativeCurrencySymbol}${numAnimatedValue.toPrecision(2)}`;
-        } else {
-          return `${nativeCurrencySymbol}${numAnimatedValue.toFixed(2)}`;
-        }
-      } else {
-        return `${nativeCurrencySymbol}${
-          nativeCurrency === 'ETH'
-            ? (Math.ceil(Number(animatedValue) * 10000) / 10000).toFixed(4)
-            : (Math.ceil(Number(animatedValue) * 100) / 100).toFixed(2)
-        }`;
-      }
+      return convertAmountToNativeDisplayWorklet(animatedValue, nativeCurrency, true);
     },
-    [loading, gasPriceReady, isLegacyGasNetwork, nativeCurrencySymbol, nativeCurrency]
+    [loading, gasPriceReady, nativeCurrency]
   );
 
   const openCustomOptionsRef = useRef<any>();

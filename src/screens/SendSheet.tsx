@@ -287,7 +287,7 @@ export default function SendSheet() {
         startPollingGasFees(currentChainId);
       });
     }
-  }, [startPollingGasFees, selected?.chainId, prevChainId, currentChainId]);
+  }, [startPollingGasFees, prevChainId, currentChainId]);
 
   // Stop polling when the sheet is unmounted
   useEffect(() => {
@@ -296,7 +296,7 @@ export default function SendSheet() {
         stopPollingGasFees();
       });
     };
-  }, [stopPollingGasFees]);
+  }, [currentChainId, stopPollingGasFees]);
 
   useEffect(() => {
     const assetChainId = selected?.chainId;
@@ -840,8 +840,7 @@ export default function SendSheet() {
       currentProviderChainId === currentChainId &&
       toAddress &&
       isValidAddress &&
-      !isEmpty(selected) &&
-      (isUniqueAsset || Number(amountDetails.assetAmount) >= 0)
+      !isEmpty(selected)
     ) {
       estimateGasLimit(
         {
