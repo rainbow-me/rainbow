@@ -10,10 +10,10 @@ import { FeaturedResult } from '@/graphql/__generated__/arc';
 export type FeaturedResultStackProps = {
   onNavigate: (url: string) => void;
   placementId: string;
-  Card: React.FC<{ handlePress: () => void; featuredResult: FeaturedResult }>;
+  children: React.FC<{ featuredResult: FeaturedResult; handlePress: () => void }>;
 };
 
-export const FeaturedResultStack = ({ onNavigate, placementId, Card }: FeaturedResultStackProps) => {
+export const FeaturedResultStack = ({ onNavigate, placementId, children }: FeaturedResultStackProps) => {
   const { accountAddress, language } = useAccountSettings();
   const currentIndex = useSharedValue(0);
 
@@ -42,7 +42,8 @@ export const FeaturedResultStack = ({ onNavigate, placementId, Card }: FeaturedR
       featuredResultId={featuredResultId}
       placementId={placementId}
       onNavigate={onNavigate}
-      Card={Card}
-    />
+    >
+      {children}
+    </FeaturedResultCard>
   );
 };
