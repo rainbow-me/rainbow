@@ -38,7 +38,7 @@ import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { walletExecuteRap } from '@/rapsV2/execute';
+import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
@@ -50,7 +50,7 @@ import { CrosschainQuote, Quote, QuoteError, SwapType } from '@rainbow-me/swaps'
 import { IS_IOS } from '@/env';
 import { Address } from 'viem';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
-import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
@@ -267,7 +267,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         metadata: {
           degenMode: isDegenModeEnabled,
         },
-      })(wallet, { type: 'crosschainSwapRap', crosschainSwapActionParameters: { ...parameters, chainId, gasParams, gasFeeParamsBySpeed } });
+      })(wallet, type, {
+        ...parameters,
+        chainId,
+        gasParams,
+        // @ts-expect-error - collision between old gas types and new
+        gasFeeParamsBySpeed: gasFeeParamsBySpeed,
+      });
       isSwapping.value = false;
 
       if (errorMessage) {

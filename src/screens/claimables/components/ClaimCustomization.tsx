@@ -14,10 +14,11 @@ import { useClaimContext } from './ClaimContext';
 
 type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 
-export function ClaimCustomization({ claimableAsset }: { claimableAsset: ParsedAddressAsset }) {
+export function ClaimCustomization() {
   const { nativeCurrency } = useAccountSettings();
   const balanceSortedChainList = useUserAssetsStore(state => state.getBalanceSortedChainList());
   const {
+    claimable: { asset: claimableAsset },
     outputConfig: { chainId: outputChainId, token: outputToken },
     setOutputConfig,
     setQuote,
@@ -67,7 +68,7 @@ export function ClaimCustomization({ claimableAsset }: { claimableAsset: ParsedA
         name: claimableAsset.name,
         symbol: claimableAsset.symbol,
         networks: claimableAsset.networks,
-        isNativeAsset: false,
+        isNativeAsset: false, // never treating as native asset bc it's the claimable asset
       },
       ...(dai && {
         [dai.symbol]: {

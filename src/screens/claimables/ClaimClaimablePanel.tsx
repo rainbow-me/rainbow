@@ -10,11 +10,9 @@ export const ClaimClaimablePanel = () => {
     params: { claimable },
   } = useRoute<RouteProp<RootStackParamList, 'ClaimClaimablePanel'>>();
 
-  return claimable.type === 'transaction' ? (
+  return (
     <ClaimContextProvider claimable={claimable}>
-      <TransactionClaimablePanel claimable={claimable} />
+      {claimable.type === 'transaction' ? <TransactionClaimablePanel /> : <SponsoredClaimablePanel />}
     </ClaimContextProvider>
-  ) : (
-    <SponsoredClaimablePanel claimable={claimable} />
   );
 };

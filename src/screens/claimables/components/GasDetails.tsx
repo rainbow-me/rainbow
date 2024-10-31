@@ -1,27 +1,21 @@
 import { Box, Inline, Text } from '@/design-system';
 import React, { useEffect } from 'react';
 import * as i18n from '@/languages';
-import { ChainId } from '@/chains/types';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { chainsLabel } from '@/chains';
-import { ClaimStatus } from '../types';
+import { useClaimContext } from './ClaimContext';
 
-export function GasDetails({
-  chainId,
-  claimStatus,
-  isGasReady,
-  nativeValueDisplay,
-}: {
-  chainId: ChainId;
-  claimStatus: ClaimStatus;
-  isGasReady: boolean;
-  nativeValueDisplay: string;
-}) {
+export function GasDetails({ isGasReady, nativeValueDisplay }: { isGasReady: boolean; nativeValueDisplay: string }) {
+  const {
+    claimable: { chainId },
+    claimStatus,
+  } = useClaimContext();
+
   const animationProgress = useSharedValue(0);
 
   useEffect(() => {
     switch (claimStatus) {
-      case 'idle':
+      case 'ready':
       case 'error':
         animationProgress.value = withTiming(0, { duration: 300 });
         break;

@@ -1,29 +1,22 @@
 import React from 'react';
-import { ChainId } from '@/chains/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Bleed, Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
 import { useTheme } from '@/theme';
 import { View } from 'react-native';
 import { IS_IOS } from '@/env';
 import { ShimmerAnimation } from '@/components/animations';
+import { useClaimContext } from './ClaimContext';
 
-export function ClaimValueDisplay({
-  chainId,
-  iconUrl,
-  nativeValueDisplay,
-  symbol,
-}: {
-  chainId?: ChainId;
-  iconUrl?: string;
-  nativeValueDisplay?: string;
-  symbol?: string;
-}) {
+export function ClaimValueDisplay({ nativeValueDisplay }: { nativeValueDisplay?: string }) {
+  const {
+    outputConfig: { token, chainId },
+  } = useClaimContext();
   const { isDarkMode } = useColorMode();
   const theme = useTheme();
 
   return (
     <Bleed vertical={{ custom: 4.5 }}>
-      {chainId && symbol ? (
+      {chainId && token?.symbol ? (
         <Box alignItems="center" flexDirection="row" gap={8} justifyContent="center">
           <View
             style={
@@ -37,7 +30,7 @@ export function ClaimValueDisplay({
                 : {}
             }
           >
-            <RainbowCoinIcon size={40} icon={iconUrl} chainId={chainId} symbol={symbol} theme={theme} colors={undefined} />
+            <RainbowCoinIcon size={40} icon={token.iconUrl} chainId={chainId} symbol={token.symbol} theme={theme} colors={undefined} />
           </View>
           {nativeValueDisplay ? (
             <TextShadow blur={12} color={globalColors.grey100} shadowOpacity={0.1} y={4}>

@@ -12,11 +12,21 @@ import { ClaimPanel } from './ClaimPanel';
 import { ClaimValueDisplay } from './ClaimValueDisplay';
 import { ClaimButton } from './ClaimButton';
 import { ClaimStatus } from '../types';
+import { useClaimContext } from './ClaimContext';
 
-export function SponsoredClaimablePanel({ claimable }: { claimable: SponsoredClaimable }) {
+export function SponsoredClaimablePanel() {
+  const {
+    claimable,
+    outputConfig: { chainId: outputChainId, token: outputToken },
+    claimStatus,
+    setClaimStatus,
+  } = useClaimContext();
+
+  if (claimable.type !== 'sponsored') {
+    throw new RainbowError('[SponsoredClaimablePanel]: Claimable is not of type "sponsored"');
+  }
+
   const { accountAddress, nativeCurrency } = useAccountSettings();
-
-  const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
 
   const queryKey = claimablesQueryKey({ address: accountAddress, currency: nativeCurrency });
 
@@ -100,18 +110,8 @@ export function SponsoredClaimablePanel({ claimable }: { claimable: SponsoredCla
 
   return (
     <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
-      <ClaimValueDisplay
-        chainId={claimable.asset.chainId}
-        iconUrl={claimable.asset.icon_url} // FIXME
-        nativeValueDisplay={claimable.value.nativeAsset.display}
-        symbol={claimable.asset.symbol}
-      />
-      <ClaimButton
-        claimType="sponsored"
-        claim={claimClaimable}
-        claimStatus={claimStatus}
-        claimValueDisplay={claimable.value.claimAsset.display}
-      />
+      <ClaimValueDisplay nativeValueDisplay={claimable.value.nativeAsset.display} />
+      <ClaimButton claim={claimClaimable} claimValueDisplay={claimable.value.claimAsset.display} />
     </ClaimPanel>
   );
 }

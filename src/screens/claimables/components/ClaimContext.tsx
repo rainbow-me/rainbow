@@ -16,6 +16,7 @@ type ClaimContextType = {
   outputConfig: OutputConfig;
   quote: Quote | CrosschainQuote | undefined;
   claimStatus: ClaimStatus;
+  claimable: Claimable;
 
   setOutputConfig: Dispatch<SetStateAction<OutputConfig>>;
   setQuote: Dispatch<SetStateAction<Quote | CrosschainQuote | undefined>>;
@@ -47,7 +48,7 @@ export function ClaimContextProvider({ claimable, children }: { claimable: Claim
     },
   });
   const [quote, setQuote] = useState<Quote | CrosschainQuote | undefined>(undefined);
-  const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
+  const [claimStatus, setClaimStatus] = useState<ClaimStatus>('ready');
 
   const updateQuote = useCallback(
     async (outputToken: TokenToReceive, outputChainId: ChainId) => {
@@ -61,7 +62,7 @@ export function ClaimContextProvider({ claimable, children }: { claimable: Claim
         fromAddress: accountAddress,
         sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
         buyTokenAddress: outputToken.isNativeAsset ? ETH_ADDRESS : outputToken.address,
-        sellAmount: convertAmountToRawAmount(0.05, claimable.asset.decimals),
+        sellAmount: convertAmountToRawAmount(0.0001, claimable.asset.decimals),
         slippage: 0.5,
         refuel: false,
         toChainId: outputChainId,
@@ -88,17 +89,24 @@ export function ClaimContextProvider({ claimable, children }: { claimable: Claim
       } else {
         console.log('setquote');
         setQuote(quote);
+        setClaimStatus('ready');
       }
     },
     [accountAddress, claimable.asset.address, claimable.asset.decimals, claimable.asset.isNativeAsset, claimable.chainId, nativeCurrency]
   );
-
+  console.log('HE');
   useEffect(() => {
-    console.log(outputConfig.chainId);
-    if (outputConfig.token && outputConfig.chainId) {
+    if (
+      claimable.type === 'transaction' &&
+      outputConfig.token &&
+      outputConfig.chainId &&
+      !(outputConfig.token.symbol === claimable.asset.symbol && outputConfig.chainId === claimable.asset.chainId)
+    ) {
+      console.log(outputConfig.token.symbol, claimable.asset.symbol, outputConfig.chainId, claimable.asset.chainId);
+      setClaimStatus('fetchingQuote');
       updateQuote(outputConfig.token, outputConfig.chainId);
     }
-  }, [outputConfig.chainId, outputConfig.token, updateQuote]);
+  }, [claimable.asset.chainId, claimable.asset.symbol, claimable.type, outputConfig.chainId, outputConfig.token, updateQuote]);
 
   return (
     <ClaimContext.Provider
@@ -106,6 +114,7 @@ export function ClaimContextProvider({ claimable, children }: { claimable: Claim
         outputConfig,
         quote,
         claimStatus,
+        claimable,
 
         setOutputConfig,
         setQuote,

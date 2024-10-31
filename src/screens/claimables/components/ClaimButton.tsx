@@ -3,39 +3,49 @@ import { deviceUtils } from '@/utils';
 import React, { useMemo } from 'react';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
-import { ClaimStatus } from '../types';
+import { useClaimContext } from './ClaimContext';
 
 const BUTTON_WIDTH = deviceUtils.dimensions.width - 52;
 
 export function ClaimButton({
   claim,
-  claimStatus,
-  claimType,
   claimValueDisplay,
   isSufficientGas,
   isTransactionReady,
 }: {
   claim: () => void;
-  claimStatus: ClaimStatus;
-  claimType: 'sponsored' | 'transaction';
   claimValueDisplay: string;
   isSufficientGas?: boolean;
   isTransactionReady?: boolean;
 }) {
-  const isDisabled =
-    claimStatus === 'claiming' ||
-    ((claimStatus === 'idle' || claimStatus === 'error') && claimType === 'transaction' && !isTransactionReady);
+  const {
+    claimable: { type: claimType },
+    claimStatus,
+  } = useClaimContext();
 
-  const shouldShowClaimText = claimStatus === 'idle' && (claimType !== 'transaction' || isSufficientGas);
+  const isDisabled =
+    claimStatus === 'fetchingQuote' ||
+    claimStatus === 'claiming' ||
+    claimStatus === 'noQuote' ||
+    claimStatus === 'noRoute' ||
+    ((claimStatus === 'ready' || claimStatus === 'error') && claimType === 'transaction' && !isTransactionReady);
+
+  const shouldShowClaimText = claimStatus === 'ready' && (claimType !== 'transaction' || isSufficientGas);
 
   const buttonLabel = useMemo(() => {
     switch (claimStatus) {
-      case 'idle':
+      case 'fetchingQuote':
+        return 'Fetching Quote';
+      case 'ready':
         if (shouldShowClaimText) {
           return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimValueDisplay });
         } else {
           return i18n.t(i18n.l.claimables.panel.insufficient_funds);
         }
+      case 'noQuote':
+        return 'Quote Error';
+      case 'noRoute':
+        return 'No Route Found';
       case 'claiming':
         return i18n.t(i18n.l.claimables.panel.claim_in_progress);
       case 'pending':

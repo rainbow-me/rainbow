@@ -5,7 +5,7 @@ import { Address } from 'viem';
 import { ParsedAsset } from '@/__swaps__/types/assets';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { ChainId } from '@/chains/types';
-import { TransactionClaimableTxPayload } from '@/screens/claimables/components/TransactionClaimablePanel';
+import { TransactionClaimableTxPayload } from '@/screens/claimables/types';
 
 export enum SwapModalField {
   input = 'inputAmount',
