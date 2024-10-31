@@ -9,8 +9,8 @@ import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';
 import { AddysAddressAsset, AddysAsset, ParsedAsset, RainbowAddressAssets } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { ChainId } from '@/chains/types';
 import { chainsIdByName } from '@/chains';
+import { ChainId } from '@/chains/types';
 
 export const filterPositionsData = (
   address: string,

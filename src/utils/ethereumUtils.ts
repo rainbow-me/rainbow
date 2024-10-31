@@ -29,17 +29,7 @@ import { convertRawAmountToDecimalFormat, fromWei, greaterThan, isZero, subtract
 import { Navigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
 import store from '@/redux/store';
-import {
-  ETH_ADDRESS,
-  ethUnits,
-  MATIC_MAINNET_ADDRESS,
-  optimismGasOracleAbi,
-  OVM_GAS_PRICE_ORACLE,
-  BNB_MAINNET_ADDRESS,
-  AVAX_AVALANCHE_ADDRESS,
-  DEGEN_CHAIN_DEGEN_ADDRESS,
-  APECOIN_APECHAIN_ADDRESS,
-} from '@/references';
+import { ETH_ADDRESS, ethUnits, optimismGasOracleAbi, OVM_GAS_PRICE_ORACLE } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
@@ -53,6 +43,44 @@ import { ChainId, Network } from '@/chains/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 import { chainsIdByName, chainsName, chainsNativeAsset, defaultChains, getChainGasUnits } from '@/chains';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+
+/**
+ * @deprecated - use `getUniqueId` instead for chainIds
+ * @desc Get the unique ID for an address and network
+ * @param address - The address to get the unique ID for
+ * @param network - The network to get the unique ID for
+ * @returns `${address}_${network}`
+ */
+export const getUniqueIdNetwork = (address: EthereumAddress, network: Network) => `${address}_${network}`;
+
+export const getUniqueId = (address: EthereumAddress, chainId: ChainId) => {
+  'worklet';
+  return `${address}_${chainId}`;
+};
+
+/**
+ * @desc Get the address and chainId from a unique ID
+ * @param uniqueId - The unique ID to get the address & (chainId || network) from
+ * @returns { address: AddressOrEth; chainId: ChainId }
+ */
+export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: AddressOrEth; chainId: ChainId } => {
+  const parts = uniqueId.split('_');
+
+  // If the unique ID does not contain '_', it's a mainnet address
+  if (parts.length === 1) {
+    return { address: parts[0] as AddressOrEth, chainId: ChainId.mainnet };
+  }
+
+  const address = parts[0] as AddressOrEth;
+  const networkOrChainId = parts[1];
+  // if the second part is a string, it's probably a network
+  if (isNaN(Number(networkOrChainId))) {
+    const chainId = chainsIdByName[networkOrChainId] || ChainId.mainnet; // Default to mainnet if unknown
+    return { address, chainId };
+  }
+
+  return { address, chainId: +networkOrChainId };
+};
 
 const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }) => {
   const nativeAssetAddress = chainsNativeAsset[chainId].address;
@@ -152,7 +180,7 @@ const getExternalAssetFromCache = (uniqueId: string) => {
 
     return cachedExternalAsset;
   } catch (e) {
-    console.log(e);
+    logger.warn(`[ethereumUtils]: Error retrieving external asset from cache: ${e}`);
   }
 };
 
@@ -169,10 +197,16 @@ const getAccountAsset = (uniqueId: EthereumAddress | undefined): ParsedAddressAs
   return accountAsset;
 };
 
-const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
-  const externalAsset = getExternalAssetFromCache(address);
+const getAssetPrice = (
+  { address, chainId }: { address: EthereumAddress; chainId: ChainId } = {
+    address: ETH_ADDRESS,
+    chainId: ChainId.mainnet,
+  }
+) => {
+  const uniqueId = getUniqueId(address, chainId);
+  const externalAsset = getExternalAssetFromCache(uniqueId);
   const genericPrice = externalAsset?.price?.value;
-  return genericPrice || getAccountAsset(address)?.price?.value || 0;
+  return genericPrice || getAccountAsset(uniqueId)?.price?.value || 0;
 };
 
 export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
@@ -188,27 +222,10 @@ export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
   return nativeAsset;
 };
 
-// anotha 1
 const getPriceOfNativeAssetForNetwork = ({ chainId }: { chainId: ChainId }) => {
-  if (chainId === ChainId.polygon) {
-    return getMaticPriceUnit();
-  } else if (chainId === ChainId.bsc) {
-    return getBnbPriceUnit();
-  } else if (chainId === ChainId.avalanche) {
-    return getAvaxPriceUnit();
-  } else if (chainId === ChainId.degen) {
-    return getDegenPriceUnit();
-  }
-  return getEthPriceUnit();
+  const address = (chainsNativeAsset[chainId]?.address || ETH_ADDRESS) as AddressOrEth;
+  return getAssetPrice({ address, chainId });
 };
-
-const getEthPriceUnit = () => getAssetPrice();
-
-const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
-const getBnbPriceUnit = () => getAssetPrice(BNB_MAINNET_ADDRESS);
-const getAvaxPriceUnit = () => getAssetPrice(getUniqueId(AVAX_AVALANCHE_ADDRESS, ChainId.avalanche));
-const getDegenPriceUnit = () => getAssetPrice(getUniqueId(DEGEN_CHAIN_DEGEN_ADDRESS, ChainId.degen));
-const getApechainPriceUnit = () => getAssetPrice(getUniqueId(APECOIN_APECHAIN_ADDRESS, ChainId.apechain));
 
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
@@ -442,24 +459,6 @@ async function parseEthereumUrl(data: string) {
   });
 }
 
-export const getUniqueIdNetwork = (address: EthereumAddress, network: Network) => `${address}_${network}`;
-
-export const getUniqueId = (address: EthereumAddress, chainId: ChainId) => `${address}_${chainId}`;
-
-export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: AddressOrEth; chainId: ChainId } => {
-  const parts = uniqueId.split('_');
-
-  // If the unique ID does not contain '_', it's a mainnet address
-  if (parts.length === 1) {
-    return { address: parts[0] as AddressOrEth, chainId: ChainId.mainnet };
-  }
-
-  const [address, chainIdOrNetwork] = parts;
-  const chainId = isNaN(+chainIdOrNetwork) ? chainsIdByName[chainIdOrNetwork] : +chainIdOrNetwork;
-
-  return { address: address as AddressOrEth, chainId };
-};
-
 const calculateL1FeeOptimism = async (
   tx: RainbowTransaction | TransactionRequest,
   provider: StaticJsonRpcProvider
@@ -521,13 +520,7 @@ export default {
   getBlockExplorer,
   getDataString,
   getEtherscanHostForNetwork,
-  getEthPriceUnit,
   getHash,
-  getMaticPriceUnit,
-  getBnbPriceUnit,
-  getAvaxPriceUnit,
-  getDegenPriceUnit,
-  getApechainPriceUnit,
   getNativeAssetForNetwork,
   getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,

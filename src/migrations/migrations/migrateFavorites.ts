@@ -1,5 +1,5 @@
-import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
-import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
+import { UniqueId } from '@/__swaps__/types/assets';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { createQueryKey, persistOptions, queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
@@ -22,10 +22,7 @@ export function migrateFavoritesV2(): Migration {
 
       const migratedFavorites: Record<UniqueId, RainbowToken> = {};
       for (const favorite of Object.values(v1Data)) {
-        const uniqueId = getStandardizedUniqueIdWorklet({
-          address: favorite.address as AddressOrEth,
-          chainId: favorite.chainId,
-        });
+        const uniqueId = getUniqueId(favorite.address, favorite.chainId);
         favorite.uniqueId = uniqueId; // v2 unique uses chainId instead of Network
         migratedFavorites[uniqueId] = favorite;
       }
