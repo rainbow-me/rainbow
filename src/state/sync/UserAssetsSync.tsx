@@ -8,6 +8,7 @@ import { ChainId } from '@/chains/types';
 
 export const UserAssetsSync = function UserAssetsSync() {
   const { accountAddress, nativeCurrency: currentCurrency } = useAccountSettings();
+  const isSwapsOpen = useSwapsStore(state => state.isSwapsOpen);
 
   useUserAssets(
     {
@@ -21,13 +22,16 @@ export const UserAssetsSync = function UserAssetsSync() {
           selector: selectUserAssetsList,
         }),
       onSuccess: data => {
-        userAssetsStore.getState().setUserAssets(data as ParsedSearchAsset[]);
+        const isUserAssetsStoreMissingData = userAssetsStore.getState().getUserAssets()?.length === 0;
+        if (!isSwapsOpen || isUserAssetsStoreMissingData) {
+          userAssetsStore.getState().setUserAssets(data as ParsedSearchAsset[]);
 
-        const inputAsset = userAssetsStore.getState().getHighestValueEth();
-        useSwapsStore.setState({
-          inputAsset,
-          selectedOutputChainId: inputAsset?.chainId ?? ChainId.mainnet,
-        });
+          const inputAsset = userAssetsStore.getState().getHighestValueEth();
+          useSwapsStore.setState({
+            inputAsset,
+            selectedOutputChainId: inputAsset?.chainId ?? ChainId.mainnet,
+          });
+        }
       },
     }
   );
