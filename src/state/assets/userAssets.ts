@@ -1,6 +1,5 @@
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { Address } from 'viem';
-import { isEmpty } from 'lodash';
 import { RainbowError, logger } from '@/logger';
 import reduxStore, { AppState } from '@/redux/store';
 import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
@@ -64,6 +63,7 @@ function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: num
       chainBalances: state.chainBalances ? Array.from(state.chainBalances.entries()) : [],
       idsByChain: state.idsByChain ? Array.from(state.idsByChain.entries()) : [],
       userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
+      searchCache: undefined,
     };
 
     return JSON.stringify({
@@ -114,11 +114,14 @@ function deserializeUserAssetsState(serializedState: string) {
     logger.error(new RainbowError(`[userAssetsStore]: Failed to convert userAssets from user assets storage`), { error });
   }
 
+  const searchCache = new Map<string, UniqueId[]>();
+
   return {
     state: {
       ...state,
       chainBalances,
       idsByChain,
+      searchCache,
       userAssets: userAssetsData,
     },
     version,
@@ -157,8 +160,7 @@ export const createUserAssetsStore = (address: Address | string) =>
         const queryKey = getSearchQueryKey({ filter, searchQuery: inputSearchQuery });
 
         // Use an external function to get the cache to prevent updates in response to changes in the cache
-        const currentSearchCache = getCurrentSearchCache();
-        const cachedData = !isEmpty(currentSearchCache) ? getCurrentSearchCache()?.get(queryKey) : [];
+        const cachedData = getCurrentSearchCache()?.get(queryKey);
 
         // Check if the search results are already cached
         if (cachedData) {
