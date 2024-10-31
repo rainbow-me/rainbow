@@ -81,8 +81,8 @@ export default function DiscoverHome() {
           {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
           {featuredResultsEnabled && (
             <FeaturedResultStack onNavigate={onNavigate} placementId="discover_big">
-              {({ featuredResult, onBeforeNavigate }) => (
-                <DiscoverFeaturedResultsCard handlePress={onBeforeNavigate} featuredResult={featuredResult} />
+              {({ featuredResult, handlePress }) => (
+                <DiscoverFeaturedResultsCard handlePress={handlePress} featuredResult={featuredResult} />
               )}
             </FeaturedResultStack>
           )}
