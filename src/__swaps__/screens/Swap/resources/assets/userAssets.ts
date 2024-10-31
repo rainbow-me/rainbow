@@ -86,6 +86,9 @@ export const userAssetsSetQueryData = ({ address, currency, userAssets, testnetM
 async function userAssetsQueryFunction({
   queryKey: [{ address, currency, testnetMode }],
 }: QueryFunctionArgs<typeof userAssetsQueryKey>): Promise<ParsedAssetsDictByChain> {
+  if (!address) {
+    return {};
+  }
   if (testnetMode) {
     const { assets, chainIdsInResponse } = await fetchHardhatBalancesByChainId(address);
     const parsedAssets: Array<{
