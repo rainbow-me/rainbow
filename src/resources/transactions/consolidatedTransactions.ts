@@ -130,6 +130,7 @@ export function useConsolidatedTransactions(
     consolidatedTransactionsQueryFunction,
     {
       ...config,
+      enabled: !!address && !!currency,
       keepPreviousData: true,
       getNextPageParam: lastPage => lastPage?.nextPage,
       refetchInterval: CONSOLIDATED_TRANSACTIONS_INTERVAL,
