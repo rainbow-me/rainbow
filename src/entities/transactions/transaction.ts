@@ -304,17 +304,14 @@ export type TransactionApiResponse = {
   address_to?: string;
   // nonce will ALWAYS be -2 when the transaction is *not* from the wallet user
   nonce: number;
-  changes: Array<
-    | {
-        asset: AddysAsset;
-        value: number | null;
-        direction: TransactionDirection;
-        address_from: string;
-        address_to: string;
-        price: number;
-      }
-    | undefined
-  >;
+  changes?: Array<{
+    asset: AddysAsset;
+    value: number | null;
+    direction: TransactionDirection;
+    address_from: string;
+    address_to: string;
+    price: number;
+  }>;
   fee: {
     value: number;
     price: number;

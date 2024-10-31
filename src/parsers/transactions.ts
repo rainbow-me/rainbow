@@ -43,7 +43,7 @@ export const getDirection = (type: TransactionType): TransactionDirection => {
   return TransactionDirection.IN;
 };
 
-export const getAssetFromChanges = (changes: TransactionChanges, type: TransactionType) => {
+export const getAssetFromChanges = (changes: TransactionChanges | undefined, type: TransactionType) => {
   if (type === 'sale') return changes?.find(c => c?.direction === 'out')?.asset;
   return changes?.[0]?.asset;
 };
@@ -55,10 +55,10 @@ export const parseTransaction = async (
 ): Promise<RainbowTransaction> => {
   const { status, hash, meta, nonce, protocol } = transaction;
 
-  const txn = {
+  const txn: TransactionApiResponse = {
     ...transaction,
   };
-  const changes: TransactionChanges = txn.changes.map(change => {
+  const changes: TransactionChanges | undefined = txn.changes?.map(change => {
     if (change) {
       return {
         ...change,
@@ -83,7 +83,7 @@ export const parseTransaction = async (
 
   const description = getDescription(asset, type, meta);
 
-  const nativeAsset = changes.find(change => change?.asset.isNativeAsset);
+  const nativeAsset = changes?.find(change => change?.asset.isNativeAsset);
   const nativeAssetPrice = nativeAsset?.price?.toString() || '0';
 
   const value = toFixedDecimals(nativeAsset?.value || '', nativeAsset?.asset?.decimals || 18);
@@ -101,7 +101,7 @@ export const parseTransaction = async (
   // NOTE: For send transactions, the to address should be pulled from the outgoing change directly, not the txn.address_to
   let to = txn.address_to;
   if (meta.type === 'send') {
-    to = txn.changes.find(change => change?.direction === 'out')?.address_to ?? txn.address_to;
+    to = txn.changes?.find(change => change?.direction === 'out')?.address_to ?? txn.address_to;
   }
 
   return {
