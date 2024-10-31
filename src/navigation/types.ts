@@ -68,8 +68,6 @@ export type RootStackParamList = {
     emptyWallet?: boolean;
   };
   [Routes.PROFILE_SCREEN]: any;
-  [Routes.SWAP_SETTINGS_SHEET]: any;
-  [Routes.SWAP_DETAILS_SHEET]: any;
   [Routes.WELCOME_SCREEN]: any;
   [Routes.ENS_CONFIRM_REGISTER_SHEET]: any;
   [Routes.PROFILE_SHEET]: {
@@ -96,5 +94,10 @@ export type RootStackParamList = {
   };
   [Routes.WALLET_CONNECT_REDIRECT_SHEET]: {
     type: WalletconnectResultType;
+  };
+  [Routes.EXPANDED_ASSET_SHEET]: {
+    longFormHeight: number;
+    type: 'token' | 'unique_token';
+    asset: ParsedAddressAsset | UniqueAsset;
   };
 };

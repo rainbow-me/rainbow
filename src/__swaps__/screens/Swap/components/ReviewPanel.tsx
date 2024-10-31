@@ -2,12 +2,7 @@ import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/Animated
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
-import {
-  convertRawAmountToBalance,
-  convertRawAmountToBalanceWorklet,
-  handleSignificantDecimals,
-  multiply,
-} from '@/__swaps__/utils/numbers';
+import { convertRawAmountToBalance, convertRawAmountToBalanceWorklet, handleSignificantDecimals, multiply } from '@/helpers/utilities';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -29,7 +24,6 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -48,7 +42,7 @@ import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { chainsLabel } from '@/chains';
+import { chainsLabel, chainsNativeAsset } from '@/chains';
 import { ChainId } from '@/chains/types';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
@@ -354,8 +348,7 @@ export function ReviewPanel() {
   });
 
   const openGasExplainer = useCallback(async () => {
-    const nativeAsset = await getNativeAssetForNetwork({ chainId: swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet });
-
+    const nativeAsset = chainsNativeAsset[swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet];
     navigate(Routes.EXPLAIN_SHEET, {
       chainId: swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet,
       type: 'gas',

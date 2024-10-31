@@ -3,6 +3,7 @@ import { InteractionManager, View } from 'react-native';
 
 import * as lang from '@/languages';
 import deviceUtils from '@/utils/deviceUtils';
+import CurrencySelectionList from '@/components/CurrencySelectionList';
 import { Row } from '@/components/layout';
 import { useDiscoverScreenContext } from '../DiscoverScreenContext';
 import { analytics } from '@/analytics';
@@ -22,8 +23,7 @@ import { navbarHeight } from '@/components/navbar/Navbar';
 import { IS_TEST } from '@/env';
 import { uniqBy } from 'lodash';
 import { useTheme } from '@/theme';
-import { CurrencySelectionList } from '@/components/exchange';
-import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
+import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 
 export const SearchContainer = styled(Row)({
   height: '100%',

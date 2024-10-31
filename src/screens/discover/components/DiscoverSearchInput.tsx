@@ -17,8 +17,8 @@ import { ThemeContextProps } from '@/theme';
 import { ChainId } from '@/chains/types';
 import { useDiscoverScreenContext } from '@/screens/discover/DiscoverScreenContext';
 
-export const ExchangeSearchHeight = 40;
-const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
+const SearchHeight = 40;
+const SearchWidth = deviceUtils.dimensions.width - 30;
 
 type ContainerProps = {
   isSearching: boolean;
@@ -31,20 +31,20 @@ const Container = styled(Row)(({ isSearching, theme: { colors } }: ContainerProp
   ...margin.object(0, 15, isSearching ? 8 : 0),
   ...(isSearching ? padding.object(0, 37, 0, 12) : padding.object(0)),
   backgroundColor: colors.transparent,
-  borderRadius: ExchangeSearchHeight / 2,
-  height: ExchangeSearchHeight,
+  borderRadius: SearchHeight / 2,
+  height: SearchHeight,
   overflow: 'hidden',
 }));
 
 const BackgroundGradient = styled(RadialGradient).attrs(({ isDiscover, theme: { colors } }: ContainerProps) => ({
-  center: [ExchangeSearchWidth, ExchangeSearchWidth / 2],
+  center: [SearchWidth, SearchWidth / 2],
   colors: isDiscover ? colors.gradients.searchBar : colors.gradients.lightGreyTransparent,
 }))({
-  height: ExchangeSearchWidth,
+  height: SearchWidth,
   position: 'absolute',
-  top: -(ExchangeSearchWidth - ExchangeSearchHeight) / 2,
-  transform: [{ scaleY: ExchangeSearchHeight / ExchangeSearchWidth }],
-  width: ExchangeSearchWidth,
+  top: -(SearchWidth - SearchHeight) / 2,
+  transform: [{ scaleY: SearchHeight / SearchWidth }],
+  width: SearchWidth,
 });
 
 const SearchIcon = styled(Text).attrs(({ theme: { colors } }: ContainerProps) => ({
@@ -219,7 +219,7 @@ const DiscoverSearchInput = ({
         testID={testID + '-input'}
       />
       <ClearInputDecorator
-        inputHeight={ExchangeSearchHeight}
+        inputHeight={SearchHeight}
         isVisible={searchQuery !== ''}
         onPress={handleClearInput}
         testID={testID + '-clear-input'}
