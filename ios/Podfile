@@ -16,12 +16,18 @@ pod 'GoogleDataTransport', :modular_headers => true
 pod 'GoogleUtilities', :modular_headers => true
 pod 'nanopb', :modular_headers => true
 
-install! 'cocoapods', :deterministic_uuids => false
+# Optimize installation
+install! 'cocoapods', 
+  :deterministic_uuids => false,
+  :generate_multiple_pod_projects => true,
+  :incremental_installation => true
+
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-# Prevent Cocoapods from collecting stats, which adds time to each pod installation
+# Performance ENV vars
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+ENV['OTHER_LDFLAGS'] = '-Wl,-no_warn_duplicate_libraries'
 
 target 'PriceWidgetExtension' do
   pod 'swift-vibrant'
@@ -104,8 +110,18 @@ target 'Rainbow' do
         end
       end
     end
-    installer.pods_project.build_configurations.each do |config|
-      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+
+    # Set optimization flags for all targets
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        # Existing architecture settings
+        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+        
+        # Safe optimization flags
+        config.build_settings['GCC_OPTIMIZATION_LEVEL'] = 's'
+        config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-O'
+        config.build_settings['SWIFT_COMPILATION_MODE'] = 'wholemodule'
+      end
     end
   end
 end

@@ -1,6 +1,9 @@
 name: iOS e2e tests
 on: [pull_request, workflow_dispatch]
 
+env:
+  HOMEBREW_NO_AUTO_UPDATE: true
+
 jobs:
   # Job to install dependencies
   install-deps:
@@ -48,6 +51,12 @@ jobs:
       - name: Install dependencies
         run: |
           yarn install && yarn setup
+
+      - name: Install xcbeautify
+        run: |
+          if ! command -v xcbeautify &> /dev/null; then
+            brew install xcbeautify
+          fi
 
       - name: Set sanitized branch name
         id: sanitize
@@ -129,11 +138,21 @@ jobs:
       - name: Set sanitized branch name
         id: sanitize
         run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
+
       - name: Download Yarn cache
         uses: actions/download-artifact@v4
         with:
           name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
           path: .yarn
+
+      - name: Cache Pods
+        uses: actions/cache@v4
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
       - name: Set up ENV vars & scripts
         env:
           CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
@@ -142,31 +161,39 @@ jobs:
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
           eval $CI_SCRIPTS
+
       - name: Install dependencies
         run: |
           yarn install && yarn setup
-
-      - name: Rebuild detox cache
-        run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
 
       - name: Version debug
         run: |
           npx react-native info
 
       - name: Install pods
+        timeout-minutes: 15
         run: |
           rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
-          yarn install-bundle && yarn install-pods
+          bundle exec pod install
 
       - uses: irgaly/xcode-cache@v1
+        id: xcode-cache
         with:
           key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
           restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
+
+      - name: Rebuild detox cache
+        if: steps.xcode-cache.outputs.cache-hit != 'true'
+        run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
       
       - name: Modify env and build app in release mode
+        env:
+          COCOAPODS_DISABLE_STATS: true
+          FASTLANE_SKIP_UPDATE_CHECK: true
         run: |
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
-          yarn detox build --configuration ios.sim.release
+          yarn detox build --configuration ios.sim.release \
+            | xcbeautify --renderer github-actions
 
       - name: Detox iOS e2e tests
         run: |
