@@ -5,7 +5,6 @@ import reduxStore, { AppState } from '@/redux/store';
 import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useStore } from 'zustand';
-import { useCallback } from 'react';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { ChainId } from '@/chains/types';
 import { SUPPORTED_CHAIN_IDS } from '@/chains';
@@ -72,7 +71,10 @@ type UserAssetsStateToPersist = Omit<
 >;
 
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
-type UserAssetsStateToPersistWithTransforms = Omit<UserAssetsStateToPersist, 'chainBalances' | 'idsByChain' | 'userAssets' | 'hiddenAssets'> & {
+type UserAssetsStateToPersistWithTransforms = Omit<
+  UserAssetsStateToPersist,
+  'chainBalances' | 'idsByChain' | 'userAssets' | 'hiddenAssets'
+> & {
   chainBalances: Array<[ChainId, number]>;
   idsByChain: Array<[UserAssetFilter, UniqueId[]]>;
   userAssets: Array<[UniqueId, ParsedSearchAsset]>;
