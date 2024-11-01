@@ -117,7 +117,7 @@ jobs:
       cancel-in-progress: true
     permissions:
       contents: read
-    timeout-minutes: 60
+    timeout-minutes: 90
     needs: install-deps
     steps:
       - name: Checkout repo
