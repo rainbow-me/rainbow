@@ -7,7 +7,7 @@ import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey, UserAssetsResult } from '@/resources/assets/UserAssetsQuery';
-import { convertAmountAndPriceToNativeDisplay, add, isEqual } from '@/helpers/utilities';
+import { convertAmountAndPriceToNativeDisplay, add, isEqual, multiply } from '@/helpers/utilities';
 import { isEqual as _isEqual } from 'lodash';
 
 export type WalletBalanceResult = {
@@ -30,8 +30,8 @@ const getHiddenAssetBalance = ({
 
   const balance = hiddenAssetIds.reduce((acc, uniqueId) => {
     const asset = assetData?.[uniqueId];
-    if (!asset) return acc
-    const assetNativeBalance = multiply(asset.price?.value || 0, asset.balance?.amount || 0)
+    if (!asset) return acc;
+    const assetNativeBalance = multiply(asset.price?.value || 0, asset.balance?.amount || 0);
     return add(acc, assetNativeBalance);
   }, '0');
 
