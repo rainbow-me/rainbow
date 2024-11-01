@@ -30,13 +30,9 @@ const getHiddenAssetBalance = ({
 
   const balance = hiddenAssetIds.reduce((acc, uniqueId) => {
     const asset = assetData?.[uniqueId];
-    let sum = acc;
-    if (asset) {
-      const priceUnit = asset.price?.value ?? 0;
-      const nativeDisplay = convertAmountAndPriceToNativeDisplay(asset?.balance?.amount ?? 0, priceUnit, nativeCurrency);
-      sum = add(sum, nativeDisplay.amount);
-    }
-    return sum;
+    if (!asset) return acc
+    const assetNativeBalance = multiply(asset.price?.value || 0, asset.balance?.amount || 0)
+    return add(acc, assetNativeBalance);
   }, '0');
 
   return balance;
