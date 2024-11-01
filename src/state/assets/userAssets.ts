@@ -2,7 +2,7 @@ import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import reduxStore, { AppState } from '@/redux/store';
-import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
+import { supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useStore } from 'zustand';
 import { useCallback } from 'react';
@@ -39,7 +39,7 @@ export interface UserAssetsState {
   getBalanceSortedChainList: () => ChainId[];
   getChainsWithBalance: () => ChainId[];
   getFilteredUserAssetIds: () => UniqueId[];
-  getHighestValueEth: () => ParsedSearchAsset | null;
+  getHighestValueNativeAsset: () => ParsedSearchAsset | null;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
   getUserAssets: () => ParsedSearchAsset[];
   selectUserAssetIds: (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) => Generator<UniqueId, void, unknown>;
@@ -57,7 +57,7 @@ type UserAssetsStateToPersist = Omit<
   | 'getBalanceSortedChainList'
   | 'getChainsWithBalance'
   | 'getFilteredUserAssetIds'
-  | 'getHighestValueEth'
+  | 'getHighestValueNativeAsset'
   | 'getUserAsset'
   | 'getUserAssets'
   | 'selectUserAssetIds'
@@ -201,14 +201,14 @@ export const createUserAssetsStore = (address: Address | string) =>
           return filteredIds;
         }
       },
-      getHighestValueEth: () => {
+      getHighestValueNativeAsset: () => {
         const preferredNetwork = swapsStore.getState().preferredNetwork;
         const assets = get().userAssets;
 
         let highestValueEth = null;
 
         for (const [, asset] of assets) {
-          if (asset.mainnetAddress !== ETH_ADDRESS) continue;
+          if (!asset.isNativeAsset) continue;
 
           if (preferredNetwork && asset.chainId === preferredNetwork) {
             return asset;

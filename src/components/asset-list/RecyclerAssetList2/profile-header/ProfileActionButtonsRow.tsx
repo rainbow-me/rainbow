@@ -175,7 +175,7 @@ function SwapButton() {
         category: 'home screen',
       });
       swapsStore.setState({
-        inputAsset: userAssetsStore.getState().getHighestValueEth(),
+        inputAsset: userAssetsStore.getState().getHighestValueNativeAsset(),
       });
       InteractionManager.runAfterInteractions(() => {
         navigate(Routes.SWAP);

@@ -440,7 +440,7 @@ const HomePanel = ({
     if (!valid) return;
 
     swapsStore.setState({
-      inputAsset: userAssetsStore.getState().getHighestValueEth(),
+      inputAsset: userAssetsStore.getState().getHighestValueNativeAsset(),
     });
     InteractionManager.runAfterInteractions(() => {
       navigate(Routes.SWAP);
@@ -452,7 +452,7 @@ const HomePanel = ({
     if (!valid) return;
 
     swapsStore.setState({
-      inputAsset: userAssetsStore.getState().getHighestValueEth(),
+      inputAsset: userAssetsStore.getState().getHighestValueNativeAsset(),
     });
     InteractionManager.runAfterInteractions(() => {
       navigate(Routes.SWAP);
