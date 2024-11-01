@@ -1,4 +1,4 @@
-import { gweiToWei } from '@/__swaps__/utils/ethereum';
+import { gweiToWei } from '@/parsers';
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { Easing, WithSpringConfig, WithTimingConfig } from 'react-native-reanimated';

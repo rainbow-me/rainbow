@@ -40,7 +40,7 @@ import { useBrowserContext } from './BrowserContext';
 import { getNameFromFormattedUrl } from './utils';
 import { useTrendingDApps } from '@/resources/metadata/trendingDapps';
 import { DApp } from '@/graphql/__generated__/metadata';
-import { DEFAULT_TAB_URL } from './constants';
+import { RAINBOW_HOME } from './constants';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { FEATURED_RESULTS, useExperimentalFlag } from '@/config';
 import { FeaturedResultStack, FeaturedResultStackProps } from '@/components/FeaturedResult/FeaturedResultStack';
@@ -189,7 +189,7 @@ const Favorites = ({ goToUrl, tabId }: { goToUrl: (url: string) => void; tabId: 
     ({ currentGridSort, isActiveTab }: { currentGridSort: string[] | undefined; isActiveTab: boolean }) => {
       'worklet';
       const homepageTabsCount = currentlyOpenTabIds.value.filter(
-        tabId => !animatedTabUrls.value[tabId] || animatedTabUrls.value[tabId] === DEFAULT_TAB_URL
+        tabId => !animatedTabUrls.value[tabId] || animatedTabUrls.value[tabId] === RAINBOW_HOME
       ).length;
       const inactiveAndMounted = !isActiveTab && currentGridSort !== undefined;
 
