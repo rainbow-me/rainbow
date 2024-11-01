@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, View } from 'react-native';
+import { useDebounce } from 'use-debounce';
 
 import * as lang from '@/languages';
 import deviceUtils from '@/utils/deviceUtils';
@@ -8,7 +9,7 @@ import { Row } from '@/components/layout';
 import { useDiscoverScreenContext } from '../DiscoverScreenContext';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { useAccountSettings, useDebounce, useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';
+import { useAccountSettings, useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchSuggestions } from '@/handlers/ens';
@@ -64,11 +65,13 @@ export default function DiscoverSearch() {
     sectionListRef,
   } = useDiscoverScreenContext();
 
-  const lastSearchQuery = usePrevious(searchQuery);
+  const [searchQueryForSearch] = useDebounce(searchQuery, 350);
+  const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 800);
+
+  const lastSearchQuery = usePrevious(searchQueryForSearch);
 
   const [ensResults, setEnsResults] = useState<EnsSearchResult[]>([]);
-  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQuery, ChainId.mainnet, true);
-  const [searchQueryForPoap] = useDebounce(searchQuery, 800);
+  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch, ChainId.mainnet, true);
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const marginBottom = TAB_BAR_HEIGHT + safeAreaInsetValues.bottom + 16;
@@ -231,13 +234,23 @@ export default function DiscoverSearch() {
   );
 
   useEffect(() => {
-    if (searchQuery && !isLoading) {
-      if (lastSearchQuery !== searchQuery) {
+    if (searchQueryForSearch && !isLoading) {
+      if (lastSearchQuery !== searchQueryForSearch) {
         setIsLoading(true);
         fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns, profilesEnabled);
       }
     }
-  }, [addEnsResults, isSearching, lastSearchQuery, searchQuery, setIsFetchingEns, profilesEnabled, isLoading, setIsLoading]);
+  }, [
+    addEnsResults,
+    isSearching,
+    lastSearchQuery,
+    searchQuery,
+    setIsFetchingEns,
+    profilesEnabled,
+    isLoading,
+    setIsLoading,
+    searchQueryForSearch,
+  ]);
 
   useEffect(() => {
     if (!swapCurrencyListLoading && !isFetchingEns) {
@@ -268,7 +281,7 @@ export default function DiscoverSearch() {
           // @ts-expect-error - FIXME: ens results / rainbow token results are not compatible with one another
           listItems={currencyList}
           loading={swapCurrencyListLoading || isFetchingEns}
-          query={searchQuery}
+          query={searchQueryForSearch}
           ref={sectionListRef}
           showList
           testID="discover-currency-select-list"
