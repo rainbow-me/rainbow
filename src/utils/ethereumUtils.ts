@@ -44,6 +44,44 @@ import { AddressOrEth } from '@/__swaps__/types/assets';
 import { chainsIdByName, chainsName, chainsNativeAsset, defaultChains, getChainGasUnits } from '@/chains';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
+/**
+ * @deprecated - use `getUniqueId` instead for chainIds
+ * @desc Get the unique ID for an address and network
+ * @param address - The address to get the unique ID for
+ * @param network - The network to get the unique ID for
+ * @returns `${address}_${network}`
+ */
+export const getUniqueIdNetwork = (address: EthereumAddress, network: Network) => `${address}_${network}`;
+
+export const getUniqueId = (address: EthereumAddress, chainId: ChainId) => {
+  'worklet';
+  return `${address}_${chainId}`;
+};
+
+/**
+ * @desc Get the address and chainId from a unique ID
+ * @param uniqueId - The unique ID to get the address & (chainId || network) from
+ * @returns { address: AddressOrEth; chainId: ChainId }
+ */
+export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: AddressOrEth; chainId: ChainId } => {
+  const parts = uniqueId.split('_');
+
+  // If the unique ID does not contain '_', it's a mainnet address
+  if (parts.length === 1) {
+    return { address: parts[0] as AddressOrEth, chainId: ChainId.mainnet };
+  }
+
+  const address = parts[0] as AddressOrEth;
+  const networkOrChainId = parts[1];
+  // if the second part is a string, it's probably a network
+  if (isNaN(Number(networkOrChainId))) {
+    const chainId = chainsIdByName[networkOrChainId] || ChainId.mainnet; // Default to mainnet if unknown
+    return { address, chainId };
+  }
+
+  return { address, chainId: +networkOrChainId };
+};
+
 const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }) => {
   const nativeAssetAddress = chainsNativeAsset[chainId].address;
   const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, chainId);
@@ -420,26 +458,6 @@ async function parseEthereumUrl(data: string) {
     }
   });
 }
-
-export const getUniqueIdNetwork = (address: EthereumAddress, network: Network) => `${address}_${network}`;
-
-export const getUniqueId = (address: EthereumAddress, chainId: ChainId) => `${address}_${chainId}`;
-
-export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: AddressOrEth; chainId: ChainId } => {
-  const parts = uniqueId.split('_');
-
-  // If the unique ID does not contain '_', it's a mainnet address
-  if (parts.length === 1) {
-    return { address: parts[0] as AddressOrEth, chainId: ChainId.mainnet };
-  }
-
-  // If the unique ID contains '_', the last part is the network and the rest is the address
-  const network = parts[1] as Network; // Assuming the last part is a valid Network enum value
-  const address = parts[0] as AddressOrEth;
-  const chainId = chainsIdByName[network];
-
-  return { address, chainId };
-};
 
 const calculateL1FeeOptimism = async (
   tx: RainbowTransaction | TransactionRequest,

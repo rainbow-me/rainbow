@@ -16,7 +16,7 @@ import ExpandedStateSection from '../ExpandedStateSection';
 import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@/react-native-animated-charts/src';
 import { isL2Chain, isTestnetChain } from '@/handlers/web3';
-import AssetInputTypes from '@/helpers/assetInputTypes';
+import { SwapAssetType } from '@/__swaps__/types/swap';
 import {
   useAccountSettings,
   useAdditionalAssetData,
@@ -292,7 +292,7 @@ export default function ChartExpandedState({ asset }) {
       {!needsEth ? (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
           {hasBalance && !isTestnet && swapEnabled && (
-            <SwapActionButton asset={assetWithPrice} color={color} inputType={AssetInputTypes.in} />
+            <SwapActionButton asset={assetWithPrice} color={color} inputType={SwapAssetType.inputAsset} />
           )}
           {hasBalance ? (
             isTransferable ? (
@@ -303,7 +303,7 @@ export default function ChartExpandedState({ asset }) {
               asset={assetWithPrice}
               color={color}
               fromDiscover={fromDiscover}
-              inputType={AssetInputTypes.out}
+              inputType={SwapAssetType.outputAsset}
               label={`􀖅 ${lang.t('expanded_state.asset.get_asset', {
                 assetSymbol: asset?.symbol,
               })}`}
@@ -315,7 +315,7 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : addCashEnabled ? (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          <BuyActionButton color={color} asset={assetWithPrice} />
+          <BuyActionButton color={color} />
         </SheetActionButtonRow>
       ) : null}
       {!data?.networks && isL2 && (

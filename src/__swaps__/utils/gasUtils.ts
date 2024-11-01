@@ -14,9 +14,10 @@ import { ParsedAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
 import { BlocksToConfirmation, GasFeeLegacyParams, GasFeeParam, GasFeeParams, GasSpeed } from '@/__swaps__/types/gas';
 
-import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
-import { addHexPrefix, convertStringToHex, toHex } from '@/__swaps__/utils/hex';
+import { gweiToWei, weiToGwei } from '@/parsers';
 import {
+  convertStringToHex,
+  lessThan,
   add,
   addBuffer,
   convertAmountAndPriceToNativeDisplay,
@@ -24,11 +25,11 @@ import {
   divide,
   fraction,
   greaterThan,
-  lessThan,
   multiply,
-} from '@/__swaps__/utils/numbers';
-import { getMinimalTimeUnitStringForMs } from '@/__swaps__/utils/time';
+} from '@/helpers/utilities';
+import { addHexPrefix, toHex } from '@/handlers/web3';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
+import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
 
 export const FLASHBOTS_MIN_TIP = 6;
 
