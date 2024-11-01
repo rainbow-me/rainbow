@@ -64,6 +64,8 @@ export default function DiscoverSearch() {
     sectionListRef,
   } = useDiscoverScreenContext();
 
+  const lastSearchQuery = usePrevious(searchQuery);
+
   const [ensResults, setEnsResults] = useState<EnsSearchResult[]>([]);
   const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQuery, ChainId.mainnet, true);
   const [searchQueryForPoap] = useDebounce(searchQuery, 800);
@@ -115,7 +117,6 @@ export default function DiscoverSearch() {
     }
     return list.filter(section => section.data.length > 0);
   }, [swapCurrencyList, ensResults]);
-  const lastSearchQuery = usePrevious(searchQuery);
 
   const currencyListDataKey = useMemo(
     () => `${swapCurrencyList?.[0]?.data?.[0]?.address || '_'}_${ensResults?.[0]?.data?.[0]?.address || '_'}`,
@@ -168,6 +169,7 @@ export default function DiscoverSearch() {
     };
     checkAndHandleMint(searchQuery);
   }, [accountAddress, navigate, searchQuery, setSearchQuery]);
+
   const handlePress = useCallback(
     (item: EnrichedExchangeAsset) => {
       if (item.ens) {
