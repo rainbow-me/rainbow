@@ -1,6 +1,4 @@
-import { AddressZero } from '@ethersproject/constants';
-
-import { ETH_ADDRESS, SupportedCurrencyKey } from '@/references';
+import { SupportedCurrencyKey } from '@/references';
 import {
   AddressOrEth,
   AssetApiResponse,
@@ -17,39 +15,23 @@ import { ChainId, ChainName } from '@/state/backendNetworks/types';
 import * as i18n from '@/languages';
 import { SearchAsset } from '@/__swaps__/types/search';
 
-import { customChainIdsToAssetNames, isNativeAsset } from '@/__swaps__/utils/chains';
+import { isNativeAsset } from '@/handlers/assets';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
   convertAmountToNativeDisplayWorklet,
   convertAmountToPercentageDisplay,
   convertRawAmountToDecimalFormat,
-} from '@/__swaps__/utils/numbers';
-import { isLowerCaseMatch, isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
+} from '@/helpers/utilities';
+import { isLowerCaseMatch } from '@/utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
   +a1.chainId === +a2.chainId && isLowerCaseMatch(a1.address, a2.address);
 
-export const isSameAssetWorklet = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) => {
-  'worklet';
-  return +a1.chainId === +a2.chainId && isLowerCaseMatchWorklet(a1.address, a2.address);
-};
-
 const get24HrChange = (priceData?: ZerionAssetPrice) => {
   const twentyFourHrChange = priceData?.relative_change_24h;
   return twentyFourHrChange ? convertAmountToPercentageDisplay(twentyFourHrChange) : '';
-};
-
-export const getCustomChainIconUrl = (chainId: ChainId, address: AddressOrEth) => {
-  if (!chainId || !customChainIdsToAssetNames[chainId]) return '';
-  const baseUrl = 'https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/';
-
-  if (address === AddressZero || address === ETH_ADDRESS) {
-    return `${baseUrl}${customChainIdsToAssetNames[chainId]}/info/logo.png`;
-  } else {
-    return `${baseUrl}${customChainIdsToAssetNames[chainId]}/assets/${address}/logo.png`;
-  }
 };
 
 export const getNativeAssetPrice = ({ priceData, currency }: { priceData?: ZerionAssetPrice; currency: SupportedCurrencyKey }) => {
@@ -127,7 +109,7 @@ export function parseAsset({ asset, currency }: { asset: ZerionAsset | AssetApiR
     symbol: asset.symbol,
     type: asset.type,
     decimals: asset.decimals,
-    icon_url: asset.icon_url || getCustomChainIconUrl(chainId, address),
+    icon_url: asset.icon_url,
     colors: asset.colors,
     standard,
     ...('networks' in asset && { networks: asset.networks }),
@@ -310,42 +292,3 @@ export const parseSearchAsset = ({
   colors: userAsset?.colors || assetWithPrice?.colors || searchAsset?.colors,
   type: userAsset?.type || assetWithPrice?.type || searchAsset?.type,
 });
-
-const assetQueryFragment = (
-  address: AddressOrEth,
-  chainId: ChainId,
-  currency: SupportedCurrencyKey,
-  index: number,
-  withPrice?: boolean
-) => {
-  const priceQuery = withPrice ? 'price { value relativeChange24h }' : '';
-  return `Q${index}: token(address: "${address}", chainID: ${chainId}, currency: "${currency}") {
-      colors {
-        primary
-        fallback
-        shadow
-      }
-      decimals
-      iconUrl
-      name
-      networks
-      symbol
-      ${priceQuery}
-  }`;
-};
-
-export const chunkArray = <TItem>(arr: TItem[], chunkSize: number) => {
-  const result = [];
-
-  for (let i = 0; i < arr.length; i += chunkSize) {
-    result.push(arr.slice(i, i + chunkSize));
-  }
-
-  return result;
-};
-
-export const createAssetQuery = (addresses: AddressOrEth[], chainId: ChainId, currency: SupportedCurrencyKey, withPrice?: boolean) => {
-  return `{
-        ${addresses.map((a, i) => assetQueryFragment(a, chainId, currency, i, withPrice)).join(',')}
-    }`;
-};

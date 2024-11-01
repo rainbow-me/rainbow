@@ -9,7 +9,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { logger, RainbowError } from '@/logger';
 import { ClaimingClaimableSharedUI, ClaimStatus } from './ClaimingClaimableSharedUI';
 import { TransactionRequest } from '@ethersproject/providers';
-import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
 import { walletExecuteRap } from '@/rapsV2/execute';

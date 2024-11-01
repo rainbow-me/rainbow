@@ -171,7 +171,7 @@ const MintSheet = () => {
     symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
   });
 
-  const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
+  const priceOfEth = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
 
   const nativeMintPriceDisplay = convertAmountToNativeDisplay(parseFloat(multiply(price.amount, quantity)) * priceOfEth, nativeCurrency);
 
@@ -628,7 +628,6 @@ const MintSheet = () => {
                   />
 
                   <Box width={{ custom: deviceWidth - INSET_OFFSET }}>
-                    {/* @ts-ignore */}
                     <GasSpeedButton
                       fallbackColor={imageColor}
                       marginTop={0}

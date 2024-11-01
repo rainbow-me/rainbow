@@ -7,7 +7,7 @@ import { useDebounce } from 'use-debounce';
 import CurrencySelectionTypes from '@/helpers/currencySelectionTypes';
 
 import deviceUtils from '@/utils/deviceUtils';
-import { CurrencySelectionList } from '@/components/exchange';
+import CurrencySelectionList from '@/components/CurrencySelectionList';
 import { Row } from '@/components/layout';
 import DiscoverSheetContext from '../DiscoverScreenContext';
 import { analytics } from '@/analytics';
@@ -22,8 +22,8 @@ import { ethereumUtils } from '@/utils';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { ChainId, Network } from '@/chains/types';
-import { getChainsIdByName } from '@/chains';
+import { ChainId, Network } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -134,7 +134,7 @@ export default function DiscoverSearch() {
           network === Network.optimism;
         }
         const contractAddress = query.split('/')[1];
-        navigateToMintCollection(contractAddress, getChainsIdByName()[network]);
+        navigateToMintCollection(contractAddress, useBackendNetworksStore.getState().getChainsIdByName()[network]);
       }
     };
     checkAndHandleMint(searchQuery);

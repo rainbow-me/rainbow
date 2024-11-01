@@ -16,7 +16,7 @@ import ExpandedStateSection from '../ExpandedStateSection';
 import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@/react-native-animated-charts/src';
 import { isL2Chain, isTestnetChain } from '@/handlers/web3';
-import AssetInputTypes from '@/helpers/assetInputTypes';
+import { SwapAssetType } from '@/__swaps__/types/swap';
 import {
   useAccountSettings,
   useAdditionalAssetData,
@@ -36,8 +36,8 @@ import { Box } from '@/design-system';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';
-import { getChainsName, supportedSwapChainIds } from '@/chains';
-import { ChainId } from '@/chains/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const defaultCarouselHeight = 60;
 const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
@@ -166,7 +166,7 @@ export default function ChartExpandedState({ asset }) {
             chainId: asset.chainId,
             network: asset.network,
             address: asset.address,
-            mainnetAddress: asset?.networks?.[getChainsName()[ChainId.mainnet]]?.address,
+            mainnetAddress: asset?.networks?.[useBackendNetworksStore.getState().getChainsName()[ChainId.mainnet]]?.address,
           }
         : asset;
   }, [asset, genericAsset, hasBalance]);
@@ -227,9 +227,10 @@ export default function ChartExpandedState({ asset }) {
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      type: assetWithPrice.network,
+      type: 'network',
+      chainId: assetWithPrice.chainId,
     });
-  }, [assetWithPrice.network, navigate]);
+  }, [assetWithPrice.chainId, navigate]);
 
   const { layout } = useContext(ModalContext) || {};
 
@@ -242,7 +243,7 @@ export default function ChartExpandedState({ asset }) {
   const assetChainId = assetWithPrice.chainId;
 
   const { swagg_enabled, f2c_enabled } = useRemoteConfig();
-  const swapEnabled = swagg_enabled && supportedSwapChainIds.includes(assetChainId);
+  const swapEnabled = swagg_enabled && useBackendNetworksStore.getState().getSupportedSwapChainIds().includes(assetChainId);
   const addCashEnabled = f2c_enabled;
 
   const format = useCallback(
@@ -291,7 +292,7 @@ export default function ChartExpandedState({ asset }) {
       {!needsEth ? (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
           {hasBalance && !isTestnet && swapEnabled && (
-            <SwapActionButton asset={assetWithPrice} color={color} inputType={AssetInputTypes.in} />
+            <SwapActionButton asset={assetWithPrice} color={color} inputType={SwapAssetType.inputAsset} />
           )}
           {hasBalance ? (
             isTransferable ? (
@@ -302,7 +303,7 @@ export default function ChartExpandedState({ asset }) {
               asset={assetWithPrice}
               color={color}
               fromDiscover={fromDiscover}
-              inputType={AssetInputTypes.out}
+              inputType={SwapAssetType.outputAsset}
               label={`􀖅 ${lang.t('expanded_state.asset.get_asset', {
                 assetSymbol: asset?.symbol,
               })}`}
@@ -314,7 +315,7 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : addCashEnabled ? (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          <BuyActionButton color={color} asset={assetWithPrice} />
+          <BuyActionButton color={color} />
         </SheetActionButtonRow>
       ) : null}
       {!data?.networks && isL2 && (

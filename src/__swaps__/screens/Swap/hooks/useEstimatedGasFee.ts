@@ -1,6 +1,6 @@
 import { ChainId } from '@/state/backendNetworks/types';
-import { weiToGwei } from '@/__swaps__/utils/ethereum';
-import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/__swaps__/utils/numbers';
+import { weiToGwei } from '@/parsers';
+import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import { useMemo } from 'react';
 import { formatUnits } from 'viem';

@@ -29,7 +29,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
   const { colors } = useTheme();
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
   const { network, status, chainId } = transaction;
-  const isReadOnly = useSelector((state: AppState) => state.wallets.selected?.type === WalletTypes.readOnly ?? true);
+  const isReadOnly = useSelector((state: AppState) => state.wallets.selected?.type === WalletTypes.readOnly);
   // Retry swap related data
   const retrySwapMetadata = useMemo(() => {
     const data = swapMetadataStorage.getString(hash ?? '');
@@ -44,13 +44,9 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
 
   const onRetrySwap = useCallback(() => {
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
-    Navigation.handleAction(Routes.EXCHANGE_MODAL, {
-      params: {
-        meta: retrySwapMetadata,
-        inputAsset: retrySwapMetadata?.inputAsset,
-        outputAsset: retrySwapMetadata?.outputAsset,
-      },
-    });
+
+    // TODO: Add retry swap logic back for swaps
+    Navigation.handleAction(Routes.SWAP, {});
   }, [retrySwapMetadata]);
 
   if (!hash || !network) {

@@ -3,15 +3,15 @@ import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
 import { useInternetStatus } from '@/hooks';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { getChainsName, getChainsNativeAsset } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const TestnetToast = ({ chainId }) => {
   const { connectedToHardhat } = useConnectedToHardhatStore();
   const isConnected = useInternetStatus();
-  const nativeAsset = getChainsNativeAsset()[chainId];
-  const name = getChainsName()[chainId];
+  const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
+  const name = useBackendNetworksStore.getState().getChainsName()[chainId];
   const color = isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary;
   const [visible, setVisible] = useState(chainId !== ChainId.mainnet);
   const [networkName, setNetworkName] = useState(name);

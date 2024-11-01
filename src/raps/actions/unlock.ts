@@ -2,7 +2,7 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
-import { getProvider } from '@/handlers/web3';
+import { getProvider, toHex } from '@/handlers/web3';
 import { Address, erc20Abi, erc721Abi } from 'viem';
 
 import { ChainId } from '@/state/backendNetworks/types';
@@ -17,7 +17,6 @@ import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { ActionProps, RapActionResult } from '../references';
 
 import { overrideWithFastSpeedIfNeeded } from './../utils';
-import { toHex } from '@/__swaps__/utils/hex';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

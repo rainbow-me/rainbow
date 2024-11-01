@@ -6,7 +6,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { RecentSwap } from '@/__swaps__/types/swap';
 import { getCachedGasSuggestions } from '@/__swaps__/utils/meteorology';
-import { lessThan } from '@/__swaps__/utils/numbers';
+import { lessThan } from '@/helpers/utilities';
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
 import { RainbowError, logger } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';

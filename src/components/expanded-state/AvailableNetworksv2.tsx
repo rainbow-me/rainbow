@@ -8,23 +8,20 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { position } from '@/styles';
 import { watchingAlert } from '@/utils';
-import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
-import { useSwapCurrencyHandlers, useWallets } from '@/hooks';
+import { useWallets } from '@/hooks';
 import { RainbowToken } from '@/entities';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { implementation } from '@/entities/dispersion';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { SWAPS_V2, enableActionsOnReadOnlyWallet, useExperimentalFlag } from '@/config';
-import { useRemoteConfig } from '@/model/remoteConfig';
+import { enableActionsOnReadOnlyWallet } from '@/config';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { ChainId } from '@/state/backendNetworks/types';
-import { getUniqueId } from '@/utils/ethereumUtils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const NOOP = () => null;
@@ -42,8 +39,6 @@ const AvailableNetworksv2 = ({
 }) => {
   const { colors } = useTheme();
   const { goBack, navigate } = useNavigation();
-  const { swaps_v2 } = useRemoteConfig();
-  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2);
   const { isReadOnlyWallet } = useWallets();
 
   const radialGradientProps = {
@@ -56,10 +51,6 @@ const AvailableNetworksv2 = ({
     },
   };
 
-  const { updateInputCurrency } = useSwapCurrencyHandlers({
-    shouldUpdate: true,
-    type: ExchangeModalTypes.swap,
-  });
   const convertAssetAndNavigate = useCallback(
     (chainId: ChainId) => {
       if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
@@ -76,76 +67,53 @@ const AvailableNetworksv2 = ({
 
       goBack();
 
-      if (swapsV2Enabled || swaps_v2) {
-        const uniqueId = `${newAsset.address}_${asset.chainId}`;
-        const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
+      const uniqueId = `${newAsset.address}_${asset.chainId}`;
+      const chainsName = useBackendNetworksStore.getState().getChainsName();
+      const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 
-        const chainName = useBackendNetworksStore.getState().getChainsName()[asset.chainId];
-
-        const parsedAsset = parseSearchAsset({
-          assetWithPrice: {
-            ...newAsset,
-            uniqueId,
-            address: newAsset.address as AddressOrEth,
-            type: newAsset.type as AssetType,
-            chainId: asset.chainId,
-            chainName,
-            isNativeAsset: false,
-            native: {},
-          },
-          searchAsset: {
-            ...newAsset,
-            uniqueId,
-            chainId: asset.chainId,
-            chainName,
-            address: newAsset.address as AddressOrEth,
-            highLiquidity: newAsset.highLiquidity ?? false,
-            isRainbowCurated: newAsset.isRainbowCurated ?? false,
-            isVerified: newAsset.isVerified ?? false,
-            mainnetAddress: (newAsset.mainnet_address ?? '') as AddressOrEth,
-            networks: newAsset.networks ?? [],
-            type: newAsset.type as AssetType,
-          },
-          userAsset,
-        });
-
-        const largestBalanceSameChainUserAsset = userAssetsStore
-          .getState()
-          .getUserAssets()
-          .find(userAsset => userAsset.chainId === asset.chainId && userAsset.address !== newAsset.address);
-        if (largestBalanceSameChainUserAsset) {
-          swapsStore.setState({ inputAsset: largestBalanceSameChainUserAsset });
-        } else {
-          swapsStore.setState({ inputAsset: null });
-        }
-        swapsStore.setState({ outputAsset: parsedAsset });
-
-        InteractionManager.runAfterInteractions(() => {
-          navigate(Routes.SWAP);
-        });
-
-        return;
-      }
-
-      newAsset.uniqueId = getUniqueId(asset.address, chainId);
-      newAsset.type = useBackendNetworksStore.getState().getChainsName()[chainId];
-
-      navigate(Routes.EXCHANGE_MODAL, {
-        params: {
-          fromDiscover: true,
-          ignoreInitialTypeCheck: true,
-          defaultOutputAsset: newAsset,
-          type: CurrencySelectionTypes.input,
-          showCoinIcon: true,
-          title: lang.t('swap.modal_types.get_symbol_with', {
-            symbol: newAsset?.symbol,
-          }),
-          onSelectCurrency: updateInputCurrency,
+      const parsedAsset = parseSearchAsset({
+        assetWithPrice: {
+          ...newAsset,
+          uniqueId,
+          address: newAsset.address as AddressOrEth,
+          type: newAsset.type as AssetType,
+          chainId: asset.chainId,
+          chainName: chainsName[asset.chainId],
+          isNativeAsset: false,
+          native: {},
         },
-        screen: Routes.CURRENCY_SELECT_SCREEN,
+        searchAsset: {
+          ...newAsset,
+          uniqueId,
+          chainId: asset.chainId,
+          chainName: chainsName[asset.chainId],
+          address: newAsset.address as AddressOrEth,
+          highLiquidity: newAsset.highLiquidity ?? false,
+          isRainbowCurated: newAsset.isRainbowCurated ?? false,
+          isVerified: newAsset.isVerified ?? false,
+          mainnetAddress: (newAsset.mainnet_address ?? '') as AddressOrEth,
+          networks: newAsset.networks ?? [],
+          type: newAsset.type as AssetType,
+        },
+        userAsset,
+      });
+
+      const largestBalanceSameChainUserAsset = userAssetsStore
+        .getState()
+        .getUserAssets()
+        .find(userAsset => userAsset.chainId === asset.chainId && userAsset.address !== newAsset.address);
+      if (largestBalanceSameChainUserAsset) {
+        swapsStore.setState({ inputAsset: largestBalanceSameChainUserAsset });
+      } else {
+        swapsStore.setState({ inputAsset: null });
+      }
+      swapsStore.setState({ outputAsset: parsedAsset });
+
+      InteractionManager.runAfterInteractions(() => {
+        navigate(Routes.SWAP);
       });
     },
-    [asset, goBack, isReadOnlyWallet, navigate, networks, swapsV2Enabled, swaps_v2, updateInputCurrency]
+    [asset, goBack, isReadOnlyWallet, navigate, networks]
   );
 
   const handlePressContextMenu = useCallback(

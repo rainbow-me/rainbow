@@ -32,12 +32,19 @@ import {
   powWorklet,
   roundWorklet,
   toFixedWorklet,
-} from '../safe-math/SafeMath';
-import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
+} from '@/safe-math/SafeMath';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
 import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
-import { convertAmountToRawAmount } from './numbers';
+import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';
+import { getUniqueId } from '@/utils/ethereumUtils';
+
+// DO NOT REMOVE THESE COMMENTED ENV VARS
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { IS_APK_BUILD } from 'react-native-dotenv';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import isTestFlight from '@/helpers/isTestFlight';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -50,14 +57,14 @@ export type ResponseByTheme<T> = {
   dark: T;
 };
 
-export const getColorValueForTheme = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = false) => {
+export const getColorValueForTheme = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean) => {
   if (!values) {
     return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
   }
   return isDarkMode ? values.dark : values.light;
 };
 
-export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = true) => {
+export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean) => {
   'worklet';
 
   if (!values) {
@@ -525,11 +532,6 @@ const ETH_COLORS: Colors = {
   shadow: undefined,
 };
 
-export const getStandardizedUniqueIdWorklet = ({ address, chainId }: { address: AddressOrEth; chainId: ChainId }) => {
-  'worklet';
-  return `${address}_${chainId}`;
-};
-
 export const parseAssetAndExtend = ({
   asset,
   insertUserAssetBalance,
@@ -543,7 +545,7 @@ export const parseAssetAndExtend = ({
     colors: (isAssetEth ? ETH_COLORS : asset.colors) as TokenColors,
   });
 
-  const uniqueId = getStandardizedUniqueIdWorklet({ address: asset.address, chainId: asset.chainId });
+  const uniqueId = getUniqueId(asset.address, asset.chainId);
   const balance = insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(uniqueId)?.balance || asset.balance : asset.balance;
 
   return {
@@ -589,7 +591,7 @@ export const buildQuoteParams = ({
 
   const isCrosschainSwap = inputAsset.chainId !== outputAsset.chainId;
 
-  return {
+  const quoteParams: QuoteParams = {
     source: source === 'auto' ? undefined : source,
     chainId: inputAsset.chainId,
     fromAddress: currentAddress,
@@ -608,4 +610,9 @@ export const buildQuoteParams = ({
     toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
     currency: store.getState().settings.nativeCurrency,
   };
+
+  // Do not delete the comment below 😤
+  // @ts-ignore About to get quote
+
+  return quoteParams;
 };

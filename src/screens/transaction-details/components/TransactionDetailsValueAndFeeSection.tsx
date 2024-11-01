@@ -1,7 +1,7 @@
 import React from 'react';
 import { DoubleLineTransactionDetailsRow } from '@/screens/transaction-details/components/DoubleLineTransactionDetailsRow';
 import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
-import { RainbowTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
+import { RainbowTransaction } from '@/entities/transactions/transaction';
 import { Box, Stack, globalColors } from '@/design-system';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import * as i18n from '@/languages';
@@ -14,12 +14,11 @@ import { CardSize } from '@/components/unique-token/CardSize';
 import ImgixImage from '@/components/images/ImgixImage';
 import { View } from 'react-native';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { checkForPendingSwap } from '../helpers/checkForPendingSwap';
+import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 import { ChainId } from '@/state/backendNetworks/types';
 
 type Props = {
   transaction: RainbowTransaction;
-  fee?: RainbowTransactionFee;
   nativeCurrencyValue?: string;
   value?: string;
 };

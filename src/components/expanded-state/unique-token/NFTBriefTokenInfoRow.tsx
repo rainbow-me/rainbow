@@ -13,6 +13,7 @@ import { UniqueAsset } from '@/entities';
 import { fetchReservoirNFTFloorPrice } from '@/resources/nfts/utils';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const NONE = 'None';
 
@@ -83,7 +84,7 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
   }, [navigate]);
 
   const lastSalePrice = formatPrice(asset?.lastPrice, asset?.lastSalePaymentToken);
-  const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
+  const priceOfEth = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
 
   return (
     <Columns space="19px (Deprecated)">

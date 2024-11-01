@@ -7,7 +7,7 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 import { ParsedAddressAsset, PendingTransaction, UniqueAsset } from '@/entities';
 import { Claimable } from '@/resources/addys/claimables/types';
-import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/redux/walletconnect';
+import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/walletConnect/types';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
@@ -68,8 +68,6 @@ export type RootStackParamList = {
     emptyWallet?: boolean;
   };
   [Routes.PROFILE_SCREEN]: any;
-  [Routes.SWAP_SETTINGS_SHEET]: any;
-  [Routes.SWAP_DETAILS_SHEET]: any;
   [Routes.WELCOME_SCREEN]: any;
   [Routes.ENS_CONFIRM_REGISTER_SHEET]: any;
   [Routes.PROFILE_SHEET]: {
@@ -96,5 +94,10 @@ export type RootStackParamList = {
   };
   [Routes.WALLET_CONNECT_REDIRECT_SHEET]: {
     type: WalletconnectResultType;
+  };
+  [Routes.EXPANDED_ASSET_SHEET]: {
+    longFormHeight: number;
+    type: 'token' | 'unique_token';
+    asset: ParsedAddressAsset | UniqueAsset;
   };
 };

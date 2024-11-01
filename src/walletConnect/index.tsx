@@ -1,3 +1,4 @@
+import { addNewWalletConnectRequest, removeWalletConnectRequest } from '@/state/walletConnectRequests';
 import React from 'react';
 import { InteractionManager } from 'react-native';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
@@ -12,9 +13,7 @@ import WalletConnectCore, { Core } from '@walletconnect/core';
 import { WalletKit, WalletKitTypes, IWalletKit } from '@reown/walletkit';
 import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
-
 import { logger, RainbowError } from '@/logger';
-import { WalletconnectApprovalSheetRouteParams } from '@/redux/walletconnect';
 import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { analyticsV2 as analytics } from '@/analytics';
@@ -25,8 +24,6 @@ import store from '@/redux/store';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import WalletTypes from '@/helpers/walletTypes';
 import { getRequestDisplayDetails } from '@/parsers/requests';
-import { WalletconnectRequestData, REQUESTS_UPDATE_REQUESTS_TO_APPROVE, removeRequest } from '@/redux/requests';
-import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
 import { IS_DEV, IS_ANDROID, IS_IOS } from '@/env';
@@ -34,7 +31,14 @@ import { loadWallet } from '@/model/wallet';
 import * as portal from '@/screens/Portal';
 import * as explain from '@/screens/Explain';
 import { Box } from '@/design-system';
-import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason, RPCMethod, RPCPayload } from '@/walletConnect/types';
+import {
+  AuthRequestAuthenticateSignature,
+  AuthRequestResponseErrorReason,
+  RPCMethod,
+  RPCPayload,
+  WalletconnectApprovalSheetRouteParams,
+  WalletconnectRequestData,
+} from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProvider } from '@/handlers/web3';
 import { uniq } from 'lodash';
@@ -507,10 +511,6 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
           try {
             if (namespaces.success) {
               /**
-               * This is equivalent handling of setPendingRequest and
-               * walletConnectApproveSession, since setPendingRequest is only used
-               * within the /redux/walletconnect handlers
-               *
                * WC v2 stores existing _pairings_ itself, so we don't need to persist
                * ourselves
                */
@@ -711,7 +711,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
       return;
     }
 
-    const { nativeCurrency, network } = store.getState().settings;
+    const { nativeCurrency } = store.getState().settings;
     const chainId = Number(event.params.chainId.split(':')[1]);
 
     logger.debug(`[walletConnect]: getting session for topic`, { session });
@@ -753,21 +753,9 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
       },
     };
 
-    const { requests: pendingRequests } = store.getState().requests;
-
-    if (!pendingRequests[request.requestId]) {
-      const updatedRequests = {
-        ...pendingRequests,
-        [request.requestId]: request,
-      };
-      store.dispatch({
-        payload: updatedRequests,
-        type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE,
-      });
-      saveLocalRequests(updatedRequests, address, network);
-
+    const addedNewRequest = addNewWalletConnectRequest({ walletConnectRequest: request });
+    if (addedNewRequest) {
       logger.debug(`[walletConnect]: navigating to CONFIRM_REQUEST sheet`, {}, logger.DebugContext.walletconnect);
-
       handleWalletConnectRequest(request);
 
       analytics.track(analytics.event.wcShowingSigningRequest, {
@@ -832,8 +820,7 @@ export async function handleSessionRequestResponse(
     logger.debug(`[walletConnect]: handleSessionRequestResponse reject`, {}, logger.DebugContext.walletconnect);
     await client.respondSessionRequest(payload);
   }
-
-  store.dispatch(removeRequest(sessionRequestEvent.id));
+  removeWalletConnectRequest({ walletConnectRequestId: sessionRequestEvent.id });
 }
 
 export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthenticate) {

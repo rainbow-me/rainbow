@@ -11,8 +11,8 @@ import { MIN_FLASHBOTS_PRIORITY_FEE } from '../screens/Swap/constants';
 import { GasSettings } from '../screens/Swap/hooks/useCustomGas';
 import { getSelectedGasSpeed, useGasSettings } from '../screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '../types/gas';
-import { getMinimalTimeUnitStringForMs } from './time';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
+import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
 
 // Query Types
 
@@ -53,11 +53,7 @@ export async function fetchMeteorology(
 
 export function useMeteorology<Selected = MeteorologyResult>(
   { chainId }: MeteorologyArgs,
-  {
-    select,
-    enabled,
-    notifyOnChangeProps = ['data'],
-  }: { select?: (data: MeteorologyResult) => Selected; enabled?: boolean; notifyOnChangeProps?: 'data'[] }
+  { select, enabled }: { select?: (data: MeteorologyResult) => Selected; enabled?: boolean }
 ) {
   return useQuery(meteorologyQueryKey({ chainId }), meteorologyQueryFunction, {
     select,
@@ -65,7 +61,6 @@ export function useMeteorology<Selected = MeteorologyResult>(
     refetchInterval: 12_000, // 12 seconds
     staleTime: 12_000, // 12 seconds
     cacheTime: Infinity,
-    notifyOnChangeProps,
   });
 }
 
@@ -189,7 +184,6 @@ export function useMeteorologySuggestions({ chainId, enabled }: { chainId: Chain
     {
       select: useCallback((data: MeteorologyResult) => selectGasSuggestions(data, flashbots), [flashbots]),
       enabled,
-      notifyOnChangeProps: enabled ? ['data'] : [],
     }
   );
 }
@@ -199,13 +193,11 @@ export function useMeteorologySuggestion<Selected = GasSuggestion>({
   speed,
   enabled,
   select = s => s as Selected,
-  notifyOnChangeProps = ['data'],
 }: {
   chainId: ChainId;
   speed: GasSpeed;
   enabled?: boolean;
   select?: (d: GasSuggestion | undefined) => Selected;
-  notifyOnChangeProps?: ['data'] | [];
 }) {
   const flashbots = useSwapsStore(s => chainId === ChainId.mainnet && s.flashbots);
   return useMeteorology(
@@ -216,7 +208,6 @@ export function useMeteorologySuggestion<Selected = GasSuggestion>({
         [select, speed, flashbots]
       ),
       enabled: enabled && speed !== 'custom',
-      notifyOnChangeProps,
     }
   );
 }

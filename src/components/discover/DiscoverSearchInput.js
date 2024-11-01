@@ -13,29 +13,29 @@ import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import { deviceUtils } from '@/utils';
 import DiscoverSheetContext from '@/screens/discover/DiscoverScreenContext';
-import { getChainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
-export const ExchangeSearchHeight = 40;
-const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
+const SearchHeight = 40;
+const SearchWidth = deviceUtils.dimensions.width - 30;
 
 const Container = styled(Row)(({ isSearchModeEnabled, theme: { colors } }) => ({
   ...margin.object(0, 15, isSearchModeEnabled ? 8 : 0),
   ...(isSearchModeEnabled ? padding.object(0, 37, 0, 12) : padding.object(0)),
   backgroundColor: colors.transparent,
-  borderRadius: ExchangeSearchHeight / 2,
-  height: ExchangeSearchHeight,
+  borderRadius: SearchHeight / 2,
+  height: SearchHeight,
   overflow: 'hidden',
 }));
 
 const BackgroundGradient = styled(RadialGradient).attrs(({ isDiscover, theme: { colors } }) => ({
-  center: [ExchangeSearchWidth, ExchangeSearchWidth / 2],
+  center: [SearchWidth, SearchWidth / 2],
   colors: isDiscover ? colors.gradients.searchBar : colors.gradients.lightGreyTransparent,
 }))({
-  height: ExchangeSearchWidth,
+  height: SearchWidth,
   position: 'absolute',
-  top: -(ExchangeSearchWidth - ExchangeSearchHeight) / 2,
-  transform: [{ scaleY: ExchangeSearchHeight / ExchangeSearchWidth }],
-  width: ExchangeSearchWidth,
+  top: -(SearchWidth - SearchHeight) / 2,
+  transform: [{ scaleY: SearchHeight / SearchWidth }],
+  width: SearchWidth,
 });
 
 const SearchIcon = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -98,7 +98,7 @@ const timingConfig = {
   duration: 300,
 };
 
-const ExchangeSearch = (
+const DiscoverSearchInput = (
   {
     isDiscover,
     isFetching,
@@ -132,7 +132,7 @@ const ExchangeSearch = (
   const placeholder = useMemo(() => {
     if (!currentChainId) return placeholderText;
     return lang.t('button.exchange_search_placeholder_network', {
-      network: getChainsName()[currentChainId],
+      network: useBackendNetworksStore.getState().getChainsName()[currentChainId],
     });
   }, [currentChainId, placeholderText]);
 
@@ -188,7 +188,7 @@ const ExchangeSearch = (
         value={searchQuery}
       />
       <ClearInputDecorator
-        inputHeight={ExchangeSearchHeight}
+        inputHeight={SearchHeight}
         isVisible={searchQuery !== ''}
         onPress={handleClearInput}
         testID={testID + '-clear-input'}
@@ -197,4 +197,4 @@ const ExchangeSearch = (
   );
 };
 
-export default React.forwardRef(ExchangeSearch);
+export default React.forwardRef(DiscoverSearchInput);

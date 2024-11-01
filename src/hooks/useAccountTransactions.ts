@@ -2,12 +2,12 @@ import { useEffect, useMemo } from 'react';
 import { buildTransactionsSections } from '../helpers/buildTransactionsSectionsSelector';
 import useAccountSettings from './useAccountSettings';
 import useContacts from './useContacts';
-import useRequests from './useRequests';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { RainbowTransaction } from '@/entities';
 import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { getSortedWalletConnectRequests } from '@/state/walletConnectRequests';
 import { nonceStore } from '@/state/nonces';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -18,6 +18,7 @@ export default function useAccountTransactions() {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
   const pendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions[accountAddress] || []);
+  const walletConnectRequests = getSortedWalletConnectRequests();
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useConsolidatedTransactions({
     address: accountAddress,
@@ -112,7 +113,6 @@ export default function useAccountTransactions() {
   const slicedTransaction = useMemo(() => allTransactions, [allTransactions]);
 
   const { contacts } = useContacts();
-  const { requests } = useRequests();
   const theme = useTheme();
   const { navigate } = useNavigation();
 
@@ -120,7 +120,7 @@ export default function useAccountTransactions() {
     accountAddress,
     contacts,
     navigate,
-    requests,
+    requests: walletConnectRequests,
     theme,
     transactions: slicedTransaction,
     nativeCurrency,

@@ -161,7 +161,7 @@ export function useAnimatedSwapStyles({
   });
 
   const outputAssetColor = useDerivedValue(() => {
-    return getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true);
+    return getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode);
   });
 
   const swapActionWrapperStyle = useAnimatedStyle(() => {
@@ -202,13 +202,13 @@ export function useAnimatedSwapStyles({
 
   const assetToSellIconStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+      backgroundColor: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode),
     };
   });
 
   const assetToBuyIconStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
+      backgroundColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode),
     };
   });
 
@@ -221,7 +221,7 @@ export function useAnimatedSwapStyles({
 
   const searchInputAssetButtonStyle = useAnimatedStyle(() => {
     return {
-      color: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
+      color: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
     };
   });
 
@@ -233,7 +233,7 @@ export function useAnimatedSwapStyles({
     const color = isPasteMode.value ? foregroundColors.blue : internalSelectedOutputAsset.value?.highContrastColor;
 
     return {
-      color: getColorValueForThemeWorklet(color, isDarkMode, true),
+      color: getColorValueForThemeWorklet(color, isDarkMode),
     };
   });
 
@@ -257,11 +257,11 @@ export function useAnimatedSwapStyles({
   const searchInputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: opacityWorklet(
-        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
+        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
         isDarkMode ? 0.1 : 0.08
       ),
       borderColor: opacityWorklet(
-        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
+        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
         isDarkMode ? 0.06 : 0.01
       ),
     };
@@ -276,9 +276,9 @@ export function useAnimatedSwapStyles({
     return {
       backgroundColor: isPasteMode.value
         ? 'transparent'
-        : opacityWorklet(getColorValueForThemeWorklet(color, isDarkMode, true), isDarkMode ? 0.1 : 0.08),
+        : opacityWorklet(getColorValueForThemeWorklet(color, isDarkMode), isDarkMode ? 0.1 : 0.08),
       borderColor: opacityWorklet(
-        getColorValueForThemeWorklet(color, isDarkMode, true),
+        getColorValueForThemeWorklet(color, isDarkMode),
         isDarkMode ? darkModeBorderOpacity : lightModeBorderOpacity
       ),
     };

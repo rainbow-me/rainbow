@@ -23,8 +23,8 @@ import {
 import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import Spinner from '../Spinner';
 import * as lang from '@/languages';
-import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
-import { checkForPendingSwap } from '@/screens/transaction-details/helpers/checkForPendingSwap';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 
 export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;

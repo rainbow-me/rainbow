@@ -49,16 +49,34 @@ export interface UserAssetsState {
   setUserAssets: (userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) => void;
 }
 
+type UserAssetsStateToPersist = Omit<
+  Partial<UserAssetsState>,
+  | 'currentAbortController'
+  | 'inputSearchQuery'
+  | 'searchCache'
+  | 'getBalanceSortedChainList'
+  | 'getChainsWithBalance'
+  | 'getFilteredUserAssetIds'
+  | 'getHighestValueEth'
+  | 'getUserAsset'
+  | 'getUserAssets'
+  | 'selectUserAssetIds'
+  | 'selectUserAssets'
+  | 'setSearchCache'
+  | 'setSearchQuery'
+  | 'setUserAssets'
+>;
+
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
-type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalances' | 'idsByChain' | 'userAssets'> & {
+type UserAssetsStateToPersistWithTransforms = Omit<UserAssetsStateToPersist, 'chainBalances' | 'idsByChain' | 'userAssets'> & {
   chainBalances: Array<[ChainId, number]>;
   idsByChain: Array<[UserAssetFilter, UniqueId[]]>;
   userAssets: Array<[UniqueId, ParsedSearchAsset]>;
 };
 
-function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: number) {
+function serializeUserAssetsState(state: UserAssetsStateToPersist, version?: number) {
   try {
-    const transformedStateToPersist: UserAssetsStateWithTransforms = {
+    const transformedStateToPersist: UserAssetsStateToPersistWithTransforms = {
       ...state,
       chainBalances: state.chainBalances ? Array.from(state.chainBalances.entries()) : [],
       idsByChain: state.idsByChain ? Array.from(state.idsByChain.entries()) : [],
@@ -76,7 +94,7 @@ function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: num
 }
 
 function deserializeUserAssetsState(serializedState: string) {
-  let parsedState: { state: UserAssetsStateWithTransforms; version: number };
+  let parsedState: { state: UserAssetsStateToPersistWithTransforms; version: number };
   try {
     parsedState = JSON.parse(serializedState);
   } catch (error) {
@@ -335,7 +353,13 @@ export const createUserAssetsStore = (address: Address | string) =>
     }),
     {
       storageKey: `userAssets_${address}`,
-      version: 0,
+      partialize: state => ({
+        chainBalances: state.chainBalances,
+        filter: state.filter,
+        idsByChain: state.idsByChain,
+        userAssets: state.userAssets,
+      }),
+      version: 1,
       serializer: serializeUserAssetsState,
       deserializer: deserializeUserAssetsState,
     }
@@ -378,6 +402,6 @@ export function useUserAssetsStore<T>(selector: (state: UserAssetsState) => T) {
   return useStore(store, useCallback(selector, []));
 }
 
-function getCurrentSearchCache(): Map<string, UniqueId[]> | undefined {
+function getCurrentSearchCache(): Map<string, UniqueId[]> {
   return getOrCreateStore().getState().searchCache;
 }

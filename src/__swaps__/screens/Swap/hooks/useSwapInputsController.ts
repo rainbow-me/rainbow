@@ -1,11 +1,4 @@
-import {
-  divWorklet,
-  equalWorklet,
-  greaterThanWorklet,
-  isNumberStringWorklet,
-  mulWorklet,
-  toFixedWorklet,
-} from '@/__swaps__/safe-math/SafeMath';
+import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -16,7 +9,7 @@ import {
   convertAmountToNativeDisplayWorklet,
   convertRawAmountToDecimalFormat,
   handleSignificantDecimalsWorklet,
-} from '@/__swaps__/utils/numbers';
+} from '@/helpers/utilities';
 import {
   addCommasToNumber,
   addSymbolToNativeDisplayWorklet,
