@@ -1,33 +1,42 @@
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
-import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
-import Spinner from '../../assets/chartSpinner.png';
-import { ClearInputDecorator, Input } from '../inputs';
-import { Row } from '../layout';
-import { Text } from '../text';
+import Animated, { Easing, useAnimatedProps, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import Spinner from '@/assets/chartSpinner.png';
+import { ClearInputDecorator, Input } from '@/components/inputs';
+import { Row } from '@/components/layout';
+import { Text } from '@/components/text';
 import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import { deviceUtils } from '@/utils';
-import DiscoverSheetContext from '@/screens/discover/DiscoverScreenContext';
 import { chainsName } from '@/chains';
+import { ThemeContextProps } from '@/theme';
+import { ChainId } from '@/chains/types';
+import { useDiscoverScreenContext } from '@/screens/discover/DiscoverScreenContext';
 
 const SearchHeight = 40;
 const SearchWidth = deviceUtils.dimensions.width - 30;
 
-const Container = styled(Row)(({ isSearchModeEnabled, theme: { colors } }) => ({
-  ...margin.object(0, 15, isSearchModeEnabled ? 8 : 0),
-  ...(isSearchModeEnabled ? padding.object(0, 37, 0, 12) : padding.object(0)),
+type ContainerProps = {
+  isSearching: boolean;
+  isDiscover: boolean;
+  clearTextOnFocus: boolean;
+  theme: ThemeContextProps;
+};
+
+const Container = styled(Row)(({ isSearching, theme: { colors } }: ContainerProps) => ({
+  ...margin.object(0, 15, isSearching ? 8 : 0),
+  ...(isSearching ? padding.object(0, 37, 0, 12) : padding.object(0)),
   backgroundColor: colors.transparent,
   borderRadius: SearchHeight / 2,
   height: SearchHeight,
   overflow: 'hidden',
 }));
 
-const BackgroundGradient = styled(RadialGradient).attrs(({ isDiscover, theme: { colors } }) => ({
+const BackgroundGradient = styled(RadialGradient).attrs(({ isDiscover, theme: { colors } }: ContainerProps) => ({
   center: [SearchWidth, SearchWidth / 2],
   colors: isDiscover ? colors.gradients.searchBar : colors.gradients.lightGreyTransparent,
 }))({
@@ -38,7 +47,7 @@ const BackgroundGradient = styled(RadialGradient).attrs(({ isDiscover, theme: { 
   width: SearchWidth,
 });
 
-const SearchIcon = styled(Text).attrs(({ theme: { colors } }) => ({
+const SearchIcon = styled(Text).attrs(({ theme: { colors } }: ContainerProps) => ({
   color: colors.alpha(colors.blueGreyDark, 0.6),
   size: 'large',
   weight: 'semibold',
@@ -48,7 +57,7 @@ const SearchIconWrapper = styled(Animated.View)({
   marginTop: android ? 4 : 9,
 });
 
-const SearchInput = styled(Input).attrs(({ theme: { colors }, isSearchModeEnabled, clearTextOnFocus }) => ({
+const SearchInput = styled(Input).attrs(({ theme: { colors }, isSearching, clearTextOnFocus }: ContainerProps) => ({
   blurOnSubmit: false,
   clearTextOnFocus,
   color: colors.alpha(colors.blueGreyDark, 0.8),
@@ -58,7 +67,7 @@ const SearchInput = styled(Input).attrs(({ theme: { colors }, isSearchModeEnable
   lineHeight: 'looserLoose',
   placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.6),
   returnKeyType: 'search',
-  selectionColor: isSearchModeEnabled ? colors.appleBlue : colors.transparent,
+  selectionColor: isSearching ? colors.appleBlue : colors.transparent,
   size: 'large',
   spellCheck: false,
   weight: 'semibold',
@@ -67,11 +76,11 @@ const SearchInput = styled(Input).attrs(({ theme: { colors }, isSearchModeEnable
   flex: 1,
   height: ios ? 39 : 56,
   marginBottom: 1,
-  marginLeft: ({ isSearchModeEnabled }) => (isSearchModeEnabled ? 4 : 0),
-  textAlign: ({ isSearchModeEnabled }) => (isSearchModeEnabled ? 'left' : 'center'),
+  marginLeft: ({ isSearching }: ContainerProps) => (isSearching ? 4 : 0),
+  textAlign: ({ isSearching }: ContainerProps) => (isSearching ? 'left' : 'center'),
 });
 
-const SearchSpinner = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
+const SearchSpinner = styled(ImgixImage).attrs(({ theme: { colors } }: ContainerProps) => ({
   resizeMode: ImgixImage.resizeMode.contain,
   source: Spinner,
   tintColor: colors.alpha(colors.blueGreyDark, 0.6),
@@ -98,21 +107,32 @@ const timingConfig = {
   duration: 300,
 };
 
-const DiscoverSearchInput = (
-  {
-    isDiscover,
-    isFetching,
-    isSearching,
-    onChangeText,
-    onFocus,
-    searchQuery,
-    testID,
-    placeholderText = lang.t('button.exchange_search_placeholder'),
-    clearTextOnFocus = true,
-    currentChainId,
-  },
-  ref
-) => {
+type DiscoverSearchInputProps = {
+  isDiscover: boolean;
+  isLoading?: boolean;
+  onChangeText: (text: string) => void;
+  onFocus: ({ target }: { target: any }) => void;
+  onBlur?: () => void;
+  searchQuery: string;
+  testID: string;
+  placeholderText?: string;
+  clearTextOnFocus: boolean;
+  currentChainId?: ChainId;
+};
+
+const DiscoverSearchInput = ({
+  isDiscover,
+  isLoading = false,
+  onChangeText,
+  onFocus,
+  onBlur,
+  searchQuery,
+  testID,
+  placeholderText = lang.t('button.exchange_search_placeholder'),
+  clearTextOnFocus = true,
+  currentChainId,
+}: DiscoverSearchInputProps) => {
+  const { searchInputRef, isSearching } = useDiscoverScreenContext();
   const handleClearInput = useCallback(() => {
     if (isDiscover && searchQuery.length > 1) {
       analytics.track('Search Query', {
@@ -121,13 +141,12 @@ const DiscoverSearchInput = (
         query: searchQuery,
       });
     }
-    ref?.current?.clear();
+    searchInputRef?.current?.clear();
     onChangeText?.('');
-  }, [isDiscover, searchQuery, ref, onChangeText]);
+  }, [isDiscover, searchQuery, searchInputRef, onChangeText]);
 
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
-  const { isSearchModeEnabled = true } = useContext(DiscoverSheetContext) || {};
 
   const placeholder = useMemo(() => {
     if (!currentChainId) return placeholderText;
@@ -136,10 +155,12 @@ const DiscoverSearchInput = (
     });
   }, [currentChainId, placeholderText]);
 
-  const spinnerTimeout = useRef();
+  const spinnerTimeout = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
-    if ((isFetching || isSearching) && !isEmpty(searchQuery)) {
-      clearTimeout(spinnerTimeout.current);
+    if (isLoading && !isEmpty(searchQuery)) {
+      if (spinnerTimeout.current) {
+        clearTimeout(spinnerTimeout.current);
+      }
       spinnerRotation.value = 0;
       spinnerRotation.value = withRepeat(withTiming(360, rotationConfig), -1, false);
       spinnerScale.value = withTiming(1, timingConfig);
@@ -147,8 +168,7 @@ const DiscoverSearchInput = (
       spinnerScale.value = withTiming(0, timingConfig);
       spinnerTimeout.current = setTimeout(() => (spinnerRotation.value = 0), timingConfig.duration);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFetching, isSearching, searchQuery]);
+  }, [isLoading, searchQuery, spinnerRotation, spinnerScale]);
 
   const searchIconStyle = useAnimatedStyle(() => {
     return {
@@ -164,10 +184,19 @@ const DiscoverSearchInput = (
     };
   });
 
+  const searchInputValue = useAnimatedProps(() => {
+    // Removing the value when the input is focused allows the input to be reset to the correct value on blur
+    const query = isLoading ? undefined : '';
+    return {
+      text: query,
+      defaultValue: '',
+    };
+  });
+
   return (
-    <Container isSearchModeEnabled={isSearchModeEnabled}>
+    <Container isSearching={isSearching}>
       <BackgroundGradient isDiscover={isDiscover} />
-      {isSearchModeEnabled && (
+      {isSearching && (
         <>
           <SearchIconWrapper style={searchIconStyle}>
             <SearchIcon>􀊫</SearchIcon>
@@ -178,14 +207,16 @@ const DiscoverSearchInput = (
         </>
       )}
       <SearchInput
+        animatedProps={searchInputValue}
         clearTextOnFocus={clearTextOnFocus}
-        isSearchModeEnabled={isSearchModeEnabled}
+        isSearching={isSearching}
         onChangeText={onChangeText}
         onFocus={onFocus}
+        onBlur={onBlur}
         placeholder={placeholder}
-        ref={ref}
-        testID={testID + '-input'}
+        ref={searchInputRef}
         value={searchQuery}
+        testID={testID + '-input'}
       />
       <ClearInputDecorator
         inputHeight={SearchHeight}
@@ -197,4 +228,4 @@ const DiscoverSearchInput = (
   );
 };
 
-export default React.forwardRef(DiscoverSearchInput);
+export default DiscoverSearchInput;
