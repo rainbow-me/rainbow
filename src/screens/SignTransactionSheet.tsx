@@ -552,7 +552,16 @@ export const SignTransactionSheet = () => {
     handleConfirmTransaction,
   });
 
+  const canPressConfirm = useMemo(() => {
+    if (isMessageRequest) {
+      return !isAuthorizing; // Only check authorization state for message requests
+    }
+
+    return !isAuthorizing && !!walletBalance?.isLoaded && !!chainId && !!selectedGasFee?.gasFee?.estimatedFee;
+  }, [isAuthorizing, isMessageRequest, walletBalance?.isLoaded, chainId, selectedGasFee?.gasFee?.estimatedFee]);
+
   const { submitFn } = useTransactionSubmission({
+    isMessageRequest,
     isBalanceEnough,
     accountInfo,
     isAuthorizing,
@@ -560,9 +569,6 @@ export const SignTransactionSheet = () => {
     onConfirm,
     source,
   });
-
-  const canPressConfirm =
-    !isAuthorizing && (isMessageRequest || (!!walletBalance?.isLoaded && !!chainId && !!selectedGasFee?.gasFee?.estimatedFee));
 
   const primaryActionButtonLabel = useMemo(() => {
     if (isAuthorizing) {
