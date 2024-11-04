@@ -29,6 +29,12 @@ export type WalletBalanceResult = {
   isLoading: boolean;
 };
 
+/**
+ * Hook to fetch balances for all wallets
+ * @deprecated - you probably want to use useWalletsWithBalancesAndNames instead which accounts for hidden assets balances
+ * @param wallets - All Rainbow wallets
+ * @returns Balances for all wallets
+ */
 const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
   const { nativeCurrency } = useAccountSettings();
 

@@ -121,19 +121,30 @@ interface AddressRowProps {
 export default function AddressRow({ contextMenuActions, data, editMode, onPress }: AddressRowProps) {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
-  const { address, balances, color: accountColor, ens, image: accountImage, isSelected, isReadOnly, isLedger, label, walletId } = data;
+  const {
+    address,
+    balancesMinusHiddenBalances,
+    color: accountColor,
+    ens,
+    image: accountImage,
+    isSelected,
+    isReadOnly,
+    isLedger,
+    label,
+    walletId,
+  } = data;
 
   const { colors, isDarkMode } = useTheme();
 
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
   const balanceText = useMemo(() => {
-    if (!balances) {
+    if (!balancesMinusHiddenBalances) {
       return lang.t('wallet.change_wallet.loading_balance');
     }
 
-    return balances.balancesMinusHiddenBalances;
-  }, [balances]);
+    return balancesMinusHiddenBalances;
+  }, [balancesMinusHiddenBalances]);
 
   const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(label), [label]);
 
