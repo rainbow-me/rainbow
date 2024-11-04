@@ -14,8 +14,6 @@ import {
   DEGEN_MAINNET_RPC,
   ETHEREUM_GOERLI_RPC,
   ETHEREUM_GOERLI_RPC_DEV,
-  ETHEREUM_MAINNET_RPC,
-  ETHEREUM_MAINNET_RPC_DEV,
   OPTIMISM_MAINNET_RPC,
   POLYGON_MAINNET_RPC,
   ZORA_MAINNET_RPC,
@@ -26,7 +24,6 @@ export interface RainbowConfig extends Record<string, string | boolean | number>
   bsc_mainnet_rpc: string;
   default_slippage_bips: string;
   ethereum_goerli_rpc: string;
-  ethereum_mainnet_rpc: string;
   f2c_enabled: boolean;
   flashbots_enabled: boolean;
   op_nft_network: string;
@@ -103,7 +100,6 @@ export const DEFAULT_CONFIG: RainbowConfig = {
     zora: 200,
   }),
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
-  ethereum_mainnet_rpc: __DEV__ ? ETHEREUM_MAINNET_RPC_DEV : ETHEREUM_MAINNET_RPC,
   f2c_enabled: true,
   flashbots_enabled: true,
   op_nft_network: 'op-mainnet',

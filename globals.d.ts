@@ -35,7 +35,6 @@ declare module 'react-native-dotenv' {
   export const ETHEREUM_GOERLI_RPC_DEV: string;
   export const ETHEREUM_KOVAN_RPC: string;
   export const ETHEREUM_KOVAN_RPC_DEV: string;
-  export const ETHEREUM_MAINNET_RPC: string;
   export const ETHEREUM_MAINNET_RPC_DEV: string;
   export const ETHEREUM_RINKEBY_RPC: string;
   export const ETHEREUM_RINKEBY_RPC_DEV: string;
