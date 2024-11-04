@@ -31,15 +31,7 @@ declare module 'react-native-dotenv' {
   export const SENTRY_ENDPOINT: string;
   export const SENTRY_ENVIRONMENT: string;
   export const ADDYS_API_KEY: string;
-  export const ETHEREUM_GOERLI_RPC: string;
-  export const ETHEREUM_GOERLI_RPC_DEV: string;
-  export const ETHEREUM_KOVAN_RPC: string;
-  export const ETHEREUM_KOVAN_RPC_DEV: string;
   export const ETHEREUM_MAINNET_RPC_DEV: string;
-  export const ETHEREUM_RINKEBY_RPC: string;
-  export const ETHEREUM_RINKEBY_RPC_DEV: string;
-  export const ETHEREUM_ROPSTEN_RPC: string;
-  export const ETHEREUM_ROPSTEN_RPC_DEV: string;
   export const OPTIMISM_MAINNET_RPC: string;
   export const BASE_MAINNET_RPC: string;
   export const BASE_MAINNET_RPC_DEV: string;
