@@ -1,60 +1,81 @@
-import lang from 'i18n-js';
-import { uniqBy } from 'lodash';
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, View } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { useDebounce } from 'use-debounce';
-import CurrencySelectionTypes from '@/helpers/currencySelectionTypes';
 
+import * as lang from '@/languages';
 import deviceUtils from '@/utils/deviceUtils';
 import CurrencySelectionList from '@/components/CurrencySelectionList';
 import { Row } from '@/components/layout';
-import DiscoverSheetContext from '../DiscoverScreenContext';
+import { useDiscoverScreenContext } from '../DiscoverScreenContext';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { fetchSuggestions } from '@/handlers/ens';
-import { useAccountSettings, useHardwareBackOnFocus, usePrevious, useSearchCurrencyList } from '@/hooks';
+import { useAccountSettings, useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { fetchSuggestions } from '@/handlers/ens';
 import styled from '@/styled-thing';
-import { useTheme } from '@/theme';
-import { ethereumUtils } from '@/utils';
+import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { ChainId, Network } from '@/state/backendNetworks/types';
+import { navbarHeight } from '@/components/navbar/Navbar';
+import { IS_TEST } from '@/env';
+import { uniqBy } from 'lodash';
+import { useTheme } from '@/theme';
+import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId, Network } from '@/state/backendNetworks/types';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
 });
 
+type EnsResult = {
+  address: string;
+  color: string;
+  ens: boolean;
+  image: string;
+  network: string;
+  nickname: string;
+  uniqueId: string;
+};
+
+type EnsSearchResult = {
+  color: string;
+  data: EnsResult[];
+  key: string;
+  title: string;
+};
+
 export default function DiscoverSearch() {
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
+  const { colors } = useTheme();
+
   const {
     isSearching,
+    isLoading,
     isFetchingEns,
-    setIsSearching,
+    setIsLoading,
     setIsFetchingEns,
-    searchQuery,
-    isSearchModeEnabled,
-    setIsSearchModeEnabled,
-    searchInputRef,
     cancelSearch,
-  } = useContext(DiscoverSheetContext);
+    setSearchQuery,
+    searchQuery,
+    searchInputRef,
+    sectionListRef,
+  } = useDiscoverScreenContext();
 
-  const { colors } = useTheme();
-  const profilesEnabled = useExperimentalFlag(PROFILES);
-  const marginBottom = TAB_BAR_HEIGHT;
-
-  const currencySelectionListRef = useRef();
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
-  const [ensResults, setEnsResults] = useState([]);
-  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch, ChainId.mainnet, true);
-
-  // we want to debounce the poap search further
   const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 800);
+
+  const lastSearchQuery = usePrevious(searchQueryForSearch);
+
+  const [ensResults, setEnsResults] = useState<EnsSearchResult[]>([]);
+  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch, ChainId.mainnet);
+
+  const profilesEnabled = useExperimentalFlag(PROFILES);
+  const marginBottom = TAB_BAR_HEIGHT + safeAreaInsetValues.bottom + 16;
+  const TOP_OFFSET = safeAreaInsetValues.top + navbarHeight;
 
   const currencyList = useMemo(() => {
     // order:
@@ -79,8 +100,8 @@ export default function DiscoverSearch() {
     }
 
     // ONLY FOR e2e!!! Fake tokens with same symbols break detox e2e tests
-    if (IS_TESTING === 'true') {
-      let symbols = [];
+    if (IS_TEST) {
+      let symbols: string[] = [];
       list = list?.map(section => {
         // Remove dupes
         section.data = uniqBy(section?.data, 'symbol');
@@ -99,7 +120,6 @@ export default function DiscoverSearch() {
     }
     return list.filter(section => section.data.length > 0);
   }, [swapCurrencyList, ensResults]);
-  const lastSearchQuery = usePrevious(searchQueryForSearch);
 
   const currencyListDataKey = useMemo(
     () => `${swapCurrencyList?.[0]?.data?.[0]?.address || '_'}_${ensResults?.[0]?.data?.[0]?.address || '_'}`,
@@ -113,7 +133,7 @@ export default function DiscoverSearch() {
   });
 
   useEffect(() => {
-    const checkAndHandlePoaps = async secretWordOrHash => {
+    const checkAndHandlePoaps = async (secretWordOrHash: string) => {
       await getPoapAndOpenSheetWithSecretWord(secretWordOrHash);
       await getPoapAndOpenSheetWithQRHash(secretWordOrHash);
     };
@@ -123,25 +143,38 @@ export default function DiscoverSearch() {
   useEffect(() => {
     // probably dont need this entry point but seems worth keeping?
     // could do the same with zora, etc
-    const checkAndHandleMint = async seachQueryForMint => {
+    const checkAndHandleMint = async (seachQueryForMint: string) => {
       if (seachQueryForMint.includes('mint.fun')) {
         const mintdotfunURL = seachQueryForMint.split('https://mint.fun/');
         const query = mintdotfunURL[1];
-        let network = query.split('/')[0];
-        if (network === 'ethereum') {
-          network = Network.mainnet;
-        } else if (network === 'op') {
-          network === Network.optimism;
+        const [networkName] = query.split('/');
+        let chainId = useBackendNetworksStore.getState().getChainsIdByName()[networkName];
+        if (!chainId) {
+          switch (networkName) {
+            case 'op':
+              chainId = ChainId.optimism;
+              break;
+            case 'ethereum':
+              chainId = ChainId.mainnet;
+              break;
+            case 'zora':
+              chainId = ChainId.zora;
+              break;
+            case 'base':
+              chainId = ChainId.base;
+              break;
+          }
         }
         const contractAddress = query.split('/')[1];
-        navigateToMintCollection(contractAddress, useBackendNetworksStore.getState().getChainsIdByName()[network]);
+        navigateToMintCollection(contractAddress, undefined, chainId);
+        setSearchQuery('');
       }
     };
     checkAndHandleMint(searchQuery);
-  }, [accountAddress, navigate, searchQuery]);
+  }, [accountAddress, navigate, searchQuery, setSearchQuery]);
 
   const handlePress = useCallback(
-    item => {
+    (item: EnrichedExchangeAsset) => {
       if (item.ens) {
         // navigate to Showcase sheet
         searchInputRef?.current?.blur();
@@ -149,7 +182,6 @@ export default function DiscoverSearch() {
           navigate(profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET, {
             address: item.nickname,
             fromRoute: 'DiscoverSearch',
-            setIsSearchModeEnabled,
           });
           if (profilesEnabled) {
             analytics.track('Viewed ENS profile', {
@@ -171,7 +203,7 @@ export default function DiscoverSearch() {
         });
       }
     },
-    [navigate, profilesEnabled, searchInputRef, setIsSearchModeEnabled]
+    [navigate, profilesEnabled, searchInputRef]
   );
 
   const itemProps = useMemo(
@@ -184,8 +216,8 @@ export default function DiscoverSearch() {
   );
 
   const addEnsResults = useCallback(
-    ensResults => {
-      let ensSearchResults = [];
+    (ensResults: EnsResult[]) => {
+      let ensSearchResults: EnsSearchResult[] = [];
       if (ensResults && ensResults.length) {
         ensSearchResults = [
           {
@@ -202,45 +234,57 @@ export default function DiscoverSearch() {
   );
 
   useEffect(() => {
-    if (searchQueryForSearch && !isSearching) {
+    if (searchQueryForSearch && !isLoading) {
       if (lastSearchQuery !== searchQueryForSearch) {
-        setIsSearching(true);
+        setIsLoading(true);
         fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns, profilesEnabled);
       }
     }
-  }, [addEnsResults, isSearching, lastSearchQuery, searchQuery, searchQueryForSearch, setIsFetchingEns, setIsSearching, profilesEnabled]);
+  }, [
+    addEnsResults,
+    isSearching,
+    lastSearchQuery,
+    searchQuery,
+    setIsFetchingEns,
+    profilesEnabled,
+    isLoading,
+    setIsLoading,
+    searchQueryForSearch,
+  ]);
 
   useEffect(() => {
     if (!swapCurrencyListLoading && !isFetchingEns) {
-      setIsSearching(false);
+      setIsLoading(false);
     }
-  }, [isFetchingEns, setIsSearching, swapCurrencyListLoading]);
+  }, [isFetchingEns, setIsLoading, swapCurrencyListLoading]);
 
   useEffect(() => {
-    currencySelectionListRef.current?.scrollToLocation({
-      animated: false,
+    if (!sectionListRef.current?.props.data?.length) {
+      return;
+    }
+
+    sectionListRef.current.scrollToLocation({
       itemIndex: 0,
       sectionIndex: 0,
-      viewOffset: 0,
-      viewPosition: 0,
+      animated: true,
     });
-  }, [isSearchModeEnabled]);
+  }, [sectionListRef, isSearching]);
 
   return (
-    <View key={currencyListDataKey} style={{ height: deviceUtils.dimensions.height - 140 - marginBottom }}>
+    <View key={currencyListDataKey} style={{ height: deviceUtils.dimensions.height - TOP_OFFSET - marginBottom }}>
       <SearchContainer>
         <CurrencySelectionList
           footerSpacer
           fromDiscover
           itemProps={itemProps}
           keyboardDismissMode="on-drag"
+          // @ts-expect-error - FIXME: ens results / rainbow token results are not compatible with one another
           listItems={currencyList}
           loading={swapCurrencyListLoading || isFetchingEns}
           query={searchQueryForSearch}
-          ref={currencySelectionListRef}
+          ref={sectionListRef}
           showList
           testID="discover-currency-select-list"
-          type={CurrencySelectionTypes.output}
         />
       </SearchContainer>
     </View>

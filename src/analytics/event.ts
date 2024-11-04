@@ -178,6 +178,7 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   tradeAmountUSD: number;
   degenMode: boolean;
   isSwappingToPopularAsset: boolean;
+  isHardwareWallet: boolean;
 };
 
 type SwapsEventFailedParameters<T extends 'swap' | 'crosschainSwap'> = {

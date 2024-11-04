@@ -19,7 +19,7 @@ export interface BackendNetworksResponse {
  */
 export const GRAPHQL_QUERY = BACKEND_NETWORKS_QUERY;
 
-export const backendNetworksQueryKey = () => createQueryKey('backendNetworks', {}, { persisterVersion: 1 });
+export const backendNetworksQueryKey = () => createQueryKey('backendNetworks', {}, { persisterVersion: 2 });
 
 export type BackendNetworksQueryKey = ReturnType<typeof backendNetworksQueryKey>;
 

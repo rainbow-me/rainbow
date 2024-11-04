@@ -61,6 +61,7 @@ import {
   getFlashbotsSupportedChainIdsWorklet,
   getChainsNativeAssetWorklet,
 } from '@/state/backendNetworks/backendNetworks';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -307,6 +308,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           degenMode: isDegenModeEnabled,
           isSwappingToPopularAsset,
           errorMessage,
+          isHardwareWallet: wallet instanceof LedgerSigner,
         });
 
         if (errorMessage !== 'handled') {
@@ -372,6 +374,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         tradeAmountUSD: parameters.quote.tradeAmountUSD,
         degenMode: isDegenModeEnabled,
         isSwappingToPopularAsset,
+        isHardwareWallet: wallet instanceof LedgerSigner,
       });
     } catch (error) {
       isSwapping.value = false;

@@ -141,7 +141,9 @@ export const ControlPanel = () => {
       (wallet.addresses || [])
         .filter(account => account.visible)
         .forEach(account => {
-          const balanceText = account.balances ? account.balances.totalBalanceDisplay : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
+          const balanceText = account.balancesMinusHiddenBalances
+            ? account.balancesMinusHiddenBalances
+            : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
 
           const item: ControlPanelMenuItemProps = {
             IconComponent: account.image ? (
