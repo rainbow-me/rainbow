@@ -215,7 +215,6 @@ workflows:
                 echo "IS_TESTING=$IS_TESTING" >> .env
                 echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
                 echo "GANACHE_URL=$GANACHE_URL" >> .env
-                echo "ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY" >> .env
 
 
 
@@ -257,7 +256,6 @@ workflows:
                 echo "IS_TESTING=$IS_TESTING" >> .env
                 echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
                 echo "GANACHE_URL=$GANACHE_URL" >> .env
-                echo "ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY" >> .env
 
           title: Generate .env file for testflight
 app:
