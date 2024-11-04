@@ -5,10 +5,10 @@ import { SharedValue, useAnimatedStyle, useDerivedValue, withRepeat, withSequenc
 import { opacity } from '@/__swaps__/utils/swaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useDelayedValue } from '@/hooks/reanimated/useDelayedValue';
-import { pulsingConfig, sliderConfig } from '../constants';
-import { GasSettings } from '../hooks/useCustomGas';
-import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
-import { useSwapContext } from '../providers/swap-provider';
+import { pulsingConfig, sliderConfig } from '@/__swaps__/screens/Swap/constants';
+import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { useSwapEstimatedGasFee } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 type EstimatedSwapGasFeeProps = { gasSettings?: GasSettings } & Partial<
   Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>

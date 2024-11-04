@@ -12,7 +12,6 @@ import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
 import settings from './settings';
 import showcaseTokens from './showcaseTokens';
-import swap from './swap';
 import transactionSignatures from './transactionSignatures';
 import wallets from './wallets';
 
@@ -28,7 +27,6 @@ export default combineReducers({
   keyboardHeight,
   settings,
   showcaseTokens,
-  swap,
   transactionSignatures,
   wallets,
 });

@@ -14,7 +14,7 @@ import {
   useSharedValue,
 } from 'react-native-reanimated';
 
-import { equalWorklet, lessThanOrEqualToWorklet, sumWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { equalWorklet, lessThanOrEqualToWorklet, sumWorklet } from '@/safe-math/SafeMath';
 import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
@@ -57,6 +57,7 @@ import { performanceTracking, Screens, TimeToSignOperation } from '@/state/perfo
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { chainsNativeAsset, supportedFlashbotsChainIds } from '@/chains';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -300,6 +301,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           degenMode: isDegenModeEnabled,
           isSwappingToPopularAsset,
           errorMessage,
+          isHardwareWallet: wallet instanceof LedgerSigner,
         });
 
         if (errorMessage !== 'handled') {
@@ -365,6 +367,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         tradeAmountUSD: parameters.quote.tradeAmountUSD,
         degenMode: isDegenModeEnabled,
         isSwappingToPopularAsset,
+        isHardwareWallet: wallet instanceof LedgerSigner,
       });
     } catch (error) {
       isSwapping.value = false;
@@ -406,8 +409,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const isNativeWrapOrUnwrap = quoteData.swapType === SwapType.wrap || quoteData.swapType === SwapType.unwrap;
 
-      // Do not deleeeet the comment below 😤
-      // About to get quote
       const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
         sellAmount: quoteData.sellAmount?.toString(),
         buyAmount: quoteData.buyAmount?.toString(),

@@ -150,7 +150,7 @@ const retryErroredChainIds = async (
   queryClient.setQueryData(userAssetsQueryKey({ address, currency, connectedToHardhat }), parsedSuccessResults);
 };
 
-type UserAssetsResult = QueryFunctionResult<typeof userAssetsQueryFunction>;
+export type UserAssetsResult = QueryFunctionResult<typeof userAssetsQueryFunction>;
 
 interface AssetsAndMetadata {
   erroredChainIds: number[];
