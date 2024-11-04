@@ -203,7 +203,6 @@ workflows:
                 set -x
                 # write your script here
                 touch .env
-                echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
                 echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
                 echo "SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT" >> .env
                 echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
@@ -247,7 +246,6 @@ workflows:
 
                 # write your script here
                 touch .env
-                echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
                 echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
                 echo "SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT" >> .env
                 echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
