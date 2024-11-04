@@ -203,8 +203,6 @@ workflows:
                 set -x
                 # write your script here
                 touch .env
-                echo "INFURA_PROJECT_ID=$INFURA_PROJECT_ID" >> .env
-                echo "INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV" >> .env
                 echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
                 echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
                 echo "SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT" >> .env
@@ -257,8 +255,6 @@ workflows:
 
                 # write your script here
                 touch .env
-                echo "INFURA_PROJECT_ID=$INFURA_PROJECT_ID" >> .env
-                echo "INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV" >> .env
                 echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
                 echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
                 echo "SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT" >> .env
