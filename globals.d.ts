@@ -52,7 +52,6 @@ declare module 'react-native-dotenv' {
   export const POAP_API_KEY: string;
   export const HARDHAT_URL_ANDROID: string;
   export const HARDHAT_URL_IOS: string;
-  export const SIMPLEHASH_API_KEY: string;
   export const RAINBOW_MASTER_KEY: string;
   export const SECURE_WALLET_HASH_KEY: string;
   export const TEST_SEEDS: string;
