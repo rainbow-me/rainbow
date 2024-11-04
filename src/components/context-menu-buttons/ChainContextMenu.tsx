@@ -61,7 +61,7 @@ export const ChainContextMenu = ({
         actionTitle: chainsLabel[chainId],
         icon: {
           iconType: 'ASSET',
-          iconValue: `${chainsName[chainId]}Badge${chainId === ChainId.mainnet ? '' : 'NoShadow'}`,
+          iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${chainsName[chainId]}BadgeNoShadow`,
         },
       };
     });
