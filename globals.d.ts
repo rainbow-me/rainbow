@@ -32,18 +32,6 @@ declare module 'react-native-dotenv' {
   export const SENTRY_ENVIRONMENT: string;
   export const ADDYS_API_KEY: string;
   export const ETHEREUM_MAINNET_RPC_DEV: string;
-  export const OPTIMISM_MAINNET_RPC: string;
-  export const BASE_MAINNET_RPC: string;
-  export const BASE_MAINNET_RPC_DEV: string;
-  export const AVALANCHE_MAINNET_RPC: string;
-  export const AVALANCHE_MAINNET_RPC_DEV: string;
-  export const AVALANCHE_FUJI_RPC: string;
-  export const BLAST_MAINNET_RPC: string;
-  export const DEGEN_MAINNET_RPC: string;
-  export const POLYGON_MAINNET_RPC: string;
-  export const ARBITRUM_MAINNET_RPC: string;
-  export const BSC_MAINNET_RPC: string;
-  export const ZORA_MAINNET_RPC: string;
   export const IMGIX_DOMAIN: string;
   export const IMGIX_TOKEN: string;
   export const CLOUDINARY_API_KEY: string;

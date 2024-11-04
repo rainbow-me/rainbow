@@ -3,35 +3,13 @@ import { createQueryKey, queryClient } from '@/react-query';
 import { delay } from '@/utils/delay';
 import remoteConfig from '@react-native-firebase/remote-config';
 import { useQuery } from '@tanstack/react-query';
-import {
-  ARBITRUM_MAINNET_RPC,
-  AVALANCHE_MAINNET_RPC,
-  AVALANCHE_MAINNET_RPC_DEV,
-  BASE_MAINNET_RPC,
-  BASE_MAINNET_RPC_DEV,
-  BLAST_MAINNET_RPC,
-  BSC_MAINNET_RPC,
-  DEGEN_MAINNET_RPC,
-  OPTIMISM_MAINNET_RPC,
-  POLYGON_MAINNET_RPC,
-  ZORA_MAINNET_RPC,
-} from 'react-native-dotenv';
 
 export interface RainbowConfig extends Record<string, string | boolean | number> {
-  arbitrum_mainnet_rpc: string;
-  bsc_mainnet_rpc: string;
   default_slippage_bips: string;
   f2c_enabled: boolean;
   flashbots_enabled: boolean;
   op_nft_network: string;
   op_rewards_enabled: boolean;
-  optimism_mainnet_rpc: string;
-  polygon_mainnet_rpc: string;
-  zora_mainnet_rpc: string;
-  base_mainnet_rpc: string;
-  avalanche_mainnet_rpc: string;
-  degen_mainnet_rpc: string;
-  blast_mainnet_rpc: string;
   swagg_enabled: boolean;
   trace_call_block_number_offset: number;
   profiles_enabled: boolean;
@@ -82,7 +60,6 @@ export interface RainbowConfig extends Record<string, string | boolean | number>
 }
 
 export const DEFAULT_CONFIG: RainbowConfig = {
-  arbitrum_mainnet_rpc: ARBITRUM_MAINNET_RPC,
   default_slippage_bips: JSON.stringify({
     apechain: 200,
     arbitrum: 200,
@@ -100,14 +77,6 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   flashbots_enabled: true,
   op_nft_network: 'op-mainnet',
   op_rewards_enabled: false,
-  optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
-  polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
-  bsc_mainnet_rpc: BSC_MAINNET_RPC,
-  zora_mainnet_rpc: ZORA_MAINNET_RPC,
-  base_mainnet_rpc: __DEV__ ? BASE_MAINNET_RPC_DEV : BASE_MAINNET_RPC,
-  avalanche_mainnet_rpc: __DEV__ ? AVALANCHE_MAINNET_RPC_DEV : AVALANCHE_MAINNET_RPC,
-  degen_mainnet_rpc: DEGEN_MAINNET_RPC,
-  blast_mainnet_rpc: BLAST_MAINNET_RPC,
   swagg_enabled: true,
   trace_call_block_number_offset: 20,
   profiles_enabled: true,
