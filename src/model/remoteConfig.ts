@@ -11,9 +11,6 @@ import {
   BASE_MAINNET_RPC_DEV,
   BLAST_MAINNET_RPC,
   BSC_MAINNET_RPC,
-  DATA_API_KEY,
-  DATA_ENDPOINT,
-  DATA_ORIGIN,
   DEGEN_MAINNET_RPC,
   ETHEREUM_GOERLI_RPC,
   ETHEREUM_GOERLI_RPC_DEV,
@@ -27,9 +24,6 @@ import {
 export interface RainbowConfig extends Record<string, string | boolean | number> {
   arbitrum_mainnet_rpc: string;
   bsc_mainnet_rpc: string;
-  data_api_key: string;
-  data_endpoint: string;
-  data_origin: string;
   default_slippage_bips: string;
   ethereum_goerli_rpc: string;
   ethereum_mainnet_rpc: string;
@@ -95,9 +89,6 @@ export interface RainbowConfig extends Record<string, string | boolean | number>
 
 export const DEFAULT_CONFIG: RainbowConfig = {
   arbitrum_mainnet_rpc: ARBITRUM_MAINNET_RPC,
-  data_api_key: DATA_API_KEY,
-  data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',
-  data_origin: DATA_ORIGIN,
   default_slippage_bips: JSON.stringify({
     apechain: 200,
     arbitrum: 200,
