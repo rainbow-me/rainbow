@@ -475,7 +475,6 @@ export const SignTransactionSheet = () => {
   ]);
 
   const handleSignMessage = useCallback(async () => {
-    console.log('handleSignMessage: called');
     const message = transactionDetails?.payload?.params.find((p: string) => !isAddress(p));
     let response = null;
 

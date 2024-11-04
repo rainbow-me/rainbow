@@ -39,8 +39,6 @@ export const useTransactionSubmission = ({
     () =>
       performanceTracking.getState().executeFn({
         fn: async () => {
-          console.log('submitFn: ', isBalanceEnough);
-
           if (!isBalanceEnough) {
             navigate(Routes.ADD_CASH_SHEET);
             return;
@@ -48,7 +46,6 @@ export const useTransactionSubmission = ({
           if (accountInfo.isHardwareWallet) {
             navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
           } else {
-            console.log('submitFn: sending');
             await onPressSend();
           }
         },

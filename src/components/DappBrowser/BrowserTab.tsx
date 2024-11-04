@@ -248,7 +248,6 @@ const FreezableWebViewComponent = ({
         }
         // eslint-disable-next-line no-empty
       } catch (e) {
-        console.log(JSON.stringify(e, null, 2));
         console.error('Error parsing message', e);
       }
     },

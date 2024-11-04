@@ -16,7 +16,6 @@ export const useConfirmTransaction = ({
   handleConfirmTransaction,
 }: UseConfirmTransactionProps) => {
   const onConfirm = useCallback(async () => {
-    console.log('onConfirm: ', isMessageRequest, isBalanceEnough, isValidGas);
     if (isMessageRequest) {
       return handleSignMessage();
     }
