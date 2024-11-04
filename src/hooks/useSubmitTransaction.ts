@@ -41,11 +41,7 @@ export const useTransactionSubmission = ({
     () =>
       performanceTracking.getState().executeFn({
         fn: async () => {
-          if (isMessageRequest) {
-            return onPressSend();
-          }
-
-          if (!isBalanceEnough) {
+          if (!isBalanceEnough && !isMessageRequest) {
             return navigate(Routes.ADD_CASH_SHEET);
           }
 
