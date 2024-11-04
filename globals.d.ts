@@ -44,7 +44,6 @@ declare module 'react-native-dotenv' {
   export const PINATA_GATEWAY_URL: string;
   export const APP_CENTER_READ_ONLY_TOKEN_ANDROID: string;
   export const APP_CENTER_READ_ONLY_TOKEN_IOS: string;
-  export const CODE_PUSH_DEPLOYMENT_KEY_ANDROID: string;
   export const CODE_PUSH_DEPLOYMENT_KEY_IOS: string;
   export const NFT_API_KEY: string;
   export const NFT_API_URL: string;
