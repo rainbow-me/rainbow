@@ -49,7 +49,6 @@ declare module 'react-native-dotenv' {
   export const NFT_API_KEY: string;
   export const NFT_API_URL: string;
   export const ETHERSCAN_API_KEY: string;
-  export const POAP_API_KEY: string;
   export const HARDHAT_URL_ANDROID: string;
   export const HARDHAT_URL_IOS: string;
   export const RAINBOW_MASTER_KEY: string;
