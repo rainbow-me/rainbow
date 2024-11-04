@@ -53,14 +53,6 @@ declare module 'react-native-dotenv' {
   export const ARBITRUM_MAINNET_RPC: string;
   export const BSC_MAINNET_RPC: string;
   export const ZORA_MAINNET_RPC: string;
-  export const RAINBOW_WYRE_MERCHANT_ID: string;
-  export const RAINBOW_WYRE_MERCHANT_ID_TEST: string;
-  export const WYRE_ACCOUNT_ID: string;
-  export const WYRE_ACCOUNT_ID_TEST: string;
-  export const WYRE_ENDPOINT: string;
-  export const WYRE_ENDPOINT_TEST: string;
-  export const WYRE_TOKEN: string;
-  export const WYRE_TOKEN_TEST: string;
   export const IMGIX_DOMAIN: string;
   export const IMGIX_TOKEN: string;
   export const CLOUDINARY_API_KEY: string;
