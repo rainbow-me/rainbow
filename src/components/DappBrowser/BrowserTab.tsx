@@ -52,7 +52,6 @@ import { useAnimatedTab } from './hooks/useAnimatedTab';
 import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
 import { freezeWebsite, getWebsiteMetadata, unfreezeWebsite } from './scripts';
 import { BrowserTabProps, ScreenshotType } from './types';
-import { normalizeUrlForRecents } from './utils';
 
 export const BrowserTab = React.memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
   const { isDarkMode } = useColorMode();
@@ -207,6 +206,7 @@ const FreezableWebViewComponent = ({
       try {
         // validate message and parse data
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+        parsedData?.jsEnabled && console.log(parsedData);
         if (!parsedData || (!parsedData.topic && !parsedData.payload)) return;
 
         if (parsedData.topic === 'websiteMetadata') {
@@ -257,6 +257,7 @@ const FreezableWebViewComponent = ({
     (event: WebViewEvent) => {
       if (event.nativeEvent.loading) return;
       const { origin } = new URL(event.nativeEvent.url);
+      console.log('======> handleOnLoad', origin);
 
       if (typeof webViewRef !== 'function' && webViewRef?.current) {
         if (!webViewRef?.current) {
@@ -346,20 +347,33 @@ const FreezableWebViewComponent = ({
     }
   }, [isActiveTab, webViewRef]);
 
+  console.log(
+    '======> rendered tab ',
+    JSON.stringify(
+      {
+        tabId,
+        tabUrl,
+        isActiveTab,
+        javaScriptEnabled: isActiveTab,
+      },
+      null,
+      2
+    )
+  );
+
   return (
-    <Freeze freeze={!isActiveTab}>
-      <TabWebView
-        onContentProcessDidTerminate={handleOnContentProcessDidTerminate}
-        onLoad={handleOnLoad}
-        onLoadProgress={handleOnLoadProgress}
-        onMessage={handleOnMessage}
-        onNavigationStateChange={handleNavigationStateChange}
-        onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
-        ref={webViewRef}
-        source={{ uri: tabUrl }}
-        onOpenWindow={handleOnOpenWindow}
-      />
-    </Freeze>
+    <TabWebView
+      onContentProcessDidTerminate={handleOnContentProcessDidTerminate}
+      onLoad={handleOnLoad}
+      onLoadProgress={handleOnLoadProgress}
+      onMessage={handleOnMessage}
+      onNavigationStateChange={handleNavigationStateChange}
+      onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+      ref={webViewRef}
+      source={{ uri: tabUrl }}
+      javaScriptEnabled={isActiveTab}
+      onOpenWindow={handleOnOpenWindow}
+    />
   );
 };
 
