@@ -28,7 +28,7 @@ import { BNB_MAINNET_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/refer
 import useAccountSettings from './useAccountSettings';
 import { ChainId } from '@/chains/types';
 
-const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {
+export const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {
   const isLegacyGasNetwork = !(txFee as GasFee)?.maxFee;
   const txFeeValue = isLegacyGasNetwork ? (txFee as LegacyGasFee)?.estimatedFee : (txFee as GasFee)?.maxFee;
   const networkNativeAsset = nativeAsset || ethereumUtils.getNetworkNativeAsset({ chainId });
@@ -38,7 +38,7 @@ const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nati
   return isSufficientGas;
 };
 
-const checkValidGas = (selectedGasParams: LegacyGasFeeParams | GasFeeParams) => {
+export const checkValidGas = (selectedGasParams: LegacyGasFeeParams | GasFeeParams) => {
   const isLegacyGasNetwork = !!(selectedGasParams as LegacyGasFeeParams)?.gasPrice;
   const gasValue = isLegacyGasNetwork
     ? (selectedGasParams as LegacyGasFeeParams)?.gasPrice
