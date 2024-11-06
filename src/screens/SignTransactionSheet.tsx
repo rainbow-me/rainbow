@@ -268,7 +268,7 @@ export const SignTransactionSheet = () => {
     const txPayload = req;
     let { gas } = txPayload;
     const gasLimitFromPayload = txPayload?.gasLimit;
-    if (!chainId) return;
+
     try {
       logger.debug(
         '[SignTransactionSheet]: gas suggested by dapp',
@@ -282,6 +282,9 @@ export const SignTransactionSheet = () => {
       // Estimate the tx with gas limit padding before sending
       const rawGasLimit = await estimateGasWithPadding(txPayload, null, null, provider);
       if (!rawGasLimit) {
+        logger.error(new RainbowError('[SignTransactionSheet]: error estimating gas'), {
+          rawGasLimit,
+        });
         return;
       }
 
@@ -323,9 +326,6 @@ export const SignTransactionSheet = () => {
 
     let response = null;
     try {
-      if (!chainId) {
-        return;
-      }
       const existingWallet = await performanceTracking.getState().executeFn({
         fn: loadWallet,
         screen: SCREEN_FOR_REQUEST_SOURCE[source],
