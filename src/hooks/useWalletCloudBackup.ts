@@ -16,6 +16,7 @@ import { getSupportedBiometryType } from '@/keychain';
 import { IS_ANDROID } from '@/env';
 import { authenticateWithPIN } from '@/handlers/authentication';
 import * as i18n from '@/languages';
+import { useCloudBackupsContext } from '@/components/backup/CloudBackupProvider';
 
 export function getUserError(e: Error) {
   switch (e.message) {
@@ -102,17 +103,17 @@ export default function useWalletCloudBackup() {
       let updatedBackupFile = null;
       try {
         if (!latestBackup) {
-          logger.debug(`[useWalletCloudBackup]: backing up to ${cloudPlatform}: ${wallets![walletId]}`);
+          logger.debug(`[useWalletCloudBackup]: backing up to ${cloudPlatform}: ${(wallets || {})[walletId]}`);
           updatedBackupFile = await backupWalletToCloud({
             password,
-            wallet: wallets![walletId],
+            wallet: (wallets || {})[walletId],
             userPIN,
           });
         } else {
           logger.debug(`[useWalletCloudBackup]: adding wallet to ${cloudPlatform} backup: ${wallets![walletId]}`);
           updatedBackupFile = await addWalletToCloudBackup({
             password,
-            wallet: wallets![walletId],
+            wallet: (wallets || {})[walletId],
             filename: latestBackup,
             userPIN,
           });

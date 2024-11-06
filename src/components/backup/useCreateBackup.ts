@@ -123,7 +123,7 @@ export const useCreateBackup = ({
 
       await walletCloudBackup({
         onError,
-        onSuccess: (password: string) => onSuccess(password),
+        onSuccess,
         password,
         walletId,
       });

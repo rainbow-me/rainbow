@@ -13,6 +13,9 @@ import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { getMostRecentCloudBackup, hasManuallyBackedUpWallet } from '@/screens/SettingsSheet/utils';
 import { useWallets } from '@/hooks';
+import { Semaphore } from 'async-mutex';
+
+const semaphore = new Semaphore(1);
 
 type CloudBackupContext = {
   provider: string | undefined;
@@ -22,6 +25,7 @@ type CloudBackupContext = {
   userData: BackupUserData | undefined;
   mostRecentBackup: Backup | undefined;
   createBackup: ReturnType<typeof useCreateBackup>;
+  syncAndFetchBackups: () => Promise<void>;
 };
 
 export enum CloudBackupState {
@@ -50,7 +54,7 @@ export function CloudBackupProvider({ children }: PropsWithChildren) {
   const [mostRecentBackup, setMostRecentBackup] = useState<Backup | undefined>(undefined);
   const [provider, setProvider] = useState<string | undefined>(undefined);
 
-  const syncAndFetchBackups = useCallback(async () => {
+  const syncAndPullFiles = useCallback(async () => {
     try {
       const isAvailable = await isCloudBackupAvailable();
       if (!isAvailable) {
@@ -98,6 +102,10 @@ export function CloudBackupProvider({ children }: PropsWithChildren) {
     }
   }, [wallets]);
 
+  const syncAndFetchBackups = useCallback(async () => {
+    return semaphore.runExclusive(syncAndPullFiles);
+  }, [syncAndPullFiles]);
+
   const createBackup = useCreateBackup({
     setBackupState,
     backupState,
@@ -122,6 +130,7 @@ export function CloudBackupProvider({ children }: PropsWithChildren) {
         userData,
         mostRecentBackup,
         createBackup,
+        syncAndFetchBackups,
       }}
     >
       {children}

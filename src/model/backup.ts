@@ -337,6 +337,7 @@ export function findLatestBackUp(wallets: AllRainbowWallets | null): string | nu
       }
     });
   }
+
   return filename;
 }
 

@@ -36,7 +36,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { Source } from 'react-native-fast-image';
 import { useTheme } from '@/theme';
-import useCloudBackups from '@/hooks/useCloudBackups';
+import { useCloudBackupsContext } from './CloudBackupProvider';
 
 const Title = styled(Text).attrs({
   size: 'big',
@@ -83,7 +83,7 @@ type RestoreCloudStepParams = {
 export default function RestoreCloudStep() {
   const { params } = useRoute<RouteProp<RestoreCloudStepParams & RestoreSheetParams, 'RestoreSheet'>>();
 
-  const { userData } = useCloudBackups();
+  const { userData } = useCloudBackupsContext();
 
   const { selectedBackup } = params;
   const { isDarkMode } = useTheme();
@@ -91,7 +91,7 @@ export default function RestoreCloudStep() {
 
   const dispatch = useDispatch();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
-  const { replace, navigate, getState: dangerouslyGetState, goBack } = useNavigation();
+  const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [password, setPassword] = useState('');
@@ -140,6 +140,7 @@ export default function RestoreCloudStep() {
       if (status === RestoreCloudBackupResultStates.success) {
         // Store it in the keychain in case it was missing
         const hasSavedPassword = await getLocalBackupPassword();
+        console.log({ hasSavedPassword });
         if (!hasSavedPassword) {
           await saveLocalBackupPassword(password);
         }

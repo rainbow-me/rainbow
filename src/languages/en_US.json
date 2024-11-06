@@ -115,6 +115,8 @@
         "no_backups": "No backups found",
         "failed_to_fetch_backups": "Failed to fetch backups",
         "retry": "Retry",
+        "refresh": "Refresh",
+        "syncing_cloud_store": "Syncing user data from %{cloudPlatformName}",
         "fetching_backups": "Retrieving backups from %{cloudPlatformName}",
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
         "restore_from_platform": "Restore from %{cloudPlatformName}",

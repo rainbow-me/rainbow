@@ -7,16 +7,16 @@ import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
 import { Backup, parseTimestampFromFilename } from '@/model/backup';
 import { format } from 'date-fns';
-import { Stack } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { Centered } from '@/components/layout';
+import { Centered, Page } from '@/components/layout';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
-import { cloudPlatform } from '@/utils/platform';
 import { useTheme } from '@/theme';
 import { useCloudBackupsContext, CloudBackupState } from '@/components/backup/CloudBackupProvider';
+import { titleForBackupState } from '../../utils';
+import { Box } from '@/design-system';
 
 const LoadingText = styled(RNText).attrs(({ theme: { colors } }: any) => ({
   color: colors.blueGreyDark,
@@ -31,7 +31,7 @@ const ViewCloudBackups = () => {
   const { navigate } = useNavigation();
 
   const { colors } = useTheme();
-  const { backupState, backups, mostRecentBackup } = useCloudBackupsContext();
+  const { backupState, backups, mostRecentBackup, syncAndFetchBackups } = useCloudBackupsContext();
 
   const onSelectCloudBackup = useCallback(
     async (selectedBackup: Backup) => {
@@ -44,11 +44,11 @@ const ViewCloudBackups = () => {
   );
 
   const renderNoBackupsState = () => (
-    <MenuContainer>
+    <>
       <Menu header={i18n.t(i18n.l.back_up.cloud.latest_backup)}>
         <MenuItem disabled size={52} titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.no_backups)} />} />
       </Menu>
-    </MenuContainer>
+    </>
   );
 
   const renderMostRecentBackup = () => {
@@ -57,7 +57,7 @@ const ViewCloudBackups = () => {
     }
 
     return (
-      <MenuContainer space="4px">
+      <Box>
         <Menu
           description={i18n.t(i18n.l.back_up.cloud.latest_backup, {
             date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
@@ -72,42 +72,57 @@ const ViewCloudBackups = () => {
             titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.most_recent_backup)} />}
           />
         </Menu>
-      </MenuContainer>
+      </Box>
     );
   };
 
   const renderOlderBackups = () => (
-    <MenuContainer space="8px">
-      <Menu header={i18n.t(i18n.l.back_up.cloud.older_backups)}>
-        {backups.files
-          .filter(backup => backup.name !== mostRecentBackup?.name)
-          .sort((a, b) => {
-            const timestampA = new Date(parseTimestampFromFilename(a.name)).getTime();
-            const timestampB = new Date(parseTimestampFromFilename(b.name)).getTime();
-            return timestampB - timestampA;
-          })
-          .map(backup => (
+    <>
+      <Box>
+        <Menu header={i18n.t(i18n.l.back_up.cloud.older_backups)}>
+          {backups.files
+            .filter(backup => backup.name !== mostRecentBackup?.name)
+            .sort((a, b) => {
+              const timestampA = new Date(parseTimestampFromFilename(a.name)).getTime();
+              const timestampB = new Date(parseTimestampFromFilename(b.name)).getTime();
+              return timestampB - timestampA;
+            })
+            .map(backup => (
+              <MenuItem
+                key={backup.name}
+                onPress={() => onSelectCloudBackup(backup)}
+                size={52}
+                width="full"
+                titleComponent={
+                  <MenuItem.Title
+                    isLink
+                    text={i18n.t(i18n.l.back_up.cloud.older_backups_title, {
+                      date: format(parseTimestampFromFilename(backup.name), 'M/d/yy'),
+                      time: format(parseTimestampFromFilename(backup.name), 'p'),
+                    })}
+                  />
+                }
+              />
+            ))}
+          {backups.files.length === 1 && (
             <MenuItem
-              key={backup.name}
-              onPress={() => onSelectCloudBackup(backup)}
+              disabled
               size={52}
-              width="full"
-              titleComponent={
-                <MenuItem.Title
-                  isLink
-                  text={i18n.t(i18n.l.back_up.cloud.older_backups_title, {
-                    date: format(parseTimestampFromFilename(backup.name), 'M/d/yy'),
-                    time: format(parseTimestampFromFilename(backup.name), 'p'),
-                  })}
-                />
-              }
+              titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.no_older_backups)} />}
             />
-          ))}
-        {backups.files.length === 1 && (
-          <MenuItem disabled size={52} titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.no_older_backups)} />} />
-        )}
+          )}
+        </Menu>
+      </Box>
+
+      <Menu>
+        <MenuItem
+          size={52}
+          width="full"
+          onPress={syncAndFetchBackups}
+          titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.refresh)} />}
+        />
       </Menu>
-    </MenuContainer>
+    </>
   );
 
   const renderBackupsList = () => (
@@ -122,22 +137,18 @@ const ViewCloudBackups = () => {
 
   if (isLoading) {
     return (
-      <Centered zIndex={2}>
+      <Box color={colors.transparent} alignItems="center" justifyContent="center" flex={1} as={Page}>
         {android ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator color={colors.blueGreyDark} />}
-        <LoadingText>
-          {i18n.t(i18n.l.back_up.cloud.fetching_backups, {
-            cloudPlatformName: cloudPlatform,
-          })}
-        </LoadingText>
-      </Centered>
+        <LoadingText>{titleForBackupState[backupState]}</LoadingText>
+      </Box>
     );
   }
 
   return (
-    <>
+    <MenuContainer>
       {backupState === CloudBackupState.Ready && !backups.files.length && renderNoBackupsState()}
       {backupState === CloudBackupState.Ready && backups.files.length > 0 && renderBackupsList()}
-    </>
+    </MenuContainer>
   );
 };
 
