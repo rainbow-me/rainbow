@@ -1,5 +1,4 @@
 import { Asset } from '@/entities';
-import { AddressZero } from '@ethersproject/constants';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chainAssets } from './chain-assets.json';
@@ -43,15 +42,6 @@ export const POAP_BASE_URL = 'https://poap.website/';
 
 // Symbols
 export const ETH_SYMBOL = 'ETH';
-
-// FIXME: remove after swaps v1 removal
-export const WETH_ARBITRUM_ADDRESS = '0x82af49447d8a07e3bd95bd0d56f35241523fbab1';
-export const WETH_ZORA_ADDRESS = '0x4200000000000000000000000000000000000006';
-export const WMATIC_POLYGON_ADDRESS = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270';
-export const WDEGEN_DEGEN_CHAIN_ADDRESS = '0xeb54dacb4c2ccb64f8074eceea33b5ebb38e5387';
-export const WBNB_BSC_ADDRESS = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c';
-export const BNB_BSC_ADDRESS = AddressZero;
-export const MATIC_POLYGON_ADDRESS = '0x0000000000000000000000000000000000001010';
 
 // Default Favorites
 export const ETH_ADDRESS = 'eth';

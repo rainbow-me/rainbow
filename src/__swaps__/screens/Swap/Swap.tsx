@@ -108,7 +108,7 @@ const useMountSignal = () => {
 const useCleanupOnUnmount = () => {
   useEffect(() => {
     return () => {
-      const highestValueEth = userAssetsStore.getState().getHighestValueEth();
+      const highestValueEth = userAssetsStore.getState().getHighestValueNativeAsset();
       const preferredNetwork = swapsStore.getState().preferredNetwork;
       const parsedAsset = highestValueEth
         ? parseSearchAsset({
@@ -139,7 +139,7 @@ const WalletAddressObserver = () => {
   const { setAsset } = useSwapContext();
 
   const setNewInputAsset = useCallback(() => {
-    const newHighestValueEth = userAssetsStore.getState().getHighestValueEth();
+    const newHighestValueEth = userAssetsStore.getState().getHighestValueNativeAsset();
 
     if (userAssetsStore.getState().filter !== 'all') {
       userAssetsStore.setState({ filter: 'all' });

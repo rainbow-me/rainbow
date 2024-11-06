@@ -28,7 +28,7 @@ export const UserAssetsSync = function UserAssetsSync() {
         if (!isSwapsOpen || isUserAssetsStoreMissingData) {
           userAssetsStore.getState().setUserAssets(data as ParsedSearchAsset[]);
 
-          const inputAsset = userAssetsStore.getState().getHighestValueEth();
+          const inputAsset = userAssetsStore.getState().getHighestValueNativeAsset();
           useSwapsStore.setState({
             inputAsset,
             selectedOutputChainId: inputAsset?.chainId ?? ChainId.mainnet,

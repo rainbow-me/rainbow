@@ -3,48 +3,14 @@ import { createQueryKey, queryClient } from '@/react-query';
 import { delay } from '@/utils/delay';
 import remoteConfig from '@react-native-firebase/remote-config';
 import { useQuery } from '@tanstack/react-query';
-import {
-  ARBITRUM_MAINNET_RPC,
-  AVALANCHE_MAINNET_RPC,
-  AVALANCHE_MAINNET_RPC_DEV,
-  BASE_MAINNET_RPC,
-  BASE_MAINNET_RPC_DEV,
-  BLAST_MAINNET_RPC,
-  BSC_MAINNET_RPC,
-  DATA_API_KEY,
-  DATA_ENDPOINT,
-  DATA_ORIGIN,
-  DEGEN_MAINNET_RPC,
-  ETHEREUM_GOERLI_RPC,
-  ETHEREUM_GOERLI_RPC_DEV,
-  ETHEREUM_MAINNET_RPC,
-  ETHEREUM_MAINNET_RPC_DEV,
-  OPTIMISM_MAINNET_RPC,
-  POLYGON_MAINNET_RPC,
-  ZORA_MAINNET_RPC,
-} from 'react-native-dotenv';
 
 export interface RainbowConfig extends Record<string, string | boolean | number> {
-  arbitrum_mainnet_rpc: string;
-  bsc_mainnet_rpc: string;
-  data_api_key: string;
-  data_endpoint: string;
-  data_origin: string;
   default_slippage_bips: string;
   default_slippage_bips_chainId: string;
-  ethereum_goerli_rpc: string;
-  ethereum_mainnet_rpc: string;
   f2c_enabled: boolean;
   flashbots_enabled: boolean;
   op_nft_network: string;
   op_rewards_enabled: boolean;
-  optimism_mainnet_rpc: string;
-  polygon_mainnet_rpc: string;
-  zora_mainnet_rpc: string;
-  base_mainnet_rpc: string;
-  avalanche_mainnet_rpc: string;
-  degen_mainnet_rpc: string;
-  blast_mainnet_rpc: string;
   swagg_enabled: boolean;
   trace_call_block_number_offset: number;
   profiles_enabled: boolean;
@@ -95,10 +61,6 @@ export interface RainbowConfig extends Record<string, string | boolean | number>
 }
 
 export const DEFAULT_CONFIG: RainbowConfig = {
-  arbitrum_mainnet_rpc: ARBITRUM_MAINNET_RPC,
-  data_api_key: DATA_API_KEY,
-  data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',
-  data_origin: DATA_ORIGIN,
   default_slippage_bips: JSON.stringify({
     apechain: 200,
     arbitrum: 200,
@@ -125,20 +87,10 @@ export const DEFAULT_CONFIG: RainbowConfig = {
     '137': 200,
     '7777777': 200,
   }),
-  ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
-  ethereum_mainnet_rpc: __DEV__ ? ETHEREUM_MAINNET_RPC_DEV : ETHEREUM_MAINNET_RPC,
   f2c_enabled: true,
   flashbots_enabled: true,
   op_nft_network: 'op-mainnet',
   op_rewards_enabled: false,
-  optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
-  polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
-  bsc_mainnet_rpc: BSC_MAINNET_RPC,
-  zora_mainnet_rpc: ZORA_MAINNET_RPC,
-  base_mainnet_rpc: __DEV__ ? BASE_MAINNET_RPC_DEV : BASE_MAINNET_RPC,
-  avalanche_mainnet_rpc: __DEV__ ? AVALANCHE_MAINNET_RPC_DEV : AVALANCHE_MAINNET_RPC,
-  degen_mainnet_rpc: DEGEN_MAINNET_RPC,
-  blast_mainnet_rpc: BLAST_MAINNET_RPC,
   swagg_enabled: true,
   trace_call_block_number_offset: 20,
   profiles_enabled: true,

@@ -56,12 +56,13 @@ export const ChainContextMenu = ({
 
   const menuConfig = useMemo(() => {
     const chainItems = balanceSortedChains.map(chainId => {
+      const chainName = useBackendNetworksStore.getState().getChainsName()[chainId];
       return {
         actionKey: `${chainId}`,
         actionTitle: useBackendNetworksStore.getState().getChainsLabel()[chainId],
         icon: {
           iconType: 'ASSET',
-          iconValue: `${useBackendNetworksStore.getState().getChainsName()[chainId]}Badge${chainId === ChainId.mainnet ? '' : 'NoShadow'}`,
+          iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${chainName}BadgeNoShadow`,
         },
       };
     });
