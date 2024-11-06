@@ -25,6 +25,7 @@ import { useNavigation } from '@/navigation';
 import { ImgixImage } from '../images';
 import RoutesWithPlatformDifferences from '@/navigation/routesNames';
 import { Source } from 'react-native-fast-image';
+import { useCloudBackupsContext } from '../backup/CloudBackupProvider';
 
 const MIN_HEIGHT = 740;
 
@@ -63,6 +64,7 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
   const { colors } = useTheme();
   const { params } = useRoute<RouteProp<SecretDisplaySectionParams, 'SecretDisplaySection'>>();
   const { selectedWallet, wallets } = useWallets();
+  const { provider, setProvider } = useCloudBackupsContext();
   const { onManuallyBackupWalletId } = useWalletManualBackup();
   const { navigate } = useNavigation();
 
@@ -124,9 +126,12 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
   const handleConfirmSaved = useCallback(() => {
     if (backupType === WalletBackupTypes.manual) {
       onManuallyBackupWalletId(walletId);
+      if (!provider) {
+        setProvider(WalletBackupTypes.manual);
+      }
       navigate(RoutesWithPlatformDifferences.SETTINGS_SECTION_BACKUP);
     }
-  }, [backupType, walletId, onManuallyBackupWalletId, navigate]);
+  }, [backupType, onManuallyBackupWalletId, walletId, provider, navigate, setProvider]);
 
   const getIconForBackupType = useCallback(() => {
     if (isBackingUp) {

@@ -16,7 +16,7 @@ import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
 import MenuHeader from '../MenuHeader';
-import { checkWalletsForBackupStatus, hasManuallyBackedUpWallet } from '../../utils';
+import { checkLocalWalletsForBackupStatus } from '../../utils';
 import { Inline, Text, Box, Stack } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
@@ -34,7 +34,6 @@ import { BackupTypes } from '@/components/backup/useCreateBackup';
 import { BackUpMenuItem } from './BackUpMenuButton';
 import { format } from 'date-fns';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { Backup, parseTimestampFromFilename } from '@/model/backup';
 import { useCloudBackupsContext } from '@/components/backup/CloudBackupProvider';
 import { GoogleDriveUserData, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -95,7 +94,7 @@ export const WalletsAndBackup = () => {
   const { wallets } = useWallets();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const dispatch = useDispatch();
-  const { backups, backupState, createBackup } = useCloudBackupsContext();
+  const { backups, backupState, createBackup, provider, mostRecentBackup } = useCloudBackupsContext();
 
   const initializeWallet = useInitializeWallet();
 
@@ -106,54 +105,15 @@ export const WalletsAndBackup = () => {
     privateKey: 0,
   };
 
-  const hasManualBackup = useMemo(() => hasManuallyBackedUpWallet(wallets || {}), [wallets]);
+  const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets), [wallets]);
 
-  const { allBackedUp } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
-
-  const { visibleWallets, lastBackupDate } = useVisibleWallets({ wallets, walletTypeCount });
-
-  const cloudBackups = backups.files
-    .filter(backup => {
-      if (IS_ANDROID) {
-        return !backup.name.match(/UserData/i);
-      }
-
-      return backup.isFile && backup.size > 0 && !backup.name.match(/UserData/i);
-    })
-    .sort((a, b) => {
-      return parseTimestampFromFilename(b.name) - parseTimestampFromFilename(a.name);
-    });
-
-  const mostRecentBackup = cloudBackups.reduce(
-    (prev, current) => {
-      if (!current) {
-        return prev;
-      }
-
-      if (!prev) {
-        return current;
-      }
-
-      const prevTimestamp = new Date(prev.lastModified).getTime();
-      const currentTimestamp = new Date(current.lastModified).getTime();
-      if (currentTimestamp > prevTimestamp) {
-        return current;
-      }
-
-      return prev;
-    },
-    undefined as Backup | undefined
-  );
+  const visibleWallets = useVisibleWallets({ wallets, walletTypeCount });
 
   const sortedWallets = useMemo(() => {
-    const notBackedUpSecretPhraseWallets = visibleWallets.filter(
-      wallet => !wallet.isBackedUp && wallet.type === EthereumWalletType.mnemonic
-    );
-    const notBackedUpPrivateKeyWallets = visibleWallets.filter(
-      wallet => !wallet.isBackedUp && wallet.type === EthereumWalletType.privateKey
-    );
-    const backedUpSecretPhraseWallets = visibleWallets.filter(wallet => wallet.isBackedUp && wallet.type === EthereumWalletType.mnemonic);
-    const backedUpPrivateKeyWallets = visibleWallets.filter(wallet => wallet.isBackedUp && wallet.type === EthereumWalletType.privateKey);
+    const notBackedUpSecretPhraseWallets = visibleWallets.filter(wallet => !wallet.backedUp && wallet.type === EthereumWalletType.mnemonic);
+    const notBackedUpPrivateKeyWallets = visibleWallets.filter(wallet => !wallet.backedUp && wallet.type === EthereumWalletType.privateKey);
+    const backedUpSecretPhraseWallets = visibleWallets.filter(wallet => wallet.backedUp && wallet.type === EthereumWalletType.mnemonic);
+    const backedUpPrivateKeyWallets = visibleWallets.filter(wallet => wallet.backedUp && wallet.type === EthereumWalletType.privateKey);
 
     return [
       ...notBackedUpSecretPhraseWallets,
@@ -260,10 +220,10 @@ export const WalletsAndBackup = () => {
     [navigate, wallets]
   );
 
-  const backupView = backups.files.length ? WalletBackupTypes.cloud : hasManualBackup ? WalletBackupTypes.manual : undefined;
+  console.log({ provider });
 
   const renderView = useCallback(() => {
-    switch (backupView) {
+    switch (provider) {
       default:
       case undefined: {
         return (
@@ -293,21 +253,23 @@ export const WalletsAndBackup = () => {
               />
             </Menu>
 
-            <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
-              <BackUpMenuItem
-                title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
-                backupState={backupState}
-                onPress={backupAllNonBackedUpWalletsTocloud}
-              />
-            </Menu>
+            <Box>
+              <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
+                <BackUpMenuItem
+                  title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
+                  backupState={backupState}
+                  onPress={backupAllNonBackedUpWalletsTocloud}
+                />
+              </Menu>
+            </Box>
 
             <Stack space={'24px'}>
-              {sortedWallets.map(({ name, isBackedUp, accounts, key, numAccounts, backedUp, imported }) => {
+              {sortedWallets.map(({ id, name, backedUp, imported, addresses }) => {
                 return (
-                  <Menu key={`wallet-${key}`}>
+                  <Menu key={`wallet-${id}`}>
                     <MenuItem
                       hasRightArrow
-                      key={key}
+                      key={id}
                       hasSfSymbol
                       labelComponent={
                         <Inline
@@ -329,30 +291,30 @@ export const WalletsAndBackup = () => {
                           {imported && <MenuItem.Label text={i18n.t(i18n.l.wallet.back_ups.imported)} />}
                           <MenuItem.Label
                             text={
-                              numAccounts > 1
+                              addresses.length > 1
                                 ? i18n.t(i18n.l.wallet.back_ups.wallet_count_gt_one, {
-                                    numAccounts,
+                                    numAccounts: addresses.length,
                                   })
                                 : i18n.t(i18n.l.wallet.back_ups.wallet_count, {
-                                    numAccounts,
+                                    numAccounts: addresses.length,
                                   })
                             }
                           />
                         </Inline>
                       }
-                      leftComponent={<MenuItem.TextIcon colorOverride={!isBackedUp ? '#FF584D' : ''} icon={isBackedUp ? '􀢶' : '􀡝'} />}
-                      onPress={() => onNavigateToWalletView(key, name)}
+                      leftComponent={<MenuItem.TextIcon colorOverride={!backedUp ? '#FF584D' : ''} icon={backedUp ? '􀢶' : '􀡝'} />}
+                      onPress={() => onNavigateToWalletView(id, name)}
                       size={60}
                       titleComponent={<MenuItem.Title text={name} />}
                     />
                     <MenuItem
-                      key={key}
-                      size={getAccountSectionHeight(numAccounts)}
+                      key={id}
+                      size={getAccountSectionHeight(addresses.length)}
                       disabled
                       titleComponent={
                         <Inline wrap verticalSpace="4px" horizontalSpace="4px">
-                          {accounts.map(account => (
-                            <WalletPill key={account.address} account={account} />
+                          {addresses.map(address => (
+                            <WalletPill key={address.address} account={address} />
                           ))}
                         </Inline>
                       }
@@ -360,6 +322,7 @@ export const WalletsAndBackup = () => {
                   </Menu>
                 );
               })}
+
               <Menu>
                 <MenuItem
                   hasSfSymbol
@@ -367,37 +330,6 @@ export const WalletsAndBackup = () => {
                   onPress={onCreateNewSecretPhrase}
                   size={52}
                   titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.manual.create_new_secret_phrase)} />}
-                />
-              </Menu>
-
-              <Menu>
-                <MenuItem
-                  hasSfSymbol
-                  leftComponent={<MenuItem.TextIcon icon="􀣔" isLink />}
-                  onPress={onViewCloudBackups}
-                  size={52}
-                  titleComponent={
-                    <MenuItem.Title
-                      isLink
-                      text={i18n.t(i18n.l.back_up.cloud.manage_platform_backups, {
-                        cloudPlatformName: cloudPlatform,
-                      })}
-                    />
-                  }
-                />
-                <MenuItem
-                  hasSfSymbol
-                  leftComponent={<MenuItem.TextIcon icon="􀍡" isLink />}
-                  onPress={manageCloudBackups}
-                  size={52}
-                  titleComponent={
-                    <MenuItem.Title
-                      isLink
-                      text={i18n.t(i18n.l.back_up.cloud.cloud_platform_backup_settings, {
-                        cloudPlatformName: cloudPlatform,
-                      })}
-                    />
-                  }
                 />
               </Menu>
             </Stack>
@@ -452,37 +384,37 @@ export const WalletsAndBackup = () => {
                 />
               </Menu>
 
-              <Menu
-                description={
-                  mostRecentBackup
-                    ? i18n.t(i18n.l.back_up.cloud.latest_backup, {
-                        date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
-                      })
-                    : lastBackupDate
+              <Box>
+                <Menu
+                  description={
+                    mostRecentBackup
                       ? i18n.t(i18n.l.back_up.cloud.latest_backup, {
-                          date: format(lastBackupDate, "M/d/yy 'at' h:mm a"),
+                          date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
                         })
                       : undefined
-                }
-              >
-                <BackUpMenuItem
-                  title={i18n.t(i18n.l.back_up.cloud.backup_to_cloud_now, {
-                    cloudPlatformName: cloudPlatform,
-                  })}
-                  icon="􀎽"
-                  backupState={backupState}
-                  onPress={backupAllNonBackedUpWalletsTocloud}
-                />
-              </Menu>
+                  }
+                >
+                  <BackUpMenuItem
+                    title={i18n.t(i18n.l.back_up.cloud.backup_to_cloud_now, {
+                      cloudPlatformName: cloudPlatform,
+                    })}
+                    icon="􀎽"
+                    backupState={backupState}
+                    onPress={backupAllNonBackedUpWalletsTocloud}
+                  />
+                </Menu>
+              </Box>
             </Stack>
 
             <Stack space={'24px'}>
-              {sortedWallets.map(({ name, isBackedUp, accounts, key, numAccounts, backedUp, imported }) => {
+              {sortedWallets.map(({ id, name, backedUp, imported, addresses, ...rest }) => {
+                console.log({ name, ...rest });
+
                 return (
-                  <Menu key={`wallet-${key}`}>
+                  <Menu key={`wallet-${id}`}>
                     <MenuItem
                       hasRightArrow
-                      key={key}
+                      key={id}
                       hasSfSymbol
                       width="full"
                       labelComponent={
@@ -499,31 +431,31 @@ export const WalletsAndBackup = () => {
                           {imported && <MenuItem.Label text={i18n.t(i18n.l.wallet.back_ups.imported)} />}
                           <MenuItem.Label
                             text={
-                              numAccounts > 1
+                              addresses.length > 1
                                 ? i18n.t(i18n.l.wallet.back_ups.wallet_count_gt_one, {
-                                    numAccounts,
+                                    numAccounts: addresses.length,
                                   })
                                 : i18n.t(i18n.l.wallet.back_ups.wallet_count, {
-                                    numAccounts,
+                                    numAccounts: addresses.length,
                                   })
                             }
                           />
                         </Inline>
                       }
-                      leftComponent={<MenuItem.TextIcon colorOverride={!isBackedUp ? '#FF584D' : ''} icon={isBackedUp ? '􀢶' : '􀡝'} />}
-                      onPress={() => onNavigateToWalletView(key, name)}
+                      leftComponent={<MenuItem.TextIcon colorOverride={!backedUp ? '#FF584D' : ''} icon={backedUp ? '􀢶' : '􀡝'} />}
+                      onPress={() => onNavigateToWalletView(id, name)}
                       size={60}
                       titleComponent={<MenuItem.Title text={name} />}
                     />
                     <MenuItem
-                      key={key}
-                      size={getAccountSectionHeight(numAccounts)}
+                      key={id}
+                      size={getAccountSectionHeight(addresses.length)}
                       disabled
                       width="full"
                       titleComponent={
                         <Inline wrap verticalSpace="4px" horizontalSpace="4px">
-                          {accounts.map(account => (
-                            <WalletPill key={account.address} account={account} />
+                          {addresses.map(address => (
+                            <WalletPill key={address.address} account={address} />
                           ))}
                         </Inline>
                       }
@@ -580,12 +512,12 @@ export const WalletsAndBackup = () => {
       case WalletBackupTypes.manual: {
         return (
           <Stack space={'24px'}>
-            {sortedWallets.map(({ name, isBackedUp, accounts, key, numAccounts, backedUp, imported }) => {
+            {sortedWallets.map(({ id, name, backedUp, imported, addresses }) => {
               return (
-                <Menu key={`wallet-${key}`}>
+                <Menu key={`wallet-${id}`}>
                   <MenuItem
                     hasRightArrow
-                    key={key}
+                    key={id}
                     hasSfSymbol
                     labelComponent={
                       <Inline
@@ -601,30 +533,30 @@ export const WalletsAndBackup = () => {
                         {imported && <MenuItem.Label testID={'back-ups-imported'} text={i18n.t(i18n.l.wallet.back_ups.imported)} />}
                         <MenuItem.Label
                           text={
-                            numAccounts > 1
+                            addresses.length > 1
                               ? i18n.t(i18n.l.wallet.back_ups.wallet_count_gt_one, {
-                                  numAccounts,
+                                  numAccounts: addresses.length,
                                 })
                               : i18n.t(i18n.l.wallet.back_ups.wallet_count, {
-                                  numAccounts,
+                                  numAccounts: addresses.length,
                                 })
                           }
                         />
                       </Inline>
                     }
-                    leftComponent={<MenuItem.TextIcon colorOverride={!isBackedUp ? '#FF584D' : ''} icon={isBackedUp ? '􀢶' : '􀡝'} />}
-                    onPress={() => onNavigateToWalletView(key, name)}
+                    leftComponent={<MenuItem.TextIcon colorOverride={!backedUp ? '#FF584D' : ''} icon={backedUp ? '􀢶' : '􀡝'} />}
+                    onPress={() => onNavigateToWalletView(id, name)}
                     size={60}
                     titleComponent={<MenuItem.Title text={name} />}
                   />
                   <MenuItem
-                    key={key}
-                    size={getAccountSectionHeight(numAccounts)}
+                    key={id}
+                    size={getAccountSectionHeight(addresses.length)}
                     disabled
                     titleComponent={
                       <Inline verticalSpace="4px" horizontalSpace="4px">
-                        {accounts.map(account => (
-                          <WalletPill key={account.address} account={account} />
+                        {addresses.map(address => (
+                          <WalletPill key={address.address} account={address} />
                         ))}
                       </Inline>
                     }
@@ -644,33 +576,35 @@ export const WalletsAndBackup = () => {
                 />
               </Menu>
 
-              <Menu
-                description={
-                  <Text color="secondary60 (Deprecated)" size="14px / 19px (Deprecated)" weight="regular">
-                    {i18n.t(i18n.l.wallet.back_ups.cloud_backup_description, {
-                      cloudPlatform,
-                    })}
+              <Box>
+                <Menu
+                  description={
+                    <Text color="secondary60 (Deprecated)" size="14px / 19px (Deprecated)" weight="regular">
+                      {i18n.t(i18n.l.wallet.back_ups.cloud_backup_description, {
+                        cloudPlatform,
+                      })}
 
-                    <Text onPress={onPressLearnMoreAboutCloudBackups} color="blue" size="14px / 19px (Deprecated)" weight="medium">
-                      {' '}
-                      {i18n.t(i18n.l.wallet.back_ups.cloud_backup_link)}
+                      <Text onPress={onPressLearnMoreAboutCloudBackups} color="blue" size="14px / 19px (Deprecated)" weight="medium">
+                        {' '}
+                        {i18n.t(i18n.l.wallet.back_ups.cloud_backup_link)}
+                      </Text>
                     </Text>
-                  </Text>
-                }
-              >
-                <BackUpMenuItem
-                  title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
-                  backupState={backupState}
-                  onPress={backupAllNonBackedUpWalletsTocloud}
-                />
-              </Menu>
+                  }
+                >
+                  <BackUpMenuItem
+                    title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
+                    backupState={backupState}
+                    onPress={backupAllNonBackedUpWalletsTocloud}
+                  />
+                </Menu>
+              </Box>
             </Stack>
           </Stack>
         );
       }
     }
   }, [
-    backupView,
+    provider,
     backupState,
     backupAllNonBackedUpWalletsTocloud,
     sortedWallets,
@@ -681,7 +615,6 @@ export const WalletsAndBackup = () => {
     onNavigateToWalletView,
     allBackedUp,
     mostRecentBackup,
-    lastBackupDate,
     onPressLearnMoreAboutCloudBackups,
   ]);
 

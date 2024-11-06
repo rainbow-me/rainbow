@@ -13,7 +13,6 @@ import store from '@/redux/store';
 import { checkKeychainIntegrity } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
-import { checkWalletsForBackupStatus } from '@/screens/SettingsSheet/utils';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { InteractionManager } from 'react-native';
 
@@ -26,7 +25,7 @@ export const runKeychainIntegrityChecks = async () => {
   }
 };
 
-export const runWalletBackupStatusChecks = () => {
+export const runWalletBackupStatusChecks = (provider: string | undefined) => {
   const {
     selected,
     wallets,
@@ -37,8 +36,6 @@ export const runWalletBackupStatusChecks = () => {
 
   // count how many visible, non-imported and non-readonly wallets are not backed up
   if (!wallets) return;
-
-  const { backupProvider } = checkWalletsForBackupStatus(wallets);
 
   const rainbowWalletsNotBackedUp = Object.values(wallets).filter(wallet => {
     const hasVisibleAccount = wallet.addresses?.find((account: RainbowAccount) => account.visible);
@@ -63,9 +60,9 @@ export const runWalletBackupStatusChecks = () => {
   // if one of them is selected, show the default BackupSheet
   if (selected && hasSelectedWallet && IS_TESTING !== 'true') {
     let stepType: string = WalletBackupStepTypes.no_provider;
-    if (backupProvider === walletBackupTypes.cloud) {
+    if (provider === walletBackupTypes.cloud) {
       stepType = WalletBackupStepTypes.backup_now_to_cloud;
-    } else if (backupProvider === walletBackupTypes.manual) {
+    } else if (provider === walletBackupTypes.manual) {
       stepType = WalletBackupStepTypes.backup_now_manually;
     }
 

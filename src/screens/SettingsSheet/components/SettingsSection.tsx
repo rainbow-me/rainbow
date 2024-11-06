@@ -28,9 +28,11 @@ import { showActionSheetWithOptions } from '@/utils';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { SettingsExternalURLs } from '../constants';
-import { capitalizeFirstLetter, checkWalletsForBackupStatus } from '../utils';
+import { checkLocalWalletsForBackupStatus } from '../utils';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { Box } from '@/design-system';
+import { useCloudBackupsContext } from '@/components/backup/CloudBackupProvider';
+import { capitalize } from 'lodash';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
@@ -59,10 +61,11 @@ const SettingsSection = ({
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
+  const { provider } = useCloudBackupsContext();
+
   const { isDarkMode, setTheme, colorScheme } = useTheme();
 
   const onSendFeedback = useSendFeedback();
-  const { backupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const onPressReview = useCallback(async () => {
     if (ios) {
@@ -85,7 +88,7 @@ const SettingsSection = ({
 
   const onPressLearn = useCallback(() => Linking.openURL(SettingsExternalURLs.rainbowLearn), []);
 
-  const { allBackedUp, canBeBackedUp } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
+  const { allBackedUp, canBeBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets), [wallets]);
 
   const themeMenuConfig = useMemo(() => {
     return {
@@ -160,12 +163,12 @@ const SettingsSection = ({
       return undefined;
     }
 
-    if (backupProvider === walletBackupTypes.cloud) {
+    if (provider === walletBackupTypes.cloud) {
       return CloudBackupWarningIcon;
     }
 
     return BackupWarningIcon;
-  }, [allBackedUp, backupProvider]);
+  }, [allBackedUp, provider]);
 
   return (
     <MenuContainer testID="settings-menu-container" Footer={<AppVersionStamp />}>
@@ -215,7 +218,7 @@ const SettingsSection = ({
           <MenuItem
             hasChevron
             leftComponent={<MenuItem.ImageIcon source={isDarkMode ? DarkModeIconDark : DarkModeIcon} />}
-            rightComponent={<MenuItem.Selection>{colorScheme ? capitalizeFirstLetter(colorScheme) : ''}</MenuItem.Selection>}
+            rightComponent={<MenuItem.Selection>{colorScheme ? capitalize(colorScheme) : ''}</MenuItem.Selection>}
             size={60}
             testID={`theme-section-${isDarkMode ? 'dark' : 'light'}`}
             titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.theme)} />}

@@ -29,9 +29,9 @@ import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger, RainbowError } from '@/logger';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
-import { checkWalletsForBackupStatus } from '@/screens/SettingsSheet/utils';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { ChainId } from '@/chains/types';
+import { useCloudBackupsContext } from '@/components/backup/CloudBackupProvider';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -51,6 +51,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const wasImporting = usePrevious(isImporting);
   const { updateWalletENSAvatars } = useWalletENSAvatar();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+
+  const { provider } = useCloudBackupsContext();
 
   const inputRef = useRef<TextInput>(null);
 
@@ -346,12 +348,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                         isValidBluetoothDeviceId(input)
                       )
                     ) {
-                      const { backupProvider } = checkWalletsForBackupStatus(wallets);
-
                       let stepType: string = WalletBackupStepTypes.no_provider;
-                      if (backupProvider === walletBackupTypes.cloud) {
+                      if (provider === walletBackupTypes.cloud) {
                         stepType = WalletBackupStepTypes.backup_now_to_cloud;
-                      } else if (backupProvider === walletBackupTypes.manual) {
+                      } else if (provider === walletBackupTypes.manual) {
                         stepType = WalletBackupStepTypes.backup_now_manually;
                       }
 
@@ -414,6 +414,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     showImportModal,
     profilesEnabled,
     dangerouslyGetParent,
+    provider,
   ]);
 
   return {

@@ -46,12 +46,9 @@ import showWalletErrorAlert from '@/helpers/support';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { BackUpMenuItem } from './BackUpMenuButton';
-import { checkWalletsForBackupStatus } from '../../utils';
 import { useCloudBackupsContext } from '@/components/backup/CloudBackupProvider';
-import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
 import { format } from 'date-fns';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { Backup, parseTimestampFromFilename } from '@/model/backup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { BackupTypes } from '@/components/backup/useCreateBackup';
 
@@ -126,7 +123,7 @@ const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: 
 const ViewWalletBackup = () => {
   const { params } = useRoute<RouteProp<ViewWalletBackupParams, 'ViewWalletBackup'>>();
 
-  const { createBackup, backups, backupState } = useCloudBackupsContext();
+  const { createBackup, backupState, provider, mostRecentBackup } = useCloudBackupsContext();
   const { walletId, title: incomingTitle } = params;
   const creatingWallet = useRef<boolean>();
   const { isDamaged, wallets } = useWallets();
@@ -134,48 +131,6 @@ const ViewWalletBackup = () => {
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-
-  const walletTypeCount: WalletCountPerType = {
-    phrase: 0,
-    privateKey: 0,
-  };
-
-  const { lastBackupDate } = useVisibleWallets({ wallets, walletTypeCount });
-
-  const cloudBackups = backups.files
-    .filter(backup => {
-      if (IS_ANDROID) {
-        return !backup.name.match(/UserData/i);
-      }
-
-      return backup.isFile && backup.size > 0 && !backup.name.match(/UserData/i);
-    })
-    .sort((a, b) => {
-      return parseTimestampFromFilename(b.name) - parseTimestampFromFilename(a.name);
-    });
-
-  const mostRecentBackup = cloudBackups.reduce(
-    (prev, current) => {
-      if (!current) {
-        return prev;
-      }
-
-      if (!prev) {
-        return current;
-      }
-
-      const prevTimestamp = new Date(prev.lastModified).getTime();
-      const currentTimestamp = new Date(current.lastModified).getTime();
-      if (currentTimestamp > prevTimestamp) {
-        return current;
-      }
-
-      return prev;
-    },
-    undefined as Backup | undefined
-  );
-
-  const { backupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
 
@@ -397,14 +352,14 @@ const ViewWalletBackup = () => {
               paddingBottom={{ custom: 24 }}
               iconComponent={
                 <MenuHeader.ImageIcon
-                  source={backupProvider === walletBackupTypes.cloud ? CloudBackupWarningIcon : BackupWarningIcon}
+                  source={provider === walletBackupTypes.cloud ? CloudBackupWarningIcon : BackupWarningIcon}
                   size={72}
                 />
               }
               titleComponent={<MenuHeader.Title text={i18n.t(i18n.l.wallet.back_ups.not_backed_up)} weight="heavy" />}
               labelComponent={
                 <Box marginTop={{ custom: 16 }}>
-                  {backupProvider === walletBackupTypes.cloud && (
+                  {provider === walletBackupTypes.cloud && (
                     <MenuHeader.Label
                       text={i18n.t(i18n.l.wallet.back_ups.not_backed_up_to_cloud_message, {
                         backupType: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
@@ -412,7 +367,7 @@ const ViewWalletBackup = () => {
                       })}
                     />
                   )}
-                  {backupProvider !== walletBackupTypes.cloud && (
+                  {provider !== walletBackupTypes.cloud && (
                     <MenuHeader.Label
                       text={i18n.t(i18n.l.wallet.back_ups.not_backed_up_message, {
                         backupType: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
@@ -424,32 +379,30 @@ const ViewWalletBackup = () => {
             />
           </Menu>
 
-          {backupProvider === walletBackupTypes.cloud && (
-            <Menu
-              description={
-                mostRecentBackup
-                  ? i18n.t(i18n.l.back_up.cloud.latest_backup, {
-                      date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
-                    })
-                  : lastBackupDate
+          {provider === walletBackupTypes.cloud && (
+            <Box>
+              <Menu
+                description={
+                  mostRecentBackup
                     ? i18n.t(i18n.l.back_up.cloud.latest_backup, {
-                        date: format(lastBackupDate, "M/d/yy 'at' h:mm a"),
+                        date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
                       })
                     : undefined
-              }
-            >
-              <BackUpMenuItem
-                icon="􀎽"
-                title={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
-                  cloudPlatformName: cloudPlatform,
-                })}
-                backupState={backupState}
-                onPress={backupWalletsToCloud}
-              />
-            </Menu>
+                }
+              >
+                <BackUpMenuItem
+                  icon="􀎽"
+                  title={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
+                    cloudPlatformName: cloudPlatform,
+                  })}
+                  backupState={backupState}
+                  onPress={backupWalletsToCloud}
+                />
+              </Menu>
+            </Box>
           )}
 
-          {backupProvider !== walletBackupTypes.cloud && (
+          {provider !== walletBackupTypes.cloud && (
             <Menu>
               <MenuItem
                 hasSfSymbol

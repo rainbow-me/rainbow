@@ -4,6 +4,7 @@ import * as i18n from '@/languages';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { DEFAULT_WALLET_NAME, RainbowAccount, RainbowWallet } from '@/model/wallet';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 
 type WalletByKey = {
   [key: string]: RainbowWallet;
@@ -19,20 +20,6 @@ export type WalletCountPerType = {
   privateKey: number;
 };
 
-export type AmendedRainbowWallet = RainbowWallet & {
-  name: string;
-  isBackedUp: boolean | undefined;
-  accounts: RainbowAccount[];
-  key: string;
-  label: string;
-  numAccounts: number;
-};
-
-type UseVisibleWalletReturnType = {
-  visibleWallets: AmendedRainbowWallet[];
-  lastBackupDate: number | undefined;
-};
-
 export const getTitleForWalletType = (type: EthereumWalletType, walletTypeCount: WalletCountPerType) => {
   switch (type) {
     case EthereumWalletType.mnemonic:
@@ -44,55 +31,30 @@ export const getTitleForWalletType = (type: EthereumWalletType, walletTypeCount:
         ? i18n.t(i18n.l.back_up.private_key_plural, { privateKeyNumber: walletTypeCount.privateKey })
         : i18n.t(i18n.l.back_up.private_key_singluar);
     default:
+      console.log({ type, walletTypeCount });
       return '';
   }
 };
 
-const isWalletGroupNamed = (wallet: RainbowWallet) => wallet.name && wallet.name.trim() !== '' && wallet.name !== DEFAULT_WALLET_NAME;
-
-export const useVisibleWallets = ({ wallets, walletTypeCount }: UseVisibleWalletProps): UseVisibleWalletReturnType => {
-  const [lastBackupDate, setLastBackupDate] = useState<number | undefined>(undefined);
-
+export const useVisibleWallets = ({ wallets, walletTypeCount }: UseVisibleWalletProps): RainbowWallet[] => {
   if (!wallets) {
-    return {
-      visibleWallets: [],
-      lastBackupDate,
-    };
+    return [];
   }
 
-  return {
-    visibleWallets: Object.keys(wallets)
-      .filter(key => wallets[key].type !== WalletTypes.readOnly && wallets[key].type !== WalletTypes.bluetooth)
-      .map(key => {
-        const wallet = wallets[key];
-        const visibleAccounts = (wallet.addresses || []).filter(a => a.visible);
-        const totalAccounts = visibleAccounts.length;
+  return Object.keys(wallets)
+    .filter(key => wallets[key].type !== WalletTypes.readOnly && wallets[key].type !== WalletTypes.bluetooth)
+    .map(key => {
+      const wallet = wallets[key];
 
-        if (
-          wallet.backedUp &&
-          wallet.backupDate &&
-          wallet.backupType === walletBackupTypes.cloud &&
-          (!lastBackupDate || Number(wallet.backupDate) > lastBackupDate)
-        ) {
-          setLastBackupDate(Number(wallet.backupDate));
-        }
+      if (wallet.type === WalletTypes.mnemonic) {
+        walletTypeCount.phrase += 1;
+      } else if (wallet.type === WalletTypes.privateKey) {
+        walletTypeCount.privateKey += 1;
+      }
 
-        if (wallet.type === WalletTypes.mnemonic) {
-          walletTypeCount.phrase += 1;
-        } else if (wallet.type === WalletTypes.privateKey) {
-          walletTypeCount.privateKey += 1;
-        }
-
-        return {
-          ...wallet,
-          name: isWalletGroupNamed(wallet) ? wallet.name : getTitleForWalletType(wallet.type, walletTypeCount),
-          isBackedUp: wallet.backedUp,
-          accounts: visibleAccounts,
-          key,
-          label: wallet.name,
-          numAccounts: totalAccounts,
-        };
-      }),
-    lastBackupDate,
-  };
+      return {
+        ...wallet,
+        name: getTitleForWalletType(wallet.type, walletTypeCount),
+      };
+    });
 };

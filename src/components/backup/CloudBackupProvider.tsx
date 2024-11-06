@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, createContext, useCallback, useContext, useEffect, useState } from 'react';
-import type { BackupUserData, CloudBackups } from '@/model/backup';
+import type { Backup, BackupUserData, CloudBackups } from '@/model/backup';
 import {
   fetchAllBackups,
   fetchUserDataFromCloud,
@@ -10,11 +10,17 @@ import {
 import { RainbowError, logger } from '@/logger';
 import { IS_ANDROID } from '@/env';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { getMostRecentCloudBackup, hasManuallyBackedUpWallet } from '@/screens/SettingsSheet/utils';
+import { useWallets } from '@/hooks';
 
 type CloudBackupContext = {
+  provider: string | undefined;
+  setProvider: (provider: string | undefined) => void;
   backupState: CloudBackupState;
   backups: CloudBackups;
   userData: BackupUserData | undefined;
+  mostRecentBackup: Backup | undefined;
   createBackup: ReturnType<typeof useCreateBackup>;
 };
 
@@ -33,12 +39,16 @@ export enum CloudBackupState {
 const CloudBackupContext = createContext({} as CloudBackupContext);
 
 export function CloudBackupProvider({ children }: PropsWithChildren) {
+  const { wallets } = useWallets();
   const [backupState, setBackupState] = useState(CloudBackupState.Initializing);
 
   const [userData, setUserData] = useState<BackupUserData>();
   const [backups, setBackups] = useState<CloudBackups>({
     files: [],
   });
+
+  const [mostRecentBackup, setMostRecentBackup] = useState<Backup | undefined>(undefined);
+  const [provider, setProvider] = useState<string | undefined>(undefined);
 
   const syncAndFetchBackups = useCallback(async () => {
     try {
@@ -67,17 +77,26 @@ export function CloudBackupProvider({ children }: PropsWithChildren) {
       const [userData, backupFiles] = await Promise.all([fetchUserDataFromCloud(), fetchAllBackups()]);
       setUserData(userData);
       setBackups(backupFiles);
-      setBackupState(CloudBackupState.Ready);
+      // if the user has any cloud backups, set the provider to cloud
+      if (backupFiles.files.length > 0) {
+        setProvider(walletBackupTypes.cloud);
+        setMostRecentBackup(getMostRecentCloudBackup(backupFiles.files));
+      } else if (hasManuallyBackedUpWallet(wallets)) {
+        // if the user has manually backed up wallets, set the provider to manual
+        setProvider(walletBackupTypes.manual);
+      } // else it'll remain undefined
 
       logger.debug(`[CloudBackupProvider]: Retrieved ${backupFiles.files.length} backup files`);
       logger.debug(`[CloudBackupProvider]: Retrieved userData with ${Object.values(userData.wallets).length} wallets`);
+
+      setBackupState(CloudBackupState.Ready);
     } catch (e) {
       logger.error(new RainbowError('[CloudBackupProvider]: Failed to fetch all backups'), {
         error: e,
       });
       setBackupState(CloudBackupState.FailedToInitialize);
     }
-  }, [setBackupState]);
+  }, [wallets]);
 
   const createBackup = useCreateBackup({
     setBackupState,
@@ -96,9 +115,12 @@ export function CloudBackupProvider({ children }: PropsWithChildren) {
   return (
     <CloudBackupContext.Provider
       value={{
+        provider,
+        setProvider,
         backupState,
         backups,
         userData,
+        mostRecentBackup,
         createBackup,
       }}
     >
