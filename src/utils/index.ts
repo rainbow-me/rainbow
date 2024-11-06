@@ -2,7 +2,6 @@ export { default as abbreviations } from './abbreviations';
 export { default as addressUtils } from './address';
 export { default as AllowancesCache } from './allowancesCache';
 export { default as TokensListenedCache } from './tokensListenedCache';
-export { default as checkTokenIsScam } from './checkTokenIsScam';
 export { default as contenthash } from './contenthash';
 export { default as deviceUtils } from './deviceUtils';
 export { default as profileUtils } from './profileUtils';
