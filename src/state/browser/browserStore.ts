@@ -2,7 +2,7 @@ import { debounce } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { create } from 'zustand';
 import { PersistStorage, StorageValue, persist, subscribeWithSelector } from 'zustand/middleware';
-import { DEFAULT_TAB_URL } from '@/components/DappBrowser/constants';
+import { RAINBOW_HOME } from '@/components/DappBrowser/constants';
 import { TabData, TabId } from '@/components/DappBrowser/types';
 import { generateUniqueIdWorklet, normalizeUrlWorklet } from '@/components/DappBrowser/utils';
 import { RainbowError, logger } from '@/logger';
@@ -64,7 +64,7 @@ function deserializeBrowserState(serializedState: string): { state: BrowserState
   const activeTabId = originalTabIds[Math.abs(state.activeTabIndex)];
 
   // Filter out inactive homepage tabs
-  const tabIds = originalTabIds.filter(tabId => tabsData.get(tabId)?.url !== DEFAULT_TAB_URL || tabId === activeTabId);
+  const tabIds = originalTabIds.filter(tabId => tabsData.get(tabId)?.url !== RAINBOW_HOME || tabId === activeTabId);
 
   // Remove entries from tabsData that don't have a corresponding tabId in tabIds
   const tabIdsSet = new Set(tabIds);
@@ -116,8 +116,8 @@ const persistedBrowserStorage: PersistStorage<BrowserState> = {
 
 const INITIAL_ACTIVE_TAB_INDEX = 0;
 const INITIAL_TAB_IDS = [generateUniqueIdWorklet()];
-const INITIAL_TABS_DATA = new Map([[INITIAL_TAB_IDS[0], { canGoBack: false, canGoForward: false, url: DEFAULT_TAB_URL }]]);
-const INITIAL_PERSISTED_TAB_URLS: Record<TabId, string> = { [INITIAL_TAB_IDS[0]]: DEFAULT_TAB_URL };
+const INITIAL_TABS_DATA = new Map([[INITIAL_TAB_IDS[0], { canGoBack: false, canGoForward: false, url: RAINBOW_HOME }]]);
+const INITIAL_PERSISTED_TAB_URLS: Record<TabId, string> = { [INITIAL_TAB_IDS[0]]: RAINBOW_HOME };
 
 interface BrowserStore {
   activeTabIndex: number;
@@ -168,14 +168,14 @@ export const useBrowserStore = create<BrowserStore>()(
 
         getActiveTabUrl: () => get().persistedTabUrls[get().getActiveTabId()],
 
-        getTabData: tabId => get().tabsData.get(tabId) || { canGoBack: false, canGoForward: false, url: DEFAULT_TAB_URL },
+        getTabData: tabId => get().tabsData.get(tabId) || { canGoBack: false, canGoForward: false, url: RAINBOW_HOME },
 
         goToPage: (url, tabId) =>
           set(state => {
             const tabIdToUse = tabId || state.getActiveTabId();
             const existingTabData = state.getTabData(tabIdToUse);
 
-            const isGoingHome = existingTabData?.url && url === DEFAULT_TAB_URL;
+            const isGoingHome = existingTabData?.url && url === RAINBOW_HOME;
             const canGoBack = isGoingHome ? false : existingTabData?.canGoBack || false;
             const canGoForward = isGoingHome ? false : existingTabData?.canGoForward || false;
             const newTabsData = new Map(state.tabsData);
@@ -214,7 +214,7 @@ export const useBrowserStore = create<BrowserStore>()(
             return { tabsData: newTabsData };
           }),
 
-        isOnHomepage: () => (get().getActiveTabUrl() || DEFAULT_TAB_URL) === DEFAULT_TAB_URL,
+        isOnHomepage: () => (get().getActiveTabUrl() || RAINBOW_HOME) === RAINBOW_HOME,
 
         isTabActive: tabId => get().getActiveTabId() === tabId,
 
@@ -257,7 +257,7 @@ export const useBrowserStore = create<BrowserStore>()(
             const existingTabIds = state.tabIds.filter(id => newTabIds.includes(id));
             const addedTabIds = newTabIds.filter(id => !state.tabIds.includes(id));
             const newTabsData = new Map(state.tabsData);
-            addedTabIds.forEach(id => newTabsData.set(id, { url: state.persistedTabUrls[id] || DEFAULT_TAB_URL }));
+            addedTabIds.forEach(id => newTabsData.set(id, { url: state.persistedTabUrls[id] || RAINBOW_HOME }));
             return { tabIds: [...existingTabIds, ...addedTabIds], tabsData: newTabsData };
           }),
 

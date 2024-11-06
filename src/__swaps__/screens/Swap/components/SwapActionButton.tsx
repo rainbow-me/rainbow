@@ -62,7 +62,7 @@ function SwapButton({
   });
 
   const secondaryTextStyles = useAnimatedStyle(() => {
-    const secondaryColor = getColorValueForThemeWorklet(asset.value?.textColor, isDarkMode, true);
+    const secondaryColor = getColorValueForThemeWorklet(asset.value?.textColor, isDarkMode);
 
     let opacity = isDarkMode ? 0.76 : 0.8;
     if (secondaryColor === globalColors.grey100) {
@@ -76,9 +76,7 @@ function SwapButton({
 
   const buttonWrapperStyles = useAnimatedStyle(() => {
     return {
-      backgroundColor: outline
-        ? 'transparent'
-        : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode, true) || fallbackColor,
+      backgroundColor: outline ? 'transparent' : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode) || fallbackColor,
       borderColor: outline ? separatorSecondary : undefined,
       borderRadius: borderRadius ?? 24,
       height: small ? 36 : 48,
@@ -170,7 +168,7 @@ const HoldProgress = ({ holdProgress }: { holdProgress: SharedValue<number> }) =
   const { internalSelectedOutputAsset } = useSwapContext();
 
   const [brightenedColor, setBrightenedColor] = useState<string>(
-    transformColor(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true), false)
+    transformColor(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode), false)
   );
 
   const holdProgressStyle = useAnimatedStyle(() => {
@@ -193,7 +191,7 @@ const HoldProgress = ({ holdProgress }: { holdProgress: SharedValue<number> }) =
     () => internalSelectedOutputAsset.value?.highContrastColor,
     (current, previous) => {
       if (current && current !== previous) {
-        runOnJS(transformColor)(getColorValueForThemeWorklet(current, isDarkMode, true));
+        runOnJS(transformColor)(getColorValueForThemeWorklet(current, isDarkMode));
       }
     },
     []

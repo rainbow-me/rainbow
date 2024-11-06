@@ -29,9 +29,6 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
-  const {
-    params: { setIsSearchModeEnabled },
-  } = useRoute<any>();
   const isSelectedWallet = useMemo(() => {
     const visibleWallet = selectedWallet.addresses?.find((wallet: { visible: boolean }) => wallet.visible);
 
@@ -106,7 +103,6 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
     async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === ACTIONS.OPEN_WALLET) {
         if (!isSelectedWallet) {
-          setIsSearchModeEnabled?.(false);
           switchToWalletWithAddress(address!);
         }
         navigate(Routes.WALLET_SCREEN);
@@ -140,17 +136,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
         Share.share(android ? { message: shareLink } : { url: shareLink });
       }
     },
-    [
-      address,
-      contact,
-      ensName,
-      isSelectedWallet,
-      navigate,
-      onRemoveContact,
-      setClipboard,
-      setIsSearchModeEnabled,
-      switchToWalletWithAddress,
-    ]
+    [address, contact, ensName, isSelectedWallet, navigate, onRemoveContact, setClipboard, switchToWalletWithAddress]
   );
 
   const menuConfig = useMemo(() => ({ menuItems, ...(ios && { menuTitle: '' }) }), [menuItems]);

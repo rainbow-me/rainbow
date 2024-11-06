@@ -20,7 +20,7 @@ export function useLedgerConnect({
   errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) {
   const transport = useRef<TransportBLE | undefined>();
-  const timer = useRef<NodeJS.Timeout | undefined>(undefined);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const isReady = useRecoilValue(LedgerIsReadyAtom);
   const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(triggerPollerCleanupAtom);
   const setReadyForPolling = useSetRecoilState(readyForPollingAtom);
@@ -64,7 +64,7 @@ export function useLedgerConnect({
   /**
    * Cleans up ledger connection polling
    */
-  const pollerCleanup = (poller: NodeJS.Timer | undefined) => {
+  const pollerCleanup = (poller: ReturnType<typeof setTimeout> | undefined) => {
     try {
       if (poller) {
         logger.debug('[useLedgerConnect]: polling tear down', {});

@@ -44,7 +44,6 @@ import { Homepage } from './Homepage';
 import { WebViewBorder } from './WebViewBorder';
 import {
   RAINBOW_HOME,
-  DEFAULT_TAB_URL,
   TAB_SCREENSHOT_FILE_FORMAT,
   TAB_SCREENSHOT_FASTER_IMAGE_CONFIG,
   USER_AGENT,
@@ -199,7 +198,7 @@ const FreezableWebViewComponent = ({
   const webViewRef = useRef<WebView>(null);
 
   const isActiveTab = useBrowserStore(state => state.isTabActive(tabId));
-  const tabUrl = useBrowserStore(state => state.getTabData?.(tabId)?.url) || DEFAULT_TAB_URL;
+  const tabUrl = useBrowserStore(state => state.getTabData?.(tabId)?.url) || RAINBOW_HOME;
   const isOnHomepage = tabUrl === RAINBOW_HOME;
 
   const handleOnMessage = useCallback(

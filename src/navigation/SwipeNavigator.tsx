@@ -189,13 +189,11 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
         }, 5);
       } else if (isFocused && tabBarIcon === 'tabDiscover') {
         if (delta < DOUBLE_PRESS_DELAY) {
-          // @ts-expect-error No call signatures
           discoverOpenSearchFnRef?.();
           return;
         }
 
         if (discoverScrollToTopFnRef?.() === 0) {
-          // @ts-expect-error No call signatures
           discoverOpenSearchFnRef?.();
           return;
         }
@@ -223,7 +221,6 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
       if (tabBarIcon === 'tabDiscover') {
         navigation.navigate(Routes.DISCOVER_SCREEN);
         InteractionManager.runAfterInteractions(() => {
-          // @ts-expect-error No call signatures
           discoverOpenSearchFnRef?.();
         });
       }

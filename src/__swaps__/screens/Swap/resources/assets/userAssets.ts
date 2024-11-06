@@ -11,7 +11,7 @@ import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { parseUserAsset } from '@/__swaps__/utils/assets';
-import { greaterThan } from '@/__swaps__/utils/numbers';
+import { greaterThan } from '@/helpers/utilities';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
@@ -124,12 +124,14 @@ async function userAssetsQueryFunction({
     const chainIdsWithErrorsInResponse = res?.data?.meta?.chain_ids_with_errors || [];
     const assets = res?.data?.payload?.assets || [];
     if (address) {
-      userAssetsQueryFunctionRetryByChain({
-        address,
-        chainIds: chainIdsWithErrorsInResponse,
-        currency,
-        testnetMode,
-      });
+      if (chainIdsWithErrorsInResponse.length) {
+        userAssetsQueryFunctionRetryByChain({
+          address,
+          chainIds: chainIdsWithErrorsInResponse,
+          currency,
+          testnetMode,
+        });
+      }
       if (assets.length && chainIdsInResponse.length) {
         const parsedAssetsDict = await parseUserAssets({
           assets,
@@ -186,9 +188,11 @@ async function userAssetsQueryFunctionRetryByChain({
     }
     const parsedRetries = await Promise.all(retries);
     for (const parsedAssets of parsedRetries) {
-      const values = Object.values(parsedAssets);
-      if (values[0]) {
-        cachedUserAssets[values[0].chainId] = parsedAssets;
+      if (parsedAssets) {
+        const values = Object.values(parsedAssets);
+        if (values[0]) {
+          cachedUserAssets[values[0].chainId] = parsedAssets;
+        }
       }
     }
     queryClient.setQueryData(userAssetsQueryKey({ address, currency, testnetMode }), cachedUserAssets);
@@ -236,9 +240,9 @@ export function useUserAssets<TSelectResult = UserAssetsResult>(
   config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
   const { connectedToHardhat } = useConnectedToHardhatStore();
-
   return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToHardhat }), userAssetsQueryFunction, {
     ...config,
+    enabled: !!address && !!currency,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
     staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,
   });
