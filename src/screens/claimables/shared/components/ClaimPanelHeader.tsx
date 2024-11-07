@@ -4,7 +4,7 @@ import { FasterImageView } from '@candlefinance/faster-image';
 import React, { useMemo } from 'react';
 import * as i18n from '@/languages';
 import { TextColor } from '@/design-system/color/palettes';
-import { ClaimStatus } from '../types';
+import { ClaimStatus } from '../../transaction/types';
 
 export function ClaimPanelHeader({ claimStatus, iconUrl }: { claimStatus: ClaimStatus; iconUrl: string }) {
   const panelTitle = useMemo(() => {

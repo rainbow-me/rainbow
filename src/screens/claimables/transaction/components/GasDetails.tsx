@@ -3,13 +3,14 @@ import React, { useEffect } from 'react';
 import * as i18n from '@/languages';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { chainsLabel } from '@/chains';
-import { useClaimContext } from './ClaimContext';
+import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
 
-export function GasDetails({ isGasReady, nativeValueDisplay }: { isGasReady: boolean; nativeValueDisplay: string }) {
+export function GasDetails() {
   const {
     claimable: { chainId },
     claimStatus,
-  } = useClaimContext();
+    gasFeeDisplay,
+  } = useTransactionClaimableContext();
 
   const animationProgress = useSharedValue(0);
 
@@ -38,14 +39,14 @@ export function GasDetails({ isGasReady, nativeValueDisplay }: { isGasReady: boo
   return (
     <Animated.View style={gasAnimatedStyle}>
       <Box paddingTop="20px">
-        {isGasReady ? (
+        {gasFeeDisplay ? (
           <Inline alignVertical="center" space="2px">
             <Text align="center" color="labelQuaternary" size="icon 10px" weight="heavy">
               􀵟
             </Text>
             <Text color="labelQuaternary" size="13pt" weight="bold">
               {i18n.t(i18n.l.claimables.panel.amount_to_claim_on_network, {
-                amount: nativeValueDisplay,
+                amount: gasFeeDisplay,
                 network: chainsLabel[chainId],
               })}
             </Text>

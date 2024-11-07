@@ -1,16 +1,15 @@
 import { Box, Text } from '@/design-system';
 import { haptics } from '@/utils';
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ChainId } from '@/chains/types';
 import { chainsLabel, chainsName, chainsNativeAsset } from '@/chains';
-import { ParsedAddressAsset } from '@/entities';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useAccountSettings } from '@/hooks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { DAI_ADDRESS, ETH_SYMBOL, WBTC_ADDRESS } from '@/references';
-import { DropdownMenu } from './DropdownMenu';
+import { DropdownMenu } from '../../shared/components/DropdownMenu';
 import { TokenToReceive } from '../types';
-import { useClaimContext } from './ClaimContext';
+import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
 
 type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 
@@ -22,7 +21,7 @@ export function ClaimCustomization() {
     outputConfig: { chainId: outputChainId, token: outputToken },
     setOutputConfig,
     setQuote,
-  } = useClaimContext();
+  } = useTransactionClaimableContext();
 
   const [isInitialState, setIsInitialState] = useState(true);
 
@@ -169,7 +168,7 @@ export function ClaimCustomization() {
 
   const networkMenuConfig = useMemo(() => {
     const supportedChains = balanceSortedChainList
-      .filter(chainId => chainId !== outputChainId)
+      .filter(chainId => isInitialState || (chainId !== outputChainId && (!outputToken || chainId in outputToken.networks)))
       .map(chainId => ({
         actionKey: `${chainId}`,
         actionTitle: chainsLabel[chainId],
@@ -189,7 +188,7 @@ export function ClaimCustomization() {
         ...supportedChains,
       ],
     };
-  }, [balanceSortedChainList, outputChainId]);
+  }, [balanceSortedChainList, isInitialState, outputChainId, outputToken]);
 
   const handleTokenSelection = useCallback(
     (selection: keyof typeof tokens | 'reset') => {

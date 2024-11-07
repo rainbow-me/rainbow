@@ -90,7 +90,7 @@ import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
-import { ClaimClaimablePanel } from '@/screens/claimables/ClaimClaimablePanel';
+import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
 import { RootStackParamList } from './types';
 
 const Stack = createStackNavigator();

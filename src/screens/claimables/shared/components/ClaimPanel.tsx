@@ -4,7 +4,7 @@ import { IS_IOS } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 import React from 'react';
 import { ClaimPanelHeader } from './ClaimPanelHeader';
-import { ClaimStatus } from '../types';
+import { ClaimStatus } from '../../transaction/types';
 
 export function ClaimPanel({ children, claimStatus, iconUrl }: { children: React.ReactNode; claimStatus: ClaimStatus; iconUrl: string }) {
   return (

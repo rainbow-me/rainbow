@@ -1,36 +1,40 @@
-import React, { useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
+import { ClaimStatus } from '../types';
 import { Claimable, ClaimResponse, SponsoredClaimable } from '@/resources/addys/claimables/types';
 import { logger, RainbowError } from '@/logger';
+import { useAccountSettings } from '@/hooks';
+import { getProvider } from '@/handlers/web3';
+import { haptics } from '@/utils';
 import { queryClient } from '@/react-query';
 import { ADDYS_BASE_URL, addysHttp, claimablesQueryKey } from '@/resources/addys/claimables/query';
-import { loadWallet } from '@/model/wallet';
 import { useMutation } from '@tanstack/react-query';
-import { getProvider } from '@/handlers/web3';
-import { useAccountSettings } from '@/hooks';
-import { haptics } from '@/utils';
-import { ClaimPanel } from './ClaimPanel';
-import { ClaimValueDisplay } from './ClaimValueDisplay';
-import { ClaimButton } from './ClaimButton';
-import { ClaimStatus } from '../types';
-import { useClaimContext } from './ClaimContext';
+import { loadWallet } from '@/model/wallet';
 
-export function SponsoredClaimablePanel() {
-  const {
-    claimable,
-    outputConfig: { chainId: outputChainId, token: outputToken },
-    claimStatus,
-    setClaimStatus,
-  } = useClaimContext();
+type SponsoredClaimableContextType = {
+  claimStatus: ClaimStatus;
+  claimable: Claimable;
 
-  if (claimable.type !== 'sponsored') {
-    throw new RainbowError('[SponsoredClaimablePanel]: Claimable is not of type "sponsored"');
+  claim: () => void;
+};
+
+const SponsoredClaimableContext = createContext<SponsoredClaimableContextType | undefined>(undefined);
+
+export function useSponsoredClaimableContext() {
+  const context = useContext(SponsoredClaimableContext);
+  if (context === undefined) {
+    throw new Error('useSponsoredClaimableContext must be used within a SponsoredClaimableContextProvider');
   }
+  return context;
+}
 
+export function SponsoredClaimableContextProvider({ claimable, children }: { claimable: SponsoredClaimable; children: React.ReactNode }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
+
+  const [claimStatus, setClaimStatus] = useState<ClaimStatus>('ready');
 
   const queryKey = claimablesQueryKey({ address: accountAddress, currency: nativeCurrency });
 
-  const { mutate: claimClaimable } = useMutation({
+  const { mutate: claim } = useMutation({
     mutationFn: async () => {
       const provider = getProvider({ chainId: claimable.chainId });
       const wallet = await loadWallet({
@@ -109,9 +113,15 @@ export function SponsoredClaimablePanel() {
   });
 
   return (
-    <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
-      <ClaimValueDisplay nativeValueDisplay={claimable.value.nativeAsset.display} />
-      <ClaimButton claim={claimClaimable} claimValueDisplay={claimable.value.claimAsset.display} />
-    </ClaimPanel>
+    <SponsoredClaimableContext.Provider
+      value={{
+        claimStatus,
+        claimable,
+
+        claim,
+      }}
+    >
+      {children}
+    </SponsoredClaimableContext.Provider>
   );
 }

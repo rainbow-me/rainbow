@@ -12,27 +12,30 @@ export type ClaimStatus =
   | 'noQuote'; // no quote available
 
 // supports legacy and new gas types
-export type TransactionClaimableTxPayload = TransactionRequest & {
-  to: string;
-  from: string;
-  nonce: number;
-  gasLimit: string;
-  maxFeePerGas: string;
-  maxPriorityFeePerGas: string;
-  data: string;
-  value: '0x0';
-  chainId: number;
-};
-// | {
-//     to: string;
-//     from: string;
-//     nonce: number;
-//     gasLimit: string;
-//     gasPrice: string;
-//     data: string;
-//     value: '0x0';
-//     chainId: number;
-//   }
+export type TransactionClaimableTxPayload = TransactionRequest &
+  (
+    | {
+        to: string;
+        from: string;
+        nonce: number;
+        gasLimit: string;
+        maxFeePerGas: string;
+        maxPriorityFeePerGas: string;
+        data: string;
+        value: '0x0';
+        chainId: number;
+      }
+    | {
+        to: string;
+        from: string;
+        nonce: number;
+        gasLimit: string;
+        gasPrice: string;
+        data: string;
+        value: '0x0';
+        chainId: number;
+      }
+  );
 
 export interface TokenToReceive {
   networks: Partial<Record<ChainId, { address: string }>>;
