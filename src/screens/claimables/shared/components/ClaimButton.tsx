@@ -5,15 +5,19 @@ import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations'
 
 const BUTTON_WIDTH = deviceUtils.dimensions.width - 52;
 
-export interface ClaimButtonProps {
+export function ClaimButton({
+  onPress,
+  disabled,
+  shimmer,
+  biometricIcon,
+  label,
+}: {
   onPress: () => void;
   disabled: boolean;
   shimmer: boolean;
   biometricIcon: boolean;
   label: string;
-}
-
-export function ClaimButton({ onPress, disabled, shimmer, biometricIcon, label }: ClaimButtonProps) {
+}) {
   return (
     <ButtonPressAnimation disabled={disabled} style={{ width: '100%', paddingHorizontal: 18 }} scaleTo={0.96} onPress={onPress}>
       <AccentColorProvider color={`rgba(41, 90, 247, ${disabled ? 0.2 : 1})`}>

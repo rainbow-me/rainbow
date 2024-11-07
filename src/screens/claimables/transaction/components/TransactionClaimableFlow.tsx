@@ -1,55 +1,57 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAccountSettings } from '@/hooks';
-import { haptics } from '@/utils';
-import { Claimable } from '@/resources/addys/claimables/types';
-import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
-import { getNextNonce } from '@/state/nonces';
-import { logger, RainbowError } from '@/logger';
-import { convertAmountToNativeDisplayWorklet, convertAmountToRawAmount, formatNumber, multiply } from '@/__swaps__/utils/numbers';
-import { useMutation } from '@tanstack/react-query';
-import { loadWallet } from '@/model/wallet';
-import { walletExecuteRap } from '@/raps/execute';
-import { claimablesQueryKey } from '@/resources/addys/claimables/query';
-import { queryClient } from '@/react-query';
-import { ETH_ADDRESS } from '@rainbow-me/swaps';
-import { useMeteorologySuggestion } from '@/__swaps__/utils/meteorology';
-import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { getGasSettingsBySpeed, useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
-import { GasSpeed } from '@/__swaps__/types/gas';
+import React, { useMemo } from 'react';
 import { Box } from '@/design-system';
 import { ClaimPanel } from '../../shared/components/ClaimPanel';
 import { ClaimValueDisplay } from '../../shared/components/ClaimValueDisplay';
 import { ClaimCustomization } from './ClaimCustomization';
 import { ClaimButton } from '../../shared/components/ClaimButton';
 import { GasDetails } from './GasDetails';
-import { TransactionClaimableTxPayload } from '../types';
-import { externalTokenQueryKey, fetchExternalToken, FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
-import { executeClaim } from '../utils';
-import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
-import { add, divide } from '@/helpers/utilities';
-import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
-import { lessThanOrEqualToWorklet } from '@/__swaps__/safe-math/SafeMath';
-import { useSwapEstimatedGasLimit } from '@/__swaps__/screens/Swap/hooks/useSwapEstimatedGasLimit';
-import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
-import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
-import { SearchAsset } from '@/__swaps__/types/search';
-import { parseSearchAsset } from '@/__swaps__/utils/assets';
-import { weiToGwei } from '@/__swaps__/utils/ethereum';
-import { formatUnits } from 'viem';
-import { useClaimButtonProps } from '../hooks/useClaimButtonProps';
+import * as i18n from '@/languages';
 
 export function TransactionClaimableFlow() {
   const {
+    claim,
     claimable,
     outputConfig: { chainId: outputChainId, token: outputToken },
     claimStatus,
-    setClaimStatus,
-    quote,
+    isSufficientGas,
     claimNativeValueDisplay,
   } = useTransactionClaimableContext();
 
-  const { onPress, disabled, shimmer, biometricIcon, label } = useClaimButtonProps();
+  // BUTTON PROPS
+  const disabled =
+    claimStatus === 'fetchingQuote' ||
+    claimStatus === 'claiming' ||
+    claimStatus === 'noQuote' ||
+    claimStatus === 'noRoute' ||
+    ((claimStatus === 'ready' || claimStatus === 'error') && !isSufficientGas);
+  const shimmer = !disabled || claimStatus === 'claiming';
+  const shouldShowClaimText = claimStatus === 'ready' && isSufficientGas;
+  const claimValueDisplay = 'FIXME';
+  const buttonLabel = useMemo(() => {
+    switch (claimStatus) {
+      case 'fetchingQuote':
+        return 'Fetching Quote';
+      case 'ready':
+        if (shouldShowClaimText) {
+          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimValueDisplay });
+        } else {
+          return i18n.t(i18n.l.claimables.panel.insufficient_funds);
+        }
+      case 'noQuote':
+        return 'Quote Error';
+      case 'noRoute':
+        return 'No Route Found';
+      case 'claiming':
+        return i18n.t(i18n.l.claimables.panel.claim_in_progress);
+      case 'pending':
+      case 'success':
+        return i18n.t(i18n.l.button.done);
+      case 'error':
+      default:
+        return i18n.t(i18n.l.points.points.try_again);
+    }
+  }, [claimStatus, claimValueDisplay, shouldShowClaimText]);
 
   return (
     <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
@@ -63,7 +65,7 @@ export function TransactionClaimableFlow() {
         <ClaimCustomization />
       </Box>
       <Box alignItems="center" width="full">
-        <ClaimButton onPress={onPress} disabled={disabled} shimmer={shimmer} biometricIcon={biometricIcon} label={label} />
+        <ClaimButton onPress={claim} disabled={disabled} shimmer={shimmer} biometricIcon={shouldShowClaimText} label={buttonLabel} />
         <GasDetails />
       </Box>
     </ClaimPanel>

@@ -3,18 +3,17 @@ import { haptics } from '@/utils';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ChainId } from '@/chains/types';
 import { chainsLabel, chainsName, chainsNativeAsset } from '@/chains';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { useAccountSettings } from '@/hooks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { DAI_ADDRESS, ETH_SYMBOL, WBTC_ADDRESS } from '@/references';
 import { DropdownMenu } from '../../shared/components/DropdownMenu';
 import { TokenToReceive } from '../types';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
+import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
+import { SearchAsset } from '@/__swaps__/types/search';
 
 type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 
 export function ClaimCustomization() {
-  const { nativeCurrency } = useAccountSettings();
   const balanceSortedChainList = useUserAssetsStore(state => state.getBalanceSortedChainList());
   const {
     claimable: { asset: claimableAsset },
@@ -25,16 +24,37 @@ export function ClaimCustomization() {
 
   const [isInitialState, setIsInitialState] = useState(true);
 
-  const { data: dai } = useExternalToken({
-    address: DAI_ADDRESS,
-    chainId: ChainId.mainnet,
-    currency: nativeCurrency,
-  });
-  const { data: wbtc } = useExternalToken({
-    address: WBTC_ADDRESS,
-    chainId: ChainId.mainnet,
-    currency: nativeCurrency,
-  });
+  const { data: daiSearchData } = useTokenSearch(
+    {
+      keys: ['address'],
+      list: 'verifiedAssets',
+      threshold: 'CASE_SENSITIVE_EQUAL',
+      query: DAI_ADDRESS,
+    },
+    {
+      select: data => {
+        return data.filter((asset: SearchAsset) => asset.address === DAI_ADDRESS && asset.symbol === 'DAI');
+      },
+    }
+  );
+
+  const dai = daiSearchData?.[0];
+
+  const { data: wbtcSearchData } = useTokenSearch(
+    {
+      keys: ['address'],
+      list: 'verifiedAssets',
+      threshold: 'CASE_SENSITIVE_EQUAL',
+      query: WBTC_ADDRESS,
+    },
+    {
+      select: data => {
+        return data.filter((asset: SearchAsset) => asset.address === WBTC_ADDRESS && asset.symbol === 'WBTC');
+      },
+    }
+  );
+
+  const wbtc = wbtcSearchData?.[0];
 
   const nativeTokens: TokenMap = useMemo(
     () =>
@@ -122,7 +142,7 @@ export function ClaimCustomization() {
     const availableTokens = Object.values(tokens)
       .filter(token => {
         // exclude if token is already selected
-        if (token.symbol === outputToken?.symbol) {
+        if (token.symbol === outputToken.symbol) {
           return false;
         }
 
@@ -164,7 +184,7 @@ export function ClaimCustomization() {
         ...availableTokens,
       ],
     };
-  }, [tokens, outputToken?.symbol, isInitialState, outputChainId]);
+  }, [tokens, outputToken.symbol, isInitialState, outputChainId]);
 
   const networkMenuConfig = useMemo(() => {
     const supportedChains = balanceSortedChainList
@@ -198,12 +218,8 @@ export function ClaimCustomization() {
       } else {
         const newToken = tokens[selection];
         setOutputConfig(prev => {
-          const currentChainId = prev.chainId;
-          const newChainId = currentChainId && !(currentChainId in tokens[selection].networks) ? undefined : currentChainId;
-
           return {
             ...prev,
-            chainId: newChainId,
             token: newToken,
           };
         });
@@ -222,22 +238,16 @@ export function ClaimCustomization() {
       } else {
         const newChainId = +selection;
         setOutputConfig(prev => {
-          const currentToken = prev.token;
-          const newToken =
-            currentToken && (!tokens[currentToken.symbol] || !(newChainId in tokens[currentToken.symbol].networks))
-              ? undefined
-              : currentToken;
-
           return {
+            ...prev,
             chainId: newChainId,
-            token: newToken,
           };
         });
         setQuote(undefined);
         setIsInitialState(false);
       }
     },
-    [resetState, setOutputConfig, setQuote, tokens]
+    [resetState, setOutputConfig, setQuote]
   );
 
   return (
@@ -245,12 +255,7 @@ export function ClaimCustomization() {
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">
         Receive
       </Text>
-      <DropdownMenu
-        menuConfig={tokenMenuConfig}
-        onPressMenuItem={handleTokenSelection}
-        text={outputToken?.symbol ?? 'a token'}
-        muted={isInitialState}
-      />
+      <DropdownMenu menuConfig={tokenMenuConfig} onPressMenuItem={handleTokenSelection} text={outputToken.symbol} muted={isInitialState} />
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">
         on
       </Text>
