@@ -9,9 +9,9 @@ import { device } from '@/storage';
 const isTesting = IS_TESTING === 'true';
 
 export class Analytics {
-  client: any;
-  currentWalletAddressHash?: string;
+  client: typeof rudderClient;
   deviceId?: string;
+  walletAddressHash?: string;
   event = event;
   disabled: boolean;
 
@@ -42,6 +42,7 @@ export class Analytics {
   /**
    * Sends a `screen` event.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   screen(routeName: string, params: Record<string, any> = {}): void {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
@@ -61,7 +62,7 @@ export class Analytics {
 
   private getDefaultMetadata() {
     return {
-      walletAddressHash: this.currentWalletAddressHash,
+      walletAddressHash: this.walletAddressHash,
     };
   }
 
@@ -85,12 +86,12 @@ export class Analytics {
   }
 
   /**
-   * Set `currentWalletAddressHash` for use in events. This DOES NOT call
+   * Set `walletAddressHash` for use in events. This DOES NOT call
    * `identify()`, you must do that on your own.
    */
-  setCurrentWalletAddressHash(currentWalletAddressHash: string) {
-    logger.debug(`[Analytics]: Set currentWalletAddressHash on analytics instance`);
-    this.currentWalletAddressHash = currentWalletAddressHash;
+  setWalletAddressHash(walletAddressHash: string) {
+    logger.debug(`[Analytics]: Set walletAddressHash on analytics instance`);
+    this.walletAddressHash = walletAddressHash;
   }
 
   /**

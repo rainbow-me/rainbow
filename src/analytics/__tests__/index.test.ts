@@ -18,7 +18,7 @@ describe.skip('@/analytics', () => {
   test('track', () => {
     const analytics = new Analytics();
 
-    analytics.setCurrentWalletAddressHash('hash');
+    analytics.setWalletAddressHash('hash');
     analytics.track(analytics.event.pressedButton);
 
     expect(analytics.client.track).toHaveBeenCalledWith(analytics.event.pressedButton, {
@@ -29,7 +29,7 @@ describe.skip('@/analytics', () => {
   test('identify', () => {
     const analytics = new Analytics();
 
-    analytics.setCurrentWalletAddressHash('hash');
+    analytics.setWalletAddressHash('hash');
     analytics.setDeviceId('id');
     analytics.identify({ currency: 'USD' });
 
@@ -42,7 +42,7 @@ describe.skip('@/analytics', () => {
   test('screen', () => {
     const analytics = new Analytics();
 
-    analytics.setCurrentWalletAddressHash('hash');
+    analytics.setWalletAddressHash('hash');
     analytics.screen(Routes.BACKUP_SHEET);
 
     expect(analytics.client.screen).toHaveBeenCalledWith(Routes.BACKUP_SHEET, {

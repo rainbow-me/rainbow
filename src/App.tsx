@@ -22,7 +22,7 @@ import * as keychain from '@/model/keychain';
 import { Navigation } from '@/navigation';
 import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
 import store, { AppDispatch, type AppState } from '@/redux/store';
-import { MainThemeProvider, useTheme } from '@/theme/ThemeContext';
+import { MainThemeProvider } from '@/theme/ThemeContext';
 import { addressKey } from '@/utils/keychainConstants';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
@@ -103,20 +103,20 @@ function Root() {
       const isReturningUser = ls.device.get(['isReturningUser']);
       const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
       const currentWalletAddress = await keychain.loadString(addressKey);
-      const currentWalletAddressHash =
+      const walletAddressHash =
         typeof currentWalletAddress === 'string' ? securelyHashWalletAddress(currentWalletAddress as Address) : undefined;
 
       Sentry.setUser({
         id: deviceId,
-        currentWalletAddress: currentWalletAddressHash,
+        walletAddressHash,
       });
 
       /**
        * Add helpful values to `analyticsV2` instance
        */
       analyticsV2.setDeviceId(deviceId);
-      if (currentWalletAddressHash) {
-        analyticsV2.setCurrentWalletAddressHash(currentWalletAddressHash);
+      if (walletAddressHash) {
+        analyticsV2.setWalletAddressHash(walletAddressHash);
       }
 
       /**
