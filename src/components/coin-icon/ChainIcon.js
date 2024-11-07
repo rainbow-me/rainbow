@@ -10,7 +10,7 @@ import BscBadge from '../../assets/badges/bscBadge.png';
 import BscBadgeDark from '../../assets/badges/bscBadgeDark.png';
 import { Centered } from '../layout';
 import styled from '@/styled-thing';
-import { Network } from '@/chains/types';
+import { Network } from '@/state/backendNetworks/types';
 
 const sizeConfigs = {
   large: {
