@@ -379,24 +379,18 @@ export async function restoreCloudBackup({
   try {
     // 1 - sanitize filename to remove extra things we don't care about
     const filename = sanitizeFilename(nameOfSelectedBackupFile);
-    console.log({ filename });
     if (!filename) {
-      console.log('no filename');
       return RestoreCloudBackupResultStates.failedWhenRestoring;
     }
     // 2 - retrieve that backup data
     const data = await getDataFromCloud(password, filename);
-    console.log({ data });
     if (!data) {
-      console.log('no data');
       return RestoreCloudBackupResultStates.incorrectPassword;
     }
 
     const dataToRestore = {
       ...data.secrets,
     };
-
-    console.log({ dataToRestore });
 
     // ANDROID ONLY - pin auth if biometrics are disabled
     let userPIN: string | undefined;
@@ -513,8 +507,6 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
         secretPhraseOrOldAndroidBackupPrivateKey = parsedValue.seedphrase;
       }
 
-      console.log({ secretPhraseOrOldAndroidBackupPrivateKey });
-
       if (!secretPhraseOrOldAndroidBackupPrivateKey) {
         continue;
       }
@@ -530,74 +522,6 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
     return true;
   } catch (e) {
     logger.error(new RainbowError(`[backup]: Error restoring specific backup into keychain: ${e}`));
-    return false;
-  }
-}
-
-async function restoreCurrentBackupIntoKeychain(backedUpData: BackedUpData, newPIN?: string): Promise<boolean> {
-  try {
-    // Access control config per each type of key
-    const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
-    const encryptedBackupPinData = backedUpData[pinKey];
-    const backupPIN = await decryptPIN(encryptedBackupPinData);
-
-    await Promise.all(
-      Object.keys(backedUpData).map(async key => {
-        let value = backedUpData[key];
-        const theKeyIsASeedPhrase = endsWith(key, seedPhraseKey);
-        const theKeyIsAPrivateKey = endsWith(key, privateKeyKey);
-        const accessControl: typeof kc.publicAccessControlOptions =
-          theKeyIsASeedPhrase || theKeyIsAPrivateKey ? privateAccessControlOptions : kc.publicAccessControlOptions;
-
-        /*
-         * Backups that were saved encrypted with PIN to the cloud need to be
-         * decrypted with the backup PIN first, and then if we still need
-         * to store them as encrypted,
-         * we need to re-encrypt them with a new PIN
-         */
-        if (theKeyIsASeedPhrase) {
-          const parsedValue = JSON.parse(value);
-          parsedValue.seedphrase = await decryptSecretFromBackupPin({
-            secret: parsedValue.seedphrase,
-            backupPIN,
-          });
-          value = JSON.stringify(parsedValue);
-        } else if (theKeyIsAPrivateKey) {
-          const parsedValue = JSON.parse(value);
-          parsedValue.privateKey = await decryptSecretFromBackupPin({
-            secret: parsedValue.privateKey,
-            backupPIN,
-          });
-          value = JSON.stringify(parsedValue);
-        }
-
-        /*
-         * Since we're decrypting the data that was saved as PIN code encrypted,
-         * we will allow the user to create a new PIN code.
-         * We store the old PIN code in the backup, but we don't want to restore it,
-         * since it will override the new PIN code that we just saved to keychain.
-         */
-        if (key === pinKey) {
-          return;
-        }
-
-        if (typeof value === 'string') {
-          return kc.set(key, value, {
-            ...accessControl,
-            androidEncryptionPin: newPIN,
-          });
-        } else {
-          return kc.setObject(key, value, {
-            ...accessControl,
-            androidEncryptionPin: newPIN,
-          });
-        }
-      })
-    );
-
-    return true;
-  } catch (e) {
-    logger.error(new RainbowError(`[backup]: Error restoring current backup into keychain: ${e}`));
     return false;
   }
 }

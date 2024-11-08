@@ -222,6 +222,8 @@ export default function RestoreCloudStep() {
       });
     } catch (e) {
       Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
+    } finally {
+      dispatch(setIsWalletLoading(null));
     }
   }, [selectedBackup.name, dispatch, password, userData, initializeWallet, dangerouslyGetState, navigate, replace]);
 
