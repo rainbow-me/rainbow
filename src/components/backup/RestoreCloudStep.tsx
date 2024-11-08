@@ -7,7 +7,6 @@ import { KeyboardArea } from 'react-native-keyboard-area';
 
 import {
   Backup,
-  fetchBackupPassword,
   getLocalBackupPassword,
   restoreCloudBackup,
   RestoreCloudBackupResultStates,
@@ -19,9 +18,15 @@ import { Text } from '../text';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { useDimensions, useInitializeWallet } from '@/hooks';
+import { useDimensions, useInitializeWallet, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { addressSetSelected, setAllWalletsWithIdsAsBackedUp, walletsLoadState, walletsSetSelected } from '@/redux/wallets';
+import {
+  addressSetSelected,
+  setAllWalletsWithIdsAsBackedUp,
+  setIsWalletLoading,
+  walletsLoadState,
+  walletsSetSelected,
+} from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
@@ -37,6 +42,7 @@ import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { Source } from 'react-native-fast-image';
 import { useTheme } from '@/theme';
 import { useCloudBackupsContext } from './CloudBackupProvider';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 
 const Title = styled(Text).attrs({
   size: 'big',
@@ -83,30 +89,29 @@ type RestoreCloudStepParams = {
 export default function RestoreCloudStep() {
   const { params } = useRoute<RouteProp<RestoreCloudStepParams & RestoreSheetParams, 'RestoreSheet'>>();
 
-  const { userData } = useCloudBackupsContext();
+  const { userData, password, setPassword } = useCloudBackupsContext();
 
   const { selectedBackup } = params;
   const { isDarkMode } = useTheme();
-  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
-  const [password, setPassword] = useState('');
   const passwordRef = useRef<TextInput | null>(null);
   const initializeWallet = useInitializeWallet();
+  const { isWalletLoading } = useWallets();
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
-      const pwd = await fetchBackupPassword();
+      const pwd = await getLocalBackupPassword();
       if (pwd) {
         setPassword(pwd);
       }
     };
     fetchPasswordIfPossible();
-  }, []);
+  }, [setPassword]);
 
   useEffect(() => {
     let passwordIsValid = false;
@@ -117,13 +122,18 @@ export default function RestoreCloudStep() {
     setValidPassword(passwordIsValid);
   }, [incorrectPassword, password]);
 
-  const onPasswordChange = useCallback(({ nativeEvent: { text: inputText } }: { nativeEvent: { text: string } }) => {
-    setPassword(inputText);
-    setIncorrectPassword(false);
-  }, []);
+  const onPasswordChange = useCallback(
+    ({ nativeEvent: { text: inputText } }: { nativeEvent: { text: string } }) => {
+      setPassword(inputText);
+      setIncorrectPassword(false);
+    },
+    [setPassword]
+  );
 
   const onSubmit = useCallback(async () => {
-    setLoading(true);
+    // NOTE: Localizing password to prevent an empty string from being saved if we re-render
+    const pwd = password.trim();
+
     try {
       if (!selectedBackup.name) {
         throw new Error('No backup file selected');
@@ -131,91 +141,89 @@ export default function RestoreCloudStep() {
 
       const prevWalletsState = await dispatch(walletsLoadState());
 
-      const status = await restoreCloudBackup({
-        password,
-        userData,
-        nameOfSelectedBackupFile: selectedBackup.name,
-      });
-
-      if (status === RestoreCloudBackupResultStates.success) {
-        // Store it in the keychain in case it was missing
-        const hasSavedPassword = await getLocalBackupPassword();
-        console.log({ hasSavedPassword });
-        if (!hasSavedPassword) {
-          await saveLocalBackupPassword(password);
-        }
-
-        InteractionManager.runAfterInteractions(async () => {
-          const newWalletsState = await dispatch(walletsLoadState());
-          let filename = selectedBackup.name;
-          if (IS_ANDROID && filename) {
-            filename = normalizeAndroidBackupFilename(filename);
+      await Promise.all([
+        dispatch(setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET)),
+        restoreCloudBackup({
+          password: pwd,
+          userData,
+          nameOfSelectedBackupFile: selectedBackup.name,
+        }),
+      ]).then(async ([_, status]) => {
+        if (status === RestoreCloudBackupResultStates.success) {
+          // Store it in the keychain in case it was missing
+          const hasSavedPassword = await getLocalBackupPassword();
+          if (!hasSavedPassword) {
+            await saveLocalBackupPassword(pwd);
           }
 
-          logger.debug('[RestoreCloudStep]: Done updating backup state');
-          // NOTE: Marking the restored wallets as backed up
-          // @ts-expect-error TypeScript doesn't play nicely with Redux types here
-          const walletIdsToUpdate = Object.keys(newWalletsState || {}).filter(walletId => !(prevWalletsState || {})[walletId]);
-
-          logger.debug('[RestoreCloudStep]: Updating backup state of wallets with ids', {
-            walletIds: JSON.stringify(walletIdsToUpdate),
-          });
-          logger.debug('[RestoreCloudStep]: Selected backup name', {
-            fileName: selectedBackup.name,
-          });
-
-          await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, walletBackupTypes.cloud, filename));
-
-          const oldCloudIds: string[] = [];
-          const oldManualIds: string[] = [];
-          // NOTE: Looping over previous wallets and restoring backup state of that wallet
-          Object.values(prevWalletsState || {}).forEach(wallet => {
-            // NOTE: This handles cloud and manual backups
-            if (wallet.backedUp && wallet.backupType === walletBackupTypes.cloud) {
-              oldCloudIds.push(wallet.id);
-            } else if (wallet.backedUp && wallet.backupType === walletBackupTypes.manual) {
-              oldManualIds.push(wallet.id);
+          InteractionManager.runAfterInteractions(async () => {
+            const newWalletsState = await dispatch(walletsLoadState());
+            let filename = selectedBackup.name;
+            if (IS_ANDROID && filename) {
+              filename = normalizeAndroidBackupFilename(filename);
             }
+
+            logger.debug('[RestoreCloudStep]: Done updating backup state');
+            // NOTE: Marking the restored wallets as backed up
+            // @ts-expect-error TypeScript doesn't play nicely with Redux types here
+            const walletIdsToUpdate = Object.keys(newWalletsState || {}).filter(walletId => !(prevWalletsState || {})[walletId]);
+
+            logger.debug('[RestoreCloudStep]: Updating backup state of wallets with ids', {
+              walletIds: JSON.stringify(walletIdsToUpdate),
+            });
+            logger.debug('[RestoreCloudStep]: Selected backup name', {
+              fileName: selectedBackup.name,
+            });
+
+            await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, walletBackupTypes.cloud, filename));
+
+            const oldCloudIds: string[] = [];
+            const oldManualIds: string[] = [];
+            // NOTE: Looping over previous wallets and restoring backup state of that wallet
+            Object.values(prevWalletsState || {}).forEach(wallet => {
+              // NOTE: This handles cloud and manual backups
+              if (wallet.backedUp && wallet.backupType === walletBackupTypes.cloud) {
+                oldCloudIds.push(wallet.id);
+              } else if (wallet.backedUp && wallet.backupType === walletBackupTypes.manual) {
+                oldManualIds.push(wallet.id);
+              }
+            });
+
+            await dispatch(setAllWalletsWithIdsAsBackedUp(oldCloudIds, walletBackupTypes.cloud, filename));
+            await dispatch(setAllWalletsWithIdsAsBackedUp(oldManualIds, walletBackupTypes.manual, filename));
+
+            const walletKeys = Object.keys(newWalletsState || {});
+            // @ts-expect-error TypeScript doesn't play nicely with Redux types here
+            const firstWallet = walletKeys.length > 0 ? (newWalletsState || {})[walletKeys[0]] : undefined;
+            const firstAddress = firstWallet ? (firstWallet.addresses || [])[0].address : undefined;
+            const p1 = dispatch(walletsSetSelected(firstWallet));
+            const p2 = dispatch(addressSetSelected(firstAddress));
+            await Promise.all([p1, p2]);
+            await initializeWallet(null, null, null, false, false, null, true, null);
+
+            const operation = dangerouslyGetState()?.index === 1 ? navigate : replace;
+            operation(Routes.SWIPE_LAYOUT, {
+              screen: Routes.WALLET_SCREEN,
+            });
           });
-
-          await dispatch(setAllWalletsWithIdsAsBackedUp(oldCloudIds, walletBackupTypes.cloud, filename));
-          await dispatch(setAllWalletsWithIdsAsBackedUp(oldManualIds, walletBackupTypes.manual, filename));
-
-          const walletKeys = Object.keys(newWalletsState || {});
-          // @ts-expect-error TypeScript doesn't play nicely with Redux types here
-          const firstWallet = walletKeys.length > 0 ? (newWalletsState || {})[walletKeys[0]] : undefined;
-          const firstAddress = firstWallet ? (firstWallet.addresses || [])[0].address : undefined;
-          const p1 = dispatch(walletsSetSelected(firstWallet));
-          const p2 = dispatch(addressSetSelected(firstAddress));
-          await Promise.all([p1, p2]);
-          await initializeWallet(null, null, null, false, false, null, true, null);
-
-          const operation = dangerouslyGetState()?.index === 1 ? navigate : replace;
-          operation(Routes.SWIPE_LAYOUT, {
-            screen: Routes.WALLET_SCREEN,
-          });
-
-          setLoading(false);
-        });
-      } else {
-        switch (status) {
-          case RestoreCloudBackupResultStates.incorrectPassword:
-            setIncorrectPassword(true);
-            break;
-          case RestoreCloudBackupResultStates.incorrectPinCode:
-            Alert.alert(lang.t('back_up.restore_cloud.incorrect_pin_code'));
-            break;
-          default:
-            Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
-            break;
+        } else {
+          switch (status) {
+            case RestoreCloudBackupResultStates.incorrectPassword:
+              setIncorrectPassword(true);
+              break;
+            case RestoreCloudBackupResultStates.incorrectPinCode:
+              Alert.alert(lang.t('back_up.restore_cloud.incorrect_pin_code'));
+              break;
+            default:
+              Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
+              break;
+          }
         }
-      }
+      });
     } catch (e) {
       Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
     }
-
-    setLoading(false);
-  }, [selectedBackup.name, password, userData, dispatch, initializeWallet, dangerouslyGetState, navigate, replace]);
+  }, [selectedBackup.name, dispatch, password, userData, initializeWallet, dangerouslyGetState, navigate, replace]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
@@ -249,7 +257,7 @@ export default function RestoreCloudStep() {
           <Box gap={12}>
             <PasswordField
               autoFocus
-              editable={!loading}
+              editable={!isWalletLoading}
               isInvalid={isPasswordValid}
               onChange={onPasswordChange}
               onSubmitEditing={onPasswordSubmit}
@@ -266,10 +274,10 @@ export default function RestoreCloudStep() {
             <RainbowButton
               height={46}
               width={deviceWidth - 48}
-              disabled={!validPassword || loading}
+              disabled={!validPassword || isWalletLoading}
               type={RainbowButtonTypes.backup}
               label={
-                loading
+                isWalletLoading
                   ? `${lang.t(lang.l.back_up.cloud.restoration_in_progress)}`
                   : `􀎽 ${lang.t(lang.l.back_up.cloud.restore_from_platform, {
                       cloudPlatformName: cloudPlatform,
