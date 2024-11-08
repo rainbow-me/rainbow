@@ -20,6 +20,7 @@ export function ClaimCustomization() {
     outputConfig: { chainId: outputChainId, token: outputToken },
     setOutputConfig,
     setQuote,
+    setTxState,
   } = useTransactionClaimableContext();
 
   const [isInitialState, setIsInitialState] = useState(true);
@@ -63,12 +64,13 @@ export function ClaimCustomization() {
         if (nativeToken) {
           if (!nativeTokenDict[nativeToken.symbol]) {
             nativeTokenDict[nativeToken.symbol] = {
-              address: nativeToken.address,
+              mainnetAddress: nativeToken.address,
               iconUrl: nativeToken.iconURL,
               name: nativeToken.name,
               symbol: nativeToken.symbol,
               networks: {},
               isNativeAsset: true,
+              isDefaultAsset: false,
             };
           }
           nativeTokenDict[nativeToken.symbol].networks[chainId] = { address: nativeToken.address };
@@ -82,31 +84,34 @@ export function ClaimCustomization() {
     () => ({
       ...nativeTokens,
       [claimableAsset.symbol]: {
-        address: claimableAsset.address,
+        mainnetAddress: claimableAsset.address,
         iconUrl: claimableAsset.icon_url,
         name: claimableAsset.name,
         symbol: claimableAsset.symbol,
         networks: claimableAsset.networks,
-        isNativeAsset: false, // never treating as native asset bc it's the claimable asset
+        isNativeAsset: !!claimableAsset.isNativeAsset,
+        isDefaultAsset: true,
       },
       ...(dai && {
         [dai.symbol]: {
-          address: dai.address,
+          mainnetAddress: dai.address,
           iconUrl: dai.icon_url,
           name: dai.name,
           symbol: dai.symbol,
           networks: dai.networks,
           isNativeAsset: false,
+          isDefaultAsset: false,
         },
       }),
       ...(wbtc && {
         [wbtc.symbol]: {
-          address: wbtc.address,
+          mainnetAddress: wbtc.address,
           iconUrl: wbtc.icon_url,
           name: wbtc.name,
           symbol: wbtc.symbol,
           networks: wbtc.networks,
           isNativeAsset: false,
+          isDefaultAsset: false,
         },
       }),
     }),
@@ -116,16 +121,18 @@ export function ClaimCustomization() {
   const resetState = useCallback(() => {
     setOutputConfig({
       token: {
-        address: claimableAsset.address,
+        mainnetAddress: claimableAsset.address,
         iconUrl: claimableAsset.icon_url,
         name: claimableAsset.name,
         symbol: claimableAsset.symbol,
         networks: claimableAsset.networks,
-        isNativeAsset: false,
+        isNativeAsset: !!claimableAsset.isNativeAsset,
+        isDefaultAsset: true,
       },
       chainId: claimableAsset.chainId,
     });
     setQuote(undefined);
+    setTxState(prev => ({ ...prev, isSufficientGas: false, gasFeeDisplay: '' }));
     setIsInitialState(true);
   }, [
     setOutputConfig,
@@ -134,16 +141,22 @@ export function ClaimCustomization() {
     claimableAsset.name,
     claimableAsset.symbol,
     claimableAsset.networks,
+    claimableAsset.isNativeAsset,
     claimableAsset.chainId,
     setQuote,
+    setTxState,
   ]);
 
   const tokenMenuConfig = useMemo(() => {
     const availableTokens = Object.values(tokens)
       .filter(token => {
         // exclude if token is already selected
-        if (token.symbol === outputToken.symbol) {
+        if (token.symbol === outputToken?.symbol) {
           return false;
+        }
+
+        if (token.isDefaultAsset) {
+          return true;
         }
 
         // if token is ETH, include if ANY are true:
@@ -184,7 +197,7 @@ export function ClaimCustomization() {
         ...availableTokens,
       ],
     };
-  }, [tokens, outputToken.symbol, isInitialState, outputChainId]);
+  }, [tokens, outputToken?.symbol, isInitialState, outputChainId]);
 
   const networkMenuConfig = useMemo(() => {
     const supportedChains = balanceSortedChainList
@@ -218,16 +231,18 @@ export function ClaimCustomization() {
       } else {
         const newToken = tokens[selection];
         setOutputConfig(prev => {
+          const newChainId = prev.chainId && prev.chainId in newToken.networks ? prev.chainId : undefined;
           return {
-            ...prev,
+            chainId: newChainId,
             token: newToken,
           };
         });
         setQuote(undefined);
+        setTxState(prev => ({ ...prev, isSufficientGas: false, gasFeeDisplay: '' }));
         setIsInitialState(false);
       }
     },
-    [resetState, setOutputConfig, setQuote, tokens]
+    [resetState, setOutputConfig, setQuote, setTxState, tokens]
   );
 
   const handleNetworkSelection = useCallback(
@@ -238,16 +253,18 @@ export function ClaimCustomization() {
       } else {
         const newChainId = +selection;
         setOutputConfig(prev => {
+          const newToken = prev.token && newChainId in prev.token.networks ? prev.token : undefined;
           return {
-            ...prev,
+            token: newToken,
             chainId: newChainId,
           };
         });
+        setTxState(prev => ({ ...prev, isSufficientGas: false, gasFeeDisplay: '' }));
         setQuote(undefined);
         setIsInitialState(false);
       }
     },
-    [resetState, setOutputConfig, setQuote]
+    [resetState, setOutputConfig, setQuote, setTxState]
   );
 
   return (
@@ -255,7 +272,12 @@ export function ClaimCustomization() {
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">
         Receive
       </Text>
-      <DropdownMenu menuConfig={tokenMenuConfig} onPressMenuItem={handleTokenSelection} text={outputToken.symbol} muted={isInitialState} />
+      <DropdownMenu
+        menuConfig={tokenMenuConfig}
+        onPressMenuItem={handleTokenSelection}
+        text={outputToken?.symbol ?? 'a token'}
+        muted={isInitialState}
+      />
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">
         on
       </Text>

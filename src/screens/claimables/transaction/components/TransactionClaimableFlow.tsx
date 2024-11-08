@@ -29,6 +29,14 @@ export function TransactionClaimableFlow() {
   const shouldShowClaimText = claimStatus === 'ready' && isSufficientGas;
   const claimValueDisplay = 'FIXME';
   const buttonLabel = useMemo(() => {
+    if (!outputChainId) {
+      return 'Select a Network';
+    }
+
+    if (!outputToken) {
+      return 'Select a Token';
+    }
+
     switch (claimStatus) {
       case 'fetchingQuote':
         return 'Fetching Quote';

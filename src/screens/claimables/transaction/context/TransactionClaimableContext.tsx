@@ -34,8 +34,8 @@ import { executeClaim } from '../utils';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 
 interface OutputConfig {
-  token: TokenToReceive;
-  chainId: ChainId;
+  token?: TokenToReceive;
+  chainId?: ChainId;
 }
 
 interface TxState {
@@ -55,6 +55,7 @@ type TransactionClaimableContextType = {
 
   setOutputConfig: Dispatch<SetStateAction<OutputConfig>>;
   setQuote: Dispatch<SetStateAction<Quote | CrosschainQuote | undefined>>;
+  setTxState: Dispatch<SetStateAction<TxState>>;
 
   claim: () => void;
 };
@@ -85,16 +86,17 @@ export function TransactionClaimableContextProvider({
   const [outputConfig, setOutputConfig] = useState<OutputConfig>({
     chainId: claimable.asset.chainId,
     token: {
-      address: claimable.asset.address,
+      mainnetAddress: claimable.asset.address,
       iconUrl: claimable.asset.icon_url,
       name: claimable.asset.name,
       symbol: claimable.asset.symbol,
       networks: claimable.asset.networks,
-      isNativeAsset: false,
+      isNativeAsset: !!claimable.asset.isNativeAsset,
+      isDefaultAsset: false,
     },
   });
 
-  const requiresSwap = outputConfig.token.symbol !== claimable.asset.symbol || outputConfig.chainId !== claimable.chainId;
+  const requiresSwap = outputConfig.token?.symbol !== claimable.asset.symbol || outputConfig.chainId !== claimable.chainId;
 
   const { data: tokenSearchData, isFetching: isFetchingOutputToken } = useTokenSearch(
     {
@@ -102,22 +104,22 @@ export function TransactionClaimableContextProvider({
       keys: ['address'],
       list: 'verifiedAssets',
       threshold: 'CASE_SENSITIVE_EQUAL',
-      query: outputConfig.token.address,
+      query: outputConfig.token?.mainnetAddress,
     },
     {
       enabled: requiresSwap,
       select: data => {
         return data.filter(
           (asset: SearchAsset) =>
-            asset.address === outputConfig.token.address &&
+            asset.address === outputConfig.token?.mainnetAddress &&
             asset.chainId === outputConfig.chainId &&
-            asset.symbol === outputConfig.token.symbol
+            asset.symbol === outputConfig.token?.symbol
         );
       },
     }
   );
 
-  console.log(tokenSearchData?.[0]);
+  // console.log(tokenSearchData?.[0]);
 
   const parsedOutputToken: ParsedSearchAsset | undefined = useMemo(() => {
     const asset = tokenSearchData?.[0];
@@ -144,6 +146,7 @@ export function TransactionClaimableContextProvider({
 
   const updateQuote = useCallback(
     async (outputToken: TokenToReceive, outputChainId: ChainId) => {
+      console.log(outputToken);
       console.log('update quote');
       console.log('updateQuote called with:', {
         outputChainId,
@@ -153,7 +156,7 @@ export function TransactionClaimableContextProvider({
         chainId: claimable.chainId,
         fromAddress: accountAddress,
         sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
-        buyTokenAddress: outputToken.isNativeAsset ? ETH_ADDRESS : outputToken.address,
+        buyTokenAddress: outputToken.isNativeAsset ? ETH_ADDRESS : outputToken.networks[outputChainId]?.address, // thjis si thi problem
         sellAmount: convertAmountToRawAmount(0.0001, claimable.asset.decimals),
         slippage: 0.5,
         refuel: false,
@@ -188,9 +191,8 @@ export function TransactionClaimableContextProvider({
   );
 
   useEffect(() => {
-    if (requiresSwap && !quote) {
+    if (requiresSwap && !quote && outputConfig.token && outputConfig.chainId) {
       setClaimStatus('fetchingQuote');
-      setTxState({ isSufficientGas: false, gasFeeDisplay: '', txPayload: undefined });
       updateQuote(outputConfig.token, outputConfig.chainId);
     }
   }, [
@@ -199,7 +201,7 @@ export function TransactionClaimableContextProvider({
     claimable.type,
     requiresSwap,
     outputConfig.chainId,
-    outputConfig.token,
+    outputConfig?.token,
     quote,
     updateQuote,
   ]);
@@ -217,6 +219,7 @@ export function TransactionClaimableContextProvider({
   );
 
   const estimateGas = useCallback(async () => {
+    console.log('ESTIMATE');
     if (!canEstimateGas) return;
 
     const gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {
@@ -320,7 +323,7 @@ export function TransactionClaimableContextProvider({
 
   const { mutate: claim } = useMutation({
     mutationFn: async () => {
-      const needsRap = outputConfig.token.symbol !== claimable.asset.symbol || outputConfig.chainId !== claimable.chainId;
+      const needsRap = outputConfig.token?.symbol !== claimable.asset.symbol || outputConfig.chainId !== claimable.chainId;
 
       if (!txState.txPayload || !outputConfig.token || !outputConfig.chainId || (needsRap && !quote)) {
         haptics.notificationError();
@@ -346,7 +349,12 @@ export function TransactionClaimableContextProvider({
         const outputAsset =
           queryClient.getQueryData<FormattedExternalAsset>(
             externalTokenQueryKey({ address: accountAddress, chainId: outputConfig.chainId, currency: nativeCurrency })
-          ) ?? (await fetchExternalToken({ address: outputConfig.token.address, chainId: outputConfig.chainId, currency: nativeCurrency }));
+          ) ??
+          (await fetchExternalToken({
+            address: outputConfig.token?.networks[outputConfig.chainId]?.address,
+            chainId: outputConfig.chainId,
+            currency: nativeCurrency,
+          }));
 
         if (!outputAsset) {
           haptics.notificationError();
@@ -461,6 +469,7 @@ export function TransactionClaimableContextProvider({
 
         setOutputConfig,
         setQuote,
+        setTxState,
 
         claim,
       }}

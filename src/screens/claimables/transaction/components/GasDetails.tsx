@@ -10,11 +10,16 @@ export function GasDetails() {
     claimable: { chainId },
     claimStatus,
     gasFeeDisplay,
+    outputConfig,
   } = useTransactionClaimableContext();
 
   const animationProgress = useSharedValue(0);
 
   useEffect(() => {
+    if (!outputConfig.chainId || !outputConfig.token) {
+      animationProgress.value = withTiming(1, { duration: 300 });
+      return;
+    }
     switch (claimStatus) {
       case 'ready':
       case 'error':
@@ -27,7 +32,7 @@ export function GasDetails() {
         animationProgress.value = withTiming(1, { duration: 300 });
         break;
     }
-  }, [claimStatus, animationProgress]);
+  }, [claimStatus, animationProgress, outputConfig.chainId, outputConfig.token, outputConfig]);
 
   const gasAnimatedStyle = useAnimatedStyle(() => {
     return {
