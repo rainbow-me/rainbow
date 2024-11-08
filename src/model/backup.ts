@@ -379,18 +379,24 @@ export async function restoreCloudBackup({
   try {
     // 1 - sanitize filename to remove extra things we don't care about
     const filename = sanitizeFilename(nameOfSelectedBackupFile);
+    console.log({ filename });
     if (!filename) {
+      console.log('no filename');
       return RestoreCloudBackupResultStates.failedWhenRestoring;
     }
     // 2 - retrieve that backup data
     const data = await getDataFromCloud(password, filename);
+    console.log({ data });
     if (!data) {
+      console.log('no data');
       return RestoreCloudBackupResultStates.incorrectPassword;
     }
 
     const dataToRestore = {
       ...data.secrets,
     };
+
+    console.log({ dataToRestore });
 
     // ANDROID ONLY - pin auth if biometrics are disabled
     let userPIN: string | undefined;
@@ -506,6 +512,8 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
       } else if (theKeyIsASeedPhrase) {
         secretPhraseOrOldAndroidBackupPrivateKey = parsedValue.seedphrase;
       }
+
+      console.log({ secretPhraseOrOldAndroidBackupPrivateKey });
 
       if (!secretPhraseOrOldAndroidBackupPrivateKey) {
         continue;

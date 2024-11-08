@@ -220,8 +220,6 @@ export const WalletsAndBackup = () => {
     [navigate, wallets]
   );
 
-  console.log({ provider });
-
   const renderView = useCallback(() => {
     switch (provider) {
       default:
@@ -407,9 +405,7 @@ export const WalletsAndBackup = () => {
             </Stack>
 
             <Stack space={'24px'}>
-              {sortedWallets.map(({ id, name, backedUp, imported, addresses, ...rest }) => {
-                console.log({ name, ...rest });
-
+              {sortedWallets.map(({ id, name, backedUp, imported, addresses }) => {
                 return (
                   <Menu key={`wallet-${id}`}>
                     <MenuItem

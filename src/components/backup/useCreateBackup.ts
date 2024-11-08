@@ -67,9 +67,7 @@ export const useCreateBackup = ({
 
   const onSuccess = useCallback(
     async (password: string) => {
-      console.log('onSuccess password: ', password);
       const hasSavedPassword = await getLocalBackupPassword();
-      console.log('hasSavedPassword: ', hasSavedPassword);
       if (!hasSavedPassword && password.trim()) {
         await saveLocalBackupPassword(password);
       }
@@ -137,7 +135,6 @@ export const useCreateBackup = ({
 
   const getPassword = useCallback(async (props: UseCreateBackupProps): Promise<string | null> => {
     const password = await getLocalBackupPassword();
-    console.log('getLocalBackupPassword result: ', password);
     if (password) {
       return password;
     }
@@ -164,7 +161,6 @@ export const useCreateBackup = ({
       }
 
       const password = await getPassword(props);
-      console.log('result of getPassword: ', password);
       if (password) {
         onConfirmBackup({
           password,

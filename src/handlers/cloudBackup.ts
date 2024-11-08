@@ -159,6 +159,8 @@ export async function getDataFromCloud(backupPassword: any, filename: string | n
     targetPath: REMOTE_BACKUP_WALLET_DIR,
   });
 
+  console.log({ backups });
+
   if (!backups || !backups.files || !backups.files.length) {
     const error = new Error(CLOUD_BACKUP_ERRORS.NO_BACKUPS_FOUND);
     throw error;
@@ -175,6 +177,8 @@ export async function getDataFromCloud(backupPassword: any, filename: string | n
       });
     }
 
+    console.log({ document });
+
     if (!document) {
       logger.error(new RainbowError('[cloudBackup]: No backup found with that name!'), {
         filename,
@@ -187,6 +191,8 @@ export async function getDataFromCloud(backupPassword: any, filename: string | n
     document = sortedBackups[0];
   }
   const encryptedData = ios ? await getICloudDocument(filename) : await getGoogleDriveDocument(document.id);
+
+  console.log({ filename, encryptedData });
 
   if (encryptedData) {
     logger.debug(`[cloudBackup]: Got cloud document ${filename}`);

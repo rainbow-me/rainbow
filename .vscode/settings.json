@@ -11,5 +11,6 @@
     "ios/Pods/Headers/Private/RCT-Folly/folly/lang",
     "ios/Pods/Headers/Public/Flipper-Folly/folly/lang",
     "ios/Pods/Headers/Public/RCT-Folly/folly/lang"
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

@@ -242,6 +242,18 @@ export const walletsSetSelected = (wallet: RainbowWallet) => async (dispatch: Di
 };
 
 /**
+ * Updates the wallet loading state.
+ *
+ * @param val The new loading state.
+ */
+export const setIsWalletLoading = (val: WalletsState['isWalletLoading']) => (dispatch: Dispatch<WalletsSetIsLoadingAction>) => {
+  dispatch({
+    payload: val,
+    type: WALLETS_SET_IS_LOADING,
+  });
+};
+
+/**
  * Marks all wallets with passed ids as backed-up
  * using a specified method and file in storage
  * and updates state accordingly.

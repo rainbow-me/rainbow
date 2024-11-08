@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { Dispatch, PropsWithChildren, SetStateAction, createContext, useCallback, useContext, useEffect, useState } from 'react';
 import type { Backup, BackupUserData, CloudBackups } from '@/model/backup';
 import {
   fetchAllBackups,
@@ -19,11 +19,13 @@ const semaphore = new Semaphore(1);
 
 type CloudBackupContext = {
   provider: string | undefined;
-  setProvider: (provider: string | undefined) => void;
+  setProvider: Dispatch<SetStateAction<string | undefined>>;
   backupState: CloudBackupState;
   backups: CloudBackups;
   userData: BackupUserData | undefined;
   mostRecentBackup: Backup | undefined;
+  password: string;
+  setPassword: Dispatch<SetStateAction<string>>;
   createBackup: ReturnType<typeof useCreateBackup>;
   syncAndFetchBackups: () => Promise<void>;
 };
@@ -50,6 +52,8 @@ export function CloudBackupProvider({ children }: PropsWithChildren) {
   const [backups, setBackups] = useState<CloudBackups>({
     files: [],
   });
+
+  const [password, setPassword] = useState<string>('');
 
   const [mostRecentBackup, setMostRecentBackup] = useState<Backup | undefined>(undefined);
   const [provider, setProvider] = useState<string | undefined>(undefined);
@@ -129,6 +133,8 @@ export function CloudBackupProvider({ children }: PropsWithChildren) {
         backups,
         userData,
         mostRecentBackup,
+        password,
+        setPassword,
         createBackup,
         syncAndFetchBackups,
       }}

@@ -30,6 +30,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
 import { useCloudBackupsContext } from '@/components/backup/CloudBackupProvider';
+import { BackendNetworks } from '@/components/BackendNetworks';
 
 function WalletScreen() {
   const { params } = useRoute<RouteProp<RootStackParamList, 'WalletScreen'>>();
@@ -118,6 +119,7 @@ function WalletScreen() {
       <UserAssetsSync />
       <RemoteCardsSync />
       <RemotePromoSheetSync />
+      <BackendNetworks />
 
       {/* NOTE: This component listens for Mobile Wallet Protocol requests and handles them */}
       <MobileWalletProtocolListener />

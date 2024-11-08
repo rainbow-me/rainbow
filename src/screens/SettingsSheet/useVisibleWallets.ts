@@ -31,7 +31,6 @@ export const getTitleForWalletType = (type: EthereumWalletType, walletTypeCount:
         ? i18n.t(i18n.l.back_up.private_key_plural, { privateKeyNumber: walletTypeCount.privateKey })
         : i18n.t(i18n.l.back_up.private_key_singluar);
     default:
-      console.log({ type, walletTypeCount });
       return '';
   }
 };

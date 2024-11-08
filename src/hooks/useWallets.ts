@@ -7,7 +7,7 @@ import { AppState } from '@/redux/store';
 const walletSelector = createSelector(
   ({ wallets: { isWalletLoading, selected = {} as RainbowWallet, walletNames, wallets } }: AppState) => ({
     isWalletLoading,
-    selectedWallet: selected as any,
+    selectedWallet: selected,
     walletNames,
     wallets,
   }),
