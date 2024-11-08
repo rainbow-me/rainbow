@@ -243,7 +243,7 @@ export default function ChartExpandedState({ asset }) {
   const assetChainId = assetWithPrice.chainId;
 
   const { swagg_enabled, f2c_enabled } = useRemoteConfig();
-  const swapEnabled = swagg_enabled && useBackendNetworksStore.getState().getSupportedSwapChainIds().includes(assetChainId);
+  const swapEnabled = swagg_enabled && useBackendNetworksStore.getState().getSwapSupportedChainIds().includes(assetChainId);
   const addCashEnabled = f2c_enabled;
 
   const format = useCallback(
