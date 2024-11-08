@@ -94,6 +94,7 @@ export async function getWalletContext(address: Address): Promise<WalletContext>
   // currentAddressStore address is initialized to ''
   if (!address || address === ('' as Address)) return {};
 
+  // walletType maybe undefined after initial wallet creation
   const { wallets } = store.getState();
   const wallet = findWalletWithAccount(wallets.wallets || {}, address);
 

@@ -87,6 +87,7 @@ export default function useInitializeWallet() {
         });
 
         // Capture wallet context in telemetry
+        // walletType maybe undefied after initial wallet creation
         const { walletType, walletAddressHash } = await getWalletContext(walletAddress as Address);
         const [deviceId] = await getOrCreateDeviceId();
 
@@ -97,7 +98,7 @@ export default function useInitializeWallet() {
         });
 
         // Allows calling telemetry before currentAddress is available (i.e. onboarding)
-        if (walletType && walletAddressHash) analyticsV2.setWalletContext({ walletAddressHash, walletType });
+        if (walletType || walletAddressHash) analyticsV2.setWalletContext({ walletAddressHash, walletType });
         analyticsV2.setDeviceId(deviceId);
         analyticsV2.identify();
 
