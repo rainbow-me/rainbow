@@ -2,6 +2,7 @@ import { ChainId } from '@/chains/types';
 import { TransactionRequest } from '@ethersproject/providers';
 
 export type ClaimStatus =
+  | 'estimatingGas' // estimating gas
   | 'fetchingQuote' // fetching quote
   | 'ready' // ready to claim state
   | 'claiming' // user has pressed the claim button

@@ -13,10 +13,10 @@ export function GasDetails() {
     outputConfig,
   } = useTransactionClaimableContext();
 
-  const animationProgress = useSharedValue(0);
+  const animationProgress = useSharedValue(1);
 
   useEffect(() => {
-    if (!outputConfig.chainId || !outputConfig.token) {
+    if (!outputConfig.chainId || !outputConfig.token || !gasFeeDisplay) {
       animationProgress.value = withTiming(1, { duration: 300 });
       return;
     }
@@ -32,7 +32,7 @@ export function GasDetails() {
         animationProgress.value = withTiming(1, { duration: 300 });
         break;
     }
-  }, [claimStatus, animationProgress, outputConfig.chainId, outputConfig.token, outputConfig]);
+  }, [claimStatus, animationProgress, outputConfig.chainId, outputConfig.token, outputConfig, gasFeeDisplay]);
 
   const gasAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -44,23 +44,17 @@ export function GasDetails() {
   return (
     <Animated.View style={gasAnimatedStyle}>
       <Box paddingTop="20px">
-        {gasFeeDisplay ? (
-          <Inline alignVertical="center" space="2px">
-            <Text align="center" color="labelQuaternary" size="icon 10px" weight="heavy">
-              􀵟
-            </Text>
-            <Text color="labelQuaternary" size="13pt" weight="bold">
-              {i18n.t(i18n.l.claimables.panel.amount_to_claim_on_network, {
-                amount: gasFeeDisplay,
-                network: chainsLabel[chainId],
-              })}
-            </Text>
-          </Inline>
-        ) : (
-          <Text color="labelQuaternary" size="13pt" weight="bold">
-            {i18n.t(i18n.l.claimables.panel.calculating_gas_fee)}
+        <Inline alignVertical="center" space="2px">
+          <Text align="center" color="labelQuaternary" size="icon 10px" weight="heavy">
+            􀵟
           </Text>
-        )}
+          <Text color="labelQuaternary" size="13pt" weight="bold">
+            {i18n.t(i18n.l.claimables.panel.amount_to_claim_on_network, {
+              amount: gasFeeDisplay,
+              network: chainsLabel[chainId],
+            })}
+          </Text>
+        </Inline>
       </Box>
     </Animated.View>
   );

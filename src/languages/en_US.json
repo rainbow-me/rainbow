@@ -452,7 +452,7 @@
     },
     "claimables": {
       "panel": {
-        "calculating_gas_fee": "Calculating gas fee...",
+        "estimating_gas_fee": "Estimating Gas Fee...",
         "amount_to_claim_on_network": "%{amount} to claim on %{network}",
         "claim": "Claim",
         "claiming": "Claiming",

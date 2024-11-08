@@ -104,14 +104,15 @@ export function TransactionClaimableContextProvider({
       keys: ['address'],
       list: 'verifiedAssets',
       threshold: 'CASE_SENSITIVE_EQUAL',
-      query: outputConfig.token?.mainnetAddress,
+      query: outputConfig.chainId ? outputConfig.token?.networks[outputConfig.chainId]?.address : undefined,
     },
     {
       enabled: requiresSwap,
       select: data => {
         return data.filter(
           (asset: SearchAsset) =>
-            asset.address === outputConfig.token?.mainnetAddress &&
+            outputConfig.chainId &&
+            asset.address === outputConfig.token?.networks[outputConfig.chainId]?.address &&
             asset.chainId === outputConfig.chainId &&
             asset.symbol === outputConfig.token?.symbol
         );
@@ -217,7 +218,7 @@ export function TransactionClaimableContextProvider({
     (!requiresSwap ||
       (quote && !isFetchingSwapGasLimit && swapGasLimit && !isFetchingOutputToken && parsedOutputToken && claimStatus !== 'fetchingQuote'))
   );
-
+  console.log('outputtoken', parsedOutputToken);
   const estimateGas = useCallback(async () => {
     console.log('ESTIMATE');
     if (!canEstimateGas) return;
@@ -280,6 +281,7 @@ export function TransactionClaimableContextProvider({
       gasFeeDisplay: gasFeeNativeCurrencyDisplay,
       txPayload: { ...partialTxPayload, gasLimit },
     });
+    setClaimStatus('ready');
   }, [
     canEstimateGas,
     meteorologyData?.maxBaseFee,
@@ -303,6 +305,9 @@ export function TransactionClaimableContextProvider({
     // estimate gas if it hasn't been estimated yet or if 10 seconds have passed since last estimate
     if (canEstimateGas && (!txState.gasFeeDisplay || Date.now() - lastGasEstimateTime > 10_000)) {
       try {
+        if (!txState.gasFeeDisplay) {
+          setClaimStatus('estimatingGas');
+        }
         estimateGas();
       } catch (e) {
         logger.warn('[TransactionClaimablePanel]: Failed to estimate gas', { error: e });

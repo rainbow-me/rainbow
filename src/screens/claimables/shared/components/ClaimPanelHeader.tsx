@@ -10,6 +10,7 @@ export function ClaimPanelHeader({ claimStatus, iconUrl }: { claimStatus: ClaimS
   const panelTitle = useMemo(() => {
     switch (claimStatus) {
       case 'fetchingQuote':
+      case 'estimatingGas':
       case 'ready':
       case 'noQuote':
       case 'noRoute':
@@ -28,6 +29,7 @@ export function ClaimPanelHeader({ claimStatus, iconUrl }: { claimStatus: ClaimS
 
   const panelTitleColor: TextColor = useMemo(() => {
     switch (claimStatus) {
+      case 'estimatingGas':
       case 'fetchingQuote':
       case 'noQuote':
       case 'noRoute':

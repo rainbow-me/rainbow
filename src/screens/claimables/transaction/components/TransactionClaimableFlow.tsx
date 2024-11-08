@@ -16,6 +16,7 @@ export function TransactionClaimableFlow() {
     claimStatus,
     isSufficientGas,
     claimNativeValueDisplay,
+    gasFeeDisplay,
   } = useTransactionClaimableContext();
 
   // BUTTON PROPS
@@ -38,8 +39,10 @@ export function TransactionClaimableFlow() {
     }
 
     switch (claimStatus) {
+      case 'estimatingGas':
+        return i18n.t(i18n.l.claimables.panel.estimating_gas_fee);
       case 'fetchingQuote':
-        return 'Fetching Quote';
+        return 'Fetching Quote...';
       case 'ready':
         if (shouldShowClaimText) {
           return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimValueDisplay });
@@ -59,7 +62,7 @@ export function TransactionClaimableFlow() {
       default:
         return i18n.t(i18n.l.points.points.try_again);
     }
-  }, [claimStatus, claimValueDisplay, shouldShowClaimText]);
+  }, [claimStatus, outputChainId, outputToken, shouldShowClaimText]);
 
   return (
     <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
