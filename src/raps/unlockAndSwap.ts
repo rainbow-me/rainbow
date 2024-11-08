@@ -48,7 +48,6 @@ export const estimateUnlockAndSwap = async ({
     if (gasLimitFromMetadata) {
       return gasLimitFromMetadata;
     }
-
     const unlockGasLimit = await estimateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
@@ -99,9 +98,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     });
   }
 
-  const allowsPermit = false;
-
-  if (swapAssetNeedsUnlocking && !allowsPermit) {
+  if (swapAssetNeedsUnlocking) {
     const unlock = createNewAction('unlock', {
       fromAddress: accountAddress,
       amount: sellAmount,
@@ -116,8 +113,8 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
   const swap = createNewAction('swap', {
     chainId,
     sellAmount,
-    permit: swapAssetNeedsUnlocking && allowsPermit,
-    requiresApprove: swapAssetNeedsUnlocking && !allowsPermit,
+    permit: false,
+    requiresApprove: swapAssetNeedsUnlocking,
     quote,
     meta: swapParameters.meta,
     assetToSell,
