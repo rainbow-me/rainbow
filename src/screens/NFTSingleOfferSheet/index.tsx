@@ -164,8 +164,6 @@ export function NFTSingleOfferSheet() {
   const feesPercentage = Math.floor(offer.feesPercentage * 10) / 10;
   const royaltiesPercentage = Math.floor(offer.royaltiesPercentage * 10) / 10;
 
-  const chain = useBackendNetworksStore.getState().getDefaultChains()[offerChainId];
-
   useEffect(() => {
     setParams({ longFormHeight: height });
   }, [height, setParams]);
@@ -184,7 +182,7 @@ export function NFTSingleOfferSheet() {
       const signer = createWalletClient({
         // @ts-ignore
         account: accountAddress,
-        chain,
+        chain: useBackendNetworksStore.getState().getDefaultChains()[offerChainId],
         transport: http(useBackendNetworksStore.getState().getChainDefaultRpc(offerChainId)),
       });
       getClient()?.actions.acceptOffer({
@@ -243,7 +241,7 @@ export function NFTSingleOfferSheet() {
     } catch {
       logger.error(new RainbowError('[NFTSingleOfferSheet]: Failed to estimate gas'));
     }
-  }, [accountAddress, chain, offerChainId, offer.nft.contractAddress, offer.nft.tokenId, feeParam, updateTxFee]);
+  }, [accountAddress, feeParam, offer.nft.contractAddress, offer.nft.tokenId, offerChainId, updateTxFee]);
 
   // estimate gas
   useEffect(() => {
@@ -254,7 +252,7 @@ export function NFTSingleOfferSheet() {
     return () => {
       stopPollingGasFees();
     };
-  }, [estimateGas, isExpired, isReadOnlyWallet, offer.network, offerChainId, startPollingGasFees, stopPollingGasFees, updateTxFee]);
+  }, [estimateGas, isExpired, isReadOnlyWallet, offerChainId, startPollingGasFees, stopPollingGasFees]);
 
   const acceptOffer = useCallback(async () => {
     logger.debug(`[NFTSingleOfferSheet]: Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`);
@@ -284,7 +282,7 @@ export function NFTSingleOfferSheet() {
 
     const signer = createWalletClient({
       account,
-      chain,
+      chain: useBackendNetworksStore.getState().getDefaultChains()[offerChainId],
       transport: http(useBackendNetworksStore.getState().getChainDefaultRpc(offerChainId)),
     });
     const nonce = await getNextNonce({ address: accountAddress, chainId: offerChainId });
@@ -425,7 +423,7 @@ export function NFTSingleOfferSheet() {
     } finally {
       setIsAccepting(false);
     }
-  }, [offer, rainbowFeeDecimal, accountAddress, chain, offerChainId, feeParam, navigate, nft]);
+  }, [offer, rainbowFeeDecimal, accountAddress, offerChainId, feeParam, navigate, nft]);
 
   let buttonLabel = '';
   if (!isAccepting) {
