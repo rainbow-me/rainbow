@@ -2,7 +2,7 @@
 /* eslint-disable no-async-promise-executor */
 /* eslint-disable no-promise-executor-return */
 import { Signer } from '@ethersproject/abstract-signer';
-
+import { ChainId } from '@/chains/types';
 import { RainbowError, logger } from '@/logger';
 
 import { claim, swap, unlock } from './actions';
@@ -131,13 +131,6 @@ const waitForNodeAck = async (hash: string, provider: Signer['provider']): Promi
   });
 };
 
-const shouldWaitForNodeAck = (rapName: string) => {
-  // We don't need to wait for node ack for these
-  if (rapName === 'unlock + swap' || rapName === 'unlock + crosschainSwap') {
-    return false;
-  }
-};
-
 export const walletExecuteRap = async (
   wallet: Signer,
   type: RapTypes,
@@ -174,11 +167,13 @@ export const walletExecuteRap = async (
       gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
     };
 
-    const { baseNonce, errorMessage: error, hash } = await executeAction(actionParams);
+    const { baseNonce, errorMessage: error, hash: firstHash } = await executeAction(actionParams);
+    const shouldWaitForNodeAck = parameters.chainId !== ChainId.mainnet;
 
     if (typeof baseNonce === 'number') {
-      actions.length > 1 && hash && shouldWaitForNodeAck(rapName) && (await waitForNodeAck(hash, wallet.provider));
+      let latestHash = firstHash;
       for (let index = 1; index < actions.length; index++) {
+        latestHash && shouldWaitForNodeAck && (await waitForNodeAck(latestHash, wallet.provider));
         const action = actions[index];
         const actionParams = {
           action,
@@ -191,8 +186,8 @@ export const walletExecuteRap = async (
           gasParams: parameters?.gasParams,
           gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
         };
-        const { hash } = await executeAction(actionParams);
-        hash && shouldWaitForNodeAck(rapName) && (await waitForNodeAck(hash, wallet.provider));
+        const { hash: nextHash } = await executeAction(actionParams);
+        latestHash = nextHash;
       }
       nonce = baseNonce + actions.length - 1;
     } else {
