@@ -9,7 +9,6 @@ import { ButtonPressAnimation } from '../animations';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { useWallets } from '@/hooks';
-import { WalletCountPerType, useVisibleWallets } from '@/screens/SettingsSheet/useVisibleWallets';
 import { format } from 'date-fns';
 import { login } from '@/handlers/cloudBackup';
 import { useCloudBackupsContext } from './CloudBackupProvider';
@@ -19,16 +18,9 @@ const imageSize = 72;
 
 export default function AddWalletToCloudBackupStep() {
   const { goBack } = useNavigation();
-  const { wallets, selectedWallet } = useWallets();
+  const { selectedWallet } = useWallets();
 
-  const { createBackup } = useCloudBackupsContext();
-
-  const walletTypeCount: WalletCountPerType = {
-    phrase: 0,
-    privateKey: 0,
-  };
-
-  const { lastBackupDate } = useVisibleWallets({ wallets, walletTypeCount });
+  const { createBackup, mostRecentBackup } = useCloudBackupsContext();
 
   const potentiallyLoginAndSubmit = useCallback(async () => {
     await login();
@@ -111,13 +103,13 @@ export default function AddWalletToCloudBackupStep() {
         <Separator color="separatorSecondary" thickness={1} />
       </Bleed>
 
-      {lastBackupDate && (
+      {mostRecentBackup && (
         <Box alignItems="center" justifyContent="center" paddingTop={'24px'} paddingBottom={'24px'}>
           <Box alignItems="center" justifyContent="center" width="full">
             <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
               <Text color={'labelTertiary'} size="15pt" weight="medium">
                 {lang.t(lang.l.back_up.cloud.latest_backup, {
-                  date: format(lastBackupDate, "M/d/yy 'at' h:mm a"),
+                  date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
                 })}
               </Text>
             </Inline>
