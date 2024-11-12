@@ -30,7 +30,7 @@ import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
 import { externalTokenQueryKey, fetchExternalToken, FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { walletExecuteRap } from '@/raps/execute';
-import { executeClaim } from '../utils';
+import { executeClaim } from '../claim';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 
 interface OutputConfig {
@@ -130,8 +130,6 @@ export function TransactionClaimableContextProvider({
     }
   );
 
-  // console.log(tokenSearchData?.[0]);
-
   const parsedOutputToken: ParsedSearchAsset | undefined = useMemo(() => {
     const asset = tokenSearchData?.[0];
     if (!asset) return undefined;
@@ -157,12 +155,6 @@ export function TransactionClaimableContextProvider({
 
   const updateQuote = useCallback(
     async (tokenToClaim: ParsedSearchAsset) => {
-      console.log(tokenToClaim);
-      console.log('update quote');
-      console.log('updateQuote called with:', {
-        tokenToClaim,
-        willBeUsedAs_toChainId: tokenToClaim, // Same value at this point
-      });
       const quoteParams: QuoteParams = {
         chainId: claimable.chainId,
         fromAddress: accountAddress,
@@ -175,17 +167,10 @@ export function TransactionClaimableContextProvider({
         currency: nativeCurrency,
       };
 
-      console.log('quoteParams created:', {
-        receivedChainId: tokenToClaim.chainId,
-        paramsToChainId: quoteParams.toChainId,
-        entireParams: quoteParams,
-      });
-
       const quote = claimable.chainId === tokenToClaim.chainId ? await getQuote(quoteParams) : await getCrosschainQuote(quoteParams);
-      console.log('quote attempt');
+
       if (!quote || 'error' in quote) {
         if (quote?.message === 'no routes found') {
-          console.log('NO ROUTE');
           setClaimStatus('noRoute');
         } else {
           setClaimStatus('noQuote');
@@ -193,8 +178,6 @@ export function TransactionClaimableContextProvider({
         }
         setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined });
       } else {
-        console.log(quote.buyAmountMinusFees);
-        console.log(quote.buyTokenAsset?.price.value);
         const buyAmount = divide(quote.buyAmountMinusFees.toString(), 10 ** tokenToClaim.decimals);
         setQuoteState({
           quote,
@@ -208,7 +191,7 @@ export function TransactionClaimableContextProvider({
     },
     [accountAddress, claimable.asset.address, claimable.asset.decimals, claimable.asset.isNativeAsset, claimable.chainId, nativeCurrency]
   );
-  console.log('buy', quoteState.quote?.buyTokenAsset);
+
   useEffect(() => {
     if (
       requiresSwap &&
@@ -358,9 +341,7 @@ export function TransactionClaimableContextProvider({
 
   const { mutate: claim } = useMutation({
     mutationFn: async () => {
-      const needsRap = outputConfig.token?.symbol !== claimable.asset.symbol || outputConfig.chainId !== claimable.chainId;
-
-      if (!txState.txPayload || !outputConfig.token || !outputConfig.chainId || (needsRap && !quote)) {
+      if (!txState.txPayload || !outputConfig.token || !outputConfig.chainId || (requiresSwap && !quoteState.quote)) {
         haptics.notificationError();
         setClaimStatus('error');
         logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to claim claimable due to missing tx payload'));
@@ -380,7 +361,7 @@ export function TransactionClaimableContextProvider({
         return;
       }
 
-      if (needsRap) {
+      if (requiresSwap) {
         const outputAsset =
           queryClient.getQueryData<FormattedExternalAsset>(
             externalTokenQueryKey({ address: accountAddress, chainId: outputConfig.chainId, currency: nativeCurrency })
