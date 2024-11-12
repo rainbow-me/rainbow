@@ -19,7 +19,7 @@ export function ClaimCustomization() {
     claimable: { asset: claimableAsset },
     outputConfig: { chainId: outputChainId, token: outputToken },
     setOutputConfig,
-    setQuote,
+    setQuoteState,
     setTxState,
   } = useTransactionClaimableContext();
 
@@ -131,8 +131,8 @@ export function ClaimCustomization() {
       },
       chainId: claimableAsset.chainId,
     });
-    setQuote(undefined);
-    setTxState(prev => ({ ...prev, isSufficientGas: false, gasFeeDisplay: '' }));
+    setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined });
+    setTxState(prev => ({ ...prev, isSufficientGas: false, gasFeeDisplay: undefined }));
     setIsInitialState(true);
   }, [
     setOutputConfig,
@@ -143,7 +143,7 @@ export function ClaimCustomization() {
     claimableAsset.networks,
     claimableAsset.isNativeAsset,
     claimableAsset.chainId,
-    setQuote,
+    setQuoteState,
     setTxState,
   ]);
 
@@ -237,12 +237,12 @@ export function ClaimCustomization() {
             token: newToken,
           };
         });
-        setQuote(undefined);
-        setTxState(prev => ({ ...prev, isSufficientGas: false, gasFeeDisplay: '' }));
+        setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined });
+        setTxState(prev => ({ ...prev, isSufficientGas: false, gasFeeDisplay: undefined }));
         setIsInitialState(false);
       }
     },
-    [resetState, setOutputConfig, setQuote, setTxState, tokens]
+    [resetState, setOutputConfig, setQuoteState, setTxState, tokens]
   );
 
   const handleNetworkSelection = useCallback(
@@ -259,12 +259,12 @@ export function ClaimCustomization() {
             chainId: newChainId,
           };
         });
-        setTxState(prev => ({ ...prev, isSufficientGas: false, gasFeeDisplay: '' }));
-        setQuote(undefined);
+        setTxState(prev => ({ ...prev, isSufficientGas: false, gasFeeDisplay: undefined }));
+        setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined });
         setIsInitialState(false);
       }
     },
-    [resetState, setOutputConfig, setQuote, setTxState]
+    [resetState, setOutputConfig, setQuoteState, setTxState]
   );
 
   return (

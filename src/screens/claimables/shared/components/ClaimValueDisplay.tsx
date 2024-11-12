@@ -12,10 +12,10 @@ export function ClaimValueDisplay({
   tokenSymbol,
   chainId,
 }: {
-  label: string;
-  tokenIconUrl?: string;
-  tokenSymbol?: string;
-  chainId?: number;
+  label: string | undefined;
+  tokenIconUrl: string | undefined;
+  tokenSymbol: string | undefined;
+  chainId: number | undefined;
 }) {
   const { isDarkMode } = useColorMode();
   const theme = useTheme();

@@ -50,7 +50,7 @@ export function GasDetails() {
           </Text>
           <Text color="labelQuaternary" size="13pt" weight="bold">
             {i18n.t(i18n.l.claimables.panel.amount_to_claim_on_network, {
-              amount: gasFeeDisplay,
+              amount: gasFeeDisplay ?? '',
               network: chainsLabel[chainId],
             })}
           </Text>

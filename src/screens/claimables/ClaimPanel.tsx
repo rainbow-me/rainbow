@@ -4,17 +4,27 @@ import { TransactionClaimableFlow } from './transaction/components/TransactionCl
 import { SponsoredClaimableFlow } from './sponsored/components/SponsoredClaimableFlow';
 import { RootStackParamList } from '@/navigation/types';
 import { TransactionClaimableContextProvider } from './transaction/context/TransactionClaimableContext';
+import { SponsoredClaimableContextProvider } from './sponsored/context/SponsoredClaimableContext';
 
 export const ClaimClaimablePanel = () => {
   const {
     params: { claimable },
   } = useRoute<RouteProp<RootStackParamList, 'ClaimClaimablePanel'>>();
 
-  return claimable.type === 'transaction' ? (
-    <TransactionClaimableContextProvider claimable={claimable}>
-      <TransactionClaimableFlow />
-    </TransactionClaimableContextProvider>
-  ) : (
-    <SponsoredClaimableFlow />
-  );
+  switch (claimable.type) {
+    case 'transaction':
+      return (
+        <TransactionClaimableContextProvider claimable={claimable}>
+          <TransactionClaimableFlow />
+        </TransactionClaimableContextProvider>
+      );
+    case 'sponsored':
+      return (
+        <SponsoredClaimableContextProvider claimable={claimable}>
+          <SponsoredClaimableFlow />
+        </SponsoredClaimableContextProvider>
+      );
+    default:
+      return null;
+  }
 };

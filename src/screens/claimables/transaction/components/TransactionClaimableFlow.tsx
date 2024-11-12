@@ -15,8 +15,8 @@ export function TransactionClaimableFlow() {
     outputConfig: { chainId: outputChainId, token: outputToken },
     claimStatus,
     isSufficientGas,
-    claimNativeValueDisplay,
-    gasFeeDisplay,
+    nativeValueDisplay,
+    tokenAmountDisplay,
   } = useTransactionClaimableContext();
 
   // BUTTON PROPS
@@ -28,7 +28,6 @@ export function TransactionClaimableFlow() {
     ((claimStatus === 'ready' || claimStatus === 'error') && !isSufficientGas);
   const shimmer = !disabled || claimStatus === 'claiming';
   const shouldShowClaimText = claimStatus === 'ready' && isSufficientGas;
-  const claimValueDisplay = 'FIXME';
   const buttonLabel = useMemo(() => {
     if (!outputChainId) {
       return 'Select a Network';
@@ -45,7 +44,7 @@ export function TransactionClaimableFlow() {
         return 'Fetching Quote...';
       case 'ready':
         if (shouldShowClaimText) {
-          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimValueDisplay });
+          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: tokenAmountDisplay });
         } else {
           return i18n.t(i18n.l.claimables.panel.insufficient_funds);
         }
@@ -62,13 +61,13 @@ export function TransactionClaimableFlow() {
       default:
         return i18n.t(i18n.l.points.points.try_again);
     }
-  }, [claimStatus, outputChainId, outputToken, shouldShowClaimText]);
+  }, [claimStatus, outputChainId, outputToken, shouldShowClaimText, tokenAmountDisplay]);
 
   return (
     <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
       <Box gap={20} alignItems="center">
         <ClaimValueDisplay
-          label={claimNativeValueDisplay}
+          label={nativeValueDisplay}
           tokenIconUrl={outputToken?.iconUrl}
           tokenSymbol={outputToken?.symbol}
           chainId={outputChainId}
