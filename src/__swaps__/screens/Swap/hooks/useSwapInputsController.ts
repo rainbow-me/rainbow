@@ -491,13 +491,12 @@ export function useSwapInputsController({
         return;
       }
 
+      const inputDecimals = inputAsset?.networks[inputAsset.chainId]?.decimals || inputAsset?.decimals;
+      const outputDecimals = outputAsset?.networks[outputAsset.chainId]?.decimals || outputAsset?.decimals;
       const quotedInputAmount =
         lastTypedInputParam === 'outputAmount' || lastTypedInputParam === 'outputNativeValue'
           ? Number(
-              convertRawAmountToDecimalFormat(
-                quoteResponse.sellAmount.toString(),
-                inputAsset?.networks[inputAsset.chainId]?.decimals || inputAsset?.decimals || 18
-              )
+              convertRawAmountToDecimalFormat(quoteResponse.sellAmount.toString(), typeof inputDecimals === 'number' ? inputDecimals : 18)
             )
           : undefined;
 
@@ -506,7 +505,7 @@ export function useSwapInputsController({
           ? Number(
               convertRawAmountToDecimalFormat(
                 quoteResponse.buyAmountMinusFees.toString(),
-                outputAsset?.networks[outputAsset.chainId]?.decimals || outputAsset?.decimals || 18
+                typeof outputDecimals === 'number' ? outputDecimals : 18
               )
             )
           : undefined;

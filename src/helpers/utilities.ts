@@ -217,9 +217,10 @@ export const handleSignificantDecimalsWorklet = (value: number | string, decimal
   } else {
     dec = Math.min(decimals, buffer);
   }
+
   return Number(value).toLocaleString('en-US', {
     useGrouping: true,
-    minimumFractionDigits: 2,
+    minimumFractionDigits: Math.min(2, dec),
     maximumFractionDigits: dec,
   });
 };
@@ -309,7 +310,7 @@ export const convertAmountToBalanceDisplayWorklet = (
  */
 export const convertRawAmountToBalanceWorklet = (value: number | string, asset: { decimals: number; symbol?: string }, buffer?: number) => {
   'worklet';
-  const decimals = asset?.decimals ?? 18;
+  const decimals = typeof asset?.decimals === 'number' ? asset.decimals : 18;
 
   const assetBalance = convertRawAmountToDecimalFormatWorklet(value, decimals);
 
@@ -328,7 +329,7 @@ export const convertRawAmountToBalance = (
   buffer?: number,
   trimTrailingZeros?: boolean
 ) => {
-  const decimals = asset?.decimals ?? 18;
+  const decimals = typeof asset?.decimals === 'number' ? asset.decimals : 18;
   const assetBalance = convertRawAmountToDecimalFormat(value, decimals);
 
   return {
@@ -346,7 +347,7 @@ export const convertAmountToBalanceDisplay = (
   buffer?: number,
   trimTrailingZeros?: boolean
 ) => {
-  const decimals = asset?.decimals ?? 18;
+  const decimals = typeof asset?.decimals === 'number' ? asset.decimals : 18;
   const display = handleSignificantDecimals(value, decimals, buffer);
   const formattedDisplay = trimTrailingZeros ? display.replace(/\.?0+$/, '') : display;
   return `${formattedDisplay} ${asset?.symbol || ''}`;
