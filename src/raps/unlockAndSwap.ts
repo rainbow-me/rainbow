@@ -1,15 +1,7 @@
-import {
-  ALLOWS_PERMIT,
-  ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR,
-  getRainbowRouterContractAddress,
-  PermitSupportedTokenList,
-} from '@rainbow-me/swaps';
+import { getRainbowRouterContractAddress } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 
-import { ChainId } from '@/chains/types';
-import { isNativeAsset } from '@/handlers/assets';
 import { add } from '@/helpers/utilities';
-import { isLowerCaseMatch } from '@/utils';
 
 import { assetNeedsUnlocking, estimateApprove, estimateSwapGasLimit } from './actions';
 import { estimateUnlockAndSwapFromMetadata } from './actions/swap';
@@ -56,7 +48,6 @@ export const estimateUnlockAndSwap = async ({
     if (gasLimitFromMetadata) {
       return gasLimitFromMetadata;
     }
-
     const unlockGasLimit = await estimateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
@@ -89,18 +80,11 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
 
   const { sellAmount, quote, chainId, assetToSell, assetToBuy } = swapParameters;
 
-  const {
-    from: accountAddress,
-    sellTokenAddress,
-    allowanceNeeded,
-  } = quote as {
+  const { from: accountAddress, allowanceNeeded } = quote as {
     from: Address;
     sellTokenAddress: Address;
     allowanceNeeded: boolean;
   };
-
-  // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
-  const nativeAsset = isLowerCaseMatch(ETH_ADDRESS_AGGREGATOR, sellTokenAddress) || isNativeAsset(sellTokenAddress, chainId);
 
   let swapAssetNeedsUnlocking = false;
 
@@ -114,10 +98,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     });
   }
 
-  const allowsPermit =
-    !nativeAsset && chainId === ChainId.mainnet && ALLOWS_PERMIT[assetToSell.address?.toLowerCase() as keyof PermitSupportedTokenList];
-
-  if (swapAssetNeedsUnlocking && !allowsPermit) {
+  if (swapAssetNeedsUnlocking) {
     const unlock = createNewAction('unlock', {
       fromAddress: accountAddress,
       amount: sellAmount,
@@ -132,8 +113,8 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
   const swap = createNewAction('swap', {
     chainId,
     sellAmount,
-    permit: swapAssetNeedsUnlocking && allowsPermit,
-    requiresApprove: swapAssetNeedsUnlocking && !allowsPermit,
+    permit: false,
+    requiresApprove: swapAssetNeedsUnlocking,
     quote,
     meta: swapParameters.meta,
     assetToSell,
