@@ -299,7 +299,7 @@ export const convertAmountToBalanceDisplayWorklet = (
   buffer?: number
 ) => {
   'worklet';
-  const decimals = asset?.decimals ?? 18;
+  const decimals = typeof asset?.decimals === 'number' ? asset.decimals : 18;
   const display = handleSignificantDecimalsWorklet(value, decimals, buffer);
   return `${display} ${asset?.symbol || ''}`;
 };

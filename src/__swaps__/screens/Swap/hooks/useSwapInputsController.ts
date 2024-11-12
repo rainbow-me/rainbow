@@ -914,7 +914,9 @@ export function useSwapInputsController({
             const decimalPlaces = isNativeInputMethod
               ? internalSelectedInputAsset.value?.decimals
               : internalSelectedOutputAsset.value?.decimals;
-            const amount = toFixedWorklet(divWorklet(current.values[inputMethodValue], nativePrice), decimalPlaces || 18);
+
+            const decimals = typeof decimalPlaces === 'number' ? decimalPlaces : 18;
+            const amount = toFixedWorklet(divWorklet(current.values[inputMethodValue], nativePrice), decimals);
             const amountKey = isNativeInputMethod ? 'inputAmount' : 'outputAmount';
 
             inputValues.modify(values => {
