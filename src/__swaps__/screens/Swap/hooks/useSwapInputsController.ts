@@ -491,12 +491,13 @@ export function useSwapInputsController({
         return;
       }
 
-      const inputDecimals = inputAsset?.networks[inputAsset.chainId]?.decimals || inputAsset?.decimals;
-      const outputDecimals = outputAsset?.networks[outputAsset.chainId]?.decimals || outputAsset?.decimals;
       const quotedInputAmount =
         lastTypedInputParam === 'outputAmount' || lastTypedInputParam === 'outputNativeValue'
           ? Number(
-              convertRawAmountToDecimalFormat(quoteResponse.sellAmount.toString(), typeof inputDecimals === 'number' ? inputDecimals : 18)
+              convertRawAmountToDecimalFormat(
+                quoteResponse.sellAmount.toString(),
+                inputAsset?.networks[inputAsset.chainId]?.decimals ?? inputAsset?.decimals ?? 18
+              )
             )
           : undefined;
 
@@ -505,7 +506,7 @@ export function useSwapInputsController({
           ? Number(
               convertRawAmountToDecimalFormat(
                 quoteResponse.buyAmountMinusFees.toString(),
-                typeof outputDecimals === 'number' ? outputDecimals : 18
+                outputAsset?.networks[outputAsset.chainId]?.decimals ?? outputAsset?.decimals ?? 18
               )
             )
           : undefined;
@@ -914,9 +915,7 @@ export function useSwapInputsController({
             const decimalPlaces = isNativeInputMethod
               ? internalSelectedInputAsset.value?.decimals
               : internalSelectedOutputAsset.value?.decimals;
-
-            const decimals = typeof decimalPlaces === 'number' ? decimalPlaces : 18;
-            const amount = toFixedWorklet(divWorklet(current.values[inputMethodValue], nativePrice), decimals);
+            const amount = toFixedWorklet(divWorklet(current.values[inputMethodValue], nativePrice), decimalPlaces || 18);
             const amountKey = isNativeInputMethod ? 'inputAmount' : 'outputAmount';
 
             inputValues.modify(values => {
