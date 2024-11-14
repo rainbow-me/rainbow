@@ -205,6 +205,7 @@ export const executeSwap = async ({
   wallet: Signer;
   permit: boolean;
 }): Promise<Transaction | null> => {
+  return;
   if (!wallet || !quote) {
     return null;
   }

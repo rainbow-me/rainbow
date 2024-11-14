@@ -88,7 +88,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
 
   let swapAssetNeedsUnlocking = false;
 
-  if (allowanceNeeded) {
+  if (false) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking({
       owner: accountAddress,
       amount: sellAmount as string,

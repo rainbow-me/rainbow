@@ -149,16 +149,21 @@ export const estimateSwapGasLimitWithFakeApproval = async (
   quote: Quote | CrosschainQuote
 ): Promise<string> => {
   let stateDiff: unknown;
+  console.log('#a');
 
   try {
+    console.log('#b');
     stateDiff = await getStateDiff(provider, quote);
+    console.log('#c');
     const { router, methodName, params, methodArgs } = getQuoteExecutionDetails(
       quote,
       { from: quote.from },
       provider as StaticJsonRpcProvider
     );
+    console.log('#d');
 
     const { data } = await router.populateTransaction[methodName](...(methodArgs ?? []), params);
+    console.log('#e');
 
     const gasLimit = await getClosestGasEstimate(async (gas: number) => {
       const callParams = [
@@ -175,17 +180,22 @@ export const estimateSwapGasLimitWithFakeApproval = async (
 
       try {
         await (provider as StaticJsonRpcProvider).send('eth_call', [...callParams, stateDiff]);
+        console.log('#f');
         return true;
       } catch (e) {
+        console.log('#g', e);
         return false;
       }
     });
     if (gasLimit && greaterThan(gasLimit, gasUnits.basic_swap[ChainId.mainnet])) {
+      console.log('#h');
       return gasLimit;
     }
   } catch (e) {
+        console.log('#i', e);
     //
   }
+      console.log('#j - returning default');
   return getDefaultGasLimitForTrade(quote, chainId);
 };
 
