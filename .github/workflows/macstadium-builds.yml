@@ -85,7 +85,7 @@ jobs:
           FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         run: |
-            cd ios && bundle update fastlane && bundle exec fastlane ios build_device
+            cd ios && bundle exec fastlane ios build_device
       - name: Upload builds to AWS S3
         env:
           AWS_BUCKET: rainbow-app-team-production
