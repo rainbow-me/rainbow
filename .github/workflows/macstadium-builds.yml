@@ -67,8 +67,15 @@ jobs:
         with:
           key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
           restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
-        
-        # TOPHAT iOS SIM   
+      # TOPHAT iOS DEVICE  
+      - name: Build the app in release mode for iOS devices
+        env: 
+          FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
+          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        run: |
+            cd ios && bundle exec fastlane ios build_device
+      # TOPHAT iOS SIM   
       - name: Build the app in release mode for simulator
         run: |
           sed -i'' -e "s/IS_TESTING=true/IS_TESTING=false/" .env && rm -f .env-e 
@@ -78,14 +85,6 @@ jobs:
           APP_DIR=$(find . -name "*.app" | head -n 1)
           cd $APP_DIR && zip -r ../../../../../../App.zip .
 
-        # TOPHAT iOS DEVICE  
-      - name: Build the app in release mode for iOS devices
-        env: 
-          FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
-          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-        run: |
-            cd ios && bundle exec fastlane ios build_device
       - name: Upload builds to AWS S3
         env:
           AWS_BUCKET: rainbow-app-team-production
