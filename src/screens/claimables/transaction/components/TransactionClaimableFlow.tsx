@@ -27,7 +27,8 @@ export function TransactionClaimableFlow() {
   const disabled = !(
     ((claimStatus === 'ready' || claimStatus === 'recoverableError') && txState.isSufficientGas) ||
     claimStatus === 'success' ||
-    claimStatus === 'pending'
+    claimStatus === 'pending' ||
+    claimStatus === 'unrecoverableError'
   );
   const shimmer = !disabled || claimStatus === 'claiming';
   const buttonLabel = useMemo(() => {
@@ -64,6 +65,7 @@ export function TransactionClaimableFlow() {
         return i18n.t(i18n.l.claimables.panel.claim_in_progress);
       case 'pending':
       case 'success':
+      case 'unrecoverableError':
         return i18n.t(i18n.l.button.done);
       case 'recoverableError':
       default:

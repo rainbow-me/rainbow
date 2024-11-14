@@ -268,7 +268,8 @@ export function ClaimCustomization() {
     [resetState, setOutputConfig, setQuoteState, setTxState]
   );
 
-  const isDisabled = claimStatus === 'success' || claimStatus === 'pending' || claimStatus === 'claiming' || claimStatus === 'notReady';
+  const isDisabled =
+    claimStatus === 'success' || claimStatus === 'pending' || claimStatus === 'claiming' || claimStatus === 'unrecoverableError';
 
   return (
     <Box justifyContent="center" alignItems="center" flexDirection="row" gap={5}>

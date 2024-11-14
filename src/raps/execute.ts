@@ -104,9 +104,9 @@ export async function executeAction<T extends RapActionTypes>({
       message: (error as Error)?.message,
     });
     if (index === 0) {
-      return { baseNonce: null, errorMessage: String(error) }; // here
+      return { baseNonce: null, errorMessage: String(error) };
     }
-    return { baseNonce: null, errorMessage: null };
+    return { baseNonce: null, errorMessage: String(error) };
   }
 }
 

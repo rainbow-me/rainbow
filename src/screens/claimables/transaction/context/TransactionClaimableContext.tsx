@@ -5,7 +5,7 @@ import { CrosschainQuote, ETH_ADDRESS, getCrosschainQuote, getQuote, Quote, Quot
 import { Claimable, TransactionClaimable } from '@/resources/addys/claimables/types';
 import { logger, RainbowError } from '@/logger';
 import { useAccountSettings } from '@/hooks';
-import { abbreviateNumber, convertAmountToNativeDisplay, convertAmountToRawAmount } from '@/helpers/utilities';
+import { convertAmountToNativeDisplay, convertAmountToRawAmount } from '@/helpers/utilities';
 import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { useMeteorologySuggestion } from '@/__swaps__/utils/meteorology';
