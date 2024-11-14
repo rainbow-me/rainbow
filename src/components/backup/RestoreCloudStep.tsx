@@ -19,7 +19,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { useDimensions, useInitializeWallet, useWallets } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import {
   addressSetSelected,
   setAllWalletsWithIdsAsBackedUp,
@@ -89,6 +89,7 @@ type RestoreCloudStepParams = {
 export default function RestoreCloudStep() {
   const { params } = useRoute<RouteProp<RestoreCloudStepParams & RestoreSheetParams, 'RestoreSheet'>>();
 
+  const { goBack } = useNavigation();
   const { userData, password, setPassword } = useCloudBackupsContext();
 
   const { selectedBackup } = params;
@@ -200,11 +201,6 @@ export default function RestoreCloudStep() {
             const p2 = dispatch(addressSetSelected(firstAddress));
             await Promise.all([p1, p2]);
             await initializeWallet(null, null, null, false, false, null, true, null);
-
-            const operation = dangerouslyGetState()?.index === 1 ? navigate : replace;
-            operation(Routes.SWIPE_LAYOUT, {
-              screen: Routes.WALLET_SCREEN,
-            });
           });
         } else {
           switch (status) {
@@ -224,8 +220,9 @@ export default function RestoreCloudStep() {
       Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
     } finally {
       dispatch(setIsWalletLoading(null));
+      Navigation.handleAction(Routes.WALLET_SCREEN, {}, dangerouslyGetState()?.index === 1);
     }
-  }, [selectedBackup.name, dispatch, password, userData, initializeWallet, dangerouslyGetState, navigate, replace]);
+  }, [selectedBackup.name, dispatch, password, userData, initializeWallet, dangerouslyGetState]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();

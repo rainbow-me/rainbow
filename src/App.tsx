@@ -69,7 +69,7 @@ function App({ walletReady }: AppProps) {
   }, []);
 
   return (
-    <Portal>
+    <>
       <View style={[sx.container, { paddingBottom: IS_ANDROID ? bottom : 0 }]}>
         {initialRoute && (
           <InitialRouteContext.Provider value={initialRoute}>
@@ -81,8 +81,9 @@ function App({ walletReady }: AppProps) {
       </View>
       <NotificationsHandler walletReady={walletReady} />
       <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
+      <Portal />
       <PortalConsumer />
-    </Portal>
+    </>
   );
 }
 
