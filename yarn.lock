@@ -9404,7 +9404,7 @@ __metadata:
     react-native-text-size: "rainbow-me/react-native-text-size#15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a"
     react-native-tooltip: "rainbow-me/react-native-tooltip#e0e88d212b5b7f350e5eabba87f588a32e0f2590"
     react-native-tooltips: "rainbow-me/react-native-tooltips#fdafbc7ba33ee231229f5d3f58b29d0d1c55ddfa"
-    react-native-turbo-haptics: "npm:1.0.2"
+    react-native-turbo-haptics: "npm:1.0.3"
     react-native-udp: "npm:2.7.0"
     react-native-url-polyfill: "npm:2.0.0"
     react-native-version-number: "npm:0.3.6"
@@ -23735,13 +23735,13 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"react-native-turbo-haptics@npm:1.0.2":
-  version: 1.0.2
-  resolution: "react-native-turbo-haptics@npm:1.0.2"
+"react-native-turbo-haptics@npm:1.0.3":
+  version: 1.0.3
+  resolution: "react-native-turbo-haptics@npm:1.0.3"
   peerDependencies:
     react: ^18.2.0
     react-native: ">=0.72.0"
-  checksum: 10c0/93f5ecf73ee6e2202ba89f98242b07992c2eaee5eefb26d30a62b9ca20451b29746b5d376eafbbc1fb4b80fcbe95f69c154069b6fa70daf295a113fb79fc9760
+  checksum: 10c0/fac0dbb8f564ce4b5f3d62773ee72607bbd666830b68c07245d1a55fb5c9be19ecb4b5f7aeb5b3dcb2f6140706793d4ffb444bba06c9eb429137e03faa4e8ebc
   languageName: node
   linkType: hard
 
