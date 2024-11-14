@@ -203,7 +203,7 @@ export function ChooseBackupStep() {
           )}
 
           {isLoading && (
-            <Box color={colors.transparent} alignItems="center" justifyContent="center" flex={1} as={Page}>
+            <Box width="full" color={colors.transparent} alignItems="center" justifyContent="center" flex={1} as={Page}>
               {android ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator color={colors.blueGreyDark} />}
               <LoadingText>{titleForBackupState[backupState]}</LoadingText>
             </Box>

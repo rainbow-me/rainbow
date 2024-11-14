@@ -1,5 +1,5 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 import ChooseBackupStep from '@/components/backup/ChooseBackupStep';
 import Routes from '@/navigation/routesNames';

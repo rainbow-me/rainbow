@@ -13,9 +13,9 @@ import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { getMostRecentCloudBackup, hasManuallyBackedUpWallet } from '@/screens/SettingsSheet/utils';
 import { useWallets } from '@/hooks';
-import { Semaphore } from 'async-mutex';
+import { Mutex } from 'async-mutex';
 
-const semaphore = new Semaphore(1);
+const mutex = new Mutex();
 
 type CloudBackupContext = {
   provider: string | undefined;
@@ -107,7 +107,7 @@ export function CloudBackupProvider({ children }: PropsWithChildren) {
   }, [wallets]);
 
   const syncAndFetchBackups = useCallback(async () => {
-    return semaphore.runExclusive(syncAndPullFiles);
+    return mutex.runExclusive(syncAndPullFiles);
   }, [syncAndPullFiles]);
 
   const createBackup = useCreateBackup({

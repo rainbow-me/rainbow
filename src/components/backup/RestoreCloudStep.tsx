@@ -43,6 +43,7 @@ import { Source } from 'react-native-fast-image';
 import { useTheme } from '@/theme';
 import { useCloudBackupsContext } from './CloudBackupProvider';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { isEmpty } from 'lodash';
 
 const Title = styled(Text).attrs({
   size: 'big',
@@ -88,16 +89,20 @@ type RestoreCloudStepParams = {
 
 export default function RestoreCloudStep() {
   const { params } = useRoute<RouteProp<RestoreCloudStepParams & RestoreSheetParams, 'RestoreSheet'>>();
-
-  const { goBack } = useNavigation();
   const { userData, password, setPassword } = useCloudBackupsContext();
 
   const { selectedBackup } = params;
   const { isDarkMode } = useTheme();
+  const { canGoBack, goBack } = useNavigation();
+
+  const onRestoreSuccess = useCallback(() => {
+    while (canGoBack()) {
+      goBack();
+    }
+  }, [canGoBack, goBack]);
 
   const dispatch = useDispatch();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
-  const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const passwordRef = useRef<TextInput | null>(null);
@@ -135,12 +140,12 @@ export default function RestoreCloudStep() {
     // NOTE: Localizing password to prevent an empty string from being saved if we re-render
     const pwd = password.trim();
 
+    const prevWalletsState = await dispatch(walletsLoadState());
+
     try {
       if (!selectedBackup.name) {
         throw new Error('No backup file selected');
       }
-
-      const prevWalletsState = await dispatch(walletsLoadState());
 
       await Promise.all([
         dispatch(setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET)),
@@ -219,10 +224,21 @@ export default function RestoreCloudStep() {
     } catch (e) {
       Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
     } finally {
+      onRestoreSuccess();
       dispatch(setIsWalletLoading(null));
-      Navigation.handleAction(Routes.WALLET_SCREEN, {}, dangerouslyGetState()?.index === 1);
+      if (isEmpty(prevWalletsState)) {
+        Navigation.handleAction(
+          Routes.SWIPE_LAYOUT,
+          {
+            screen: Routes.WALLET_SCREEN,
+          },
+          false
+        );
+      } else {
+        Navigation.handleAction(Routes.WALLET_SCREEN, {});
+      }
     }
-  }, [selectedBackup.name, dispatch, password, userData, initializeWallet, dangerouslyGetState]);
+  }, [password, dispatch, selectedBackup.name, userData, initializeWallet, onRestoreSuccess]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
