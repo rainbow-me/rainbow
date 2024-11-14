@@ -41,7 +41,7 @@ const getPositions = async (address: string, currency: NativeCurrencyKey): Promi
 export const POSITIONS_QUERY_KEY = 'positions';
 
 export const positionsQueryKey = ({ address, currency }: PositionsArgs) =>
-  createQueryKey(POSITIONS_QUERY_KEY, { address, currency }, { persisterVersion: 1 });
+  createQueryKey(POSITIONS_QUERY_KEY, { address, currency }, { persisterVersion: 2 });
 
 type PositionsQueryKey = ReturnType<typeof positionsQueryKey>;
 

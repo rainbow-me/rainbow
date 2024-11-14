@@ -8,8 +8,9 @@ import { ChainId } from '@/chains/types';
 
 export const UserAssetsSync = function UserAssetsSync() {
   const { accountAddress, nativeCurrency: currentCurrency } = useAccountSettings();
-
   const isSwapsOpen = useSwapsStore(state => state.isSwapsOpen);
+  const isUserAssetsStoreMissingData = userAssetsStore.getState().getUserAssets()?.length === 0;
+  const enabled = (!isSwapsOpen || isUserAssetsStoreMissingData) && !!accountAddress && !!currentCurrency;
 
   useUserAssets(
     {
@@ -17,17 +18,17 @@ export const UserAssetsSync = function UserAssetsSync() {
       currency: currentCurrency,
     },
     {
-      enabled: !isSwapsOpen,
+      enabled,
       select: data =>
         selectorFilterByUserChains({
           data,
           selector: selectUserAssetsList,
         }),
       onSuccess: data => {
-        if (!isSwapsOpen) {
+        if (!isSwapsOpen || isUserAssetsStoreMissingData) {
           userAssetsStore.getState().setUserAssets(data as ParsedSearchAsset[]);
 
-          const inputAsset = userAssetsStore.getState().getHighestValueEth();
+          const inputAsset = userAssetsStore.getState().getHighestValueNativeAsset();
           useSwapsStore.setState({
             inputAsset,
             selectedOutputChainId: inputAsset?.chainId ?? ChainId.mainnet,

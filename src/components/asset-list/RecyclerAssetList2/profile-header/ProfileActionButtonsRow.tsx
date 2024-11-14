@@ -5,12 +5,11 @@ import { InteractionManager, PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
-import { enableActionsOnReadOnlyWallet, useExperimentalFlag, SWAPS_V2 } from '@/config';
+import { enableActionsOnReadOnlyWallet } from '@/config';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
-import { useAccountProfile, useAccountSettings, useWallets } from '@/hooks';
-import { delayNext } from '@/hooks/useMagicAutofocus';
+import { useAccountProfile, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { ethereumUtils, watchingAlert } from '@/utils';
+import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
 import { analytics } from '@/analytics';
@@ -20,7 +19,6 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { ChainId } from '@/chains/types';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -169,9 +167,6 @@ function BuyButton() {
 
 function SwapButton() {
   const { isReadOnlyWallet } = useWallets();
-  const { accountAddress } = useAccountSettings();
-  const remoteConfig = useRemoteConfig();
-  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
   const { navigate } = useNavigation();
 
   const handlePress = React.useCallback(async () => {
@@ -179,30 +174,16 @@ function SwapButton() {
       analytics.track('Tapped "Swap"', {
         category: 'home screen',
       });
-      if (swapsV2Enabled) {
-        swapsStore.setState({
-          inputAsset: userAssetsStore.getState().getHighestValueEth(),
-        });
-        InteractionManager.runAfterInteractions(() => {
-          navigate(Routes.SWAP);
-        });
-        return;
-      }
-
-      android && delayNext();
-
-      const mainnetEth = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.mainnet, address: accountAddress });
-      navigate(Routes.EXCHANGE_MODAL, {
-        fromDiscover: true,
-        params: {
-          inputAsset: mainnetEth,
-        },
-        screen: Routes.MAIN_EXCHANGE_SCREEN,
+      swapsStore.setState({
+        inputAsset: userAssetsStore.getState().getHighestValueNativeAsset(),
+      });
+      InteractionManager.runAfterInteractions(() => {
+        navigate(Routes.SWAP);
       });
     } else {
       watchingAlert();
     }
-  }, [accountAddress, isReadOnlyWallet, navigate, swapsV2Enabled]);
+  }, [isReadOnlyWallet, navigate]);
 
   return (
     <ActionButton icon="􀖅" onPress={handlePress} testID="swap-button">

@@ -80,7 +80,11 @@ export default function DiscoverHome() {
           {!IS_TEST && nftOffersEnabled && <NFTOffersCard />}
           {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
           {featuredResultsEnabled && (
-            <FeaturedResultStack onNavigate={onNavigate} placementId="discover_big" Card={DiscoverFeaturedResultsCard} />
+            <FeaturedResultStack onNavigate={onNavigate} placementId="discover_big">
+              {({ featuredResult, handlePress }) => (
+                <DiscoverFeaturedResultsCard handlePress={handlePress} featuredResult={featuredResult} />
+              )}
+            </FeaturedResultStack>
           )}
           {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
           {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}

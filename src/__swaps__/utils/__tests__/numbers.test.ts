@@ -1,4 +1,4 @@
-import { convertAmountToNativeDisplayWorklet } from '../numbers';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { supportedCurrencies } from '@/references/supportedCurrencies';
 
 const testCases = [

@@ -2,7 +2,7 @@ import { FeaturedResultsVariables, useFeaturedResults } from '@/resources/featur
 import { getFeaturedResultById } from '@/resources/featuredResults/_selectors/getFeaturedResultById';
 import { useTrackFeaturedResult } from '@/resources/featuredResults/trackFeaturedResult';
 import { TrackFeaturedResultType } from '@/graphql/__generated__/arc';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { FeaturedResultStackProps } from './FeaturedResultStack';
 import { logger } from '@/logger';
 
@@ -11,7 +11,7 @@ type FeaturedResultCardProps = FeaturedResultStackProps &
     featuredResultId: string;
   };
 
-export const FeaturedResultCard = ({ featuredResultId, onNavigate, Card, ...props }: FeaturedResultCardProps) => {
+export const FeaturedResultCard = ({ featuredResultId, onNavigate, children, ...props }: FeaturedResultCardProps) => {
   const { data: featuredResult } = useFeaturedResults(props, {
     select: data => getFeaturedResultById(data, featuredResultId),
   });
@@ -56,5 +56,5 @@ export const FeaturedResultCard = ({ featuredResultId, onNavigate, Card, ...prop
     return null;
   }
 
-  return <Card handlePress={handlePress} featuredResult={featuredResult} />;
+  return children({ featuredResult, handlePress });
 };

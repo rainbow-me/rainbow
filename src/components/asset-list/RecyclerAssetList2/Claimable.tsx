@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { ExtendedState } from './core/RawRecyclerList';
-import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { analyticsV2 } from '@/analytics';
 
 export const Claimable = React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
@@ -25,10 +25,9 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
   );
 
   const [claimable] = data;
+  if (!claimable) return null;
 
   const nativeDisplay = convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true);
-
-  if (!claimable) return null;
 
   return (
     <Box
