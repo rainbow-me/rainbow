@@ -1,7 +1,6 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
 import {
-  ALLOWS_PERMIT,
   CrosschainQuote,
   getQuoteExecutionDetails,
   getRainbowRouterContractAddress,
@@ -85,17 +84,8 @@ const getCrosschainSwapDefaultGasLimit = (tradeDetails: CrosschainQuote) => trad
 const getCrosschainSwapRainbowDefaultGasLimit = (chainId: ChainId) =>
   ethereumUtils.getBasicSwapGasLimit(Number(chainId)) * EXTRA_GAS_PADDING;
 
-export const getCrosschainSwapServiceTime = (tradeDetails: CrosschainQuote) => tradeDetails?.routes?.[0]?.serviceTime;
-
 export const getDefaultGasLimitForTrade = (tradeDetails: Quote, chainId: ChainId): number => {
-  const allowsPermit =
-    chainId === ChainId.mainnet && ALLOWS_PERMIT[tradeDetails?.sellTokenAddress?.toLowerCase() as keyof PermitSupportedTokenList];
-
-  let defaultGasLimit = tradeDetails?.defaultGasLimit;
-
-  if (allowsPermit) {
-    defaultGasLimit = Math.max(Number(defaultGasLimit), Number(ethUnits.basic_swap_permit) * EXTRA_GAS_PADDING).toString();
-  }
+  const defaultGasLimit = tradeDetails?.defaultGasLimit;
   return Number(defaultGasLimit || 0) || ethereumUtils.getBasicSwapGasLimit(Number(chainId)) * EXTRA_GAS_PADDING;
 };
 
@@ -203,7 +193,7 @@ export const estimateSwapGasLimit = async ({
   requiresApprove?: boolean;
   tradeDetails: Quote | null;
 }): Promise<string | number> => {
-  const provider = await getProvider({ chainId });
+  const provider = getProvider({ chainId });
   if (!provider || !tradeDetails) {
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
@@ -270,7 +260,7 @@ export const estimateCrosschainSwapGasLimit = async ({
   requiresApprove?: boolean;
   tradeDetails: CrosschainQuote;
 }): Promise<string | number> => {
-  const provider = await getProvider({ chainId });
+  const provider = getProvider({ chainId });
   if (!provider || !tradeDetails) {
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }

@@ -22,6 +22,7 @@ import { parseAddressAsset, parseAsset } from '@/resources/assets/assets';
 import { ParsedAsset } from '@/resources/assets/types';
 
 import { ChainId } from '@/chains/types';
+import { chainsNativeAsset } from '@/chains';
 
 const TransactionOutTypes = [
   'burn',
@@ -86,12 +87,13 @@ export const parseTransaction = async (
   const nativeAsset = changes.find(change => change?.asset.isNativeAsset);
   const nativeAssetPrice = nativeAsset?.price?.toString() || '0';
 
-  const value = toFixedDecimals(nativeAsset?.value || '', nativeAsset?.asset?.decimals || 18);
+  const decimals = typeof nativeAsset?.asset?.decimals === 'number' ? nativeAsset.asset.decimals : 18;
+  const value = toFixedDecimals(nativeAsset?.value || '', decimals);
 
   // this is probably wrong, need to revisit
   const native = convertAmountAndPriceToNativeDisplay(value, nativeAssetPrice, nativeCurrency);
 
-  const fee = getTransactionFee(txn, nativeCurrency);
+  const fee = getTransactionFee(txn, nativeCurrency, chainId);
 
   const contract = meta.contract_name && {
     name: meta.contract_name,
@@ -158,27 +160,26 @@ export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): R
 /**
  * Helper for retrieving tx fee sent by zerion, works only for mainnet only
  */
-const getTransactionFee = (txn: TransactionApiResponse, nativeCurrency: NativeCurrencyKey): RainbowTransactionFee | undefined => {
+const getTransactionFee = (
+  txn: TransactionApiResponse,
+  nativeCurrency: NativeCurrencyKey,
+  chainId: ChainId
+): RainbowTransactionFee | undefined => {
   if (txn.fee === null || txn.fee === undefined) {
     return undefined;
   }
 
+  const chainNativeAsset = chainsNativeAsset[chainId];
+
   const zerionFee = txn.fee;
   return {
-    // TODO: asset hardcoded for mainnet only need to add support for L2 networks
     value: convertRawAmountToBalance(zerionFee.value, {
-      decimals: 18,
-      symbol: 'ETH',
+      decimals: chainNativeAsset.decimals,
+      symbol: chainNativeAsset.symbol,
     }),
     native:
       nativeCurrency !== 'ETH' && zerionFee?.price > 0
-        ? convertRawAmountToNativeDisplay(
-            zerionFee.value,
-            // TODO: asset decimals hardcoded for mainnet only need to add support for L2 networks
-            18,
-            zerionFee.price,
-            nativeCurrency
-          )
+        ? convertRawAmountToNativeDisplay(zerionFee.value, chainNativeAsset.decimals, zerionFee.price, nativeCurrency)
         : undefined,
   };
 };

@@ -11,9 +11,7 @@ import {
 } from '@/notifications/types';
 import { handleShowingForegroundNotification } from '@/notifications/foregroundHandler';
 import { registerTokenRefreshListener, saveFCMToken } from '@/notifications/tokens';
-import { WALLETCONNECT_SYNC_DELAY } from '@/notifications/constants';
 import { useDispatch } from 'react-redux';
-import { requestsForTopic } from '@/redux/requests';
 import { ThunkDispatch } from 'redux-thunk';
 import store, { AppState } from '@/redux/store';
 import { AnyAction } from 'redux';
@@ -32,10 +30,7 @@ import {
   trackWalletsSubscribedForNotifications,
 } from '@/notifications/analytics';
 import { AddressWithRelationship, WalletNotificationRelationship } from '@/notifications/settings';
-import {
-  initializeGlobalNotificationSettings,
-  initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets,
-} from '@/notifications/settings/initialization';
+import { initializeNotificationSettingsForAllAddresses } from '@/notifications/settings/initialization';
 import { logger } from '@/logger';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 
@@ -66,30 +61,9 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
 
   const onForegroundRemoteNotification = (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
     const type = remoteMessage?.data?.type;
-    if (type === NotificationTypes.walletConnect) {
-      handleWalletConnectNotification(remoteMessage);
-    } else if (remoteMessage?.notification !== undefined) {
+    if (type !== NotificationTypes.walletConnect && remoteMessage?.notification !== undefined) {
       handleShowingForegroundNotification(remoteMessage as FixedRemoteMessage);
     }
-  };
-
-  const onBackgroundRemoteNotification = async (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
-    const type = remoteMessage?.data?.type;
-    if (type === NotificationTypes.walletConnect) {
-      handleWalletConnectNotification(remoteMessage);
-    }
-  };
-
-  const handleWalletConnectNotification = (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
-    const topic = remoteMessage?.data?.topic;
-
-    setTimeout(() => {
-      const requests = dispatch(requestsForTopic(topic as string));
-      if (requests) {
-        // WC requests will open automatically
-        return false;
-      }
-    }, WALLETCONNECT_SYNC_DELAY);
   };
 
   const handleDeferredNotificationIfNeeded = useCallback(async () => {
@@ -208,7 +182,6 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
     subscriptionChangesListener.current = registerNotificationSubscriptionChangesListener();
     onTokenRefreshListener.current = registerTokenRefreshListener();
     foregroundNotificationListener.current = messaging().onMessage(onForegroundRemoteNotification);
-    messaging().setBackgroundMessageHandler(onBackgroundRemoteNotification);
     messaging().getInitialNotification().then(handleAppOpenedWithNotification);
     notificationOpenedListener.current = messaging().onNotificationOpenedApp(handleAppOpenedWithNotification);
     appStateListener.current = ApplicationState.addEventListener('change', nextAppState => {
@@ -255,8 +228,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
             })
         )
       );
-      initializeGlobalNotificationSettings();
-      initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets(addresses);
+      initializeNotificationSettingsForAllAddresses(addresses);
 
       alreadyRanInitialization.current = true;
     }

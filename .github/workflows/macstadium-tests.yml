@@ -49,10 +49,14 @@ jobs:
         run: |
           yarn install && yarn setup
 
+      - name: Set sanitized branch name
+        id: sanitize
+        run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
+
       - name: Upload Yarn cache
         uses: actions/upload-artifact@v4
         with:
-          name: yarn-cache
+          name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
           path: |
             .yarn/cache
             .yarn/install-state.gz
@@ -60,13 +64,35 @@ jobs:
   # Job for linting and unit tests
   linting-and-unit-tests:
     runs-on: ["self-hosted"]
+    permissions:
+      contents: read
     needs: install-deps
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up github keys
+        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+        
+      - name: Set sanitized branch name
+        id: sanitize
+        run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
       - name: Download Yarn cache
         uses: actions/download-artifact@v4
         with:
-          name: yarn-cache
+          name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
           path: .yarn
+      - name: Set up ENV vars & scripts
+        env:
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+        run: |
+          source ~/.zshrc
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env && rm -rf rainbow-env
+          eval $CI_SCRIPTS      
+      - name: Install dependencies
+        run: |
+          yarn install && yarn setup
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
@@ -86,14 +112,39 @@ jobs:
   # iOS build and e2e tests
   e2e-ios:
     runs-on: ["self-hosted"]
-    timeout-minutes: 60
+    concurrency: 
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+    timeout-minutes: 90
     needs: install-deps
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up github keys
+        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+      
+      - name: Set sanitized branch name
+        id: sanitize
+        run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
       - name: Download Yarn cache
         uses: actions/download-artifact@v4
         with:
-          name: yarn-cache
+          name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
           path: .yarn
+      - name: Set up ENV vars & scripts
+        env:
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+        run: |
+          source ~/.zshrc
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env && rm -rf rainbow-env
+          eval $CI_SCRIPTS
+      - name: Install dependencies
+        run: |
+          yarn install && yarn setup
 
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache

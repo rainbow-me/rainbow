@@ -4,7 +4,7 @@ import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmp
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
-import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import { analyticsV2 } from '@/analytics';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import * as i18n from '@/languages';
@@ -45,10 +45,7 @@ const TokenToSellListComponent = () => {
       if (!token) return;
 
       runOnUI(() => {
-        if (
-          internalSelectedOutputAsset.value &&
-          getStandardizedUniqueIdWorklet({ address: token.address, chainId: token.chainId }) !== internalSelectedInputAsset.value?.uniqueId
-        ) {
+        if (internalSelectedOutputAsset.value && getUniqueId(token.address, token.chainId) !== internalSelectedInputAsset.value?.uniqueId) {
           isQuoteStale.value = 1;
           isFetching.value = true;
         }
@@ -86,27 +83,29 @@ const TokenToSellListComponent = () => {
   });
 
   return (
-    <FlatList
-      ListEmptyComponent={<ListEmpty />}
-      ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
-      ListHeaderComponent={<ChainSelection allText={i18n.t(i18n.l.exchange.all_networks)} output={false} />}
-      contentContainerStyle={{ paddingBottom: 16 }}
-      data={userAssetIds}
-      getItemLayout={getItemLayout}
-      keyExtractor={uniqueId => uniqueId}
-      renderItem={({ item: uniqueId }) => {
-        return <CoinRow onPress={(asset: ParsedSearchAsset | null) => handleSelectToken(asset)} output={false} uniqueId={uniqueId} />;
-      }}
-      renderScrollComponent={props => {
-        return (
-          <Animated.ScrollView
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...props}
-            animatedProps={animatedListProps}
-          />
-        );
-      }}
-      style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
-    />
+    <>
+      <ChainSelection allText={i18n.t(i18n.l.exchange.all_networks)} output={false} />
+      <FlatList
+        ListEmptyComponent={<ListEmpty />}
+        ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
+        contentContainerStyle={{ paddingBottom: 16 }}
+        data={userAssetIds}
+        getItemLayout={getItemLayout}
+        keyExtractor={uniqueId => uniqueId}
+        renderItem={({ item: uniqueId }) => {
+          return <CoinRow onPress={(asset: ParsedSearchAsset | null) => handleSelectToken(asset)} output={false} uniqueId={uniqueId} />;
+        }}
+        renderScrollComponent={props => {
+          return (
+            <Animated.ScrollView
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...props}
+              animatedProps={animatedListProps}
+            />
+          );
+        }}
+        style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
+      />
+    </>
   );
 };

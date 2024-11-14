@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
 import { Address } from 'viem';
 
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
@@ -11,8 +10,6 @@ import { RainbowError, logger } from '@/logger';
 import { parseUserAssets, userAssetsQueryKey } from './userAssets';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
-
-const USER_ASSETS_REFETCH_INTERVAL = 60000;
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -59,15 +56,19 @@ export async function fetchUserAssetsByChain<TSelectData = UserAssetsByChainResu
 // ///////////////////////////////////////////////
 // Query Function
 
-export async function userAssetsByChainQueryFunction({
+async function userAssetsByChainQueryFunction({
   queryKey: [{ address, chainId, currency }],
 }: QueryFunctionArgs<typeof userAssetsByChainQueryKey>): Promise<Record<string, ParsedUserAsset>> {
   const cache = queryClient.getQueryCache();
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency }))?.state?.data || {}) as ParsedAssetsDictByChain;
-  const cachedDataForChain = cachedUserAssets?.[chainId];
+  const cachedDataForChain = cachedUserAssets?.[chainId] || {};
   try {
-    const url = `/${chainId}/${address}/assets/?currency=${currency.toLowerCase()}`;
-    const res = await addysHttp.get<AddressAssetsReceivedMessage>(url);
+    const url = `/${chainId}/${address}/assets`;
+    const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
+      params: {
+        currency: currency.toLowerCase(),
+      },
+    });
     const chainIdsInResponse = res?.data?.meta?.chain_ids || [];
     const assets = res?.data?.payload?.assets || [];
     if (assets.length && chainIdsInResponse.length) {
@@ -90,24 +91,3 @@ export async function userAssetsByChainQueryFunction({
 }
 
 type UserAssetsByChainResult = QueryFunctionResult<typeof userAssetsByChainQueryFunction>;
-
-// ///////////////////////////////////////////////
-// Query Hook
-
-export function useUserAssetsByChain<TSelectResult = UserAssetsByChainResult>(
-  { address, chainId, currency }: UserAssetsByChainArgs,
-  config: QueryConfigWithSelect<UserAssetsByChainResult, Error, TSelectResult, UserAssetsByChainQueryKey> = {}
-) {
-  return useQuery(
-    userAssetsByChainQueryKey({
-      address,
-      chainId,
-      currency,
-    }),
-    userAssetsByChainQueryFunction,
-    {
-      ...config,
-      refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
-    }
-  );
-}

@@ -23,6 +23,7 @@ import { toChecksumAddress } from '@/handlers/web3';
 import { IS_IOS, IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { useForegroundColor } from '@/design-system';
+import { MenuActionConfig } from 'react-native-ios-context-menu';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -120,13 +121,30 @@ interface AddressRowProps {
 export default function AddressRow({ contextMenuActions, data, editMode, onPress }: AddressRowProps) {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
-  const { address, balances, color: accountColor, ens, image: accountImage, isSelected, isReadOnly, isLedger, label, walletId } = data;
+  const {
+    address,
+    balancesMinusHiddenBalances,
+    color: accountColor,
+    ens,
+    image: accountImage,
+    isSelected,
+    isReadOnly,
+    isLedger,
+    label,
+    walletId,
+  } = data;
 
   const { colors, isDarkMode } = useTheme();
 
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
-  const balanceText = balances ? balances.totalBalanceDisplay : lang.t('wallet.change_wallet.loading_balance');
+  const balanceText = useMemo(() => {
+    if (!balancesMinusHiddenBalances) {
+      return lang.t('wallet.change_wallet.loading_balance');
+    }
+
+    return balancesMinusHiddenBalances;
+  }, [balancesMinusHiddenBalances]);
 
   const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(label), [label]);
 
@@ -157,7 +175,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
     },
 
     ...(notificationsEnabled
-      ? [
+      ? ([
           {
             actionKey: ContextMenuKeys.Notifications,
             actionTitle: lang.t('wallet.action.notifications.action_title'),
@@ -166,18 +184,15 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
               iconValue: 'bell.fill',
             },
           },
-        ]
+        ] as const)
       : []),
     {
       actionKey: ContextMenuKeys.Remove,
       actionTitle: lang.t('wallet.action.remove'),
-      icon: {
-        iconType: 'SYSTEM',
-        iconValue: 'trash.fill',
-      },
+      icon: { iconType: 'SYSTEM', iconValue: 'trash.fill' },
       menuAttributes: ['destructive'],
     },
-  ];
+  ] satisfies MenuActionConfig[];
 
   const menuConfig = {
     menuItems: contextMenuItems,

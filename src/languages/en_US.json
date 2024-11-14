@@ -873,6 +873,10 @@
         "title_plural": "Available on %{length} Networks",
         "title_singular": "Available on the %{network} Network"
       },
+      "default_network_explainer": {
+        "text": "%{chainName} is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.",
+        "title": "What's %{chainName}?"
+      },
       "arbitrum": {
         "text": "Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
         "title": "What's Arbitrum?"
@@ -933,7 +937,7 @@
       },
       "avalanche": {
         "text": "Avalanche is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Avalanche has its own security and consensus mechanisms that differ from Ethereum.",
-        "title": "What's Avalanche"
+        "title": "What's Avalanche?"
       },
       "degen": {
         "text": "Degen Chain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum.",
@@ -944,7 +948,7 @@
         "title": "What's Blast?"
       },
       "apechain": {
-        "text": "ApeChain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum. It significantly enhances ApeCoin's utility, fostering a robust and dynamic economy driven by $APE.",
+        "text": "ApeChain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum.\n\nIt significantly enhances ApeCoin's utility, fostering a robust and dynamic economy driven by $APE.",
         "title": "What's ApeChain?"
       },
       "zora": {
@@ -1342,7 +1346,11 @@
         "MOST_RECENT": "Recent",
         "most_recent": "Recent",
         "FLOOR_PRICE": "Floor Price",
-        "floor_price": "Floor Price"
+        "floor_price": "Floor Price",
+        "order": {
+          "asc": "Ascending order",
+          "desc": "Descending order"
+        }
       },
       "empty": "Collectibles",
       "collect_now": "Collect Now",
@@ -2765,6 +2773,8 @@
       }
     },
     "walletconnect": {
+      "connecting": "Connecting",
+      "loading": "Loading",
       "requests": "Requests",
       "wants_to_connect": "wants to connect to your wallet",
       "wants_to_connect_to_network": "wants to connect to the %{network} network",

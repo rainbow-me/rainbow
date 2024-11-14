@@ -1,5 +1,4 @@
 import { Signer } from '@ethersproject/abstract-signer';
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Transaction } from '@ethersproject/transactions';
 import {
   CrosschainQuote,
@@ -13,7 +12,7 @@ import {
   unwrapNativeAsset,
   wrapNativeAsset,
 } from '@rainbow-me/swaps';
-import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
+import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { Address } from 'viem';
 
 import { metadataPOSTClient } from '@/graphql';
@@ -25,7 +24,6 @@ import { RainbowError, logger } from '@/logger';
 
 import { gasUnits, REFERRER } from '@/references';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { toHex } from '@/__swaps__/utils/hex';
 import { ActionProps, RapActionResult } from '../references';
 import {
   CHAIN_IDS_WITH_TRACE_SUPPORT,
@@ -56,7 +54,6 @@ export const estimateSwapGasLimit = async ({
   requiresApprove?: boolean;
   quote: Quote;
 }): Promise<string> => {
-  // TODO: MARK - Replace this once we migrate network => chainId
   const provider = getProvider({ chainId });
   if (!provider || !quote) {
     return gasUnits.basic_swap[chainId];
@@ -74,11 +71,7 @@ export const estimateSwapGasLimit = async ({
           from: quote.from,
           value: isWrapNativeAsset ? quote.buyAmount.toString() : '0',
         },
-        getWrappedAssetMethod(
-          isWrapNativeAsset ? 'deposit' : 'withdraw',
-          provider as StaticJsonRpcProvider,
-          chainId as unknown as SwapChainId
-        ),
+        getWrappedAssetMethod(isWrapNativeAsset ? 'deposit' : 'withdraw', provider, chainId as unknown as SwapChainId),
         isWrapNativeAsset ? [] : [quote.buyAmount.toString()],
         provider,
         WRAP_GAS_PADDING
@@ -95,7 +88,7 @@ export const estimateSwapGasLimit = async ({
     // Swap
   } else {
     try {
-      const { params, method, methodArgs } = getQuoteExecutionDetails(quote, { from: quote.from }, provider as StaticJsonRpcProvider);
+      const { params, method, methodArgs } = getQuoteExecutionDetails(quote, { from: quote.from }, provider);
 
       if (requiresApprove) {
         if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
@@ -212,9 +205,10 @@ export const executeSwap = async ({
   wallet: Signer;
   permit: boolean;
 }): Promise<Transaction | null> => {
-  if (!wallet || !quote) return null;
+  if (!wallet || !quote) {
+    return null;
+  }
 
-  const { sellTokenAddress, buyTokenAddress } = quote;
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
     nonce: nonce ? toHex(`${nonce}`) : undefined,
@@ -243,9 +237,8 @@ export const swap = async ({
   gasFeeParamsBySpeed,
 }: ActionProps<'swap'>): Promise<RapActionResult> => {
   let gasParamsToUse = gasParams;
-  // let gasParams = parseGasParamAmounts(selectedGasFee);
 
-  const { quote, permit, chainId, requiresApprove } = parameters;
+  const { quote, chainId, requiresApprove } = parameters;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
 
   if (currentRap.actions.length - 1 > index) {
@@ -279,7 +272,7 @@ export const swap = async ({
       chainId,
       gasLimit,
       nonce,
-      permit: !!permit,
+      permit: false,
       quote,
       wallet,
     };

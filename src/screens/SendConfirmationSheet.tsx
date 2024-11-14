@@ -36,7 +36,7 @@ import {
   formatRecordsForTransaction,
 } from '@/handlers/ens';
 import svgToPngIfNeeded from '@/handlers/svgs';
-import { estimateGasLimit } from '@/handlers/web3';
+import { estimateGasLimit, getProvider } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
@@ -254,6 +254,7 @@ export const SendConfirmationSheet = () => {
   const [checkboxes, setCheckboxes] = useState<Checkbox[]>(getDefaultCheckboxes({ ensProfile, isENS, chainId, toAddress }));
 
   useEffect(() => {
+    const provider = getProvider({ chainId });
     if (isENS) {
       const promises = [
         estimateGasLimit(
@@ -263,7 +264,8 @@ export const SendConfirmationSheet = () => {
             asset: asset,
             recipient: toAddress,
           },
-          true
+          true,
+          provider
         ),
       ];
       const sendENSOptions = Object.fromEntries(checkboxes.map(option => [option.id, option.checked])) as {
@@ -352,9 +354,10 @@ export const SendConfirmationSheet = () => {
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      type: asset.network,
+      type: 'network',
+      chainId,
     });
-  }, [asset.network, navigate]);
+  }, [chainId, navigate]);
 
   const nativeDisplayAmount = useMemo(
     () => convertAmountToNativeDisplay(amountDetails.nativeAmount, nativeCurrency),
@@ -667,18 +670,7 @@ export const SendConfirmationSheet = () => {
               testID="send-confirmation-button"
             />
           </SendButtonWrapper>
-          {isENS && (
-            <GasSpeedButton
-              asset={undefined}
-              fallbackColor={undefined}
-              testID={undefined}
-              showGasOptions={undefined}
-              validateGasParams={undefined}
-              crossChainServiceTime={undefined}
-              chainId={chainId}
-              theme={theme.isDarkMode ? 'dark' : 'light'}
-            />
-          )}
+          {isENS && <GasSpeedButton chainId={chainId} theme={theme.isDarkMode ? 'dark' : 'light'} />}
         </Column>
       </SlackSheet>
     </Container>

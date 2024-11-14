@@ -20,6 +20,10 @@ export interface UserProperties {
   NFTs?: number;
   poaps?: number;
 
+  // claimables
+  claimablesAmount?: number;
+  claimablesUSDValue?: number;
+
   // nft offers
   nftOffersAmount?: number;
   nftOffersUSDValue?: number;

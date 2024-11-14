@@ -17,20 +17,20 @@ import { ethereumUtils } from '@/utils';
 import { chainsIdByName } from '@/chains';
 
 export const parsePosition = (position: Position, currency: NativeCurrencyKey): RainbowPosition => {
+  let totalLocked = '0';
+
   let totalDeposits = '0';
   const parsedDeposits = position.deposits?.map((deposit): RainbowDeposit => {
     return {
       ...deposit,
       underlying: deposit.underlying?.map(underlying => {
-        const nativeDisplay = convertRawAmountToNativeDisplay(
-          underlying.quantity,
-          underlying.asset.decimals,
-          underlying.asset.price?.value!,
-          currency
-        );
-        if (!deposit.omit_from_total) {
-          totalDeposits = add(totalDeposits, nativeDisplay.amount);
+        const decimals = typeof underlying.asset.decimals === 'number' ? underlying.asset.decimals : 18;
+        const nativeDisplay = convertRawAmountToNativeDisplay(underlying.quantity, decimals, underlying.asset.price?.value!, currency);
+
+        if (deposit.omit_from_total) {
+          totalLocked = add(totalLocked, nativeDisplay.amount);
         }
+        totalDeposits = add(totalDeposits, nativeDisplay.amount);
 
         return {
           ...underlying,
@@ -46,15 +46,14 @@ export const parsePosition = (position: Position, currency: NativeCurrencyKey): 
     return {
       ...borrow,
       underlying: borrow.underlying.map(underlying => {
-        const nativeDisplay = convertRawAmountToNativeDisplay(
-          underlying.quantity,
-          underlying.asset.decimals,
-          underlying.asset.price?.value!,
-          currency
-        );
-        if (!borrow.omit_from_total) {
-          totalBorrows = add(totalBorrows, nativeDisplay.amount);
+        const decimals = typeof underlying.asset.decimals === 'number' ? underlying.asset.decimals : 18;
+        const nativeDisplay = convertRawAmountToNativeDisplay(underlying.quantity, decimals, underlying.asset.price?.value!, currency);
+
+        if (borrow.omit_from_total) {
+          totalLocked = subtract(totalLocked, nativeDisplay.amount);
         }
+
+        totalBorrows = add(totalBorrows, nativeDisplay.amount);
 
         return {
           ...underlying,
@@ -66,10 +65,14 @@ export const parsePosition = (position: Position, currency: NativeCurrencyKey): 
 
   let totalClaimables = '0';
   const parsedClaimables = position.claimables?.map((claim: Claimable): RainbowClaimable => {
-    const nativeDisplay = convertRawAmountToNativeDisplay(claim.quantity, claim.asset.decimals, claim.asset.price?.value!, currency);
-    if (!claim.omit_from_total) {
-      totalClaimables = add(totalClaimables, nativeDisplay.amount);
+    const decimals = typeof claim.asset.decimals === 'number' ? claim.asset.decimals : 18;
+    const nativeDisplay = convertRawAmountToNativeDisplay(claim.quantity, decimals, claim.asset.price?.value!, currency);
+
+    if (claim.omit_from_total) {
+      totalLocked = add(totalLocked, nativeDisplay.amount);
     }
+    totalClaimables = add(totalClaimables, nativeDisplay.amount);
+
     return {
       asset: claim.asset,
       quantity: claim.quantity,
@@ -82,6 +85,7 @@ export const parsePosition = (position: Position, currency: NativeCurrencyKey): 
       amount: subtract(add(totalDeposits, totalClaimables), totalBorrows),
       display: convertAmountToNativeDisplay(subtract(add(totalDeposits, totalClaimables), totalBorrows), currency),
     },
+    totalLocked,
     borrows: {
       amount: totalBorrows,
       display: convertAmountToNativeDisplay(totalBorrows, currency),
@@ -142,6 +146,7 @@ export const parsePositions = (data: AddysPositionsResponse, currency: NativeCur
 
   const positionsTotals = parsedPositions.reduce(
     (acc, position) => ({
+      totalLocked: add(acc.totalLocked, position.totals.totalLocked),
       borrows: {
         amount: add(acc.borrows.amount, position.totals.borrows.amount),
         display: convertAmountToNativeDisplay(add(acc.borrows.amount, position.totals.borrows.amount), currency),
@@ -156,6 +161,7 @@ export const parsePositions = (data: AddysPositionsResponse, currency: NativeCur
       },
     }),
     {
+      totalLocked: '0',
       borrows: { amount: '0', display: '0' },
       claimables: { amount: '0', display: '0' },
       deposits: { amount: '0', display: '0' },
@@ -164,14 +170,12 @@ export const parsePositions = (data: AddysPositionsResponse, currency: NativeCur
 
   const totalAmount = subtract(add(positionsTotals.deposits.amount, positionsTotals.claimables.amount), positionsTotals.borrows.amount);
 
-  const totalDisplay = {
-    amount: totalAmount,
-    display: convertAmountToNativeDisplay(totalAmount, currency),
-  };
-
   return {
     totals: {
-      total: totalDisplay,
+      total: {
+        amount: totalAmount,
+        display: convertAmountToNativeDisplay(totalAmount, currency),
+      },
       ...positionsTotals,
     },
     positions: parsedPositions,

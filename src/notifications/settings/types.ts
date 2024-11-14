@@ -14,14 +14,23 @@ export type GlobalNotificationTopics = {
   [key: GlobalNotificationTopicType]: boolean;
 };
 
+export type NotificationSubscriptionWalletsType = {
+  type: WalletNotificationRelationshipType;
+  address: string;
+  transaction_action_types: WalletNotificationTopicType[];
+};
+
+export type NotificationSubscriptionType = {
+  firebase_token: string;
+  wallets: NotificationSubscriptionWalletsType[];
+};
+
 export type WalletNotificationSettings = {
   address: string;
   topics: WalletNotificationTopics;
   enabled: boolean;
   type: WalletNotificationRelationshipType;
   successfullyFinishedInitialSubscription: boolean;
-  // only set in cases when the user imported an already watched wallet
-  oldType?: WalletNotificationRelationshipType;
 };
 
 export type GroupSettings = {

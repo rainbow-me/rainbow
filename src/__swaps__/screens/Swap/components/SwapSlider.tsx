@@ -22,7 +22,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { AnimatedText, Bleed, Box, Column, Columns, Inline, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { triggerHapticFeedback } from '@/screens/points/constants';
-import { greaterThanWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { greaterThanWorklet } from '@/safe-math/SafeMath';
 import {
   SCRUBBER_WIDTH,
   SLIDER_COLLAPSED_HEIGHT,
@@ -90,18 +90,18 @@ export const SwapSlider = ({
   const colors = useDerivedValue(() => ({
     inactiveColorLeft: opacityWorklet(
       dualColor
-        ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true)
-        : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
+        ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode)
+        : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
       0.9
     ),
     activeColorLeft: dualColor
-      ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true)
-      : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
+      ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode)
+      : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
     inactiveColorRight: dualColor
-      ? opacityWorklet(getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true), 0.9)
+      ? opacityWorklet(getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode), 0.9)
       : separatorSecondary,
     activeColorRight: dualColor
-      ? getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true)
+      ? getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode)
       : fillSecondary,
   }));
 

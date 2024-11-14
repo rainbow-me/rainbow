@@ -2,9 +2,9 @@ import '@/languages';
 import * as Sentry from '@sentry/react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native';
+import { Toaster } from 'sonner-native';
 import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
 import { DeeplinkHandler } from '@/components/DeeplinkHandler';
-import { AppStateChangeHandler } from '@/components/AppStateChangeHandler';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -79,10 +79,10 @@ function App({ walletReady }: AppProps) {
           </InitialRouteContext.Provider>
         )}
         <OfflineToast />
+        <Toaster />
       </View>
       <NotificationsHandler walletReady={walletReady} />
       <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
-      <AppStateChangeHandler walletReady={walletReady} />
       <BackendNetworks />
     </Portal>
   );

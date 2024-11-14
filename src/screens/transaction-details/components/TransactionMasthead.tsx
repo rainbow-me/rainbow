@@ -33,7 +33,7 @@ import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtil
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import * as lang from '@/languages';
-import { checkForPendingSwap } from '../helpers/checkForPendingSwap';
+import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 import { ChainId } from '@/chains/types';
 
 const TransactionMastheadHeight = android ? 153 : 135;
@@ -289,12 +289,13 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
     // NOTE: For pending transactions let's use the change value
     // since the balance hasn't been updated yet.
     if (isPendingSwap) {
-      const inAssetValueDisplay = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(change?.value?.toString() || '0', change?.asset.decimals || 18), change?.asset.decimals || 18)} ${change?.asset.symbol}`;
+      const decimals = typeof change?.asset.decimals === 'number' ? change?.asset.decimals : 18;
+      const inAssetValueDisplay = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(change?.value?.toString() || '0', decimals), decimals)} ${change?.asset.symbol}`;
       return {
         inAssetValueDisplay,
         inAssetNativeDisplay: change?.asset.price?.value
           ? convertAmountAndPriceToNativeDisplay(
-              convertRawAmountToDecimalFormat(change?.value?.toString() || '0', change?.asset.decimals || 18),
+              convertRawAmountToDecimalFormat(change?.value?.toString() || '0', decimals),
               change?.asset.price?.value || '0',
               nativeCurrency
             )?.display
@@ -322,12 +323,13 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
     // NOTE: For pending transactions let's use the change value
     // since the balance hasn't been updated yet.
     if (isPendingSwap) {
-      const inAssetValueDisplay = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(change?.value?.toString() || '0', change?.asset.decimals || 18), change?.asset.decimals || 18)} ${change?.asset.symbol}`;
+      const decimals = typeof change?.asset.decimals === 'number' ? change?.asset.decimals : 18;
+      const inAssetValueDisplay = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(change?.value?.toString() || '0', decimals), decimals)} ${change?.asset.symbol}`;
       return {
         inAssetValueDisplay,
         inAssetNativeDisplay: change?.asset.price?.value
           ? convertAmountAndPriceToNativeDisplay(
-              convertRawAmountToDecimalFormat(change?.value?.toString() || '0', change?.asset.decimals || 18),
+              convertRawAmountToDecimalFormat(change?.value?.toString() || '0', decimals),
               change?.asset.price?.value || '0',
               nativeCurrency
             )?.display

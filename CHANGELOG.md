@@ -15,6 +15,92 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.45] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.45)
+
+### Added
+
+- Upgraded to new notifications endpoint for notifications v2 (#6190, #6223, #6229, #6251)
+- Added option to sort NFTs by ascending and descending (#6068)
+- We added isHardwareWallet to swap analytic events (#6238)
+
+### Changed
+
+- Featured results now uses redirect_url for recents (#6203)
+- Removed direct usage of web3Provider (#6200)
+- Now using backend endpoint for determining output based quotes for Swaps v2 (#6212)
+- We now navigate back to last screen after swap confirmation (#6207)
+- ChainSelector row is now fixed at top of list in swaps v2 (#6206)
+- Removed all of WC v1 (#6214)
+- Removed unused references and did updates to ExplainSheet (#6222)
+- Removed Swaps v1 code (#6181, #6250)
+- Updated featured results to use native card styling (#6246)
+- We now exclude hardware wallet related transactions from TTS tracking (#6247)
+- We are now subtracting hidden assets from total wallet balances (#6205)
+- We converted discover screen content to typescript (#6226)
+
+### Fixed
+
+- Fixed broken context menus on asset expanded state in search results (#6209)
+- Fixed a bug with positions total value display (#6185)
+- Fixed CI build issues (#6232, #6225, #6244, #6248)
+- Fixed a crash with animated inputs (#6227)
+- Fixed a bug where balance would show as NaN value (#6239)
+- Fixed transaction details not showing native asset symbol but always showing ETH instead (#6245)
+- Fixed a bug where an empty account balances prevents a swap from being done (#6243)
+- Fixed a bug where Apecoin wasn’t being set as the inputAsset when set as the preferred network (#6252)
+- Fixed a bug where change wallet sheet was missing balance value (#6253)
+
+## [1.9.44] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.44)
+
+### Fixed
+
+- Fixed apechain using mainnet gas prices (#6220)
+
+## [1.9.43] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.43)
+
+### Added
+
+- Added Apechain Support
+
+## [1.9.42] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.42)
+
+### Added
+
+- Added comments watchdog to PRs in github to monitor spam (#6153)
+- Added functionality to hide send button for assets that are not transferable (#6123)
+- Implemented Zeego dropdown menus (#6143)
+- Added a connecting toast for wallet connect connection sheet (#6197)
+
+### Changed
+
+- Converted our send flow to typescript (#6120)
+- Updated Analytics (#6169, #6186, #6195)
+- Made improvements to wallet connect approval/redirect sheet by converting to typescript (#6167)
+- Migrated wallet connect to use WalletKit (#6163)
+- Improvements to claim button (#6165)
+- Updates to swaps v2 logic (#6171)
+- Bumped walletkit to improve wallet connect connections (#6183)
+- Removed transaction inconsistencies and improved type safety (#6137)
+- Upgraded ledger to allow clear signing with updated firmware versions (#5966)
+- Disabled one click auth on wallet connect (#6201)
+- Enabled new features by default (#6192)
+
+### Fixed
+
+- Fixed CI pods to unlock if pod repo update fails (#6168)
+- Fixed wallet connect v2 changeAccount issues (#6160)
+- Fixed ApprovalSheet not using wallet connect v2 isScam flag (#6162)
+- Fixed a bug with network expansion that caused discrepancies in swaps network switcher dropdown (#6149)
+- Fixed a bug where NFT expanded state would cause a crash (#6115)
+- Fixed an issue with MWP from not prompting if dapp metadata retrieval fails (#6164)
+- Fixed an issue where users couldn’t open last weeks points breakdown from points screen (#6166)
+- Fixed a crash on networks while attempting to connect to wallet connect dapp (#6176)
+- Fixed a bug with claimables where data failed to update on app (#6182)
+- Fixed a padding issue for importing ledger devices (#6187)
+- Fixed a crash happening on swaps and also no local images being displayed (#6196)
+- Fixed an issue with CI artifacts being stored with the same name (#6198)
+- Fixed a bug where the gas button wasn't working to change gas speed (#6208)
+
 ## [1.9.41] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.41)
 
 ### Added

@@ -2,7 +2,7 @@ import { Block, Provider } from '@ethersproject/abstract-provider';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { ALLOWS_PERMIT, CrosschainQuote, Quote, getQuoteExecutionDetails, getRainbowRouterContractAddress } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote, getQuoteExecutionDetails, getRainbowRouterContractAddress } from '@rainbow-me/swaps';
 import { mainnet } from 'viem/chains';
 import { Chain, erc20Abi } from 'viem';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
@@ -140,14 +140,7 @@ const getClosestGasEstimate = async (estimationFn: (gasEstimate: number) => Prom
 };
 
 export const getDefaultGasLimitForTrade = (quote: Quote, chainId: Chain['id']): string => {
-  const allowsPermit = chainId === mainnet.id && ALLOWS_PERMIT[quote?.sellTokenAddress?.toLowerCase()];
-
-  let defaultGasLimit = quote?.defaultGasLimit;
-
-  if (allowsPermit) {
-    defaultGasLimit = Math.max(Number(defaultGasLimit), Number(multiply(gasUnits.basic_swap_permit, EXTRA_GAS_PADDING))).toString();
-  }
-  return defaultGasLimit || multiply(gasUnits.basic_swap[chainId], EXTRA_GAS_PADDING);
+  return quote?.defaultGasLimit || multiply(gasUnits.basic_swap[chainId], EXTRA_GAS_PADDING);
 };
 
 export const estimateSwapGasLimitWithFakeApproval = async (

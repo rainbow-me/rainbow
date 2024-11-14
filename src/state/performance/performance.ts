@@ -3,6 +3,7 @@ import { OperationForScreen, PerformanceLog, Screen } from '@/state/performance/
 import { analyticsV2 } from '@/analytics';
 import { logger } from '@/logger';
 import { runOnJS } from 'react-native-reanimated';
+import store from '@/redux/store';
 
 type AnyFunction = (...args: any[]) => any;
 
@@ -23,6 +24,12 @@ interface PerformanceTrackingState {
   };
 }
 
+export function isEnabled() {
+  const isHardwareWallet = store.getState().wallets.selected?.deviceId;
+
+  return !isHardwareWallet;
+}
+
 // Helper function to log performance to Rudderstack
 function logPerformance<S extends Screen>({
   screen,
@@ -33,6 +40,11 @@ function logPerformance<S extends Screen>({
   endOfOperation,
 }: ExecuteFnParamsWithoutFn<S> & { startTime: number; endTime: number }) {
   performanceTracking.setState(state => {
+    if (!isEnabled()) {
+      logger.debug('[performance]: Performance tracking is disabled');
+      return state;
+    }
+
     const timeToCompletion = endTime - startTime;
     const log: PerformanceLog<S> = {
       completedAt: Date.now(),

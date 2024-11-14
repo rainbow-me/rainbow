@@ -1,7 +1,7 @@
 import { Signer } from '@ethersproject/abstract-signer';
 import { CrosschainQuote, fillCrosschainQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
-import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
+import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 
 import { REFERRER, gasUnits, ReferrerType } from '@/references';
 import { ChainId } from '@/chains/types';
@@ -10,7 +10,6 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { toHex } from '@/__swaps__/utils/hex';
 import { ActionProps, RapActionResult } from '../references';
 import {
   CHAIN_IDS_WITH_TRACE_SUPPORT,
@@ -37,7 +36,6 @@ export const estimateCrosschainSwapGasLimit = async ({
   requiresApprove?: boolean;
   quote: CrosschainQuote;
 }): Promise<string> => {
-  // TODO: MARK - Replace this once we migrate network => chainId
   const provider = getProvider({ chainId });
   if (!provider || !quote) {
     return gasUnits.basic_swap[chainId];
