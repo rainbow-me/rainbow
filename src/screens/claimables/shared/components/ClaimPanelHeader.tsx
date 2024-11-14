@@ -9,11 +9,8 @@ import { ClaimStatus } from '../../transaction/types';
 export function ClaimPanelHeader({ claimStatus, iconUrl }: { claimStatus: ClaimStatus; iconUrl: string }) {
   const panelTitle = useMemo(() => {
     switch (claimStatus) {
-      case 'fetchingQuote':
-      case 'estimatingGas':
+      case 'notReady':
       case 'ready':
-      case 'noQuote':
-      case 'noRoute':
         return i18n.t(i18n.l.claimables.panel.claim);
       case 'claiming':
         return i18n.t(i18n.l.claimables.panel.claiming);
@@ -21,7 +18,8 @@ export function ClaimPanelHeader({ claimStatus, iconUrl }: { claimStatus: ClaimS
         return i18n.t(i18n.l.claimables.panel.tokens_on_the_way);
       case 'success':
         return i18n.t(i18n.l.claimables.panel.claimed);
-      case 'error':
+      case 'recoverableError':
+        return 'Swap Failed';
       default:
         return i18n.t(i18n.l.claimables.panel.claiming_failed);
     }
@@ -29,17 +27,15 @@ export function ClaimPanelHeader({ claimStatus, iconUrl }: { claimStatus: ClaimS
 
   const panelTitleColor: TextColor = useMemo(() => {
     switch (claimStatus) {
-      case 'estimatingGas':
-      case 'fetchingQuote':
-      case 'noQuote':
-      case 'noRoute':
+      case 'notReady':
       case 'ready':
       case 'claiming':
         return 'label';
       case 'pending':
       case 'success':
         return 'green';
-      case 'error':
+      case 'unrecoverableError':
+      case 'recoverableError':
       default:
         return 'red';
     }

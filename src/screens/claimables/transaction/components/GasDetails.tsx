@@ -9,7 +9,7 @@ export function GasDetails() {
   const {
     claimable: { chainId },
     claimStatus,
-    gasFeeDisplay,
+    txState: { gasFeeDisplay },
     outputConfig,
   } = useTransactionClaimableContext();
 
@@ -22,7 +22,7 @@ export function GasDetails() {
     }
     switch (claimStatus) {
       case 'ready':
-      case 'error':
+      case 'recoverableError':
         animationProgress.value = withTiming(0, { duration: 300 });
         break;
       case 'claiming':

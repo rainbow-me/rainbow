@@ -39,6 +39,7 @@ interface OutputConfig {
 }
 
 interface TxState {
+  status: 'fetching' | 'success' | 'none';
   isSufficientGas: boolean;
   gasFeeDisplay: string | undefined;
   txPayload: TransactionClaimableTxPayload | undefined;
@@ -46,6 +47,7 @@ interface TxState {
 
 interface QuoteState {
   quote: Quote | CrosschainQuote | undefined;
+  status: 'fetching' | 'noRouteError' | 'noQuoteError' | 'success' | 'none';
   nativeValueDisplay: string | undefined;
   tokenAmountDisplay: string | undefined;
 }
@@ -54,11 +56,11 @@ type TransactionClaimableContextType = {
   outputConfig: OutputConfig;
   claimStatus: ClaimStatus;
   claimable: Claimable;
-  isSufficientGas: boolean;
-  gasFeeDisplay: string | undefined;
-  nativeValueDisplay: string;
-  tokenAmountDisplay: string;
+  txState: TxState;
+  quoteState: QuoteState;
+  requiresSwap: boolean;
 
+  setClaimStatus: Dispatch<SetStateAction<ClaimStatus>>;
   setOutputConfig: Dispatch<SetStateAction<OutputConfig>>;
   setQuoteState: Dispatch<SetStateAction<QuoteState>>;
   setTxState: Dispatch<SetStateAction<TxState>>;
@@ -85,13 +87,19 @@ export function TransactionClaimableContextProvider({
 }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
-  const [claimStatus, setClaimStatus] = useState<ClaimStatus>('ready');
+  const [claimStatus, setClaimStatus] = useState<ClaimStatus>('notReady');
   const [quoteState, setQuoteState] = useState<QuoteState>({
     quote: undefined,
     nativeValueDisplay: undefined,
     tokenAmountDisplay: undefined,
+    status: 'none',
   });
-  const [txState, setTxState] = useState<TxState>({ isSufficientGas: false, gasFeeDisplay: undefined, txPayload: undefined });
+  const [txState, setTxState] = useState<TxState>({
+    isSufficientGas: false,
+    gasFeeDisplay: undefined,
+    txPayload: undefined,
+    status: 'none',
+  });
   const [lastGasEstimateTime, setLastGasEstimateTime] = useState<number>(0);
   const [outputConfig, setOutputConfig] = useState<OutputConfig>({
     chainId: claimable.asset.chainId,
@@ -155,38 +163,44 @@ export function TransactionClaimableContextProvider({
 
   const updateQuote = useCallback(
     async (tokenToClaim: ParsedSearchAsset) => {
-      const quoteParams: QuoteParams = {
-        chainId: claimable.chainId,
-        fromAddress: accountAddress,
-        sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
-        buyTokenAddress: tokenToClaim.isNativeAsset ? ETH_ADDRESS : tokenToClaim.networks[tokenToClaim.chainId]?.address, // thjis si thi problem
-        sellAmount: convertAmountToRawAmount(0.0001, claimable.asset.decimals),
-        slippage: 0.5,
-        refuel: false,
-        toChainId: tokenToClaim.chainId,
-        currency: nativeCurrency,
-      };
+      try {
+        const quoteParams: QuoteParams = {
+          chainId: claimable.chainId,
+          fromAddress: accountAddress,
+          sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
+          buyTokenAddress: tokenToClaim.isNativeAsset ? ETH_ADDRESS : tokenToClaim.networks[tokenToClaim.chainId]?.address, // thjis si thi problem
+          sellAmount: convertAmountToRawAmount(0.0001, claimable.asset.decimals),
+          slippage: 0.5,
+          refuel: false,
+          toChainId: tokenToClaim.chainId,
+          currency: nativeCurrency,
+        };
 
-      const quote = claimable.chainId === tokenToClaim.chainId ? await getQuote(quoteParams) : await getCrosschainQuote(quoteParams);
+        const quote = claimable.chainId === tokenToClaim.chainId ? await getQuote(quoteParams) : await getCrosschainQuote(quoteParams);
 
-      if (!quote || 'error' in quote) {
-        if (quote?.message === 'no routes found') {
-          setClaimStatus('noRoute');
+        if (!quote || 'error' in quote) {
+          let status: QuoteState['status'];
+          if (quote?.message === 'no routes found') {
+            status = 'noRouteError';
+          } else {
+            status = 'noQuoteError';
+            logger.error(new RainbowError('[ClaimingTransactionClaimable]: failed to get quote'), { quote, quoteParams });
+          }
+          setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status });
         } else {
-          setClaimStatus('noQuote');
-          logger.error(new RainbowError('[ClaimingTransactionClaimable]: failed to get quote'), { quote, quoteParams });
+          const buyAmount = divide(quote.buyAmountMinusFees.toString(), 10 ** tokenToClaim.decimals);
+          setQuoteState({
+            quote,
+            nativeValueDisplay: quote.buyTokenAsset?.price.value
+              ? convertAmountToNativeDisplay(multiply(buyAmount, quote.buyTokenAsset.price.value), nativeCurrency)
+              : buyAmount,
+            tokenAmountDisplay: `${buyAmount} ${tokenToClaim.symbol}`,
+            status: 'success',
+          });
         }
-        setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined });
-      } else {
-        const buyAmount = divide(quote.buyAmountMinusFees.toString(), 10 ** tokenToClaim.decimals);
-        setQuoteState({
-          quote,
-          nativeValueDisplay: quote.buyTokenAsset?.price.value
-            ? convertAmountToNativeDisplay(multiply(buyAmount, quote.buyTokenAsset.price.value), nativeCurrency)
-            : buyAmount,
-          tokenAmountDisplay: `${abbreviateNumber(+buyAmount, 3)} ${tokenToClaim.symbol}`,
-        });
-        setClaimStatus('ready');
+      } catch (e) {
+        logger.error(new RainbowError('[ClaimingTransactionClaimable]: failed to get quote'), { error: e });
+        setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'noQuoteError' });
       }
     },
     [accountAddress, claimable.asset.address, claimable.asset.decimals, claimable.asset.isNativeAsset, claimable.chainId, nativeCurrency]
@@ -198,9 +212,11 @@ export function TransactionClaimableContextProvider({
       !quoteState.quote &&
       parsedOutputToken &&
       parsedOutputToken?.symbol === outputConfig.token?.symbol &&
-      parsedOutputToken?.chainId === outputConfig.chainId
+      parsedOutputToken?.chainId === outputConfig.chainId &&
+      quoteState.status === 'none'
     ) {
-      setClaimStatus('fetchingQuote');
+      setQuoteState(prev => ({ ...prev, status: 'fetching' }));
+      setClaimStatus('notReady');
       updateQuote(parsedOutputToken);
     }
   }, [
@@ -213,6 +229,7 @@ export function TransactionClaimableContextProvider({
     quoteState.quote,
     updateQuote,
     parsedOutputToken,
+    quoteState.status,
   ]);
 
   const provider = useMemo(() => getProvider({ chainId: claimable.chainId }), [claimable.chainId]);
@@ -229,72 +246,89 @@ export function TransactionClaimableContextProvider({
         swapGasLimit &&
         !isFetchingOutputToken &&
         parsedOutputToken &&
-        claimStatus !== 'fetchingQuote'))
+        quoteState.status === 'success'))
   );
 
   const estimateGas = useCallback(async () => {
-    console.log('ESTIMATE');
-    if (!canEstimateGas) return;
-
-    const gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {
-      maxFeePerGas: meteorologyData.maxBaseFee,
-      maxPriorityFeePerGas: meteorologyData.maxPriorityFee,
-      gasPrice: meteorologyData.gasPrice,
-    };
-
-    const partialTxPayload = {
-      value: '0x0' as const,
-      data: claimable.action.data,
-      from: accountAddress,
-      chainId: claimable.chainId,
-      nonce: await getNextNonce({ address: accountAddress, chainId: claimable.chainId }),
-      to: claimable.action.to,
-      ...gasParams,
-    };
-
-    const gasLimit = await estimateGasWithPadding(partialTxPayload, null, null, provider);
-
-    if (!gasLimit) {
-      logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to estimate claim gas limit'));
-      return;
-    }
-
-    let gasFeeGwei = calculateGasFeeWorklet(gasSettings, gasLimit);
-
-    if (requiresSwap) {
-      if (!swapGasLimit) {
-        logger.error(new RainbowError('[TransactionClaimablePanel]: swapGasLimit is undefined'));
+    try {
+      if (!canEstimateGas) {
+        if (txState.status === 'fetching') {
+          setTxState(prev => ({ ...prev, status: 'none' }));
+        }
         return;
       }
 
-      const swapGasFeeGwei = calculateGasFeeWorklet(gasSettings, swapGasLimit);
-      gasFeeGwei = add(gasFeeGwei, swapGasFeeGwei);
+      const gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {
+        maxFeePerGas: meteorologyData.maxBaseFee,
+        maxPriorityFeePerGas: meteorologyData.maxPriorityFee,
+        gasPrice: meteorologyData.gasPrice,
+      };
+
+      const partialTxPayload = {
+        value: '0x0' as const,
+        data: claimable.action.data,
+        from: accountAddress,
+        chainId: claimable.chainId,
+        nonce: await getNextNonce({ address: accountAddress, chainId: claimable.chainId }),
+        to: claimable.action.to,
+        ...gasParams,
+      };
+
+      const gasLimit = await estimateGasWithPadding(partialTxPayload, null, null, provider);
+
+      if (!gasLimit) {
+        if (txState.status === 'fetching') {
+          setTxState(prev => ({ ...prev, status: 'none' }));
+        }
+        logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to estimate claim gas limit'));
+        return;
+      }
+
+      let gasFeeGwei = calculateGasFeeWorklet(gasSettings, gasLimit);
+
+      if (requiresSwap) {
+        if (!swapGasLimit) {
+          if (txState.status === 'fetching') {
+            setTxState(prev => ({ ...prev, status: 'none' }));
+          }
+          logger.error(new RainbowError('[TransactionClaimablePanel]: swapGasLimit is undefined'));
+          return;
+        }
+
+        const swapGasFeeGwei = calculateGasFeeWorklet(gasSettings, swapGasLimit);
+        gasFeeGwei = add(gasFeeGwei, swapGasFeeGwei);
+      }
+
+      const gasFeeNativeToken = divide(gasFeeGwei, Math.pow(10, userNativeNetworkAsset.decimals));
+      const userBalance = userNativeNetworkAsset.balance?.amount || '0';
+
+      const sufficientGas = lessThanOrEqualToWorklet(gasFeeNativeToken, userBalance);
+
+      const networkAssetPrice = userNativeNetworkAsset.price?.value?.toString();
+
+      let gasFeeNativeCurrencyDisplay;
+      if (!networkAssetPrice) {
+        gasFeeNativeCurrencyDisplay = `${formatNumber(weiToGwei(gasFeeGwei))} Gwei`;
+      } else {
+        const feeFormatted = formatUnits(safeBigInt(gasFeeGwei), userNativeNetworkAsset.decimals).toString();
+        const feeInUserCurrency = multiply(networkAssetPrice, feeFormatted);
+
+        gasFeeNativeCurrencyDisplay = convertAmountToNativeDisplayWorklet(feeInUserCurrency, nativeCurrency, true);
+      }
+
+      setLastGasEstimateTime(Date.now());
+      setTxState({
+        isSufficientGas: sufficientGas,
+        gasFeeDisplay: gasFeeNativeCurrencyDisplay,
+        txPayload: { ...partialTxPayload, gasLimit },
+        status: 'success',
+      });
+    } catch (e) {
+      if (txState.status === 'fetching') {
+        setTxState(prev => ({ ...prev, status: 'none' }));
+      }
+      logger.warn('[TransactionClaimablePanel]: Failed to estimate gas', { error: e });
     }
-
-    const gasFeeNativeToken = divide(gasFeeGwei, Math.pow(10, userNativeNetworkAsset.decimals));
-    const userBalance = userNativeNetworkAsset.balance?.amount || '0';
-
-    const sufficientGas = lessThanOrEqualToWorklet(gasFeeNativeToken, userBalance);
-
-    const networkAssetPrice = userNativeNetworkAsset.price?.value?.toString();
-
-    let gasFeeNativeCurrencyDisplay;
-    if (!networkAssetPrice) {
-      gasFeeNativeCurrencyDisplay = `${formatNumber(weiToGwei(gasFeeGwei))} Gwei`;
-    } else {
-      const feeFormatted = formatUnits(safeBigInt(gasFeeGwei), userNativeNetworkAsset.decimals).toString();
-      const feeInUserCurrency = multiply(networkAssetPrice, feeFormatted);
-
-      gasFeeNativeCurrencyDisplay = convertAmountToNativeDisplayWorklet(feeInUserCurrency, nativeCurrency, true);
-    }
-
-    setLastGasEstimateTime(Date.now());
-    setTxState({
-      isSufficientGas: sufficientGas,
-      gasFeeDisplay: gasFeeNativeCurrencyDisplay,
-      txPayload: { ...partialTxPayload, gasLimit },
-    });
-    setClaimStatus('ready');
   }, [
     canEstimateGas,
     meteorologyData?.maxBaseFee,
@@ -310,6 +344,7 @@ export function TransactionClaimableContextProvider({
     userNativeNetworkAsset?.decimals,
     userNativeNetworkAsset?.balance?.amount,
     userNativeNetworkAsset?.price?.value,
+    txState.status,
     swapGasLimit,
     nativeCurrency,
   ]);
@@ -318,8 +353,13 @@ export function TransactionClaimableContextProvider({
     // estimate gas if it hasn't been estimated yet or if 10 seconds have passed since last estimate
     if (canEstimateGas && (!txState.gasFeeDisplay || Date.now() - lastGasEstimateTime > 10_000)) {
       try {
+        // if initial gas estimate
         if (!txState.gasFeeDisplay) {
-          setClaimStatus('estimatingGas');
+          setTxState(prev => ({
+            ...prev,
+            status: 'fetching',
+          }));
+          setClaimStatus('notReady');
         }
         estimateGas();
       } catch (e) {
@@ -337,13 +377,24 @@ export function TransactionClaimableContextProvider({
     txState.gasFeeDisplay,
   ]);
 
+  useEffect(() => {
+    if (
+      txState.status === 'success' &&
+      txState.isSufficientGas &&
+      (!requiresSwap || quoteState.status === 'success') &&
+      claimStatus === 'notReady'
+    ) {
+      setClaimStatus('ready');
+    }
+  }, [claimStatus, quoteState.status, requiresSwap, txState.isSufficientGas, txState.status]);
+
   const queryKey = claimablesQueryKey({ address: accountAddress, currency: nativeCurrency });
 
   const { mutate: claim } = useMutation({
     mutationFn: async () => {
       if (!txState.txPayload || !outputConfig.token || !outputConfig.chainId || (requiresSwap && !quoteState.quote)) {
         haptics.notificationError();
-        setClaimStatus('error');
+        setClaimStatus('recoverableError');
         logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to claim claimable due to missing tx payload'));
         return;
       }
@@ -357,7 +408,7 @@ export function TransactionClaimableContextProvider({
       if (!wallet) {
         // Biometrics auth failure (retry possible)
         haptics.notificationError();
-        setClaimStatus('error');
+        setClaimStatus('recoverableError');
         return;
       }
 
@@ -374,7 +425,7 @@ export function TransactionClaimableContextProvider({
 
         if (!outputAsset) {
           haptics.notificationError();
-          setClaimStatus('error');
+          setClaimStatus('recoverableError');
           logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to claim claimable due to error fetching output asset'));
           return;
         }
@@ -391,7 +442,8 @@ export function TransactionClaimableContextProvider({
 
         if (!quoteState.quote || 'error' in quoteState.quote) {
           haptics.notificationError();
-          setClaimStatus('error');
+          setClaimStatus('recoverableError');
+          setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
           logger.error(new RainbowError('[TransactionClaimablePanel]: quote error'));
           return;
         }
@@ -419,13 +471,24 @@ export function TransactionClaimableContextProvider({
           quote: quoteState.quote,
           additionalParams: { claimTx: txState.txPayload },
         });
-
+        console.log(errorMessage);
         if (errorMessage) {
           haptics.notificationError();
-          setClaimStatus('error');
-          logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to claim claimable due to rap error'), {
-            message: errorMessage,
-          });
+          if (errorMessage.includes('[CLAIM-CLAIMABLE]')) {
+            // Claim error (retry possible)
+            setClaimStatus('recoverableError');
+            logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to claim claimable due to rap error (claim)'), {
+              message: errorMessage,
+              recoverable: true,
+            });
+          } else {
+            // Bridge error (retry not possible)
+            setClaimStatus('unrecoverableError');
+            logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to claim claimable due to rap error (bridge)'), {
+              message: errorMessage,
+              recoverable: false,
+            });
+          }
           return;
         }
       } else {
@@ -437,7 +500,7 @@ export function TransactionClaimableContextProvider({
           });
         } catch (e) {
           haptics.notificationError();
-          setClaimStatus('error');
+          setClaimStatus('recoverableError');
           logger.error(new RainbowError(`[TransactionClaimablePanel]: Failed to claim claimable due to executeClaim error`), {
             message: (e as Error)?.message,
           });
@@ -452,7 +515,7 @@ export function TransactionClaimableContextProvider({
     },
     onError: e => {
       haptics.notificationError();
-      setClaimStatus('error');
+      setClaimStatus('recoverableError');
       logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to claim claimable due to unhandled error'), {
         message: (e as Error)?.message,
       });
@@ -460,7 +523,7 @@ export function TransactionClaimableContextProvider({
     onSuccess: () => {
       if (claimStatus === 'claiming') {
         haptics.notificationError();
-        setClaimStatus('error');
+        setClaimStatus('recoverableError');
         logger.error(
           new RainbowError('[TransactionClaimablePanel]: claim function completed but never resolved status to success or error state')
         );
@@ -478,12 +541,11 @@ export function TransactionClaimableContextProvider({
         outputConfig,
         claimStatus,
         claimable,
-        isSufficientGas: txState.isSufficientGas,
-        gasFeeDisplay: txState.gasFeeDisplay,
-        nativeValueDisplay: quoteState.nativeValueDisplay ?? claimable.value.nativeAsset.display,
-        tokenAmountDisplay:
-          quoteState.tokenAmountDisplay ?? `${abbreviateNumber(+claimable.value.claimAsset.amount, 3)} ${outputConfig.token?.symbol}`,
+        quoteState,
+        txState,
+        requiresSwap,
 
+        setClaimStatus,
         setOutputConfig,
         setQuoteState,
         setTxState,

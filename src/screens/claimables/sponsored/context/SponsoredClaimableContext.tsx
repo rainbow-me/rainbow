@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
 import { ClaimStatus } from '../types';
 import { Claimable, ClaimResponse, SponsoredClaimable } from '@/resources/addys/claimables/types';
 import { logger, RainbowError } from '@/logger';
@@ -13,6 +13,8 @@ import { loadWallet } from '@/model/wallet';
 type SponsoredClaimableContextType = {
   claimStatus: ClaimStatus;
   claimable: Claimable;
+
+  setClaimStatus: Dispatch<SetStateAction<ClaimStatus>>;
 
   claim: () => void;
 };
@@ -117,6 +119,8 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
       value={{
         claimStatus,
         claimable,
+
+        setClaimStatus,
 
         claim,
       }}

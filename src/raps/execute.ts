@@ -104,7 +104,7 @@ export async function executeAction<T extends RapActionTypes>({
       message: (error as Error)?.message,
     });
     if (index === 0) {
-      return { baseNonce: null, errorMessage: String(error) };
+      return { baseNonce: null, errorMessage: String(error) }; // here
     }
     return { baseNonce: null, errorMessage: null };
   }
@@ -184,7 +184,12 @@ export const walletExecuteRap = async (
           gasParams: parameters?.gasParams,
           gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
         };
-        const { hash } = await executeAction(actionParams);
+        const { hash, errorMessage: error } = await executeAction(actionParams);
+        // if previous action didn't fail, but the current one did, set the error message
+        console.log('errorMessage', error);
+        if (!errorMessage && error) {
+          errorMessage = error;
+        }
         hash && (await waitForNodeAck(hash, wallet.provider));
       }
       nonce = baseNonce + actions.length - 1;

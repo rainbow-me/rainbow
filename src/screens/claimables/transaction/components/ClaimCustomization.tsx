@@ -16,6 +16,7 @@ type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 export function ClaimCustomization() {
   const balanceSortedChainList = useUserAssetsStore(state => state.getBalanceSortedChainList());
   const {
+    claimStatus,
     claimable: { asset: claimableAsset },
     outputConfig: { chainId: outputChainId, token: outputToken },
     setOutputConfig,
@@ -131,8 +132,8 @@ export function ClaimCustomization() {
       },
       chainId: claimableAsset.chainId,
     });
-    setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined });
-    setTxState(prev => ({ ...prev, isSufficientGas: false, gasFeeDisplay: undefined }));
+    setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
+    setTxState({ txPayload: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
     setIsInitialState(true);
   }, [
     setOutputConfig,
@@ -237,8 +238,8 @@ export function ClaimCustomization() {
             token: newToken,
           };
         });
-        setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined });
-        setTxState(prev => ({ ...prev, isSufficientGas: false, gasFeeDisplay: undefined }));
+        setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
+        setTxState({ txPayload: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
         setIsInitialState(false);
       }
     },
@@ -259,13 +260,15 @@ export function ClaimCustomization() {
             chainId: newChainId,
           };
         });
-        setTxState(prev => ({ ...prev, isSufficientGas: false, gasFeeDisplay: undefined }));
-        setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined });
+        setTxState({ txPayload: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
+        setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
         setIsInitialState(false);
       }
     },
     [resetState, setOutputConfig, setQuoteState, setTxState]
   );
+
+  const isDisabled = claimStatus === 'success' || claimStatus === 'pending' || claimStatus === 'claiming' || claimStatus === 'notReady';
 
   return (
     <Box justifyContent="center" alignItems="center" flexDirection="row" gap={5}>
@@ -273,6 +276,7 @@ export function ClaimCustomization() {
         Receive
       </Text>
       <DropdownMenu
+        disabled={isDisabled}
         menuConfig={tokenMenuConfig}
         onPressMenuItem={handleTokenSelection}
         text={outputToken?.symbol ?? 'a token'}
@@ -282,6 +286,7 @@ export function ClaimCustomization() {
         on
       </Text>
       <DropdownMenu
+        disabled={isDisabled}
         menuConfig={networkMenuConfig}
         onPressMenuItem={handleNetworkSelection}
         text={outputChainId ? chainsLabel[outputChainId] : 'a network'}

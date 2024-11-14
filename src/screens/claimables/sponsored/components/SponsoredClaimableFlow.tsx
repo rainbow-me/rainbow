@@ -1,24 +1,21 @@
-import React, { useMemo } from 'react';
-import { useAccountSettings } from '@/hooks';
+import React, { useCallback, useMemo } from 'react';
 import { ClaimPanel } from '../../shared/components/ClaimPanel';
 import { ClaimValueDisplay } from '../../shared/components/ClaimValueDisplay';
 import { ClaimButton } from '../../shared/components/ClaimButton';
 import { useSponsoredClaimableContext } from '../context/SponsoredClaimableContext';
 import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation';
 
 export function SponsoredClaimableFlow() {
-  const { nativeCurrency } = useAccountSettings();
-  const { claim, claimable, claimStatus } = useSponsoredClaimableContext();
+  const { goBack } = useNavigation();
+  const { claim, claimable, claimStatus, setClaimStatus } = useSponsoredClaimableContext();
 
-  const claimNativeValueDisplay = 'FIXME';
-
-  const claimValueDisplay = 'FIXME';
   const shouldShowClaimText = claimStatus === 'ready';
   const buttonLabel = useMemo(() => {
     switch (claimStatus) {
       case 'ready':
         if (shouldShowClaimText) {
-          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimValueDisplay });
+          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimable.value.claimAsset.display });
         } else {
           return i18n.t(i18n.l.claimables.panel.insufficient_funds);
         }
@@ -31,17 +28,32 @@ export function SponsoredClaimableFlow() {
       default:
         return i18n.t(i18n.l.points.points.try_again);
     }
-  }, [claimStatus, claimValueDisplay, shouldShowClaimText]);
+  }, [claimStatus, claimable.value.claimAsset.display, shouldShowClaimText]);
+
+  const onPress = useCallback(() => {
+    if (claimStatus === 'ready') {
+      setClaimStatus('claiming');
+      claim();
+    } else if (claimStatus === 'success' || claimStatus === 'pending') {
+      goBack();
+    }
+  }, [claim, claimStatus, goBack, setClaimStatus]);
 
   return (
     <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
       <ClaimValueDisplay
-        label={claimNativeValueDisplay}
+        label={claimable.value.nativeAsset.display}
         tokenIconUrl={claimable.asset.icon_url}
         tokenSymbol={claimable.asset.symbol}
         chainId={claimable.chainId}
       />
-      <ClaimButton onPress={claim} disabled={claimStatus === 'claiming'} shimmer biometricIcon={shouldShowClaimText} label={buttonLabel} />
+      <ClaimButton
+        onPress={onPress}
+        disabled={claimStatus === 'claiming'}
+        shimmer
+        biometricIcon={shouldShowClaimText}
+        label={buttonLabel}
+      />
     </ClaimPanel>
   );
 }
