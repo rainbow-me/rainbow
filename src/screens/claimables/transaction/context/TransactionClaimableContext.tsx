@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ChainId } from '@/chains/types';
-import { ClaimStatus, TokenToReceive, TransactionClaimableTxPayload } from '../types';
+import { TokenToReceive, TransactionClaimableTxPayload } from '../types';
 import { CrosschainQuote, ETH_ADDRESS, getCrosschainQuote, getQuote, Quote, QuoteParams } from '@rainbow-me/swaps';
 import { Claimable, TransactionClaimable } from '@/resources/addys/claimables/types';
 import { logger, RainbowError } from '@/logger';
@@ -10,6 +10,12 @@ import {
   convertAmountToRawAmount,
   convertRawAmountToBalance,
   convertAmountToBalanceDisplay,
+  convertRawAmountToDecimalFormat,
+  multiply,
+  add,
+  divide,
+  formatNumber,
+  convertAmountToNativeDisplayWorklet,
 } from '@/helpers/utilities';
 import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -23,16 +29,6 @@ import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/
 import { getNextNonce } from '@/state/nonces';
 import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
-import {
-  add,
-  convertAmountToNativeDisplayWorklet,
-  convertRawAmountToDecimalFormat,
-  divide,
-  formatNumber,
-  multiply,
-} from '@/__swaps__/utils/numbers';
-import { lessThanOrEqualToWorklet } from '@/__swaps__/safe-math/SafeMath';
-import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { formatUnits } from 'viem';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { haptics } from '@/utils';
@@ -44,6 +40,9 @@ import { externalTokenQueryKey, fetchExternalToken, FormattedExternalAsset } fro
 import { walletExecuteRap } from '@/raps/execute';
 import { executeClaim } from '../claim';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { weiToGwei } from '@/parsers';
+import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
+import { ClaimStatus } from '../../shared/types';
 
 interface OutputConfig {
   token?: TokenToReceive;
@@ -126,6 +125,8 @@ export function TransactionClaimableContextProvider({
     },
   });
 
+  const outputTokenAddress = outputConfig.chainId ? outputConfig.token?.networks[outputConfig.chainId]?.address : undefined;
+
   const requiresSwap = outputConfig.token?.symbol !== claimable.asset.symbol || outputConfig.chainId !== claimable.chainId;
 
   const { data: tokenSearchData, isFetching: isFetchingOutputToken } = useTokenSearch(
@@ -134,17 +135,14 @@ export function TransactionClaimableContextProvider({
       keys: ['address'],
       list: 'verifiedAssets',
       threshold: 'CASE_SENSITIVE_EQUAL',
-      query: outputConfig.chainId ? outputConfig.token?.networks[outputConfig.chainId]?.address : undefined,
+      query: outputTokenAddress,
     },
     {
       enabled: requiresSwap,
       select: data => {
         return data.filter(
           (asset: SearchAsset) =>
-            outputConfig.chainId &&
-            asset.address === outputConfig.token?.networks[outputConfig.chainId]?.address &&
-            asset.chainId === outputConfig.chainId &&
-            asset.symbol === outputConfig.token?.symbol
+            asset.address === outputTokenAddress && asset.chainId === outputConfig.chainId && asset.symbol === outputConfig.token?.symbol
         );
       },
     }
@@ -180,7 +178,7 @@ export function TransactionClaimableContextProvider({
           chainId: claimable.chainId,
           fromAddress: accountAddress,
           sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
-          buyTokenAddress: tokenToClaim.isNativeAsset ? ETH_ADDRESS : tokenToClaim.networks[tokenToClaim.chainId]?.address, // thjis si thi problem
+          buyTokenAddress: tokenToClaim.isNativeAsset ? ETH_ADDRESS : (tokenToClaim.networks[tokenToClaim.chainId]?.address as string),
           sellAmount: convertAmountToRawAmount(0.0001, claimable.asset.decimals),
           slippage: 0.5,
           refuel: false,
@@ -200,7 +198,7 @@ export function TransactionClaimableContextProvider({
           }
           setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status });
         } else {
-          const buyAmount = convertRawAmountToDecimalFormat(quote.buyAmountMinusFees, tokenToClaim.decimals);
+          const buyAmount = convertRawAmountToDecimalFormat(quote.buyAmountMinusFees.toString(), tokenToClaim.decimals);
           const buyAmountDisplay = convertAmountToBalanceDisplay(
             buyAmount,
             { decimals: tokenToClaim.decimals, symbol: tokenToClaim.symbol },
@@ -410,7 +408,13 @@ export function TransactionClaimableContextProvider({
 
   const { mutate: claim } = useMutation({
     mutationFn: async () => {
-      if (!txState.txPayload || !outputConfig.token || !outputConfig.chainId || (requiresSwap && !quoteState.quote)) {
+      if (
+        !txState.txPayload ||
+        !outputConfig.token ||
+        !outputTokenAddress ||
+        !outputConfig.chainId ||
+        (requiresSwap && !quoteState.quote)
+      ) {
         haptics.notificationError();
         setClaimStatus('recoverableError');
         logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to claim claimable due to missing tx payload'));
@@ -436,7 +440,7 @@ export function TransactionClaimableContextProvider({
             externalTokenQueryKey({ address: accountAddress, chainId: outputConfig.chainId, currency: nativeCurrency })
           ) ??
           (await fetchExternalToken({
-            address: outputConfig.token?.networks[outputConfig.chainId]?.address,
+            address: outputTokenAddress,
             chainId: outputConfig.chainId,
             currency: nativeCurrency,
           }));

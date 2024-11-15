@@ -24,7 +24,7 @@ export function SponsoredClaimableFlow() {
       case 'pending':
       case 'success':
         return i18n.t(i18n.l.button.done);
-      case 'error':
+      case 'recoverableError':
       default:
         return i18n.t(i18n.l.points.points.try_again);
     }

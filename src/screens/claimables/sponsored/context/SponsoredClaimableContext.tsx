@@ -1,5 +1,4 @@
 import React, { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
-import { ClaimStatus } from '../types';
 import { Claimable, ClaimResponse, SponsoredClaimable } from '@/resources/addys/claimables/types';
 import { logger, RainbowError } from '@/logger';
 import { useAccountSettings } from '@/hooks';
@@ -9,6 +8,7 @@ import { queryClient } from '@/react-query';
 import { ADDYS_BASE_URL, addysHttp, claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
+import { ClaimStatus } from '../../shared/types';
 
 type SponsoredClaimableContextType = {
   claimStatus: ClaimStatus;
@@ -48,7 +48,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
       if (!wallet) {
         // Biometrics auth failure (retry possible)
         haptics.notificationError();
-        setClaimStatus('error');
+        setClaimStatus('recoverableError');
         return;
       }
 
@@ -60,7 +60,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
           response = await addysHttp.get(path);
         } catch (e) {
           haptics.notificationError();
-          setClaimStatus('error');
+          setClaimStatus('recoverableError');
           logger.error(new RainbowError('[ClaimSponsoredClaimable]: failed to execute sponsored claim api call'));
           return;
         }
@@ -69,7 +69,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
           response = await addysHttp.post(path);
         } catch (e) {
           haptics.notificationError();
-          setClaimStatus('error');
+          setClaimStatus('recoverableError');
           logger.error(new RainbowError('[ClaimSponsoredClaimable]: failed to execute sponsored claim api call'));
           return;
         }
@@ -77,7 +77,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
 
       if (!response.data.payload.success) {
         haptics.notificationError();
-        setClaimStatus('error');
+        setClaimStatus('recoverableError');
         logger.error(new RainbowError('[ClaimSponsoredClaimable]: sponsored claim api call returned unsuccessful response'));
       } else {
         haptics.notificationSuccess();
@@ -94,7 +94,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
     },
     onError: e => {
       haptics.notificationError();
-      setClaimStatus('error');
+      setClaimStatus('recoverableError');
       logger.error(new RainbowError('[ClaimingSponsoredClaimable]: Failed to claim claimable due to unhandled error'), {
         message: (e as Error)?.message,
       });
@@ -102,7 +102,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
     onSuccess: () => {
       if (claimStatus === 'claiming') {
         haptics.notificationError();
-        setClaimStatus('error');
+        setClaimStatus('recoverableError');
         logger.error(
           new RainbowError('[ClaimingSponsoredClaimable]: claim function completed but never resolved status to success or error state')
         );

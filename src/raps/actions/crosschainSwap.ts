@@ -113,7 +113,7 @@ export const crosschainSwap = async ({
   gasFeeParamsBySpeed,
 }: ActionProps<'crosschainSwap'>): Promise<RapActionResult> => {
   const { quote, chainId, requiresApprove } = parameters;
-  throw new RainbowError('[raps/crosschainSwap]: error executeCrosschainSwap');
+
   let gasParamsToUse = gasParams;
   if (currentRap.actions.length - 1 > index) {
     gasParamsToUse = overrideWithFastSpeedIfNeeded({
