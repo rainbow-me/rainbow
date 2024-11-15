@@ -24,7 +24,7 @@ import { RainbowError, logger } from '@/logger';
 
 import { gasUnits, REFERRER } from '@/references';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { ActionProps, RapActionResult } from '../references';
+import { ActionProps, RapActionResult, RapSwapActionParameters } from '../references';
 import {
   CHAIN_IDS_WITH_TRACE_SUPPORT,
   SWAP_GAS_PADDING,
@@ -34,7 +34,7 @@ import {
   populateSwap,
 } from '../utils';
 
-import { populateApprove } from './unlock';
+import { assetNeedsUnlocking, estimateApprove, populateApprove } from './unlock';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { swapMetadataStorage } from '../common';
 import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
@@ -44,6 +44,73 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { chainsName } from '@/chains';
 
 const WRAP_GAS_PADDING = 1.002;
+
+export const estimateUnlockAndSwap = async ({
+  sellAmount,
+  quote,
+  chainId,
+  assetToSell,
+}: Pick<RapSwapActionParameters<'swap'>, 'sellAmount' | 'quote' | 'chainId' | 'assetToSell'>) => {
+  const {
+    from: accountAddress,
+    sellTokenAddress,
+    allowanceNeeded,
+  } = quote as {
+    from: Address;
+    sellTokenAddress: Address;
+    allowanceNeeded: boolean;
+  };
+
+  let gasLimits: (string | number)[] = [];
+  let swapAssetNeedsUnlocking = false;
+
+  if (allowanceNeeded) {
+    swapAssetNeedsUnlocking = await assetNeedsUnlocking({
+      owner: accountAddress,
+      amount: sellAmount,
+      assetToUnlock: assetToSell,
+      spender: getRainbowRouterContractAddress(chainId),
+      chainId,
+    });
+  }
+
+  if (swapAssetNeedsUnlocking) {
+    const gasLimitFromMetadata = await estimateUnlockAndSwapFromMetadata({
+      swapAssetNeedsUnlocking,
+      chainId,
+      accountAddress,
+      sellTokenAddress,
+      quote,
+    });
+    if (gasLimitFromMetadata) {
+      return gasLimitFromMetadata;
+    }
+    const unlockGasLimit = await estimateApprove({
+      owner: accountAddress,
+      tokenAddress: sellTokenAddress,
+      spender: getRainbowRouterContractAddress(chainId),
+      chainId,
+    });
+    gasLimits = gasLimits.concat(unlockGasLimit);
+  }
+
+  const swapGasLimit = await estimateSwapGasLimit({
+    chainId,
+    requiresApprove: swapAssetNeedsUnlocking,
+    quote,
+  });
+
+  if (swapGasLimit === null || swapGasLimit === undefined || isNaN(Number(swapGasLimit))) {
+    return getDefaultGasLimitForTrade(quote, chainId);
+  }
+
+  const gasLimit = gasLimits.concat(swapGasLimit).reduce((acc, limit) => add(acc, limit), '0');
+  if (isNaN(Number(gasLimit))) {
+    return getDefaultGasLimitForTrade(quote, chainId);
+  }
+
+  return gasLimit.toString();
+};
 
 export const estimateSwapGasLimit = async ({
   chainId,
@@ -238,7 +305,7 @@ export const swap = async ({
 }: ActionProps<'swap'>): Promise<RapActionResult> => {
   let gasParamsToUse = gasParams;
 
-  const { quote, chainId, requiresApprove } = parameters;
+  const { assetToSell, quote, chainId, sellAmount } = parameters;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
 
   if (currentRap.actions.length - 1 > index) {
@@ -251,9 +318,10 @@ export const swap = async ({
 
   let gasLimit;
   try {
-    gasLimit = await estimateSwapGasLimit({
+    gasLimit = await estimateUnlockAndSwap({
+      sellAmount,
+      assetToSell,
       chainId,
-      requiresApprove,
       quote,
     });
   } catch (e) {
@@ -313,7 +381,7 @@ export const swap = async ({
     price: nativePriceForAssetToBuy,
   } satisfies ParsedAsset;
 
-  const assetToSell = {
+  const updatedAssetToSell = {
     ...parameters.assetToSell,
     network: chainsName[parameters.assetToSell.chainId],
     networks: parameters.assetToSell.networks as Record<string, AddysNetworkDetails>,
@@ -332,7 +400,7 @@ export const swap = async ({
       {
         direction: TransactionDirection.OUT,
         asset: {
-          ...assetToSell,
+          ...updatedAssetToSell,
           native: undefined,
         },
         value: quote.sellAmount.toString(),
