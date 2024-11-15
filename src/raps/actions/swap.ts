@@ -24,7 +24,7 @@ import { RainbowError, logger } from '@/logger';
 
 import { gasUnits, REFERRER } from '@/references';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { ActionProps, RapActionResult } from '../references';
+import { ActionProps, RapActionResult, RapSwapActionParameters } from '../references';
 import {
   CHAIN_IDS_WITH_TRACE_SUPPORT,
   SWAP_GAS_PADDING,
@@ -34,7 +34,7 @@ import {
   populateSwap,
 } from '../utils';
 
-import { populateApprove } from './unlock';
+import { assetNeedsUnlocking, estimateApprove, populateApprove } from './unlock';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { swapMetadataStorage } from '../common';
 import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
@@ -44,6 +44,73 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { chainsName } from '@/chains';
 
 const WRAP_GAS_PADDING = 1.002;
+
+export const estimateUnlockAndSwap = async ({
+  sellAmount,
+  quote,
+  chainId,
+  assetToSell,
+}: Pick<RapSwapActionParameters<'swap'>, 'sellAmount' | 'quote' | 'chainId' | 'assetToSell'>) => {
+  const {
+    from: accountAddress,
+    sellTokenAddress,
+    allowanceNeeded,
+  } = quote as {
+    from: Address;
+    sellTokenAddress: Address;
+    allowanceNeeded: boolean;
+  };
+
+  let gasLimits: (string | number)[] = [];
+  let swapAssetNeedsUnlocking = false;
+
+  if (allowanceNeeded) {
+    swapAssetNeedsUnlocking = await assetNeedsUnlocking({
+      owner: accountAddress,
+      amount: sellAmount,
+      assetToUnlock: assetToSell,
+      spender: getRainbowRouterContractAddress(chainId),
+      chainId,
+    });
+  }
+
+  if (swapAssetNeedsUnlocking) {
+    const gasLimitFromMetadata = await estimateUnlockAndSwapFromMetadata({
+      swapAssetNeedsUnlocking,
+      chainId,
+      accountAddress,
+      sellTokenAddress,
+      quote,
+    });
+    if (gasLimitFromMetadata) {
+      return gasLimitFromMetadata;
+    }
+    const unlockGasLimit = await estimateApprove({
+      owner: accountAddress,
+      tokenAddress: sellTokenAddress,
+      spender: getRainbowRouterContractAddress(chainId),
+      chainId,
+    });
+    gasLimits = gasLimits.concat(unlockGasLimit);
+  }
+
+  const swapGasLimit = await estimateSwapGasLimit({
+    chainId,
+    requiresApprove: swapAssetNeedsUnlocking,
+    quote,
+  });
+
+  if (swapGasLimit === null || swapGasLimit === undefined || isNaN(Number(swapGasLimit))) {
+    return null;
+  }
+
+  const gasLimit = gasLimits.concat(swapGasLimit).reduce((acc, limit) => add(acc, limit), '0');
+  if (isNaN(Number(gasLimit))) {
+    return null;
+  }
+
+  return gasLimit.toString();
+};
 
 export const estimateSwapGasLimit = async ({
   chainId,
