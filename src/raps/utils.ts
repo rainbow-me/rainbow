@@ -70,7 +70,7 @@ const getStateDiff = async (provider: Provider, quote: Quote | CrosschainQuote):
       value: '0x0',
     },
     ['stateDiff'],
-    blockNumber - TRACE_CALL_BLOCK_NUMBER_OFFSET,
+    toHexNoLeadingZeros(blockNumber - TRACE_CALL_BLOCK_NUMBER_OFFSET),
   ];
 
   const trace = await (provider as StaticJsonRpcProvider).send('trace_call', callParams);
