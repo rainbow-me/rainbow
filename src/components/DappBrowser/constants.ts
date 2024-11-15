@@ -7,7 +7,7 @@ export const HTTPS = 'https://';
 export const RAINBOW_HOME = 'RAINBOW_HOME';
 
 export const IOS_APP_STORE_URL_PREFIXES = ['itms-apps://', 'itms-appss://', 'https://itunes.apple.com', 'https://apps.apple.com'];
-export const ANDROID_APP_STORE_URL_PREFIXES = ['market://', 'https://play.google.com/store', 'https://play.google.com/store/apps'];
+export const ANDROID_APP_STORE_URL_PREFIXES = ['market://', 'https://play.google.com/store'];
 
 export const APP_STORE_URL_PREFIXES = [...IOS_APP_STORE_URL_PREFIXES, ...ANDROID_APP_STORE_URL_PREFIXES];
 
