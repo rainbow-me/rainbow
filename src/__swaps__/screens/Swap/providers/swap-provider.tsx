@@ -44,6 +44,8 @@ import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { getNextNonce } from '@/state/nonces';
+
 import { haptics } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError, SwapType } from '@rainbow-me/swaps';
 
@@ -261,6 +263,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       const chainId = connectedToHardhat ? ChainId.hardhat : parameters.chainId;
+      const nonce = await getNextNonce({ address: parameters.quote.from, chainId });
+
       const { errorMessage } = await performanceTracking.getState().executeFn({
         fn: walletExecuteRap,
         screen: Screens.SWAPS,
@@ -270,6 +274,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         },
       })(wallet, type, {
         ...parameters,
+        nonce,
         chainId,
         gasParams,
         // @ts-expect-error - collision between old gas types and new
