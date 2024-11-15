@@ -19,7 +19,7 @@ type UpdateNonceArgs = NonceData & GetNonceArgs;
 export async function getNextNonce({
   address,
   chainId,
-  checkFlashbots = false,
+  checkFlashbots = true,
 }: {
   address: string;
   chainId: ChainId;
