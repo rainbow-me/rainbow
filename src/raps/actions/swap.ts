@@ -101,12 +101,12 @@ export const estimateUnlockAndSwap = async ({
   });
 
   if (swapGasLimit === null || swapGasLimit === undefined || isNaN(Number(swapGasLimit))) {
-    return null;
+    return getDefaultGasLimitForTrade(quote, chainId);
   }
 
   const gasLimit = gasLimits.concat(swapGasLimit).reduce((acc, limit) => add(acc, limit), '0');
   if (isNaN(Number(gasLimit))) {
-    return null;
+    return getDefaultGasLimitForTrade(quote, chainId);
   }
 
   return gasLimit.toString();
@@ -305,7 +305,7 @@ export const swap = async ({
 }: ActionProps<'swap'>): Promise<RapActionResult> => {
   let gasParamsToUse = gasParams;
 
-  const { quote, chainId, requiresApprove } = parameters;
+  const { assetToSell, quote, chainId, sellAmount } = parameters;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
 
   if (currentRap.actions.length - 1 > index) {
@@ -318,9 +318,10 @@ export const swap = async ({
 
   let gasLimit;
   try {
-    gasLimit = await estimateSwapGasLimit({
+    gasLimit = await estimateUnlockAndSwap({
+      sellAmount,
+      assetToSell,
       chainId,
-      requiresApprove,
       quote,
     });
   } catch (e) {
@@ -380,7 +381,7 @@ export const swap = async ({
     price: nativePriceForAssetToBuy,
   } satisfies ParsedAsset;
 
-  const assetToSell = {
+  const updatedAssetToSell = {
     ...parameters.assetToSell,
     network: chainsName[parameters.assetToSell.chainId],
     networks: parameters.assetToSell.networks as Record<string, AddysNetworkDetails>,
@@ -399,7 +400,7 @@ export const swap = async ({
       {
         direction: TransactionDirection.OUT,
         asset: {
-          ...assetToSell,
+          ...updatedAssetToSell,
           native: undefined,
         },
         value: quote.sellAmount.toString(),
