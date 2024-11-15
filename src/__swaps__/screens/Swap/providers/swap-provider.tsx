@@ -263,7 +263,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       const chainId = connectedToHardhat ? ChainId.hardhat : parameters.chainId;
-      const nonce = await getNextNonce({ address: parameters.quote.from, chainId });
+      const nonce = await getNextNonce({ address: parameters.quote.from, chainId, checkFlashbots: true });
 
       const { errorMessage } = await performanceTracking.getState().executeFn({
         fn: walletExecuteRap,
