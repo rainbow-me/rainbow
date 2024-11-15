@@ -204,7 +204,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const provider =
         parameters.flashbots && supportedFlashbotsChainIds.includes(parameters.chainId)
-          ? await getFlashbotsProvider()
+          ? getFlashbotsProvider()
           : getProvider({ chainId: parameters.chainId });
       const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
 
