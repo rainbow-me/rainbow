@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
-import { estimateUnlockAndCrosschainSwap } from '@/raps/unlockAndCrosschainSwap';
+import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey } from '@/react-query';
 import { gasUnits } from '@/references/gasUnits';
