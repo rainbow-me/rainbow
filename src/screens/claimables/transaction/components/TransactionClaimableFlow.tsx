@@ -24,6 +24,7 @@ export function TransactionClaimableFlow() {
   const { goBack } = useNavigation();
   console.log(claimStatus);
   // BUTTON PROPS
+  const shouldShowClaimText = !!(claimStatus === 'ready' && outputChainId && outputToken);
   const disabled = !(
     ((claimStatus === 'ready' || claimStatus === 'recoverableError') && txState.isSufficientGas) ||
     claimStatus === 'success' ||
@@ -42,25 +43,34 @@ export function TransactionClaimableFlow() {
 
     switch (claimStatus) {
       case 'notReady':
+        if (quoteState.status === 'success' || !requiresSwap) {
+          switch (txState.status) {
+            case 'error':
+              return 'Gas Error';
+            case 'success':
+              if (!txState.isSufficientGas) {
+                return i18n.t(i18n.l.claimables.panel.insufficient_funds);
+              }
+            case 'fetching':
+            default:
+              return i18n.t(i18n.l.claimables.panel.estimating_gas_fee);
+          }
+        }
+
         switch (quoteState.status) {
           case 'noQuoteError':
             return 'Quote Error';
           case 'noRouteError':
             return 'No Route Found';
           case 'fetching':
-            return 'Fetching Quote...';
           default:
-            return i18n.t(i18n.l.claimables.panel.estimating_gas_fee);
+            return 'Fetching Quote...';
         }
 
       case 'ready':
-        if (claimStatus === 'ready') {
-          return i18n.t(i18n.l.claimables.panel.claim_amount, {
-            amount: requiresSwap && quoteState.tokenAmountDisplay ? quoteState.tokenAmountDisplay : claimable.value.claimAsset.display,
-          });
-        } else {
-          return i18n.t(i18n.l.claimables.panel.insufficient_funds);
-        }
+        return i18n.t(i18n.l.claimables.panel.claim_amount, {
+          amount: requiresSwap && quoteState.tokenAmountDisplay ? quoteState.tokenAmountDisplay : claimable.value.claimAsset.display,
+        });
       case 'claiming':
         return i18n.t(i18n.l.claimables.panel.claim_in_progress);
       case 'pending':
@@ -71,15 +81,7 @@ export function TransactionClaimableFlow() {
       default:
         return i18n.t(i18n.l.points.points.try_again);
     }
-  }, [
-    claimStatus,
-    claimable.value.claimAsset.display,
-    outputChainId,
-    outputToken,
-    quoteState.status,
-    quoteState.tokenAmountDisplay,
-    requiresSwap,
-  ]);
+  }, [claimStatus, claimable.value.claimAsset.display, requiresSwap, quoteState, txState, outputChainId, outputToken]);
 
   const onPress = useCallback(() => {
     if (claimStatus === 'ready' || claimStatus === 'recoverableError') {
@@ -102,7 +104,7 @@ export function TransactionClaimableFlow() {
         <ClaimCustomization />
       </Box>
       <Box alignItems="center" width="full">
-        <ClaimButton onPress={onPress} disabled={disabled} shimmer={shimmer} biometricIcon={claimStatus === 'ready'} label={buttonLabel} />
+        <ClaimButton onPress={onPress} disabled={disabled} shimmer={shimmer} biometricIcon={shouldShowClaimText} label={buttonLabel} />
         <GasDetails />
       </Box>
     </ClaimPanel>

@@ -50,7 +50,7 @@ interface OutputConfig {
 }
 
 interface TxState {
-  status: 'fetching' | 'success' | 'none';
+  status: 'fetching' | 'error' | 'success' | 'none';
   isSufficientGas: boolean;
   gasFeeDisplay: string | undefined;
   txPayload: TransactionClaimableTxPayload | undefined;
@@ -179,7 +179,7 @@ export function TransactionClaimableContextProvider({
           fromAddress: accountAddress,
           sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
           buyTokenAddress: tokenToClaim.isNativeAsset ? ETH_ADDRESS : (tokenToClaim.networks[tokenToClaim.chainId]?.address as string),
-          sellAmount: convertAmountToRawAmount(0.0001, claimable.asset.decimals),
+          sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
           slippage: 0.5,
           refuel: false,
           toChainId: tokenToClaim.chainId,
@@ -331,7 +331,7 @@ export function TransactionClaimableContextProvider({
 
         gasFeeNativeCurrencyDisplay = convertAmountToNativeDisplayWorklet(feeInUserCurrency, nativeCurrency, true);
       }
-
+      console.log(sufficientGas);
       setLastGasEstimateTime(Date.now());
       setTxState({
         isSufficientGas: sufficientGas,
@@ -339,9 +339,10 @@ export function TransactionClaimableContextProvider({
         txPayload: { ...partialTxPayload, gasLimit },
         status: 'success',
       });
+      console.log('HEYO');
     } catch (e) {
       if (txState.status === 'fetching') {
-        setTxState(prev => ({ ...prev, status: 'none' }));
+        setTxState(prev => ({ ...prev, status: 'error' }));
       }
       logger.warn('[TransactionClaimablePanel]: Failed to estimate gas', { error: e });
     }
@@ -454,7 +455,7 @@ export function TransactionClaimableContextProvider({
 
         const swapData = {
           amount: claimable.value.claimAsset.amount,
-          sellAmount: convertAmountToRawAmount(0.0001, claimable.asset.decimals),
+          sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
           chainId: claimable.chainId,
           toChainId: outputConfig.chainId,
           assetToSell: outputAsset,
