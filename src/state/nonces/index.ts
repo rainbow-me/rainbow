@@ -1,8 +1,8 @@
 import create from 'zustand';
 import { createStore } from '../internal/createStore';
 import { Network, ChainId } from '@/chains/types';
-import { getFlashbotsProvider, getProvider } from '@/handlers/web3';
-import { chainsIdByName, supportedFlashbotsChainIds } from '@/chains';
+import { getProvider } from '@/handlers/web3';
+import { chainsIdByName } from '@/chains';
 
 type NonceData = {
   currentNonce?: number;
@@ -16,19 +16,11 @@ type GetNonceArgs = {
 
 type UpdateNonceArgs = NonceData & GetNonceArgs;
 
-export async function getNextNonce({
-  address,
-  chainId,
-  checkFlashbots = true,
-}: {
-  address: string;
-  chainId: ChainId;
-  checkFlashbots?: boolean;
-}) {
+export async function getNextNonce({ address, chainId }: { address: string; chainId: ChainId }) {
   const { getNonce } = nonceStore.getState();
   const localNonceData = getNonce({ address, chainId });
   const localNonce = localNonceData?.currentNonce || 0;
-  const provider = checkFlashbots && supportedFlashbotsChainIds.includes(chainId) ? getFlashbotsProvider() : getProvider({ chainId });
+  const provider = getProvider({ chainId });
   const txCountIncludingPending = await provider.getTransactionCount(address, 'pending');
   if (!localNonce && !txCountIncludingPending) return 0;
   const ret = Math.max(localNonce + 1, txCountIncludingPending);
