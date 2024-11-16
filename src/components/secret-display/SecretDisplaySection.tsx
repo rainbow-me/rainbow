@@ -1,5 +1,4 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { captureException } from '@sentry/react-native';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { createdWithBiometricError, identifyWalletType, loadPrivateKey, loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
 import ActivityIndicator from '../ActivityIndicator';
@@ -25,7 +24,7 @@ import { useNavigation } from '@/navigation';
 import { ImgixImage } from '../images';
 import RoutesWithPlatformDifferences from '@/navigation/routesNames';
 import { Source } from 'react-native-fast-image';
-import { useCloudBackupsContext } from '../backup/CloudBackupProvider';
+import { backupsStore } from '@/state/backups/backups';
 
 const MIN_HEIGHT = 740;
 
@@ -64,7 +63,9 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
   const { colors } = useTheme();
   const { params } = useRoute<RouteProp<SecretDisplaySectionParams, 'SecretDisplaySection'>>();
   const { selectedWallet, wallets } = useWallets();
-  const { provider, setProvider } = useCloudBackupsContext();
+  const { backupProvider } = backupsStore(state => ({
+    backupProvider: state.backupProvider,
+  }));
   const { onManuallyBackupWalletId } = useWalletManualBackup();
   const { navigate } = useNavigation();
 
@@ -126,12 +127,12 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
   const handleConfirmSaved = useCallback(() => {
     if (backupType === WalletBackupTypes.manual) {
       onManuallyBackupWalletId(walletId);
-      if (!provider) {
-        setProvider(WalletBackupTypes.manual);
+      if (!backupProvider) {
+        backupsStore.getState().setBackupProvider(WalletBackupTypes.manual);
       }
       navigate(RoutesWithPlatformDifferences.SETTINGS_SECTION_BACKUP);
     }
-  }, [backupType, onManuallyBackupWalletId, walletId, provider, navigate, setProvider]);
+  }, [backupType, onManuallyBackupWalletId, walletId, backupProvider, navigate]);
 
   const getIconForBackupType = useCallback(() => {
     if (isBackingUp) {

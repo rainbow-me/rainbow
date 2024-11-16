@@ -11,16 +11,19 @@ import { useNavigation } from '@/navigation';
 import { useWallets } from '@/hooks';
 import { format } from 'date-fns';
 import { login } from '@/handlers/cloudBackup';
-import { useCloudBackupsContext } from './CloudBackupProvider';
-import { BackupTypes } from '@/components/backup/useCreateBackup';
+import { BackupTypes, useCreateBackup } from '@/components/backup/useCreateBackup';
+import { backupsStore } from '@/state/backups/backups';
 
 const imageSize = 72;
 
 export default function AddWalletToCloudBackupStep() {
   const { goBack } = useNavigation();
   const { selectedWallet } = useWallets();
+  const createBackup = useCreateBackup();
 
-  const { createBackup, mostRecentBackup } = useCloudBackupsContext();
+  const { mostRecentBackup } = backupsStore(state => ({
+    mostRecentBackup: state.mostRecentBackup,
+  }));
 
   const potentiallyLoginAndSubmit = useCallback(async () => {
     await login();

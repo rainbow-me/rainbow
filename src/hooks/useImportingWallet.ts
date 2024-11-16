@@ -31,7 +31,7 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { ChainId } from '@/chains/types';
-import { useCloudBackupsContext } from '@/components/backup/CloudBackupProvider';
+import { backupsStore } from '@/state/backups/backups';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -52,7 +52,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const { updateWalletENSAvatars } = useWalletENSAvatar();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
-  const { provider } = useCloudBackupsContext();
+  const { backupProvider } = backupsStore(state => ({
+    backupProvider: state.backupProvider,
+  }));
 
   const inputRef = useRef<TextInput>(null);
 
@@ -349,9 +351,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                       )
                     ) {
                       let stepType: string = WalletBackupStepTypes.no_provider;
-                      if (provider === walletBackupTypes.cloud) {
+                      if (backupProvider === walletBackupTypes.cloud) {
                         stepType = WalletBackupStepTypes.backup_now_to_cloud;
-                      } else if (provider === walletBackupTypes.manual) {
+                      } else if (backupProvider === walletBackupTypes.manual) {
                         stepType = WalletBackupStepTypes.backup_now_manually;
                       }
 
@@ -414,7 +416,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     showImportModal,
     profilesEnabled,
     dangerouslyGetParent,
-    provider,
+    backupProvider,
   ]);
 
   return {

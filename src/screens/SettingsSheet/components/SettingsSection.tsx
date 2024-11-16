@@ -31,8 +31,8 @@ import { SettingsExternalURLs } from '../constants';
 import { checkLocalWalletsForBackupStatus } from '../utils';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { Box } from '@/design-system';
-import { useCloudBackupsContext } from '@/components/backup/CloudBackupProvider';
 import { capitalize } from 'lodash';
+import { backupsStore } from '@/state/backups/backups';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
@@ -61,7 +61,9 @@ const SettingsSection = ({
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
-  const { provider } = useCloudBackupsContext();
+  const { backupProvider } = backupsStore(state => ({
+    backupProvider: state.backupProvider,
+  }));
 
   const { isDarkMode, setTheme, colorScheme } = useTheme();
 
@@ -163,12 +165,12 @@ const SettingsSection = ({
       return undefined;
     }
 
-    if (provider === walletBackupTypes.cloud) {
+    if (backupProvider === walletBackupTypes.cloud) {
       return CloudBackupWarningIcon;
     }
 
     return BackupWarningIcon;
-  }, [allBackedUp, provider]);
+  }, [allBackedUp, backupProvider]);
 
   return (
     <MenuContainer testID="settings-menu-container" Footer={<AppVersionStamp />}>

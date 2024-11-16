@@ -31,26 +31,21 @@ import { SETTINGS_BACKUP_ROUTES } from './routes';
 import { analyticsV2 } from '@/analytics';
 import { InteractionManager, Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
-import {
-  GoogleDriveUserData,
-  backupUserDataIntoCloud,
-  getGoogleAccountUserData,
-  isCloudBackupAvailable,
-  login,
-} from '@/handlers/cloudBackup';
+import { createAccountForWallet, setIsWalletLoading } from '@/redux/wallets';
+import { GoogleDriveUserData, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import { logger, RainbowError } from '@/logger';
-import { RainbowAccount, createWallet } from '@/model/wallet';
+import { RainbowAccount } from '@/model/wallet';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import showWalletErrorAlert from '@/helpers/support';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { BackUpMenuItem } from './BackUpMenuButton';
-import { useCloudBackupsContext } from '@/components/backup/CloudBackupProvider';
 import { format } from 'date-fns';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { BackupTypes } from '@/components/backup/useCreateBackup';
+import { BackupTypes, useCreateBackup } from '@/components/backup/useCreateBackup';
+import { backupsStore } from '@/state/backups/backups';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -123,11 +118,18 @@ const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: 
 const ViewWalletBackup = () => {
   const { params } = useRoute<RouteProp<ViewWalletBackupParams, 'ViewWalletBackup'>>();
 
-  const { createBackup, backupState, provider, mostRecentBackup } = useCloudBackupsContext();
+  const createBackup = useCreateBackup();
+  const { status, backupProvider, mostRecentBackup } = backupsStore(state => ({
+    status: state.status,
+    backupProvider: state.backupProvider,
+    mostRecentBackup: state.mostRecentBackup,
+  }));
   const { walletId, title: incomingTitle } = params;
   const creatingWallet = useRef<boolean>();
   const { isDamaged, wallets } = useWallets();
   const wallet = wallets?.[walletId];
+
+  console.log(JSON.stringify(wallet, null, 2));
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -223,38 +225,19 @@ const ViewWalletBackup = () => {
             },
             onCloseModal: async (args: any) => {
               if (args) {
+                dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+
                 const name = args?.name ?? '';
                 const color = args?.color ?? null;
                 // Check if the selected wallet is the primary
                 try {
                   // If we found it and it's not damaged use it to create the new account
                   if (wallet && !wallet.damaged) {
-                    const newWallets = await dispatch(createAccountForWallet(wallet.id, color, name));
+                    await dispatch(createAccountForWallet(wallet.id, color, name));
                     // @ts-expect-error - no params
                     await initializeWallet();
-                    // If this wallet was previously backed up to the cloud
-                    // We need to update userData backup so it can be restored too
-                    if (wallet.backedUp && wallet.backupType === walletBackupTypes.cloud) {
-                      try {
-                        await backupUserDataIntoCloud({ wallets: newWallets });
-                      } catch (e) {
-                        logger.error(new RainbowError(`[ViewWalletBackup]: Updating wallet userdata failed after new account creation`), {
-                          error: e,
-                        });
-                        throw e;
-                      }
-                    }
 
-                    // If doesn't exist, we need to create a new wallet
-                  } else {
-                    await createWallet({
-                      color,
-                      name,
-                      clearCallbackOnStartCreation: true,
-                    });
-                    await dispatch(walletsLoadState(profilesEnabled));
-                    // @ts-expect-error - no params
-                    await initializeWallet();
+                    // TODO: mark the newly created wallet as not backed up
                   }
                 } catch (e) {
                   logger.error(new RainbowError(`[ViewWalletBackup]: Error while trying to add account`), {
@@ -265,6 +248,8 @@ const ViewWalletBackup = () => {
                       showWalletErrorAlert();
                     }, 1000);
                   }
+                } finally {
+                  dispatch(setIsWalletLoading(null));
                 }
               }
               creatingWallet.current = false;
@@ -352,14 +337,14 @@ const ViewWalletBackup = () => {
               paddingBottom={{ custom: 24 }}
               iconComponent={
                 <MenuHeader.ImageIcon
-                  source={provider === walletBackupTypes.cloud ? CloudBackupWarningIcon : BackupWarningIcon}
+                  source={backupProvider === walletBackupTypes.cloud ? CloudBackupWarningIcon : BackupWarningIcon}
                   size={72}
                 />
               }
               titleComponent={<MenuHeader.Title text={i18n.t(i18n.l.wallet.back_ups.not_backed_up)} weight="heavy" />}
               labelComponent={
                 <Box marginTop={{ custom: 16 }}>
-                  {provider === walletBackupTypes.cloud && (
+                  {backupProvider === walletBackupTypes.cloud && (
                     <MenuHeader.Label
                       text={i18n.t(i18n.l.wallet.back_ups.not_backed_up_to_cloud_message, {
                         backupType: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
@@ -367,7 +352,7 @@ const ViewWalletBackup = () => {
                       })}
                     />
                   )}
-                  {provider !== walletBackupTypes.cloud && (
+                  {backupProvider !== walletBackupTypes.cloud && (
                     <MenuHeader.Label
                       text={i18n.t(i18n.l.wallet.back_ups.not_backed_up_message, {
                         backupType: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
@@ -379,7 +364,7 @@ const ViewWalletBackup = () => {
             />
           </Menu>
 
-          {provider === walletBackupTypes.cloud && (
+          {backupProvider === walletBackupTypes.cloud && (
             <Box>
               <Menu
                 description={
@@ -395,14 +380,14 @@ const ViewWalletBackup = () => {
                   title={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
                     cloudPlatformName: cloudPlatform,
                   })}
-                  backupState={backupState}
+                  backupState={status}
                   onPress={backupWalletsToCloud}
                 />
               </Menu>
             </Box>
           )}
 
-          {provider !== walletBackupTypes.cloud && (
+          {backupProvider !== walletBackupTypes.cloud && (
             <Menu>
               <MenuItem
                 hasSfSymbol
@@ -417,7 +402,7 @@ const ViewWalletBackup = () => {
                 title={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
                   cloudPlatformName: cloudPlatform,
                 })}
-                backupState={backupState}
+                backupState={status}
                 onPress={backupWalletsToCloud}
               />
             </Menu>

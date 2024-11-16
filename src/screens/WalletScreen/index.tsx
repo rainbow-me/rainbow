@@ -29,7 +29,6 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
-import { useCloudBackupsContext } from '@/components/backup/CloudBackupProvider';
 import { BackendNetworks } from '@/components/BackendNetworks';
 
 function WalletScreen() {
@@ -39,8 +38,6 @@ function WalletScreen() {
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const initializeWallet = useInitializeWallet();
   const { network: currentNetwork, accountAddress, appIcon } = useAccountSettings();
-  const { provider } = useCloudBackupsContext();
-
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const insets = useSafeAreaInsets();
@@ -75,10 +72,8 @@ function WalletScreen() {
   }, [initializeWallet, initialized, params, setParams]);
 
   useEffect(() => {
-    if (provider) {
-      runWalletBackupStatusChecks(provider);
-    }
-  }, [provider]);
+    runWalletBackupStatusChecks();
+  }, []);
 
   useEffect(() => {
     if (walletReady) {

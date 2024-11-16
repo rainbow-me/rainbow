@@ -42,6 +42,7 @@ import { Address } from 'viem';
 import { IS_ANDROID, IS_DEV } from '@/env';
 import { prefetchDefaultFavorites } from '@/resources/favorites';
 import Routes from '@/navigation/Routes';
+import { BackupsSync } from '@/state/sync/BackupsSync';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -83,6 +84,7 @@ function App({ walletReady }: AppProps) {
       <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
       <Portal />
       <PortalConsumer />
+      <BackupsSync />
     </>
   );
 }

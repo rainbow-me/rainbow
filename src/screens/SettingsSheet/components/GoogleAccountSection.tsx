@@ -3,7 +3,7 @@ import { getGoogleAccountUserData, GoogleDriveUserData, logoutFromGoogleDrive } 
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { showActionSheetWithOptions } from '@/utils';
 import * as i18n from '@/languages';
-import { clearAllWalletsBackupStatus, updateWalletBackupStatusesBasedOnCloudUserData } from '@/redux/wallets';
+import { clearAllWalletsBackupStatus } from '@/redux/wallets';
 import { useDispatch } from 'react-redux';
 import Menu from './Menu';
 import MenuItem from './MenuItem';
@@ -61,7 +61,8 @@ export const GoogleAccountSection: React.FC = () => {
 
   const loginToGoogleDrive = async () => {
     setLoading(true);
-    await dispatch(updateWalletBackupStatusesBasedOnCloudUserData());
+
+    // TODO: We need to update the wallet backup status here somehow...
     try {
       const accountDetails = await getGoogleAccountUserData();
       setAccountDetails(accountDetails ?? undefined);

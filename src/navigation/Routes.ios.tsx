@@ -102,7 +102,6 @@ import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPane
 import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimClaimablePanel';
 import { RootStackParamList } from './types';
-import { CloudBackupProvider } from '@/components/backup/CloudBackupProvider';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -284,11 +283,9 @@ function NativeStackNavigator() {
 
 const AppContainerWithAnalytics = React.forwardRef<NavigationContainerRef<RootStackParamList>, { onReady: () => void }>((props, ref) => (
   <NavigationContainer onReady={props.onReady} onStateChange={onNavigationStateChange} ref={ref}>
-    <CloudBackupProvider>
-      <PointsProfileProvider>
-        <NativeStackNavigator />
-      </PointsProfileProvider>
-    </CloudBackupProvider>
+    <PointsProfileProvider>
+      <NativeStackNavigator />
+    </PointsProfileProvider>
   </NavigationContainer>
 ));
 

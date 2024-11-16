@@ -7,7 +7,6 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import { Box, Stack } from '@/design-system';
-import { RouteProp, useRoute } from '@react-navigation/native';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { ImgixImage } from '@/components/images';
 import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
@@ -16,7 +15,6 @@ import { format } from 'date-fns';
 import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
 import Routes from '@/navigation/routesNames';
 import { Backup, parseTimestampFromFilename } from '@/model/backup';
-import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { Source } from 'react-native-fast-image';
 import { IS_ANDROID } from '@/env';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -24,7 +22,7 @@ import { Page } from '@/components/layout';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { useTheme } from '@/theme';
-import { CloudBackupState, useCloudBackupsContext } from './CloudBackupProvider';
+import { backupsStore, CloudBackupState, LoadingStates } from '@/state/backups/backups';
 import { titleForBackupState } from '@/screens/SettingsSheet/utils';
 
 const Title = styled(RNText).attrs({
@@ -53,15 +51,15 @@ const Masthead = styled(Box).attrs({
 });
 
 export function ChooseBackupStep() {
-  const {
-    params: { fromSettings },
-  } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
   const { colors } = useTheme();
 
-  const { backupState, backups, userData, mostRecentBackup, syncAndFetchBackups } = useCloudBackupsContext();
+  const { status, backups, mostRecentBackup } = backupsStore(state => ({
+    status: state.status,
+    backups: state.backups,
+    mostRecentBackup: state.mostRecentBackup,
+  }));
 
-  const isLoading =
-    backupState === CloudBackupState.Initializing || backupState === CloudBackupState.Syncing || backupState === CloudBackupState.Fetching;
+  const isLoading = LoadingStates.includes(status);
 
   const { top } = useSafeAreaInsets();
   const { height: deviceHeight } = useDimensions();
@@ -70,13 +68,10 @@ export function ChooseBackupStep() {
   const onSelectCloudBackup = useCallback(
     (selectedBackup: Backup) => {
       navigate(Routes.RESTORE_CLOUD_SHEET, {
-        backups,
-        userData,
         selectedBackup,
-        fromSettings,
       });
     },
-    [navigate, userData, backups, fromSettings]
+    [navigate]
   );
 
   const height = IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset - 48;
@@ -102,7 +97,7 @@ export function ChooseBackupStep() {
             </Stack>
           </Masthead>
 
-          {backupState === CloudBackupState.FailedToInitialize && (
+          {status === CloudBackupState.FailedToInitialize && (
             <Stack width="full" space="44px">
               <Menu>
                 <MenuItem
@@ -117,22 +112,37 @@ export function ChooseBackupStep() {
                 <MenuItem
                   size={52}
                   width="full"
-                  onPress={syncAndFetchBackups}
+                  onPress={() => backupsStore.getState().syncAndFetchBackups()}
                   titleComponent={<MenuItem.Title disabled text={lang.t(lang.l.back_up.cloud.retry)} />}
                 />
               </Menu>
             </Stack>
           )}
 
-          {backupState === CloudBackupState.Ready && backups.files.length === 0 && (
+          {status === CloudBackupState.Ready && backups.files.length === 0 && (
             <Stack width="full" space="44px">
+              <Box>
+                <Menu>
+                  <MenuItem
+                    disabled
+                    size={52}
+                    titleComponent={<MenuItem.Title disabled text={lang.t(lang.l.back_up.cloud.no_backups)} />}
+                  />
+                </Menu>
+              </Box>
+
               <Menu>
-                <MenuItem disabled size={52} titleComponent={<MenuItem.Title disabled text={lang.t(lang.l.back_up.cloud.no_backups)} />} />
+                <MenuItem
+                  size={52}
+                  width="full"
+                  onPress={() => backupsStore.getState().syncAndFetchBackups()}
+                  titleComponent={<MenuItem.Title disabled text={lang.t(lang.l.back_up.cloud.refresh)} />}
+                />
               </Menu>
             </Stack>
           )}
 
-          {backupState === CloudBackupState.Ready && backups.files.length > 0 && (
+          {status === CloudBackupState.Ready && backups.files.length > 0 && (
             <Stack width="full" space="44px">
               {mostRecentBackup && (
                 <Box>
@@ -194,7 +204,7 @@ export function ChooseBackupStep() {
                   <MenuItem
                     size={52}
                     width="full"
-                    onPress={syncAndFetchBackups}
+                    onPress={() => backupsStore.getState().syncAndFetchBackups()}
                     titleComponent={<MenuItem.Title disabled text={lang.t(lang.l.back_up.cloud.refresh)} />}
                   />
                 </Menu>
@@ -203,9 +213,9 @@ export function ChooseBackupStep() {
           )}
 
           {isLoading && (
-            <Box width="full" color={colors.transparent} alignItems="center" justifyContent="center" flex={1} as={Page}>
+            <Box width="full" height="full" color={colors.transparent} alignItems="center" justifyContent="center" flex={1} as={Page}>
               {android ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator color={colors.blueGreyDark} />}
-              <LoadingText>{titleForBackupState[backupState]}</LoadingText>
+              <LoadingText>{titleForBackupState[status]}</LoadingText>
             </Box>
           )}
         </Stack>

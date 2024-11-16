@@ -4,12 +4,11 @@ import { captureException } from '@sentry/react-native';
 import { endsWith } from 'lodash';
 import { CLOUD_BACKUP_ERRORS, encryptAndSaveDataToCloud, getDataFromCloud } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
-import WalletTypes from '../helpers/walletTypes';
 import { Alert } from '@/components/alerts';
 import { allWalletsKey, pinKey, privateKeyKey, seedPhraseKey, selectedWalletKey, identifierForVendorKey } from '@/utils/keychainConstants';
 import * as keychain from '@/model/keychain';
 import * as kc from '@/keychain';
-import { AllRainbowWallets, allWalletsVersion, createWallet, RainbowWallet } from './wallet';
+import { AllRainbowWallets, createWallet, RainbowWallet } from './wallet';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_DEV } from '@/env';
@@ -100,14 +99,12 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
 export async function backupAllWalletsToCloud({
   wallets,
   password,
-  latestBackup,
   onError,
   onSuccess,
   dispatch,
 }: {
   wallets: AllRainbowWallets;
   password: BackupPassword;
-  latestBackup: string | null;
   onError?: (message: string) => void;
   onSuccess?: (password: BackupPassword) => void;
   dispatch: any;
@@ -158,48 +155,22 @@ export async function backupAllWalletsToCloud({
     });
 
     let updatedBackupFile: any = null;
-    if (!latestBackup) {
-      const data = {
-        createdAt: now,
-        secrets: {},
+
+    const data = {
+      createdAt: now,
+      secrets: {},
+    };
+    const promises = Object.entries(allSecrets).map(async ([username, password]) => {
+      const processedNewSecrets = await decryptAllPinEncryptedSecretsIfNeeded({ [username]: password }, userPIN);
+
+      data.secrets = {
+        ...data.secrets,
+        ...processedNewSecrets,
       };
-      const promises = Object.entries(allSecrets).map(async ([username, password]) => {
-        const processedNewSecrets = await decryptAllPinEncryptedSecretsIfNeeded({ [username]: password }, userPIN);
+    });
 
-        data.secrets = {
-          ...data.secrets,
-          ...processedNewSecrets,
-        };
-      });
-
-      await Promise.all(promises);
-      updatedBackupFile = await encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
-    } else {
-      // if we have a latest backup file, we need to update the updatedAt and add new secrets to the backup file..
-      const backup = await getDataFromCloud(password, latestBackup);
-      if (!backup) {
-        onError?.(i18n.t(i18n.l.back_up.errors.backup_not_found));
-        return;
-      }
-
-      const data = {
-        createdAt: backup.createdAt,
-        secrets: backup.secrets,
-      };
-
-      const promises = Object.entries(allSecrets).map(async ([username, password]) => {
-        const processedNewSecrets = await decryptAllPinEncryptedSecretsIfNeeded({ [username]: password }, userPIN);
-
-        data.secrets = {
-          ...data.secrets,
-          ...processedNewSecrets,
-        };
-      });
-
-      await Promise.all(promises);
-      updatedBackupFile = await encryptAndSaveDataToCloud(data, password, latestBackup);
-    }
-
+    await Promise.all(promises);
+    updatedBackupFile = await encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
     const walletIdsToUpdate = Object.keys(wallets);
     await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, WalletBackupTypes.cloud, updatedBackupFile));
 
@@ -251,9 +222,15 @@ export async function addWalletToCloudBackup({
   wallet: RainbowWallet;
   filename: string;
   userPIN?: string;
-}): Promise<null | boolean> {
-  // @ts-ignore
+}): Promise<null | string> {
   const backup = await getDataFromCloud(password, filename);
+  if (!backup) {
+    logger.error(new RainbowError('[backup]: Unable to get backup data for filename'), {
+      filename,
+    });
+    return null;
+  }
+
   const now = Date.now();
   const newSecretsToBeAddedToBackup = await extractSecretsForWallet(wallet);
   const processedNewSecrets = await decryptAllPinEncryptedSecretsIfNeeded(newSecretsToBeAddedToBackup, userPIN);
@@ -321,26 +298,6 @@ export async function decryptAllPinEncryptedSecretsIfNeeded(secrets: Record<stri
   }
 }
 
-export function findLatestBackUp(wallets: AllRainbowWallets | null): string | null {
-  let latestBackup: number | null = null;
-  let filename: string | null = null;
-
-  if (wallets) {
-    Object.values(wallets).forEach(wallet => {
-      // Check if there's a wallet backed up
-      if (wallet.backedUp && wallet.backupDate && wallet.backupFile && wallet.backupType === WalletBackupTypes.cloud) {
-        // If there is one, let's grab the latest backup
-        if (!latestBackup || Number(wallet.backupDate) > latestBackup) {
-          filename = wallet.backupFile;
-          latestBackup = Number(wallet.backupDate);
-        }
-      }
-    });
-  }
-
-  return filename;
-}
-
 export const RestoreCloudBackupResultStates = {
   success: 'success',
   failedWhenRestoring: 'failedWhenRestoring',
@@ -369,16 +326,14 @@ const sanitizeFilename = (filename: string) => {
  */
 export async function restoreCloudBackup({
   password,
-  userData,
-  nameOfSelectedBackupFile,
+  backupFilename,
 }: {
   password: BackupPassword;
-  userData: BackupUserData | undefined;
-  nameOfSelectedBackupFile: string;
+  backupFilename: string;
 }): Promise<RestoreCloudBackupResultStatesType> {
   try {
     // 1 - sanitize filename to remove extra things we don't care about
-    const filename = sanitizeFilename(nameOfSelectedBackupFile);
+    const filename = sanitizeFilename(backupFilename);
     if (!filename) {
       return RestoreCloudBackupResultStates.failedWhenRestoring;
     }
@@ -401,26 +356,6 @@ export async function restoreCloudBackup({
       } catch (e) {
         return RestoreCloudBackupResultStates.incorrectPinCode;
       }
-    }
-
-    if (userData) {
-      // Restore only wallets that were backed up in cloud
-      // or wallets that are read-only
-      const walletsToRestore: AllRainbowWallets = {};
-      Object.values(userData?.wallets ?? {}).forEach(wallet => {
-        if (
-          (wallet.backedUp && wallet.backupDate && wallet.backupFile && wallet.backupType === WalletBackupTypes.cloud) ||
-          wallet.type === WalletTypes.readOnly
-        ) {
-          walletsToRestore[wallet.id] = wallet;
-        }
-      });
-
-      // All wallets
-      dataToRestore[allWalletsKey] = {
-        version: allWalletsVersion,
-        wallets: walletsToRestore,
-      };
     }
 
     const restoredSuccessfully = await restoreSpecificBackupIntoKeychain(dataToRestore, userPIN);

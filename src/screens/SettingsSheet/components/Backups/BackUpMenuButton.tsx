@@ -5,18 +5,20 @@ import MenuItem from '../MenuItem';
 import Spinner from '@/components/Spinner';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { useDimensions } from '@/hooks';
-import { CloudBackupState } from '@/components/backup/CloudBackupProvider';
+import { CloudBackupState } from '@/state/backups/backups';
 
 export const BackUpMenuItem = ({
   icon = '􀊯',
   backupState,
   onPress,
   title,
+  disabled,
 }: {
   icon?: string;
   backupState: CloudBackupState;
   title: string;
   onPress: () => void;
+  disabled?: boolean;
 }) => {
   const { colors } = useTheme();
   const { width: deviceWidth } = useDimensions();
@@ -86,6 +88,7 @@ export const BackUpMenuItem = ({
           <MenuItem
             testID={'backup-now-button'}
             hasSfSymbol
+            disabled={disabled}
             leftComponent={
               backupState === CloudBackupState.InProgress ? (
                 <Spinner size={20} color={colors.appleBlue} />

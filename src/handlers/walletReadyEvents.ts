@@ -15,6 +15,7 @@ import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { InteractionManager } from 'react-native';
+import { backupsStore } from '@/state/backups/backups';
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 
@@ -25,7 +26,7 @@ export const runKeychainIntegrityChecks = async () => {
   }
 };
 
-export const runWalletBackupStatusChecks = (provider: string | undefined) => {
+export const runWalletBackupStatusChecks = () => {
   const {
     selected,
     wallets,
@@ -56,6 +57,8 @@ export const runWalletBackupStatusChecks = (provider: string | undefined) => {
   logger.debug('[walletReadyEvents]: rainbow wallet not backed up that is selected?', {
     hasSelectedWallet,
   });
+
+  const provider = backupsStore.getState().backupProvider;
 
   // if one of them is selected, show the default BackupSheet
   if (selected && hasSelectedWallet && IS_TESTING !== 'true') {

@@ -20,8 +20,8 @@ import { GoogleDriveUserData, getGoogleAccountUserData, isCloudBackupAvailable, 
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { RainbowError, logger } from '@/logger';
 import { Linking } from 'react-native';
-import { CloudBackupState, useCloudBackupsContext } from './CloudBackupProvider';
-import { BackupTypes } from '@/components/backup/useCreateBackup';
+import { BackupTypes, useCreateBackup } from '@/components/backup/useCreateBackup';
+import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 
 const imageSize = 72;
 
@@ -29,7 +29,10 @@ export default function BackupSheetSectionNoProvider() {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
   const { selectedWallet } = useWallets();
-  const { createBackup, backupState } = useCloudBackupsContext();
+  const createBackup = useCreateBackup();
+  const { status } = backupsStore(state => ({
+    status: state.status,
+  }));
 
   const onCloudBackup = async () => {
     // NOTE: On Android we need to make sure the user is signed into a Google account before trying to backup
@@ -115,7 +118,7 @@ export default function BackupSheetSectionNoProvider() {
       </Bleed>
 
       {/* replace this with BackUpMenuButton */}
-      <ButtonPressAnimation disabled={backupState !== CloudBackupState.Ready} scaleTo={0.95} onPress={onCloudBackup}>
+      <ButtonPressAnimation disabled={status !== CloudBackupState.Ready} scaleTo={0.95} onPress={onCloudBackup}>
         <Box alignItems="flex-start" justifyContent="flex-start" paddingTop={'24px'} paddingBottom={'36px'} gap={8}>
           <Box justifyContent="center" width="full">
             <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>

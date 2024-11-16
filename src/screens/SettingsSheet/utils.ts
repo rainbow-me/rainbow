@@ -3,9 +3,9 @@ import WalletTypes from '@/helpers/walletTypes';
 import { useWallets } from '@/hooks';
 import { isEmpty } from 'lodash';
 import { Backup, parseTimestampFromFilename } from '@/model/backup';
-import { CloudBackupState } from '@/components/backup/CloudBackupProvider';
 import * as i18n from '@/languages';
 import { cloudPlatform } from '@/utils/platform';
+import { CloudBackupState } from '@/state/backups/backups';
 
 type WalletBackupStatus = {
   allBackedUp: boolean;
@@ -68,7 +68,7 @@ export const getMostRecentCloudBackup = (backups: Backup[]) => {
   );
 };
 
-export const titleForBackupState = {
+export const titleForBackupState: Partial<Record<CloudBackupState, string>> = {
   [CloudBackupState.Initializing]: i18n.t(i18n.l.back_up.cloud.syncing_cloud_store, {
     cloudPlatformName: cloudPlatform,
   }),

@@ -15,7 +15,7 @@ import { useNavigation } from '@/navigation';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
-import MenuHeader from '../MenuHeader';
+import MenuHeader, { StatusType } from '../MenuHeader';
 import { checkLocalWalletsForBackupStatus } from '../../utils';
 import { Inline, Text, Box, Stack } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
@@ -27,17 +27,18 @@ import { SETTINGS_BACKUP_ROUTES } from './routes';
 import { RainbowAccount, createWallet } from '@/model/wallet';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { useDispatch } from 'react-redux';
-import { walletsLoadState } from '@/redux/wallets';
+import { setIsWalletLoading, walletsLoadState } from '@/redux/wallets';
 import { RainbowError, logger } from '@/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { BackupTypes } from '@/components/backup/useCreateBackup';
+import { BackupTypes, useCreateBackup } from '@/components/backup/useCreateBackup';
 import { BackUpMenuItem } from './BackUpMenuButton';
 import { format } from 'date-fns';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { useCloudBackupsContext } from '@/components/backup/CloudBackupProvider';
+import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { GoogleDriveUserData, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Linking } from 'react-native';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -94,7 +95,14 @@ export const WalletsAndBackup = () => {
   const { wallets } = useWallets();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const dispatch = useDispatch();
-  const { backups, backupState, createBackup, provider, mostRecentBackup } = useCloudBackupsContext();
+
+  const createBackup = useCreateBackup();
+  const { status, backupProvider, backups, mostRecentBackup } = backupsStore(state => ({
+    status: state.status,
+    backupProvider: state.backupProvider,
+    backups: state.backups,
+    mostRecentBackup: state.mostRecentBackup,
+  }));
 
   const initializeWallet = useInitializeWallet();
 
@@ -163,8 +171,12 @@ export const WalletsAndBackup = () => {
       }
     }
 
+    if (status !== CloudBackupState.Ready) {
+      return;
+    }
+
     createBackup({ type: BackupTypes.All });
-  }, [createBackup]);
+  }, [createBackup, status]);
 
   const onViewCloudBackups = useCallback(async () => {
     navigate(SETTINGS_BACKUP_ROUTES.VIEW_CLOUD_BACKUPS, {
@@ -180,6 +192,8 @@ export const WalletsAndBackup = () => {
       onCloseModal: async ({ name }: { name: string }) => {
         const nameValue = name.trim() !== '' ? name.trim() : '';
         try {
+          dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+
           await createWallet({
             color: null,
             name: nameValue,
@@ -194,6 +208,8 @@ export const WalletsAndBackup = () => {
           logger.error(new RainbowError(`[WalletsAndBackup]: Failed to create new secret phrase`), {
             error: err,
           });
+        } finally {
+          dispatch(setIsWalletLoading(null));
         }
       },
     });
@@ -220,8 +236,36 @@ export const WalletsAndBackup = () => {
     [navigate, wallets]
   );
 
+  const { status: iconStatusType, text } = useMemo<{ status: StatusType; text: string }>(() => {
+    if (status === CloudBackupState.FailedToInitialize || status === CloudBackupState.NotAvailable) {
+      return {
+        status: 'not-enabled',
+        text: 'Not Enabled',
+      };
+    }
+
+    if (status !== CloudBackupState.Ready) {
+      return {
+        status: 'out-of-sync',
+        text: 'Syncing',
+      };
+    }
+
+    if (!allBackedUp) {
+      return {
+        status: 'out-of-date',
+        text: 'Out of Date',
+      };
+    }
+
+    return {
+      status: 'up-to-date',
+      text: 'Up to date',
+    };
+  }, [status, allBackedUp]);
+
   const renderView = useCallback(() => {
-    switch (provider) {
+    switch (backupProvider) {
       default:
       case undefined: {
         return (
@@ -255,7 +299,8 @@ export const WalletsAndBackup = () => {
               <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
                 <BackUpMenuItem
                   title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
-                  backupState={backupState}
+                  backupState={status}
+                  disabled={status !== CloudBackupState.Ready}
                   onPress={backupAllNonBackedUpWalletsTocloud}
                 />
               </Menu>
@@ -345,12 +390,7 @@ export const WalletsAndBackup = () => {
                   paddingTop={{ custom: 8 }}
                   iconComponent={<MenuHeader.ImageIcon source={allBackedUp ? CloudBackedUpIcon : CloudBackupWarningIcon} size={72} />}
                   titleComponent={<MenuHeader.Title text={i18n.t(i18n.l.wallet.back_ups.cloud_backup_title)} weight="heavy" />}
-                  statusComponent={
-                    <MenuHeader.StatusIcon
-                      status={allBackedUp ? 'up-to-date' : 'out-of-date'}
-                      text={allBackedUp ? 'Up to date' : 'Out of date'} // TODO: i18n this
-                    />
-                  }
+                  statusComponent={<MenuHeader.StatusIcon status={iconStatusType} text={text} />}
                   labelComponent={
                     allBackedUp ? (
                       <MenuHeader.Label
@@ -397,7 +437,8 @@ export const WalletsAndBackup = () => {
                       cloudPlatformName: cloudPlatform,
                     })}
                     icon="􀎽"
-                    backupState={backupState}
+                    backupState={status}
+                    disabled={status !== CloudBackupState.Ready}
                     onPress={backupAllNonBackedUpWalletsTocloud}
                   />
                 </Menu>
@@ -589,8 +630,9 @@ export const WalletsAndBackup = () => {
                 >
                   <BackUpMenuItem
                     title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
-                    backupState={backupState}
+                    backupState={status}
                     onPress={backupAllNonBackedUpWalletsTocloud}
+                    disabled={status !== CloudBackupState.Ready}
                   />
                 </Menu>
               </Box>
@@ -600,17 +642,19 @@ export const WalletsAndBackup = () => {
       }
     }
   }, [
-    provider,
-    backupState,
+    backupProvider,
+    status,
     backupAllNonBackedUpWalletsTocloud,
     sortedWallets,
     onCreateNewSecretPhrase,
-    onViewCloudBackups,
-    manageCloudBackups,
     navigate,
     onNavigateToWalletView,
     allBackedUp,
+    iconStatusType,
+    text,
     mostRecentBackup,
+    onViewCloudBackups,
+    manageCloudBackups,
     onPressLearnMoreAboutCloudBackups,
   ]);
 

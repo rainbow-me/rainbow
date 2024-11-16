@@ -8,8 +8,7 @@ import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
 import { InteractionManager, Linking } from 'react-native';
-import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
-import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import { createAccountForWallet, setIsWalletLoading, walletsLoadState } from '@/redux/wallets';
 import { createWallet } from '@/model/wallet';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
@@ -18,10 +17,8 @@ import CreateNewWallet from '@/assets/CreateNewWallet.png';
 import PairHairwareWallet from '@/assets/PairHardwareWallet.png';
 import ImportSecretPhraseOrPrivateKey from '@/assets/ImportSecretPhraseOrPrivateKey.png';
 import WatchWalletIcon from '@/assets/watchWallet.png';
-import { captureException } from '@sentry/react-native';
 import { useDispatch } from 'react-redux';
 import {
-  backupUserDataIntoCloud,
   getGoogleAccountUserData,
   GoogleDriveUserData,
   isCloudBackupAvailable,
@@ -34,6 +31,7 @@ import { IS_ANDROID } from '@/env';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useInitializeWallet, useWallets } from '@/hooks';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
@@ -84,6 +82,8 @@ export const AddWalletSheet = () => {
             },
             onCloseModal: async (args: any) => {
               if (args) {
+                dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+
                 const name = args?.name ?? '';
                 const color = args?.color ?? null;
                 // Check if the selected wallet is the primary
@@ -114,31 +114,19 @@ export const AddWalletSheet = () => {
                 try {
                   // If we found it and it's not damaged use it to create the new account
                   if (primaryWalletKey && !wallets?.[primaryWalletKey].damaged) {
-                    const newWallets = await dispatch(createAccountForWallet(primaryWalletKey, color, name));
+                    await dispatch(createAccountForWallet(primaryWalletKey, color, name));
                     // @ts-ignore
                     await initializeWallet();
-                    // If this wallet was previously backed up to the cloud
-                    // We need to update userData backup so it can be restored too
-                    if (wallets?.[primaryWalletKey].backedUp && wallets[primaryWalletKey].backupType === WalletBackupTypes.cloud) {
-                      try {
-                        await backupUserDataIntoCloud({ wallets: newWallets });
-                      } catch (e) {
-                        logger.error(new RainbowError('[AddWalletSheet]: Updating wallet userdata failed after new account creation'), {
-                          error: e,
-                        });
-                        throw e;
-                      }
-                    }
-
-                    // If doesn't exist, we need to create a new wallet
+                    // TODO: Make sure the new wallet is marked as not backed up
                   } else {
+                    // If doesn't exist, we need to create a new wallet
                     await createWallet({
                       color,
                       name,
                       clearCallbackOnStartCreation: true,
                     });
                     await dispatch(walletsLoadState(profilesEnabled));
-                    // @ts-ignore
+                    // @ts-expect-error - needs refactor to object params
                     await initializeWallet();
                   }
                 } catch (e) {
@@ -150,6 +138,8 @@ export const AddWalletSheet = () => {
                       showWalletErrorAlert();
                     }, 1000);
                   }
+                } finally {
+                  dispatch(setIsWalletLoading(null));
                 }
               }
               creatingWallet.current = false;

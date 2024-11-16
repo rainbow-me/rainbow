@@ -10,11 +10,11 @@ import { format } from 'date-fns';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { Centered, Page } from '@/components/layout';
+import { Page } from '@/components/layout';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { useTheme } from '@/theme';
-import { useCloudBackupsContext, CloudBackupState } from '@/components/backup/CloudBackupProvider';
+import { CloudBackupState, LoadingStates, backupsStore } from '@/state/backups/backups';
 import { titleForBackupState } from '../../utils';
 import { Box } from '@/design-system';
 
@@ -31,7 +31,11 @@ const ViewCloudBackups = () => {
   const { navigate } = useNavigation();
 
   const { colors } = useTheme();
-  const { backupState, backups, mostRecentBackup, syncAndFetchBackups } = useCloudBackupsContext();
+  const { status, backups, mostRecentBackup } = backupsStore(state => ({
+    status: state.status,
+    backups: state.backups,
+    mostRecentBackup: state.mostRecentBackup,
+  }));
 
   const onSelectCloudBackup = useCallback(
     async (selectedBackup: Backup) => {
@@ -118,7 +122,7 @@ const ViewCloudBackups = () => {
         <MenuItem
           size={52}
           width="full"
-          onPress={syncAndFetchBackups}
+          onPress={() => backupsStore.getState().syncAndFetchBackups()}
           titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.refresh)} />}
         />
       </Menu>
@@ -132,22 +136,21 @@ const ViewCloudBackups = () => {
     </>
   );
 
-  const isLoading =
-    backupState === CloudBackupState.Initializing || backupState === CloudBackupState.Syncing || backupState === CloudBackupState.Fetching;
+  const isLoading = LoadingStates.includes(status);
 
   if (isLoading) {
     return (
       <Box color={colors.transparent} alignItems="center" justifyContent="center" flex={1} as={Page}>
         {android ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator color={colors.blueGreyDark} />}
-        <LoadingText>{titleForBackupState[backupState]}</LoadingText>
+        <LoadingText>{titleForBackupState[status]}</LoadingText>
       </Box>
     );
   }
 
   return (
     <MenuContainer>
-      {backupState === CloudBackupState.Ready && !backups.files.length && renderNoBackupsState()}
-      {backupState === CloudBackupState.Ready && backups.files.length > 0 && renderBackupsList()}
+      {status === CloudBackupState.Ready && !backups.files.length && renderNoBackupsState()}
+      {status === CloudBackupState.Ready && backups.files.length > 0 && renderBackupsList()}
     </MenuContainer>
   );
 };
