@@ -50,7 +50,6 @@ export default function useManageCloudBackups() {
     };
 
     const loginToGoogleDrive = async () => {
-      // TODO: Figure out how to update the backup status based on the new account?
       try {
         const accountDetails = await getGoogleAccountUserData();
         backupsStore.getState().syncAndFetchBackups();
@@ -96,7 +95,7 @@ export default function useManageCloudBackups() {
         if (_buttonIndex === 1 && IS_ANDROID) {
           logoutFromGoogleDrive();
           setAccountDetails(undefined);
-          removeBackupStateFromAllWallets().then(() => loginToGoogleDrive());
+          loginToGoogleDrive();
         }
       }
     );

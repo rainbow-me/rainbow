@@ -115,6 +115,8 @@ export const backupsStore = createRainbowStore<BackupsStore>((set, get) => ({
           });
         } else if (hasManuallyBackedUpWallet(wallets)) {
           set({ backupProvider: walletBackupTypes.manual });
+        } else {
+          set({ backupProvider: undefined });
         }
 
         logger.debug(`[backupsStore]: Retrieved ${backups.files.length} backup files`);
