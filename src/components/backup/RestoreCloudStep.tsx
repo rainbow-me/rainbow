@@ -150,7 +150,7 @@ export default function RestoreCloudStep() {
       dispatch(setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET));
       const status = await restoreCloudBackup({
         password: pwd,
-        backupFilename: selectedBackup.name,
+        backupFilename: filename,
       });
       if (status === RestoreCloudBackupResultStates.success) {
         // Store it in the keychain in case it was missing
