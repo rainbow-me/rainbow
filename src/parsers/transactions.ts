@@ -87,7 +87,8 @@ export const parseTransaction = async (
   const nativeAsset = changes.find(change => change?.asset.isNativeAsset);
   const nativeAssetPrice = nativeAsset?.price?.toString() || '0';
 
-  const value = toFixedDecimals(nativeAsset?.value || '', nativeAsset?.asset?.decimals || 18);
+  const decimals = typeof nativeAsset?.asset?.decimals === 'number' ? nativeAsset.asset.decimals : 18;
+  const value = toFixedDecimals(nativeAsset?.value || '', decimals);
 
   // this is probably wrong, need to revisit
   const native = convertAmountAndPriceToNativeDisplay(value, nativeAssetPrice, nativeCurrency);

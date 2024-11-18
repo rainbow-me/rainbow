@@ -24,12 +24,8 @@ export const parsePosition = (position: Position, currency: NativeCurrencyKey): 
     return {
       ...deposit,
       underlying: deposit.underlying?.map(underlying => {
-        const nativeDisplay = convertRawAmountToNativeDisplay(
-          underlying.quantity,
-          underlying.asset.decimals,
-          underlying.asset.price?.value!,
-          currency
-        );
+        const decimals = typeof underlying.asset.decimals === 'number' ? underlying.asset.decimals : 18;
+        const nativeDisplay = convertRawAmountToNativeDisplay(underlying.quantity, decimals, underlying.asset.price?.value!, currency);
 
         if (deposit.omit_from_total) {
           totalLocked = add(totalLocked, nativeDisplay.amount);
@@ -50,12 +46,8 @@ export const parsePosition = (position: Position, currency: NativeCurrencyKey): 
     return {
       ...borrow,
       underlying: borrow.underlying.map(underlying => {
-        const nativeDisplay = convertRawAmountToNativeDisplay(
-          underlying.quantity,
-          underlying.asset.decimals,
-          underlying.asset.price?.value!,
-          currency
-        );
+        const decimals = typeof underlying.asset.decimals === 'number' ? underlying.asset.decimals : 18;
+        const nativeDisplay = convertRawAmountToNativeDisplay(underlying.quantity, decimals, underlying.asset.price?.value!, currency);
 
         if (borrow.omit_from_total) {
           totalLocked = subtract(totalLocked, nativeDisplay.amount);
@@ -73,7 +65,8 @@ export const parsePosition = (position: Position, currency: NativeCurrencyKey): 
 
   let totalClaimables = '0';
   const parsedClaimables = position.claimables?.map((claim: Claimable): RainbowClaimable => {
-    const nativeDisplay = convertRawAmountToNativeDisplay(claim.quantity, claim.asset.decimals, claim.asset.price?.value!, currency);
+    const decimals = typeof claim.asset.decimals === 'number' ? claim.asset.decimals : 18;
+    const nativeDisplay = convertRawAmountToNativeDisplay(claim.quantity, decimals, claim.asset.price?.value!, currency);
 
     if (claim.omit_from_total) {
       totalLocked = add(totalLocked, nativeDisplay.amount);

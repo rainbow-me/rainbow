@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
 import isEmpty from 'lodash/isEmpty';
-import { MMKV } from 'react-native-mmkv';
 import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertRawAmountToBalance } from '@/helpers/utilities';

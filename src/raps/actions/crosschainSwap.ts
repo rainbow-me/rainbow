@@ -2,6 +2,8 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { CrosschainQuote, fillCrosschainQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
+import { add } from '@/helpers/utilities';
+import { assetNeedsUnlocking, estimateApprove } from './unlock';
 
 import { REFERRER, gasUnits, ReferrerType } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -10,7 +12,8 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { ActionProps, RapActionResult } from '../references';
+import { ActionProps, RapActionResult, RapSwapActionParameters } from '../references';
+
 import {
   CHAIN_IDS_WITH_TRACE_SUPPORT,
   SWAP_GAS_PADDING,
@@ -26,6 +29,65 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
+
+export const estimateUnlockAndCrosschainSwap = async ({
+  sellAmount,
+  quote,
+  chainId,
+  assetToSell,
+}: Pick<RapSwapActionParameters<'crosschainSwap'>, 'sellAmount' | 'quote' | 'chainId' | 'assetToSell'>) => {
+  const {
+    from: accountAddress,
+    sellTokenAddress,
+    allowanceTarget,
+    allowanceNeeded,
+  } = quote as {
+    from: Address;
+    sellTokenAddress: Address;
+    allowanceTarget: Address;
+    allowanceNeeded: boolean;
+  };
+
+  let gasLimits: (string | number)[] = [];
+  let swapAssetNeedsUnlocking = false;
+
+  if (allowanceNeeded) {
+    swapAssetNeedsUnlocking = await assetNeedsUnlocking({
+      owner: accountAddress,
+      amount: sellAmount,
+      assetToUnlock: assetToSell,
+      spender: allowanceTarget,
+      chainId,
+    });
+  }
+
+  if (swapAssetNeedsUnlocking) {
+    const unlockGasLimit = await estimateApprove({
+      owner: accountAddress,
+      tokenAddress: sellTokenAddress,
+      spender: allowanceTarget,
+      chainId,
+    });
+    gasLimits = gasLimits.concat(unlockGasLimit);
+  }
+
+  const swapGasLimit = await estimateCrosschainSwapGasLimit({
+    chainId,
+    requiresApprove: swapAssetNeedsUnlocking,
+    quote,
+  });
+
+  if (swapGasLimit === null || swapGasLimit === undefined || isNaN(Number(swapGasLimit))) {
+    return getCrosschainSwapDefaultGasLimit(quote) || getDefaultGasLimitForTrade(quote, chainId);
+  }
+
+  const gasLimit = gasLimits.concat(swapGasLimit).reduce((acc, limit) => add(acc, limit), '0');
+  if (isNaN(Number(gasLimit))) {
+    return getCrosschainSwapDefaultGasLimit(quote) || getDefaultGasLimitForTrade(quote, chainId);
+  }
+
+  return gasLimit.toString();
+};
 
 export const estimateCrosschainSwapGasLimit = async ({
   chainId,
@@ -112,7 +174,7 @@ export const crosschainSwap = async ({
   gasParams,
   gasFeeParamsBySpeed,
 }: ActionProps<'crosschainSwap'>): Promise<RapActionResult> => {
-  const { quote, chainId, requiresApprove } = parameters;
+  const { assetToSell, sellAmount, quote, chainId } = parameters;
 
   let gasParamsToUse = gasParams;
   if (currentRap.actions.length - 1 > index) {
@@ -125,10 +187,11 @@ export const crosschainSwap = async ({
 
   let gasLimit;
   try {
-    gasLimit = await estimateCrosschainSwapGasLimit({
-      chainId,
-      requiresApprove,
+    gasLimit = await estimateUnlockAndCrosschainSwap({
+      sellAmount,
       quote,
+      chainId,
+      assetToSell,
     });
   } catch (e) {
     logger.error(new RainbowError('[raps/crosschainSwap]: error estimateCrosschainSwapGasLimit'), {
@@ -189,7 +252,7 @@ export const crosschainSwap = async ({
     price: nativePriceForAssetToBuy,
   } satisfies ParsedAsset;
 
-  const assetToSell = {
+  const updatedAssetToSell = {
     ...parameters.assetToSell,
     network: chainsName[parameters.assetToSell.chainId],
     networks: parameters.assetToSell.networks as Record<string, AddysNetworkDetails>,
@@ -208,7 +271,7 @@ export const crosschainSwap = async ({
       {
         direction: TransactionDirection.OUT,
         asset: {
-          ...assetToSell,
+          ...updatedAssetToSell,
           native: undefined,
         },
         value: quote.sellAmount.toString(),

@@ -112,7 +112,7 @@ export const fetchHardhatBalancesByChainId = async (
         implementations: chainAsset.asset.implementations || {},
         name: chainAsset.asset.name || 'Unknown Token',
         symbol: chainAsset.asset.symbol || 'UNKNOWN',
-        decimals: chainAsset.asset.decimals || 18,
+        decimals: typeof chainAsset.asset.decimals === 'number' ? chainAsset.asset.decimals : 18,
         icon_url: chainAsset.asset.icon_url || '',
         price: chainAsset.asset.price || { value: 0, relative_change_24h: 0 },
       };

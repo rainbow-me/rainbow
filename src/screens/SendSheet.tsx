@@ -325,7 +325,7 @@ export default function SendSheet() {
       let _assetAmount = '';
       if (_nativeAmount.length) {
         const priceUnit = !isUniqueAsset ? selected?.price?.value ?? 0 : 0;
-        const decimals = !isUniqueAsset ? selected?.decimals ?? 18 : 0;
+        const decimals = !isUniqueAsset ? (typeof selected?.decimals === 'number' ? selected.decimals : 18) : 0;
         const convertedAssetAmount = convertAmountFromNativeValue(_nativeAmount, priceUnit, decimals);
         _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
       }
