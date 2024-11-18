@@ -241,9 +241,6 @@ export default function RestoreCloudStep() {
     validPassword && onSubmit();
   }, [onSubmit, validPassword]);
 
-  const isPasswordValid =
-    (password !== '' && password.length < cloudBackupPasswordMinLength && !passwordRef?.current?.isFocused()) || incorrectPassword;
-
   return (
     <Box height={{ custom: deviceHeight - sharedCoolModalTopOffset - 48 }}>
       <Inset horizontal={'24px'}>
@@ -270,7 +267,7 @@ export default function RestoreCloudStep() {
             <PasswordField
               autoFocus
               editable={!isWalletLoading}
-              isInvalid={isPasswordValid}
+              isInvalid={incorrectPassword}
               onChange={onPasswordChange}
               onSubmitEditing={onPasswordSubmit}
               password={password}
