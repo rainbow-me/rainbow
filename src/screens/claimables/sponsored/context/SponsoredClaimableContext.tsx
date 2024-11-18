@@ -61,7 +61,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         } catch (e) {
           haptics.notificationError();
           setClaimStatus('recoverableError');
-          logger.error(new RainbowError('[ClaimSponsoredClaimable]: failed to execute sponsored claim api call'));
+          logger.error(new RainbowError('[SponsoredClaimableContext]: failed to execute sponsored claim api call'));
           return;
         }
       } else {
@@ -70,7 +70,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         } catch (e) {
           haptics.notificationError();
           setClaimStatus('recoverableError');
-          logger.error(new RainbowError('[ClaimSponsoredClaimable]: failed to execute sponsored claim api call'));
+          logger.error(new RainbowError('[SponsoredClaimableContext]: failed to execute sponsored claim api call'));
           return;
         }
       }
@@ -78,7 +78,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
       if (!response.data.payload.success) {
         haptics.notificationError();
         setClaimStatus('recoverableError');
-        logger.error(new RainbowError('[ClaimSponsoredClaimable]: sponsored claim api call returned unsuccessful response'));
+        logger.error(new RainbowError('[SponsoredClaimableContext]: sponsored claim api call returned unsuccessful response'));
       } else {
         haptics.notificationSuccess();
 
@@ -95,7 +95,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
     onError: e => {
       haptics.notificationError();
       setClaimStatus('recoverableError');
-      logger.error(new RainbowError('[ClaimingSponsoredClaimable]: Failed to claim claimable due to unhandled error'), {
+      logger.error(new RainbowError('[SponsoredClaimableContext]: Failed to claim claimable due to unhandled error'), {
         message: (e as Error)?.message,
       });
     },
@@ -104,7 +104,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         haptics.notificationError();
         setClaimStatus('recoverableError');
         logger.error(
-          new RainbowError('[ClaimingSponsoredClaimable]: claim function completed but never resolved status to success or error state')
+          new RainbowError('[SponsoredClaimableContext]: claim function completed but never resolved status to success or error state')
         );
       }
     },

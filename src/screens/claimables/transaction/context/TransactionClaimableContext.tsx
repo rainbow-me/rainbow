@@ -194,7 +194,7 @@ export function TransactionClaimableContextProvider({
             status = 'noRouteError';
           } else {
             status = 'noQuoteError';
-            logger.error(new RainbowError('[ClaimingTransactionClaimable]: failed to get quote'), { quote, quoteParams });
+            logger.error(new RainbowError('[TransactionClaimableContext]: failed to get quote'), { quote, quoteParams });
           }
           setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status });
         } else {
@@ -215,7 +215,7 @@ export function TransactionClaimableContextProvider({
           });
         }
       } catch (e) {
-        logger.error(new RainbowError('[ClaimingTransactionClaimable]: failed to get quote'), { error: e });
+        logger.error(new RainbowError('[TransactionClaimableContext]: failed to get quote'), { error: e });
         setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'noQuoteError' });
       }
     },
@@ -296,7 +296,7 @@ export function TransactionClaimableContextProvider({
         if (txState.status === 'fetching') {
           setTxState(prev => ({ ...prev, status: 'none' }));
         }
-        logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to estimate claim gas limit'));
+        logger.error(new RainbowError('[TransactionClaimableContext]: Failed to estimate claim gas limit'));
         return;
       }
 
@@ -307,7 +307,7 @@ export function TransactionClaimableContextProvider({
           if (txState.status === 'fetching') {
             setTxState(prev => ({ ...prev, status: 'none' }));
           }
-          logger.error(new RainbowError('[TransactionClaimablePanel]: swapGasLimit is undefined'));
+          logger.error(new RainbowError('[TransactionClaimableContext]: swapGasLimit is undefined'));
           return;
         }
 
@@ -343,7 +343,7 @@ export function TransactionClaimableContextProvider({
       if (txState.status === 'fetching') {
         setTxState(prev => ({ ...prev, status: 'error' }));
       }
-      logger.warn('[TransactionClaimablePanel]: Failed to estimate gas', { error: e });
+      logger.warn('[TransactionClaimableContext]: Failed to estimate gas', { error: e });
     }
   }, [
     canEstimateGas,
@@ -379,7 +379,7 @@ export function TransactionClaimableContextProvider({
         }
         estimateGas();
       } catch (e) {
-        logger.warn('[TransactionClaimablePanel]: Failed to estimate gas', { error: e });
+        logger.warn('[TransactionClaimableContext]: Failed to estimate gas', { error: e });
       }
     }
   }, [
@@ -417,7 +417,7 @@ export function TransactionClaimableContextProvider({
       ) {
         haptics.notificationError();
         setClaimStatus('recoverableError');
-        logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to claim claimable due to missing tx payload'));
+        logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to missing tx payload'));
         return;
       }
 
@@ -448,7 +448,7 @@ export function TransactionClaimableContextProvider({
         if (!outputAsset) {
           haptics.notificationError();
           setClaimStatus('recoverableError');
-          logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to claim claimable due to error fetching output asset'));
+          logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to error fetching output asset'));
           return;
         }
 
@@ -466,7 +466,7 @@ export function TransactionClaimableContextProvider({
           haptics.notificationError();
           setClaimStatus('recoverableError');
           setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
-          logger.error(new RainbowError('[TransactionClaimablePanel]: quote error'));
+          logger.error(new RainbowError('[TransactionClaimableContext]: quote error'));
           return;
         }
 
@@ -499,14 +499,14 @@ export function TransactionClaimableContextProvider({
           if (errorMessage.includes('[CLAIM-CLAIMABLE]')) {
             // Claim error (retry possible)
             setClaimStatus('recoverableError');
-            logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to claim claimable due to rap error (claim)'), {
+            logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to rap error (claim)'), {
               message: errorMessage,
               recoverable: true,
             });
           } else {
             // Bridge error (retry not possible)
             setClaimStatus('unrecoverableError');
-            logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to claim claimable due to rap error (bridge)'), {
+            logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to rap error (bridge)'), {
               message: errorMessage,
               recoverable: false,
             });
@@ -523,7 +523,7 @@ export function TransactionClaimableContextProvider({
         } catch (e) {
           haptics.notificationError();
           setClaimStatus('recoverableError');
-          logger.error(new RainbowError(`[TransactionClaimablePanel]: Failed to claim claimable due to executeClaim error`), {
+          logger.error(new RainbowError(`[TransactionClaimableContext]: Failed to claim claimable due to executeClaim error`), {
             message: (e as Error)?.message,
           });
         }
@@ -538,7 +538,7 @@ export function TransactionClaimableContextProvider({
     onError: e => {
       haptics.notificationError();
       setClaimStatus('recoverableError');
-      logger.error(new RainbowError('[TransactionClaimablePanel]: Failed to claim claimable due to unhandled error'), {
+      logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to unhandled error'), {
         message: (e as Error)?.message,
       });
     },
@@ -547,7 +547,7 @@ export function TransactionClaimableContextProvider({
         haptics.notificationError();
         setClaimStatus('recoverableError');
         logger.error(
-          new RainbowError('[TransactionClaimablePanel]: claim function completed but never resolved status to success or error state')
+          new RainbowError('[TransactionClaimableContext]: claim function completed but never resolved status to success or error state')
         );
       }
     },
