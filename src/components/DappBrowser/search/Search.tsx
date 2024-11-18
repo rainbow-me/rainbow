@@ -11,7 +11,7 @@ import { GOOGLE_SEARCH_URL, HTTPS } from '../constants';
 import { AccountIcon } from '../search-input/AccountIcon';
 import { SearchInput } from '../search-input/SearchInput';
 import { TabButton } from '../search-input/TabButton';
-import { isMissingValidProtocol, isMissingValidProtocolWorklet, isValidURL, isValidURLWorklet } from '../utils';
+import { isMissingValidProtocolWorklet, isValidURLWorklet } from '../utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { SearchResults } from './results/SearchResults';
@@ -70,9 +70,9 @@ export const Search = () => {
     (updatedUrl: string) => {
       let newUrl = updatedUrl;
 
-      if (!isValidURL(newUrl)) {
+      if (!isValidURLWorklet(newUrl)) {
         newUrl = GOOGLE_SEARCH_URL + newUrl;
-      } else if (isMissingValidProtocol(newUrl)) {
+      } else if (isMissingValidProtocolWorklet(newUrl)) {
         newUrl = HTTPS + newUrl;
       }
 
@@ -88,6 +88,7 @@ export const Search = () => {
       'worklet';
       let newUrl = updatedUrl;
 
+      console.log('url submit');
       if (searchResults.value.length > 0 && searchResults.value[0].url) {
         newUrl = searchResults.value[0].url;
       }

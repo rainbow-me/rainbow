@@ -25,14 +25,6 @@ export function isValidAppStoreUrl(url: string): boolean {
   return APP_STORE_URL_PREFIXES.some(prefix => url.startsWith(prefix));
 }
 
-export function isValidURL(url: string): boolean {
-  let urlForValidation = url.trim();
-  if (isMissingValidProtocol(urlForValidation)) {
-    urlForValidation = HTTPS + urlForValidation;
-  }
-  return URL_PATTERN_REGEX.test(urlForValidation);
-}
-
 export function isValidURLWorklet(url: string): boolean {
   'worklet';
   let urlForValidation = url.trim();
@@ -41,20 +33,6 @@ export function isValidURLWorklet(url: string): boolean {
   }
   return URL_PATTERN_REGEX.test(urlForValidation);
 }
-
-export const normalizeUrl = (url: string): string => {
-  if (!url) {
-    return '';
-  }
-  let normalizedUrl = url;
-  if (isMissingValidProtocol(normalizedUrl)) {
-    normalizedUrl = HTTPS + normalizedUrl;
-  }
-  if (!normalizedUrl.endsWith('/') && !normalizedUrl.includes('?')) {
-    normalizedUrl += '/';
-  }
-  return normalizedUrl;
-};
 
 export const normalizeUrlWorklet = (url: string): string => {
   'worklet';
@@ -99,12 +77,6 @@ export const formatUrl = (url: string, formatSearches = true, prettifyUrl = true
     }
   }
   return formattedValue;
-};
-
-export const generateUniqueId = (): string => {
-  const timestamp = Date.now().toString(36);
-  const randomString = Math.random().toString(36).slice(2, 7);
-  return `${timestamp}${randomString}`;
 };
 
 export function generateUniqueIdWorklet(): string {
