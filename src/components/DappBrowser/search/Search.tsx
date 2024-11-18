@@ -88,7 +88,6 @@ export const Search = () => {
       'worklet';
       let newUrl = updatedUrl;
 
-      console.log('url submit');
       if (searchResults.value.length > 0 && searchResults.value[0].url) {
         newUrl = searchResults.value[0].url;
       }
