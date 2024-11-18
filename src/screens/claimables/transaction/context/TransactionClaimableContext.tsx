@@ -331,7 +331,7 @@ export function TransactionClaimableContextProvider({
 
         gasFeeNativeCurrencyDisplay = convertAmountToNativeDisplayWorklet(feeInUserCurrency, nativeCurrency, true);
       }
-      console.log(sufficientGas);
+
       setLastGasEstimateTime(Date.now());
       setTxState({
         isSufficientGas: sufficientGas,
@@ -339,7 +339,6 @@ export function TransactionClaimableContextProvider({
         txPayload: { ...partialTxPayload, gasLimit },
         status: 'success',
       });
-      console.log('HEYO');
     } catch (e) {
       if (txState.status === 'fetching') {
         setTxState(prev => ({ ...prev, status: 'error' }));
@@ -494,7 +493,7 @@ export function TransactionClaimableContextProvider({
           quote: quoteState.quote,
           additionalParams: { claimTx: txState.txPayload },
         });
-        console.log(errorMessage);
+
         if (errorMessage) {
           haptics.notificationError();
           if (errorMessage.includes('[CLAIM-CLAIMABLE]')) {

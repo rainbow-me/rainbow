@@ -22,7 +22,7 @@ export function TransactionClaimableFlow() {
     requiresSwap,
   } = useTransactionClaimableContext();
   const { goBack } = useNavigation();
-  console.log(claimStatus);
+
   // BUTTON PROPS
   const shouldShowClaimText = !!(claimStatus === 'ready' && outputChainId && outputToken);
   const disabled = !(
