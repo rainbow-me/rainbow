@@ -7,7 +7,7 @@ import * as i18n from '@/languages';
 import { cloudPlatform } from '@/utils/platform';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { RainbowWallet } from '@/model/wallet';
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 
 type WalletBackupStatus = {
@@ -28,6 +28,26 @@ export const checkLocalWalletsForBackupStatus = (wallets: ReturnType<typeof useW
       areBackedUp: false,
       canBeBackedUp: false,
     };
+  }
+
+  // FOR ANDROID, we need to check if the current google account also has the backup file
+  if (IS_ANDROID) {
+    const backupFiles = backupsStore.getState().backups;
+    return Object.values(wallets).reduce<WalletBackupStatus>(
+      (acc, wallet) => {
+        const isBackupEligible = wallet.type !== WalletTypes.readOnly && wallet.type !== WalletTypes.bluetooth;
+        const hasBackupFile = backupFiles.files.some(
+          file => normalizeAndroidBackupFilename(file.name) === normalizeAndroidBackupFilename(wallet.backupFile ?? '')
+        );
+
+        return {
+          allBackedUp: acc.allBackedUp && hasBackupFile && (wallet.backedUp || !isBackupEligible),
+          areBackedUp: acc.areBackedUp && hasBackupFile && (wallet.backedUp || !isBackupEligible),
+          canBeBackedUp: acc.canBeBackedUp || isBackupEligible,
+        };
+      },
+      { allBackedUp: true, areBackedUp: true, canBeBackedUp: false }
+    );
   }
 
   return Object.values(wallets).reduce<WalletBackupStatus>(
@@ -81,13 +101,20 @@ export const titleForBackupState: Partial<Record<CloudBackupState, string>> = {
 };
 
 export const isWalletBackedUpForCurrentAccount = ({ backupType, backedUp, backupFile }: Partial<RainbowWallet>) => {
-  if (!backupType || !backedUp || !backupFile) {
+  console.log({
+    backupType,
+    backedUp,
+    backupFile,
+  });
+  if (!backupType || !backupFile) {
     return false;
   }
 
   if (IS_IOS || backupType === WalletBackupTypes.manual) {
     return backedUp;
   }
+
+  console.log('backupFile', backupFile);
 
   // NOTE: For Android, we also need to check if the current google account has the matching backup file
   if (!backupFile) {

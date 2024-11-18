@@ -73,7 +73,7 @@ export async function fetchAllBackups(): Promise<CloudBackups> {
   });
 
   return {
-    files: files?.files?.filter((file: BackupFile) => file.name !== USERDATA_FILE) || [],
+    files: files?.files?.filter((file: BackupFile) => normalizeAndroidBackupFilename(file.name) !== USERDATA_FILE) || [],
   };
 }
 

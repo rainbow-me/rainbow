@@ -25,7 +25,6 @@ import { backupsCard } from '@/components/cards/utils/constants';
 import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
 import { RainbowAccount, createWallet } from '@/model/wallet';
-import { PROFILES, useExperimentalFlag } from '@/config';
 import { useDispatch } from 'react-redux';
 import { setIsWalletLoading, walletsLoadState } from '@/redux/wallets';
 import { RainbowError, logger } from '@/logger';
@@ -193,6 +192,20 @@ export const WalletsAndBackup = () => {
   );
 
   const { status: iconStatusType, text } = useMemo<{ status: StatusType; text: string }>(() => {
+    if (!backupProvider) {
+      if (!allBackedUp) {
+        return {
+          status: 'out-of-date',
+          text: 'Out of Date',
+        };
+      }
+
+      return {
+        status: 'up-to-date',
+        text: 'Up to date',
+      };
+    }
+
     if (status === CloudBackupState.FailedToInitialize || status === CloudBackupState.NotAvailable) {
       return {
         status: 'not-enabled',
@@ -218,7 +231,7 @@ export const WalletsAndBackup = () => {
       status: 'up-to-date',
       text: 'Up to date',
     };
-  }, [status, allBackedUp]);
+  }, [backupProvider, status, allBackedUp]);
 
   const renderView = useCallback(() => {
     switch (backupProvider) {
@@ -256,14 +269,15 @@ export const WalletsAndBackup = () => {
                 <BackUpMenuItem
                   title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
                   backupState={status}
-                  disabled={status !== CloudBackupState.Ready}
                   onPress={backupAllNonBackedUpWalletsTocloud}
                 />
               </Menu>
             </Box>
 
             <Stack space={'24px'}>
-              {sortedWallets.map(({ id, name, backedUp, imported, addresses }) => {
+              {sortedWallets.map(({ id, name, backedUp, backupFile, backupType, imported, addresses }) => {
+                const isBackedUp = isWalletBackedUpForCurrentAccount({ backedUp, backupFile, backupType });
+
                 return (
                   <Menu key={`wallet-${id}`}>
                     <MenuItem
@@ -280,7 +294,7 @@ export const WalletsAndBackup = () => {
                             </Text>
                           }
                         >
-                          {!backedUp && (
+                          {!isBackedUp && (
                             <MenuItem.Label
                               testID={'not-backed-up'}
                               color={'#FF584D'}
@@ -301,7 +315,7 @@ export const WalletsAndBackup = () => {
                           />
                         </Inline>
                       }
-                      leftComponent={<MenuItem.TextIcon colorOverride={!backedUp ? '#FF584D' : ''} icon={backedUp ? '􀢶' : '􀡝'} />}
+                      leftComponent={<MenuItem.TextIcon colorOverride={!isBackedUp ? '#FF584D' : ''} icon={isBackedUp ? '􀢶' : '􀡝'} />}
                       onPress={() => onNavigateToWalletView(id, name)}
                       size={60}
                       titleComponent={<MenuItem.Title text={name} />}
@@ -404,6 +418,7 @@ export const WalletsAndBackup = () => {
             <Stack space={'24px'}>
               {sortedWallets.map(({ id, name, backedUp, backupFile, backupType, imported, addresses }) => {
                 const isBackedUp = isWalletBackedUpForCurrentAccount({ backedUp, backupFile, backupType });
+                console.log('isBackedUp', isBackedUp);
 
                 return (
                   <Menu key={`wallet-${id}`}>

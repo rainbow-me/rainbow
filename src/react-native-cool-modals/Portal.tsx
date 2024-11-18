@@ -1,7 +1,7 @@
 import React from 'react';
 import { IS_IOS } from '@/env';
 import { portalStore } from '@/state/portal/portal';
-import { Platform, requireNativeComponent, StyleSheet, View } from 'react-native';
+import { requireNativeComponent, StyleSheet, View } from 'react-native';
 
 const NativePortal = IS_IOS ? requireNativeComponent('WindowPortal') : View;
 const Wrapper = IS_IOS ? ({ children }: { children: React.ReactNode }) => children : View;
@@ -35,7 +35,6 @@ export function Portal() {
 
 const sx = StyleSheet.create({
   wrapper: {
-    zIndex: Number.MAX_SAFE_INTEGER,
     ...StyleSheet.absoluteFillObject,
   },
 });

@@ -3,13 +3,19 @@ import lang from 'i18n-js';
 import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { GoogleDriveUserData, getGoogleAccountUserData, deleteAllBackups, logoutFromGoogleDrive } from '@/handlers/cloudBackup';
+import {
+  GoogleDriveUserData,
+  getGoogleAccountUserData,
+  deleteAllBackups,
+  logoutFromGoogleDrive as logout,
+  login,
+} from '@/handlers/cloudBackup';
 import { clearAllWalletsBackupStatus } from '@/redux/wallets';
 import { showActionSheetWithOptions } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import * as i18n from '@/languages';
-import { backupsStore } from '@/state/backups/backups';
+import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 
 export default function useManageCloudBackups() {
   const dispatch = useDispatch();
@@ -49,8 +55,19 @@ export default function useManageCloudBackups() {
       await dispatch(clearAllWalletsBackupStatus());
     };
 
+    const logoutFromGoogleDrive = async () => {
+      await logout();
+      backupsStore.setState({
+        backupProvider: undefined,
+        backups: { files: [] },
+        mostRecentBackup: undefined,
+        status: CloudBackupState.NotAvailable,
+      });
+    };
+
     const loginToGoogleDrive = async () => {
       try {
+        await login();
         const accountDetails = await getGoogleAccountUserData();
         backupsStore.getState().syncAndFetchBackups();
         setAccountDetails(accountDetails ?? undefined);

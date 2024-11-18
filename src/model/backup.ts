@@ -10,6 +10,7 @@ import {
   getGoogleAccountUserData,
   login,
   logoutFromGoogleDrive,
+  normalizeAndroidBackupFilename,
 } from '@/handlers/cloudBackup';
 import { Alert as NativeAlert } from '@/components/alerts';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
@@ -53,8 +54,9 @@ export interface BackupFile {
 }
 
 export const parseTimestampFromFilename = (filename: string) => {
+  const name = normalizeAndroidBackupFilename(filename);
   return Number(
-    filename
+    name
       .replace('.backup_', '')
       .replace('backup_', '')
       .replace('.json', '')
