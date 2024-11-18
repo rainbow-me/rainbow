@@ -7,11 +7,11 @@ import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useBrowserContext } from '../BrowserContext';
-import { GOOGLE_SEARCH_URL, HTTP, HTTPS } from '../constants';
+import { GOOGLE_SEARCH_URL, HTTPS } from '../constants';
 import { AccountIcon } from '../search-input/AccountIcon';
 import { SearchInput } from '../search-input/SearchInput';
 import { TabButton } from '../search-input/TabButton';
-import { isValidURL, isValidURLWorklet } from '../utils';
+import { isMissingValidProtocolWorklet, isValidURLWorklet } from '../utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { SearchResults } from './results/SearchResults';
@@ -70,9 +70,9 @@ export const Search = () => {
     (updatedUrl: string) => {
       let newUrl = updatedUrl;
 
-      if (!isValidURL(newUrl)) {
+      if (!isValidURLWorklet(newUrl)) {
         newUrl = GOOGLE_SEARCH_URL + newUrl;
-      } else if (!newUrl.startsWith(HTTP) && !newUrl.startsWith(HTTPS)) {
+      } else if (isMissingValidProtocolWorklet(newUrl)) {
         newUrl = HTTPS + newUrl;
       }
 
@@ -94,7 +94,7 @@ export const Search = () => {
 
       if (!isValidURLWorklet(newUrl)) {
         newUrl = GOOGLE_SEARCH_URL + newUrl;
-      } else if (!newUrl.startsWith(HTTP) && !newUrl.startsWith(HTTPS)) {
+      } else if (isMissingValidProtocolWorklet(newUrl)) {
         newUrl = HTTPS + newUrl;
       }
 

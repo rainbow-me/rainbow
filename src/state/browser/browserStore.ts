@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import { PersistStorage, StorageValue, persist, subscribeWithSelector } from 'zustand/middleware';
 import { RAINBOW_HOME } from '@/components/DappBrowser/constants';
 import { TabData, TabId } from '@/components/DappBrowser/types';
-import { generateUniqueId, normalizeUrl } from '@/components/DappBrowser/utils';
+import { generateUniqueIdWorklet, normalizeUrlWorklet } from '@/components/DappBrowser/utils';
 import { RainbowError, logger } from '@/logger';
 
 const BROWSER_STORAGE_ID = 'browserStore';
@@ -104,7 +104,7 @@ const persistedBrowserStorage: PersistStorage<BrowserState> = {
 };
 
 const INITIAL_ACTIVE_TAB_INDEX = 0;
-const INITIAL_TAB_IDS = [generateUniqueId()];
+const INITIAL_TAB_IDS = [generateUniqueIdWorklet()];
 const INITIAL_TABS_DATA = new Map([[INITIAL_TAB_IDS[0], { url: RAINBOW_HOME }]]);
 const INITIAL_PERSISTED_TAB_URLS: Record<TabId, string> = { [INITIAL_TAB_IDS[0]]: RAINBOW_HOME };
 
@@ -154,7 +154,7 @@ export const useBrowserStore = create<BrowserStore>()(
             const existingTabData = state.tabsData.get(tabIdToUse);
             if (existingTabData?.url !== url) {
               const newTabsData = new Map(state.tabsData);
-              newTabsData.set(tabIdToUse, { ...existingTabData, url: normalizeUrl(url) });
+              newTabsData.set(tabIdToUse, { ...existingTabData, url: normalizeUrlWorklet(url) });
               return { tabsData: newTabsData };
             }
             return state;
