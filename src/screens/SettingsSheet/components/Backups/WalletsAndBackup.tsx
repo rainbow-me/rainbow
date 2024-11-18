@@ -16,7 +16,7 @@ import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
 import MenuHeader, { StatusType } from '../MenuHeader';
-import { checkLocalWalletsForBackupStatus } from '../../utils';
+import { checkLocalWalletsForBackupStatus, isWalletBackedUpForCurrentAccount } from '../../utils';
 import { Inline, Text, Box, Stack } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
@@ -402,7 +402,9 @@ export const WalletsAndBackup = () => {
             </Stack>
 
             <Stack space={'24px'}>
-              {sortedWallets.map(({ id, name, backedUp, imported, addresses }) => {
+              {sortedWallets.map(({ id, name, backedUp, backupFile, backupType, imported, addresses }) => {
+                const isBackedUp = isWalletBackedUpForCurrentAccount({ backedUp, backupFile, backupType });
+
                 return (
                   <Menu key={`wallet-${id}`}>
                     <MenuItem
@@ -420,7 +422,7 @@ export const WalletsAndBackup = () => {
                             </Text>
                           }
                         >
-                          {!backedUp && <MenuItem.Label color={'#FF584D'} text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)} />}
+                          {!isBackedUp && <MenuItem.Label color={'#FF584D'} text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)} />}
                           {imported && <MenuItem.Label text={i18n.t(i18n.l.wallet.back_ups.imported)} />}
                           <MenuItem.Label
                             text={
@@ -435,7 +437,7 @@ export const WalletsAndBackup = () => {
                           />
                         </Inline>
                       }
-                      leftComponent={<MenuItem.TextIcon colorOverride={!backedUp ? '#FF584D' : ''} icon={backedUp ? '􀢶' : '􀡝'} />}
+                      leftComponent={<MenuItem.TextIcon colorOverride={!isBackedUp ? '#FF584D' : ''} icon={isBackedUp ? '􀢶' : '􀡝'} />}
                       onPress={() => onNavigateToWalletView(id, name)}
                       size={60}
                       titleComponent={<MenuItem.Title text={name} />}
@@ -505,7 +507,8 @@ export const WalletsAndBackup = () => {
       case WalletBackupTypes.manual: {
         return (
           <Stack space={'24px'}>
-            {sortedWallets.map(({ id, name, backedUp, imported, addresses }) => {
+            {sortedWallets.map(({ id, name, backedUp, backupType, backupFile, imported, addresses }) => {
+              const isBackedUp = isWalletBackedUpForCurrentAccount({ backedUp, backupType, backupFile });
               return (
                 <Menu key={`wallet-${id}`}>
                   <MenuItem
@@ -522,7 +525,7 @@ export const WalletsAndBackup = () => {
                           </Text>
                         }
                       >
-                        {!backedUp && <MenuItem.Label color={'#FF584D'} text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)} />}
+                        {!isBackedUp && <MenuItem.Label color={'#FF584D'} text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)} />}
                         {imported && <MenuItem.Label testID={'back-ups-imported'} text={i18n.t(i18n.l.wallet.back_ups.imported)} />}
                         <MenuItem.Label
                           text={
@@ -537,7 +540,7 @@ export const WalletsAndBackup = () => {
                         />
                       </Inline>
                     }
-                    leftComponent={<MenuItem.TextIcon colorOverride={!backedUp ? '#FF584D' : ''} icon={backedUp ? '􀢶' : '􀡝'} />}
+                    leftComponent={<MenuItem.TextIcon colorOverride={!isBackedUp ? '#FF584D' : ''} icon={isBackedUp ? '􀢶' : '􀡝'} />}
                     onPress={() => onNavigateToWalletView(id, name)}
                     size={60}
                     titleComponent={<MenuItem.Title text={name} />}

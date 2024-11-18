@@ -5,7 +5,10 @@ import { isEmpty } from 'lodash';
 import { BackupFile, parseTimestampFromFilename } from '@/model/backup';
 import * as i18n from '@/languages';
 import { cloudPlatform } from '@/utils/platform';
-import { CloudBackupState } from '@/state/backups/backups';
+import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+import { RainbowWallet } from '@/model/wallet';
+import { IS_IOS } from '@/env';
+import { normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 
 type WalletBackupStatus = {
   allBackedUp: boolean;
@@ -75,4 +78,22 @@ export const titleForBackupState: Partial<Record<CloudBackupState, string>> = {
   [CloudBackupState.Fetching]: i18n.t(i18n.l.back_up.cloud.fetching_backups, {
     cloudPlatformName: cloudPlatform,
   }),
+};
+
+export const isWalletBackedUpForCurrentAccount = ({ backupType, backedUp, backupFile }: Partial<RainbowWallet>) => {
+  if (!backupType || !backedUp || !backupFile) {
+    return false;
+  }
+
+  if (IS_IOS || backupType === WalletBackupTypes.manual) {
+    return backedUp;
+  }
+
+  // NOTE: For Android, we also need to check if the current google account has the matching backup file
+  if (!backupFile) {
+    return false;
+  }
+
+  const backupFiles = backupsStore.getState().backups;
+  return backupFiles.files.some(file => normalizeAndroidBackupFilename(file.name) === normalizeAndroidBackupFilename(backupFile));
 };

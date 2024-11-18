@@ -44,6 +44,7 @@ import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { backupsStore } from '@/state/backups/backups';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
+import { isWalletBackedUpForCurrentAccount } from '../../utils';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -131,6 +132,11 @@ const ViewWalletBackup = () => {
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
   const title = wallet?.type === WalletTypes.privateKey ? wallet?.addresses[0].label : incomingTitle;
+  const isBackedUp = isWalletBackedUpForCurrentAccount({
+    backupType: wallet?.backupType,
+    backedUp: wallet?.backedUp,
+    backupFile: wallet?.backupFile,
+  });
 
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
@@ -285,7 +291,7 @@ const ViewWalletBackup = () => {
 
   return (
     <MenuContainer>
-      {!wallet?.backedUp && (
+      {!isBackedUp && (
         <>
           <Menu>
             <MenuHeader
@@ -351,7 +357,7 @@ const ViewWalletBackup = () => {
         </>
       )}
 
-      {wallet?.backedUp && (
+      {isBackedUp && (
         <>
           <Menu>
             <MenuHeader
@@ -359,14 +365,14 @@ const ViewWalletBackup = () => {
               paddingBottom={{ custom: 24 }}
               iconComponent={
                 <MenuHeader.ImageIcon
-                  source={wallet.backupType === walletBackupTypes.cloud ? CloudBackedUpIcon : ManuallyBackedUpIcon}
+                  source={wallet?.backupType === walletBackupTypes.cloud ? CloudBackedUpIcon : ManuallyBackedUpIcon}
                   size={72}
                 />
               }
               titleComponent={
                 <MenuHeader.Title
                   text={
-                    wallet.backupType === walletBackupTypes.cloud
+                    wallet?.backupType === walletBackupTypes.cloud
                       ? i18n.t(i18n.l.wallet.back_ups.backed_up)
                       : i18n.t(i18n.l.wallet.back_ups.backed_up_manually)
                   }
@@ -378,7 +384,7 @@ const ViewWalletBackup = () => {
                 <Box marginTop={{ custom: 16 }}>
                   <MenuHeader.Label
                     text={
-                      wallet.backupType === walletBackupTypes.cloud
+                      wallet?.backupType === walletBackupTypes.cloud
                         ? i18n.t(i18n.l.wallet.back_ups.backed_up_to_cloud_message, {
                             cloudPlatform,
                           })
