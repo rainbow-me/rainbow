@@ -7,7 +7,7 @@ import React, { useRef } from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
-import { InteractionManager, Linking } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { createAccountForWallet, setIsWalletLoading, walletsLoadState } from '@/redux/wallets';
 import { createWallet } from '@/model/wallet';
 import WalletTypes from '@/helpers/walletTypes';
@@ -18,20 +18,12 @@ import PairHairwareWallet from '@/assets/PairHardwareWallet.png';
 import ImportSecretPhraseOrPrivateKey from '@/assets/ImportSecretPhraseOrPrivateKey.png';
 import WatchWalletIcon from '@/assets/watchWallet.png';
 import { useDispatch } from 'react-redux';
-import {
-  getGoogleAccountUserData,
-  GoogleDriveUserData,
-  isCloudBackupAvailable,
-  login,
-  logoutFromGoogleDrive,
-} from '@/handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
 import { cloudPlatform } from '@/utils/platform';
-import { IS_ANDROID } from '@/env';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useInitializeWallet, useWallets } from '@/hooks';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
@@ -188,47 +180,11 @@ export const AddWalletSheet = () => {
       isFirstWallet,
       type: 'seed',
     });
-    if (IS_ANDROID) {
-      try {
-        await logoutFromGoogleDrive();
-        await login();
 
-        getGoogleAccountUserData().then((accountDetails: GoogleDriveUserData | undefined) => {
-          if (accountDetails) {
-            return navigate(Routes.RESTORE_SHEET);
-          }
-          Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
-        });
-      } catch (e) {
-        Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
-        logger.error(new RainbowError('[AddWalletSheet]: Error while trying to restore from cloud'), {
-          error: e,
-        });
-      }
-    } else {
-      const isAvailable = await isCloudBackupAvailable();
-      if (!isAvailable) {
-        Alert.alert(
-          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.label),
-          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.description),
-          [
-            {
-              onPress: () => {
-                Linking.openURL('https://support.apple.com/en-us/HT204025');
-              },
-              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
-            },
-            {
-              style: 'cancel',
-              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
-            },
-          ]
-        );
-        return;
-      }
-
-      navigate(Routes.RESTORE_SHEET);
-    }
+    executeFnIfCloudBackupAvailable({
+      fn: () => navigate(Routes.RESTORE_SHEET),
+      logout: true,
+    });
   };
 
   const restoreFromCloudDescription = i18n.t(TRANSLATIONS.options.cloud.description_restore_sheet, {

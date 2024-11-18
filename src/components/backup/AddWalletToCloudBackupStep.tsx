@@ -10,9 +10,9 @@ import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { useWallets } from '@/hooks';
 import { format } from 'date-fns';
-import { login } from '@/handlers/cloudBackup';
-import { BackupTypes, useCreateBackup } from '@/components/backup/useCreateBackup';
+import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { backupsStore } from '@/state/backups/backups';
+import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 
 const imageSize = 72;
 
@@ -26,16 +26,17 @@ export default function AddWalletToCloudBackupStep() {
   }));
 
   const potentiallyLoginAndSubmit = useCallback(async () => {
-    await login();
-    const result = await createBackup({
-      type: BackupTypes.Single,
-      walletId: selectedWallet.id,
-      navigateToRoute: {
-        route: Routes.SETTINGS_SHEET,
-        params: {
-          screen: Routes.SETTINGS_SECTION_BACKUP,
-        },
-      },
+    const result = await executeFnIfCloudBackupAvailable({
+      fn: () =>
+        createBackup({
+          walletId: selectedWallet.id,
+          navigateToRoute: {
+            route: Routes.SETTINGS_SHEET,
+            params: {
+              screen: Routes.SETTINGS_SECTION_BACKUP,
+            },
+          },
+        }),
     });
 
     if (result) {

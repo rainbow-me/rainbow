@@ -29,16 +29,14 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import { useDispatch } from 'react-redux';
 import { setIsWalletLoading, walletsLoadState } from '@/redux/wallets';
 import { RainbowError, logger } from '@/logger';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { BackupTypes, useCreateBackup } from '@/components/backup/useCreateBackup';
+import { IS_IOS } from '@/env';
+import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { BackUpMenuItem } from './BackUpMenuButton';
 import { format } from 'date-fns';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
-import { GoogleDriveUserData, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { Linking } from 'react-native';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -132,51 +130,10 @@ export const WalletsAndBackup = () => {
   }, [visibleWallets]);
 
   const backupAllNonBackedUpWalletsTocloud = useCallback(async () => {
-    if (IS_ANDROID) {
-      try {
-        await login();
-
-        getGoogleAccountUserData().then((accountDetails: GoogleDriveUserData | undefined) => {
-          if (accountDetails) {
-            return createBackup({ type: BackupTypes.All });
-          }
-          Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
-        });
-      } catch (e) {
-        Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
-        logger.error(new RainbowError(`[WalletsAndBackup]: Logging into Google Drive failed`), {
-          error: e,
-        });
-      }
-    } else {
-      const isAvailable = await isCloudBackupAvailable();
-      if (!isAvailable) {
-        Alert.alert(
-          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.label),
-          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.description),
-          [
-            {
-              onPress: () => {
-                Linking.openURL('https://support.apple.com/en-us/HT204025');
-              },
-              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
-            },
-            {
-              style: 'cancel',
-              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
-            },
-          ]
-        );
-        return;
-      }
-    }
-
-    if (status !== CloudBackupState.Ready) {
-      return;
-    }
-
-    createBackup({ type: BackupTypes.All });
-  }, [createBackup, status]);
+    executeFnIfCloudBackupAvailable({
+      fn: () => createBackup({}),
+    });
+  }, [createBackup]);
 
   const onViewCloudBackups = useCallback(async () => {
     navigate(SETTINGS_BACKUP_ROUTES.VIEW_CLOUD_BACKUPS, {

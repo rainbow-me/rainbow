@@ -6,7 +6,7 @@ import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { KeyboardArea } from 'react-native-keyboard-area';
 
 import {
-  Backup,
+  BackupFile,
   getLocalBackupPassword,
   restoreCloudBackup,
   RestoreCloudBackupResultStates,
@@ -83,7 +83,7 @@ const KeyboardSizeView = styled(KeyboardArea)({
 
 type RestoreCloudStepParams = {
   RestoreSheet: {
-    selectedBackup: Backup;
+    selectedBackup: BackupFile;
   };
 };
 
@@ -205,6 +205,7 @@ export default function RestoreCloudStep() {
         });
 
         onRestoreSuccess();
+        backupsStore.getState().setPassword('');
         if (isEmpty(prevWalletsState)) {
           Navigation.handleAction(
             Routes.SWIPE_LAYOUT,

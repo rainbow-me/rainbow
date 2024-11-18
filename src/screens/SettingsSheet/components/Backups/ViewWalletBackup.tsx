@@ -29,23 +29,22 @@ import Routes from '@/navigation/routesNames';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
 import { analyticsV2 } from '@/analytics';
-import { InteractionManager, Linking } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { createAccountForWallet, setIsWalletLoading } from '@/redux/wallets';
-import { GoogleDriveUserData, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import { logger, RainbowError } from '@/logger';
 import { RainbowAccount } from '@/model/wallet';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import showWalletErrorAlert from '@/helpers/support';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_IOS } from '@/env';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { BackUpMenuItem } from './BackUpMenuButton';
 import { format } from 'date-fns';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { BackupTypes, useCreateBackup } from '@/components/backup/useCreateBackup';
+import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { backupsStore } from '@/state/backups/backups';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -128,8 +127,6 @@ const ViewWalletBackup = () => {
   const creatingWallet = useRef<boolean>();
   const { isDamaged, wallets } = useWallets();
   const wallet = wallets?.[walletId];
-
-  console.log(JSON.stringify(wallet, null, 2));
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -142,49 +139,11 @@ const ViewWalletBackup = () => {
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
 
   const backupWalletsToCloud = useCallback(async () => {
-    if (IS_ANDROID) {
-      try {
-        await login();
-
-        getGoogleAccountUserData().then((accountDetails: GoogleDriveUserData | undefined) => {
-          if (accountDetails) {
-            return createBackup({
-              walletId,
-              type: BackupTypes.Single,
-            });
-          }
-          Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
-        });
-      } catch (e) {
-        Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
-        logger.error(new RainbowError(`[ViewWalletBackup]: Logging into Google Drive failed`), { error: e });
-      }
-    } else {
-      const isAvailable = await isCloudBackupAvailable();
-      if (!isAvailable) {
-        Alert.alert(
-          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.label),
-          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.description),
-          [
-            {
-              onPress: () => {
-                Linking.openURL('https://support.apple.com/en-us/HT204025');
-              },
-              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
-            },
-            {
-              style: 'cancel',
-              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
-            },
-          ]
-        );
-        return;
-      }
-    }
-
-    return createBackup({
-      walletId,
-      type: BackupTypes.Single,
+    executeFnIfCloudBackupAvailable({
+      fn: () =>
+        createBackup({
+          walletId,
+        }),
     });
   }, [createBackup, walletId]);
 

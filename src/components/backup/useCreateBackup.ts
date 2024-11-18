@@ -13,31 +13,17 @@ import { DelayedAlert } from '@/components/alerts';
 import { useDispatch } from 'react-redux';
 import { AllRainbowWallets } from '@/model/wallet';
 
-type SingleWalletBackupProps = {
-  type: BackupTypes.Single;
-  walletId: string;
-};
-
-type AllWalletsBackupProps = {
-  type: BackupTypes.All;
-  walletId?: undefined;
-};
-
-type UseCreateBackupProps = (SingleWalletBackupProps | AllWalletsBackupProps) & {
+type UseCreateBackupProps = {
+  walletId?: string;
   navigateToRoute?: {
     route: string;
-    params?: any;
+    params?: Record<string, unknown>;
   };
 };
 
 type ConfirmBackupProps = {
   password: string;
 } & UseCreateBackupProps;
-
-export enum BackupTypes {
-  Single = 'single',
-  All = 'all',
-}
 
 export const useCreateBackup = () => {
   const dispatch = useDispatch();
@@ -94,11 +80,11 @@ export const useCreateBackup = () => {
   );
 
   const onConfirmBackup = useCallback(
-    async ({ password, type, walletId, navigateToRoute }: ConfirmBackupProps) => {
+    async ({ password, walletId, navigateToRoute }: ConfirmBackupProps) => {
       analytics.track('Tapped "Confirm Backup"');
       backupsStore.getState().setStatus(CloudBackupState.InProgress);
 
-      if (type === BackupTypes.All) {
+      if (typeof walletId === 'undefined') {
         if (!wallets) {
           onError('Error loading wallets. Please try again.');
           backupsStore.getState().setStatus(CloudBackupState.Error);
@@ -111,12 +97,6 @@ export const useCreateBackup = () => {
           onSuccess,
           dispatch,
         });
-        return;
-      }
-
-      if (!walletId) {
-        onError('Wallet not found. Please try again.');
-        backupsStore.getState().setStatus(CloudBackupState.Error);
         return;
       }
 

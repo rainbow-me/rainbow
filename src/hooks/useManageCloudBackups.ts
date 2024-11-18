@@ -4,11 +4,12 @@ import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { GoogleDriveUserData, getGoogleAccountUserData, deleteAllBackups, logoutFromGoogleDrive } from '@/handlers/cloudBackup';
-import { clearAllWalletsBackupStatus, updateWalletBackupStatusesBasedOnCloudUserData } from '@/redux/wallets';
+import { clearAllWalletsBackupStatus } from '@/redux/wallets';
 import { showActionSheetWithOptions } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import * as i18n from '@/languages';
+import { backupsStore } from '@/state/backups/backups';
 
 export default function useManageCloudBackups() {
   const dispatch = useDispatch();
@@ -49,9 +50,10 @@ export default function useManageCloudBackups() {
     };
 
     const loginToGoogleDrive = async () => {
-      await dispatch(updateWalletBackupStatusesBasedOnCloudUserData());
+      // TODO: Figure out how to update the backup status based on the new account?
       try {
         const accountDetails = await getGoogleAccountUserData();
+        backupsStore.getState().syncAndFetchBackups();
         setAccountDetails(accountDetails ?? undefined);
       } catch (error) {
         logger.error(new RainbowError(`[useManageCloudBackups]: Logging into Google Drive failed.`), {

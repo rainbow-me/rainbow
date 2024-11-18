@@ -14,7 +14,7 @@ import Menu from '@/screens/SettingsSheet/components/Menu';
 import { format } from 'date-fns';
 import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
 import Routes from '@/navigation/routesNames';
-import { Backup, parseTimestampFromFilename } from '@/model/backup';
+import { BackupFile, parseTimestampFromFilename } from '@/model/backup';
 import { Source } from 'react-native-fast-image';
 import { IS_ANDROID } from '@/env';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -66,7 +66,7 @@ export function ChooseBackupStep() {
   const { navigate } = useNavigation();
 
   const onSelectCloudBackup = useCallback(
-    (selectedBackup: Backup) => {
+    (selectedBackup: BackupFile) => {
       navigate(Routes.RESTORE_CLOUD_SHEET, {
         selectedBackup,
       });

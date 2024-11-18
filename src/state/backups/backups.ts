@@ -1,4 +1,4 @@
-import { Backup, CloudBackups } from '@/model/backup';
+import { BackupFile, CloudBackups } from '@/model/backup';
 import { createRainbowStore } from '../internal/createRainbowStore';
 import { IS_ANDROID } from '@/env';
 import { fetchAllBackups, getGoogleAccountUserData, isCloudBackupAvailable, syncCloud } from '@/handlers/cloudBackup';
@@ -39,8 +39,8 @@ interface BackupsStore {
   backups: CloudBackups;
   setBackups: (backups: CloudBackups) => void;
 
-  mostRecentBackup: Backup | undefined;
-  setMostRecentBackup: (backup: Backup | undefined) => void;
+  mostRecentBackup: BackupFile | undefined;
+  setMostRecentBackup: (backup: BackupFile | undefined) => void;
 
   password: string;
   setPassword: (password: string) => void;

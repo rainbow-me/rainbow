@@ -2,7 +2,7 @@ import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { useWallets } from '@/hooks';
 import { isEmpty } from 'lodash';
-import { Backup, parseTimestampFromFilename } from '@/model/backup';
+import { BackupFile, parseTimestampFromFilename } from '@/model/backup';
 import * as i18n from '@/languages';
 import { cloudPlatform } from '@/utils/platform';
 import { CloudBackupState } from '@/state/backups/backups';
@@ -41,31 +41,28 @@ export const checkLocalWalletsForBackupStatus = (wallets: ReturnType<typeof useW
   );
 };
 
-export const getMostRecentCloudBackup = (backups: Backup[]) => {
+export const getMostRecentCloudBackup = (backups: BackupFile[]) => {
   const cloudBackups = backups.sort((a, b) => {
     return parseTimestampFromFilename(b.name) - parseTimestampFromFilename(a.name);
   });
 
-  return cloudBackups.reduce(
-    (prev, current) => {
-      if (!current) {
-        return prev;
-      }
-
-      if (!prev) {
-        return current;
-      }
-
-      const prevTimestamp = new Date(prev.lastModified).getTime();
-      const currentTimestamp = new Date(current.lastModified).getTime();
-      if (currentTimestamp > prevTimestamp) {
-        return current;
-      }
-
+  return cloudBackups.reduce<BackupFile>((prev, current) => {
+    if (!current) {
       return prev;
-    },
-    undefined as Backup | undefined
-  );
+    }
+
+    if (!prev) {
+      return current;
+    }
+
+    const prevTimestamp = new Date(prev.lastModified).getTime();
+    const currentTimestamp = new Date(current.lastModified).getTime();
+    if (currentTimestamp > prevTimestamp) {
+      return current;
+    }
+
+    return prev;
+  }, cloudBackups[0]);
 };
 
 export const titleForBackupState: Partial<Record<CloudBackupState, string>> = {

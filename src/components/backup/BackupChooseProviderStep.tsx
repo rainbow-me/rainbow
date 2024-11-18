@@ -15,13 +15,9 @@ import { SETTINGS_BACKUP_ROUTES } from '@/screens/SettingsSheet/components/Backu
 import { useWallets } from '@/hooks';
 import walletTypes from '@/helpers/walletTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { IS_ANDROID } from '@/env';
-import { GoogleDriveUserData, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { RainbowError, logger } from '@/logger';
-import { Linking } from 'react-native';
-import { BackupTypes, useCreateBackup } from '@/components/backup/useCreateBackup';
+import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 
 const imageSize = 72;
 
@@ -34,56 +30,18 @@ export default function BackupSheetSectionNoProvider() {
     status: state.status,
   }));
 
-  const onCloudBackup = async () => {
-    // NOTE: On Android we need to make sure the user is signed into a Google account before trying to backup
-    // otherwise we'll fake backup and it's confusing...
-    if (IS_ANDROID) {
-      try {
-        await login();
-        getGoogleAccountUserData().then((accountDetails: GoogleDriveUserData | undefined) => {
-          if (!accountDetails) {
-            Alert.alert(lang.t(lang.l.back_up.errors.no_account_found));
-            return;
-          }
-        });
-      } catch (e) {
-        logger.error(new RainbowError('[BackupSheetSectionNoProvider]: No account found'), {
-          error: e,
-        });
-        Alert.alert(lang.t(lang.l.back_up.errors.no_account_found));
-      }
-    } else {
-      const isAvailable = await isCloudBackupAvailable();
-      if (!isAvailable) {
-        Alert.alert(
-          lang.t(lang.l.modal.back_up.alerts.cloud_not_enabled.label),
-          lang.t(lang.l.modal.back_up.alerts.cloud_not_enabled.description),
-          [
-            {
-              onPress: () => {
-                Linking.openURL('https://support.apple.com/en-us/HT204025');
-              },
-              text: lang.t(lang.l.modal.back_up.alerts.cloud_not_enabled.show_me),
+  const onCloudBackup = () => {
+    executeFnIfCloudBackupAvailable({
+      fn: () =>
+        createBackup({
+          walletId: selectedWallet.id,
+          navigateToRoute: {
+            route: Routes.SETTINGS_SHEET,
+            params: {
+              screen: Routes.SETTINGS_SECTION_BACKUP,
             },
-            {
-              style: 'cancel',
-              text: lang.t(lang.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
-            },
-          ]
-        );
-        return;
-      }
-    }
-
-    createBackup({
-      type: BackupTypes.Single,
-      walletId: selectedWallet.id,
-      navigateToRoute: {
-        route: Routes.SETTINGS_SHEET,
-        params: {
-          screen: Routes.SETTINGS_SECTION_BACKUP,
-        },
-      },
+          },
+        }),
     });
   };
 

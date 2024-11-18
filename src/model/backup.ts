@@ -1,10 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NativeModules } from 'react-native';
+import { NativeModules, Linking } from 'react-native';
 import { captureException } from '@sentry/react-native';
 import { endsWith } from 'lodash';
-import { CLOUD_BACKUP_ERRORS, encryptAndSaveDataToCloud, getDataFromCloud } from '@/handlers/cloudBackup';
+import {
+  CLOUD_BACKUP_ERRORS,
+  encryptAndSaveDataToCloud,
+  getDataFromCloud,
+  isCloudBackupAvailable,
+  getGoogleAccountUserData,
+  login,
+  logoutFromGoogleDrive,
+} from '@/handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
-import { Alert } from '@/components/alerts';
 import { allWalletsKey, pinKey, privateKeyKey, seedPhraseKey, selectedWalletKey, identifierForVendorKey } from '@/utils/keychainConstants';
 import * as keychain from '@/model/keychain';
 import * as kc from '@/keychain';
@@ -24,15 +31,17 @@ import { clearAllStorages } from './mmkv';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { getRemoteConfig } from './remoteConfig';
 
+import { WrappedAlert as Alert } from '@/helpers/alert';
+
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
 const PIN_REGEX = /^\d{4}$/;
 
 export interface CloudBackups {
-  files: Backup[];
+  files: BackupFile[];
 }
 
-export interface Backup {
+export interface BackupFile {
   isDirectory: boolean;
   isFile: boolean;
   lastModified: string;
@@ -62,6 +71,54 @@ interface BackedUpData {
 export interface BackupUserData {
   wallets: AllRainbowWallets;
 }
+type MaybePromise<T> = T | Promise<T>;
+
+export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }: { fn: () => MaybePromise<T>; logout?: boolean }) => {
+  if (IS_ANDROID) {
+    try {
+      if (logout) {
+        await logoutFromGoogleDrive();
+      }
+      await login();
+      const userData = await getGoogleAccountUserData();
+      if (!userData) {
+        Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+        return;
+      }
+      // execute the function
+      return await fn();
+    } catch (e) {
+      logger.error(new RainbowError('[BackupSheetSectionNoProvider]: No account found'), {
+        error: e,
+      });
+      Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+    }
+  } else {
+    const isAvailable = await isCloudBackupAvailable();
+    if (!isAvailable) {
+      Alert.alert(
+        i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.label),
+        i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.description),
+        [
+          {
+            onPress: () => {
+              Linking.openURL('https://support.apple.com/en-us/HT204025');
+            },
+            text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
+          },
+          {
+            style: 'cancel',
+            text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
+          },
+        ]
+      );
+      return;
+    }
+
+    // execute the function
+    return await fn();
+  }
+};
 
 async function extractSecretsForWallet(wallet: RainbowWallet) {
   const allKeys = await keychain.loadAllKeys();
