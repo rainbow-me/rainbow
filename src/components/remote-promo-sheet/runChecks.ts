@@ -1,7 +1,6 @@
 import { IS_TEST } from '@/env';
-import { runFeatureUnlockChecks } from '@/handlers/walletReadyEvents';
+import { runFeatureAndLocalCampaignChecks } from '@/handlers/walletReadyEvents';
 import { logger } from '@/logger';
-import { runLocalCampaignChecks } from '@/components/remote-promo-sheet/localCampaignChecks';
 import { checkForRemotePromoSheet } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 import { useCallback, useEffect } from 'react';
 import { InteractionManager } from 'react-native';
@@ -19,11 +18,7 @@ export const useRunChecks = ({ runChecksOnMount = true, walletReady }: { runChec
         return;
       }
 
-      const showedFeatureUnlock = await runFeatureUnlockChecks();
-      if (showedFeatureUnlock) return;
-
-      const showedLocalPromo = await runLocalCampaignChecks();
-      if (showedLocalPromo) return;
+      if (await runFeatureAndLocalCampaignChecks()) return;
 
       if (!remotePromoSheets) {
         logger.debug('[useRunChecks]: remote promo sheets is disabled');

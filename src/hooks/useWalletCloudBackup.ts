@@ -9,7 +9,7 @@ import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
-import { CLOUD_BACKUP_ERRORS, isCloudBackupAvailable } from '@/handlers/cloudBackup';
+import { CLOUD_BACKUP_ERRORS, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { logger, RainbowError } from '@/logger';
 import { getSupportedBiometryType } from '@/keychain';
@@ -55,32 +55,53 @@ export default function useWalletCloudBackup() {
       password: string;
       walletId: string;
     }): Promise<boolean> => {
-      const isAvailable = await isCloudBackupAvailable();
-      if (!isAvailable) {
-        analytics.track('iCloud not enabled', {
-          category: 'backup',
-        });
-        Alert.alert(lang.t('modal.back_up.alerts.cloud_not_enabled.label'), lang.t('modal.back_up.alerts.cloud_not_enabled.description'), [
-          {
-            onPress: () => {
-              Linking.openURL('https://support.apple.com/en-us/HT204025');
-              analytics.track('View how to Enable iCloud', {
-                category: 'backup',
-              });
-            },
-            text: lang.t('modal.back_up.alerts.cloud_not_enabled.show_me'),
-          },
-          {
-            onPress: () => {
-              analytics.track('Ignore how to enable iCloud', {
-                category: 'backup',
-              });
-            },
-            style: 'cancel',
-            text: lang.t('modal.back_up.alerts.cloud_not_enabled.no_thanks'),
-          },
-        ]);
-        return false;
+      if (IS_ANDROID) {
+        try {
+          await login();
+          const userData = await getGoogleAccountUserData();
+          if (!userData) {
+            Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+            return false;
+          }
+        } catch (e) {
+          logger.error(new RainbowError('[BackupSheetSectionNoProvider]: No account found'), {
+            error: e,
+          });
+          Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+          return false;
+        }
+      } else {
+        const isAvailable = await isCloudBackupAvailable();
+        if (!isAvailable) {
+          analytics.track('iCloud not enabled', {
+            category: 'backup',
+          });
+          Alert.alert(
+            lang.t('modal.back_up.alerts.cloud_not_enabled.label'),
+            lang.t('modal.back_up.alerts.cloud_not_enabled.description'),
+            [
+              {
+                onPress: () => {
+                  Linking.openURL('https://support.apple.com/en-us/HT204025');
+                  analytics.track('View how to Enable iCloud', {
+                    category: 'backup',
+                  });
+                },
+                text: lang.t('modal.back_up.alerts.cloud_not_enabled.show_me'),
+              },
+              {
+                onPress: () => {
+                  analytics.track('Ignore how to enable iCloud', {
+                    category: 'backup',
+                  });
+                },
+                style: 'cancel',
+                text: lang.t('modal.back_up.alerts.cloud_not_enabled.no_thanks'),
+              },
+            ]
+          );
+          return false;
+        }
       }
 
       // For Android devices without biometrics enabled, we need to ask for PIN

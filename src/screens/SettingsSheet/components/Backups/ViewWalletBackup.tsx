@@ -34,7 +34,6 @@ import { useDispatch } from 'react-redux';
 import { createAccountForWallet, setIsWalletLoading } from '@/redux/wallets';
 import { logger, RainbowError } from '@/logger';
 import { RainbowAccount } from '@/model/wallet';
-import { PROFILES, useExperimentalFlag } from '@/config';
 import showWalletErrorAlert from '@/helpers/support';
 import { IS_IOS } from '@/env';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -129,10 +128,8 @@ const ViewWalletBackup = () => {
   const wallet = wallets?.[walletId];
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
-  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
-
   const title = wallet?.type === WalletTypes.privateKey ? wallet?.addresses[0].label : incomingTitle;
 
   const { navigate } = useNavigation();
@@ -226,7 +223,7 @@ const ViewWalletBackup = () => {
         error: e,
       });
     }
-  }, [creatingWallet, dispatch, isDamaged, navigate, initializeWallet, profilesEnabled, wallet]);
+  }, [creatingWallet, dispatch, isDamaged, navigate, initializeWallet, wallet]);
 
   const handleCopyAddress = React.useCallback(
     (address: string) => {
@@ -323,31 +320,24 @@ const ViewWalletBackup = () => {
             />
           </Menu>
 
-          {backupProvider === walletBackupTypes.cloud && (
-            <Box>
-              <Menu
-                description={
-                  mostRecentBackup
-                    ? i18n.t(i18n.l.back_up.cloud.latest_backup, {
-                        date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
-                      })
-                    : undefined
-                }
-              >
-                <BackUpMenuItem
-                  icon="􀎽"
-                  title={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
-                    cloudPlatformName: cloudPlatform,
-                  })}
-                  backupState={status}
-                  onPress={backupWalletsToCloud}
-                />
-              </Menu>
-            </Box>
-          )}
-
-          {backupProvider !== walletBackupTypes.cloud && (
-            <Menu>
+          <Box>
+            <Menu
+              description={
+                mostRecentBackup && backupProvider === walletBackupTypes.cloud
+                  ? i18n.t(i18n.l.back_up.cloud.latest_backup, {
+                      date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
+                    })
+                  : undefined
+              }
+            >
+              <BackUpMenuItem
+                icon="􀎽"
+                title={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
+                  cloudPlatformName: cloudPlatform,
+                })}
+                backupState={status}
+                onPress={backupWalletsToCloud}
+              />
               <MenuItem
                 hasSfSymbol
                 leftComponent={<MenuItem.TextIcon icon="􀈊" isLink />}
@@ -356,16 +346,8 @@ const ViewWalletBackup = () => {
                 titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.manual.backup_manually)} />}
                 testID={'back-up-manually'}
               />
-              <BackUpMenuItem
-                icon="􀊯"
-                title={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
-                  cloudPlatformName: cloudPlatform,
-                })}
-                backupState={status}
-                onPress={backupWalletsToCloud}
-              />
             </Menu>
-          )}
+          </Box>
         </>
       )}
 
@@ -412,20 +394,37 @@ const ViewWalletBackup = () => {
         </>
       )}
 
-      <Menu>
-        <MenuItem
-          hasSfSymbol
-          leftComponent={<MenuItem.TextIcon icon={isSecretPhrase ? '􀉆' : '􀟖'} isLink />}
-          onPress={onNavigateToSecretWarning}
-          size={52}
-          titleComponent={
-            <MenuItem.Title
-              isLink
-              text={isSecretPhrase ? i18n.t(i18n.l.wallet.back_ups.view_secret_phrase) : i18n.t(i18n.l.wallet.back_ups.view_private_key)}
+      {wallet?.backupType === walletBackupTypes.manual && (
+        <Box>
+          <Menu>
+            <BackUpMenuItem
+              icon="􀎽"
+              title={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
+                cloudPlatformName: cloudPlatform,
+              })}
+              backupState={status}
+              onPress={backupWalletsToCloud}
             />
-          }
-        />
-      </Menu>
+          </Menu>
+        </Box>
+      )}
+
+      <Box>
+        <Menu>
+          <MenuItem
+            hasSfSymbol
+            leftComponent={<MenuItem.TextIcon icon={isSecretPhrase ? '􀉆' : '􀟖'} isLink />}
+            onPress={onNavigateToSecretWarning}
+            size={52}
+            titleComponent={
+              <MenuItem.Title
+                isLink
+                text={isSecretPhrase ? i18n.t(i18n.l.wallet.back_ups.view_secret_phrase) : i18n.t(i18n.l.wallet.back_ups.view_private_key)}
+              />
+            }
+          />
+        </Menu>
+      </Box>
 
       <Stack space={'24px'}>
         <Menu>
@@ -460,15 +459,17 @@ const ViewWalletBackup = () => {
         </Menu>
 
         {wallet?.type !== WalletTypes.privateKey && (
-          <Menu description={i18n.t(i18n.l.wallet.back_ups.create_new_wallet_description)}>
-            <MenuItem
-              hasSfSymbol
-              leftComponent={<MenuItem.TextIcon icon="􀁍" isLink />}
-              onPress={onCreateNewWallet}
-              size={52}
-              titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.wallet.back_ups.create_new_wallet)} />}
-            />
-          </Menu>
+          <Box>
+            <Menu description={i18n.t(i18n.l.wallet.back_ups.create_new_wallet_description)}>
+              <MenuItem
+                hasSfSymbol
+                leftComponent={<MenuItem.TextIcon icon="􀁍" isLink />}
+                onPress={onCreateNewWallet}
+                size={52}
+                titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.wallet.back_ups.create_new_wallet)} />}
+              />
+            </Menu>
+          </Box>
         )}
       </Stack>
     </MenuContainer>

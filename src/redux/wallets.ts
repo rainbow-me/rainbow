@@ -28,6 +28,8 @@ import { AppGetState, AppState } from './store';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { lightModeThemeColors } from '@/styles';
 import { RainbowError, logger } from '@/logger';
+import { parseTimestampFromBackupFile } from '@/model/backup';
+import { WalletLoadingState } from '@/helpers/walletLoadingStates';
 
 // -- Types ---------------------------------------- //
 
@@ -38,7 +40,7 @@ interface WalletsState {
   /**
    * The current loading state of the wallet.
    */
-  isWalletLoading: any;
+  isWalletLoading: WalletLoadingState | null;
 
   /**
    * The currently selected wallet.
@@ -128,90 +130,88 @@ const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 /**
  * Loads wallet information from storage and updates state accordingly.
  */
-export const walletsLoadState =
-  (profilesEnabled = false) =>
-  async (dispatch: ThunkDispatch<AppState, unknown, WalletsLoadAction>, getState: AppGetState) => {
-    try {
-      const { accountAddress } = getState().settings;
-      let addressFromKeychain: string | null = accountAddress;
-      const allWalletsResult = await getAllWallets();
-      const wallets = allWalletsResult?.wallets || {};
-      if (isEmpty(wallets)) return;
-      const selected = await getSelectedWallet();
-      // Prevent irrecoverable state (no selected wallet)
-      let selectedWallet = selected?.wallet;
-      // Check if the selected wallet is among all the wallets
-      if (selectedWallet && !wallets[selectedWallet.id]) {
-        // If not then we should clear it and default to the first one
-        const firstWalletKey = Object.keys(wallets)[0];
-        selectedWallet = wallets[firstWalletKey];
-        await setSelectedWallet(selectedWallet);
-      }
+export const walletsLoadState = () => async (dispatch: ThunkDispatch<AppState, unknown, WalletsLoadAction>, getState: AppGetState) => {
+  try {
+    const { accountAddress } = getState().settings;
+    let addressFromKeychain: string | null = accountAddress;
+    const allWalletsResult = await getAllWallets();
+    const wallets = allWalletsResult?.wallets || {};
+    if (isEmpty(wallets)) return;
+    const selected = await getSelectedWallet();
+    // Prevent irrecoverable state (no selected wallet)
+    let selectedWallet = selected?.wallet;
+    // Check if the selected wallet is among all the wallets
+    if (selectedWallet && !wallets[selectedWallet.id]) {
+      // If not then we should clear it and default to the first one
+      const firstWalletKey = Object.keys(wallets)[0];
+      selectedWallet = wallets[firstWalletKey];
+      await setSelectedWallet(selectedWallet);
+    }
 
-      if (!selectedWallet) {
-        const address = await loadAddress();
-        if (!address) {
-          selectedWallet = wallets[Object.keys(wallets)[0]];
-        } else {
-          keys(wallets).some(key => {
-            const someWallet = wallets[key];
-            const found = (someWallet.addresses || []).some(account => {
-              return toChecksumAddress(account.address) === toChecksumAddress(address!);
-            });
-            if (found) {
-              selectedWallet = someWallet;
-              logger.debug('[redux/wallets]: Found selected wallet based on loadAddress result');
-            }
-            return found;
+    if (!selectedWallet) {
+      const address = await loadAddress();
+      if (!address) {
+        selectedWallet = wallets[Object.keys(wallets)[0]];
+      } else {
+        keys(wallets).some(key => {
+          const someWallet = wallets[key];
+          const found = (someWallet.addresses || []).some(account => {
+            return toChecksumAddress(account.address) === toChecksumAddress(address!);
           });
-        }
+          if (found) {
+            selectedWallet = someWallet;
+            logger.debug('[redux/wallets]: Found selected wallet based on loadAddress result');
+          }
+          return found;
+        });
       }
+    }
 
-      // Recover from broken state (account address not in selected wallet)
-      if (!addressFromKeychain) {
-        addressFromKeychain = await loadAddress();
-        logger.debug("[redux/wallets]: addressFromKeychain wasn't set on settings so it is being loaded from loadAddress");
-      }
+    // Recover from broken state (account address not in selected wallet)
+    if (!addressFromKeychain) {
+      addressFromKeychain = await loadAddress();
+      logger.debug("[redux/wallets]: addressFromKeychain wasn't set on settings so it is being loaded from loadAddress");
+    }
 
-      const selectedAddress = selectedWallet?.addresses.find(a => {
-        return a.visible && a.address === addressFromKeychain;
-      });
+    const selectedAddress = selectedWallet?.addresses.find(a => {
+      return a.visible && a.address === addressFromKeychain;
+    });
 
-      // Let's select the first visible account if we don't have a selected address
-      if (!selectedAddress) {
-        const allWallets = Object.values(allWalletsResult?.wallets || {});
-        let account = null;
-        for (const wallet of allWallets) {
-          for (const rainbowAccount of wallet.addresses || []) {
-            if (rainbowAccount.visible) {
-              account = rainbowAccount;
-              break;
-            }
+    // Let's select the first visible account if we don't have a selected address
+    if (!selectedAddress) {
+      const allWallets = Object.values(allWalletsResult?.wallets || {});
+      let account = null;
+      for (const wallet of allWallets) {
+        for (const rainbowAccount of wallet.addresses || []) {
+          if (rainbowAccount.visible) {
+            account = rainbowAccount;
+            break;
           }
         }
-        if (!account) return;
-        await dispatch(settingsUpdateAccountAddress(account.address));
-        await saveAddress(account.address);
-        logger.debug('[redux/wallets]: Selected the first visible address because there was not selected one');
       }
-
-      const walletNames = await getWalletNames();
-      dispatch({
-        payload: {
-          selected: selectedWallet,
-          walletNames,
-          wallets,
-        },
-        type: WALLETS_LOAD,
-      });
-
-      return wallets;
-    } catch (error) {
-      logger.error(new RainbowError('[redux/wallets]: Exception during walletsLoadState'), {
-        message: (error as Error)?.message,
-      });
+      if (!account) return;
+      await dispatch(settingsUpdateAccountAddress(account.address));
+      await saveAddress(account.address);
+      logger.debug('[redux/wallets]: Selected the first visible address because there was not selected one');
     }
-  };
+
+    const walletNames = await getWalletNames();
+    dispatch({
+      payload: {
+        selected: selectedWallet,
+        walletNames,
+        wallets,
+      },
+      type: WALLETS_LOAD,
+    });
+
+    return wallets;
+  } catch (error) {
+    logger.error(new RainbowError('[redux/wallets]: Exception during walletsLoadState'), {
+      message: (error as Error)?.message,
+    });
+  }
+};
 
 /**
  * Saves new wallets to storage and updates state accordingly.
@@ -262,21 +262,21 @@ export const setIsWalletLoading = (val: WalletsState['isWalletLoading']) => (dis
  * @param updateUserMetadata Whether to update user metadata.
  */
 export const setAllWalletsWithIdsAsBackedUp =
-  (
-    walletIds: RainbowWallet['id'][],
-    method: RainbowWallet['backupType'],
-    backupFile: RainbowWallet['backupFile'] = null,
-    updateUserMetadata = true
-  ) =>
+  (walletIds: RainbowWallet['id'][], method: RainbowWallet['backupType'], backupFile: RainbowWallet['backupFile'] = null) =>
   async (dispatch: ThunkDispatch<AppState, unknown, never>, getState: AppGetState) => {
     const { wallets, selected } = getState().wallets;
     const newWallets = { ...wallets };
+
+    let backupDate = Date.now();
+    if (backupFile) {
+      backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
+    }
 
     walletIds.forEach(walletId => {
       newWallets[walletId] = {
         ...newWallets[walletId],
         backedUp: true,
-        backupDate: Date.now(),
+        backupDate,
         backupFile,
         backupType: method,
       };
@@ -301,16 +301,20 @@ export const setWalletBackedUp =
   async (dispatch: ThunkDispatch<AppState, unknown, never>, getState: AppGetState) => {
     const { wallets, selected } = getState().wallets;
     const newWallets = { ...wallets };
+    let backupDate = Date.now();
+    if (backupFile) {
+      backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
+    }
     newWallets[walletId] = {
       ...newWallets[walletId],
       backedUp: true,
-      backupDate: Date.now(),
+      backupDate,
       backupFile,
       backupType: method,
     };
 
     await dispatch(walletsUpdate(newWallets));
-    if (selected!.id === walletId) {
+    if (selected?.id === walletId) {
       await dispatch(walletsSetSelected(newWallets[walletId]));
     }
   };

@@ -75,19 +75,18 @@ export const runFeatureUnlockChecks = async (): Promise<boolean> => {
 
   // short circuits once the first feature is unlocked
   for (const featureUnlockCheck of featureUnlockChecks) {
-    InteractionManager.runAfterInteractions(async () => {
-      const unlockNow = await featureUnlockCheck(walletsToCheck);
-      if (unlockNow) {
-        return true;
-      }
-    });
+    const unlockNow = await featureUnlockCheck(walletsToCheck);
+    if (unlockNow) {
+      return true;
+    }
   }
   return false;
 };
 
 export const runFeatureAndLocalCampaignChecks = async () => {
-  const showingFeatureUnlock: boolean = await runFeatureUnlockChecks();
+  const showingFeatureUnlock = await runFeatureUnlockChecks();
   if (!showingFeatureUnlock) {
-    await runLocalCampaignChecks();
+    return await runLocalCampaignChecks();
   }
+  return false;
 };

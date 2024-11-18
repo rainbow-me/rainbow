@@ -5,7 +5,7 @@ import RNFS from 'react-native-fs';
 import AesEncryptor from '../handlers/aesEncryption';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { Backup, CloudBackups } from '@/model/backup';
+import { BackupFile, CloudBackups } from '@/model/backup';
 
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 export const USERDATA_FILE = 'UserData.json';
@@ -73,7 +73,7 @@ export async function fetchAllBackups(): Promise<CloudBackups> {
   });
 
   return {
-    files: files?.files?.filter((file: Backup) => file.name !== USERDATA_FILE) || [],
+    files: files?.files?.filter((file: BackupFile) => file.name !== USERDATA_FILE) || [],
   };
 }
 
@@ -106,6 +106,7 @@ export async function encryptAndSaveDataToCloud(data: Record<string, unknown>, p
       scope,
       sourcePath: sourceUri,
       targetPath: destinationPath,
+      update: true,
     });
     // Now we need to verify the file has been stored in the cloud
     const exists = await RNCloudFs.fileExists(

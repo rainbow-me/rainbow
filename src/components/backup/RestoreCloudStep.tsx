@@ -16,7 +16,7 @@ import { cloudPlatform } from '@/utils/platform';
 import { PasswordField } from '../fields';
 import { Text } from '../text';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
+import { isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { useDimensions, useInitializeWallet, useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
@@ -283,7 +283,7 @@ export default function RestoreCloudStep() {
             <RainbowButton
               height={46}
               width={deviceWidth - 48}
-              disabled={!validPassword || isWalletLoading}
+              disabled={!validPassword || !!isWalletLoading}
               type={RainbowButtonTypes.backup}
               label={
                 isWalletLoading

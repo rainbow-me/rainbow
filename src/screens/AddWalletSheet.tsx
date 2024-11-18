@@ -5,7 +5,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import React, { useRef } from 'react';
 import * as i18n from '@/languages';
-import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
+import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
 import { InteractionManager } from 'react-native';
 import { createAccountForWallet, setIsWalletLoading, walletsLoadState } from '@/redux/wallets';
@@ -43,7 +43,6 @@ export const AddWalletSheet = () => {
   const { goBack, navigate } = useNavigation();
 
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
-  const profilesEnabled = useExperimentalFlag(PROFILES);
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const creatingWallet = useRef<boolean>();
@@ -117,7 +116,7 @@ export const AddWalletSheet = () => {
                       name,
                       clearCallbackOnStartCreation: true,
                     });
-                    await dispatch(walletsLoadState(profilesEnabled));
+                    await dispatch(walletsLoadState());
                     // @ts-expect-error - needs refactor to object params
                     await initializeWallet();
                   }

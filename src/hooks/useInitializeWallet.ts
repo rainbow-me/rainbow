@@ -64,7 +64,7 @@ export default function useInitializeWallet() {
 
         if (shouldRunMigrations && !seedPhrase) {
           logger.debug('[useInitializeWallet]: shouldRunMigrations && !seedPhrase? => true');
-          await dispatch(walletsLoadState(profilesEnabled));
+          await dispatch(walletsLoadState());
           logger.debug('[useInitializeWallet]: walletsLoadState call #1');
           await runMigrations();
           logger.debug('[useInitializeWallet]: done with migrations');
@@ -90,7 +90,7 @@ export default function useInitializeWallet() {
 
         if (seedPhrase || isNew) {
           logger.debug('[useInitializeWallet]: walletsLoadState call #2');
-          await dispatch(walletsLoadState(profilesEnabled));
+          await dispatch(walletsLoadState());
         }
 
         if (isNil(walletAddress)) {

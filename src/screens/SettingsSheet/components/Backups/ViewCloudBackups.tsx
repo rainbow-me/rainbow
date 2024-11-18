@@ -5,7 +5,7 @@ import { Text as RNText } from '@/components/text';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
-import { Backup, parseTimestampFromFilename } from '@/model/backup';
+import { BackupFile, parseTimestampFromFilename } from '@/model/backup';
 import { format } from 'date-fns';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -38,7 +38,7 @@ const ViewCloudBackups = () => {
   }));
 
   const onSelectCloudBackup = useCallback(
-    async (selectedBackup: Backup) => {
+    async (selectedBackup: BackupFile) => {
       navigate(Routes.BACKUP_SHEET, {
         step: walletBackupStepTypes.restore_from_backup,
         selectedBackup,

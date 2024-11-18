@@ -11,6 +11,7 @@ import {
   login,
   logoutFromGoogleDrive,
 } from '@/handlers/cloudBackup';
+import { Alert as NativeAlert } from '@/components/alerts';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import { allWalletsKey, pinKey, privateKeyKey, seedPhraseKey, selectedWalletKey, identifierForVendorKey } from '@/utils/keychainConstants';
 import * as keychain from '@/model/keychain';
@@ -30,8 +31,8 @@ import Routes from '@/navigation/routesNames';
 import { clearAllStorages } from './mmkv';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { getRemoteConfig } from './remoteConfig';
-
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { AppDispatch } from '@/redux/store';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
@@ -60,6 +61,27 @@ export const parseTimestampFromFilename = (filename: string) => {
       .replace('.icloud', '')
       .replace('rainbow.me/wallet-backups/', '')
   );
+};
+
+/**
+ * Parse the timestamp from a backup file name
+ * @param filename - The name of the backup file backup_${now}.json
+ * @returns The timestamp as a number
+ */
+export const parseTimestampFromBackupFile = (filename: string | null): number | undefined => {
+  if (!filename) {
+    return;
+  }
+  const match = filename.match(/backup_(\d+)\.json/);
+  if (!match) {
+    return;
+  }
+
+  if (Number.isNaN(Number(match[1]))) {
+    return;
+  }
+
+  return Number(match[1]);
 };
 
 type BackupPassword = string;
@@ -164,7 +186,7 @@ export async function backupAllWalletsToCloud({
   password: BackupPassword;
   onError?: (message: string) => void;
   onSuccess?: (password: BackupPassword) => void;
-  dispatch: any;
+  dispatch: AppDispatch;
 }) {
   let userPIN: string | undefined;
   const hasBiometricsEnabled = await kc.getSupportedBiometryType();
@@ -211,7 +233,7 @@ export async function backupAllWalletsToCloud({
       label: cloudPlatform,
     });
 
-    let updatedBackupFile: any = null;
+    let updatedBackupFile: string | null = null;
 
     const data = {
       createdAt: now,
@@ -238,15 +260,17 @@ export async function backupAllWalletsToCloud({
     });
 
     onSuccess?.(password);
-  } catch (error: any) {
-    const userError = getUserError(error);
-    onError?.(userError);
-    captureException(error);
-    analytics.track(`Error backing up all wallets to ${cloudPlatform}`, {
-      category: 'backup',
-      error: userError,
-      label: cloudPlatform,
-    });
+  } catch (error) {
+    if (error instanceof Error) {
+      const userError = getUserError(error);
+      onError?.(userError);
+      captureException(error);
+      analytics.track(`Error backing up all wallets to ${cloudPlatform}`, {
+        category: 'backup',
+        error: userError,
+        label: cloudPlatform,
+      });
+    }
   }
 }
 
@@ -620,7 +644,7 @@ export async function getDeviceUUID(): Promise<string | null> {
 }
 
 const FailureAlert = () =>
-  Alert({
+  NativeAlert({
     buttons: [
       {
         style: 'cancel',

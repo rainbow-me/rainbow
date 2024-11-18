@@ -91,7 +91,6 @@ const getAccountSectionHeight = (numAccounts: number) => {
 export const WalletsAndBackup = () => {
   const { navigate } = useNavigation();
   const { wallets } = useWallets();
-  const profilesEnabled = useExperimentalFlag(PROFILES);
   const dispatch = useDispatch();
 
   const createBackup = useCreateBackup();
@@ -157,7 +156,7 @@ export const WalletsAndBackup = () => {
             clearCallbackOnStartCreation: true,
           });
 
-          await dispatch(walletsLoadState(profilesEnabled));
+          await dispatch(walletsLoadState());
 
           // @ts-expect-error - no params
           await initializeWallet();
@@ -170,7 +169,7 @@ export const WalletsAndBackup = () => {
         }
       },
     });
-  }, [dispatch, initializeWallet, navigate, profilesEnabled, walletTypeCount.phrase]);
+  }, [dispatch, initializeWallet, navigate, walletTypeCount.phrase]);
 
   const onPressLearnMoreAboutCloudBackups = useCallback(() => {
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
@@ -233,7 +232,7 @@ export const WalletsAndBackup = () => {
                 paddingTop={{ custom: 8 }}
                 iconComponent={<MenuHeader.ImageIcon source={WalletsAndBackupIcon} size={72} />}
                 titleComponent={<MenuHeader.Title text={i18n.t(i18n.l.wallet.back_ups.cloud_backup_title)} weight="heavy" />}
-                statusComponent={<MenuHeader.StatusIcon status="not-enabled" text="Not Enabled" />}
+                statusComponent={<MenuHeader.StatusIcon status={iconStatusType} text={text} />}
                 labelComponent={
                   <MenuHeader.Label
                     text={i18n.t(i18n.l.wallet.back_ups.cloud_backup_description, {
