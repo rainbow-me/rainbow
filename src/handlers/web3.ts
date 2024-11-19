@@ -103,8 +103,8 @@ export const isTestnetChain = ({ chainId = ChainId.mainnet }: { chainId?: ChainI
   return !!defaultChains[chainId].testnet;
 };
 
-// shoudl figure out better way to include this in networks
-export const getFlashbotsProvider = async () => {
+// TODO: should figure out better way to include this in networks
+export const getFlashbotsProvider = () => {
   return new StaticJsonRpcProvider(
     proxyCustomRpcEndpoint(
       ChainId.mainnet,

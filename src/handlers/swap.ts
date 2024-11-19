@@ -1,14 +1,6 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
-import {
-  CrosschainQuote,
-  getQuoteExecutionDetails,
-  getRainbowRouterContractAddress,
-  getWrappedAssetMethod,
-  PermitSupportedTokenList,
-  Quote,
-  SwapType,
-} from '@rainbow-me/swaps';
+import { CrosschainQuote, getQuoteExecutionDetails, getRainbowRouterContractAddress, Quote } from '@rainbow-me/swaps';
 import { Contract } from '@ethersproject/contracts';
 import { MaxUint256 } from '@ethersproject/constants';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -182,73 +174,6 @@ export const getSwapGasLimitWithFakeApproval = async (
     });
   }
   return getDefaultGasLimitForTrade(tradeDetails, chainId);
-};
-
-export const estimateSwapGasLimit = async ({
-  chainId,
-  requiresApprove,
-  tradeDetails,
-}: {
-  chainId: ChainId;
-  requiresApprove?: boolean;
-  tradeDetails: Quote | null;
-}): Promise<string | number> => {
-  const provider = getProvider({ chainId });
-  if (!provider || !tradeDetails) {
-    return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
-  }
-  const isWrapNativeAsset = tradeDetails.swapType === SwapType.wrap;
-  const isUnwrapNativeAsset = tradeDetails.swapType === SwapType.unwrap;
-
-  // Wrap / Unwrap Eth
-  if (isWrapNativeAsset || isUnwrapNativeAsset) {
-    const default_estimate = isWrapNativeAsset ? ethUnits.weth_wrap : ethUnits.weth_unwrap;
-    try {
-      const gasLimit = await estimateGasWithPadding(
-        {
-          from: tradeDetails.from,
-          value: isWrapNativeAsset ? tradeDetails.buyAmount : '0',
-        },
-        getWrappedAssetMethod(isWrapNativeAsset ? 'deposit' : 'withdraw', provider, chainId as number),
-        // @ts-ignore
-        isUnwrapNativeAsset ? [tradeDetails.buyAmount] : null,
-        provider,
-        1.002
-      );
-
-      return gasLimit || tradeDetails?.defaultGasLimit || default_estimate;
-    } catch (e) {
-      return tradeDetails?.defaultGasLimit || default_estimate;
-    }
-    // Swap
-  } else {
-    try {
-      const { params, method, methodArgs } = getQuoteExecutionDetails(tradeDetails, { from: tradeDetails.from }, provider);
-
-      if (requiresApprove) {
-        if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId) && IS_TESTING !== 'true') {
-          try {
-            const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(chainId, provider, tradeDetails);
-            logger.debug('[swap]: Got gasLimitWithFakeApproval!', {
-              gasLimitWithFakeApproval,
-            });
-            return gasLimitWithFakeApproval;
-          } catch (e) {
-            logger.error(new RainbowError('[swap]: Error estimating swap gas limit with approval'), {
-              error: e,
-            });
-          }
-        }
-
-        return getDefaultGasLimitForTrade(tradeDetails, chainId);
-      }
-
-      const gasLimit = await estimateGasWithPadding(params, method, methodArgs as any, provider, SWAP_GAS_PADDING);
-      return gasLimit || getDefaultGasLimitForTrade(tradeDetails, chainId);
-    } catch (error) {
-      return getDefaultGasLimitForTrade(tradeDetails, chainId);
-    }
-  }
 };
 
 export const estimateCrosschainSwapGasLimit = async ({
