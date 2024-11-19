@@ -206,5 +206,6 @@ export interface BackendNetwork {
       shadow: string;
     };
   };
+  privateMempoolTimeout?: number;
   enabledServices: BackendNetworkServices;
 }

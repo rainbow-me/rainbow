@@ -13,6 +13,8 @@ const backendNetworks = queryClient.getQueryData<BackendNetworksResponse>(backen
 
 const BACKEND_CHAINS = transformBackendNetworksToChains(backendNetworks.networks);
 
+const DEFAULT_PRIVATE_MEMPOOL_TIMEOUT = 2 * 60 * 1_000; // 2 minutes
+
 export const SUPPORTED_CHAINS: Chain[] = IS_TEST ? [...BACKEND_CHAINS, chainHardhat, chainHardhatOptimism] : BACKEND_CHAINS;
 
 export const defaultChains: Record<ChainId, Chain> = SUPPORTED_CHAINS.reduce(
@@ -47,6 +49,14 @@ export const chainsLabel: Record<number, string> = backendNetworks.networks.redu
     return acc;
   },
   {} as Record<number, string>
+);
+
+export const privateMempoolTimeout: Record<number, number> = backendNetworks.networks.reduce(
+  (acc, backendNetwork: BackendNetwork) => {
+    acc[parseInt(backendNetwork.id, 10)] = backendNetwork.privateMempoolTimeout || DEFAULT_PRIVATE_MEMPOOL_TIMEOUT;
+    return acc;
+  },
+  {} as Record<number, number>
 );
 
 export const chainsName: Record<number, string> = backendNetworks.networks.reduce(
