@@ -54,8 +54,11 @@ const swapTypeValues = (changes: RainbowTransaction['changes'], status: RainbowT
   // NOTE: For pending txns let's use the change values instead of
   // the transaction balance change since that hasn't happened yet
   if (status === TransactionStatus.pending) {
-    const valueOut = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(tokenOut?.value?.toString() || '0', tokenOut?.asset.decimals || 18), tokenOut?.asset.decimals || 18)} ${tokenOut?.asset.symbol}`;
-    const valueIn = `+${handleSignificantDecimals(convertRawAmountToDecimalFormat(tokenIn?.value?.toString() || '0', tokenIn?.asset.decimals || 18), tokenIn?.asset.decimals || 18)} ${tokenIn?.asset.symbol}`;
+    const decimalsOut = typeof tokenOut?.asset.decimals === 'number' ? tokenOut.asset.decimals : 18;
+    const decimalsIn = typeof tokenIn?.asset.decimals === 'number' ? tokenIn.asset.decimals : 18;
+
+    const valueOut = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(tokenOut?.value?.toString() || '0', decimalsOut), decimalsOut)} ${tokenOut?.asset.symbol}`;
+    const valueIn = `+${handleSignificantDecimals(convertRawAmountToDecimalFormat(tokenIn?.value?.toString() || '0', decimalsIn), decimalsIn)} ${tokenIn?.asset.symbol}`;
 
     return [valueOut, valueIn];
   }

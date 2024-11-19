@@ -312,19 +312,15 @@ export default function SpeedUpAndCancelSheet() {
   useEffect(() => {
     if (currentChainId) {
       startPollingGasFees(currentChainId, tx.flashbots);
-      const updateProvider = async () => {
-        let provider;
-        if (supportedFlashbotsChainIds.includes(tx.chainId || ChainId.mainnet) && tx.flashbots) {
-          logger.debug(`[SpeedUpAndCancelSheet]: using flashbots provider for chainId ${tx?.chainId}`);
-          provider = await getFlashbotsProvider();
-        } else {
-          logger.debug(`[SpeedUpAndCancelSheet]: using provider for network ${tx?.chainId}`);
-          provider = getProvider({ chainId: currentChainId });
-        }
-        setCurrentProvider(provider);
-      };
-
-      updateProvider();
+      let provider;
+      if (supportedFlashbotsChainIds.includes(tx.chainId || ChainId.mainnet) && tx.flashbots) {
+        logger.debug(`[SpeedUpAndCancelSheet]: using flashbots provider for chainId ${tx?.chainId}`);
+        provider = getFlashbotsProvider();
+      } else {
+        logger.debug(`[SpeedUpAndCancelSheet]: using provider for network ${tx?.chainId}`);
+        provider = getProvider({ chainId: currentChainId });
+      }
+      setCurrentProvider(provider);
 
       return () => {
         stopPollingGasFees();

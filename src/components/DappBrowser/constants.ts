@@ -10,7 +10,10 @@ export const RAINBOW_HOME = 'RAINBOW_HOME';
 export const HOMEPAGE_BACKGROUND_COLOR_DARK = globalColors.grey100;
 export const HOMEPAGE_BACKGROUND_COLOR_LIGHT = '#F7F7F9';
 
-export const DEFAULT_TAB_URL = RAINBOW_HOME;
+export const IOS_APP_STORE_URL_PREFIXES = ['itms-apps://', 'itms-appss://', 'https://itunes.apple.com', 'https://apps.apple.com'];
+export const ANDROID_APP_STORE_URL_PREFIXES = ['market://', 'https://play.google.com/store'];
+
+export const APP_STORE_URL_PREFIXES = [...IOS_APP_STORE_URL_PREFIXES, ...ANDROID_APP_STORE_URL_PREFIXES];
 
 export const USER_AGENT = {
   IOS: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Mobile/15E148 Safari/604.1',

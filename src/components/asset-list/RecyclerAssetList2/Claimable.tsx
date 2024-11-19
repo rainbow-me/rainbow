@@ -25,10 +25,9 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
   );
 
   const [claimable] = data;
+  if (!claimable) return null;
 
   const nativeDisplay = convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true);
-
-  if (!claimable) return null;
 
   return (
     <Box

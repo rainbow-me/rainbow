@@ -159,15 +159,20 @@ const MintSheet = () => {
   // if there is no max mint info, we fallback to 1 to be safe
   const maxMintsPerWallet = Number(mintCollection.publicMintInfo?.maxMintsPerWallet);
 
+  const decimals =
+    typeof mintCollection.publicMintInfo?.price?.currency?.decimals === 'number'
+      ? mintCollection.publicMintInfo?.price?.currency?.decimals
+      : 18;
+
   const price = convertRawAmountToBalance(mintCollection.publicMintInfo?.price?.amount?.raw || pricePerMint || '0', {
-    decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
+    decimals,
     symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
   });
 
   // case where mint isnt eth? prob not with our current entrypoints
   const mintPriceAmount = multiply(price.amount, quantity);
   const mintPriceDisplay = convertAmountToBalanceDisplay(multiply(price.amount, quantity), {
-    decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
+    decimals,
     symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
   });
 

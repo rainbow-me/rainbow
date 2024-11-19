@@ -13,12 +13,12 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { BOTTOM_BAR_HEIGHT } from '../Dimensions';
-import { GOOGLE_SEARCH_URL, HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, HTTP, HTTPS } from '../constants';
+import { GOOGLE_SEARCH_URL, HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, HTTPS } from '../constants';
 import { useTabViewGestures } from '../hooks/useTabViewGestures';
 import { AccountIcon } from '../search-input/AccountIcon';
 import { SearchInput } from '../search-input/SearchInput';
 import { TabButton } from '../search-input/TabButton';
-import { isValidURLWorklet } from '../utils';
+import { isMissingValidProtocolWorklet, isValidURLWorklet } from '../utils';
 import { useSearchContext } from './SearchContext';
 import { SearchResults } from './results/SearchResults';
 
@@ -106,7 +106,7 @@ export const Search = () => {
 
       if (!isValidURLWorklet(newUrl)) {
         newUrl = GOOGLE_SEARCH_URL + newUrl;
-      } else if (!newUrl.startsWith(HTTP) && !newUrl.startsWith(HTTPS)) {
+      } else if (isMissingValidProtocolWorklet(newUrl)) {
         newUrl = HTTPS + newUrl;
       }
 
