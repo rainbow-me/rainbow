@@ -15,6 +15,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.46] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.46)
+
+### Changed
+
+- Remove unused environment configurations (#6254) 
+- Added a null check guard to the claimable flow (#6257)
+
+### Fixed
+
+- Fixed an issue in our approve and swap flow that should help overall swap success (#6259)
+- Changed the way we handle flashbots gas so less transactions should fail due to insufficent gas (#6265)
+
 ## [1.9.45] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.45)
 
 ### Added
