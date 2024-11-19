@@ -1876,6 +1876,27 @@ PODS:
   - TOCropViewController (2.7.4)
   - ToolTipMenu (5.2.1):
     - React
+  - TurboHaptics (1.0.4):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - VisionCamera (4.4.2):
     - VisionCamera/Core (= 4.4.2)
     - VisionCamera/React (= 4.4.2)
@@ -2035,6 +2056,7 @@ DEPENDENCIES:
   - TcpSockets (from `../node_modules/react-native-tcp`)
   - TOCropViewController (~> 2.7.4)
   - ToolTipMenu (from `../node_modules/react-native-tooltip`)
+  - TurboHaptics (from `../node_modules/react-native-turbo-haptics`)
   - VisionCamera (from `../node_modules/react-native-vision-camera`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -2345,6 +2367,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-tcp"
   ToolTipMenu:
     :path: "../node_modules/react-native-tooltip"
+  TurboHaptics:
+    :path: "../node_modules/react-native-turbo-haptics"
   VisionCamera:
     :path: "../node_modules/react-native-vision-camera"
   Yoga:
@@ -2524,6 +2548,7 @@ SPEC CHECKSUMS:
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
+  TurboHaptics: 6381613d33ab97aeb30d9b15c3df94dc616a25e4
   VisionCamera: 2af28201c3de77245f8c58b7a5274d5979df70df
   Yoga: 04f1db30bb810187397fa4c37dd1868a27af229c
 
