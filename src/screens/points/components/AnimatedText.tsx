@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { HapticFeedbackType } from '@/utils/haptics';
 import { Bleed } from '@/design-system';
 import { Text as RNText, StyleSheet } from 'react-native';
+import { HapticType, triggerHaptics } from 'react-native-turbo-haptics';
 import { useTheme } from '@/theme';
 import { useAnimationContext } from '../contexts/AnimationContext';
 import {
@@ -14,7 +14,7 @@ import {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { generateRainbowColors, triggerHapticFeedback } from '../constants';
+import { generateRainbowColors } from '../constants';
 import { fonts } from '@/styles';
 
 type AnimatedTextProps = {
@@ -22,7 +22,7 @@ type AnimatedTextProps = {
   delayStart?: number;
   disableShadow?: boolean;
   enableHapticTyping?: boolean;
-  hapticType?: HapticFeedbackType;
+  hapticType?: HapticType;
   multiline?: boolean;
   onComplete?: () => void;
   opacity?: number;
@@ -145,7 +145,7 @@ export const AnimatedText = ({
 
         runOnJS(setDisplayedText)(newText);
         if (enableHapticTyping && Math.round(current.displayedValue) && newText[newText.length - 1] !== ' ') {
-          runOnJS(triggerHapticFeedback)(hapticType);
+          triggerHaptics(hapticType);
         }
       }
     }

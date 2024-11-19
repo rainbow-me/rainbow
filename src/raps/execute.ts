@@ -2,7 +2,7 @@
 /* eslint-disable no-async-promise-executor */
 /* eslint-disable no-promise-executor-return */
 import { Signer } from '@ethersproject/abstract-signer';
-
+import { ChainId } from '@/chains/types';
 import { RainbowError, logger } from '@/logger';
 
 import { claim, swap, unlock } from './actions';
@@ -111,18 +111,29 @@ function getRapFullName<T extends RapActionTypes>(actions: RapAction<T>[]) {
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-const waitForNodeAck = async (hash: string, provider: Signer['provider']): Promise<void> => {
-  return new Promise(async resolve => {
+const NODE_ACK_MAX_TRIES = 10;
+
+const waitForNodeAck = async (hash: string, provider: Signer['provider'], tries = 0): Promise<void> => {
+  try {
     const tx = await provider?.getTransaction(hash);
+
     // This means the node is aware of the tx, we're good to go
     if ((tx && tx.blockNumber === null) || (tx && tx?.blockNumber && tx?.blockNumber > 0)) {
-      resolve();
-    } else {
-      // Wait for 1 second and try again
-      await delay(1000);
-      return waitForNodeAck(hash, provider);
+      return;
     }
-  });
+
+    // Wait for 1 second and try again
+    if (tries < NODE_ACK_MAX_TRIES) {
+      await delay(1000);
+      return waitForNodeAck(hash, provider, tries + 1);
+    }
+  } catch (e) {
+    // Wait for 1 second and try again
+    if (tries < NODE_ACK_MAX_TRIES) {
+      await delay(1000);
+      return waitForNodeAck(hash, provider, tries + 1);
+    }
+  }
 };
 
 export const walletExecuteRap = async (
@@ -161,11 +172,13 @@ export const walletExecuteRap = async (
       gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
     };
 
-    const { baseNonce, errorMessage: error, hash } = await executeAction(actionParams);
+    const { baseNonce, errorMessage: error, hash: firstHash } = await executeAction(actionParams);
+    const shouldWaitForNodeAck = parameters.chainId !== ChainId.mainnet;
 
     if (typeof baseNonce === 'number') {
-      actions.length > 1 && hash && (await waitForNodeAck(hash, wallet.provider));
+      let latestHash = firstHash;
       for (let index = 1; index < actions.length; index++) {
+        latestHash && shouldWaitForNodeAck && (await waitForNodeAck(latestHash, wallet.provider));
         const action = actions[index];
         const actionParams = {
           action,
@@ -178,8 +191,8 @@ export const walletExecuteRap = async (
           gasParams: parameters?.gasParams,
           gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
         };
-        const { hash } = await executeAction(actionParams);
-        hash && (await waitForNodeAck(hash, wallet.provider));
+        const { hash: nextHash } = await executeAction(actionParams);
+        latestHash = nextHash;
       }
       nonce = baseNonce + actions.length - 1;
     } else {

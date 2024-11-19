@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import { Freeze } from 'react-freeze';
-import { StyleSheet } from 'react-native';
+import { Linking, StyleSheet } from 'react-native';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -52,6 +52,7 @@ import { useAnimatedTab } from './hooks/useAnimatedTab';
 import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
 import { freezeWebsite, getWebsiteMetadata, unfreezeWebsite } from './scripts';
 import { BrowserTabProps, ScreenshotType } from './types';
+import { isValidAppStoreUrl } from './utils';
 
 export const BrowserTab = React.memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
   const { isDarkMode } = useColorMode();
@@ -310,6 +311,12 @@ const FreezableWebViewComponent = ({
     (syntheticEvent: { nativeEvent: { targetUrl: string } }) => {
       const { nativeEvent } = syntheticEvent;
       const { targetUrl } = nativeEvent;
+
+      if (isValidAppStoreUrl(targetUrl)) {
+        Linking.openURL(targetUrl);
+        return;
+      }
+
       setParams({ url: targetUrl });
     },
     [setParams]
