@@ -51,7 +51,7 @@ export const chainsLabel: Record<number, string> = backendNetworks.networks.redu
   {} as Record<number, string>
 );
 
-export const privateMempoolTimeout: Record<number, number> = backendNetworks.networks.reduce(
+export const chainsPrivateMempoolTimeout: Record<number, number> = backendNetworks.networks.reduce(
   (acc, backendNetwork: BackendNetwork) => {
     acc[parseInt(backendNetwork.id, 10)] = backendNetwork.privateMempoolTimeout || DEFAULT_PRIVATE_MEMPOOL_TIMEOUT;
     return acc;
