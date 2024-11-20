@@ -148,6 +148,7 @@ export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): R
     hash: tx.hash,
     nonce: tx.nonce,
     protocol: tx.protocol,
+    timestamp: Date.now(),
     to: tx.to,
     type: tx.type,
     flashbots: tx.flashbots,
