@@ -14,6 +14,7 @@ import { ReviewPanel } from './ReviewPanel';
 import { SwapActionButton } from './SwapActionButton';
 import { SettingsPanel } from './SettingsPanel';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { useWallets } from '@/hooks';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 
@@ -28,6 +29,7 @@ export function SwapBottomPanel() {
     internalSelectedOutputAsset,
     quoteFetchingInterval,
   } = useSwapContext();
+  const { isHardwareWallet } = useWallets();
 
   const { swipeToDismissGestureHandler, gestureY } = useBottomPanelGestureHandler();
 
@@ -102,7 +104,7 @@ export function SwapBottomPanel() {
               onPressWorklet={() => {
                 'worklet';
                 if (type.value !== 'hold') {
-                  SwapNavigation.handleSwapAction();
+                  SwapNavigation.handleSwapAction(isHardwareWallet);
                 }
               }}
               onLongPressEndWorklet={success => {
@@ -116,7 +118,7 @@ export function SwapBottomPanel() {
                 'worklet';
                 if (type.value === 'hold') {
                   triggerHaptics('notificationSuccess');
-                  SwapNavigation.handleSwapAction();
+                  SwapNavigation.handleSwapAction(isHardwareWallet);
                 }
               }}
               onPressStartWorklet={() => {

@@ -238,6 +238,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           },
         },
       });
+      const isHardwareWallet = wallet instanceof LedgerSigner;
 
       if (!wallet) {
         isSwapping.value = false;
@@ -306,7 +307,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           degenMode: isDegenModeEnabled,
           isSwappingToPopularAsset,
           errorMessage,
-          isHardwareWallet: wallet instanceof LedgerSigner,
+          isHardwareWallet,
         });
 
         if (errorMessage !== 'handled') {
@@ -372,7 +373,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         tradeAmountUSD: parameters.quote.tradeAmountUSD,
         degenMode: isDegenModeEnabled,
         isSwappingToPopularAsset,
-        isHardwareWallet: wallet instanceof LedgerSigner,
+        isHardwareWallet,
       });
     } catch (error) {
       isSwapping.value = false;

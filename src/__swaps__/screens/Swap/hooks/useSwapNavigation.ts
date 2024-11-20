@@ -2,6 +2,8 @@ import { useCallback } from 'react';
 import { DerivedValue, SharedValue, useSharedValue } from 'react-native-reanimated';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import Routes from '@/navigation/Routes';
+import { navigate } from '@/navigation/Navigation';
 
 export const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
@@ -213,33 +215,40 @@ export function useSwapNavigation({
     }
   }, [handleDismissReview, handleDismissGas, handleDismissSettings, inputProgress, outputProgress, quoteFetchingInterval]);
 
-  const handleSwapAction = useCallback(() => {
-    'worklet';
+  const handleSwapAction = useCallback(
+    (isHardwareWallet: boolean) => {
+      'worklet';
 
-    if (configProgress.value === NavigationSteps.SHOW_GAS) {
-      if (navigateBackToReview.value) {
-        navigateBackToReview.value = false;
-        return handleShowReview();
+      if (configProgress.value === NavigationSteps.SHOW_GAS) {
+        if (navigateBackToReview.value) {
+          navigateBackToReview.value = false;
+          return handleShowReview();
+        }
+
+        return handleDismissGas();
       }
 
-      return handleDismissGas();
-    }
+      if (configProgress.value === NavigationSteps.SHOW_SETTINGS) {
+        if (navigateBackToReview.value && !isDegenMode.value) {
+          navigateBackToReview.value = false;
+          return handleShowReview();
+        }
 
-    if (configProgress.value === NavigationSteps.SHOW_SETTINGS) {
-      if (navigateBackToReview.value && !isDegenMode.value) {
-        navigateBackToReview.value = false;
-        return handleShowReview();
+        return handleDismissSettings();
       }
 
-      return handleDismissSettings();
-    }
+      if (isDegenMode.value || configProgress.value === NavigationSteps.SHOW_REVIEW) {
+        if (isHardwareWallet) {
+          navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: executeSwap });
+        } else {
+          return executeSwap();
+        }
+      }
 
-    if (isDegenMode.value || configProgress.value === NavigationSteps.SHOW_REVIEW) {
-      return executeSwap();
-    }
-
-    return handleShowReview();
-  }, [configProgress, executeSwap, handleDismissGas, handleDismissSettings, handleShowReview, isDegenMode, navigateBackToReview]);
+      return handleShowReview();
+    },
+    [configProgress, executeSwap, handleDismissGas, handleDismissSettings, handleShowReview, isDegenMode, navigateBackToReview]
+  );
 
   return {
     navigateBackToReview,
