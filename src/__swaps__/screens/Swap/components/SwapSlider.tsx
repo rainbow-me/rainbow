@@ -18,10 +18,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Bleed, Box, Column, Columns, Inline, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { triggerHapticFeedback } from '@/screens/points/constants';
 import { greaterThanWorklet } from '@/safe-math/SafeMath';
 import {
   SCRUBBER_WIDTH,
@@ -124,10 +124,10 @@ export const SwapSlider = ({
     (current, previous) => {
       if (current !== previous && SwapInputController.inputMethod.value === 'slider') {
         if (current.x >= width * 0.995 && previous?.x && previous?.x < width * 0.995) {
-          runOnJS(triggerHapticFeedback)('impactMedium');
+          triggerHaptics('impactMedium');
         }
         if (current.x < width * 0.005 && previous?.x && previous?.x >= width * 0.005) {
-          runOnJS(triggerHapticFeedback)('impactLight');
+          triggerHaptics('impactLight');
         }
       }
     },
@@ -160,7 +160,7 @@ export const SwapSlider = ({
           ctx.exceedsMax = true;
           isQuoteStale.value = 1;
           sliderXPosition.value = width * 0.999;
-          runOnJS(triggerHapticFeedback)('impactMedium');
+          triggerHaptics('impactMedium');
         }
       }
 
