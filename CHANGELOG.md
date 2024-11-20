@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
-- Remove unused environment configurations (#6254) 
+- Remove unused environment configurations (#6254)
 - Added a null check guard to the claimable flow (#6257)
 
 ### Fixed
