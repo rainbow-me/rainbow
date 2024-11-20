@@ -8,7 +8,6 @@ import { useAccountSettings } from '@/hooks';
 import {
   convertAmountToNativeDisplay,
   convertAmountToRawAmount,
-  convertRawAmountToBalance,
   convertAmountToBalanceDisplay,
   convertRawAmountToDecimalFormat,
   multiply,
@@ -36,13 +35,21 @@ import { queryClient } from '@/react-query';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
-import { externalTokenQueryKey, fetchExternalToken, FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
+import { externalTokenQueryKey,  FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { walletExecuteRap } from '@/raps/execute';
 import { executeClaim } from '../claim';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { weiToGwei } from '@/parsers';
 import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 import { ClaimStatus } from '../../shared/types';
+import { analyticsV2 } from '@/analytics';
+
+enum ErrorMessages {
+  SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
+  CLAIM_ERROR = 'Failed to claim claimable due to claim action error',
+  UNHANDLED_ERROR = 'Failed to claim claimable due to unhandled error',
+  UNRESOLVED_CLAIM_STATUS = 'Claim function completed but never resolved status to success or error state',
+}
 
 interface OutputConfig {
   token?: TokenToReceive;
@@ -219,7 +226,7 @@ export function TransactionClaimableContextProvider({
         setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'noQuoteError' });
       }
     },
-    [accountAddress, claimable.asset.address, claimable.asset.decimals, claimable.asset.isNativeAsset, claimable.chainId, nativeCurrency]
+    [accountAddress, claimable.asset.address, claimable.asset.decimals, claimable.asset.isNativeAsset, claimable.chainId, claimable.value.claimAsset.amount, nativeCurrency]
   );
 
   useEffect(() => {
@@ -296,7 +303,7 @@ export function TransactionClaimableContextProvider({
         if (txState.status === 'fetching') {
           setTxState(prev => ({ ...prev, status: 'none' }));
         }
-        logger.error(new RainbowError('[TransactionClaimableContext]: Failed to estimate claim gas limit'));
+        logger.warn('[TransactionClaimableContext]: Failed to estimate claim gas limit');
         return;
       }
 
@@ -307,7 +314,7 @@ export function TransactionClaimableContextProvider({
           if (txState.status === 'fetching') {
             setTxState(prev => ({ ...prev, status: 'none' }));
           }
-          logger.error(new RainbowError('[TransactionClaimableContext]: swapGasLimit is undefined'));
+          logger.warn('[TransactionClaimableContext]: swapGasLimit is undefined');
           return;
         }
 
@@ -408,16 +415,16 @@ export function TransactionClaimableContextProvider({
 
   const { mutate: claim } = useMutation({
     mutationFn: async () => {
-      if (
-        !txState.txPayload ||
-        !outputConfig.token ||
-        !outputTokenAddress ||
-        !outputConfig.chainId ||
-        (requiresSwap && !quoteState.quote)
-      ) {
+      if (!outputTokenAddress) {
         haptics.notificationError();
         setClaimStatus('recoverableError');
-        logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to missing tx payload'));
+        logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to missing output token address'));
+        return;
+      }
+
+      if (!txState.txPayload || !outputConfig.token || !outputConfig.chainId || (requiresSwap && (!quoteState.quote || 'error' in quoteState.quote))) {
+        haptics.notificationError();
+        setClaimStatus('recoverableError');
         return;
       }
 
@@ -435,15 +442,9 @@ export function TransactionClaimableContextProvider({
       }
 
       if (requiresSwap) {
-        const outputAsset =
-          queryClient.getQueryData<FormattedExternalAsset>(
-            externalTokenQueryKey({ address: accountAddress, chainId: outputConfig.chainId, currency: nativeCurrency })
-          ) ??
-          (await fetchExternalToken({
-            address: outputTokenAddress,
-            chainId: outputConfig.chainId,
-            currency: nativeCurrency,
-          }));
+        const outputAsset = await queryClient.fetchQuery<FormattedExternalAsset | undefined>(
+          externalTokenQueryKey({ address: outputTokenAddress, chainId: outputConfig.chainId, currency: nativeCurrency })
+        );
 
         if (!outputAsset) {
           haptics.notificationError();
@@ -461,14 +462,6 @@ export function TransactionClaimableContextProvider({
           assetToBuy: outputAsset.isNativeAsset ? { ...outputAsset, address: ETH_ADDRESS } : outputAsset,
           address: accountAddress,
         };
-
-        if (!quoteState.quote || 'error' in quoteState.quote) {
-          haptics.notificationError();
-          setClaimStatus('recoverableError');
-          setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
-          logger.error(new RainbowError('[TransactionClaimableContext]: quote error'));
-          return;
-        }
 
         const selectedGas = {
           maxBaseFee: meteorologyData?.maxBaseFee,
@@ -499,16 +492,42 @@ export function TransactionClaimableContextProvider({
           if (errorMessage.includes('[CLAIM-CLAIMABLE]')) {
             // Claim error (retry possible)
             setClaimStatus('recoverableError');
-            logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to rap error (claim)'), {
+            logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.CLAIM_ERROR}`), {
               message: errorMessage,
               recoverable: true,
+            });
+            analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+              claimableType: 'transaction',
+              claimableId: claimable.uniqueId,
+              chainId: claimable.chainId,
+              asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+              amount: claimable.value.claimAsset.amount,
+              usdValue: claimable.value.usd,
+              isSwapping: requiresSwap,
+              outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
+              outputChainId: outputConfig.chainId,
+              failureStep: 'claim',
+              errorMessage: ErrorMessages.CLAIM_ERROR,
             });
           } else {
             // Bridge error (retry not possible)
             setClaimStatus('unrecoverableError');
-            logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to rap error (bridge)'), {
+            logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.SWAP_ERROR}`), {
               message: errorMessage,
               recoverable: false,
+            });
+            analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+              claimableType: 'transaction',
+              claimableId: claimable.uniqueId,
+              chainId: claimable.chainId,
+              asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+              amount: claimable.value.claimAsset.amount,
+              usdValue: claimable.value.usd,
+              isSwapping: requiresSwap,
+        outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
+        outputChainId: outputConfig.chainId,
+              failureStep: 'swap',
+              errorMessage: ErrorMessages.SWAP_ERROR,
             });
           }
           return;
@@ -523,8 +542,21 @@ export function TransactionClaimableContextProvider({
         } catch (e) {
           haptics.notificationError();
           setClaimStatus('recoverableError');
-          logger.error(new RainbowError(`[TransactionClaimableContext]: Failed to claim claimable due to executeClaim error`), {
+          logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.CLAIM_ERROR}`), {
             message: (e as Error)?.message,
+          });
+          analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+            claimableType: 'transaction',
+            claimableId: claimable.uniqueId,
+            chainId: claimable.chainId,
+            asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+            amount: claimable.value.claimAsset.amount,
+            usdValue: claimable.value.usd,
+            isSwapping: requiresSwap,
+            outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+            outputChainId: claimable.chainId,
+            failureStep: 'claim',
+            errorMessage: ErrorMessages.CLAIM_ERROR,
           });
         }
       }
@@ -532,14 +564,39 @@ export function TransactionClaimableContextProvider({
       haptics.notificationSuccess();
       setClaimStatus('success');
 
+      analyticsV2.track(analyticsV2.event.claimClaimableSucceeded, {
+        claimableType: 'transaction',
+        claimableId: claimable.uniqueId,
+        chainId: claimable.chainId,
+        asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+        amount: claimable.value.claimAsset.amount,
+        usdValue: claimable.value.usd,
+        isSwapping: requiresSwap,
+        outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
+        outputChainId: outputConfig.chainId,
+      });
+
       // Immediately remove the claimable from cached data
       queryClient.setQueryData(queryKey, (oldData: Claimable[] | undefined) => oldData?.filter(c => c.uniqueId !== claimable.uniqueId));
     },
     onError: e => {
       haptics.notificationError();
       setClaimStatus('recoverableError');
-      logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to unhandled error'), {
+      logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.UNHANDLED_ERROR}`), {
         message: (e as Error)?.message,
+      });
+      analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+        claimableType: 'transaction',
+        claimableId: claimable.uniqueId,
+        chainId: claimable.chainId,
+        asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+        amount: claimable.value.claimAsset.amount,
+        usdValue: claimable.value.usd,
+        isSwapping: requiresSwap,
+        outputAsset: { symbol: outputConfig.token?.symbol ?? '', address: outputTokenAddress ?? '' },
+        outputChainId: outputConfig.chainId ?? -1,
+        failureStep: 'unknown',
+        errorMessage: ErrorMessages.UNHANDLED_ERROR,
       });
     },
     onSuccess: () => {
@@ -547,8 +604,21 @@ export function TransactionClaimableContextProvider({
         haptics.notificationError();
         setClaimStatus('recoverableError');
         logger.error(
-          new RainbowError('[TransactionClaimableContext]: claim function completed but never resolved status to success or error state')
+          new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.UNRESOLVED_CLAIM_STATUS}`)
         );
+        analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+          claimableType: 'transaction',
+          claimableId: claimable.uniqueId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
+          isSwapping: requiresSwap,
+        outputAsset: { symbol: outputConfig.token?.symbol ?? '', address: outputTokenAddress ?? '' },
+        outputChainId: outputConfig.chainId ?? -1,
+        failureStep: 'unknown',
+          errorMessage: ErrorMessages.UNRESOLVED_CLAIM_STATUS,
+        });
       }
     },
     onSettled: () => {

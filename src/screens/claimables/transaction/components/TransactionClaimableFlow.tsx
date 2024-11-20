@@ -7,7 +7,6 @@ import { ClaimButton } from '../../shared/components/ClaimButton';
 import { GasDetails } from './GasDetails';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
 import * as i18n from '@/languages';
-import { abbreviateNumber } from '@/helpers/utilities';
 import { useNavigation } from '@/navigation';
 
 export function TransactionClaimableFlow() {
@@ -34,39 +33,34 @@ export function TransactionClaimableFlow() {
   const shimmer = !disabled || claimStatus === 'claiming';
   const buttonLabel = useMemo(() => {
     if (!outputChainId) {
-      return 'Select a Network';
+      return i18n.t(i18n.l.claimables.panel.select_a_network);
     }
 
     if (!outputToken) {
-      return 'Select a Token';
+      return i18n.t(i18n.l.claimables.panel.select_a_token);
     }
 
     switch (claimStatus) {
       case 'notReady':
         if (quoteState.status === 'success' || !requiresSwap) {
-          switch (txState.status) {
-            case 'error':
-              return 'Gas Error';
-            case 'success':
-              if (!txState.isSufficientGas) {
-                return i18n.t(i18n.l.claimables.panel.insufficient_funds);
-              }
+          if (txState.status === 'error') {
+            return i18n.t(i18n.l.claimables.panel.gas_error);
+          } else if (txState.status === 'success' && !txState.isSufficientGas) {
+            return i18n.t(i18n.l.claimables.panel.insufficient_funds);
+          } else {
+            return i18n.t(i18n.l.claimables.panel.estimating_gas_fee);
+          }
+        } else {
+          switch (quoteState.status) {
+            case 'noQuoteError':
+              return i18n.t(i18n.l.claimables.panel.quote_error);
+            case 'noRouteError':
+              return i18n.t(i18n.l.claimables.panel.no_route_found);
             case 'fetching':
             default:
-              return i18n.t(i18n.l.claimables.panel.estimating_gas_fee);
+              return i18n.t(i18n.l.claimables.panel.fetching_quote);
           }
         }
-
-        switch (quoteState.status) {
-          case 'noQuoteError':
-            return 'Quote Error';
-          case 'noRouteError':
-            return 'No Route Found';
-          case 'fetching':
-          default:
-            return 'Fetching Quote...';
-        }
-
       case 'ready':
         return i18n.t(i18n.l.claimables.panel.claim_amount, {
           amount: requiresSwap && quoteState.tokenAmountDisplay ? quoteState.tokenAmountDisplay : claimable.value.claimAsset.display,

@@ -19,7 +19,7 @@ export function ClaimPanelHeader({ claimStatus, iconUrl }: { claimStatus: ClaimS
       case 'success':
         return i18n.t(i18n.l.claimables.panel.claimed);
       case 'unrecoverableError':
-        return 'Swap Failed';
+        return i18n.t(i18n.l.claimables.panel.swap_failed);
       default:
         return i18n.t(i18n.l.claimables.panel.claiming_failed);
     }

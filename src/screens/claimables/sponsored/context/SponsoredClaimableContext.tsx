@@ -9,6 +9,14 @@ import { ADDYS_BASE_URL, addysHttp, claimablesQueryKey } from '@/resources/addys
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
 import { ClaimStatus } from '../../shared/types';
+import { analyticsV2 } from '@/analytics';
+
+enum ErrorMessages {
+  CLAIM_API_CALL_FAILED = 'Failed to execute sponsored claim api call',
+  CLAIM_API_UNSUCCESSFUL_RESPONSE = 'Sponsored claim api call returned unsuccessful response',
+  UNHANDLED_ERROR = 'Failed to claim claimable due to unhandled error',
+  UNRESOLVED_CLAIM_STATUS = 'Claim function completed but never resolved status to success or error state',
+}
 
 type SponsoredClaimableContextType = {
   claimStatus: ClaimStatus;
@@ -61,7 +69,20 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         } catch (e) {
           haptics.notificationError();
           setClaimStatus('recoverableError');
-          logger.error(new RainbowError('[SponsoredClaimableContext]: failed to execute sponsored claim api call'));
+          logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_CALL_FAILED}`));
+          analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+            claimableType: 'sponsored',
+            claimableId: claimable.uniqueId,
+            chainId: claimable.chainId,
+            asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+            amount: claimable.value.claimAsset.amount,
+            isSwapping: false,
+            outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+            outputChainId: claimable.chainId,
+            usdValue: claimable.value.usd,
+            failureStep: 'claim',
+            errorMessage: ErrorMessages.CLAIM_API_CALL_FAILED,
+          });
           return;
         }
       } else {
@@ -70,7 +91,20 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         } catch (e) {
           haptics.notificationError();
           setClaimStatus('recoverableError');
-          logger.error(new RainbowError('[SponsoredClaimableContext]: failed to execute sponsored claim api call'));
+          logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_CALL_FAILED}`));
+          analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+            claimableType: 'sponsored',
+            claimableId: claimable.uniqueId,
+            chainId: claimable.chainId,
+            asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+            amount: claimable.value.claimAsset.amount,
+            isSwapping: false,
+            outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+            outputChainId: claimable.chainId,
+            failureStep: 'claim',
+            usdValue: claimable.value.usd,
+            errorMessage: ErrorMessages.CLAIM_API_CALL_FAILED,
+          });
           return;
         }
       }
@@ -78,7 +112,20 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
       if (!response.data.payload.success) {
         haptics.notificationError();
         setClaimStatus('recoverableError');
-        logger.error(new RainbowError('[SponsoredClaimableContext]: sponsored claim api call returned unsuccessful response'));
+        logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_UNSUCCESSFUL_RESPONSE}`));
+        analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+          claimableType: 'sponsored',
+          claimableId: claimable.uniqueId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          isSwapping: false,
+          outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          outputChainId: claimable.chainId,
+          failureStep: 'claim',
+          usdValue: claimable.value.usd,
+          errorMessage: ErrorMessages.CLAIM_API_UNSUCCESSFUL_RESPONSE,
+        });
       } else {
         haptics.notificationSuccess();
 
@@ -88,6 +135,18 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
           setClaimStatus('pending');
         }
 
+        analyticsV2.track(analyticsV2.event.claimClaimableSucceeded, {
+          claimableType: 'sponsored',
+          claimableId: claimable.uniqueId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
+          isSwapping: false,
+          outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          outputChainId: claimable.chainId,
+        });
+
         // Immediately remove the claimable from cached data
         queryClient.setQueryData(queryKey, (oldData: Claimable[] | undefined) => oldData?.filter(c => c.uniqueId !== claimable.uniqueId));
       }
@@ -95,17 +154,41 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
     onError: e => {
       haptics.notificationError();
       setClaimStatus('recoverableError');
-      logger.error(new RainbowError('[SponsoredClaimableContext]: Failed to claim claimable due to unhandled error'), {
+      logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.UNHANDLED_ERROR}`), {
         message: (e as Error)?.message,
+      });
+      analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+        claimableType: 'sponsored',
+        claimableId: claimable.uniqueId,
+        chainId: claimable.chainId,
+        asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+        amount: claimable.value.claimAsset.amount,
+        usdValue: claimable.value.usd,
+        isSwapping: false,
+        outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+        outputChainId: claimable.chainId,
+        failureStep: 'unknown',
+        errorMessage: ErrorMessages.UNHANDLED_ERROR,
       });
     },
     onSuccess: () => {
       if (claimStatus === 'claiming') {
         haptics.notificationError();
         setClaimStatus('recoverableError');
-        logger.error(
-          new RainbowError('[SponsoredClaimableContext]: claim function completed but never resolved status to success or error state')
-        );
+        logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.UNRESOLVED_CLAIM_STATUS}`));
+        analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+          claimableType: 'sponsored',
+          claimableId: claimable.uniqueId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
+          isSwapping: false,
+          outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          outputChainId: claimable.chainId,
+          failureStep: 'unknown',
+          errorMessage: ErrorMessages.UNRESOLVED_CLAIM_STATUS,
+        });
       }
     },
     onSettled: () => {

@@ -36,7 +36,7 @@ export function DropdownMenu({
             justifyContent="center"
           >
             <Text align="center" weight="heavy" color={muted ? 'labelQuaternary' : 'label'} size="17pt">
-              {text ?? 'a token'}
+              {text}
             </Text>
             <Text align="center" weight="heavy" color="labelSecondary" size="icon 12px">
               􀆏

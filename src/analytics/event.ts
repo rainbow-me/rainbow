@@ -615,6 +615,12 @@ export type EventProperties = {
       symbol: string;
       address: string;
     };
+    outputAsset: {
+      symbol: string;
+      address: string;
+    };
+    outputChainId: ChainId;
+    isSwapping: boolean;
     amount: string;
     usdValue: number;
   };
@@ -627,6 +633,13 @@ export type EventProperties = {
       symbol: string;
       address: string;
     };
+    isSwapping: boolean;
+    outputAsset: {
+      symbol: string;
+      address: string;
+    };
+    outputChainId: ChainId;
+    failureStep: 'claim' | 'swap' | 'unknown';
     amount: string;
     usdValue: number;
     errorMessage: string;

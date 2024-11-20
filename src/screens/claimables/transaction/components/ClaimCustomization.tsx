@@ -10,6 +10,7 @@ import { TokenToReceive } from '../types';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
 import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
 import { SearchAsset } from '@/__swaps__/types/search';
+import * as i18n from '@/languages';
 
 type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 
@@ -280,7 +281,7 @@ export function ClaimCustomization() {
         disabled={isDisabled}
         menuConfig={tokenMenuConfig}
         onPressMenuItem={handleTokenSelection}
-        text={outputToken?.symbol ?? 'a token'}
+        text={outputToken?.symbol ?? i18n.t(i18n.l.claimables.panel.a_token)}
         muted={isInitialState}
       />
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">
@@ -290,7 +291,7 @@ export function ClaimCustomization() {
         disabled={isDisabled}
         menuConfig={networkMenuConfig}
         onPressMenuItem={handleNetworkSelection}
-        text={outputChainId ? chainsLabel[outputChainId] : 'a network'}
+        text={outputChainId ? chainsLabel[outputChainId] : i18n.t(i18n.l.claimables.panel.a_network)}
         muted={isInitialState}
       />
     </Box>

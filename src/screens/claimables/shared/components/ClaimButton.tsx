@@ -1,6 +1,6 @@
 import { AccentColorProvider, Box, Inline, Text, TextShadow } from '@/design-system';
 import { deviceUtils, watchingAlert } from '@/utils';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { debounce } from 'lodash';
 import { useWallets } from '@/hooks';
