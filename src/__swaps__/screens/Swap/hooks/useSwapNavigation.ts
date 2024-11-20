@@ -239,7 +239,7 @@ export function useSwapNavigation({
 
       if (isDegenMode.value || configProgress.value === NavigationSteps.SHOW_REVIEW) {
         if (isHardwareWallet) {
-          navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: executeSwap });
+          return () => navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: executeSwap });
         } else {
           return executeSwap();
         }
