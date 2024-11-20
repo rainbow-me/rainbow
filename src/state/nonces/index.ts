@@ -1,8 +1,10 @@
 import create from 'zustand';
 import { createStore } from '../internal/createStore';
+import { RainbowTransaction } from '@/entities/transactions';
 import { Network, ChainId } from '@/chains/types';
 import { getProvider } from '@/handlers/web3';
-import { chainsIdByName } from '@/chains';
+import { chainsIdByName, chainsPrivateMempoolTimeout } from '@/chains';
+import { pendingTransactionsStore } from '@/state/pendingTransactions';
 
 type NonceData = {
   currentNonce?: number;
@@ -21,10 +23,34 @@ export async function getNextNonce({ address, chainId }: { address: string; chai
   const localNonceData = getNonce({ address, chainId });
   const localNonce = localNonceData?.currentNonce || 0;
   const provider = getProvider({ chainId });
-  const txCountIncludingPending = await provider.getTransactionCount(address, 'pending');
-  if (!localNonce && !txCountIncludingPending) return 0;
-  const ret = Math.max(localNonce + 1, txCountIncludingPending);
-  return ret;
+  const privateMempoolTimeout = chainsPrivateMempoolTimeout[chainId];
+
+  const publicRpcPendingTxCount = await provider.getTransactionCount(address, 'pending');
+  const publicRpcLatestTxCount = await provider.getTransactionCount(address, 'latest');
+  const numPendingPublicTx = publicRpcPendingTxCount - publicRpcLatestTxCount;
+  const numPendingLocalTx = localNonce - publicRpcLatestTxCount;
+  if (numPendingLocalTx === numPendingPublicTx) return publicRpcPendingTxCount;
+  if (numPendingLocalTx === 0 && numPendingPublicTx > 0) return publicRpcLatestTxCount;
+
+  const { pendingTransactions: storePendingTransactions } = pendingTransactionsStore.getState();
+  const pendingTransactions: RainbowTransaction[] = storePendingTransactions[address]?.filter(txn => txn.chainId === chainId) || [];
+
+  for (const pendingTx of pendingTransactions) {
+    if (!pendingTx.nonce || pendingTx.nonce < publicRpcPendingTxCount) {
+      continue;
+    } else {
+      if (!pendingTx.timestamp) continue;
+      if (pendingTx.nonce === publicRpcPendingTxCount) {
+        if (Date.now() - pendingTx.timestamp > privateMempoolTimeout) {
+          return publicRpcPendingTxCount;
+        } else {
+          return localNonce + 1;
+        }
+      } else {
+        return publicRpcPendingTxCount;
+      }
+    }
+  }
 }
 
 type NoncesV0 = {
