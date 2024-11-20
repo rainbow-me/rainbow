@@ -4,7 +4,7 @@
         {
             "label": "run build",
             "type": "shell",
-            "command": "cd ${workspaceFolder}/android && ./gradlew assembleDebug",
+            "command": "cd \"${workspaceFolder}/android\" && ./gradlew assembleDebug",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -22,7 +22,7 @@
         {
             "label": "run clean",
             "type": "shell",
-            "command": "cd ${workspaceFolder}/android && ./gradlew clean",
+            "command": "cd \"${workspaceFolder}/android\" && ./gradlew clean",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -40,7 +40,7 @@
         {
             "label": "run sync",
             "type": "shell",
-            "command": "cd ${workspaceFolder}/android && ./gradlew --refresh-dependencies",
+            "command": "cd \"${workspaceFolder}/android\" && ./gradlew --refresh-dependencies",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -58,7 +58,7 @@
         {
             "label": "run invalidate",
             "type": "shell",
-            "command": " rm -rf ~/.gradle/caches && rm -rf ~/.gradle && cd ${workspaceFolder}/android && ./gradlew --stop",
+            "command": "rm -rf \"${HOME}/.gradle/caches\" && rm -rf \"${HOME}/.gradle\" && cd \"${workspaceFolder}/android\" && ./gradlew --stop",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
