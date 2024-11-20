@@ -8,6 +8,8 @@ import { GasDetails } from './GasDetails';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
+import { useWallets } from '@/hooks';
+import { watchingAlert } from '@/utils';
 
 export function TransactionClaimableFlow() {
   const {
@@ -21,6 +23,7 @@ export function TransactionClaimableFlow() {
     requiresSwap,
   } = useTransactionClaimableContext();
   const { goBack } = useNavigation();
+  const { isReadOnlyWallet } = useWallets();
 
   // BUTTON PROPS
   const shouldShowClaimText = !!(claimStatus === 'ready' && outputChainId && outputToken);
@@ -78,13 +81,17 @@ export function TransactionClaimableFlow() {
   }, [claimStatus, claimable.value.claimAsset.display, requiresSwap, quoteState, txState, outputChainId, outputToken]);
 
   const onPress = useCallback(() => {
-    if (claimStatus === 'ready' || claimStatus === 'recoverableError') {
-      setClaimStatus('claiming');
-      claim();
-    } else if (claimStatus === 'success' || claimStatus === 'pending' || claimStatus === 'unrecoverableError') {
-      goBack();
+    if (isReadOnlyWallet) {
+      watchingAlert();
+    } else {
+      if (claimStatus === 'ready' || claimStatus === 'recoverableError') {
+        setClaimStatus('claiming');
+        claim();
+      } else if (claimStatus === 'success' || claimStatus === 'pending' || claimStatus === 'unrecoverableError') {
+        goBack();
+      }
     }
-  }, [claim, claimStatus, goBack, setClaimStatus]);
+  }, [claim, claimStatus, goBack, isReadOnlyWallet, setClaimStatus]);
 
   return (
     <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>

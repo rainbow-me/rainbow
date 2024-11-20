@@ -5,10 +5,13 @@ import { ClaimButton } from '../../shared/components/ClaimButton';
 import { useSponsoredClaimableContext } from '../context/SponsoredClaimableContext';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
+import { useWallets } from '@/hooks';
+import { watchingAlert } from '@/utils';
 
 export function SponsoredClaimableFlow() {
   const { goBack } = useNavigation();
   const { claim, claimable, claimStatus, setClaimStatus } = useSponsoredClaimableContext();
+  const { isReadOnlyWallet } = useWallets();
 
   const shouldShowClaimText = claimStatus === 'ready';
   const buttonLabel = useMemo(() => {
@@ -31,13 +34,17 @@ export function SponsoredClaimableFlow() {
   }, [claimStatus, claimable.value.claimAsset.display, shouldShowClaimText]);
 
   const onPress = useCallback(() => {
-    if (claimStatus === 'ready') {
-      setClaimStatus('claiming');
-      claim();
-    } else if (claimStatus === 'success' || claimStatus === 'pending') {
-      goBack();
+    if (isReadOnlyWallet) {
+      watchingAlert();
+    } else {
+      if (claimStatus === 'ready') {
+        setClaimStatus('claiming');
+        claim();
+      } else if (claimStatus === 'success' || claimStatus === 'pending') {
+        goBack();
+      }
     }
-  }, [claim, claimStatus, goBack, setClaimStatus]);
+  }, [claim, claimStatus, goBack, isReadOnlyWallet, setClaimStatus]);
 
   return (
     <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
