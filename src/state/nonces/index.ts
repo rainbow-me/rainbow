@@ -25,8 +25,9 @@ export async function getNextNonce({ address, chainId }: { address: string; chai
   const provider = getProvider({ chainId });
   const privateMempoolTimeout = chainsPrivateMempoolTimeout[chainId];
 
-  const publicRpcPendingTxCount = await provider.getTransactionCount(address, 'pending');
-  const publicRpcLatestTxCount = await provider.getTransactionCount(address, 'latest');
+  const getPublicRpcPendingTxCount = provider.getTransactionCount(address, 'pending');
+  const getPublicRpcLatestTxCount = provider.getTransactionCount(address, 'latest');
+  const [publicRpcPendingTxCount, publicRpcLatestTxCount] = await Promise.all([getPublicRpcPendingTxCount, getPublicRpcLatestTxCount]);
   const numPendingPublicTx = publicRpcPendingTxCount - publicRpcLatestTxCount;
   const numPendingLocalTx = localNonce - publicRpcLatestTxCount;
   if (numPendingLocalTx === numPendingPublicTx) return publicRpcPendingTxCount;
