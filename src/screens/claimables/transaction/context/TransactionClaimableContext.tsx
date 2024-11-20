@@ -405,11 +405,11 @@ export function TransactionClaimableContextProvider({
       txState.status === 'success' &&
       txState.isSufficientGas &&
       (!requiresSwap || quoteState.status === 'success') &&
-      claimStatus === 'notReady'
+      claimStatus === 'notReady' && outputConfig.chainId && outputConfig.token
     ) {
       setClaimStatus('ready');
     }
-  }, [claimStatus, quoteState.status, requiresSwap, txState.isSufficientGas, txState.status]);
+  }, [claimStatus, outputConfig.chainId, outputConfig.token, quoteState.status, requiresSwap, txState.isSufficientGas, txState.status]);
 
   const queryKey = claimablesQueryKey({ address: accountAddress, currency: nativeCurrency });
 
