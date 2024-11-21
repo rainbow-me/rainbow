@@ -2974,6 +2974,30 @@
         "back": "Back"
       }
     },
+    "trending_tokens": {
+      "no_results": {
+        "title": "No results",
+        "body": "Try browsing a larger timeframe or a different network or category."
+      },
+      "filters": {
+        "categories": {
+          "trending": "Trending",
+          "new": "New",
+          "farcaster": "Farcaster"
+        },
+        "sort": {
+          "volume": "Volume",
+          "market_cap": "Market Cap",
+          "top_gainers": "Top Gainers",
+          "top_losers": "Top Losers"
+        },
+        "time": {
+          "day": "24h",
+          "week": "1 Week",
+          "month": "1 Month"
+        }
+      }
+    },
     "copy": "Copy",
     "paste": "Paste"
   }
