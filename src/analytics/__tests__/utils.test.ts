@@ -8,6 +8,8 @@ jest.mock('@/model/keychain', () => ({
   loadString: jest.fn(),
 }));
 
+jest.mock('@/redux/store');
+
 jest.mock('@sentry/react-native', () => ({
   setUser: jest.fn(),
 }));
