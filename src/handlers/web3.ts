@@ -3,7 +3,7 @@ import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
-import { Block, StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
+import { Block, JsonRpcBatchProvider, StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
@@ -34,6 +34,8 @@ export enum TokenStandard {
 }
 
 export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
+
+export const chainsBatchProviders = new Map<ChainId, JsonRpcBatchProvider>();
 
 /**
  * Creates an rpc endpoint for a given chain id using the Rainbow rpc proxy.
@@ -115,6 +117,27 @@ export const getFlashbotsProvider = () => {
 
 export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet): StaticJsonRpcProvider | undefined => {
   return chainsProviders.get(chainId);
+};
+
+export const getBatchedProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): JsonRpcBatchProvider => {
+  if (useConnectedToHardhatStore.getState().connectedToHardhat) {
+    const provider = new JsonRpcBatchProvider('http://127.0.0.1:8545/', ChainId.mainnet);
+    chainsBatchProviders.set(chainId, provider);
+
+    return provider;
+  }
+
+  const cachedProvider = chainsBatchProviders.get(chainId);
+
+  const providerUrl = defaultChains[chainId]?.rpcUrls?.default?.http?.[0];
+
+  if (cachedProvider && cachedProvider?.connection.url === providerUrl) {
+    return cachedProvider;
+  }
+  const provider = new JsonRpcBatchProvider(providerUrl, chainId);
+  chainsBatchProviders.set(chainId, provider);
+
+  return provider;
 };
 
 export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): StaticJsonRpcProvider => {
