@@ -9300,6 +9300,7 @@ __metadata:
     ethereumjs-wallet: "npm:1.0.1"
     events: "npm:3.3.0"
     expo: "npm:51.0.33"
+    expo-store-review: "npm:7.0.2"
     fast-text-encoding: "npm:1.0.4"
     global: "npm:4.4.0"
     grapheme-splitter: "npm:1.0.4"
@@ -15025,6 +15026,15 @@ __metadata:
   dependencies:
     invariant: "npm:^2.2.4"
   checksum: 10c0/910ab3819920c36c715c546ec954ceea253ddd466534f839537986fecafc82ed74555f8bc0a852a6b5a5b473ce984a2217416830c835ed940fae5e3a8768da72
+  languageName: node
+  linkType: hard
+
+"expo-store-review@npm:7.0.2":
+  version: 7.0.2
+  resolution: "expo-store-review@npm:7.0.2"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/8a2e0622a0876bcdfdedcfda8a518cfa04c568007ff02d89e2409de00df00c8783fdf668aafada67bb1788b88e87113885355c2a0d5d07499d39bec357ca71f3
   languageName: node
   linkType: hard
 
