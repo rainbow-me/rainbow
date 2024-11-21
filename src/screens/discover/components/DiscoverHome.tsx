@@ -6,6 +6,7 @@ import useExperimentalFlag, {
   MINTS,
   NFT_OFFERS,
   FEATURED_RESULTS,
+  TRENDING_TOKENS,
 } from '@rainbow-me/config/experimentalHooks';
 import { isTestnetChain } from '@/handlers/web3';
 import { Inline, Inset, Stack, Box } from '@/design-system';
@@ -28,6 +29,7 @@ import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultS
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
+import { TrendingTokens } from './TrendingTokens';
 
 export const HORIZONTAL_PADDING = 20;
 
@@ -42,6 +44,7 @@ export default function DiscoverHome() {
   const mintsEnabled = (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
+  const trendingTokensEnabled = useExperimentalFlag(TRENDING_TOKENS);
   const testNetwork = isTestnetChain({ chainId });
   const { navigate } = useNavigation();
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
@@ -67,6 +70,7 @@ export default function DiscoverHome() {
             <GasCard />
             {isProfilesEnabled && <ENSSearchCard />}
           </Inline>
+          {trendingTokensEnabled && <TrendingTokens />}
           <RemoteCardCarousel />
           {mintsEnabled && (
             <Stack space="20px">

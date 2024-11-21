@@ -30,6 +30,7 @@ export const DEGEN_MODE = 'Degen Mode';
 export const FEATURED_RESULTS = 'Featured Results';
 export const CLAIMABLES = 'Claimables';
 export const NFTS_ENABLED = 'Nfts Enabled';
+export const TRENDING_TOKENS = 'Trending Tokens';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -68,6 +69,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [FEATURED_RESULTS]: { settings: true, value: false },
   [CLAIMABLES]: { settings: true, value: false },
   [NFTS_ENABLED]: { settings: true, value: !!IS_TEST },
+  [TRENDING_TOKENS]: { settings: true, value: false },
 };
 
 export const defaultConfigValues: Record<string, boolean> = Object.fromEntries(
