@@ -15,6 +15,8 @@ const BACKEND_CHAINS = transformBackendNetworksToChains(backendNetworks.networks
 
 export const SUPPORTED_CHAINS: Chain[] = IS_TEST ? [...BACKEND_CHAINS, chainHardhat, chainHardhatOptimism] : BACKEND_CHAINS;
 
+export const SUPPORTED_CHAIN_IDS_ALPHABETICAL = SUPPORTED_CHAINS.sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
+
 export const defaultChains: Record<ChainId, Chain> = SUPPORTED_CHAINS.reduce(
   (acc, chain) => {
     acc[chain.id] = chain;
