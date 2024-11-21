@@ -2,7 +2,7 @@ import create from 'zustand';
 import { createStore } from '../internal/createStore';
 import { RainbowTransaction } from '@/entities/transactions';
 import { Network, ChainId } from '@/chains/types';
-import { getProvider } from '@/handlers/web3';
+import { getBatchedProvider } from '@/handlers/web3';
 import { chainsIdByName, chainsPrivateMempoolTimeout } from '@/chains';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
 
@@ -22,33 +22,33 @@ export async function getNextNonce({ address, chainId }: { address: string; chai
   const { getNonce } = nonceStore.getState();
   const localNonceData = getNonce({ address, chainId });
   const localNonce = localNonceData?.currentNonce || 0;
-  const provider = getProvider({ chainId });
+  const provider = getBatchedProvider({ chainId });
   const privateMempoolTimeout = chainsPrivateMempoolTimeout[chainId];
 
-  const getPublicRpcPendingTxCount = provider.getTransactionCount(address, 'pending');
-  const getPublicRpcLatestTxCount = provider.getTransactionCount(address, 'latest');
-  const [publicRpcPendingTxCount, publicRpcLatestTxCount] = await Promise.all([getPublicRpcPendingTxCount, getPublicRpcLatestTxCount]);
-  const numPendingPublicTx = publicRpcPendingTxCount - publicRpcLatestTxCount;
-  const numPendingLocalTx = localNonce - publicRpcLatestTxCount;
-  if (numPendingLocalTx === numPendingPublicTx) return publicRpcPendingTxCount;
-  if (numPendingLocalTx === 0 && numPendingPublicTx > 0) return publicRpcLatestTxCount;
+  const pendingTxCountRequest = provider.getTransactionCount(address, 'pending');
+  const latestTxCountRequest = provider.getTransactionCount(address, 'latest');
+  const [pendingTxCountFromPublicRpc, latestTxCountFromPublicRpc] = await Promise.all([pendingTxCountRequest, latestTxCountRequest]);
+  const numPendingPublicTx = pendingTxCountFromPublicRpc - latestTxCountFromPublicRpc;
+  const numPendingLocalTx = localNonce - latestTxCountFromPublicRpc;
+  if (numPendingLocalTx === numPendingPublicTx) return pendingTxCountFromPublicRpc; // nothing in private mempool, proceed normally
+  if (numPendingLocalTx === 0 && numPendingPublicTx > 0) return latestTxCountFromPublicRpc; // catch up with public
 
   const { pendingTransactions: storePendingTransactions } = pendingTransactionsStore.getState();
   const pendingTransactions: RainbowTransaction[] = storePendingTransactions[address]?.filter(txn => txn.chainId === chainId) || [];
 
   for (const pendingTx of pendingTransactions) {
-    if (!pendingTx.nonce || pendingTx.nonce < publicRpcPendingTxCount) {
+    if (!pendingTx.nonce || pendingTx.nonce < pendingTxCountFromPublicRpc) {
       continue;
     } else {
       if (!pendingTx.timestamp) continue;
-      if (pendingTx.nonce === publicRpcPendingTxCount) {
+      if (pendingTx.nonce === pendingTxCountFromPublicRpc) {
         if (Date.now() - pendingTx.timestamp > privateMempoolTimeout) {
-          return publicRpcPendingTxCount;
+          return pendingTxCountFromPublicRpc;
         } else {
           return localNonce + 1;
         }
       } else {
-        return publicRpcPendingTxCount;
+        return pendingTxCountFromPublicRpc;
       }
     }
   }
