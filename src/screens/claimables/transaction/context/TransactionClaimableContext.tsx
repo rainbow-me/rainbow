@@ -18,7 +18,6 @@ import {
 } from '@/helpers/utilities';
 import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { useMeteorologySuggestion } from '@/__swaps__/utils/meteorology';
 import { useSwapEstimatedGasLimit } from '@/__swaps__/screens/Swap/hooks/useSwapEstimatedGasLimit';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { getGasSettingsBySpeed, useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
@@ -35,7 +34,7 @@ import { queryClient } from '@/react-query';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
-import { externalTokenQueryFunction, externalTokenQueryKey, FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
+import { externalTokenQueryFunction, externalTokenQueryKey } from '@/resources/assets/externalAssetsQuery';
 import { walletExecuteRap } from '@/raps/execute';
 import { executeClaim } from '../claim';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
@@ -43,6 +42,8 @@ import { weiToGwei } from '@/parsers';
 import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 import { ClaimStatus } from '../../shared/types';
 import { analyticsV2 } from '@/analytics';
+import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
@@ -132,10 +133,12 @@ export function TransactionClaimableContextProvider({
     },
   });
 
+  // chain-specific address for output token
   const outputTokenAddress = outputConfig.chainId ? outputConfig.token?.networks[outputConfig.chainId]?.address : undefined;
 
   const requiresSwap = outputConfig.token?.symbol !== claimable.asset.symbol || outputConfig.chainId !== claimable.chainId;
 
+  // need to get token data using token search api so the asset type is compatible w/ swaps v2 gas utils
   const { data: tokenSearchData, isFetching: isFetchingOutputToken } = useTokenSearch(
     {
       chainId: outputConfig.chainId,
@@ -170,11 +173,6 @@ export function TransactionClaimableContextProvider({
     },
     { enabled: !!quoteState.quote && !!parsedOutputToken }
   );
-  const { data: meteorologyData } = useMeteorologySuggestion({
-    chainId: claimable.chainId,
-    speed: GasSpeed.FAST,
-    enabled: true,
-  });
 
   const { data: userNativeNetworkAsset, isLoading: isLoadingNativeNetworkAsset } = useUserNativeNetworkAsset(claimable.chainId);
 
@@ -187,7 +185,7 @@ export function TransactionClaimableContextProvider({
           sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
           buyTokenAddress: tokenToClaim.isNativeAsset ? ETH_ADDRESS : (tokenToClaim.networks[tokenToClaim.chainId]?.address as string),
           sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
-          slippage: 0.5,
+          slippage: +getDefaultSlippageWorklet(claimable.chainId, getRemoteConfig()),
           refuel: false,
           toChainId: tokenToClaim.chainId,
           currency: nativeCurrency,
@@ -266,8 +264,6 @@ export function TransactionClaimableContextProvider({
   const provider = useMemo(() => getProvider({ chainId: claimable.chainId }), [claimable.chainId]);
 
   const canEstimateGas = !!(
-    meteorologyData?.maxBaseFee &&
-    meteorologyData?.maxPriorityFee &&
     !isLoadingNativeNetworkAsset &&
     userNativeNetworkAsset &&
     gasSettings &&
@@ -289,11 +285,12 @@ export function TransactionClaimableContextProvider({
         return;
       }
 
-      const gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {
-        maxFeePerGas: meteorologyData.maxBaseFee,
-        maxPriorityFeePerGas: meteorologyData.maxPriorityFee,
-        gasPrice: meteorologyData.gasPrice,
-      };
+      const gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = gasSettings.isEIP1559
+        ? {
+            maxFeePerGas: gasSettings.maxBaseFee,
+            maxPriorityFeePerGas: gasSettings.maxPriorityFee,
+          }
+        : { gasPrice: gasSettings.gasPrice };
 
       const partialTxPayload = {
         value: '0x0' as const,
@@ -362,9 +359,6 @@ export function TransactionClaimableContextProvider({
     }
   }, [
     canEstimateGas,
-    meteorologyData?.maxBaseFee,
-    meteorologyData?.maxPriorityFee,
-    meteorologyData?.gasPrice,
     claimable.action.data,
     claimable.action.to,
     claimable.chainId,
@@ -428,12 +422,13 @@ export function TransactionClaimableContextProvider({
       if (!outputTokenAddress) {
         haptics.notificationError();
         setClaimStatus('recoverableError');
-        logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to missing output token address'));
+        logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to undefined output token address'));
         return;
       }
 
       if (
         !txState.txPayload ||
+        !gasSettings ||
         !outputConfig.token ||
         !outputConfig.chainId ||
         (requiresSwap && (!quoteState.quote || 'error' in quoteState.quote))
@@ -479,19 +474,13 @@ export function TransactionClaimableContextProvider({
           address: accountAddress,
         };
 
-        const selectedGas = {
-          maxBaseFee: meteorologyData?.maxBaseFee,
-          maxPriorityFee: meteorologyData?.maxPriorityFee,
-        };
+        const gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = gasSettings.isEIP1559
+          ? {
+              maxFeePerGas: gasSettings.maxBaseFee,
+              maxPriorityFeePerGas: gasSettings.maxPriorityFee,
+            }
+          : { gasPrice: gasSettings.gasPrice };
 
-        let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
-          | TransactionGasParamAmounts
-          | LegacyTransactionGasParamAmounts;
-
-        gasParams = {
-          maxFeePerGas: selectedGas?.maxBaseFee as string,
-          maxPriorityFeePerGas: selectedGas?.maxPriorityFee as string,
-        };
         const gasFeeParamsBySpeed = getGasSettingsBySpeed(claimable.chainId);
 
         const { errorMessage } = await walletExecuteRap(wallet, 'claimClaimable', {
