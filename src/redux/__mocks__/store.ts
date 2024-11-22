@@ -1,4 +1,4 @@
-export default {
-  getState: jest.fn(),
-  dispatch: jest.fn(),
-};
+import { jest } from '@jest/globals';
+
+export const getState = jest.fn();
+export const dispatch = jest.fn();
