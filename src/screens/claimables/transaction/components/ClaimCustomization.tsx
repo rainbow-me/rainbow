@@ -275,7 +275,7 @@ export function ClaimCustomization() {
   return (
     <Box justifyContent="center" alignItems="center" flexDirection="row" gap={5}>
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">
-        Receive
+        {i18n.t(i18n.l.claimables.panel.receive)}
       </Text>
       <DropdownMenu
         disabled={isDisabled}
@@ -285,7 +285,7 @@ export function ClaimCustomization() {
         muted={isInitialState}
       />
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">
-        on
+        {i18n.t(i18n.l.claimables.panel.on)}
       </Text>
       <DropdownMenu
         disabled={isDisabled}

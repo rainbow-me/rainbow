@@ -454,7 +454,7 @@
       "panel": {
         "estimating_gas_fee": "Estimating Gas Fee...",
         "gas_error": "Gas Error",
-        "quote_error":"Quote Error",
+        "quote_error": "Quote Error",
         "no_route_found": "No Route Found",
         "fetching_quote": "Fetching Quote...",
         "select_a_network": "Select a Network",
@@ -472,7 +472,9 @@
         "tokens_on_the_way": "Tokens on the way!",
         "a_token": "a token",
         "a_network": "a network",
-        "swap_failed": "Swap Failed"
+        "swap_failed": "Swap Failed",
+        "receive": "Receive",
+        "on": "on"
       }
     },
     "cloud": {
