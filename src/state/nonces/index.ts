@@ -18,7 +18,7 @@ type GetNonceArgs = {
 
 type UpdateNonceArgs = NonceData & GetNonceArgs;
 
-export async function getNextNonce({ address, chainId }: { address: string; chainId: ChainId }) {
+export async function getNextNonce({ address, chainId }: { address: string; chainId: ChainId }): Promise<number> {
   const { getNonce } = nonceStore.getState();
   const localNonceData = getNonce({ address, chainId });
   const localNonce = localNonceData?.currentNonce || 0;
@@ -36,6 +36,7 @@ export async function getNextNonce({ address, chainId }: { address: string; chai
   const { pendingTransactions: storePendingTransactions } = pendingTransactionsStore.getState();
   const pendingTransactions: RainbowTransaction[] = storePendingTransactions[address]?.filter(txn => txn.chainId === chainId) || [];
 
+  let nextNonce = localNonce + 1;
   for (const pendingTx of pendingTransactions) {
     if (!pendingTx.nonce || pendingTx.nonce < pendingTxCountFromPublicRpc) {
       continue;
@@ -43,15 +44,19 @@ export async function getNextNonce({ address, chainId }: { address: string; chai
       if (!pendingTx.timestamp) continue;
       if (pendingTx.nonce === pendingTxCountFromPublicRpc) {
         if (Date.now() - pendingTx.timestamp > privateMempoolTimeout) {
-          return pendingTxCountFromPublicRpc;
+          nextNonce = pendingTxCountFromPublicRpc;
+          break;
         } else {
-          return localNonce + 1;
+          nextNonce = localNonce + 1;
+          break;
         }
       } else {
-        return pendingTxCountFromPublicRpc;
+        nextNonce = pendingTxCountFromPublicRpc;
+        break;
       }
     }
   }
+  return nextNonce;
 }
 
 type NoncesV0 = {
