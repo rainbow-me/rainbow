@@ -2,7 +2,7 @@ import { chainsName } from '@/chains';
 import { NewTransaction, TransactionStatus } from '@/entities';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { getProvider } from '@/handlers/web3';
-import { RainbowError } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { sendTransaction } from '@/model/wallet';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { TransactionClaimableTxPayload } from './types';
@@ -24,7 +24,9 @@ export async function executeClaim({
   const result = await sendTransaction({ transaction: claimTx, existingWallet: wallet, provider });
 
   if (!result?.result || !!result.error || !result.result.hash) {
-    throw new RainbowError('[CLAIM-CLAIMABLE]: failed to execute claim transaction');
+    const error = new RainbowError('[CLAIM-CLAIMABLE]: failed to execute claim transaction');
+    logger.error(error);
+    throw error;
   }
 
   const parsedAsset = {
@@ -55,9 +57,17 @@ export async function executeClaim({
   });
 
   const tx = await wallet?.provider?.getTransaction(result.result.hash);
+  if (!tx) {
+    const error = new RainbowError('[CLAIM-CLAIMABLE]: failed to get transaction');
+    logger.error(error);
+    throw error;
+  }
+
   const receipt = await tx?.wait();
   if (!receipt) {
-    throw new RainbowError('[CLAIM-CLAIMABLE]: tx not mined');
+    const error = new RainbowError('[CLAIM-CLAIMABLE]: tx not mined');
+    logger.error(error);
+    throw error;
   }
 
   return {

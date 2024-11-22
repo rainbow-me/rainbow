@@ -35,7 +35,7 @@ import { queryClient } from '@/react-query';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
-import { externalTokenQueryKey,  FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
+import { externalTokenQueryFunction, externalTokenQueryKey, FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { walletExecuteRap } from '@/raps/execute';
 import { executeClaim } from '../claim';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
@@ -226,7 +226,15 @@ export function TransactionClaimableContextProvider({
         setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'noQuoteError' });
       }
     },
-    [accountAddress, claimable.asset.address, claimable.asset.decimals, claimable.asset.isNativeAsset, claimable.chainId, claimable.value.claimAsset.amount, nativeCurrency]
+    [
+      accountAddress,
+      claimable.asset.address,
+      claimable.asset.decimals,
+      claimable.asset.isNativeAsset,
+      claimable.chainId,
+      claimable.value.claimAsset.amount,
+      nativeCurrency,
+    ]
   );
 
   useEffect(() => {
@@ -405,7 +413,9 @@ export function TransactionClaimableContextProvider({
       txState.status === 'success' &&
       txState.isSufficientGas &&
       (!requiresSwap || quoteState.status === 'success') &&
-      claimStatus === 'notReady' && outputConfig.chainId && outputConfig.token
+      claimStatus === 'notReady' &&
+      outputConfig.chainId &&
+      outputConfig.token
     ) {
       setClaimStatus('ready');
     }
@@ -422,7 +432,12 @@ export function TransactionClaimableContextProvider({
         return;
       }
 
-      if (!txState.txPayload || !outputConfig.token || !outputConfig.chainId || (requiresSwap && (!quoteState.quote || 'error' in quoteState.quote))) {
+      if (
+        !txState.txPayload ||
+        !outputConfig.token ||
+        !outputConfig.chainId ||
+        (requiresSwap && (!quoteState.quote || 'error' in quoteState.quote))
+      ) {
         haptics.notificationError();
         setClaimStatus('recoverableError');
         return;
@@ -442,9 +457,10 @@ export function TransactionClaimableContextProvider({
       }
 
       if (requiresSwap) {
-        const outputAsset = await queryClient.fetchQuery<FormattedExternalAsset | undefined>(
-          externalTokenQueryKey({ address: outputTokenAddress, chainId: outputConfig.chainId, currency: nativeCurrency })
-        );
+        const outputAsset = await queryClient.fetchQuery({
+          queryKey: externalTokenQueryKey({ address: outputTokenAddress, chainId: outputConfig.chainId, currency: nativeCurrency }),
+          queryFn: externalTokenQueryFunction,
+        });
 
         if (!outputAsset) {
           haptics.notificationError();
@@ -524,8 +540,8 @@ export function TransactionClaimableContextProvider({
               amount: claimable.value.claimAsset.amount,
               usdValue: claimable.value.usd,
               isSwapping: requiresSwap,
-        outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
-        outputChainId: outputConfig.chainId,
+              outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
+              outputChainId: outputConfig.chainId,
               failureStep: 'swap',
               errorMessage: ErrorMessages.SWAP_ERROR,
             });
@@ -603,9 +619,7 @@ export function TransactionClaimableContextProvider({
       if (claimStatus === 'claiming') {
         haptics.notificationError();
         setClaimStatus('recoverableError');
-        logger.error(
-          new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.UNRESOLVED_CLAIM_STATUS}`)
-        );
+        logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.UNRESOLVED_CLAIM_STATUS}`));
         analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
           claimableType: 'transaction',
           claimableId: claimable.uniqueId,
@@ -614,9 +628,9 @@ export function TransactionClaimableContextProvider({
           amount: claimable.value.claimAsset.amount,
           usdValue: claimable.value.usd,
           isSwapping: requiresSwap,
-        outputAsset: { symbol: outputConfig.token?.symbol ?? '', address: outputTokenAddress ?? '' },
-        outputChainId: outputConfig.chainId ?? -1,
-        failureStep: 'unknown',
+          outputAsset: { symbol: outputConfig.token?.symbol ?? '', address: outputTokenAddress ?? '' },
+          outputChainId: outputConfig.chainId ?? -1,
+          failureStep: 'unknown',
           errorMessage: ErrorMessages.UNRESOLVED_CLAIM_STATUS,
         });
       }
