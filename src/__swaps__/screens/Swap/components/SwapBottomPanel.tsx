@@ -73,7 +73,12 @@ export function SwapBottomPanel() {
   const handleHwConnectionAndSwap = useCallback(() => {
     try {
       if (isHardwareWallet && configProgress.value === NavigationSteps.SHOW_REVIEW) {
-        navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: SwapNavigation.handleSwapAction });
+        navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+          submit: () => {
+            navigate(-1); // close hw sheet after receiving device input
+            SwapNavigation.handleSwapAction();
+          },
+        });
       } else {
         SwapNavigation.handleSwapAction();
       }
