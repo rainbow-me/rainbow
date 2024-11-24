@@ -130,7 +130,6 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     const isLeftOfActiveTab = tabIndex === pendingActiveIndex - 1;
     const isRightOfActiveTab = tabIndex === pendingActiveIndex + 1;
 
-    // const shouldUseTabViewGestureStyles = isSwitchingTabs.value && (animatedIsActiveTab || !isRunningEnterTabViewAnimation);
     const shouldUseTabSwitchGestureStyles =
       isSwitchingTabs.value && (isPendingActiveTab || (!isRunningEnterTabViewAnimation && (isLeftOfActiveTab || isRightOfActiveTab)));
 
