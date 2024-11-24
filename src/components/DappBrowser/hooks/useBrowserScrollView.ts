@@ -11,7 +11,7 @@ import {
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from '../BrowserContext';
@@ -22,8 +22,8 @@ import { determineGestureType, determineTapResult, handleGestureEnd, updateTabGe
 import { calculateScrollPositionToCenterTab } from '../utils/layoutUtils';
 import { TabHitResult, tabHitTest } from '../utils/tabHitTest';
 
-const ENABLE_PAN_LOGS = false;
-const ENABLE_SCROLL_VIEW_LOGS = false;
+const ENABLE_PAN_LOGS = IS_DEV && false;
+const ENABLE_SCROLL_VIEW_LOGS = IS_DEV && false;
 
 export function useBrowserScrollView() {
   const {
@@ -109,7 +109,7 @@ export function useBrowserScrollView() {
     // Native ScrollView Gesture
     const nativeScrollViewGesture = Gesture.Native()
       .onTouchesDown((_, manager) => {
-        if (ENABLE_PAN_LOGS) console.log('[ScrollView Gesture] TOUCH DOWN');
+        if (ENABLE_SCROLL_VIEW_LOGS) console.log('[ScrollView Gesture] TOUCH DOWN');
 
         if (gestureManagerState.value === 'active') manager.fail();
       })
@@ -124,7 +124,7 @@ export function useBrowserScrollView() {
       .blocksExternalGesture(nativeScrollViewGesture)
       .manualActivation(true)
       .onTouchesDown((e, manager) => {
-        if (ENABLE_PAN_LOGS) console.log('[Native Gesture] TOUCH DOWN');
+        if (ENABLE_PAN_LOGS) console.log('[Pan Gesture] TOUCH DOWN');
 
         const areMultipleTouchesActive = e.allTouches.length > 1;
 
@@ -153,7 +153,7 @@ export function useBrowserScrollView() {
       })
 
       .onTouchesMove((e, manager) => {
-        if (ENABLE_PAN_LOGS) console.log('[Native Gesture] TOUCH MOVE');
+        if (ENABLE_PAN_LOGS) console.log('[Pan Gesture] TOUCH MOVE');
 
         const decision = determineGestureType({
           currentX: e.changedTouches[0].absoluteX,
@@ -223,7 +223,7 @@ export function useBrowserScrollView() {
       })
 
       .onTouchesCancelled((_, manager) => {
-        if (ENABLE_PAN_LOGS) console.log('[Native Gesture] TOUCH CANCELLED');
+        if (ENABLE_PAN_LOGS) console.log('[Pan Gesture] TOUCH CANCELLED');
 
         if (touchInfo.value?.initialTappedTab) {
           const { tabId, tabIndex } = touchInfo.value.initialTappedTab;
@@ -242,7 +242,7 @@ export function useBrowserScrollView() {
       })
 
       .onTouchesUp((e, manager) => {
-        if (ENABLE_PAN_LOGS) console.log('[Native Gesture] TOUCH UP');
+        if (ENABLE_PAN_LOGS) console.log('[Pan Gesture] TOUCH UP');
 
         const result = determineTapResult({
           currentTouch: {
@@ -274,7 +274,7 @@ export function useBrowserScrollView() {
       })
 
       .onEnd((e, success) => {
-        if (ENABLE_PAN_LOGS) console.log('[Native Gesture] ON END');
+        if (ENABLE_PAN_LOGS) console.log('[Pan Gesture] ON END');
 
         if (!success || !touchInfo.value?.initialTappedTab) return;
 
@@ -302,7 +302,7 @@ export function useBrowserScrollView() {
         }
       });
 
-    return Gesture.Simultaneous(nativeScrollViewGesture, manualPanGesture);
+    return Gesture.Simultaneous(manualPanGesture, nativeScrollViewGesture);
   }, [
     activeTabCloseGestures,
     animatedTabUrls,
