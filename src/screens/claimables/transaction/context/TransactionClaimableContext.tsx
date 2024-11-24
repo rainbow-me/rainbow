@@ -128,6 +128,7 @@ export function TransactionClaimableContextProvider({
       name: claimable.asset.name,
       symbol: claimable.asset.symbol,
       networks: claimable.asset.networks,
+      decimals: claimable.asset.decimals,
       isNativeAsset: !!claimable.asset.isNativeAsset,
       isDefaultAsset: true,
     },
@@ -136,7 +137,11 @@ export function TransactionClaimableContextProvider({
   // chain-specific address for output token
   const outputTokenAddress = outputConfig.chainId ? outputConfig.token?.networks[outputConfig.chainId]?.address : undefined;
 
-  const requiresSwap = outputConfig.token?.symbol !== claimable.asset.symbol || outputConfig.chainId !== claimable.chainId;
+  const requiresSwap = !!(
+    outputConfig.token &&
+    outputConfig.chainId &&
+    (outputConfig.token.symbol !== claimable.asset.symbol || outputConfig.chainId !== claimable.chainId)
+  );
 
   // need to get token data using token search api so the asset type is compatible w/ swaps v2 gas utils
   const { data: tokenSearchData, isFetching: isFetchingOutputToken } = useTokenSearch(
@@ -176,93 +181,82 @@ export function TransactionClaimableContextProvider({
 
   const { data: userNativeNetworkAsset, isLoading: isLoadingNativeNetworkAsset } = useUserNativeNetworkAsset(claimable.chainId);
 
-  const updateQuote = useCallback(
-    async (tokenToClaim: ParsedSearchAsset) => {
-      try {
-        const quoteParams: QuoteParams = {
-          chainId: claimable.chainId,
-          fromAddress: accountAddress,
-          sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
-          buyTokenAddress: tokenToClaim.isNativeAsset ? ETH_ADDRESS : (tokenToClaim.networks[tokenToClaim.chainId]?.address as string),
-          sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
-          slippage: +getDefaultSlippageWorklet(claimable.chainId, getRemoteConfig()),
-          refuel: false,
-          toChainId: tokenToClaim.chainId,
-          currency: nativeCurrency,
-        };
+  const updateQuote = useCallback(async () => {
+    if (!outputConfig?.token || !outputConfig.chainId || !outputTokenAddress) {
+      logger.warn('[TransactionClaimableContext]: Somehow entered unreachable state in updateQuote');
+      setQuoteState(prev => ({ ...prev, status: 'none' }));
+      return;
+    }
+    try {
+      const quoteParams: QuoteParams = {
+        chainId: claimable.chainId,
+        fromAddress: accountAddress,
+        sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
+        buyTokenAddress: outputConfig.token.isNativeAsset ? ETH_ADDRESS : outputTokenAddress,
+        sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
+        slippage: +getDefaultSlippageWorklet(claimable.chainId, getRemoteConfig()),
+        refuel: false,
+        toChainId: outputConfig.chainId,
+        currency: nativeCurrency,
+      };
 
-        const quote = claimable.chainId === tokenToClaim.chainId ? await getQuote(quoteParams) : await getCrosschainQuote(quoteParams);
+      const quote = claimable.chainId === outputConfig.chainId ? await getQuote(quoteParams) : await getCrosschainQuote(quoteParams);
 
-        if (!quote || 'error' in quote) {
-          let status: QuoteState['status'];
-          if (quote?.message === 'no routes found') {
-            status = 'noRouteError';
-          } else {
-            status = 'noQuoteError';
-            logger.error(new RainbowError('[TransactionClaimableContext]: failed to get quote'), { quote, quoteParams });
-          }
-          setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status });
+      if (!quote || 'error' in quote) {
+        let status: QuoteState['status'];
+        if (quote?.message === 'no routes found') {
+          status = 'noRouteError';
         } else {
-          const buyAmount = convertRawAmountToDecimalFormat(quote.buyAmountMinusFees.toString(), tokenToClaim.decimals);
-          const buyAmountDisplay = convertAmountToBalanceDisplay(
-            buyAmount,
-            { decimals: tokenToClaim.decimals, symbol: tokenToClaim.symbol },
-            undefined,
-            true
-          );
-          setQuoteState({
-            quote,
-            nativeValueDisplay: quote.buyTokenAsset?.price.value
-              ? convertAmountToNativeDisplay(multiply(buyAmount, quote.buyTokenAsset.price.value), nativeCurrency)
-              : buyAmountDisplay.split(' ')[0],
-            tokenAmountDisplay: buyAmountDisplay,
-            status: 'success',
-          });
+          status = 'noQuoteError';
+          logger.error(new RainbowError('[TransactionClaimableContext]: failed to get quote'), { quote, quoteParams });
         }
-      } catch (e) {
-        logger.error(new RainbowError('[TransactionClaimableContext]: failed to get quote'), { error: e });
-        setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'noQuoteError' });
+        setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status });
+      } else {
+        const buyAmount = convertRawAmountToDecimalFormat(quote.buyAmountMinusFees.toString(), outputConfig.token.decimals);
+        const buyAmountDisplay = convertAmountToBalanceDisplay(
+          buyAmount,
+          { decimals: outputConfig.token.decimals, symbol: outputConfig.token.symbol },
+          undefined,
+          true
+        );
+        setQuoteState({
+          quote,
+          nativeValueDisplay: quote.buyTokenAsset?.price.value
+            ? convertAmountToNativeDisplay(multiply(buyAmount, quote.buyTokenAsset.price.value), nativeCurrency)
+            : buyAmountDisplay.split(' ')[0], // fall back to token amount instead of native value if price is not available
+          tokenAmountDisplay: buyAmountDisplay,
+          status: 'success',
+        });
       }
-    },
-    [
-      accountAddress,
-      claimable.asset.address,
-      claimable.asset.decimals,
-      claimable.asset.isNativeAsset,
-      claimable.chainId,
-      claimable.value.claimAsset.amount,
-      nativeCurrency,
-    ]
-  );
-
-  useEffect(() => {
-    if (
-      requiresSwap &&
-      !quoteState.quote &&
-      parsedOutputToken &&
-      parsedOutputToken?.symbol === outputConfig.token?.symbol &&
-      parsedOutputToken?.chainId === outputConfig.chainId &&
-      quoteState.status === 'none'
-    ) {
-      setQuoteState(prev => ({ ...prev, status: 'fetching' }));
-      setClaimStatus('notReady');
-      updateQuote(parsedOutputToken);
+    } catch (e) {
+      logger.error(new RainbowError('[TransactionClaimableContext]: failed to get quote'), { error: e });
+      setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'noQuoteError' });
     }
   }, [
-    claimable.asset.chainId,
-    claimable.asset.symbol,
-    claimable.type,
-    requiresSwap,
+    accountAddress,
+    claimable.asset.address,
+    claimable.asset.decimals,
+    claimable.asset.isNativeAsset,
+    claimable.chainId,
+    claimable.value.claimAsset.amount,
+    nativeCurrency,
     outputConfig.chainId,
     outputConfig.token,
-    quoteState.quote,
-    updateQuote,
-    parsedOutputToken,
-    quoteState.status,
+    outputTokenAddress,
   ]);
+
+  // if we don't have a quote yet, fetch one
+  useEffect(() => {
+    if (requiresSwap && !quoteState.quote && quoteState.status === 'none' && outputTokenAddress) {
+      setQuoteState(prev => ({ ...prev, status: 'fetching' }));
+      setClaimStatus('notReady');
+      updateQuote();
+    }
+  }, [outputTokenAddress, quoteState.quote, quoteState.status, requiresSwap, updateQuote]);
 
   const provider = useMemo(() => getProvider({ chainId: claimable.chainId }), [claimable.chainId]);
 
+  // make sure we have necessary data before attempting gas estimation
   const canEstimateGas = !!(
     !isLoadingNativeNetworkAsset &&
     userNativeNetworkAsset &&
@@ -273,6 +267,8 @@ export function TransactionClaimableContextProvider({
         swapGasLimit &&
         !isFetchingOutputToken &&
         parsedOutputToken &&
+        parsedOutputToken.symbol === outputConfig.token?.symbol &&
+        parsedOutputToken.chainId === outputConfig.chainId &&
         quoteState.status === 'success'))
   );
 
@@ -353,6 +349,7 @@ export function TransactionClaimableContextProvider({
       });
     } catch (e) {
       if (txState.status === 'fetching') {
+        // if is initial gas estimate, set status to error
         setTxState(prev => ({ ...prev, status: 'error' }));
       }
       logger.warn('[TransactionClaimableContext]: Failed to estimate gas', { error: e });
@@ -377,19 +374,15 @@ export function TransactionClaimableContextProvider({
   useEffect(() => {
     // estimate gas if it hasn't been estimated yet or if 10 seconds have passed since last estimate
     if (canEstimateGas && (!txState.gasFeeDisplay || Date.now() - lastGasEstimateTime > 10_000)) {
-      try {
-        // if initial gas estimate
-        if (!txState.gasFeeDisplay) {
-          setTxState(prev => ({
-            ...prev,
-            status: 'fetching',
-          }));
-          setClaimStatus('notReady');
-        }
-        estimateGas();
-      } catch (e) {
-        logger.warn('[TransactionClaimableContext]: Failed to estimate gas', { error: e });
+      // update tx state/claim status only if initial gas estimate
+      if (!txState.gasFeeDisplay) {
+        setTxState(prev => ({
+          ...prev,
+          status: 'fetching',
+        }));
+        setClaimStatus('notReady');
       }
+      estimateGas();
     }
   }, [
     canEstimateGas,
@@ -419,22 +412,17 @@ export function TransactionClaimableContextProvider({
 
   const { mutate: claim } = useMutation({
     mutationFn: async () => {
-      if (!outputTokenAddress) {
-        haptics.notificationError();
-        setClaimStatus('recoverableError');
-        logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to undefined output token address'));
-        return;
-      }
-
       if (
         !txState.txPayload ||
         !gasSettings ||
         !outputConfig.token ||
         !outputConfig.chainId ||
+        !outputTokenAddress ||
         (requiresSwap && (!quoteState.quote || 'error' in quoteState.quote))
       ) {
         haptics.notificationError();
         setClaimStatus('recoverableError');
+        logger.warn('[TransactionClaimableContext]: Somehow entered unreachable state in claim');
         return;
       }
 
@@ -452,6 +440,7 @@ export function TransactionClaimableContextProvider({
       }
 
       if (requiresSwap) {
+        // need to get yet another output asset type for raps compatibility
         const outputAsset = await queryClient.fetchQuery({
           queryKey: externalTokenQueryKey({ address: outputTokenAddress, chainId: outputConfig.chainId, currency: nativeCurrency }),
           queryFn: externalTokenQueryFunction,
