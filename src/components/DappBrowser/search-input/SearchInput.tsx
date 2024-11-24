@@ -394,12 +394,7 @@ const AddressBar = memo(function AddressBar({
   return (
     <View style={styles.inputContainer}>
       <Animated.View style={[styles.gestureHandlerButton, animatedButtonWrapperStyle]}>
-        <GestureHandlerButton
-          buttonPressWrapperStyleIOS={styles.gestureHandlerButton}
-          onPressWorklet={onPressWorklet}
-          scaleTo={0.965}
-          style={styles.gestureHandlerButton}
-        >
+        <GestureHandlerButton onPressWorklet={onPressWorklet} scaleTo={0.965} style={styles.gestureHandlerButton}>
           <MaskedView
             maskElement={<FadeMask fadeEdgeInset={36} fadeWidth={12} height={SEARCH_BAR_HEIGHT} side="right" />}
             style={styles.fadeMaskStyle}
