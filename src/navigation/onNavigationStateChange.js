@@ -1,12 +1,12 @@
 import { NativeModules } from 'react-native';
-import { sentryUtils } from '../utils';
-import Routes from './routesNames';
-import { Navigation } from './index';
-import { StatusBarHelper } from '@/helpers';
 import { analytics } from '@/analytics';
-import { currentColors } from '@/theme';
-import { useFreezeStore } from '@/state/freezeStore/freezeStore';
+import { StatusBarHelper } from '@/helpers';
 import { POINTS_ROUTES } from '@/screens/points/PointsScreen';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { currentColors } from '@/theme';
+import { sentryUtils } from '../utils';
+import { Navigation } from './index';
+import Routes from './routesNames';
 
 let memState;
 let memRouteName;
@@ -83,7 +83,7 @@ export function onNavigationStateChange(currentState) {
     setTimeout(NativeModules.MenuViewModule.dismiss, 400);
   }
 
-  useFreezeStore.getState().setActiveRoute(routeName);
+  useNavigationStore.getState().setActiveRoute(routeName);
 
   if (isOnSwipeScreen(routeName)) {
     action?.();

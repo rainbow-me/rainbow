@@ -188,9 +188,9 @@ export const useBrowserStore = create<BrowserStore>()(
             /**
              * In cases like the following, we need to force a URL update:
              *
-             * - User opens a new tab and goes to URL X, which sets the tab's URL state and the WebView's source prop to URL X.
+             * - User opens a new tab and goes to URL X, which sets the tab's URL state (the WebView's source prop) to URL X.
              * - User then navigates to a new page from within the WebView, making the true internal URL of the WebView URL Y.
-             * - At this point the tab's URL state and the WebView's source prop remain set to URL X, despite being on URL Y.
+             * - At this point the WebView's source prop remains set to URL X, despite the WebView's internal URL being URL Y.
              * - If the user then manually attempts to go back to URL X from the search bar, the WebView won't detect a change
              *   in its source prop and thus won't navigate to URL X, so we first re-sync the URL state and then set URL X.
              */

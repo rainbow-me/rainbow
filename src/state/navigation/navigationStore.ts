@@ -1,7 +1,7 @@
 import { makeMutable, SharedValue } from 'react-native-reanimated';
 import Routes from '@/navigation/routesNames';
-import { createRainbowStore } from '../internal/createRainbowStore';
 import { POINTS_ROUTES } from '@/screens/points/PointsScreen';
+import { createRainbowStore } from '../internal/createRainbowStore';
 
 const SWIPE_ROUTES = [
   Routes.WALLET_SCREEN,
@@ -19,19 +19,22 @@ const isSwipeRoute = (route: string): route is SwipeRoute => {
   return Object.values(SWIPE_ROUTES).includes(route as SwipeRoute);
 };
 
-interface FreezeStore {
+interface NavigationStore {
   activeRoute: string;
   activeSwipeRoute: SwipeRoute;
   animatedActiveRoute: SharedValue<string>;
   animatedActiveSwipeRoute: SharedValue<SwipeRoute>;
+  isRouteActive: (route: string) => boolean;
   setActiveRoute: (route: string) => void;
 }
 
-export const useFreezeStore = createRainbowStore<FreezeStore>(set => ({
+export const useNavigationStore = createRainbowStore<NavigationStore>((set, get) => ({
   activeRoute: Routes.WALLET_SCREEN,
   activeSwipeRoute: Routes.WALLET_SCREEN,
   animatedActiveRoute: makeMutable<string>(Routes.WALLET_SCREEN),
   animatedActiveSwipeRoute: makeMutable<SwipeRoute>(Routes.WALLET_SCREEN),
+
+  isRouteActive: (route: string) => route === get().activeRoute,
 
   setActiveRoute: (route: string) => {
     set(state => {
