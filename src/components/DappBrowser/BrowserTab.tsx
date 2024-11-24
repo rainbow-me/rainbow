@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { memo, useCallback, useEffect, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Freeze } from 'react-freeze';
 import { Linking, StyleSheet } from 'react-native';
 import Animated, { AnimatedStyle, DerivedValue, FadeIn, SharedValue, runOnUI, useAnimatedProps, withTiming } from 'react-native-reanimated';
@@ -38,7 +38,7 @@ import { useAnimatedTab } from './hooks/useAnimatedTab';
 import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
 import { freezeWebsite, getWebsiteMetadata, hideBanners, unfreezeWebsite } from './scripts';
 import { BrowserTabProps, ScreenshotType } from './types';
-import { isValidAppStoreUrl } from './utils';
+import { generateUniqueIdWorklet, isValidAppStoreUrl } from './utils';
 
 export const BrowserTab = memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
   const viewShotRef = useRef<ViewShot | null>(null);
@@ -172,6 +172,8 @@ const FreezableWebViewComponent = ({
   const { activeTabRef, loadProgress, resetScrollHandlers, screenshotCaptureRef } = useBrowserContext();
   const { updateTabUrlWorklet } = useBrowserWorkletsContext();
   const { setParams } = useNavigation();
+
+  const [renderKey, setRenderKey] = useState(`${tabId}-0`);
 
   const currentMessengerRef = useRef<any>(null);
   const logoRef = useRef<string | null>(null);
@@ -318,8 +320,11 @@ const FreezableWebViewComponent = ({
   );
 
   const handleOnContentProcessDidTerminate = useCallback(() => {
-    activeTabRef.current?.reload();
-  }, [activeTabRef]);
+    const currentUrl = useBrowserStore.getState().getTabUrl(tabId);
+    if (currentUrl) useBrowserStore.getState().goToPage(currentUrl, tabId);
+
+    setRenderKey(`${tabId}-${generateUniqueIdWorklet()}`);
+  }, [tabId]);
 
   useEffect(() => {
     if (isActiveTab) {
@@ -350,6 +355,7 @@ const FreezableWebViewComponent = ({
   return (
     <Freeze freeze={!isActiveTab}>
       <TabWebView
+        key={renderKey}
         onContentProcessDidTerminate={handleOnContentProcessDidTerminate}
         onLoad={handleOnLoad}
         onLoadProgress={handleOnLoadProgress}

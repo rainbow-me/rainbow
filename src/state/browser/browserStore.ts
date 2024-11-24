@@ -131,6 +131,7 @@ interface BrowserStore {
   getActiveTabTitle: () => string | undefined;
   getActiveTabUrl: () => string | undefined;
   getTabData: (tabId: TabId) => TabData | undefined;
+  getTabUrl: (tabId: TabId) => string | undefined;
   goToPage: (url: string, tabId?: TabId) => void;
   isOnHomepage: () => boolean;
   isTabActive: (tabId: TabId) => boolean;
@@ -169,6 +170,8 @@ export const useBrowserStore = create<BrowserStore>()(
         getActiveTabUrl: () => get().persistedTabUrls[get().getActiveTabId()],
 
         getTabData: tabId => get().tabsData.get(tabId) || { canGoBack: false, canGoForward: false, url: RAINBOW_HOME },
+
+        getTabUrl: tabId => get().persistedTabUrls[tabId],
 
         goToPage: (url, tabId) =>
           set(state => {
