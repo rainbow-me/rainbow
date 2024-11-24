@@ -5,11 +5,12 @@ import { Linking, StyleSheet } from 'react-native';
 import Animated, { AnimatedStyle, DerivedValue, FadeIn, SharedValue, runOnUI, useAnimatedProps, withTiming } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
 import WebView, { WebViewMessageEvent, WebViewNavigation, WebViewProps } from 'react-native-webview';
-import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
+import { ShouldStartLoadRequest, WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import { globalColors, useColorMode } from '@/design-system';
 import { IS_DEV, IS_IOS } from '@/env';
-import { useNavigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { Site } from '@/state/browserHistory';
 import { getDappHostname } from '@/utils/connectedApps';
@@ -38,11 +39,6 @@ import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
 import { freezeWebsite, getWebsiteMetadata, hideBanners, unfreezeWebsite } from './scripts';
 import { BrowserTabProps, ScreenshotType } from './types';
 import { isValidAppStoreUrl } from './utils';
-// import { useAppSessionsStore } from '@/state/appSessions';
-// import store from '@/redux/store';
-// import { ChainId } from '@/chains/types';
-// import { toHex } from 'viem';
-// import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 
 export const BrowserTab = memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
   const viewShotRef = useRef<ViewShot | null>(null);
@@ -273,73 +269,17 @@ const FreezableWebViewComponent = ({
     [tabId, webViewRef]
   );
 
-  // const addSession = useAppSessionsStore(state => state.addSession);
-
-  // const handleConnect = useCallback(async () => {
-  //   const activeTabHost = getDappHost(tabUrl);
-  //   const hostSessions = useAppSessionsStore.getState().getActiveSession({ host: activeTabHost });
-  //   const address = hostSessions?.activeSessionAddress || store.getState().settings.accountAddress;
-  //   const chainId = hostSessions?.sessions[hostSessions?.activeSessionAddress] || ChainId.mainnet;
-
-  //   addSession({
-  //     address: address as `0x${string}`,
-  //     chainId,
-  //     host: activeTabHost || '',
-  //     url: tabUrl,
-  //   });
-
-  //   activeTabRef.current?.injectJavaScript(`
-  //     // Trigger an Escape key press to hide the WC web modal
-  //     const escapeEvent = new KeyboardEvent('keydown', {
-  //       key: 'Escape',
-  //       keyCode: 27,
-  //       which: 27,
-  //       bubbles: true,
-  //       cancelable: true
-  //     });
-  //     document.dispatchEvent(escapeEvent);
-
-  //     window.ethereum.emit('accountsChanged', ['${address}']);
-  //     window.ethereum.emit('connect', { address: '${address}', chainId: '${toHex(chainId)}' });
-
-  //     true;
-  //   `);
-  // }, [activeTabRef, addSession, tabUrl]);
-
-  const handleShouldStartLoadWithRequest = useCallback((request: { url: string }) => {
-    const isAppLink = request.url.startsWith('https://apps.apple.com/app/') || request.url.startsWith('itms-appss://apps.apple.com/app/');
-    if (isAppLink) return false;
-
-    const isMetaMaskLink = request.url.startsWith('https://metamask.app.link/') || request.url.startsWith('metamask://wc');
-    const wcRegex = /^(?!https?:\/\/)[a-zA-Z0-9-_.]+:\/\/wc.*/;
-
-    // console.log('🟢 REQUEST: ', JSON.stringify(request, null, 2));
-    if (wcRegex.test(request.url) || isMetaMaskLink || request.url.startsWith('https://rnbwappdotcom.app.link/')) {
-      // Navigation.handleAction(Routes.NO_NEED_WC_SHEET, {});
-      if (request.url.startsWith('rainbow://wc') || isMetaMaskLink || request.url.startsWith('https://rnbwappdotcom.app.link/')) {
-        // handleConnect();
-        // activeTabRef.current?.reload();
-        // handleWalletConnectRequest
-        Linking.openURL(request.url);
-      } else {
-        Linking.openURL(request.url);
+  const handleShouldStartLoadWithRequest = useCallback(
+    (request: ShouldStartLoadRequest) => {
+      if (request.url.startsWith('rainbow://wc') || request.url.startsWith('https://rnbwappdotcom.app.link/')) {
+        Navigation.handleAction(Routes.NO_NEED_WC_SHEET, {});
+        activeTabRef.current?.reload();
+        return false;
       }
-      return false;
-    }
-    return true;
-  }, []);
-
-  // const handleShouldStartLoadWithRequest = useCallback(
-  //   (request: ShouldStartLoadRequest) => {
-  //     if (request.url.startsWith('rainbow://wc') || request.url.startsWith('https://rnbwappdotcom.app.link/')) {
-  //       Navigation.handleAction(Routes.NO_NEED_WC_SHEET, {});
-  //       activeTabRef.current?.reload();
-  //       return false;
-  //     }
-  //     return true;
-  //   },
-  //   [activeTabRef]
-  // );
+      return true;
+    },
+    [activeTabRef]
+  );
 
   const handleOnLoadProgress = useCallback(
     ({ nativeEvent: { progress } }: { nativeEvent: { progress: number } }) => {
