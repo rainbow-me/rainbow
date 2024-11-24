@@ -2,13 +2,11 @@ import { useCallback } from 'react';
 import { dispatchCommand, runOnJS, runOnUI, useAnimatedReaction } from 'react-native-reanimated';
 import { IS_IOS } from '@/env';
 import { RainbowError, logger } from '@/logger';
-import { safeAreaInsetValues } from '@/utils';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
-import { TAB_VIEW_ROW_HEIGHT } from '../Dimensions';
 import { RAINBOW_HOME } from '../constants';
 import { saveScreenshot } from '../screenshots';
+import { calculateScrollPositionToCenterTab } from '../utils/layoutUtils';
 
 /**
  * ### `useScreenshotAndScrollTriggers`:
@@ -88,7 +86,7 @@ export function useScreenshotAndScrollTriggers() {
 
       const enterTabViewAnimationIsComplete = tabViewVisible.value && previous.tabViewProgress > 100 && current.tabViewProgress <= 100;
       const exitTabViewAnimationIsComplete =
-        IS_IOS && !tabViewVisible.value && current.tabViewProgress === 0 && previous.tabViewProgress !== 0;
+        /* IS_IOS && */ !tabViewVisible.value && current.tabViewProgress === 0 && previous.tabViewProgress !== 0;
 
       const shouldAttemptScreenshot = didBeginSwitchingTabs || enterTabViewAnimationIsComplete;
       const shouldAttemptScroll = didFinishSwitchingTabs || exitTabViewAnimationIsComplete;
@@ -130,33 +128,4 @@ export function useScreenshotAndScrollTriggers() {
     },
     []
   );
-}
-
-const SCREEN_HEIGHT = DEVICE_HEIGHT;
-const HALF_SCREEN_HEIGHT = DEVICE_HEIGHT / 2;
-
-export function calculateScrollPositionToCenterTab(activeTabIndex: number, numberOfOpenTabs: number): number {
-  'worklet';
-
-  const scrollViewHeight =
-    Math.ceil(numberOfOpenTabs / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + 165 + 28 + (IS_IOS ? 0 : 35);
-
-  if (scrollViewHeight <= SCREEN_HEIGHT) {
-    // No need to scroll if all tabs fit on the screen
-    return 0;
-  }
-
-  const currentTabRow = Math.floor(activeTabIndex / 2);
-  const tabCenterPosition = currentTabRow * TAB_VIEW_ROW_HEIGHT + (currentTabRow - 1) * 28 + TAB_VIEW_ROW_HEIGHT / 2 + 37;
-
-  if (tabCenterPosition <= HALF_SCREEN_HEIGHT) {
-    // Scroll to top if the tab is too near to the top of the scroll view to be centered
-    return 0;
-  } else if (tabCenterPosition + HALF_SCREEN_HEIGHT >= scrollViewHeight) {
-    // Scroll to bottom if the tab is too near to the end of the scroll view to be centered
-    return scrollViewHeight - SCREEN_HEIGHT;
-  } else {
-    // Otherwise, vertically center the tab on the screen
-    return tabCenterPosition - HALF_SCREEN_HEIGHT;
-  }
 }

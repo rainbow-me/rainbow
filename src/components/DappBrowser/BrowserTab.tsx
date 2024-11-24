@@ -2,31 +2,14 @@
 import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { Freeze } from 'react-freeze';
 import { Linking, StyleSheet } from 'react-native';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  TapGestureHandler,
-  TapGestureHandlerGestureEvent,
-} from 'react-native-gesture-handler';
-import Animated, {
-  AnimatedStyle,
-  DerivedValue,
-  FadeIn,
-  SharedValue,
-  runOnUI,
-  useAnimatedGestureHandler,
-  useAnimatedProps,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { AnimatedStyle, DerivedValue, FadeIn, SharedValue, runOnUI, useAnimatedProps, withTiming } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
 import WebView, { WebViewMessageEvent, WebViewNavigation, WebViewProps } from 'react-native-webview';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import { globalColors, useColorMode } from '@/design-system';
 import { IS_DEV, IS_IOS } from '@/env';
-import { Navigation, useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
+import { useNavigation } from '@/navigation';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { Site } from '@/state/browserHistory';
 import { getDappHostname } from '@/utils/connectedApps';
@@ -38,7 +21,7 @@ import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { CloseTabButton } from './CloseTabButton';
 import { WebViewShadows } from './DappBrowserShadows';
 import DappBrowserWebview from './DappBrowserWebview';
-import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, EXTRA_WEBVIEW_HEIGHT, TAB_VIEW_COLUMN_WIDTH, TOP_INSET, WEBVIEW_HEIGHT } from './Dimensions';
+import { EXTRA_WEBVIEW_HEIGHT, TOP_INSET, WEBVIEW_HEIGHT } from './Dimensions';
 import { ErrorPage } from './ErrorPage';
 import { Homepage } from './Homepage';
 import { WebViewBorder } from './WebViewBorder';
@@ -52,22 +35,23 @@ import {
 import { handleProviderRequestApp } from './handleProviderRequest';
 import { useAnimatedTab } from './hooks/useAnimatedTab';
 import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
-import { freezeWebsite, getWebsiteMetadata, unfreezeWebsite } from './scripts';
+import { freezeWebsite, getWebsiteMetadata, hideBanners, unfreezeWebsite } from './scripts';
 import { BrowserTabProps, ScreenshotType } from './types';
 import { isValidAppStoreUrl } from './utils';
+// import { useAppSessionsStore } from '@/state/appSessions';
+// import store from '@/redux/store';
+// import { ChainId } from '@/chains/types';
+// import { toHex } from 'viem';
+// import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 
 export const BrowserTab = memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
-  const { isDarkMode } = useColorMode();
   const viewShotRef = useRef<ViewShot | null>(null);
 
   const {
-    animatedTabIndex,
     animatedWebViewBackgroundColorStyle,
     animatedWebViewStyle,
     backgroundColor,
     expensiveAnimatedWebViewStyles,
-    gestureScale,
-    gestureX,
     zIndexAnimatedStyle,
   } = useAnimatedTab({ tabId });
 
@@ -92,9 +76,9 @@ export const BrowserTab = memo(function BrowserTab({ addRecent, setLogo, setTitl
             </Animated.View>
           </ViewShot>
           <TabScreenshotContainer tabId={tabId} />
-          <WebViewBorder enabled={IS_IOS && isDarkMode} tabId={tabId} />
+          <WebViewBorder enabled={IS_IOS} tabId={tabId} />
         </Animated.View>
-        <TabGestureHandlers animatedTabIndex={animatedTabIndex} gestureScale={gestureScale} gestureX={gestureX} tabId={tabId} />
+        <CloseTabButton tabId={tabId} />
       </Animated.View>
     </WebViewShadows>
   );
@@ -289,17 +273,73 @@ const FreezableWebViewComponent = ({
     [tabId, webViewRef]
   );
 
-  const handleShouldStartLoadWithRequest = useCallback(
-    (request: { url: string }) => {
-      if (request.url.startsWith('rainbow://wc') || request.url.startsWith('https://rnbwappdotcom.app.link/')) {
-        Navigation.handleAction(Routes.NO_NEED_WC_SHEET, {});
-        activeTabRef.current?.reload();
-        return false;
+  // const addSession = useAppSessionsStore(state => state.addSession);
+
+  // const handleConnect = useCallback(async () => {
+  //   const activeTabHost = getDappHost(tabUrl);
+  //   const hostSessions = useAppSessionsStore.getState().getActiveSession({ host: activeTabHost });
+  //   const address = hostSessions?.activeSessionAddress || store.getState().settings.accountAddress;
+  //   const chainId = hostSessions?.sessions[hostSessions?.activeSessionAddress] || ChainId.mainnet;
+
+  //   addSession({
+  //     address: address as `0x${string}`,
+  //     chainId,
+  //     host: activeTabHost || '',
+  //     url: tabUrl,
+  //   });
+
+  //   activeTabRef.current?.injectJavaScript(`
+  //     // Trigger an Escape key press to hide the WC web modal
+  //     const escapeEvent = new KeyboardEvent('keydown', {
+  //       key: 'Escape',
+  //       keyCode: 27,
+  //       which: 27,
+  //       bubbles: true,
+  //       cancelable: true
+  //     });
+  //     document.dispatchEvent(escapeEvent);
+
+  //     window.ethereum.emit('accountsChanged', ['${address}']);
+  //     window.ethereum.emit('connect', { address: '${address}', chainId: '${toHex(chainId)}' });
+
+  //     true;
+  //   `);
+  // }, [activeTabRef, addSession, tabUrl]);
+
+  const handleShouldStartLoadWithRequest = useCallback((request: { url: string }) => {
+    const isAppLink = request.url.startsWith('https://apps.apple.com/app/') || request.url.startsWith('itms-appss://apps.apple.com/app/');
+    if (isAppLink) return false;
+
+    const isMetaMaskLink = request.url.startsWith('https://metamask.app.link/') || request.url.startsWith('metamask://wc');
+    const wcRegex = /^(?!https?:\/\/)[a-zA-Z0-9-_.]+:\/\/wc.*/;
+
+    // console.log('🟢 REQUEST: ', JSON.stringify(request, null, 2));
+    if (wcRegex.test(request.url) || isMetaMaskLink || request.url.startsWith('https://rnbwappdotcom.app.link/')) {
+      // Navigation.handleAction(Routes.NO_NEED_WC_SHEET, {});
+      if (request.url.startsWith('rainbow://wc') || isMetaMaskLink || request.url.startsWith('https://rnbwappdotcom.app.link/')) {
+        // handleConnect();
+        // activeTabRef.current?.reload();
+        // handleWalletConnectRequest
+        Linking.openURL(request.url);
+      } else {
+        Linking.openURL(request.url);
       }
-      return true;
-    },
-    [activeTabRef]
-  );
+      return false;
+    }
+    return true;
+  }, []);
+
+  // const handleShouldStartLoadWithRequest = useCallback(
+  //   (request: ShouldStartLoadRequest) => {
+  //     if (request.url.startsWith('rainbow://wc') || request.url.startsWith('https://rnbwappdotcom.app.link/')) {
+  //       Navigation.handleAction(Routes.NO_NEED_WC_SHEET, {});
+  //       activeTabRef.current?.reload();
+  //       return false;
+  //     }
+  //     return true;
+  //   },
+  //   [activeTabRef]
+  // );
 
   const handleOnLoadProgress = useCallback(
     ({ nativeEvent: { progress } }: { nativeEvent: { progress: number } }) => {
@@ -404,7 +444,7 @@ const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
       contentInset={{ bottom: 0, left: 0, right: 0, top: 0 }}
       decelerationRate="normal"
       fraudulentWebsiteWarningEnabled
-      injectedJavaScript={getWebsiteMetadata}
+      injectedJavaScript={getWebsiteMetadata + hideBanners}
       mediaPlaybackRequiresUserAction
       onScroll={IS_IOS ? onScrollWebView : undefined}
       onTouchEnd={IS_IOS ? onTouchEnd : undefined}
@@ -423,146 +463,7 @@ const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
 
 const TabWebView = memo(React.forwardRef(TabWebViewComponent));
 
-interface TabGestureHandlerProps {
-  animatedTabIndex: SharedValue<number>;
-  gestureScale: SharedValue<number>;
-  gestureX: SharedValue<number>;
-  tabId: string;
-}
-
-const TabGestureHandlers = ({ animatedTabIndex, gestureScale, gestureX, tabId }: TabGestureHandlerProps) => {
-  const { animatedTabUrls, currentlyBeingClosedTabIds, currentlyOpenTabIds, multipleTabsOpen, tabViewVisible } = useBrowserContext();
-  const { closeTabWorklet, toggleTabViewWorklet } = useBrowserWorkletsContext();
-
-  const tapHandlerRef = useRef();
-
-  const animatedGestureHandlerStyle = useAnimatedStyle(() => {
-    const shouldActivate = tabViewVisible.value;
-    return {
-      pointerEvents: shouldActivate ? 'auto' : 'none',
-    };
-  });
-
-  const swipeToCloseTabGestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
-    onStart: (_, ctx: { startX?: number | undefined }) => {
-      if (!tabViewVisible.value) return;
-      if (ctx.startX) {
-        ctx.startX = undefined;
-      }
-    },
-    onActive: (e, ctx: { startX?: number | undefined }) => {
-      if (!tabViewVisible.value) return;
-
-      if (ctx.startX === undefined) {
-        gestureScale.value = withTiming(1.1, TIMING_CONFIGS.tabPressConfig);
-        ctx.startX = e.absoluteX;
-      }
-
-      const xDelta = e.absoluteX - ctx.startX;
-      gestureX.value = xDelta;
-    },
-    onFail: (_, ctx: { startX?: number | undefined }) => {
-      gestureScale.value = withTiming(1, TIMING_CONFIGS.tabPressConfig);
-      gestureX.value = withTiming(0, TIMING_CONFIGS.tabPressConfig);
-      ctx.startX = undefined;
-    },
-    onEnd: (e, ctx: { startX?: number | undefined }) => {
-      const xDelta = e.absoluteX - (ctx.startX || 0);
-
-      const isBeyondDismissThreshold = xDelta < -(TAB_VIEW_COLUMN_WIDTH / 2 + 20) && e.velocityX <= 0;
-      const isFastLeftwardSwipe = e.velocityX < -500;
-      const url = animatedTabUrls.value[tabId] || RAINBOW_HOME;
-      const isEmptyState = !multipleTabsOpen.value && url === RAINBOW_HOME;
-
-      const shouldDismiss = tabViewVisible.value && !isEmptyState && (isBeyondDismissThreshold || isFastLeftwardSwipe);
-
-      if (shouldDismiss) {
-        const xDestination = -Math.min(Math.max(DEVICE_WIDTH, DEVICE_WIDTH + Math.abs(e.velocityX * 0.2)), 1200);
-        // Store the tab's index before modifying currentlyOpenTabIds, so we can pass it along to closeTabWorklet()
-        const storedTabIndex = animatedTabIndex.value;
-
-        // Initiate tab closing logic
-        currentlyOpenTabIds.modify(openTabs => {
-          const index = openTabs.indexOf(tabId);
-          if (index !== -1) {
-            currentlyBeingClosedTabIds.modify(closingTabs => {
-              closingTabs.push(tabId);
-              return closingTabs;
-            });
-            openTabs.splice(index, 1);
-          }
-          return openTabs;
-        });
-
-        gestureX.value = withTiming(xDestination, TIMING_CONFIGS.tabPressConfig, () => {
-          // Ensure the tab remains hidden after being swiped off screen (until the tab is destroyed)
-          gestureScale.value = 0;
-
-          // Because the animation is complete we know the tab is off screen and can be safely destroyed
-          currentlyBeingClosedTabIds.modify(closingTabs => {
-            const index = closingTabs.indexOf(tabId);
-            if (index !== -1) {
-              closingTabs.splice(index, 1);
-            }
-            return closingTabs;
-          });
-          closeTabWorklet({ tabId, tabIndex: storedTabIndex });
-        });
-      } else {
-        gestureScale.value = withTiming(1, TIMING_CONFIGS.tabPressConfig);
-        gestureX.value = withTiming(0, TIMING_CONFIGS.tabPressConfig);
-        ctx.startX = undefined;
-      }
-    },
-  });
-
-  const pressTabGestureHandler = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
-    onActive: () => {
-      if (tabViewVisible.value) {
-        toggleTabViewWorklet(animatedTabIndex.value);
-      }
-    },
-    onCancel: () => {
-      return false;
-    },
-    onEnd: () => {
-      return false;
-    },
-  });
-
-  return (
-    <>
-      <Animated.View style={[styles.gestureHandlersContainer, animatedGestureHandlerStyle]}>
-        <PanGestureHandler
-          activeOffsetX={[-2, 2]}
-          failOffsetY={[-12, 12]}
-          maxPointers={1}
-          onGestureEvent={swipeToCloseTabGestureHandler}
-          waitFor={tapHandlerRef}
-        >
-          <Animated.View style={styles.gestureHandlersContainer}>
-            <TapGestureHandler
-              maxDeltaX={10}
-              maxDeltaY={10}
-              onGestureEvent={pressTabGestureHandler}
-              ref={tapHandlerRef}
-              shouldCancelWhenOutside
-            >
-              <Animated.View style={styles.gestureHandlersContainer} />
-            </TapGestureHandler>
-          </Animated.View>
-        </PanGestureHandler>
-      </Animated.View>
-      <CloseTabButton animatedTabIndex={animatedTabIndex} gestureScale={gestureScale} gestureX={gestureX} tabId={tabId} />
-    </>
-  );
-};
-
 const styles = StyleSheet.create({
-  gestureHandlersContainer: {
-    height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
-    width: DEVICE_WIDTH,
-  },
   screenshotContainerStyle: {
     height: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
     left: 0,
@@ -579,7 +480,6 @@ const styles = StyleSheet.create({
   webViewContainer: {
     height: WEBVIEW_HEIGHT,
     overflow: 'visible',
-    pointerEvents: 'box-none',
     position: 'absolute',
     top: TOP_INSET,
     width: DEVICE_WIDTH,
@@ -594,7 +494,7 @@ const styles = StyleSheet.create({
   },
   webViewStyle: {
     backgroundColor: 'transparent',
-    borderCurve: 'continuous',
+    flex: 0,
     height: WEBVIEW_HEIGHT,
     maxHeight: WEBVIEW_HEIGHT,
     minHeight: WEBVIEW_HEIGHT,
@@ -605,37 +505,4 @@ const styles = StyleSheet.create({
     maxHeight: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
     minHeight: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
   },
-  // Need to fix some shadow performance issues - disabling shadows for now
-  // webViewContainerShadowLarge: IS_IOS
-  //   ? {
-  //       shadowColor: globalColors.grey100,
-  //       shadowOffset: { width: 0, height: 8 },
-  //       shadowOpacity: 0.1,
-  //       shadowRadius: 12,
-  //     }
-  //   : {},
-  // webViewContainerShadowLargeDark: IS_IOS
-  //   ? {
-  //       shadowColor: globalColors.grey100,
-  //       shadowOffset: { width: 0, height: 8 },
-  //       shadowOpacity: 0.3,
-  //       shadowRadius: 12,
-  //     }
-  //   : {},
-  // webViewContainerShadowSmall: IS_IOS
-  //   ? {
-  //       shadowColor: globalColors.grey100,
-  //       shadowOffset: { width: 0, height: 2 },
-  //       shadowOpacity: 0.04,
-  //       shadowRadius: 3,
-  //     }
-  //   : {},
-  // webViewContainerShadowSmallDark: IS_IOS
-  //   ? {
-  //       shadowColor: globalColors.grey100,
-  //       shadowOffset: { width: 0, height: 2 },
-  //       shadowOpacity: 0.2,
-  //       shadowRadius: 3,
-  //     }
-  //   : {},
 });

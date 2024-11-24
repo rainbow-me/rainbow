@@ -4,7 +4,7 @@ import { Easing, interpolate, runOnJS, useSharedValue, withSpring, withTiming } 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { clamp } from '@/__swaps__/utils/swaps';
-import { TabViewGestureStates, useBrowserContext } from '../BrowserContext';
+import { useBrowserContext } from '../BrowserContext';
 import {
   MULTI_TAB_SCALE,
   SINGLE_TAB_SCALE,
@@ -14,14 +14,8 @@ import {
   WEBVIEW_HEIGHT,
 } from '../Dimensions';
 import { RAINBOW_HOME } from '../constants';
+import { TabViewGestureStates } from '../types';
 import { generateUniqueIdWorklet } from '../utils';
-
-export enum GestureProgressThresholds {
-  CENTER_TAB_SCALE_END = 80,
-  HIDE_SURROUNDING_TABS = 70,
-  LOCK_SURROUNDING_TABS_SCALE = 50,
-  SKIP_SURROUNDING_TABS_ANIMATION = 5,
-}
 
 export const HIDE_SURROUNDING_TABS_X_OFFSET = 100;
 export const TAB_VIEW_GESTURE_HOLD_THRESHOLD_MS = 500;
@@ -32,7 +26,14 @@ const VELOCITY_FACTOR_Y = 0.25;
 const VELOCITY_THRESHOLD_X = 300;
 const VELOCITY_THRESHOLD_Y = 400;
 
-export const useTabViewGestures = () => {
+export enum GestureProgressThresholds {
+  CENTER_TAB_SCALE_END = 80,
+  HIDE_SURROUNDING_TABS = 70,
+  LOCK_SURROUNDING_TABS_SCALE = 50,
+  SKIP_SURROUNDING_TABS_ANIMATION = 5,
+}
+
+export const useTabSwitchGestures = () => {
   const {
     activeTabId,
     animatedActiveTabIndex,
@@ -54,7 +55,7 @@ export const useTabViewGestures = () => {
 
   const setActiveTabIndex = useBrowserStore(state => state.setActiveTabIndex);
 
-  const tabViewGestureHandler = useMemo(
+  const tabSwitchGestureHandler = useMemo(
     () =>
       Gesture.Pan()
         .onChange(e => {
@@ -286,5 +287,5 @@ export const useTabViewGestures = () => {
     ]
   );
 
-  return { tabViewGestureHandler };
+  return { tabSwitchGestureHandler };
 };

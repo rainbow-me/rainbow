@@ -1,19 +1,19 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { SharedValue, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Box, TextIcon, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { deviceUtils } from '@/utils';
 import { AnimatedBlurView } from '../AnimatedComponents/AnimatedBlurView';
-import { TIMING_CONFIGS } from '../animations/animationConfigs';
-import { TabViewGestureStates, useBrowserContext } from './BrowserContext';
-import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
+import { useBrowserContext } from './BrowserContext';
 import { TAB_VIEW_COLUMN_WIDTH } from './Dimensions';
+import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { RAINBOW_HOME } from './constants';
+import { TabId, TabViewGestureStates } from './types';
 
 export const X_BUTTON_SIZE = 22;
 export const X_BUTTON_PADDING = 6;
+export const X_BUTTON_TAPPABLE_AREA = X_BUTTON_SIZE + X_BUTTON_PADDING * 2;
 
 const INVERTED_WEBVIEW_SCALE = deviceUtils.dimensions.width / TAB_VIEW_COLUMN_WIDTH;
 const SINGLE_TAB_INVERTED_WEBVIEW_SCALE = 10 / 7;
@@ -24,19 +24,11 @@ const SCALE_ADJUSTED_X_BUTTON_PADDING = X_BUTTON_PADDING * INVERTED_WEBVIEW_SCAL
 const SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB = X_BUTTON_SIZE * SINGLE_TAB_INVERTED_WEBVIEW_SCALE;
 const SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB = X_BUTTON_PADDING * SINGLE_TAB_INVERTED_WEBVIEW_SCALE;
 
-interface CloseTabButtonProps {
-  animatedTabIndex: SharedValue<number>;
-  gestureScale: SharedValue<number>;
-  gestureX: SharedValue<number>;
-  tabId: string;
-}
-
-export const CloseTabButton = ({ animatedTabIndex, gestureScale, gestureX, tabId }: CloseTabButtonProps) => {
+export const CloseTabButton = ({ tabId }: { tabId: TabId }) => {
   const {
     animatedActiveTabIndex,
     animatedMultipleTabsOpen,
     animatedTabUrls,
-    currentlyBeingClosedTabIds,
     currentlyOpenTabIds,
     isSwitchingTabs,
     multipleTabsOpen,
@@ -46,7 +38,6 @@ export const CloseTabButton = ({ animatedTabIndex, gestureScale, gestureX, tabId
     tabViewProgress,
     tabViewVisible,
   } = useBrowserContext();
-  const { closeTabWorklet } = useBrowserWorkletsContext();
   const { isDarkMode } = useColorMode();
 
   const closeButtonStyle = useAnimatedStyle(() => {
@@ -107,118 +98,78 @@ export const CloseTabButton = ({ animatedTabIndex, gestureScale, gestureX, tabId
     };
   });
 
-  const closeTab = useCallback(() => {
-    'worklet';
-    // Store the tab's index before modifying currentlyOpenTabIds, so we can pass it along to closeTabWorklet()
-    const storedTabIndex = animatedTabIndex.value;
-
-    const isOnlyOneTabOpen = currentlyOpenTabIds.value.length === 1;
-    const isTabInLeftColumn = storedTabIndex % 2 === 0 && !isOnlyOneTabOpen;
-    const xDestination = isTabInLeftColumn ? -deviceUtils.dimensions.width / 1.5 : -deviceUtils.dimensions.width;
-
-    // Initiate tab closing logic
-    currentlyOpenTabIds.modify(openTabs => {
-      const index = openTabs.indexOf(tabId);
-      if (index !== -1) {
-        currentlyBeingClosedTabIds.modify(closingTabs => {
-          closingTabs.push(tabId);
-          return closingTabs;
-        });
-        openTabs.splice(index, 1);
-      }
-      return openTabs;
-    });
-
-    gestureX.value = withTiming(xDestination, TIMING_CONFIGS.tabPressConfig, () => {
-      // Ensure the tab remains hidden after being swiped off screen (until the tab is destroyed)
-      gestureScale.value = 0;
-
-      // Because the animation is complete we know the tab is off screen and can be safely destroyed
-      currentlyBeingClosedTabIds.modify(closingTabs => {
-        const index = closingTabs.indexOf(tabId);
-        if (index !== -1) {
-          closingTabs.splice(index, 1);
-        }
-        return closingTabs;
-      });
-      closeTabWorklet({ tabId, tabIndex: storedTabIndex });
-    });
-  }, [animatedTabIndex, closeTabWorklet, currentlyBeingClosedTabIds, currentlyOpenTabIds, gestureScale, gestureX, tabId]);
-
   return (
     <Animated.View style={[styles.containerStyle, containerStyle]}>
-      <GestureHandlerButton disableButtonPressWrapper onPressWorklet={closeTab} pointerEvents="auto" style={styles.buttonPressWrapperStyle}>
-        <Box as={Animated.View} position="absolute" style={singleTabStyle}>
-          {IS_IOS ? (
+      <Box as={Animated.View} position="absolute" style={singleTabStyle}>
+        {IS_IOS ? (
+          <Box
+            as={AnimatedBlurView}
+            blurAmount={10}
+            blurType={isDarkMode ? 'materialDark' : 'materialLight'}
+            style={[styles.closeButtonStyle, closeButtonStyle, { borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB / 2 }]}
+          >
             <Box
-              as={AnimatedBlurView}
-              blurAmount={10}
-              blurType={isDarkMode ? 'materialDark' : 'materialLight'}
-              style={[styles.closeButtonStyle, closeButtonStyle, { borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB / 2 }]}
-            >
-              <Box
-                background="fillSecondary"
-                borderRadius={SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB / 2}
-                height="full"
-                position="absolute"
-                width="full"
-              />
-              <XIcon buttonSize={SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB} multipleTabsOpen={false} />
-            </Box>
-          ) : (
+              background="fillSecondary"
+              borderRadius={SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB / 2}
+              height="full"
+              position="absolute"
+              width="full"
+            />
+            <XIcon buttonSize={SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB} multipleTabsOpen={false} />
+          </Box>
+        ) : (
+          <Box
+            as={Animated.View}
+            background="fill"
+            style={[
+              styles.closeButtonStyle,
+              closeButtonStyle,
+              {
+                height: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB,
+                width: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB,
+                borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE / 2,
+              },
+            ]}
+          >
+            <XIcon buttonSize={SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB} multipleTabsOpen={false} />
+          </Box>
+        )}
+      </Box>
+      <Box as={Animated.View} position="absolute" style={multipleTabsStyle}>
+        {IS_IOS ? (
+          <Box
+            as={AnimatedBlurView}
+            blurAmount={10}
+            blurType={isDarkMode ? 'materialDark' : 'materialLight'}
+            style={[styles.closeButtonStyle, closeButtonStyle, { borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE / 2 }]}
+          >
             <Box
-              as={Animated.View}
-              background="fill"
-              style={[
-                styles.closeButtonStyle,
-                closeButtonStyle,
-                {
-                  height: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB,
-                  width: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB,
-                  borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE / 2,
-                },
-              ]}
-            >
-              <XIcon buttonSize={SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB} multipleTabsOpen={false} />
-            </Box>
-          )}
-        </Box>
-        <Box as={Animated.View} position="absolute" style={multipleTabsStyle}>
-          {IS_IOS ? (
-            <Box
-              as={AnimatedBlurView}
-              blurAmount={10}
-              blurType={isDarkMode ? 'materialDark' : 'materialLight'}
-              style={[styles.closeButtonStyle, closeButtonStyle, { borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE / 2 }]}
-            >
-              <Box
-                background="fillSecondary"
-                borderRadius={SCALE_ADJUSTED_X_BUTTON_SIZE / 2}
-                height="full"
-                position="absolute"
-                width="full"
-              />
-              <XIcon buttonSize={SCALE_ADJUSTED_X_BUTTON_SIZE} multipleTabsOpen={true} />
-            </Box>
-          ) : (
-            <Box
-              as={Animated.View}
-              background="surfaceSecondary"
-              style={[
-                styles.closeButtonStyle,
-                closeButtonStyle,
-                {
-                  height: SCALE_ADJUSTED_X_BUTTON_SIZE,
-                  width: SCALE_ADJUSTED_X_BUTTON_SIZE,
-                  borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE / 2,
-                },
-              ]}
-            >
-              <XIcon buttonSize={SCALE_ADJUSTED_X_BUTTON_SIZE} multipleTabsOpen={true} />
-            </Box>
-          )}
-        </Box>
-      </GestureHandlerButton>
+              background="fillSecondary"
+              borderRadius={SCALE_ADJUSTED_X_BUTTON_SIZE / 2}
+              height="full"
+              position="absolute"
+              width="full"
+            />
+            <XIcon buttonSize={SCALE_ADJUSTED_X_BUTTON_SIZE} multipleTabsOpen={true} />
+          </Box>
+        ) : (
+          <Box
+            as={Animated.View}
+            background="surfaceSecondary"
+            style={[
+              styles.closeButtonStyle,
+              closeButtonStyle,
+              {
+                height: SCALE_ADJUSTED_X_BUTTON_SIZE,
+                width: SCALE_ADJUSTED_X_BUTTON_SIZE,
+                borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE / 2,
+              },
+            ]}
+          >
+            <XIcon buttonSize={SCALE_ADJUSTED_X_BUTTON_SIZE} multipleTabsOpen={true} />
+          </Box>
+        )}
+      </Box>
     </Animated.View>
   );
 };
@@ -238,18 +189,13 @@ const XIcon = ({ buttonSize, multipleTabsOpen }: { buttonSize: number; multipleT
 };
 
 const styles = StyleSheet.create({
-  buttonPressWrapperStyle: {
-    alignItems: 'center',
-    height: '100%',
-    justifyContent: 'center',
-    width: '100%',
-    zIndex: 99999999999,
-  },
   closeButtonStyle: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   containerStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
     position: 'absolute',
     zIndex: 99999999999,
   },

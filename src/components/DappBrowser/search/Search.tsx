@@ -14,7 +14,7 @@ import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { BOTTOM_BAR_HEIGHT } from '../Dimensions';
 import { GOOGLE_SEARCH_URL, HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, HTTPS } from '../constants';
-import { useTabViewGestures } from '../hooks/useTabViewGestures';
+import { useTabSwitchGestures } from '../hooks/useTabSwitchGestures';
 import { AccountIcon } from '../search-input/AccountIcon';
 import { SearchInput } from '../search-input/SearchInput';
 import { TabButton } from '../search-input/TabButton';
@@ -37,7 +37,7 @@ export const Search = () => {
   const { inputRef, isFocused, keyboardHeight, searchQuery, searchResults } = useSearchContext();
   const { isDarkMode } = useColorMode();
 
-  const { tabViewGestureHandler } = useTabViewGestures();
+  const { tabSwitchGestureHandler } = useTabSwitchGestures();
 
   const barStyle = useAnimatedStyle(() => {
     const opacity = 1 - tabViewProgress.value / 75;
@@ -97,8 +97,8 @@ export const Search = () => {
   );
 
   const handleUrlSubmit = useCallback(
-    ({ shouldBlur, updatedUrl }: { shouldBlur: boolean; updatedUrl: string }) => {
-      let newUrl = updatedUrl;
+    ({ shouldBlur, url }: { shouldBlur: boolean; url: string }) => {
+      let newUrl = url;
 
       if (!shouldBlur && searchQuery.value && searchResults.value.length > 0 && searchResults.value[0].url) {
         newUrl = searchResults.value[0].url;
@@ -118,15 +118,15 @@ export const Search = () => {
 
   const onAddressInputPressWorklet = useCallback(() => {
     'worklet';
-    dispatchCommand(inputRef, 'focus');
-    searchViewProgress.value = withSpring(100, SPRING_CONFIGS.snappierSpringConfig);
     isFocused.value = true;
+    searchViewProgress.value = withSpring(100, SPRING_CONFIGS.snappierSpringConfig);
+    dispatchCommand(inputRef, 'focus');
   }, [inputRef, isFocused, searchViewProgress]);
 
   const onBlurWorklet = useCallback(() => {
     'worklet';
-    searchViewProgress.value = withSpring(0, SPRING_CONFIGS.snappierSpringConfig);
     isFocused.value = false;
+    searchViewProgress.value = withSpring(0, SPRING_CONFIGS.snappierSpringConfig);
     searchQuery.value = '';
   }, [isFocused, searchQuery, searchViewProgress]);
 
@@ -139,9 +139,9 @@ export const Search = () => {
           { backgroundColor: isDarkMode ? HOMEPAGE_BACKGROUND_COLOR_DARK : HOMEPAGE_BACKGROUND_COLOR_LIGHT },
         ]}
       >
-        <SearchResults goToUrl={url => handleUrlSubmit({ shouldBlur: true, updatedUrl: url })} />
+        <SearchResults goToUrl={url => handleUrlSubmit({ shouldBlur: true, url })} />
       </Animated.View>
-      <GestureDetector gesture={tabViewGestureHandler}>
+      <GestureDetector gesture={tabSwitchGestureHandler}>
         <Animated.View style={[bottomBarStyle, styles.bottomBarStyle]}>
           <Animated.View style={[styles.barStyle, barStyle, expensiveBarStyles]}>
             <Animated.View style={[styles.cover, tapToExpandBottomBarStyle]}>
@@ -157,7 +157,7 @@ export const Search = () => {
                 inputRef={inputRef}
                 onBlurWorklet={onBlurWorklet}
                 onPressWorklet={onAddressInputPressWorklet}
-                onSubmitEditing={url => handleUrlSubmit({ shouldBlur: false, updatedUrl: url })}
+                onSubmitEditing={url => handleUrlSubmit({ shouldBlur: false, url })}
               />
             </View>
             <TabButton inputRef={inputRef} toggleTabViewWorklet={toggleTabViewWorklet} />
@@ -172,7 +172,7 @@ export const Search = () => {
 const KeyboardHeightSetter = () => {
   const { isFocused, keyboardHeight } = useSearchContext();
 
-  const isFocusedState = useSharedValueState(isFocused);
+  const isFocusedState = useSharedValueState(isFocused, { initialValue: false });
   const trueKeyboardHeight = useKeyboardHeight({ shouldListen: isFocusedState });
 
   useSyncSharedValue({
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     pointerEvents: 'box-none',
     position: 'absolute',
     width: DEVICE_WIDTH,
-    zIndex: 10000,
+    zIndex: 30000,
   },
   cover: {
     bottom: 0,
@@ -219,6 +219,7 @@ const styles = StyleSheet.create({
     height: '100%',
     position: 'absolute',
     width: '100%',
+    zIndex: 20000,
   },
   searchInputContainer: {
     flex: 1,

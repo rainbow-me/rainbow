@@ -36,7 +36,7 @@ import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { BrowserButtonShadows } from '../DappBrowserShadows';
 import { SEARCH_BAR_BORDER_RADIUS, SEARCH_BAR_HEIGHT, SEARCH_BAR_WIDTH } from '../Dimensions';
 import { ToolbarIcon } from '../ToolbarIcon';
-import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
+import { HOMEPAGE_BACKGROUND_COLOR_DARK, RAINBOW_HOME } from '../constants';
 import { useSearchContext } from '../search/SearchContext';
 import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
 
@@ -286,11 +286,11 @@ export const SearchInput = memo(function SearchInput({
 
   return (
     <BrowserButtonShadows
-      backgroundColor={isDarkMode ? HOMEPAGE_BACKGROUND_COLOR_DARK : HOMEPAGE_BACKGROUND_COLOR_LIGHT}
+      backgroundColor={isDarkMode ? HOMEPAGE_BACKGROUND_COLOR_DARK : undefined}
       borderRadius={SEARCH_BAR_BORDER_RADIUS}
       hideDarkModeShadows
     >
-      <Box as={Animated.View} justifyContent="center" style={pointerEventsStyle}>
+      <Animated.View style={pointerEventsStyle}>
         <AddressBar
           formattedUrlValue={formattedUrlValue}
           inputRef={inputRef}
@@ -313,7 +313,7 @@ export const SearchInput = memo(function SearchInput({
             <ToolbarIcon color="label" icon="􀆄" onPress={stopLoading} side="right" size="icon 16px" weight="heavy" />
           </Animated.View>
         </Animated.View>
-      </Box>
+      </Animated.View>
     </BrowserButtonShadows>
   );
 });

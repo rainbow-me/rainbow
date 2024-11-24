@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, { AnimatedStyle, useAnimatedStyle } from 'react-native-reanimated';
 import { globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
@@ -99,6 +99,7 @@ export const WebViewShadows = ({
   return (
     <Animated.View
       style={[
+        styles.boxNone,
         isDarkMode
           ? {}
           : {
@@ -113,6 +114,7 @@ export const WebViewShadows = ({
     >
       <Animated.View
         style={[
+          styles.boxNone,
           isDarkMode
             ? {}
             : {
@@ -129,3 +131,9 @@ export const WebViewShadows = ({
     </Animated.View>
   );
 };
+
+const styles = StyleSheet.create({
+  boxNone: {
+    pointerEvents: 'box-none',
+  },
+});

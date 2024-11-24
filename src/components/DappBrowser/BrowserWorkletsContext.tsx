@@ -3,21 +3,10 @@ import { runOnJS, useAnimatedReaction, useSharedValue, withSpring } from 'react-
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { deepEqualWorklet } from '@/worklets/comparisons';
-import { TabViewGestureStates, useBrowserContext, useBrowserTabBarContext } from './BrowserContext';
+import { useBrowserContext, useBrowserTabBarContext } from './BrowserContext';
 import { RAINBOW_HOME } from './constants';
-import { ScreenshotType, TabOperation } from './types';
+import { BrowserWorkletsContextType, ScreenshotType, TabOperation, TabViewGestureStates } from './types';
 import { generateUniqueIdWorklet, normalizeUrlWorklet } from './utils';
-
-type NewTabOptions = { newTabId?: string; newTabUrl?: string };
-
-export interface BrowserWorkletsContextType {
-  closeAllTabsWorklet: () => void;
-  closeTabWorklet: ({ tabId, tabIndex }: { tabId: string; tabIndex: number }) => void;
-  newTabWorklet: (options?: NewTabOptions) => void;
-  setScreenshotDataWorklet: (screenshotData: ScreenshotType) => void;
-  toggleTabViewWorklet: (activeIndex?: number) => void;
-  updateTabUrlWorklet: ({ tabId, url }: { tabId: string; url: string }) => void;
-}
 
 export const BrowserWorkletsContext = createContext<BrowserWorkletsContextType | undefined>(undefined);
 
@@ -73,14 +62,16 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
       const willTabViewBecomeVisible = !tabViewVisible.value;
       const tabIndexProvided = activeIndex !== undefined;
       const indexToMakeActive = Math.abs(tabIndexProvided ? activeIndex : animatedActiveTabIndex.value);
+      const newActiveTabId = currentlyOpenTabIds.value[indexToMakeActive];
 
       if (!willTabViewBecomeVisible) {
-        if (currentlyOpenTabIds.value[indexToMakeActive]) {
+        if (newActiveTabId) {
           animatedActiveTabIndex.value = indexToMakeActive;
           runOnJS(setActiveTabIndex)(indexToMakeActive);
         } else {
-          animatedActiveTabIndex.value = currentlyOpenTabIds.value.length - 1;
-          runOnJS(setActiveTabIndex)(currentlyOpenTabIds.value.length - 1);
+          const fallbackIndex = currentlyOpenTabIds.value.length - 1;
+          animatedActiveTabIndex.value = fallbackIndex;
+          runOnJS(setActiveTabIndex)(fallbackIndex);
         }
       }
 

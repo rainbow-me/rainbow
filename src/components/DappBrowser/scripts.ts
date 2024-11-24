@@ -170,3 +170,30 @@ export const unfreezeWebsite = `(function() {
       element.removeAttribute('data-frozen-animation-name');
     });
   })();`;
+
+export const hideBanners = `(function () {
+    // Only run on Uniswap
+    if (!window.location.hostname.includes('uniswap.org')) {
+      return;
+    }
+  
+    const observer = new MutationObserver(() => {
+      const bannerCloseButton = document.querySelector('[data-testid="mobile-promo-banner-close-button"]');
+      if (bannerCloseButton) {
+        const banner = bannerCloseButton.parentElement;
+        if (banner?.parentElement) {
+          banner.parentElement.style.display = 'none';
+          observer.disconnect();
+        }
+      }
+    });
+  
+    // Observe changes to catch React mounting
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  
+    // Clean up after 3 seconds if not found
+    setTimeout(() => observer.disconnect(), 3000);
+  })()`;

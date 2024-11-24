@@ -1,7 +1,8 @@
 import { BlurView } from '@react-native-community/blur';
 import React from 'react';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
-import { Bleed, Box, BoxProps, Inline, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { HapticType } from 'react-native-turbo-haptics';
+import { Bleed, Box, BoxProps, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
@@ -11,11 +12,12 @@ import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { position } from '@/styles';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { clamp, opacity } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from './BrowserContext';
-import { BrowserWorkletsContextType, useBrowserWorkletsContext } from './BrowserWorkletsContext';
+import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { BrowserButtonShadows } from './DappBrowserShadows';
+import { BrowserWorkletsContextType } from './types';
 
 export const TabViewToolbar = () => {
   const { extraWebViewHeight, tabViewProgress, tabViewVisible } = useBrowserContext();
@@ -23,7 +25,7 @@ export const TabViewToolbar = () => {
 
   const barStyle = useAnimatedStyle(() => {
     return {
-      opacity: tabViewProgress.value / 75,
+      opacity: clamp(tabViewProgress.value / 75, 0, 1),
       pointerEvents: tabViewVisible?.value ? 'box-none' : 'none',
       transform: [
         {
@@ -44,7 +46,7 @@ export const TabViewToolbar = () => {
       paddingTop="20px"
       pointerEvents="box-none"
       position="absolute"
-      style={[{ height: TAB_BAR_HEIGHT + 86, zIndex: 10000 }]}
+      style={{ height: TAB_BAR_HEIGHT + 86, zIndex: 10000 }}
       width={{ custom: DEVICE_WIDTH }}
     >
       <Box
@@ -52,9 +54,7 @@ export const TabViewToolbar = () => {
         style={[{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }, barStyle]}
         width="full"
       >
-        <Inline space={{ custom: 14 }}>
-          <NewTabButton newTabWorklet={newTabWorklet} />
-        </Inline>
+        <NewTabButton newTabWorklet={newTabWorklet} />
         <DoneButton toggleTabViewWorklet={toggleTabViewWorklet} />
       </Box>
     </Box>
@@ -77,6 +77,8 @@ const DoneButton = ({ toggleTabViewWorklet }: { toggleTabViewWorklet: (activeInd
 
 type BaseButtonProps = {
   children?: React.ReactNode;
+  disableHaptics?: boolean;
+  hapticType?: HapticType;
   icon?: string;
   iconColor?: TextColor;
   iconSize?: TextSize;
@@ -91,6 +93,8 @@ type BaseButtonProps = {
 
 const BaseButton = ({
   children,
+  disableHaptics = false,
+  hapticType,
   icon,
   iconColor = 'labelSecondary',
   iconSize = 'icon 17px',
@@ -114,6 +118,8 @@ const BaseButton = ({
     <BrowserButtonShadows lightShadows={lightShadows}>
       <Bleed space="8px">
         <GestureHandlerButton
+          disableHaptics={disableHaptics}
+          hapticType={hapticType}
           onPressJS={onPress}
           onPressWorklet={() => {
             'worklet';

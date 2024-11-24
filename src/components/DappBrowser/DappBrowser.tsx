@@ -1,13 +1,7 @@
 import React, { memo, useEffect } from 'react';
 import { InteractionManager, StyleSheet } from 'react-native';
-import Animated, {
-  interpolateColor,
-  runOnJS,
-  useAnimatedProps,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useDerivedValue,
-} from 'react-native-reanimated';
+import { GestureDetector } from 'react-native-gesture-handler';
+import Animated, { interpolateColor, runOnJS, useAnimatedReaction, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Page } from '@/components/layout';
 import { Box, globalColors, useColorMode } from '@/design-system';
@@ -16,18 +10,18 @@ import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { useNavigation } from '@/navigation';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserHistoryStore } from '@/state/browserHistory';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { BrowserContextProvider, TabViewGestureStates, useBrowserContext } from './BrowserContext';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
 import { BrowserTab } from './BrowserTab';
 import { BrowserWorkletsContextProvider, useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { ProgressBar } from './ProgressBar';
 import { TabViewToolbar } from './TabViewToolbar';
-import { calculateScrollPositionToCenterTab, useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTriggers';
-import { useSmoothScrollView } from './hooks/useSmoothScrollView';
+import { useBrowserScrollView } from './hooks/useBrowserScrollView';
+import { useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTriggers';
 import { pruneScreenshots } from './screenshots';
 import { Search } from './search/Search';
 import { SearchContextProvider } from './search/SearchContext';
-import { AnimatedTabUrls } from './types';
+import { AnimatedTabUrls, TabViewGestureStates } from './types';
 import { generateUniqueIdWorklet } from './utils';
 
 export type DappBrowserParams =
@@ -43,12 +37,7 @@ type RouteParams = {
 export const DappBrowser = () => {
   const { isDarkMode } = useColorMode();
   return (
-    <Box
-      as={Page}
-      height="full"
-      style={[isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight, styles.overflowHidden]}
-      width="full"
-    >
+    <Box as={Page} height="full" style={[isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight]} width="full">
       <BrowserContextProvider>
         <BrowserWorkletsContextProvider>
           <DappBrowserComponent />
@@ -135,31 +124,24 @@ const TabViewBackground = () => {
 };
 
 const TabViewScrollView = ({ children }: { children: React.ReactNode }) => {
-  const { animatedActiveTabIndex, currentlyOpenTabIds, scrollViewRef, tabViewVisible } = useBrowserContext();
-  const { jitterCorrection, scrollViewHeight, smoothScrollHandler } = useSmoothScrollView();
-
-  const scrollEnabledProp = useAnimatedProps(() => ({ scrollEnabled: tabViewVisible.value }));
-  const scrollViewStyle = useAnimatedStyle(() => ({ height: scrollViewHeight.value, transform: [{ translateY: jitterCorrection.value }] }));
-
-  useEffect(() => {
-    scrollViewRef.current?.scrollTo({
-      x: 0,
-      y: calculateScrollPositionToCenterTab(animatedActiveTabIndex.value, currentlyOpenTabIds.value.length),
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { scrollViewOffset, scrollViewRef } = useBrowserContext();
+  const { gestureManager, gestureManagerStyle, scrollEnabledProp, scrollViewContainerStyle, scrollViewStyle } = useBrowserScrollView();
 
   return (
-    <Animated.ScrollView
-      animatedProps={scrollEnabledProp}
-      onScroll={smoothScrollHandler}
-      pinchGestureEnabled={false}
-      ref={scrollViewRef}
-      showsVerticalScrollIndicator={false}
-      testID="browser-screen"
-    >
-      <Animated.View style={[styles.scrollViewHeight, scrollViewStyle]}>{children}</Animated.View>
-    </Animated.ScrollView>
+    <Animated.View style={[styles.scrollViewContainer, gestureManagerStyle]} testID="browser-screen">
+      {children}
+      <GestureDetector gesture={gestureManager}>
+        <Animated.ScrollView
+          animatedProps={scrollEnabledProp}
+          scrollViewOffset={scrollViewOffset}
+          ref={scrollViewRef}
+          showsVerticalScrollIndicator={false}
+          style={[styles.scrollView, scrollViewContainerStyle]}
+        >
+          <Animated.View style={[styles.scrollViewHeight, scrollViewStyle]} />
+        </Animated.ScrollView>
+      </GestureDetector>
+    </Animated.View>
   );
 };
 
@@ -194,18 +176,30 @@ const TabViewContent = () => {
 };
 
 const styles = StyleSheet.create({
-  overflowHidden: {
-    overflow: 'hidden',
-  },
   rootViewBackground: {
     backgroundColor: globalColors.grey100,
     flex: 1,
+    position: 'absolute',
   },
   rootViewBackgroundLight: {
     backgroundColor: '#F7F7F9',
     flex: 1,
+    position: 'absolute',
+  },
+  scrollView: {
+    flex: 1,
+    height: DEVICE_HEIGHT,
+    position: 'absolute',
+    width: DEVICE_WIDTH,
+    zIndex: 10000,
+  },
+  scrollViewContainer: {
+    height: DEVICE_HEIGHT,
+    position: 'absolute',
+    width: DEVICE_WIDTH,
   },
   scrollViewHeight: {
+    height: DEVICE_HEIGHT,
     pointerEvents: 'box-none',
     width: DEVICE_WIDTH,
   },

@@ -16,6 +16,7 @@ import { useBrowserContext } from '../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
 
 export const AccountIcon = React.memo(function AccountIcon() {
+  // return <View style={{ backgroundColor: 'rgba(20, 20, 20, 1)', borderRadius: 22, height: 44, left: -8, width: 44 }} />;
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const { isDarkMode } = useColorMode();
