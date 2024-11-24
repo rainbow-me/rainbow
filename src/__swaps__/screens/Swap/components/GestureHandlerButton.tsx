@@ -32,6 +32,7 @@ export type GestureHandlerButtonProps = {
   onPressStartWorklet?: (e?: GestureStateChangeEvent<TapGestureHandlerEventPayload>) => void;
   onPressWorklet?: (e?: GestureStateChangeEvent<TapGestureHandlerEventPayload>) => void;
   pointerEvents?: ViewProps['pointerEvents'];
+  requireExternalGestureToFail?: MutableRefObject<GestureType>;
   scaleTo?: number;
   simultaneousWithExternalGesture?: MutableRefObject<GestureType>;
   style?: StyleProp<ViewStyle> | AnimatedStyle;
@@ -72,6 +73,7 @@ export function GestureHandlerButton({
   onPressStartWorklet,
   onPressWorklet,
   pointerEvents = 'box-only',
+  requireExternalGestureToFail,
   scaleTo = 0.86,
   simultaneousWithExternalGesture,
   style,
@@ -105,8 +107,9 @@ export function GestureHandlerButton({
       });
 
     if (tapRef) tap.withRef(tapRef);
-    if (simultaneousWithExternalGesture) tap.simultaneousWithExternalGesture(simultaneousWithExternalGesture);
     if (blocksExternalGesture) tap.blocksExternalGesture(blocksExternalGesture);
+    if (requireExternalGestureToFail) tap.requireExternalGestureToFail(requireExternalGestureToFail);
+    if (simultaneousWithExternalGesture) tap.simultaneousWithExternalGesture(simultaneousWithExternalGesture);
 
     const longPressEnabled = !!(onLongPressEndWorklet || onLongPressJS || onLongPressWorklet);
 
@@ -127,6 +130,9 @@ export function GestureHandlerButton({
       });
 
     if (longPressRef) longPress.withRef(longPressRef);
+    if (blocksExternalGesture) longPress.blocksExternalGesture(blocksExternalGesture);
+    if (requireExternalGestureToFail) longPress.requireExternalGestureToFail(requireExternalGestureToFail);
+    if (simultaneousWithExternalGesture) longPress.simultaneousWithExternalGesture(simultaneousWithExternalGesture);
 
     const tapEnabled = !!(onPressStartWorklet || onPressJS || onPressWorklet);
 
@@ -149,6 +155,7 @@ export function GestureHandlerButton({
     onPressJS,
     onPressStartWorklet,
     onPressWorklet,
+    requireExternalGestureToFail,
     simultaneousWithExternalGesture,
     tapRef,
   ]);
