@@ -11,7 +11,6 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider, shallowEqual } from 'react-redux';
 import { RecoilRoot } from 'recoil';
-import PortalConsumer from '@/components/PortalConsumer';
 import ErrorBoundary from '@/components/error-boundary/ErrorBoundary';
 import { OfflineToast } from '@/components/toasts';
 import { designSystemPlaygroundEnabled, reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
@@ -26,7 +25,6 @@ import { MainThemeProvider } from '@/theme/ThemeContext';
 import { addressKey } from '@/utils/keychainConstants';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
-import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { analyticsV2 } from '@/analytics';
 import { getOrCreateDeviceId, securelyHashWalletAddress } from '@/analytics/utils';
@@ -82,8 +80,6 @@ function App({ walletReady }: AppProps) {
       </View>
       <NotificationsHandler walletReady={walletReady} />
       <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
-      <Portal />
-      <PortalConsumer />
       <BackupsSync />
     </>
   );
