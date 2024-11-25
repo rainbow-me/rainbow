@@ -1,11 +1,15 @@
 import { nanoid } from 'nanoid/non-secure';
 import { SECURE_WALLET_HASH_KEY } from 'react-native-dotenv';
+import type { Address } from 'viem';
 
 import * as ls from '@/storage';
 import * as keychain from '@/model/keychain';
 import { analyticsUserIdentifier } from '@/utils/keychainConstants';
 import { logger, RainbowError } from '@/logger';
 import { computeHmac, SupportedAlgorithm } from '@ethersproject/sha2';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import store from '@/redux/store';
+import { EthereumWalletType } from '@/helpers/walletTypes';
 
 /**
  * Returns the device id in a type-safe manner. It will throw if no device ID
@@ -58,7 +62,7 @@ export async function getOrCreateDeviceId(): Promise<[string, boolean]> {
   }
 }
 
-export function securelyHashWalletAddress(walletAddress: `0x${string}`): string | undefined {
+function securelyHashWalletAddress(walletAddress: Address): string | undefined {
   if (!SECURE_WALLET_HASH_KEY) {
     logger.error(new RainbowError(`[securelyHashWalletAddress]: Required .env variable SECURE_WALLET_HASH_KEY does not exist`));
   }
@@ -79,4 +83,34 @@ export function securelyHashWalletAddress(walletAddress: `0x${string}`): string 
     // could be an invalid hashing key, or trying to hash an ENS
     logger.error(new RainbowError(`[securelyHashWalletAddress]: Wallet address hashing failed`));
   }
+}
+
+export type WalletContext = {
+  walletType?: 'owned' | 'hardware' | 'watched';
+  walletAddressHash?: string;
+};
+
+export async function getWalletContext(address: Address): Promise<WalletContext> {
+  // currentAddressStore address is initialized to ''
+  if (!address || address === ('' as Address)) return {};
+
+  // walletType maybe undefined after initial wallet creation
+  const { wallets } = store.getState();
+  const wallet = findWalletWithAccount(wallets.wallets || {}, address);
+
+  const walletType = (
+    {
+      [EthereumWalletType.mnemonic]: 'owned',
+      [EthereumWalletType.privateKey]: 'owned',
+      [EthereumWalletType.seed]: 'owned',
+      [EthereumWalletType.readOnly]: 'watched',
+      [EthereumWalletType.bluetooth]: 'hardware',
+    } as const
+  )[wallet?.type!];
+  const walletAddressHash = securelyHashWalletAddress(address);
+
+  return {
+    walletType,
+    walletAddressHash,
+  };
 }

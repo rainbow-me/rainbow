@@ -5,13 +5,15 @@ import { EventProperties, event } from '@/analytics/event';
 import { UserProperties } from '@/analytics/userProperties';
 import { logger, RainbowError } from '@/logger';
 import { device } from '@/storage';
+import { WalletContext } from './utils';
 
 const isTesting = IS_TESTING === 'true';
 
 export class Analytics {
-  client: any;
-  currentWalletAddressHash?: string;
+  client: typeof rudderClient;
   deviceId?: string;
+  walletAddressHash?: WalletContext['walletAddressHash'];
+  walletType?: WalletContext['walletType'];
   event = event;
   disabled: boolean;
 
@@ -30,22 +32,27 @@ export class Analytics {
    * here. This uses the `deviceId` as the identifier, and attaches the hashed
    * wallet address as a property, if available.
    */
-  identify(userProperties: UserProperties) {
+  identify(userProperties?: UserProperties) {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
-    this.client.identify(this.deviceId, {
-      ...userProperties,
-      ...metadata,
-    });
+    this.client.identify(
+      this.deviceId as string,
+      {
+        ...metadata,
+        ...userProperties,
+      },
+      {}
+    );
   }
 
   /**
    * Sends a `screen` event.
    */
-  screen(routeName: string, params: Record<string, any> = {}): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  screen(routeName: string, params: Record<string, any> = {}, walletContext?: WalletContext): void {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
-    this.client.screen(routeName, { ...params, ...metadata });
+    this.client.screen(routeName, { ...metadata, ...walletContext, ...params });
   }
 
   /**
@@ -53,15 +60,16 @@ export class Analytics {
    * `@/analytics/event`, and if properties are associated with it, they must
    * be defined as part of `EventProperties` in the same file
    */
-  track<T extends keyof EventProperties>(event: T, params?: EventProperties[T]) {
+  track<T extends keyof EventProperties>(event: T, params?: EventProperties[T], walletContext?: WalletContext) {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
-    this.client.track(event, { ...params, ...metadata });
+    this.client.track(event, { ...metadata, ...walletContext, ...params });
   }
 
   private getDefaultMetadata() {
     return {
-      walletAddressHash: this.currentWalletAddressHash,
+      walletAddressHash: this.walletAddressHash,
+      walletType: this.walletType,
     };
   }
 
@@ -80,17 +88,18 @@ export class Analytics {
    * `identify()`, you must do that on your own.
    */
   setDeviceId(deviceId: string) {
-    logger.debug(`[Analytics]: Set deviceId on analytics instance`);
     this.deviceId = deviceId;
+    logger.debug(`[Analytics]: Set deviceId on analytics instance`);
   }
 
   /**
-   * Set `currentWalletAddressHash` for use in events. This DOES NOT call
+   * Set `walletAddressHash` and `walletType` for use in events. This DOES NOT call
    * `identify()`, you must do that on your own.
    */
-  setCurrentWalletAddressHash(currentWalletAddressHash: string) {
-    logger.debug(`[Analytics]: Set currentWalletAddressHash on analytics instance`);
-    this.currentWalletAddressHash = currentWalletAddressHash;
+  setWalletContext(walletContext: WalletContext) {
+    this.walletAddressHash = walletContext.walletAddressHash;
+    this.walletType = walletContext.walletType;
+    logger.debug(`[Analytics]: Set walletAddressHash on analytics instance`);
   }
 
   /**
