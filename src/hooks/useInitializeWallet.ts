@@ -19,6 +19,10 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
 import { RainbowError, logger } from '@/logger';
+import { getOrCreateDeviceId, getWalletContext } from '@/analytics/utils';
+import * as Sentry from '@sentry/react-native';
+import { analyticsV2 } from '@/analytics';
+import { Address } from 'viem';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -81,6 +85,22 @@ export default function useInitializeWallet() {
           isNew,
           walletAddress,
         });
+
+        // Capture wallet context in telemetry
+        // walletType maybe undefied after initial wallet creation
+        const { walletType, walletAddressHash } = await getWalletContext(walletAddress as Address);
+        const [deviceId] = await getOrCreateDeviceId();
+
+        Sentry.setUser({
+          id: deviceId,
+          walletAddressHash,
+          walletType,
+        });
+
+        // Allows calling telemetry before currentAddress is available (i.e. onboarding)
+        if (walletType || walletAddressHash) analyticsV2.setWalletContext({ walletAddressHash, walletType });
+        analyticsV2.setDeviceId(deviceId);
+        analyticsV2.identify();
 
         if (!switching) {
           // Run keychain integrity checks right after walletInit
