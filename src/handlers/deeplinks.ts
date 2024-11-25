@@ -10,7 +10,7 @@ import { delay } from '@/utils/delay';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import ethereumUtils from '@/utils/ethereumUtils';
+import ethereumUtils, { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { logger } from '@/logger';
 import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
 import { analyticsV2 } from '@/analytics';
@@ -22,16 +22,15 @@ import { useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-ho
 import { InitialRoute } from '@/navigation/initialRoute';
 import { ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
+
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { supportedSwapChainIds } from '@/chains';
 import { queryTokenSearch } from '@/__swaps__/screens/Swap/resources/search/search';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { isAddress } from 'viem';
-import { settingsUpdateAccountAddress } from '@/redux/settings';
-import { queryUserAssets } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { navigateToSwaps, SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
   url: string;
@@ -348,7 +347,7 @@ function handleWalletConnect(uri?: string, connector?: string) {
 const querySwapAsset = async (uniqueId: string | undefined): Promise<ParsedSearchAsset | undefined> => {
   if (!uniqueId) return undefined;
 
-  const { address, chainId } = deriveAddressAndChainWithUniqueId(uniqueId);
+  const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
   if (!supportedSwapChainIds.includes(parseInt(chainId.toString(), 10))) return undefined;
   if (address !== 'eth' && address.length !== 42) return undefined;
 
@@ -372,15 +371,15 @@ function isValidGasSpeed(s: string | undefined): s is GasSpeed {
   return Object.values(GasSpeed).includes(s as GasSpeed);
 }
 
-function setFromWallet(address: string | undefined) {
+async function setFromWallet(address: string | undefined) {
   if (!address || !isAddress(address)) return;
 
   const userWallets = store.getState().wallets.wallets!;
-  const userAddresses = Object.values(userWallets).flatMap(w => w.addresses.map(a => a.address));
+  const wallet = Object.values(userWallets).find(w => w.addresses.some(a => a.address === address));
 
-  if (userAddresses.includes(address)) {
-    store.dispatch(settingsUpdateAccountAddress(address));
-  }
+  if (!wallet) return;
+
+  await Promise.all([store.dispatch(walletsSetSelected(wallet)), store.dispatch(addressSetSelected(address))]);
 }
 
 function isNumbericString(value: string | undefined): value is string {
@@ -391,7 +390,7 @@ function isNumbericString(value: string | undefined): value is string {
 async function handleSwapsDeeplink(url: string) {
   const { query } = new URL(url, true);
 
-  setFromWallet(query.from);
+  await setFromWallet(query.from);
 
   const params: SwapsParams = {};
 
