@@ -4,18 +4,13 @@ import { MMKV } from 'react-native-mmkv';
 import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
-import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { queryClient } from '@/react-query';
-import { setHiddenCoins } from '@/redux/editOptions';
-import store from '@/redux/store';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';
 import { AddysAddressAsset, AddysAsset, ParsedAsset, RainbowAddressAssets } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { ChainId } from '@/chains/types';
 import { chainsIdByName } from '@/chains';
-
-const storage = new MMKV();
+import { ChainId } from '@/chains/types';
 
 export const filterPositionsData = (
   address: string,
@@ -82,23 +77,4 @@ export function parseAddressAsset({ assetData }: { assetData: AddysAddressAsset 
     ...parsedAsset,
     balance: convertRawAmountToBalance(quantity, asset),
   };
-}
-
-/**
- * Adds new hidden coins for an address and updates key-value storage.
- *
- * @param coins New coin IDs.
- * @param address The address to hide coins for.
- */
-function addHiddenCoins(coins: string[], address: string) {
-  const { dispatch } = store;
-  const storageKey = 'hidden-coins-obj-' + address;
-  const storageEntity = storage.getString(storageKey);
-  const list = Object.keys(storageEntity ? JSON.parse(storageEntity) : {});
-  const newHiddenCoins = [...list.filter((i: string) => !coins.includes(i)), ...coins].reduce((acc, curr) => {
-    acc[curr] = true;
-    return acc;
-  }, {} as BooleanMap);
-  dispatch(setHiddenCoins(newHiddenCoins));
-  storage.set(storageKey, JSON.stringify(newHiddenCoins));
 }

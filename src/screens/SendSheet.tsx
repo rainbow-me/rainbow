@@ -69,6 +69,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Contact } from '@/redux/contacts';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -142,7 +143,8 @@ export default function SendSheet() {
     step: REGISTRATION_STEPS.TRANSFER,
   });
 
-  const { hiddenCoinsObj, pinnedCoinsObj } = useCoinListEditOptions();
+  const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
+  const { pinnedCoinsObj } = useCoinListEditOptions();
   const [toAddress, setToAddress] = useState<string>('');
   const [amountDetails, setAmountDetails] = useState({
     assetAmount: '',
@@ -287,7 +289,7 @@ export default function SendSheet() {
         startPollingGasFees(currentChainId);
       });
     }
-  }, [startPollingGasFees, selected?.chainId, prevChainId, currentChainId]);
+  }, [startPollingGasFees, prevChainId, currentChainId]);
 
   // Stop polling when the sheet is unmounted
   useEffect(() => {
@@ -296,7 +298,7 @@ export default function SendSheet() {
         stopPollingGasFees();
       });
     };
-  }, [stopPollingGasFees]);
+  }, [currentChainId, stopPollingGasFees]);
 
   useEffect(() => {
     const assetChainId = selected?.chainId;
@@ -840,8 +842,7 @@ export default function SendSheet() {
       currentProviderChainId === currentChainId &&
       toAddress &&
       isValidAddress &&
-      !isEmpty(selected) &&
-      (isUniqueAsset || Number(amountDetails.assetAmount) >= 0)
+      !isEmpty(selected)
     ) {
       estimateGasLimit(
         {
@@ -933,7 +934,7 @@ export default function SendSheet() {
         {showAssetList &&
           (!isEmptyWallet ? (
             <SendAssetList
-              hiddenCoins={hiddenCoinsObj}
+              hiddenCoins={hiddenAssets}
               nativeCurrency={nativeCurrency}
               onSelectAsset={sendUpdateSelected}
               pinnedCoins={pinnedCoinsObj}

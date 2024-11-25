@@ -1,6 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 import React, { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { PixelRatio, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -40,11 +40,10 @@ import { useBrowserContext } from './BrowserContext';
 import { getNameFromFormattedUrl } from './utils';
 import { useTrendingDApps } from '@/resources/metadata/trendingDapps';
 import { DApp } from '@/graphql/__generated__/metadata';
-import { DEFAULT_TAB_URL } from './constants';
-import { FeaturedResult } from '@/graphql/__generated__/arc';
+import { RAINBOW_HOME } from './constants';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { FEATURED_RESULTS, useExperimentalFlag } from '@/config';
-import { FeaturedResultStack } from '../FeaturedResult/FeaturedResultStack';
+import { FeaturedResultStack, FeaturedResultStackProps } from '@/components/FeaturedResult/FeaturedResultStack';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -86,7 +85,7 @@ export const Homepage = ({ tabId }: { tabId: string }) => {
   );
 };
 
-const DappBrowserFeaturedResults = () => {
+const DappBrowserFeaturedResults = ({ children }: { children: FeaturedResultStackProps['children'] }) => {
   const { goToUrl } = useBrowserContext();
   const { featured_results } = useRemoteConfig();
   const featuredResultsEnabled = (useExperimentalFlag(FEATURED_RESULTS) || featured_results) && !IS_TEST;
@@ -102,7 +101,11 @@ const DappBrowserFeaturedResults = () => {
     return null;
   }
 
-  return <FeaturedResultStack onNavigate={onNavigate} placementId="dapp_browser" Card={DappBrowserFeaturedResultsCard} />;
+  return (
+    <FeaturedResultStack onNavigate={onNavigate} placementId="dapp_browser_card">
+      {children}
+    </FeaturedResultStack>
+  );
 };
 
 const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
@@ -132,7 +135,18 @@ const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
         >
           <Inset space="24px">
             <Box flexDirection="row" gap={CARD_PADDING}>
-              <DappBrowserFeaturedResults />
+              <DappBrowserFeaturedResults>
+                {({ featuredResult, handlePress }) => (
+                  <Card
+                    goToUrl={handlePress}
+                    site={{
+                      image: featuredResult.imageUrl,
+                      name: featuredResult.title,
+                      url: featuredResult.description,
+                    }}
+                  />
+                )}
+              </DappBrowserFeaturedResults>
               {data.dApps
                 .filter((dApp): dApp is DApp => dApp !== null)
                 .map((dApp, index) => (
@@ -175,7 +189,7 @@ const Favorites = ({ goToUrl, tabId }: { goToUrl: (url: string) => void; tabId: 
     ({ currentGridSort, isActiveTab }: { currentGridSort: string[] | undefined; isActiveTab: boolean }) => {
       'worklet';
       const homepageTabsCount = currentlyOpenTabIds.value.filter(
-        tabId => !animatedTabUrls.value[tabId] || animatedTabUrls.value[tabId] === DEFAULT_TAB_URL
+        tabId => !animatedTabUrls.value[tabId] || animatedTabUrls.value[tabId] === RAINBOW_HOME
       ).length;
       const inactiveAndMounted = !isActiveTab && currentGridSort !== undefined;
 
@@ -390,7 +404,8 @@ const Card = memo(function Card({
   const dappIconUrl = useMemo(() => {
     const dappUrl = site.url;
     const iconUrl = site.image;
-    const host = new URL(dappUrl).hostname;
+    const url = dappUrl.startsWith('http') ? dappUrl : `https://${dappUrl}`;
+    const host = new URL(url).hostname;
     // 👇 TODO: Remove this once the Uniswap logo in the dapps metadata is fixed
     const isUniswap = host === 'uniswap.org' || host.endsWith('.uniswap.org');
     const dappOverride = dapps.find(dapp => dapp.urlDisplay === host);
@@ -504,65 +519,6 @@ const Card = memo(function Card({
         </ContextMenuButton>
       )}
     </Box>
-  );
-});
-
-const getImageForDevicePixelRatio = ({ imageUrl, imageVariants }: FeaturedResult) => {
-  if (!imageVariants) return imageUrl;
-
-  const pixelRatio = PixelRatio.get();
-  const { x1, x2, x3 } = imageVariants;
-
-  if (pixelRatio < 1.5) return x1?.url || imageUrl;
-  if (pixelRatio < 3) return x2?.url || x1?.url || imageUrl;
-  return x3?.url || x2?.url || x1?.url || imageUrl;
-};
-
-export const DappBrowserFeaturedResultsCard = memo(function Card({
-  handlePress,
-  featuredResult,
-}: {
-  handlePress: () => void;
-  featuredResult: FeaturedResult;
-}) {
-  const { isDarkMode } = useColorMode();
-
-  const imageUrl = getImageForDevicePixelRatio(featuredResult);
-
-  return (
-    <ButtonPressAnimation onPress={handlePress} scaleTo={0.94}>
-      <Box
-        background="surfacePrimary"
-        borderRadius={24}
-        style={{
-          width: CARD_WIDTH,
-        }}
-      >
-        <Box
-          borderRadius={24}
-          height={{ custom: CARD_HEIGHT }}
-          justifyContent="space-between"
-          style={[styles.cardContainer, isDarkMode && styles.cardContainerDark]}
-          width={{ custom: CARD_WIDTH }}
-        >
-          <ImgixImage enableFasterImage size={CARD_WIDTH} source={{ uri: imageUrl }} style={{ height: CARD_HEIGHT, width: CARD_WIDTH }} />
-        </Box>
-        {IS_IOS && (
-          <Box
-            borderRadius={24}
-            height="full"
-            position="absolute"
-            style={{
-              borderColor: isDarkMode ? opacity(globalColors.white100, 0.09) : opacity(globalColors.grey100, 0.08),
-              borderWidth: THICK_BORDER_WIDTH,
-              overflow: 'hidden',
-              pointerEvents: 'none',
-            }}
-            width="full"
-          />
-        )}
-      </Box>
-    </ButtonPressAnimation>
   );
 });
 

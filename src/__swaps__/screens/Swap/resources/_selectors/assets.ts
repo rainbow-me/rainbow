@@ -1,7 +1,7 @@
 import { ParsedAssetsDict, ParsedAssetsDictByChain, ParsedUserAsset, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
-import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
-import { add } from '@/__swaps__/utils/numbers';
+import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
+import { add } from '@/helpers/utilities';
 
 // selectors
 export function selectorFilterByUserChains<T>({
@@ -34,14 +34,6 @@ export function selectUserAssetsDictByChain(assets: ParsedAssetsDictByChain) {
   return assets;
 }
 
-export function selectUserAssetsListByChainId(assets: ParsedAssetsDictByChain, chainId: ChainId) {
-  const assetsForNetwork = assets?.[chainId];
-
-  return Object.values(assetsForNetwork).sort(
-    (a: ParsedUserAsset, b: ParsedUserAsset) => parseFloat(b?.native?.balance?.amount) - parseFloat(a?.native?.balance?.amount)
-  );
-}
-
 export function selectUserAssetAddressMapByChainId(assets: ParsedAssetsDictByChain) {
   const mapAddresses = (list: ParsedAssetsDict = {}) => Object.values(list).map(i => i.address);
   return {
@@ -59,7 +51,7 @@ export function selectUserAssetAddressMapByChainId(assets: ParsedAssetsDictByCha
 // selector generators
 export function selectUserAssetWithUniqueId(uniqueId: UniqueId) {
   return (assets: ParsedAssetsDictByChain) => {
-    const { chainId } = deriveAddressAndChainWithUniqueId(uniqueId);
+    const { chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
     return assets?.[chainId]?.[uniqueId];
   };
 }
