@@ -16,7 +16,7 @@ import { Emoji, Text } from '../components/text';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/redux/ensRegistration';
 import { GasFeeType, GasFeeTypes, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts, TransactionStatus } from '@/entities';
-import { getFlashbotsProvider, getProvider, isL2Chain, toHex } from '@/handlers/web3';
+import { getProvider, isL2Chain, toHex } from '@/handlers/web3';
 import { greaterThan } from '@/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas, useWallets } from '@/hooks';
 import { sendTransaction } from '@/model/wallet';
@@ -30,7 +30,6 @@ import { gasUtils, safeAreaInsetValues } from '@/utils';
 import * as i18n from '@/languages';
 import { updateTransaction } from '@/state/pendingTransactions';
 import { logger, RainbowError } from '@/logger';
-import { supportedFlashbotsChainIds } from '@/chains';
 import { ChainId } from '@/chains/types';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { BigNumberish } from '@ethersproject/bignumber';
@@ -311,22 +310,16 @@ export default function SpeedUpAndCancelSheet() {
   // Set the provider
   useEffect(() => {
     if (currentChainId) {
-      startPollingGasFees(currentChainId, tx.flashbots);
-      let provider;
-      if (supportedFlashbotsChainIds.includes(tx.chainId || ChainId.mainnet) && tx.flashbots) {
-        logger.debug(`[SpeedUpAndCancelSheet]: using flashbots provider for chainId ${tx?.chainId}`);
-        provider = getFlashbotsProvider();
-      } else {
-        logger.debug(`[SpeedUpAndCancelSheet]: using provider for network ${tx?.chainId}`);
-        provider = getProvider({ chainId: currentChainId });
-      }
+      startPollingGasFees(currentChainId);
+      const provider = getProvider({ chainId: currentChainId });
+      logger.debug(`[SpeedUpAndCancelSheet]: using provider for network ${tx?.chainId}`);
       setCurrentProvider(provider);
 
       return () => {
         stopPollingGasFees();
       };
     }
-  }, [currentChainId, startPollingGasFees, stopPollingGasFees, tx?.chainId, tx.flashbots]);
+  }, [currentChainId, startPollingGasFees, stopPollingGasFees, tx?.chainId]);
 
   // Update gas limit
   useEffect(() => {
@@ -513,7 +506,6 @@ export default function SpeedUpAndCancelSheet() {
                     <GasSpeedButton
                       asset={{ color: accentColor }}
                       chainId={currentChainId}
-                      flashbotTransaction={tx.flashbots}
                       speeds={speeds}
                       theme={isDarkMode ? 'dark' : 'light'}
                     />
