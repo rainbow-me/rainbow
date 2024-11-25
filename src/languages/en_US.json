@@ -2999,6 +2999,19 @@
         }
       }
     },
+    "network_switcher": {
+      "customize_networks_banner": {
+        "title": "Customize Networks",
+        "description": "Tap the edit button below to set up"
+      },
+      "edit": "Edit",
+      "networks": "Networks",
+      "drag_to_rearrange": "Drag to rearrange",
+      "show_less": "Show less",
+      "show_more": "More Networks",
+      "all_networks": "All Networks"
+    },
+    "done": "Done",
     "copy": "Copy",
     "paste": "Paste"
   }
