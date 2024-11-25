@@ -72,7 +72,7 @@ export const BrowserTab = memo(function BrowserTab({ addRecent, setLogo, setTitl
             </Animated.View>
           </ViewShot>
           <TabScreenshotContainer tabId={tabId} />
-          <WebViewBorder enabled={IS_IOS} tabId={tabId} />
+          {IS_IOS && <WebViewBorder tabId={tabId} />}
         </Animated.View>
         <CloseTabButton tabId={tabId} />
       </Animated.View>

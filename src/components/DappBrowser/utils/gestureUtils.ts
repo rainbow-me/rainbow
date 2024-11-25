@@ -151,7 +151,6 @@ type GestureEndParams = {
 
 export function handleGestureEnd({ multipleTabsOpen, tabViewVisible, translationX, url, velocityX }: GestureEndParams): {
   shouldClose: boolean;
-  velocity?: number;
 } {
   'worklet';
   const isBeyondDismissThreshold = translationX < -(TAB_VIEW_COLUMN_WIDTH / 2 + 20) && velocityX <= 0;
@@ -160,8 +159,5 @@ export function handleGestureEnd({ multipleTabsOpen, tabViewVisible, translation
 
   const shouldClose = tabViewVisible && !isEmptyState && (isBeyondDismissThreshold || isFastLeftwardSwipe);
 
-  return {
-    shouldClose,
-    velocity: isFastLeftwardSwipe ? velocityX : undefined,
-  };
+  return { shouldClose };
 }

@@ -16,6 +16,13 @@ import { BrowserTab } from './BrowserTab';
 import { BrowserWorkletsContextProvider, useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { ProgressBar } from './ProgressBar';
 import { TabViewToolbar } from './TabViewToolbar';
+import {
+  BROWSER_BACKGROUND_COLOR_DARK,
+  BROWSER_BACKGROUND_COLOR_LIGHT,
+  HOMEPAGE_BACKGROUND_COLOR_LIGHT,
+  TAB_VIEW_BACKGROUND_COLOR_DARK,
+  TAB_VIEW_BACKGROUND_COLOR_LIGHT,
+} from './constants';
 import { useBrowserScrollView } from './hooks/useBrowserScrollView';
 import { useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTriggers';
 import { pruneScreenshots } from './screenshots';
@@ -114,8 +121,10 @@ const TabViewBackground = () => {
       backgroundColor: interpolateColor(
         tabViewProgress.value,
         [0, 100],
-        // eslint-disable-next-line no-nested-ternary
-        [isDarkMode ? globalColors.grey100 : IS_ANDROID ? '#F2F2F5' : '#F7F7F9', isDarkMode ? '#0A0A0A' : '#F2F2F5']
+        [
+          isDarkMode ? BROWSER_BACKGROUND_COLOR_DARK : BROWSER_BACKGROUND_COLOR_LIGHT,
+          isDarkMode ? TAB_VIEW_BACKGROUND_COLOR_DARK : TAB_VIEW_BACKGROUND_COLOR_LIGHT,
+        ]
       ),
     };
   });
@@ -182,7 +191,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   rootViewBackgroundLight: {
-    backgroundColor: '#F7F7F9',
+    backgroundColor: HOMEPAGE_BACKGROUND_COLOR_LIGHT,
     flex: 1,
     position: 'absolute',
   },

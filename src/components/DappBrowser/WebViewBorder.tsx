@@ -10,7 +10,7 @@ import { ZOOMED_TAB_BORDER_RADIUS } from './Dimensions';
 import { RAINBOW_HOME } from './constants';
 import { TabViewGestureStates } from './types';
 
-export const WebViewBorder = ({ enabled, tabId }: { enabled?: boolean; tabId: string }) => {
+export const WebViewBorder = ({ tabId }: { tabId: string }) => {
   const {
     animatedActiveTabIndex,
     animatedTabUrls,
@@ -25,9 +25,10 @@ export const WebViewBorder = ({ enabled, tabId }: { enabled?: boolean; tabId: st
 
   const { isDarkMode } = useColorMode();
 
+  const enabled = isDarkMode;
+
   const webViewBorderStyle = useAnimatedStyle(() => {
-    const shouldDisplay = enabled && isDarkMode;
-    if (!shouldDisplay) return { borderRadius: ZOOMED_TAB_BORDER_RADIUS, opacity: 0 };
+    if (!enabled) return { borderRadius: ZOOMED_TAB_BORDER_RADIUS, opacity: 0 };
 
     const url = animatedTabUrls.value[tabId] || RAINBOW_HOME;
     const isOnHomepage = url === RAINBOW_HOME;

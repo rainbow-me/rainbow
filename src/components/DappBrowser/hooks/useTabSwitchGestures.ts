@@ -80,7 +80,7 @@ export const useTabSwitchGestures = () => {
             Math.abs(switchTabsXTranslation) > TAB_SWITCH_HORIZONTAL_GAP &&
             newTabViewGestureProgress < GestureProgressThresholds.SKIP_SURROUNDING_TABS_ANIMATION;
 
-          if (shouldRevealSurroundingTabs) {
+          if (shouldRevealSurroundingTabs && tabViewGestureHoldDuration.value !== TAB_VIEW_GESTURE_HOLD_THRESHOLD_MS) {
             tabViewGestureHoldDuration.value = TAB_VIEW_GESTURE_HOLD_THRESHOLD_MS;
           }
         })

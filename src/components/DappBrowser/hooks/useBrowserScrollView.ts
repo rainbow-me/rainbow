@@ -62,11 +62,10 @@ export function useBrowserScrollView() {
 
   const scrollViewStyle = useAnimatedStyle(() => ({ height: scrollViewHeight.value }));
   const gestureManagerStyle = useAnimatedStyle(() => ({ pointerEvents: tabViewVisible.value ? 'auto' : 'box-none' }));
-
   const scrollEnabledProp = useAnimatedProps(() => ({ scrollEnabled: tabViewVisible.value }));
 
   const closeTab = useCallback(
-    (tabId: string, tabIndex: number, velocityX?: number) => {
+    (tabId: string, tabIndex: number, velocityX: number | undefined) => {
       'worklet';
       let xDestination: number;
 
@@ -249,15 +248,15 @@ export function useBrowserScrollView() {
             x: e.changedTouches[0].absoluteX,
             y: e.changedTouches[0].absoluteY,
           },
-          touchInfo: touchInfo.value,
-          tabViewVisible: tabViewVisible.value,
           gestureState: gestureManagerState.value,
+          tabViewVisible: tabViewVisible.value,
+          touchInfo: touchInfo.value,
         });
 
         switch (result.type) {
           case 'close':
             gestureManagerState.value = 'inactive';
-            closeTab(result.tabInfo.tabId, result.tabInfo.tabIndex);
+            closeTab(result.tabInfo.tabId, result.tabInfo.tabIndex, undefined);
             touchInfo.value = undefined;
             break;
 
@@ -276,12 +275,25 @@ export function useBrowserScrollView() {
       .onEnd((e, success) => {
         if (ENABLE_PAN_LOGS) console.log('[Pan Gesture] ON END');
 
-        if (!success || !touchInfo.value?.initialTappedTab) return;
+        if (!touchInfo.value?.initialTappedTab) return;
+
+        if (!success) {
+          updateTabGestureState(activeTabCloseGestures, {
+            gestureScale: 1,
+            gestureX: 0,
+            isActive: false,
+            tabId: touchInfo.value.initialTappedTab.tabId,
+            tabIndex: touchInfo.value.initialTappedTab.tabIndex,
+          });
+          gestureManagerState.value = 'inactive';
+          touchInfo.value = undefined;
+          return;
+        }
 
         const { tabId, tabIndex } = touchInfo.value.initialTappedTab;
         const url = animatedTabUrls.value[tabId] || RAINBOW_HOME;
 
-        const { shouldClose, velocity } = handleGestureEnd({
+        const { shouldClose } = handleGestureEnd({
           multipleTabsOpen: multipleTabsOpen.value,
           tabViewVisible: tabViewVisible.value,
           translationX: e.translationX,
@@ -290,7 +302,7 @@ export function useBrowserScrollView() {
         });
 
         if (shouldClose) {
-          closeTab(tabId, tabIndex, velocity);
+          closeTab(tabId, tabIndex, e.velocityX);
         } else {
           updateTabGestureState(activeTabCloseGestures, {
             gestureScale: 1,
