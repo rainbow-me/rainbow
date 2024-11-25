@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { AnimatePresence, MotiView } from 'moti';
 import * as i18n from '@/languages';
 import { Image, InteractionManager, PixelRatio, ScrollView } from 'react-native';
@@ -108,8 +108,6 @@ export const SignTransactionSheet = () => {
 
   const provider = getProvider({ chainId });
   const nativeAsset = ethereumUtils.getNetworkNativeAsset({ chainId });
-
-  const [isAuthorizing, setIsAuthorizing] = useState(false);
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
   const isPersonalSignRequest = isPersonalSign(transactionDetails.payload.method);
@@ -552,23 +550,21 @@ export const SignTransactionSheet = () => {
     handleConfirmTransaction,
   });
 
+  const { submitFn, isAuthorizing } = useTransactionSubmission({
+    isMessageRequest,
+    isBalanceEnough,
+    accountInfo,
+    onConfirm,
+    source,
+  });
+
   const canPressConfirm = useMemo(() => {
     if (isMessageRequest) {
       return !isAuthorizing; // Only check authorization state for message requests
     }
 
-    return !isAuthorizing && !!walletBalance?.isLoaded && !!chainId && !!selectedGasFee?.gasFee?.estimatedFee;
-  }, [isAuthorizing, isMessageRequest, walletBalance?.isLoaded, chainId, selectedGasFee?.gasFee?.estimatedFee]);
-
-  const { submitFn } = useTransactionSubmission({
-    isMessageRequest,
-    isBalanceEnough,
-    accountInfo,
-    isAuthorizing,
-    setIsAuthorizing,
-    onConfirm,
-    source,
-  });
+    return !isAuthorizing && isBalanceEnough && !!chainId && !!selectedGasFee?.gasFee?.estimatedFee;
+  }, [isAuthorizing, isMessageRequest, isBalanceEnough, chainId, selectedGasFee?.gasFee?.estimatedFee]);
 
   const primaryActionButtonLabel = useMemo(() => {
     if (isAuthorizing) {

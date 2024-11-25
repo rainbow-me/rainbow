@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback } from 'react';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
@@ -10,19 +10,16 @@ export const useTransactionSubmission = ({
   isMessageRequest,
   isBalanceEnough,
   accountInfo,
-  isAuthorizing,
-  setIsAuthorizing,
   onConfirm,
   source,
 }: {
   isMessageRequest: boolean;
   isBalanceEnough: boolean | undefined;
   accountInfo: { isHardwareWallet: boolean };
-  isAuthorizing: boolean;
-  setIsAuthorizing: Dispatch<SetStateAction<boolean>>;
   onConfirm: () => Promise<void>;
   source: RequestSource;
 }) => {
+  const [isAuthorizing, setIsAuthorizing] = useState(false);
   const { navigate } = useNavigation();
 
   const onPressSend = useCallback(async () => {
