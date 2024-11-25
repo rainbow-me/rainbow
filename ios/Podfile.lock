@@ -10,7 +10,7 @@ PODS:
   - DoubleConversion (1.1.6)
   - EXConstants (16.0.2):
     - ExpoModulesCore
-  - Expo (51.0.33):
+  - Expo (51.0.38):
     - ExpoModulesCore
   - ExpoAsset (10.0.10):
     - ExpoModulesCore
@@ -20,7 +20,7 @@ PODS:
     - ExpoModulesCore
   - ExpoKeepAwake (13.0.2):
     - ExpoModulesCore
-  - ExpoModulesCore (1.12.24):
+  - ExpoModulesCore (1.12.26):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1297,11 +1297,11 @@ PODS:
     - React
   - react-native-restart (0.0.22):
     - React-Core
-  - react-native-safe-area-context (4.11.0):
+  - react-native-safe-area-context (4.14.0):
     - React-Core
   - react-native-screen-corner-radius (0.2.2):
     - React
-  - react-native-skia (1.5.0):
+  - react-native-skia (1.5.6):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1377,8 +1377,27 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-view-shot (3.8.0):
+  - react-native-view-shot (4.0.2):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-webview (13.8.2):
     - DoubleConversion
     - glog
@@ -1661,7 +1680,7 @@ PODS:
     - Firebase/RemoteConfig (= 10.27.0)
     - React-Core
     - RNFBApp
-  - RNFlashList (1.7.1):
+  - RNFlashList (1.7.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1684,7 +1703,7 @@ PODS:
     - Yoga
   - RNFS (2.16.6):
     - React
-  - RNGestureHandler (2.20.1):
+  - RNGestureHandler (2.21.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1730,7 +1749,7 @@ PODS:
     - React-Core
   - RNReactNativeHapticFeedback (2.2.0):
     - React-Core
-  - RNReanimated (3.16.1):
+  - RNReanimated (3.16.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1750,10 +1769,10 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.16.1)
-    - RNReanimated/worklets (= 3.16.1)
+    - RNReanimated/reanimated (= 3.16.2)
+    - RNReanimated/worklets (= 3.16.2)
     - Yoga
-  - RNReanimated/reanimated (3.16.1):
+  - RNReanimated/reanimated (3.16.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1773,9 +1792,9 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 3.16.1)
+    - RNReanimated/reanimated/apple (= 3.16.2)
     - Yoga
-  - RNReanimated/reanimated/apple (3.16.1):
+  - RNReanimated/reanimated/apple (3.16.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1796,7 +1815,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated/worklets (3.16.1):
+  - RNReanimated/worklets (3.16.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1820,7 +1839,7 @@ PODS:
   - RNRudderSdk (1.12.1):
     - React
     - Rudder (< 2.0.0, >= 1.24.1)
-  - RNScreens (3.34.0):
+  - RNScreens (3.35.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1842,7 +1861,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSentry (5.31.1):
+  - RNSentry (5.35.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1863,7 +1882,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - Sentry/HybridSDK (= 8.36.0)
+    - Sentry/HybridSDK (= 8.37.0)
     - Yoga
   - RNShare (8.2.1):
     - React-Core
@@ -1872,7 +1891,7 @@ PODS:
     - RNSound/Core (= 0.11.2)
   - RNSound/Core (0.11.2):
     - React-Core
-  - RNSVG (15.6.0):
+  - RNSVG (15.8.0):
     - React-Core
   - RNTextSize (4.0.0-rc.1):
     - React
@@ -1886,7 +1905,7 @@ PODS:
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
-  - Sentry/HybridSDK (8.36.0)
+  - Sentry/HybridSDK (8.37.0)
   - Shimmer (1.0.2)
   - SocketRocket (0.7.0)
   - SRSRadialGradient (1.0.10):
@@ -2409,12 +2428,12 @@ SPEC CHECKSUMS:
   CoinbaseWalletSDK: bd6aa4f5a6460d4279e09e115969868e134126fb
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   EXConstants: 409690fbfd5afea964e5e9d6c4eb2c2b59222c59
-  Expo: 0b623d99ade6b23201ad615e289d32b669035ea3
+  Expo: 9b6666ef2fedcfc89c5b9be2aa1ce12b81f9e7f5
   ExpoAsset: 323700f291684f110fb55f0d4022a3362ea9f875
   ExpoFileSystem: 80bfe850b1f9922c16905822ecbf97acd711dc51
   ExpoFont: 00756e6c796d8f7ee8d211e29c8b619e75cbf238
   ExpoKeepAwake: 3b8815d9dd1d419ee474df004021c69fdd316d08
-  ExpoModulesCore: f30a203ff1863bab3dd9f4421e7fc1564797f18a
+  ExpoModulesCore: 831ece8311a489418746925820bbffdda587d6f4
   FasterImage: af05a76f042ca3654c962b658fdb01cb4d31caee
   FBLazyVector: 7e977dd099937dc5458851233141583abba49ff2
   Firebase: 26b040b20866a55f55eb3611b9fcf3ae64816b86
@@ -2493,15 +2512,15 @@ SPEC CHECKSUMS:
   react-native-quick-md5: 9a4cb8201cd0b1866e374ac19d530da0964c0aed
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
-  react-native-safe-area-context: 851c62c48dce80ccaa5637b6aa5991a1bc36eca9
+  react-native-safe-area-context: 4532f1a0c5d34a46b9324ccaaedcb5582a302b7d
   react-native-screen-corner-radius: 67064efbb78f2d48f01626713ae8142f6a20f925
-  react-native-skia: dd503e4426d5dcd578a2d11c9261fb591501924b
+  react-native-skia: a04b565e0123780b0c49c2b99a60dcb7d8152fd8
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   react-native-video: 449453bcc9e02d17f7d5dd55e07bafd4129cec5c
-  react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688
+  react-native-view-shot: 8e9953fcc80224620f6f4300f7be5a9e785a3880
   react-native-webview: 97b8113cdfb6f9bb9c2c884bf02dcb0207808fa0
   react-native-widgetkit: efb6680df237463bbe1be3a4d1a1578a1b0bb08f
   React-nativeconfig: fa5de9d8f4dbd5917358f8ad3ad1e08762f01dcb
@@ -2538,9 +2557,9 @@ SPEC CHECKSUMS:
   RNFBApp: 1ae7462cddf74a49df206d3418bc0170f8fa53e5
   RNFBMessaging: 85f661b9f16e2b081e6809ef63d3daa4458b9042
   RNFBRemoteConfig: a8325e2d3772127358dd2e7d5e39c9ad3e3379ac
-  RNFlashList: e9c5b8fe1b84f9c198cb550eb4cc0c45569fbf42
+  RNFlashList: d5ded0d87e54ed3f92466a6b65253f5b78007116
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
-  RNGestureHandler: d965a561d5458dd1e10617602f55726e04e4aac5
+  RNGestureHandler: 6fee3422fd8c81c5ee756fa72e3d1780e9943d9d
   RNImageCropPicker: 771e2ca319d2cf92e04ebf334ece892ee9a6728f
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: 14793d75953d99c6d950090b8e9698b234c5d08c
@@ -2549,20 +2568,20 @@ SPEC CHECKSUMS:
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
   RNReactNativeHapticFeedback: ec56a5f81c3941206fd85625fa669ffc7b4545f9
-  RNReanimated: af4e059a8fd0fb7a9cdf5ad35ead4699598a9447
+  RNReanimated: 30ed0985f2b8dc16a76c23362cabe8dd5166b64f
   RNRudderSdk: 805d4b7064714f3295bf5f152d3812cc67f67a93
-  RNScreens: aa943ad421c3ced3ef5a47ede02b0cbfc43a012e
-  RNSentry: 2c78e72aaa6e55d61ce60d98a62f01b666f76513
+  RNScreens: 6b641f232990a9d505a6d139fd18c3c759c9d290
+  RNSentry: 6a5d9f48370070c1d4697dfe74044b7f45512420
   RNShare: eaee3dd5a06dad397c7d3b14762007035c5de405
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
-  RNSVG: 5da7a24f31968ec74f0b091e3440080f347e279b
+  RNSVG: 8b1a777d54096b8c2a0fd38fc9d5a454332bbb4d
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
   RSCrashReporter: 6b8376ac729b0289ebe0908553e5f56d8171f313
   Rudder: 3cfcd9e6c5359cd6d49f411101ed9b894e3b64bd
   RudderKit: f272f9872183946452ac94cd7bb2244a71e6ca8f
   SDWebImage: 2d6d229046fea284d62e36bfb8ebe8287dfc5b10
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
-  Sentry: f8374b5415bc38dfb5645941b3ae31230fbeae57
+  Sentry: ee060c09b2f7ec1240e95c766ab44c04c7bdb052
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   SRSRadialGradient: e5a34825dff88c9cf773b58bf39ed6a02e59a084
@@ -2572,8 +2591,8 @@ SPEC CHECKSUMS:
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   TurboHaptics: 6381613d33ab97aeb30d9b15c3df94dc616a25e4
   VisionCamera: 2af28201c3de77245f8c58b7a5274d5979df70df
-  Yoga: 04f1db30bb810187397fa4c37dd1868a27af229c
+  Yoga: 88480008ccacea6301ff7bf58726e27a72931c8d
 
 PODFILE CHECKSUM: 98c3fc206d7041ac7388693bb0753109d1884b57
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.16.1
