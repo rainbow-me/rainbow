@@ -15,6 +15,53 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.46] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.46)
+
+### Changed
+
+- Remove unused environment configurations (#6254)
+- Added a null check guard to the claimable flow (#6257)
+
+### Fixed
+
+- Fixed an issue in our approve and swap flow that should help overall swap success (#6259)
+- Changed the way we handle flashbots gas so less transactions should fail due to insufficent gas (#6265)
+
+## [1.9.45] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.45)
+
+### Added
+
+- Upgraded to new notifications endpoint for notifications v2 (#6190, #6223, #6229, #6251)
+- Added option to sort NFTs by ascending and descending (#6068)
+- We added isHardwareWallet to swap analytic events (#6238)
+
+### Changed
+
+- Featured results now uses redirect_url for recents (#6203)
+- Removed direct usage of web3Provider (#6200)
+- Now using backend endpoint for determining output based quotes for Swaps v2 (#6212)
+- We now navigate back to last screen after swap confirmation (#6207)
+- ChainSelector row is now fixed at top of list in swaps v2 (#6206)
+- Removed all of WC v1 (#6214)
+- Removed unused references and did updates to ExplainSheet (#6222)
+- Removed Swaps v1 code (#6181, #6250)
+- Updated featured results to use native card styling (#6246)
+- We now exclude hardware wallet related transactions from TTS tracking (#6247)
+- We are now subtracting hidden assets from total wallet balances (#6205)
+- We converted discover screen content to typescript (#6226)
+
+### Fixed
+
+- Fixed broken context menus on asset expanded state in search results (#6209)
+- Fixed a bug with positions total value display (#6185)
+- Fixed CI build issues (#6232, #6225, #6244, #6248)
+- Fixed a crash with animated inputs (#6227)
+- Fixed a bug where balance would show as NaN value (#6239)
+- Fixed transaction details not showing native asset symbol but always showing ETH instead (#6245)
+- Fixed a bug where an empty account balances prevents a swap from being done (#6243)
+- Fixed a bug where Apecoin wasn’t being set as the inputAsset when set as the preferred network (#6252)
+- Fixed a bug where change wallet sheet was missing balance value (#6253)
+
 ## [1.9.44] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.44)
 
 ### Fixed
