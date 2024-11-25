@@ -10,6 +10,7 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { ParsedAsset as SwapsParsedAsset } from '@/__swaps__/types/assets';
 import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
 
+// also used by raps
 export async function executeClaim({
   asset,
   claimTx,

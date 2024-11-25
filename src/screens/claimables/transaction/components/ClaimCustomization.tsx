@@ -59,6 +59,7 @@ export function ClaimCustomization() {
 
   const wbtc = wbtcSearchData?.[0];
 
+  // populate `networks` attribute for native tokens
   const nativeTokens: TokenMap = useMemo(
     () =>
       balanceSortedChainList.reduce<TokenMap>((nativeTokenDict, chainId) => {

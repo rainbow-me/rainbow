@@ -395,6 +395,7 @@ export function TransactionClaimableContextProvider({
     txState.gasFeeDisplay,
   ]);
 
+  // claim is ready if we have tx payload, sufficent gas, quote (if required), and previously in notReady state
   useEffect(() => {
     if (
       txState.status === 'success' &&
@@ -594,6 +595,7 @@ export function TransactionClaimableContextProvider({
       });
     },
     onSuccess: () => {
+      // claimStatus should not be set to claiming at this point, if it is, something went wrong
       if (claimStatus === 'claiming') {
         haptics.notificationError();
         setClaimStatus('recoverableError');
