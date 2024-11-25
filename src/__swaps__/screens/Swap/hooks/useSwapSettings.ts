@@ -8,19 +8,10 @@ export const useSwapSettings = ({ debouncedFetchQuote, slippage }: { debouncedFe
   const degenMode = useSharedValue(swapsStore.getState().degenMode);
 
   const setSlippage = swapsStore(state => state.setSlippage);
-  const setFlashbots = swapsStore(state => state.setFlashbots);
 
   const setDegenMode = (value: boolean) => {
     swapsStore.getState().setDegenMode(value);
     analyticsV2.track(analyticsV2.event.swapsToggledDegenMode, { enabled: value });
-  };
-
-  const onToggleFlashbots = () => {
-    'worklet';
-
-    const current = flashbots.value;
-    flashbots.value = !current;
-    runOnJS(setFlashbots)(!current);
   };
 
   const onUpdateSlippage = (operation: 'plus' | 'minus') => {
@@ -54,8 +45,6 @@ export const useSwapSettings = ({ debouncedFetchQuote, slippage }: { debouncedFe
     flashbots,
     slippage,
     degenMode,
-
-    onToggleFlashbots,
     onUpdateSlippage,
     onToggleDegenMode,
   };
