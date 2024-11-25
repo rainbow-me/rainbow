@@ -45,6 +45,8 @@ import { analyticsV2 } from '@/analytics';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
+const RAINBOW_FEE_BIPS = 250;
+
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
   CLAIM_ERROR = 'Failed to claim claimable due to claim action error',
@@ -198,6 +200,7 @@ export function TransactionClaimableContextProvider({
         refuel: false,
         toChainId: outputConfig.chainId,
         currency: nativeCurrency,
+        feePercentageBasisPoints: RAINBOW_FEE_BIPS,
       };
 
       const quote = claimable.chainId === outputConfig.chainId ? await getQuote(quoteParams) : await getCrosschainQuote(quoteParams);
