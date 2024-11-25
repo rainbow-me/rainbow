@@ -24,6 +24,8 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { useInitializeWallet, useWallets } from '@/hooks';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
+import { IS_ANDROID } from '@/env';
+import { backupsStore } from '@/state/backups/backups';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 

@@ -2,7 +2,7 @@ import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { useWallets } from '@/hooks';
 import { isEmpty } from 'lodash';
-import { BackupFile, parseTimestampFromFilename } from '@/model/backup';
+import { BackupFile, CloudBackups, parseTimestampFromFilename } from '@/model/backup';
 import * as i18n from '@/languages';
 import { cloudPlatform } from '@/utils/platform';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
@@ -21,7 +21,10 @@ export const hasManuallyBackedUpWallet = (wallets: ReturnType<typeof useWallets>
   return Object.values(wallets).some(wallet => wallet.backupType === WalletBackupTypes.manual);
 };
 
-export const checkLocalWalletsForBackupStatus = (wallets: ReturnType<typeof useWallets>['wallets']): WalletBackupStatus => {
+export const checkLocalWalletsForBackupStatus = (
+  wallets: ReturnType<typeof useWallets>['wallets'],
+  backups: CloudBackups
+): WalletBackupStatus => {
   if (!wallets || isEmpty(wallets)) {
     return {
       allBackedUp: false,
@@ -32,11 +35,10 @@ export const checkLocalWalletsForBackupStatus = (wallets: ReturnType<typeof useW
 
   // FOR ANDROID, we need to check if the current google account also has the backup file
   if (IS_ANDROID) {
-    const backupFiles = backupsStore.getState().backups;
     return Object.values(wallets).reduce<WalletBackupStatus>(
       (acc, wallet) => {
         const isBackupEligible = wallet.type !== WalletTypes.readOnly && wallet.type !== WalletTypes.bluetooth;
-        const hasBackupFile = backupFiles.files.some(
+        const hasBackupFile = backups.files.some(
           file => normalizeAndroidBackupFilename(file.name) === normalizeAndroidBackupFilename(wallet.backupFile ?? '')
         );
 
@@ -101,11 +103,7 @@ export const titleForBackupState: Partial<Record<CloudBackupState, string>> = {
 };
 
 export const isWalletBackedUpForCurrentAccount = ({ backupType, backedUp, backupFile }: Partial<RainbowWallet>) => {
-  console.log({
-    backupType,
-    backedUp,
-    backupFile,
-  });
+  console.log({ backupType, backedUp, backupFile });
   if (!backupType || !backupFile) {
     return false;
   }
@@ -113,8 +111,6 @@ export const isWalletBackedUpForCurrentAccount = ({ backupType, backedUp, backup
   if (IS_IOS || backupType === WalletBackupTypes.manual) {
     return backedUp;
   }
-
-  console.log('backupFile', backupFile);
 
   // NOTE: For Android, we also need to check if the current google account has the matching backup file
   if (!backupFile) {

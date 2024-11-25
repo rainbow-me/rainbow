@@ -61,8 +61,9 @@ const SettingsSection = ({
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
-  const { backupProvider } = backupsStore(state => ({
+  const { backupProvider, backups } = backupsStore(state => ({
     backupProvider: state.backupProvider,
+    backups: state.backups,
   }));
 
   const { isDarkMode, setTheme, colorScheme } = useTheme();
@@ -90,7 +91,7 @@ const SettingsSection = ({
 
   const onPressLearn = useCallback(() => Linking.openURL(SettingsExternalURLs.rainbowLearn), []);
 
-  const { allBackedUp, canBeBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets), [wallets]);
+  const { allBackedUp, canBeBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets, backups), [wallets, backups]);
 
   const themeMenuConfig = useMemo(() => {
     return {

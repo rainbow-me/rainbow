@@ -34,6 +34,7 @@ import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { getRemoteConfig } from './remoteConfig';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { AppDispatch } from '@/redux/store';
+import { backupsStore } from '@/state/backups/backups';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
@@ -103,7 +104,12 @@ export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }:
       if (logout) {
         await logoutFromGoogleDrive();
       }
-      await login();
+
+      const currentUser = await getGoogleAccountUserData();
+      if (!currentUser) {
+        await login();
+        await backupsStore.getState().syncAndFetchBackups();
+      }
       const userData = await getGoogleAccountUserData();
       if (!userData) {
         Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));

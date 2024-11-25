@@ -1,10 +1,7 @@
-import { useState } from 'react';
 import * as i18n from '@/languages';
 
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import { DEFAULT_WALLET_NAME, RainbowAccount, RainbowWallet } from '@/model/wallet';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { RainbowWallet } from '@/model/wallet';
 
 type WalletByKey = {
   [key: string]: RainbowWallet;

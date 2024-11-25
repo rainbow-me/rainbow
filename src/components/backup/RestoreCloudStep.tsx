@@ -22,6 +22,8 @@ import { useDimensions, useInitializeWallet, useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import {
   addressSetSelected,
+  fetchWalletENSAvatars,
+  fetchWalletNames,
   setAllWalletsWithIdsAsBackedUp,
   setIsWalletLoading,
   walletsLoadState,
@@ -44,6 +46,7 @@ import { useTheme } from '@/theme';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { isEmpty } from 'lodash';
 import { backupsStore } from '@/state/backups/backups';
+import { useExperimentalFlag, PROFILES } from '@/config';
 
 const Title = styled(Text).attrs({
   size: 'big',
@@ -104,6 +107,7 @@ export default function RestoreCloudStep() {
   }, [canGoBack, goBack]);
 
   const dispatch = useDispatch();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
@@ -205,6 +209,9 @@ export default function RestoreCloudStep() {
         });
 
         onRestoreSuccess();
+        const getWalletNames = dispatch(fetchWalletNames());
+        const getWalletENSAvatars = profilesEnabled ? dispatch(fetchWalletENSAvatars()) : null;
+        Promise.all([getWalletNames, getWalletENSAvatars]);
         backupsStore.getState().setPassword('');
         if (isEmpty(prevWalletsState)) {
           Navigation.handleAction(
@@ -212,7 +219,7 @@ export default function RestoreCloudStep() {
             {
               screen: Routes.WALLET_SCREEN,
             },
-            false
+            true
           );
         } else {
           Navigation.handleAction(Routes.WALLET_SCREEN, {});
@@ -233,9 +240,10 @@ export default function RestoreCloudStep() {
     } catch (e) {
       Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
     } finally {
+      console.log('here');
       dispatch(setIsWalletLoading(null));
     }
-  }, [password, dispatch, selectedBackup.name, initializeWallet, onRestoreSuccess]);
+  }, [password, selectedBackup.name, dispatch, onRestoreSuccess, profilesEnabled, initializeWallet]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();

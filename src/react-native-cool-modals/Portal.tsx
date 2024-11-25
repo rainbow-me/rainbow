@@ -12,6 +12,10 @@ export function Portal() {
     Component: state.Component,
   }));
 
+  if (!Component) {
+    return null;
+  }
+
   return (
     <Wrapper
       pointerEvents={blockTouches ? 'none' : 'auto'}

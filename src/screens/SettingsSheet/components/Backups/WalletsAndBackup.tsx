@@ -28,7 +28,7 @@ import { RainbowAccount, createWallet } from '@/model/wallet';
 import { useDispatch } from 'react-redux';
 import { setIsWalletLoading, walletsLoadState } from '@/redux/wallets';
 import { RainbowError, logger } from '@/logger';
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { BackUpMenuItem } from './BackUpMenuButton';
 import { format } from 'date-fns';
@@ -109,7 +109,7 @@ export const WalletsAndBackup = () => {
     privateKey: 0,
   };
 
-  const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets), [wallets]);
+  const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets, backups), [wallets, backups]);
 
   const visibleWallets = useVisibleWallets({ wallets, walletTypeCount });
 
@@ -127,11 +127,27 @@ export const WalletsAndBackup = () => {
     ];
   }, [visibleWallets]);
 
-  const backupAllNonBackedUpWalletsTocloud = useCallback(async () => {
+  const backupAllNonBackedUpWalletsTocloud = useCallback(() => {
     executeFnIfCloudBackupAvailable({
       fn: () => createBackup({}),
     });
   }, [createBackup]);
+
+  const enableCloudBackups = useCallback(() => {
+    executeFnIfCloudBackupAvailable({
+      fn: async () => {
+        // NOTE: For Android we could be coming from a not-logged-in state, so we
+        // need to check if we have any wallets to back up first.
+        if (IS_ANDROID) {
+          const currentBackups = backupsStore.getState().backups;
+          if (checkLocalWalletsForBackupStatus(wallets, currentBackups).allBackedUp) {
+            return;
+          }
+        }
+        return createBackup({});
+      },
+    });
+  }, [createBackup, wallets]);
 
   const onViewCloudBackups = useCallback(async () => {
     navigate(SETTINGS_BACKUP_ROUTES.VIEW_CLOUD_BACKUPS, {
@@ -193,6 +209,20 @@ export const WalletsAndBackup = () => {
 
   const { status: iconStatusType, text } = useMemo<{ status: StatusType; text: string }>(() => {
     if (!backupProvider) {
+      if (status === CloudBackupState.FailedToInitialize || status === CloudBackupState.NotAvailable) {
+        return {
+          status: 'not-enabled',
+          text: 'Not Enabled',
+        };
+      }
+
+      if (status !== CloudBackupState.Ready) {
+        return {
+          status: 'out-of-sync',
+          text: 'Syncing',
+        };
+      }
+
       if (!allBackedUp) {
         return {
           status: 'out-of-date',
@@ -269,7 +299,7 @@ export const WalletsAndBackup = () => {
                 <BackUpMenuItem
                   title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
                   backupState={status}
-                  onPress={backupAllNonBackedUpWalletsTocloud}
+                  onPress={enableCloudBackups}
                 />
               </Menu>
             </Box>
@@ -418,7 +448,6 @@ export const WalletsAndBackup = () => {
             <Stack space={'24px'}>
               {sortedWallets.map(({ id, name, backedUp, backupFile, backupType, imported, addresses }) => {
                 const isBackedUp = isWalletBackedUpForCurrentAccount({ backedUp, backupFile, backupType });
-                console.log('isBackedUp', isBackedUp);
 
                 return (
                   <Menu key={`wallet-${id}`}>
@@ -617,16 +646,17 @@ export const WalletsAndBackup = () => {
     }
   }, [
     backupProvider,
+    iconStatusType,
+    text,
     status,
-    backupAllNonBackedUpWalletsTocloud,
+    enableCloudBackups,
     sortedWallets,
     onCreateNewSecretPhrase,
     navigate,
     onNavigateToWalletView,
     allBackedUp,
-    iconStatusType,
-    text,
     mostRecentBackup,
+    backupAllNonBackedUpWalletsTocloud,
     onViewCloudBackups,
     manageCloudBackups,
     onPressLearnMoreAboutCloudBackups,

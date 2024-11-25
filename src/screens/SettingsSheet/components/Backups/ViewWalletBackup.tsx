@@ -198,8 +198,6 @@ const ViewWalletBackup = () => {
                     await dispatch(createAccountForWallet(wallet.id, color, name));
                     // @ts-expect-error - no params
                     await initializeWallet();
-
-                    // TODO: mark the newly created wallet as not backed up
                   }
                 } catch (e) {
                   logger.error(new RainbowError(`[ViewWalletBackup]: Error while trying to add account`), {
@@ -436,32 +434,33 @@ const ViewWalletBackup = () => {
         <Menu>
           {wallet?.addresses
             .filter(a => a.visible)
-            .map((account: RainbowAccount) => (
-              <ContextMenuWrapper account={account} menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} key={account.address}>
-                <MenuItem
-                  testID={'wallet-backup-button'}
-                  size={60}
-                  disabled
-                  leftComponent={<WalletAvatar account={account} />}
-                  labelComponent={
-                    account.label.endsWith('.eth') || account.label !== '' ? (
-                      <MenuItem.Label text={abbreviations.address(account.address, 3, 5) || ''} />
-                    ) : null
-                  }
-                  titleComponent={
-                    <MenuItem.Title
-                      text={
-                        account.label.endsWith('.eth') || account.label !== ''
-                          ? abbreviations.abbreviateEnsForDisplay(removeFirstEmojiFromString(account.label), 20) ?? ''
-                          : abbreviations.address(account.address, 3, 5) ?? ''
-                      }
-                      weight="semibold"
-                    />
-                  }
-                  rightComponent={<MenuItem.TextIcon disabled icon="􀍡" />}
-                />
-              </ContextMenuWrapper>
-            ))}
+            .map((account: RainbowAccount) => {
+              console.log({
+                address: account.address,
+                label: account.label,
+              });
+              const isNamedOrEns = account.label.endsWith('.eth') || removeFirstEmojiFromString(account.label) !== '';
+
+              const label = isNamedOrEns ? abbreviations.address(account.address, 3, 5) : undefined;
+
+              const title = isNamedOrEns
+                ? abbreviations.abbreviateEnsForDisplay(removeFirstEmojiFromString(account.label), 20) ?? ''
+                : abbreviations.address(account.address, 3, 5) ?? '';
+
+              return (
+                <ContextMenuWrapper account={account} menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} key={account.address}>
+                  <MenuItem
+                    testID={'wallet-backup-button'}
+                    size={60}
+                    disabled
+                    leftComponent={<WalletAvatar account={account} />}
+                    labelComponent={label ? <MenuItem.Label text={label} /> : null}
+                    titleComponent={<MenuItem.Title text={title} weight="semibold" />}
+                    rightComponent={<MenuItem.TextIcon disabled icon="􀍡" />}
+                  />
+                </ContextMenuWrapper>
+              );
+            })}
         </Menu>
 
         {wallet?.type !== WalletTypes.privateKey && (

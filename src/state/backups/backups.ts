@@ -76,7 +76,7 @@ export const backupsStore = createRainbowStore<BackupsStore>((set, get) => ({
         const isAvailable = await isCloudBackupAvailable();
         if (!isAvailable) {
           logger.debug('[backupsStore]: Cloud backup is not available');
-          set({ status: CloudBackupState.NotAvailable });
+          set({ backupProvider: undefined, status: CloudBackupState.NotAvailable, backups: { files: [] }, mostRecentBackup: undefined });
           return {
             success: false,
             retry: false,
@@ -87,7 +87,7 @@ export const backupsStore = createRainbowStore<BackupsStore>((set, get) => ({
           const gdata = await getGoogleAccountUserData();
           if (!gdata) {
             logger.debug('[backupsStore]: Google account is not available');
-            set({ status: CloudBackupState.NotAvailable, backups: { files: [] }, mostRecentBackup: undefined });
+            set({ backupProvider: undefined, status: CloudBackupState.NotAvailable, backups: { files: [] }, mostRecentBackup: undefined });
             return {
               success: false,
               retry: false,

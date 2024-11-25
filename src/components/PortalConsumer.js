@@ -9,7 +9,7 @@ export default function PortalConsumer() {
 
   useEffect(() => {
     if (isWalletLoading) {
-      portalStore.getState().setComponent(<LoadingOverlay paddingTop={sheetVerticalOffset} title={isWalletLoading} />, true);
+      portalStore.getState().setComponent(<LoadingOverlay paddingTop={sheetVerticalOffset} title={isWalletLoading} />);
     }
     return portalStore.getState().hide;
   }, [isWalletLoading]);
