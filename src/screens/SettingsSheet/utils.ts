@@ -103,7 +103,6 @@ export const titleForBackupState: Partial<Record<CloudBackupState, string>> = {
 };
 
 export const isWalletBackedUpForCurrentAccount = ({ backupType, backedUp, backupFile }: Partial<RainbowWallet>) => {
-  console.log({ backupType, backedUp, backupFile });
   if (!backupType || !backupFile) {
     return false;
   }

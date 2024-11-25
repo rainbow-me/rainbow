@@ -133,6 +133,7 @@ export function useConsolidatedTransactions(
       keepPreviousData: true,
       getNextPageParam: lastPage => lastPage?.nextPage,
       refetchInterval: CONSOLIDATED_TRANSACTIONS_INTERVAL,
+      enabled: !!address,
       retry: 3,
     }
   );

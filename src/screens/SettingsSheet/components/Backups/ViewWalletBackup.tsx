@@ -435,14 +435,8 @@ const ViewWalletBackup = () => {
           {wallet?.addresses
             .filter(a => a.visible)
             .map((account: RainbowAccount) => {
-              console.log({
-                address: account.address,
-                label: account.label,
-              });
               const isNamedOrEns = account.label.endsWith('.eth') || removeFirstEmojiFromString(account.label) !== '';
-
               const label = isNamedOrEns ? abbreviations.address(account.address, 3, 5) : undefined;
-
               const title = isNamedOrEns
                 ? abbreviations.abbreviateEnsForDisplay(removeFirstEmojiFromString(account.label), 20) ?? ''
                 : abbreviations.address(account.address, 3, 5) ?? '';

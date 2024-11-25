@@ -204,14 +204,14 @@ export default function RestoreCloudStep() {
           const firstAddress = firstWallet ? (firstWallet.addresses || [])[0].address : undefined;
           const p1 = dispatch(walletsSetSelected(firstWallet));
           const p2 = dispatch(addressSetSelected(firstAddress));
-          await Promise.all([p1, p2]);
+          const p3 = dispatch(fetchWalletNames());
+          const p4 = profilesEnabled ? dispatch(fetchWalletENSAvatars()) : null;
+
+          await Promise.all([p1, p2, p3, p4]);
           await initializeWallet(null, null, null, false, false, null, true, null);
         });
 
         onRestoreSuccess();
-        const getWalletNames = dispatch(fetchWalletNames());
-        const getWalletENSAvatars = profilesEnabled ? dispatch(fetchWalletENSAvatars()) : null;
-        Promise.all([getWalletNames, getWalletENSAvatars]);
         backupsStore.getState().setPassword('');
         if (isEmpty(prevWalletsState)) {
           Navigation.handleAction(
@@ -240,7 +240,6 @@ export default function RestoreCloudStep() {
     } catch (e) {
       Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
     } finally {
-      console.log('here');
       dispatch(setIsWalletLoading(null));
     }
   }, [password, selectedBackup.name, dispatch, onRestoreSuccess, profilesEnabled, initializeWallet]);
