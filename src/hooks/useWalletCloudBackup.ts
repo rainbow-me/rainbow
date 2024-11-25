@@ -105,7 +105,7 @@ export default function useWalletCloudBackup() {
 
       const wallet = wallets?.[walletId];
       if (wallet?.damaged) {
-        onError?.(i18n.t(i18n.l.back_up.errors.damaged_wallet));
+        onError?.(i18n.t(i18n.l.back_up.errors.damaged_wallet), true);
         return false;
       }
 

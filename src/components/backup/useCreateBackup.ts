@@ -12,6 +12,7 @@ import { InteractionManager } from 'react-native';
 import { DelayedAlert } from '@/components/alerts';
 import { useDispatch } from 'react-redux';
 import * as i18n from '@/languages';
+import showWalletErrorAlert from '@/helpers/support';
 
 type UseCreateBackupProps = {
   walletId?: string;
@@ -70,9 +71,13 @@ export const useCreateBackup = () => {
   );
 
   const onError = useCallback(
-    (msg: string) => {
+    (msg: string, isDamaged?: boolean) => {
       InteractionManager.runAfterInteractions(async () => {
-        DelayedAlert({ title: msg }, 500);
+        if (isDamaged) {
+          showWalletErrorAlert();
+        } else {
+          DelayedAlert({ title: msg }, 500);
+        }
         setLoadingStateWithTimeout({ state: CloudBackupState.Error });
       });
     },
@@ -92,9 +97,8 @@ export const useCreateBackup = () => {
         }
 
         const validWallets = Object.fromEntries(Object.entries(wallets).filter(([_, wallet]) => !wallet.damaged));
-
         if (Object.keys(validWallets).length === 0) {
-          onError(i18n.t(i18n.l.back_up.errors.no_keys_found));
+          onError(i18n.t(i18n.l.back_up.errors.no_keys_found), true);
           backupsStore.getState().setStatus(CloudBackupState.Error);
           return;
         }
