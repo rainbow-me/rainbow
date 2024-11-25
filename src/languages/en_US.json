@@ -96,7 +96,8 @@
         "generic": "Error while trying to backup. Error code: %{errorCodes}",
         "no_keys_found": "No keys found. Please try again.",
         "backup_not_found": "Backup not found. Please try again.",
-        "no_account_found": "Unable to retrieve backup files. Make sure you're logged in."
+        "no_account_found": "Unable to retrieve backup files. Make sure you're logged in.",
+        "damaged_wallet": "Unable to backup wallet. Missing keychain data."
       },
       "wrong_pin": "The PIN code you entered was incorrect and we can't make a backup. Please try again with the correct code.",
       "already_backed_up": {

@@ -11,6 +11,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import { InteractionManager } from 'react-native';
 import { DelayedAlert } from '@/components/alerts';
 import { useDispatch } from 'react-redux';
+import * as i18n from '@/languages';
 
 type UseCreateBackupProps = {
   walletId?: string;
@@ -85,12 +86,21 @@ export const useCreateBackup = () => {
 
       if (typeof walletId === 'undefined') {
         if (!wallets) {
-          onError('Error loading wallets. Please try again.');
+          onError(i18n.t(i18n.l.back_up.errors.no_keys_found));
           backupsStore.getState().setStatus(CloudBackupState.Error);
           return;
         }
+
+        const validWallets = Object.fromEntries(Object.entries(wallets).filter(([_, wallet]) => !wallet.damaged));
+
+        if (Object.keys(validWallets).length === 0) {
+          onError(i18n.t(i18n.l.back_up.errors.no_keys_found));
+          backupsStore.getState().setStatus(CloudBackupState.Error);
+          return;
+        }
+
         backupAllWalletsToCloud({
-          wallets,
+          wallets: validWallets,
           password,
           onError,
           onSuccess,

@@ -1,4 +1,3 @@
-import lang from 'i18n-js';
 import { values } from 'lodash';
 import { useCallback } from 'react';
 import { Linking } from 'react-native';
@@ -77,8 +76,8 @@ export default function useWalletCloudBackup() {
             category: 'backup',
           });
           Alert.alert(
-            lang.t('modal.back_up.alerts.cloud_not_enabled.label'),
-            lang.t('modal.back_up.alerts.cloud_not_enabled.description'),
+            i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.label),
+            i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.description),
             [
               {
                 onPress: () => {
@@ -87,7 +86,7 @@ export default function useWalletCloudBackup() {
                     category: 'backup',
                   });
                 },
-                text: lang.t('modal.back_up.alerts.cloud_not_enabled.show_me'),
+                text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
               },
               {
                 onPress: () => {
@@ -96,12 +95,18 @@ export default function useWalletCloudBackup() {
                   });
                 },
                 style: 'cancel',
-                text: lang.t('modal.back_up.alerts.cloud_not_enabled.no_thanks'),
+                text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
               },
             ]
           );
           return false;
         }
+      }
+
+      const wallet = wallets?.[walletId];
+      if (wallet?.damaged) {
+        onError?.(i18n.t(i18n.l.back_up.errors.damaged_wallet));
+        return false;
       }
 
       // For Android devices without biometrics enabled, we need to ask for PIN
