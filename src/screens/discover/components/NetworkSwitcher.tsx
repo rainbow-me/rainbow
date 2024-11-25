@@ -11,18 +11,17 @@ import { nonceStore } from '@/state/nonces';
 import { useTheme } from '@/theme';
 import MaskedView from '@react-native-masked-view/masked-view';
 import chroma from 'chroma-js';
-import { Component, forwardRef, useReducer, useState } from 'react';
+import { useReducer, useState } from 'react';
 import React, { Pressable, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector, GestureStateChangeEvent, TapGestureHandlerEventPayload } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
-  BounceIn,
   FadeIn,
   FadeOut,
   FadeOutUp,
   LinearTransition,
-  makeMutable,
   runOnJS,
+  SequencedTransition,
   SharedValue,
   SlideInDown,
   SlideOutDown,
@@ -34,6 +33,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
+import * as i18n from '@/languages';
+
+const t = i18n.l.network_switcher;
 
 function getMostUsedChains() {
   const noncesByAddress = nonceStore.getState().nonces;
@@ -53,13 +55,13 @@ function getMostUsedChains() {
 
 const initialPinnedNetworks = getMostUsedChains().slice(0, 5);
 const useNetworkSwitcherStore = createRainbowStore<{ pinnedNetworks: ChainId[] }>(
-  (set, get) => ({
+  () => ({
     pinnedNetworks: initialPinnedNetworks,
-  })
-  // {
-  //   storageKey: 'network-switcher',
-  //   // version: 0,
-  // }
+  }),
+  {
+    storageKey: 'network-switcher',
+    version: 0,
+  }
 );
 const setNetworkSwitcherState = (s: { pinnedNetworks: ChainId[] }) => {
   useNetworkSwitcherStore.setState(s);
@@ -164,7 +166,7 @@ function ExpandNetworks({
           </View>
         )}
         <Text color="labelTertiary" weight="bold" size="17pt">
-          {isExpanded ? 'Show Less' : 'More Networks'}
+          {isExpanded ? i18n.t(t.show_less) : i18n.t(t.show_more)}
         </Text>
         <View style={{ width: 24, justifyContent: 'center' }}>
           <Text color="labelQuaternary" weight="heavy" size="13pt">
@@ -246,7 +248,7 @@ function AllNetworksOption({
           <ChainImage chainId={ChainId.arbitrum} size={16} style={overlappingBadge} />
         </View>
         <Text color="label" size="17pt" weight="bold" style={{ textAlign: 'center', flex: 1 }}>
-          All Networks
+          {i18n.t(t.all_networks)}
         </Text>
       </Animated.View>
     </GestureDetector>
@@ -332,13 +334,6 @@ const ITEM_HEIGHT = 48;
 const ITEM_WIDTH = 164.5;
 const GAP = 12;
 const HALF_GAP = 6;
-
-/*
-
-  - what to do if user pins all networks (where to drag to unpin)
-  - how to display if user selects a network that is in the "more networks" (hidden)
-
- */
 
 function DraggingItem({
   chainId,
@@ -513,6 +508,7 @@ function NetworksGrid({
       droppingTransform.value = draggingTransform.value;
       droppingTransform.value = withSpring({ y, x, scale: 1 }, { mass: 0.6 }, completed => {
         if (completed) dropping.value = null;
+        else droppingTransform.value = { y, x, scale: 1 };
       });
       dropping.value = dragging.value;
       dragging.value = null;
@@ -524,7 +520,7 @@ function NetworksGrid({
     (newY, prevY) => {
       // the layout can recalculate after the drop started
       if (!prevY || !droppingTransform.value) return;
-      const { x, y } = droppingTransform.value; // TODO: does not work
+      const { x, y } = droppingTransform.value;
       droppingTransform.value = withSpring({ x, y: y + (prevY - newY), scale: 1 }, { mass: 0.6 }, completed => {
         if (completed) dropping.value = null;
       });
@@ -558,10 +554,7 @@ function NetworksGrid({
           selected={!!dragging.value && selected.includes(dragging.value)}
         />
 
-        <Animated.View
-          layout={LinearTransition.springify().mass(0.4)}
-          style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingBottom: 12 }}
-        >
+        <Animated.View layout={SequencedTransition} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingBottom: 12 }}>
           {pinnedGrid.map(chainId =>
             chainId === dragging.value || chainId === dropping.value ? (
               <View key={`placeholder-${chainId}`} style={{ width: ITEM_WIDTH, height: ITEM_HEIGHT }} />
@@ -579,7 +572,7 @@ function NetworksGrid({
         {editing ? (
           <Animated.View layout={LinearTransition} style={{ height: 44, justifyContent: 'center', alignItems: 'center' }}>
             <Text color="labelQuaternary" weight="bold" size="17pt">
-              Drag to Rearrange
+              {i18n.t(t.drag_to_rearrange)}
             </Text>
           </Animated.View>
         ) : (
@@ -589,7 +582,7 @@ function NetworksGrid({
         {(editing || isExpanded) && (
           <Animated.View
             onLayout={e => (unpinnedGridY.value = e.nativeEvent.layout.y)}
-            layout={LinearTransition}
+            layout={SequencedTransition.duration(500)}
             entering={FadeIn.duration(250).delay(125)}
             style={{ flexDirection: 'row', gap: 12, flexWrap: 'wrap', paddingVertical: 12 }}
           >
@@ -695,9 +688,13 @@ function CustomizeNetworksBanner() {
               </LinearGradient>
               <View style={{ gap: 10 }}>
                 <Text weight="heavy" size="15pt" color="labelSecondary">
-                  Customize Your Networks
+                  {i18n.t(t.customize_networks_banner.title)}
                 </Text>
                 <Text weight="semibold" size="13pt" color="labelQuaternary">
+                  {/* 
+                    is there a way to render a diferent component mid sentence?
+                    like i18n.t(t.customize_networks_banner.description, { Edit: <Text... /> })
+                  */}
                   Tap the{' '}
                   <Text weight="bold" size="13pt" color={{ custom: blue }}>
                     Edit
@@ -725,8 +722,6 @@ export function NetworkSelector({ onClose, onSelect, multiple }: { onClose: Void
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const separatorTertiary = useForegroundColor('separatorTertiary');
   const fill = useForegroundColor('fill');
-
-  console.log('rerender NetworkSelector');
 
   const translationY = useSharedValue<number>(0);
 
@@ -798,11 +793,11 @@ export function NetworkSelector({ onClose, onSelect, multiple }: { onClose: Void
 
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 28 }}>
                 <Text color="label" size="20pt" weight="heavy">
-                  {isEditing ? 'Edit' : 'Network'}
+                  {isEditing ? i18n.t(t.edit) : i18n.t(t.networks)}
                 </Text>
 
                 <EditButton
-                  text={isEditing ? 'Done' : 'Edit'}
+                  text={isEditing ? i18n.t(i18n.l.done) : i18n.t(t.edit)}
                   onPress={() => {
                     dismissCustomizeNetworksBanner();
                     setEditing(s => !s);
