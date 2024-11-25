@@ -183,7 +183,6 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   outputAssetChainId: ChainId;
   outputAssetAmount: number;
   mainnetAddress: string;
-  flashbots: boolean;
   tradeAmountUSD: number;
   degenMode: boolean;
   isSwappingToPopularAsset: boolean;
