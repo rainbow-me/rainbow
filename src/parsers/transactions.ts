@@ -151,7 +151,6 @@ export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): R
     timestamp: Date.now(),
     to: tx.to,
     type: tx.type,
-    flashbots: tx.flashbots,
     gasPrice: tx.gasPrice,
     maxFeePerGas: tx.maxFeePerGas,
     maxPriorityFeePerGas: tx.maxPriorityFeePerGas,
