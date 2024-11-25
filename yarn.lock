@@ -9230,6 +9230,7 @@ __metadata:
     ethereumjs-wallet: "npm:1.0.1"
     events: "npm:3.3.0"
     expo: "npm:51.0.38"
+    expo-store-review: "npm:7.0.2"
     fast-text-encoding: "npm:1.0.4"
     global: "npm:4.4.0"
     grapheme-splitter: "npm:1.0.4"
@@ -14932,12 +14933,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-modules-core@npm:1.12.26":
-  version: 1.12.26
-  resolution: "expo-modules-core@npm:1.12.26"
-  dependencies:
-    invariant: "npm:^2.2.4"
-  checksum: 10c0/02fd20d52e15cb8c34f0f652512e7fe5ba66fd353a2fbd05888f22bfa4f3de4b699724c37393b415b1336f9ce9691e67342c9fc9ccded4f8806a726b0a711d3c
+"expo-store-review@npm:7.0.2":
+  version: 7.0.2
+  resolution: "expo-store-review@npm:7.0.2"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/8a2e0622a0876bcdfdedcfda8a518cfa04c568007ff02d89e2409de00df00c8783fdf668aafada67bb1788b88e87113885355c2a0d5d07499d39bec357ca71f3
   languageName: node
   linkType: hard
 
