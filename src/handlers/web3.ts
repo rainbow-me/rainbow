@@ -105,16 +105,6 @@ export const isTestnetChain = ({ chainId = ChainId.mainnet }: { chainId?: ChainI
   return !!defaultChains[chainId].testnet;
 };
 
-// TODO: should figure out better way to include this in networks
-export const getFlashbotsProvider = () => {
-  return new StaticJsonRpcProvider(
-    proxyCustomRpcEndpoint(
-      ChainId.mainnet,
-      'https://rpc.flashbots.net/?hint=hash&builder=flashbots&builder=f1b.io&builder=rsync&builder=beaverbuild.org&builder=builder0x69&builder=titan&builder=eigenphi&builder=boba-builder'
-    )
-  );
-};
-
 export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet): StaticJsonRpcProvider | undefined => {
   return chainsProviders.get(chainId);
 };
