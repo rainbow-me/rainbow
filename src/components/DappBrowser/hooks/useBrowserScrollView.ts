@@ -62,7 +62,7 @@ export function useBrowserScrollView() {
 
   const scrollViewStyle = useAnimatedStyle(() => ({ height: scrollViewHeight.value }));
   const gestureManagerStyle = useAnimatedStyle(() => ({ pointerEvents: tabViewVisible.value ? 'auto' : 'box-none' }));
-  const scrollEnabledProp = useAnimatedProps(() => ({ scrollEnabled: tabViewVisible.value }));
+  const animatedProps = useAnimatedProps(() => ({ scrollEnabled: tabViewVisible.value }));
 
   const closeTab = useCallback(
     (tabId: string, tabIndex: number, velocityX: number | undefined) => {
@@ -341,5 +341,5 @@ export function useBrowserScrollView() {
     })();
   }, [animatedActiveTabIndex, currentlyOpenTabIds, scrollViewRef]);
 
-  return { gestureManager, scrollEnabledProp, scrollViewContainerStyle, scrollViewStyle, gestureManagerStyle };
+  return { animatedProps, gestureManager, scrollViewContainerStyle, scrollViewStyle, gestureManagerStyle };
 }

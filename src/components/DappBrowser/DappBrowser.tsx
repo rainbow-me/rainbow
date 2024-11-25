@@ -134,22 +134,22 @@ const TabViewBackground = () => {
 
 const TabViewScrollView = ({ children }: { children: React.ReactNode }) => {
   const { scrollViewOffset, scrollViewRef } = useBrowserContext();
-  const { gestureManager, gestureManagerStyle, scrollEnabledProp, scrollViewContainerStyle, scrollViewStyle } = useBrowserScrollView();
+  const { animatedProps, gestureManager, gestureManagerStyle, scrollViewContainerStyle, scrollViewStyle } = useBrowserScrollView();
 
   return (
     <Animated.View style={[styles.scrollViewContainer, gestureManagerStyle]} testID="browser-screen">
-      {children}
       <GestureDetector gesture={gestureManager}>
         <Animated.ScrollView
-          animatedProps={scrollEnabledProp}
-          scrollViewOffset={scrollViewOffset}
+          animatedProps={animatedProps}
           ref={scrollViewRef}
+          scrollViewOffset={scrollViewOffset}
           showsVerticalScrollIndicator={false}
           style={[styles.scrollView, scrollViewContainerStyle]}
         >
           <Animated.View style={[styles.scrollViewHeight, scrollViewStyle]} />
         </Animated.ScrollView>
       </GestureDetector>
+      {children}
     </Animated.View>
   );
 };
