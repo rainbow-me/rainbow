@@ -207,7 +207,6 @@ const FreezableWebViewComponent = ({
       try {
         // validate message and parse data
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
-        parsedData?.jsEnabled && console.log(parsedData);
         if (!parsedData || (!parsedData.topic && !parsedData.payload)) return;
 
         if (parsedData.topic === 'websiteMetadata') {
@@ -258,7 +257,6 @@ const FreezableWebViewComponent = ({
     (event: WebViewEvent) => {
       if (event.nativeEvent.loading) return;
       const { origin } = new URL(event.nativeEvent.url);
-      console.log('======> handleOnLoad', origin);
 
       if (typeof webViewRef !== 'function' && webViewRef?.current) {
         if (!webViewRef?.current) {
@@ -348,39 +346,28 @@ const FreezableWebViewComponent = ({
     if (webViewRef?.current) {
       if (isActiveTab) {
         webViewRef.current.injectJavaScript(unfreezeWebsite);
+        webViewRef.current.setActive(true);
       } else {
         webViewRef.current.injectJavaScript(freezeWebsite);
+        webViewRef.current.setActive(false);
       }
     }
   }, [isActiveTab, webViewRef]);
 
-  console.log(
-    '======> rendered tab ',
-    JSON.stringify(
-      {
-        tabId,
-        tabUrl,
-        isActiveTab,
-        javaScriptEnabled: isActiveTab,
-      },
-      null,
-      2
-    )
-  );
-
   return (
-    <TabWebView
-      onContentProcessDidTerminate={handleOnContentProcessDidTerminate}
-      onLoad={handleOnLoad}
-      onLoadProgress={handleOnLoadProgress}
-      onMessage={handleOnMessage}
-      onNavigationStateChange={handleNavigationStateChange}
-      onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
-      ref={webViewRef}
-      source={{ uri: tabUrl }}
-      javaScriptEnabled={isActiveTab}
-      onOpenWindow={handleOnOpenWindow}
-    />
+    <Freeze freeze={!isActiveTab}>
+      <TabWebView
+        onContentProcessDidTerminate={handleOnContentProcessDidTerminate}
+        onLoad={handleOnLoad}
+        onLoadProgress={handleOnLoadProgress}
+        onMessage={handleOnMessage}
+        onNavigationStateChange={handleNavigationStateChange}
+        onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+        ref={webViewRef}
+        source={{ uri: tabUrl }}
+        onOpenWindow={handleOnOpenWindow}
+      />
+    </Freeze>
   );
 };
 
