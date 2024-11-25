@@ -4,7 +4,6 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { runOnJS, SharedValue, useSharedValue } from 'react-native-reanimated';
 
 export const useSwapSettings = ({ debouncedFetchQuote, slippage }: { debouncedFetchQuote: () => void; slippage: SharedValue<string> }) => {
-  const flashbots = useSharedValue(swapsStore.getState().flashbots);
   const degenMode = useSharedValue(swapsStore.getState().degenMode);
 
   const setSlippage = swapsStore(state => state.setSlippage);
@@ -42,7 +41,6 @@ export const useSwapSettings = ({ debouncedFetchQuote, slippage }: { debouncedFe
   };
 
   return {
-    flashbots,
     slippage,
     degenMode,
     onUpdateSlippage,
