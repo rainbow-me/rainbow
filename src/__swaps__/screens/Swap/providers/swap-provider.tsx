@@ -339,9 +339,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       performanceTracking.getState().executeFn({
         fn: () => {
           const { routes, index } = Navigation.getState();
-          if (index === 0 || routes[index - 1].name === Routes.EXPANDED_ASSET_SHEET) {
+          const currentRoute = routes[index - 1];
+          if (index === 0 || currentRoute.name === Routes.EXPANDED_ASSET_SHEET) {
             Navigation.handleAction(Routes.WALLET_SCREEN, {});
           } else {
+            if (currentRoute.name === Routes.HARDWARE_WALLET_TX_NAVIGATOR) {
+              Navigation.goBack();
+            }
             Navigation.goBack();
           }
         },
