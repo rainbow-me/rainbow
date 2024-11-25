@@ -1303,7 +1303,7 @@ PODS:
     - React-Core
   - react-native-screen-corner-radius (0.2.2):
     - React
-  - react-native-skia (1.5.6):
+  - react-native-skia (1.5.10):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2520,7 +2520,7 @@ SPEC CHECKSUMS:
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
   react-native-safe-area-context: 4532f1a0c5d34a46b9324ccaaedcb5582a302b7d
   react-native-screen-corner-radius: 67064efbb78f2d48f01626713ae8142f6a20f925
-  react-native-skia: a04b565e0123780b0c49c2b99a60dcb7d8152fd8
+  react-native-skia: 6e137273ac478a9c840b45ca53b7a248f9103fe2
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf

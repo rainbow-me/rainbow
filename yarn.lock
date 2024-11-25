@@ -6859,9 +6859,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/react-native-skia@npm:1.5.6":
-  version: 1.5.6
-  resolution: "@shopify/react-native-skia@npm:1.5.6"
+"@shopify/react-native-skia@npm:1.5.10":
+  version: 1.5.10
+  resolution: "@shopify/react-native-skia@npm:1.5.10"
   dependencies:
     canvaskit-wasm: "npm:0.39.1"
     react-reconciler: "npm:0.27.0"
@@ -6876,7 +6876,7 @@ __metadata:
       optional: true
   bin:
     setup-skia-web: ./scripts/setup-canvaskit.js
-  checksum: 10c0/ac20fbc4cdceaabfcf1a59d8d8b7774048a10874c9a055af72a11440249be5dbd09f77b3e583ee50ee6090e8bf99dedbf615b5ff58ebcd9dc4652563aa56c00e
+  checksum: 10c0/c9449dde7c80ed600c26dfc2ba76dd05b4f0b82f019128fab15fdfbf0b05696ad31937adbef3d4ee4c5d04272a325c83c734b154780e3c4e644295819559a039
   languageName: node
   linkType: hard
 
@@ -9153,7 +9153,7 @@ __metadata:
     "@rudderstack/rudder-sdk-react-native": "npm:1.12.1"
     "@sentry/react-native": "npm:5.35.0"
     "@shopify/flash-list": "npm:1.7.2"
-    "@shopify/react-native-skia": "npm:1.5.6"
+    "@shopify/react-native-skia": "npm:1.5.10"
     "@tanstack/query-async-storage-persister": "npm:4.2.1"
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
@@ -14930,6 +14930,15 @@ __metadata:
   dependencies:
     invariant: "npm:^2.2.4"
   checksum: 10c0/910ab3819920c36c715c546ec954ceea253ddd466534f839537986fecafc82ed74555f8bc0a852a6b5a5b473ce984a2217416830c835ed940fae5e3a8768da72
+  languageName: node
+  linkType: hard
+
+"expo-modules-core@npm:1.12.26":
+  version: 1.12.26
+  resolution: "expo-modules-core@npm:1.12.26"
+  dependencies:
+    invariant: "npm:^2.2.4"
+  checksum: 10c0/02fd20d52e15cb8c34f0f652512e7fe5ba66fd353a2fbd05888f22bfa4f3de4b699724c37393b415b1336f9ce9691e67342c9fc9ccded4f8806a726b0a711d3c
   languageName: node
   linkType: hard
 
