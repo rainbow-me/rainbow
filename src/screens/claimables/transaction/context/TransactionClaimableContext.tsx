@@ -45,7 +45,7 @@ import { analyticsV2 } from '@/analytics';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
-const RAINBOW_FEE_BIPS = 250;
+const RAINBOW_FEE_BIPS = 85;
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
