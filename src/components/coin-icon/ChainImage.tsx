@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { ChainId } from '@/state/backendNetworks/types';
+import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
 
 import ApechainBadge from '@/assets/badges/apechain.png';
 import ArbitrumBadge from '@/assets/badges/arbitrum.png';
@@ -20,9 +21,15 @@ import PolygonBadge from '@/assets/badges/polygon.png';
 // import ZksyncBadge from '@/assets/badges/zksync.png';
 import ZoraBadge from '@/assets/badges/zora.png';
 
-import FastImage, { Source } from 'react-native-fast-image';
-
-export function ChainImage({ chainId, size = 20 }: { chainId: ChainId | null | undefined; size?: number }) {
+export function ChainImage({
+  chainId,
+  size = 20,
+  style,
+}: {
+  chainId: ChainId | null | undefined;
+  size?: number;
+  style?: FastImageProps['style'];
+}) {
   const source = useMemo(() => {
     switch (chainId) {
       case ChainId.apechain:
@@ -69,6 +76,10 @@ export function ChainImage({ chainId, size = 20 }: { chainId: ChainId | null | u
   if (!chainId) return null;
 
   return (
-    <FastImage key={`${chainId}-badge-${size}`} source={source as Source} style={{ borderRadius: size / 2, height: size, width: size }} />
+    <FastImage
+      key={`${chainId}-badge-${size}`}
+      source={source as Source}
+      style={[{ borderRadius: size / 2, height: size, width: size }, style]}
+    />
   );
 }

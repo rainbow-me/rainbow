@@ -13,8 +13,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Animated, { LinearTransition, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { NetworkSelector } from './NetworkSwitcher';
 import * as i18n from '@/languages';
-
-const TRANSLATIONS = i18n.l.cards.ens_search;
+import { useTheme } from '@/theme';
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -84,8 +83,11 @@ function CategoryFilterButton({
   iconWidth?: number;
   label: string;
 }) {
-  const backgroundColor = useBackgroundColor('fillTertiary');
-  const borderColor = useBackgroundColor('fillSecondary');
+  const { isDarkMode } = useTheme();
+  const fillTertiary = useBackgroundColor('fillTertiary');
+  const fillSecondary = useBackgroundColor('fillSecondary');
+
+  const borderColor = selected && isDarkMode ? globalColors.white80 : fillSecondary;
 
   const pressed = useSharedValue(false);
 
@@ -103,7 +105,7 @@ function CategoryFilterButton({
   return (
     <GestureDetector gesture={tap}>
       <AnimatedLinearGradient
-        colors={selected ? [chroma(iconColor).luminance(0.5).hex(), 'white'] : [backgroundColor, backgroundColor]}
+        colors={selected ? [chroma(iconColor).luminance(0.5).hex(), 'white'] : [fillTertiary, fillTertiary]}
         style={[
           {
             flexDirection: 'row',
@@ -113,7 +115,7 @@ function CategoryFilterButton({
             paddingHorizontal: 12,
             borderRadius: 18,
             borderWidth: 1.33,
-            borderColor: selected ? 'white' : borderColor,
+            borderColor,
           },
           animatedStyles,
         ]}
@@ -131,20 +133,37 @@ function CategoryFilterButton({
 }
 
 function FriendHolders() {
+  const backgroundColor = useBackgroundColor('surfacePrimary');
   return (
     <View style={{ flexDirection: 'row', gap: 5.67, alignItems: 'center', marginTop: -2 }}>
-      <View style={{ flexDirection: 'row-reverse' }}>
+      <View style={{ flexDirection: 'row-reverse', alignItems: 'center' }}>
         <FastImage
           source={{
             uri: 'https://rainbowme-res.cloudinary.com/image/upload/v1654696359/assets/ethereum/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png',
           }}
-          style={{ height: 12, width: 12, borderRadius: 6, marginLeft: -6 }}
+          style={{
+            height: 12 + 2,
+            width: 12 + 2,
+            borderRadius: 6,
+            borderWidth: 1,
+            borderColor: backgroundColor,
+            marginVertical: -1,
+            marginLeft: -6,
+          }}
         />
         <FastImage
           source={{
             uri: 'https://rainbowme-res.cloudinary.com/image/upload/v1654696359/assets/ethereum/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png',
           }}
-          style={{ height: 12, width: 12, borderRadius: 6 }}
+          style={{
+            height: 12 + 2,
+            width: 12 + 2,
+            borderRadius: 6,
+            borderWidth: 1,
+            borderColor: backgroundColor,
+            marginVertical: -1,
+            marginLeft: -6,
+          }}
         />
       </View>
 
@@ -258,7 +277,9 @@ function TrendingTokenRow() {
 const t = i18n.l.trending_tokens;
 
 function NoResults() {
-  const backgroundColor = '#191A1C'; // useBackgroundColor('fillQuaternary');
+  const { isDarkMode } = useTheme();
+  const fillQuaternary = useBackgroundColor('fillQuaternary');
+  const backgroundColor = isDarkMode ? '#191A1C' : fillQuaternary;
 
   return (
     <View style={{ padding: 20, flexDirection: 'row', justifyContent: 'space-between', backgroundColor, borderRadius: 20 }}>
@@ -349,7 +370,7 @@ export function TrendingTokens() {
             side="bottom"
             onPressMenuItem={timeframe => setFilter(filter => ({ ...filter, timeframe }))}
           >
-            <FilterButton label={filter.timeframe} icon="􀐫" />
+            <FilterButton label={i18n.t(t.filters.time[filter.timeframe])} icon="􀐫" />
           </DropdownMenu>
 
           <DropdownMenu
@@ -367,7 +388,7 @@ export function TrendingTokens() {
               })
             }
           >
-            <FilterButton label={filter.sort || 'Sort'} icon="􀄬" />
+            <FilterButton label={i18n.t(t.filters.sort[filter.sort || 'sort'])} icon="􀄬" />
           </DropdownMenu>
         </View>
       </View>

@@ -3030,6 +3030,7 @@
           "farcaster": "Farcaster"
         },
         "sort": {
+          "sort": "Sort",
           "volume": "Volume",
           "market_cap": "Market Cap",
           "top_gainers": "Top Gainers",
