@@ -49,7 +49,7 @@ export default function useWalletCloudBackup() {
     }: {
       handleNoLatestBackup?: () => void;
       handlePasswordNotFound?: () => void;
-      onError?: (error: string) => void;
+      onError?: (error: string, isDamaged?: boolean) => void;
       onSuccess?: (password: string) => void;
       password: string;
       walletId: string;
