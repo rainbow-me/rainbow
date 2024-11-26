@@ -4,7 +4,9 @@ import { Emoji } from '../text';
 
 interface GravityEmojiProps {
   distance: number;
+  duration: number;
   emoji: string;
+  index: number;
   left: number;
   size: number;
   top: number;

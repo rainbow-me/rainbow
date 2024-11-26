@@ -36,6 +36,7 @@ import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
+import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -263,6 +264,10 @@ export const WalletsAndBackup = () => {
     };
   }, [backupProvider, status, allBackedUp]);
 
+  const isCloudBackupDisabled = useMemo(() => {
+    return status !== CloudBackupState.Ready && status !== CloudBackupState.NotAvailable;
+  }, [status]);
+
   const renderView = useCallback(() => {
     switch (backupProvider) {
       default:
@@ -299,6 +304,7 @@ export const WalletsAndBackup = () => {
                 <BackUpMenuItem
                   title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
                   backupState={status}
+                  disabled={isCloudBackupDisabled}
                   onPress={enableCloudBackups}
                 />
               </Menu>
@@ -438,7 +444,7 @@ export const WalletsAndBackup = () => {
                     })}
                     icon="􀎽"
                     backupState={status}
-                    disabled={status !== CloudBackupState.Ready}
+                    disabled={isCloudBackupDisabled}
                     onPress={backupAllNonBackedUpWalletsTocloud}
                   />
                 </Menu>
@@ -649,6 +655,7 @@ export const WalletsAndBackup = () => {
     iconStatusType,
     text,
     status,
+    isCloudBackupDisabled,
     enableCloudBackups,
     sortedWallets,
     onCreateNewSecretPhrase,
@@ -662,7 +669,12 @@ export const WalletsAndBackup = () => {
     onPressLearnMoreAboutCloudBackups,
   ]);
 
-  return <MenuContainer>{renderView()}</MenuContainer>;
+  return (
+    <MenuContainer>
+      <AbsolutePortalRoot style={{ zIndex: 100 }} />
+      {renderView()}
+    </MenuContainer>
+  );
 };
 
 export default WalletsAndBackup;
