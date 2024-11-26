@@ -14,22 +14,28 @@ import { event } from '@/analytics/event';
 import * as i18n from '@/languages';
 import { capitalize } from 'lodash';
 import { RainbowPosition } from '@/resources/defi/types';
+import { LpPositionListItem } from './LpPositionListItem';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
 const CLAIMABLE_ITEM_HEIGHT = 44;
+const STAKE_ITEM_HEIGHT = 44;
 const ITEM_PADDING = 20;
 const SECTION_TITLE_HEIGHT = 20 + ITEM_PADDING;
 
 export function getPositionSheetHeight({ position }: { position: RainbowPosition }) {
   let height = android ? 120 : 100;
-  const numberOfDeposits = position?.deposits?.length || 0;
+  const numberOfDeposits = position?.deposits.filter(deposit => !deposit.isLp).length || 0;
+  const numberOfLpDeposits = position?.deposits.filter(deposit => deposit.isLp).length || 0;
   const numberOfBorrows = position?.borrows?.length || 0;
   const numberOfClaimables = position?.claimables?.length || 0;
+  const numberOfStakes = position?.stakes?.length || 0;
 
   height += numberOfDeposits > 0 ? SECTION_TITLE_HEIGHT + numberOfDeposits * (DEPOSIT_ITEM_HEIGHT + ITEM_PADDING) : 0;
+  height += numberOfLpDeposits > 0 ? SECTION_TITLE_HEIGHT + numberOfLpDeposits * (DEPOSIT_ITEM_HEIGHT + ITEM_PADDING) : 0;
   height += numberOfBorrows > 0 ? SECTION_TITLE_HEIGHT + numberOfBorrows * (BORROW_ITEM_HEIGHT + ITEM_PADDING) : 0;
   height += numberOfClaimables > 0 ? SECTION_TITLE_HEIGHT + numberOfClaimables * (CLAIMABLE_ITEM_HEIGHT + ITEM_PADDING) : 0;
+  height += numberOfStakes > 0 ? SECTION_TITLE_HEIGHT + numberOfStakes * (STAKE_ITEM_HEIGHT + ITEM_PADDING) : 0;
 
   return height;
 }
@@ -40,7 +46,10 @@ export const PositionSheet: React.FC = () => {
 
   const { position } = params as { position: RainbowPosition };
 
-  const positionColor = position.dapp.colors.primary || position.dapp.colors.fallback;
+  const positionColor = position.dapp.colors.primary || position.dapp.colors.fallback || colors.black;
+
+  const deposits = position.deposits.filter(deposit => !deposit.isLp);
+  const lpDeposits = position.deposits.filter(deposit => deposit.isLp);
 
   const openDapp = useCallback(() => {
     analyticsV2.track(event.positionsOpenedExternalDapp, {
@@ -103,21 +112,62 @@ export const PositionSheet: React.FC = () => {
               </Inline>
 
               <Stack space={'20px'}>
-                {(position?.deposits?.length || false) && (
+                {(deposits.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
                     {i18n.t(i18n.l.positions.deposits)}
                   </Text>
                 )}
-                {position?.deposits?.map(deposit => (
+                {deposits.map(deposit => (
                   <SubPositionListItem
-                    key={`deposit-${deposit.underlying[0].asset.asset_code}-${deposit.quantity}-${deposit.apy}`}
+                    key={`deposit-${deposit.asset.asset_code}-${deposit.quantity}-${deposit.apy}`}
                     asset={deposit.underlying[0].asset}
                     quantity={deposit.underlying[0].quantity}
                     native={deposit.underlying[0].native}
+                    dappVersion={deposit.dappVersion}
                     positionColor={positionColor}
                     apy={deposit.apy}
                   />
                 ))}
+
+                {(lpDeposits.length || false) && (
+                  <Text size="17pt" weight="heavy" color="label">
+                    {i18n.t(i18n.l.positions.pools)}
+                  </Text>
+                )}
+                {lpDeposits.map(deposit => (
+                  <LpPositionListItem
+                    key={`deposit-${deposit.asset.asset_code}-${deposit.quantity}`}
+                    underlyingAssets={deposit.underlying}
+                    isConcentratedLiquidity={deposit.isConcentratedLiquidity}
+                    dappVersion={deposit.dappVersion}
+                  />
+                ))}
+
+                {(position?.stakes?.length || false) && (
+                  <Text size="17pt" weight="heavy" color="label">
+                    {i18n.t(i18n.l.positions.stakes)}
+                  </Text>
+                )}
+                {position?.stakes?.map(stake =>
+                  stake.isLp ? (
+                    <LpPositionListItem
+                      key={`stake-${stake.asset.asset_code}-${stake.quantity}`}
+                      underlyingAssets={stake.underlying}
+                      // TODO: move to parsing utils
+                      isConcentratedLiquidity={stake.isConcentratedLiquidity}
+                      dappVersion={stake.dappVersion}
+                    />
+                  ) : (
+                    <SubPositionListItem
+                      key={`stake-${stake.asset.asset_code}-${stake.quantity}`}
+                      asset={stake.underlying[0].asset}
+                      quantity={stake.underlying[0].quantity}
+                      native={stake.underlying[0].native}
+                      positionColor={positionColor}
+                      apy={stake.apy}
+                    />
+                  )
+                )}
 
                 {(position?.borrows?.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
