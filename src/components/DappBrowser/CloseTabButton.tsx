@@ -6,6 +6,7 @@ import { IS_IOS } from '@/env';
 import { deviceUtils } from '@/utils';
 import { AnimatedBlurView } from '../AnimatedComponents/AnimatedBlurView';
 import { useBrowserContext } from './BrowserContext';
+import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { TAB_VIEW_COLUMN_WIDTH } from './Dimensions';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { RAINBOW_HOME } from './constants';
@@ -26,30 +27,28 @@ const SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB = X_BUTTON_PADDING * SINGLE_TAB
 
 export const CloseTabButton = ({ tabId }: { tabId: TabId }) => {
   const {
-    animatedActiveTabIndex,
     animatedMultipleTabsOpen,
     animatedTabUrls,
     currentlyOpenTabIds,
     isSwitchingTabs,
     multipleTabsOpen,
-    pendingTabSwitchOffset,
     tabViewGestureProgress,
     tabViewGestureState,
     tabViewProgress,
     tabViewVisible,
   } = useBrowserContext();
+
+  const { getTabInfo } = useBrowserWorkletsContext();
   const { isDarkMode } = useColorMode();
 
   const closeButtonStyle = useAnimatedStyle(() => {
+    const { isFullSizeTab, isPendingActiveTab } = getTabInfo(tabId);
+
     const isRunningEnterTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING;
-    const tabIndex = currentlyOpenTabIds.value.indexOf(tabId);
-    const activeIndex = Math.abs(animatedActiveTabIndex.value);
-    const pendingActiveIndex = activeIndex + pendingTabSwitchOffset.value;
-    const isPendingActiveTab = pendingActiveIndex === tabIndex;
     const animatedIsActiveTab = isPendingActiveTab || currentlyOpenTabIds.value.length === 0;
 
-    const startOpacity = animatedIsActiveTab || (isSwitchingTabs.value && !isRunningEnterTabViewAnimation) ? 0 : 1;
-    const endOpacity = isSwitchingTabs.value && !isRunningEnterTabViewAnimation ? 0 : 1;
+    const startOpacity = isFullSizeTab ? 0 : 1;
+    const endOpacity = isSwitchingTabs.value && isFullSizeTab && !isRunningEnterTabViewAnimation ? 0 : 1;
 
     // Switch to using progress-based interpolation when the tab view is
     // entered. This is mainly to avoid showing the close button in the

@@ -6,23 +6,13 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from './BrowserContext';
+import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { ZOOMED_TAB_BORDER_RADIUS } from './Dimensions';
 import { RAINBOW_HOME } from './constants';
-import { TabViewGestureStates } from './types';
 
 export const WebViewBorder = ({ tabId }: { tabId: string }) => {
-  const {
-    animatedActiveTabIndex,
-    animatedTabUrls,
-    currentlyOpenTabIds,
-    isSwitchingTabs,
-    pendingTabSwitchOffset,
-    tabViewBorderRadius,
-    tabViewGestureProgress,
-    tabViewGestureState,
-    tabViewProgress,
-  } = useBrowserContext();
-
+  const { animatedTabUrls, isSwitchingTabs, tabViewBorderRadius, tabViewGestureProgress, tabViewProgress } = useBrowserContext();
+  const { getTabInfo } = useBrowserWorkletsContext();
   const { isDarkMode } = useColorMode();
 
   const enabled = isDarkMode;
@@ -30,24 +20,14 @@ export const WebViewBorder = ({ tabId }: { tabId: string }) => {
   const webViewBorderStyle = useAnimatedStyle(() => {
     if (!enabled) return { borderRadius: ZOOMED_TAB_BORDER_RADIUS, opacity: 0 };
 
+    const { isFullSizeTab } = getTabInfo(tabId);
+
     const url = animatedTabUrls.value[tabId] || RAINBOW_HOME;
     const isOnHomepage = url === RAINBOW_HOME;
     const opacity = isOnHomepage ? 0 : 1 - tabViewProgress.value / 100;
 
-    const tabIndex = currentlyOpenTabIds.value.indexOf(tabId);
-    const activeIndex = Math.abs(animatedActiveTabIndex.value);
-    const pendingActiveIndex = activeIndex + pendingTabSwitchOffset.value;
-    const isPendingActiveTab = pendingActiveIndex === tabIndex;
-
-    const isRunningEnterTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING;
-    const isLeftOfActiveTab = tabIndex === pendingActiveIndex - 1;
-    const isRightOfActiveTab = tabIndex === pendingActiveIndex + 1;
-
-    const isFullSizeTab =
-      isPendingActiveTab || ((isLeftOfActiveTab || isRightOfActiveTab) && isSwitchingTabs.value && !isRunningEnterTabViewAnimation);
-
     const borderRadius = interpolate(
-      isSwitchingTabs.value ? tabViewGestureProgress.value : tabViewProgress.value,
+      isSwitchingTabs.value && isFullSizeTab ? tabViewGestureProgress.value : tabViewProgress.value,
       [0, 0, 100],
       [ZOOMED_TAB_BORDER_RADIUS, isFullSizeTab ? ZOOMED_TAB_BORDER_RADIUS : tabViewBorderRadius.value, tabViewBorderRadius.value],
       'clamp'
@@ -59,7 +39,7 @@ export const WebViewBorder = ({ tabId }: { tabId: string }) => {
     };
   });
 
-  return <Animated.View style={[enabled && isDarkMode ? styles.webViewBorder : {}, webViewBorderStyle]} />;
+  return <Animated.View style={[enabled ? styles.webViewBorder : {}, webViewBorderStyle]} />;
 };
 
 const styles = StyleSheet.create({

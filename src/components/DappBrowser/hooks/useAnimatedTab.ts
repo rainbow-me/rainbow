@@ -49,7 +49,7 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     tabViewProgress,
     tabViewVisible,
   } = useBrowserContext();
-  const { closeTabWorklet } = useBrowserWorkletsContext();
+  const { closeTabWorklet, getTabInfo } = useBrowserWorkletsContext();
 
   const animatedTabIndex = useSharedValue(useBrowserStore.getState().tabIds.indexOf(tabId));
 
@@ -120,18 +120,13 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
   });
 
   const animatedWebViewStyle = useAnimatedStyle(() => {
-    const tabIndex = currentlyOpenTabIds.value.indexOf(tabId);
+    const { isFullSizeTab, isPendingActiveTab: animatedIsActiveTab } = getTabInfo(tabId);
+
     const activeIndex = Math.abs(animatedActiveTabIndex.value);
     const pendingActiveIndex = activeIndex + pendingTabSwitchOffset.value;
-    const isPendingActiveTab = pendingActiveIndex === tabIndex;
-    const animatedIsActiveTab = isPendingActiveTab || currentlyOpenTabIds.value.length === 0;
-
+    const tabIndex = currentlyOpenTabIds.value.indexOf(tabId);
     const isRunningEnterTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING;
-    const isLeftOfActiveTab = tabIndex === pendingActiveIndex - 1;
-    const isRightOfActiveTab = tabIndex === pendingActiveIndex + 1;
-
-    const shouldUseTabSwitchGestureStyles =
-      isSwitchingTabs.value && (isPendingActiveTab || (!isRunningEnterTabViewAnimation && (isLeftOfActiveTab || isRightOfActiveTab)));
+    const shouldUseTabSwitchGestureStyles = isSwitchingTabs.value && isFullSizeTab;
 
     if (shouldUseTabSwitchGestureStyles) {
       return getTabSwitchGestureStyles({
@@ -172,28 +167,17 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
   });
 
   const expensiveAnimatedWebViewStyles = useAnimatedStyle(() => {
-    const isTabBeingClosed = !currentlyOpenTabIds.value.includes(tabId);
-
-    const tabIndex = currentlyOpenTabIds.value.indexOf(tabId);
-    const activeIndex = Math.abs(animatedActiveTabIndex.value);
-    const pendingActiveIndex = activeIndex + pendingTabSwitchOffset.value;
-    const isPendingActiveTab = pendingActiveIndex === tabIndex;
-
-    const isLeftOfActiveTab = tabIndex === pendingActiveIndex - 1;
-    const isRightOfActiveTab = tabIndex === pendingActiveIndex + 1;
-    const isRunningEnterTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING;
-
-    const isFullSizeTab =
-      isPendingActiveTab || ((isLeftOfActiveTab || isRightOfActiveTab) && isSwitchingTabs.value && !isRunningEnterTabViewAnimation);
+    const { isFullSizeTab, isPendingActiveTab } = getTabInfo(tabId);
 
     const borderRadius = interpolate(
-      isSwitchingTabs.value ? tabViewGestureProgress.value : tabViewProgress.value,
+      isSwitchingTabs.value && isFullSizeTab ? tabViewGestureProgress.value : tabViewProgress.value,
       [0, 0, 100],
       [ZOOMED_TAB_BORDER_RADIUS, isFullSizeTab ? ZOOMED_TAB_BORDER_RADIUS : tabViewBorderRadius.value, tabViewBorderRadius.value],
       'clamp'
     );
 
     const height = isFullSizeTab ? animatedWebViewHeight.value : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED;
+    const isTabBeingClosed = !currentlyOpenTabIds.value.includes(tabId);
 
     return {
       borderRadius,
@@ -209,23 +193,17 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
   });
 
   const zIndexAnimatedStyle = useAnimatedStyle(() => {
-    const tabIndex = currentlyOpenTabIds.value.indexOf(tabId);
-    const activeIndex = Math.abs(animatedActiveTabIndex.value);
-    const pendingActiveIndex = activeIndex + pendingTabSwitchOffset.value;
-    const isPendingActiveTab = pendingActiveIndex === tabIndex;
-
     const wasCloseButtonPressed = gestureScale.value === 1 && gestureX.value < 0;
     const isRunningEnterTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING;
+
+    const { isFullSizeTab, isPendingActiveTab } = getTabInfo(tabId);
 
     const scaleWeighting =
       gestureScale.value *
       interpolate(
         isRunningEnterTabViewAnimation ? tabViewGestureProgress.value : tabViewProgress.value,
         [0, 100],
-        [
-          isPendingActiveTab || isSwitchingTabs.value ? 1 : MULTI_TAB_SCALE,
-          SINGLE_TAB_SCALE - MULTI_TAB_SCALE_DIFF * animatedMultipleTabsOpen.value,
-        ],
+        [isFullSizeTab ? 1 : MULTI_TAB_SCALE, SINGLE_TAB_SCALE - MULTI_TAB_SCALE_DIFF * animatedMultipleTabsOpen.value],
         'clamp'
       );
 
