@@ -599,7 +599,6 @@ export const SignTransactionSheet = () => {
 
   const expandedCardBottomInset = EXPANDED_CARD_BOTTOM_INSET + (isMessageRequest ? 0 : GAS_BUTTON_SPACE);
 
-  simulationResult?.simulationError && console.log(JSON.stringify(simulationResult?.simulationError, null, 2));
 
   return (
     <PanGestureHandler enabled={IS_IOS}>
