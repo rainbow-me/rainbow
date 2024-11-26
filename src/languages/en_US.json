@@ -1193,6 +1193,12 @@
         "check_out_this_wallet": "Check out this wallet's collectibles on 🌈 Rainbow at %{showcaseUrl}"
       }
     },
+    "loading": {
+      "backing_up": "Backing up...",
+      "creating_wallet": "Creating wallet...",
+      "importing_wallet": "Importing...",
+      "restoring": "Restoring..."
+    },
     "message": {
       "click_to_copy_to_clipboard": "Click to copy to clipboard",
       "coming_soon": "Coming soon...",
