@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { SlackSheet } from '@/components/sheet';
-import { BackgroundProvider, Box, Inline, Separator, Stack, Text } from '@/design-system';
+import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { Linking } from 'react-native';
 import { useRoute } from '@react-navigation/native';
@@ -43,10 +43,12 @@ export function getPositionSheetHeight({ position }: { position: RainbowPosition
 export const PositionSheet: React.FC = () => {
   const { params } = useRoute();
   const { colors } = useTheme();
+  const { isDarkMode } = useColorMode();
 
   const { position } = params as { position: RainbowPosition };
 
-  const positionColor = position.dapp.colors.primary || position.dapp.colors.fallback || colors.black;
+  const positionColor =
+    position.dapp.colors.primary || position.dapp.colors.fallback || (isDarkMode ? globalColors.white100 : globalColors.white10);
 
   const deposits = position.deposits.filter(deposit => !deposit.isLp);
   const lpDeposits = position.deposits.filter(deposit => deposit.isLp);
@@ -153,7 +155,6 @@ export const PositionSheet: React.FC = () => {
                     <LpPositionListItem
                       key={`stake-${stake.asset.asset_code}-${stake.quantity}`}
                       underlyingAssets={stake.underlying}
-                      // TODO: move to parsing utils
                       isConcentratedLiquidity={stake.isConcentratedLiquidity}
                       dappVersion={stake.dappVersion}
                     />

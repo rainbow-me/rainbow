@@ -1,4 +1,4 @@
-import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
+import { Box, Column, Columns, Inline, Stack, Text, globalColors } from '@/design-system';
 import React, { useCallback, useMemo } from 'react';
 import { useTheme } from '@/theme';
 
@@ -92,7 +92,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
 
   const depositTokens: CoinStackToken[] = useMemo(() => {
     const tokens: CoinStackToken[] = [];
-    position.deposits.forEach((deposit: RainbowDeposit) => {
+    position.deposits?.forEach((deposit: RainbowDeposit) => {
       deposit.underlying?.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
@@ -101,7 +101,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
         });
       });
     });
-    position.stakes.forEach((stake: RainbowStake) => {
+    position.stakes?.forEach((stake: RainbowStake) => {
       stake.underlying?.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
@@ -110,15 +110,15 @@ export const PositionCard = ({ position }: PositionCardProps) => {
         });
       });
     });
-    position.claimables.forEach((claimable: RainbowClaimable) => {
+    position.claimables?.forEach((claimable: RainbowClaimable) => {
       tokens.push({
         address: claimable.asset.asset_code,
         network: claimable.asset.network,
         symbol: claimable.asset.symbol,
       });
     });
-    position.borrows.forEach((borrow: RainbowBorrow) => {
-      borrow.underlying.forEach(({ asset }) => {
+    position.borrows?.forEach((borrow: RainbowBorrow) => {
+      borrow.underlying?.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
           network: asset.network,
@@ -132,7 +132,8 @@ export const PositionCard = ({ position }: PositionCardProps) => {
     return dedupedTokens?.slice(0, 5);
   }, [position]);
 
-  const positionColor = position.dapp.colors.primary || position.dapp.colors.fallback || '#000000';
+  const positionColor =
+    position.dapp.colors.primary || position.dapp.colors.fallback || (isDarkMode ? globalColors.white100 : globalColors.white10);
 
   return (
     <Box width="full" height={{ custom: 117 }}>
