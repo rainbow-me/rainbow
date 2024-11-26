@@ -1,6 +1,5 @@
 import React, { createContext, useCallback, useContext, useRef } from 'react';
 import Animated, {
-  interpolate,
   runOnUI,
   useAnimatedReaction,
   useAnimatedRef,
@@ -12,12 +11,12 @@ import Animated, {
 import ViewShot from 'react-native-view-shot';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, EXTRA_WEBVIEW_HEIGHT, WEBVIEW_HEIGHT } from './Dimensions';
+import { EXTRA_WEBVIEW_HEIGHT } from './Dimensions';
 import { RAINBOW_HOME } from './constants';
+import { useGestureManager } from './hooks/useGestureManager';
 import { ActiveTabRef, AnimatedScreenshotData, AnimatedTabUrls, BrowserContextType, BrowserTabBarContextType } from './types';
 import { normalizeUrlWorklet } from './utils';
 import { calculateTabViewBorderRadius } from './utils/layoutUtils';
-import { useGestureManager } from './hooks/useGestureManager';
 
 const BrowserTabBarContext = createContext<BrowserTabBarContextType | undefined>(undefined);
 
@@ -131,10 +130,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
 
   const animatedMultipleTabsOpen = useDerivedValue<number>(() => withTiming(multipleTabsOpen.value ? 1 : 0, TIMING_CONFIGS.tabPressConfig));
 
-  const animatedWebViewHeight = useDerivedValue(() =>
-    interpolate(tabViewProgress.value, [0, 100], [WEBVIEW_HEIGHT + extraWebViewHeight.value, COLLAPSED_WEBVIEW_HEIGHT_UNSCALED], 'clamp')
-  );
-
   const tabViewBorderRadius = useDerivedValue(() => calculateTabViewBorderRadius(animatedMultipleTabsOpen.value));
 
   const refreshPage = useCallback(() => {
@@ -176,7 +171,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         animatedMultipleTabsOpen,
         animatedScreenshotData,
         animatedTabUrls,
-        animatedWebViewHeight,
         currentlyBeingClosedTabIds,
         currentlyOpenTabIds,
         lastActiveHomepageTab,

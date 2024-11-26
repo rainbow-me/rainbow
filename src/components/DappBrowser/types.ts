@@ -87,7 +87,6 @@ export interface BrowserContextType {
   animatedMultipleTabsOpen: DerivedValue<number>;
   animatedScreenshotData: SharedValue<AnimatedScreenshotData>;
   animatedTabUrls: SharedValue<AnimatedTabUrls>;
-  animatedWebViewHeight: DerivedValue<number>;
   currentlyBeingClosedTabIds: SharedValue<string[]>;
   currentlyOpenTabIds: SharedValue<string[]>;
   extraWebViewHeight: DerivedValue<number>;

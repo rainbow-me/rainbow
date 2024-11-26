@@ -22,6 +22,7 @@ import {
   SINGLE_TAB_SCALE,
   TAB_VIEW_COLUMN_WIDTH,
   TAB_VIEW_ROW_HEIGHT,
+  WEBVIEW_HEIGHT,
   ZOOMED_TAB_BORDER_RADIUS,
 } from '../Dimensions';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
@@ -34,7 +35,6 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     animatedActiveTabIndex,
     animatedMultipleTabsOpen,
     animatedTabUrls,
-    animatedWebViewHeight,
     currentlyBeingClosedTabIds,
     currentlyOpenTabIds,
     extraWebViewHeight,
@@ -175,8 +175,12 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
       [ZOOMED_TAB_BORDER_RADIUS, isFullSizeTab ? ZOOMED_TAB_BORDER_RADIUS : tabViewBorderRadius.value, tabViewBorderRadius.value],
       'clamp'
     );
+    const height = interpolate(
+      tabViewProgress.value,
+      [0, 100],
+      [isFullSizeTab ? WEBVIEW_HEIGHT + extraWebViewHeight.value : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, COLLAPSED_WEBVIEW_HEIGHT_UNSCALED]
+    );
 
-    const height = isFullSizeTab ? animatedWebViewHeight.value : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED;
     const isTabBeingClosed = !currentlyOpenTabIds.value.includes(tabId);
 
     return {
