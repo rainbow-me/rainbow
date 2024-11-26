@@ -42,11 +42,16 @@ import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { Source } from 'react-native-fast-image';
-import { useTheme } from '@/theme';
+import { ThemeContextProps, useTheme } from '@/theme';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { isEmpty } from 'lodash';
 import { backupsStore } from '@/state/backups/backups';
 import { useExperimentalFlag, PROFILES } from '@/config';
+
+type ComponentProps = {
+  theme: ThemeContextProps;
+  color: ThemeContextProps['colors'][keyof ThemeContextProps['colors']];
+};
 
 const Title = styled(Text).attrs({
   size: 'big',
@@ -55,7 +60,7 @@ const Title = styled(Text).attrs({
   ...padding.object(12, 0, 0),
 });
 
-const DescriptionText = styled(Text).attrs(({ theme: { colors }, color }: any) => ({
+const DescriptionText = styled(Text).attrs(({ theme: { colors }, color }: ComponentProps) => ({
   align: 'left',
   color: color || colors.alpha(colors.blueGreyDark, 0.5),
   lineHeight: 'looser',
@@ -63,7 +68,7 @@ const DescriptionText = styled(Text).attrs(({ theme: { colors }, color }: any) =
   weight: 'medium',
 }))({});
 
-const ButtonText = styled(Text).attrs(({ theme: { colors }, color }: any) => ({
+const ButtonText = styled(Text).attrs(({ theme: { colors }, color }: ComponentProps) => ({
   align: 'center',
   letterSpacing: 'rounded',
   color: color || colors.alpha(colors.blueGreyDark, 0.5),
@@ -81,7 +86,7 @@ const Masthead = styled(Box).attrs({
 });
 
 const KeyboardSizeView = styled(KeyboardArea)({
-  backgroundColor: ({ theme: { colors } }: any) => colors.transparent,
+  backgroundColor: ({ theme: { colors } }: ComponentProps) => colors.transparent,
 });
 
 type RestoreCloudStepParams = {
@@ -119,6 +124,7 @@ export default function RestoreCloudStep() {
     const fetchPasswordIfPossible = async () => {
       const pwd = await getLocalBackupPassword();
       if (pwd) {
+        backupsStore.getState().setHasStoredPassword(true);
         backupsStore.getState().setPassword(pwd);
       }
     };
@@ -158,9 +164,13 @@ export default function RestoreCloudStep() {
       });
       if (status === RestoreCloudBackupResultStates.success) {
         // Store it in the keychain in case it was missing
-        const hasSavedPassword = await getLocalBackupPassword();
-        if (!hasSavedPassword) {
+        if (!backupsStore.getState().hasStoredPassword && pwd) {
           await saveLocalBackupPassword(pwd);
+        }
+
+        // Reset the hasStoredPassword state for next restoration process
+        if (backupsStore.getState().hasStoredPassword) {
+          backupsStore.getState().setHasStoredPassword(false);
         }
 
         InteractionManager.runAfterInteractions(async () => {

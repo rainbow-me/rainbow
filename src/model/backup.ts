@@ -595,11 +595,7 @@ export async function saveBackupPassword(password: BackupPassword): Promise<void
 }
 
 export async function getLocalBackupPassword(): Promise<string | null> {
-  const { value, error } = await kc.get('RainbowBackupPassword');
-  if (error) {
-    return null;
-  }
-
+  const { value } = await kc.get('RainbowBackupPassword');
   if (value) {
     return value;
   }
