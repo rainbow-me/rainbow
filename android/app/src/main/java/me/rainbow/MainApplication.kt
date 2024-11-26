@@ -19,7 +19,6 @@ import me.rainbow.NativeModules.Haptics.RNHapticsPackage
 import me.rainbow.NativeModules.Internals.InternalPackage
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage
 import me.rainbow.NativeModules.RNBip39.RNBip39Package
-import me.rainbow.NativeModules.RNReview.RNReviewPackage
 import me.rainbow.NativeModules.RNStartTime.RNStartTimePackage
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage
@@ -36,7 +35,6 @@ class MainApplication : Application(), ReactApplication {
             val packages: MutableList<ReactPackage> = PackageList(this).packages
             // Packages that cannot be autolinked yet can be added manually here, for example:
             packages.add(RNBip39Package())
-            packages.add(RNReviewPackage())
             packages.add(SystemNavigationBarPackage())
             packages.add(RNBackHandlerPackage())
             packages.add(RNTextAnimatorPackage())

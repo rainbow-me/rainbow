@@ -1,13 +1,10 @@
 import lang from 'i18n-js';
 import * as ls from '@/storage';
-import { Linking, NativeModules } from 'react-native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { ReviewPromptAction } from '@/storage/schema';
-import { IS_IOS } from '@/env';
-import { logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { IS_TESTING } from 'react-native-dotenv';
-
-const { RainbowRequestReview, RNReview } = NativeModules;
+import * as StoreReview from 'expo-store-review';
 
 export const AppleReviewAddress = 'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review';
 
@@ -78,17 +75,14 @@ export const handleReviewPromptAction = async (action: ReviewPromptAction) => {
 export const promptForReview = async () => {
   Alert.alert(lang.t('review.alert.are_you_enjoying_rainbow'), lang.t('review.alert.leave_a_review'), [
     {
-      onPress: () => {
-        ls.review.set(['hasReviewed'], true);
-
-        if (IS_IOS) {
-          RainbowRequestReview?.requestReview((handled: boolean) => {
-            if (!handled) {
-              Linking.openURL(AppleReviewAddress);
-            }
+      onPress: async () => {
+        try {
+          ls.review.set(['hasReviewed'], true);
+          await StoreReview.requestReview();
+        } catch (e) {
+          logger.error(new RainbowError('[reviewAlert]: Failed to request review'), {
+            error: e,
           });
-        } else {
-          RNReview.show();
         }
       },
       text: lang.t('review.alert.yes'),

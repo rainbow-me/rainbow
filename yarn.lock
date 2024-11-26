@@ -9300,6 +9300,7 @@ __metadata:
     ethereumjs-wallet: "npm:1.0.1"
     events: "npm:3.3.0"
     expo: "npm:51.0.33"
+    expo-store-review: "npm:7.0.2"
     fast-text-encoding: "npm:1.0.4"
     global: "npm:4.4.0"
     grapheme-splitter: "npm:1.0.4"
@@ -9404,6 +9405,7 @@ __metadata:
     react-native-text-size: "rainbow-me/react-native-text-size#15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a"
     react-native-tooltip: "rainbow-me/react-native-tooltip#e0e88d212b5b7f350e5eabba87f588a32e0f2590"
     react-native-tooltips: "rainbow-me/react-native-tooltips#fdafbc7ba33ee231229f5d3f58b29d0d1c55ddfa"
+    react-native-turbo-haptics: "npm:1.0.4"
     react-native-udp: "npm:2.7.0"
     react-native-url-polyfill: "npm:2.0.0"
     react-native-version-number: "npm:0.3.6"
@@ -15024,6 +15026,15 @@ __metadata:
   dependencies:
     invariant: "npm:^2.2.4"
   checksum: 10c0/910ab3819920c36c715c546ec954ceea253ddd466534f839537986fecafc82ed74555f8bc0a852a6b5a5b473ce984a2217416830c835ed940fae5e3a8768da72
+  languageName: node
+  linkType: hard
+
+"expo-store-review@npm:7.0.2":
+  version: 7.0.2
+  resolution: "expo-store-review@npm:7.0.2"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/8a2e0622a0876bcdfdedcfda8a518cfa04c568007ff02d89e2409de00df00c8783fdf668aafada67bb1788b88e87113885355c2a0d5d07499d39bec357ca71f3
   languageName: node
   linkType: hard
 
@@ -23731,6 +23742,16 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   version: 1.0.4
   resolution: "react-native-tooltips@https://github.com/rainbow-me/react-native-tooltips.git#commit=fdafbc7ba33ee231229f5d3f58b29d0d1c55ddfa"
   checksum: 10c0/7a1f79d8d381532b41eff2b6e8dbd818a4cbd05c21c28419cba8bfb63047555d5e10ee93687a56c2e093eff7921503971942f14a9b5584e6be93cd21ab334805
+  languageName: node
+  linkType: hard
+
+"react-native-turbo-haptics@npm:1.0.4":
+  version: 1.0.4
+  resolution: "react-native-turbo-haptics@npm:1.0.4"
+  peerDependencies:
+    react: ^18.2.0
+    react-native: ">=0.72.0"
+  checksum: 10c0/1c65d3c6380a438e55540cbdc82d865f26aa2b6c24364d2be5092c87f347115471162f8a61c8f9c71324d88bf392da7fbe19c4a489e74a8394bbbdf0664da24e
   languageName: node
   linkType: hard
 
