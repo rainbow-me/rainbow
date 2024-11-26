@@ -27,12 +27,8 @@ export const LpPositionListItem: React.FC<Props> = ({ underlyingAssets, isConcen
   const { colors } = useTheme();
   const { nativeCurrency } = useAccountSettings();
   const theme = useTheme();
-  // const chainId = chainsIdByName[asset.network];
-  // const { data: externalAsset } = useExternalToken({ address: asset.asset_code, chainId, currency: nativeCurrency });
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
-
-  // const priceChangeColor = (asset.price?.relative_change_24h || 0) < 0 ? theme.colors.blueGreyDark60 : theme.colors.green;
 
   const totalDepositValue = underlyingAssets.reduce((acc, underlying) => add(acc, underlying.native.amount), '0');
   const assetAllocations = underlyingAssets.map(underlying => {
