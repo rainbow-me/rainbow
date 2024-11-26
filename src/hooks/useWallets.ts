@@ -21,9 +21,9 @@ const walletSelector = createSelector(
 
 export default function useWallets() {
   const { isWalletLoading, selectedWallet, walletNames, wallets } = useSelector(walletSelector);
-
+  console.log('##################', selectedWallet.damaged);
   return {
-    isDamaged: selectedWallet?.damaged,
+    isDamaged: true,
     isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
     isHardwareWallet: !!selectedWallet.deviceId,
     isWalletLoading,
