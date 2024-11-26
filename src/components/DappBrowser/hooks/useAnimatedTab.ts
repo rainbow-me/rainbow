@@ -178,7 +178,8 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     const height = interpolate(
       tabViewProgress.value,
       [0, 100],
-      [isFullSizeTab ? WEBVIEW_HEIGHT + extraWebViewHeight.value : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, COLLAPSED_WEBVIEW_HEIGHT_UNSCALED]
+      [isFullSizeTab ? WEBVIEW_HEIGHT + extraWebViewHeight.value : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, COLLAPSED_WEBVIEW_HEIGHT_UNSCALED],
+      'clamp'
     );
 
     const isTabBeingClosed = !currentlyOpenTabIds.value.includes(tabId);

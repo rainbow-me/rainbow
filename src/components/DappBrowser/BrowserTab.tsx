@@ -36,7 +36,7 @@ import {
 import { handleProviderRequestApp } from './handleProviderRequest';
 import { useAnimatedTab } from './hooks/useAnimatedTab';
 import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
-import { freezeWebsite, getWebsiteMetadata, hideBanners, unfreezeWebsite } from './scripts';
+import { SCRIPTS_TO_INJECT, freezeWebsite, unfreezeWebsite } from './scripts';
 import { BrowserTabProps, ScreenshotType } from './types';
 import { generateUniqueIdWorklet, isValidAppStoreUrl } from './utils';
 
@@ -390,7 +390,7 @@ const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
       contentInset={{ bottom: 0, left: 0, right: 0, top: 0 }}
       decelerationRate="normal"
       fraudulentWebsiteWarningEnabled
-      injectedJavaScript={getWebsiteMetadata + hideBanners}
+      injectedJavaScript={SCRIPTS_TO_INJECT}
       mediaPlaybackRequiresUserAction
       onScroll={IS_IOS ? onScrollWebView : undefined}
       onTouchEnd={IS_IOS ? onTouchEnd : undefined}
