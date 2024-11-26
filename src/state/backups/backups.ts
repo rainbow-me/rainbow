@@ -30,8 +30,8 @@ export enum CloudBackupState {
 export const LoadingStates = [CloudBackupState.Initializing, CloudBackupState.Syncing, CloudBackupState.Fetching];
 
 interface BackupsStore {
-  hasStoredPassword: boolean;
-  setHasStoredPassword: (hasStoredPassword: boolean) => void;
+  storedPassword: string;
+  setStoredPassword: (storedPassword: string) => void;
 
   backupProvider: string | undefined;
   setBackupProvider: (backupProvider: string | undefined) => void;
@@ -57,8 +57,8 @@ interface BackupsStore {
 const returnEarlyIfLockedStates = [CloudBackupState.Syncing, CloudBackupState.Fetching];
 
 export const backupsStore = createRainbowStore<BackupsStore>((set, get) => ({
-  hasStoredPassword: false,
-  setHasStoredPassword: hasStoredPassword => set({ hasStoredPassword }),
+  storedPassword: '',
+  setStoredPassword: storedPassword => set({ storedPassword }),
 
   backupProvider: undefined,
   setBackupProvider: provider => set({ backupProvider: provider }),

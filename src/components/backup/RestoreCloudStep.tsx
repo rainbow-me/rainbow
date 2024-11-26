@@ -124,7 +124,7 @@ export default function RestoreCloudStep() {
     const fetchPasswordIfPossible = async () => {
       const pwd = await getLocalBackupPassword();
       if (pwd) {
-        backupsStore.getState().setHasStoredPassword(true);
+        backupsStore.getState().setStoredPassword(pwd);
         backupsStore.getState().setPassword(pwd);
       }
     };
@@ -164,13 +164,13 @@ export default function RestoreCloudStep() {
       });
       if (status === RestoreCloudBackupResultStates.success) {
         // Store it in the keychain in case it was missing
-        if (!backupsStore.getState().hasStoredPassword && pwd) {
+        if (backupsStore.getState().storedPassword !== pwd) {
           await saveLocalBackupPassword(pwd);
         }
 
-        // Reset the hasStoredPassword state for next restoration process
-        if (backupsStore.getState().hasStoredPassword) {
-          backupsStore.getState().setHasStoredPassword(false);
+        // Reset the storedPassword state for next restoration process
+        if (backupsStore.getState().storedPassword) {
+          backupsStore.getState().setStoredPassword('');
         }
 
         InteractionManager.runAfterInteractions(async () => {
