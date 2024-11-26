@@ -15,7 +15,7 @@ import {
   Stake,
   UnderlyingAsset,
 } from './types';
-import { add, convertAmountToNativeDisplay, convertRawAmountToNativeDisplay, subtract } from '@/helpers/utilities';
+import { add, convertAmountToNativeDisplay, convertRawAmountToNativeDisplay, lessThan, subtract } from '@/helpers/utilities';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ethereumUtils } from '@/utils';
 import { chainsIdByName } from '@/chains';
@@ -224,17 +224,20 @@ function parsePosition(position: Position, currency: NativeCurrencyKey): Rainbow
       ];
     }
 
+    const underlying = parsedDeposit.underlying.map(underlying => {
+      return {
+        ...underlying,
+        native: calculatePositionItemNativeDisplayValue(underlying, currency),
+      };
+    });
+
     return {
       ...parsedDeposit,
       dappVersion,
       isLp: isLpDeposit,
       isConcentratedLiquidity: CONCENTRATED_LIQUIDITY_ONLY_DAPPS.includes(position.type),
-      underlying: parsedDeposit.underlying?.map(underlying => {
-        return {
-          ...underlying,
-          native: calculatePositionItemNativeDisplayValue(underlying, currency),
-        };
-      }),
+      totalValue: underlying.reduce((acc, underlying) => add(acc, underlying.native.amount), '0'),
+      underlying,
     };
   });
 
@@ -257,21 +260,25 @@ function parsePosition(position: Position, currency: NativeCurrencyKey): Rainbow
       ];
     }
 
+    const underlying = parsedStake.underlying.map(underlying => {
+      return {
+        ...underlying,
+        native: calculatePositionItemNativeDisplayValue(underlying, currency),
+      };
+    });
+
     return {
       ...parsedStake,
       dappVersion,
       isLp: isLpStake,
       isConcentratedLiquidity: CONCENTRATED_LIQUIDITY_ONLY_DAPPS.includes(position.type),
-      underlying: parsedStake.underlying?.map(underlying => {
-        return {
-          ...underlying,
-          native: calculatePositionItemNativeDisplayValue(underlying, currency),
-        };
-      }),
+      totalValue: underlying.reduce((acc, underlying) => add(acc, underlying.native.amount), '0'),
+      underlying,
     };
   });
 
   const parsedBorrows = position.borrows?.map((borrow: Borrow): RainbowBorrow => {
+    // not all borrows have underlying assets, normalize to avoid conditional rendering logic
     if (!borrow.underlying) {
       borrow.underlying = [
         {
@@ -281,16 +288,18 @@ function parsePosition(position: Position, currency: NativeCurrencyKey): Rainbow
       ];
     }
 
+    const underlying = borrow.underlying.map(underlying => {
+      return {
+        ...underlying,
+        dappVersion,
+        native: calculatePositionItemNativeDisplayValue(underlying, currency),
+      };
+    });
+
     return {
       ...borrow,
-      underlying:
-        borrow.underlying.map(underlying => {
-          return {
-            ...underlying,
-            dappVersion,
-            native: calculatePositionItemNativeDisplayValue(underlying, currency),
-          };
-        }) ?? [],
+      totalValue: underlying.reduce((acc, underlying) => add(acc, underlying.native.amount), '0'),
+      underlying,
     };
   });
 
@@ -349,14 +358,27 @@ export function parsePositions(data: AddysPositionsResponse, currency: NativeCur
     const nonVersionedType = isDappVersioned ? position.type.replace(PROTOCOL_VERSION_REGEX, '') : position.type;
     const nonVersionedDappName = isDappVersioned ? position.dapp.name.replace(PROTOCOL_VERSION_REGEX, '') : position.dapp.name;
 
+    const nonVersionedClaimables = [...(acc?.[nonVersionedType]?.claimables || []), ...(position?.claimables || [])].sort((a, b) =>
+      lessThan(b.native.amount, a.native.amount) ? -1 : 1
+    );
+    const nonVersionedDeposits = [...(acc?.[nonVersionedType]?.deposits || []), ...(position?.deposits || [])].sort((a, b) =>
+      lessThan(b.totalValue, a.totalValue) ? -1 : 1
+    );
+    const nonVersionedBorrows = [...(acc?.[nonVersionedType]?.borrows || []), ...(position?.borrows || [])].sort((a, b) =>
+      lessThan(b.totalValue, a.totalValue) ? -1 : 1
+    );
+    const nonVersionedStakes = [...(acc?.[nonVersionedType]?.stakes || []), ...(position?.stakes || [])].sort((a, b) =>
+      lessThan(b.totalValue, a.totalValue) ? -1 : 1
+    );
+
     return {
       ...acc,
       [nonVersionedType]: {
         type: nonVersionedType,
-        claimables: [...(acc?.[nonVersionedType]?.claimables || []), ...(position?.claimables || [])],
-        deposits: [...(acc?.[nonVersionedType]?.deposits || []), ...(position?.deposits || [])],
-        borrows: [...(acc?.[nonVersionedType]?.borrows || []), ...(position?.borrows || [])],
-        stakes: [...(acc?.[nonVersionedType]?.stakes || []), ...(position?.stakes || [])],
+        claimables: nonVersionedClaimables,
+        deposits: nonVersionedDeposits,
+        borrows: nonVersionedBorrows,
+        stakes: nonVersionedStakes,
         dapp: {
           ...position.dapp,
           name: nonVersionedDappName,

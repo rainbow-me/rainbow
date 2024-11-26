@@ -100,8 +100,9 @@ export type RainbowDeposit = {
   quantity: string;
   isLp: boolean;
   isConcentratedLiquidity: boolean;
-  omit_from_total?: boolean;
+  totalValue: string;
   underlying: RainbowUnderlyingAsset[];
+  omit_from_total?: boolean;
   apr?: string;
   apy?: string;
   dappVersion?: string;
@@ -110,10 +111,11 @@ export type RainbowDeposit = {
 export type RainbowBorrow = {
   asset: PositionAsset;
   quantity: string;
-  omit_from_total?: boolean;
   apr: string;
   apy: string;
   total_asset: string; // what does this mean?
+  totalValue: string;
+  omit_from_total?: boolean;
   dappVersion?: string;
   underlying: RainbowUnderlyingAsset[];
 };
@@ -122,6 +124,7 @@ export type RainbowStake = {
   quantity: string;
   isLp: boolean;
   isConcentratedLiquidity: boolean;
+  totalValue: string;
   omit_from_total?: boolean;
   underlying: RainbowUnderlyingAsset[];
   dappVersion?: string;
