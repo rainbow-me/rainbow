@@ -29,6 +29,8 @@ export default function useWallets() {
     isWalletLoading,
     selectedWallet,
     walletNames,
-    wallets,
+    // TODO: Revert this before merge:
+    // wallets,
+    wallets: Object.fromEntries(Object.entries(wallets || {}).map(([key, wallet]) => [key, { ...wallet, damaged: true }])),
   };
 }
