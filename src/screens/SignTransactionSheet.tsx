@@ -599,7 +599,6 @@ export const SignTransactionSheet = () => {
 
   const expandedCardBottomInset = EXPANDED_CARD_BOTTOM_INSET + (isMessageRequest ? 0 : GAS_BUTTON_SPACE);
 
-
   return (
     <PanGestureHandler enabled={IS_IOS}>
       <Animated.View>
