@@ -172,7 +172,7 @@ const GasSpeedButton = ({
 }: GasSpeedButtonProps) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
-  const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const rawColorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
 
   const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFee, selectedGasFeeOption, currentBlockParams } = useGas();

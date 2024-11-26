@@ -5,15 +5,8 @@ import { Box, Separator, globalColors, useColorMode } from '@/design-system';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import Animated, {
-  Easing,
-  runOnJS,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useBottomPanelGestureHandler } from '../hooks/useBottomPanelGestureHandler';
 import { GasButton } from './GasButton';
 import { GasPanel } from './GasPanel';
@@ -21,7 +14,6 @@ import { ReviewPanel } from './ReviewPanel';
 import { SwapActionButton } from './SwapActionButton';
 import { SettingsPanel } from './SettingsPanel';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { triggerHapticFeedback } from '@/screens/points/constants';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 
@@ -123,7 +115,7 @@ export function SwapBottomPanel() {
               onLongPressWorklet={() => {
                 'worklet';
                 if (type.value === 'hold') {
-                  runOnJS(triggerHapticFeedback)('notificationSuccess');
+                  triggerHaptics('notificationSuccess');
                   SwapNavigation.handleSwapAction();
                 }
               }}
