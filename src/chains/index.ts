@@ -188,8 +188,6 @@ export const supportedTokenSearchChainIds = filterChainIdsByService(services => 
 
 export const supportedNftChainIds = filterChainIdsByService(services => services.nftProxy.enabled);
 
-export const supportedFlashbotsChainIds = [ChainId.mainnet];
-
 export const shouldDefaultToFastGasChainIds = [ChainId.mainnet, ChainId.polygon, ChainId.goerli];
 
 const chainsGasUnits = backendNetworks.networks.reduce(
