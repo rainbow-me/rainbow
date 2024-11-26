@@ -313,7 +313,13 @@ export default function SpeedUpAndCancelSheet() {
     if (currentChainId) {
       startPollingGasFees(currentChainId, tx.flashbots);
       let provider;
-      if (useBackendNetworksStore.getState().getFlashbotsSupportedChainIds().includes(tx.chainId || ChainId.mainnet) && tx.flashbots) {
+      if (
+        useBackendNetworksStore
+          .getState()
+          .getFlashbotsSupportedChainIds()
+          .includes(tx.chainId || ChainId.mainnet) &&
+        tx.flashbots
+      ) {
         logger.debug(`[SpeedUpAndCancelSheet]: using flashbots provider for chainId ${tx?.chainId}`);
         provider = getFlashbotsProvider();
       } else {

@@ -2,7 +2,7 @@
 /* eslint-disable no-async-promise-executor */
 /* eslint-disable no-promise-executor-return */
 import { Signer } from '@ethersproject/abstract-signer';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { RainbowError, logger } from '@/logger';
 
 import { claim, swap, unlock } from './actions';
