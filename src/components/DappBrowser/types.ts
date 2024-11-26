@@ -73,7 +73,12 @@ export interface WebViewScrollEvent extends Omit<NativeScrollEvent, 'zoomScale'>
 // ---------------------------------------------------------------------------- //
 export interface BrowserContextType {
   activeTabId: SharedValue<string>;
-  activeTabInfo: DerivedValue<{ isGoogleSearch: boolean; isOnHomepage: boolean; tabId: string; tabIndex: number; url: string }>;
+  activeTabInfo: DerivedValue<{
+    isGoogleSearch: boolean;
+    isOnHomepage: boolean;
+    tabIndex: number;
+    url: string;
+  }>;
   activeTabCloseGestures: SharedValue<ActiveTabCloseGestures>;
   activeTabRef: MutableRefObject<ActiveTabRef | null>;
   animatedActiveTabIndex: SharedValue<number>;

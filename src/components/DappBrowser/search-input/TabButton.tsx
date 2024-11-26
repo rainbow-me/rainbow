@@ -30,7 +30,7 @@ export const TabButton = React.memo(function TabButton({
   inputRef: AnimatedRef<TextInput>;
   toggleTabViewWorklet(tabIndex?: number): void;
 }) {
-  const { activeTabInfo, currentlyOpenTabIds, goToUrl, loadProgress } = useBrowserContext();
+  const { activeTabId, currentlyOpenTabIds, goToUrl, loadProgress } = useBrowserContext();
   const { closeAllTabsWorklet, closeTabWorklet, newTabWorklet } = useBrowserWorkletsContext();
   const { isFocused } = useSearchContext();
 
@@ -156,7 +156,7 @@ export const TabButton = React.memo(function TabButton({
         runOnUI(() => {
           const multipleTabsOpen = currentlyOpenTabIds.value.length > 1;
           if (multipleTabsOpen) {
-            const tabId = activeTabInfo.value.tabId;
+            const tabId = activeTabId.value;
             const tabIndex = currentlyOpenTabIds.value.indexOf(tabId);
             currentlyOpenTabIds.modify(value => {
               value.splice(tabIndex, 1);
@@ -173,7 +173,7 @@ export const TabButton = React.memo(function TabButton({
         runOnUI(newTabWorklet)({ newTabUrl: RAINBOW_HOME });
       }
     },
-    [activeTabInfo, closeAllTabsWorklet, closeTabWorklet, currentlyOpenTabIds, goHome, newTabWorklet]
+    [activeTabId, closeAllTabsWorklet, closeTabWorklet, currentlyOpenTabIds, goHome, newTabWorklet]
   );
 
   const onLongPressAndroid = useCallback(() => {

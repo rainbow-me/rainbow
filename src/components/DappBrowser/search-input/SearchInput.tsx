@@ -50,7 +50,7 @@ const ThreeDotMenu = function ThreeDotMenu({ formattedUrlValue }: { formattedUrl
   const isOnHomepage = useBrowserStore(state => state.isOnHomepage());
   const navState = useBrowserStore(state => state.getActiveTabNavState());
 
-  const { activeTabInfo, currentlyOpenTabIds, goBack, goForward, goToUrl, loadProgress } = useBrowserContext();
+  const { activeTabId, activeTabInfo, currentlyOpenTabIds, goBack, goForward, goToUrl, loadProgress } = useBrowserContext();
   const { closeTabWorklet } = useBrowserWorkletsContext();
 
   const addFavorite = useFavoriteDappsStore(state => state.addFavorite);
@@ -164,7 +164,7 @@ const ThreeDotMenu = function ThreeDotMenu({ formattedUrlValue }: { formattedUrl
         runOnUI(() => {
           const multipleTabsOpen = currentlyOpenTabIds.value.length > 1;
           if (multipleTabsOpen) {
-            const tabId = activeTabInfo.value.tabId;
+            const tabId = activeTabId.value;
             const tabIndex = currentlyOpenTabIds.value.indexOf(tabId);
             currentlyOpenTabIds.modify(value => {
               value.splice(tabIndex, 1);
@@ -177,7 +177,7 @@ const ThreeDotMenu = function ThreeDotMenu({ formattedUrlValue }: { formattedUrl
         })();
       }
     },
-    [activeTabInfo, closeTabWorklet, currentlyOpenTabIds, goBack, goForward, goHome, handleFavoritePress]
+    [activeTabId, activeTabInfo, closeTabWorklet, currentlyOpenTabIds, goBack, goForward, goHome, handleFavoritePress]
   );
 
   const onPressAndroid = useCallback(() => {

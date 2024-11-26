@@ -112,7 +112,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
     return {
       isGoogleSearch,
       isOnHomepage,
-      tabId: activeTabId.value,
       tabIndex: Math.abs(animatedActiveTabIndex.value),
       url,
     };
@@ -148,8 +147,8 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
 
   const goToUrl = useCallback(
     (url: string, tabId?: string) => {
-      const { url: activeTabUrl, tabId: activeTabId } = activeTabInfo.value;
-      const tabIdToUse = tabId || activeTabId;
+      const { url: activeTabUrl } = activeTabInfo.value;
+      const tabIdToUse = tabId || activeTabId.value;
 
       if (normalizeUrlWorklet(url) === normalizeUrlWorklet(activeTabUrl)) {
         refreshPage();
@@ -159,11 +158,11 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
 
       runOnUI(() => {
         'worklet';
-        const tabIdToUse = tabId || activeTabId;
+        const tabIdToUse = tabId || activeTabId.value;
         animatedTabUrls.modify(urls => ({ ...urls, [tabIdToUse]: normalizeUrlWorklet(url) }));
       })();
     },
-    [activeTabInfo, animatedTabUrls, goToPage, refreshPage]
+    [activeTabId, activeTabInfo, animatedTabUrls, goToPage, refreshPage]
   );
 
   return (
