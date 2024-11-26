@@ -8,7 +8,6 @@ import { ChainId } from '@/chains/types';
 export interface PendingTransactionsState {
   pendingTransactions: Record<string, RainbowTransaction[]>;
   addPendingTransaction: ({ address, pendingTransaction }: { address: string; pendingTransaction: RainbowTransaction }) => void;
-  updatePendingTransaction: ({ address, pendingTransaction }: { address: string; pendingTransaction: RainbowTransaction }) => void;
   setPendingTransactions: ({ address, pendingTransactions }: { address: string; pendingTransactions: RainbowTransaction[] }) => void;
   clearPendingTransactions: () => void;
 }
@@ -19,17 +18,6 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
     addPendingTransaction: ({ address, pendingTransaction }) => {
       const { pendingTransactions: currentPendingTransactions } = get();
       const addressPendingTransactions = currentPendingTransactions[address] || [];
-      set({
-        pendingTransactions: {
-          ...currentPendingTransactions,
-          [address]: [...addressPendingTransactions, pendingTransaction],
-        },
-      });
-    },
-    updatePendingTransaction: ({ address, pendingTransaction }) => {
-      const { pendingTransactions: currentPendingTransactions } = get();
-      const addressPendingTransactions = currentPendingTransactions[address] || [];
-
       set({
         pendingTransactions: {
           ...currentPendingTransactions,
@@ -97,10 +85,10 @@ export const updateTransaction = ({
   chainId: ChainId;
   transaction: NewTransaction;
 }) => {
-  const { updatePendingTransaction } = pendingTransactionsStore.getState();
+  const { addPendingTransaction } = pendingTransactionsStore.getState();
   const { setNonce } = nonceStore.getState();
   const parsedTransaction = convertNewTransactionToRainbowTransaction(transaction);
-  updatePendingTransaction({ address, pendingTransaction: parsedTransaction });
+  addPendingTransaction({ address, pendingTransaction: parsedTransaction });
   setNonce({
     address,
     chainId,
