@@ -151,7 +151,7 @@ export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }:
 };
 
 async function extractSecretsForWallet(wallet: RainbowWallet) {
-  const allKeys = await keychain.loadAllKeys();
+  const allKeys = await kc.getAllKeys();
   if (!allKeys) throw new Error(CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR);
   const secrets = {} as { [key: string]: string };
 
@@ -214,7 +214,7 @@ export async function backupAllWalletsToCloud({
      * if latest backup, update updatedAt and add new secrets to the backup
      */
 
-    const allKeys = await keychain.loadAllKeys();
+    const allKeys = await kc.getAllKeys();
     if (!allKeys) {
       onError?.(i18n.t(i18n.l.back_up.errors.no_keys_found));
       return;
@@ -595,13 +595,13 @@ export async function saveBackupPassword(password: BackupPassword): Promise<void
 }
 
 export async function getLocalBackupPassword(): Promise<string | null> {
-  const rainbowBackupPassword = await keychain.loadString('RainbowBackupPassword');
-  if (typeof rainbowBackupPassword === 'number') {
+  const { value, error } = await kc.get('RainbowBackupPassword');
+  if (error) {
     return null;
   }
 
-  if (rainbowBackupPassword) {
-    return rainbowBackupPassword;
+  if (value) {
+    return value;
   }
 
   return await fetchBackupPassword();
@@ -610,7 +610,7 @@ export async function getLocalBackupPassword(): Promise<string | null> {
 export async function saveLocalBackupPassword(password: string) {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
 
-  await keychain.saveString('RainbowBackupPassword', password, privateAccessControlOptions);
+  await kc.set('RainbowBackupPassword', password, privateAccessControlOptions);
   saveBackupPassword(password);
 }
 
@@ -623,7 +623,7 @@ export async function fetchBackupPassword(): Promise<null | BackupPassword> {
   try {
     const { value: results } = await kc.getSharedWebCredentials();
     if (results) {
-      return results.password as BackupPassword;
+      return results.password;
     }
     return null;
   } catch (e) {
