@@ -31,8 +31,6 @@ import { addHexPrefix, toHex } from '@/handlers/web3';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
 
-export const FLASHBOTS_MIN_TIP = 6;
-
 export const parseGasDataConfirmationTime = ({
   maxBaseFee,
   maxPriorityFee,
