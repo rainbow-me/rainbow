@@ -172,15 +172,17 @@ export function TransactionClaimableContextProvider({
   }, [tokenSearchData]);
 
   const gasSettings = useGasSettings(claimable.chainId, GasSpeed.FAST);
-  const { data: swapGasLimit, isFetching: isFetchingSwapGasLimit } = useSwapEstimatedGasLimit(
-    {
-      chainId: claimable.chainId,
-      assetToSell: parsedOutputToken,
-      quote: quoteState.quote,
-    },
-    { enabled: !!quoteState.quote && !!parsedOutputToken }
-  );
+  // const { data: swapGasLimit, isFetching: isFetchingSwapGasLimit } = useSwapEstimatedGasLimit(
+  //   {
+  //     chainId: claimable.chainId,
+  //     assetToSell: parsedOutputToken,
+  //     quote: quoteState.quote,
+  //   },
+  //   { enabled: !!quoteState.quote && !!parsedOutputToken }
+  // );
 
+  const swapGasLimit = '0';
+  const isFetchingSwapGasLimit = false;
   const { data: userNativeNetworkAsset, isLoading: isLoadingNativeNetworkAsset } = useUserNativeNetworkAsset(claimable.chainId);
 
   const updateQuote = useCallback(async () => {
@@ -301,7 +303,7 @@ export function TransactionClaimableContextProvider({
         ...gasParams,
       };
 
-      const gasLimit = await estimateGasWithPadding(partialTxPayload, null, null, provider);
+      let gasLimit = await estimateGasWithPadding(partialTxPayload, null, null, provider);
 
       if (!gasLimit) {
         if (txState.status === 'fetching') {
@@ -311,7 +313,7 @@ export function TransactionClaimableContextProvider({
         return;
       }
 
-      let gasFeeGwei = calculateGasFeeWorklet(gasSettings, gasLimit);
+      // let gasFeeGwei = calculateGasFeeWorklet(gasSettings, gasLimit);
 
       if (requiresSwap) {
         if (!swapGasLimit) {
@@ -322,23 +324,22 @@ export function TransactionClaimableContextProvider({
           return;
         }
 
-        const swapGasFeeGwei = calculateGasFeeWorklet(gasSettings, swapGasLimit);
-        gasFeeGwei = add(gasFeeGwei, swapGasFeeGwei);
+        gasLimit = add(gasLimit, swapGasLimit);
       }
 
-      const gasFeeNativeToken = divide(gasFeeGwei, Math.pow(10, userNativeNetworkAsset.decimals));
+      const gasFeeWei = calculateGasFeeWorklet(gasSettings, gasLimit);
+
+      const gasFeeNativeToken = formatUnits(safeBigInt(gasFeeWei), userNativeNetworkAsset.decimals);
       const userBalance = userNativeNetworkAsset.balance?.amount || '0';
 
       const sufficientGas = lessThanOrEqualToWorklet(gasFeeNativeToken, userBalance);
-
       const networkAssetPrice = userNativeNetworkAsset.price?.value?.toString();
 
       let gasFeeNativeCurrencyDisplay;
       if (!networkAssetPrice) {
-        gasFeeNativeCurrencyDisplay = `${formatNumber(weiToGwei(gasFeeGwei))} Gwei`;
+        gasFeeNativeCurrencyDisplay = `${formatNumber(weiToGwei(gasFeeWei))} Gwei`;
       } else {
-        const feeFormatted = formatUnits(safeBigInt(gasFeeGwei), userNativeNetworkAsset.decimals).toString();
-        const feeInUserCurrency = multiply(networkAssetPrice, feeFormatted);
+        const feeInUserCurrency = multiply(networkAssetPrice, gasFeeNativeToken);
 
         gasFeeNativeCurrencyDisplay = convertAmountToNativeDisplayWorklet(feeInUserCurrency, nativeCurrency, true);
       }
