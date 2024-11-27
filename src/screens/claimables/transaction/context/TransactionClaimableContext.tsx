@@ -317,8 +317,6 @@ export function TransactionClaimableContextProvider({
         return;
       }
 
-      // let gasFeeGwei = calculateGasFeeWorklet(gasSettings, gasLimit);
-
       if (requiresSwap) {
         if (!swapGasLimit) {
           if (txState.status === 'fetching') {
