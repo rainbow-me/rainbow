@@ -180,6 +180,7 @@ export function TransactionClaimableContextProvider({
     },
     {
       enabled:
+        requiresSwap &&
         !!quoteState.quote &&
         !!parsedOutputToken &&
         parsedOutputToken.chainId === outputConfig.chainId &&
