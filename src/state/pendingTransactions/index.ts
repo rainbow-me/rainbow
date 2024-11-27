@@ -7,6 +7,7 @@ import { ChainId } from '@/chains/types';
 
 export interface PendingTransactionsState {
   pendingTransactions: Record<string, RainbowTransaction[]>;
+  getPendingTransactionsInReverseOrder: (address: string) => RainbowTransaction[];
   addPendingTransaction: ({ address, pendingTransaction }: { address: string; pendingTransaction: RainbowTransaction }) => void;
   setPendingTransactions: ({ address, pendingTransactions }: { address: string; pendingTransactions: RainbowTransaction[] }) => void;
   clearPendingTransactions: () => void;
@@ -15,6 +16,15 @@ export interface PendingTransactionsState {
 export const pendingTransactionsStore = createStore<PendingTransactionsState>(
   (set, get) => ({
     pendingTransactions: {},
+    getPendingTransactionsInReverseOrder: address => {
+      const { pendingTransactions } = get();
+      const pendingTransactionsForAddress = pendingTransactions[address] || [];
+      // returns pending txns for display from most recent to oldest
+      const orderedPendingTransactions = pendingTransactionsForAddress.sort((a, b) => {
+        return (a.nonce || 0) > (b.nonce || 0) ? -1 : 1;
+      });
+      return orderedPendingTransactions;
+    },
     addPendingTransaction: ({ address, pendingTransaction }) => {
       const { pendingTransactions: currentPendingTransactions } = get();
       const addressPendingTransactions = currentPendingTransactions[address] || [];

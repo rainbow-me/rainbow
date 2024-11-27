@@ -6,7 +6,7 @@ import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { RainbowTransaction } from '@/entities';
-import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { pendingTransactionsStore } from '@/state/pendingTransactions';
 import { getSortedWalletConnectRequests } from '@/state/walletConnectRequests';
 import { nonceStore } from '@/state/nonces';
 import { ChainId } from '@/chains/types';
@@ -17,7 +17,8 @@ export const NOE_PAGE = 30;
 export default function useAccountTransactions() {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
-  const pendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions[accountAddress] || []);
+  const { getPendingTransactionsInReverseOrder } = pendingTransactionsStore.getState();
+  const pendingTransactionsMostRecentFirst = getPendingTransactionsInReverseOrder(accountAddress);
   const walletConnectRequests = getSortedWalletConnectRequests();
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useConsolidatedTransactions({
@@ -66,7 +67,7 @@ export default function useAccountTransactions() {
       const latestTxConfirmedByBackend = latestTransactions.get(chainId);
       if (latestTxConfirmedByBackend) {
         const latestNonceConfirmedByBackend = latestTxConfirmedByBackend.nonce || 0;
-        const [latestPendingTx] = pendingTransactions.filter(tx => tx?.chainId === chainId);
+        const [latestPendingTx] = pendingTransactionsMostRecentFirst.filter(tx => tx?.chainId === chainId);
 
         let currentNonce;
         if (latestPendingTx) {
@@ -103,7 +104,10 @@ export default function useAccountTransactions() {
 
   const transactions: RainbowTransaction[] = useMemo(() => pages?.flatMap(p => p.transactions) || [], [pages]);
 
-  const allTransactions = useMemo(() => pendingTransactions.concat(transactions), [pendingTransactions, transactions]);
+  const allTransactions = useMemo(
+    () => pendingTransactionsMostRecentFirst.concat(transactions),
+    [pendingTransactionsMostRecentFirst, transactions]
+  );
 
   const slicedTransaction = useMemo(() => allTransactions, [allTransactions]);
 
