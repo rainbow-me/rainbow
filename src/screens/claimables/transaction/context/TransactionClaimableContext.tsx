@@ -467,7 +467,7 @@ export function TransactionClaimableContextProvider({
           sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
           chainId: claimable.chainId,
           toChainId: outputConfig.chainId,
-          assetToSell: outputAsset,
+          assetToSell: claimable.asset.isNativeAsset ? { ...claimable.asset, address: ETH_ADDRESS } : claimable.asset,
           assetToBuy: outputAsset.isNativeAsset ? { ...outputAsset, address: ETH_ADDRESS } : outputAsset,
           address: accountAddress,
         };
