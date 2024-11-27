@@ -60,6 +60,8 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { chainsNativeAsset, supportedFlashbotsChainIds } from '@/chains';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { EventProperties } from '@/analytics/event';
+import { isEqual } from 'lodash';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -135,6 +137,7 @@ interface SwapProviderProps {
   children: ReactNode;
 }
 
+let lastQuoteFailedEventParams: EventProperties[typeof analyticsV2.event.swapsQuoteFailed] | object = {};
 function trackQuoteFailed(
   quote: QuoteError,
   {
@@ -149,14 +152,17 @@ function trackQuoteFailed(
     outputAmount: string | number;
   }
 ) {
-  analyticsV2.track(analyticsV2.event.swapsQuoteFailed, {
+  const params = {
     error_code: quote.error_code,
     reason: quote.message,
     inputAsset: { address: inputAsset.address, chainId: inputAsset.chainId, symbol: inputAsset.symbol },
     outputAsset: { address: outputAsset.address, chainId: outputAsset.chainId, symbol: outputAsset.symbol },
     inputAmount,
     outputAmount,
-  });
+  };
+  if (isEqual(params, lastQuoteFailedEventParams)) return;
+  analyticsV2.track(analyticsV2.event.swapsQuoteFailed, params);
+  lastQuoteFailedEventParams = params;
 }
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
