@@ -25,7 +25,7 @@ export const BackUpMenuItem = ({
   const [emojiTrigger, setEmojiTrigger] = useState<null | (() => void)>(null);
 
   useEffect(() => {
-    if (backupState === 'success') {
+    if (backupState === CloudBackupState.Success) {
       for (let i = 0; i < 20; i++) {
         setTimeout(() => {
           emojiTrigger?.();
@@ -36,9 +36,9 @@ export const BackUpMenuItem = ({
 
   const accentColor = useMemo(() => {
     switch (backupState) {
-      case 'success':
+      case CloudBackupState.Success:
         return colors.green;
-      case 'error':
+      case CloudBackupState.Error:
         return colors.red;
       default:
         return undefined;
@@ -69,42 +69,39 @@ export const BackUpMenuItem = ({
   }, [icon, backupState]);
 
   return (
-    <>
-      {/* @ts-ignore js */}
-      <FloatingEmojis
-        centerVertically
-        distance={600}
-        duration={1000}
-        emojis={['check_mark_button']}
-        marginTop={-10}
-        fadeOut={false}
-        range={[deviceWidth / 2 - 100, deviceWidth / 2 + 100]}
-        gravityEnabled
-        scaleTo={0}
-        size={100}
-        wiggleFactor={0}
-      >
-        {({ onNewEmoji }: { onNewEmoji: () => void }) => (
-          <MenuItem
-            testID={'backup-now-button'}
-            hasSfSymbol
-            disabled={disabled}
-            leftComponent={
-              backupState === CloudBackupState.InProgress ? (
-                <Spinner size={20} color={colors.appleBlue} />
-              ) : (
-                <MenuItem.TextIcon icon={localIcon} isLink colorOverride={accentColor} />
-              )
-            }
-            onPress={() => {
-              setEmojiTrigger(() => onNewEmoji);
-              onPress();
-            }}
-            size={52}
-            titleComponent={<MenuItem.Title isLink customColor={accentColor} text={titleText} />}
-          />
-        )}
-      </FloatingEmojis>
-    </>
+    <FloatingEmojis
+      centerVertically
+      distance={600}
+      duration={1000}
+      emojis={['check_mark_button']}
+      marginTop={-10}
+      fadeOut={false}
+      range={[deviceWidth / 2 - 100, deviceWidth / 2 + 100]}
+      gravityEnabled
+      scaleTo={0}
+      size={100}
+      wiggleFactor={0}
+    >
+      {({ onNewEmoji }) => (
+        <MenuItem
+          testID={'backup-now-button'}
+          hasSfSymbol
+          disabled={disabled}
+          leftComponent={
+            backupState === CloudBackupState.InProgress ? (
+              <Spinner size={20} color={colors.appleBlue} />
+            ) : (
+              <MenuItem.TextIcon disabled={disabled} icon={localIcon} isLink colorOverride={disabled ? undefined : accentColor} />
+            )
+          }
+          onPress={() => {
+            setEmojiTrigger(() => onNewEmoji);
+            onPress();
+          }}
+          size={52}
+          titleComponent={<MenuItem.Title disabled={disabled} isLink customColor={disabled ? undefined : accentColor} text={titleText} />}
+        />
+      )}
+    </FloatingEmojis>
   );
 };
