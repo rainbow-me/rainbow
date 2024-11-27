@@ -178,9 +178,15 @@ export function TransactionClaimableContextProvider({
       assetToSell: parsedOutputToken,
       quote: quoteState.quote,
     },
-    { enabled: !!quoteState.quote && !!parsedOutputToken }
+    {
+      enabled:
+        !!quoteState.quote &&
+        !!parsedOutputToken &&
+        parsedOutputToken.chainId === outputConfig.chainId &&
+        parsedOutputToken.symbol === outputConfig.token?.symbol,
+    }
   );
-
+  console.log(swapGasLimit, parsedOutputToken?.chainId);
   const { data: userNativeNetworkAsset, isLoading: isLoadingNativeNetworkAsset } = useUserNativeNetworkAsset(claimable.chainId);
 
   const updateQuote = useCallback(async () => {
