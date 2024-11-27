@@ -119,7 +119,7 @@ const INITIAL_TAB_IDS = [generateUniqueIdWorklet()];
 const INITIAL_TABS_DATA = new Map([[INITIAL_TAB_IDS[0], { canGoBack: false, canGoForward: false, url: RAINBOW_HOME }]]);
 const INITIAL_PERSISTED_TAB_URLS: Record<TabId, string> = { [INITIAL_TAB_IDS[0]]: RAINBOW_HOME };
 
-interface BrowserStore {
+export interface BrowserStore {
   activeTabIndex: number;
   persistedTabUrls: Record<TabId, string>;
   shouldExpandWebView: boolean;

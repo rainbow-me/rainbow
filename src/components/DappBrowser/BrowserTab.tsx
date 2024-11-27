@@ -1,24 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { Freeze } from 'react-freeze';
-import { Linking, StyleSheet } from 'react-native';
-import Animated, { AnimatedStyle, DerivedValue, FadeIn, SharedValue, runOnUI, useAnimatedProps, withTiming } from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
+import Animated, { AnimatedStyle, DerivedValue, FadeIn, SharedValue, useAnimatedProps } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
-import WebView, { WebViewMessageEvent, WebViewNavigation, WebViewProps } from 'react-native-webview';
-import { ShouldStartLoadRequest, WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
-import { appMessenger } from '@/browserMessaging/AppMessenger';
+import WebView, { WebViewProps } from 'react-native-webview';
 import { globalColors, useColorMode } from '@/design-system';
 import { IS_DEV, IS_IOS } from '@/env';
-import { Navigation, useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { useBrowserStore } from '@/state/browser/browserStore';
-import { Site } from '@/state/browserHistory';
-import { getDappHostname } from '@/utils/connectedApps';
+import { BrowserStore, useBrowserStore } from '@/state/browser/browserStore';
+import { BrowserHistoryStore } from '@/state/browserHistory';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { AnimatedFasterImage } from '../AnimatedComponents/AnimatedFasterImage';
-import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { useBrowserContext } from './BrowserContext';
-import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { CloseTabButton } from './CloseTabButton';
 import { WebViewShadows } from './DappBrowserShadows';
 import DappBrowserWebview from './DappBrowserWebview';
@@ -33,23 +26,16 @@ import {
   USER_AGENT,
   USER_AGENT_APPLICATION_NAME,
 } from './constants';
-import { handleProviderRequestApp } from './handleProviderRequest';
 import { useAnimatedTab } from './hooks/useAnimatedTab';
 import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
+import { useWebViewHandlers } from './hooks/useWebViewHandlers';
 import { SCRIPTS_TO_INJECT, freezeWebsite, unfreezeWebsite } from './scripts';
 import { BrowserTabProps, ScreenshotType } from './types';
-import { generateUniqueIdWorklet, isValidAppStoreUrl } from './utils';
 
 export const BrowserTab = memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
   const viewShotRef = useRef<ViewShot | null>(null);
 
-  const {
-    animatedWebViewBackgroundColorStyle,
-    animatedWebViewStyle,
-    backgroundColor,
-    expensiveAnimatedWebViewStyles,
-    zIndexAnimatedStyle,
-  } = useAnimatedTab({ tabId });
+  const { animatedWebViewBackgroundColorStyle, animatedWebViewStyle, backgroundColor, zIndexAnimatedStyle } = useAnimatedTab({ tabId });
 
   return (
     <WebViewShadows tabId={tabId} zIndexAnimatedStyle={zIndexAnimatedStyle}>
@@ -88,19 +74,19 @@ const HomepageOrWebView = ({
   tabId,
   viewShotRef,
 }: {
-  addRecent: (recent: Site) => void;
+  addRecent: BrowserHistoryStore['addRecent'];
   backgroundColor: SharedValue<string>;
-  setLogo: (logoUrl: string | undefined, tabId: string) => void;
-  setTitle: (title: string | undefined, tabId: string) => void;
+  setLogo: BrowserStore['setLogo'];
+  setTitle: BrowserStore['setTitle'];
   tabId: string;
-  viewShotRef: React.RefObject<ViewShot | null>;
+  viewShotRef: MutableRefObject<ViewShot | null>;
 }) => {
   const isOnHomepage = useBrowserStore(state => !state.getTabData?.(tabId)?.url || state.getTabData?.(tabId)?.url === RAINBOW_HOME);
   const { isDarkMode } = useColorMode();
 
-  // Reset background color when returning to the homepage
   useEffect(() => {
     if (isOnHomepage) {
+      // Reset background color when returning to the homepage
       backgroundColor.value = isDarkMode ? '#191A1C' : globalColors.white100;
     }
   }, [backgroundColor, isDarkMode, isOnHomepage]);
@@ -120,7 +106,8 @@ const HomepageOrWebView = ({
 };
 
 /**
- * ### `TabScreenshotContainer`
+ * #### `TabScreenshotContainer`
+ *
  * This component gets the tab's `screenshotData` and its `animatedScreenshotStyle` via `useTabScreenshotProvider`,
  * which accesses the active state of the tab internally. This component isolates the resulting re-renders that
  * occur when the tab becomes active or inactive, and shields the `TabScreenshot` component and the screenshot
@@ -150,7 +137,7 @@ const TabScreenshot = memo(function TabScreenshot({
   return (
     // ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error
     // @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps
-    <AnimatedFasterImage animatedProps={animatedProps} style={[styles.screenshotContainerStyle, animatedStyle]} />
+    <AnimatedFasterImage animatedProps={animatedProps} style={[styles.screenshotContainer, animatedStyle]} />
   );
 });
 
@@ -162,169 +149,41 @@ const FreezableWebViewComponent = ({
   tabId,
   viewShotRef,
 }: {
-  addRecent: (recent: Site) => void;
+  addRecent: BrowserHistoryStore['addRecent'];
   backgroundColor: SharedValue<string>;
-  setLogo: (logoUrl: string | undefined, tabId: string) => void;
-  setTitle: (title: string | undefined, tabId: string) => void;
+  setLogo: BrowserStore['setLogo'];
+  setTitle: BrowserStore['setTitle'];
   tabId: string;
-  viewShotRef: React.RefObject<ViewShot | null>;
+  viewShotRef: MutableRefObject<ViewShot | null>;
 }) => {
-  const { activeTabRef, loadProgress, resetScrollHandlers, screenshotCaptureRef } = useBrowserContext();
-  const { updateTabUrlWorklet } = useBrowserWorkletsContext();
-  const { setParams } = useNavigation();
+  const { activeTabRef, resetScrollHandlers, screenshotCaptureRef } = useBrowserContext();
+
+  const webViewRef = useRef<WebView>(null);
+  const titleRef = useRef<string | null>(null);
 
   const [renderKey, setRenderKey] = useState(`${tabId}-0`);
-
-  const currentMessengerRef = useRef<any>(null);
-  const logoRef = useRef<string | null>(null);
-  const titleRef = useRef<string | null>(null);
-  const webViewRef = useRef<WebView>(null);
-
   const isActiveTab = useBrowserStore(state => state.isTabActive(tabId));
   const tabUrl = useBrowserStore(state => state.getTabData?.(tabId)?.url) || RAINBOW_HOME;
   const isOnHomepage = tabUrl === RAINBOW_HOME;
 
-  const handleOnMessage = useCallback(
-    (event: Partial<WebViewMessageEvent>) => {
-      if (!useBrowserStore.getState().isTabActive(tabId)) return;
-
-      const data = event.nativeEvent?.data as any;
-      try {
-        // validate message and parse data
-        const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
-        if (!parsedData || (!parsedData.topic && !parsedData.payload)) return;
-
-        if (IS_IOS && parsedData.topic === 'injectedUnderPageBackgroundColor') {
-          const { underPageBackgroundColor } = parsedData.payload;
-
-          if (underPageBackgroundColor && typeof underPageBackgroundColor === 'string') {
-            backgroundColor.value = underPageBackgroundColor;
-          }
-        } else if (parsedData.topic === 'websiteMetadata') {
-          const { bgColor, logoUrl, pageTitle } = parsedData.payload;
-
-          if (!IS_IOS && bgColor && typeof bgColor === 'string') {
-            backgroundColor.value = bgColor;
-          }
-
-          if (logoUrl && typeof logoUrl === 'string') {
-            logoRef.current = logoUrl;
-            setLogo(logoUrl, tabId);
-          } else {
-            logoRef.current = null;
-            setLogo(undefined, tabId);
-          }
-
-          if (pageTitle && typeof pageTitle === 'string') {
-            titleRef.current = pageTitle;
-            setTitle(pageTitle, tabId);
-          } else {
-            titleRef.current = null;
-            setTitle(undefined, tabId);
-          }
-
-          addRecent({
-            url: tabUrl,
-            name: pageTitle,
-            image: logoUrl,
-            timestamp: Date.now(),
-          });
-        } else {
-          const m = currentMessengerRef.current;
-          if (!m) return;
-
-          handleProviderRequestApp({
-            messenger: m,
-            data: parsedData,
-            meta: {
-              topic: 'providerRequest',
-              sender: {
-                url: m.url,
-                tab: { id: tabId },
-                title: titleRef.current || tabUrl,
-              },
-              id: parsedData.id,
-            },
-          });
-        }
-        // eslint-disable-next-line no-empty
-      } catch (e) {
-        console.error('Error parsing message', e);
-      }
-    },
-    [addRecent, backgroundColor, setLogo, setTitle, tabId, tabUrl]
-  );
-
-  const handleOnLoad = useCallback(
-    (event: WebViewEvent) => {
-      if (event.nativeEvent.loading) return;
-      const { origin } = new URL(event.nativeEvent.url);
-
-      if (typeof webViewRef !== 'function' && webViewRef.current) {
-        if (!webViewRef.current) {
-          return;
-        }
-        const messenger = appMessenger(webViewRef.current, tabId, origin);
-        currentMessengerRef.current = messenger;
-      }
-    },
-    [tabId, webViewRef]
-  );
-
-  const handleShouldStartLoadWithRequest = useCallback(
-    (request: ShouldStartLoadRequest) => {
-      if (request.url.startsWith('rainbow://wc') || request.url.startsWith('https://rnbwappdotcom.app.link/')) {
-        Navigation.handleAction(Routes.NO_NEED_WC_SHEET, {});
-        activeTabRef.current?.reload();
-        return false;
-      }
-      return true;
-    },
-    [activeTabRef]
-  );
-
-  const handleOnLoadProgress = useCallback(
-    ({ nativeEvent: { progress } }: { nativeEvent: { progress: number } }) => {
-      runOnUI(() => {
-        if (loadProgress.value === 1) loadProgress.value = 0;
-        loadProgress.value = withTiming(progress, TIMING_CONFIGS.slowestFadeConfig);
-      })();
-    },
-    [loadProgress]
-  );
-
-  const handleNavigationStateChange = useCallback(
-    (navState: WebViewNavigation) => {
-      if (navState.navigationType !== 'other' || getDappHostname(navState.url) === getDappHostname(tabUrl)) {
-        runOnUI(updateTabUrlWorklet)({ tabId, url: navState.url });
-      }
-      useBrowserStore.getState().setNavState({ canGoBack: navState.canGoBack, canGoForward: navState.canGoForward }, tabId);
-      resetScrollHandlers();
-    },
-    [resetScrollHandlers, tabId, tabUrl, updateTabUrlWorklet]
-  );
-
-  const handleOnOpenWindow = useCallback(
-    (syntheticEvent: { nativeEvent: { targetUrl: string } }) => {
-      const { nativeEvent } = syntheticEvent;
-      const { targetUrl } = nativeEvent;
-
-      if (isValidAppStoreUrl(targetUrl)) {
-        Linking.openURL(targetUrl);
-        return;
-      }
-
-      setParams({ url: targetUrl });
-    },
-    [setParams]
-  );
-
-  const handleOnContentProcessDidTerminate = useCallback(() => {
-    const currentUrl = useBrowserStore.getState().getTabUrl(tabId);
-    if (currentUrl) useBrowserStore.getState().goToPage(currentUrl, tabId);
-
-    setRenderKey(`${tabId}-${generateUniqueIdWorklet()}`);
-  }, [tabId]);
+  const {
+    handleNavigationStateChange,
+    handleOnContentProcessDidTerminate,
+    handleOnLoad,
+    handleOnLoadProgress,
+    handleOnMessage,
+    handleOnOpenWindow,
+    handleShouldStartLoadWithRequest,
+  } = useWebViewHandlers({
+    addRecent,
+    backgroundColor,
+    setLogo,
+    setRenderKey,
+    setTitle,
+    tabId,
+    titleRef,
+    webViewRef,
+  });
 
   useEffect(() => {
     if (isActiveTab) {
@@ -332,9 +191,7 @@ const FreezableWebViewComponent = ({
 
       if (webViewRef.current) {
         activeTabRef.current = webViewRef.current;
-        if (titleRef.current) {
-          activeTabRef.current.title = titleRef.current;
-        }
+        if (titleRef.current) activeTabRef.current.title = titleRef.current;
       }
     }
   }, [activeTabRef, isActiveTab, isOnHomepage, resetScrollHandlers, screenshotCaptureRef, webViewRef]);
@@ -342,13 +199,11 @@ const FreezableWebViewComponent = ({
   useEffect(() => {
     if (isActiveTab) screenshotCaptureRef.current = viewShotRef.current;
 
-    // Freeze heavy website processes when the WebView is inactive
     if (webViewRef.current) {
-      if (isActiveTab) {
-        webViewRef.current.injectJavaScript(unfreezeWebsite);
-      } else {
-        webViewRef.current.injectJavaScript(freezeWebsite);
-      }
+      // Unfreeze heavy site processes when the tab becomes active
+      if (isActiveTab) webViewRef.current.injectJavaScript(unfreezeWebsite);
+      // Freeze when becoming inactive
+      else webViewRef.current.injectJavaScript(freezeWebsite);
     }
   }, [isActiveTab, screenshotCaptureRef, viewShotRef, webViewRef]);
 
@@ -400,7 +255,7 @@ const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
       ref={ref}
       renderError={() => <ErrorPage />}
       renderLoading={() => <></>}
-      style={[styles.webViewStyle, shouldExpandWebView ? styles.webViewStyleExpanded : {}]}
+      style={[styles.webView, shouldExpandWebView ? styles.webViewExpanded : {}]}
       userAgent={USER_AGENT[IS_IOS ? 'IOS' : 'ANDROID']}
       webviewDebuggingEnabled={IS_DEV}
     />
@@ -410,7 +265,7 @@ const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
 const TabWebView = memo(React.forwardRef(TabWebViewComponent));
 
 const styles = StyleSheet.create({
-  screenshotContainerStyle: {
+  screenshotContainer: {
     height: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
     left: 0,
     position: 'absolute',
@@ -438,7 +293,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: DEVICE_WIDTH,
   },
-  webViewStyle: {
+  webView: {
     backgroundColor: 'transparent',
     flex: 0,
     height: WEBVIEW_HEIGHT,
@@ -446,7 +301,7 @@ const styles = StyleSheet.create({
     minHeight: WEBVIEW_HEIGHT,
     width: DEVICE_WIDTH,
   },
-  webViewStyleExpanded: {
+  webViewExpanded: {
     height: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
     maxHeight: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
     minHeight: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
