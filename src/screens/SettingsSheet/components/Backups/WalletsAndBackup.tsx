@@ -146,6 +146,7 @@ export const WalletsAndBackup = () => {
         }
         return createBackup({});
       },
+      logout: true,
     });
   }, [createBackup, wallets]);
 

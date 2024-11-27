@@ -110,6 +110,7 @@ export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }:
         await login();
         await backupsStore.getState().syncAndFetchBackups();
       }
+
       const userData = await getGoogleAccountUserData();
       if (!userData) {
         Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
