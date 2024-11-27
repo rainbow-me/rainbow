@@ -3,7 +3,7 @@ import { SlackSheet } from '@/components/sheet';
 import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { Linking } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { analyticsV2 } from '@/analytics';
 import { RequestVendorLogoIcon } from '@/components/coin-icon';
 import startCase from 'lodash/startCase';
@@ -15,6 +15,7 @@ import * as i18n from '@/languages';
 import { capitalize } from 'lodash';
 import { RainbowPosition } from '@/resources/defi/types';
 import { LpPositionListItem } from './LpPositionListItem';
+import { RootStackParamList } from '@/navigation/types';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -24,12 +25,12 @@ const ITEM_PADDING = 20;
 const SECTION_TITLE_HEIGHT = 20 + ITEM_PADDING;
 
 export function getPositionSheetHeight({ position }: { position: RainbowPosition }) {
-  let height = android ? 120 : 100;
-  const numberOfDeposits = position?.deposits.filter(deposit => !deposit.isLp).length || 0;
-  const numberOfLpDeposits = position?.deposits.filter(deposit => deposit.isLp).length || 0;
-  const numberOfBorrows = position?.borrows?.length || 0;
-  const numberOfClaimables = position?.claimables?.length || 0;
-  const numberOfStakes = position?.stakes?.length || 0;
+  let height = IS_IOS ? 100 : 120;
+  const numberOfDeposits = position.deposits.filter(deposit => !deposit.isLp).length || 0;
+  const numberOfLpDeposits = position.deposits.filter(deposit => deposit.isLp).length || 0;
+  const numberOfBorrows = position.borrows.length || 0;
+  const numberOfClaimables = position.claimables.length || 0;
+  const numberOfStakes = position.stakes.length || 0;
 
   height += numberOfDeposits > 0 ? SECTION_TITLE_HEIGHT + numberOfDeposits * (DEPOSIT_ITEM_HEIGHT + ITEM_PADDING) : 0;
   height += numberOfLpDeposits > 0 ? SECTION_TITLE_HEIGHT + numberOfLpDeposits * (DEPOSIT_ITEM_HEIGHT + ITEM_PADDING) : 0;
@@ -41,11 +42,11 @@ export function getPositionSheetHeight({ position }: { position: RainbowPosition
 }
 
 export const PositionSheet: React.FC = () => {
-  const { params } = useRoute();
+  const {
+    params: { position },
+  } = useRoute<RouteProp<RootStackParamList, 'PositionSheet'>>();
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
-
-  const { position } = params as { position: RainbowPosition };
 
   const positionColor =
     position.dapp.colors.primary || position.dapp.colors.fallback || (isDarkMode ? globalColors.white100 : globalColors.white10);
@@ -96,21 +97,23 @@ export const PositionSheet: React.FC = () => {
                     </Stack>
                   </Inline>
                 </Box>
-                <ButtonPressAnimation onPress={openDapp}>
-                  <Box
-                    style={{
-                      backgroundColor: colors.alpha(positionColor, 0.08),
-                      borderRadius: 20,
-                      height: 40,
-                    }}
-                    justifyContent="center"
-                    padding="12px"
-                  >
-                    <Text size="17pt" weight="heavy" color={{ custom: positionColor }}>
-                      {i18n.t(i18n.l.positions.open_dapp)}
-                    </Text>
-                  </Box>
-                </ButtonPressAnimation>
+                {position.dapp.url && (
+                  <ButtonPressAnimation onPress={openDapp}>
+                    <Box
+                      style={{
+                        backgroundColor: colors.alpha(positionColor, 0.08),
+                        borderRadius: 20,
+                        height: 40,
+                      }}
+                      justifyContent="center"
+                      padding="12px"
+                    >
+                      <Text size="17pt" weight="heavy" color={{ custom: positionColor }}>
+                        {i18n.t(i18n.l.positions.open_dapp)}
+                      </Text>
+                    </Box>
+                  </ButtonPressAnimation>
+                )}
               </Inline>
 
               <Stack space={'20px'}>
@@ -145,12 +148,12 @@ export const PositionSheet: React.FC = () => {
                   />
                 ))}
 
-                {(position?.stakes?.length || false) && (
+                {(position.stakes.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
                     {i18n.t(i18n.l.positions.stakes)}
                   </Text>
                 )}
-                {position?.stakes?.map(stake =>
+                {position.stakes.map(stake =>
                   stake.isLp ? (
                     <LpPositionListItem
                       key={`stake-${stake.asset.asset_code}-${stake.quantity}`}
@@ -170,12 +173,12 @@ export const PositionSheet: React.FC = () => {
                   )
                 )}
 
-                {(position?.borrows?.length || false) && (
+                {(position.borrows.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
                     {i18n.t(i18n.l.positions.borrows)}
                   </Text>
                 )}
-                {position?.borrows?.map(borrow => (
+                {position.borrows.map(borrow => (
                   <SubPositionListItem
                     key={`borrow-${borrow.underlying[0].asset.asset_code}-${borrow.quantity}-${borrow.apy}`}
                     asset={borrow.underlying[0].asset}
@@ -186,12 +189,12 @@ export const PositionSheet: React.FC = () => {
                   />
                 ))}
 
-                {(position?.claimables?.length || false) && (
+                {(position.claimables.length || false) && (
                   <Text size="17pt" weight="heavy" color="label">
                     {i18n.t(i18n.l.positions.rewards)}
                   </Text>
                 )}
-                {position?.claimables?.map(claim => (
+                {position.claimables.map(claim => (
                   <SubPositionListItem
                     key={`claimable-${claim.asset.asset_code}-${claim.quantity}`}
                     asset={claim.asset}
