@@ -158,6 +158,10 @@ export const event = {
   claimClaimableSucceeded: 'claim_claimable.succeeded',
   claimClaimableFailed: 'claim_claimable.failed',
   claimablePanelOpened: 'claimable_panel.opened',
+
+  // error boundary
+  errorBoundary: 'error_boundary.viewed',
+  errorBoundaryReset: 'error_boundary.reset',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -643,4 +647,7 @@ export type EventProperties = {
     amount: string;
     usdValue: number;
   };
+
+  [event.errorBoundary]: { error: Error | null };
+  [event.errorBoundaryReset]: { error: Error | null };
 };
