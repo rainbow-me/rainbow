@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
 import { useTheme } from '@/theme';
-import { add, convertAmountToPercentageDisplay, convertRawAmountToNativeDisplay, divide } from '@/helpers/utilities';
+import { convertAmountToPercentageDisplay, convertRawAmountToNativeDisplay, divide } from '@/helpers/utilities';
 import { RainbowUnderlyingAsset } from '@/resources/defi/types';
 import { useAccountSettings } from '@/hooks';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -10,65 +10,69 @@ import { TwoCoinsIcon } from '@/components/coin-icon/TwoCoinsIcon';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 
-function getRangeStatus(isConcentratedLiquidity: boolean, isOutOfRange: boolean) {
+function getRangeStatus(assets: RainbowUnderlyingAsset[], isConcentratedLiquidity: boolean) {
   if (!isConcentratedLiquidity) {
     return 'full_range';
   }
+
+  const isOutOfRange =
+    assets.some(asset => {
+      return asset.quantity === '0';
+    }) || assets.length === 1;
+
   return isOutOfRange ? 'out_of_range' : 'in_range';
 }
 
 type Props = {
-  underlyingAssets: RainbowUnderlyingAsset[];
+  assets: RainbowUnderlyingAsset[];
+  totalAssetsValue: string;
   isConcentratedLiquidity: boolean;
   dappVersion?: string;
 };
 
-export const LpPositionListItem: React.FC<Props> = ({ underlyingAssets, isConcentratedLiquidity, dappVersion }) => {
+export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, isConcentratedLiquidity, dappVersion }) => {
   const { colors } = useTheme();
   const { nativeCurrency } = useAccountSettings();
   const theme = useTheme();
-
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const totalDepositValue = underlyingAssets.reduce((acc, underlying) => add(acc, underlying.native.amount), '0');
-  const assetAllocations = underlyingAssets.map(underlying => {
-    return parseFloat(divide(underlying.native.amount, totalDepositValue));
+  const totalAssetsValueNative = convertRawAmountToNativeDisplay(totalAssetsValue, 0, 1, nativeCurrency);
+
+  const rangeStatus = getRangeStatus(assets, isConcentratedLiquidity);
+
+  const assetAllocations = assets.map(asset => {
+    return parseFloat(divide(asset.native.amount, totalAssetsValue));
   });
 
-  const totalValueNative = convertRawAmountToNativeDisplay(totalDepositValue, 0, 1, nativeCurrency);
-
-  const isOutOfRange =
-    underlyingAssets.some(underlying => {
-      return underlying.quantity === '0';
-    }) || underlyingAssets.length === 1;
-
-  const rangeStatus = getRangeStatus(isConcentratedLiquidity, isOutOfRange);
+  const allocationPercentageText = assetAllocations
+    .map(allocation => `${convertAmountToPercentageDisplay(allocation * 100, 0, undefined, true)}`)
+    .join(' / ');
 
   return (
     <Columns space={'10px'}>
       <Column width={'content'}>
-        {underlyingAssets.length === 2 && (
+        {assets.length === 2 && (
           <TwoCoinsIcon
             badge
             // @ts-expect-error component uses different Token entity type, but it is compatible
             under={{
-              ...underlyingAssets[0].asset,
-              chainId: underlyingAssets[0].asset.chain_id,
+              ...assets[0].asset,
+              chainId: assets[0].asset.chain_id,
             }}
             // @ts-expect-error component uses different Token entity type, but it is compatible
             over={{
-              ...underlyingAssets[1].asset,
-              chainId: underlyingAssets[1].asset.chain_id,
+              ...assets[1].asset,
+              chainId: assets[1].asset.chain_id,
             }}
           />
         )}
-        {underlyingAssets.length === 1 && (
+        {assets.length === 1 && (
           <RainbowCoinIcon
-            icon={underlyingAssets[0].asset.icon_url ?? undefined}
-            chainId={underlyingAssets[0].asset.chain_id}
-            symbol={underlyingAssets[0].asset.symbol}
+            icon={assets[0].asset.icon_url ?? undefined}
+            chainId={assets[0].asset.chain_id}
+            symbol={assets[0].asset.symbol}
             theme={theme}
-            colors={underlyingAssets[0].asset.colors}
+            colors={assets[0].asset.colors}
           />
         )}
         {/* TODO: add three+ coins icon */}
@@ -80,7 +84,7 @@ export const LpPositionListItem: React.FC<Props> = ({ underlyingAssets, isConcen
               <Column>
                 <Inline alignVertical="center" space={'6px'}>
                   <Text size="17pt" weight="medium" color="label" numberOfLines={1}>
-                    {underlyingAssets.map(underlying => underlying.asset.symbol).join(' / ')}
+                    {assets.map(underlying => underlying.asset.symbol).join(' / ')}
                   </Text>
                   {dappVersion && (
                     <Box
@@ -102,7 +106,7 @@ export const LpPositionListItem: React.FC<Props> = ({ underlyingAssets, isConcen
               </Column>
               <Column width={'content'}>
                 <Text size="17pt" weight="medium" color="label" numberOfLines={1}>
-                  {`${totalValueNative.display}`}
+                  {`${totalAssetsValueNative.display}`}
                 </Text>
               </Column>
             </Columns>
@@ -132,8 +136,8 @@ export const LpPositionListItem: React.FC<Props> = ({ underlyingAssets, isConcen
                     </Text>
                   </Box>
                   <LpRangeBadge
-                    assets={underlyingAssets.map((underlying, index) => ({
-                      color: underlying.asset.colors.primary ?? underlying.asset.colors.fallback ?? colors.black,
+                    assets={assets.map((underlying, index) => ({
+                      color: underlying.asset.colors?.primary ?? underlying.asset.colors?.fallback ?? colors.black,
                       allocationPercentage: assetAllocations[index],
                     }))}
                   />
@@ -141,9 +145,7 @@ export const LpPositionListItem: React.FC<Props> = ({ underlyingAssets, isConcen
               </Column>
               <Column width="content">
                 <Text size="13pt" weight="medium" color={'labelSecondary'} align="right">
-                  {assetAllocations
-                    .map(allocation => `${convertAmountToPercentageDisplay(allocation * 100, 0, undefined, true)}`)
-                    .join(' / ')}
+                  {allocationPercentageText}
                 </Text>
               </Column>
             </Columns>

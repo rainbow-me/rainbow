@@ -78,10 +78,7 @@ function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
 export const PositionCard = ({ position }: PositionCardProps) => {
   const { colors, isDarkMode } = useTheme();
   const totalPositions =
-    (position.borrows?.length || 0) +
-    (position.deposits?.length || 0) +
-    (position.claimables?.length || 0) +
-    (position.stakes?.length || 0);
+    (position.borrows.length || 0) + (position.deposits.length || 0) + (position.claimables.length || 0) + (position.stakes.length || 0);
 
   const { navigate } = useNavigation();
 
@@ -92,8 +89,8 @@ export const PositionCard = ({ position }: PositionCardProps) => {
 
   const depositTokens: CoinStackToken[] = useMemo(() => {
     const tokens: CoinStackToken[] = [];
-    position.deposits?.forEach((deposit: RainbowDeposit) => {
-      deposit.underlying?.forEach(({ asset }) => {
+    position.deposits.forEach((deposit: RainbowDeposit) => {
+      deposit.underlying.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
           network: asset.network,
@@ -101,8 +98,8 @@ export const PositionCard = ({ position }: PositionCardProps) => {
         });
       });
     });
-    position.stakes?.forEach((stake: RainbowStake) => {
-      stake.underlying?.forEach(({ asset }) => {
+    position.stakes.forEach((stake: RainbowStake) => {
+      stake.underlying.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
           network: asset.network,
@@ -110,15 +107,15 @@ export const PositionCard = ({ position }: PositionCardProps) => {
         });
       });
     });
-    position.claimables?.forEach((claimable: RainbowClaimable) => {
+    position.claimables.forEach((claimable: RainbowClaimable) => {
       tokens.push({
         address: claimable.asset.asset_code,
         network: claimable.asset.network,
         symbol: claimable.asset.symbol,
       });
     });
-    position.borrows?.forEach((borrow: RainbowBorrow) => {
-      borrow.underlying?.forEach(({ asset }) => {
+    position.borrows.forEach((borrow: RainbowBorrow) => {
+      borrow.underlying.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
           network: asset.network,

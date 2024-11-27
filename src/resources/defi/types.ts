@@ -1,6 +1,6 @@
-import { NativeCurrencyKey, ZerionAsset } from '@/entities';
+import { NativeCurrencyKey } from '@/entities';
 import { ChainId, Network } from '@/chains/types';
-import { TokenColors } from '@/graphql/__generated__/metadata';
+import { AddysAsset } from '@/resources/addys/types';
 
 export type AddysPositionsResponse =
   | {
@@ -21,12 +21,9 @@ export type NativeDisplay = {
   display: string;
 };
 
-// TODO: this does not have all the fields returned by the API
-export type PositionAsset = ZerionAsset & {
+export type PositionAsset = AddysAsset & {
   network: Network;
   chain_id: ChainId;
-  networks: Record<ChainId, { address: string; decimals: number }>;
-  colors: TokenColors;
 };
 
 export type PositionDapp = {

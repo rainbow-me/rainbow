@@ -142,7 +142,8 @@ export const PositionSheet: React.FC = () => {
                 {lpDeposits.map(deposit => (
                   <LpPositionListItem
                     key={`deposit-${deposit.asset.asset_code}-${deposit.quantity}`}
-                    underlyingAssets={deposit.underlying}
+                    assets={deposit.underlying}
+                    totalAssetsValue={deposit.totalValue}
                     isConcentratedLiquidity={deposit.isConcentratedLiquidity}
                     dappVersion={deposit.dappVersion}
                   />
@@ -157,7 +158,8 @@ export const PositionSheet: React.FC = () => {
                   stake.isLp ? (
                     <LpPositionListItem
                       key={`stake-${stake.asset.asset_code}-${stake.quantity}`}
-                      underlyingAssets={stake.underlying}
+                      assets={stake.underlying}
+                      totalAssetsValue={stake.totalValue}
                       isConcentratedLiquidity={stake.isConcentratedLiquidity}
                       dappVersion={stake.dappVersion}
                     />
