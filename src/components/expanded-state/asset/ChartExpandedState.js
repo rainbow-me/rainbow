@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
@@ -23,6 +23,7 @@ import {
   useChartThrottledPoints,
   useDelayedValueWithLayoutAnimation,
   useDimensions,
+  useTimeout,
 } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
@@ -38,6 +39,8 @@ import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';
 import { chainsName, supportedSwapChainIds } from '@/chains';
 import { ChainId } from '@/chains/types';
+import { useTimeoutEffect } from '@/hooks/useTimeout';
+import { analyticsV2 } from '@/analytics';
 
 const defaultCarouselHeight = 60;
 const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
@@ -253,6 +256,19 @@ export default function ChartExpandedState({ asset }) {
       return test;
     },
     [nativeCurrency]
+  );
+
+  const mountedAt = useRef(Date.now());
+  useTimeoutEffect(
+    () => {
+      const { address, chainId, symbol, name, icon_url, price } = assetWithPrice;
+      analyticsV2.track(analyticsV2.event.tokenDetailsErc20, {
+        eventSentAfterMs: Date.now() - mountedAt.current,
+        token: { address, chainId, symbol, name, icon_url, price },
+        available_data: { chart: showChart, description: !!data?.description, iconUrl: !!icon_url },
+      });
+    },
+    5 * 1000 // 5s
   );
 
   return (

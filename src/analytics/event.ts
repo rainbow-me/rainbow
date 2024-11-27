@@ -162,6 +162,10 @@ export const event = {
   // error boundary
   errorBoundary: 'error_boundary.viewed',
   errorBoundaryReset: 'error_boundary.reset',
+
+  // token details
+  tokenDetailsErc20: 'token_details.erc20',
+  tokenDetailsNFT: 'token_details.nft',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -650,4 +654,34 @@ export type EventProperties = {
 
   [event.errorBoundary]: { error: Error | null };
   [event.errorBoundaryReset]: { error: Error | null };
+
+  [event.tokenDetailsErc20]: {
+    token: {
+      address: string;
+      chainId: ChainId;
+      symbol: string;
+      name: string;
+      icon_url: string;
+      price: number;
+    };
+    eventSentAfterMs: number;
+    available_data: {
+      chart: boolean;
+      description: boolean;
+      iconUrl: boolean;
+    };
+  };
+  [event.tokenDetailsNFT]: {
+    token: {
+      isPoap: boolean;
+      isParty: boolean;
+      isENS: boolean;
+      address: string;
+      chainId: ChainId;
+      name: string;
+      image_url: string | null | undefined;
+    };
+    eventSentAfterMs: number;
+    available_data: { description: boolean; image_url: boolean; floorPrice: boolean };
+  };
 };
