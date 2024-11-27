@@ -2279,6 +2279,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@clack/core@npm:0.3.5, @clack/core@npm:^0.3.5":
+  version: 0.3.5
+  resolution: "@clack/core@npm:0.3.5"
+  dependencies:
+    picocolors: "npm:^1.0.0"
+    sisteransi: "npm:^1.0.5"
+  checksum: 10c0/b1037226b38696bd95e09beef789ff4e23abb282505ac233c0316c2410c8afb68cf91b67812c883f05ffa6943d6f0593f1ebc17beb94f4a42c13e4657f598c0b
+  languageName: node
+  linkType: hard
+
+"@clack/prompts@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "@clack/prompts@npm:0.8.2"
+  dependencies:
+    "@clack/core": "npm:0.3.5"
+    picocolors: "npm:^1.0.0"
+    sisteransi: "npm:^1.0.5"
+  checksum: 10c0/7ac6e7e0fba1c958847e6e3ef9415d9c2184fb424b31691aaef64fd06042d243e859c157b941ca1c9f73e9cb649413fab487a602b981e300acfbec4a111d7562
+  languageName: node
+  linkType: hard
+
 "@coinbase/mobile-wallet-protocol-host@npm:0.1.7":
   version: 0.1.7
   resolution: "@coinbase/mobile-wallet-protocol-host@npm:0.1.7"
@@ -6929,9 +6950,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/react-native-skia@npm:1.3.11":
-  version: 1.3.11
-  resolution: "@shopify/react-native-skia@npm:1.3.11"
+"@shopify/react-native-skia@npm:1.5.10":
+  version: 1.5.10
+  resolution: "@shopify/react-native-skia@npm:1.5.10"
   dependencies:
     canvaskit-wasm: "npm:0.39.1"
     react-reconciler: "npm:0.27.0"
@@ -6945,8 +6966,8 @@ __metadata:
     react-native-reanimated:
       optional: true
   bin:
-    setup-skia-web: scripts/setup-canvaskit.js
-  checksum: 10c0/b069d05ff1bf3599cc16eadc492614ab55b9e9130ba1aac22d83f19e6b7f37e57260471cf8bda86b9bbdebb71834bf4b83f33da2f7c0b18b31df104015b72fef
+    setup-skia-web: ./scripts/setup-canvaskit.js
+  checksum: 10c0/c9449dde7c80ed600c26dfc2ba76dd05b4f0b82f019128fab15fdfbf0b05696ad31937adbef3d4ee4c5d04272a325c83c734b154780e3c4e644295819559a039
   languageName: node
   linkType: hard
 
@@ -9223,7 +9244,7 @@ __metadata:
     "@rudderstack/rudder-sdk-react-native": "npm:1.12.1"
     "@sentry/react-native": "npm:5.31.1"
     "@shopify/flash-list": "npm:1.7.0"
-    "@shopify/react-native-skia": "npm:1.3.11"
+    "@shopify/react-native-skia": "npm:1.5.10"
     "@tanstack/query-async-storage-persister": "npm:4.2.1"
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
@@ -9417,6 +9438,7 @@ __metadata:
     react-navigation-backhandler: "npm:2.0.1"
     react-primitives: "npm:0.8.1"
     react-redux: "npm:7.2.1"
+    react-scan: "npm:0.0.34-native"
     react-style-proptype: "npm:3.2.2"
     react-test-renderer: "npm:18.2.0"
     readable-stream: "npm:1.1.14"
@@ -15852,12 +15874,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fsevents@npm:2.3.2":
+  version: 2.3.2
+  resolution: "fsevents@npm:2.3.2"
+  dependencies:
+    node-gyp: "npm:latest"
+  checksum: 10c0/be78a3efa3e181cda3cf7a4637cb527bcebb0bd0ea0440105a3bb45b86f9245b307dc10a2507e8f4498a7d4ec349d1910f4d73e4d4495b16103106e07eee735b
+  conditions: os=darwin
+  languageName: node
+  linkType: hard
+
 "fsevents@npm:^2.3.2, fsevents@npm:~2.3.2":
   version: 2.3.3
   resolution: "fsevents@npm:2.3.3"
   dependencies:
     node-gyp: "npm:latest"
   checksum: 10c0/a1f0c44595123ed717febbc478aa952e47adfc28e2092be66b8ab1635147254ca6cfe1df792a8997f22716d4cbafc73309899ff7bfac2ac3ad8cf2e4ecc3ec60
+  conditions: os=darwin
+  languageName: node
+  linkType: hard
+
+"fsevents@patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>":
+  version: 2.3.2
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"
+  dependencies:
+    node-gyp: "npm:latest"
   conditions: os=darwin
   languageName: node
   linkType: hard
@@ -19003,6 +19044,13 @@ __metadata:
   version: 3.0.3
   resolution: "kleur@npm:3.0.3"
   checksum: 10c0/cd3a0b8878e7d6d3799e54340efe3591ca787d9f95f109f28129bdd2915e37807bf8918bb295ab86afb8c82196beec5a1adcaf29042ce3f2bd932b038fe3aa4b
+  languageName: node
+  linkType: hard
+
+"kleur@npm:^4.1.5":
+  version: 4.1.5
+  resolution: "kleur@npm:4.1.5"
+  checksum: 10c0/e9de6cb49657b6fa70ba2d1448fd3d691a5c4370d8f7bbf1c2f64c24d461270f2117e1b0afe8cb3114f13bbd8e51de158c2a224953960331904e636a5e4c0f2a
   languageName: node
   linkType: hard
 
@@ -22318,6 +22366,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"playwright-core@npm:1.49.0":
+  version: 1.49.0
+  resolution: "playwright-core@npm:1.49.0"
+  bin:
+    playwright-core: cli.js
+  checksum: 10c0/22c1a72fabdcc87bd1cd4d40a032d2c5b94cf94ba7484dc182048c3fa1c8ec26180b559d8cac4ca9870e8fd6bdf5ef9d9f54e7a31fd60d67d098fcffc5e4253b
+  languageName: node
+  linkType: hard
+
+"playwright@npm:^1.49.0":
+  version: 1.49.0
+  resolution: "playwright@npm:1.49.0"
+  dependencies:
+    fsevents: "npm:2.3.2"
+    playwright-core: "npm:1.49.0"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    playwright: cli.js
+  checksum: 10c0/e94d662747cd147d0573570fec90dadc013c1097595714036fc8934a075c5a82ab04a49111b03b1f762ea86429bdb7c94460901896901e20970b30ce817cc93f
+  languageName: node
+  linkType: hard
+
 "please-upgrade-node@npm:^3.2.0":
   version: 3.2.0
   resolution: "please-upgrade-node@npm:3.2.0"
@@ -24039,6 +24111,30 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
     "@types/react":
       optional: true
   checksum: 10c0/dcd523ada602bd0a839c2032cadf0b3e4af55ee85acefee3760976a9cceaa4606927801b093bbb8bf3c2989c71e048f5428c2c6eb9e6681762e86356833d039b
+  languageName: node
+  linkType: hard
+
+"react-scan@npm:0.0.34-native":
+  version: 0.0.34-native
+  resolution: "react-scan@npm:0.0.34-native"
+  dependencies:
+    "@clack/core": "npm:^0.3.5"
+    "@clack/prompts": "npm:^0.8.2"
+    kleur: "npm:^4.1.5"
+    mri: "npm:^1.2.0"
+    playwright: "npm:^1.49.0"
+  peerDependenciesMeta:
+    "@shopify/react-native-skia":
+      optional: true
+    babel-preset-expo:
+      optional: true
+    react-native:
+      optional: true
+    react-native-reanimated:
+      optional: true
+  bin:
+    react-scan: bin/cli.js
+  checksum: 10c0/f65b2721b6d6ad95e2a8d5d1ff7c145d2a02625d867cd52ddd304874eed03eeac87d687edc1e15c3533ed3f2d3011502dbff38c386296e8d1dda47f5aa6e6ea6
   languageName: node
   linkType: hard
 

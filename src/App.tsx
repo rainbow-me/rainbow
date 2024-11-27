@@ -40,6 +40,7 @@ import { IS_ANDROID, IS_DEV } from '@/env';
 import { prefetchDefaultFavorites } from '@/resources/favorites';
 import Routes from '@/navigation/Routes';
 import { BackendNetworks } from '@/components/BackendNetworks';
+import { ReactScan } from 'react-scan/native';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -172,34 +173,42 @@ function Root() {
   }, [setInitializing]);
 
   return initializing ? null : (
-    // @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>'
-    <ReduxProvider store={store}>
-      <RecoilRoot>
-        <PersistQueryClientProvider
-          client={queryClient}
-          persistOptions={persistOptions}
-          onSuccess={() => {
-            prefetchDefaultFavorites();
-          }}
-        >
-          <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
-            <SafeAreaProvider>
-              <MainThemeProvider>
-                <GestureHandlerRootView style={sx.container}>
-                  <RainbowContextWrapper>
-                    <SharedValuesProvider>
-                      <ErrorBoundary>
-                        <AppWithRedux walletReady={false} />
-                      </ErrorBoundary>
-                    </SharedValuesProvider>
-                  </RainbowContextWrapper>
-                </GestureHandlerRootView>
-              </MainThemeProvider>
-            </SafeAreaProvider>
-          </MobileWalletProtocolProvider>
-        </PersistQueryClientProvider>
-      </RecoilRoot>
-    </ReduxProvider>
+    <ReactScan
+      options={{
+        enabled: true,
+        log: true,
+        animationWhenFlashing: false,
+      }}
+    >
+      {/* @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>' */}
+      <ReduxProvider store={store}>
+        <RecoilRoot>
+          <PersistQueryClientProvider
+            client={queryClient}
+            persistOptions={persistOptions}
+            onSuccess={() => {
+              prefetchDefaultFavorites();
+            }}
+          >
+            <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
+              <SafeAreaProvider>
+                <MainThemeProvider>
+                  <GestureHandlerRootView style={sx.container}>
+                    <RainbowContextWrapper>
+                      <SharedValuesProvider>
+                        <ErrorBoundary>
+                          <AppWithRedux walletReady={false} />
+                        </ErrorBoundary>
+                      </SharedValuesProvider>
+                    </RainbowContextWrapper>
+                  </GestureHandlerRootView>
+                </MainThemeProvider>
+              </SafeAreaProvider>
+            </MobileWalletProtocolProvider>
+          </PersistQueryClientProvider>
+        </RecoilRoot>
+      </ReduxProvider>
+    </ReactScan>
   );
 }
 
