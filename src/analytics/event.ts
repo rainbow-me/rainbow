@@ -141,6 +141,7 @@ export const event = {
   swapsSubmitted: 'swaps.submitted',
   swapsFailed: 'swaps.failed',
   swapsSucceeded: 'swaps.succeeded',
+  swapsQuoteFailed: 'swaps.quote_failed',
 
   // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
@@ -580,6 +581,15 @@ export type EventProperties = {
   [event.swapsSubmitted]: SwapEventParameters<'swap' | 'crosschainSwap'>;
   [event.swapsFailed]: SwapsEventFailedParameters<'swap' | 'crosschainSwap'>;
   [event.swapsSucceeded]: SwapsEventSucceededParameters<'swap' | 'crosschainSwap'>;
+
+  [event.swapsQuoteFailed]: {
+    error_code: number | undefined;
+    reason: string;
+    inputAsset: { symbol: string; address: string; chainId: ChainId };
+    inputAmount: string | number;
+    outputAsset: { symbol: string; address: string; chainId: ChainId };
+    outputAmount: string | number;
+  };
 
   [event.browserTrendingDappClicked]: {
     name: string;
