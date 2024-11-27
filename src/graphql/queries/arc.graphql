@@ -513,3 +513,69 @@ mutation trackFeaturedResult(
     message
   }
 }
+
+query trendingTokens($chainId: Int) {
+  trendingTokens(chainId: $chainId) {
+    data {
+      colors {
+        primary
+        fallback
+        shadow
+      }
+      icon_url
+      name
+      networks {
+        _ {
+          address
+          decimals
+        }
+      }
+      symbol
+      decimals
+      highLiquidity
+      isRainbowCurated
+      isVerified
+      uniqueId
+      address
+      market {
+        currency_used
+        fdv
+        volume_24h
+        circulating_supply
+        total_supply
+        max_supply
+        market_cap {
+          value
+          change_24h
+        }
+        price {
+          value
+          change_24h
+        }
+        ath {
+          value
+          change_percentage
+          date
+        }
+        atl {
+          value
+          change_percentage
+          date
+        }
+        updated_at
+      }
+      bridging {
+        bridgeable
+        networks {
+          _ {
+            address
+            decimals
+          }
+        }
+      }
+      creationDate
+      chainId
+      transferable
+    }
+  }
+}
