@@ -48,7 +48,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
             <Columns alignVertical="center">
               <Column>
                 <Inline alignVertical="center" space={'6px'}>
-                  <Text size="17pt" weight="bold" color="label" numberOfLines={1}>
+                  <Text size="17pt" weight="semibold" color="label" numberOfLines={1}>
                     {asset.name}
                   </Text>
                   {dappVersion && (

@@ -79,7 +79,7 @@ export const LpPositionListItem: React.FC<Props> = ({ underlyingAssets, isConcen
             <Columns alignVertical="center">
               <Column>
                 <Inline alignVertical="center" space={'6px'}>
-                  <Text size="17pt" weight="bold" color="label" numberOfLines={1}>
+                  <Text size="17pt" weight="medium" color="label" numberOfLines={1}>
                     {underlyingAssets.map(underlying => underlying.asset.symbol).join(' / ')}
                   </Text>
                   {dappVersion && (
