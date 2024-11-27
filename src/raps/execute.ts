@@ -27,6 +27,8 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { createClaimClaimableRap } from './claimClaimable';
 import { claimClaimable } from './actions/claimClaimable';
 
+const PERF_TRACKING_EXEMPTIONS: RapTypes[] = ['claimBridge', 'claimClaimable'];
+
 export function createSwapRapByType<T extends RapTypes>(
   type: T,
   swapParameters: RapSwapActionParameters<T>
@@ -148,17 +150,16 @@ export const walletExecuteRap = async (
   parameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimBridge' | 'claimClaimable'>
 ): Promise<{ nonce: number | undefined; errorMessage: string | null }> => {
   // NOTE: We don't care to track claimBridge raps
-  const rap =
-    type === 'claimBridge' || type === 'claimClaimable'
-      ? await createSwapRapByType(type, parameters)
-      : await performanceTracking.getState().executeFn({
-          fn: createSwapRapByType,
-          screen: Screens.SWAPS,
-          operation: TimeToSignOperation.CreateRap,
-          metadata: {
-            degenMode: swapsStore.getState().degenMode,
-          },
-        })(type, parameters);
+  const rap = PERF_TRACKING_EXEMPTIONS.includes(type)
+    ? await createSwapRapByType(type, parameters)
+    : await performanceTracking.getState().executeFn({
+        fn: createSwapRapByType,
+        screen: Screens.SWAPS,
+        operation: TimeToSignOperation.CreateRap,
+        metadata: {
+          degenMode: swapsStore.getState().degenMode,
+        },
+      })(type, parameters);
 
   const { actions } = rap;
   const rapName = getRapFullName(rap.actions);
