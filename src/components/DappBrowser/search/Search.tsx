@@ -21,15 +21,16 @@ import { TabButton } from '../search-input/TabButton';
 import { isMissingValidProtocolWorklet, isValidURLWorklet } from '../utils';
 import { useSearchContext } from './SearchContext';
 import { SearchResults } from './results/SearchResults';
+import { TabViewGestureStates } from '../types';
 
 export const Search = () => {
   const {
     extraWebViewHeight,
     goToUrl,
-    isSwitchingTabs,
     resetScrollHandlers,
     searchViewProgress,
     shouldCollapseBottomBar,
+    tabViewGestureState,
     tabViewProgress,
     tabViewVisible,
   } = useBrowserContext();
@@ -87,13 +88,14 @@ export const Search = () => {
       Gesture.Tap()
         .maxDistance(5)
         .onEnd(() => {
-          if (shouldCollapseBottomBar.value && !isSwitchingTabs.value) {
+          const isSwitchingTabs = tabViewGestureState.value !== TabViewGestureStates.INACTIVE;
+          if (shouldCollapseBottomBar.value && !isSwitchingTabs) {
             shouldCollapseBottomBar.value = false;
           }
           runOnJS(resetScrollHandlers)();
         })
         .shouldCancelWhenOutside(true),
-    [isSwitchingTabs, resetScrollHandlers, shouldCollapseBottomBar]
+    [resetScrollHandlers, shouldCollapseBottomBar, tabViewGestureState]
   );
 
   const handleUrlSubmit = useCallback(

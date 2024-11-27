@@ -41,7 +41,6 @@ export function useGestureManager({
   const startScrollPositionRef = useRef<number | undefined>(undefined);
   const touchPositionYRef = useRef<number | undefined>(undefined);
 
-  const isSwitchingTabs = useDerivedValue(() => tabViewGestureState.value !== TabViewGestureStates.INACTIVE);
   const shouldExpandWebView = useDerivedValue(
     () => shouldCollapseBottomBar.value || (!shouldCollapseBottomBar.value && extraWebViewHeight.value > 0)
   );
@@ -175,7 +174,6 @@ export function useGestureManager({
     activeTabCloseGestures,
     extraWebViewHeight,
     gestureManagerState,
-    isSwitchingTabs,
     pendingTabSwitchOffset,
     shouldCollapseBottomBar,
     shouldToggleAfterTabSwitch,

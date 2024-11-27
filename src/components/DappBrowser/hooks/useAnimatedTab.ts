@@ -38,7 +38,6 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     currentlyBeingClosedTabIds,
     currentlyOpenTabIds,
     extraWebViewHeight,
-    isSwitchingTabs,
     pendingTabSwitchOffset,
     scrollViewOffset,
     tabSwitchGestureX,
@@ -126,51 +125,10 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     const pendingActiveIndex = activeIndex + pendingTabSwitchOffset.value;
     const tabIndex = currentlyOpenTabIds.value.indexOf(tabId);
     const isRunningEnterTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING;
-    const shouldUseTabSwitchGestureStyles = isSwitchingTabs.value && isFullSizeTab;
-
-    if (shouldUseTabSwitchGestureStyles) {
-      return getTabSwitchGestureStyles({
-        activeIndex,
-        animatedIsActiveTab,
-        animatedMultipleTabsOpen,
-        animatedTabXPosition,
-        animatedTabYPosition,
-        extraWebViewHeight,
-        gestureScale,
-        gestureX,
-        isRunningEnterTabViewAnimation,
-        pendingActiveIndex,
-        pendingTabSwitchOffset,
-        scrollViewOffset,
-        tabIndex,
-        tabSwitchGestureX,
-        tabViewGestureHoldDuration,
-        tabViewGestureProgress,
-        tabViewGestureState,
-        tabViewProgress,
-      });
-    }
-
-    return getTabStyles({
-      animatedIsActiveTab,
-      animatedMultipleTabsOpen,
-      animatedTabXPosition,
-      animatedTabYPosition,
-      currentlyBeingClosedTabIds,
-      currentlyOpenTabIds,
-      gestureScale,
-      gestureX,
-      scrollViewOffset,
-      tabId,
-      tabViewProgress,
-    });
-  });
-
-  const expensiveAnimatedWebViewStyles = useAnimatedStyle(() => {
-    const { isFullSizeTab, isPendingActiveTab } = getTabInfo(tabId);
+    const isSwitchingTabs = tabViewGestureState.value !== TabViewGestureStates.INACTIVE;
 
     const borderRadius = interpolate(
-      isSwitchingTabs.value && isFullSizeTab ? tabViewGestureProgress.value : tabViewProgress.value,
+      isSwitchingTabs && isFullSizeTab ? tabViewGestureProgress.value : tabViewProgress.value,
       [0, 0, 100],
       [ZOOMED_TAB_BORDER_RADIUS, isFullSizeTab ? ZOOMED_TAB_BORDER_RADIUS : tabViewBorderRadius.value, tabViewBorderRadius.value],
       'clamp'
@@ -183,25 +141,60 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     );
 
     const isTabBeingClosed = !currentlyOpenTabIds.value.includes(tabId);
+    const pointerEvents = isTabBeingClosed
+      ? 'none'
+      : tabViewVisible.value
+        ? 'auto'
+        : animatedIsActiveTab && !isSwitchingTabs
+          ? 'auto'
+          : 'none';
+
+    const shouldUseTabSwitchGestureStyles = tabViewGestureState.value !== TabViewGestureStates.INACTIVE && isFullSizeTab;
 
     return {
       borderRadius,
       height,
-      pointerEvents: isTabBeingClosed
-        ? 'none'
-        : tabViewVisible.value
-          ? 'auto'
-          : isPendingActiveTab && !isSwitchingTabs.value
-            ? 'auto'
-            : 'none',
+      pointerEvents,
+      ...(shouldUseTabSwitchGestureStyles
+        ? getTabSwitchGestureStyles({
+            activeIndex,
+            animatedIsActiveTab,
+            animatedMultipleTabsOpen: animatedMultipleTabsOpen.value,
+            animatedTabXPosition: animatedTabXPosition.value,
+            animatedTabYPosition: animatedTabYPosition.value,
+            extraWebViewHeight: extraWebViewHeight.value,
+            gestureScale: gestureScale.value,
+            gestureX: gestureX.value,
+            isRunningEnterTabViewAnimation,
+            pendingActiveIndex,
+            pendingTabSwitchOffset: pendingTabSwitchOffset.value,
+            scrollViewOffset: scrollViewOffset.value,
+            tabIndex,
+            tabSwitchGestureX: tabSwitchGestureX.value,
+            tabViewGestureHoldDuration: tabViewGestureHoldDuration.value,
+            tabViewGestureProgress: tabViewGestureProgress.value,
+            tabViewGestureState: tabViewGestureState.value,
+            tabViewProgress: tabViewProgress.value,
+          })
+        : getTabStyles({
+            animatedIsActiveTab,
+            animatedMultipleTabsOpen: animatedMultipleTabsOpen.value,
+            animatedTabXPosition: animatedTabXPosition.value,
+            animatedTabYPosition: animatedTabYPosition.value,
+            currentlyBeingClosedTabIds: currentlyBeingClosedTabIds.value,
+            currentlyOpenTabIds: currentlyOpenTabIds.value,
+            gestureScale: gestureScale.value,
+            gestureX: gestureX.value,
+            scrollViewOffset: scrollViewOffset.value,
+            tabId,
+            tabViewProgress: tabViewProgress.value,
+          })),
     };
   });
 
   const zIndexAnimatedStyle = useAnimatedStyle(() => {
-    const wasCloseButtonPressed = gestureScale.value === 1 && gestureX.value < 0;
-    const isRunningEnterTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING;
-
     const { isFullSizeTab, isPendingActiveTab } = getTabInfo(tabId);
+    const isRunningEnterTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING;
 
     const scaleWeighting =
       gestureScale.value *
@@ -212,6 +205,7 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
         'clamp'
       );
 
+    const wasCloseButtonPressed = gestureScale.value === 1 && gestureX.value < 0;
     const zIndex = scaleWeighting * (isPendingActiveTab || gestureScale.value > 1 ? 9999 : 1) + (wasCloseButtonPressed ? 9999 : 0);
 
     return { zIndex };
@@ -233,7 +227,6 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     animatedWebViewBackgroundColorStyle,
     animatedWebViewStyle,
     backgroundColor,
-    expensiveAnimatedWebViewStyles,
     zIndexAnimatedStyle,
   };
 }

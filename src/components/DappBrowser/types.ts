@@ -91,7 +91,6 @@ export interface BrowserContextType {
   currentlyOpenTabIds: SharedValue<string[]>;
   extraWebViewHeight: DerivedValue<number>;
   gestureManagerState: SharedValue<GestureManagerState>;
-  isSwitchingTabs: DerivedValue<boolean>;
   lastActiveHomepageTab: SharedValue<string | null>;
   loadProgress: SharedValue<number>;
   multipleTabsOpen: DerivedValue<boolean>;

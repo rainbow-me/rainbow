@@ -25,7 +25,6 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
     animatedTabUrls,
     currentlyBeingClosedTabIds,
     currentlyOpenTabIds,
-    isSwitchingTabs,
     loadProgress,
     pendingTabSwitchOffset,
     shouldToggleAfterTabSwitch,
@@ -75,7 +74,7 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
   const toggleTabViewWorklet = useCallback(
     (activeIndex?: number) => {
       'worklet';
-      if (isSwitchingTabs.value) {
+      if (tabViewGestureState.value !== TabViewGestureStates.INACTIVE) {
         shouldToggleAfterTabSwitch.value = activeIndex ?? true;
         return;
       }
@@ -105,9 +104,9 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
     [
       animatedActiveTabIndex,
       currentlyOpenTabIds,
-      isSwitchingTabs,
       setActiveTabIndex,
       shouldToggleAfterTabSwitch,
+      tabViewGestureState,
       tabViewProgress,
       tabViewVisible,
     ]
@@ -324,7 +323,7 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
   );
 
   useAnimatedReaction(
-    () => ({ isSwitching: isSwitchingTabs.value, shouldToggle: shouldToggleAfterTabSwitch.value }),
+    () => ({ isSwitching: tabViewGestureState.value !== TabViewGestureStates.INACTIVE, shouldToggle: shouldToggleAfterTabSwitch.value }),
     (current, prev) => {
       if (!current.isSwitching && prev && (prev.isSwitching || current.shouldToggle !== false)) {
         if (current.shouldToggle !== false) {

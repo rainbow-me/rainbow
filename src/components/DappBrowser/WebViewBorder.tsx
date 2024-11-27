@@ -9,9 +9,10 @@ import { useBrowserContext } from './BrowserContext';
 import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { ZOOMED_TAB_BORDER_RADIUS } from './Dimensions';
 import { RAINBOW_HOME } from './constants';
+import { TabViewGestureStates } from './types';
 
 export const WebViewBorder = ({ tabId }: { tabId: string }) => {
-  const { animatedTabUrls, isSwitchingTabs, tabViewBorderRadius, tabViewGestureProgress, tabViewProgress } = useBrowserContext();
+  const { animatedTabUrls, tabViewBorderRadius, tabViewGestureProgress, tabViewGestureState, tabViewProgress } = useBrowserContext();
   const { getTabInfo } = useBrowserWorkletsContext();
   const { isDarkMode } = useColorMode();
 
@@ -25,9 +26,10 @@ export const WebViewBorder = ({ tabId }: { tabId: string }) => {
     const url = animatedTabUrls.value[tabId] || RAINBOW_HOME;
     const isOnHomepage = url === RAINBOW_HOME;
     const opacity = isOnHomepage ? 0 : 1 - tabViewProgress.value / 100;
+    const isSwitchingTabs = tabViewGestureState.value !== TabViewGestureStates.INACTIVE;
 
     const borderRadius = interpolate(
-      isSwitchingTabs.value && isFullSizeTab ? tabViewGestureProgress.value : tabViewProgress.value,
+      isSwitchingTabs && isFullSizeTab ? tabViewGestureProgress.value : tabViewProgress.value,
       [0, 0, 100],
       [ZOOMED_TAB_BORDER_RADIUS, isFullSizeTab ? ZOOMED_TAB_BORDER_RADIUS : tabViewBorderRadius.value, tabViewBorderRadius.value],
       'clamp'

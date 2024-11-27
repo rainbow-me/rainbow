@@ -8,6 +8,7 @@ import { clamp } from '@/__swaps__/utils/swaps';
 import { useBrowserContext } from './BrowserContext';
 import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { RAINBOW_HOME } from './constants';
+import { TabViewGestureStates } from './types';
 
 export const BrowserButtonShadows = ({
   backgroundColor,
@@ -65,7 +66,7 @@ export const WebViewShadows = ({
   tabId: string;
   zIndexAnimatedStyle: AnimatedStyle;
 }) => {
-  const { animatedTabUrls, isSwitchingTabs, tabViewGestureProgress, tabViewProgress } = useBrowserContext();
+  const { animatedTabUrls, tabViewGestureState, tabViewGestureProgress, tabViewProgress } = useBrowserContext();
   const { getTabInfo } = useBrowserWorkletsContext();
   const { isDarkMode } = useColorMode();
 
@@ -74,9 +75,10 @@ export const WebViewShadows = ({
 
     const tabUrl = animatedTabUrls.value[tabId] || RAINBOW_HOME;
     const isOnHomepage = tabUrl === RAINBOW_HOME;
+    const isSwitchingTabs = tabViewGestureState.value !== TabViewGestureStates.INACTIVE;
     const progress =
       !isDarkMode && isOnHomepage
-        ? (isSwitchingTabs.value && isFullSizeTab ? clamp(tabViewGestureProgress.value * 2, 0, 100) : tabViewProgress.value) / 100
+        ? (isSwitchingTabs && isFullSizeTab ? clamp(tabViewGestureProgress.value * 2, 0, 100) : tabViewProgress.value) / 100
         : 1;
 
     return {
@@ -89,9 +91,10 @@ export const WebViewShadows = ({
 
     const tabUrl = animatedTabUrls.value[tabId] || RAINBOW_HOME;
     const isOnHomepage = tabUrl === RAINBOW_HOME;
+    const isSwitchingTabs = tabViewGestureState.value !== TabViewGestureStates.INACTIVE;
     const progress =
       !isDarkMode && isOnHomepage
-        ? (isSwitchingTabs.value && isFullSizeTab ? clamp(tabViewGestureProgress.value * 2, 0, 100) : tabViewProgress.value) / 100
+        ? (isSwitchingTabs && isFullSizeTab ? clamp(tabViewGestureProgress.value * 2, 0, 100) : tabViewProgress.value) / 100
         : 1;
 
     return {

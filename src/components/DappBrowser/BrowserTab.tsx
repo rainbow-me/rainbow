@@ -40,26 +40,24 @@ export const BrowserTab = memo(function BrowserTab({ addRecent, setLogo, setTitl
   return (
     <WebViewShadows tabId={tabId} zIndexAnimatedStyle={zIndexAnimatedStyle}>
       <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, IS_IOS ? {} : zIndexAnimatedStyle]}>
-        <Animated.View style={[styles.webViewExpensiveStylesContainer, expensiveAnimatedWebViewStyles]}>
-          <ViewShot options={TAB_SCREENSHOT_FILE_FORMAT} ref={viewShotRef}>
-            <Animated.View
-              collapsable={false}
-              entering={FadeIn.duration(160)}
-              style={[styles.viewShotContainer, animatedWebViewBackgroundColorStyle]}
-            >
-              <HomepageOrWebView
-                addRecent={addRecent}
-                backgroundColor={backgroundColor}
-                setLogo={setLogo}
-                setTitle={setTitle}
-                tabId={tabId}
-                viewShotRef={viewShotRef}
-              />
-            </Animated.View>
-          </ViewShot>
-          <TabScreenshotContainer tabId={tabId} />
-          {IS_IOS && <WebViewBorder tabId={tabId} />}
-        </Animated.View>
+        <ViewShot options={TAB_SCREENSHOT_FILE_FORMAT} ref={viewShotRef}>
+          <Animated.View
+            collapsable={false}
+            entering={FadeIn.duration(160)}
+            style={[styles.viewShotContainer, animatedWebViewBackgroundColorStyle]}
+          >
+            <HomepageOrWebView
+              addRecent={addRecent}
+              backgroundColor={backgroundColor}
+              setLogo={setLogo}
+              setTitle={setTitle}
+              tabId={tabId}
+              viewShotRef={viewShotRef}
+            />
+          </Animated.View>
+        </ViewShot>
+        <TabScreenshotContainer tabId={tabId} />
+        {IS_IOS && <WebViewBorder tabId={tabId} />}
         <CloseTabButton tabId={tabId} />
       </Animated.View>
     </WebViewShadows>
@@ -279,18 +277,12 @@ const styles = StyleSheet.create({
     width: DEVICE_WIDTH,
   },
   webViewContainer: {
-    height: WEBVIEW_HEIGHT,
-    overflow: 'visible',
-    position: 'absolute',
-    top: TOP_INSET,
-    width: DEVICE_WIDTH,
-  },
-  webViewExpensiveStylesContainer: {
     borderCurve: 'continuous',
     height: WEBVIEW_HEIGHT,
     left: 0,
     position: 'absolute',
     overflow: 'hidden',
+    top: TOP_INSET,
     width: DEVICE_WIDTH,
   },
   webView: {

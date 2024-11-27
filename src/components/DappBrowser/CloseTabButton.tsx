@@ -30,7 +30,6 @@ export const CloseTabButton = ({ tabId }: { tabId: TabId }) => {
     animatedMultipleTabsOpen,
     animatedTabUrls,
     currentlyOpenTabIds,
-    isSwitchingTabs,
     multipleTabsOpen,
     tabViewGestureProgress,
     tabViewGestureState,
@@ -45,10 +44,11 @@ export const CloseTabButton = ({ tabId }: { tabId: TabId }) => {
     const { isFullSizeTab, isPendingActiveTab } = getTabInfo(tabId);
 
     const isRunningEnterTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING;
+    const isSwitchingTabs = tabViewGestureState.value !== TabViewGestureStates.INACTIVE;
     const animatedIsActiveTab = isPendingActiveTab || currentlyOpenTabIds.value.length === 0;
 
     const startOpacity = isFullSizeTab ? 0 : 1;
-    const endOpacity = isSwitchingTabs.value && isFullSizeTab && !isRunningEnterTabViewAnimation ? 0 : 1;
+    const endOpacity = isSwitchingTabs && isFullSizeTab && !isRunningEnterTabViewAnimation ? 0 : 1;
 
     // Switch to using progress-based interpolation when the tab view is
     // entered. This is mainly to avoid showing the close button in the

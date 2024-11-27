@@ -1,5 +1,4 @@
-/* eslint-disable no-nested-ternary */
-import { DerivedValue, SharedValue, interpolate, withSpring } from 'react-native-reanimated';
+import { interpolate, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import {
   COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
@@ -39,52 +38,51 @@ export function getTabStyles({
   tabViewProgress,
 }: {
   animatedIsActiveTab: boolean;
-  animatedMultipleTabsOpen: DerivedValue<number>;
-  animatedTabXPosition: DerivedValue<number>;
-  animatedTabYPosition: DerivedValue<number>;
-  currentlyBeingClosedTabIds: SharedValue<string[]>;
-  currentlyOpenTabIds: SharedValue<string[]>;
-  gestureScale: SharedValue<number>;
-  gestureX: SharedValue<number>;
-  scrollViewOffset: SharedValue<number>;
+  animatedMultipleTabsOpen: number;
+  animatedTabXPosition: number;
+  animatedTabYPosition: number;
+  currentlyBeingClosedTabIds: string[];
+  currentlyOpenTabIds: string[];
+  gestureScale: number;
+  gestureX: number;
+  scrollViewOffset: number;
   tabId: string;
-  tabViewProgress: SharedValue<number>;
+  tabViewProgress: number;
 }) {
   'worklet';
-  const isTabBeingClosed = currentlyBeingClosedTabIds.value.includes(tabId) && currentlyOpenTabIds.value.length !== 0;
+  const isTabBeingClosed = currentlyBeingClosedTabIds.includes(tabId) && currentlyOpenTabIds.length !== 0;
 
-  const opacity = interpolate(tabViewProgress.value, [0, 100], [animatedIsActiveTab ? 1 : 0, 1], 'clamp');
+  const opacity = interpolate(tabViewProgress, [0, 100], [animatedIsActiveTab ? 1 : 0, 1], 'clamp');
 
   const scale = interpolate(
-    tabViewProgress.value,
+    tabViewProgress,
     [0, 100],
     [
       animatedIsActiveTab && !isTabBeingClosed ? 1 : MULTI_TAB_SCALE,
-      SINGLE_TAB_SCALE - MULTI_TAB_SCALE_DIFF * (isTabBeingClosed ? 1 : animatedMultipleTabsOpen.value),
+      SINGLE_TAB_SCALE - MULTI_TAB_SCALE_DIFF * (isTabBeingClosed ? 1 : animatedMultipleTabsOpen),
     ]
   );
 
-  const xPositionStart = animatedIsActiveTab && !isTabBeingClosed ? 0 : animatedTabXPosition.value;
-  const xPositionEnd = (isTabBeingClosed ? 1 : animatedMultipleTabsOpen.value) * animatedTabXPosition.value;
-  const xPositionForTab = interpolate(tabViewProgress.value, [0, 100], [xPositionStart, xPositionEnd]);
+  const xPositionStart = animatedIsActiveTab && !isTabBeingClosed ? 0 : animatedTabXPosition;
+  const xPositionEnd = (isTabBeingClosed ? 1 : animatedMultipleTabsOpen) * animatedTabXPosition;
+  const xPositionForTab = interpolate(tabViewProgress, [0, 100], [xPositionStart, xPositionEnd]);
 
   const yPositionStart =
-    animatedIsActiveTab && !isTabBeingClosed ? 0 : -scrollViewOffset.value + animatedTabYPosition.value + TAB_VIEW_EXTRA_TOP_PADDING;
-
-  const yPositionEnd = animatedTabYPosition.value * animatedMultipleTabsOpen.value - scrollViewOffset.value + TAB_VIEW_EXTRA_TOP_PADDING;
+    animatedIsActiveTab && !isTabBeingClosed ? 0 : -scrollViewOffset + animatedTabYPosition + TAB_VIEW_EXTRA_TOP_PADDING;
+  const yPositionEnd = animatedTabYPosition * animatedMultipleTabsOpen - scrollViewOffset + TAB_VIEW_EXTRA_TOP_PADDING;
 
   const yPositionForTab =
-    interpolate(tabViewProgress.value, [0, 100], [yPositionStart, yPositionEnd]) -
-    ((gestureScale.value - 1) * COLLAPSED_WEBVIEW_HEIGHT_UNSCALED * MULTI_TAB_SCALE) / 2;
+    interpolate(tabViewProgress, [0, 100], [yPositionStart, yPositionEnd]) -
+    ((gestureScale - 1) * COLLAPSED_WEBVIEW_HEIGHT_UNSCALED * MULTI_TAB_SCALE) / 2;
 
-  const shouldHideTab = !animatedIsActiveTab && tabViewProgress.value <= 1;
+  const shouldHideTab = !animatedIsActiveTab && tabViewProgress <= 1;
 
   return {
     opacity: shouldHideTab ? 0 : opacity,
     transform: [
-      { translateX: shouldHideTab ? 0 : xPositionForTab + gestureX.value },
+      { translateX: shouldHideTab ? 0 : xPositionForTab + gestureX },
       { translateY: shouldHideTab ? 0 : yPositionForTab },
-      { scale: shouldHideTab ? 0 : scale * gestureScale.value },
+      { scale: shouldHideTab ? 0 : scale * gestureScale },
     ],
     transformOrigin: TAB_TRANSFORM_ORIGIN,
   };
@@ -117,37 +115,37 @@ export function getTabSwitchGestureStyles({
 }: {
   activeIndex: number;
   animatedIsActiveTab: boolean;
-  animatedMultipleTabsOpen: DerivedValue<number>;
-  animatedTabXPosition: DerivedValue<number>;
-  animatedTabYPosition: DerivedValue<number>;
-  extraWebViewHeight: DerivedValue<number>;
-  gestureScale: SharedValue<number>;
-  gestureX: SharedValue<number>;
+  animatedMultipleTabsOpen: number;
+  animatedTabXPosition: number;
+  animatedTabYPosition: number;
+  extraWebViewHeight: number;
+  gestureScale: number;
+  gestureX: number;
   isRunningEnterTabViewAnimation: boolean;
   pendingActiveIndex: number;
-  pendingTabSwitchOffset: SharedValue<number>;
-  scrollViewOffset: SharedValue<number>;
+  pendingTabSwitchOffset: number;
+  scrollViewOffset: number;
   tabIndex: number;
-  tabSwitchGestureX: SharedValue<number>;
-  tabViewGestureHoldDuration: SharedValue<number>;
-  tabViewGestureProgress: SharedValue<number>;
-  tabViewGestureState: SharedValue<TabViewGestureStates>;
-  tabViewProgress: SharedValue<number>;
+  tabSwitchGestureX: number;
+  tabViewGestureHoldDuration: number;
+  tabViewGestureProgress: number;
+  tabViewGestureState: TabViewGestureStates;
+  tabViewProgress: number;
 }) {
   'worklet';
-  const enterTabViewProgress = tabViewProgress.value / 100;
-  const isRunningExitTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_EXITING;
-  const minScale = SINGLE_TAB_SCALE - MULTI_TAB_SCALE_DIFF * animatedMultipleTabsOpen.value;
+  const enterTabViewProgress = tabViewProgress / 100;
+  const isRunningExitTabViewAnimation = tabViewGestureState === TabViewGestureStates.DRAG_END_EXITING;
+  const minScale = SINGLE_TAB_SCALE - MULTI_TAB_SCALE_DIFF * animatedMultipleTabsOpen;
 
   const scale = animatedIsActiveTab
     ? interpolate(
-        tabViewGestureProgress.value,
+        tabViewGestureProgress,
         [0, GestureProgressThresholds.CENTER_TAB_SCALE_END, 100, 110],
         [1, minScale, minScale, 1 - minScale * 1.1],
         isRunningEnterTabViewAnimation || isRunningExitTabViewAnimation ? 'extend' : 'clamp'
       )
     : interpolate(
-        tabViewGestureProgress.value,
+        tabViewGestureProgress,
         [0, GestureProgressThresholds.LOCK_SURROUNDING_TABS_SCALE],
         [
           1,
@@ -159,7 +157,7 @@ export function getTabSwitchGestureStyles({
 
   const referenceScale = animatedIsActiveTab
     ? interpolate(
-        tabViewGestureProgress.value,
+        tabViewGestureProgress,
         [0, GestureProgressThresholds.CENTER_TAB_SCALE_END, 100, 110],
         [
           1,
@@ -170,32 +168,32 @@ export function getTabSwitchGestureStyles({
         isRunningEnterTabViewAnimation || isRunningExitTabViewAnimation ? 'extend' : 'clamp'
       )
     : interpolate(
-        tabViewGestureProgress.value,
+        tabViewGestureProgress,
         [0, GestureProgressThresholds.LOCK_SURROUNDING_TABS_SCALE],
         [1, minScale + (1 - minScale) * (1 - GestureProgressThresholds.LOCK_SURROUNDING_TABS_SCALE / 100)],
         'clamp'
       );
 
-  const adjustedScale = interpolate(tabViewProgress.value, [0, 100], [scale, minScale]);
+  const adjustedScale = interpolate(tabViewProgress, [0, 100], [scale, minScale]);
   const activeIndexOffset = -TAB_SWITCH_TAB_WIDTH * activeIndex;
   const xPositionForTab = TAB_SWITCH_TAB_WIDTH * tabIndex + activeIndexOffset;
 
-  const switchTabsXTranslation = tabSwitchGestureX.value * TAB_SWITCH_X_AMPLIFICATION;
-  const currentHeight = WEBVIEW_HEIGHT + extraWebViewHeight.value;
+  const switchTabsXTranslation = tabSwitchGestureX * TAB_SWITCH_X_AMPLIFICATION;
+  const currentHeight = WEBVIEW_HEIGHT + extraWebViewHeight;
   const scaleDiff = referenceScale - scale;
   const yPositionForTab = scaleDiff * currentHeight;
 
   const baseTranslateX =
-    animatedIsActiveTab || tabViewGestureProgress.value < GestureProgressThresholds.HIDE_SURROUNDING_TABS
+    animatedIsActiveTab || tabViewGestureProgress < GestureProgressThresholds.HIDE_SURROUNDING_TABS
       ? xPositionForTab + switchTabsXTranslation
       : withSpring(
-          xPositionForTab - (switchTabsXTranslation - (switchTabsXTranslation - TAB_SWITCH_TAB_WIDTH * pendingTabSwitchOffset.value)),
+          xPositionForTab - (switchTabsXTranslation - (switchTabsXTranslation - TAB_SWITCH_TAB_WIDTH * pendingTabSwitchOffset)),
           SPRING_CONFIGS.tabSwitchConfig
         );
 
-  const enterTabViewAnimationX = isRunningEnterTabViewAnimation ? animatedTabXPosition.value * animatedMultipleTabsOpen.value : 0;
+  const enterTabViewAnimationX = isRunningEnterTabViewAnimation ? animatedTabXPosition * animatedMultipleTabsOpen : 0;
   const enterTabViewAnimationY = isRunningEnterTabViewAnimation
-    ? animatedTabYPosition.value * animatedMultipleTabsOpen.value + TAB_VIEW_EXTRA_TOP_PADDING
+    ? animatedTabYPosition * animatedMultipleTabsOpen + TAB_VIEW_EXTRA_TOP_PADDING
     : 0;
 
   const activeTabTranslateY = isRunningEnterTabViewAnimation
@@ -206,8 +204,7 @@ export function getTabSwitchGestureStyles({
   const isRightOfPendingActiveTab = tabIndex > pendingActiveIndex;
 
   const shouldRevealSurroundingTabs =
-    (tabViewGestureState.value === TabViewGestureStates.ACTIVE &&
-      tabViewGestureHoldDuration.value === TAB_VIEW_GESTURE_HOLD_THRESHOLD_MS) ||
+    (tabViewGestureState === TabViewGestureStates.ACTIVE && tabViewGestureHoldDuration === TAB_VIEW_GESTURE_HOLD_THRESHOLD_MS) ||
     isRunningExitTabViewAnimation;
 
   const surroundingTabsXAdjustment =
@@ -217,12 +214,12 @@ export function getTabSwitchGestureStyles({
 
   const shouldForceFullOpacity =
     Math.abs(switchTabsXTranslation) > TAB_SWITCH_HORIZONTAL_GAP &&
-    tabViewGestureProgress.value < GestureProgressThresholds.SKIP_SURROUNDING_TABS_ANIMATION &&
-    tabViewGestureHoldDuration.value === TAB_VIEW_GESTURE_HOLD_THRESHOLD_MS;
+    tabViewGestureProgress < GestureProgressThresholds.SKIP_SURROUNDING_TABS_ANIMATION &&
+    tabViewGestureHoldDuration === TAB_VIEW_GESTURE_HOLD_THRESHOLD_MS;
 
   const enteringTabViewOpacity = animatedIsActiveTab
     ? withSpring(1, SPRING_CONFIGS.tabSwitchConfig)
-    : tabViewGestureProgress.value < GestureProgressThresholds.HIDE_SURROUNDING_TABS
+    : tabViewGestureProgress < GestureProgressThresholds.HIDE_SURROUNDING_TABS
       ? shouldRevealSurroundingTabs
         ? shouldForceFullOpacity
           ? 1
@@ -247,19 +244,19 @@ export function getTabSwitchGestureStyles({
         )
       : enteringTabViewOpacity;
 
-  const closeTabGestureScale = isRunningEnterTabViewAnimation ? gestureScale.value : 1;
+  const closeTabGestureScale = isRunningEnterTabViewAnimation ? gestureScale : 1;
   const closeTabGestureYAdjustment = isRunningEnterTabViewAnimation
-    ? -((gestureScale.value - 1) * COLLAPSED_WEBVIEW_HEIGHT_UNSCALED * MULTI_TAB_SCALE) / 2
+    ? -((gestureScale - 1) * COLLAPSED_WEBVIEW_HEIGHT_UNSCALED * MULTI_TAB_SCALE) / 2
     : 0;
 
   return {
     opacity,
     transform: [
-      { translateX: isRunningEnterTabViewAnimation ? enterTabViewAnimationX * enterTabViewProgress + gestureX.value : 0 },
-      { translateY: -scrollViewOffset.value * enterTabViewProgress + closeTabGestureYAdjustment },
+      { translateX: isRunningEnterTabViewAnimation ? enterTabViewAnimationX * enterTabViewProgress + gestureX : 0 },
+      { translateY: -scrollViewOffset * enterTabViewProgress + closeTabGestureYAdjustment },
       {
         translateY:
-          animatedIsActiveTab || tabViewGestureProgress.value < GestureProgressThresholds.HIDE_SURROUNDING_TABS
+          animatedIsActiveTab || tabViewGestureProgress < GestureProgressThresholds.HIDE_SURROUNDING_TABS
             ? activeTabTranslateY
             : withSpring(0, SPRING_CONFIGS.tabSwitchConfig),
       },
@@ -272,7 +269,7 @@ export function getTabSwitchGestureStyles({
       { scale: adjustedScale * closeTabGestureScale },
       {
         scale:
-          animatedIsActiveTab || tabViewGestureProgress.value < GestureProgressThresholds.HIDE_SURROUNDING_TABS
+          animatedIsActiveTab || tabViewGestureProgress < GestureProgressThresholds.HIDE_SURROUNDING_TABS
             ? 1
             : withSpring(1 / scale, SPRING_CONFIGS.tabSwitchConfig),
       },
@@ -280,7 +277,7 @@ export function getTabSwitchGestureStyles({
       {
         translateX: isRunningEnterTabViewAnimation
           ? switchTabsXTranslation -
-            enterTabViewProgress * (switchTabsXTranslation - (switchTabsXTranslation + TAB_SWITCH_TAB_WIDTH * pendingTabSwitchOffset.value))
+            enterTabViewProgress * (switchTabsXTranslation - (switchTabsXTranslation + TAB_SWITCH_TAB_WIDTH * pendingTabSwitchOffset))
           : 0,
       },
     ],

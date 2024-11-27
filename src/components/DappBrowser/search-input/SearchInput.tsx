@@ -38,6 +38,7 @@ import { SEARCH_BAR_BORDER_RADIUS, SEARCH_BAR_HEIGHT, SEARCH_BAR_WIDTH } from '.
 import { ToolbarIcon } from '../ToolbarIcon';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, RAINBOW_HOME } from '../constants';
 import { useSearchContext } from '../search/SearchContext';
+import { TabViewGestureStates } from '../types';
 import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
 
 const SEARCH_PLACEHOLDER_TEXT = i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder);
@@ -231,11 +232,11 @@ export const SearchInput = memo(function SearchInput({
     activeTabId,
     animatedTabUrls,
     currentlyOpenTabIds,
-    isSwitchingTabs,
     loadProgress,
     pendingTabSwitchOffset,
     refreshPage,
     stopLoading,
+    tabViewGestureState,
     tabViewProgress,
   } = useBrowserContext();
   const { isDarkMode } = useColorMode();
@@ -258,7 +259,7 @@ export const SearchInput = memo(function SearchInput({
   const isLoading = useDerivedValue(() => loadProgress.value !== 1 && loadProgress.value !== 0);
 
   const pointerEventsStyle = useAnimatedStyle(() => ({
-    pointerEvents: isSwitchingTabs.value || tabViewProgress.value / 100 < 1 ? 'auto' : 'none',
+    pointerEvents: tabViewGestureState.value !== TabViewGestureStates.INACTIVE || tabViewProgress.value / 100 < 1 ? 'auto' : 'none',
   }));
 
   const refreshButtonStyle = useAnimatedStyle(() => ({
