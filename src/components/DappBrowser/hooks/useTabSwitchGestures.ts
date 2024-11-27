@@ -184,10 +184,10 @@ export const useTabSwitchGestures = () => {
                 };
 
                 if (shouldSetNewActiveTabId) {
+                  runOnJS(setActiveTabIndex)(indexForNewTab);
+                  resetAnimationValues();
                   animatedActiveTabIndex.value = indexForNewTab;
                   if (shouldActivateTab) activeTabId.value = newActiveTabId;
-                  resetAnimationValues();
-                  runOnJS(setActiveTabIndex)(indexForNewTab);
                 } else {
                   resetAnimationValues();
                 }
@@ -210,6 +210,7 @@ export const useTabSwitchGestures = () => {
           if (didSwipeUp) {
             tabViewGestureState.value = TabViewGestureStates.DRAG_END_ENTERING;
             tabViewVisible.value = true;
+
             tabViewProgress.value = withSpring(100, {
               ...SPRING_CONFIGS.tabGestureConfig,
               velocity: -yVelocity * VELOCITY_FACTOR_Y * velocityDamper,
@@ -223,20 +224,16 @@ export const useTabSwitchGestures = () => {
           } else if (didSwipeDown || shouldSwitchToPreviousTab || shouldSwitchToNextTab) {
             tabViewGestureState.value = TabViewGestureStates.DRAG_END_EXITING;
             tabViewVisible.value = false;
+
             tabViewProgress.value = withSpring(0, {
               ...SPRING_CONFIGS.tabGestureConfig,
               velocity: -yVelocity * VELOCITY_FACTOR_Y * velocityDamper,
             });
-            // const willAnimate = tabViewGestureProgress.value !== 0 || tabSwitchGestureX.value !== 0;
-            // if (willAnimate) {
             tabViewGestureProgress.value = withSpring(
               0,
               { ...SPRING_CONFIGS.tabGestureConfig, velocity: -yVelocity * VELOCITY_FACTOR_Y * velocityDamper },
               onComplete
             );
-            // } else {
-            //   tabViewGestureState.value = TabViewGestureStates.INACTIVE;
-            // }
             return;
           } else if ((!isBeyondEnterTabViewThreshold && tabViewVisible.value) || (isBeyondEnterTabViewThreshold && !tabViewVisible.value)) {
             tabViewVisible.value = !tabViewVisible.value;

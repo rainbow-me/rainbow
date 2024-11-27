@@ -82,16 +82,16 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
       const willTabViewBecomeVisible = !tabViewVisible.value;
       const tabIndexProvided = activeIndex !== undefined;
       const indexToMakeActive = Math.abs(tabIndexProvided ? activeIndex : animatedActiveTabIndex.value);
-      const newActiveTabId = currentlyOpenTabIds.value[indexToMakeActive];
+      const isNewIndexValid = currentlyOpenTabIds.value[indexToMakeActive];
 
       if (!willTabViewBecomeVisible) {
-        if (newActiveTabId) {
-          animatedActiveTabIndex.value = indexToMakeActive;
+        if (isNewIndexValid) {
           runOnJS(setActiveTabIndex)(indexToMakeActive);
+          animatedActiveTabIndex.value = indexToMakeActive;
         } else {
           const fallbackIndex = currentlyOpenTabIds.value.length - 1;
-          animatedActiveTabIndex.value = fallbackIndex;
           runOnJS(setActiveTabIndex)(fallbackIndex);
+          animatedActiveTabIndex.value = fallbackIndex;
         }
       }
 
@@ -263,8 +263,8 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
     if (shouldToggleTabView) {
       toggleTabViewWorklet(newActiveIndex);
     } else {
-      animatedActiveTabIndex.value = newActiveIndex;
       runOnJS(setActiveTabIndex)(newActiveIndex);
+      animatedActiveTabIndex.value = newActiveIndex;
     }
 
     shouldBlockOperationQueue.value = false;
