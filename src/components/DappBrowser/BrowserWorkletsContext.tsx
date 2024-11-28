@@ -82,7 +82,7 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
       const willTabViewBecomeVisible = !tabViewVisible.value;
       const tabIndexProvided = activeIndex !== undefined;
       const indexToMakeActive = Math.abs(tabIndexProvided ? activeIndex : animatedActiveTabIndex.value);
-      const isNewIndexValid = currentlyOpenTabIds.value[indexToMakeActive];
+      const isNewIndexValid = !!currentlyOpenTabIds.value[indexToMakeActive];
 
       if (!willTabViewBecomeVisible) {
         if (isNewIndexValid) {
