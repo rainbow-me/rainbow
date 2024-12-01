@@ -21,7 +21,7 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
       const pendingTransactionsForAddress = pendingTransactions[address] || [];
       // returns pending txns for display from most recent to oldest
       const orderedPendingTransactions = pendingTransactionsForAddress.sort((a, b) => {
-        return (a.nonce || 0) > (b.nonce || 0) ? -1 : 1;
+        return (b.nonce || 0) - (a.nonce || 0);
       });
       return orderedPendingTransactions;
     },
@@ -38,7 +38,7 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
         pendingTransaction,
       ];
       const orderedPendingTransactions = updatedPendingTransactions.sort((a, b) => {
-        return (a.nonce || 0) < (b.nonce || 0) ? -1 : 1;
+        return (a.nonce || 0) - (b.nonce || 0);
       });
       set({
         pendingTransactions: {
