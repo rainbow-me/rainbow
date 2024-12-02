@@ -6,9 +6,9 @@ import { globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { useBrowserContext } from './BrowserContext';
-import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { RAINBOW_HOME } from './constants';
 import { TabViewGestureStates } from './types';
+import { getTabInfo } from './utils/getTabInfo';
 
 export const BrowserButtonShadows = ({
   backgroundColor,
@@ -66,12 +66,26 @@ export const WebViewShadows = ({
   tabId: string;
   zIndexAnimatedStyle: AnimatedStyle;
 }) => {
-  const { animatedTabUrls, tabViewGestureState, tabViewGestureProgress, tabViewProgress } = useBrowserContext();
-  const { getTabInfo } = useBrowserWorkletsContext();
+  const {
+    animatedActiveTabIndex,
+    animatedTabUrls,
+    currentlyOpenTabIds,
+    pendingTabSwitchOffset,
+    tabViewGestureState,
+    tabViewGestureProgress,
+    tabViewProgress,
+  } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
   const innerShadowOpacityOverride = useAnimatedStyle(() => {
-    const { isFullSizeTab } = getTabInfo(tabId);
+    const { isFullSizeTab } = getTabInfo({
+      animatedActiveTabIndex: animatedActiveTabIndex.value,
+      currentlyOpenTabIds: currentlyOpenTabIds.value,
+      pendingTabSwitchOffset: pendingTabSwitchOffset.value,
+      tabId,
+      tabViewGestureState: tabViewGestureState.value,
+      tabViewProgress: tabViewProgress.value,
+    });
 
     const tabUrl = animatedTabUrls.value[tabId] || RAINBOW_HOME;
     const isOnHomepage = tabUrl === RAINBOW_HOME;
@@ -87,7 +101,14 @@ export const WebViewShadows = ({
   });
 
   const outerShadowOpacityOverride = useAnimatedStyle(() => {
-    const { isFullSizeTab } = getTabInfo(tabId);
+    const { isFullSizeTab } = getTabInfo({
+      animatedActiveTabIndex: animatedActiveTabIndex.value,
+      currentlyOpenTabIds: currentlyOpenTabIds.value,
+      pendingTabSwitchOffset: pendingTabSwitchOffset.value,
+      tabId,
+      tabViewGestureState: tabViewGestureState.value,
+      tabViewProgress: tabViewProgress.value,
+    });
 
     const tabUrl = animatedTabUrls.value[tabId] || RAINBOW_HOME;
     const isOnHomepage = tabUrl === RAINBOW_HOME;

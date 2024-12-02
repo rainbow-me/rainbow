@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { interpolate, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import {

@@ -27,6 +27,7 @@ import {
 } from '../Dimensions';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
 import { TabViewGestureStates } from '../types';
+import { getTabInfo } from '../utils/getTabInfo';
 import { getTabStyles, getTabSwitchGestureStyles } from '../utils/styleUtils';
 
 export function useAnimatedTab({ tabId }: { tabId: string }) {
@@ -48,7 +49,7 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     tabViewProgress,
     tabViewVisible,
   } = useBrowserContext();
-  const { closeTabWorklet, getTabInfo } = useBrowserWorkletsContext();
+  const { closeTabWorklet } = useBrowserWorkletsContext();
 
   const animatedTabIndex = useSharedValue(useBrowserStore.getState().tabIds.indexOf(tabId));
 
@@ -113,13 +114,30 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
   const animatedWebViewBackgroundColorStyle = useAnimatedStyle(() => {
     const tabUrl = animatedTabUrls.value[tabId] || RAINBOW_HOME;
     const isOnHomepage = tabUrl === RAINBOW_HOME;
+
+    const { isFullSizeTab } = getTabInfo({
+      animatedActiveTabIndex: animatedActiveTabIndex.value,
+      currentlyOpenTabIds: currentlyOpenTabIds.value,
+      pendingTabSwitchOffset: pendingTabSwitchOffset.value,
+      tabId,
+      tabViewGestureState: tabViewGestureState.value,
+      tabViewProgress: tabViewProgress.value,
+    });
+
     return {
       backgroundColor: isOnHomepage ? homepageBackgroundColor : safeBackgroundColor.value,
     };
   });
 
   const animatedWebViewStyle = useAnimatedStyle(() => {
-    const { isFullSizeTab, isPendingActiveTab: animatedIsActiveTab } = getTabInfo(tabId);
+    const { isFullSizeTab, isPendingActiveTab: animatedIsActiveTab } = getTabInfo({
+      animatedActiveTabIndex: animatedActiveTabIndex.value,
+      currentlyOpenTabIds: currentlyOpenTabIds.value,
+      pendingTabSwitchOffset: pendingTabSwitchOffset.value,
+      tabId,
+      tabViewGestureState: tabViewGestureState.value,
+      tabViewProgress: tabViewProgress.value,
+    });
 
     const activeIndex = Math.abs(animatedActiveTabIndex.value);
     const pendingActiveIndex = activeIndex + pendingTabSwitchOffset.value;
@@ -149,13 +167,13 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
           ? 'auto'
           : 'none';
 
-    const shouldUseTabSwitchGestureStyles = tabViewGestureState.value !== TabViewGestureStates.INACTIVE && isFullSizeTab;
+    const shouldUseTabSwitchStyles = tabViewGestureState.value !== TabViewGestureStates.INACTIVE && isFullSizeTab;
 
     return {
       borderRadius,
       height,
       pointerEvents,
-      ...(shouldUseTabSwitchGestureStyles
+      ...(shouldUseTabSwitchStyles
         ? getTabSwitchGestureStyles({
             activeIndex,
             animatedIsActiveTab,
@@ -193,7 +211,15 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
   });
 
   const zIndexAnimatedStyle = useAnimatedStyle(() => {
-    const { isFullSizeTab, isPendingActiveTab } = getTabInfo(tabId);
+    const { isFullSizeTab, isPendingActiveTab } = getTabInfo({
+      animatedActiveTabIndex: animatedActiveTabIndex.value,
+      currentlyOpenTabIds: currentlyOpenTabIds.value,
+      pendingTabSwitchOffset: pendingTabSwitchOffset.value,
+      tabId,
+      tabViewGestureState: tabViewGestureState.value,
+      tabViewProgress: tabViewProgress.value,
+    });
+
     const isRunningEnterTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING;
 
     const scaleWeighting =

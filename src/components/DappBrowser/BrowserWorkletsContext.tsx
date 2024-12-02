@@ -5,7 +5,7 @@ import { useBrowserStore } from '@/state/browser/browserStore';
 import { deepEqualWorklet } from '@/worklets/comparisons';
 import { useBrowserContext, useBrowserTabBarContext } from './BrowserContext';
 import { RAINBOW_HOME } from './constants';
-import { BrowserWorkletsContextType, ScreenshotType, TabId, TabInfo, TabOperation, TabViewGestureStates } from './types';
+import { BrowserWorkletsContextType, ScreenshotType, TabOperation, TabViewGestureStates } from './types';
 import { generateUniqueIdWorklet, normalizeUrlWorklet } from './utils';
 
 export const BrowserWorkletsContext = createContext<BrowserWorkletsContextType | undefined>(undefined);
@@ -26,7 +26,6 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
     currentlyBeingClosedTabIds,
     currentlyOpenTabIds,
     loadProgress,
-    pendingTabSwitchOffset,
     shouldToggleAfterTabSwitch,
     tabViewGestureState,
     tabViewVisible,
@@ -40,25 +39,6 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
   const goToPage = useBrowserStore(state => state.goToPage);
   const setActiveTabIndex = useBrowserStore(state => state.setActiveTabIndex);
   const silentlySetPersistedTabUrls = useBrowserStore(state => state.silentlySetPersistedTabUrls);
-
-  const getTabInfo = useCallback(
-    (tabId: TabId): TabInfo => {
-      'worklet';
-      const pendingActiveIndex = Math.abs(animatedActiveTabIndex.value) + pendingTabSwitchOffset.value;
-      const tabIndex = currentlyOpenTabIds.value.indexOf(tabId);
-
-      const isLeftOfActiveTab = tabIndex === pendingActiveIndex - 1;
-      const isRightOfActiveTab = tabIndex === pendingActiveIndex + 1;
-      const isActivelySwitchingTabs =
-        tabViewGestureState.value === TabViewGestureStates.ACTIVE || tabViewGestureState.value === TabViewGestureStates.DRAG_END_EXITING;
-
-      const isPendingActiveTab = pendingActiveIndex === tabIndex;
-      const isFullSizeTab = isPendingActiveTab || ((isLeftOfActiveTab || isRightOfActiveTab) && isActivelySwitchingTabs);
-
-      return { isFullSizeTab, isPendingActiveTab };
-    },
-    [animatedActiveTabIndex, currentlyOpenTabIds, pendingTabSwitchOffset, tabViewGestureState]
-  );
 
   const requestTabOperationsWorklet = useCallback(
     (operations: TabOperation | TabOperation[]) => {
@@ -341,7 +321,6 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
       value={{
         closeAllTabsWorklet,
         closeTabWorklet,
-        getTabInfo,
         newTabWorklet,
         setScreenshotDataWorklet,
         toggleTabViewWorklet,

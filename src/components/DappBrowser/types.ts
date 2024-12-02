@@ -140,7 +140,6 @@ type NewTabOptions = { newTabId?: string; newTabUrl?: string };
 export interface BrowserWorkletsContextType {
   closeAllTabsWorklet: () => void;
   closeTabWorklet: ({ tabId, tabIndex }: { tabId: string; tabIndex: number }) => void;
-  getTabInfo: (tabId: TabId) => TabInfo;
   newTabWorklet: (options?: NewTabOptions) => void;
   setScreenshotDataWorklet: (screenshotData: ScreenshotType) => void;
   toggleTabViewWorklet: (activeIndex?: number) => void;

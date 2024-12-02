@@ -6,14 +6,22 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from './BrowserContext';
-import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { ZOOMED_TAB_BORDER_RADIUS } from './Dimensions';
 import { RAINBOW_HOME } from './constants';
 import { TabViewGestureStates } from './types';
+import { getTabInfo } from './utils/getTabInfo';
 
 export const WebViewBorder = ({ tabId }: { tabId: string }) => {
-  const { animatedTabUrls, tabViewBorderRadius, tabViewGestureProgress, tabViewGestureState, tabViewProgress } = useBrowserContext();
-  const { getTabInfo } = useBrowserWorkletsContext();
+  const {
+    animatedActiveTabIndex,
+    animatedTabUrls,
+    currentlyOpenTabIds,
+    pendingTabSwitchOffset,
+    tabViewBorderRadius,
+    tabViewGestureProgress,
+    tabViewGestureState,
+    tabViewProgress,
+  } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
   const enabled = isDarkMode;
@@ -21,7 +29,14 @@ export const WebViewBorder = ({ tabId }: { tabId: string }) => {
   const webViewBorderStyle = useAnimatedStyle(() => {
     if (!enabled) return { borderRadius: ZOOMED_TAB_BORDER_RADIUS, opacity: 0 };
 
-    const { isFullSizeTab } = getTabInfo(tabId);
+    const { isFullSizeTab } = getTabInfo({
+      animatedActiveTabIndex: animatedActiveTabIndex.value,
+      currentlyOpenTabIds: currentlyOpenTabIds.value,
+      pendingTabSwitchOffset: pendingTabSwitchOffset.value,
+      tabId,
+      tabViewGestureState: tabViewGestureState.value,
+      tabViewProgress: tabViewProgress.value,
+    });
 
     const url = animatedTabUrls.value[tabId] || RAINBOW_HOME;
     const isOnHomepage = url === RAINBOW_HOME;

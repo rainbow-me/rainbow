@@ -6,11 +6,11 @@ import { IS_IOS } from '@/env';
 import { deviceUtils } from '@/utils';
 import { AnimatedBlurView } from '../AnimatedComponents/AnimatedBlurView';
 import { useBrowserContext } from './BrowserContext';
-import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { TAB_VIEW_COLUMN_WIDTH } from './Dimensions';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { RAINBOW_HOME } from './constants';
 import { TabId, TabViewGestureStates } from './types';
+import { getTabInfo } from './utils/getTabInfo';
 
 export const X_BUTTON_SIZE = 22;
 export const X_BUTTON_PADDING = 6;
@@ -27,21 +27,28 @@ const SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB = X_BUTTON_PADDING * SINGLE_TAB
 
 export const CloseTabButton = ({ tabId }: { tabId: TabId }) => {
   const {
+    animatedActiveTabIndex,
     animatedMultipleTabsOpen,
     animatedTabUrls,
     currentlyOpenTabIds,
     multipleTabsOpen,
+    pendingTabSwitchOffset,
     tabViewGestureProgress,
     tabViewGestureState,
     tabViewProgress,
     tabViewVisible,
   } = useBrowserContext();
-
-  const { getTabInfo } = useBrowserWorkletsContext();
   const { isDarkMode } = useColorMode();
 
   const closeButtonStyle = useAnimatedStyle(() => {
-    const { isFullSizeTab, isPendingActiveTab } = getTabInfo(tabId);
+    const { isFullSizeTab, isPendingActiveTab } = getTabInfo({
+      animatedActiveTabIndex: animatedActiveTabIndex.value,
+      currentlyOpenTabIds: currentlyOpenTabIds.value,
+      pendingTabSwitchOffset: pendingTabSwitchOffset.value,
+      tabId,
+      tabViewGestureState: tabViewGestureState.value,
+      tabViewProgress: tabViewProgress.value,
+    });
 
     const isRunningEnterTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING;
     const isSwitchingTabs = tabViewGestureState.value !== TabViewGestureStates.INACTIVE;
