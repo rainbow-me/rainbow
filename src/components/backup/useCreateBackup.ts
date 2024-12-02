@@ -153,7 +153,6 @@ export const useCreateBackup = () => {
       if (backupsStore.getState().status !== CloudBackupState.Ready) {
         return false;
       }
-
       const password = await getPassword(props);
       if (password) {
         onConfirmBackup({

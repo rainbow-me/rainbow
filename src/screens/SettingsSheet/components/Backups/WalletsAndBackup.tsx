@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
@@ -37,6 +37,7 @@ import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
+import { ScrollView } from 'react-native';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -92,6 +93,8 @@ export const WalletsAndBackup = () => {
   const { navigate } = useNavigation();
   const { wallets } = useWallets();
   const dispatch = useDispatch();
+
+  const scrollviewRef = useRef<ScrollView>(null);
 
   const createBackup = useCreateBackup();
   const { status, backupProvider, backups, mostRecentBackup } = backupsStore(state => ({
@@ -183,6 +186,7 @@ export const WalletsAndBackup = () => {
           });
         } finally {
           dispatch(setIsWalletLoading(null));
+          scrollviewRef.current?.scrollTo({ y: 0, animated: true });
         }
       },
     });
@@ -214,54 +218,54 @@ export const WalletsAndBackup = () => {
       if (status === CloudBackupState.FailedToInitialize || status === CloudBackupState.NotAvailable) {
         return {
           status: 'not-enabled',
-          text: 'Not Enabled',
+          text: i18n.t(i18n.l.back_up.cloud.statuses.not_enabled),
         };
       }
 
       if (status !== CloudBackupState.Ready) {
         return {
           status: 'out-of-sync',
-          text: 'Syncing',
+          text: i18n.t(i18n.l.back_up.cloud.statuses.syncing),
         };
       }
 
       if (!allBackedUp) {
         return {
           status: 'out-of-date',
-          text: 'Out of Date',
+          text: i18n.t(i18n.l.back_up.cloud.statuses.out_of_date),
         };
       }
 
       return {
         status: 'up-to-date',
-        text: 'Up to date',
+        text: i18n.t(i18n.l.back_up.cloud.statuses.up_to_date),
       };
     }
 
     if (status === CloudBackupState.FailedToInitialize || status === CloudBackupState.NotAvailable) {
       return {
         status: 'not-enabled',
-        text: 'Not Enabled',
+        text: i18n.t(i18n.l.back_up.cloud.statuses.not_enabled),
       };
     }
 
     if (status !== CloudBackupState.Ready) {
       return {
         status: 'out-of-sync',
-        text: 'Syncing',
+        text: i18n.t(i18n.l.back_up.cloud.statuses.syncing),
       };
     }
 
     if (!allBackedUp) {
       return {
         status: 'out-of-date',
-        text: 'Out of Date',
+        text: i18n.t(i18n.l.back_up.cloud.statuses.out_of_date),
       };
     }
 
     return {
       status: 'up-to-date',
-      text: 'Up to date',
+      text: i18n.t(i18n.l.back_up.cloud.statuses.up_to_date),
     };
   }, [backupProvider, status, allBackedUp]);
 
@@ -671,7 +675,7 @@ export const WalletsAndBackup = () => {
   ]);
 
   return (
-    <MenuContainer>
+    <MenuContainer scrollviewRef={scrollviewRef}>
       <AbsolutePortalRoot style={{ zIndex: 100 }} />
       {renderView()}
     </MenuContainer>

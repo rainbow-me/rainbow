@@ -34,7 +34,7 @@ import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { getRemoteConfig } from './remoteConfig';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { AppDispatch } from '@/redux/store';
-import { backupsStore } from '@/state/backups/backups';
+import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
@@ -99,6 +99,8 @@ export interface BackupUserData {
 type MaybePromise<T> = T | Promise<T>;
 
 export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }: { fn: () => MaybePromise<T>; logout?: boolean }) => {
+  backupsStore.getState().setStatus(CloudBackupState.InProgress);
+
   if (IS_ANDROID) {
     try {
       if (logout) {
@@ -114,15 +116,20 @@ export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }:
       const userData = await getGoogleAccountUserData();
       if (!userData) {
         Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+        backupsStore.getState().setStatus(CloudBackupState.NotAvailable);
         return;
       }
       // execute the function
+
+      // NOTE: Set this back to ready in order to process the backup
+      backupsStore.getState().setStatus(CloudBackupState.Ready);
       return await fn();
     } catch (e) {
       logger.error(new RainbowError('[BackupSheetSectionNoProvider]: No account found'), {
         error: e,
       });
       Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+      backupsStore.getState().setStatus(CloudBackupState.NotAvailable);
     }
   } else {
     const isAvailable = await isCloudBackupAvailable();
@@ -143,10 +150,12 @@ export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }:
           },
         ]
       );
+      backupsStore.getState().setStatus(CloudBackupState.NotAvailable);
       return;
     }
 
-    // execute the function
+    // NOTE: Set this back to ready in order to process the backup
+    backupsStore.getState().setStatus(CloudBackupState.Ready);
     return await fn();
   }
 };

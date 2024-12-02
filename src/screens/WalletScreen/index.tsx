@@ -134,13 +134,10 @@ function WalletScreen() {
   }, [initializeWallet, initialized, params, setParams, trackWallets]);
 
   useEffect(() => {
-    runWalletBackupStatusChecks();
-  }, []);
-
-  useEffect(() => {
     if (walletReady) {
       loadAccountLateData();
       loadGlobalLateData();
+      runWalletBackupStatusChecks();
     }
   }, [loadAccountLateData, loadGlobalLateData, walletReady]);
 

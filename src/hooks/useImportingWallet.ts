@@ -3,7 +3,6 @@ import lang from 'i18n-js';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, TextInput } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { fetchENSAvatar } from './useENSAvatar';
@@ -29,9 +28,9 @@ import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger, RainbowError } from '@/logger';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { ChainId } from '@/chains/types';
 import { backupsStore } from '@/state/backups/backups';
+import { IS_TEST } from '@/env';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -350,17 +349,11 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                         isValidBluetoothDeviceId(input)
                       )
                     ) {
-                      let stepType: string = WalletBackupStepTypes.no_provider;
-                      if (backupProvider === walletBackupTypes.cloud) {
-                        stepType = WalletBackupStepTypes.backup_now_to_cloud;
-                      } else if (backupProvider === walletBackupTypes.manual) {
-                        stepType = WalletBackupStepTypes.backup_now_manually;
-                      }
-
-                      IS_TESTING !== 'true' &&
+                      if (!IS_TEST) {
                         Navigation.handleAction(Routes.BACKUP_SHEET, {
-                          step: stepType,
+                          step: WalletBackupStepTypes.backup_prompt,
                         });
+                      }
                     }
                   }, 1000);
 
