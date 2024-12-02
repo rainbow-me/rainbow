@@ -1,3 +1,4 @@
+import { ChainId } from '@/chains/types';
 import { NativeCurrencyKey } from '@/entities';
 import { Language } from '@/languages';
 
@@ -15,6 +16,9 @@ export interface UserProperties {
   pinnedCoins?: string[];
   hiddenCOins?: string[];
   appIcon?: string;
+
+  // most used networks at the time the user first opens the network switcher
+  mostUsedNetworks?: ChainId[];
 
   // assets
   NFTs?: number;
