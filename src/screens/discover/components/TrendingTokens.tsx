@@ -306,7 +306,16 @@ function NetworkFilter() {
   return (
     <>
       <FilterButton label="All" icon="􀤆" onPress={() => setOpen(true)} />
-      {isOpen && <NetworkSelector onClose={() => setOpen(false)} onSelect={() => null} multiple />}
+      {isOpen && (
+        <NetworkSelector
+          onClose={selected => {
+            console.log(selected);
+            setOpen(false);
+          }}
+          onSelect={() => null}
+          multiple
+        />
+      )}
     </>
   );
 }
