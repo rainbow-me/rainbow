@@ -346,8 +346,10 @@ const FreezableWebViewComponent = ({
     if (webViewRef?.current) {
       if (isActiveTab) {
         webViewRef.current.injectJavaScript(unfreezeWebsite);
+        webViewRef.current.setActive(true);
       } else {
         webViewRef.current.injectJavaScript(freezeWebsite);
+        webViewRef.current.setActive(false);
       }
     }
   }, [isActiveTab, webViewRef]);
