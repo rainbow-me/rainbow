@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
@@ -11,6 +11,7 @@ import {
   useInitializeWallet,
   useLoadAccountLateData,
   useLoadGlobalLateData,
+  useWallets,
   useWalletSectionsData,
 } from '@/hooks';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
@@ -30,6 +31,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
 import { BackendNetworks } from '@/components/BackendNetworks';
+import walletTypes from '@/helpers/walletTypes';
 
 function WalletScreen() {
   const { params } = useRoute<RouteProp<RootStackParamList, 'WalletScreen'>>();
@@ -41,9 +43,68 @@ function WalletScreen() {
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const insets = useSafeAreaInsets();
+  const { wallets } = useWallets();
 
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
   const { isWalletEthZero, isLoadingUserAssets, isLoadingBalance, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData();
+
+  const trackWallets = useCallback(() => {
+    const identify = Object.values(wallets || {}).reduce(
+      (result, wallet) => {
+        switch (wallet.type) {
+          case walletTypes.mnemonic:
+            result.ownedAccounts += wallet.addresses.length;
+            result.recoveryPhrases += 1;
+            if (wallet.imported) {
+              result.importedRecoveryPhrases += 1;
+              result.hasImported = true;
+            }
+            break;
+          case walletTypes.privateKey:
+            result.ownedAccounts += wallet.addresses.length;
+            result.privateKeys += 1;
+            if (wallet.imported) {
+              result.importedPrivateKeys += 1;
+              result.hasImported = true;
+            }
+            break;
+          case walletTypes.readOnly:
+            result.watchedAccounts += wallet.addresses.length;
+            break;
+          case walletTypes.bluetooth:
+            result.hardwareAccounts += wallet.addresses.length;
+            result.ledgerDevices += 1;
+            break;
+        }
+        return result;
+      },
+      {
+        ownedAccounts: 0,
+        watchedAccounts: 0,
+        recoveryPhrases: 0,
+        importedRecoveryPhrases: 0,
+        privateKeys: 0,
+        importedPrivateKeys: 0,
+        hasImported: false,
+        hardwareAccounts: 0,
+        ledgerDevices: 0,
+        trezorDevices: 0,
+      }
+    );
+
+    analyticsV2.identify({
+      ownedAccounts: identify.ownedAccounts,
+      hardwareAccounts: identify.hardwareAccounts,
+      watchedAccounts: identify.watchedAccounts,
+      recoveryPhrases: identify.recoveryPhrases,
+      importedRecoveryPhrases: identify.importedRecoveryPhrases,
+      privateKeys: identify.privateKeys,
+      importedPrivateKeys: identify.importedPrivateKeys,
+      ledgerDevices: identify.ledgerDevices,
+      trezorDevices: identify.trezorDevices,
+      hasImported: identify.hasImported,
+    });
+  }, [wallets]);
 
   useEffect(() => {
     // This is the fix for Android wallet creation problem.
@@ -63,13 +124,14 @@ function WalletScreen() {
       await initializeWallet(null, null, null, !params?.emptyWallet);
       setInitialized(true);
       setParams({ emptyWallet: false });
+      trackWallets();
     };
 
     if (!initialized || (params?.emptyWallet && initialized)) {
       // We run the migrations only once on app launch
       initializeAndSetParams();
     }
-  }, [initializeWallet, initialized, params, setParams]);
+  }, [initializeWallet, initialized, params, setParams, trackWallets]);
 
   useEffect(() => {
     runWalletBackupStatusChecks();
