@@ -26,7 +26,7 @@ import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
 import { RainbowAccount, createWallet } from '@/model/wallet';
 import { useDispatch } from 'react-redux';
-import { setIsWalletLoading, walletsLoadState } from '@/redux/wallets';
+import { walletsLoadState } from '@/redux/wallets';
 import { RainbowError, logger } from '@/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
@@ -36,6 +36,7 @@ import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
+import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -163,7 +164,9 @@ export const WalletsAndBackup = () => {
       onCloseModal: async ({ name }: { name: string }) => {
         const nameValue = name.trim() !== '' ? name.trim() : '';
         try {
-          dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+          walletLoadingStore.setState({
+            loadingState: WalletLoadingStates.CREATING_WALLET,
+          });
 
           await createWallet({
             color: null,
@@ -180,7 +183,9 @@ export const WalletsAndBackup = () => {
             error: err,
           });
         } finally {
-          dispatch(setIsWalletLoading(null));
+          walletLoadingStore.setState({
+            loadingState: null,
+          });
         }
       },
     });
