@@ -39,6 +39,11 @@ const smallFallbackIconStyle = {
   position: 'absolute',
 };
 
+const xLargeFallbackIconStyle = {
+  ...borders.buildCircleAsObject(40),
+  position: 'absolute',
+};
+
 /**
  * If mainnet asset is available, get the token under /ethereum/ (token) url.
  * Otherwise let it use whatever type it has
@@ -68,6 +73,8 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   chainId,
   small,
   symbol,
+  xLarge,
+  chainSize,
 }: {
   address: string;
   color?: string;
@@ -79,6 +86,8 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   chainId: ChainId;
   small?: boolean;
   symbol: string;
+  xLarge?: boolean;
+  chainSize?: number;
 }) {
   const theme = useTheme();
 
@@ -92,25 +101,27 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   const eth = isETH(resolvedAddress);
 
   return (
-    <View style={small ? sx.containerSmall : large ? sx.containerLarge : sx.container}>
+    <View style={xLarge ? sx.containerXLarge : small ? sx.containerSmall : large ? sx.containerLarge : sx.container}>
       {eth ? (
         <Animated.View
           key={`${resolvedAddress}-${eth}`}
           style={[
             sx.reactCoinIconContainer,
-            small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
+            xLarge ? sx.coinIconFallbackXLarge : small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
             small || disableShadow ? {} : sx.withShadow,
             { shadowColor },
           ]}
         >
           <FastImage
             source={EthIcon as Source}
-            style={small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback}
+            style={
+              xLarge ? sx.coinIconFallbackXLarge : small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback
+            }
           />
         </Animated.View>
       ) : (
         <FastFallbackCoinIconImage
-          size={small ? 16 : large ? 36 : 32}
+          size={xLarge ? 40 : small ? 16 : large ? 36 : 32}
           icon={iconUrl}
           shadowColor={shadowColor}
           symbol={symbol}
@@ -119,11 +130,11 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
           {() => (
             <CoinIconTextFallback
               color={color}
-              height={small ? 16 : large ? 36 : 32}
-              style={small ? smallFallbackIconStyle : large ? largeFallbackIconStyle : fallbackIconStyle}
+              height={xLarge ? 40 : small ? 16 : large ? 36 : 32}
+              style={xLarge ? xLargeFallbackIconStyle : small ? smallFallbackIconStyle : large ? largeFallbackIconStyle : fallbackIconStyle}
               symbol={symbol}
               textStyles={fallbackTextStyles}
-              width={small ? 16 : large ? 36 : 32}
+              width={xLarge ? 40 : small ? 16 : large ? 36 : 32}
             />
           )}
         </FastFallbackCoinIconImage>
@@ -131,7 +142,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
 
       {chainId && chainId !== ChainId.mainnet && !small && (
         <View style={sx.badge}>
-          <ChainImage chainId={chainId} size={16} />
+          <ChainImage chainId={chainId} size={chainSize ?? 16} />
         </View>
       )}
     </View>
@@ -196,5 +207,16 @@ const sx = StyleSheet.create({
     },
     shadowOpacity: 0.2,
     shadowRadius: 6,
+  },
+  coinIconFallbackXLarge: {
+    borderRadius: 20,
+    height: 40,
+    width: 40,
+    overflow: 'visible',
+  },
+  containerXLarge: {
+    elevation: 6,
+    height: 40,
+    overflow: 'visible',
   },
 });

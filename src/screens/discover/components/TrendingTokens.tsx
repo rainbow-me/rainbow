@@ -1,12 +1,10 @@
-import { ChainId } from '@/chains/types';
-import { ChainBadge } from '@/components/coin-icon';
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { globalColors, Text, useBackgroundColor } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
 import chroma from 'chroma-js';
-import { useState } from 'react';
-import React, { View } from 'react-native';
+import { useCallback, useMemo, useState } from 'react';
+import React, { FlatList, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
@@ -14,10 +12,22 @@ import Animated, { LinearTransition, runOnJS, useAnimatedStyle, useSharedValue, 
 import { NetworkSelector } from './NetworkSwitcher';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme';
+import { TrendingTokens as TrendingTokensType, useTrendingTokens } from '@/resources/trendingTokens/trendingTokens';
+import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
+import { colors } from '@/styles';
+import { categories, sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
+import { chainsLabel } from '@/chains';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { formatNumber } from '@/helpers/strings';
+import { supportedNativeCurrencies } from '@/references';
+
+const t = i18n.l.trending_tokens;
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
-function FilterButton({ icon, label, onPress }: { onPress?: VoidFunction; label: string; icon: string }) {
+function FilterButton({ icon, label, onPress }: { onPress?: VoidFunction; label: string; icon: string | React.ReactNode }) {
   const pressed = useSharedValue(false);
 
   const tap = Gesture.Tap()
@@ -54,9 +64,13 @@ function FilterButton({ icon, label, onPress }: { onPress?: VoidFunction; label:
           animatedStyles,
         ]}
       >
-        <Text color={{ custom: iconColor }} size="icon 13px" weight="heavy" style={{ width: 16 }}>
-          {icon}
-        </Text>
+        {typeof icon === 'string' ? (
+          <Text color={{ custom: iconColor }} size="icon 13px" weight="heavy" style={{ width: 16 }}>
+            {icon}
+          </Text>
+        ) : (
+          icon
+        )}
         <Text color="labelSecondary" size="17pt" weight="bold">
           {label}
         </Text>
@@ -69,15 +83,13 @@ function FilterButton({ icon, label, onPress }: { onPress?: VoidFunction; label:
 }
 
 function CategoryFilterButton({
-  selected,
-  onPress,
+  category,
   icon,
   iconWidth = 16,
   iconColor,
   label,
 }: {
-  onPress: VoidFunction;
-  selected: boolean;
+  category: (typeof categories)[number];
   icon: string;
   iconColor: string;
   iconWidth?: number;
@@ -87,14 +99,20 @@ function CategoryFilterButton({
   const fillTertiary = useBackgroundColor('fillTertiary');
   const fillSecondary = useBackgroundColor('fillSecondary');
 
+  const selected = useTrendingTokensStore(state => state.category === category);
+
   const borderColor = selected && isDarkMode ? globalColors.white80 : fillSecondary;
 
   const pressed = useSharedValue(false);
 
+  const selectCategory = useCallback(() => {
+    useTrendingTokensStore.getState().setCategory(category);
+  }, [category]);
+
   const tap = Gesture.Tap()
     .onBegin(() => {
       pressed.value = true;
-      runOnJS(onPress)();
+      runOnJS(selectCategory)();
     })
     .onFinalize(() => (pressed.value = false));
 
@@ -177,104 +195,191 @@ function FriendHolders() {
   );
 }
 
-function TokenIcon({ uri, chainId }: { uri: string; chainId: ChainId }) {
+function TrendingTokenLoadingRow() {
   return (
-    <View style={{ position: 'relative' }}>
-      <FastImage source={{ uri }} style={{ height: 40, width: 40, borderRadius: 20 }} />
-      {chainId !== ChainId.mainnet && <ChainBadge chainId={10} position="absolute" badgeXPosition={-10} />}
+    <View style={{ flex: 1, gap: 0, height: 78, width: '100%' }}>
+      <Skeleton>
+        <View style={{ padding: 12, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+          <FakeAvatar />
+
+          <View style={{ gap: 12, flex: 1 }}>
+            <View style={{ flexDirection: 'row', gap: 5.67, alignItems: 'center', marginTop: -2 }}>
+              <View style={{ flexDirection: 'row-reverse', alignItems: 'center' }}>
+                <View
+                  style={{
+                    height: 12 + 2,
+                    width: 12 + 2,
+                    borderRadius: 6,
+                    borderWidth: 1,
+                    borderColor: colors.dark,
+                    backgroundColor: colors.alpha(colors.dark, 0.8),
+                    marginVertical: -1,
+                    marginLeft: -6,
+                  }}
+                />
+                <View
+                  style={{
+                    height: 12 + 2,
+                    width: 12 + 2,
+                    borderRadius: 6,
+                    borderWidth: 1,
+                    borderColor: colors.dark,
+                    backgroundColor: colors.alpha(colors.dark, 0.6),
+                    marginVertical: -1,
+                    marginLeft: -6,
+                  }}
+                />
+                <View
+                  style={{
+                    height: 12 + 2,
+                    width: 12 + 2,
+                    borderRadius: 6,
+                    borderWidth: 1,
+                    borderColor: colors.dark,
+                    backgroundColor: colors.alpha(colors.dark, 0.4),
+                    marginVertical: -1,
+                  }}
+                />
+              </View>
+
+              <FakeText width={148} />
+            </View>
+
+            <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+              <View style={{ gap: 8 }}>
+                <View style={{ flexDirection: 'row', gap: 6, alignItems: 'baseline' }}>
+                  <FakeText height={16} width={84} />
+                  <FakeText height={14} width={32} />
+                  <FakeText height={16} width={60} />
+                </View>
+
+                <View style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}>
+                  <View style={{ flexDirection: 'row', gap: 4 }}>
+                    <FakeText height={14} width={32} />
+                    <FakeText height={14} width={44} />
+                  </View>
+
+                  <View style={{ flexDirection: 'row', gap: 4 }}>
+                    <FakeText height={14} width={36} />
+                    <FakeText height={14} width={52} />
+                  </View>
+                </View>
+              </View>
+
+              <View style={{ gap: 8, marginLeft: 'auto' }}>
+                <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center' }}>
+                  <FakeText height={16} width={60} />
+                </View>
+                <View style={{ flexDirection: 'row', gap: 5, justifyContent: 'flex-end' }}>
+                  <FakeText width={40} />
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Skeleton>
     </View>
   );
 }
 
-function TrendingTokenRow() {
+function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']['data'][number] }) {
   const separatorColor = useForegroundColor('separator');
 
-  const percentChange24h = '3.40%';
-  const percentChange1h = '8.82%';
+  const marketCap = useMemo(
+    () => formatNumber(item.market.market_cap?.value || 0, { useOrderSuffix: true, decimals: 1 }),
+    [item.market.market_cap?.value]
+  );
 
-  const token = {
-    name: 'Uniswap',
-    symbol: 'UNI',
-    price: '$9.21',
-  };
+  const isPositiveChange = useMemo(
+    () => item.market.price?.change_24h && item.market.price?.change_24h > 0,
+    [item.market.price?.change_24h]
+  );
 
-  const volume = '$1.8M';
-  const marketCap = '$1.8M';
+  const price = useMemo(() => `$${item.market.price?.value ?? '0'}`, [item.market.price?.value]);
+
+  const volume = useMemo(() => formatNumber(item.market.volume_24h || 0, { useOrderSuffix: true, decimals: 1 }), [item.market.volume_24h]);
+
+  if (!item) return null;
 
   return (
-    <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-      <TokenIcon
-        chainId={1}
-        uri="https://rainbowme-res.cloudinary.com/image/upload/v1654696359/assets/ethereum/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png"
-      />
+    <GestureHandlerButton scaleTo={0.94}>
+      <View style={{ padding: 12, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+        <SwapCoinIcon
+          iconUrl={item.icon_url}
+          color={item.colors.primary}
+          chainId={item.chainId}
+          address={item.address}
+          symbol={item.symbol}
+          xLarge
+          chainSize={20}
+        />
 
-      <View style={{ gap: 12, flex: 1 }}>
-        <FriendHolders />
+        <View style={{ gap: 12, flex: 1 }}>
+          <FriendHolders />
 
-        <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-          <View style={{ gap: 12 }}>
-            <View style={{ flexDirection: 'row', gap: 6, alignItems: 'baseline' }}>
-              <Text color="label" size="15pt" weight="bold" style={{ maxWidth: 100 }} numberOfLines={1}>
-                {token.name}
-              </Text>
-              <Text color="labelTertiary" size="11pt" weight="bold" style={{ maxWidth: 50 }} numberOfLines={1}>
-                {token.symbol}
-              </Text>
-              <Text color="label" size="15pt" weight="bold" style={{ maxWidth: 100 }} numberOfLines={1}>
-                {token.price}
-              </Text>
-            </View>
-
-            <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-              <View style={{ flexDirection: 'row', gap: 4 }}>
-                <Text color="labelQuaternary" size="11pt" weight="bold">
-                  VOL
+          <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+            <View style={{ gap: 12 }}>
+              <View style={{ flexDirection: 'row', gap: 6, alignItems: 'baseline' }}>
+                <Text color="label" size="15pt" weight="bold" style={{ maxWidth: 100 }} numberOfLines={1}>
+                  {item.name}
                 </Text>
-                <Text color="labelTertiary" size="11pt" weight="bold">
-                  {volume}
+                <Text color="labelTertiary" size="11pt" weight="bold" style={{ maxWidth: 50 }} numberOfLines={1}>
+                  {item.symbol}
+                </Text>
+                <Text color="label" size="15pt" weight="bold" style={{ maxWidth: 100 }} numberOfLines={1}>
+                  {price}
                 </Text>
               </View>
 
-              <Text color={{ custom: separatorColor }} size="icon 9px" weight="bold">
-                |
-              </Text>
+              <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+                <View style={{ flexDirection: 'row', gap: 4 }}>
+                  <Text color="labelQuaternary" size="11pt" weight="bold">
+                    VOL
+                  </Text>
+                  <Text color="labelTertiary" size="11pt" weight="bold">
+                    {volume}
+                  </Text>
+                </View>
 
-              <View style={{ flexDirection: 'row', gap: 4 }}>
-                <Text color="labelQuaternary" size="11pt" weight="bold">
-                  MCAP
+                <Text color={{ custom: separatorColor }} size="icon 9px" weight="bold">
+                  |
                 </Text>
-                <Text color="labelTertiary" size="11pt" weight="bold">
-                  {marketCap}
-                </Text>
+
+                <View style={{ flexDirection: 'row', gap: 4 }}>
+                  <Text color="labelQuaternary" size="11pt" weight="bold">
+                    MCAP
+                  </Text>
+                  <Text color="labelTertiary" size="11pt" weight="bold">
+                    {marketCap}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
 
-          <View style={{ gap: 12, marginLeft: 'auto' }}>
-            <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center' }}>
-              <Text color="green" size="11pt" weight="bold">
-                􀄨
-              </Text>
-              <Text color="green" size="15pt" weight="bold">
-                {percentChange24h}
-              </Text>
-            </View>
-            <View style={{ flexDirection: 'row', gap: 5, justifyContent: 'flex-end' }}>
-              <Text color="labelQuaternary" size="11pt" weight="bold">
-                1H
-              </Text>
-              <Text color="green" size="11pt" weight="bold">
-                {percentChange1h}
-              </Text>
+            <View style={{ gap: 12, marginLeft: 'auto' }}>
+              <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center' }}>
+                <Text color={isPositiveChange ? 'green' : 'red'} size="11pt" weight="bold">
+                  {isPositiveChange ? '􀄨' : '􀄩'}
+                </Text>
+                <Text color={isPositiveChange ? 'green' : 'red'} size="15pt" weight="bold">
+                  {formatNumber(item.market.price?.change_24h || 0, { decimals: 2 })}%
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', gap: 5, justifyContent: 'flex-end' }}>
+                <Text color="labelQuaternary" size="11pt" weight="bold">
+                  1H
+                </Text>
+                <Text color={isPositiveChange ? 'green' : 'red'} size="11pt" weight="bold">
+                  {formatNumber(item.market.price?.change_24h || 0, { decimals: 2 })}%
+                </Text>
+              </View>
             </View>
           </View>
         </View>
       </View>
-    </View>
+    </GestureHandlerButton>
   );
 }
-
-const t = i18n.l.trending_tokens;
 
 function NoResults() {
   const { isDarkMode } = useTheme();
@@ -282,8 +387,8 @@ function NoResults() {
   const backgroundColor = isDarkMode ? '#191A1C' : fillQuaternary;
 
   return (
-    <View style={{ padding: 20, flexDirection: 'row', justifyContent: 'space-between', backgroundColor, borderRadius: 20 }}>
-      <View style={{ gap: 16 }}>
+    <View style={{ flex: 1, padding: 20, flexDirection: 'row', justifyContent: 'space-between', backgroundColor, borderRadius: 20 }}>
+      <View style={{ flex: 1, gap: 16 }}>
         <Text color="label" size="20pt" weight="heavy">
           {i18n.t(t.no_results.title)}
         </Text>
@@ -302,116 +407,115 @@ function NoResults() {
 
 function NetworkFilter() {
   const [isOpen, setOpen] = useState(false);
+  const network = useTrendingTokensStore(state => state.network);
+
+  const label = useMemo(() => {
+    if (!network) return 'All';
+    return chainsLabel[network];
+  }, [network]);
+
+  const icon = useMemo(() => {
+    if (!network) return '􀤆';
+    return <ChainImage chainId={network} size={16} />;
+  }, [network]);
 
   return (
     <>
-      <FilterButton label="All" icon="􀤆" onPress={() => setOpen(true)} />
-      {isOpen && (
-        <NetworkSelector
-          onClose={selected => {
-            console.log(selected);
-            setOpen(false);
-          }}
-          onSelect={() => null}
-          multiple
-        />
-      )}
+      <FilterButton label={label} icon={icon} onPress={() => setOpen(true)} />
+      {isOpen && <NetworkSelector onClose={() => setOpen(false)} />}
     </>
   );
 }
 
-const sortFilters = ['volume', 'market_cap', 'top_gainers', 'top_losers'] as const;
-const timeFilters = ['day', 'week', 'month'] as const;
-type TrendingTokensFilter = {
-  category: 'trending' | 'new' | 'farcaster';
-  network: undefined | ChainId;
-  timeframe: (typeof timeFilters)[number];
-  sort: (typeof sortFilters)[number] | undefined;
-};
+function TimeFilter() {
+  const timeframe = useTrendingTokensStore(state => state.timeframe);
+
+  return (
+    <DropdownMenu
+      menuConfig={{
+        menuItems: timeFilters.map(time => ({
+          actionTitle: i18n.t(t.filters.time[time]),
+          actionKey: time,
+        })),
+      }}
+      side="bottom"
+      onPressMenuItem={timeframe => useTrendingTokensStore.getState().setTimeframe(timeframe)}
+    >
+      <FilterButton label={i18n.t(t.filters.time[timeframe])} icon="􀐫" />
+    </DropdownMenu>
+  );
+}
+
+function SortFilter() {
+  const sort = useTrendingTokensStore(state => state.sort);
+
+  return (
+    <DropdownMenu
+      menuConfig={{
+        menuItems: sortFilters.map(sort => ({
+          actionTitle: i18n.t(t.filters.sort[sort]),
+          actionKey: sort,
+        })),
+      }}
+      side="bottom"
+      onPressMenuItem={selection => {
+        if (selection === sort) return useTrendingTokensStore.getState().setSort(undefined);
+        useTrendingTokensStore.getState().setSort(selection);
+      }}
+    >
+      <FilterButton label={i18n.t(t.filters.sort[sort || 'sort'])} icon="􀄬" />
+    </DropdownMenu>
+  );
+}
+
+function TrendingTokenData() {
+  const network = useTrendingTokensStore(state => state.network);
+
+  // TODO: Add timeframe, sort, etc..
+  const { data, isLoading } = useTrendingTokens({ chainId: network });
+
+  if (isLoading)
+    return (
+      <View style={{ flex: 1 }}>
+        {Array.from({ length: 10 }).map((_, index) => (
+          <TrendingTokenLoadingRow key={index} />
+        ))}
+      </View>
+    );
+
+  return (
+    <FlatList
+      ListEmptyComponent={<NoResults />}
+      data={data?.trendingTokens.data}
+      renderItem={({ item }) => <TrendingTokenRow item={item} />}
+    />
+  );
+}
 
 export function TrendingTokens() {
-  const [filter, setFilter] = useState<TrendingTokensFilter>({
-    category: 'trending',
-    network: undefined,
-    timeframe: 'day',
-    sort: 'volume',
-  });
-  const setCategory = (category: TrendingTokensFilter['category']) => setFilter(filter => ({ ...filter, category }));
   return (
     <View style={{ gap: 28 }}>
       <View style={{ gap: 12, justifyContent: 'center' }}>
         <View style={{ alignItems: 'center', flexDirection: 'row', gap: 12 }}>
+          <CategoryFilterButton category="trending" label={i18n.t(t.filters.categories.trending)} icon="􀙭" iconColor={'#D0281C'} />
+          <CategoryFilterButton category="new" label={i18n.t(t.filters.categories.new)} icon="􀋃" iconColor={'#FFDA24'} iconWidth={18} />
           <CategoryFilterButton
-            label={i18n.t(t.filters.categories.trending)}
-            icon="􀙭"
-            iconColor={'#D0281C'}
-            selected={filter.category === 'trending'}
-            onPress={() => setCategory('trending')}
-          />
-          <CategoryFilterButton
-            label={i18n.t(t.filters.categories.new)}
-            icon="􀋃"
-            iconColor={'#FFDA24'}
-            iconWidth={18}
-            selected={filter.category === 'new'}
-            onPress={() => setCategory('new')}
-          />
-          <CategoryFilterButton
+            category="farcaster"
             label={i18n.t(t.filters.categories.farcaster)}
             icon="􀌥"
             iconColor={globalColors.purple60}
             iconWidth={20}
-            selected={filter.category === 'farcaster'}
-            onPress={() => setCategory('farcaster')}
           />
         </View>
 
         <View style={{ alignItems: 'center', flexDirection: 'row', gap: 12 }}>
           <NetworkFilter />
-
-          <DropdownMenu
-            menuConfig={{
-              menuItems: timeFilters.map(time => ({
-                actionTitle: i18n.t(t.filters.time[time]),
-                actionKey: time,
-              })),
-            }}
-            side="bottom"
-            onPressMenuItem={timeframe => setFilter(filter => ({ ...filter, timeframe }))}
-          >
-            <FilterButton label={i18n.t(t.filters.time[filter.timeframe])} icon="􀐫" />
-          </DropdownMenu>
-
-          <DropdownMenu
-            menuConfig={{
-              menuItems: sortFilters.map(sort => ({
-                actionTitle: i18n.t(t.filters.sort[sort]),
-                actionKey: sort,
-              })),
-            }}
-            side="bottom"
-            onPressMenuItem={sort =>
-              setFilter(filter => {
-                if (sort === filter.sort) return { ...filter, sort: undefined };
-                return { ...filter, sort };
-              })
-            }
-          >
-            <FilterButton label={i18n.t(t.filters.sort[filter.sort || 'sort'])} icon="􀄬" />
-          </DropdownMenu>
+          <TimeFilter />
+          <SortFilter />
         </View>
       </View>
 
-      <NoResults />
-
-      <View style={{ gap: 26 }}>
-        <TrendingTokenRow />
-        <TrendingTokenRow />
-        <TrendingTokenRow />
-        <TrendingTokenRow />
-        <TrendingTokenRow />
-        <TrendingTokenRow />
-      </View>
+      <TrendingTokenData />
     </View>
   );
 }

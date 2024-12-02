@@ -10,16 +10,18 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedChainImage, ChainImage } from '@/components/coin-icon/ChainImage';
 import { AnimatedText, DesignSystemProvider, globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
+import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import * as i18n from '@/languages';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { nonceStore } from '@/state/nonces';
+import { useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
 import { useTheme } from '@/theme';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
 import chroma from 'chroma-js';
 import { PropsWithChildren, ReactElement, useEffect } from 'react';
 import React, { Pressable, View } from 'react-native';
-import { Gesture, GestureDetector, State } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, State, TapGesture } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   FadeIn,
@@ -285,10 +287,10 @@ const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color: string) 
   };
 };
 
-function AllNetworksOption({ selected }: { selected: SharedValue<ChainId[] | 'all'> }) {
+function AllNetworksOption({ selected }: { selected: SharedValue<ChainId | undefined> }) {
   const blue = useForegroundColor('blue');
 
-  const isSelected = useDerivedValue(() => selected.value === 'all');
+  const isSelected = useDerivedValue(() => selected.value === undefined);
   const { animatedStyle, selectedStyle, defaultStyle } = useNetworkOptionStyle(isSelected, blue);
 
   const overlappingBadge = useAnimatedStyle(() => {
@@ -303,8 +305,8 @@ function AllNetworksOption({ selected }: { selected: SharedValue<ChainId[] | 'al
   });
 
   const tapGesture = Gesture.Tap().onTouchesDown(() => {
-    if (selected.value === 'all') selected.value = [];
-    else selected.value = 'all';
+    'worklet';
+    selected.value = undefined;
   });
 
   return (
@@ -336,7 +338,7 @@ function AllNetworksOption({ selected }: { selected: SharedValue<ChainId[] | 'al
   );
 }
 
-function AllNetworksSection({ editing, selected }: { editing: SharedValue<boolean>; selected: SharedValue<ChainId[] | 'all'> }) {
+function AllNetworksSection({ editing, selected }: { editing: SharedValue<boolean>; selected: SharedValue<ChainId | undefined> }) {
   const style = useAnimatedStyle(() => ({
     opacity: editing.value ? withTiming(0, { duration: 50 }) : withDelay(250, withTiming(1, { duration: 250 })),
     height: withTiming(
@@ -354,12 +356,12 @@ function AllNetworksSection({ editing, selected }: { editing: SharedValue<boolea
   );
 }
 
-function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: SharedValue<ChainId[] | 'all'> }) {
+function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: SharedValue<ChainId | undefined> }) {
   const name = chainsLabel[chainId];
   if (!name) throw new Error(`<NetworkSwitcher />: No chain name for chainId ${chainId}`);
 
   const chainColor = getChainColorWorklet(chainId, true);
-  const isSelected = useDerivedValue(() => selected.value !== 'all' && selected.value.includes(chainId));
+  const isSelected = useDerivedValue(() => selected.value === chainId);
   const { animatedStyle } = useNetworkOptionStyle(isSelected, chainColor);
 
   return (
@@ -468,25 +470,18 @@ function SectionSeparator({
   editing,
   expanded,
   networks,
+  tapExpand,
+  pressedExpand,
 }: {
   y: SharedValue<number>;
   editing: SharedValue<boolean>;
   expanded: SharedValue<boolean>;
   networks: SharedValue<Record<Section, ChainId[]>>;
+  tapExpand: TapGesture;
+  pressedExpand: SharedValue<boolean>;
 }) {
-  const pressed = useSharedValue(false);
-  const tapGesture = Gesture.Tap()
-    .onBegin(e => {
-      if (editing.value) e.state = State.FAILED;
-      else pressed.value = true;
-    })
-    .onEnd(() => {
-      pressed.value = false;
-      expanded.value = !expanded.value;
-    });
-
   const separatorStyles = useAnimatedStyle(() => ({
-    transform: [{ translateY: y.value }, { scale: withTiming(pressed.value ? 0.95 : 1) }],
+    transform: [{ translateY: y.value }, { scale: withTiming(pressedExpand.value ? 0.95 : 1) }],
   }));
 
   const text = useDerivedValue(() => {
@@ -500,7 +495,7 @@ function SectionSeparator({
   const showMoreOrLessIconStyle = useAnimatedStyle(() => ({ opacity: editing.value ? 0 : 1 }));
 
   return (
-    <GestureDetector gesture={tapGesture}>
+    <GestureDetector gesture={tapExpand}>
       <Animated.View
         style={[
           { position: 'absolute', width: '100%', height: SEPARATOR_HEIGHT, justifyContent: 'center', alignItems: 'center' },
@@ -538,7 +533,7 @@ function SectionSeparator({
   );
 }
 
-function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; selected: SharedValue<ChainId[] | 'all'> }) {
+function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; selected: SharedValue<ChainId | undefined> }) {
   const initialPinned = useNetworkSwitcherStore.getState().pinnedNetworks;
   const initialUnpinned = SUPPORTED_CHAIN_IDS_ALPHABETICAL.filter(chainId => !initialPinned.includes(chainId));
   const networks = useSharedValue({ [Section.pinned]: initialPinned, [Section.unpinned]: initialUnpinned });
@@ -620,29 +615,36 @@ function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; se
       dragging.value = null;
     });
 
-  const tapNetwork = Gesture.Tap().onTouchesDown((e, s) => {
-    'worklet';
-    const touch = e.allTouches[0];
-    if (editing.value) {
-      s.fail();
-      return;
-    }
-    const section = touch.y > sectionsOffsets.value[Section.unpinned].y ? Section.unpinned : Section.pinned;
-    const index = indexFromPosition(touch.x, touch.y, sectionsOffsets.value[section]);
-    const chainId = networks.value[section][index];
+  const pressedExpand = useSharedValue(false);
 
-    selected.modify(selected => {
-      if (selected === 'all') {
-        // @ts-expect-error I think something is wrong with reanimated types, not infering right here
-        selected = [chainId];
-        return selected;
+  // TODO: Need to prevent this from firing the tapNetwork as well
+  const tapExpand = Gesture.Tap()
+    .onBegin(e => {
+      if (editing.value) {
+        e.state = State.FAILED;
       }
-      const selectedIndex = selected.indexOf(chainId);
-      if (selectedIndex !== -1) selected.splice(selectedIndex, 1);
-      else selected.push(chainId);
-      return selected;
+      pressedExpand.value = true;
+    })
+    .onEnd(() => {
+      pressedExpand.value = false;
+      expanded.value = !expanded.value;
     });
-  });
+
+  const tapNetwork = Gesture.Tap()
+    .onTouchesDown((e, s) => {
+      'worklet';
+      if (editing.value) {
+        s.fail();
+        return;
+      }
+      const touch = e.allTouches[0];
+      const section = touch.y > sectionsOffsets.value[Section.unpinned].y ? Section.unpinned : Section.pinned;
+      const index = indexFromPosition(touch.x, touch.y, sectionsOffsets.value[section]);
+      const chainId = networks.value[section][index];
+
+      selected.value = chainId;
+    })
+    .requireExternalGestureToFail(tapExpand);
 
   const gridGesture = Gesture.Exclusive(dragNetwork, tapNetwork);
 
@@ -662,7 +664,14 @@ function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; se
           </Draggable>
         ))}
 
-        <SectionSeparator y={pinnedHeight} expanded={expanded} editing={editing} networks={networks} />
+        <SectionSeparator
+          y={pinnedHeight}
+          expanded={expanded}
+          editing={editing}
+          networks={networks}
+          tapExpand={tapExpand}
+          pressedExpand={pressedExpand}
+        />
 
         {/* {initialUnpinned.length === 0 && (
           <View style={{ borderRadius: 20, flex: 1, height: ITEM_HEIGHT }}>
@@ -715,7 +724,7 @@ function Sheet({ children, header, onClose }: PropsWithChildren<{ header: ReactE
       translationY.value = event.translationY;
     })
     .onFinalize(() => {
-      if (translationY.value > 120) onClose();
+      if (translationY.value > 120) runOnJS(onClose)();
       else translationY.value = withSpring(0);
     });
 
@@ -746,28 +755,24 @@ function Sheet({ children, header, onClose }: PropsWithChildren<{ header: ReactE
   );
 }
 
-export function NetworkSelector({
-  onClose,
-  multiple,
-}: {
-  onClose: (selected: ChainId[] | 'all') => void;
-  onSelect: VoidFunction;
-  multiple?: boolean;
-}) {
+export function NetworkSelector({ onClose }: { onClose: VoidFunction }) {
   const editing = useSharedValue(false);
-  const selected = useSharedValue<ChainId[] | 'all'>([]);
 
-  const close = () => {
-    'worklet';
-    runOnJS(onClose)(selected.value);
-  };
+  const network = useTrendingTokensStore(state => state.network);
+  const selected = useSharedValue<ChainId | undefined>(network);
+  const setNetwork = useTrendingTokensStore(state => state.setNetwork);
+
+  useSyncSharedValue<ChainId | undefined>({
+    sharedValue: selected,
+    syncDirection: 'sharedValueToState',
+    state: network,
+    setState: setNetwork,
+  });
 
   return (
-    <Sheet header={<Header editing={editing} />} onClose={close}>
+    <Sheet header={<Header editing={editing} />} onClose={onClose}>
       <CustomizeNetworksBanner editing={editing} />
-
-      {multiple && <AllNetworksSection editing={editing} selected={selected} />}
-
+      <AllNetworksSection editing={editing} selected={selected} />
       <NetworksGrid editing={editing} selected={selected} />
     </Sheet>
   );
