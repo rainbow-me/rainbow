@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -125,19 +125,9 @@ const WALLET_ROW_HEIGHT = 59;
 const WATCH_ONLY_BOTTOM_PADDING = IS_ANDROID ? 20 : 0;
 
 const getWalletListHeight = (numWallets: number, watchOnly: boolean) => {
-  let listHeight = !watchOnly ? FOOTER_HEIGHT + LIST_PADDING_BOTTOM : WATCH_ONLY_BOTTOM_PADDING;
-
-  if (numWallets) {
-    for (let i = 0; i < numWallets; i++) {
-      listHeight += WALLET_ROW_HEIGHT + 6;
-
-      if (listHeight > MAX_LIST_HEIGHT) {
-        return MAX_LIST_HEIGHT;
-      }
-    }
-  }
-
-  return listHeight;
+  const baseHeight = !watchOnly ? FOOTER_HEIGHT + LIST_PADDING_BOTTOM : WATCH_ONLY_BOTTOM_PADDING;
+  const calculatedHeight = baseHeight + numWallets * (WALLET_ROW_HEIGHT + 6);
+  return Math.min(calculatedHeight, MAX_LIST_HEIGHT);
 };
 
 interface Props {
@@ -173,6 +163,8 @@ export default function WalletList({
   const emptyOpacityAnimation = useSharedValue(1);
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const { colors } = useTheme();
+
+  const containerHeight = useMemo(() => getWalletListHeight(rows.length, watchOnly), [rows.length, watchOnly]);
 
   // Update the rows when allWallets changes
   useEffect(() => {
@@ -270,10 +262,8 @@ export default function WalletList({
     [contextMenuActions, editMode]
   );
 
-  const height = getWalletListHeight(rows.length, watchOnly);
-
   return (
-    <Container height={height}>
+    <Container height={containerHeight}>
       <Column height={40} justify="space-between">
         <Centered>
           <SheetTitle testID="change-wallet-sheet-title">{lang.t('wallet.label')}</SheetTitle>
@@ -293,7 +283,7 @@ export default function WalletList({
           data={rows}
           initialNumToRender={10}
           ref={scrollView}
-          scrollEnabled={height >= MAX_LIST_HEIGHT}
+          scrollEnabled={containerHeight >= MAX_LIST_HEIGHT}
           renderItem={renderItem}
           ListEmptyComponent={() => (
             <Animated.View style={[StyleSheet.absoluteFill, emptyOpacityStyle]}>
