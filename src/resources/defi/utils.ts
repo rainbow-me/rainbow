@@ -31,7 +31,7 @@ function isLpPositionItem(item: Deposit | Stake): boolean {
 
 function calculatePositionItemNativeDisplayValue(item: UnderlyingAsset | Claimable | Stake, currency: NativeCurrencyKey) {
   const decimals = typeof item.asset.decimals === 'number' ? item.asset.decimals : 18;
-  return convertRawAmountToNativeDisplay(item.quantity, decimals, item.asset.price?.value!, currency);
+  return convertRawAmountToNativeDisplay(item.quantity, decimals, item.asset.price?.value ?? 0, currency);
 }
 
 function addPositionTotals(totals1: PositionsTotals, totals2: PositionsTotals, currency: NativeCurrencyKey): PositionsTotals {
