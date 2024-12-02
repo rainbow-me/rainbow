@@ -198,10 +198,15 @@ const FreezableWebViewComponent = ({
     if (isActiveTab) screenshotCaptureRef.current = viewShotRef.current;
 
     if (webViewRef.current) {
-      // Unfreeze heavy site processes when the tab becomes active
-      if (isActiveTab) webViewRef.current.injectJavaScript(unfreezeWebsite);
-      // Freeze when becoming inactive
-      else webViewRef.current.injectJavaScript(freezeWebsite);
+      if (isActiveTab) {
+        // Unfreeze heavy site processes when the tab becomes active
+        webViewRef.current.injectJavaScript(unfreezeWebsite);
+        webViewRef.current.setActive(true);
+      } else {
+        // Freeze when becoming inactive
+        webViewRef.current.injectJavaScript(freezeWebsite);
+        webViewRef.current.setActive(false);
+      }
     }
   }, [isActiveTab, screenshotCaptureRef, viewShotRef, webViewRef]);
 

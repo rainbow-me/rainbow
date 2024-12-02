@@ -21,11 +21,13 @@ export default function useWalletsWithBalancesAndNames() {
           return {
             ...account,
             balances: balances[lowerCaseAddress],
-            hiddenBalances: hiddenBalances[lowerCaseAddress] ?? '0',
-            balancesMinusHiddenBalances: convertAmountToNativeDisplay(
-              subtract(balances[lowerCaseAddress]?.totalBalanceAmount, hiddenBalances[lowerCaseAddress] ?? '0'),
-              nativeCurrency
-            ),
+            hiddenBalances: hiddenBalances[lowerCaseAddress],
+            balancesMinusHiddenBalances: balances[lowerCaseAddress]?.totalBalanceDisplay
+              ? convertAmountToNativeDisplay(
+                  subtract(balances[lowerCaseAddress].totalBalanceAmount, hiddenBalances[lowerCaseAddress] ?? '0'),
+                  nativeCurrency
+                )
+              : undefined,
             ens: walletNames[account.address],
           };
         });
