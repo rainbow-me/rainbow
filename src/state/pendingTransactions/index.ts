@@ -80,14 +80,18 @@ export const addNewTransaction = ({
   transaction: NewTransaction;
 }) => {
   const { addPendingTransaction } = pendingTransactionsStore.getState();
-  const { setNonce } = nonceStore.getState();
+  const { getNonce, setNonce } = nonceStore.getState();
   const parsedTransaction = convertNewTransactionToRainbowTransaction(transaction);
   addPendingTransaction({ address, pendingTransaction: parsedTransaction });
-  setNonce({
-    address,
-    chainId,
-    currentNonce: transaction.nonce,
-  });
+  const localNonceData = getNonce({ address, chainId });
+  const localNonce = localNonceData?.currentNonce || 0;
+  if (transaction.nonce > localNonce) {
+    setNonce({
+      address,
+      chainId,
+      currentNonce: transaction.nonce,
+    });
+  }
 };
 
 export const updateTransaction = ({
