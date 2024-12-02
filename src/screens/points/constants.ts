@@ -1,5 +1,3 @@
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { HapticFeedbackType } from '@/utils/haptics';
 import { safeAreaInsetValues } from '@/utils';
 import { OnboardPointsMutation, PointsOnboardingCategory } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
@@ -68,8 +66,6 @@ export const generateRainbowColors = (text: string): Array<{ text: string; shado
 
   return colors;
 };
-
-export const triggerHapticFeedback = (hapticType: HapticFeedbackType) => ReactNativeHapticFeedback?.trigger(hapticType);
 
 const BASE_URL = `https://twitter.com/intent/tweet?text=`;
 const NEWLINE_OR_SPACE = IS_IOS ? '\n\n' : ' ';

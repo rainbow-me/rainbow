@@ -9,7 +9,7 @@ export const analyticsV2 = {
   screen: jest.fn(),
   track: jest.fn(),
   setDeviceId: jest.fn(),
-  setCurrentWalletAddressHash: jest.fn(),
+  setWalletContext: jest.fn(),
   enable: jest.fn(),
   disable: jest.fn(),
   event,
