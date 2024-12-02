@@ -24,7 +24,7 @@ import {
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
-import { ChainId } from '@/chains/types';
+import { ChainId, chainHardhat } from '@/chains/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { defaultChains } from '@/chains';
 
@@ -111,7 +111,7 @@ export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet):
 
 export const getBatchedProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): JsonRpcBatchProvider => {
   if (useConnectedToHardhatStore.getState().connectedToHardhat) {
-    const provider = new JsonRpcBatchProvider('http://127.0.0.1:8545/', ChainId.mainnet);
+    const provider = new JsonRpcBatchProvider(chainHardhat.rpcUrls.default.http[0], ChainId.mainnet);
     chainsBatchProviders.set(chainId, provider);
 
     return provider;
@@ -132,7 +132,7 @@ export const getBatchedProvider = ({ chainId = ChainId.mainnet }: { chainId?: nu
 
 export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): StaticJsonRpcProvider => {
   if (useConnectedToHardhatStore.getState().connectedToHardhat) {
-    const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545/', ChainId.mainnet);
+    const provider = new StaticJsonRpcProvider(chainHardhat.rpcUrls.default.http[0], ChainId.mainnet);
     chainsProviders.set(chainId, provider);
 
     return provider;

@@ -206,7 +206,7 @@ export const getChainDefaultRpc = (chainId: ChainId) => {
   switch (chainId) {
     case ChainId.mainnet:
       return useConnectedToHardhatStore.getState().connectedToHardhat
-        ? 'http://127.0.0.1:8545'
+        ? chainHardhat.rpcUrls.default.http[0]
         : defaultChains[ChainId.mainnet].rpcUrls.default.http[0];
     default:
       return defaultChains[chainId].rpcUrls.default.http[0];
