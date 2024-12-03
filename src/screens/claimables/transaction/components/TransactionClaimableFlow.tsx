@@ -18,7 +18,7 @@ export function TransactionClaimableFlow() {
     outputConfig: { chainId: outputChainId, token: outputToken },
     claimStatus,
     setClaimStatus,
-    txState,
+    gasState,
     quoteState,
     requiresSwap,
   } = useTransactionClaimableContext();
@@ -28,7 +28,7 @@ export function TransactionClaimableFlow() {
   // BUTTON PROPS
   const shouldShowClaimText = !!(claimStatus === 'ready' && outputChainId && outputToken);
   const disabled = !(
-    ((claimStatus === 'ready' || claimStatus === 'recoverableError') && txState.isSufficientGas) ||
+    ((claimStatus === 'ready' || claimStatus === 'recoverableError') && gasState.isSufficientGas) ||
     claimStatus === 'success' ||
     claimStatus === 'pending' ||
     claimStatus === 'unrecoverableError'
@@ -46,9 +46,9 @@ export function TransactionClaimableFlow() {
     switch (claimStatus) {
       case 'notReady':
         if (quoteState.status === 'success' || !requiresSwap) {
-          if (txState.status === 'error') {
+          if (gasState.status === 'error') {
             return i18n.t(i18n.l.claimables.panel.gas_error);
-          } else if (txState.status === 'success' && !txState.isSufficientGas) {
+          } else if (gasState.status === 'success' && !gasState.isSufficientGas) {
             return i18n.t(i18n.l.claimables.panel.insufficient_funds);
           } else {
             return i18n.t(i18n.l.claimables.panel.estimating_gas_fee);
@@ -78,7 +78,7 @@ export function TransactionClaimableFlow() {
       default:
         return i18n.t(i18n.l.points.points.try_again);
     }
-  }, [claimStatus, claimable.value.claimAsset.display, requiresSwap, quoteState, txState, outputChainId, outputToken]);
+  }, [claimStatus, claimable.value.claimAsset.display, requiresSwap, quoteState, gasState, outputChainId, outputToken]);
 
   const onPress = useCallback(() => {
     if (isReadOnlyWallet) {

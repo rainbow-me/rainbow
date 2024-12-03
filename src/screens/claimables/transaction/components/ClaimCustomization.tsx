@@ -22,7 +22,7 @@ export function ClaimCustomization() {
     outputConfig: { chainId: outputChainId, token: outputToken },
     setOutputConfig,
     setQuoteState,
-    setTxState,
+    setGasState,
   } = useTransactionClaimableContext();
 
   const [isInitialState, setIsInitialState] = useState(true);
@@ -112,7 +112,7 @@ export function ClaimCustomization() {
       chainId: claimableAsset.chainId,
     });
     setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
-    setTxState({ gasLimit: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
+    setGasState({ gasLimit: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
     setIsInitialState(true);
   }, [
     setOutputConfig,
@@ -125,7 +125,7 @@ export function ClaimCustomization() {
     claimableAsset.isNativeAsset,
     claimableAsset.chainId,
     setQuoteState,
-    setTxState,
+    setGasState,
   ]);
 
   const tokenMenuConfig = useMemo(() => {
@@ -219,11 +219,11 @@ export function ClaimCustomization() {
           };
         });
         setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
-        setTxState({ gasLimit: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
+        setGasState({ gasLimit: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
         setIsInitialState(false);
       }
     },
-    [resetState, setOutputConfig, setQuoteState, setTxState, tokens]
+    [resetState, setOutputConfig, setQuoteState, setGasState, tokens]
   );
 
   const handleNetworkSelection = useCallback(
@@ -240,12 +240,12 @@ export function ClaimCustomization() {
             chainId: newChainId,
           };
         });
-        setTxState({ gasLimit: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
+        setGasState({ gasLimit: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
         setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
         setIsInitialState(false);
       }
     },
-    [resetState, setOutputConfig, setQuoteState, setTxState]
+    [resetState, setOutputConfig, setQuoteState, setGasState]
   );
 
   const isDisabled =

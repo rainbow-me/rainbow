@@ -51,7 +51,7 @@ interface OutputConfig {
   chainId?: ChainId;
 }
 
-interface TxState {
+interface GasState {
   status: 'fetching' | 'error' | 'success' | 'none';
   isSufficientGas: boolean;
   gasFeeDisplay: string | undefined;
@@ -69,14 +69,14 @@ type TransactionClaimableContextType = {
   outputConfig: OutputConfig;
   claimStatus: ClaimStatus;
   claimable: Claimable;
-  txState: TxState;
+  gasState: GasState;
   quoteState: QuoteState;
   requiresSwap: boolean;
 
   setClaimStatus: Dispatch<SetStateAction<ClaimStatus>>;
   setOutputConfig: Dispatch<SetStateAction<OutputConfig>>;
   setQuoteState: Dispatch<SetStateAction<QuoteState>>;
-  setTxState: Dispatch<SetStateAction<TxState>>;
+  setGasState: Dispatch<SetStateAction<GasState>>;
 
   claim: () => void;
 };
@@ -107,7 +107,7 @@ export function TransactionClaimableContextProvider({
     tokenAmountDisplay: undefined,
     status: 'none',
   });
-  const [txState, setTxState] = useState<TxState>({
+  const [gasState, setGasState] = useState<GasState>({
     isSufficientGas: false,
     gasFeeDisplay: undefined,
     gasLimit: undefined,
@@ -228,8 +228,8 @@ export function TransactionClaimableContextProvider({
   const updateGasState = useCallback(async () => {
     try {
       if (!canEstimateGas) {
-        if (txState.status === 'fetching') {
-          setTxState(prev => ({ ...prev, status: 'none' }));
+        if (gasState.status === 'fetching') {
+          setGasState(prev => ({ ...prev, status: 'none' }));
         }
         return;
       }
@@ -241,8 +241,8 @@ export function TransactionClaimableContextProvider({
       });
       console.log(gasLimit);
       if (!gasLimit) {
-        if (txState.status === 'fetching') {
-          setTxState(prev => ({ ...prev, status: 'error' }));
+        if (gasState.status === 'fetching') {
+          setGasState(prev => ({ ...prev, status: 'error' }));
         }
         logger.warn('[TransactionClaimableContext]: Failed to estimate claim gas limit');
         return;
@@ -266,16 +266,16 @@ export function TransactionClaimableContextProvider({
       }
 
       setLastGasEstimateTime(Date.now());
-      setTxState({
+      setGasState({
         isSufficientGas: sufficientGas,
         gasFeeDisplay: gasFeeNativeCurrencyDisplay,
         gasLimit,
         status: 'success',
       });
     } catch (e) {
-      if (txState.status === 'fetching') {
+      if (gasState.status === 'fetching') {
         // if is initial gas estimate, set status to error
-        setTxState(prev => ({ ...prev, status: 'error' }));
+        setGasState(prev => ({ ...prev, status: 'error' }));
       }
       logger.warn('[TransactionClaimableContext]: Failed to estimate gas', { error: e });
     }
@@ -290,16 +290,16 @@ export function TransactionClaimableContextProvider({
     userNativeNetworkAsset?.decimals,
     userNativeNetworkAsset?.balance?.amount,
     userNativeNetworkAsset?.price?.value,
-    txState.status,
+    gasState.status,
     nativeCurrency,
   ]);
 
   useEffect(() => {
     // estimate gas if it hasn't been estimated yet or if 10 seconds have passed since last estimate
-    if (canEstimateGas && ((!txState.gasLimit && txState.status !== 'error') || Date.now() - lastGasEstimateTime > 10_000)) {
+    if (canEstimateGas && ((!gasState.gasLimit && gasState.status !== 'error') || Date.now() - lastGasEstimateTime > 10_000)) {
       // update tx state/claim status only if initial gas estimate
-      if (!txState.gasLimit) {
-        setTxState(prev => ({
+      if (!gasState.gasLimit) {
+        setGasState(prev => ({
           ...prev,
           status: 'fetching',
         }));
@@ -307,13 +307,13 @@ export function TransactionClaimableContextProvider({
       }
       updateGasState();
     }
-  }, [canEstimateGas, claimStatus, lastGasEstimateTime, txState.gasFeeDisplay, txState.gasLimit, txState.status, updateGasState]);
+  }, [canEstimateGas, claimStatus, lastGasEstimateTime, gasState.gasFeeDisplay, gasState.gasLimit, gasState.status, updateGasState]);
 
   // claim is ready if we have tx payload, sufficent gas, quote (if required), and previously in notReady state
   useEffect(() => {
     if (
-      txState.status === 'success' &&
-      txState.isSufficientGas &&
+      gasState.status === 'success' &&
+      gasState.isSufficientGas &&
       (!requiresSwap || quoteState.status === 'success') &&
       claimStatus === 'notReady' &&
       outputConfig.chainId &&
@@ -321,14 +321,14 @@ export function TransactionClaimableContextProvider({
     ) {
       setClaimStatus('ready');
     }
-  }, [claimStatus, outputConfig.chainId, outputConfig.token, quoteState.status, requiresSwap, txState.isSufficientGas, txState.status]);
+  }, [claimStatus, outputConfig.chainId, outputConfig.token, quoteState.status, requiresSwap, gasState.isSufficientGas, gasState.status]);
 
   const queryKey = claimablesQueryKey({ address: accountAddress, currency: nativeCurrency });
 
   const { mutate: claim } = useMutation({
     mutationFn: async () => {
       if (
-        !txState.gasLimit ||
+        !gasState.gasLimit ||
         !gasSettings ||
         !outputConfig.token ||
         !outputConfig.chainId ||
@@ -370,7 +370,7 @@ export function TransactionClaimableContextProvider({
         chainId: claimable.chainId,
         nonce: await getNextNonce({ address: accountAddress, chainId: claimable.chainId }),
         to: claimable.action.to,
-        gasLimit: txState.gasLimit,
+        gasLimit: gasState.gasLimit,
         ...gasParams,
       };
 
@@ -553,13 +553,13 @@ export function TransactionClaimableContextProvider({
         claimStatus,
         claimable,
         quoteState,
-        txState,
+        gasState,
         requiresSwap,
 
         setClaimStatus,
         setOutputConfig,
         setQuoteState,
-        setTxState,
+        setGasState,
 
         claim,
       }}

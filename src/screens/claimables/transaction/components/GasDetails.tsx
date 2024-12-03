@@ -9,7 +9,7 @@ export function GasDetails() {
   const {
     claimable: { chainId },
     claimStatus,
-    txState: { gasFeeDisplay },
+    gasState: { gasFeeDisplay },
     outputConfig,
   } = useTransactionClaimableContext();
 
