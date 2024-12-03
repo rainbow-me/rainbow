@@ -44,8 +44,7 @@ import { ClaimStatus } from '../../shared/types';
 import { analyticsV2 } from '@/analytics';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { getRemoteConfig } from '@/model/remoteConfig';
-
-const RAINBOW_FEE_BIPS = 85;
+import { estimateClaimUnlockSwapGasLimit } from '../estimateGas';
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
@@ -63,7 +62,7 @@ interface TxState {
   status: 'fetching' | 'error' | 'success' | 'none';
   isSufficientGas: boolean;
   gasFeeDisplay: string | undefined;
-  txPayload: TransactionClaimableTxPayload | undefined;
+  gasLimit: string | undefined;
 }
 
 interface QuoteState {
@@ -118,7 +117,7 @@ export function TransactionClaimableContextProvider({
   const [txState, setTxState] = useState<TxState>({
     isSufficientGas: false,
     gasFeeDisplay: undefined,
-    txPayload: undefined,
+    gasLimit: undefined,
     status: 'none',
   });
   const [lastGasEstimateTime, setLastGasEstimateTime] = useState<number>(0);
@@ -145,52 +144,11 @@ export function TransactionClaimableContextProvider({
     (outputConfig.token.symbol !== claimable.asset.symbol || outputConfig.chainId !== claimable.chainId)
   );
 
-  // need to get token data using token search api so the asset type is compatible w/ swaps v2 gas utils
-  const { data: tokenSearchData, isFetching: isFetchingOutputToken } = useTokenSearch(
-    {
-      chainId: outputConfig.chainId,
-      keys: ['address'],
-      list: 'verifiedAssets',
-      threshold: 'CASE_SENSITIVE_EQUAL',
-      query: outputTokenAddress,
-    },
-    {
-      enabled: requiresSwap,
-      select: data => {
-        return data.filter(
-          (asset: SearchAsset) =>
-            asset.address === outputTokenAddress && asset.chainId === outputConfig.chainId && asset.symbol === outputConfig.token?.symbol
-        );
-      },
-    }
-  );
-
-  const parsedOutputToken: ParsedSearchAsset | undefined = useMemo(() => {
-    const asset = tokenSearchData?.[0];
-    if (!asset) return undefined;
-    return parseSearchAsset({ searchAsset: asset });
-  }, [tokenSearchData]);
-
   const gasSettings = useGasSettings(claimable.chainId, GasSpeed.FAST);
-  const { data: swapGasLimit, isFetching: isFetchingSwapGasLimit } = useSwapEstimatedGasLimit(
-    {
-      chainId: claimable.chainId,
-      assetToSell: parsedOutputToken,
-      quote: quoteState.quote,
-    },
-    {
-      enabled:
-        requiresSwap &&
-        !!quoteState.quote &&
-        !!parsedOutputToken &&
-        parsedOutputToken.chainId === outputConfig.chainId &&
-        parsedOutputToken.symbol === outputConfig.token?.symbol,
-    }
-  );
-  console.log(swapGasLimit, parsedOutputToken?.chainId);
+
   const { data: userNativeNetworkAsset, isLoading: isLoadingNativeNetworkAsset } = useUserNativeNetworkAsset(claimable.chainId);
 
-  const updateQuote = useCallback(async () => {
+  const updateQuoteState = useCallback(async () => {
     if (!outputConfig?.token || !outputConfig.chainId || !outputTokenAddress) {
       logger.warn('[TransactionClaimableContext]: Somehow entered unreachable state in updateQuote');
       setQuoteState(prev => ({ ...prev, status: 'none' }));
@@ -202,12 +160,12 @@ export function TransactionClaimableContextProvider({
         fromAddress: accountAddress,
         sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
         buyTokenAddress: outputConfig.token.isNativeAsset ? ETH_ADDRESS : outputTokenAddress,
-        sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
+        sellAmount: convertAmountToRawAmount(0.0001, claimable.asset.decimals),
         slippage: +getDefaultSlippageWorklet(claimable.chainId, getRemoteConfig()),
         refuel: false,
         toChainId: outputConfig.chainId,
         currency: nativeCurrency,
-        feePercentageBasisPoints: RAINBOW_FEE_BIPS,
+        feePercentageBasisPoints: 0,
       };
 
       const quote = claimable.chainId === outputConfig.chainId ? await getQuote(quoteParams) : await getCrosschainQuote(quoteParams);
@@ -248,7 +206,6 @@ export function TransactionClaimableContextProvider({
     claimable.asset.decimals,
     claimable.asset.isNativeAsset,
     claimable.chainId,
-    claimable.value.claimAsset.amount,
     nativeCurrency,
     outputConfig.chainId,
     outputConfig.token,
@@ -260,9 +217,9 @@ export function TransactionClaimableContextProvider({
     if (requiresSwap && !quoteState.quote && quoteState.status === 'none' && outputTokenAddress) {
       setQuoteState(prev => ({ ...prev, status: 'fetching' }));
       setClaimStatus('notReady');
-      updateQuote();
+      updateQuoteState();
     }
-  }, [outputTokenAddress, quoteState.quote, quoteState.status, requiresSwap, updateQuote]);
+  }, [outputTokenAddress, quoteState.quote, quoteState.status, requiresSwap, updateQuoteState]);
 
   const provider = useMemo(() => getProvider({ chainId: claimable.chainId }), [claimable.chainId]);
 
@@ -271,18 +228,10 @@ export function TransactionClaimableContextProvider({
     !isLoadingNativeNetworkAsset &&
     userNativeNetworkAsset &&
     gasSettings &&
-    (!requiresSwap ||
-      (quoteState.quote &&
-        !isFetchingSwapGasLimit &&
-        swapGasLimit &&
-        !isFetchingOutputToken &&
-        parsedOutputToken &&
-        parsedOutputToken.symbol === outputConfig.token?.symbol &&
-        parsedOutputToken.chainId === outputConfig.chainId &&
-        quoteState.status === 'success'))
+    (!requiresSwap || (quoteState.quote && quoteState.status === 'success'))
   );
 
-  const estimateGas = useCallback(async () => {
+  const updateGasState = useCallback(async () => {
     try {
       if (!canEstimateGas) {
         if (txState.status === 'fetching') {
@@ -291,24 +240,11 @@ export function TransactionClaimableContextProvider({
         return;
       }
 
-      const gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = gasSettings.isEIP1559
-        ? {
-            maxFeePerGas: gasSettings.maxBaseFee,
-            maxPriorityFeePerGas: gasSettings.maxPriorityFee,
-          }
-        : { gasPrice: gasSettings.gasPrice };
-
-      const partialTxPayload = {
-        value: '0x0' as const,
-        data: claimable.action.data,
-        from: accountAddress,
+      const gasLimit = await estimateClaimUnlockSwapGasLimit({
         chainId: claimable.chainId,
-        nonce: await getNextNonce({ address: accountAddress, chainId: claimable.chainId }),
-        to: claimable.action.to,
-        ...gasParams,
-      };
-
-      let gasLimit = await estimateGasWithPadding(partialTxPayload, null, null, provider);
+        claim: { to: claimable.action.to, from: accountAddress, data: claimable.action.data },
+        quote: quoteState.quote,
+      });
 
       if (!gasLimit) {
         if (txState.status === 'fetching') {
@@ -316,18 +252,6 @@ export function TransactionClaimableContextProvider({
         }
         logger.warn('[TransactionClaimableContext]: Failed to estimate claim gas limit');
         return;
-      }
-
-      if (requiresSwap) {
-        if (!swapGasLimit) {
-          if (txState.status === 'fetching') {
-            setTxState(prev => ({ ...prev, status: 'none' }));
-          }
-          logger.warn('[TransactionClaimableContext]: swapGasLimit is undefined');
-          return;
-        }
-
-        gasLimit = add(gasLimit, swapGasLimit);
       }
 
       const gasFeeWei = calculateGasFeeWorklet(gasSettings, gasLimit);
@@ -351,7 +275,7 @@ export function TransactionClaimableContextProvider({
       setTxState({
         isSufficientGas: sufficientGas,
         gasFeeDisplay: gasFeeNativeCurrencyDisplay,
-        txPayload: { ...partialTxPayload, gasLimit },
+        gasLimit,
         status: 'success',
       });
     } catch (e) {
@@ -363,44 +287,33 @@ export function TransactionClaimableContextProvider({
     }
   }, [
     canEstimateGas,
-    claimable.action.data,
-    claimable.action.to,
     claimable.chainId,
+    claimable.action.to,
+    claimable.action.data,
     accountAddress,
-    provider,
+    quoteState.quote,
     gasSettings,
-    requiresSwap,
     userNativeNetworkAsset?.decimals,
     userNativeNetworkAsset?.balance?.amount,
     userNativeNetworkAsset?.price?.value,
     txState.status,
-    swapGasLimit,
     nativeCurrency,
   ]);
 
   useEffect(() => {
     // estimate gas if it hasn't been estimated yet or if 10 seconds have passed since last estimate
-    if (canEstimateGas && (!txState.gasFeeDisplay || Date.now() - lastGasEstimateTime > 10_000)) {
+    if (canEstimateGas && ((!txState.gasLimit && txState.status !== 'error') || Date.now() - lastGasEstimateTime > 10_000)) {
       // update tx state/claim status only if initial gas estimate
-      if (!txState.gasFeeDisplay) {
+      if (!txState.gasLimit) {
         setTxState(prev => ({
           ...prev,
           status: 'fetching',
         }));
         setClaimStatus('notReady');
       }
-      estimateGas();
+      updateGasState();
     }
-  }, [
-    canEstimateGas,
-    claimStatus,
-    estimateGas,
-    isFetchingOutputToken,
-    isFetchingSwapGasLimit,
-    lastGasEstimateTime,
-    parsedOutputToken,
-    txState.gasFeeDisplay,
-  ]);
+  }, [canEstimateGas, claimStatus, lastGasEstimateTime, txState.gasFeeDisplay, txState.gasLimit, txState.status, updateGasState]);
 
   // claim is ready if we have tx payload, sufficent gas, quote (if required), and previously in notReady state
   useEffect(() => {
@@ -421,7 +334,7 @@ export function TransactionClaimableContextProvider({
   const { mutate: claim } = useMutation({
     mutationFn: async () => {
       if (
-        !txState.txPayload ||
+        !txState.gasLimit ||
         !gasSettings ||
         !outputConfig.token ||
         !outputConfig.chainId ||
@@ -447,6 +360,26 @@ export function TransactionClaimableContextProvider({
         return;
       }
 
+      const gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = gasSettings.isEIP1559
+        ? {
+            maxFeePerGas: gasSettings.maxBaseFee,
+            maxPriorityFeePerGas: gasSettings.maxPriorityFee,
+          }
+        : { gasPrice: gasSettings.gasPrice };
+
+      const gasFeeParamsBySpeed = getGasSettingsBySpeed(claimable.chainId);
+
+      const txPayload = {
+        value: '0x0' as const,
+        data: claimable.action.data,
+        from: accountAddress,
+        chainId: claimable.chainId,
+        nonce: await getNextNonce({ address: accountAddress, chainId: claimable.chainId }),
+        to: claimable.action.to,
+        gasLimit: txState.gasLimit,
+        ...gasParams,
+      };
+
       if (requiresSwap) {
         // need to get yet another output asset type for raps compatibility
         const outputAsset = await queryClient.fetchQuery({
@@ -471,22 +404,13 @@ export function TransactionClaimableContextProvider({
           address: accountAddress,
         };
 
-        const gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = gasSettings.isEIP1559
-          ? {
-              maxFeePerGas: gasSettings.maxBaseFee,
-              maxPriorityFeePerGas: gasSettings.maxPriorityFee,
-            }
-          : { gasPrice: gasSettings.gasPrice };
-
-        const gasFeeParamsBySpeed = getGasSettingsBySpeed(claimable.chainId);
-
         const { errorMessage } = await walletExecuteRap(wallet, 'claimClaimable', {
           ...swapData,
           gasParams,
           // @ts-expect-error - collision between old gas types and new
           gasFeeParamsBySpeed,
           quote: quoteState.quote,
-          additionalParams: { claimTx: txState.txPayload },
+          additionalParams: { claimTx: txPayload },
         });
 
         if (errorMessage) {
@@ -538,7 +462,7 @@ export function TransactionClaimableContextProvider({
         try {
           await executeClaim({
             asset: claimable.asset,
-            claimTx: txState.txPayload,
+            claimTx: txPayload,
             wallet,
           });
         } catch (e) {
