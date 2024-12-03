@@ -77,6 +77,9 @@ jobs:
           xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
           APP_DIR=$(find . -name "*.app" | head -n 1)
           cd $APP_DIR && zip -r ../../../../../../App.zip .
+      - name: Set up Appstore Key
+        run: |
+          cp ~/appstore/AuthKey_63N65C2G2S.p8 ios/fastlane/AuthKey_63N65C2G2S.p8
 
         # TOPHAT iOS DEVICE  
       - name: Build the app in release mode for iOS devices
