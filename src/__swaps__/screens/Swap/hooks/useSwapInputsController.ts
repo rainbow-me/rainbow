@@ -48,20 +48,23 @@ const REMOTE_CONFIG = getRemoteConfig();
 const analyticsTrack: typeof analyticsV2.track = (...args) => analyticsV2.track(...args);
 let lastParams: EventProperties[typeof analyticsV2.event.swapsQuoteFailed];
 function analyticsTrackQuoteFailed(
-  quote: QuoteError,
+  quote: QuoteError | null,
   {
     inputAsset,
     outputAsset,
     inputAmount,
     outputAmount,
   }: {
-    inputAsset: ExtendedAnimatedAssetWithColors;
-    outputAsset: ExtendedAnimatedAssetWithColors;
+    inputAsset: ExtendedAnimatedAssetWithColors | null;
+    outputAsset: ExtendedAnimatedAssetWithColors | null;
     inputAmount: number | undefined;
     outputAmount: number | undefined;
   }
 ) {
   'worklet';
+  // we are tracking 'Insufficient funds' 'Out of gas' 'No routes found' and 'No quotes found'
+  if (!quote || !inputAsset || !outputAsset || !inputAmount) return;
+
   if (
     lastParams &&
     quote.error_code === lastParams.error_code &&
@@ -83,6 +86,7 @@ function analyticsTrackQuoteFailed(
   lastParams = params;
   runOnJS(analyticsTrack)(analyticsV2.event.swapsQuoteFailed, params);
 }
+
 export function useSwapInputsController({
   focusedInput,
   inputProgress,

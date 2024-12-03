@@ -586,7 +586,7 @@ export type EventProperties = {
     error_code: number | undefined;
     reason: string;
     inputAsset: { symbol: string; address: string; chainId: ChainId };
-    inputAmount: string | number | undefined;
+    inputAmount: string | number;
     outputAsset: { symbol: string; address: string; chainId: ChainId };
     outputAmount: string | number | undefined;
   };
