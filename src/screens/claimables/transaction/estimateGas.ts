@@ -96,14 +96,17 @@ export const estimateClaimUnlockSwapGasLimit = async ({
       return undefined;
     }
   }
-
+  console.log(transactions);
   try {
     const response = await metadataPOSTClient.simulateTransactions({
       chainId,
       transactions,
     });
     const gasLimit = response.simulateTransactions
-      ?.map(res => res?.gas?.estimate)
+      ?.map(res => {
+        console.log('estimate', res?.gas?.estimate);
+        return res?.gas?.estimate;
+      })
       .reduce((acc, limit) => (acc && limit ? add(acc, limit) : acc), '0');
     return gasLimit;
   } catch (e) {

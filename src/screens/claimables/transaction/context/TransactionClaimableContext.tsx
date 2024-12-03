@@ -153,7 +153,7 @@ export function TransactionClaimableContextProvider({
         fromAddress: accountAddress,
         sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
         buyTokenAddress: outputConfig.token.isNativeAsset ? ETH_ADDRESS : outputTokenAddress,
-        sellAmount: convertAmountToRawAmount(0.0001, claimable.asset.decimals),
+        sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
         slippage: +getDefaultSlippageWorklet(claimable.chainId, getRemoteConfig()),
         refuel: false,
         toChainId: outputConfig.chainId,
@@ -199,6 +199,7 @@ export function TransactionClaimableContextProvider({
     claimable.asset.decimals,
     claimable.asset.isNativeAsset,
     claimable.chainId,
+    claimable.value.claimAsset.amount,
     nativeCurrency,
     outputConfig.chainId,
     outputConfig.token,
@@ -238,10 +239,10 @@ export function TransactionClaimableContextProvider({
         claim: { to: claimable.action.to, from: accountAddress, data: claimable.action.data },
         quote: quoteState.quote,
       });
-
+      console.log(gasLimit);
       if (!gasLimit) {
         if (txState.status === 'fetching') {
-          setTxState(prev => ({ ...prev, status: 'none' }));
+          setTxState(prev => ({ ...prev, status: 'error' }));
         }
         logger.warn('[TransactionClaimableContext]: Failed to estimate claim gas limit');
         return;
