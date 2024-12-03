@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { ChainId } from '@/chains/types';
 import { chainsLabel, chainsName, chainsNativeAsset } from '@/chains';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { DAI_ADDRESS, ETH_SYMBOL, WBTC_ADDRESS } from '@/references';
+import { ETH_SYMBOL, USDC_ADDRESS } from '@/references';
 import { DropdownMenu } from '../../shared/components/DropdownMenu';
 import { TokenToReceive } from '../types';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
@@ -27,37 +27,21 @@ export function ClaimCustomization() {
 
   const [isInitialState, setIsInitialState] = useState(true);
 
-  const { data: daiSearchData } = useTokenSearch(
+  const { data: usdcSearchData } = useTokenSearch(
     {
       keys: ['address'],
       list: 'verifiedAssets',
       threshold: 'CASE_SENSITIVE_EQUAL',
-      query: DAI_ADDRESS,
+      query: USDC_ADDRESS,
     },
     {
       select: data => {
-        return data.filter((asset: SearchAsset) => asset.address === DAI_ADDRESS && asset.symbol === 'DAI');
+        return data.filter((asset: SearchAsset) => asset.address === USDC_ADDRESS && asset.symbol === 'USDC');
       },
     }
   );
 
-  const dai = daiSearchData?.[0];
-
-  const { data: wbtcSearchData } = useTokenSearch(
-    {
-      keys: ['address'],
-      list: 'verifiedAssets',
-      threshold: 'CASE_SENSITIVE_EQUAL',
-      query: WBTC_ADDRESS,
-    },
-    {
-      select: data => {
-        return data.filter((asset: SearchAsset) => asset.address === WBTC_ADDRESS && asset.symbol === 'WBTC');
-      },
-    }
-  );
-
-  const wbtc = wbtcSearchData?.[0];
+  const usdc = usdcSearchData?.[0];
 
   // populate `networks` attribute for native tokens
   const nativeTokens: TokenMap = useMemo(
@@ -97,32 +81,20 @@ export function ClaimCustomization() {
         isNativeAsset: !!claimableAsset.isNativeAsset,
         isDefaultAsset: true,
       },
-      ...(dai && {
-        [dai.symbol]: {
-          mainnetAddress: dai.address,
-          iconUrl: dai.icon_url,
-          name: dai.name,
-          symbol: dai.symbol,
-          networks: dai.networks,
-          decimals: dai.decimals,
-          isNativeAsset: false,
-          isDefaultAsset: false,
-        },
-      }),
-      ...(wbtc && {
-        [wbtc.symbol]: {
-          mainnetAddress: wbtc.address,
-          iconUrl: wbtc.icon_url,
-          name: wbtc.name,
-          symbol: wbtc.symbol,
-          networks: wbtc.networks,
-          decimals: wbtc.decimals,
+      ...(usdc && {
+        [usdc.symbol]: {
+          mainnetAddress: usdc.address,
+          iconUrl: usdc.icon_url,
+          name: usdc.name,
+          symbol: usdc.symbol,
+          networks: usdc.networks,
+          decimals: usdc.decimals,
           isNativeAsset: false,
           isDefaultAsset: false,
         },
       }),
     }),
-    [claimableAsset, dai, nativeTokens, wbtc]
+    [claimableAsset, nativeTokens, usdc]
   );
 
   const resetState = useCallback(() => {
@@ -140,7 +112,7 @@ export function ClaimCustomization() {
       chainId: claimableAsset.chainId,
     });
     setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
-    setTxState({ txPayload: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
+    setTxState({ gasLimit: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
     setIsInitialState(true);
   }, [
     setOutputConfig,
@@ -247,7 +219,7 @@ export function ClaimCustomization() {
           };
         });
         setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
-        setTxState({ txPayload: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
+        setTxState({ gasLimit: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
         setIsInitialState(false);
       }
     },
@@ -268,7 +240,7 @@ export function ClaimCustomization() {
             chainId: newChainId,
           };
         });
-        setTxState({ txPayload: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
+        setTxState({ gasLimit: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
         setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
         setIsInitialState(false);
       }
