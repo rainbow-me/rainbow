@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ChainId } from '@/chains/types';
-import { TokenToReceive, TransactionClaimableTxPayload } from '../types';
+import { TokenToReceive } from '../types';
 import { CrosschainQuote, ETH_ADDRESS, getCrosschainQuote, getQuote, Quote, QuoteParams } from '@rainbow-me/swaps';
 import { Claimable, TransactionClaimable } from '@/resources/addys/claimables/types';
 import { logger, RainbowError } from '@/logger';
@@ -11,21 +11,15 @@ import {
   convertAmountToBalanceDisplay,
   convertRawAmountToDecimalFormat,
   multiply,
-  add,
-  divide,
   formatNumber,
   convertAmountToNativeDisplayWorklet,
 } from '@/helpers/utilities';
 import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { useSwapEstimatedGasLimit } from '@/__swaps__/screens/Swap/hooks/useSwapEstimatedGasLimit';
-import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { getGasSettingsBySpeed, useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
-import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
-import { SearchAsset } from '@/__swaps__/types/search';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getNextNonce } from '@/state/nonces';
-import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { formatUnits } from 'viem';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
@@ -37,7 +31,6 @@ import { loadWallet } from '@/model/wallet';
 import { externalTokenQueryFunction, externalTokenQueryKey } from '@/resources/assets/externalAssetsQuery';
 import { walletExecuteRap } from '@/raps/execute';
 import { executeClaim } from '../claim';
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { weiToGwei } from '@/parsers';
 import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 import { ClaimStatus } from '../../shared/types';
