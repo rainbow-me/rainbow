@@ -247,7 +247,7 @@ export async function estimateGasWithPadding(
     const txPayloadToEstimate: TransactionRequest & { gas?: string } = {
       ...txPayload,
     };
-    console.log(txPayload);
+
     // `getBlock`'s typing requires a parameter, but passing no parameter
     // works as intended and returns the gas limit.
     const { gasLimit } = await (p.getBlock as () => Promise<Block>)();
