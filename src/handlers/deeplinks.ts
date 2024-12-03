@@ -382,8 +382,10 @@ async function setFromWallet(address: string | undefined) {
   await Promise.all([store.dispatch(walletsSetSelected(wallet)), store.dispatch(addressSetSelected(address))]);
 }
 
-function isNumbericString(value: string | undefined): value is string {
-  if (!value) return false;
+function isNumericString(value: string | undefined): value is string {
+  if (!value) {
+    return false;
+  }
   return !isNaN(+value);
 }
 
@@ -397,15 +399,25 @@ async function handleSwapsDeeplink(url: string) {
   const inputAsset = querySwapAsset(query.inputAsset);
   const outputAsset = querySwapAsset(query.outputAsset);
 
-  if ('flashbots' in query) params.flashbots = query.flashbots === 'true';
-  if ('slippage' in query && isNumbericString(query.slippage)) params.slippage = query.slippage;
+  if ('flashbots' in query) {
+    params.flashbots = query.flashbots === 'true';
+  }
+  if ('slippage' in query && isNumericString(query.slippage)) {
+    params.slippage = query.slippage;
+  }
 
-  if (isNumbericString(query.percentageToSell)) params.percentageToSell = clamp(+query.percentageToSell, 0, 1);
-  else if (isNumbericString(query.inputAmount)) params.inputAmount = query.inputAmount;
-  else if (isNumbericString(query.outputAmount)) params.outputAmount = query.outputAmount;
+  if (isNumericString(query.percentageToSell)) {
+    params.percentageToSell = clamp(+query.percentageToSell, 0, 1);
+  } else if (isNumericString(query.inputAmount)) {
+    params.inputAmount = query.inputAmount;
+  } else if (isNumericString(query.outputAmount)) {
+    params.outputAmount = query.outputAmount;
+  }
 
   const gasSpeed = query.gasSpeed?.toLowerCase();
-  if (isValidGasSpeed(gasSpeed)) params.gasSpeed = gasSpeed;
+  if (isValidGasSpeed(gasSpeed)) {
+    params.gasSpeed = gasSpeed;
+  }
 
   params.inputAsset = await inputAsset;
   params.outputAsset = await outputAsset;
