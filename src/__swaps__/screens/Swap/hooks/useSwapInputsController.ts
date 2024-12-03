@@ -41,8 +41,48 @@ import { useDebouncedCallback } from 'use-debounce';
 import { NavigationSteps } from './useSwapNavigation';
 import { deepEqualWorklet } from '@/worklets/comparisons';
 
+import { EventProperties } from '@/analytics/event';
+
 const REMOTE_CONFIG = getRemoteConfig();
 
+const analyticsTrack: typeof analyticsV2.track = (...args) => analyticsV2.track(...args);
+let lastParams: EventProperties[typeof analyticsV2.event.swapsQuoteFailed];
+function analyticsTrackQuoteFailed(
+  quote: QuoteError,
+  {
+    inputAsset,
+    outputAsset,
+    inputAmount,
+    outputAmount,
+  }: {
+    inputAsset: ExtendedAnimatedAssetWithColors;
+    outputAsset: ExtendedAnimatedAssetWithColors;
+    inputAmount: number | undefined;
+    outputAmount: number | undefined;
+  }
+) {
+  'worklet';
+  if (
+    lastParams &&
+    quote.error_code === lastParams.error_code &&
+    inputAmount === lastParams.inputAmount &&
+    outputAmount === lastParams.outputAmount &&
+    inputAsset.address === lastParams.inputAsset.address &&
+    outputAsset.address === lastParams.outputAsset.address
+  )
+    return;
+
+  const params = {
+    error_code: quote.error_code,
+    reason: quote.message,
+    inputAsset: { address: inputAsset.address, chainId: inputAsset.chainId, symbol: inputAsset.symbol },
+    outputAsset: { address: outputAsset.address, chainId: outputAsset.chainId, symbol: outputAsset.symbol },
+    inputAmount,
+    outputAmount,
+  };
+  lastParams = params;
+  runOnJS(analyticsTrack)(analyticsV2.event.swapsQuoteFailed, params);
+}
 export function useSwapInputsController({
   focusedInput,
   inputProgress,
@@ -300,8 +340,14 @@ export function useSwapInputsController({
 
       quote.value = data;
 
-      if (!data || (data as QuoteError)?.error) {
+      if (!data || 'error' in data) {
         resetFetchingStatus({ fromError: true, quoteFetchingInterval });
+        analyticsTrackQuoteFailed(data, {
+          inputAsset: internalSelectedInputAsset.value,
+          outputAsset: internalSelectedOutputAsset.value,
+          inputAmount,
+          outputAmount,
+        });
         return;
       }
 

@@ -137,34 +137,6 @@ interface SwapProviderProps {
   children: ReactNode;
 }
 
-let lastQuoteFailedEventParams: EventProperties[typeof analyticsV2.event.swapsQuoteFailed] | object = {};
-function trackQuoteFailed(
-  quote: QuoteError,
-  {
-    inputAsset,
-    outputAsset,
-    inputAmount,
-    outputAmount,
-  }: {
-    inputAsset: ExtendedAnimatedAssetWithColors;
-    outputAsset: ExtendedAnimatedAssetWithColors;
-    inputAmount: string | number;
-    outputAmount: string | number;
-  }
-) {
-  const params = {
-    error_code: quote.error_code,
-    reason: quote.message,
-    inputAsset: { address: inputAsset.address, chainId: inputAsset.chainId, symbol: inputAsset.symbol },
-    outputAsset: { address: outputAsset.address, chainId: outputAsset.chainId, symbol: outputAsset.symbol },
-    inputAmount,
-    outputAmount,
-  };
-  if (isEqual(params, lastQuoteFailedEventParams)) return;
-  analyticsV2.track(analyticsV2.event.swapsQuoteFailed, params);
-  lastQuoteFailedEventParams = params;
-}
-
 export const SwapProvider = ({ children }: SwapProviderProps) => {
   const { nativeCurrency } = useAccountSettings();
 
@@ -512,23 +484,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     isFetching,
     isQuoteStale,
   });
-
-  /** Failed Quote analytics */
-  useAnimatedReaction(
-    () => quote.value,
-    quote => {
-      const inputAsset = internalSelectedInputAsset.value;
-      const outputAsset = internalSelectedOutputAsset.value;
-      if (quote && 'error' in quote && inputAsset && outputAsset) {
-        runOnJS(trackQuoteFailed)(quote, {
-          inputAsset,
-          outputAsset,
-          inputAmount: SwapInputController.inputValues.value.inputAmount,
-          outputAmount: SwapInputController.inputValues.value.outputAmount,
-        });
-      }
-    }
-  );
 
   const AnimatedSwapStyles = useAnimatedSwapStyles({
     SwapWarning,
