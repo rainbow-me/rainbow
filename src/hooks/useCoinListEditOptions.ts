@@ -15,12 +15,14 @@ export interface BooleanMap {
   [index: string]: boolean;
 }
 
+const INITIAL_PINNED_COINS: BooleanMap = {};
+
 export default function useCoinListEditOptions() {
   const { accountAddress } = useAccountSettings();
 
   const setSelectedItems = useSetRecoilState(selectedItemsAtom);
 
-  const [pinnedCoins = {}] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
+  const [pinnedCoins = INITIAL_PINNED_COINS] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
   const pushSelectedCoin = useCallback(
     (item: string) =>
       setSelectedItems(prev => {

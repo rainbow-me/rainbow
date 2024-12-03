@@ -16,6 +16,7 @@
       "tab_balances": "Soldes",
       "tab_balances_empty_state": "Solde",
       "tab_balances_tooltip": "Soldes d'Ethereum et de Tokens",
+      "tab_claimables": "Réclamables",
       "tab_collectibles": "Objets de collection",
       "tab_interactions": "Interactions",
       "tab_interactions_tooltip": "Interactions de contrat intelligent",
@@ -449,6 +450,22 @@
         "action": "Continuer"
       }
     },
+    "claimables": {
+      "panel": {
+        "calculating_gas_fee": "Calcul des frais de gaz...",
+        "amount_to_claim_on_network": "%{amount} à réclamer sur %{network}",
+        "claim": "Réclamer",
+        "claiming": "Réclamer",
+        "claim_in_progress": "Réclamation en cours...",
+        "claimed": "Réclamé!",
+        "claiming_failed": "Échec de réclamation",
+        "insufficient_funds": "Fonds insuffisants",
+        "claim_amount": "Réclamer %{amount}",
+        "done": "Terminé",
+        "try_again": "Réessayer",
+        "tokens_on_the_way": "Jetons en route!"
+      }
+    },
     "cloud": {
       "backup_success": "Votre portefeuille a été sauvegardé avec succès!"
     },
@@ -487,6 +504,7 @@
       "clear_local_storage": "Effacer le stockage local",
       "clear_mmkv_storage": "Effacer le stockage MMKV",
       "connect_to_hardhat": "Se connecter à hardhat",
+      "disconnect_to_hardhat": "Déconnecter de hardhat",
       "crash_app_render_error": "Crash app (render error) :)",
       "enable_testnets": "Activer Testnets",
       "installing_update": "Installation de la mise à jour",
@@ -855,6 +873,10 @@
         "title_plural": "Disponible sur %{length} Réseaux",
         "title_singular": "Disponible sur le réseau %{network}"
       },
+      "default_network_explainer": {
+        "text": "%{chainName} est un réseau de couche 2 qui fonctionne sur Ethereum, permettant des transactions moins chères et plus rapides tout en bénéficiant de la sécurité sous-jacente d'Ethereum.",
+        "title": "Qu'est-ce que %{chainName}?"
+      },
       "arbitrum": {
         "text": "Arbitrum est un réseau de couche 2 qui fonctionne sur Ethereum, permettant des transactions moins chères et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe de nombreuses transactions dans un \"roll up\" avant de les envoyer pour résider de manière permanente sur Ethereum.",
         "title": "Qu'est-ce que Arbitrum?"
@@ -915,15 +937,19 @@
       },
       "avalanche": {
         "text": "Avalanche est une sidechain, un réseau distinct qui fonctionne parallèlement à Ethereum et qui est compatible avec celui-ci.\n\nElle permet des transactions moins chères et plus rapides, mais contrairement aux réseaux de couche 2, Avalanche possède ses propres mécanismes de sécurité et de consensus qui diffèrent d'Ethereum.",
-        "title": "Qu'est-ce qu'Avalanche?"
+        "title": "Qu'est-ce que l'Avalanche?"
       },
       "degen": {
-        "text": "Degen Chain est un réseau Layer 3 qui fonctionne au-dessus d'Arbitrum et d'Ethereum, offrant des transactions incroyablement rapides et bon marché libellées dans le token communautaire Farcaster $degen.",
+        "text": "Degen Chain est un réseau de couche 3 qui fonctionne au-dessus d'Arbitrum et d'Ethereum.",
         "title": "Qu'est-ce que Degen Chain?"
       },
       "blast": {
         "text": "Blast est un réseau de couche 2 qui fonctionne sur Ethereum, permettant des transactions moins chères et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe de nombreuses transactions ensemble dans un \"roll up\" avant de les envoyer vivre de manière permanente sur Ethereum.",
         "title": "Qu'est-ce que Blast?"
+      },
+      "apechain": {
+        "text": "ApeChain est un réseau de couche 3 qui fonctionne au-dessus d'Arbitrum Orbit et d'Ethereum.\n\nIl améliore considérablement l'utilité de l'ApeCoin, favorisant une économie robuste et dynamique alimentée par $APE.",
+        "title": "Qu'est-ce que l'ApeChain?"
       },
       "zora": {
         "text": "Zora est un réseau Layer 2 qui fonctionne sur Ethereum, permettant des transactions moins chères et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe beaucoup de transactions ensemble dans un \"roll up\" avant de les envoyer pour demeurer de manière permanente sur Ethereum.",
@@ -1326,7 +1352,11 @@
         "MOST_RECENT": "Récent",
         "most_recent": "Le plus récent",
         "FLOOR_PRICE": "Prix Plancher",
-        "floor_price": "Prix Plancher"
+        "floor_price": "Prix Plancher",
+        "order": {
+          "asc": "Ordre croissant",
+          "desc": "Ordre décroissant"
+        }
       },
       "empty": "Objets de collection",
       "collect_now": "Collect Now",
@@ -1847,10 +1877,17 @@
       }
     },
     "positions": {
+      "lp_range_status": {
+        "full_range": "Gamme Complète",
+        "out_of_range": "Hors de Portée",
+        "in_range": "Dans la Portée"
+      },
       "open_dapp": "Ouvrir 􀮶",
       "deposits": "Dépôts",
       "borrows": "Emprunts",
-      "rewards": "Récompenses"
+      "stakes": "Misé",
+      "rewards": "Récompenses",
+      "pools": "Piscines"
     },
     "savings": {
       "deposit": "Dépôt",
@@ -1991,6 +2028,7 @@
     "swap": {
       "actions": {
         "hold_to_swap": "Maintenir pour échanger",
+        "hold_to_bridge": "Maintenir pour faire le pont",
         "save": "Sauvegarder",
         "enter_amount": "Entrez un Montant",
         "review": "Revoir",
@@ -2117,9 +2155,9 @@
           "failed": "Échec de l'envoi"
         },
         "receive": {
-          "pending": "",
+          "pending": "Réception en cours",
           "confirmed": "Reçu",
-          "failed": ""
+          "failed": "Échec de la réception"
         },
         "withdraw": {
           "pending": "Retrait en cours",
@@ -2751,6 +2789,8 @@
       }
     },
     "walletconnect": {
+      "connecting": "Connexion en cours",
+      "loading": "Chargement",
       "requests": "Demandes",
       "wants_to_connect": "veut se connecter à votre portefeuille",
       "wants_to_connect_to_network": "veut se connecter au %{network} réseau",
@@ -2844,6 +2884,7 @@
             "unavailable_personal_sign": "La simulation pour les signatures personnelles n'est pas encore prise en charge",
             "unavailable_zora_network": "La simulation sur Zora n'est pas encore prise en charge",
             "failed_to_simulate": "La simulation a échoué, ce qui suggère que votre transaction est susceptible d'échouer. Cela peut être un problème avec l'application que vous utilisez.",
+            "tx_api_error": "Nous ne pouvons pas déterminer si votre transaction réussira ou échouera. Procédez avec prudence.",
             "warning": "Aucun comportement malveillant connu n'a été détecté, mais cette transaction présente des caractéristiques qui pourraient représenter un risque pour votre portefeuille.",
             "malicious": "Signer cette transaction pourrait entraîner la perte d'accès à tout ce qui se trouve dans votre portefeuille."
           },

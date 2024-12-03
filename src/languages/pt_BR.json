@@ -16,6 +16,7 @@
       "tab_balances": "Saldos",
       "tab_balances_empty_state": "Saldo",
       "tab_balances_tooltip": "Saldos de Ethereum e Token",
+      "tab_claimables": "Reivindicáveis",
       "tab_collectibles": "Colecionáveis",
       "tab_interactions": "Interações",
       "tab_interactions_tooltip": "Interações de Contrato Inteligente",
@@ -449,6 +450,22 @@
         "action": "Continuar"
       }
     },
+    "claimables": {
+      "panel": {
+        "calculating_gas_fee": "Calculando a taxa de gás...",
+        "amount_to_claim_on_network": "%{amount} para reivindicar na %{network}",
+        "claim": "Reivindicar",
+        "claiming": "Reivindicando",
+        "claim_in_progress": "Reivindicação em Progresso...",
+        "claimed": "Reivindicado!",
+        "claiming_failed": "Reivindicação falhou",
+        "insufficient_funds": "Fundos insuficientes",
+        "claim_amount": "Reivindicar %{amount}",
+        "done": "Concluído",
+        "try_again": "Tente Novamente",
+        "tokens_on_the_way": "Tokens a caminho!"
+      }
+    },
     "cloud": {
       "backup_success": "Sua carteira foi salva com sucesso!"
     },
@@ -487,6 +504,7 @@
       "clear_local_storage": "Limpar Armazenamento Local",
       "clear_mmkv_storage": "Limpar Armazenamento MMKV",
       "connect_to_hardhat": "Conectar ao Hardhat",
+      "disconnect_to_hardhat": "Desconectar do hardhat",
       "crash_app_render_error": "Crash no app (erro de renderização)",
       "enable_testnets": "Ativar Testnets",
       "installing_update": "Instalando atualização",
@@ -855,6 +873,10 @@
         "title_plural": "Disponível em %{length} Redes",
         "title_singular": "Disponível em %{network} Rede"
       },
+      "default_network_explainer": {
+        "text": "%{chainName} é uma rede de Camada 2 que funciona sobre o Ethereum, permitindo transações mais baratas e rápidas, ao mesmo tempo em que se beneficia da segurança subjacente do Ethereum.",
+        "title": "O que é %{chainName}?"
+      },
       "arbitrum": {
         "text": "Arbitrum é uma rede de Camada 2 que funciona em cima do Ethereum, possibilitando transações mais baratas e rápidas, ao mesmo tempo em que se beneficia da segurança subjacente do Ethereum.\n\nEle agrupa várias transações juntas em um \"roll up\" antes de enviá-las para ficar permanentemente no Ethereum.",
         "title": "O que é o Arbitrum?"
@@ -915,15 +937,19 @@
       },
       "avalanche": {
         "text": "Avalanche é uma sidechain, uma rede distinta que opera junto com o Ethereum e é compatível com ela.\n\nPermite transações mais baratas e rápidas, mas, ao contrário das redes de Camada 2, o Avalanche possui seus próprios mecanismos de segurança e consenso que diferem do Ethereum.",
-        "title": "O que é Avalanche"
+        "title": "O que é Avalanche?"
       },
       "degen": {
-        "text": "Degen Chain é uma rede de Camada 3 que opera sobre o Arbitrum e o Ethereum, oferecendo transações incrivelmente rápidas e baratas denominadas no token da comunidade Farcaster $degen.",
+        "text": "Degen Chain é uma rede Layer 3 que funciona em cima do Arbitrum e Ethereum.",
         "title": "O que é Degen Chain?"
       },
       "blast": {
         "text": "Blast é uma rede de Camada 2 que opera sobre o Ethereum, permitindo transações mais baratas e rápidas, enquanto ainda se beneficia da segurança subjacente do Ethereum.\n\nTambém agrupa muitas transações juntas em um \"roll up\" antes de enviá-las permanentemente para o Ethereum.",
         "title": "O que é Blast?"
+      },
+      "apechain": {
+        "text": "ApeChain é uma rede Layer 3 que funciona em cima do Arbitrum Orbit e Ethereum.\n\nEla melhora significativamente a utilidade do ApeCoin, promovendo uma economia robusta e dinâmica impulsionada pelo $APE.",
+        "title": "O que é ApeChain?"
       },
       "zora": {
         "text": "Zora é uma rede de Camada 2 que roda em cima do Ethereum, permitindo transações mais baratas e rápidas enquanto ainda se beneficia da segurança subjacente do Ethereum.\n\nEle agrupa muitas transações juntas em um \"roll up\" antes de enviá-las permanentemente para o Ethereum.",
@@ -1326,7 +1352,11 @@
         "MOST_RECENT": "Recente",
         "most_recent": "Mais Recente",
         "FLOOR_PRICE": "Preço do Piso",
-        "floor_price": "Preço do Piso"
+        "floor_price": "Preço do Piso",
+        "order": {
+          "asc": "Ordem crescente",
+          "desc": "Ordem decrescente"
+        }
       },
       "empty": "Colecionáveis",
       "collect_now": "Colecione Agora",
@@ -1847,10 +1877,17 @@
       }
     },
     "positions": {
+      "lp_range_status": {
+        "full_range": "Alcance Completo",
+        "out_of_range": "Fora do Alcance",
+        "in_range": "Dentro do Alcance"
+      },
       "open_dapp": "Abrir 􀮶",
       "deposits": "Depósitos",
       "borrows": "Empréstimos",
-      "rewards": "Recompensas"
+      "stakes": "Apostado",
+      "rewards": "Recompensas",
+      "pools": "Pools"
     },
     "savings": {
       "deposit": "Depósito",
@@ -1991,6 +2028,7 @@
     "swap": {
       "actions": {
         "hold_to_swap": "Segure para Trocar",
+        "hold_to_bridge": "Segure para Transferir",
         "save": "Salvar",
         "enter_amount": "Insira um valor",
         "review": "Revisão",
@@ -2117,9 +2155,9 @@
           "failed": "Falha no Envio"
         },
         "receive": {
-          "pending": "",
+          "pending": "Recebendo",
           "confirmed": "Recebido",
-          "failed": ""
+          "failed": "Falha ao Receber"
         },
         "withdraw": {
           "pending": "Sacando",
@@ -2751,6 +2789,8 @@
       }
     },
     "walletconnect": {
+      "connecting": "Conectando",
+      "loading": "Carregando",
       "requests": "Pedidos",
       "wants_to_connect": "deseja conectar-se à sua carteira",
       "wants_to_connect_to_network": "quer se conectar à rede %{network}",
@@ -2844,6 +2884,7 @@
             "unavailable_personal_sign": "Simulação para sinais pessoais ainda não é suportada",
             "unavailable_zora_network": "Simulação em Zora ainda não é suportada",
             "failed_to_simulate": "A simulação falhou, o que sugere que sua transação provavelmente falhará. Isso pode ser um problema com o aplicativo que está usando.",
+            "tx_api_error": "Não conseguimos determinar se sua transação será bem-sucedida ou falhará. Proceda com cautela.",
             "warning": "Nenhum comportamento malicioso conhecido foi detectado, mas esta transação possui características que podem representar um risco para a sua carteira.",
             "malicious": "Assinar esta transação pode resultar na perda de acesso a tudo em sua carteira."
           },
