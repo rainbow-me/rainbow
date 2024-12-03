@@ -7,4 +7,4 @@ export const WalletLoadingStates = {
   RESTORING_WALLET: i18n.t('loading.restoring'),
 } as const;
 
-export type WalletLoadingState = (typeof WalletLoadingStates)[keyof typeof WalletLoadingStates];
+export type WalletLoadingStates = (typeof WalletLoadingStates)[keyof typeof WalletLoadingStates];

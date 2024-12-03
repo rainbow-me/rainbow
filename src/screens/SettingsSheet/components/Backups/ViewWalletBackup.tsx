@@ -31,7 +31,7 @@ import { SETTINGS_BACKUP_ROUTES } from './routes';
 import { analyticsV2 } from '@/analytics';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { createAccountForWallet, setIsWalletLoading } from '@/redux/wallets';
+import { createAccountForWallet } from '@/redux/wallets';
 import { logger, RainbowError } from '@/logger';
 import { RainbowAccount } from '@/model/wallet';
 import showWalletErrorAlert from '@/helpers/support';
@@ -45,6 +45,7 @@ import { backupsStore } from '@/state/backups/backups';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { isWalletBackedUpForCurrentAccount } from '../../utils';
+import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -187,7 +188,9 @@ const ViewWalletBackup = () => {
             },
             onCloseModal: async (args: any) => {
               if (args) {
-                dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+                walletLoadingStore.setState({
+                  loadingState: WalletLoadingStates.CREATING_WALLET,
+                });
 
                 const name = args?.name ?? '';
                 const color = args?.color ?? null;
@@ -209,7 +212,9 @@ const ViewWalletBackup = () => {
                     }, 1000);
                   }
                 } finally {
-                  dispatch(setIsWalletLoading(null));
+                  walletLoadingStore.setState({
+                    loadingState: null,
+                  });
                 }
               }
               creatingWallet.current = false;

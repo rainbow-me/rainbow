@@ -8,7 +8,7 @@ import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
 import { InteractionManager } from 'react-native';
-import { createAccountForWallet, setIsWalletLoading, walletsLoadState } from '@/redux/wallets';
+import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
 import { createWallet } from '@/model/wallet';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
@@ -24,8 +24,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { useInitializeWallet, useWallets } from '@/hooks';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
-import { IS_ANDROID } from '@/env';
-import { backupsStore } from '@/state/backups/backups';
+import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
@@ -75,7 +74,9 @@ export const AddWalletSheet = () => {
             },
             onCloseModal: async (args: any) => {
               if (args) {
-                dispatch(setIsWalletLoading(WalletLoadingStates.CREATING_WALLET));
+                walletLoadingStore.setState({
+                  loadingState: WalletLoadingStates.CREATING_WALLET,
+                });
 
                 const name = args?.name ?? '';
                 const color = args?.color ?? null;
@@ -132,7 +133,9 @@ export const AddWalletSheet = () => {
                     }, 1000);
                   }
                 } finally {
-                  dispatch(setIsWalletLoading(null));
+                  walletLoadingStore.setState({
+                    loadingState: null,
+                  });
                 }
               }
               creatingWallet.current = false;
