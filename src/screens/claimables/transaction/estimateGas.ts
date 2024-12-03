@@ -5,11 +5,12 @@ import { metadataPOSTClient } from '@/graphql';
 import { ChainId } from '@/chains/types';
 import { add, convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { populateSwap } from '@/raps/utils';
-import { getAssetRawAllowance, populateApprove } from '@/raps/actions/unlock';
+import { estimateApprove, getAssetRawAllowance, populateApprove } from '@/raps/actions/unlock';
 import { isNativeAsset } from '@/handlers/assets';
 import { ETH_ADDRESS } from '@/references';
 import { logger, RainbowError } from '@/logger';
 import { Transaction } from '@/graphql/__generated__/simulation';
+import { estimateSwapGasLimit } from '@/raps/actions/swap';
 
 /**
  * Estimates the gas limit for claim + unlock + swap transactions using transaction simulation.
@@ -27,22 +28,22 @@ export const estimateClaimUnlockSwapGasLimit = async ({
     {
       to: claim.to,
       data: claim.data,
-      from: claim.to,
+      from: claim.from,
       value: '0x0',
     },
   ];
+
+  let swapAssetNeedsUnlocking = false;
+
+  const spender = getRainbowRouterContractAddress(chainId as number);
 
   if (quote) {
     const { from: accountAddress, sellTokenAddress, allowanceNeeded, sellTokenAsset, sellAmount } = quote;
 
     if (!sellTokenAsset) {
-      logger.error(new RainbowError('[estimateClaimUnlockSwapGasLimit]: Quote is missing sell token asset'));
+      logger.error(new RainbowError('[estimateClaimUnlockSwapGasLimit]: Quote is missing sellTokenAsset'));
       return undefined;
     }
-
-    const spender = getRainbowRouterContractAddress(chainId as number);
-
-    let swapAssetNeedsUnlocking = false;
 
     if (allowanceNeeded && !(isNativeAsset(sellTokenAddress, chainId) || sellTokenAddress === ETH_ADDRESS)) {
       const allowance = await getAssetRawAllowance({
@@ -102,12 +103,52 @@ export const estimateClaimUnlockSwapGasLimit = async ({
       chainId,
       transactions,
     });
-    const gasLimit = response.simulateTransactions
-      ?.map(res => {
-        console.log('estimate', res?.gas?.estimate);
-        return res?.gas?.estimate;
-      })
-      .reduce((acc, limit) => (acc && limit ? add(acc, limit) : acc), '0');
+    const gasEstimates = await Promise.all(
+      response.simulateTransactions?.map(async (res, index) => {
+        let step;
+        if (index === 0) {
+          step = 'claim';
+        } else if (index === 1 && swapAssetNeedsUnlocking) {
+          step = 'approval';
+        } else {
+          step = 'swap';
+        }
+
+        let gasEstimate = res?.gas?.estimate;
+
+        if (!gasEstimate) {
+          logger.warn(`[estimateClaimUnlockSwapGasLimit]: Failed to simulate ${step} transaction`, {
+            message: res?.error?.message,
+          });
+
+          if (quote) {
+            if (step === 'approval') {
+              gasEstimate = await estimateApprove({
+                owner: quote.from as Address,
+                tokenAddress: quote.sellTokenAddress as Address,
+                spender,
+                chainId,
+              });
+            } else if (step === 'swap') {
+              gasEstimate = await estimateSwapGasLimit({
+                chainId,
+                requiresApprove: swapAssetNeedsUnlocking,
+                quote,
+              });
+            }
+          }
+        }
+
+        if (!gasEstimate) {
+          throw new Error(`Failed to estimate gas for ${step}`);
+        }
+        console.log(res?.error);
+        return gasEstimate;
+      }) || []
+    );
+
+    const gasLimit = gasEstimates.reduce((acc, limit) => (acc && limit ? add(acc, limit) : acc), '0');
+
     return gasLimit;
   } catch (e) {
     logger.error(new RainbowError('[estimateClaimUnlockSwapGasLimit]: Failed to simulate transactions'), {

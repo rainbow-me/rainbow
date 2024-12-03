@@ -224,7 +224,7 @@ export function TransactionClaimableContextProvider({
     gasSettings &&
     (!requiresSwap || (quoteState.quote && quoteState.status === 'success'))
   );
-
+  console.log('Quote:', JSON.stringify(quoteState.quote, null, 2));
   const updateGasState = useCallback(async () => {
     try {
       if (!canEstimateGas) {
@@ -239,12 +239,12 @@ export function TransactionClaimableContextProvider({
         claim: { to: claimable.action.to, from: accountAddress, data: claimable.action.data },
         quote: quoteState.quote,
       });
-      console.log(gasLimit);
-      if (!gasLimit) {
+
+      if (!gasLimit || gasLimit === '0') {
         if (gasState.status === 'fetching') {
           setGasState(prev => ({ ...prev, status: 'error' }));
         }
-        logger.warn('[TransactionClaimableContext]: Failed to estimate claim gas limit');
+        logger.warn('[TransactionClaimableContext]: Failed to estimate gas limit');
         return;
       }
 
@@ -296,7 +296,11 @@ export function TransactionClaimableContextProvider({
 
   useEffect(() => {
     // estimate gas if it hasn't been estimated yet or if 10 seconds have passed since last estimate
-    if (canEstimateGas && ((!gasState.gasLimit && gasState.status !== 'error') || Date.now() - lastGasEstimateTime > 10_000)) {
+    if (
+      gasState.status !== 'fetching' &&
+      canEstimateGas &&
+      ((!gasState.gasLimit && gasState.status !== 'error') || Date.now() - lastGasEstimateTime > 10_000)
+    ) {
       // update tx state/claim status only if initial gas estimate
       if (!gasState.gasLimit) {
         setGasState(prev => ({
