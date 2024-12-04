@@ -588,10 +588,6 @@ export function useSwapInputsController({
     autoStart: false,
   });
 
-  if (internalSelectedInputAsset.value && internalSelectedOutputAsset.value) {
-    fetchQuoteAndAssetPrices();
-  }
-
   const onChangedPercentage = useDebouncedCallback(
     (percentage: number) => {
       lastTypedInput.value = 'inputAmount';
@@ -686,7 +682,6 @@ export function useSwapInputsController({
       assetToSellNetwork: internalSelectedInputAsset.value?.chainId,
     }),
     (current, previous) => {
-      if (!previous) return;
       const didInputAssetChange = current.assetToSellId !== previous?.assetToSellId;
       const didOutputAssetChange = current.assetToBuyId !== previous?.assetToBuyId;
 
