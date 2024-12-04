@@ -376,11 +376,12 @@ export const WalletsAndBackup = () => {
                       key={`${id}-accounts`}
                       size={getAccountSectionHeight(addresses.length)}
                       disabled
+                      width="full"
                       titleComponent={
                         <FlatList
                           data={addresses}
-                          columnWrapperStyle={{ gap: 4 }}
-                          contentContainerStyle={{ gap: 4 }}
+                          columnWrapperStyle={{ gap: spaceBetweenAccounts }}
+                          contentContainerStyle={{ gap: spaceBetweenAccounts }}
                           renderItem={({ item }) => <WalletPill account={item} />}
                           keyExtractor={item => item.address}
                           numColumns={3}
@@ -479,7 +480,7 @@ export const WalletsAndBackup = () => {
                   <Menu key={`wallet-${id}`}>
                     <MenuItem
                       hasRightArrow
-                      key={id}
+                      key={`${id}-title`}
                       hasSfSymbol
                       width="full"
                       labelComponent={
@@ -492,7 +493,13 @@ export const WalletsAndBackup = () => {
                             </Text>
                           }
                         >
-                          {!isBackedUp && <MenuItem.Label color={'#FF584D'} text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)} />}
+                          {!isBackedUp && (
+                            <MenuItem.Label
+                              testID={`${id}-not-backed-up`}
+                              color={'#FF584D'}
+                              text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)}
+                            />
+                          )}
                           {imported && <MenuItem.Label text={i18n.t(i18n.l.wallet.back_ups.imported)} />}
                           <MenuItem.Label
                             text={
@@ -513,7 +520,7 @@ export const WalletsAndBackup = () => {
                       titleComponent={<MenuItem.Title text={name} />}
                     />
                     <MenuItem
-                      key={id}
+                      key={`${id}-accounts`}
                       size={getAccountSectionHeight(addresses.length)}
                       disabled
                       width="full"
@@ -587,7 +594,7 @@ export const WalletsAndBackup = () => {
                 <Menu key={`wallet-${id}`}>
                   <MenuItem
                     hasRightArrow
-                    key={id}
+                    key={`${id}-title`}
                     hasSfSymbol
                     labelComponent={
                       <Inline
@@ -599,7 +606,13 @@ export const WalletsAndBackup = () => {
                           </Text>
                         }
                       >
-                        {!isBackedUp && <MenuItem.Label color={'#FF584D'} text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)} />}
+                        {!isBackedUp && (
+                          <MenuItem.Label
+                            testID={`${id}-not-backed-up`}
+                            color={'#FF584D'}
+                            text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)}
+                          />
+                        )}
                         {imported && <MenuItem.Label testID={'back-ups-imported'} text={i18n.t(i18n.l.wallet.back_ups.imported)} />}
                         <MenuItem.Label
                           text={
@@ -620,17 +633,19 @@ export const WalletsAndBackup = () => {
                     titleComponent={<MenuItem.Title text={name} />}
                   />
                   <MenuItem
-                    key={id}
+                    key={`${id}-accounts`}
                     size={getAccountSectionHeight(addresses.length)}
                     disabled
+                    width="full"
                     titleComponent={
                       <FlatList
                         data={addresses}
-                        columnWrapperStyle={{ gap: 4 }}
-                        contentContainerStyle={{ gap: 4 }}
+                        columnWrapperStyle={{ gap: spaceBetweenAccounts }}
+                        contentContainerStyle={{ gap: spaceBetweenAccounts }}
                         renderItem={({ item }) => <WalletPill account={item} />}
                         keyExtractor={item => item.address}
                         numColumns={3}
+                        scrollEnabled={false}
                       />
                     }
                   />
