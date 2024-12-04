@@ -1,5 +1,5 @@
 import { Box, Text } from '@/design-system';
-import { haptics } from '@/utils';
+import { haptics, showActionSheetWithOptions } from '@/utils';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ChainId } from '@/chains/types';
 import { chainsLabel, chainsName, chainsNativeAsset } from '@/chains';
@@ -11,6 +11,8 @@ import { useTransactionClaimableContext } from '../context/TransactionClaimableC
 import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
 import { SearchAsset } from '@/__swaps__/types/search';
 import * as i18n from '@/languages';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 
 type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 
@@ -190,7 +192,8 @@ export function ClaimCustomization() {
           iconType: 'ASSET',
           iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${chainsName[chainId]}BadgeNoShadow`,
         },
-      }));
+      }))
+      .reverse();
 
     return {
       menuItems: [
@@ -205,12 +208,12 @@ export function ClaimCustomization() {
   }, [balanceSortedChainList, isInitialState, outputChainId, outputToken]);
 
   const handleTokenSelection = useCallback(
-    (selection: keyof typeof tokens | 'reset') => {
+    ({ nativeEvent: { actionKey } }: Omit<OnPressMenuItemEventObject, 'isUsingActionSheetFallback'>) => {
       haptics.selection();
-      if (selection === 'reset') {
+      if (actionKey === 'reset') {
         resetState();
       } else {
-        const newToken = tokens[selection];
+        const newToken = tokens[actionKey];
         setOutputConfig(prev => {
           const newChainId = prev.chainId && prev.chainId in newToken.networks ? prev.chainId : undefined;
           return {
@@ -227,12 +230,12 @@ export function ClaimCustomization() {
   );
 
   const handleNetworkSelection = useCallback(
-    (selection: `${ChainId}` | 'reset') => {
+    ({ nativeEvent: { actionKey } }: Omit<OnPressMenuItemEventObject, 'isUsingActionSheetFallback'>) => {
       haptics.selection();
-      if (selection === 'reset') {
+      if (actionKey === 'reset') {
         resetState();
       } else {
-        const newChainId = +selection;
+        const newChainId = +actionKey;
         setOutputConfig(prev => {
           const newToken = prev.token && newChainId in prev.token.networks ? prev.token : undefined;
           return {
@@ -248,6 +251,42 @@ export function ClaimCustomization() {
     [resetState, setOutputConfig, setQuoteState, setGasState]
   );
 
+  const onShowTokenActionSheet = useCallback(() => {
+    const tokenTitles = tokenMenuConfig.menuItems.map(token => token.actionTitle);
+
+    showActionSheetWithOptions(
+      {
+        options: tokenTitles,
+        showSeparators: true,
+      },
+      (index: number | undefined) => {
+        // NOTE: When they click away from the menu, the index is undefined
+        if (typeof index === 'undefined') return;
+        handleTokenSelection({
+          nativeEvent: { actionKey: tokenMenuConfig.menuItems[index].actionKey, actionTitle: '' },
+        });
+      }
+    );
+  }, [handleTokenSelection, tokenMenuConfig.menuItems]);
+
+  const onShowNetworkActionSheet = useCallback(() => {
+    const networkTitles = networkMenuConfig.menuItems.map(network => network.actionTitle);
+
+    showActionSheetWithOptions(
+      {
+        options: networkTitles,
+        showSeparators: true,
+      },
+      (index: number | undefined) => {
+        // NOTE: When they click away from the menu, the index is undefined
+        if (typeof index === 'undefined') return;
+        handleNetworkSelection({
+          nativeEvent: { actionKey: networkMenuConfig.menuItems[index].actionKey, actionTitle: '' },
+        });
+      }
+    );
+  }, [handleNetworkSelection, networkMenuConfig.menuItems]);
+
   const isDisabled =
     claimStatus === 'success' || claimStatus === 'pending' || claimStatus === 'claiming' || claimStatus === 'unrecoverableError';
 
@@ -260,6 +299,7 @@ export function ClaimCustomization() {
         disabled={isDisabled}
         menuConfig={tokenMenuConfig}
         onPressMenuItem={handleTokenSelection}
+        onShowActionSheet={onShowTokenActionSheet}
         text={outputToken?.symbol ?? i18n.t(i18n.l.claimables.panel.a_token)}
         muted={isInitialState}
       />
@@ -270,8 +310,10 @@ export function ClaimCustomization() {
         disabled={isDisabled}
         menuConfig={networkMenuConfig}
         onPressMenuItem={handleNetworkSelection}
+        onShowActionSheet={onShowNetworkActionSheet}
         text={outputChainId ? chainsLabel[outputChainId] : i18n.t(i18n.l.claimables.panel.a_network)}
         muted={isInitialState}
+        icon={<ChainImage chainId={outputChainId} size={16} />}
       />
     </Box>
   );

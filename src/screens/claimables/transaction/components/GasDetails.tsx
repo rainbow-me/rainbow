@@ -43,19 +43,21 @@ export function GasDetails() {
 
   return (
     <Animated.View style={gasAnimatedStyle}>
-      <Box paddingTop="20px">
-        <Inline alignVertical="center" space="2px">
-          <Text align="center" color="labelQuaternary" size="icon 10px" weight="heavy">
-            􀵟
-          </Text>
-          <Text color="labelQuaternary" size="13pt" weight="bold">
-            {i18n.t(i18n.l.claimables.panel.amount_to_claim_on_network, {
-              amount: gasFeeDisplay ?? '',
-              network: chainsLabel[chainId],
-            })}
-          </Text>
-        </Inline>
-      </Box>
+      {gasFeeDisplay && (
+        <Box paddingTop="20px">
+          <Inline alignVertical="center" space="2px">
+            <Text align="center" color="labelQuaternary" size="icon 10px" weight="heavy">
+              􀵟
+            </Text>
+            <Text color="labelQuaternary" size="13pt" weight="bold">
+              {i18n.t(i18n.l.claimables.panel.amount_to_claim_on_network, {
+                amount: gasFeeDisplay,
+                network: chainsLabel[chainId],
+              })}
+            </Text>
+          </Inline>
+        </Box>
+      )}
     </Animated.View>
   );
 }
