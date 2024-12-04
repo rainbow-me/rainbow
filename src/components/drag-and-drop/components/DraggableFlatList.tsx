@@ -16,7 +16,6 @@ import Animated, {
   useAnimatedScrollHandler,
   // useSharedValue,
 } from 'react-native-reanimated';
-import { AnimatedFlatList } from '@/components/AnimatedComponents/AnimatedFlatList';
 import { useDndContext } from '../DndContext';
 import { useDraggableSort, UseDraggableStackOptions } from '../features';
 import type { UniqueIdentifier } from '../types';
@@ -201,7 +200,7 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
   /** END */
 
   return (
-    <AnimatedFlatList
+    <Animated.FlatList
       CellRendererComponent={DraggableFlatListCellRenderer}
       data={data}
       onScroll={scrollHandler}

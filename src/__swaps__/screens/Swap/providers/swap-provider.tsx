@@ -75,6 +75,14 @@ const insufficientFunds = i18n.t(i18n.l.swap.actions.insufficient_funds);
 const insufficient = i18n.t(i18n.l.swap.actions.insufficient);
 const quoteError = i18n.t(i18n.l.swap.actions.quote_error);
 
+type ConfirmButtonProps = {
+  label: string;
+  icon?: string;
+  disabled?: boolean;
+  opacity?: number;
+  type: 'hold' | 'tap';
+};
+
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
   isSwapping: SharedValue<boolean>;
@@ -119,13 +127,7 @@ interface SwapContextType {
   SwapNavigation: ReturnType<typeof useSwapNavigation>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
 
-  confirmButtonProps: DerivedValue<{
-    label: string;
-    icon?: string;
-    disabled?: boolean;
-    opacity?: number;
-    type: 'tap' | 'hold';
-  }>;
+  confirmButtonProps: DerivedValue<ConfirmButtonProps>;
   confirmButtonIconStyle: StyleProp<TextStyle>;
 
   hasEnoughFundsForGas: SharedValue<boolean | undefined>;
@@ -702,7 +704,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     []
   );
 
-  const confirmButtonProps: SwapContextType['confirmButtonProps'] = useDerivedValue(() => {
+  const confirmButtonProps = useDerivedValue<ConfirmButtonProps>(() => {
     if (isSwapping.value) {
       return { label: swapping, disabled: true, type: 'hold' };
     }

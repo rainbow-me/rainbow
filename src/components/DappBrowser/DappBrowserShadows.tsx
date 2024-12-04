@@ -1,126 +1,163 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
-import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { Box, globalColors, useColorMode } from '@/design-system';
+import { StyleSheet, View } from 'react-native';
+import Animated, { AnimatedStyle, useAnimatedStyle } from 'react-native-reanimated';
+import { globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { StyleSheet } from 'react-native';
+import { clamp } from '@/__swaps__/utils/swaps';
+import { useBrowserContext } from './BrowserContext';
+import { RAINBOW_HOME } from './constants';
+import { TabViewGestureStates } from './types';
+import { getTabInfo } from './utils/getTabInfo';
 
-export const BrowserButtonShadows = ({ children, lightShadows }: { children: React.ReactNode; lightShadows?: boolean }) => {
-  const { isDarkMode } = useColorMode();
-
-  if (!IS_IOS) return <>{children}</>;
-
-  return (
-    <Box
-      style={{
-        shadowColor: globalColors.grey100,
-        shadowOffset: { width: 0, height: 8 },
-        // eslint-disable-next-line no-nested-ternary
-        shadowOpacity: isDarkMode ? 0.3 : lightShadows ? 0.06 : 0.08,
-        shadowRadius: 12,
-      }}
-    >
-      <Box
-        style={{
-          shadowColor: globalColors.grey100,
-          shadowOffset: { width: 0, height: 2 },
-          // eslint-disable-next-line no-nested-ternary
-          shadowOpacity: isDarkMode ? 0.2 : lightShadows ? 0.02 : 0.04,
-          shadowRadius: 3,
-        }}
-      >
-        {children}
-      </Box>
-    </Box>
-  );
-};
-
-export const WebViewShadows = ({
+export const BrowserButtonShadows = ({
+  backgroundColor,
+  borderRadius,
   children,
-  gestureScale,
-  isOnHomepage,
-  tabIndex,
-  animatedActiveTabIndex,
-  tabViewProgress,
+  hideDarkModeShadows,
+  lightShadows,
 }: {
+  backgroundColor?: string;
+  borderRadius?: number;
   children: React.ReactNode;
-  gestureScale: SharedValue<number>;
-  isOnHomepage: boolean;
-  tabIndex: number;
-  animatedActiveTabIndex: SharedValue<number> | undefined;
-  tabViewProgress: SharedValue<number> | undefined;
+  hideDarkModeShadows?: boolean;
+  lightShadows?: boolean;
 }) => {
   const { isDarkMode } = useColorMode();
 
+  if (!IS_IOS || (isDarkMode && hideDarkModeShadows)) return <>{children}</>;
+
+  return (
+    <View
+      style={[
+        styles.outerButtonShadow,
+        {
+          backgroundColor,
+          borderRadius,
+          shadowOpacity: isDarkMode ? 0.3 : lightShadows ? 0.06 : 0.08,
+        },
+      ]}
+    >
+      <View
+        style={[
+          styles.innerButtonShadow,
+          {
+            backgroundColor,
+            borderRadius,
+            shadowOpacity: isDarkMode ? 0.2 : lightShadows ? 0.02 : 0.04,
+          },
+        ]}
+      >
+        {children}
+      </View>
+    </View>
+  );
+};
+
+const INNER_SHADOW_OPACITY = 0.04;
+const OUTER_SHADOW_OPACITY = 0.1;
+
+export const WebViewShadows = ({
+  children,
+  tabId,
+  zIndexAnimatedStyle,
+}: {
+  children: React.ReactNode;
+  tabId: string;
+  zIndexAnimatedStyle: AnimatedStyle;
+}) => {
+  const {
+    animatedActiveTabIndex,
+    animatedTabUrls,
+    currentlyOpenTabIds,
+    pendingTabSwitchOffset,
+    tabViewGestureState,
+    tabViewGestureProgress,
+    tabViewProgress,
+  } = useBrowserContext();
+  const { isDarkMode } = useColorMode();
+
   const innerShadowOpacityOverride = useAnimatedStyle(() => {
-    const progress = tabViewProgress?.value ?? 0;
+    const { isFullSizeTab } = getTabInfo({
+      animatedActiveTabIndex: animatedActiveTabIndex.value,
+      currentlyOpenTabIds: currentlyOpenTabIds.value,
+      pendingTabSwitchOffset: pendingTabSwitchOffset.value,
+      tabId,
+      tabViewGestureState: tabViewGestureState.value,
+      tabViewProgress: tabViewProgress.value,
+    });
+
+    const tabUrl = animatedTabUrls.value[tabId] || RAINBOW_HOME;
+    const isOnHomepage = tabUrl === RAINBOW_HOME;
+    const isSwitchingTabs = tabViewGestureState.value !== TabViewGestureStates.INACTIVE;
+    const progress =
+      !isDarkMode && isOnHomepage
+        ? (isSwitchingTabs && isFullSizeTab ? clamp(tabViewGestureProgress.value * 2, 0, 100) : tabViewProgress.value) / 100
+        : 1;
+
     return {
-      ...(IS_IOS && isOnHomepage && !isDarkMode
-        ? {
-            shadowOpacity: (progress / 100) * 0.04,
-          }
-        : {}),
+      shadowOpacity: isDarkMode ? 0 : progress * INNER_SHADOW_OPACITY,
     };
   });
 
   const outerShadowOpacityOverride = useAnimatedStyle(() => {
-    const progress = tabViewProgress?.value ?? 0;
-    const isActiveTabAnimated = animatedActiveTabIndex?.value === tabIndex;
+    const { isFullSizeTab } = getTabInfo({
+      animatedActiveTabIndex: animatedActiveTabIndex.value,
+      currentlyOpenTabIds: currentlyOpenTabIds.value,
+      pendingTabSwitchOffset: pendingTabSwitchOffset.value,
+      tabId,
+      tabViewGestureState: tabViewGestureState.value,
+      tabViewProgress: tabViewProgress.value,
+    });
+
+    const tabUrl = animatedTabUrls.value[tabId] || RAINBOW_HOME;
+    const isOnHomepage = tabUrl === RAINBOW_HOME;
+    const isSwitchingTabs = tabViewGestureState.value !== TabViewGestureStates.INACTIVE;
+    const progress =
+      !isDarkMode && isOnHomepage
+        ? (isSwitchingTabs && isFullSizeTab ? clamp(tabViewGestureProgress.value * 2, 0, 100) : tabViewProgress.value) / 100
+        : 1;
 
     return {
-      ...(IS_IOS && isOnHomepage && !isDarkMode
-        ? {
-            shadowOpacity: (progress / 100) * 0.1,
-          }
-        : {}),
-      zIndex: gestureScale.value * (isActiveTabAnimated || gestureScale.value > 1 ? 9999 : 1),
+      shadowOpacity: isDarkMode ? 0 : progress * OUTER_SHADOW_OPACITY,
     };
   });
 
-  if (!IS_IOS)
-    return (
-      <Box as={Animated.View} style={outerShadowOpacityOverride}>
-        {children}
-      </Box>
-    );
+  if (!IS_IOS) return <>{children}</>;
 
   return (
-    <Box
-      as={Animated.View}
-      style={[
-        {
-          shadowColor: globalColors.grey100,
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: isDarkMode ? 0.3 : 0.1,
-          shadowRadius: 12,
-        },
-        isDarkMode ? styles.darkBackground : styles.lightBackground,
-        outerShadowOpacityOverride,
-      ]}
-    >
-      <Box
-        as={Animated.View}
-        style={[
-          {
-            shadowColor: globalColors.grey100,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: isDarkMode ? 0.2 : 0.04,
-            shadowRadius: 3,
-          },
-          isDarkMode ? styles.darkBackground : styles.lightBackground,
-          innerShadowOpacityOverride,
-        ]}
-      >
+    <Animated.View style={[styles.boxNone, isDarkMode ? {} : styles.outerWebViewShadow, outerShadowOpacityOverride, zIndexAnimatedStyle]}>
+      <Animated.View style={[styles.boxNone, isDarkMode ? {} : styles.innerWebViewShadow, innerShadowOpacityOverride]}>
         {children}
-      </Box>
-    </Box>
+      </Animated.View>
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  darkBackground: {
-    backgroundColor: globalColors.grey100,
+  boxNone: {
+    pointerEvents: 'box-none',
   },
-  lightBackground: {
-    backgroundColor: '#FBFCFD',
+  innerButtonShadow: {
+    shadowColor: globalColors.grey100,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 3,
+  },
+  innerWebViewShadow: {
+    shadowColor: globalColors.grey100,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: INNER_SHADOW_OPACITY,
+    shadowRadius: 3,
+  },
+  outerButtonShadow: {
+    shadowColor: globalColors.grey100,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 12,
+  },
+  outerWebViewShadow: {
+    shadowColor: globalColors.grey100,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: OUTER_SHADOW_OPACITY,
+    shadowRadius: 12,
   },
 });
