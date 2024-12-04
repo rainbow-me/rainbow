@@ -60,6 +60,8 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { chainsNativeAsset, supportedFlashbotsChainIds } from '@/chains';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { EventProperties } from '@/analytics/event';
+import { isEqual } from 'lodash';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
