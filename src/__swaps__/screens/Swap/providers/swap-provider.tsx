@@ -60,6 +60,8 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { chainsNativeAsset, supportedFlashbotsChainIds } from '@/chains';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { EventProperties } from '@/analytics/event';
+import { isEqual } from 'lodash';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -238,6 +240,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           },
         },
       });
+      const isHardwareWallet = wallet instanceof LedgerSigner;
 
       if (!wallet) {
         isSwapping.value = false;
@@ -306,7 +309,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           degenMode: isDegenModeEnabled,
           isSwappingToPopularAsset,
           errorMessage,
-          isHardwareWallet: wallet instanceof LedgerSigner,
+          isHardwareWallet,
         });
 
         if (errorMessage !== 'handled') {
@@ -338,7 +341,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       performanceTracking.getState().executeFn({
         fn: () => {
           const { routes, index } = Navigation.getState();
-          if (index === 0 || routes[index - 1].name === Routes.EXPANDED_ASSET_SHEET) {
+          const activeRoute = Navigation.getActiveRoute();
+          if (
+            index === 0 ||
+            routes[index - 1].name === Routes.EXPANDED_ASSET_SHEET ||
+            activeRoute.name === Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET
+          ) {
             Navigation.handleAction(Routes.WALLET_SCREEN, {});
           } else {
             Navigation.goBack();
@@ -372,7 +380,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         tradeAmountUSD: parameters.quote.tradeAmountUSD,
         degenMode: isDegenModeEnabled,
         isSwappingToPopularAsset,
-        isHardwareWallet: wallet instanceof LedgerSigner,
+        isHardwareWallet,
       });
     } catch (error) {
       isSwapping.value = false;

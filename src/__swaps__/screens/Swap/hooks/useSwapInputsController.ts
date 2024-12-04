@@ -40,6 +40,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useDebouncedCallback } from 'use-debounce';
 import { NavigationSteps } from './useSwapNavigation';
 import { deepEqualWorklet } from '@/worklets/comparisons';
+import { analyticsTrackQuoteFailed } from './analyticsTrackQuoteFailed';
 
 const REMOTE_CONFIG = getRemoteConfig();
 
@@ -300,8 +301,14 @@ export function useSwapInputsController({
 
       quote.value = data;
 
-      if (!data || (data as QuoteError)?.error) {
+      if (!data || 'error' in data) {
         resetFetchingStatus({ fromError: true, quoteFetchingInterval });
+        analyticsTrackQuoteFailed(data, {
+          inputAsset: internalSelectedInputAsset.value,
+          outputAsset: internalSelectedOutputAsset.value,
+          inputAmount,
+          outputAmount,
+        });
         return;
       }
 

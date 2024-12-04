@@ -1879,10 +1879,17 @@
       }
     },
     "positions": {
+      "lp_range_status": {
+        "full_range": "Full Range",
+        "out_of_range": "Out of Range",
+        "in_range": "In Range"
+      },
       "open_dapp": "Open 􀮶",
       "deposits": "Deposits",
       "borrows": "Borrows",
-      "rewards": "Rewards"
+      "stakes": "Staked",
+      "rewards": "Rewards",
+      "pools": "Pools"
     },
     "savings": {
       "deposit": "Deposit",

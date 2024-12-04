@@ -21,6 +21,7 @@ const getPositions = async (address: string, currency: NativeCurrencyKey): Promi
     method: 'get',
     params: {
       currency,
+      enableThirdParty: 'true',
     },
     headers: {
       Authorization: `Bearer ${ADDYS_API_KEY}`,

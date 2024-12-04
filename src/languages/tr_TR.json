@@ -16,6 +16,7 @@
       "tab_balances": "Bakiyeler",
       "tab_balances_empty_state": "Bakiye",
       "tab_balances_tooltip": "Ethereum ve Token Bakiyeleri",
+      "tab_claimables": "Talep Edilebilirler",
       "tab_collectibles": "Koleksiyonlar",
       "tab_interactions": "Etkileşimler",
       "tab_interactions_tooltip": "Akıllı Sözleşme Etkileşimleri",
@@ -449,6 +450,22 @@
         "action": "Devam Et"
       }
     },
+    "claimables": {
+      "panel": {
+        "calculating_gas_fee": "Gaz ücreti hesaplanıyor...",
+        "amount_to_claim_on_network": "%{network} üzerinde talep için %{amount}",
+        "claim": "Talep Et",
+        "claiming": "Talep Etme",
+        "claim_in_progress": "Talep İşlemde...",
+        "claimed": "Talep Edildi!",
+        "claiming_failed": "Talep Başarısız",
+        "insufficient_funds": "Yetersiz Bakiye",
+        "claim_amount": "%{amount} Talep Et",
+        "done": "Tamamlandı",
+        "try_again": "Tekrar Deneyin",
+        "tokens_on_the_way": "Tokenlar yolda!"
+      }
+    },
     "cloud": {
       "backup_success": "Cüzdanınız başarıyla yedeklendi!"
     },
@@ -487,6 +504,7 @@
       "clear_local_storage": "Yerel depolamayı temizle",
       "clear_mmkv_storage": "MMKV depolamasını temizle",
       "connect_to_hardhat": "Hardhat'a bağlan",
+      "disconnect_to_hardhat": "Hardhat'tan bağlantıyı kes",
       "crash_app_render_error": "Uygulamayı çökert (render hatası)",
       "enable_testnets": "Testnetleri Etkinleştir",
       "installing_update": "Güncelleme Yükleniyor",
@@ -855,6 +873,10 @@
         "title_plural": "%{length} Ağlarda Mevcut",
         "title_singular": "%{network} Ağı Üzerinde Mevcut"
       },
+      "default_network_explainer": {
+        "text": "%{chainName}, Ethereum'un üzerinde çalışan bir Layer 2 ağıdır. Daha ucuz ve daha hızlı işlemleri mümkün kılar ve aynı zamanda Ethereum'un temel güvenliğinden faydalanır.",
+        "title": "%{chainName} nedir?"
+      },
       "arbitrum": {
         "text": "Arbitrum, Ethereum'in üzerinde çalışan bir Katman 2 ağıdır, daha ucuz ve daha hızlı işlemleri mümkün kılar ve yine de Ethereum'un altındaki güvenlikten faydalanır.\n\nBirçok işlemi bir \"roll up\" şeklinde bir araya getirir ve bunları kalıcı olarak Ethereum'da yaşamak üzere gönderir.",
         "title": "Arbitrum nedir?"
@@ -915,15 +937,19 @@
       },
       "avalanche": {
         "text": "Avalanche, Ethereum ile uyumlu olan ve yanında çalışan ayrı bir ağ olan bir sidechain'dir.\n\nDaha ucuz ve daha hızlı işlemlere izin verir, ancak Layer 2 ağlarının aksine, Avalanche kendi güvenlik ve uzlaşma mekanizmalarına sahiptir ve bunlar Ethereum'dan farklıdır.",
-        "title": "Avalanche Nedir?"
+        "title": "Avalanche nedir?"
       },
       "degen": {
-        "text": "Degen Chain, Arbitrum ve Ethereum'un üzerinde çalışan ve inanılmaz hızlı ve ucuz işlemler sunan, Farcaster topluluk tokeni $degen ile işlem yapılan bir Layer 3 ağıdır.",
+        "text": "Degen Chain, Arbitrum ve Ethereum'un üzerinde çalışan bir Katman 3 ağıdır.",
         "title": "Degen Chain Nedir?"
       },
       "blast": {
         "text": "Blast, Ethereum üzerinde çalışan bir Layer 2 ağıdır ve daha ucuz ve hızlı işlemleri mümkün kılar ve aynı zamanda Ethereum'un temel güvenliğinden faydalanır.\n\nBirçok işlemi \"roll up\" içinde toplayarak kalıcı olarak Ethereum üzerinde yaşamalarına izin verir.",
         "title": "Blast Nedir?"
+      },
+      "apechain": {
+        "text": "ApeChain, Arbitrum Orbit ve Ethereum'un üzerinde çalışan bir Katman 3 ağıdır. Bu ağ, ApeCoin'in faydasını önemli ölçüde artırarak $APE ile yönlendirilen güçlü ve dinamik bir ekonomi oluşturmaktadır.",
+        "title": "ApeChain nedir?"
       },
       "zora": {
         "text": "Zora, Ethereum'un üzerinde çalışan Layer 2 bir ağdır, daha ucuz ve daha hızlı işlemleri mümkün kılar ve hala Ethereum'un temel güvenliğinden faydalanır.\n\nBu, bir \"roll up\" içerisinde birçok işlemi birleştirir ve bu işlemleri kalıcı olarak Ethereum'da yaşamak üzere gönderir.",
@@ -1326,7 +1352,11 @@
         "MOST_RECENT": "Son",
         "most_recent": "En Yeni",
         "FLOOR_PRICE": "Taban Fiyatı",
-        "floor_price": "Taban Fiyatı"
+        "floor_price": "Taban Fiyatı",
+        "order": {
+          "asc": "Artan düzende",
+          "desc": "Azalan düzende"
+        }
       },
       "empty": "Koleksiyonlar",
       "collect_now": "Şimdi Koleksiyon Yap",
@@ -1847,10 +1877,17 @@
       }
     },
     "positions": {
+      "lp_range_status": {
+        "full_range": "Tam Aralık",
+        "out_of_range": "Aralık Dışında",
+        "in_range": "Aralık İçinde"
+      },
       "open_dapp": "Açık 􀮶",
       "deposits": "Mevduatlar",
       "borrows": "Borçlar",
-      "rewards": "Ödüller"
+      "stakes": "Bahis Yapıldı",
+      "rewards": "Ödüller",
+      "pools": "Havuzlar"
     },
     "savings": {
       "deposit": "Mevduat",
@@ -1991,6 +2028,7 @@
     "swap": {
       "actions": {
         "hold_to_swap": "Değiştirmek için Tut",
+        "hold_to_bridge": "Köprülemek İçin Tut",
         "save": "Kaydet",
         "enter_amount": "Miktar Girin",
         "review": "İncele",
@@ -2117,9 +2155,9 @@
           "failed": "Gönderme Başarısız"
         },
         "receive": {
-          "pending": "",
+          "pending": "Alınıyor",
           "confirmed": "Alınan",
-          "failed": ""
+          "failed": "Alma Başarısız"
         },
         "withdraw": {
           "pending": "Çekiliyor",
@@ -2751,6 +2789,8 @@
       }
     },
     "walletconnect": {
+      "connecting": "Bağlanıyor",
+      "loading": "Yükleniyor",
       "requests": "İstekler",
       "wants_to_connect": "Cüzdanınıza bağlanmak istiyor",
       "wants_to_connect_to_network": "%{network} ağına bağlanmak istiyor",
@@ -2844,6 +2884,7 @@
             "unavailable_personal_sign": "Kişisel imzaların simülasyonu henüz desteklenmiyor",
             "unavailable_zora_network": "Zora üzerinde simülasyon henüz desteklenmiyor",
             "failed_to_simulate": "Simülasyon başarısız oldu, bu da işleminizin başarısız olma ihtimalinin yüksek olduğunu gösteriyor. Bu, kullandığınız uygulama ile ilgili bir sorun olabilir.",
+            "tx_api_error": "İşleminizin başarılı olup olmayacağını belirleyemiyoruz. Dikkatle devam edin.",
             "warning": "Herhangi bir kötü niyetli davranış tespit edilmemiş olsa da, bu işlemin cüzdanınıza risk oluşturabilecek özellikleri bulunmaktadır.",
             "malicious": "Bu işlemi imzalamak, cüzdanınızdaki her şeye erişimi kaybetmenize neden olabilir."
           },
