@@ -18,14 +18,13 @@ import { Text } from '../text';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { useDimensions, useInitializeWallet, useWallets } from '@/hooks';
+import { useDimensions, useInitializeWallet } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import {
   addressSetSelected,
   fetchWalletENSAvatars,
   fetchWalletNames,
   setAllWalletsWithIdsAsBackedUp,
-  setIsWalletLoading,
   walletsLoadState,
   walletsSetSelected,
 } from '@/redux/wallets';
@@ -42,11 +41,17 @@ import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { Source } from 'react-native-fast-image';
-import { useTheme } from '@/theme';
+import { ThemeContextProps, useTheme } from '@/theme';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { isEmpty } from 'lodash';
 import { backupsStore } from '@/state/backups/backups';
 import { useExperimentalFlag, PROFILES } from '@/config';
+import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+
+type ComponentProps = {
+  theme: ThemeContextProps;
+  color: ThemeContextProps['colors'][keyof ThemeContextProps['colors']];
+};
 
 const Title = styled(Text).attrs({
   size: 'big',
@@ -55,7 +60,7 @@ const Title = styled(Text).attrs({
   ...padding.object(12, 0, 0),
 });
 
-const DescriptionText = styled(Text).attrs(({ theme: { colors }, color }: any) => ({
+const DescriptionText = styled(Text).attrs(({ theme: { colors }, color }: ComponentProps) => ({
   align: 'left',
   color: color || colors.alpha(colors.blueGreyDark, 0.5),
   lineHeight: 'looser',
@@ -63,7 +68,7 @@ const DescriptionText = styled(Text).attrs(({ theme: { colors }, color }: any) =
   weight: 'medium',
 }))({});
 
-const ButtonText = styled(Text).attrs(({ theme: { colors }, color }: any) => ({
+const ButtonText = styled(Text).attrs(({ theme: { colors }, color }: ComponentProps) => ({
   align: 'center',
   letterSpacing: 'rounded',
   color: color || colors.alpha(colors.blueGreyDark, 0.5),
@@ -81,7 +86,7 @@ const Masthead = styled(Box).attrs({
 });
 
 const KeyboardSizeView = styled(KeyboardArea)({
-  backgroundColor: ({ theme: { colors } }: any) => colors.transparent,
+  backgroundColor: ({ theme: { colors } }: ComponentProps) => colors.transparent,
 });
 
 type RestoreCloudStepParams = {
@@ -95,6 +100,8 @@ export default function RestoreCloudStep() {
   const { password } = backupsStore(state => ({
     password: state.password,
   }));
+
+  const loadingState = walletLoadingStore(state => state.loadingState);
 
   const { selectedBackup } = params;
   const { isDarkMode } = useTheme();
@@ -113,12 +120,12 @@ export default function RestoreCloudStep() {
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const passwordRef = useRef<TextInput | null>(null);
   const initializeWallet = useInitializeWallet();
-  const { isWalletLoading } = useWallets();
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
       const pwd = await getLocalBackupPassword();
       if (pwd) {
+        backupsStore.getState().setStoredPassword(pwd);
         backupsStore.getState().setPassword(pwd);
       }
     };
@@ -151,16 +158,22 @@ export default function RestoreCloudStep() {
         throw new Error('No backup file selected');
       }
 
-      dispatch(setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET));
+      walletLoadingStore.setState({
+        loadingState: WalletLoadingStates.RESTORING_WALLET,
+      });
       const status = await restoreCloudBackup({
         password: pwd,
         backupFilename: filename,
       });
       if (status === RestoreCloudBackupResultStates.success) {
         // Store it in the keychain in case it was missing
-        const hasSavedPassword = await getLocalBackupPassword();
-        if (!hasSavedPassword) {
+        if (backupsStore.getState().storedPassword !== pwd) {
           await saveLocalBackupPassword(pwd);
+        }
+
+        // Reset the storedPassword state for next restoration process
+        if (backupsStore.getState().storedPassword) {
+          backupsStore.getState().setStoredPassword('');
         }
 
         InteractionManager.runAfterInteractions(async () => {
@@ -240,7 +253,9 @@ export default function RestoreCloudStep() {
     } catch (e) {
       Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
     } finally {
-      dispatch(setIsWalletLoading(null));
+      walletLoadingStore.setState({
+        loadingState: null,
+      });
     }
   }, [password, selectedBackup.name, dispatch, onRestoreSuccess, profilesEnabled, initializeWallet]);
 
@@ -273,7 +288,7 @@ export default function RestoreCloudStep() {
           <Box gap={12}>
             <PasswordField
               autoFocus
-              editable={!isWalletLoading}
+              editable={!loadingState}
               isInvalid={incorrectPassword}
               onChange={onPasswordChange}
               onSubmitEditing={onPasswordSubmit}
@@ -290,10 +305,10 @@ export default function RestoreCloudStep() {
             <RainbowButton
               height={46}
               width={deviceWidth - 48}
-              disabled={!validPassword || !!isWalletLoading}
+              disabled={!validPassword || !!loadingState}
               type={RainbowButtonTypes.backup}
               label={
-                isWalletLoading
+                loadingState
                   ? `${lang.t(lang.l.back_up.cloud.restoration_in_progress)}`
                   : `􀎽 ${lang.t(lang.l.back_up.cloud.restore_from_platform, {
                       cloudPlatformName: cloudPlatform,

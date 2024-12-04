@@ -29,7 +29,6 @@ import { fetchReverseRecord } from '@/handlers/ens';
 import { lightModeThemeColors } from '@/styles';
 import { RainbowError, logger } from '@/logger';
 import { parseTimestampFromBackupFile } from '@/model/backup';
-import { WalletLoadingState } from '@/helpers/walletLoadingStates';
 
 // -- Types ---------------------------------------- //
 
@@ -37,11 +36,6 @@ import { WalletLoadingState } from '@/helpers/walletLoadingStates';
  * The current state of the `wallets` reducer.
  */
 interface WalletsState {
-  /**
-   * The current loading state of the wallet.
-   */
-  isWalletLoading: WalletLoadingState | null;
-
   /**
    * The currently selected wallet.
    */
@@ -62,20 +56,11 @@ interface WalletsState {
  * An action for the `wallets` reducer.
  */
 type WalletsAction =
-  | WalletsSetIsLoadingAction
   | WalletsSetSelectedAction
   | WalletsUpdateAction
   | WalletsUpdateNamesAction
   | WalletsLoadAction
   | WalletsAddedAccountAction;
-
-/**
- * An action that sets the wallet loading state.
- */
-interface WalletsSetIsLoadingAction {
-  type: typeof WALLETS_SET_IS_LOADING;
-  payload: WalletsState['isWalletLoading'];
-}
 
 /**
  * An action that sets the selected wallet.
@@ -236,18 +221,6 @@ export const walletsSetSelected = (wallet: RainbowWallet) => async (dispatch: Di
   dispatch({
     payload: wallet,
     type: WALLETS_SET_SELECTED,
-  });
-};
-
-/**
- * Updates the wallet loading state.
- *
- * @param val The new loading state.
- */
-export const setIsWalletLoading = (val: WalletsState['isWalletLoading']) => (dispatch: Dispatch<WalletsSetIsLoadingAction>) => {
-  dispatch({
-    payload: val,
-    type: WALLETS_SET_IS_LOADING,
   });
 };
 
@@ -611,7 +584,6 @@ export const checkKeychainIntegrity = () => async (dispatch: ThunkDispatch<AppSt
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: WalletsState = {
-  isWalletLoading: null,
   selected: undefined,
   walletNames: {},
   wallets: null,
@@ -619,8 +591,6 @@ const INITIAL_STATE: WalletsState = {
 
 export default (state = INITIAL_STATE, action: WalletsAction): WalletsState => {
   switch (action.type) {
-    case WALLETS_SET_IS_LOADING:
-      return { ...state, isWalletLoading: action.payload };
     case WALLETS_SET_SELECTED:
       return { ...state, selected: action.payload };
     case WALLETS_UPDATE:

@@ -102,7 +102,7 @@ import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPane
 import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimClaimablePanel';
 import { RootStackParamList } from './types';
-import PortalConsumer from '@/components/PortalConsumer';
+import WalletLoadingListener from '@/components/WalletLoadingListener';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
 
 const Stack = createStackNavigator();
@@ -291,7 +291,7 @@ const AppContainerWithAnalytics = React.forwardRef<NavigationContainerRef<RootSt
 
     {/* NOTE: Internally, these use some navigational checks */}
     <CMPortal />
-    <PortalConsumer />
+    <WalletLoadingListener />
   </NavigationContainer>
 ));
 

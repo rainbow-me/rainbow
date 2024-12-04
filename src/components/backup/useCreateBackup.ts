@@ -53,10 +53,11 @@ export const useCreateBackup = () => {
 
   const onSuccess = useCallback(
     async (password: string) => {
-      const hasSavedPassword = await getLocalBackupPassword();
-      if (!hasSavedPassword && password.trim()) {
+      if (backupsStore.getState().storedPassword !== password) {
         await saveLocalBackupPassword(password);
       }
+      // Reset the storedPassword state for next backup
+      backupsStore.getState().setStoredPassword('');
       analytics.track('Backup Complete', {
         category: 'backup',
         label: cloudPlatform,
@@ -130,6 +131,7 @@ export const useCreateBackup = () => {
   const getPassword = useCallback(async (props: UseCreateBackupProps): Promise<string | null> => {
     const password = await getLocalBackupPassword();
     if (password) {
+      backupsStore.getState().setStoredPassword(password);
       return password;
     }
 
@@ -154,17 +156,17 @@ export const useCreateBackup = () => {
         return false;
       }
       const password = await getPassword(props);
-      if (password) {
-        onConfirmBackup({
-          password,
-          ...props,
+      if (!password) {
+        setLoadingStateWithTimeout({
+          state: CloudBackupState.Ready,
         });
-        return true;
+        return false;
       }
-      setLoadingStateWithTimeout({
-        state: CloudBackupState.Ready,
+      onConfirmBackup({
+        password,
+        ...props,
       });
-      return false;
+      return true;
     },
     [getPassword, onConfirmBackup, setLoadingStateWithTimeout]
   );
