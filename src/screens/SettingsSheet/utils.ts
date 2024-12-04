@@ -45,7 +45,7 @@ export const checkLocalWalletsForBackupStatus = (
         return {
           allBackedUp: acc.allBackedUp && hasBackupFile && (wallet.backedUp || !isBackupEligible),
           areBackedUp: acc.areBackedUp && hasBackupFile && (wallet.backedUp || !isBackupEligible),
-          canBeBackedUp: acc.canBeBackedUp || isBackupEligible,
+          canBeBackedUp: acc.canBeBackedUp && isBackupEligible,
         };
       },
       { allBackedUp: true, areBackedUp: true, canBeBackedUp: false }
@@ -59,7 +59,7 @@ export const checkLocalWalletsForBackupStatus = (
       return {
         allBackedUp: acc.allBackedUp && (wallet.backedUp || !isBackupEligible),
         areBackedUp: acc.areBackedUp && (wallet.backedUp || !isBackupEligible || wallet.imported),
-        canBeBackedUp: acc.canBeBackedUp || isBackupEligible,
+        canBeBackedUp: acc.canBeBackedUp && isBackupEligible,
       };
     },
     { allBackedUp: true, areBackedUp: true, canBeBackedUp: false }
