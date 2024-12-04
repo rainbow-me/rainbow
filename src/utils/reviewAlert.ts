@@ -78,7 +78,7 @@ export const promptForReview = async () => {
       onPress: async () => {
         try {
           ls.review.set(['hasReviewed'], true);
-          // await StoreReview.requestReview();
+          await StoreReview.requestReview();
         } catch (e) {
           logger.error(new RainbowError('[reviewAlert]: Failed to request review'), {
             error: e,
