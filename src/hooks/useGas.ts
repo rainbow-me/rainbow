@@ -34,7 +34,7 @@ import { ChainId } from '@/chains/types';
 import { useQueries } from '@tanstack/react-query';
 import { chainsNativeAsset } from '@/chains';
 
-export const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {
+const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {
   const isLegacyGasNetwork = !(txFee as GasFee)?.maxFee;
   const txFeeValue = isLegacyGasNetwork ? (txFee as LegacyGasFee)?.estimatedFee : (txFee as GasFee)?.maxFee;
   const networkNativeAsset = nativeAsset || ethereumUtils.getNetworkNativeAsset({ chainId });
@@ -44,7 +44,7 @@ export const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainI
   return isSufficientGas;
 };
 
-export const checkValidGas = (selectedGasParams: LegacyGasFeeParams | GasFeeParams) => {
+const checkValidGas = (selectedGasParams: LegacyGasFeeParams | GasFeeParams) => {
   const isLegacyGasNetwork = !!(selectedGasParams as LegacyGasFeeParams)?.gasPrice;
   const gasValue = isLegacyGasNetwork
     ? (selectedGasParams as LegacyGasFeeParams)?.gasPrice
