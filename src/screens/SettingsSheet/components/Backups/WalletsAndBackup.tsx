@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
@@ -11,12 +11,12 @@ import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { useENSAvatar, useInitializeWallet, useManageCloudBackups, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { abbreviations } from '@/utils';
+import { abbreviations, deviceUtils } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
 import MenuHeader, { StatusType } from '../MenuHeader';
 import { checkLocalWalletsForBackupStatus, isWalletBackedUpForCurrentAccount } from '../../utils';
-import { Inline, Text, Box, Stack, Bleed } from '@/design-system';
+import { Inline, Text, Box, Stack } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
@@ -43,20 +43,28 @@ type WalletPillProps = {
   account: RainbowAccount;
 };
 
+// constants for the account section
+const menuContainerPadding = 19.5; // 19px is the padding on the left and right of the container but we need 1px more to account for the shadows on each container
+const accountsContainerWidth = deviceUtils.dimensions.width - menuContainerPadding * 4;
+const spaceBetweenAccounts = 4;
+const accountsItemWidth = accountsContainerWidth / 3;
+const basePadding = 16;
+const rowHeight = 36;
+
+const getAccountSectionHeight = (numAccounts: number) => {
+  const rows = Math.ceil(Math.max(1, numAccounts) / 3);
+  const paddingBetween = (rows - 1) * 4;
+
+  return basePadding + rows * rowHeight - paddingBetween;
+};
+
 const WalletPill = ({ account }: WalletPillProps) => {
-  const [width, setWidth] = useState<number | undefined>(undefined);
   const label = useMemo(() => removeFirstEmojiFromString(account.label), [account.label]);
 
   const { data: ENSAvatar } = useENSAvatar(label);
   const { colors, isDarkMode } = useTheme();
 
   const accountImage = addressHashedEmoji(account.address);
-
-  useLayoutEffect(() => {
-    if (width) {
-      setWidth(width - 8);
-    }
-  }, [width]);
 
   return (
     <Box
@@ -72,6 +80,7 @@ const WalletPill = ({ account }: WalletPillProps) => {
       paddingLeft={{ custom: 4 }}
       paddingRight={{ custom: 8 }}
       padding={{ custom: 4 }}
+      width={{ custom: accountsItemWidth }}
     >
       {ENSAvatar?.imageUrl ? (
         <ImageAvatar image={ENSAvatar.imageUrl} marginRight={4} size="smaller_shadowless" />
@@ -85,16 +94,6 @@ const WalletPill = ({ account }: WalletPillProps) => {
       </Text>
     </Box>
   );
-};
-
-const basePadding = 16;
-const rowHeight = 36;
-
-const getAccountSectionHeight = (numAccounts: number) => {
-  const rows = Math.ceil(Math.max(1, numAccounts) / 3);
-  const paddingBetween = (rows - 1) * 4;
-
-  return basePadding + rows * rowHeight - paddingBetween;
 };
 
 export const WalletsAndBackup = () => {
@@ -385,6 +384,7 @@ export const WalletsAndBackup = () => {
                           renderItem={({ item }) => <WalletPill account={item} />}
                           keyExtractor={item => item.address}
                           numColumns={3}
+                          scrollEnabled={false}
                         />
                       }
                     />
@@ -520,14 +520,12 @@ export const WalletsAndBackup = () => {
                       titleComponent={
                         <FlatList
                           data={addresses}
-                          columnWrapperStyle={{
-                            flex: 1,
-                            justifyContent: 'space-around',
-                          }}
-                          contentContainerStyle={{ gap: 4 }}
+                          columnWrapperStyle={{ gap: spaceBetweenAccounts }}
+                          contentContainerStyle={{ gap: spaceBetweenAccounts }}
                           renderItem={({ item }) => <WalletPill account={item} />}
                           keyExtractor={item => item.address}
                           numColumns={3}
+                          scrollEnabled={false}
                         />
                       }
                     />
