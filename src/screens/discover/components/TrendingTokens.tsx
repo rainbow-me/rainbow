@@ -21,7 +21,8 @@ import { categories, sortFilters, timeFilters, useTrendingTokensStore } from '@/
 import { chainsLabel } from '@/chains';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { formatNumber } from '@/helpers/strings';
-import { supportedNativeCurrencies } from '@/references';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 const t = i18n.l.trending_tokens;
 
@@ -299,10 +300,14 @@ function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']
 
   const volume = useMemo(() => formatNumber(item.market.volume_24h || 0, { useOrderSuffix: true, decimals: 1 }), [item.market.volume_24h]);
 
+  const handleNavigateToToken = useCallback(() => {
+    // TODO: Handle navigation to token in our swaps flow
+  }, []);
+
   if (!item) return null;
 
   return (
-    <GestureHandlerButton scaleTo={0.94}>
+    <GestureHandlerButton onPressJS={handleNavigateToToken} scaleTo={0.94}>
       <View style={{ padding: 12, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
         <SwapCoinIcon
           iconUrl={item.icon_url}
