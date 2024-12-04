@@ -224,7 +224,7 @@ export function TransactionClaimableContextProvider({
     gasSettings &&
     (!requiresSwap || (quoteState.quote && quoteState.status === 'success'))
   );
-  console.log('Quote:', JSON.stringify(quoteState.quote, null, 2));
+
   const updateGasState = useCallback(async () => {
     try {
       if (!canEstimateGas) {

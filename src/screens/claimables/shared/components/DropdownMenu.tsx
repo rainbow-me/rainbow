@@ -18,7 +18,7 @@ export function DropdownMenu({
     menuItems: {
       actionKey: string;
       actionTitle: string;
-      icon: {
+      icon?: {
         iconType: string;
         iconValue: string;
       };
