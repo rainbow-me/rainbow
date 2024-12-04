@@ -8,11 +8,6 @@ import { getMostRecentCloudBackup, hasManuallyBackedUpWallet } from '@/screens/S
 import { Mutex } from 'async-mutex';
 import store from '@/redux/store';
 
-const sleep = (ms: number) =>
-  new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-
 const mutex = new Mutex();
 
 export enum CloudBackupState {
@@ -26,6 +21,9 @@ export enum CloudBackupState {
   Error = 'error',
   Success = 'success',
 }
+
+const DEFAULT_TIMEOUT = 10_000;
+const MAX_RETRIES = 3;
 
 export const LoadingStates = [CloudBackupState.Initializing, CloudBackupState.Syncing, CloudBackupState.Fetching];
 
@@ -48,7 +46,10 @@ interface BackupsStore {
   password: string;
   setPassword: (password: string) => void;
 
-  syncAndFetchBackups: (retryOnFailure?: boolean) => Promise<{
+  syncAndFetchBackups: (
+    retryOnFailure?: boolean,
+    retryCount?: number
+  ) => Promise<{
     success: boolean;
     retry?: boolean;
   }>;
@@ -75,8 +76,15 @@ export const backupsStore = createRainbowStore<BackupsStore>((set, get) => ({
   password: '',
   setPassword: password => set({ password }),
 
-  syncAndFetchBackups: async (retryOnFailure = true) => {
+  syncAndFetchBackups: async (retryOnFailure = true, retryCount = 0) => {
     const { status } = get();
+
+    const timeoutPromise = new Promise<{ success: boolean; retry?: boolean }>(resolve => {
+      setTimeout(() => {
+        resolve({ success: false, retry: retryOnFailure });
+      }, DEFAULT_TIMEOUT);
+    });
+
     const syncAndPullFiles = async (): Promise<{ success: boolean; retry?: boolean }> => {
       try {
         const isAvailable = await isCloudBackupAvailable();
@@ -157,13 +165,18 @@ export const backupsStore = createRainbowStore<BackupsStore>((set, get) => ({
 
     const releaser = await mutex.acquire();
     logger.debug('[backupsStore]: Acquired mutex');
-    const { success, retry } = await syncAndPullFiles();
+    const { success, retry } = await Promise.race([syncAndPullFiles(), timeoutPromise]);
     releaser();
     logger.debug('[backupsStore]: Released mutex');
-    if (retry) {
-      await sleep(5_000);
-      return get().syncAndFetchBackups(retryOnFailure);
+    if (retry && retryCount < MAX_RETRIES) {
+      logger.debug(`[backupsStore]: Retrying sync and fetch backups attempt: ${retryCount + 1}`);
+      return get().syncAndFetchBackups(retryOnFailure, retryCount + 1);
     }
+
+    if (retry && retryCount >= MAX_RETRIES) {
+      logger.error(new RainbowError('[backupsStore]: Max retry attempts reached. Sync failed.'));
+    }
+
     return { success, retry };
   },
 }));
