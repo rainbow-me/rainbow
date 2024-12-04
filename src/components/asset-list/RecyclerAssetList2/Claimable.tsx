@@ -9,6 +9,7 @@ import Routes from '@/navigation/routesNames';
 import { ExtendedState } from './core/RawRecyclerList';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { analyticsV2 } from '@/analytics';
+import { ChainBadge } from '@/components/coin-icon';
 
 export const Claimable = React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -53,6 +54,7 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
         <Box borderRadius={11} borderWidth={1} borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}>
           <FasterImageView source={{ url: claimable.iconUrl }} style={{ height: 40, width: 40 }} />
         </Box>
+        <ChainBadge chainId={claimable.chainId} position="absolute" size="small" forceDark={true} />
         <Stack space={{ custom: 11 }}>
           <Text
             weight="semibold"
