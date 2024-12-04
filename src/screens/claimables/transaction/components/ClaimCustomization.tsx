@@ -13,6 +13,7 @@ import { SearchAsset } from '@/__swaps__/types/search';
 import * as i18n from '@/languages';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
+import { IS_ANDROID } from '@/env';
 
 type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 
@@ -170,15 +171,21 @@ export function ClaimCustomization() {
       }))
       .sort((a, b) => (a.actionTitle < b.actionTitle ? 1 : -1));
 
+    let menuItems = [
+      {
+        actionKey: 'reset',
+        actionTitle: 'Reset',
+        icon: { iconType: 'SYSTEM', iconValue: 'arrow.counterclockwise' },
+      },
+      ...availableTokens,
+    ];
+
+    if (IS_ANDROID) {
+      menuItems = menuItems.reverse();
+    }
+
     return {
-      menuItems: [
-        {
-          actionKey: 'reset',
-          actionTitle: 'Reset',
-          icon: { iconType: 'SYSTEM', iconValue: 'arrow.counterclockwise' },
-        },
-        ...availableTokens,
-      ],
+      menuItems,
     };
   }, [tokens, outputToken?.symbol, isInitialState, outputChainId]);
 
@@ -195,15 +202,21 @@ export function ClaimCustomization() {
       }))
       .reverse();
 
+    let menuItems = [
+      {
+        actionKey: 'reset',
+        actionTitle: 'Reset',
+        icon: { iconType: 'SYSTEM', iconValue: 'arrow.counterclockwise' },
+      },
+      ...supportedChains,
+    ];
+
+    if (IS_ANDROID) {
+      menuItems = menuItems.reverse();
+    }
+
     return {
-      menuItems: [
-        {
-          actionKey: 'reset',
-          actionTitle: 'Reset',
-          icon: { iconType: 'SYSTEM', iconValue: 'arrow.counterclockwise' },
-        },
-        ...supportedChains,
-      ],
+      menuItems,
     };
   }, [balanceSortedChainList, isInitialState, outputChainId, outputToken]);
 
