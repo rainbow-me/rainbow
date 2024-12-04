@@ -16,6 +16,7 @@
       "tab_balances": "残高",
       "tab_balances_empty_state": "残高",
       "tab_balances_tooltip": "イーサリアムとトークンの残高",
+      "tab_claimables": "請求可能",
       "tab_collectibles": "コレクタブル",
       "tab_interactions": "インタラクション",
       "tab_interactions_tooltip": "スマートコントラクトのインタラクション",
@@ -449,6 +450,22 @@
         "action": "続ける"
       }
     },
+    "claimables": {
+      "panel": {
+        "calculating_gas_fee": "ガス料金を計算中...",
+        "amount_to_claim_on_network": "%{amount}を%{network}で請求する",
+        "claim": "請求",
+        "claiming": "主張",
+        "claim_in_progress": "請求中...",
+        "claimed": "主張済み!",
+        "claiming_failed": "主張失敗",
+        "insufficient_funds": "資金が不足しています",
+        "claim_amount": "%{amount}を請求",
+        "done": "完了",
+        "try_again": "再試行",
+        "tokens_on_the_way": "トークンが届きます！"
+      }
+    },
     "cloud": {
       "backup_success": "ウォレットは正常にバックアップされました！"
     },
@@ -487,6 +504,7 @@
       "clear_local_storage": "ローカルストレージをクリア",
       "clear_mmkv_storage": "MMKVストレージをクリア",
       "connect_to_hardhat": "Hardhatに接続する",
+      "disconnect_to_hardhat": "hardhatから切断する",
       "crash_app_render_error": "アプリをクラッシュさせる（レンダーエラー）",
       "enable_testnets": "テストネットを有効にする",
       "installing_update": "アップデートをインストール中",
@@ -855,6 +873,10 @@
         "title_plural": "%{length} のネットワークで使用できます",
         "title_singular": "%{network} のネットワークで使用できます"
       },
+      "default_network_explainer": {
+        "text": "%{chainName}はEthereum上で動作するLayer <b>2</b>ネットワークであり、より安価で高速なトランザクションを提供しながら、Ethereumの基礎的なセキュリティの利点を享受できます。",
+        "title": "%{chainName}とは何ですか？"
+      },
       "arbitrum": {
         "text": "Arbitrum は Ethereum の上で動作するレイヤー 2 ネットワークであり、より安価で高速なトランザクションを可能にします。それでいて Ethereum の基盤となるセキュリティの恩恵も受けられます。\n\nは、トランザクションを Ethereum に送る前にそれらを「ロールアップ」して束ね、永久的に生き残らせます。",
         "title": "Arbitrum とは何ですか？"
@@ -915,15 +937,19 @@
       },
       "avalanche": {
         "text": "AvalancheはEthereumと共に動作する別個のネットワークであるサイドチェーンです。\n\nより安価かつ高速なトランザクションが可能ですが、Layer 2ネットワークとは異なり、Avalancheには独自のセキュリティとコンセンサスメカニズムがあります。",
-        "title": "Avalancheとは？"
+        "title": "Avalancheとは何ですか？"
       },
       "degen": {
-        "text": "Degen Chainは、ArbitrumおよびEthereumの上で動作するLayer 3ネットワークであり、Farcasterコミュニティトークン$degenで非常に高速かつ安価なトランザクションを提供します。",
+        "text": "ディージェンチェーンは、アービトラムとイーサリアムの上で動作するレイヤー<b>3</b>ネットワークです。",
         "title": "Degen Chainとは？"
       },
       "blast": {
         "text": "BlastはEthereum上で動作するLayer 2ネットワークであり、Ethereumの基盤のセキュリティを活用しながら、より安価かつ高速なトランザクションを可能にします。\n\n多くのトランザクションを「ロールアップ」としてまとめた後、それをEthereumに永続転送します。",
         "title": "Blastとは？"
+      },
+      "apechain": {
+        "text": "ApeChainはArbitrum OrbitとEthereumの上で動作するLayer <b>3</b>ネットワークです。\n\nそれはApeCoinの実用性を著しく向上させ、$APEによって駆動される強力かつ動的な経済を促進します。",
+        "title": "ApeChainとは何ですか？"
       },
       "zora": {
         "text": "ZoraはEthereumの上で動作するLayer 2ネットワークであり、より安価で高速なトランザクションを実現しながら、Ethereumの基礎的なセキュリティの恩恵も受けます。\n\nロールアップでトランザクションをまとめてから、それらを永久的にEthereum上に送信します。",
@@ -1326,7 +1352,11 @@
         "MOST_RECENT": "最近の",
         "most_recent": "最新順",
         "FLOOR_PRICE": "フロア価格",
-        "floor_price": "フロア価格"
+        "floor_price": "フロア価格",
+        "order": {
+          "asc": "昇順",
+          "desc": "降順"
+        }
       },
       "empty": "コレクタブル",
       "collect_now": "今すぐコレクト",
@@ -1847,10 +1877,17 @@
       }
     },
     "positions": {
+      "lp_range_status": {
+        "full_range": "全範囲",
+        "out_of_range": "範囲外",
+        "in_range": "範囲内"
+      },
       "open_dapp": "オープン 􀮶",
       "deposits": "預金",
       "borrows": "借入",
-      "rewards": "報酬"
+      "stakes": "ステイクされた",
+      "rewards": "報酬",
+      "pools": "プール"
     },
     "savings": {
       "deposit": "預金",
@@ -1991,6 +2028,7 @@
     "swap": {
       "actions": {
         "hold_to_swap": "スワップを保持",
+        "hold_to_bridge": "ブリッジを保持",
         "save": "保存する",
         "enter_amount": "金額を入力してください",
         "review": "レビュー",
@@ -2117,9 +2155,9 @@
           "failed": "送信に失敗しました"
         },
         "receive": {
-          "pending": "",
+          "pending": "受信中",
           "confirmed": "受信済み",
-          "failed": ""
+          "failed": "受信失敗"
         },
         "withdraw": {
           "pending": "引き出し中",
@@ -2751,6 +2789,8 @@
       }
     },
     "walletconnect": {
+      "connecting": "接続中",
+      "loading": "読み込み中",
       "requests": "リクエスト",
       "wants_to_connect": "あなたのウォレットに接続を許可します",
       "wants_to_connect_to_network": "%{network} ネットワークに接続を許可します",
@@ -2844,6 +2884,7 @@
             "unavailable_personal_sign": "パーソナルサインのシミュレーションはまだサポートされていません",
             "unavailable_zora_network": "Zoraでのシミュレーションはまだサポートされていません",
             "failed_to_simulate": "シミュレーションに失敗しました。これは使用しているアプリに問題がある可能性があります。",
+            "tx_api_error": "トランザクションが成功するか失敗するかを判断することができません。注意して進んでください。",
             "warning": "悪意のある行動は検出されませんでしたが、このトランザクションには財布にリスクを及ぼす可能性のある特徴があります。",
             "malicious": "このトランザクションに署名すると、財布の中のすべてにアクセスできなくなる可能性があります。"
           },

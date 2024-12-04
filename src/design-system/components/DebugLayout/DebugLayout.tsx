@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { ReactNode, useState } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 
 const styles = StyleSheet.create({
   debug: {
@@ -10,10 +10,25 @@ const styles = StyleSheet.create({
   },
 });
 
-export function DebugLayout({ children }: { children: ReactNode }) {
+export function DebugLayout({ children, showDimensions = false }: { children: ReactNode; showDimensions?: boolean }) {
+  const [layout, setLayout] = useState<{ width: number; height: number } | null>(null);
+
   return (
     <View>
-      <View pointerEvents="none" style={styles.debug} />
+      {showDimensions && (
+        <View pointerEvents="none">
+          <Text>Height: {layout?.height}</Text>
+          <Text>Width: {layout?.width}</Text>
+        </View>
+      )}
+      <View
+        pointerEvents="none"
+        style={styles.debug}
+        onLayout={event => {
+          const { width, height } = event.nativeEvent.layout;
+          setLayout({ width, height });
+        }}
+      />
       {children}
     </View>
   );

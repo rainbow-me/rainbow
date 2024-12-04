@@ -87,6 +87,14 @@ platform :ios do
   desc "Create new build for iOS devices in release mode"
   lane :build_device do
 
+    api_key = app_store_connect_api_key(
+      key_id: "63N65C2G2S",
+      issuer_id: "95830311-9e99-47b0-95ac-d628a3e4215e",
+      key_filepath: "fastlane/AuthKey_63N65C2G2S.p8",
+      duration: 1200, # optional
+      in_house: false, # optional but may be required if using match/sigh
+    )
+
     update_info_plist(
       plist_path: "Rainbow/Info.plist",
       display_name: "Rainbow"
