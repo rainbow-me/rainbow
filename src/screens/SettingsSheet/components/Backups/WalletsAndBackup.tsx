@@ -1,5 +1,4 @@
-/* eslint-disable no-nested-ternary */
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
@@ -17,7 +16,7 @@ import { addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
 import MenuHeader, { StatusType } from '../MenuHeader';
 import { checkLocalWalletsForBackupStatus, isWalletBackedUpForCurrentAccount } from '../../utils';
-import { Inline, Text, Box, Stack } from '@/design-system';
+import { Inline, Text, Box, Stack, Bleed } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
@@ -38,13 +37,14 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
-import { ScrollView } from 'react-native';
+import { FlatList, ScrollView } from 'react-native';
 
 type WalletPillProps = {
   account: RainbowAccount;
 };
 
 const WalletPill = ({ account }: WalletPillProps) => {
+  const [width, setWidth] = useState<number | undefined>(undefined);
   const label = useMemo(() => removeFirstEmojiFromString(account.label), [account.label]);
 
   const { data: ENSAvatar } = useENSAvatar(label);
@@ -52,12 +52,18 @@ const WalletPill = ({ account }: WalletPillProps) => {
 
   const accountImage = addressHashedEmoji(account.address);
 
+  useLayoutEffect(() => {
+    if (width) {
+      setWidth(width - 8);
+    }
+  }, [width]);
+
   return (
     <Box
       key={account.address}
       flexDirection="row"
       alignItems="center"
-      backgroundColor={colors.alpha(colors.grey, 0.4)}
+      backgroundColor={colors.alpha(colors.grey, 0.24)}
       borderRadius={23}
       shadowColor={isDarkMode ? colors.shadow : colors.alpha(colors.blueGreyDark, 0.1)}
       elevation={12}
@@ -81,9 +87,10 @@ const WalletPill = ({ account }: WalletPillProps) => {
   );
 };
 
+const basePadding = 16;
+const rowHeight = 36;
+
 const getAccountSectionHeight = (numAccounts: number) => {
-  const basePadding = 16;
-  const rowHeight = 36;
   const rows = Math.ceil(Math.max(1, numAccounts) / 3);
   const paddingBetween = (rows - 1) * 4;
 
@@ -328,7 +335,7 @@ export const WalletsAndBackup = () => {
                   <Menu key={`wallet-${id}`}>
                     <MenuItem
                       hasRightArrow
-                      key={id}
+                      key={`${id}-title`}
                       hasSfSymbol
                       labelComponent={
                         <Inline
@@ -342,7 +349,7 @@ export const WalletsAndBackup = () => {
                         >
                           {!isBackedUp && (
                             <MenuItem.Label
-                              testID={'not-backed-up'}
+                              testID={`${id}-not-backed-up`}
                               color={'#FF584D'}
                               text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)}
                             />
@@ -367,15 +374,18 @@ export const WalletsAndBackup = () => {
                       titleComponent={<MenuItem.Title text={name} />}
                     />
                     <MenuItem
-                      key={id}
+                      key={`${id}-accounts`}
                       size={getAccountSectionHeight(addresses.length)}
                       disabled
                       titleComponent={
-                        <Inline wrap verticalSpace="4px" horizontalSpace="4px">
-                          {addresses.map(address => (
-                            <WalletPill key={address.address} account={address} />
-                          ))}
-                        </Inline>
+                        <FlatList
+                          data={addresses}
+                          columnWrapperStyle={{ gap: 4 }}
+                          contentContainerStyle={{ gap: 4 }}
+                          renderItem={({ item }) => <WalletPill account={item} />}
+                          keyExtractor={item => item.address}
+                          numColumns={3}
+                        />
                       }
                     />
                   </Menu>
@@ -508,11 +518,17 @@ export const WalletsAndBackup = () => {
                       disabled
                       width="full"
                       titleComponent={
-                        <Inline wrap verticalSpace="4px" horizontalSpace="4px">
-                          {addresses.map(address => (
-                            <WalletPill key={address.address} account={address} />
-                          ))}
-                        </Inline>
+                        <FlatList
+                          data={addresses}
+                          columnWrapperStyle={{
+                            flex: 1,
+                            justifyContent: 'space-around',
+                          }}
+                          contentContainerStyle={{ gap: 4 }}
+                          renderItem={({ item }) => <WalletPill account={item} />}
+                          keyExtractor={item => item.address}
+                          numColumns={3}
+                        />
                       }
                     />
                   </Menu>
@@ -610,11 +626,14 @@ export const WalletsAndBackup = () => {
                     size={getAccountSectionHeight(addresses.length)}
                     disabled
                     titleComponent={
-                      <Inline verticalSpace="4px" horizontalSpace="4px">
-                        {addresses.map(address => (
-                          <WalletPill key={address.address} account={address} />
-                        ))}
-                      </Inline>
+                      <FlatList
+                        data={addresses}
+                        columnWrapperStyle={{ gap: 4 }}
+                        contentContainerStyle={{ gap: 4 }}
+                        renderItem={({ item }) => <WalletPill account={item} />}
+                        keyExtractor={item => item.address}
+                        numColumns={3}
+                      />
                     }
                   />
                 </Menu>

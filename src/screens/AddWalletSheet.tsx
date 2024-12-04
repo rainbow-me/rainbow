@@ -111,7 +111,6 @@ export const AddWalletSheet = () => {
                     await dispatch(createAccountForWallet(primaryWalletKey, color, name));
                     // @ts-ignore
                     await initializeWallet();
-                    // TODO: Make sure the new wallet is marked as not backed up
                   } else {
                     // If doesn't exist, we need to create a new wallet
                     await createWallet({
