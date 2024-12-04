@@ -30,7 +30,7 @@ const throttledClaimablesAnalytics = throttle(
     } = {};
 
     claimables.forEach(claimable => {
-      const attribute = `${claimable.analyticsId}USDValue`;
+      const attribute = `claimable-${claimable.analyticsId}-USDValue`;
       totalUSDValue += claimable.value.usd;
 
       if (claimablesUSDValues[attribute] !== undefined) {
