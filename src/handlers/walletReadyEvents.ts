@@ -14,12 +14,35 @@ import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
 import { InteractionManager } from 'react-native';
 import { IS_TEST } from '@/env';
+import { backupsStore, LoadingStates } from '@/state/backups/backups';
 
 export const runKeychainIntegrityChecks = async () => {
   const keychainIntegrityState = await getKeychainIntegrityState();
   if (!keychainIntegrityState) {
     await store.dispatch(checkKeychainIntegrity());
   }
+};
+
+const delay = (ms: number) =>
+  new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+
+const promptForBackupOnceReadyOrNotAvailable = async (): Promise<void> => {
+  const { status } = backupsStore.getState();
+  if (LoadingStates.includes(status)) {
+    await delay(1000);
+    return promptForBackupOnceReadyOrNotAvailable();
+  }
+
+  InteractionManager.runAfterInteractions(() => {
+    logger.debug(`[walletReadyEvents]: BackupSheet: showing backup now sheet for selected wallet`);
+    triggerOnSwipeLayout(() =>
+      Navigation.handleAction(Routes.BACKUP_SHEET, {
+        step: WalletBackupStepTypes.backup_prompt,
+      })
+    );
+  });
 };
 
 export const runWalletBackupStatusChecks = () => {
@@ -29,15 +52,7 @@ export const runWalletBackupStatusChecks = () => {
   const selectedWalletNeedsBackedUp = !selected.backedUp && !selected.damaged && selected.type !== WalletTypes.readOnly;
   if (selectedWalletNeedsBackedUp) {
     logger.debug('[walletReadyEvents]: Selected wallet is not backed up, prompting backup sheet');
-
-    InteractionManager.runAfterInteractions(() => {
-      logger.debug(`[walletReadyEvents]: BackupSheet: showing backup now sheet for selected wallet`);
-      triggerOnSwipeLayout(() =>
-        Navigation.handleAction(Routes.BACKUP_SHEET, {
-          step: WalletBackupStepTypes.backup_prompt,
-        })
-      );
-    });
+    promptForBackupOnceReadyOrNotAvailable();
   }
 };
 
