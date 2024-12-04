@@ -214,7 +214,7 @@ function BSNavigator() {
             step === walletBackupStepTypes.restore_from_backup
           ) {
             heightForStep = backupSheetSizes.long;
-          } else if (step === walletBackupStepTypes.no_provider) {
+          } else if (step === walletBackupStepTypes.backup_prompt) {
             heightForStep = backupSheetSizes.medium;
           }
 

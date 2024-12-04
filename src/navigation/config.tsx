@@ -103,12 +103,10 @@ export const getHeightForStep = (step: string) => {
     case WalletBackupStepTypes.backup_manual:
     case WalletBackupStepTypes.restore_from_backup:
       return backupSheetSizes.long;
-    case WalletBackupStepTypes.no_provider:
+    case WalletBackupStepTypes.backup_prompt:
       return backupSheetSizes.medium;
     case WalletBackupStepTypes.check_identifier:
       return backupSheetSizes.check_identifier;
-    case WalletBackupStepTypes.backup_now_manually:
-      return backupSheetSizes.shorter;
     default:
       return backupSheetSizes.short;
   }

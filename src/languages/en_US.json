@@ -148,6 +148,12 @@
         "older_backups": "Older Backups",
         "no_older_backups": "No Older Backups",
         "older_backups_title": "%{date} at %{time}",
+        "statuses": {
+          "not_enabled": "Not Enabled",
+          "syncing": "Syncing",
+          "out_of_date": "Out of Date",
+          "up_to_date":"Up to Date"
+        },
         "password": {
           "a_password_youll_remember_part_one": "This password is",
           "not": "not",

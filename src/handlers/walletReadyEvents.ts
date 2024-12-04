@@ -12,9 +12,7 @@ import store from '@/redux/store';
 import { checkKeychainIntegrity } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { InteractionManager } from 'react-native';
-import { backupsStore } from '@/state/backups/backups';
 import { IS_TEST } from '@/env';
 
 export const runKeychainIntegrityChecks = async () => {
@@ -28,22 +26,15 @@ export const runWalletBackupStatusChecks = () => {
   const { selected } = store.getState().wallets;
   if (!selected || IS_TEST) return;
 
-  const isSelectedWalletBackedUp = selected.backedUp && !selected.damaged && selected.type !== WalletTypes.readOnly;
-  if (!isSelectedWalletBackedUp) {
+  const selectedWalletNeedsBackedUp = !selected.backedUp && !selected.damaged && selected.type !== WalletTypes.readOnly;
+  if (selectedWalletNeedsBackedUp) {
     logger.debug('[walletReadyEvents]: Selected wallet is not backed up, prompting backup sheet');
-    const provider = backupsStore.getState().backupProvider;
-    let stepType: string = WalletBackupStepTypes.no_provider;
-    if (provider === walletBackupTypes.cloud) {
-      stepType = WalletBackupStepTypes.backup_now_to_cloud;
-    } else if (provider === walletBackupTypes.manual) {
-      stepType = WalletBackupStepTypes.backup_now_manually;
-    }
 
     InteractionManager.runAfterInteractions(() => {
-      logger.debug(`[walletReadyEvents]: BackupSheet: showing ${stepType} for selected wallet`);
+      logger.debug(`[walletReadyEvents]: BackupSheet: showing backup now sheet for selected wallet`);
       triggerOnSwipeLayout(() =>
         Navigation.handleAction(Routes.BACKUP_SHEET, {
-          step: stepType,
+          step: WalletBackupStepTypes.backup_prompt,
         })
       );
     });
