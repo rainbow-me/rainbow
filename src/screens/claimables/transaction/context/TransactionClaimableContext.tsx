@@ -38,6 +38,7 @@ import { analyticsV2 } from '@/analytics';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { estimateClaimUnlockSwapGasLimit } from '../estimateGas';
+import { chainsNativeAsset } from '@/chains';
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
@@ -220,7 +221,6 @@ export function TransactionClaimableContextProvider({
   // make sure we have necessary data before attempting gas estimation
   const canEstimateGas = !!(
     !isLoadingNativeNetworkAsset &&
-    userNativeNetworkAsset &&
     gasSettings &&
     (!requiresSwap || (quoteState.quote && quoteState.status === 'success'))
   );
@@ -250,11 +250,13 @@ export function TransactionClaimableContextProvider({
 
       const gasFeeWei = calculateGasFeeWorklet(gasSettings, gasLimit);
 
-      const gasFeeNativeToken = formatUnits(safeBigInt(gasFeeWei), userNativeNetworkAsset.decimals);
-      const userBalance = userNativeNetworkAsset.balance?.amount || '0';
+      const nativeAsset = chainsNativeAsset[claimable.chainId];
+
+      const gasFeeNativeToken = formatUnits(safeBigInt(gasFeeWei), nativeAsset.decimals);
+      const userBalance = userNativeNetworkAsset?.balance?.amount || '0';
 
       const sufficientGas = lessThanOrEqualToWorklet(gasFeeNativeToken, userBalance);
-      const networkAssetPrice = userNativeNetworkAsset.price?.value?.toString();
+      const networkAssetPrice = userNativeNetworkAsset?.price?.value?.toString();
 
       let gasFeeNativeCurrencyDisplay;
       if (!networkAssetPrice) {
