@@ -51,6 +51,7 @@ export const useVisibleWallets = ({ wallets, walletTypeCount }: UseVisibleWallet
       return {
         ...wallet,
         name: getTitleForWalletType(wallet.type, walletTypeCount),
+        addresses: Object.values(wallet.addresses).filter(address => address.visible),
       };
     });
 };

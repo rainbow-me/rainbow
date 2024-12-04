@@ -220,8 +220,6 @@ export async function backupAllWalletsToCloud({
   try {
     /**
      * Loop over all keys and decrypt if necessary for android
-     * if no latest backup, create first backup with all secrets
-     * if latest backup, update updatedAt and add new secrets to the backup
      */
 
     const allKeys = await kc.getAllKeys();
@@ -251,8 +249,6 @@ export async function backupAllWalletsToCloud({
       label: cloudPlatform,
     });
 
-    let updatedBackupFile: string | null = null;
-
     const data = {
       createdAt: now,
       secrets: {},
@@ -267,7 +263,7 @@ export async function backupAllWalletsToCloud({
     });
 
     await Promise.all(promises);
-    updatedBackupFile = await encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
+    const updatedBackupFile = await encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
     const walletIdsToUpdate = Object.keys(wallets);
     await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, WalletBackupTypes.cloud, updatedBackupFile));
 
