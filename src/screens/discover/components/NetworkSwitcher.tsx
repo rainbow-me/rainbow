@@ -358,8 +358,6 @@ function AllNetworksSection({ editing, selected }: { editing: SharedValue<boolea
 
 function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: SharedValue<ChainId | undefined> }) {
   const name = chainsLabel[chainId];
-  if (!name) throw new Error(`<NetworkSwitcher />: No chain name for chainId ${chainId}`);
-
   const chainColor = getChainColorWorklet(chainId, true);
   const isSelected = useDerivedValue(() => selected.value === chainId);
   const { animatedStyle } = useNetworkOptionStyle(isSelected, chainColor);
@@ -576,13 +574,18 @@ function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; se
       const sectionOffset = sectionsOffsets.value[section];
       const index = indexFromPosition(touch.x, touch.y, sectionOffset);
       const chainId = networks.value[section][index];
+      if (!chainId) {
+        s.fail();
+        return;
+      }
+
       const position = positionFromIndex(index, sectionOffset);
       dragging.value = { chainId, position };
     })
     .onChange(e => {
-      'worklet';
       if (!dragging.value) return;
       const chainId = dragging.value.chainId;
+      if (!chainId) return;
 
       const section = e.y > sectionsOffsets.value[Section.unpinned].y ? Section.unpinned : Section.pinned;
       const sectionArray = networks.value[section];
@@ -611,7 +614,6 @@ function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; se
       });
     })
     .onFinalize(() => {
-      'worklet';
       dragging.value = null;
     });
 
@@ -632,19 +634,26 @@ function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; se
 
   const tapNetwork = Gesture.Tap()
     .onTouchesDown((e, s) => {
-      'worklet';
       if (editing.value) {
         s.fail();
-        return;
       }
-      const touch = e.allTouches[0];
-      const section = touch.y > sectionsOffsets.value[Section.unpinned].y ? Section.unpinned : Section.pinned;
-      const index = indexFromPosition(touch.x, touch.y, sectionsOffsets.value[section]);
+
+      const touches = e.allTouches[0];
+      const section = touches.y > sectionsOffsets.value[Section.unpinned].y ? Section.unpinned : Section.pinned;
+      const index = indexFromPosition(touches.x, touches.y, sectionsOffsets.value[section]);
       const chainId = networks.value[section][index];
+      if (!chainId) {
+        s.fail();
+      }
+    })
+    .onEnd(e => {
+      const section = e.y > sectionsOffsets.value[Section.unpinned].y ? Section.unpinned : Section.pinned;
+      const index = indexFromPosition(e.x, e.y, sectionsOffsets.value[section]);
+      const chainId = networks.value[section][index];
+      if (!chainId) return;
 
       selected.value = chainId;
-    })
-    .requireExternalGestureToFail(tapExpand);
+    });
 
   const gridGesture = Gesture.Exclusive(dragNetwork, tapNetwork);
 
