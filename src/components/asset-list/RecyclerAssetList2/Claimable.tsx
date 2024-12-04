@@ -35,7 +35,7 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
       onPress={() => {
         analyticsV2.track(analyticsV2.event.claimablePanelOpened, {
           claimableType: claimable.type,
-          claimableId: claimable.uniqueId,
+          claimableId: claimable.analyticsId,
           chainId: claimable.chainId,
           asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           amount: claimable.value.claimAsset.amount,

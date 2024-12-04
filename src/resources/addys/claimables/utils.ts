@@ -27,7 +27,7 @@ export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCu
         chainId: claimable.network,
         name: claimable.name,
         uniqueId: claimable.unique_id,
-        analyticsId: `claimables${claimable.type.replace(/(^|-)([a-z])/g, (_, __, letter) => letter.toUpperCase())}`, // one-two-three -> OneTwoThree
+        analyticsId: claimable.type,
         iconUrl: claimable.dapp.icon_url,
         value: {
           claimAsset: convertRawAmountToBalance(claimable.amount, claimable.asset),

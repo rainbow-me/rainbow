@@ -72,7 +72,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
           logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_CALL_FAILED}`));
           analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
             claimableType: 'sponsored',
-            claimableId: claimable.uniqueId,
+            claimableId: claimable.analyticsId,
             chainId: claimable.chainId,
             asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
             amount: claimable.value.claimAsset.amount,
@@ -94,7 +94,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
           logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_CALL_FAILED}`));
           analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
             claimableType: 'sponsored',
-            claimableId: claimable.uniqueId,
+            claimableId: claimable.analyticsId,
             chainId: claimable.chainId,
             asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
             amount: claimable.value.claimAsset.amount,
@@ -115,7 +115,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_UNSUCCESSFUL_RESPONSE}`));
         analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
           claimableType: 'sponsored',
-          claimableId: claimable.uniqueId,
+          claimableId: claimable.analyticsId,
           chainId: claimable.chainId,
           asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           amount: claimable.value.claimAsset.amount,
@@ -137,7 +137,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
 
         analyticsV2.track(analyticsV2.event.claimClaimableSucceeded, {
           claimableType: 'sponsored',
-          claimableId: claimable.uniqueId,
+          claimableId: claimable.analyticsId,
           chainId: claimable.chainId,
           asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           amount: claimable.value.claimAsset.amount,
@@ -159,7 +159,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
       });
       analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
         claimableType: 'sponsored',
-        claimableId: claimable.uniqueId,
+        claimableId: claimable.analyticsId,
         chainId: claimable.chainId,
         asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
         amount: claimable.value.claimAsset.amount,
@@ -178,7 +178,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.UNRESOLVED_CLAIM_STATUS}`));
         analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
           claimableType: 'sponsored',
-          claimableId: claimable.uniqueId,
+          claimableId: claimable.analyticsId,
           chainId: claimable.chainId,
           asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           amount: claimable.value.claimAsset.amount,

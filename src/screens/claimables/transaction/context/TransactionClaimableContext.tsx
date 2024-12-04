@@ -422,7 +422,7 @@ export function TransactionClaimableContextProvider({
             });
             analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
               claimableType: 'transaction',
-              claimableId: claimable.uniqueId,
+              claimableId: claimable.analyticsId,
               chainId: claimable.chainId,
               asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
               amount: claimable.value.claimAsset.amount,
@@ -442,7 +442,7 @@ export function TransactionClaimableContextProvider({
             });
             analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
               claimableType: 'transaction',
-              claimableId: claimable.uniqueId,
+              claimableId: claimable.analyticsId,
               chainId: claimable.chainId,
               asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
               amount: claimable.value.claimAsset.amount,
@@ -471,7 +471,7 @@ export function TransactionClaimableContextProvider({
           });
           analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
             claimableType: 'transaction',
-            claimableId: claimable.uniqueId,
+            claimableId: claimable.analyticsId,
             chainId: claimable.chainId,
             asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
             amount: claimable.value.claimAsset.amount,
@@ -490,7 +490,7 @@ export function TransactionClaimableContextProvider({
 
       analyticsV2.track(analyticsV2.event.claimClaimableSucceeded, {
         claimableType: 'transaction',
-        claimableId: claimable.uniqueId,
+        claimableId: claimable.analyticsId,
         chainId: claimable.chainId,
         asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
         amount: claimable.value.claimAsset.amount,
@@ -511,7 +511,7 @@ export function TransactionClaimableContextProvider({
       });
       analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
         claimableType: 'transaction',
-        claimableId: claimable.uniqueId,
+        claimableId: claimable.analyticsId,
         chainId: claimable.chainId,
         asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
         amount: claimable.value.claimAsset.amount,
@@ -531,7 +531,7 @@ export function TransactionClaimableContextProvider({
         logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.UNRESOLVED_CLAIM_STATUS}`));
         analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
           claimableType: 'transaction',
-          claimableId: claimable.uniqueId,
+          claimableId: claimable.analyticsId,
           chainId: claimable.chainId,
           asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           amount: claimable.value.claimAsset.amount,
