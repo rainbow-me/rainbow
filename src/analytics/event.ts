@@ -158,6 +158,9 @@ export const event = {
   claimClaimableSucceeded: 'claim_claimable.succeeded',
   claimClaimableFailed: 'claim_claimable.failed',
   claimablePanelOpened: 'claimable_panel.opened',
+
+  // Token Lists
+  tokenList: 'token_list',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -642,5 +645,12 @@ export type EventProperties = {
     };
     amount: string;
     usdValue: number;
+  };
+
+  [event.tokenList]: {
+    screen: 'wallet' | 'swap' | 'send' | 'discover';
+    total_tokens: number;
+    no_icon: number;
+    no_price?: number;
   };
 };

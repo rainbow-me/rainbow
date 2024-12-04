@@ -15,6 +15,7 @@ import { TokenToBuyListItem } from '../components/TokenList/TokenToBuyList';
 import { useSwapContext } from '../providers/swap-provider';
 import { RecentSwap } from '@/__swaps__/types/swap';
 import { useTokenDiscovery } from '../resources/search';
+import { analyticsV2 } from '@/analytics';
 
 export type AssetToBuySectionId = 'bridge' | 'recent' | 'favorites' | 'verified' | 'unverified' | 'other_networks' | 'popular';
 
@@ -429,21 +430,34 @@ export function useSearchCurrencyLists() {
     const verifiedResults = query === '' ? verifiedAssets : verifiedAssets?.filter(asset => asset.chainId === toChainId);
     const unverifiedResults = memoizedData.enableUnverifiedSearch ? unverifiedAssets : undefined;
 
-    return {
-      results: buildListSectionsData({
-        combinedData: {
-          bridgeAsset: bridgeResult,
-          crosschainExactMatches: crosschainMatches,
-          unverifiedAssets: unverifiedResults,
-          verifiedAssets: verifiedResults,
-          recentSwaps: recentsForChain,
-          popularAssets: popularAssetsForChain,
-        },
-        favoritesList,
-        filteredBridgeAssetAddress: memoizedData.filteredBridgeAsset?.address,
-      }),
-      isLoading: isLoadingVerifiedAssets || isLoadingUnverifiedAssets || isLoadingPopularAssets,
-    };
+    const results = buildListSectionsData({
+      combinedData: {
+        bridgeAsset: bridgeResult,
+        crosschainExactMatches: crosschainMatches,
+        unverifiedAssets: unverifiedResults,
+        verifiedAssets: verifiedResults,
+        recentSwaps: recentsForChain,
+        popularAssets: popularAssetsForChain,
+      },
+      favoritesList,
+      filteredBridgeAssetAddress: memoizedData.filteredBridgeAsset?.address,
+    });
+
+    const isLoading = isLoadingVerifiedAssets || isLoadingUnverifiedAssets || isLoadingPopularAssets;
+
+    if (!isLoading) {
+      let total_tokens = 0;
+      let no_icon = 0;
+      for (const assetOrHeader of results) {
+        if (assetOrHeader.listItemType === 'header') continue;
+        const asset = assetOrHeader;
+        if (!asset.icon_url) no_icon += 1;
+        total_tokens += 1;
+      }
+      analyticsV2.track(analyticsV2.event.tokenList, { screen: 'swap', total_tokens, no_icon });
+    }
+
+    return { results, isLoading };
   }, [
     favoritesList,
     isLoadingUnverifiedAssets,
