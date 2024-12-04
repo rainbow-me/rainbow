@@ -21,14 +21,12 @@ import { categories, sortFilters, timeFilters, useTrendingTokensStore } from '@/
 import { chainsLabel } from '@/chains';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { formatNumber } from '@/helpers/strings';
-import { Navigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 
 const t = i18n.l.trending_tokens;
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
-function FilterButton({ icon, label, onPress }: { onPress?: VoidFunction; label: string; icon: string | React.ReactNode }) {
+function FilterButton({ icon, label, onPress }: { onPress?: VoidFunction; label: string; icon: string | JSX.Element }) {
   const pressed = useSharedValue(false);
 
   const tap = Gesture.Tap()
