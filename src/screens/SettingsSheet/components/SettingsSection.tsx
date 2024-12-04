@@ -91,7 +91,7 @@ const SettingsSection = ({
 
   const onPressLearn = useCallback(() => Linking.openURL(SettingsExternalURLs.rainbowLearn), []);
 
-  const { allBackedUp, canBeBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets, backups), [wallets, backups]);
+  const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets, backups), [wallets, backups]);
 
   const themeMenuConfig = useMemo(() => {
     return {
@@ -176,21 +176,19 @@ const SettingsSection = ({
   return (
     <MenuContainer testID="settings-menu-container" Footer={<AppVersionStamp />}>
       <Menu>
-        {canBeBackedUp && (
-          <MenuItem
-            hasRightArrow
-            leftComponent={<MenuItem.ImageIcon source={WalletsAndBackupIcon} />}
-            onPress={onPressBackup}
-            rightComponent={
-              <Box paddingBottom="2px" paddingRight="8px">
-                <MenuItem.ImageIcon size={44} source={getWalletsAndBackupAlertIcon()} />
-              </Box>
-            }
-            size={60}
-            testID={'backup-section'}
-            titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.backup)} />}
-          />
-        )}
+        <MenuItem
+          hasRightArrow
+          leftComponent={<MenuItem.ImageIcon source={WalletsAndBackupIcon} />}
+          onPress={onPressBackup}
+          rightComponent={
+            <Box paddingBottom="2px" paddingRight="8px">
+              <MenuItem.ImageIcon size={44} source={getWalletsAndBackupAlertIcon()} />
+            </Box>
+          }
+          size={60}
+          testID={'backup-section'}
+          titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.backup)} />}
+        />
         {isNotificationsEnabled && (
           <MenuItem
             hasRightArrow
