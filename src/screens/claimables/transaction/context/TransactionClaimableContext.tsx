@@ -13,6 +13,7 @@ import {
   multiply,
   formatNumber,
   convertAmountToNativeDisplayWorklet,
+  add,
 } from '@/helpers/utilities';
 import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -362,7 +363,7 @@ export function TransactionClaimableContextProvider({
 
       const gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = gasSettings.isEIP1559
         ? {
-            maxFeePerGas: gasSettings.maxBaseFee,
+            maxFeePerGas: add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee),
             maxPriorityFeePerGas: gasSettings.maxPriorityFee,
           }
         : { gasPrice: gasSettings.gasPrice };
