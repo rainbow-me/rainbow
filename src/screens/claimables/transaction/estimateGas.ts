@@ -9,7 +9,6 @@ import { estimateApprove, getAssetRawAllowance, populateApprove } from '@/raps/a
 import { isNativeAsset } from '@/handlers/assets';
 import { ETH_ADDRESS } from '@/references';
 import { logger, RainbowError } from '@/logger';
-import { Transaction } from '@/graphql/__generated__/simulation';
 import { estimateSwapGasLimit } from '@/raps/actions/swap';
 
 /**
@@ -24,7 +23,7 @@ export const estimateClaimUnlockSwapGasLimit = async ({
   claim: { data: string; to: string; from: string };
   quote: Quote | CrosschainQuote | undefined;
 }): Promise<string | undefined> => {
-  const transactions: Transaction[] = [
+  const transactions: { to: string; data: string; from: string; value: string }[] = [
     {
       to: claim.to,
       data: claim.data,
