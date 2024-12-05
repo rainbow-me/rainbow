@@ -704,6 +704,5 @@ export type EventProperties = {
     no_icon: number;
     no_price?: number;
     query?: string; // query is only sent for the swap screen
-    eventSentAfterMs?: number;
   };
 };
