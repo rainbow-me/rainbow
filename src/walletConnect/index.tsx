@@ -540,7 +540,7 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
                 reason: 'INVALID_SESSION_SETTLE_REQUEST',
               });
 
-              analyticsV2.track(analyticsV2.event.wcRequestFailed, { reason: 'invalid namespaces' });
+              analyticsV2.track(analyticsV2.event.wcRequestFailed, { reason: `invalid namespaces: ${namespaces}` });
 
               showErrorSheet({
                 title: lang.t(T.errors.generic_title),
@@ -651,7 +651,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
           message,
         });
 
-        analyticsV2.track(analyticsV2.event.wcRequestFailed, { reason: 'invalid signing reques' });
+        analyticsV2.track(analyticsV2.event.wcRequestFailed, { reason: 'invalid signing request' });
 
         await client.respondSessionRequest({
           topic,
@@ -775,7 +775,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
       method,
     });
 
-    analyticsV2.track(analyticsV2.event.wcRequestFailed, { reason: 'method not supported' });
+    analyticsV2.track(analyticsV2.event.wcRequestFailed, { reason: `method not supported: ${method}` });
 
     try {
       await client.respondSessionRequest({
