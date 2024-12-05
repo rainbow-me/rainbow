@@ -16,7 +16,7 @@ interface SharedToStateParams<T> extends BaseSyncParams<T> {
   /** The setter function for the JS state (only applicable when `syncDirection` is `'sharedValueToState'`). */
   setState: (value: T) => void;
   /** The shared value to be synchronized. */
-  sharedValue: DerivedValue<T | undefined> | SharedValue<T | undefined>;
+  sharedValue: DerivedValue<T> | DerivedValue<T | undefined> | SharedValue<T> | SharedValue<T | undefined>;
   /** The direction of synchronization. */
   syncDirection: 'sharedValueToState';
 }
@@ -24,7 +24,7 @@ interface SharedToStateParams<T> extends BaseSyncParams<T> {
 interface StateToSharedParams<T> extends BaseSyncParams<T> {
   setState?: never;
   /** The shared value to be synchronized. */
-  sharedValue: SharedValue<T | undefined>;
+  sharedValue: SharedValue<T> | SharedValue<T | undefined>;
   /** The direction of synchronization. */
   syncDirection: 'stateToSharedValue';
 }
