@@ -268,7 +268,7 @@ export default function ChartExpandedState({ asset }) {
         available_data: { chart: showChart, description: !!data?.description, iconUrl: !!icon_url },
       });
     },
-    { delay: 5 * 1000 }
+    { timeout: 5 * 1000 }
   );
 
   return (

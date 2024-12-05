@@ -427,7 +427,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
         available_data: { description: !!description, image_url: !!image_url, floorPrice: !!offer?.floorPrice },
       });
     },
-    { delay: 5 * 1000 }
+    { timeout: 5 * 1000 }
   );
   return (
     <>

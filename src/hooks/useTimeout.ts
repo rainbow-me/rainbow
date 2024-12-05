@@ -20,7 +20,7 @@ export default function useTimeout(): [(func: () => void, ms?: number) => void, 
 
 export function useTimeoutEffect(
   onTimeout: (e: { cancelled: boolean; elapsedTime: number }) => void,
-  { delay, enabled = true }: { delay: number; enabled?: boolean }
+  { timeout, enabled = true }: { timeout: number; enabled?: boolean }
 ) {
   const callback = useRef(onTimeout);
   useLayoutEffect(() => {
@@ -36,13 +36,13 @@ export function useTimeoutEffect(
         cancelled: false,
         elapsedTime: Date.now() - startedAt,
       });
-    }, delay);
+    }, timeout);
     return () => {
       clearTimeout(timeoutRef.current);
       const elapsedTime = Date.now() - startedAt;
-      if (elapsedTime < delay) {
+      if (elapsedTime < timeout) {
         callback.current({ cancelled: true, elapsedTime });
       }
     };
-  }, [delay, enabled]);
+  }, [timeout, enabled]);
 }
