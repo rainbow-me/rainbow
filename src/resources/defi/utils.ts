@@ -392,18 +392,15 @@ export function parsePositions(data: AddysPositionsResponse, currency: NativeCur
 
   const positions = Object.values(versionAgnosticPositions);
 
-  const positionTokens: string[] = [];
+  // these are tokens that would be represented twice if shown in the token list, such as a Sushiswap LP token
+  const tokensToExcludeFromTokenList: string[] = [];
 
-  positions.forEach(({ deposits, stakes }) => {
+  positions.forEach(({ deposits }) => {
     deposits.forEach(({ asset }) => {
-      const uniqueId = ethereumUtils.getUniqueId(asset.asset_code.toLowerCase(), chainsIdByName[asset.network]);
-      positionTokens.push(uniqueId);
-    });
-    stakes.forEach(({ underlying }) => {
-      underlying.forEach(({ asset }) => {
+      if (asset.defi_position) {
         const uniqueId = ethereumUtils.getUniqueId(asset.asset_code.toLowerCase(), chainsIdByName[asset.network]);
-        positionTokens.push(uniqueId);
-      });
+        tokensToExcludeFromTokenList.push(uniqueId);
+      }
     });
   });
 
@@ -425,6 +422,6 @@ export function parsePositions(data: AddysPositionsResponse, currency: NativeCur
       ...positionsTotals,
     },
     positions,
-    positionTokens,
+    positionTokens: tokensToExcludeFromTokenList,
   };
 }
