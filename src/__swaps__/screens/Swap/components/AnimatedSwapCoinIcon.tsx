@@ -14,7 +14,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
 import { useSwapContext } from '../providers/swap-provider';
 
-export const AnimatedSwapCoinIcon = memo(function FeedCoinIcon({
+export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
   assetType,
   size = 32,
   showBadge = true,

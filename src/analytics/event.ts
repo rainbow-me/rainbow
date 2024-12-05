@@ -141,6 +141,7 @@ export const event = {
   swapsSubmitted: 'swaps.submitted',
   swapsFailed: 'swaps.failed',
   swapsSucceeded: 'swaps.succeeded',
+  swapsQuoteFailed: 'swaps.quote_failed',
 
   // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
@@ -158,6 +159,14 @@ export const event = {
   claimClaimableSucceeded: 'claim_claimable.succeeded',
   claimClaimableFailed: 'claim_claimable.failed',
   claimablePanelOpened: 'claimable_panel.opened',
+
+  // error boundary
+  errorBoundary: 'error_boundary.viewed',
+  errorBoundaryReset: 'error_boundary.reset',
+
+  // token details
+  tokenDetailsErc20: 'token_details.erc20',
+  tokenDetailsNFT: 'token_details.nft',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -573,6 +582,15 @@ export type EventProperties = {
   [event.swapsFailed]: SwapsEventFailedParameters<'swap' | 'crosschainSwap'>;
   [event.swapsSucceeded]: SwapsEventSucceededParameters<'swap' | 'crosschainSwap'>;
 
+  [event.swapsQuoteFailed]: {
+    error_code: number | undefined;
+    reason: string;
+    inputAsset: { symbol: string; address: string; chainId: ChainId };
+    inputAmount: string | number;
+    outputAsset: { symbol: string; address: string; chainId: ChainId };
+    outputAmount: string | number | undefined;
+  };
+
   [event.browserTrendingDappClicked]: {
     name: string;
     url: string;
@@ -642,5 +660,38 @@ export type EventProperties = {
     };
     amount: string;
     usdValue: number;
+  };
+
+  [event.errorBoundary]: { error: Error | null };
+  [event.errorBoundaryReset]: { error: Error | null };
+
+  [event.tokenDetailsErc20]: {
+    token: {
+      address: string;
+      chainId: ChainId;
+      symbol: string;
+      name: string;
+      icon_url: string;
+      price: number;
+    };
+    eventSentAfterMs: number;
+    available_data: {
+      chart: boolean;
+      description: boolean;
+      iconUrl: boolean;
+    };
+  };
+  [event.tokenDetailsNFT]: {
+    token: {
+      isPoap: boolean;
+      isParty: boolean;
+      isENS: boolean;
+      address: string;
+      chainId: ChainId;
+      name: string;
+      image_url: string | null | undefined;
+    };
+    eventSentAfterMs: number;
+    available_data: { description: boolean; image_url: boolean; floorPrice: boolean };
   };
 };

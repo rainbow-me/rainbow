@@ -83,8 +83,9 @@ function SwapOutputAmount({ handleTapWhileDisabled }: { handleTapWhileDisabled: 
       }
     >
       <GestureHandlerButton
-        disableButtonPressWrapper
-        onPressStartWorklet={() => {
+        disableHaptics
+        disableScale
+        onPressWorklet={() => {
           'worklet';
           if (outputQuotesAreDisabled.value) {
             runOnJS(handleTapWhileDisabled)();

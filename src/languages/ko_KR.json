@@ -16,6 +16,7 @@
       "tab_balances": "잔고",
       "tab_balances_empty_state": "균형",
       "tab_balances_tooltip": "이더리움 및 토큰 잔고",
+      "tab_claimables": "청구 가능",
       "tab_collectibles": "수집품",
       "tab_interactions": "상호작용",
       "tab_interactions_tooltip": "스마트 계약 상호작용",
@@ -449,6 +450,22 @@
         "action": "계속"
       }
     },
+    "claimables": {
+      "panel": {
+        "calculating_gas_fee": "가스 요금 계산 중...",
+        "amount_to_claim_on_network": "%{amount}을(를) %{network}에서 청구",
+        "claim": "청구",
+        "claiming": "청구 중",
+        "claim_in_progress": "청구 진행 중...",
+        "claimed": "청구 완료!",
+        "claiming_failed": "청구 실패",
+        "insufficient_funds": "자금이 부족합니다",
+        "claim_amount": "%{amount} 청구",
+        "done": "완료",
+        "try_again": "다시 시도하기",
+        "tokens_on_the_way": "토큰이 도착 중입니다!"
+      }
+    },
     "cloud": {
       "backup_success": "당신의 지갑이 성공적으로 백업되었습니다!"
     },
@@ -487,6 +504,7 @@
       "clear_local_storage": "로컬 저장소 지우기",
       "clear_mmkv_storage": "MMKV 저장소 지우기",
       "connect_to_hardhat": "하드햇에 연결",
+      "disconnect_to_hardhat": "hardhat 연결 해제",
       "crash_app_render_error": "애플리케이션 종료 (렌더링 오류)",
       "enable_testnets": "테스트넷 활성화",
       "installing_update": "업데이트 설치 중",
@@ -855,6 +873,10 @@
         "title_plural": "%{length} 네트워크에서 이용 가능",
         "title_singular": "%{network} 네트워크에서 이용 가능"
       },
+      "default_network_explainer": {
+        "text": "%{chainName}은 Ethereum 위에서 실행되는 레이어 2 네트워크로, 더 저렴하고 빠른 거래를 가능하게 하면서 Ethereum의 기본 보안의 이점을 계속 제공받습니다.",
+        "title": "%{chainName}란 무엇인가요?"
+      },
       "arbitrum": {
         "text": "Arbitrum은 Ethereum 위에서 작동하는 계층 2 네트워크로, 더 저렴하고 빠른 거래를 가능하게 하면서도 Ethereum의 기본 보안에서 혜택을 받습니다.\n\n이는 많은 거래를 \"롤업\"에 묶어 Ethereum에 영구적으로 보내기 전에 함께 보냅니다.",
         "title": "Arbitrum이 무엇인가요?"
@@ -918,12 +940,16 @@
         "title": "Avalanche란 무엇인가요?"
       },
       "degen": {
-        "text": "Degen Chain은 Arbitrum과 이더리움 위에서 실행되는 Layer 3 네트워크로, 더 빠르고 저렴한 거래를 가능하게 하며 Farcaster 커뮤니티 토큰 $degen으로 표시됩니다.",
+        "text": "디젠 체인은 Arbitrum Orbit와 Ethereum 위에서 운영되는 레이어 3 네트워크입니다.",
         "title": "Degen Chain이란 무엇인가요?"
       },
       "blast": {
         "text": "Blast는 이더리움 위에서 실행되는 Layer 2 네트워크로, 더 저렴하고 빠른 거래를 가능하게 하면서도 이더리움의 기본적인 보안 혜택을 누릴 수 있습니다.\n\n여러 거래를 \"롤업\"하여 영구적으로 이더리움에 저장하기 전에 묶습니다.",
         "title": "Blast란 무엇인가요?"
+      },
+      "apechain": {
+        "text": "ApeChain은 Arbitrum Orbit와 Ethereum 위에서 운영되는 레이어 3 네트워크입니다.\n\n이것은 ApeCoin의 유용성을 크게 향상시키며, $APE에 의해 이끌어지는 강력하고 역동적인 경제를 촉진합니다.",
+        "title": "ApeChain이란 무엇인가요?"
       },
       "zora": {
         "text": "조라는 이더리움 위에서 실행되는 레이어 2 네트워크로, 거래 비용을 낮추고 속도를 높이면서도 이더리움의 기본 보안에서 여전히 혜택을 받습니다.\n\n그것은 많은 거래를 한꺼번에 \"롤업\"에 묶어 이더리움에 영구적으로 보내서 보관합니다.",
@@ -1326,7 +1352,11 @@
         "MOST_RECENT": "최근",
         "most_recent": "최신순",
         "FLOOR_PRICE": "최저 가격",
-        "floor_price": "최저 가격"
+        "floor_price": "최저 가격",
+        "order": {
+          "asc": "오름차순",
+          "desc": "내림차순"
+        }
       },
       "empty": "수집품",
       "collect_now": "지금 수집",
@@ -1847,10 +1877,17 @@
       }
     },
     "positions": {
+      "lp_range_status": {
+        "full_range": "전체 범위",
+        "out_of_range": "범위 초과",
+        "in_range": "범위 내"
+      },
       "open_dapp": "오픈 􀮶",
       "deposits": "입금",
       "borrows": "대출",
-      "rewards": "보상"
+      "stakes": "스테이킹 완료",
+      "rewards": "보상",
+      "pools": "풀"
     },
     "savings": {
       "deposit": "예금",
@@ -1991,6 +2028,7 @@
     "swap": {
       "actions": {
         "hold_to_swap": "스왑하기 위해 누르고 있기",
+        "hold_to_bridge": "브리지하기 위해 누르고 있기",
         "save": "저장",
         "enter_amount": "금액 입력",
         "review": "리뷰",
@@ -2117,9 +2155,9 @@
           "failed": "보내기 실패"
         },
         "receive": {
-          "pending": "",
+          "pending": "수신 중",
           "confirmed": "받음",
-          "failed": ""
+          "failed": "수신 실패"
         },
         "withdraw": {
           "pending": "인출 중",
@@ -2751,6 +2789,8 @@
       }
     },
     "walletconnect": {
+      "connecting": "연결 중",
+      "loading": "불러오는 중",
       "requests": "요청",
       "wants_to_connect": "당신의 지갑에 연결하려 합니다",
       "wants_to_connect_to_network": "%{network} 네트워크에 연결하려 합니다",
@@ -2844,6 +2884,7 @@
             "unavailable_personal_sign": "개인 서명의 시뮬레이션은 아직 지원되지 않습니다.",
             "unavailable_zora_network": "Zora의 시뮬레이션은 아직 지원되지 않습니다.",
             "failed_to_simulate": "시뮬레이션에 실패하여 거래가 실패할 가능성이 높습니다. 이는 사용중인 앱의 문제일 수 있습니다.",
+            "tx_api_error": "거래가 성공할지 실패할지 여부를 결정할 수 없습니다. 주의해서 진행하세요.",
             "warning": "악의적인 행동은 감지되지 않았지만, 이 거래는 지갑에 위험을 줄 수 있는 특성을 가지고 있습니다.",
             "malicious": "이 거래에 서명하면 지갑의 모든 접근 권한을 잃을 수 있습니다."
           },

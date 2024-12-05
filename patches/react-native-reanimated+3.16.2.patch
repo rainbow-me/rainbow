@@ -1,10 +1,7 @@
-diff --git a/node_modules/react-native-reanimated/.DS_Store b/node_modules/react-native-reanimated/.DS_Store
-new file mode 100644
-index 0000000..e69de29
-diff --git a/node_modules/react-native-reanimated/apple/REANodesManager.mm b/node_modules/react-native-reanimated/apple/REANodesManager.mm
-index 4fa8f44..70651d4 100644
---- a/node_modules/react-native-reanimated/apple/REANodesManager.mm
-+++ b/node_modules/react-native-reanimated/apple/REANodesManager.mm
+diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
+index ec86d08..b043442 100644
+--- a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
++++ b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
 @@ -176,7 +176,11 @@ - (READisplayLink *)getDisplayLink
    if (!_displayLink) {
      _displayLink = [READisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
@@ -17,10 +14,10 @@ index 4fa8f44..70651d4 100644
  #endif // TARGET_OS_OSX
      [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
    }
-diff --git a/node_modules/react-native-reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm b/node_modules/react-native-reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
-index fddcb84..be06bac 100644
---- a/node_modules/react-native-reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
-+++ b/node_modules/react-native-reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
+diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
+index 1b556f6..8cd4fcb 100644
+--- a/node_modules/react-native-reanimated/apple/reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
++++ b/node_modules/react-native-reanimated/apple/reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
 @@ -51,7 +51,11 @@ - (READisplayLink *)getDisplayLink
    if (!_displayLink) {
      _displayLink = [READisplayLink displayLinkWithTarget:self selector:@selector(updateKeyboardFrame)];
@@ -34,10 +31,10 @@ index fddcb84..be06bac 100644
      [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
    }
 diff --git a/node_modules/react-native-reanimated/src/propsAllowlists.ts b/node_modules/react-native-reanimated/src/propsAllowlists.ts
-index 5e004b7..0f752e0 100644
+index 39c77a1..8bcbc7e 100644
 --- a/node_modules/react-native-reanimated/src/propsAllowlists.ts
 +++ b/node_modules/react-native-reanimated/src/propsAllowlists.ts
-@@ -85,6 +85,7 @@ export const PropsAllowlists: AllowlistsHolder = {
+@@ -84,6 +84,7 @@ export const PropsAllowlists: AllowlistsHolder = {
      elevation: true,
      fontSize: true,
      lineHeight: true,

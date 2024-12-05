@@ -264,7 +264,7 @@ export const parseSearchAsset = ({
   searchAsset,
   userAsset,
 }: {
-  assetWithPrice?: ParsedAsset;
+  assetWithPrice?: Partial<ParsedAsset>;
   searchAsset: ParsedSearchAsset | SearchAsset;
   userAsset?: ParsedUserAsset;
 }): ParsedSearchAsset => ({
@@ -278,7 +278,7 @@ export const parseSearchAsset = ({
       amount: '0',
       display: '0.00',
     },
-    price: assetWithPrice?.native.price || userAsset?.native?.price,
+    price: assetWithPrice?.native?.price || userAsset?.native?.price,
   },
   price: assetWithPrice?.price || userAsset?.price,
   balance: userAsset?.balance || { amount: '0', display: '0.00' },

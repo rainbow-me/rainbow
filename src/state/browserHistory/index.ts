@@ -10,7 +10,7 @@ export interface Site {
   timestamp: number;
 }
 
-interface BrowserHistoryStore {
+export interface BrowserHistoryStore {
   recents: Site[];
   addRecent: (site: Site) => void;
   hasVisited: (url: string) => boolean;
