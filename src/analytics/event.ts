@@ -170,6 +170,7 @@ export const event = {
   tokenDetailsNFT: 'token_details.nft',
 
   // trending tokens
+  browsedDiscoverScreen: 'browsed_discover_screen',
   viewTrendingToken: 'view_trending_token',
 } as const;
 
