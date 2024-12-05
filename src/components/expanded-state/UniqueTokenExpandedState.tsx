@@ -417,18 +417,17 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
 
   const hideNftMarketplaceAction = isPoap || !slug;
 
-  const mountedAt = useRef(Date.now());
   useTimeoutEffect(
-    () => {
+    ({ elapsedTime }) => {
       const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
       const { name, description, image_url } = asset;
       analyticsV2.track(analyticsV2.event.tokenDetailsNFT, {
-        eventSentAfterMs: Date.now() - mountedAt.current,
+        eventSentAfterMs: elapsedTime,
         token: { isPoap, isParty: !!isParty, isENS, address, chainId, name, image_url },
         available_data: { description: !!description, image_url: !!image_url, floorPrice: !!offer?.floorPrice },
       });
     },
-    5 * 1000 // 5s
+    { delay: 5 * 1000 }
   );
   return (
     <>

@@ -18,7 +18,10 @@ export default function useTimeout(): [(func: () => void, ms?: number) => void, 
   return [start, stop, handle];
 }
 
-export function useTimeoutEffect(onTimeout: (cancelled: boolean) => void, delay: number) {
+export function useTimeoutEffect(
+  onTimeout: (e: { cancelled: boolean; elapsedTime: number }) => void,
+  { delay, enabled = true }: { delay: number; enabled?: boolean }
+) {
   const callback = useRef(onTimeout);
   useLayoutEffect(() => {
     callback.current = onTimeout;
@@ -26,12 +29,20 @@ export function useTimeoutEffect(onTimeout: (cancelled: boolean) => void, delay:
 
   const timeoutRef = useRef<NodeJS.Timeout>();
   useEffect(() => {
+    if (!enabled) return;
     const startedAt = Date.now();
-    timeoutRef.current = setTimeout(() => callback.current(false), delay);
-    const timeout = timeoutRef.current;
+    timeoutRef.current = setTimeout(() => {
+      callback.current({
+        cancelled: false,
+        elapsedTime: Date.now() - startedAt,
+      });
+    }, delay);
     return () => {
-      clearTimeout(timeout);
-      if (Date.now() - startedAt < delay) callback.current(true);
+      clearTimeout(timeoutRef.current);
+      const elapsedTime = Date.now() - startedAt;
+      if (elapsedTime < delay) {
+        callback.current({ cancelled: true, elapsedTime });
+      }
     };
-  }, [delay]);
+  }, [delay, enabled]);
 }

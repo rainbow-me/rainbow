@@ -260,15 +260,15 @@ export default function ChartExpandedState({ asset }) {
 
   const mountedAt = useRef(Date.now());
   useTimeoutEffect(
-    () => {
+    ({ elapsedTime }) => {
       const { address, chainId, symbol, name, icon_url, price } = assetWithPrice;
       analyticsV2.track(analyticsV2.event.tokenDetailsErc20, {
-        eventSentAfterMs: Date.now() - mountedAt.current,
+        eventSentAfterMs: elapsedTime,
         token: { address, chainId, symbol, name, icon_url, price },
         available_data: { chart: showChart, description: !!data?.description, iconUrl: !!icon_url },
       });
     },
-    5 * 1000 // 5s
+    { delay: 5 * 1000 }
   );
 
   return (
