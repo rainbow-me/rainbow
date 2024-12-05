@@ -60,17 +60,26 @@ function deserializeBrowserState(serializedState: string): { state: BrowserState
     throw error;
   }
 
+  const originalTabIds = state.tabIds;
+  const activeTabId = originalTabIds[Math.abs(state.activeTabIndex)];
+
+  // Filter out inactive homepage tabs
+  const tabIds = originalTabIds.filter(tabId => tabsData.get(tabId)?.url !== RAINBOW_HOME || tabId === activeTabId);
+
   // Remove entries from tabsData that don't have a corresponding tabId in tabIds
-  const tabIdsSet = new Set(state.tabIds);
+  const tabIdsSet = new Set(tabIds);
   for (const tabId of tabsData.keys()) {
     if (!tabIdsSet.has(tabId)) {
       tabsData.delete(tabId);
+    } else {
+      // Reset canGoBack and canGoForward for each restored tab
+      tabsData.set(tabId, { ...tabsData.get(tabId), canGoBack: false, canGoForward: false });
     }
   }
 
-  // Restore persisted tab URLs if any exist
-  const persistedTabUrlsSet = new Set(Object.entries(state.persistedTabUrls || {}));
-  for (const [tabId, persistedUrl] of persistedTabUrlsSet) {
+  // Restore persisted tab URLs and prune URL entries for non-existent tabs
+  const persistedTabUrls = state.persistedTabUrls;
+  for (const [tabId, persistedUrl] of Object.entries(persistedTabUrls)) {
     if (tabIdsSet.has(tabId)) {
       const tabData = tabsData.get(tabId);
       if (tabData) {
@@ -78,16 +87,18 @@ function deserializeBrowserState(serializedState: string): { state: BrowserState
       } else {
         logger.warn(`[browserStore]: No tabData found for tabId ${tabId} during URL restoration`);
       }
+    } else {
+      delete persistedTabUrls[tabId];
     }
   }
 
   return {
     state: {
       ...state,
-      // The stored tab index may be negative here in the event that a tab was closed and then the app
-      // was quit. For more details on this, see BrowserWorkletsContext.tsx -> closeTabWorklet.
-      activeTabIndex: Math.abs(state.activeTabIndex),
+      activeTabIndex: tabIds.includes(activeTabId) ? tabIds.indexOf(activeTabId) : tabIds.length - 1,
+      persistedTabUrls,
       tabsData,
+      tabIds,
     },
     version,
   };
@@ -105,25 +116,31 @@ const persistedBrowserStorage: PersistStorage<BrowserState> = {
 
 const INITIAL_ACTIVE_TAB_INDEX = 0;
 const INITIAL_TAB_IDS = [generateUniqueIdWorklet()];
-const INITIAL_TABS_DATA = new Map([[INITIAL_TAB_IDS[0], { url: RAINBOW_HOME }]]);
+const INITIAL_TABS_DATA = new Map([[INITIAL_TAB_IDS[0], { canGoBack: false, canGoForward: false, url: RAINBOW_HOME }]]);
 const INITIAL_PERSISTED_TAB_URLS: Record<TabId, string> = { [INITIAL_TAB_IDS[0]]: RAINBOW_HOME };
 
-interface BrowserStore {
+export interface BrowserStore {
   activeTabIndex: number;
   persistedTabUrls: Record<TabId, string>;
+  shouldExpandWebView: boolean;
   tabIds: TabId[];
   tabsData: Map<TabId, TabData>;
   getActiveTabId: () => TabId;
   getActiveTabLogo: () => string | undefined;
+  getActiveTabNavState: () => { canGoBack: boolean; canGoForward: boolean };
   getActiveTabTitle: () => string | undefined;
   getActiveTabUrl: () => string | undefined;
   getTabData: (tabId: TabId) => TabData | undefined;
+  getTabUrl: (tabId: TabId) => string | undefined;
   goToPage: (url: string, tabId?: TabId) => void;
+  isOnHomepage: () => boolean;
   isTabActive: (tabId: TabId) => boolean;
   setActiveTabIndex: (index: number) => void;
-  setLogo: (logoUrl: string, tabId: TabId) => void;
+  setLogo: (logoUrl: string | undefined, tabId: TabId) => void;
+  setNavState: (navState: { canGoBack: boolean; canGoForward: boolean }, tabId: TabId) => void;
+  setShouldExpandWebView: (shouldExpandWebView: boolean) => void;
   setTabIds: (tabIds: TabId[]) => void;
-  setTitle: (title: string, tabId: TabId) => void;
+  setTitle: (title: string | undefined, tabId: TabId) => void;
   silentlySetPersistedTabUrls: (persistedTabUrls: Record<TabId, string>) => void;
 }
 
@@ -135,34 +152,76 @@ export const useBrowserStore = create<BrowserStore>()(
       (set, get) => ({
         activeTabIndex: INITIAL_ACTIVE_TAB_INDEX,
         persistedTabUrls: INITIAL_PERSISTED_TAB_URLS,
+        shouldExpandWebView: false,
         tabIds: INITIAL_TAB_IDS,
         tabsData: INITIAL_TABS_DATA,
 
-        getActiveTabId: () => get().tabIds[get().activeTabIndex],
+        getActiveTabId: () => get().tabIds[get().activeTabIndex] || '',
 
-        getActiveTabLogo: () => get().tabsData.get(get().getActiveTabId())?.logoUrl,
+        getActiveTabLogo: () => get().getTabData(get().getActiveTabId())?.logoUrl,
 
-        getActiveTabTitle: () => get().tabsData.get(get().getActiveTabId())?.title,
+        getActiveTabNavState: () => {
+          const tabData = get().getTabData(get().getActiveTabId());
+          return { canGoBack: tabData?.canGoBack || false, canGoForward: tabData?.canGoForward || false };
+        },
+
+        getActiveTabTitle: () => get().getTabData(get().getActiveTabId())?.title,
 
         getActiveTabUrl: () => get().persistedTabUrls[get().getActiveTabId()],
 
-        getTabData: (tabId: string) => get().tabsData.get(tabId) || { url: RAINBOW_HOME },
+        getTabData: tabId => get().tabsData.get(tabId) || { canGoBack: false, canGoForward: false, url: RAINBOW_HOME },
 
-        goToPage: (url: string, tabId?: string) =>
+        getTabUrl: tabId => get().persistedTabUrls[tabId],
+
+        goToPage: (url, tabId) =>
           set(state => {
-            const tabIdToUse = tabId || state.tabIds[state.activeTabIndex];
-            const existingTabData = state.tabsData.get(tabIdToUse);
-            if (existingTabData?.url !== url) {
-              const newTabsData = new Map(state.tabsData);
-              newTabsData.set(tabIdToUse, { ...existingTabData, url: normalizeUrlWorklet(url) });
+            const tabIdToUse = tabId || state.getActiveTabId();
+            const existingTabData = state.getTabData(tabIdToUse);
+
+            const isGoingHome = existingTabData?.url && url === RAINBOW_HOME;
+            const canGoBack = isGoingHome ? false : existingTabData?.canGoBack || false;
+            const canGoForward = isGoingHome ? false : existingTabData?.canGoForward || false;
+            const newTabsData = new Map(state.tabsData);
+
+            const existingUrl = existingTabData?.url || '';
+            const persistedUrl = state.persistedTabUrls[tabIdToUse] || '';
+            const urlToSet = normalizeUrlWorklet(url);
+            const shouldForceUrlUpdate = !isGoingHome && existingUrl === urlToSet && persistedUrl !== existingUrl;
+
+            /**
+             * In cases like the following, we need to force a URL update:
+             *
+             * - User opens a new tab and goes to URL X, which sets the tab's URL state (the WebView's source prop) to URL X.
+             * - User then navigates to a new page from within the WebView, making the true internal URL of the WebView URL Y.
+             * - At this point the WebView's source prop remains set to URL X, despite the WebView's internal URL being URL Y.
+             * - If the user then manually attempts to go back to URL X from the search bar, the WebView won't detect a change
+             *   in its source prop and thus won't navigate to URL X, so we first re-sync the URL state and then set URL X.
+             */
+            if (shouldForceUrlUpdate) {
+              newTabsData.set(tabIdToUse, {
+                ...existingTabData,
+                url: persistedUrl,
+              });
+
+              scheduleTabUrlUpdate(urlToSet, tabIdToUse);
               return { tabsData: newTabsData };
             }
-            return state;
+
+            newTabsData.set(tabIdToUse, {
+              ...existingTabData,
+              canGoBack,
+              canGoForward,
+              url: urlToSet,
+            });
+
+            return { tabsData: newTabsData };
           }),
 
-        isTabActive: (tabId: string) => get().getActiveTabId() === tabId,
+        isOnHomepage: () => (get().getActiveTabUrl() || RAINBOW_HOME) === RAINBOW_HOME,
 
-        setActiveTabIndex: (index: number) =>
+        isTabActive: tabId => get().getActiveTabId() === tabId,
+
+        setActiveTabIndex: index =>
           set(state => {
             if (state.activeTabIndex !== index) {
               return { activeTabIndex: index };
@@ -170,9 +229,21 @@ export const useBrowserStore = create<BrowserStore>()(
             return state;
           }),
 
-        setLogo: (logoUrl: string, tabId: string) =>
+        setNavState: (navState, tabId) =>
           set(state => {
-            const existingTabData = state.tabsData.get(tabId);
+            const existingTabData = state.getTabData(tabId);
+            if (existingTabData?.canGoBack !== navState.canGoBack || existingTabData?.canGoForward !== navState.canGoForward) {
+              const updatedTabData = { ...existingTabData, ...navState };
+              const newTabsData = new Map(state.tabsData);
+              newTabsData.set(tabId, updatedTabData);
+              return { tabsData: newTabsData };
+            }
+            return state;
+          }),
+
+        setLogo: (logoUrl, tabId) =>
+          set(state => {
+            const existingTabData = state.getTabData(tabId);
             if (existingTabData?.logoUrl !== logoUrl) {
               const updatedTabData = { ...existingTabData, logoUrl };
               const newTabsData = new Map(state.tabsData);
@@ -182,18 +253,20 @@ export const useBrowserStore = create<BrowserStore>()(
             return state;
           }),
 
-        setTabIds: (newTabIds: string[]) =>
+        setShouldExpandWebView: shouldExpandWebView => set(() => ({ shouldExpandWebView })),
+
+        setTabIds: newTabIds =>
           set(state => {
             const existingTabIds = state.tabIds.filter(id => newTabIds.includes(id));
             const addedTabIds = newTabIds.filter(id => !state.tabIds.includes(id));
             const newTabsData = new Map(state.tabsData);
-            addedTabIds.forEach(id => newTabsData.set(id, { url: RAINBOW_HOME }));
+            addedTabIds.forEach(id => newTabsData.set(id, { url: state.persistedTabUrls[id] || RAINBOW_HOME }));
             return { tabIds: [...existingTabIds, ...addedTabIds], tabsData: newTabsData };
           }),
 
-        setTitle: (title: string, tabId: string) =>
+        setTitle: (title, tabId) =>
           set(state => {
-            const existingTabData = state.tabsData.get(tabId);
+            const existingTabData = state.getTabData(tabId);
             if (existingTabData?.title !== title) {
               const updatedTabData = { ...existingTabData, title };
               const newTabsData = new Map(state.tabsData);
@@ -203,10 +276,7 @@ export const useBrowserStore = create<BrowserStore>()(
             return state;
           }),
 
-        silentlySetPersistedTabUrls: (persistedTabUrls: Record<TabId, string>) =>
-          set(() => {
-            return { persistedTabUrls: persistedTabUrls };
-          }),
+        silentlySetPersistedTabUrls: persistedTabUrls => set(() => ({ persistedTabUrls })),
       }),
       {
         name: BROWSER_STORAGE_ID,
@@ -222,3 +292,9 @@ export const useBrowserStore = create<BrowserStore>()(
     )
   )
 );
+
+function scheduleTabUrlUpdate(url: string, tabId: TabId) {
+  setTimeout(() => {
+    useBrowserStore.getState().goToPage(url, tabId);
+  }, 0);
+}

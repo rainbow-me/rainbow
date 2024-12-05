@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Box } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks';
-import { TabBarIcon } from '@/components/icons/TabBarIcon';
+import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { useTheme } from '@/theme';
 import Animated, {
   Easing,

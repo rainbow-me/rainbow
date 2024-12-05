@@ -2,9 +2,6 @@ import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { arcClient } from '@/graphql';
 
-const defaultStaleTime = 60_000; // 1 minute
-const defaultCacheTime = 1000 * 60 * 60 * 24; // 1 day
-
 export type FeaturedResultsVariables = Parameters<typeof arcClient.getFeaturedResults>['0'];
 export type FeaturedResults = Awaited<ReturnType<typeof arcClient.getFeaturedResults>>;
 
@@ -24,7 +21,7 @@ export function useFeaturedResults<T = FeaturedResults>(
 ) {
   return useQuery(featuredResultsQueryKey(props), () => arcClient.getFeaturedResults(props), {
     ...config,
-    staleTime: defaultStaleTime,
-    cacheTime: defaultCacheTime,
+    staleTime: 1000 * 60 * 20, // 20 minutes
+    cacheTime: 1000 * 60 * 60 * 24, // 1 day
   });
 }
