@@ -24,6 +24,7 @@ import { formatNumber } from '@/helpers/strings';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 const t = i18n.l.trending_tokens;
 
@@ -305,9 +306,13 @@ function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']
     analyticsV2.track(analyticsV2.event.viewTrendingToken, {
       uniqueId: item.uniqueId,
     });
+
+    swapsStore.setState({
+      lastNavigatedTrendingToken: item.uniqueId,
+    });
+
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
       asset: item,
-      fromTrendingTokens: true,
       type: 'token',
     });
   }, [item]);
