@@ -703,5 +703,7 @@ export type EventProperties = {
     total_tokens: number;
     no_icon: number;
     no_price?: number;
+    query?: string; // query is only sent for the swap screen
+    eventSentAfterMs?: number;
   };
 };

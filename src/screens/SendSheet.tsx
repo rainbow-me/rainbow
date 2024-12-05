@@ -10,7 +10,7 @@ import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../co
 import { SheetActionButton } from '../components/sheet';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@/analytics';
+import { analytics, analyticsV2 } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetTypes, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
@@ -70,6 +70,7 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Contact } from '@/redux/contacts';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useTimeoutEffect } from '@/hooks/useTimeout';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -117,7 +118,7 @@ type OnSubmitProps = {
 
 export default function SendSheet() {
   const { goBack, navigate } = useNavigation();
-  const { data: sortedAssets } = useSortedUserAssets();
+  const { isLoading: isLoadingUserAssets, data: sortedAssets } = useSortedUserAssets();
   const {
     gasFeeParamsBySpeed,
     gasLimit,
@@ -882,6 +883,16 @@ export default function SendSheet() {
     currentChainId,
     isUniqueAsset,
   ]);
+
+  useEffect(() => {
+    if (isLoadingUserAssets || !sortedAssets) return;
+    const params = { screen: 'wallet' as const, no_icon: 0, no_price: 0, total_tokens: sortedAssets.length };
+    for (const asset of sortedAssets) {
+      if (!asset.icon_url) params.no_icon += 1;
+      if (!asset.price?.relative_change_24h) params.no_price += 1;
+    }
+    analyticsV2.track(analyticsV2.event.tokenList, params);
+  }, [isLoadingUserAssets, sortedAssets]);
 
   const sendContactListDataKey = useMemo(() => `${ensSuggestions?.[0]?.address || '_'}`, [ensSuggestions]);
 

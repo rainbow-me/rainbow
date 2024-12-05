@@ -8,7 +8,7 @@ import { useFavorites } from '@/resources/favorites';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { isAddress } from '@ethersproject/address';
 import { rankings } from 'match-sorter';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { TokenToBuyListItem } from '../components/TokenList/TokenToBuyList';
@@ -423,7 +423,7 @@ export function useSearchCurrencyLists() {
     }
   );
 
-  return useMemo(() => {
+  const searchCurrencyLists = useMemo(() => {
     const toChainId = selectedOutputChainId.value ?? ChainId.mainnet;
     const bridgeResult = memoizedData.filteredBridgeAsset ?? undefined;
     const crosschainMatches = query === '' ? undefined : verifiedAssets?.filter(asset => asset.chainId !== toChainId);
@@ -445,18 +445,6 @@ export function useSearchCurrencyLists() {
 
     const isLoading = isLoadingVerifiedAssets || isLoadingUnverifiedAssets || isLoadingPopularAssets;
 
-    if (!isLoading) {
-      let total_tokens = 0;
-      let no_icon = 0;
-      for (const assetOrHeader of results) {
-        if (assetOrHeader.listItemType === 'header') continue;
-        const asset = assetOrHeader;
-        if (!asset.icon_url) no_icon += 1;
-        total_tokens += 1;
-      }
-      analyticsV2.track(analyticsV2.event.tokenList, { screen: 'swap', total_tokens, no_icon });
-    }
-
     return { results, isLoading };
   }, [
     favoritesList,
@@ -472,4 +460,17 @@ export function useSearchCurrencyLists() {
     recentsForChain,
     popularAssetsForChain,
   ]);
+
+  useEffect(() => {
+    if (searchCurrencyLists.isLoading) return;
+    const params = { screen: 'swap' as const, total_tokens: 0, no_icon: 0, query };
+    for (const assetOrHeader of searchCurrencyLists.results) {
+      if (assetOrHeader.listItemType === 'header') continue;
+      if (!assetOrHeader.icon_url) params.no_icon += 1;
+      params.total_tokens += 1;
+    }
+    analyticsV2.track(analyticsV2.event.tokenList, params);
+  }, [searchCurrencyLists.results, searchCurrencyLists.isLoading, query]);
+
+  return searchCurrencyLists;
 }

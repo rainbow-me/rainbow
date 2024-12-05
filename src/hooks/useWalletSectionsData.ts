@@ -20,6 +20,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { analyticsV2 } from '@/analytics';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { throttle } from 'lodash';
+import { useTimeoutEffect } from './useTimeout';
 
 // user properties analytics for claimables that executes at max once every 2 min
 const throttledClaimablesAnalytics = throttle(
@@ -97,6 +98,16 @@ export default function useWalletSectionsData({
   const { pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
 
   const { isCoinListEdited } = useCoinListEdited();
+
+  useEffect(() => {
+    if (isLoadingUserAssets || type !== 'wallet') return;
+    const params = { screen: 'wallet' as const, no_icon: 0, no_price: 0, total_tokens: sortedAssets.length };
+    for (const asset of sortedAssets) {
+      if (!asset.icon_url) params.no_icon += 1;
+      if (!asset.price?.relative_change_24h) params.no_price += 1;
+    }
+    analyticsV2.track(analyticsV2.event.tokenList, params);
+  }, [isLoadingUserAssets, sortedAssets, type]);
 
   const walletSections = useMemo(() => {
     const accountInfo = {
