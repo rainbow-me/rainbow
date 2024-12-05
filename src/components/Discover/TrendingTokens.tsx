@@ -313,7 +313,7 @@ function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']
           chainId={item.chainId}
           address={item.address}
           symbol={item.symbol}
-          xLarge
+          size={40}
           chainSize={20}
         />
 
@@ -410,17 +410,17 @@ function NoResults() {
 
 function NetworkFilter() {
   const [isOpen, setOpen] = useState(false);
-  const network = useTrendingTokensStore(state => state.network);
+  const chainId = useTrendingTokensStore(state => state.chainId);
 
   const label = useMemo(() => {
-    if (!network) return 'All';
-    return chainsLabel[network];
-  }, [network]);
+    if (!chainId) return 'All';
+    return chainsLabel[chainId];
+  }, [chainId]);
 
   const icon = useMemo(() => {
-    if (!network) return '􀤆';
-    return <ChainImage chainId={network} size={16} />;
-  }, [network]);
+    if (!chainId) return '􀤆';
+    return <ChainImage chainId={chainId} size={16} />;
+  }, [chainId]);
 
   return (
     <>
@@ -472,10 +472,10 @@ function SortFilter() {
 }
 
 function TrendingTokenData() {
-  const network = useTrendingTokensStore(state => state.network);
+  const chainId = useTrendingTokensStore(state => state.chainId);
 
   // TODO: Add timeframe, sort, etc..
-  const { data, isLoading } = useTrendingTokens({ chainId: network });
+  const { data, isLoading } = useTrendingTokens({ chainId });
 
   if (isLoading)
     return (
