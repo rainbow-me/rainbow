@@ -20,7 +20,6 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { analyticsV2 } from '@/analytics';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { throttle } from 'lodash';
-import { useTimeoutEffect } from './useTimeout';
 
 // user properties analytics for claimables that executes at max once every 2 min
 const throttledClaimablesAnalytics = throttle(

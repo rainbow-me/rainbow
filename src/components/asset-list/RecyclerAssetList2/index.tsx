@@ -18,7 +18,6 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { analytics } from '@/analytics';
 import lang from 'i18n-js';
 import { IS_ANDROID } from '@/env';
-import { useTimeout } from '@/hooks';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 

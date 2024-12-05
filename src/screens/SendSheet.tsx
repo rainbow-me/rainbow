@@ -70,7 +70,6 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Contact } from '@/redux/contacts';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useTimeoutEffect } from '@/hooks/useTimeout';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;

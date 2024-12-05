@@ -258,7 +258,6 @@ export default function ChartExpandedState({ asset }) {
     [nativeCurrency]
   );
 
-  const mountedAt = useRef(Date.now());
   useTimeoutEffect(
     ({ elapsedTime }) => {
       const { address, chainId, symbol, name, icon_url, price } = assetWithPrice;
