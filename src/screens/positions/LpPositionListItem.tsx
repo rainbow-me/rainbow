@@ -127,7 +127,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
                     borderColor={{ custom: 'rgba(0,0,0,0.02)' }}
                     backgroundColor={rangeStatus === 'in_range' || rangeStatus === 'full_range' ? colors.green : colors.red}
                     shadowColor={rangeStatus === 'in_range' || rangeStatus === 'full_range' ? colors.green : colors.red}
-                    elevation={12}
+                    elevation={2}
                     shadowOpacity={IS_IOS ? 0.2 : 1}
                     shadowRadius={6}
                     style={{
@@ -143,6 +143,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
                     assets={assets
                       .filter(asset => asset.quantity !== '0')
                       .map((underlying, index) => ({
+                        id: underlying.asset.asset_code,
                         color: underlying.asset.colors?.primary ?? underlying.asset.colors?.fallback ?? colors.black,
                         allocationPercentage: assetAllocations[index],
                       }))}
