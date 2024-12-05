@@ -42,9 +42,6 @@ declare module 'react-native-dotenv' {
   export const PINATA_API_SECRET: string;
   export const PINATA_API_URL: string;
   export const PINATA_GATEWAY_URL: string;
-  export const APP_CENTER_READ_ONLY_TOKEN_ANDROID: string;
-  export const APP_CENTER_READ_ONLY_TOKEN_IOS: string;
-  export const CODE_PUSH_DEPLOYMENT_KEY_ANDROID: string;
   export const CODE_PUSH_DEPLOYMENT_KEY_IOS: string;
   export const NFT_API_KEY: string;
   export const NFT_API_URL: string;
@@ -63,12 +60,9 @@ declare module 'react-native-dotenv' {
   export const ARC_GRAPHQL_API_KEY: string;
   export const METADATA_GRAPHQL_API_KEY: string;
   export const GRAPH_ENS_API_KEY: string;
-  export const RESERVOIR_API_KEY_PROD: string;
-  export const RESERVOIR_API_KEY_DEV: string;
-  export const RPC_PROXY_BASE_URL_PROD: string;
-  export const RPC_PROXY_BASE_URL_DEV: string;
-  export const RPC_PROXY_API_KEY_PROD: string;
-  export const RPC_PROXY_API_KEY_DEV: string;
+  export const RESERVOIR_API_KEY: string;
+  export const RPC_PROXY_BASE_URL: string;
+  export const RPC_PROXY_API_KEY: string;
   export const REACT_NATIVE_RUDDERSTACK_WRITE_KEY: string;
   export const RUDDERSTACK_DATA_PLANE_URL: string;
   export const SILENCE_EMOJI_WARNINGS: boolean;
