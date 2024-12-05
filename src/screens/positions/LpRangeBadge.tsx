@@ -13,6 +13,7 @@ const MAX_ALLOCATION_PERCENTAGE = 0.75;
 
 type LpRangeBadgeProps = {
   assets: {
+    id: string;
     color: string;
     allocationPercentage: number;
   }[];
@@ -54,7 +55,7 @@ export const LpRangeBadge = ({ assets }: LpRangeBadgeProps) => {
 
         return (
           <Box
-            key={`${asset.color}-${asset.allocationPercentage}`}
+            key={asset.id}
             borderTopLeftRadius={borderTopLeftRadius}
             borderBottomLeftRadius={borderBottomLeftRadius}
             borderTopRightRadius={borderTopRightRadius}
@@ -65,21 +66,34 @@ export const LpRangeBadge = ({ assets }: LpRangeBadgeProps) => {
             shadowColor={asset.color}
             shadowOpacity={IS_IOS ? 0.2 : 1}
             shadowRadius={9}
+            elevation={3}
             style={{
               shadowOffset: { width: 0, height: 3 },
               borderCurve: 'continuous',
             }}
           >
-            <LinearGradient
-              colors={
-                isMiddle
-                  ? ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.0)', 'rgba(255, 255, 255, 0.1)']
-                  : ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)']
-              }
-              start={{ x: isFirst ? 0 : 1, y: 0.5 }}
-              end={{ x: isFirst ? 1 : 0, y: 0.5 }}
-              style={StyleSheet.absoluteFillObject}
-            />
+            <Box
+              height={'full'}
+              borderTopLeftRadius={borderTopLeftRadius}
+              borderBottomLeftRadius={borderBottomLeftRadius}
+              borderTopRightRadius={borderTopRightRadius}
+              borderBottomRightRadius={borderBottomRightRadius}
+              style={{
+                overflow: 'hidden',
+                borderCurve: 'continuous',
+              }}
+            >
+              <LinearGradient
+                colors={
+                  isMiddle
+                    ? ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.0)', 'rgba(255, 255, 255, 0.1)']
+                    : ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)']
+                }
+                start={{ x: isFirst ? 0 : 1, y: 0.5 }}
+                end={{ x: isFirst ? 1 : 0, y: 0.5 }}
+                style={StyleSheet.absoluteFillObject}
+              />
+            </Box>
           </Box>
         );
       })}
