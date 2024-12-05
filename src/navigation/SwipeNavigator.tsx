@@ -13,7 +13,7 @@ import RecyclerListViewScrollToTopProvider, {
   useRecyclerListViewScrollToTopContext,
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import DappBrowserScreen from '@/screens/dapp-browser/DappBrowserScreen';
-import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
+import { discoverOpenSearchFnRef } from '@/components/Discover/DiscoverSearchContainer';
 import { PointsScreen } from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen';
 import { useTheme } from '@/theme';
@@ -36,7 +36,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
-import DiscoverScreen, { discoverScrollToTopFnRef } from '../screens/discover/DiscoverScreen';
+import DiscoverScreen, { discoverScrollToTopFnRef } from '../screens/DiscoverScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import Routes from './routesNames';
 import { ScrollPositionContext } from './ScrollPositionContext';

@@ -7,12 +7,12 @@ export const timeFilters = ['day', 'week', 'month'] as const;
 
 type TrendingTokensState = {
   category: 'trending' | 'new' | 'farcaster';
-  network: undefined | ChainId;
+  chainId: undefined | ChainId;
   timeframe: (typeof timeFilters)[number];
   sort: (typeof sortFilters)[number] | undefined;
 
   setCategory: (category: TrendingTokensState['category']) => void;
-  setNetwork: (network: TrendingTokensState['network']) => void;
+  setChainId: (chainId: TrendingTokensState['chainId']) => void;
   setTimeframe: (timeframe: TrendingTokensState['timeframe']) => void;
   setSort: (sort: TrendingTokensState['sort']) => void;
 };
@@ -20,11 +20,11 @@ type TrendingTokensState = {
 export const useTrendingTokensStore = createRainbowStore<TrendingTokensState>(
   set => ({
     category: 'trending',
-    network: undefined,
+    chainId: undefined,
     timeframe: 'day',
     sort: 'volume',
     setCategory: category => set({ category }),
-    setNetwork: network => set({ network }),
+    setChainId: chainId => set({ chainId }),
     setTimeframe: timeframe => set({ timeframe }),
     setSort: sort => set({ sort }),
   }),

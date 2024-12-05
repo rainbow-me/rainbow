@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { getChainColorWorklet } from '@/__swaps__/utils/swaps';
-import { analyticsV2 } from '@/analytics';
 import { chainsLabel, SUPPORTED_CHAIN_IDS_ALPHABETICAL } from '@/chains';
 import { ChainId } from '@/chains/types';
 import { AbsolutePortal } from '@/components/AbsolutePortal';
@@ -12,8 +11,6 @@ import { AnimatedText, DesignSystemProvider, globalColors, Separator, Text, useB
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import * as i18n from '@/languages';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { nonceStore } from '@/state/nonces';
 import { useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
 import { useTheme } from '@/theme';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -42,43 +39,15 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
+import {
+  customizeNetworksBannerStore,
+  dismissCustomizeNetworksBanner,
+  networkSwitcherStore,
+  shouldShowCustomizeNetworksBanner,
+  showCustomizeNetworksBanner,
+} from '@/state/networkSwitcher/networkSwitcher';
 
 const t = i18n.l.network_switcher;
-
-function getMostUsedChains() {
-  const noncesByAddress = nonceStore.getState().nonces;
-
-  const summedNoncesByChainId: Record<string, number> = {};
-  for (const addressNonces of Object.values(noncesByAddress)) {
-    for (const [chainId, { currentNonce }] of Object.entries(addressNonces)) {
-      summedNoncesByChainId[chainId] ??= 0;
-      summedNoncesByChainId[chainId] += currentNonce || 0;
-    }
-  }
-
-  return Object.entries(summedNoncesByChainId)
-    .sort((a, b) => b[1] - a[1])
-    .map(([chainId]) => parseInt(chainId));
-}
-
-// const pinnedNetworks = getMostUsedChains().slice(0, 5);
-const useNetworkSwitcherStore = createRainbowStore<{
-  pinnedNetworks: ChainId[];
-}>(() => ({ pinnedNetworks: [] }), {
-  storageKey: 'network-switcher',
-  version: 0,
-  onRehydrateStorage(state) {
-    // if we are missing pinned networks, use the user most used chains
-    if (state.pinnedNetworks.length === 0) {
-      const mostUsedNetworks = getMostUsedChains();
-      state.pinnedNetworks = mostUsedNetworks.slice(0, 5);
-      analyticsV2.identify({ mostUsedNetworks: mostUsedNetworks.filter(Boolean) });
-    }
-  },
-});
-const setNetworkSwitcherPinned = (pinnedNetworks: ChainId[]) => {
-  useNetworkSwitcherStore.setState({ pinnedNetworks });
-};
 
 const translations = {
   edit: i18n.t(t.edit),
@@ -140,22 +109,7 @@ function Header({ editing }: { editing: SharedValue<boolean> }) {
   );
 }
 
-const useCustomizeNetworksBanner = createRainbowStore<{
-  dismissedAt: number; // timestamp
-}>(() => ({ dismissedAt: 0 }), {
-  storageKey: 'CustomizeNetworksBanner',
-  version: 0,
-});
-const twoWeeks = 1000 * 60 * 60 * 24 * 7 * 2;
-const should_show_CustomizeNetworksBanner = (dismissedAt: number) => Date.now() - dismissedAt > twoWeeks;
-const dismissCustomizeNetworksBanner = () => {
-  const { dismissedAt } = useCustomizeNetworksBanner.getState();
-  if (should_show_CustomizeNetworksBanner(dismissedAt)) return;
-  useCustomizeNetworksBanner.setState({ dismissedAt: Date.now() });
-};
-const show_CustomizeNetworksBanner = should_show_CustomizeNetworksBanner(useCustomizeNetworksBanner.getState().dismissedAt);
-
-const CustomizeNetworksBanner = !show_CustomizeNetworksBanner
+const CustomizeNetworksBanner = !showCustomizeNetworksBanner
   ? () => null
   : function CustomizeNetworksBanner({ editing }: { editing: SharedValue<boolean> }) {
       useAnimatedReaction(
@@ -165,8 +119,8 @@ const CustomizeNetworksBanner = !show_CustomizeNetworksBanner
         }
       );
 
-      const dismissedAt = useCustomizeNetworksBanner(s => s.dismissedAt);
-      if (!should_show_CustomizeNetworksBanner(dismissedAt)) return null;
+      const dismissedAt = customizeNetworksBannerStore(s => s.dismissedAt);
+      if (!shouldShowCustomizeNetworksBanner(dismissedAt)) return null;
 
       const height = 75;
       const blue = '#268FFF';
@@ -532,7 +486,7 @@ function SectionSeparator({
 }
 
 function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; selected: SharedValue<ChainId | undefined> }) {
-  const initialPinned = useNetworkSwitcherStore.getState().pinnedNetworks;
+  const initialPinned = networkSwitcherStore.getState().pinnedNetworks;
   const initialUnpinned = SUPPORTED_CHAIN_IDS_ALPHABETICAL.filter(chainId => !initialPinned.includes(chainId));
   const networks = useSharedValue({ [Section.pinned]: initialPinned, [Section.unpinned]: initialUnpinned });
 
@@ -540,7 +494,7 @@ function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; se
     // persists pinned networks when closing the sheet
     // should be the only time this component is unmounted
     return () => {
-      setNetworkSwitcherPinned(networks.value[Section.pinned]);
+      networkSwitcherStore.setState({ pinnedNetworks: networks.value[Section.pinned] });
     };
   }, [networks]);
 
@@ -767,15 +721,15 @@ function Sheet({ children, header, onClose }: PropsWithChildren<{ header: ReactE
 export function NetworkSelector({ onClose }: { onClose: VoidFunction }) {
   const editing = useSharedValue(false);
 
-  const network = useTrendingTokensStore(state => state.network);
-  const selected = useSharedValue<ChainId | undefined>(network);
-  const setNetwork = useTrendingTokensStore(state => state.setNetwork);
+  const chainId = useTrendingTokensStore(state => state.chainId);
+  const selected = useSharedValue<ChainId | undefined>(chainId);
+  const setChainId = useTrendingTokensStore(state => state.setChainId);
 
   useSyncSharedValue<ChainId | undefined>({
     sharedValue: selected,
     syncDirection: 'sharedValueToState',
-    state: network,
-    setState: setNetwork,
+    state: chainId,
+    setState: setChainId,
   });
 
   return (

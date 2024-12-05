@@ -9,7 +9,7 @@ import FastImage from 'react-native-fast-image';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { LinearTransition, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { NetworkSelector } from './NetworkSwitcher';
+import { NetworkSelector } from '@/components/NetworkSwitcher';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme';
 import { TrendingTokens as TrendingTokensType, useTrendingTokens } from '@/resources/trendingTokens/trendingTokens';

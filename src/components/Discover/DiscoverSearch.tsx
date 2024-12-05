@@ -6,7 +6,7 @@ import * as lang from '@/languages';
 import deviceUtils from '@/utils/deviceUtils';
 import CurrencySelectionList from '@/components/CurrencySelectionList';
 import { Row } from '@/components/layout';
-import { useDiscoverScreenContext } from '../DiscoverScreenContext';
+import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { useAccountSettings, useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';

@@ -15,7 +15,7 @@ import { deviceUtils } from '@/utils';
 import { chainsName } from '@/chains';
 import { ThemeContextProps } from '@/theme';
 import { ChainId } from '@/chains/types';
-import { useDiscoverScreenContext } from '@/screens/discover/DiscoverScreenContext';
+import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 
 const SearchHeight = 40;
 const SearchWidth = deviceUtils.dimensions.width - 30;
