@@ -6,7 +6,7 @@ import { ClaimableExtraData, PositionExtraData } from '@/components/asset-list/R
 import { DEFI_POSITIONS, CLAIMABLES, ExperimentalValue } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
 import { Claimable } from '@/resources/addys/claimables/types';
-import { add, convertAmountToNativeDisplay } from './utilities';
+import { add, convertAmountToNativeDisplay, lessThan } from './utilities';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { IS_TEST } from '@/env';
 import { UniqueId } from '@/__swaps__/types/assets';
@@ -88,7 +88,10 @@ const buildBriefWalletSections = (
 
 const withPositionsSection = (positionsObj: RainbowPositions | undefined, isLoadingUserAssets: boolean) => {
   const result: PositionExtraData[] = [];
-  const sortedPositions = positionsObj?.positions?.sort((a, b) => (a.totals.totals.amount > b.totals.totals.amount ? -1 : 1));
+  const sortedPositions = positionsObj?.positions?.sort((a, b) => {
+    return lessThan(b.totals.totals.amount, a.totals.totals.amount) ? -1 : 1;
+  });
+
   sortedPositions?.forEach((position, index) => {
     const listData = {
       type: 'POSITION',

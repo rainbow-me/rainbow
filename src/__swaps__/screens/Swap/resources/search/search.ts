@@ -111,6 +111,18 @@ export async function fetchTokenSearch(
   );
 }
 
+export async function queryTokenSearch(
+  { chainId, fromChainId, keys, list, threshold, query }: TokenSearchArgs,
+  config: QueryConfigWithSelect<TokenSearchResult, Error, TokenSearchResult, TokenSearchQueryKey> = {}
+) {
+  const queryKey = tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query });
+
+  const cachedData = queryClient.getQueryData<SearchAsset[]>(queryKey);
+  if (cachedData?.length) return cachedData;
+
+  return await queryClient.fetchQuery(queryKey, tokenSearchQueryFunction, config);
+}
+
 // ///////////////////////////////////////////////
 // Query Hook
 
