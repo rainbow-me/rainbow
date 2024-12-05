@@ -41,6 +41,10 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
   const rangeStatus = getRangeStatus(assets, isConcentratedLiquidity);
 
   const assetAllocations = assets.map(asset => {
+    // if both assets value are 0 value, return 1 for asset with non-zero quantity
+    if (totalAssetsValue === '0') {
+      return asset.quantity === '0' ? 0 : 1;
+    }
     return parseFloat(divide(asset.native.amount, totalAssetsValue));
   });
 
@@ -136,11 +140,13 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
                     </Text>
                   </Box>
                   <LpRangeBadge
-                    assets={assets.map((underlying, index) => ({
-                      id: underlying.asset.asset_code,
-                      color: underlying.asset.colors?.primary ?? underlying.asset.colors?.fallback ?? colors.black,
-                      allocationPercentage: assetAllocations[index],
-                    }))}
+                    assets={assets
+                      .filter(asset => asset.quantity !== '0')
+                      .map((underlying, index) => ({
+                        id: underlying.asset.asset_code,
+                        color: underlying.asset.colors?.primary ?? underlying.asset.colors?.fallback ?? colors.black,
+                        allocationPercentage: assetAllocations[index],
+                      }))}
                   />
                 </Inline>
               </Column>
