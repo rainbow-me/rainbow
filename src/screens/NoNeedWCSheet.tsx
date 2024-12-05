@@ -27,7 +27,7 @@ const WalletConnectRedirectSheet = () => {
   const { params } = useRoute();
 
   useEffect(() => {
-    analyticsV2.track(analyticsV2.event.wcConnectionFailed, { reason: 'rainbow dapp browser' });
+    analyticsV2.track(analyticsV2.event.wcRequestFailed, { reason: 'rainbow dapp browser' });
   }, []);
 
   const handleOnPress = useCallback(() => {

@@ -540,7 +540,7 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
                 reason: 'INVALID_SESSION_SETTLE_REQUEST',
               });
 
-              analyticsV2.track(analyticsV2.event.wcConnectionFailed, { reason: 'invalid namespaces' });
+              analyticsV2.track(analyticsV2.event.wcRequestFailed, { reason: 'invalid namespaces' });
 
               showErrorSheet({
                 title: lang.t(T.errors.generic_title),
@@ -651,7 +651,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
           message,
         });
 
-        analyticsV2.track(analyticsV2.event.wcConnectionFailed, { reason: 'invalid signing reques' });
+        analyticsV2.track(analyticsV2.event.wcRequestFailed, { reason: 'invalid signing reques' });
 
         await client.respondSessionRequest({
           topic,
@@ -683,7 +683,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
 
         const errorMessageBody = isReadOnly ? lang.t(T.errors.read_only_wallet_on_signing_method) : lang.t(T.errors.generic_error);
 
-        analyticsV2.track(analyticsV2.event.wcConnectionFailed, { reason: 'read only wallet' });
+        analyticsV2.track(analyticsV2.event.wcRequestFailed, { reason: 'read only wallet' });
 
         await client.respondSessionRequest({
           topic,
@@ -708,7 +708,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
     if (!session) {
       logger.error(new RainbowError(`[walletConnect]: session_request topic was not found`));
 
-      analyticsV2.track(analyticsV2.event.wcConnectionFailed, { reason: 'session not found' });
+      analyticsV2.track(analyticsV2.event.wcRequestFailed, { reason: 'session not found' });
 
       await client.respondSessionRequest({
         topic,
@@ -775,7 +775,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
       method,
     });
 
-    analyticsV2.track(analyticsV2.event.wcConnectionFailed, { reason: 'method not supported' });
+    analyticsV2.track(analyticsV2.event.wcRequestFailed, { reason: 'method not supported' });
 
     try {
       await client.respondSessionRequest({
