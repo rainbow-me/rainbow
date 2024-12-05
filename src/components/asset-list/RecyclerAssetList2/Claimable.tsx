@@ -24,8 +24,6 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
 
   const eth = useNativeAsset({ chainId: ChainId.mainnet });
 
-  if (isETHRewards && !eth) return null;
-
   const { data = [] } = useClaimables(
     {
       address: accountAddress,
@@ -38,7 +36,6 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
   );
 
   const [claimable] = data;
-  if (!isETHRewards && !claimable) return null;
 
   const { data: points } = usePoints({
     walletAddress: accountAddress,
@@ -46,28 +43,31 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
 
   const claimableETHRewardsRawAmount = points?.points?.user?.rewards?.claimable;
 
-  if (isETHRewards && (!eth || !claimableETHRewardsRawAmount || claimableETHRewardsRawAmount === '0')) return null;
+  const { display: claimableETHRewardsDisplay, amount: claimableETHRewardsAmount } = useMemo(() => {
+    if (!isETHRewards || !claimableETHRewardsRawAmount) return { amount: undefined, display: undefined };
 
-  const { display: claimableETHRewardsDisplay, amount: claimableETHRewardsAmount } = useMemo(
-    () =>
-      convertRawAmountToBalance(claimableETHRewardsRawAmount || '0', {
-        decimals: 18,
-        symbol: 'ETH',
-      }),
-    []
-  );
+    return convertRawAmountToBalance(claimableETHRewardsRawAmount, {
+      decimals: 18,
+      symbol: 'ETH',
+    });
+  }, []);
 
-  const nativeDisplay = useMemo(
-    () =>
-      convertAmountToNativeDisplayWorklet(
-        isETHRewards
-          ? convertAmountAndPriceToNativeDisplay(claimableETHRewardsAmount, eth?.price?.value || 0, nativeCurrency)?.amount
-          : claimable.value.nativeAsset.amount,
-        nativeCurrency,
-        true
-      ),
-    []
-  );
+  const nativeDisplay = useMemo(() => {
+    if (isETHRewards && (!eth || !claimableETHRewardsAmount)) return undefined;
+
+    if (!isETHRewards && !claimable) return undefined;
+
+    return convertAmountToNativeDisplayWorklet(
+      isETHRewards
+        ? convertAmountAndPriceToNativeDisplay(claimableETHRewardsAmount ?? '0', eth?.price?.value || 0, nativeCurrency)?.amount
+        : claimable?.value.nativeAsset.amount,
+      nativeCurrency,
+      true
+    );
+  }, []);
+
+  if (!isETHRewards && (!claimable || !nativeDisplay)) return null;
+  if (isETHRewards && (!nativeDisplay || !claimableETHRewardsDisplay)) return null;
 
   return (
     <Box
@@ -75,12 +75,12 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
       onPress={() => {
         if (!isETHRewards) {
           analyticsV2.track(analyticsV2.event.claimablePanelOpened, {
-            claimableType: claimable.type,
-            claimableId: claimable.analyticsId,
-            chainId: claimable.chainId,
-            asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-            amount: claimable.value.claimAsset.amount,
-            usdValue: claimable.value.usd,
+            claimableType: claimable?.type,
+            claimableId: claimable?.analyticsId,
+            chainId: claimable?.chainId,
+            asset: { symbol: claimable?.asset.symbol, address: claimable?.asset.address },
+            amount: claimable?.value.claimAsset.amount,
+            usdValue: claimable?.value.usd,
           });
           navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable });
         } else {
@@ -95,9 +95,9 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
     >
       <Inline alignVertical="center" space="12px">
         <Box borderRadius={11} borderWidth={1} borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}>
-          <FasterImageView source={{ url: isETHRewards ? RAINBOW_ICON_URL : claimable.iconUrl }} style={{ height: 40, width: 40 }} />
+          <FasterImageView source={{ url: isETHRewards ? RAINBOW_ICON_URL : claimable?.iconUrl }} style={{ height: 40, width: 40 }} />
         </Box>
-        <ChainBadge chainId={isETHRewards ? ChainId.mainnet : claimable.chainId} position="absolute" size="small" forceDark={true} />
+        <ChainBadge chainId={isETHRewards ? ChainId.mainnet : claimable?.chainId} position="absolute" size="small" forceDark={true} />
         <Stack space={{ custom: 11 }}>
           <Text
             weight="semibold"
@@ -107,10 +107,10 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
             numberOfLines={1}
             style={{ maxWidth: deviceUtils.dimensions.width - 220 }}
           >
-            {isETHRewards ? 'Rainbow ETH Rewards' : claimable.name}
+            {isETHRewards ? 'Rainbow ETH Rewards' : claimable?.name}
           </Text>
           <Text weight="semibold" color="labelTertiary" size="13pt">
-            {isETHRewards ? claimableETHRewardsDisplay : claimable.value.claimAsset.display}
+            {isETHRewards ? claimableETHRewardsDisplay : claimable?.value.claimAsset.display}
           </Text>
         </Stack>
       </Inline>
