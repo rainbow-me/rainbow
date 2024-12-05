@@ -35,39 +35,39 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
     }
   );
 
-  const [claimable] = data;
-
   const { data: points } = usePoints({
     walletAddress: accountAddress,
   });
 
+  const [claimable] = data;
   const claimableETHRewardsRawAmount = points?.points?.user?.rewards?.claimable;
 
-  const { display: claimableETHRewardsDisplay, amount: claimableETHRewardsAmount } = useMemo(() => {
-    if (!isETHRewards || !claimableETHRewardsRawAmount) return { amount: undefined, display: undefined };
+  if (isETHRewards) {
+    if (!claimableETHRewardsRawAmount) return null;
+  } else {
+    if (!claimable) return null;
+  }
 
-    return convertRawAmountToBalance(claimableETHRewardsRawAmount, {
-      decimals: 18,
-      symbol: 'ETH',
-    });
-  }, []);
+  const { display: claimableETHRewardsDisplay, amount: claimableETHRewardsAmount } = isETHRewards
+    ? convertRawAmountToBalance(claimableETHRewardsRawAmount ?? '0', {
+        decimals: 18,
+        symbol: 'ETH',
+      })
+    : { display: undefined, amount: undefined };
 
-  const nativeDisplay = useMemo(() => {
-    if (isETHRewards && (!eth || !claimableETHRewardsAmount)) return undefined;
+  const nativeDisplay = convertAmountToNativeDisplayWorklet(
+    isETHRewards
+      ? convertAmountAndPriceToNativeDisplay(claimableETHRewardsAmount ?? '0', eth?.price?.value || 0, nativeCurrency)?.amount
+      : claimable?.value.nativeAsset.amount,
+    nativeCurrency,
+    true
+  );
 
-    if (!isETHRewards && !claimable) return undefined;
+  if (isETHRewards) {
+    if (!claimableETHRewardsDisplay) return null;
+  }
 
-    return convertAmountToNativeDisplayWorklet(
-      isETHRewards
-        ? convertAmountAndPriceToNativeDisplay(claimableETHRewardsAmount ?? '0', eth?.price?.value || 0, nativeCurrency)?.amount
-        : claimable?.value.nativeAsset.amount,
-      nativeCurrency,
-      true
-    );
-  }, []);
-
-  if (!isETHRewards && (!claimable || !nativeDisplay)) return null;
-  if (isETHRewards && (!nativeDisplay || !claimableETHRewardsDisplay)) return null;
+  if (!nativeDisplay) return null;
 
   return (
     <Box
