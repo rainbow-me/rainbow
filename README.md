@@ -21,7 +21,7 @@
 
 ### MacOS
 
-1. Install the [latest version of XCode](https://developer.apple.com/xcode/).
+1. Install the [latest version of Xcode](https://developer.apple.com/xcode/).
 
 2. Install Watchman:
 
@@ -74,7 +74,7 @@ https://reactnative.dev/docs/getting-started
 
    - Etherscan: https://etherscan.io/apis
    - Infura: https://infura.io/
-   - ETH Gas Station: https://docs.ethgasstation.info/
+   - ETH Gas Station: https://etherscan.io/gastracker
    - Imgix: https://www.imgix.com/
 
 3. Ensure a `google-services.json` has been added to the relevant project
@@ -87,7 +87,7 @@ https://reactnative.dev/docs/getting-started
 ### MacOS
 
 _Note: Darwin versions of the application can only be developed/built on Darwin
-platforms with XCode._
+platforms with Xcode._
 
 1. Start a React Native webserver with:
 
@@ -95,7 +95,7 @@ platforms with XCode._
    yarn start
    ```
 
-2. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
+2. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in Xcode.
 
 3. Run the project by clicking the play button.
 
