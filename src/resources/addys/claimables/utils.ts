@@ -53,6 +53,5 @@ export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCu
         };
       }
     })
-    .filter((c): c is Claimable => !!c)
-    .sort((a, b) => (greaterThan(a.value.claimAsset.amount ?? '0', b.value.claimAsset.amount ?? '0') ? -1 : 1));
+    .filter((c): c is Claimable => !!c);
 };
