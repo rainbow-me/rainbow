@@ -21,6 +21,9 @@ import { categories, sortFilters, timeFilters, useTrendingTokensStore } from '@/
 import { chainsLabel } from '@/chains';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { formatNumber } from '@/helpers/strings';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { analyticsV2 } from '@/analytics';
 
 const t = i18n.l.trending_tokens;
 
@@ -299,8 +302,15 @@ function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']
   const volume = useMemo(() => formatNumber(item.market.volume_24h || 0, { useOrderSuffix: true, decimals: 1 }), [item.market.volume_24h]);
 
   const handleNavigateToToken = useCallback(() => {
-    // TODO: Handle navigation to token in our swaps flow
-  }, []);
+    analyticsV2.track(analyticsV2.event.viewTrendingToken, {
+      uniqueId: item.uniqueId,
+    });
+    Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
+      asset: item,
+      fromTrendingTokens: true,
+      type: 'token',
+    });
+  }, [item]);
 
   if (!item) return null;
 

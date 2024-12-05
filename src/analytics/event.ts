@@ -9,6 +9,7 @@ import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
 import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
+import { TrendingTokens } from '@/resources/trendingTokens/trendingTokens';
 
 /**
  * All events, used by `analytics.track()`
@@ -167,6 +168,9 @@ export const event = {
   // token details
   tokenDetailsErc20: 'token_details.erc20',
   tokenDetailsNFT: 'token_details.nft',
+
+  // trending tokens
+  viewTrendingToken: 'view_trending_token',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -693,5 +697,9 @@ export type EventProperties = {
     };
     eventSentAfterMs: number;
     available_data: { description: boolean; image_url: boolean; floorPrice: boolean };
+  };
+
+  [event.viewTrendingToken]: {
+    uniqueId: TrendingTokens['trendingTokens']['data'][number]['uniqueId'];
   };
 };
