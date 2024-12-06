@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { getChainColorWorklet } from '@/__swaps__/utils/swaps';
-import { analyticsV2 } from '@/analytics';
 import { chainsLabel, SUPPORTED_CHAIN_IDS_ALPHABETICAL } from '@/chains';
 import { ChainId } from '@/chains/types';
 import { AbsolutePortal } from '@/components/AbsolutePortal';
@@ -11,15 +10,13 @@ import { AnimatedChainImage, ChainImage } from '@/components/coin-icon/ChainImag
 import { AnimatedText, DesignSystemProvider, globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import * as i18n from '@/languages';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { nonceStore } from '@/state/nonces';
 import { useTheme } from '@/theme';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
 import chroma from 'chroma-js';
 import { PropsWithChildren, ReactElement, useEffect } from 'react';
 import React, { Pressable, View } from 'react-native';
-import { Gesture, GestureDetector, State } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, State, TapGesture } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   FadeIn,
@@ -40,43 +37,15 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
+import {
+  customizeNetworksBannerStore,
+  dismissCustomizeNetworksBanner,
+  networkSwitcherStore,
+  shouldShowCustomizeNetworksBanner,
+  showCustomizeNetworksBanner,
+} from '@/state/networkSwitcher/networkSwitcher';
 
 const t = i18n.l.network_switcher;
-
-function getMostUsedChains() {
-  const noncesByAddress = nonceStore.getState().nonces;
-
-  const summedNoncesByChainId: Record<string, number> = {};
-  for (const addressNonces of Object.values(noncesByAddress)) {
-    for (const [chainId, { currentNonce }] of Object.entries(addressNonces)) {
-      summedNoncesByChainId[chainId] ??= 0;
-      summedNoncesByChainId[chainId] += currentNonce || 0;
-    }
-  }
-
-  return Object.entries(summedNoncesByChainId)
-    .sort((a, b) => b[1] - a[1])
-    .map(([chainId]) => parseInt(chainId));
-}
-
-// const pinnedNetworks = getMostUsedChains().slice(0, 5);
-const useNetworkSwitcherStore = createRainbowStore<{
-  pinnedNetworks: ChainId[];
-}>(() => ({ pinnedNetworks: [] }), {
-  storageKey: 'network-switcher',
-  version: 0,
-  onRehydrateStorage(state) {
-    // if we are missing pinned networks, use the user most used chains
-    if (state.pinnedNetworks.length === 0) {
-      const mostUsedNetworks = getMostUsedChains();
-      state.pinnedNetworks = mostUsedNetworks.slice(0, 5);
-      analyticsV2.identify({ mostUsedNetworks: mostUsedNetworks.filter(Boolean) });
-    }
-  },
-});
-const setNetworkSwitcherPinned = (pinnedNetworks: ChainId[]) => {
-  useNetworkSwitcherStore.setState({ pinnedNetworks });
-};
 
 const translations = {
   edit: i18n.t(t.edit),
@@ -138,22 +107,7 @@ function Header({ editing }: { editing: SharedValue<boolean> }) {
   );
 }
 
-const useCustomizeNetworksBanner = createRainbowStore<{
-  dismissedAt: number; // timestamp
-}>(() => ({ dismissedAt: 0 }), {
-  storageKey: 'CustomizeNetworksBanner',
-  version: 0,
-});
-const twoWeeks = 1000 * 60 * 60 * 24 * 7 * 2;
-const should_show_CustomizeNetworksBanner = (dismissedAt: number) => Date.now() - dismissedAt > twoWeeks;
-const dismissCustomizeNetworksBanner = () => {
-  const { dismissedAt } = useCustomizeNetworksBanner.getState();
-  if (should_show_CustomizeNetworksBanner(dismissedAt)) return;
-  useCustomizeNetworksBanner.setState({ dismissedAt: Date.now() });
-};
-const show_CustomizeNetworksBanner = should_show_CustomizeNetworksBanner(useCustomizeNetworksBanner.getState().dismissedAt);
-
-const CustomizeNetworksBanner = !show_CustomizeNetworksBanner
+const CustomizeNetworksBanner = !showCustomizeNetworksBanner
   ? () => null
   : function CustomizeNetworksBanner({ editing }: { editing: SharedValue<boolean> }) {
       useAnimatedReaction(
@@ -163,8 +117,8 @@ const CustomizeNetworksBanner = !show_CustomizeNetworksBanner
         }
       );
 
-      const dismissedAt = useCustomizeNetworksBanner(s => s.dismissedAt);
-      if (!should_show_CustomizeNetworksBanner(dismissedAt)) return null;
+      const dismissedAt = customizeNetworksBannerStore(s => s.dismissedAt);
+      if (!shouldShowCustomizeNetworksBanner(dismissedAt)) return null;
 
       const height = 75;
       const blue = '#268FFF';
@@ -285,10 +239,16 @@ const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color: string) 
   };
 };
 
-function AllNetworksOption({ selected }: { selected: SharedValue<ChainId[] | 'all'> }) {
+function AllNetworksOption({
+  selected,
+  setSelected,
+}: {
+  selected: SharedValue<ChainId | undefined>;
+  setSelected: (chainId: ChainId | undefined) => void;
+}) {
   const blue = useForegroundColor('blue');
 
-  const isSelected = useDerivedValue(() => selected.value === 'all');
+  const isSelected = useDerivedValue(() => selected.value === undefined);
   const { animatedStyle, selectedStyle, defaultStyle } = useNetworkOptionStyle(isSelected, blue);
 
   const overlappingBadge = useAnimatedStyle(() => {
@@ -303,8 +263,8 @@ function AllNetworksOption({ selected }: { selected: SharedValue<ChainId[] | 'al
   });
 
   const tapGesture = Gesture.Tap().onTouchesDown(() => {
-    if (selected.value === 'all') selected.value = [];
-    else selected.value = 'all';
+    'worklet';
+    setSelected(undefined);
   });
 
   return (
@@ -336,7 +296,15 @@ function AllNetworksOption({ selected }: { selected: SharedValue<ChainId[] | 'al
   );
 }
 
-function AllNetworksSection({ editing, selected }: { editing: SharedValue<boolean>; selected: SharedValue<ChainId[] | 'all'> }) {
+function AllNetworksSection({
+  editing,
+  setSelected,
+  selected,
+}: {
+  editing: SharedValue<boolean>;
+  setSelected: (chainId: ChainId | undefined) => void;
+  selected: SharedValue<ChainId | undefined>;
+}) {
   const style = useAnimatedStyle(() => ({
     opacity: editing.value ? withTiming(0, { duration: 50 }) : withDelay(250, withTiming(1, { duration: 250 })),
     height: withTiming(
@@ -348,18 +316,16 @@ function AllNetworksSection({ editing, selected }: { editing: SharedValue<boolea
   }));
   return (
     <Animated.View style={[style, { gap: 14 }]}>
-      <AllNetworksOption selected={selected} />
+      <AllNetworksOption selected={selected} setSelected={setSelected} />
       <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
     </Animated.View>
   );
 }
 
-function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: SharedValue<ChainId[] | 'all'> }) {
+function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: SharedValue<ChainId | undefined> }) {
   const name = chainsLabel[chainId];
-  if (!name) throw new Error(`<NetworkSwitcher />: No chain name for chainId ${chainId}`);
-
   const chainColor = getChainColorWorklet(chainId, true);
-  const isSelected = useDerivedValue(() => selected.value !== 'all' && selected.value.includes(chainId));
+  const isSelected = useDerivedValue(() => selected.value === chainId);
   const { animatedStyle } = useNetworkOptionStyle(isSelected, chainColor);
 
   return (
@@ -468,25 +434,18 @@ function SectionSeparator({
   editing,
   expanded,
   networks,
+  tapExpand,
+  pressedExpand,
 }: {
   y: SharedValue<number>;
   editing: SharedValue<boolean>;
   expanded: SharedValue<boolean>;
   networks: SharedValue<Record<Section, ChainId[]>>;
+  tapExpand: TapGesture;
+  pressedExpand: SharedValue<boolean>;
 }) {
-  const pressed = useSharedValue(false);
-  const tapGesture = Gesture.Tap()
-    .onBegin(e => {
-      if (editing.value) e.state = State.FAILED;
-      else pressed.value = true;
-    })
-    .onEnd(() => {
-      pressed.value = false;
-      expanded.value = !expanded.value;
-    });
-
   const separatorStyles = useAnimatedStyle(() => ({
-    transform: [{ translateY: y.value }, { scale: withTiming(pressed.value ? 0.95 : 1) }],
+    transform: [{ translateY: y.value }, { scale: withTiming(pressedExpand.value ? 0.95 : 1) }],
   }));
 
   const text = useDerivedValue(() => {
@@ -500,7 +459,7 @@ function SectionSeparator({
   const showMoreOrLessIconStyle = useAnimatedStyle(() => ({ opacity: editing.value ? 0 : 1 }));
 
   return (
-    <GestureDetector gesture={tapGesture}>
+    <GestureDetector gesture={tapExpand}>
       <Animated.View
         style={[
           { position: 'absolute', width: '100%', height: SEPARATOR_HEIGHT, justifyContent: 'center', alignItems: 'center' },
@@ -538,8 +497,16 @@ function SectionSeparator({
   );
 }
 
-function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; selected: SharedValue<ChainId[] | 'all'> }) {
-  const initialPinned = useNetworkSwitcherStore.getState().pinnedNetworks;
+function NetworksGrid({
+  editing,
+  setSelected,
+  selected,
+}: {
+  editing: SharedValue<boolean>;
+  setSelected: (chainId: ChainId | undefined) => void;
+  selected: SharedValue<ChainId | undefined>;
+}) {
+  const initialPinned = networkSwitcherStore.getState().pinnedNetworks;
   const initialUnpinned = SUPPORTED_CHAIN_IDS_ALPHABETICAL.filter(chainId => !initialPinned.includes(chainId));
   const networks = useSharedValue({ [Section.pinned]: initialPinned, [Section.unpinned]: initialUnpinned });
 
@@ -547,7 +514,7 @@ function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; se
     // persists pinned networks when closing the sheet
     // should be the only time this component is unmounted
     return () => {
-      setNetworkSwitcherPinned(networks.value[Section.pinned]);
+      networkSwitcherStore.setState({ pinnedNetworks: networks.value[Section.pinned] });
     };
   }, [networks]);
 
@@ -581,13 +548,18 @@ function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; se
       const sectionOffset = sectionsOffsets.value[section];
       const index = indexFromPosition(touch.x, touch.y, sectionOffset);
       const chainId = networks.value[section][index];
+      if (!chainId) {
+        s.fail();
+        return;
+      }
+
       const position = positionFromIndex(index, sectionOffset);
       dragging.value = { chainId, position };
     })
     .onChange(e => {
-      'worklet';
       if (!dragging.value) return;
       const chainId = dragging.value.chainId;
+      if (!chainId) return;
 
       const section = e.y > sectionsOffsets.value[Section.unpinned].y ? Section.unpinned : Section.pinned;
       const sectionArray = networks.value[section];
@@ -616,33 +588,46 @@ function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; se
       });
     })
     .onFinalize(() => {
-      'worklet';
       dragging.value = null;
     });
 
-  const tapNetwork = Gesture.Tap().onTouchesDown((e, s) => {
-    'worklet';
-    const touch = e.allTouches[0];
-    if (editing.value) {
-      s.fail();
-      return;
-    }
-    const section = touch.y > sectionsOffsets.value[Section.unpinned].y ? Section.unpinned : Section.pinned;
-    const index = indexFromPosition(touch.x, touch.y, sectionsOffsets.value[section]);
-    const chainId = networks.value[section][index];
+  const pressedExpand = useSharedValue(false);
 
-    selected.modify(selected => {
-      if (selected === 'all') {
-        // @ts-expect-error I think something is wrong with reanimated types, not infering right here
-        selected = [chainId];
-        return selected;
+  // TODO: Need to prevent this from firing the tapNetwork as well
+  const tapExpand = Gesture.Tap()
+    .onBegin(e => {
+      if (editing.value) {
+        e.state = State.FAILED;
       }
-      const selectedIndex = selected.indexOf(chainId);
-      if (selectedIndex !== -1) selected.splice(selectedIndex, 1);
-      else selected.push(chainId);
-      return selected;
+      pressedExpand.value = true;
+    })
+    .onEnd(() => {
+      pressedExpand.value = false;
+      expanded.value = !expanded.value;
     });
-  });
+
+  const tapNetwork = Gesture.Tap()
+    .onTouchesDown((e, s) => {
+      if (editing.value) {
+        s.fail();
+      }
+
+      const touches = e.allTouches[0];
+      const section = touches.y > sectionsOffsets.value[Section.unpinned].y ? Section.unpinned : Section.pinned;
+      const index = indexFromPosition(touches.x, touches.y, sectionsOffsets.value[section]);
+      const chainId = networks.value[section][index];
+      if (!chainId) {
+        s.fail();
+      }
+    })
+    .onEnd(e => {
+      const section = e.y > sectionsOffsets.value[Section.unpinned].y ? Section.unpinned : Section.pinned;
+      const index = indexFromPosition(e.x, e.y, sectionsOffsets.value[section]);
+      const chainId = networks.value[section][index];
+      if (!chainId) return;
+
+      setSelected(chainId);
+    });
 
   const gridGesture = Gesture.Exclusive(dragNetwork, tapNetwork);
 
@@ -662,7 +647,14 @@ function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; se
           </Draggable>
         ))}
 
-        <SectionSeparator y={pinnedHeight} expanded={expanded} editing={editing} networks={networks} />
+        <SectionSeparator
+          y={pinnedHeight}
+          expanded={expanded}
+          editing={editing}
+          networks={networks}
+          tapExpand={tapExpand}
+          pressedExpand={pressedExpand}
+        />
 
         {/* {initialUnpinned.length === 0 && (
           <View style={{ borderRadius: 20, flex: 1, height: ITEM_HEIGHT }}>
@@ -715,7 +707,7 @@ function Sheet({ children, header, onClose }: PropsWithChildren<{ header: ReactE
       translationY.value = event.translationY;
     })
     .onFinalize(() => {
-      if (translationY.value > 120) onClose();
+      if (translationY.value > 120) runOnJS(onClose)();
       else translationY.value = withSpring(0);
     });
 
@@ -748,27 +740,20 @@ function Sheet({ children, header, onClose }: PropsWithChildren<{ header: ReactE
 
 export function NetworkSelector({
   onClose,
-  multiple,
+  selected,
+  setSelected,
 }: {
-  onClose: (selected: ChainId[] | 'all') => void;
-  onSelect: VoidFunction;
-  multiple?: boolean;
+  onClose: VoidFunction;
+  selected: SharedValue<ChainId | undefined>;
+  setSelected: (chainId: ChainId | undefined) => void;
 }) {
   const editing = useSharedValue(false);
-  const selected = useSharedValue<ChainId[] | 'all'>([]);
-
-  const close = () => {
-    'worklet';
-    runOnJS(onClose)(selected.value);
-  };
 
   return (
-    <Sheet header={<Header editing={editing} />} onClose={close}>
+    <Sheet header={<Header editing={editing} />} onClose={onClose}>
       <CustomizeNetworksBanner editing={editing} />
-
-      {multiple && <AllNetworksSection editing={editing} selected={selected} />}
-
-      <NetworksGrid editing={editing} selected={selected} />
+      <AllNetworksSection editing={editing} setSelected={setSelected} selected={selected} />
+      <NetworksGrid editing={editing} setSelected={setSelected} selected={selected} />
     </Sheet>
   );
 }

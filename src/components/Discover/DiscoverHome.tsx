@@ -29,7 +29,7 @@ import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultS
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
-import { TrendingTokens } from './TrendingTokens';
+import { TrendingTokens } from '@/components/Discover/TrendingTokens';
 
 export const HORIZONTAL_PADDING = 20;
 

@@ -22,5 +22,6 @@ export function useTrendingTokens<T = TrendingTokens>(
     ...config,
     staleTime: 60_000, // 1 minute
     cacheTime: 60_000 * 30, // 30 minutes
+    keepPreviousData: true,
   });
 }
