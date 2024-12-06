@@ -11,19 +11,25 @@ import {
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { TAB_VIEW_ROW_HEIGHT } from '../Dimensions';
 import { RAINBOW_HOME } from '../constants';
-import { determineGestureType, determineTapResult, handleGestureEnd, updateTabGestureState } from '../utils/gestureUtils';
+import {
+  determineGestureType,
+  determineTapResult,
+  handleGestureEnd,
+  resetTabCloseGestures,
+  updateTabGestureState,
+} from '../utils/gestureUtils';
 import { calculateScrollPositionToCenterTab } from '../utils/layoutUtils';
 import { TabHitResult, tabHitTest } from '../utils/tabHitTest';
 
-const ENABLE_PAN_LOGS = IS_DEV && false;
-const ENABLE_SCROLL_VIEW_LOGS = IS_DEV && false;
+const ENABLE_PAN_LOGS = false;
+const ENABLE_SCROLL_VIEW_LOGS = false;
 
 export function useBrowserScrollView() {
   const {
@@ -224,16 +230,7 @@ export function useBrowserScrollView() {
       .onTouchesCancelled((_, manager) => {
         if (ENABLE_PAN_LOGS) console.log('[Pan Gesture] TOUCH CANCELLED');
 
-        if (touchInfo.value?.initialTappedTab) {
-          const { tabId, tabIndex } = touchInfo.value.initialTappedTab;
-          updateTabGestureState(activeTabCloseGestures, {
-            gestureScale: 1,
-            gestureX: 0,
-            isActive: false,
-            tabId,
-            tabIndex,
-          });
-        }
+        resetTabCloseGestures({ activeTabCloseGestures, currentlyBeingClosedTabIds: currentlyBeingClosedTabIds.value });
 
         manager.fail();
         gestureManagerState.value = 'inactive';
@@ -265,6 +262,10 @@ export function useBrowserScrollView() {
             toggleTabViewWorklet(result.tabInfo.tabIndex);
             touchInfo.value = undefined;
             break;
+
+          case 'ignore':
+            resetTabCloseGestures({ activeTabCloseGestures, currentlyBeingClosedTabIds: currentlyBeingClosedTabIds.value });
+            break;
         }
 
         manager.end();
@@ -275,16 +276,8 @@ export function useBrowserScrollView() {
       .onEnd((e, success) => {
         if (ENABLE_PAN_LOGS) console.log('[Pan Gesture] ON END');
 
-        if (!touchInfo.value?.initialTappedTab) return;
-
-        if (!success) {
-          updateTabGestureState(activeTabCloseGestures, {
-            gestureScale: 1,
-            gestureX: 0,
-            isActive: false,
-            tabId: touchInfo.value.initialTappedTab.tabId,
-            tabIndex: touchInfo.value.initialTappedTab.tabIndex,
-          });
+        if (!touchInfo.value?.initialTappedTab || !success) {
+          resetTabCloseGestures({ activeTabCloseGestures, currentlyBeingClosedTabIds: currentlyBeingClosedTabIds.value });
           gestureManagerState.value = 'inactive';
           touchInfo.value = undefined;
           return;
@@ -301,17 +294,8 @@ export function useBrowserScrollView() {
           velocityX: e.velocityX,
         });
 
-        if (shouldClose) {
-          closeTab(tabId, tabIndex, e.velocityX);
-        } else {
-          updateTabGestureState(activeTabCloseGestures, {
-            gestureScale: 1,
-            gestureX: 0,
-            isActive: false,
-            tabId,
-            tabIndex,
-          });
-        }
+        if (shouldClose) closeTab(tabId, tabIndex, e.velocityX);
+        else resetTabCloseGestures({ activeTabCloseGestures, currentlyBeingClosedTabIds: currentlyBeingClosedTabIds.value });
       });
 
     return Gesture.Simultaneous(manualPanGesture, nativeScrollViewGesture);
@@ -319,6 +303,7 @@ export function useBrowserScrollView() {
     activeTabCloseGestures,
     animatedTabUrls,
     closeTab,
+    currentlyBeingClosedTabIds,
     currentlyOpenTabIds,
     gestureManagerState,
     multipleTabsOpen,

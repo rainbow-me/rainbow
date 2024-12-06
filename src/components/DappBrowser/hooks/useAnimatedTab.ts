@@ -12,11 +12,13 @@ import {
 } from 'react-native-reanimated';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode } from '@/design-system';
+import { IS_ANDROID } from '@/env';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import {
   COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
+  EXTRA_WEBVIEW_HEIGHT,
   MULTI_TAB_SCALE,
   MULTI_TAB_SCALE_DIFF,
   SINGLE_TAB_SCALE,
@@ -47,7 +49,6 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     tabViewGestureProgress,
     tabViewGestureState,
     tabViewProgress,
-    tabViewVisible,
   } = useBrowserContext();
   const { closeTabWorklet } = useBrowserWorkletsContext();
 
@@ -124,8 +125,15 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
       tabViewProgress: tabViewProgress.value,
     });
 
+    const backgroundColor = isOnHomepage ? homepageBackgroundColor : safeBackgroundColor.value;
+
+    if (IS_ANDROID) return { backgroundColor };
+
+    const paddingBottom = isFullSizeTab ? EXTRA_WEBVIEW_HEIGHT - extraWebViewHeight.value : EXTRA_WEBVIEW_HEIGHT;
+
     return {
       backgroundColor: isOnHomepage ? homepageBackgroundColor : safeBackgroundColor.value,
+      paddingBottom,
     };
   });
 
@@ -161,13 +169,11 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     const isTabBeingClosed = !currentlyOpenTabIds.value.includes(tabId);
     const pointerEvents = isTabBeingClosed
       ? 'none'
-      : tabViewVisible.value
+      : animatedIsActiveTab && tabViewGestureState.value !== TabViewGestureStates.ACTIVE
         ? 'auto'
-        : animatedIsActiveTab && !isSwitchingTabs
-          ? 'auto'
-          : 'none';
+        : 'none';
 
-    const shouldUseTabSwitchStyles = tabViewGestureState.value !== TabViewGestureStates.INACTIVE && isFullSizeTab;
+    const shouldUseTabSwitchStyles = isSwitchingTabs && isFullSizeTab;
 
     return {
       borderRadius,

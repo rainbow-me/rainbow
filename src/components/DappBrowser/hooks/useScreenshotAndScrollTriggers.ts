@@ -85,8 +85,7 @@ export function useScreenshotAndScrollTriggers() {
         current.tabViewProgress <= 1;
 
       const enterTabViewAnimationIsComplete = tabViewVisible.value && previous.tabViewProgress > 100 && current.tabViewProgress <= 100;
-      const exitTabViewAnimationIsComplete =
-        /* IS_IOS && */ !tabViewVisible.value && current.tabViewProgress === 0 && previous.tabViewProgress !== 0;
+      const exitTabViewAnimationIsComplete = !tabViewVisible.value && current.tabViewProgress === 0 && previous.tabViewProgress !== 0;
 
       const shouldAttemptScreenshot = didBeginSwitchingTabs || enterTabViewAnimationIsComplete;
       const shouldAttemptScroll = didFinishSwitchingTabs || exitTabViewAnimationIsComplete;

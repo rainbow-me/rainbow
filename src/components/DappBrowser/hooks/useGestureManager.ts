@@ -1,7 +1,6 @@
-import { GestureResponderEvent, NativeSyntheticEvent } from 'react-native';
-import { runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useCallback, useRef } from 'react';
-import { useBrowserStore } from '@/state/browser/browserStore';
+import { GestureResponderEvent, NativeSyntheticEvent } from 'react-native';
+import { useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { EXTRA_WEBVIEW_HEIGHT, GROW_WEBVIEW_THRESHOLD, SHRINK_WEBVIEW_THRESHOLD, WEBVIEW_HEIGHT } from '../Dimensions';
 import { ActiveTabCloseGestures, BrowserContextType, GestureManagerState, TabViewGestureStates, WebViewScrollEvent } from '../types';
@@ -36,12 +35,6 @@ export function useGestureManager({
   const scrollPositionRef = useRef<number | undefined>(undefined);
   const startScrollPositionRef = useRef<number | undefined>(undefined);
   const touchPositionYRef = useRef<number | undefined>(undefined);
-
-  const shouldExpandWebView = useDerivedValue(
-    () => shouldCollapseBottomBar.value || (!shouldCollapseBottomBar.value && extraWebViewHeight.value > 0)
-  );
-
-  const setShouldExpandWebView = useBrowserStore(state => state.setShouldExpandWebView);
 
   const onScrollWebView = useCallback(
     (event: NativeSyntheticEvent<WebViewScrollEvent>) => {
@@ -108,21 +101,6 @@ export function useGestureManager({
     scrollPositionRef.current = undefined;
     touchPositionYRef.current = undefined;
   }, []);
-
-  // Handles expanding the WebView when scrolling down the page
-  useAnimatedReaction(
-    () => shouldExpandWebView.value,
-    (shouldExpand, wasExpanded) => {
-      if (wasExpanded === null) return;
-
-      if (!wasExpanded && shouldExpand) {
-        runOnJS(setShouldExpandWebView)(true);
-      } else if (wasExpanded && !shouldExpand) {
-        runOnJS(setShouldExpandWebView)(false);
-      }
-    },
-    []
-  );
 
   // Manages setting the last active homepage tab, which is used to determine which homepage should allow reordering favorites
   useAnimatedReaction(

@@ -152,7 +152,6 @@ export const useBrowserStore = create<BrowserStore>()(
       (set, get) => ({
         activeTabIndex: INITIAL_ACTIVE_TAB_INDEX,
         persistedTabUrls: INITIAL_PERSISTED_TAB_URLS,
-        shouldExpandWebView: false,
         tabIds: INITIAL_TAB_IDS,
         tabsData: INITIAL_TABS_DATA,
 
@@ -252,8 +251,6 @@ export const useBrowserStore = create<BrowserStore>()(
             }
             return state;
           }),
-
-        setShouldExpandWebView: shouldExpandWebView => set(() => ({ shouldExpandWebView })),
 
         setTabIds: newTabIds =>
           set(state => {
