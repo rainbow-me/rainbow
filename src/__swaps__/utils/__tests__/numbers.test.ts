@@ -1,4 +1,4 @@
-import { convertAmountToNativeDisplayWorklet } from '../numbers';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { supportedCurrencies } from '@/references/supportedCurrencies';
 
 const testCases = [
@@ -13,7 +13,7 @@ const testCases = [
   { value: 1234.56, currency: supportedCurrencies.NZD, expected: 'NZ$1,234.56' },
   { value: 1234.56, currency: supportedCurrencies.GBP, expected: '£1,234.56' },
   { value: 1234.56, currency: supportedCurrencies.CNY, expected: '¥1,234.56' },
-  { value: 1234.56, currency: supportedCurrencies.JPY, expected: '¥1,234.56' },
+  { value: 1234.56, currency: supportedCurrencies.JPY, expected: '¥1,235' },
   { value: 1234.56, currency: supportedCurrencies.INR, expected: '₹1,234.56' },
   { value: 1234.56, currency: supportedCurrencies.TRY, expected: '₺1,234.56' },
   { value: 1234.56, currency: supportedCurrencies.ZAR, expected: 'R1,234.56' },

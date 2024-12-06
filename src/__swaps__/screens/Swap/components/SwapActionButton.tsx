@@ -20,6 +20,7 @@ import { AnimatedText, Box, Column, Columns, Cover, globalColors, useColorMode, 
 import { IS_IOS } from '@/env';
 import { GestureHandlerButton, GestureHandlerButtonProps } from './GestureHandlerButton';
 import { useSwapContext } from '../providers/swap-provider';
+import { SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 
 function SwapButton({
   asset,
@@ -39,9 +40,9 @@ function SwapButton({
   asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
   borderRadius?: number;
   disableShadow?: boolean;
-  icon?: string | DerivedValue<string | undefined>;
+  icon?: string | SharedOrDerivedValueText;
   iconStyle?: StyleProp<TextStyle>;
-  label: string | DerivedValue<string | undefined>;
+  label: string | SharedOrDerivedValueText;
   outline?: boolean;
   rightIcon?: string;
   small?: boolean;
@@ -61,7 +62,7 @@ function SwapButton({
   });
 
   const secondaryTextStyles = useAnimatedStyle(() => {
-    const secondaryColor = getColorValueForThemeWorklet(asset.value?.textColor, isDarkMode, true);
+    const secondaryColor = getColorValueForThemeWorklet(asset.value?.textColor, isDarkMode);
 
     let opacity = isDarkMode ? 0.76 : 0.8;
     if (secondaryColor === globalColors.grey100) {
@@ -75,9 +76,7 @@ function SwapButton({
 
   const buttonWrapperStyles = useAnimatedStyle(() => {
     return {
-      backgroundColor: outline
-        ? 'transparent'
-        : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode, true) || fallbackColor,
+      backgroundColor: outline ? 'transparent' : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode) || fallbackColor,
       borderColor: outline ? separatorSecondary : undefined,
       borderRadius: borderRadius ?? 24,
       height: small ? 36 : 48,
@@ -169,7 +168,7 @@ const HoldProgress = ({ holdProgress }: { holdProgress: SharedValue<number> }) =
   const { internalSelectedOutputAsset } = useSwapContext();
 
   const [brightenedColor, setBrightenedColor] = useState<string>(
-    transformColor(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true), false)
+    transformColor(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode), false)
   );
 
   const holdProgressStyle = useAnimatedStyle(() => {
@@ -192,7 +191,7 @@ const HoldProgress = ({ holdProgress }: { holdProgress: SharedValue<number> }) =
     () => internalSelectedOutputAsset.value?.highContrastColor,
     (current, previous) => {
       if (current && current !== previous) {
-        runOnJS(transformColor)(getColorValueForThemeWorklet(current, isDarkMode, true));
+        runOnJS(transformColor)(getColorValueForThemeWorklet(current, isDarkMode));
       }
     },
     []
@@ -244,9 +243,9 @@ export const SwapActionButton = ({
   disableShadow?: boolean;
   holdProgress?: SharedValue<number>;
   hugContent?: boolean;
-  icon?: string | DerivedValue<string | undefined>;
+  icon?: string | SharedOrDerivedValueText;
   iconStyle?: StyleProp<TextStyle>;
-  label: string | DerivedValue<string | undefined>;
+  label: string | SharedOrDerivedValueText;
   longPressDuration?: GestureHandlerButtonProps['longPressDuration'];
   onLongPressEndWorklet?: GestureHandlerButtonProps['onLongPressEndWorklet'];
   onLongPressWorklet?: GestureHandlerButtonProps['onLongPressWorklet'];

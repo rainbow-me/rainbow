@@ -1,24 +1,45 @@
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { StatusBar } from 'react-native';
-import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
+import { IS_IOS } from '@/env';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { safeAreaInsetValues } from '@/utils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const BOTTOM_BAR_HEIGHT = 88;
-export const TOP_INSET = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight ?? 40;
-export const BOTTOM_INSET = IS_ANDROID ? NAVIGATION_BAR_HEIGHT - 8 : BOTTOM_BAR_HEIGHT;
-export const WEBVIEW_HEIGHT = deviceUtils.dimensions.height - TOP_INSET - TAB_BAR_HEIGHT - BOTTOM_INSET;
+export const SEARCH_BAR_BORDER_RADIUS = 18;
+export const SEARCH_BAR_HEIGHT = 48;
+export const SEARCH_BAR_WIDTH = DEVICE_WIDTH - 72 * 2;
+
+const ADJUSTED_DEVICE_HEIGHT = IS_IOS ? DEVICE_HEIGHT : DEVICE_HEIGHT - safeAreaInsetValues.bottom;
+
+export const TOP_INSET = IS_IOS ? Math.max(safeAreaInsetValues.top, 20) : StatusBar.currentHeight ?? 40;
+export const WEBVIEW_HEIGHT = ADJUSTED_DEVICE_HEIGHT - TOP_INSET - TAB_BAR_HEIGHT - BOTTOM_BAR_HEIGHT;
+export const EXTRA_WEBVIEW_HEIGHT = 62;
 export const COLLAPSED_WEBVIEW_ASPECT_RATIO = 4 / 3;
-export const COLLAPSED_WEBVIEW_HEIGHT_UNSCALED = Math.min(WEBVIEW_HEIGHT, deviceUtils.dimensions.width * COLLAPSED_WEBVIEW_ASPECT_RATIO);
+export const COLLAPSED_WEBVIEW_HEIGHT_UNSCALED = Math.min(WEBVIEW_HEIGHT, DEVICE_WIDTH * COLLAPSED_WEBVIEW_ASPECT_RATIO);
 
-export const TAB_VIEW_COLUMN_WIDTH = (deviceUtils.dimensions.width - 20 * 3) / 2;
-export const TAB_VIEW_SINGLE_TAB_HEIGHT = deviceUtils.dimensions.width * (COLLAPSED_WEBVIEW_HEIGHT_UNSCALED / deviceUtils.dimensions.width);
-export const TAB_VIEW_TAB_HEIGHT = TAB_VIEW_COLUMN_WIDTH * (COLLAPSED_WEBVIEW_HEIGHT_UNSCALED / deviceUtils.dimensions.width);
-export const TAB_VIEW_ROW_HEIGHT = TAB_VIEW_TAB_HEIGHT + 28;
-export const TAB_VIEW_EXTRA_TOP_PADDING = 20;
+export const GROW_WEBVIEW_THRESHOLD = 10;
+export const SHRINK_WEBVIEW_THRESHOLD = EXTRA_WEBVIEW_HEIGHT;
 
-export const INVERTED_SINGLE_TAB_SCALE = 1 / 0.7;
-export const INVERTED_MULTI_TAB_SCALE = deviceUtils.dimensions.width / TAB_VIEW_COLUMN_WIDTH;
-export const INVERTED_SCALE_DIFF = INVERTED_SINGLE_TAB_SCALE - INVERTED_MULTI_TAB_SCALE;
+export const TAB_VIEW_COLUMN_GAP = 20;
+export const TAB_VIEW_ROW_GAP = 28;
 
+export const TAB_VIEW_COLUMN_WIDTH = (DEVICE_WIDTH - TAB_VIEW_COLUMN_GAP * 3) / 2;
+export const TAB_VIEW_SINGLE_TAB_HEIGHT = DEVICE_WIDTH * (COLLAPSED_WEBVIEW_HEIGHT_UNSCALED / DEVICE_WIDTH);
+export const TAB_VIEW_TAB_HEIGHT = TAB_VIEW_COLUMN_WIDTH * (COLLAPSED_WEBVIEW_HEIGHT_UNSCALED / DEVICE_WIDTH);
+export const TAB_VIEW_ROW_HEIGHT = TAB_VIEW_TAB_HEIGHT + TAB_VIEW_ROW_GAP;
+export const TAB_VIEW_EXTRA_TOP_PADDING = 16;
+
+export const SINGLE_TAB_SCALE = 0.7;
+export const TAB_VIEW_SINGLE_TAB_WIDTH = DEVICE_WIDTH * SINGLE_TAB_SCALE;
+export const MULTI_TAB_SCALE = TAB_VIEW_COLUMN_WIDTH / DEVICE_WIDTH;
+export const MULTI_TAB_SCALE_DIFF = SINGLE_TAB_SCALE - MULTI_TAB_SCALE;
+export const INVERTED_SINGLE_TAB_SCALE = 1 / SINGLE_TAB_SCALE;
+export const INVERTED_MULTI_TAB_SCALE = DEVICE_WIDTH / TAB_VIEW_COLUMN_WIDTH;
+export const INVERTED_MULTI_TAB_SCALE_DIFF = INVERTED_SINGLE_TAB_SCALE - INVERTED_MULTI_TAB_SCALE;
+
+export const TAB_SWITCH_HORIZONTAL_GAP = 40;
+export const TAB_SWITCH_TAB_WIDTH = DEVICE_WIDTH + TAB_SWITCH_HORIZONTAL_GAP;
+export const TAB_SWITCH_X_AMPLIFICATION = 1.25;
+
+export const TAB_TRANSFORM_ORIGIN = [DEVICE_WIDTH / 2, 0, 0];
 export const ZOOMED_TAB_BORDER_RADIUS = 16;

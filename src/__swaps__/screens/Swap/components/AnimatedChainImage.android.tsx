@@ -2,16 +2,17 @@
 import React, { useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
+const ApechainBadge = require('@/assets/badges/apechain.png');
 const ArbitrumBadge = require('@/assets/badges/arbitrum.png');
+const AvalancheBadge = require('@/assets/badges/avalanche.png');
 const BaseBadge = require('@/assets/badges/base.png');
+const BlastBadge = require('@/assets/badges/blast.png');
 const BscBadge = require('@/assets/badges/bsc.png');
+const DegenBadge = require('@/assets/badges/degen.png');
 const EthereumBadge = require('@/assets/badges/ethereum.png');
 const OptimismBadge = require('@/assets/badges/optimism.png');
 const PolygonBadge = require('@/assets/badges/polygon.png');
 const ZoraBadge = require('@/assets/badges/zora.png');
-const AvalancheBadge = require('@/assets/badges/avalanche.png');
-const BlastBadge = require('@/assets/badges/blast.png');
-const DegenBadge = require('@/assets/badges/degen.png');
 
 import { ChainId } from '@/chains/types';
 import { globalColors } from '@/design-system';
@@ -19,26 +20,27 @@ import { PIXEL_RATIO } from '@/utils/deviceUtils';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 
 const networkBadges = {
-  [ChainId.mainnet]: EthereumBadge,
-  [ChainId.polygon]: PolygonBadge,
-  [ChainId.optimism]: OptimismBadge,
+  [ChainId.apechain]: ApechainBadge,
   [ChainId.arbitrum]: ArbitrumBadge,
-  [ChainId.base]: BaseBadge,
-  [ChainId.zora]: ZoraBadge,
-  [ChainId.bsc]: BscBadge,
-  [ChainId.avalanche]: AvalancheBadge,
-  [ChainId.sepolia]: EthereumBadge,
-  [ChainId.holesky]: EthereumBadge,
-  [ChainId.optimismSepolia]: OptimismBadge,
-  [ChainId.bscTestnet]: BscBadge,
-  [ChainId.polygonAmoy]: PolygonBadge,
   [ChainId.arbitrumSepolia]: ArbitrumBadge,
-  [ChainId.baseSepolia]: BaseBadge,
-  [ChainId.zoraSepolia]: ZoraBadge,
+  [ChainId.avalanche]: AvalancheBadge,
   [ChainId.avalancheFuji]: AvalancheBadge,
+  [ChainId.base]: BaseBadge,
+  [ChainId.baseSepolia]: BaseBadge,
   [ChainId.blast]: BlastBadge,
   [ChainId.blastSepolia]: BlastBadge,
+  [ChainId.bsc]: BscBadge,
+  [ChainId.bscTestnet]: BscBadge,
   [ChainId.degen]: DegenBadge,
+  [ChainId.holesky]: EthereumBadge,
+  [ChainId.mainnet]: EthereumBadge,
+  [ChainId.optimism]: OptimismBadge,
+  [ChainId.optimismSepolia]: OptimismBadge,
+  [ChainId.polygon]: PolygonBadge,
+  [ChainId.polygonAmoy]: PolygonBadge,
+  [ChainId.sepolia]: EthereumBadge,
+  [ChainId.zora]: ZoraBadge,
+  [ChainId.zoraSepolia]: ZoraBadge,
 };
 
 export function AnimatedChainImage({

@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { GestureHandlerButton } from './GestureHandlerButton';
 import { AnimatedText, Box } from '@/design-system';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -9,7 +10,7 @@ import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { useClipboard } from '@/hooks';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { triggerHapticFeedback } from '@/screens/points/constants';
+import { IS_ANDROID } from '@/env';
 
 const CANCEL_LABEL = i18n.t(i18n.l.button.cancel);
 const CLOSE_LABEL = i18n.t(i18n.l.button.close);
@@ -35,6 +36,7 @@ export const SearchInputButton = ({
     outputSearchRef,
     AnimatedSwapStyles,
   } = useSwapContext();
+
   const { hasClipboardData } = useClipboard();
 
   const btnText = useDerivedValue(() => {
@@ -52,31 +54,24 @@ export const SearchInputButton = ({
     return PASTE_LABEL;
   });
 
-  const onPaste = useCallback(
-    (isPasteDisabled: boolean) => {
-      if (isPasteDisabled) {
-        triggerHapticFeedback('notificationError');
-        return;
-      }
-
-      Clipboard.getString().then(text => {
-        // Slice the pasted text to the length of an ETH address
-        const v = text.trim().slice(0, 42);
-        pastedSearchInputValue.value = v;
-        useSwapsStore.setState({ outputSearchQuery: v });
-      });
-    },
-    [pastedSearchInputValue]
-  );
+  const onPaste = useCallback(() => {
+    Clipboard.getString().then(text => {
+      // Slice the pasted text to the length of an ETH address
+      const v = text.trim().slice(0, 42);
+      pastedSearchInputValue.value = v;
+      useSwapsStore.setState({ outputSearchQuery: v });
+    });
+  }, [pastedSearchInputValue]);
 
   const buttonInfo = useDerivedValue(() => {
     const isInputSearchFocused = inputProgress.value === NavigationSteps.SEARCH_FOCUSED;
     const isOutputSearchFocused = outputProgress.value === NavigationSteps.SEARCH_FOCUSED;
     const isOutputTokenListFocused = outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED;
 
-    const isVisible = isInputSearchFocused || isOutputSearchFocused || output || (!output && !!internalSelectedInputAsset.value);
+    const clipboardDataAvailable = hasClipboardData || IS_ANDROID;
 
-    const isPasteDisabled = output && !internalSelectedOutputAsset.value && isOutputTokenListFocused && !hasClipboardData;
+    const isPasteDisabled = output && !internalSelectedOutputAsset.value && isOutputTokenListFocused && !clipboardDataAvailable;
+    const isVisible = isInputSearchFocused || isOutputSearchFocused || output || (!output && !!internalSelectedInputAsset.value);
     const visibleOpacity = isPasteDisabled ? 0.4 : 1;
 
     return {
@@ -103,7 +98,11 @@ export const SearchInputButton = ({
         onPressWorklet={() => {
           'worklet';
           if (output && outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value) {
-            runOnJS(onPaste)(buttonInfo.value.isPasteDisabled);
+            if (buttonInfo.value.isPasteDisabled) {
+              triggerHaptics('notificationError');
+            } else {
+              runOnJS(onPaste)();
+            }
           }
 
           if (isSearchFocused.value || (output && internalSelectedOutputAsset.value) || (!output && internalSelectedInputAsset.value)) {

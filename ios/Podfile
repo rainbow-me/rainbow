@@ -1,3 +1,4 @@
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 platform :ios, '15.0'
 source 'https://github.com/CocoaPods/Specs.git'
 #use_modular_headers!
@@ -36,6 +37,19 @@ end
 
 target 'Rainbow' do
 
+  use_expo_modules!
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+  end
   # Pods for Rainbow
   config = use_native_modules!
 
@@ -69,7 +83,7 @@ target 'Rainbow' do
   pod 'SRSRadialGradient', :path => '../node_modules/react-native-radial-gradient/ios'
   pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
   pod 'react-native-ble-plx', :path => '../node_modules/react-native-ble-plx'
-  pod 'TOCropViewController', '2.7.3'
+  pod 'TOCropViewController', '~> 2.7.4'
 
   use_native_modules!
 

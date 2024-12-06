@@ -1,24 +1,30 @@
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import WalletTypes from '../../helpers/walletTypes';
 import { address } from '../../utils/abbreviations';
-import Divider from '../Divider';
+import { Text } from '@/components/text';
+import Divider from '@/components/Divider';
 import { EmptyAssetList } from '../asset-list';
-import { Column } from '../layout';
+import { Centered, Column, Row } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
 import { EthereumAddress } from '@rainbow-me/entities';
-import { useAccountSettings } from '@/hooks';
+import { useAccountSettings, useWalletsWithBalancesAndNames } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
-import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
+import { getExperimetalFlag, HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { Inset, Stack } from '@/design-system';
 import { Network } from '@/chains/types';
+import { SheetTitle } from '../sheet';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { useTheme } from '@/theme';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -40,8 +46,7 @@ const getItemLayout = (data: any, index: number) => {
 
 const keyExtractor = (item: any) => `${item.walletId}-${item?.id}`;
 
-// @ts-ignore
-const Container = styled.View({
+const Container = styled(View)({
   height: ({ height }: { height: number }) => height,
   marginTop: -2,
 });
@@ -59,7 +64,7 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
   paddingTop: listTopPadding,
 });
 
-const WalletFlatList = styled(FlatList).attrs(({ showDividers }: { showDividers: boolean }) => ({
+const WalletFlatList: FlatList = styled(FlatList).attrs(({ showDividers }: { showDividers: boolean }) => ({
   contentContainerStyle: {
     paddingBottom: showDividers ? 9.5 : 0,
     paddingTop: listTopPadding,
@@ -80,18 +85,61 @@ const WalletListDivider = styled(Divider).attrs(({ theme: { colors } }: any) => 
   marginTop: -1,
 });
 
+const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }: { editMode: boolean }) => ({
+  scaleTo: 0.96,
+  wrapperStyle: {
+    width: editMode ? 70 : 58,
+  },
+  width: editMode ? 100 : 100,
+}))(
+  IS_IOS
+    ? {
+        position: 'absolute',
+        right: 20,
+        top: -11,
+      }
+    : {
+        elevation: 10,
+        position: 'relative',
+        right: 20,
+        top: 6,
+      }
+);
+
+const EditButtonLabel = styled(Text).attrs(({ theme: { colors }, editMode }: { theme: any; editMode: boolean }) => ({
+  align: 'right',
+  color: colors.appleBlue,
+  letterSpacing: 'roundedMedium',
+  size: 'large',
+  weight: editMode ? 'bold' : 'semibold',
+  numberOfLines: 1,
+  ellipsizeMode: 'tail',
+}))({
+  height: 40,
+});
+
+const FOOTER_HEIGHT = getExperimetalFlag(HARDWARE_WALLETS) ? 100 : 60;
+const LIST_PADDING_BOTTOM = 6;
+export const MAX_LIST_HEIGHT = DEVICE_HEIGHT - 220;
+const WALLET_ROW_HEIGHT = 59;
+const WATCH_ONLY_BOTTOM_PADDING = IS_ANDROID ? 20 : 0;
+
+const getWalletListHeight = (numWallets: number, watchOnly: boolean) => {
+  const baseHeight = !watchOnly ? FOOTER_HEIGHT + LIST_PADDING_BOTTOM : WATCH_ONLY_BOTTOM_PADDING;
+  const calculatedHeight = baseHeight + numWallets * (WALLET_ROW_HEIGHT + 6);
+  return Math.min(calculatedHeight, MAX_LIST_HEIGHT);
+};
+
 interface Props {
   accountAddress: EthereumAddress;
-  allWallets: any;
+  allWallets: ReturnType<typeof useWalletsWithBalancesAndNames>;
   contextMenuActions: EditWalletContextMenuActions;
   currentWallet: any;
   editMode: boolean;
-  height: number;
+  onPressEditMode: () => void;
   onChangeAccount: (walletId: string, address: EthereumAddress) => void;
   onPressAddAnotherWallet: () => void;
   onPressPairHardwareWallet: () => void;
-  scrollEnabled: boolean;
-  showDividers: boolean;
   watchOnly: boolean;
 }
 
@@ -101,12 +149,10 @@ export default function WalletList({
   contextMenuActions,
   currentWallet,
   editMode,
-  height,
+  onPressEditMode,
   onChangeAccount,
   onPressAddAnotherWallet,
   onPressPairHardwareWallet,
-  scrollEnabled,
-  showDividers,
   watchOnly,
 }: Props) {
   const [rows, setRows] = useState<any[]>([]);
@@ -116,6 +162,9 @@ export default function WalletList({
   const opacityAnimation = useSharedValue(0);
   const emptyOpacityAnimation = useSharedValue(1);
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
+  const { colors } = useTheme();
+
+  const containerHeight = useMemo(() => getWalletListHeight(rows.length, watchOnly), [rows.length, watchOnly]);
 
   // Update the rows when allWallets changes
   useEffect(() => {
@@ -214,42 +263,57 @@ export default function WalletList({
   );
 
   return (
-    <Container height={height}>
-      <Animated.View style={[StyleSheet.absoluteFill, emptyOpacityStyle]}>
-        <EmptyWalletList />
-      </Animated.View>
+    <Container height={containerHeight}>
+      <Column height={40} justify="space-between">
+        <Centered>
+          <SheetTitle testID="change-wallet-sheet-title">{lang.t('wallet.label')}</SheetTitle>
+
+          {!watchOnly && (
+            <Row style={{ position: 'absolute', right: 0 }}>
+              <EditButton editMode={editMode} onPress={onPressEditMode}>
+                <EditButtonLabel editMode={editMode}>{editMode ? lang.t('button.done') : lang.t('button.edit')}</EditButtonLabel>
+              </EditButton>
+            </Row>
+          )}
+        </Centered>
+        <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
+      </Column>
       <WalletsContainer style={opacityStyle}>
         <WalletFlatList
           data={rows}
-          initialNumToRender={rows.length}
+          initialNumToRender={10}
           ref={scrollView}
+          scrollEnabled={containerHeight >= MAX_LIST_HEIGHT}
           renderItem={renderItem}
-          scrollEnabled={scrollEnabled}
-          showDividers={showDividers}
+          ListEmptyComponent={() => (
+            <Animated.View style={[StyleSheet.absoluteFill, emptyOpacityStyle]}>
+              <EmptyWalletList />
+            </Animated.View>
+          )}
         />
-        {showDividers && <WalletListDivider />}
-        {!watchOnly && (
-          <Inset space="20px">
-            <Stack space="24px">
+      </WalletsContainer>
+      <WalletListDivider />
+      {!watchOnly && (
+        <Inset space="20px">
+          <Stack space="24px">
+            <WalletOption
+              editMode={editMode}
+              label={`􀁍 ${lang.t('wallet.action.add_another')}`}
+              onPress={onPressAddAnotherWallet}
+              testID="add-another-wallet-button"
+            />
+
+            {hardwareWalletsEnabled && (
               <WalletOption
                 editMode={editMode}
-                label={`􀁍 ${lang.t('wallet.action.add_another')}`}
-                onPress={onPressAddAnotherWallet}
-                testID="add-another-wallet-button"
+                label={`􀱝 ${lang.t('wallet.action.pair_hardware_wallet')}`}
+                onPress={onPressPairHardwareWallet}
+                testID="pair-hardware-wallet-button"
               />
-
-              {hardwareWalletsEnabled && (
-                <WalletOption
-                  editMode={editMode}
-                  label={`􀱝 ${lang.t('wallet.action.pair_hardware_wallet')}`}
-                  onPress={onPressPairHardwareWallet}
-                  testID="pair-hardware-wallet-button"
-                />
-              )}
-            </Stack>
-          </Inset>
-        )}
-      </WalletsContainer>
+            )}
+          </Stack>
+        </Inset>
+      )}
     </Container>
   );
 }

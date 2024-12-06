@@ -60,9 +60,8 @@ import {
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
-import { ExchangeModalNavigator } from './index';
 import { deviceUtils } from '@/utils';
-import useExperimentalFlag, { PROFILES, SWAPS_V2 } from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
@@ -87,9 +86,9 @@ import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileCo
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
+import { ClaimClaimablePanel } from '@/screens/claimables/ClaimClaimablePanel';
 import { RootStackParamList } from './types';
 
 const Stack = createStackNavigator();
@@ -114,7 +113,6 @@ function MainNavigator() {
           cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
         }}
       />
-      <Stack.Screen component={ExchangeModalNavigator} name={Routes.EXCHANGE_MODAL} options={exchangePreset} />
       <Stack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} options={androidRecievePreset} />
 
       <Stack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} options={wcPromptPreset} />
@@ -142,9 +140,7 @@ function MainOuterNavigator() {
 }
 
 function BSNavigator() {
-  const remoteConfig = useRemoteConfig();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
 
   return (
     <BSStack.Navigator>
@@ -247,8 +243,9 @@ function BSNavigator() {
       <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
       <BSStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} />
       <BSStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} />
+      <BSStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} />
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
-      {swapsV2Enabled && <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />}
+      <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
     </BSStack.Navigator>
   );
 }

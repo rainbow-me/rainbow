@@ -11,9 +11,10 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
-
+import { supportedNativeCurrencies } from '@/references';
 import { Bleed, Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { stripCommas } from '@/__swaps__/utils/swaps';
+import { equalWorklet } from '@/safe-math/SafeMath';
+import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import {
   CUSTOM_KEYBOARD_HEIGHT,
   LIGHT_SEPARATOR_COLOR,
@@ -30,6 +31,7 @@ import { colors } from '@/styles';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { IS_IOS } from '@/env';
 import { inputKeys } from '@/__swaps__/types/swap';
+import { useAccountSettings } from '@/hooks';
 
 type numberPadCharacter = number | 'backspace' | '.';
 
@@ -49,23 +51,81 @@ const getFormattedInputKey = (inputKey: inputKeys) => {
 
 export const SwapNumberPad = () => {
   const { isDarkMode } = useColorMode();
-  const { focusedInput, isQuoteStale, SwapInputController, configProgress, outputQuotesAreDisabled } = useSwapContext();
+  const { nativeCurrency } = useAccountSettings();
+  const {
+    focusedInput,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    isQuoteStale,
+    SwapInputController,
+    configProgress,
+    outputQuotesAreDisabled,
+  } = useSwapContext();
 
   const longPressTimer = useSharedValue(0);
 
+  const removeFormatting = (inputKey: inputKeys) => {
+    'worklet';
+    return stripNonDecimalNumbers(SwapInputController[getFormattedInputKey(inputKey)].value);
+  };
+
+  const ignoreChange = ({ currentValue, addingDecimal = false }: { currentValue?: string; addingDecimal?: boolean }) => {
+    'worklet';
+    // ignore when: outputQuotesAreDisabled and we are updating the output amount or output native value
+    if ((focusedInput.value === 'outputAmount' || focusedInput.value === 'outputNativeValue') && outputQuotesAreDisabled.value) {
+      return true;
+    }
+
+    // ignore when: corresponding asset does not have a price and we are updating native inputs
+    const inputAssetPrice = internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
+    const outputAssetPrice = internalSelectedOutputAsset.value?.nativePrice || internalSelectedOutputAsset.value?.price?.value || 0;
+    const outputAssetHasNoPrice = !outputAssetPrice || equalWorklet(outputAssetPrice, 0);
+    const inputAssetHasNoPrice = !inputAssetPrice || equalWorklet(inputAssetPrice, 0);
+    if (
+      (focusedInput.value === 'outputNativeValue' && outputAssetHasNoPrice) ||
+      (focusedInput.value === 'inputNativeValue' && inputAssetHasNoPrice)
+    ) {
+      return true;
+    }
+
+    // ignore when: decimals exceed native currency decimals
+    if (currentValue) {
+      const currentValueDecimals = currentValue.split('.')?.[1]?.length ?? -1;
+      const nativeCurrencyDecimals = supportedNativeCurrencies[nativeCurrency].decimals;
+
+      const isNativePlaceholderValue = equalWorklet(currentValue, 0) && SwapInputController.inputMethod.value !== focusedInput.value;
+
+      if (addingDecimal && nativeCurrencyDecimals === 0) {
+        return true;
+      } else if (
+        (focusedInput.value === 'inputNativeValue' || focusedInput.value === 'outputNativeValue') &&
+        !isNativePlaceholderValue &&
+        currentValueDecimals >= nativeCurrencyDecimals
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   const addNumber = (number?: number) => {
     'worklet';
-    if ((focusedInput.value === 'outputAmount' || focusedInput.value === 'outputNativeValue') && outputQuotesAreDisabled.value) {
+    const inputKey = focusedInput.value;
+    const currentValue = removeFormatting(inputKey);
+
+    if (ignoreChange({ currentValue })) {
       return;
     }
 
     // Immediately stop the quote fetching interval
     SwapInputController.quoteFetchingInterval.stop();
 
-    const inputKey = focusedInput.value;
-    const currentValue = stripCommas(SwapInputController[getFormattedInputKey(inputKey)].value);
+    const inputMethod = SwapInputController.inputMethod.value;
 
-    const newValue = currentValue === '0' ? `${number}` : `${currentValue}${number}`;
+    const isNativePlaceholderValue =
+      equalWorklet(currentValue, 0) && inputMethod !== inputKey && (inputKey === 'inputNativeValue' || inputKey === 'outputNativeValue');
+
+    const newValue = currentValue === '0' || isNativePlaceholderValue ? `${number}` : `${currentValue}${number}`;
 
     // For a uint256, the maximum value is:
     // 2e256 − 1 =115792089237316195423570985008687907853269984665640564039457584007913129639935
@@ -79,7 +139,7 @@ export const SwapNumberPad = () => {
       isQuoteStale.value = 1;
     }
 
-    if (SwapInputController.inputMethod.value !== inputKey) {
+    if (inputMethod !== inputKey) {
       SwapInputController.inputMethod.value = inputKey;
     }
 
@@ -94,7 +154,11 @@ export const SwapNumberPad = () => {
   const addDecimalPoint = () => {
     'worklet';
     const inputKey = focusedInput.value;
-    const currentValue = stripCommas(SwapInputController[getFormattedInputKey(inputKey)].value);
+    const currentValue = removeFormatting(inputKey);
+
+    if (ignoreChange({ currentValue, addingDecimal: true })) {
+      return;
+    }
 
     if (!currentValue.includes('.')) {
       if (SwapInputController.inputMethod.value !== inputKey) {
@@ -115,7 +179,7 @@ export const SwapNumberPad = () => {
   const deleteLastCharacter = () => {
     'worklet';
 
-    if ((focusedInput.value === 'outputAmount' || focusedInput.value === 'outputNativeValue') && outputQuotesAreDisabled.value) {
+    if (ignoreChange({})) {
       return;
     }
 
@@ -125,7 +189,7 @@ export const SwapNumberPad = () => {
       SwapInputController.inputMethod.value = inputKey;
     }
 
-    const currentValue = stripCommas(SwapInputController[getFormattedInputKey(inputKey)].value);
+    const currentValue = removeFormatting(inputKey);
     // Handle deletion, ensuring a placeholder zero remains if the entire number is deleted
     const newValue = currentValue.length > 1 ? currentValue.slice(0, -1) : 0;
 

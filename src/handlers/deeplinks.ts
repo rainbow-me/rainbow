@@ -2,16 +2,15 @@ import URL from 'url-parse';
 import { parseUri } from '@walletconnect/utils';
 
 import store from '@/redux/store';
-import { walletConnectOnSessionRequest, walletConnectRemovePendingRedirect, walletConnectSetPendingRedirect } from '@/redux/walletconnect';
-
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
+import { showWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { defaultConfig } from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
 import { delay } from '@/utils/delay';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import ethereumUtils from '@/utils/ethereumUtils';
+import ethereumUtils, { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { logger } from '@/logger';
 import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
 import { analyticsV2 } from '@/analytics';
@@ -21,6 +20,17 @@ import { queryClient } from '@/react-query';
 import { pointsReferralCodeQueryKey } from '@/resources/points';
 import { useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 import { InitialRoute } from '@/navigation/initialRoute';
+import { ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
+import { GasSpeed } from '@/__swaps__/types/gas';
+
+import { parseSearchAsset } from '@/__swaps__/utils/assets';
+import { supportedSwapChainIds } from '@/chains';
+import { queryTokenSearch } from '@/__swaps__/screens/Swap/resources/search/search';
+import { clamp } from '@/__swaps__/utils/swaps';
+import { isAddress } from 'viem';
+import { navigateToSwaps, SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
   url: string;
@@ -207,6 +217,12 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
         break;
       }
 
+      case 'swap': {
+        logger.debug(`[handleDeeplink]: swap`, { url });
+        handleSwapsDeeplink(url);
+        break;
+      }
+
       case 'wsegue': {
         const response = await handleRequestUrl(url);
         if (response.error) {
@@ -275,9 +291,8 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
  * already handled.
  *
  * In the case of WC, we don't want this to happen because we'll try to connect
- * to a session that's either already active or expired. In WC v1, we handled
- * this using `walletConnectUris` state in Redux. We now handle this here,
- * before we even reach application code.
+ * to a session that's either already active or expired.
+ * We handle this here, before we even reach application code.
  *
  * Important: dapps also use deeplinks to re-focus the user to our app, where
  * the socket connections then take over. So those URIs are always the same,
@@ -289,6 +304,7 @@ const walletConnectURICache = new Set();
 function handleWalletConnect(uri?: string, connector?: string) {
   if (!uri) {
     logger.debug(`[handleWalletConnect]: skipping uri empty`);
+    showWalletConnectToast({ isTransactionRequest: true });
     return;
   }
 
@@ -312,19 +328,9 @@ function handleWalletConnect(uri?: string, connector?: string) {
     // make sure we don't handle this again
     walletConnectURICache.add(cacheKey);
 
-    if (parsedUri.version === 1) {
-      store.dispatch(walletConnectSetPendingRedirect());
-      store.dispatch(
-        walletConnectOnSessionRequest(uri, connector, (status: any, dappScheme: any) => {
-          logger.debug(`[walletConnectOnSessionRequest] callback`, {
-            status,
-            dappScheme,
-          });
-          const type = status === 'approved' ? 'connect' : status;
-          store.dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
-        })
-      );
-    } else if (parsedUri.version === 2) {
+    showWalletConnectToast();
+
+    if (parsedUri.version === 2) {
       logger.debug(`[handleWalletConnect]: handling v2`, { uri });
       setHasPendingDeeplinkPendingRedirect(true);
       pairWalletConnect({ uri, connector });
@@ -333,7 +339,88 @@ function handleWalletConnect(uri?: string, connector?: string) {
     logger.debug(`[handleWalletConnect]: handling fallback`, { uri });
     // This is when we get focused by WC due to a signing request
     // Don't add this URI to cache
+    showWalletConnectToast({ isTransactionRequest: true });
     setHasPendingDeeplinkPendingRedirect(true);
-    store.dispatch(walletConnectSetPendingRedirect());
   }
+}
+
+const querySwapAsset = async (uniqueId: string | undefined): Promise<ParsedSearchAsset | undefined> => {
+  if (!uniqueId) return undefined;
+
+  const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
+  if (!supportedSwapChainIds.includes(parseInt(chainId.toString(), 10))) return undefined;
+  if (address !== 'eth' && address.length !== 42) return undefined;
+
+  const userAsset = userAssetsStore.getState().getUserAsset(uniqueId) || undefined;
+
+  const searchAsset = await queryTokenSearch({
+    chainId,
+    query: address.toLowerCase(),
+    keys: ['address'],
+    threshold: 'CASE_SENSITIVE_EQUAL',
+    list: 'verifiedAssets',
+  }).then(res => res[0]);
+
+  if (!searchAsset) return userAsset;
+
+  return parseSearchAsset({ searchAsset, userAsset });
+};
+
+function isValidGasSpeed(s: string | undefined): s is GasSpeed {
+  if (!s) return false;
+  return Object.values(GasSpeed).includes(s as GasSpeed);
+}
+
+async function setFromWallet(address: string | undefined) {
+  if (!address || !isAddress(address)) return;
+
+  const userWallets = store.getState().wallets.wallets!;
+  const wallet = Object.values(userWallets).find(w => w.addresses.some(a => a.address === address));
+
+  if (!wallet) return;
+
+  await Promise.all([store.dispatch(walletsSetSelected(wallet)), store.dispatch(addressSetSelected(address))]);
+}
+
+function isNumericString(value: string | undefined): value is string {
+  if (!value) {
+    return false;
+  }
+  return !isNaN(+value);
+}
+
+async function handleSwapsDeeplink(url: string) {
+  const { query } = new URL(url, true);
+
+  await setFromWallet(query.from);
+
+  const params: SwapsParams = {};
+
+  const inputAsset = querySwapAsset(query.inputAsset);
+  const outputAsset = querySwapAsset(query.outputAsset);
+
+  if ('flashbots' in query) {
+    params.flashbots = query.flashbots === 'true';
+  }
+  if ('slippage' in query && isNumericString(query.slippage)) {
+    params.slippage = query.slippage;
+  }
+
+  if (isNumericString(query.percentageToSell)) {
+    params.percentageToSell = clamp(+query.percentageToSell, 0, 1);
+  } else if (isNumericString(query.inputAmount)) {
+    params.inputAmount = query.inputAmount;
+  } else if (isNumericString(query.outputAmount)) {
+    params.outputAmount = query.outputAmount;
+  }
+
+  const gasSpeed = query.gasSpeed?.toLowerCase();
+  if (isValidGasSpeed(gasSpeed)) {
+    params.gasSpeed = gasSpeed;
+  }
+
+  params.inputAsset = await inputAsset;
+  params.outputAsset = await outputAsset;
+
+  navigateToSwaps(params);
 }

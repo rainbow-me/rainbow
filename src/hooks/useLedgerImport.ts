@@ -42,7 +42,7 @@ export function useLedgerImport({
    */
   const handlePairSuccess = useCallback(
     (deviceId: string) => {
-      logger.debug('[useLedgerImport]: Pairing Success', {}, DebugContext.ledger);
+      logger.debug('[useLedgerImport]: Pairing Success', {});
       successCallback?.(deviceId);
       handleCleanUp();
     },
@@ -54,61 +54,73 @@ export function useLedgerImport({
    */
   const searchAndPair = useCallback(() => {
     let currentDeviceId = '';
-
-    const newObserver = TransportBLE.observeState({
-      // havnt seen complete or error fire yet but its in the docs so keeping for reporting purposes
-      complete: (e: any) => {
-        logger.debug('[useLedgerImport]: Observer complete', { e }, DebugContext.ledger);
-      },
-      error: (e: any) => {
-        logger.debug('[useLedgerImport]: Observer error ', { e }, DebugContext.ledger);
-      },
-      next: async (e: any) => {
-        // App is not authorized to use Bluetooth
-        if (e.type === 'Unauthorized') {
-          logger.debug('[useLedgerImport]: Bluetooth Unauthorized', {}, DebugContext.ledger);
-          if (IS_IOS) {
-            await showBluetoothPermissionsAlert();
-          } else {
-            await checkAndRequestAndroidBluetooth();
+    logger.debug('[useLedgerImport]: searchAndPair', {});
+    try {
+      const newObserver = TransportBLE.observeState({
+        // havnt seen complete or error fire yet but its in the docs so keeping for reporting purposes
+        complete: () => {
+          logger.debug('[useLedgerImport]: Observer complete', {});
+        },
+        error: (e: any) => {
+          logger.debug('[useLedgerImport]: Observer error ', { e });
+        },
+        next: async (e: any) => {
+          // App is not authorized to use Bluetooth
+          if (e.type === 'Unauthorized') {
+            logger.debug('[useLedgerImport]: Bluetooth Unauthorized', {});
+            if (IS_IOS) {
+              await showBluetoothPermissionsAlert();
+              return;
+            } else {
+              await checkAndRequestAndroidBluetooth();
+              return;
+            }
           }
-        }
-        // Bluetooth is turned off
-        if (e.type === 'PoweredOff') {
-          logger.debug('[useLedgerImport]: Bluetooth Powered Off', {}, DebugContext.ledger);
-          await showBluetoothPoweredOffAlert();
-        }
-        if (e.available) {
-          const newListener = TransportBLE.listen({
-            complete: () => {},
-            error: error => {
-              logger.error(new RainbowError('[useLedgerImport]: Error Pairing'), { errorMessage: (error as Error).message });
-            },
-            next: async e => {
-              if (e.type === 'add') {
-                const device = e.descriptor;
-                // prevent duplicate alerts
-                if (currentDeviceId === device.id) {
-                  return;
-                }
-                // set the current device id to prevent duplicate alerts
-                currentDeviceId = device.id;
+          // Bluetooth is turned off
+          if (e.type === 'PoweredOff') {
+            logger.debug('[useLedgerImport]: Bluetooth Powered Off', {});
+            await showBluetoothPoweredOffAlert();
+            return;
+          }
+          if (e.available) {
+            const newListener = TransportBLE.listen({
+              complete: () => {
+                logger.debug('[useLedgerImport]: TransportBLE.listen complete', {});
+              },
+              error: error => {
+                logger.error(new RainbowError('[useLedgerImport]: Error Pairing'), { errorMessage: (error as Error).message });
+                handlePairError(e);
+              },
+              next: async e => {
+                logger.debug('[useLedgerImport]: TransportBLE.listen next', { e });
 
-                try {
-                  const transport = await TransportBLE.open(device.id);
+                if (e.type === 'add') {
+                  const device = e.descriptor;
+                  // prevent duplicate alerts
+                  if (currentDeviceId === device.id) {
+                    logger.debug('[useLedgerImport]: TransportBLE.listen next dupe', { deviceId: device.id });
+                    return;
+                  }
+                  // set the current device id to prevent duplicate alerts
+                  currentDeviceId = device.id;
+
+                  logger.debug('[useLedgerImport]: TransportBLE.listen next paired successfully', { deviceId: device.id });
                   handlePairSuccess(device.id);
-                } catch (e) {
-                  handlePairError(e as Error);
-                  currentDeviceId === '';
+                } else {
+                  logger.debug('[useLedgerImport]: TransportBLE.listen next not paired', { e });
+                  handlePairError(e);
                 }
-              }
-            },
-          });
-          listener.current = newListener;
-        }
-      },
-    });
-    observer.current = newObserver;
+              },
+            });
+            listener.current = newListener;
+          }
+        },
+      });
+      observer.current = newObserver;
+    } catch (e) {
+      logger.error(new RainbowError('[useLedgerImport]: Error Pairing'), { errorMessage: (e as Error).message });
+      handlePairError(e as Error);
+    }
   }, [handlePairError, handlePairSuccess]);
 
   /**
@@ -118,10 +130,10 @@ export function useLedgerImport({
 
   useEffect(() => {
     const asyncFn = async () => {
-      logger.debug('[useLedgerImport]: init device polling', {}, DebugContext.ledger);
+      logger.debug('[useLedgerImport]: init device polling', {});
 
       const isBluetoothEnabled = IS_ANDROID ? await checkAndRequestAndroidBluetooth() : true;
-      logger.debug('[useLedgerImport]: bluetooth enabled? ', { isBluetoothEnabled }, DebugContext.ledger);
+      logger.debug('[useLedgerImport]: bluetooth enabled? ', { isBluetoothEnabled });
 
       if (isBluetoothEnabled) {
         searchAndPair();

@@ -23,10 +23,16 @@ import {
   gasUpdateTxFee,
 } from '@/redux/gas';
 import { ethereumUtils } from '@/utils';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { BNB_MAINNET_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
+import {
+  EXTERNAL_TOKEN_CACHE_TIME,
+  EXTERNAL_TOKEN_STALE_TIME,
+  externalTokenQueryKey,
+  fetchExternalToken,
+} from '@/resources/assets/externalAssetsQuery';
 import useAccountSettings from './useAccountSettings';
 import { ChainId } from '@/chains/types';
+import { useQueries } from '@tanstack/react-query';
+import { chainsNativeAsset } from '@/chains';
 
 const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {
   const isLegacyGasNetwork = !(txFee as GasFee)?.maxFee;
@@ -60,21 +66,19 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
   const dispatch = useDispatch();
   const { nativeCurrency } = useAccountSettings();
 
-  // keep native assets up to date
-  useExternalToken({
-    address: BNB_MAINNET_ADDRESS,
-    chainId: ChainId.mainnet,
-    currency: nativeCurrency,
-  });
-  useExternalToken({
-    address: ETH_ADDRESS,
-    chainId: ChainId.mainnet,
-    currency: nativeCurrency,
-  });
-  useExternalToken({
-    address: MATIC_MAINNET_ADDRESS,
-    chainId: ChainId.mainnet,
-    currency: nativeCurrency,
+  // keep native assets up to date for gas price calculations
+  // NOTE: We only fetch the native asset for mainnet and chains that don't use ETH as their native token
+  const chainsToFetch = Object.entries(chainsNativeAsset).filter(
+    ([chainId, { symbol }]) => +chainId === ChainId.mainnet || symbol.toLowerCase() !== 'eth'
+  );
+  useQueries({
+    queries: chainsToFetch.map(([chainId, { address }]) => ({
+      queryKey: externalTokenQueryKey({ address, chainId: parseInt(chainId, 10), currency: nativeCurrency }),
+      queryFn: () => fetchExternalToken({ address, chainId: parseInt(chainId, 10), currency: nativeCurrency }),
+      staleTime: EXTERNAL_TOKEN_STALE_TIME,
+      cacheTime: EXTERNAL_TOKEN_CACHE_TIME,
+      enabled: !!address,
+    })),
   });
 
   const gasData: {
@@ -137,7 +141,7 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
   const updateGasFeeOption = useCallback((option: string) => dispatch(gasUpdateGasFeeOption(option)), [dispatch]);
 
   const updateTxFee = useCallback(
-    (newGasLimit: any, overrideGasOption: any, l1GasFeeOptimism: any = null) => {
+    (newGasLimit: any, overrideGasOption?: any, l1GasFeeOptimism: any = null) => {
       dispatch(gasUpdateTxFee(newGasLimit, overrideGasOption, l1GasFeeOptimism));
     },
     [dispatch]

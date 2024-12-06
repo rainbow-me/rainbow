@@ -1,19 +1,49 @@
-import { useContext, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
 import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
+import { useNftSort } from './useNFTsSortBy';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
 import { useLegacyNFTs } from '@/resources/nfts';
-import useNftSort from './useNFTsSortBy';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { RainbowContext } from '@/helpers/RainbowContext';
+import { usePositions } from '@/resources/defi/PositionsQuery';
+import { useClaimables } from '@/resources/addys/claimables/query';
+import { useExperimentalConfig } from '@/config/experimentalHooks';
+import { analyticsV2 } from '@/analytics';
+import { Claimable } from '@/resources/addys/claimables/types';
+import { throttle } from 'lodash';
+
+// user properties analytics for claimables that executes at max once every 2 min
+const throttledClaimablesAnalytics = throttle(
+  (claimables: Claimable[]) => {
+    let totalUSDValue = 0;
+    const claimablesUSDValues: {
+      [key: string]: number;
+    } = {};
+
+    claimables.forEach(claimable => {
+      const attribute = `${claimable.analyticsId}USDValue`;
+      totalUSDValue += claimable.value.usd;
+
+      if (claimablesUSDValues[attribute] !== undefined) {
+        claimablesUSDValues[attribute] += claimable.value.usd;
+      } else {
+        claimablesUSDValues[attribute] = claimable.value.usd;
+      }
+    });
+
+    analyticsV2.identify({ claimablesAmount: claimables.length, claimablesUSDValue: totalUSDValue, ...claimablesUSDValues });
+  },
+  2 * 60 * 1000,
+  { trailing: false }
+);
 
 export default function useWalletSectionsData({
   type,
@@ -28,7 +58,7 @@ export default function useWalletSectionsData({
   }));
   const isWalletEthZero = useIsWalletEthZero();
 
-  const { nftSort } = useNftSort();
+  const { nftSort, nftSortDirection } = useNftSort();
 
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
@@ -37,7 +67,20 @@ export default function useWalletSectionsData({
   } = useLegacyNFTs({
     address: accountAddress,
     sortBy: nftSort,
+    sortDirection: nftSortDirection,
   });
+  const { data: positions } = usePositions({ address: accountAddress, currency: nativeCurrency });
+  const { data: claimables } = useClaimables({ address: accountAddress, currency: nativeCurrency });
+
+  // claimables analytics
+  useEffect(() => {
+    if (claimables?.length) {
+      throttledClaimablesAnalytics(claimables);
+    }
+    return () => {
+      throttledClaimablesAnalytics.cancel();
+    };
+  }, [claimables]);
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -49,15 +92,17 @@ export default function useWalletSectionsData({
   const { hiddenTokens } = useHiddenTokens();
 
   const remoteConfig = useRemoteConfig();
-  const experimentalConfig = useContext(RainbowContext).config;
+  const experimentalConfig = useExperimentalConfig();
 
-  const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
+  const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
+
+  const { pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
 
   const { isCoinListEdited } = useCoinListEdited();
 
   const walletSections = useMemo(() => {
     const accountInfo = {
-      hiddenCoins,
+      hiddenAssets,
       isCoinListEdited,
       isLoadingUserAssets,
       language,
@@ -66,8 +111,8 @@ export default function useWalletSectionsData({
       pinnedCoins,
       sendableUniqueTokens,
       sortedAssets,
-      accountBalanceDisplay: accountWithBalance?.balances?.totalBalanceDisplay,
-      isLoadingBalance: !accountWithBalance?.balances,
+      accountBalanceDisplay: accountWithBalance?.balancesMinusHiddenBalances,
+      isLoadingBalance: !accountWithBalance?.balancesMinusHiddenBalances,
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...isWalletEthZero,
       hiddenTokens,
@@ -79,6 +124,8 @@ export default function useWalletSectionsData({
       nftSort,
       remoteConfig,
       experimentalConfig,
+      positions,
+      claimables,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo);
@@ -93,7 +140,7 @@ export default function useWalletSectionsData({
       briefSectionsData,
     };
   }, [
-    hiddenCoins,
+    hiddenAssets,
     isCoinListEdited,
     isLoadingUserAssets,
     language,
@@ -102,6 +149,7 @@ export default function useWalletSectionsData({
     pinnedCoins,
     sendableUniqueTokens,
     sortedAssets,
+    accountWithBalance?.balancesMinusHiddenBalances,
     accountWithBalance?.balances,
     isWalletEthZero,
     hiddenTokens,
@@ -113,6 +161,8 @@ export default function useWalletSectionsData({
     nftSort,
     remoteConfig,
     experimentalConfig,
+    positions,
+    claimables,
   ]);
   return walletSections;
 }

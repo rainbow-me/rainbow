@@ -15,7 +15,199 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
-## [1.9.38] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.36)
+## [1.9.47] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.47)
+
+### Added
+
+- Added react-native-turbo-haptics on both OS's (#6264)
+- Added trending tokens query (#6288)
+- Implemented active tab flag for dapp browser (#6279)
+- Added translations for claimables, DeFi Positions, WC loading state and swaps v2 bridging (#6295)
+- Added more analytics events for token details, erc20s and nfts (#6287)
+- Added ability to deeplink to swaps (#6178)
+
+### Changed
+
+- Replaced custom native review module with expo-store-review (#6268)
+- Updated mobile app's id'ing number of wallets to match BX (#6278)
+- Dapp Browser upgrades (#6269, #6300)
+- Enable third party defi positions & fix token list exclusion logic (#6299)
+
+### Fixed
+
+- Fixed a crash that would happen when attempting to swap tokens with 0 decimals (#6263)
+- Fixed app store deep links in dapp browser (#6267)
+- Fixed address searches on discover screen (#6272)
+- Fixed wallet telemetry identify for analytics (#6258)
+- Fixed a bug where users weren't able to open points breakdown from points screen (#6284)
+- Fixed an issue where we showed NaN wallet balance (#6283)
+- We now use MMKVObject initial value which fixes the empty default object being recreated (#6290)
+- Fixed the issue where we weren't showing the ledger pairing sheet during swaps confirmation (#6275)
+- Fixed build failures by using appstore connect key for CI (#6294)
+- Fixed a race condition where the wallet list would be static and users couldn't scroll (#6286)
+- Fixed lp badge gradient overflow and android shadows (#6296)
+
+## [1.9.46] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.46)
+
+### Changed
+
+- Remove unused environment configurations (#6254)
+- Added a null check guard to the claimable flow (#6257)
+
+### Fixed
+
+- Fixed an issue in our approve and swap flow that should help overall swap success (#6259)
+- Changed the way we handle flashbots gas so less transactions should fail due to insufficent gas (#6265)
+
+## [1.9.45] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.45)
+
+### Added
+
+- Upgraded to new notifications endpoint for notifications v2 (#6190, #6223, #6229, #6251)
+- Added option to sort NFTs by ascending and descending (#6068)
+- We added isHardwareWallet to swap analytic events (#6238)
+
+### Changed
+
+- Featured results now uses redirect_url for recents (#6203)
+- Removed direct usage of web3Provider (#6200)
+- Now using backend endpoint for determining output based quotes for Swaps v2 (#6212)
+- We now navigate back to last screen after swap confirmation (#6207)
+- ChainSelector row is now fixed at top of list in swaps v2 (#6206)
+- Removed all of WC v1 (#6214)
+- Removed unused references and did updates to ExplainSheet (#6222)
+- Removed Swaps v1 code (#6181, #6250)
+- Updated featured results to use native card styling (#6246)
+- We now exclude hardware wallet related transactions from TTS tracking (#6247)
+- We are now subtracting hidden assets from total wallet balances (#6205)
+- We converted discover screen content to typescript (#6226)
+
+### Fixed
+
+- Fixed broken context menus on asset expanded state in search results (#6209)
+- Fixed a bug with positions total value display (#6185)
+- Fixed CI build issues (#6232, #6225, #6244, #6248)
+- Fixed a crash with animated inputs (#6227)
+- Fixed a bug where balance would show as NaN value (#6239)
+- Fixed transaction details not showing native asset symbol but always showing ETH instead (#6245)
+- Fixed a bug where an empty account balances prevents a swap from being done (#6243)
+- Fixed a bug where Apecoin wasn’t being set as the inputAsset when set as the preferred network (#6252)
+- Fixed a bug where change wallet sheet was missing balance value (#6253)
+
+## [1.9.44] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.44)
+
+### Fixed
+
+- Fixed apechain using mainnet gas prices (#6220)
+
+## [1.9.43] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.43)
+
+### Added
+
+- Added Apechain Support
+
+## [1.9.42] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.42)
+
+### Added
+
+- Added comments watchdog to PRs in github to monitor spam (#6153)
+- Added functionality to hide send button for assets that are not transferable (#6123)
+- Implemented Zeego dropdown menus (#6143)
+- Added a connecting toast for wallet connect connection sheet (#6197)
+
+### Changed
+
+- Converted our send flow to typescript (#6120)
+- Updated Analytics (#6169, #6186, #6195)
+- Made improvements to wallet connect approval/redirect sheet by converting to typescript (#6167)
+- Migrated wallet connect to use WalletKit (#6163)
+- Improvements to claim button (#6165)
+- Updates to swaps v2 logic (#6171)
+- Bumped walletkit to improve wallet connect connections (#6183)
+- Removed transaction inconsistencies and improved type safety (#6137)
+- Upgraded ledger to allow clear signing with updated firmware versions (#5966)
+- Disabled one click auth on wallet connect (#6201)
+- Enabled new features by default (#6192)
+
+### Fixed
+
+- Fixed CI pods to unlock if pod repo update fails (#6168)
+- Fixed wallet connect v2 changeAccount issues (#6160)
+- Fixed ApprovalSheet not using wallet connect v2 isScam flag (#6162)
+- Fixed a bug with network expansion that caused discrepancies in swaps network switcher dropdown (#6149)
+- Fixed a bug where NFT expanded state would cause a crash (#6115)
+- Fixed an issue with MWP from not prompting if dapp metadata retrieval fails (#6164)
+- Fixed an issue where users couldn’t open last weeks points breakdown from points screen (#6166)
+- Fixed a crash on networks while attempting to connect to wallet connect dapp (#6176)
+- Fixed a bug with claimables where data failed to update on app (#6182)
+- Fixed a padding issue for importing ledger devices (#6187)
+- Fixed a crash happening on swaps and also no local images being displayed (#6196)
+- Fixed an issue with CI artifacts being stored with the same name (#6198)
+- Fixed a bug where the gas button wasn't working to change gas speed (#6208)
+
+## [1.9.41] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.41)
+
+### Added
+
+- Added support for typing into native inputs in swap (#6100)
+- Implementation of claimables (#6140, #6141, #6138, #6146, #6155, #6158, #6159)
+
+### Changed
+
+- Updated arbitrum default back to mainnet for WC message signing (#6122)
+- Bumped dependencies for xcode 16 compatibility (#6110)
+- Bumped CI to work with xcode 16/ iOS 18 (#6129)
+- Now using backend to omit certain defi positions from users wallet balance (#6103)
+- We are now filtering out backend driven networks that are internal and not in production (#6148)
+
+### Fixed
+
+- Fixed Spindl featured image resolution on dapp browser (#6114)
+- Fixed a bug where an error would occur during personal signing using MWP (#6142)
+- Updated url navigation to fix a bug in dapp browser (#6150)
+- Fixed a bug with improper gas fee calculation on mainnet (#6125)
+- Fixed a crash on token search for newly added chains (#6147)
+
+## [1.9.40] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.40)
+
+### Fixed
+
+- Fixed a bug with speed up and cancel (#6133)
+
+## [1.9.39] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.39)
+
+### Added
+
+- Added rc-push script for release tracking and cleanup (#6088)
+- Built the react query for addys claimables endpoint along with wallet screen UI (#6071)
+
+### Changed
+
+- Swaps performance improvements (#6050)
+- Improved CI jobs for build and tests for Tophat (#6043, #6089)
+- Removed some test env for some vars that aren’t needed anymore (#6077)
+- userAssetsStore refactor (#6015)
+- Bumped swaps sdk to 0.26 (#6098)
+- Final implementation for network to chainId migration (#6039)
+
+### Fixed
+
+- Fixed swaps spec in e2e so that all assets balances will update correctly (#6060)
+- Fixed an issue with charts where it was using USD for points instead of user’s selected currency (#6051)
+- Fixed an issue on Android nav bar where it was covered by the systems navigation bar (#6053)
+- Fixed e2e flakiness (#6084, #6090)
+- Fixed an issue with opacity on mwp sign txn sheet (#6083)
+- Fixed a crash that happened when searching input token in swaps (#6104)
+- Fixed and issue with degen native asset address, degen ↔ wdegen (#6087, #6091)
+- Fixed a crash on token details chart for cannot read property ‘y’ of undefined (#6009)
+- Fixed issues with remote promo sheets (#6085)
+- Fixed a bug on iOS 18 which caused context menu dismissals (#6112)
+- Fixed a crash that was happening on send flow (#6116)
+- Fixed a bug where the paste button was disabled on swaps flow for android devices (#6118)
+- Fixed an issue where deleting a contact would cause loading issues on send flow (#6119)
+- Fixed a bug where chainId wasn’t being passed in the dapp browser (#6121)
+
+## [1.9.38] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.38)
 
 ### Fixed
 

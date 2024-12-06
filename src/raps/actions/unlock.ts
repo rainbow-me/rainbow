@@ -2,13 +2,12 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
-import { getProvider } from '@/handlers/web3';
+import { getProvider, toHex } from '@/handlers/web3';
 import { Address, erc20Abi, erc721Abi } from 'viem';
 
 import { ChainId } from '@/chains/types';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { NewTransaction } from '@/entities/transactions';
-import { TxHash } from '@/resources/transactions/types';
+import { NewTransaction, TransactionStatus, TxHash } from '@/entities';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
@@ -18,7 +17,6 @@ import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { ActionProps, RapActionResult } from '../references';
 
 import { overrideWithFastSpeedIfNeeded } from './../utils';
-import { toHex } from '@/__swaps__/utils/hex';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
 import { chainsName } from '@/chains';
@@ -283,7 +281,7 @@ export const unlock = async ({
     network: chainsName[chainId],
     chainId: approval.chainId,
     nonce: approval.nonce,
-    status: 'pending',
+    status: TransactionStatus.pending,
     type: 'approve',
     approvalAmount: 'UNLIMITED',
     ...gasParams,

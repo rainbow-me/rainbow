@@ -1,12 +1,15 @@
 import { Chain } from 'viem/chains';
-
-import backendNetworks from '../references/networks.json';
-
+import { queryClient } from '@/react-query';
+import { backendNetworksQueryKey, BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
 import { ChainId, BackendNetwork, BackendNetworkServices, chainHardhat, chainHardhatOptimism } from './types';
 import { transformBackendNetworksToChains } from './utils/backendNetworks';
 import { gasUtils } from '@/utils';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { IS_TEST } from '@/env';
+import buildTimeNetworks from '@/references/networks.json';
+
+// NOTE: Prefer runtime data from backendNetworksQueryKey, but fallback to buildTimeNetworks if needed
+const backendNetworks = queryClient.getQueryData<BackendNetworksResponse>(backendNetworksQueryKey()) ?? buildTimeNetworks;
 
 const BACKEND_CHAINS = transformBackendNetworksToChains(backendNetworks.networks);
 
@@ -105,6 +108,8 @@ export const chainsSwapPollingInterval: Record<ChainId, number> = backendNetwork
 
 const defaultSimplehashNetworks = (chainId: ChainId) => {
   switch (chainId) {
+    case ChainId.apechain:
+      return 'apechain';
     case ChainId.arbitrum:
       return 'arbitrum';
     case ChainId.avalanche:
@@ -155,6 +160,12 @@ export const meteorologySupportedChainIds = filterChainIdsByService(services => 
 
 export const supportedSwapChainIds = filterChainIdsByService(services => services.swap.enabled);
 
+export const supportedSwapExactOutputChainIds = filterChainIdsByService(services => services.swap.swapExactOutput);
+
+export const supportedBridgeExactOutputChainIds = filterChainIdsByService(services => services.swap.bridgeExactOutput);
+
+export const supportedNotificationsChainIds = filterChainIdsByService(services => services.notifications.enabled);
+
 export const supportedApprovalsChainIds = filterChainIdsByService(services => services.addys.approvals);
 
 export const supportedTransactionsChainIds = filterChainIdsByService(services => services.addys.transactions);
@@ -167,45 +178,9 @@ export const supportedTokenSearchChainIds = filterChainIdsByService(services => 
 
 export const supportedNftChainIds = filterChainIdsByService(services => services.nftProxy.enabled);
 
-export const supportedWalletConnectChainIds = [
-  ChainId.arbitrum,
-  ChainId.avalanche,
-  ChainId.base,
-  ChainId.blast,
-  ChainId.bsc,
-  ChainId.degen,
-  ChainId.mainnet,
-  ChainId.optimism,
-  ChainId.polygon,
-  ChainId.zora,
-];
-
 export const supportedFlashbotsChainIds = [ChainId.mainnet];
 
 export const shouldDefaultToFastGasChainIds = [ChainId.mainnet, ChainId.polygon, ChainId.goerli];
-
-export const oldDefaultRPC: { [key in ChainId]?: string } = {
-  [ChainId.mainnet]: process.env.ETH_MAINNET_RPC,
-  [ChainId.optimism]: process.env.OPTIMISM_MAINNET_RPC,
-  [ChainId.arbitrum]: process.env.ARBITRUM_MAINNET_RPC,
-  [ChainId.polygon]: process.env.POLYGON_MAINNET_RPC,
-  [ChainId.base]: process.env.BASE_MAINNET_RPC,
-  [ChainId.zora]: process.env.ZORA_MAINNET_RPC,
-  [ChainId.bsc]: process.env.BSC_MAINNET_RPC,
-  [ChainId.sepolia]: process.env.ETH_SEPOLIA_RPC,
-  [ChainId.holesky]: process.env.ETH_HOLESKY_RPC,
-  [ChainId.optimismSepolia]: process.env.OPTIMISM_SEPOLIA_RPC,
-  [ChainId.bscTestnet]: process.env.BSC_TESTNET_RPC,
-  [ChainId.arbitrumSepolia]: process.env.ARBITRUM_SEPOLIA_RPC,
-  [ChainId.baseSepolia]: process.env.BASE_SEPOLIA_RPC,
-  [ChainId.zoraSepolia]: process.env.ZORA_SEPOLIA_RPC,
-  [ChainId.avalanche]: process.env.AVALANCHE_MAINNET_RPC,
-  [ChainId.avalancheFuji]: process.env.AVALANCHE_FUJI_RPC,
-  [ChainId.blast]: process.env.BLAST_MAINNET_RPC,
-  [ChainId.blastSepolia]: process.env.BLAST_SEPOLIA_RPC,
-  [ChainId.polygonAmoy]: process.env.POLYGON_AMOY_RPC,
-  [ChainId.degen]: process.env.DEGEN_MAINNET_RPC,
-};
 
 const chainsGasUnits = backendNetworks.networks.reduce(
   (acc, backendNetwork: BackendNetwork) => {

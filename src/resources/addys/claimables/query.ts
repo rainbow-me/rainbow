@@ -11,8 +11,10 @@ import { CLAIMABLES, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { SUPPORTED_CHAIN_IDS } from '@/chains';
 
-const addysHttp = new RainbowFetchClient({
-  baseURL: 'https://addys.p.rainbow.me/v3',
+export const ADDYS_BASE_URL = 'https://addys.p.rainbow.me/v3';
+
+export const addysHttp = new RainbowFetchClient({
+  baseURL: ADDYS_BASE_URL,
   headers: {
     Authorization: `Bearer ${ADDYS_API_KEY}`,
   },
@@ -30,7 +32,7 @@ export type ClaimablesArgs = {
 // Query Key
 
 export const claimablesQueryKey = ({ address, currency }: ClaimablesArgs) =>
-  createQueryKey('claimables', { address, currency }, { persisterVersion: 1 });
+  createQueryKey('claimables', { address, currency }, { persisterVersion: 4 });
 
 type ClaimablesQueryKey = ReturnType<typeof claimablesQueryKey>;
 
@@ -77,6 +79,7 @@ export function useClaimables(
     ...config,
     enabled: !!address && (remoteFlag || localFlag) && !IS_TEST,
     staleTime: 1000 * 60 * 2,
+    refetchInterval: 1000 * 60 * 2,
     cacheTime: 1000 * 60 * 60 * 24,
   });
 }

@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
@@ -16,13 +16,14 @@ import ExpandedStateSection from '../ExpandedStateSection';
 import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@/react-native-animated-charts/src';
 import { isL2Chain, isTestnetChain } from '@/handlers/web3';
-import AssetInputTypes from '@/helpers/assetInputTypes';
+import { SwapAssetType } from '@/__swaps__/types/swap';
 import {
   useAccountSettings,
   useAdditionalAssetData,
   useChartThrottledPoints,
   useDelayedValueWithLayoutAnimation,
   useDimensions,
+  useTimeout,
 } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
@@ -38,6 +39,8 @@ import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';
 import { chainsName, supportedSwapChainIds } from '@/chains';
 import { ChainId } from '@/chains/types';
+import { useTimeoutEffect } from '@/hooks/useTimeout';
+import { analyticsV2 } from '@/analytics';
 
 const defaultCarouselHeight = 60;
 const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
@@ -173,6 +176,7 @@ export default function ChartExpandedState({ asset }) {
 
   const isL2 = useMemo(() => isL2Chain({ chainId: asset?.chainId }), [asset?.chainId]);
   const isTestnet = isTestnetChain({ chainId: currentChainId });
+  const isTransferable = asset?.transferable ?? genericAsset?.transferable ?? true;
 
   const { data, isLoading: additionalAssetDataLoading } = useAdditionalAssetData({
     address: asset?.address,
@@ -226,9 +230,10 @@ export default function ChartExpandedState({ asset }) {
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      type: assetWithPrice.network,
+      type: 'network',
+      chainId: assetWithPrice.chainId,
     });
-  }, [assetWithPrice.network, navigate]);
+  }, [assetWithPrice.chainId, navigate]);
 
   const { layout } = useContext(ModalContext) || {};
 
@@ -251,6 +256,19 @@ export default function ChartExpandedState({ asset }) {
       return test;
     },
     [nativeCurrency]
+  );
+
+  const mountedAt = useRef(Date.now());
+  useTimeoutEffect(
+    () => {
+      const { address, chainId, symbol, name, icon_url, price } = assetWithPrice;
+      analyticsV2.track(analyticsV2.event.tokenDetailsErc20, {
+        eventSentAfterMs: Date.now() - mountedAt.current,
+        token: { address, chainId, symbol, name, icon_url, price },
+        available_data: { chart: showChart, description: !!data?.description, iconUrl: !!icon_url },
+      });
+    },
+    5 * 1000 // 5s
   );
 
   return (
@@ -290,16 +308,18 @@ export default function ChartExpandedState({ asset }) {
       {!needsEth ? (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
           {hasBalance && !isTestnet && swapEnabled && (
-            <SwapActionButton asset={assetWithPrice} color={color} inputType={AssetInputTypes.in} />
+            <SwapActionButton asset={assetWithPrice} color={color} inputType={SwapAssetType.inputAsset} />
           )}
           {hasBalance ? (
-            <SendActionButton asset={assetWithPrice} color={color} fromDiscover={fromDiscover} />
+            isTransferable ? (
+              <SendActionButton asset={assetWithPrice} color={color} fromDiscover={fromDiscover} />
+            ) : null
           ) : swapEnabled ? (
             <SwapActionButton
               asset={assetWithPrice}
               color={color}
               fromDiscover={fromDiscover}
-              inputType={AssetInputTypes.out}
+              inputType={SwapAssetType.outputAsset}
               label={`􀖅 ${lang.t('expanded_state.asset.get_asset', {
                 assetSymbol: asset?.symbol,
               })}`}
@@ -311,7 +331,7 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : addCashEnabled ? (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          <BuyActionButton color={color} asset={assetWithPrice} />
+          <BuyActionButton color={color} />
         </SheetActionButtonRow>
       ) : null}
       {!data?.networks && isL2 && (

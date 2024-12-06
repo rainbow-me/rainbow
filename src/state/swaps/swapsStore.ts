@@ -1,4 +1,4 @@
-import { MIN_FLASHBOTS_PRIORITY_FEE } from '@/__swaps__/screens/Swap/constants';
+import { INITIAL_SLIDER_POSITION, MIN_FLASHBOTS_PRIORITY_FEE } from '@/__swaps__/screens/Swap/constants';
 import { getCustomGasSettings, setCustomMaxPriorityFee } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { getSelectedGasSpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
@@ -6,7 +6,7 @@ import { ChainId } from '@/chains/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { RecentSwap } from '@/__swaps__/types/swap';
 import { getCachedGasSuggestions } from '@/__swaps__/utils/meteorology';
-import { lessThan } from '@/__swaps__/utils/numbers';
+import { lessThan } from '@/helpers/utilities';
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
 import { RainbowError, logger } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
@@ -26,6 +26,9 @@ export interface SwapsState {
 
   selectedOutputChainId: ChainId;
   outputSearchQuery: string;
+
+  percentageToSell: number; // Value between 0 and 1, e.g., 0.5, 0.1, 0.25
+  setPercentageToSell: (percentageToSell: number) => void; // Accepts values from 0 to 1
 
   // settings
   flashbots: boolean;
@@ -141,6 +144,9 @@ export const swapsStore = createRainbowStore<SwapsState>(
 
     selectedOutputChainId: ChainId.mainnet,
     outputSearchQuery: '',
+
+    percentageToSell: INITIAL_SLIDER_POSITION,
+    setPercentageToSell: (percentageToSell: number) => set({ percentageToSell }),
 
     flashbots: false,
     setFlashbots: (flashbots: boolean) => {

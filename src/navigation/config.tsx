@@ -248,7 +248,7 @@ export const consoleSheetConfig = {
   }),
 };
 
-export const dappBrowserControlPanelConfig = {
+export const panelConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
@@ -597,16 +597,6 @@ export const nativeStackDefaultConfigWithoutStatusBar: CoolModalConfigOptions = 
   onWillDismiss: () => {
     onWillPop();
   },
-};
-
-export const exchangeTabNavigatorConfig = {
-  initialLayout: deviceUtils.dimensions,
-  sceneContainerStyle: {
-    backgroundColor: 'transparent',
-  },
-  swipeDistanceMinimum: 0,
-  tabBar: () => null,
-  transparentCard: true,
 };
 
 const BackArrow = styled(Icon).attrs({

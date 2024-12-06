@@ -1,4 +1,7 @@
 package me.rainbow
+import android.content.res.Configuration
+import expo.modules.ApplicationLifecycleDispatcher
+import expo.modules.ReactNativeHostWrapper
 
 import android.app.Application
 import android.content.Context
@@ -16,7 +19,6 @@ import me.rainbow.NativeModules.Haptics.RNHapticsPackage
 import me.rainbow.NativeModules.Internals.InternalPackage
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage
 import me.rainbow.NativeModules.RNBip39.RNBip39Package
-import me.rainbow.NativeModules.RNReview.RNReviewPackage
 import me.rainbow.NativeModules.RNStartTime.RNStartTimePackage
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage
@@ -24,7 +26,7 @@ import me.rainbow.NativeModules.SystemNavigationBar.SystemNavigationBarPackage
 import me.rainbow.NativeModules.NavbarHeight.NavbarHeightPackage
 
 class MainApplication : Application(), ReactApplication {
-    override val reactNativeHost: ReactNativeHost = object : DefaultReactNativeHost(this) {
+    override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(this, object : DefaultReactNativeHost(this) {
         override fun getUseDeveloperSupport(): Boolean {
             return BuildConfig.DEBUG
         }
@@ -33,7 +35,6 @@ class MainApplication : Application(), ReactApplication {
             val packages: MutableList<ReactPackage> = PackageList(this).packages
             // Packages that cannot be autolinked yet can be added manually here, for example:
             packages.add(RNBip39Package())
-            packages.add(RNReviewPackage())
             packages.add(SystemNavigationBarPackage())
             packages.add(RNBackHandlerPackage())
             packages.add(RNTextAnimatorPackage())
@@ -47,14 +48,14 @@ class MainApplication : Application(), ReactApplication {
         }
 
         override fun getJSMainModuleName(): String {
-            return "index"
+            return ".expo/.virtual-metro-entry"
         }
 
         override val isNewArchEnabled: Boolean
             get() = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
         override val isHermesEnabled: Boolean
             get() = BuildConfig.IS_HERMES_ENABLED
-    }
+    })
 
     override fun onCreate() {
         super.onCreate()
@@ -67,7 +68,8 @@ class MainApplication : Application(), ReactApplication {
         // Branch logging for debugging
         RNBranchModule.enableLogging()
         RNBranchModule.getAutoInstance(this)
-    }
+      ApplicationLifecycleDispatcher.onApplicationCreate(this)
+  }
 
     companion object {
         private val START_MARK = System.currentTimeMillis()
@@ -75,4 +77,9 @@ class MainApplication : Application(), ReactApplication {
 
         fun getAppContext(): Context = appContext
     }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
+  }
 }

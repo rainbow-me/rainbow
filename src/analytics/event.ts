@@ -1,16 +1,14 @@
-import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId, Network } from '@/chains/types';
-import { GasSpeed } from '@/__swaps__/types/gas';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
-import { RapSwapActionParameters } from '@/raps/references';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
+import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
 
 /**
  * All events, used by `analytics.track()`
@@ -143,26 +141,53 @@ export const event = {
   swapsSubmitted: 'swaps.submitted',
   swapsFailed: 'swaps.failed',
   swapsSucceeded: 'swaps.succeeded',
+  swapsQuoteFailed: 'swaps.quote_failed',
 
   // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
+  browserAddFavorite: 'browser.add_favorite',
+  browserTapFavorite: 'browser.tap_favorite',
 
   performanceTimeToSign: 'performance.time_to_sign',
   performanceTimeToSignOperation: 'performance.time_to_sign.operation',
+
+  addFavoriteToken: 'add_favorite_token',
+  watchWallet: 'watch_wallet',
+  watchedWalletCohort: 'watched_wallet_cohort',
+
+  // claimables
+  claimClaimableSucceeded: 'claim_claimable.succeeded',
+  claimClaimableFailed: 'claim_claimable.failed',
+  claimablePanelOpened: 'claimable_panel.opened',
+
+  // error boundary
+  errorBoundary: 'error_boundary.viewed',
+  errorBoundaryReset: 'error_boundary.reset',
+
+  // token details
+  tokenDetailsErc20: 'token_details.erc20',
+  tokenDetailsNFT: 'token_details.nft',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
-  createdAt: number;
   type: T;
-  bridge: boolean;
-  inputNativeValue: string | number;
-  outputNativeValue: string | number;
-  parameters: Omit<RapSwapActionParameters<T>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
-  selectedGas: GasSettings;
-  selectedGasSpeed: GasSpeed;
-  slippage: string;
+  isBridge: boolean;
+  inputAssetSymbol: string;
+  inputAssetName: string;
+  inputAssetAddress: AddressOrEth;
+  inputAssetChainId: ChainId;
+  inputAssetAmount: number;
+  outputAssetSymbol: string;
+  outputAssetName: string;
+  outputAssetAddress: AddressOrEth;
+  outputAssetChainId: ChainId;
+  outputAssetAmount: number;
+  mainnetAddress: string;
+  flashbots: boolean;
+  tradeAmountUSD: number;
   degenMode: boolean;
   isSwappingToPopularAsset: boolean;
+  isHardwareWallet: boolean;
 };
 
 type SwapsEventFailedParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -557,12 +582,23 @@ export type EventProperties = {
   [event.swapsFailed]: SwapsEventFailedParameters<'swap' | 'crosschainSwap'>;
   [event.swapsSucceeded]: SwapsEventSucceededParameters<'swap' | 'crosschainSwap'>;
 
+  [event.swapsQuoteFailed]: {
+    error_code: number | undefined;
+    reason: string;
+    inputAsset: { symbol: string; address: string; chainId: ChainId };
+    inputAmount: string | number;
+    outputAsset: { symbol: string; address: string; chainId: ChainId };
+    outputAmount: string | number | undefined;
+  };
+
   [event.browserTrendingDappClicked]: {
     name: string;
     url: string;
     hasClickedBefore: boolean;
     index: number;
   };
+  [event.browserAddFavorite]: FavoritedSite;
+  [event.browserTapFavorite]: FavoritedSite;
 
   [event.performanceTimeToSign]: {
     screen: Screen;
@@ -571,4 +607,91 @@ export type EventProperties = {
   };
 
   [event.performanceTimeToSignOperation]: AnyPerformanceLog;
+
+  [event.addFavoriteToken]: {
+    address: AddressOrEth;
+    chainId: ChainId;
+    name: string;
+    symbol: string;
+  };
+
+  [event.watchWallet]: {
+    addressOrEnsName: string;
+    address: string;
+  };
+
+  [event.watchedWalletCohort]: {
+    numWatchedWallets: number;
+    watchedWalletsAddresses: string[];
+  };
+
+  [event.claimClaimableSucceeded]: {
+    claimableId: string;
+    claimableType: 'transaction' | 'sponsored';
+    chainId: ChainId;
+    asset: {
+      symbol: string;
+      address: string;
+    };
+    amount: string;
+    usdValue: number;
+  };
+
+  [event.claimClaimableFailed]: {
+    claimableId: string;
+    claimableType: 'transaction' | 'sponsored';
+    chainId: ChainId;
+    asset: {
+      symbol: string;
+      address: string;
+    };
+    amount: string;
+    usdValue: number;
+    errorMessage: string;
+  };
+
+  [event.claimablePanelOpened]: {
+    claimableId: string;
+    claimableType: 'transaction' | 'sponsored';
+    chainId: ChainId;
+    asset: {
+      symbol: string;
+      address: string;
+    };
+    amount: string;
+    usdValue: number;
+  };
+
+  [event.errorBoundary]: { error: Error | null };
+  [event.errorBoundaryReset]: { error: Error | null };
+
+  [event.tokenDetailsErc20]: {
+    token: {
+      address: string;
+      chainId: ChainId;
+      symbol: string;
+      name: string;
+      icon_url: string;
+      price: number;
+    };
+    eventSentAfterMs: number;
+    available_data: {
+      chart: boolean;
+      description: boolean;
+      iconUrl: boolean;
+    };
+  };
+  [event.tokenDetailsNFT]: {
+    token: {
+      isPoap: boolean;
+      isParty: boolean;
+      isENS: boolean;
+      address: string;
+      chainId: ChainId;
+      name: string;
+      image_url: string | null | undefined;
+    };
+    eventSentAfterMs: number;
+    available_data: { description: boolean; image_url: boolean; floorPrice: boolean };
+  };
 };

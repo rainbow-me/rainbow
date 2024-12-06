@@ -4,6 +4,7 @@ import { Network, ChainId } from '@/chains/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 const chainsIdByNetwork: Record<Network, ChainId> = {
+  [Network.apechain]: ChainId.apechain,
   [Network.mainnet]: ChainId.mainnet,
   [Network.polygon]: ChainId.polygon,
   [Network.avalanche]: ChainId.avalanche,

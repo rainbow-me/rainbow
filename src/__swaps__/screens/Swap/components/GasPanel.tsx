@@ -6,7 +6,7 @@ import { MIN_FLASHBOTS_PRIORITY_FEE, THICK_BORDER_WIDTH } from '@/__swaps__/scre
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/chains/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
+import { gweiToWei, weiToGwei } from '@/parsers';
 import {
   getCachedCurrentBaseFee,
   getSelectedSpeedSuggestion,
@@ -16,13 +16,12 @@ import {
   useMeteorologySuggestion,
   useMeteorologySuggestions,
 } from '@/__swaps__/utils/meteorology';
-import { add, formatNumber, greaterThan, multiply, subtract } from '@/__swaps__/utils/numbers';
+import { add, greaterThan, multiply, subtract, lessThan, formatNumber } from '@/helpers/utilities';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { lessThan } from '@/helpers/utilities';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
@@ -238,7 +237,6 @@ function useGasPanelState<
     speed,
     select,
     enabled: !editedSetting,
-    notifyOnChangeProps: !editedSetting && speed !== 'custom' ? ['data'] : [],
   });
 
   if (editedSetting) return editedSetting;

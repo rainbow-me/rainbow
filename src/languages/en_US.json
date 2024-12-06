@@ -450,6 +450,22 @@
         "action": "Continue"
       }
     },
+    "claimables": {
+      "panel": {
+        "calculating_gas_fee": "Calculating gas fee...",
+        "amount_to_claim_on_network": "%{amount} to claim on %{network}",
+        "claim": "Claim",
+        "claiming": "Claiming",
+        "claim_in_progress": "Claim in Progress...",
+        "claimed": "Claimed!",
+        "claiming_failed": "Claim Failed",
+        "insufficient_funds": "Insufficient Funds",
+        "claim_amount": "Claim %{amount}",
+        "done": "Done",
+        "try_again": "Try Again",
+        "tokens_on_the_way": "Tokens on the way!"
+      }
+    },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
     },
@@ -857,6 +873,10 @@
         "title_plural": "Available on %{length} Networks",
         "title_singular": "Available on the %{network} Network"
       },
+      "default_network_explainer": {
+        "text": "%{chainName} is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.",
+        "title": "What's %{chainName}?"
+      },
       "arbitrum": {
         "text": "Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
         "title": "What's Arbitrum?"
@@ -917,15 +937,19 @@
       },
       "avalanche": {
         "text": "Avalanche is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Avalanche has its own security and consensus mechanisms that differ from Ethereum.",
-        "title": "What's Avalanche"
+        "title": "What's Avalanche?"
       },
       "degen": {
-        "text": "Degen Chain is a Layer 3 network that runs on top of Arbitrum and Ethereum, offering incredibly fast and cheap transactions denominated in the Farcaster community token $degen.",
+        "text": "Degen Chain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum.",
         "title": "What's Degen Chain?"
       },
       "blast": {
         "text": "Blast is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
         "title": "What's Blast?"
+      },
+      "apechain": {
+        "text": "ApeChain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum.\n\nIt significantly enhances ApeCoin's utility, fostering a robust and dynamic economy driven by $APE.",
+        "title": "What's ApeChain?"
       },
       "zora": {
         "text": "Zora is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
@@ -1322,7 +1346,11 @@
         "MOST_RECENT": "Recent",
         "most_recent": "Recent",
         "FLOOR_PRICE": "Floor Price",
-        "floor_price": "Floor Price"
+        "floor_price": "Floor Price",
+        "order": {
+          "asc": "Ascending order",
+          "desc": "Descending order"
+        }
       },
       "empty": "Collectibles",
       "collect_now": "Collect Now",
@@ -1840,10 +1868,17 @@
       }
     },
     "positions": {
+      "lp_range_status": {
+        "full_range": "Full Range",
+        "out_of_range": "Out of Range",
+        "in_range": "In Range"
+      },
       "open_dapp": "Open 􀮶",
       "deposits": "Deposits",
       "borrows": "Borrows",
-      "rewards": "Rewards"
+      "stakes": "Staked",
+      "rewards": "Rewards",
+      "pools": "Pools"
     },
     "savings": {
       "deposit": "Deposit",
@@ -2111,9 +2146,9 @@
           "failed": "Send Failed"
         },
         "receive": {
-          "pending": "",
+          "pending": "Receiving",
           "confirmed": "Received",
-          "failed": ""
+          "failed": "Receive Failed"
         },
         "withdraw": {
           "pending": "Withdrawing",
@@ -2745,6 +2780,8 @@
       }
     },
     "walletconnect": {
+      "connecting": "Connecting",
+      "loading": "Loading",
       "requests": "Requests",
       "wants_to_connect": "wants to connect to your wallet",
       "wants_to_connect_to_network": "wants to connect to the %{network} network",
@@ -2878,6 +2915,7 @@
         "buttons": {
           "cancel": "Cancel",
           "confirm": "􀎽 Confirm",
+          "confirming": "Confirming",
           "get_native_token": "Get %{symbol}",
           "buy_native_token": "Buy %{symbol}"
         },
@@ -2938,10 +2976,17 @@
       },
       "menus": {
         "favorite": "Favorite",
+        "home": "Home",
         "undo_favorite": "Undo Favorite",
         "remove": "Remove",
         "forward": "Forward",
-        "back": "Back"
+        "back": "Back",
+        "share": "Share",
+        "close_all_tabs": "Close All %{numberOfClosableTabs} Tabs",
+        "close_both_tabs": "Close Both Tabs",
+        "close_this_tab": "Close This Tab",
+        "close_tab": "Close Tab",
+        "new_tab": "New Tab"
       }
     },
     "copy": "Copy",

@@ -90,7 +90,7 @@ export function CarouselCard<T>({
                 paddingHorizontal: HORIZONTAL_PADDING,
               }}
               estimatedItemSize={carouselItem.width}
-              horizontal
+              horizontal={data.length > 1}
               ref={carouselItem.carouselRef}
               estimatedListSize={{
                 height: actualItemHeight,
@@ -156,7 +156,7 @@ const RefreshButton = ({ refresh, isRefreshing, dataUpdatedAt }: RefreshButtonPr
   const { colorMode } = useColorMode();
 
   const [canRefresh, setCanRefresh] = useState(dataUpdatedAt < Date.now() - 30_000);
-  const interval = useRef<NodeJS.Timer>();
+  const interval = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     const checkRefresh = () => {

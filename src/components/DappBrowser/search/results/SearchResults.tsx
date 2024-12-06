@@ -1,18 +1,29 @@
 import React, { useCallback } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
-import Animated, { SharedValue, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
+import { Directions, Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  Easing,
+  runOnJS,
+  SharedValue,
+  useAnimatedReaction,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Bleed, Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { Bleed, Box, Inline, Inset, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import * as i18n from '@/languages';
 import { Dapp, DappsContextProvider, useDappsContext } from '@/resources/metadata/dapps';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from '../../BrowserContext';
-import { SEARCH_BAR_HEIGHT } from '../../search-input/SearchInput';
+import { SEARCH_BAR_HEIGHT } from '../../Dimensions';
+import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT } from '../../constants';
+import { isValidURLWorklet } from '../../utils';
 import { useSearchContext } from '../SearchContext';
 import { GoogleSearchResult, SearchResult } from './SearchResult';
-import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { isValidURLWorklet } from '../../utils';
-import * as i18n from '@/languages';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
   'worklet';
@@ -54,12 +65,9 @@ const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
       if (b?.trending === true && a?.trending !== true) return 1;
       if (a?.trending === true && b?.trending !== true) return -1;
 
-      // @ts-expect-error: Need to fix these types
       const relevanceDiff = b.relevance - a.relevance;
       if (relevanceDiff === 0) {
-        // @ts-expect-error: Same here
         const aWordCount = a.name.split(' ').length;
-        // @ts-expect-error: Same here
         const bWordCount = b.name.split(' ').length;
         return aWordCount - bWordCount;
       }
@@ -74,35 +82,26 @@ const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
     return [{ url: query, urlDisplay: query, name: query, isDirect: true } as unknown as Dapp, ...(dappResults as Dapp[])];
   }
 
-  // @ts-expect-error: Same here
   return filteredDapps;
 };
 
-export const SearchResults = React.memo(function SearchResults({
-  goToUrl,
-  isFocused,
-}: {
-  goToUrl: (url: string) => void;
-  isFocused: SharedValue<boolean>;
-}) {
+export const SearchResults = React.memo(function SearchResults({ goToUrl }: { goToUrl: (url: string) => void }) {
   const { isDarkMode } = useColorMode();
   const { searchViewProgress } = useBrowserContext();
-  const { inputRef, keyboardHeight, searchQuery, searchResults } = useSearchContext();
+  const { inputRef, isFocused, keyboardHeight, searchQuery, searchResults } = useSearchContext();
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
+  const backgroundStyle = isDarkMode ? styles.searchBackgroundDark : styles.searchBackgroundLight;
+
   const animatedSearchContainerStyle = useAnimatedStyle(() => ({
-    opacity: searchViewProgress.value,
+    opacity: searchViewProgress.value / 100,
     pointerEvents: isFocused.value ? 'auto' : 'none',
   }));
 
-  const onPressX = useCallback(() => {
-    inputRef?.current?.blur();
-  }, [inputRef]);
-
   const allResultsAnimatedStyle = useAnimatedStyle(() => ({
-    display: searchQuery.value ? 'flex' : 'none',
+    display: searchQuery.value.trim() ? 'flex' : 'none',
   }));
 
   const moreResultsAnimatedStyle = useAnimatedStyle(() => ({
@@ -110,35 +109,61 @@ export const SearchResults = React.memo(function SearchResults({
   }));
 
   const suggestedGoogleSearchAnimatedStyle = useAnimatedStyle(() => ({
-    display: searchResults.value.length ? 'none' : 'flex',
+    display: searchResults.value.length || !searchQuery.value.trim() ? 'none' : 'flex',
   }));
 
   const closeButtonAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: searchViewProgress.value,
+    opacity: searchViewProgress.value / 100,
     transform: [{ scale: withSpring(isFocused.value ? 1 : 0.5, SPRING_CONFIGS.snappySpringConfig) }],
   }));
 
-  const emptyStateAnimatedStyle = useAnimatedStyle(() => ({
-    height: DEVICE_HEIGHT - keyboardHeight.value,
-    opacity: searchQuery.value ? 0 : searchViewProgress.value * 0.6,
-    transform: [
-      { scale: withSpring(isFocused.value ? 1 : 0.8, SPRING_CONFIGS.snappySpringConfig) },
-      { translateY: withSpring(isFocused.value ? 0 : 80, SPRING_CONFIGS.snappySpringConfig) },
-    ],
-  }));
+  const emptyStateAnimatedStyle = useAnimatedStyle(() => {
+    const searchQueryExists = searchQuery.value.trim();
+    return {
+      height: DEVICE_HEIGHT - keyboardHeight.value,
+      opacity: searchQueryExists ? 0 : (searchViewProgress.value / 100) * 0.6,
+      pointerEvents: searchQueryExists ? 'none' : 'auto',
+      transform: [
+        { scale: withSpring(isFocused.value ? 1 : 0.8, SPRING_CONFIGS.snappySpringConfig) },
+        { translateY: withSpring(isFocused.value ? 0 : 80, SPRING_CONFIGS.snappySpringConfig) },
+      ],
+    };
+  });
+
+  const onPressX = useCallback(() => {
+    inputRef?.current?.blur();
+  }, [inputRef]);
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onEndDrag: event => {
+      const velocityY = event.velocity?.y || 0;
+      const isSwitchingTabsDown = velocityY <= 0;
+
+      if (event.contentOffset.y < 0 && isSwitchingTabsDown) {
+        searchViewProgress.value = withSpring(0, SPRING_CONFIGS.slowSpring, isFinished => {
+          if (isFinished) {
+            searchQuery.value = '';
+          }
+        });
+        isFocused.value = false;
+      }
+    },
+  });
+
+  const swipeToCloseGesture = Gesture.Race(
+    Gesture.Fling()
+      .direction(Directions.DOWN)
+      .onStart(() => {
+        runOnJS(onPressX)();
+      }),
+    Gesture.Tap().onEnd(() => {
+      runOnJS(onPressX)();
+    })
+  );
 
   return (
     <>
-      <DappsContextProvider>
-        <DappsDataSync isFocused={isFocused} searchQuery={searchQuery} searchResults={searchResults} />
-      </DappsContextProvider>
-      <Animated.View
-        style={[
-          styles.searchContainer,
-          isDarkMode ? styles.searchBackgroundDark : styles.searchBackgroundLight,
-          animatedSearchContainerStyle,
-        ]}
-      >
+      <Animated.View style={[styles.searchContainer, backgroundStyle, animatedSearchContainerStyle]}>
         <Animated.View style={[styles.closeButton, closeButtonAnimatedStyle]}>
           <Box
             as={ButtonPressAnimation}
@@ -157,67 +182,95 @@ export const SearchResults = React.memo(function SearchResults({
           </Box>
         </Animated.View>
         <Animated.View style={[styles.emptyStateContainer, emptyStateAnimatedStyle]}>
-          <Stack alignHorizontal="center" space="24px">
-            <Text align="center" color="labelQuaternary" size="34pt" weight="heavy">
-              􀊫
-            </Text>
-            <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
-              {i18n.t(i18n.l.dapp_browser.search.find_apps_and_more)}
-            </Text>
-          </Stack>
+          <GestureDetector gesture={swipeToCloseGesture}>
+            <Animated.View style={styles.cover}>
+              <Stack alignHorizontal="center" space="24px">
+                <Text align="center" color="labelQuaternary" size="34pt" weight="heavy">
+                  􀊫
+                </Text>
+                <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
+                  {i18n.t(i18n.l.dapp_browser.search.find_apps_and_more)}
+                </Text>
+              </Stack>
+            </Animated.View>
+          </GestureDetector>
         </Animated.View>
         <Animated.View style={allResultsAnimatedStyle}>
-          <ScrollView style={{ paddingHorizontal: 16 }} contentContainerStyle={{ paddingBottom: SEARCH_BAR_HEIGHT }}>
-            <Inset>
-              <Stack space="32px">
-                <Box paddingTop={{ custom: 42 }}>
-                  <SearchResult index={0} goToUrl={goToUrl} />
-                  <Box
-                    as={Animated.View}
-                    borderRadius={18}
-                    background="fill"
-                    style={[
-                      suggestedGoogleSearchAnimatedStyle,
-                      {
-                        borderWidth: THICK_BORDER_WIDTH,
-                        borderColor: isDarkMode ? separatorSecondary : separatorTertiary,
-                        borderCurve: 'continuous',
-                        overflow: 'hidden',
-                      },
-                    ]}
-                  >
-                    <Bleed space={{ custom: THICK_BORDER_WIDTH }}>
-                      <GoogleSearchResult goToUrl={goToUrl} />
-                    </Bleed>
-                  </Box>
+          <Animated.ScrollView
+            contentContainerStyle={{ paddingBottom: SEARCH_BAR_HEIGHT }}
+            keyboardShouldPersistTaps="always"
+            onScroll={scrollHandler}
+            showsVerticalScrollIndicator={false}
+            style={styles.searchScrollView}
+          >
+            <Stack space="32px">
+              <Box paddingTop={{ custom: 42 }}>
+                <SearchResult index={0} goToUrl={goToUrl} />
+                <Box
+                  as={Animated.View}
+                  borderRadius={18}
+                  background="fill"
+                  style={[
+                    suggestedGoogleSearchAnimatedStyle,
+                    {
+                      borderWidth: THICK_BORDER_WIDTH,
+                      borderColor: isDarkMode ? separatorSecondary : separatorTertiary,
+                      borderCurve: 'continuous',
+                      overflow: 'hidden',
+                    },
+                  ]}
+                >
+                  <Bleed space={{ custom: THICK_BORDER_WIDTH }}>
+                    <GoogleSearchResult goToUrl={goToUrl} />
+                  </Bleed>
                 </Box>
-                <Animated.View style={moreResultsAnimatedStyle}>
-                  <Stack space="12px">
-                    <Inset horizontal="8px">
-                      <Inline space="6px" alignVertical="center">
-                        <TextIcon color="labelSecondary" size="icon 15px" weight="heavy" width={20}>
-                          􀊫
-                        </TextIcon>
-                        <Text color="label" size="20pt" weight="heavy">
-                          {i18n.t(i18n.l.dapp_browser.search.more_results)}
-                        </Text>
-                      </Inline>
-                    </Inset>
-                    <Box gap={6}>
-                      <GoogleSearchResult goToUrl={goToUrl} />
-                      <SearchResult index={1} goToUrl={goToUrl} />
-                      <SearchResult index={2} goToUrl={goToUrl} />
-                      <SearchResult index={3} goToUrl={goToUrl} />
-                      <SearchResult index={4} goToUrl={goToUrl} />
-                      <SearchResult index={5} goToUrl={goToUrl} />
-                    </Box>
-                  </Stack>
-                </Animated.View>
-              </Stack>
-            </Inset>
-          </ScrollView>
+              </Box>
+              <Animated.View style={moreResultsAnimatedStyle}>
+                <Stack space="12px">
+                  <Inset horizontal="8px">
+                    <Inline space="6px" alignVertical="center">
+                      <TextIcon color="labelSecondary" size="icon 15px" weight="heavy" width={20}>
+                        􀊫
+                      </TextIcon>
+                      <Text color="label" size="20pt" weight="heavy">
+                        {i18n.t(i18n.l.dapp_browser.search.more_results)}
+                      </Text>
+                    </Inline>
+                  </Inset>
+                  <Box gap={6}>
+                    <GoogleSearchResult goToUrl={goToUrl} />
+                    <SearchResult index={1} goToUrl={goToUrl} />
+                    <SearchResult index={2} goToUrl={goToUrl} />
+                    <SearchResult index={3} goToUrl={goToUrl} />
+                    <SearchResult index={4} goToUrl={goToUrl} />
+                    <SearchResult index={5} goToUrl={goToUrl} />
+                  </Box>
+                </Stack>
+              </Animated.View>
+            </Stack>
+          </Animated.ScrollView>
+          <EasingGradient
+            easing={Easing.inOut(Easing.quad)}
+            endColor={backgroundStyle.backgroundColor}
+            endOpacity={0}
+            startColor={backgroundStyle.backgroundColor}
+            startOpacity={1}
+            steps={12}
+            style={styles.topFade}
+          />
+          <EasingGradient
+            easing={Easing.inOut(Easing.quad)}
+            endColor={backgroundStyle.backgroundColor}
+            startColor={backgroundStyle.backgroundColor}
+            steps={12}
+            style={styles.bottomFade}
+          />
         </Animated.View>
       </Animated.View>
+
+      <DappsContextProvider>
+        <DappsDataSync isFocused={isFocused} searchQuery={searchQuery} searchResults={searchResults} />
+      </DappsContextProvider>
     </>
   );
 });
@@ -234,23 +287,38 @@ const DappsDataSync = ({
   const { dapps } = useDappsContext();
 
   useAnimatedReaction(
-    () => searchQuery.value,
-    (result, previous) => {
-      if (result !== previous && isFocused.value) {
+    () => searchQuery.value.trim(),
+    (query, previousQuery) => {
+      if (!query && searchResults.value.length) {
         searchResults.modify(value => {
-          const results = search(result, dapps, 4);
+          value.splice(0, value.length);
+          return value;
+        });
+        return;
+      }
+      if (query !== previousQuery && isFocused.value) {
+        searchResults.modify(value => {
+          const results = search(query, dapps, 4);
           value.splice(0, value.length);
           value.push(...results);
           return value;
         });
       }
-    }
+    },
+    []
   );
 
   return null;
 };
 
 const styles = StyleSheet.create({
+  bottomFade: {
+    bottom: 0,
+    height: 42,
+    pointerEvents: 'none',
+    position: 'absolute',
+    width: DEVICE_WIDTH,
+  },
   closeButton: {
     height: 32,
     position: 'absolute',
@@ -259,16 +327,30 @@ const styles = StyleSheet.create({
     width: 32,
     zIndex: 1000,
   },
+  cover: {
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
   emptyStateContainer: {
     alignItems: 'center',
     bottom: 0,
     justifyContent: 'center',
     left: 0,
     marginTop: 36,
-    pointerEvents: 'none',
     position: 'absolute',
     right: 0,
     top: 0,
+  },
+  searchBackgroundDark: {
+    backgroundColor: HOMEPAGE_BACKGROUND_COLOR_DARK,
+  },
+  searchBackgroundLight: {
+    backgroundColor: HOMEPAGE_BACKGROUND_COLOR_LIGHT,
   },
   searchContainer: {
     height: DEVICE_HEIGHT,
@@ -276,10 +358,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: DEVICE_WIDTH,
   },
-  searchBackgroundDark: {
-    backgroundColor: globalColors.grey100,
+  searchScrollView: {
+    paddingHorizontal: 16,
   },
-  searchBackgroundLight: {
-    backgroundColor: '#FBFCFD',
+  topFade: {
+    height: 42,
+    pointerEvents: 'none',
+    position: 'absolute',
+    top: 0,
+    width: DEVICE_WIDTH,
   },
 });

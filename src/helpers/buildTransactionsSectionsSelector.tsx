@@ -3,20 +3,37 @@ import { capitalize, groupBy, isEmpty } from 'lodash';
 import React from 'react';
 import { FastTransactionCoinRow, RequestCoinRow } from '../components/coin-row';
 import { thisMonthTimestamp, thisYearTimestamp, todayTimestamp, yesterdayTimestamp } from './transactions';
-import { NativeCurrencyKey, RainbowTransaction, TransactionStatusTypes } from '@/entities';
+import { NativeCurrencyKey, RainbowTransaction, TransactionStatus } from '@/entities';
 import * as i18n from '@/languages';
-import { WalletconnectRequestData } from '@/redux/requests';
+import { WalletconnectRequestData } from '@/walletConnect/types';
 import { ThemeContextProps } from '@/theme';
 import { Contact } from '@/redux/contacts';
-import { TransactionStatus } from '@/resources/transactions/types';
+import { SectionListData } from 'react-native';
 
-type RainbowTransactionWithContact = RainbowTransaction & {
+export type RainbowTransactionWithContact = RainbowTransaction & {
   contact: Contact | null;
+};
+
+type Section<T> = {
+  title: string;
+  data: T[];
+  renderItem: ({ item }: { item: T }) => JSX.Element;
+};
+
+export type WalletconnectSection = Section<WalletconnectRequestData>;
+export type TransactionSection = Section<RainbowTransactionWithContact>;
+
+export type TransactionSections = WalletconnectSection | TransactionSection;
+
+export type TransactionItemForSectionList = WalletconnectRequestData | RainbowTransactionWithContact;
+
+export type TransactionSectionsResult = {
+  sections: SectionListData<TransactionItemForSectionList, TransactionSections>[];
 };
 
 // bad news
 const groupTransactionByDate = ({ status, minedAt }: { status: TransactionStatus; minedAt: string }) => {
-  if (status === 'pending') {
+  if (status === TransactionStatus.pending) {
     return i18n.t(i18n.l.transactions.pending_title);
   }
 
@@ -44,7 +61,7 @@ const addContactInfo =
     contact: Contact | null;
   } => {
     const { from, to, status } = txn;
-    const isSent = status === TransactionStatusTypes.sent;
+    const isSent = status === TransactionStatus.sent;
     const contactAddress = (isSent ? to : from) || '';
     const contact = contacts?.[contactAddress?.toLowerCase()] ?? null;
     return {
@@ -67,16 +84,12 @@ export const buildTransactionsSections = ({
   theme: ThemeContextProps;
   transactions: RainbowTransaction[];
   nativeCurrency: NativeCurrencyKey;
-}) => {
+}): TransactionSectionsResult => {
   if (!transactions) {
     return { sections: [] };
   }
 
-  let sectionedTransactions: {
-    title: string;
-    data: RainbowTransactionWithContact[];
-    renderItem: ({ item }: { item: RainbowTransactionWithContact }) => JSX.Element;
-  }[] = [];
+  let sectionedTransactions: TransactionSections[] = [];
 
   const transactionsWithContacts = transactions?.map(addContactInfo(contacts));
 
@@ -85,11 +98,7 @@ export const buildTransactionsSections = ({
 
     const test = Object.keys(transactionsByDate);
     const filter = test.filter(key => key !== 'Dropped');
-    const sectioned: {
-      title: string;
-      data: RainbowTransactionWithContact[];
-      renderItem: ({ item }: { item: RainbowTransactionWithContact }) => JSX.Element;
-    }[] = filter.map((section: string) => {
+    const sectioned: TransactionSection[] = filter.map((section: string) => {
       const sectionData: RainbowTransactionWithContact[] = transactionsByDate[section].map(txn => {
         const typeTxn = txn as RainbowTransactionWithContact;
         const res = {
@@ -119,18 +128,14 @@ export const buildTransactionsSections = ({
     }
   }
 
-  // i18n
-  let requestsToApprove: any = [];
   if (!isEmpty(requests)) {
-    requestsToApprove = [
-      {
-        data: requests,
-        renderItem: ({ item }: any) => <RequestCoinRow item={item} theme={theme} />,
-        title: i18n.t(i18n.l.walletconnect.requests),
-      },
-    ];
+    sectionedTransactions.unshift({
+      data: requests,
+      renderItem: ({ item }: { item: WalletconnectRequestData }) => <RequestCoinRow item={item} theme={theme} />,
+      title: i18n.t(i18n.l.walletconnect.requests),
+    });
   }
   return {
-    sections: requestsToApprove.concat(sectionedTransactions),
+    sections: sectionedTransactions as SectionListData<TransactionItemForSectionList, TransactionSections>[],
   };
 };

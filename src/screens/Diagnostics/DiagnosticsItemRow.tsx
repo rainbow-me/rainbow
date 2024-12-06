@@ -113,7 +113,6 @@ export const DiagnosticsItemRow = ({ data }: any) => {
           </Text>
         </View>
       </ButtonPressAnimation>
-      {/* @ts-expect-error JS component */}
       <Divider />
     </ColumnWithMargins>
   );

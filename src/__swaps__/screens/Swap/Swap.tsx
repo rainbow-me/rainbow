@@ -24,7 +24,7 @@ import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
@@ -108,7 +108,8 @@ const useMountSignal = () => {
 const useCleanupOnUnmount = () => {
   useEffect(() => {
     return () => {
-      const highestValueEth = userAssetsStore.getState().getHighestValueEth();
+      const highestValueEth = userAssetsStore.getState().getHighestValueNativeAsset();
+      const preferredNetwork = swapsStore.getState().preferredNetwork;
       const parsedAsset = highestValueEth
         ? parseSearchAsset({
             assetWithPrice: undefined,
@@ -123,7 +124,7 @@ const useCleanupOnUnmount = () => {
         outputAsset: null,
         outputSearchQuery: '',
         quote: null,
-        selectedOutputChainId: parsedAsset?.chainId ?? ChainId.mainnet,
+        selectedOutputChainId: parsedAsset?.chainId ?? preferredNetwork ?? ChainId.mainnet,
       });
 
       userAssetsStore.setState({ filter: 'all', inputSearchQuery: '' });
@@ -138,7 +139,7 @@ const WalletAddressObserver = () => {
   const { setAsset } = useSwapContext();
 
   const setNewInputAsset = useCallback(() => {
-    const newHighestValueEth = userAssetsStore.getState().getHighestValueEth();
+    const newHighestValueEth = userAssetsStore.getState().getHighestValueNativeAsset();
 
     if (userAssetsStore.getState().filter !== 'all') {
       userAssetsStore.setState({ filter: 'all' });
@@ -208,7 +209,10 @@ const ExchangeRateBubbleAndWarning = () => {
 
 export const styles = StyleSheet.create({
   rootViewBackground: {
-    borderRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
+    borderTopLeftRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
+    borderTopRightRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
+    borderBottomLeftRadius: IS_ANDROID ? 0 : ScreenCornerRadius,
+    borderBottomRightRadius: IS_ANDROID ? 0 : ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',
     marginTop: StatusBar.currentHeight ?? 0,

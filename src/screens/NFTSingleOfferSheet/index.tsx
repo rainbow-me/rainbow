@@ -27,7 +27,7 @@ import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings, useGas, useWallets } from '@/hooks';
-import { NewTransaction } from '@/entities';
+import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities';
 import { analyticsV2 } from '@/analytics';
 import { BigNumber } from '@ethersproject/bignumber';
 import { HoldToAuthorizeButton } from '@/components/buttons';
@@ -48,11 +48,11 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { chainsIdByName, chainsNativeAsset, defaultChains, getChainDefaultRpc } from '@/chains';
 import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { ethUnits } from '@/references';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
-import { chainsIdByName, chainsNativeAsset, defaultChains, getChainDefaultRpc } from '@/chains';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -324,7 +324,7 @@ export function NFTSingleOfferSheet() {
                 };
                 if (step.id === 'sale') {
                   tx = {
-                    status: 'pending',
+                    status: TransactionStatus.pending,
                     chainId: offerChainId,
                     to: item.data?.to,
                     from: item.data?.from,
@@ -339,12 +339,12 @@ export function NFTSingleOfferSheet() {
                     },
                     changes: [
                       {
-                        direction: 'out',
+                        direction: TransactionDirection.OUT,
                         asset,
                         value: 1,
                       },
                       {
-                        direction: 'in',
+                        direction: TransactionDirection.IN,
                         asset: {
                           ...offer.paymentToken,
                           network: offer.network as Network,
@@ -358,7 +358,7 @@ export function NFTSingleOfferSheet() {
                   };
                 } else if (step.id === 'nft-approval') {
                   tx = {
-                    status: 'pending',
+                    status: TransactionStatus.pending,
                     chainId: offerChainId,
                     to: item.data?.to,
                     from: item.data?.from,
@@ -722,7 +722,6 @@ export function NFTSingleOfferSheet() {
                     parentHorizontalPadding={28}
                     showBiometryIcon={!insufficientEth}
                   />
-                  {/* @ts-ignore */}
                   <GasSpeedButton
                     asset={{
                       color: offer.nft.predominantColor || buttonColorFallback,

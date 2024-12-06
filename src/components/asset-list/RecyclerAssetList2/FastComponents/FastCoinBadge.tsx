@@ -18,6 +18,8 @@ import BlastBadge from '@/assets/badges/blastBadge.png';
 import BlastBadgeDark from '@/assets/badges/blastBadgeDark.png';
 import DegenBadge from '@/assets/badges/degenBadge.png';
 import DegenBadgeDark from '@/assets/badges/degenBadgeDark.png';
+import ApechainBadge from '@/assets/badges/apechainBadge.png';
+import ApechainBadgeDark from '@/assets/badges/apechainBadgeDark.png';
 import { ChainId } from '@/chains/types';
 
 interface FastChainBadgeProps {
@@ -31,6 +33,10 @@ const AssetIconsByTheme: {
     light: ImageSourcePropType;
   };
 } = {
+  [ChainId.apechain]: {
+    dark: ApechainBadgeDark,
+    light: ApechainBadge,
+  },
   [ChainId.arbitrum]: {
     dark: ArbitrumBadgeDark,
     light: ArbitrumBadge,

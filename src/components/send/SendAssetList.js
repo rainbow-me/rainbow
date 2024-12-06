@@ -4,7 +4,7 @@ import { View } from 'react-primitives';
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 import { buildCoinsList } from '../../helpers/assets';
 import { deviceUtils } from '../../utils';
-import Divider, { DividerSize } from '../Divider';
+import Divider, { DividerSize } from '@/components/Divider';
 import { FlyInAnimation } from '../animations';
 import { CoinDividerOpenButton } from '../coin-divider';
 import { CollectiblesSendRow, SendCoinRow } from '../coin-row';

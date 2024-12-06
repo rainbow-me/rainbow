@@ -4,12 +4,7 @@ import {
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
-import {
-  GlobalNotificationTopics,
-  GroupSettings,
-  WalletNotificationRelationshipType,
-  WalletNotificationSettings,
-} from '@/notifications/settings/types';
+import { GlobalNotificationTopics, GroupSettings, WalletNotificationSettings } from '@/notifications/settings/types';
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 
@@ -66,48 +61,6 @@ export const getExistingGroupSettingsFromStorage = () => {
 
   if (data) return JSON.parse(data) as GroupSettings;
   return {};
-};
-
-/**
- * Updates settings for all wallets with relationship type
- * @returns updated wallet settings array
- */
-export const updateSettingsForWalletsWithRelationshipType = (
-  type: WalletNotificationRelationshipType,
-  options: Partial<WalletNotificationSettings>
-): WalletNotificationSettings[] => {
-  const data = getAllWalletNotificationSettingsFromStorage();
-  const newSettings = data.map((wallet: WalletNotificationSettings) => {
-    if (wallet.type === type) {
-      return { ...wallet, ...options };
-    }
-    return wallet;
-  });
-  notificationSettingsStorage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
-
-  return newSettings;
-};
-
-/**
- * Updates settings for wallet with address
- * @returns updated wallet settings object or undefined if there's no wallet with passed address
- */
-export const updateSettingsForWalletWithAddress = (
-  address: string,
-  options: Partial<WalletNotificationSettings>
-): WalletNotificationSettings | undefined => {
-  let updatedSettings: WalletNotificationSettings | undefined = undefined;
-  const data = getAllWalletNotificationSettingsFromStorage();
-  const newSettings = data.map((wallet: WalletNotificationSettings) => {
-    if (wallet.address === address) {
-      updatedSettings = { ...wallet, ...options };
-      return updatedSettings;
-    }
-    return wallet;
-  });
-  notificationSettingsStorage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
-
-  return updatedSettings;
 };
 
 /**

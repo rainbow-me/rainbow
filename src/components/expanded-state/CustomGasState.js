@@ -1,13 +1,12 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import Divider from '../Divider';
-import { ExchangeHeader } from '../exchange';
+import Divider from '@/components/Divider';
+import { ExchangeHeader } from '@/components/ExchangeHeader';
 import { FloatingPanel } from '../floating-panels';
-import { GasSpeedButton } from '../gas';
-import { Column } from '../layout';
-import { SlackSheet } from '../sheet';
-import { FeesPanel, FeesPanelTabs } from './custom-gas';
+import { GasSpeedButton } from '@/components/gas';
+import { Column } from '@/components/layout';
+import { SlackSheet } from '@/components/sheet';
 import { getTrendKey } from '@/helpers/gas';
 import { useColorForAsset, useDimensions, useGas, useKeyboardHeight } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -15,8 +14,8 @@ import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { deviceUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
-import { useSelector } from 'react-redux';
-import { getCrosschainSwapServiceTime } from '@/handlers/swap';
+import FeesPanel from '@/components/FeesPanel';
+import FeesPanelTabs from '@/components/FeesPanelTabs';
 
 const FOOTER_HEIGHT = 120;
 const CONTENT_HEIGHT = 310;
@@ -42,7 +41,6 @@ export default function CustomGasState({ asset }) {
   const colorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
   const { selectedGasFee, currentBlockParams, chainId } = useGas();
   const [canGoBack, setCanGoBack] = useState(true);
-  const { tradeDetails } = useSelector(state => state.swap);
 
   const validateGasParams = useRef(null);
   useAndroidDisableGesturesOnFocus();
@@ -99,7 +97,6 @@ export default function CustomGasState({ asset }) {
           theme="dark"
           validateGasParams={validateGasParams}
           marginTop={19}
-          crossChainServiceTime={getCrosschainSwapServiceTime(tradeDetails)}
         />
       </Column>
     </SlackSheet>

@@ -1,7 +1,7 @@
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { weiToGwei } from '@/__swaps__/utils/ethereum';
+import { weiToGwei } from '@/parsers';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
-import { add, formatNumber } from '@/__swaps__/utils/numbers';
+import { add, formatNumber } from '@/helpers/utilities';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenu } from '@/components/context-menu';
@@ -14,7 +14,6 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
@@ -58,7 +57,8 @@ function EstimatedGasFee() {
 }
 
 function SelectedGas({ isPill }: { isPill?: boolean }) {
-  const chainId = swapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const preferredNetwork = swapsStore(s => s.preferredNetwork);
+  const chainId = swapsStore(s => s.inputAsset?.chainId || preferredNetwork || ChainId.mainnet);
   const selectedGasSpeed = useSelectedGasSpeed(chainId);
 
   return (
@@ -108,11 +108,12 @@ function keys<const T extends string>(obj: Record<T, unknown> | undefined) {
 const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; children: ReactNode }) => {
   const { SwapNavigation } = useSwapContext();
 
-  const chainId = swapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const metereologySuggestions = useMeteorologySuggestions({ chainId });
+  const preferredNetwork = swapsStore(s => s.preferredNetwork);
+  const chainId = swapsStore(s => s.inputAsset?.chainId || preferredNetwork || ChainId.mainnet);
+  const { data: metereologySuggestions, isLoading } = useMeteorologySuggestions({ chainId });
   const customGasSettings = useCustomGasSettings(chainId);
 
-  const menuOptions = useMemo(() => [...keys(metereologySuggestions.data), GasSpeed.CUSTOM] as GasSpeed[], [metereologySuggestions.data]);
+  const menuOptions = useMemo(() => [...keys(metereologySuggestions), GasSpeed.CUSTOM] as GasSpeed[], [metereologySuggestions]);
 
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
@@ -133,7 +134,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
   );
 
   const handlePressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => handlePressSpeedOption(actionKey as GasSpeed),
+    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: GasSpeed } }) => handlePressSpeedOption(actionKey),
     [handlePressSpeedOption]
   );
 
@@ -147,10 +148,8 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
 
   const menuConfig = useMemo(() => {
     const menuItems = menuOptions.map(gasOption => {
-      if (IS_ANDROID) return gasOption;
-
       const currentBaseFee = getCachedCurrentBaseFee(chainId);
-      const gasSettings = gasOption === GasSpeed.CUSTOM ? customGasSettings : metereologySuggestions.data?.[gasOption];
+      const gasSettings = gasOption === GasSpeed.CUSTOM ? customGasSettings : metereologySuggestions?.[gasOption];
       const subtitle = getEstimatedFeeRangeInGwei(gasSettings, currentBaseFee);
 
       return {
@@ -161,9 +160,9 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
       };
     });
     return { menuItems, menuTitle: '' };
-  }, [customGasSettings, menuOptions, metereologySuggestions.data, chainId]);
+  }, [customGasSettings, menuOptions, metereologySuggestions, chainId]);
 
-  if (metereologySuggestions.isLoading) return children;
+  if (isLoading) return children;
 
   return (
     <Box alignItems="center" justifyContent="center" style={{ margin: IS_ANDROID ? 0 : -GAS_BUTTON_HIT_SLOP }} testID="gas-speed-pager">
@@ -174,7 +173,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
           isAnchoredToRight
           isMenuPrimaryAction
           onPressActionSheet={handlePressActionSheet}
-          options={menuConfig.menuItems}
+          options={menuOptions}
           useActionSheetFallback={false}
           wrapNativeComponent={false}
         >
@@ -184,14 +183,11 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
         </ContextMenu>
       ) : (
         <ContextMenuButton
-          activeOpacity={0}
           enableContextMenu
-          isAnchoredToRight
           isMenuPrimaryAction
           menuConfig={menuConfig}
           onPressMenuItem={handlePressMenuItem}
           useActionSheetFallback={false}
-          wrapNativeComponent={false}
         >
           <ButtonPressAnimation scaleTo={0.825} style={{ padding: GAS_BUTTON_HIT_SLOP }}>
             {children}
@@ -215,7 +211,7 @@ export function ReviewGasButton() {
 
   const animatedBorderColor = useAnimatedStyle(() => {
     return {
-      borderColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
+      borderColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode),
     };
   });
 

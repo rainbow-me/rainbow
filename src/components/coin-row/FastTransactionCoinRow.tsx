@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
-import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
+import { NativeCurrencyKey, RainbowTransaction, TransactionStatus, TransactionType } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
@@ -12,7 +12,6 @@ import { CardSize } from '../unique-token/CardSize';
 import { ChainBadge } from '../coin-icon';
 import { ChainId } from '@/chains/types';
 import { address } from '@/utils/abbreviations';
-import { TransactionType } from '@/resources/transactions/types';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
@@ -24,8 +23,8 @@ import {
 import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import Spinner from '../Spinner';
 import * as lang from '@/languages';
-import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
-import { checkForPendingSwap } from '@/screens/transaction-details/helpers/checkForPendingSwap';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 
 export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;
@@ -54,9 +53,12 @@ const swapTypeValues = (changes: RainbowTransaction['changes'], status: RainbowT
 
   // NOTE: For pending txns let's use the change values instead of
   // the transaction balance change since that hasn't happened yet
-  if (status === 'pending') {
-    const valueOut = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(tokenOut?.value?.toString() || '0', tokenOut?.asset.decimals || 18), tokenOut?.asset.decimals || 18)} ${tokenOut?.asset.symbol}`;
-    const valueIn = `+${handleSignificantDecimals(convertRawAmountToDecimalFormat(tokenIn?.value?.toString() || '0', tokenIn?.asset.decimals || 18), tokenIn?.asset.decimals || 18)} ${tokenIn?.asset.symbol}`;
+  if (status === TransactionStatus.pending) {
+    const decimalsOut = typeof tokenOut?.asset.decimals === 'number' ? tokenOut.asset.decimals : 18;
+    const decimalsIn = typeof tokenIn?.asset.decimals === 'number' ? tokenIn.asset.decimals : 18;
+
+    const valueOut = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(tokenOut?.value?.toString() || '0', decimalsOut), decimalsOut)} ${tokenOut?.asset.symbol}`;
+    const valueIn = `+${handleSignificantDecimals(convertRawAmountToDecimalFormat(tokenIn?.value?.toString() || '0', decimalsIn), decimalsIn)} ${tokenIn?.asset.symbol}`;
 
     return [valueOut, valueIn];
   }
@@ -143,8 +145,7 @@ export const ActivityTypeIcon = ({
   transaction: Pick<RainbowTransaction, 'status' | 'type'>;
   color: string;
 }) => {
-  // if (status === 'pending') return null;
-  if (status === 'pending') {
+  if (status === TransactionStatus.pending) {
     return <Spinner color={color} size={11} style={{ marginTop: -1, paddingRight: 2 }} />;
   }
 

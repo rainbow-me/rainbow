@@ -77,7 +77,12 @@ react {
 	    //
 	    //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
 	    // hermesFlags = ["-O", "-output-source-map"]
-	}
+	    //
+    // Added by install-expo-modules
+    entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", rootDir.getAbsoluteFile().getParentFile().getAbsolutePath(), "android", "absolute"].execute(null, rootDir).text.trim())
+    cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
+    bundleCommand = "export:embed"
+}
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -130,8 +135,8 @@ android {
         applicationId "me.rainbow"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 231
-        versionName "1.9.39"
+        versionCode 241
+        versionName "1.9.48"
         missingDimensionStrategy 'react-native-camera', 'general'
         renderscriptTargetApi 23
         renderscriptSupportModeEnabled true

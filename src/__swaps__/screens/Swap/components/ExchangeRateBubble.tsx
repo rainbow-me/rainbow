@@ -7,12 +7,11 @@ import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { IS_IOS } from '@/env';
 import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { GestureHandlerButton } from './GestureHandlerButton';
-import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
 
 export const ExchangeRateBubble = () => {
@@ -141,13 +140,15 @@ export const ExchangeRateBubble = () => {
     };
   });
 
+  const pointerEventsStyle = useAnimatedStyle(() => {
+    const shouldDisplay = fromAssetText.value.length > 0 && toAssetText.value.length > 0;
+    return {
+      pointerEvents: shouldDisplay ? 'auto' : 'none',
+    };
+  });
+
   return (
-    <GestureHandlerButton
-      buttonPressWrapperStyleIOS={IS_IOS ? styles.buttonPosition : undefined}
-      onPressWorklet={onChangeIndex}
-      scaleTo={0.9}
-      style={IS_IOS ? undefined : styles.buttonPosition}
-    >
+    <GestureHandlerButton onPressWorklet={onChangeIndex} scaleTo={0.9} style={[styles.buttonPosition, pointerEventsStyle]}>
       <Box
         as={Animated.View}
         alignItems="center"

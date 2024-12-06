@@ -9,19 +9,18 @@ import {
   SLIDER_WIDTH,
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
-import { ChainId, ChainName } from '@/chains/types';
-import { isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
+import { ChainId } from '@/chains/types';
 import { globalColors } from '@/design-system';
 import { ForegroundColor, palettes } from '@/design-system/color/palettes';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
 import { RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
-import { ETH_ADDRESS } from '@/references';
+import { supportedNativeCurrencies } from '@/references';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteParams } from '@rainbow-me/swaps';
 import { swapsStore } from '../../state/swaps/swapsStore';
 import {
   divWorklet,
@@ -34,12 +33,19 @@ import {
   powWorklet,
   roundWorklet,
   toFixedWorklet,
-} from '../safe-math/SafeMath';
-import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
+} from '@/safe-math/SafeMath';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
 import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
-import { convertAmountToRawAmount } from './numbers';
+import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { chainsName } from '@/chains';
+import { getUniqueId } from '@/utils/ethereumUtils';
+
+// DO NOT REMOVE THESE COMMENTED ENV VARS
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { IS_APK_BUILD } from 'react-native-dotenv';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import isTestFlight from '@/helpers/isTestFlight';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -52,14 +58,14 @@ export type ResponseByTheme<T> = {
   dark: T;
 };
 
-export const getColorValueForTheme = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = false) => {
+export const getColorValueForTheme = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean) => {
   if (!values) {
     return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
   }
   return isDarkMode ? values.dark : values.light;
 };
 
-export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = true) => {
+export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean) => {
   'worklet';
 
   if (!values) {
@@ -197,6 +203,8 @@ export const findNiceIncrement = (availableBalance: string | number | undefined)
 
 // /---- 🔵 Worklet utils 🔵 ----/ //
 //
+type nativeCurrencyType = typeof supportedNativeCurrencies;
+
 export function addCommasToNumber<T extends 0 | '0' | '0.00'>(number: string | number, fallbackValue: T = 0 as T): T | string {
   'worklet';
   if (isNaN(Number(number))) {
@@ -217,14 +225,25 @@ export function addCommasToNumber<T extends 0 | '0' | '0.00'>(number: string | n
   }
 }
 
+export const addSymbolToNativeDisplayWorklet = (value: number | string, nativeCurrency: keyof nativeCurrencyType): string => {
+  'worklet';
+
+  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
+  const { symbol } = nativeSelected;
+
+  const nativeValueWithCommas = addCommasToNumber(value, '0');
+
+  return `${symbol}${nativeValueWithCommas}`;
+};
+
 export function clamp(value: number, lowerBound: number, upperBound: number) {
   'worklet';
   return Math.min(Math.max(lowerBound, value), upperBound);
 }
 
-export function stripCommas(value: string) {
+export function stripNonDecimalNumbers(value: string) {
   'worklet';
-  return value.replace(/,/g, '');
+  return value.replace(/[^0-9.]/g, '');
 }
 
 export function trimTrailingZeros(value: string) {
@@ -328,15 +347,17 @@ export const opacityWorklet = (color: string, opacity: number) => {
 // /---- END worklet utils ----/ //
 
 export const DEFAULT_SLIPPAGE_BIPS = {
-  [ChainId.mainnet]: 100,
-  [ChainId.polygon]: 200,
-  [ChainId.bsc]: 200,
-  [ChainId.optimism]: 200,
-  [ChainId.base]: 200,
-  [ChainId.zora]: 200,
+  [ChainId.apechain]: 200,
   [ChainId.arbitrum]: 200,
   [ChainId.avalanche]: 200,
+  [ChainId.base]: 200,
   [ChainId.blast]: 200,
+  [ChainId.bsc]: 200,
+  [ChainId.degen]: 200,
+  [ChainId.mainnet]: 100,
+  [ChainId.optimism]: 200,
+  [ChainId.polygon]: 200,
+  [ChainId.zora]: 200,
 };
 
 export const slippageInBipsToString = (slippageInBips: number) => (slippageInBips / 100).toFixed(1);
@@ -482,44 +503,6 @@ export const getCrossChainTimeEstimateWorklet = ({
   };
 };
 
-export const isUnwrapEthWorklet = ({
-  buyTokenAddress,
-  chainId,
-  sellTokenAddress,
-}: {
-  chainId: ChainId;
-  sellTokenAddress: string;
-  buyTokenAddress: string;
-}) => {
-  'worklet';
-  if (chainId === ChainId.mainnet) {
-    return isLowerCaseMatchWorklet(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatchWorklet(buyTokenAddress, ETH_ADDRESS);
-  } else {
-    return (
-      isLowerCaseMatchWorklet(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatchWorklet(buyTokenAddress, ETH_ADDRESS_AGGREGATOR)
-    );
-  }
-};
-
-export const isWrapEthWorklet = ({
-  buyTokenAddress,
-  chainId,
-  sellTokenAddress,
-}: {
-  chainId: ChainId;
-  sellTokenAddress: string;
-  buyTokenAddress: string;
-}) => {
-  'worklet';
-  if (chainId === ChainId.mainnet) {
-    return isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId]);
-  } else {
-    return (
-      isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS_AGGREGATOR) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId])
-    );
-  }
-};
-
 export const priceForAsset = ({
   asset,
   assetType,
@@ -558,11 +541,6 @@ const ETH_COLORS: Colors = {
   shadow: undefined,
 };
 
-export const getStandardizedUniqueIdWorklet = ({ address, chainId }: { address: AddressOrEth; chainId: ChainId }) => {
-  'worklet';
-  return `${address}_${chainId}`;
-};
-
 export const parseAssetAndExtend = ({
   asset,
   insertUserAssetBalance,
@@ -576,7 +554,7 @@ export const parseAssetAndExtend = ({
     colors: (isAssetEth ? ETH_COLORS : asset.colors) as TokenColors,
   });
 
-  const uniqueId = getStandardizedUniqueIdWorklet({ address: asset.address, chainId: asset.chainId });
+  const uniqueId = getUniqueId(asset.address, asset.chainId);
   const balance = insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(uniqueId)?.balance || asset.balance : asset.balance;
 
   return {
@@ -622,13 +600,12 @@ export const buildQuoteParams = ({
 
   const isCrosschainSwap = inputAsset.chainId !== outputAsset.chainId;
 
-  return {
+  const quoteParams: QuoteParams = {
     source: source === 'auto' ? undefined : source,
     chainId: inputAsset.chainId,
     fromAddress: currentAddress,
     sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : inputAsset.address,
     buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : outputAsset.address,
-    // TODO: Handle native input cases below
     sellAmount:
       lastTypedInput === 'inputAmount' || lastTypedInput === 'inputNativeValue'
         ? convertAmountToRawAmount(inputAmount.toString(), inputAsset.decimals)
@@ -639,8 +616,12 @@ export const buildQuoteParams = ({
         : undefined,
     slippage: Number(slippage),
     refuel: false,
-    swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
     toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
     currency: store.getState().settings.nativeCurrency,
   };
+
+  // Do not delete the comment below 😤
+  // @ts-ignore About to get quote
+
+  return quoteParams;
 };

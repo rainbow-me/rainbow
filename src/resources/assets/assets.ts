@@ -1,11 +1,36 @@
 import lang from 'i18n-js';
-import { ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
+import isEmpty from 'lodash/isEmpty';
+import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
+import { queryClient } from '@/react-query';
+import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
+import { RainbowPositions } from '@/resources/defi/types';
 import { AddysAddressAsset, AddysAsset, ParsedAsset, RainbowAddressAssets } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { ChainId } from '@/chains/types';
 import { chainsIdByName } from '@/chains';
+import { ChainId } from '@/chains/types';
+
+export const filterPositionsData = (
+  address: string,
+  currency: NativeCurrencyKey,
+  assetsData: RainbowAddressAssets
+): RainbowAddressAssets => {
+  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(positionsQueryKey({ address, currency }));
+  const positionTokens = positionsObj?.positionTokens || [];
+
+  if (isEmpty(positionTokens)) {
+    return assetsData;
+  }
+
+  return Object.keys(assetsData)
+    .filter(uniqueId => !positionTokens.find(positionToken => positionToken === uniqueId))
+    .reduce((cur, uniqueId) => {
+      return Object.assign(cur, {
+        [uniqueId]: assetsData[uniqueId],
+      });
+    }, {});
+};
 
 export function parseAsset({ address, asset }: { address: string; asset: AddysAsset }): ParsedAsset {
   const network = asset?.network;
@@ -32,6 +57,7 @@ export function parseAsset({ address, asset }: { address: string; asset: AddysAs
     symbol: asset?.symbol,
     type: asset?.type,
     uniqueId,
+    transferable: asset?.transferable,
   };
 
   return parsedAsset;

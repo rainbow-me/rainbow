@@ -11,7 +11,7 @@ import {
   sumWorklet,
   toFixedWorklet,
   toScaledIntegerWorklet,
-} from '@/__swaps__/safe-math/SafeMath';
+} from '@/safe-math/SafeMath';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
 import { ParsedAddressAsset } from '@/entities';
@@ -28,6 +28,7 @@ import { useSwapContext } from './swap-provider';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { chainsNativeAsset } from '@/chains';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
 
 const BUFFER_RATIO = 0.5;
 
@@ -91,18 +92,13 @@ export function calculateGasFeeWorklet(gasSettings: GasSettings, gasLimit: strin
   'worklet';
 
   if (gasSettings.isEIP1559) {
-    if (isFeeNaNWorklet(gasSettings.maxBaseFee) || isFeeNaNWorklet(gasSettings.maxPriorityFee)) {
-      return null;
-    }
-
-    return sumWorklet(gasSettings.maxBaseFee || '0', gasSettings.maxPriorityFee || '0');
+    const maxBaseFee = isFeeNaNWorklet(gasSettings.maxBaseFee) ? '0' : gasSettings.maxBaseFee;
+    const maxPriorityFee = isFeeNaNWorklet(gasSettings.maxPriorityFee) ? '0' : gasSettings.maxPriorityFee;
+    return mulWorklet(gasLimit, sumWorklet(maxBaseFee, maxPriorityFee));
   }
 
-  if (isFeeNaNWorklet(gasSettings.gasPrice)) {
-    return null;
-  }
-
-  return mulWorklet(gasLimit, gasSettings.gasPrice);
+  const gasPrice = isFeeNaNWorklet(gasSettings.gasPrice) ? '0' : gasSettings.gasPrice;
+  return mulWorklet(gasLimit, gasPrice);
 }
 
 export function formatUnitsWorklet(value: string, decimals: number) {
@@ -140,8 +136,12 @@ const getHasEnoughFundsForGasWorklet = ({
 
 export function SyncGasStateToSharedValues() {
   const { hasEnoughFundsForGas, internalSelectedInputAsset } = useSwapContext();
+  const preferredNetwork = useSwapsStore(s => s.preferredNetwork);
 
-  const initialChainId = useMemo(() => internalSelectedInputAsset.value?.chainId || ChainId.mainnet, [internalSelectedInputAsset]);
+  const initialChainId = useMemo(
+    () => internalSelectedInputAsset.value?.chainId || preferredNetwork || ChainId.mainnet,
+    [internalSelectedInputAsset, preferredNetwork]
+  );
   const { assetToSell, chainId = initialChainId, quote } = useSyncedSwapQuoteStore();
 
   const gasSettings = useSelectedGas(chainId);
@@ -205,7 +205,7 @@ export function SyncGasStateToSharedValues() {
       }
 
       const gasFee = calculateGasFeeWorklet(gasSettings, estimatedGasLimit);
-      if (gasFee === null || isNaN(Number(gasFee))) {
+      if (isNaN(Number(gasFee))) {
         return;
       }
 

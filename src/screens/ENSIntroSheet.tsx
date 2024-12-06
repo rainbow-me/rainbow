@@ -4,7 +4,6 @@ import { IS_TESTING } from 'react-native-dotenv';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { InteractionManager, View } from 'react-native';
-import { MenuActionConfig } from 'react-native-ios-context-menu';
 import LinearGradient from 'react-native-linear-gradient';
 import ActivityIndicator from '../components/ActivityIndicator';
 import IntroMarquee from '../components/ens-registration/IntroMarquee/IntroMarquee';
@@ -55,7 +54,7 @@ const ContextMenuRenderer = ({ children, handleSelectExistingName, handleNavigat
             iconValue: 'magnifyingglass',
           },
         },
-      ] as MenuActionConfig[],
+      ],
       menuTitle: '',
     };
   }, []);
@@ -223,7 +222,6 @@ export default function ENSIntroSheet() {
                 <Inset space="19px (Deprecated)" {...(isSmallPhone && { bottom: '8px' })}>
                   {isLoading && (
                     <Box alignItems="center" paddingBottom="15px (Deprecated)">
-                      {/* @ts-expect-error JavaScript component */}
                       <ActivityIndicator />
                     </Box>
                   )}

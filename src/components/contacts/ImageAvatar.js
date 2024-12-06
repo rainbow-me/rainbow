@@ -92,7 +92,7 @@ const Avatar = styled(ImgixImage)(({ dimensions }) => ({
   width: dimensions,
 }));
 
-const ImageAvatar = ({ image, size = 'medium', onLoad = undefined, ...props }) => {
+const ImageAvatar = ({ backgroundColor = '', image, size = 'medium', onLoad = undefined, ...props }) => {
   const { accentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
@@ -102,7 +102,12 @@ const ImageAvatar = ({ image, size = 'medium', onLoad = undefined, ...props }) =
   const shadows = useMemo(() => (size === 'smaller' ? buildSmallShadows(colors.shadow, colors) : shadow), [shadow, size, colors]);
 
   return (
-    <ShadowStack {...props} {...borders.buildCircleAsObject(dimensions)} backgroundColor={colors.white} shadows={shadows}>
+    <ShadowStack
+      {...props}
+      {...borders.buildCircleAsObject(dimensions)}
+      backgroundColor={backgroundColor || colors.white}
+      shadows={shadows}
+    >
       <Centered flex={1}>
         <Avatar
           onLoad={onLoad}

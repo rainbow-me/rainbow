@@ -66,6 +66,9 @@ import isHttpUrl from '@/helpers/isHttpUrl';
 import { useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { ChainId } from '@/chains/types';
+import { useTimeoutEffect } from '@/hooks/useTimeout';
+import { analyticsV2 } from '@/analytics';
+import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -275,7 +278,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   }, [isReportSpamToastActive]);
 
   const {
-    collection: { description: familyDescription, external_url: familyLink, slug },
+    collection: { description: familyDescription, external_url: familyLink, slug } = {},
     description,
     familyImage,
     familyName,
@@ -338,9 +341,10 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      type: asset.network,
+      type: 'network',
+      chainId: asset.chainId,
     });
-  }, [asset.network, navigate]);
+  }, [asset.chainId, navigate]);
 
   const isHiddenAsset = useMemo(() => hiddenTokens.includes(fullUniqueId) as boolean, [hiddenTokens, fullUniqueId]);
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId) as boolean, [showcaseTokens, uniqueId]);
@@ -413,6 +417,19 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
 
   const hideNftMarketplaceAction = isPoap || !slug;
 
+  const mountedAt = useRef(Date.now());
+  useTimeoutEffect(
+    () => {
+      const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
+      const { name, description, image_url } = asset;
+      analyticsV2.track(analyticsV2.event.tokenDetailsNFT, {
+        eventSentAfterMs: Date.now() - mountedAt.current,
+        token: { isPoap, isParty: !!isParty, isENS, address, chainId, name, image_url },
+        available_data: { description: !!description, image_url: !!image_url, floorPrice: !!offer?.floorPrice },
+      });
+    },
+    5 * 1000 // 5s
+  );
   return (
     <>
       {ios && (
@@ -594,7 +611,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                                 {...asset}
                                 color={imageColor}
                                 hideNftMarketplaceAction={hideNftMarketplaceAction}
-                                slug={slug}
+                                slug={slug ?? ''}
                               />
                             </Section>
                           ) : null}

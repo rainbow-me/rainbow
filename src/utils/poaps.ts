@@ -5,7 +5,7 @@ import { logger } from '@/logger';
 
 export type PoapMintError = 'LIMIT_EXCEEDED' | 'EVENT_EXPIRED' | 'UNKNOWN';
 
-export const getPoapAndOpenSheetWithSecretWord = async (secretWord: string, goBack: boolean) => {
+export const getPoapAndOpenSheetWithSecretWord = async (secretWord: string, goBack = false) => {
   try {
     const event = await arcClient.getPoapEventBySecretWord({
       secretWord,
@@ -24,7 +24,7 @@ export const getPoapAndOpenSheetWithSecretWord = async (secretWord: string, goBa
   }
 };
 
-export const getPoapAndOpenSheetWithQRHash = async (qrHash: string, goBack: boolean) => {
+export const getPoapAndOpenSheetWithQRHash = async (qrHash: string, goBack = false) => {
   try {
     const event = await arcClient.getPoapEventByQrHash({
       qrHash,

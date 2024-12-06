@@ -1,11 +1,10 @@
 import { difference } from 'lodash';
 import { useCallback, useMemo, useRef } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
-import { useDispatch } from 'react-redux';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import useAccountSettings from './useAccountSettings';
 import EditAction from '@/helpers/EditAction';
-import { setHiddenCoins as reduxSetHiddenCoins } from '@/redux/editOptions';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const selectedItemsAtom = atom<string[]>({
   default: [],
@@ -16,13 +15,14 @@ export interface BooleanMap {
   [index: string]: boolean;
 }
 
+const INITIAL_PINNED_COINS: BooleanMap = {};
+
 export default function useCoinListEditOptions() {
   const { accountAddress } = useAccountSettings();
 
   const setSelectedItems = useSetRecoilState(selectedItemsAtom);
-  const [hiddenCoins = {}] = useMMKVObject<BooleanMap>('hidden-coins-obj-' + accountAddress);
 
-  const [pinnedCoins = {}] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
+  const [pinnedCoins = INITIAL_PINNED_COINS] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
   const pushSelectedCoin = useCallback(
     (item: string) =>
       setSelectedItems(prev => {
@@ -49,7 +49,6 @@ export default function useCoinListEditOptions() {
 
   return {
     clearSelectedCoins,
-    hiddenCoinsObj: hiddenCoins,
     pinnedCoinsObj: pinnedCoins,
     pushSelectedCoin,
     removeSelectedCoin,
@@ -59,12 +58,12 @@ export default function useCoinListEditOptions() {
 
 export function useCoinListFinishEditingOptions() {
   const { accountAddress } = useAccountSettings();
+  const hiddenAssets = useUserAssetsStore(state => state.getHiddenAssetsIds());
+  const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
 
   const [selectedItems, setSelectedItems] = useRecoilState(selectedItemsAtom);
   const selectedItemsNonReactive = useRef<string[]>();
   selectedItemsNonReactive.current = selectedItems;
-
-  const [hiddenCoins = {}, setHiddenCoinsObject] = useMMKVObject<BooleanMap>('hidden-coins-obj-' + accountAddress);
 
   const [pinnedCoins = {}, setPinnedCoinsObject] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
 
@@ -75,7 +74,7 @@ export function useCoinListFinishEditingOptions() {
       return EditAction.none;
     } else if (
       newSelectedCoinsLength > 0 &&
-      difference(Object.keys(hiddenCoins), selectedItems).length === Object.keys(hiddenCoins).length - newSelectedCoinsLength
+      difference(hiddenAssets, selectedItems).length === hiddenAssets.length - newSelectedCoinsLength
     ) {
       return EditAction.unhide;
     } else if (
@@ -86,7 +85,7 @@ export function useCoinListFinishEditingOptions() {
     } else {
       return EditAction.standard;
     }
-  }, [hiddenCoins, pinnedCoins, selectedItems]);
+  }, [hiddenAssets, pinnedCoins, selectedItems]);
 
   const currentActionNonReactive = useRef<keyof typeof EditAction>();
   currentActionNonReactive.current = currentAction;
@@ -114,24 +113,18 @@ export function useCoinListFinishEditingOptions() {
     setSelectedItems([]);
   }, [setSelectedItems, setPinnedCoinsObject]);
 
-  const dispatch = useDispatch();
-
   const setHiddenCoins = useCallback(() => {
-    setHiddenCoinsObject((hiddenCoins: BooleanMap | undefined) => {
-      const safeHiddenCoins = hiddenCoins ?? {};
-      const newList = [
-        ...Object.keys(safeHiddenCoins).filter(i => !selectedItemsNonReactive.current?.includes(i)),
-        ...(currentActionNonReactive.current === EditAction.standard ? selectedItemsNonReactive.current || [] : []),
-      ].reduce((acc, curr) => {
-        acc[curr] = true;
-        return acc;
-      }, {} as BooleanMap);
-      dispatch(reduxSetHiddenCoins(newList));
-      return newList;
-    });
+    if (
+      !currentActionNonReactive.current ||
+      currentActionNonReactive.current === EditAction.none ||
+      currentActionNonReactive.current === EditAction.unpin
+    )
+      return;
+
+    setHiddenAssets([...(selectedItemsNonReactive.current || [])]);
 
     setSelectedItems([]);
-  }, [dispatch, setSelectedItems, setHiddenCoinsObject]);
+  }, [setHiddenAssets, setSelectedItems]);
 
   return {
     currentAction,

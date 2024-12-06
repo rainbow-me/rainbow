@@ -30,6 +30,7 @@ module.exports = function (api) {
         root: ['./src'],
       },
     ],
+    '@babel/plugin-transform-export-namespace-from',
     'babel-plugin-styled-components',
     '@babel/plugin-proposal-numeric-separator',
     'date-fns',

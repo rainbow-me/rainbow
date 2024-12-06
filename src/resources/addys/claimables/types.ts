@@ -1,6 +1,7 @@
-import { ChainId } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { AddysAsset, AddysConsolidatedError, AddysResponseStatus } from '../types';
+import { ChainId } from '@/chains/types';
+import { ParsedAddressAsset } from '@/entities';
 
 interface Colors {
   primary: string;
@@ -28,19 +29,33 @@ interface DApp {
   colors: Colors;
 }
 
-type ClaimableType = 'transaction' | 'sponsored';
-
-export interface AddysClaimable {
+interface AddysBaseClaimable {
   name: string;
   unique_id: string;
-  type: ClaimableType;
+  type: string;
   network: ChainId;
   asset: AddysAsset;
   amount: string;
   dapp: DApp;
-  claim_action_type?: string | null;
+  total_usd_value: number;
+}
+
+interface AddysTransactionClaimable extends AddysBaseClaimable {
+  claim_action_type: 'transaction';
+  claim_action: ClaimActionTransaction[];
+}
+
+interface AddysSponsoredClaimable extends AddysBaseClaimable {
+  claim_action_type: 'sponsored';
+  claim_action: ClaimActionSponsored[];
+}
+
+interface AddysUnsupportedClaimable extends AddysBaseClaimable {
+  claim_action_type?: 'unknown' | null;
   claim_action?: ClaimAction[];
 }
+
+export type AddysClaimable = AddysTransactionClaimable | AddysSponsoredClaimable | AddysUnsupportedClaimable;
 
 interface ConsolidatedClaimablesPayloadResponse {
   claimables: AddysClaimable[];
@@ -61,13 +76,54 @@ export interface ConsolidatedClaimablesResponse {
   payload: ConsolidatedClaimablesPayloadResponse;
 }
 
-// will add more attributes as needed
-export interface Claimable {
+interface BaseClaimable {
+  asset: ParsedAddressAsset;
+  chainId: ChainId;
   name: string;
   uniqueId: string;
+  analyticsId: string;
   iconUrl: string;
   value: {
     claimAsset: { amount: string; display: string };
     nativeAsset: { amount: string; display: string };
+    usd: number;
   };
+}
+
+export interface TransactionClaimable extends BaseClaimable {
+  type: 'transaction';
+  action: { to: Address; data: string };
+}
+
+export interface SponsoredClaimable extends BaseClaimable {
+  type: 'sponsored';
+  action: { url: string; method: string };
+}
+
+export type Claimable = TransactionClaimable | SponsoredClaimable;
+
+interface ClaimTransactionStatus {
+  network: ChainId;
+  transaction_hash: string;
+  explorer_url: string;
+  sponsored_status: string;
+}
+
+interface ClaimPayloadResponse {
+  success: boolean;
+  claimable: Claimable | null;
+  claim_transaction_status: ClaimTransactionStatus | null;
+}
+
+interface ClaimMetadataResponse {
+  address: string;
+  chain_id: ChainId;
+  currency: string;
+  claim_type: string;
+  error: string;
+}
+
+export interface ClaimResponse {
+  metadata: ClaimMetadataResponse;
+  payload: ClaimPayloadResponse;
 }
