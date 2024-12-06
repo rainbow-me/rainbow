@@ -3,7 +3,7 @@ import { globalColors, Text, useBackgroundColor } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
 import chroma from 'chroma-js';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import React, { FlatList, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -25,6 +25,8 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { ChainId } from '@/chains/types';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 const t = i18n.l.trending_tokens;
 
@@ -83,6 +85,46 @@ function FilterButton({ icon, label, onPress }: { onPress?: VoidFunction; label:
       </Animated.View>
     </GestureDetector>
   );
+}
+
+function useTrendingTokensData() {
+  const { chainId, category, timeframe, sort } = useTrendingTokensStore(state => ({
+    chainId: state.chainId,
+    category: state.category,
+    timeframe: state.timeframe,
+    sort: state.sort,
+  }));
+
+  const { data, isLoading } = useTrendingTokens({
+    chainId,
+    // category,
+    // timeframe,
+    // sort,
+  });
+
+  return { data, isLoading };
+}
+
+function ReportAnalytics() {
+  const activeSwipeRoute = useNavigationStore(state => state.activeSwipeRoute);
+  const { category, chainId } = useTrendingTokensStore(state => ({ category: state.category, chainId: state.chainId }));
+  const { data, isLoading } = useTrendingTokensData();
+
+  useEffect(() => {
+    if (isLoading || activeSwipeRoute !== Routes.DISCOVER_SCREEN) return;
+
+    const isEmpty = (data?.trendingTokens?.data?.length ?? 0) === 0;
+    const isLimited = !isEmpty && (data?.trendingTokens?.data?.length ?? 0) < 6;
+
+    analyticsV2.track(analyticsV2.event.viewRankedCategory, {
+      category,
+      chainId,
+      isLimited,
+      isEmpty,
+    });
+  }, [isLoading, activeSwipeRoute, data?.trendingTokens.data.length, category, chainId]);
+
+  return null;
 }
 
 function CategoryFilterButton({
@@ -304,7 +346,11 @@ function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']
 
   const handleNavigateToToken = useCallback(() => {
     analyticsV2.track(analyticsV2.event.viewTrendingToken, {
-      uniqueId: item.uniqueId,
+      address: item.address,
+      chainId: item.chainId,
+      symbol: item.symbol,
+      name: item.name,
+      highlightedFriends: 0, // TODO: Once data is available from backend
     });
 
     swapsStore.setState({
@@ -425,7 +471,20 @@ function NoResults() {
 
 function NetworkFilter() {
   const [isOpen, setOpen] = useState(false);
-  const chainId = useTrendingTokensStore(state => state.chainId);
+  const selected = useSharedValue<ChainId | undefined>(undefined);
+  const { chainId, setChainId } = useTrendingTokensStore(state => ({
+    chainId: state.chainId,
+    setChainId: state.setChainId,
+  }));
+
+  const setSelected = useCallback(
+    (chainId: ChainId | undefined) => {
+      'worklet';
+      selected.value = chainId;
+      runOnJS(setChainId)(chainId);
+    },
+    [selected, setChainId]
+  );
 
   const label = useMemo(() => {
     if (!chainId) return 'All';
@@ -440,7 +499,7 @@ function NetworkFilter() {
   return (
     <>
       <FilterButton label={label} icon={icon} onPress={() => setOpen(true)} />
-      {isOpen && <NetworkSelector onClose={() => setOpen(false)} />}
+      {isOpen && <NetworkSelector selected={selected} setSelected={setSelected} onClose={() => setOpen(false)} />}
     </>
   );
 }
@@ -487,11 +546,7 @@ function SortFilter() {
 }
 
 function TrendingTokenData() {
-  const chainId = useTrendingTokensStore(state => state.chainId);
-
-  // TODO: Add timeframe, sort, etc..
-  const { data, isLoading } = useTrendingTokens({ chainId });
-
+  const { data, isLoading } = useTrendingTokensData();
   if (isLoading)
     return (
       <View style={{ flex: 1 }}>
@@ -534,6 +589,7 @@ export function TrendingTokens() {
       </View>
 
       <TrendingTokenData />
+      <ReportAnalytics />
     </View>
   );
 }

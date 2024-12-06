@@ -1,5 +1,7 @@
 import { ChainId } from '@/chains/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
+import { makeMutable, SharedValue } from 'react-native-reanimated';
+import { analyticsV2 } from '@/analytics';
 
 export const categories = ['trending', 'new', 'farcaster'] as const;
 export const sortFilters = ['volume', 'market_cap', 'top_gainers', 'top_losers'] as const;
@@ -24,9 +26,18 @@ export const useTrendingTokensStore = createRainbowStore<TrendingTokensState>(
     timeframe: 'day',
     sort: 'volume',
     setCategory: category => set({ category }),
-    setChainId: chainId => set({ chainId }),
-    setTimeframe: timeframe => set({ timeframe }),
-    setSort: sort => set({ sort }),
+    setChainId: chainId => {
+      analyticsV2.track(analyticsV2.event.changeNetworkFilter, { chainId });
+      set({ chainId });
+    },
+    setTimeframe: timeframe => {
+      analyticsV2.track(analyticsV2.event.changeTimeframeFilter, { timeframe });
+      set({ timeframe });
+    },
+    setSort: sort => {
+      analyticsV2.track(analyticsV2.event.changeSortFilter, { sort });
+      set({ sort });
+    },
   }),
   {
     storageKey: 'trending-tokens',

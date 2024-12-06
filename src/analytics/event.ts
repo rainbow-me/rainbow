@@ -170,8 +170,12 @@ export const event = {
   tokenDetailsNFT: 'token_details.nft',
 
   // trending tokens
-  browsedDiscoverScreen: 'browsed_discover_screen',
-  viewTrendingToken: 'view_trending_token',
+  viewTrendingToken: 'trending_tokens.view_trending_token',
+  viewRankedCategory: 'trending_tokens.view_ranked_category',
+  changeNetworkFilter: 'trending_tokens.change_network_filter',
+  changeTimeframeFilter: 'trending_tokens.change_timeframe_filter',
+  changeSortFilter: 'trending_tokens.change_sort_filter',
+  hasLinkedFarcaster: 'trending_tokens.has_linked_farcaster',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -702,6 +706,35 @@ export type EventProperties = {
   };
 
   [event.viewTrendingToken]: {
-    uniqueId: TrendingTokens['trendingTokens']['data'][number]['uniqueId'];
+    address: TrendingTokens['trendingTokens']['data'][number]['address'];
+    chainId: TrendingTokens['trendingTokens']['data'][number]['chainId'];
+    symbol: TrendingTokens['trendingTokens']['data'][number]['symbol'];
+    name: TrendingTokens['trendingTokens']['data'][number]['name'];
+    highlightedFriends: number;
+  };
+
+  [event.viewRankedCategory]: {
+    category: string;
+    chainId: ChainId | undefined;
+    isLimited: boolean;
+    isEmpty: boolean;
+  };
+
+  [event.changeNetworkFilter]: {
+    chainId: ChainId | undefined;
+  };
+
+  [event.changeTimeframeFilter]: {
+    timeframe: string;
+  };
+
+  [event.changeSortFilter]: {
+    sort: string | undefined;
+  };
+
+  [event.hasLinkedFarcaster]: {
+    hasFarcaster: boolean;
+    personalizedTrending: boolean;
+    walletHash: string;
   };
 };

@@ -9,9 +9,7 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedChainImage, ChainImage } from '@/components/coin-icon/ChainImage';
 import { AnimatedText, DesignSystemProvider, globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import * as i18n from '@/languages';
-import { useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
 import { useTheme } from '@/theme';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -241,7 +239,13 @@ const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color: string) 
   };
 };
 
-function AllNetworksOption({ selected }: { selected: SharedValue<ChainId | undefined> }) {
+function AllNetworksOption({
+  selected,
+  setSelected,
+}: {
+  selected: SharedValue<ChainId | undefined>;
+  setSelected: (chainId: ChainId | undefined) => void;
+}) {
   const blue = useForegroundColor('blue');
 
   const isSelected = useDerivedValue(() => selected.value === undefined);
@@ -260,7 +264,7 @@ function AllNetworksOption({ selected }: { selected: SharedValue<ChainId | undef
 
   const tapGesture = Gesture.Tap().onTouchesDown(() => {
     'worklet';
-    selected.value = undefined;
+    setSelected(undefined);
   });
 
   return (
@@ -292,7 +296,15 @@ function AllNetworksOption({ selected }: { selected: SharedValue<ChainId | undef
   );
 }
 
-function AllNetworksSection({ editing, selected }: { editing: SharedValue<boolean>; selected: SharedValue<ChainId | undefined> }) {
+function AllNetworksSection({
+  editing,
+  setSelected,
+  selected,
+}: {
+  editing: SharedValue<boolean>;
+  setSelected: (chainId: ChainId | undefined) => void;
+  selected: SharedValue<ChainId | undefined>;
+}) {
   const style = useAnimatedStyle(() => ({
     opacity: editing.value ? withTiming(0, { duration: 50 }) : withDelay(250, withTiming(1, { duration: 250 })),
     height: withTiming(
@@ -304,7 +316,7 @@ function AllNetworksSection({ editing, selected }: { editing: SharedValue<boolea
   }));
   return (
     <Animated.View style={[style, { gap: 14 }]}>
-      <AllNetworksOption selected={selected} />
+      <AllNetworksOption selected={selected} setSelected={setSelected} />
       <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
     </Animated.View>
   );
@@ -485,7 +497,15 @@ function SectionSeparator({
   );
 }
 
-function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; selected: SharedValue<ChainId | undefined> }) {
+function NetworksGrid({
+  editing,
+  setSelected,
+  selected,
+}: {
+  editing: SharedValue<boolean>;
+  setSelected: (chainId: ChainId | undefined) => void;
+  selected: SharedValue<ChainId | undefined>;
+}) {
   const initialPinned = networkSwitcherStore.getState().pinnedNetworks;
   const initialUnpinned = SUPPORTED_CHAIN_IDS_ALPHABETICAL.filter(chainId => !initialPinned.includes(chainId));
   const networks = useSharedValue({ [Section.pinned]: initialPinned, [Section.unpinned]: initialUnpinned });
@@ -606,7 +626,7 @@ function NetworksGrid({ editing, selected }: { editing: SharedValue<boolean>; se
       const chainId = networks.value[section][index];
       if (!chainId) return;
 
-      selected.value = chainId;
+      setSelected(chainId);
     });
 
   const gridGesture = Gesture.Exclusive(dragNetwork, tapNetwork);
@@ -718,25 +738,22 @@ function Sheet({ children, header, onClose }: PropsWithChildren<{ header: ReactE
   );
 }
 
-export function NetworkSelector({ onClose }: { onClose: VoidFunction }) {
+export function NetworkSelector({
+  onClose,
+  selected,
+  setSelected,
+}: {
+  onClose: VoidFunction;
+  selected: SharedValue<ChainId | undefined>;
+  setSelected: (chainId: ChainId | undefined) => void;
+}) {
   const editing = useSharedValue(false);
-
-  const chainId = useTrendingTokensStore(state => state.chainId);
-  const selected = useSharedValue<ChainId | undefined>(chainId);
-  const setChainId = useTrendingTokensStore(state => state.setChainId);
-
-  useSyncSharedValue<ChainId | undefined>({
-    sharedValue: selected,
-    syncDirection: 'sharedValueToState',
-    state: chainId,
-    setState: setChainId,
-  });
 
   return (
     <Sheet header={<Header editing={editing} />} onClose={onClose}>
       <CustomizeNetworksBanner editing={editing} />
-      <AllNetworksSection editing={editing} selected={selected} />
-      <NetworksGrid editing={editing} selected={selected} />
+      <AllNetworksSection editing={editing} setSelected={setSelected} selected={selected} />
+      <NetworksGrid editing={editing} setSelected={setSelected} selected={selected} />
     </Sheet>
   );
 }
