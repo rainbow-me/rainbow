@@ -21,7 +21,7 @@ import isSVGImage from '@/utils/isSVG';
 import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simplehash';
 import { ContextCircleButton } from '@/components/context-menu';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',

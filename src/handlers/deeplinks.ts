@@ -20,11 +20,11 @@ import { queryClient } from '@/react-query';
 import { pointsReferralCodeQueryKey } from '@/resources/points';
 import { useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 import { InitialRoute } from '@/navigation/initialRoute';
-import { ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { GasSpeed } from '@/__swaps__/types/gas';
 
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
-import { supportedSwapChainIds } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { queryTokenSearch } from '@/__swaps__/screens/Swap/resources/search/search';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { isAddress } from 'viem';
@@ -348,6 +348,7 @@ const querySwapAsset = async (uniqueId: string | undefined): Promise<ParsedSearc
   if (!uniqueId) return undefined;
 
   const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
+  const supportedSwapChainIds = useBackendNetworksStore.getState().getSwapSupportedChainIds();
   if (!supportedSwapChainIds.includes(parseInt(chainId.toString(), 10))) return undefined;
   if (address !== 'eth' && address.length !== 42) return undefined;
 

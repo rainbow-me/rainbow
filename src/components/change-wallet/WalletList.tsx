@@ -19,7 +19,7 @@ import { position } from '@/styles';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { getExperimetalFlag, HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { Inset, Stack } from '@/design-system';
-import { Network } from '@/chains/types';
+import { Network } from '@/state/backendNetworks/types';
 import { SheetTitle } from '../sheet';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { IS_ANDROID, IS_IOS } from '@/env';

@@ -14,7 +14,7 @@ import {
   REGISTRATION_STEPS,
 } from '@/helpers/ens';
 import { updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const checkRegisterBlockTimestamp = async ({

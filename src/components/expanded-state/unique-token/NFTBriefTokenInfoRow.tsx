@@ -13,7 +13,7 @@ import { UniqueAsset } from '@/entities';
 import { fetchReservoirNFTFloorPrice } from '@/resources/nfts/utils';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const NONE = 'None';
 

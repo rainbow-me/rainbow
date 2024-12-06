@@ -52,11 +52,11 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { chainsName, defaultChains, getChainDefaultRpc } from '@/chains';
 import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -252,10 +252,11 @@ const MintSheet = () => {
   // estimate gas limit
   useEffect(() => {
     const estimateMintGas = async () => {
+      const defaultChains = useBackendNetworksStore.getState().getDefaultChains();
       const signer = createWalletClient({
         account: accountAddress,
         chain: defaultChains[chainId],
-        transport: http(getChainDefaultRpc(chainId)),
+        transport: http(useBackendNetworksStore.getState().getChainDefaultRpc(chainId)),
       });
       try {
         await getClient()?.actions.mintToken({
@@ -360,11 +361,11 @@ const MintSheet = () => {
     const privateKey = await loadPrivateKey(accountAddress, false);
     // @ts-ignore
     const account = privateKeyToAccount(privateKey);
-    const chain = defaultChains[chainId];
+    const chain = useBackendNetworksStore.getState().getDefaultChains()[chainId];
     const signer = createWalletClient({
       account,
       chain,
-      transport: http(getChainDefaultRpc(chainId)),
+      transport: http(useBackendNetworksStore.getState().getChainDefaultRpc(chainId)),
     });
 
     const feeAddress = getRainbowFeeAddress(chainId);
@@ -381,6 +382,7 @@ const MintSheet = () => {
         wallet: signer!,
         chainId,
         onProgress: (steps: Execute['steps']) => {
+          const chainsName = useBackendNetworksStore.getState().getChainsName();
           steps.forEach(step => {
             if (step.error) {
               logger.error(new RainbowError(`[MintSheet]: Error minting NFT: ${step.error}`));
@@ -708,7 +710,7 @@ const MintSheet = () => {
                           <ChainBadge chainId={chainId} position="relative" size="small" forceDark={true} />
                         )}
                         <Text color="labelSecondary" align="right" size="17pt" weight="medium">
-                          {`${defaultChains[chainId].name}`}
+                          {`${useBackendNetworksStore.getState().getDefaultChains()[chainId].name}`}
                         </Text>
                       </Inline>
                     </Inset>

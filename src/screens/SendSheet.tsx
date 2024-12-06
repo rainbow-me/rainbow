@@ -63,8 +63,8 @@ import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
-import { ChainId } from '@/chains/types';
-import { chainsName, chainsNativeAsset, needsL1SecurityFeeChains } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { RootStackParamList } from '@/navigation/types';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
@@ -418,7 +418,7 @@ export default function SendSheet() {
       });
       if (!wallet) return;
 
-      const currentChainIdNetwork = chainsName[currentChainId ?? ChainId.mainnet];
+      const currentChainIdNetwork = useBackendNetworksStore.getState().getChainsName()[currentChainId ?? ChainId.mainnet];
 
       const validTransaction = isValidAddress && amountDetails.isSufficientBalance && isSufficientGas && isValidGas;
       if (!selectedGasFee?.gasFee?.estimatedFee || !validTransaction) {
@@ -450,7 +450,7 @@ export default function SendSheet() {
           );
 
           if (updatedGasLimit && !lessThan(updatedGasLimit, gasLimit)) {
-            if (needsL1SecurityFeeChains.includes(currentChainId)) {
+            if (useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(currentChainId)) {
               updateTxFeeForOptimism(updatedGasLimit);
             } else {
               updateTxFee(updatedGasLimit, null);
@@ -672,14 +672,14 @@ export default function SendSheet() {
       !selectedGasFee ||
       isEmpty(selectedGasFee?.gasFee) ||
       !toAddress ||
-      (needsL1SecurityFeeChains.includes(currentChainId) && l1GasFeeOptimism === null)
+      (useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(currentChainId) && l1GasFeeOptimism === null)
     ) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
       label = lang.t('button.confirm_exchange.insufficient_token', {
-        tokenName: chainsNativeAsset[currentChainId || ChainId.mainnet].symbol,
+        tokenName: useBackendNetworksStore.getState().getChainsNativeAsset()[currentChainId || ChainId.mainnet].symbol,
       });
     } else if (!isValidGas) {
       disabled = true;
@@ -856,7 +856,7 @@ export default function SendSheet() {
         currentChainId
       )
         .then(async gasLimit => {
-          if (gasLimit && needsL1SecurityFeeChains.includes(currentChainId)) {
+          if (gasLimit && useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(currentChainId)) {
             updateTxFeeForOptimism(gasLimit);
           } else {
             updateTxFee(gasLimit, null);

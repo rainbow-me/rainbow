@@ -9,8 +9,8 @@ import { InteractionManager } from 'react-native';
 import { GasFeeParamsBySpeed } from '@/entities';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { useGas } from '@/hooks';
-import { ChainId } from '@/chains/types';
-import { needsL1SecurityFeeChains } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type CalculateGasLimitProps = {
   isMessageRequest: boolean;
@@ -52,7 +52,7 @@ export const useCalculateGasLimit = ({
     } finally {
       logger.debug('WC: Setting gas limit to', { gas: convertHexToString(gas) }, logger.DebugContext.walletconnect);
 
-      const needsL1SecurityFee = needsL1SecurityFeeChains.includes(chainId);
+      const needsL1SecurityFee = useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(chainId);
       if (needsL1SecurityFee) {
         const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txPayload, provider);
         updateTxFee(gas, null, l1GasFeeOptimism);
