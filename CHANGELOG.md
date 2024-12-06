@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.48] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.48)
+
+### Fixed
+
+- Bumped persist version for positions query. Otherwise, app will crash when serving stale query that does not have new parser that guarantees non-null array fields (#6307)
+
 ## [1.9.47] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.47)
 
 ### Added
