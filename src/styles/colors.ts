@@ -49,7 +49,7 @@ const darkModeColors = {
   skeleton: '#191B21',
   stackBackground: '#000000',
   surfacePrimary: '#000000',
-  white: '#000',
+  white: '#12131A',
   whiteLabel: '#FFFFFF',
 };
 
