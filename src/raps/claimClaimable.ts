@@ -1,7 +1,7 @@
 import { Address } from 'viem';
 import { createNewAction, createNewRap } from './common';
 import { RapAction, RapSwapActionParameters } from './references';
-import { RainbowError } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { CrosschainQuote } from '@rainbow-me/swaps';
 import { assetNeedsUnlocking } from './actions';
 
@@ -11,7 +11,10 @@ export async function createClaimClaimableRap(parameters: RapSwapActionParameter
   const { sellAmount, assetToBuy, quote, chainId, toChainId, assetToSell, meta, gasFeeParamsBySpeed, gasParams, additionalParams } =
     parameters;
 
-  if (!additionalParams?.claimTx) throw new RainbowError('[raps/claimClaimable]: claimTx is undefined');
+  if (!additionalParams?.claimTx) {
+    logger.error(new RainbowError('[raps/claimClaimable]: claimTx is undefined'));
+    return { actions: [] };
+  }
 
   const claim = createNewAction('claimClaimable', {
     claimTx: additionalParams.claimTx,
@@ -42,7 +45,10 @@ export async function createClaimClaimableRap(parameters: RapSwapActionParameter
   }
 
   if (swapAssetNeedsUnlocking) {
-    if (!quote.to) throw new RainbowError('[raps/claimClaimable]: quote.to is undefined');
+    if (!quote.to) {
+      logger.error(new RainbowError('[raps/claimClaimable]: quote.to is undefined'));
+      return { actions: [] };
+    }
 
     const unlock = createNewAction('unlock', {
       fromAddress: accountAddress,
