@@ -12,7 +12,6 @@ import store from '@/redux/store';
 import { checkKeychainIntegrity } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
-import { InteractionManager } from 'react-native';
 import { IS_TEST } from '@/env';
 import { backupsStore, LoadingStates } from '@/state/backups/backups';
 
@@ -28,32 +27,33 @@ const delay = (ms: number) =>
     setTimeout(resolve, ms);
   });
 
-const promptForBackupOnceReadyOrNotAvailable = async (): Promise<void> => {
+const promptForBackupOnceReadyOrNotAvailable = async (): Promise<boolean> => {
   const { status } = backupsStore.getState();
   if (LoadingStates.includes(status)) {
     await delay(1000);
     return promptForBackupOnceReadyOrNotAvailable();
   }
 
-  InteractionManager.runAfterInteractions(() => {
-    logger.debug(`[walletReadyEvents]: BackupSheet: showing backup now sheet for selected wallet`);
-    triggerOnSwipeLayout(() =>
-      Navigation.handleAction(Routes.BACKUP_SHEET, {
-        step: WalletBackupStepTypes.backup_prompt,
-      })
-    );
-  });
+  logger.debug(`[walletReadyEvents]: BackupSheet: showing backup now sheet for selected wallet`);
+  triggerOnSwipeLayout(() =>
+    Navigation.handleAction(Routes.BACKUP_SHEET, {
+      step: WalletBackupStepTypes.backup_prompt,
+    })
+  );
+  return true;
 };
 
-export const runWalletBackupStatusChecks = () => {
+export const runWalletBackupStatusChecks = async (): Promise<boolean> => {
   const { selected } = store.getState().wallets;
-  if (!selected || IS_TEST) return;
+  if (!selected || IS_TEST) return false;
 
-  const selectedWalletNeedsBackedUp = !selected.backedUp && !selected.damaged && selected.type !== WalletTypes.readOnly;
+  const selectedWalletNeedsBackedUp =
+    !selected.backedUp && !selected.damaged && selected.type !== WalletTypes.readOnly && selected.type !== WalletTypes.bluetooth;
   if (selectedWalletNeedsBackedUp) {
     logger.debug('[walletReadyEvents]: Selected wallet is not backed up, prompting backup sheet');
-    promptForBackupOnceReadyOrNotAvailable();
+    return promptForBackupOnceReadyOrNotAvailable();
   }
+  return false;
 };
 
 export const runFeatureUnlockChecks = async (): Promise<boolean> => {
@@ -89,10 +89,16 @@ export const runFeatureUnlockChecks = async (): Promise<boolean> => {
   return false;
 };
 
-export const runFeatureAndLocalCampaignChecks = async () => {
-  const showingFeatureUnlock = await runFeatureUnlockChecks();
-  if (!showingFeatureUnlock) {
-    return await runLocalCampaignChecks();
+export const runFeaturesLocalCampaignAndBackupChecks = async () => {
+  if (await runFeatureUnlockChecks()) {
+    return true;
   }
+  if (await runLocalCampaignChecks()) {
+    return true;
+  }
+  if (await runWalletBackupStatusChecks()) {
+    return true;
+  }
+
   return false;
 };

@@ -1,5 +1,5 @@
 import { IS_TEST } from '@/env';
-import { runFeatureAndLocalCampaignChecks } from '@/handlers/walletReadyEvents';
+import { runFeaturesLocalCampaignAndBackupChecks } from '@/handlers/walletReadyEvents';
 import { logger } from '@/logger';
 import { checkForRemotePromoSheet } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 import { useCallback, useEffect } from 'react';
@@ -18,7 +18,7 @@ export const useRunChecks = ({ runChecksOnMount = true, walletReady }: { runChec
         return;
       }
 
-      if (await runFeatureAndLocalCampaignChecks()) return;
+      if (await runFeaturesLocalCampaignAndBackupChecks()) return;
 
       if (!remotePromoSheets) {
         logger.debug('[useRunChecks]: remote promo sheets is disabled');

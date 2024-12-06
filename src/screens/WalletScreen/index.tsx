@@ -25,7 +25,6 @@ import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
-import { runWalletBackupStatusChecks } from '@/handlers/walletReadyEvents';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
@@ -137,7 +136,6 @@ function WalletScreen() {
     if (walletReady) {
       loadAccountLateData();
       loadGlobalLateData();
-      runWalletBackupStatusChecks();
     }
   }, [loadAccountLateData, loadGlobalLateData, walletReady]);
 
