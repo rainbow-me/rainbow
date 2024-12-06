@@ -90,7 +90,7 @@ export function CarouselCard<T>({
                 paddingHorizontal: HORIZONTAL_PADDING,
               }}
               estimatedItemSize={carouselItem.width}
-              horizontal
+              horizontal={data.length > 1}
               ref={carouselItem.carouselRef}
               estimatedListSize={{
                 height: actualItemHeight,

@@ -16,6 +16,7 @@
       "tab_balances": "ยอดคงเหลือ",
       "tab_balances_empty_state": "ยอดคงเหลือ",
       "tab_balances_tooltip": "Ethereum และยอดคงเหลือ Token",
+      "tab_claimables": "รายการที่ต้องเคลม",
       "tab_collectibles": "สะสม",
       "tab_interactions": "การต่อสู้",
       "tab_interactions_tooltip": "การโต้ตอบของสัญญาอัจฉริยะ",
@@ -449,6 +450,22 @@
         "action": "ดำเนินการต่อ"
       }
     },
+    "claimables": {
+      "panel": {
+        "calculating_gas_fee": "กำลังคำนวณค่าแก๊ส...",
+        "amount_to_claim_on_network": "%{amount} ที่ต้องเคลมบน %{network}",
+        "claim": "เคลม",
+        "claiming": "กำลังเรียกร้อง",
+        "claim_in_progress": "กำลังเคลม...",
+        "claimed": "เคลมแล้ว!",
+        "claiming_failed": "การเรียกร้องล้มเหลว",
+        "insufficient_funds": "เงินทุนไม่เพียงพอ",
+        "claim_amount": "เคลม %{amount}",
+        "done": "เสร็จสิ้น",
+        "try_again": "ลองใหม่",
+        "tokens_on_the_way": "โทเคนกำลังมาถึง!"
+      }
+    },
     "cloud": {
       "backup_success": "กระเป๋าเงินของคุณได้รับการสำรองข้อมูลเรียบร้อยแล้ว!"
     },
@@ -487,6 +504,7 @@
       "clear_local_storage": "ล้าง local storage",
       "clear_mmkv_storage": "ล้าง MMKV storage",
       "connect_to_hardhat": "เชื่อมต่อกับ hardhat",
+      "disconnect_to_hardhat": "ตัดการเชื่อมต่อจาก Hardhat",
       "crash_app_render_error": "คว่ำ app (render error)",
       "enable_testnets": "เปิดใช้งาน Testnets",
       "installing_update": "กำลังติดตั้งการอัปเดต",
@@ -855,6 +873,10 @@
         "title_plural": "สามารถใช้ได้บน %{length} เครือข่าย",
         "title_singular": "สามารถใช้ได้บนเครือข่าย %{network}"
       },
+      "default_network_explainer": {
+        "text": "%{chainName} เป็น Layer 2 ที่ทำงานบน Ethereum ทำให้ธุรกรรมถูกและเร็วขึ้น ยังได้รับประโยชน์จากความปลอดภัยหลักของ Ethereum",
+        "title": "%{chainName} คืออะไร?"
+      },
       "arbitrum": {
         "text": "Arbitrum เป็นเครือข่ายชั้นที่ 2 ที่ทำงานบน Ethereum ทำให้การทำธุรกรรมถูกลงและเร็วขึ้นในขณะที่ยังได้รับประโยชน์จากความปลอดภัยที่รองรับ Ethereum\n\nมันผนึกธุรกรรมหลายๆ รายการเข้าด้วยกันในรูปแบบ \"roll up\" ก่อนจะส่งให้อยู่ถาวรบน Ethereum",
         "title": "Arbitrum คืออะไร?"
@@ -915,15 +937,19 @@
       },
       "avalanche": {
         "text": "Avalanche เป็น sidechain, เครือข่ายที่แตกต่างกันที่ทำงานข้างกับ Ethereum และสามารถเข้ากันได้\n\nช่วยให้การทำธุรกรรมถูกและเร็วขึ้น แต่ไม่เหมือนกับเครือข่าย Layer 2, Avalanche มีระบบความปลอดภัยและการสร้างความเห็นชอบที่ต่างจาก Ethereum",
-        "title": "Avalanche คืออะไร"
+        "title": "Avalanche คืออะไร?"
       },
       "degen": {
-        "text": "Degen Chain เป็นเครือข่าย Layer 3 ที่ทำงานบน Arbitrum และ Ethereum นำเสนอการทำธุรกรรมที่เร็วและถูกต้นทุนอย่างไม่น่าเชื่อ โดยใช้โทเคนชุมชน Farcaster $degen",
+        "text": "Degen Chain เป็นเครือข่าย Layer 3 ที่ทำงานบน Arbitrum และ Ethereum",
         "title": "Degen Chain คืออะไร?"
       },
       "blast": {
         "text": "Blast คือเครือข่าย Layer 2 ที่ทำงานบน Ethereum นำเสนอธุรกรรมที่ราคาถูกและเร็วขึ้นในขณะที่ยังได้รับประโยชน์จากความปลอดภัยหลักของ Ethereum\n\nมันรวมธุรกรรมจำนวนมากเข้าด้วยกันใน \"roll up\" ก่อนที่จะส่งลงไปที่ Ethereum อย่างถาวร",
         "title": "Blast คืออะไร?"
+      },
+      "apechain": {
+        "text": "ApeChain เป็นเครือข่าย Layer 3 ที่ทำงานบน Arbitrum Orbit และ Ethereum\n\nมันเสริมสร้างการใช้ ApeCoin อย่างมีนัยสำคัญ ส่งเสริมเศรษฐกิจที่แข็งแกร่งและมีพลังซึ่งขับเคลื่อนโดย $APE",
+        "title": "ApeChain คืออะไร?"
       },
       "zora": {
         "text": "Zora คือเครือข่าย Layer 2 ที่ทำงานบน Ethereum ทำให้การทำธุรกรรมถูกและเร็วขึ้นในขณะที่ยังได้รับประโยชน์จากความปลอดภัยสำคัญของ Ethereum\n\nมันรวมการทำธุรกรรมหลายๆ รายการใน \"roll up\" ก่อนส่งลงไปอยู่ถาวรบน Ethereum.",
@@ -1326,7 +1352,11 @@
         "MOST_RECENT": "ล่าสุด",
         "most_recent": "ล่าสุด",
         "FLOOR_PRICE": "ราคาพื้น",
-        "floor_price": "ราคาพื้น"
+        "floor_price": "ราคาพื้น",
+        "order": {
+          "asc": "ลำดับจากน้อยไปมาก",
+          "desc": "ลำดับจากมากไปน้อย"
+        }
       },
       "empty": "สะสม",
       "collect_now": "เก็บสะสมทันที",
@@ -1847,10 +1877,17 @@
       }
     },
     "positions": {
+      "lp_range_status": {
+        "full_range": "ช่วงเต็ม",
+        "out_of_range": "นอกช่วง",
+        "in_range": "ในช่วง"
+      },
       "open_dapp": "เปิด 􀮶",
       "deposits": "การฝาก",
       "borrows": "การยืม",
-      "rewards": "รางวัล"
+      "stakes": "วางเดิมทุนแล้ว",
+      "rewards": "รางวัล",
+      "pools": "สระน้ำ"
     },
     "savings": {
       "deposit": "ฝาก",
@@ -1991,6 +2028,7 @@
     "swap": {
       "actions": {
         "hold_to_swap": "กดแลกเปลี่ยน",
+        "hold_to_bridge": "กดที่สะพาน",
         "save": "บันทึก",
         "enter_amount": "ป้อนจำนวน",
         "review": "รีวิว",
@@ -2117,9 +2155,9 @@
           "failed": "การส่งล้มเหลว"
         },
         "receive": {
-          "pending": "",
+          "pending": "กำลังรับ",
           "confirmed": "ได้รับ",
-          "failed": ""
+          "failed": "รับล้มเหลว"
         },
         "withdraw": {
           "pending": "กำลังถอน",
@@ -2751,6 +2789,8 @@
       }
     },
     "walletconnect": {
+      "connecting": "กำลังเชื่อมต่อ",
+      "loading": "กำลังโหลด",
       "requests": "คำร้องขอ",
       "wants_to_connect": "ต้องการเชื่อมต่อกับกระเป๋าสตางค์ของคุณ",
       "wants_to_connect_to_network": "ต้องการเชื่อมต่อกับเครือข่าย %{network}",
@@ -2844,6 +2884,7 @@
             "unavailable_personal_sign": "ยังไม่สนับสนุนการจำลองสำหรับการเซ็นส่วนตัว",
             "unavailable_zora_network": "การจำลองที่ Zora ยังไม่รองรับ",
             "failed_to_simulate": "การจำลองล้มเหลว ซึ่งแสดงให้เห็นว่าธุรกรรมของคุณมีความเป็นไปได้ที่จะล้มเหลว นี่อาจเป็นปัญหาเกี่ยวกับแอปที่คุณใช้",
+            "tx_api_error": "เราไม่สามารถระบุได้ว่าธุรกรรมของคุณจะสำเร็จหรือล้มเหลว โปรดระมัดระวังในการดำเนินการ",
             "warning": "ไม่พบพฤติกรรมที่เป็นอันตรายที่เป็นที่รู้จัก แต่ธุรกรรมนี้มีลักษณะที่อาจเป็นความเสี่ยงต่อกระเป๋าเงินของท่าน",
             "malicious": "การเซ็นชื่อในธุรกรรมนี้อาจทำให้ท่านสูญเสียการเข้าถึงสิ่งที่อยู่ในกระเป๋าเงินของท่านทั้งหมด"
           },

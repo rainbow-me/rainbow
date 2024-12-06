@@ -1,5 +1,5 @@
 import chroma from 'chroma-js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
@@ -32,7 +32,7 @@ import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBala
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { colors } from '@/styles';
-import { deviceUtils, watchingAlert } from '@/utils';
+import { deviceUtils, safeAreaInsetValues, watchingAlert } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { TOP_INSET } from '../Dimensions';
@@ -201,7 +201,7 @@ export const ControlPanel = () => {
 
   const selectedWallet = allWalletItems.find(item => item.selected);
 
-  const animatedAccentColor = useSharedValue(selectedWallet?.color || globalColors.blue10);
+  const animatedAccentColor = useSharedValue<string | undefined>(selectedWallet?.color || globalColors.blue10);
   const selectedNetworkId = useSharedValue(currentChainId?.toString() || ChainId.mainnet.toString());
   const selectedWalletId = useSharedValue(selectedWallet?.uniqueId || accountAddress);
 
@@ -247,7 +247,7 @@ export const ControlPanel = () => {
     setIsConnected(true);
     setCurrentAddress(address);
     setCurrentChainId(chainId);
-  }, [activeTabUrl, selectedWalletId.value, selectedNetworkId.value, addSession, activeTabRef]);
+  }, [activeTabUrl, selectedWalletId, selectedNetworkId, addSession, activeTabRef]);
 
   const handleDisconnect = useCallback(() => {
     const activeTabHost = getDappHost(activeTabUrl as string);
@@ -266,14 +266,14 @@ export const ControlPanel = () => {
           <SmoothPager.Page
             component={
               <HomePanel
+                allNetworkItems={allNetworkItems}
                 animatedAccentColor={animatedAccentColor}
                 goToPage={goToPage}
-                selectedChainId={currentChainId}
-                selectedWallet={selectedWallet}
-                allNetworkItems={allNetworkItems}
                 isConnected={isConnected}
                 onConnect={handleConnect}
                 onDisconnect={handleDisconnect}
+                selectedChainId={currentChainId}
+                selectedWallet={selectedWallet}
               />
             }
             id={PAGES.HOME}
@@ -285,8 +285,8 @@ export const ControlPanel = () => {
                   allWalletItems={allWalletItems}
                   animatedAccentColor={animatedAccentColor}
                   goBack={goBack}
-                  selectedWalletId={selectedWalletId}
                   onWalletSwitch={handleSwitchWallet}
+                  selectedWalletId={selectedWalletId}
                 />
               }
               id={PAGES.SWITCH_WALLET}
@@ -297,8 +297,8 @@ export const ControlPanel = () => {
                   allNetworkItems={allNetworkItems}
                   animatedAccentColor={animatedAccentColor}
                   goBack={goBack}
-                  selectedNetworkId={selectedNetworkId}
                   onNetworkSwitch={handleNetworkSwitch}
+                  selectedNetworkId={selectedNetworkId}
                 />
               }
               id={PAGES.SWITCH_NETWORK}
@@ -311,7 +311,7 @@ export const ControlPanel = () => {
   );
 };
 
-const TapToDismiss = React.memo(function TapToDismiss() {
+const TapToDismiss = memo(function TapToDismiss() {
   const { goBack } = useNavigation();
   return (
     <TouchableWithoutFeedback onPress={goBack}>
@@ -356,7 +356,7 @@ const AccentColorSetter = ({
   return null;
 };
 
-const HomePanel = ({
+const HomePanel = memo(function HomePanel({
   animatedAccentColor,
   goToPage,
   selectedChainId,
@@ -374,7 +374,7 @@ const HomePanel = ({
   isConnected: boolean;
   onConnect: () => void;
   onDisconnect: () => void;
-}) => {
+}) {
   const { accountAddress } = useAccountSettings();
   const { wallets } = useWallets();
   const initializeWallet = useInitializeWallet();
@@ -510,9 +510,9 @@ const HomePanel = ({
       </Box>
     </Panel>
   );
-};
+});
 
-const HomePanelLogo = React.memo(function HomePanelLogo() {
+const HomePanelLogo = memo(function HomePanelLogo() {
   const logoUrl = useBrowserStore(state => state.getActiveTabLogo());
   return (
     <Box
@@ -529,7 +529,7 @@ const HomePanelLogo = React.memo(function HomePanelLogo() {
   );
 });
 
-const HomePanelTitleSection = React.memo(function HomePanelTitleSection() {
+const HomePanelTitleSection = memo(function HomePanelTitleSection() {
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
   const activeTabTitle = useBrowserStore(state => state.getActiveTabTitle());
   return (
@@ -544,19 +544,19 @@ const HomePanelTitleSection = React.memo(function HomePanelTitleSection() {
   );
 });
 
-const SwitchWalletPanel = ({
+const SwitchWalletPanel = memo(function SwitchWalletPanel({
+  allWalletItems,
   animatedAccentColor,
   goBack,
-  selectedWalletId,
-  allWalletItems,
   onWalletSwitch,
+  selectedWalletId,
 }: {
+  allWalletItems: ControlPanelMenuItemProps[];
   animatedAccentColor: SharedValue<string | undefined>;
   goBack: () => void;
-  selectedWalletId: SharedValue<string>;
-  allWalletItems: ControlPanelMenuItemProps[];
   onWalletSwitch: (selectedItemId: string) => void;
-}) => {
+  selectedWalletId: SharedValue<string>;
+}) {
   const handleOnSelect = useCallback(
     (selectedItemId: string) => {
       onWalletSwitch(selectedItemId);
@@ -570,25 +570,25 @@ const SwitchWalletPanel = ({
       goBack={goBack}
       items={allWalletItems}
       pageTitle={i18n.t(i18n.l.dapp_browser.control_panel.switch_wallet)}
-      selectedItemId={selectedWalletId}
       onSelect={handleOnSelect}
+      selectedItemId={selectedWalletId}
     />
   );
-};
+});
 
-const SwitchNetworkPanel = ({
+const SwitchNetworkPanel = memo(function SwitchNetworkPanel({
+  allNetworkItems,
   animatedAccentColor,
   goBack,
-  selectedNetworkId,
-  allNetworkItems,
   onNetworkSwitch,
+  selectedNetworkId,
 }: {
+  allNetworkItems: ControlPanelMenuItemProps[];
   animatedAccentColor: SharedValue<string | undefined>;
   goBack: () => void;
-  selectedNetworkId: SharedValue<string>;
-  allNetworkItems: ControlPanelMenuItemProps[];
   onNetworkSwitch: (selectedItemId: string) => void;
-}) => {
+  selectedNetworkId: SharedValue<string>;
+}) {
   const handleOnSelect = useCallback(
     (selectedItemId: string) => {
       onNetworkSwitch(selectedItemId);
@@ -606,7 +606,7 @@ const SwitchNetworkPanel = ({
       onSelect={handleOnSelect}
     />
   );
-};
+});
 
 const LIST_SCROLL_INDICATOR_BOTTOM_INSET = { bottom: 42 };
 
@@ -615,15 +615,15 @@ const ListPanel = ({
   goBack,
   items,
   pageTitle,
-  selectedItemId,
   onSelect,
+  selectedItemId,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
   goBack: () => void;
   items?: ControlPanelMenuItemProps[];
   pageTitle: string;
-  selectedItemId: SharedValue<string>;
   onSelect: (selectedItemId: string) => void;
+  selectedItemId: SharedValue<string>;
 }) => {
   const memoizedItems = useMemo(() => items, [items]);
 
@@ -634,7 +634,17 @@ const ListPanel = ({
         <ScrollView
           contentContainerStyle={controlPanelStyles.listScrollViewContentContainer}
           scrollIndicatorInsets={LIST_SCROLL_INDICATOR_BOTTOM_INSET}
-          style={controlPanelStyles.listScrollView}
+          style={[
+            controlPanelStyles.listScrollView,
+            {
+              height: Math.min(
+                (memoizedItems?.length ?? 0) * 56 +
+                  controlPanelStyles.listScrollViewContentContainer.paddingBottom +
+                  controlPanelStyles.listScrollViewContentContainer.paddingTop,
+                controlPanelStyles.listScrollView.maxHeight
+              ),
+            },
+          ]}
         >
           <Box width="full">
             {memoizedItems?.map(item => (
@@ -654,7 +664,7 @@ const ListPanel = ({
   );
 };
 
-const ListHeader = React.memo(function ListHeader({
+const ListHeader = memo(function ListHeader({
   animatedAccentColor,
   goBack,
   rightComponent,
@@ -677,7 +687,9 @@ const ListHeader = React.memo(function ListHeader({
       <Box style={controlPanelStyles.listHeaderContent}>
         <ButtonPressAnimation onPress={goBack} scaleTo={0.8} style={controlPanelStyles.listHeaderButtonWrapper}>
           <Box alignItems="center" height={{ custom: 20 }} justifyContent="center" width={{ custom: 20 }}>
-            <AnimatedText align="center" size="icon 20px" staticText="􀆉" style={backIconStyle} weight="bold" />
+            <AnimatedText align="center" size="icon 20px" style={backIconStyle} weight="bold">
+              􀆉
+            </AnimatedText>
           </Box>
         </ButtonPressAnimation>
         <Box alignItems="center" justifyContent="center" paddingHorizontal="44px" width="full">
@@ -710,7 +722,7 @@ interface ControlPanelMenuItemProps {
   variant?: 'homePanel';
 }
 
-const ControlPanelMenuItem = React.memo(function ControlPanelMenuItem({
+const ControlPanelMenuItem = memo(function ControlPanelMenuItem({
   IconComponent,
   animatedAccentColor,
   label,
@@ -731,19 +743,14 @@ const ControlPanelMenuItem = React.memo(function ControlPanelMenuItem({
       selectedItemId.value = uniqueId;
     }
 
-    // const walletColor = PLACEHOLDER_WALLET_ITEMS.find(item => item.uniqueId === uniqueId)?.color;
-    // if (walletColor && animatedAccentColor) {
-    //   animatedAccentColor.value = withTiming(walletColor, TIMING_CONFIGS.slowFadeConfig);
-    // }
-
     onPress?.();
-  }, [/* animatedAccentColor, */ onPress, selectedItemId, uniqueId]);
+  }, [onPress, selectedItemId, uniqueId]);
 
   const selectedStyle = useAnimatedStyle(() => {
     const selected = selectedItemId?.value === uniqueId || variant === 'homePanel';
     return {
       // eslint-disable-next-line no-nested-ternary
-      backgroundColor: selected ? (isDarkMode ? globalColors.white10 : '#FBFCFD') : 'transparent',
+      backgroundColor: selected ? (isDarkMode ? globalColors.white10 : '#F7F7F9') : 'transparent',
       borderColor: selected ? borderColor : 'transparent',
       borderWidth: !selected || IS_ANDROID ? 0 : THICK_BORDER_WIDTH,
       paddingLeft: !selected || IS_ANDROID ? 10 : 10 - THICK_BORDER_WIDTH,
@@ -768,7 +775,9 @@ const ControlPanelMenuItem = React.memo(function ControlPanelMenuItem({
             <Box style={controlPanelStyles.menuItemIconContainer}>{IconComponent}</Box>
           </Column>
           <Stack space="10px">
-            <AnimatedText numberOfLines={1} size="17pt" staticText={label} style={selectedTextStyle} />
+            <AnimatedText numberOfLines={1} size="17pt" style={selectedTextStyle}>
+              {label}
+            </AnimatedText>
             {secondaryLabel && (
               <Text
                 color={secondaryLabelColor || (variant === 'homePanel' ? 'labelTertiary' : 'labelQuaternary')}
@@ -783,7 +792,9 @@ const ControlPanelMenuItem = React.memo(function ControlPanelMenuItem({
           {variant === 'homePanel' && (
             <Column width="content">
               <Box alignItems="center" height={{ custom: 24 }} justifyContent="center" width={{ custom: 24 }}>
-                <AnimatedText align="center" size="icon 17px" staticText="􀆊" style={selectedTextStyle} weight="heavy" />
+                <AnimatedText align="center" size="icon 17px" style={selectedTextStyle} weight="heavy">
+                  􀆊
+                </AnimatedText>
               </Box>
             </Column>
           )}
@@ -793,13 +804,13 @@ const ControlPanelMenuItem = React.memo(function ControlPanelMenuItem({
   );
 });
 
-const ListAvatar = React.memo(function ListAvatar({ size = 36, url }: { size?: number; url: string }) {
+const ListAvatar = memo(function ListAvatar({ size = 36, url }: { size?: number; url: string }) {
   return (
     <ImgixImage enableFasterImage size={size ?? 36} source={{ uri: url }} style={{ borderRadius: size / 2, height: size, width: size }} />
   );
 });
 
-const ListEmojiAvatar = React.memo(function ListEmojiAvatar({
+const ListEmojiAvatar = memo(function ListEmojiAvatar({
   address,
   color,
   label,
@@ -837,7 +848,7 @@ const ListEmojiAvatar = React.memo(function ListEmojiAvatar({
   );
 });
 
-const ControlPanelButton = React.memo(function ControlPanelButton({
+const ControlPanelButton = memo(function ControlPanelButton({
   animatedAccentColor,
   icon,
   label,
@@ -856,7 +867,9 @@ const ControlPanelButton = React.memo(function ControlPanelButton({
       <HitSlop horizontal="16px" vertical="10px">
         <Stack alignHorizontal="center" space="10px">
           <Box as={Animated.View} background="accent" style={[controlPanelStyles.button, backgroundColor]}>
-            <AnimatedText align="center" color="label" size="icon 20px" staticText={icon} style={buttonTextColor} weight="heavy" />
+            <AnimatedText align="center" color="label" size="icon 20px" style={buttonTextColor} weight="heavy">
+              {icon}
+            </AnimatedText>
           </Box>
           <Bleed horizontal="20px">
             <Text align="center" color="labelQuaternary" numberOfLines={1} size="12pt" weight="bold">
@@ -869,7 +882,7 @@ const ControlPanelButton = React.memo(function ControlPanelButton({
   );
 });
 
-const FavoriteButton = React.memo(function FavButton({ animatedAccentColor }: { animatedAccentColor: SharedValue<string | undefined> }) {
+const FavoriteButton = memo(function FavButton({ animatedAccentColor }: { animatedAccentColor: SharedValue<string | undefined> }) {
   const tabId = useBrowserStore(state => state.getActiveTabId());
   const tabData = useBrowserStore(state => state.getTabData(tabId));
   const isFavorite = useFavoriteDappsStore(state => state.isFavorite(tabData?.url || ''));
@@ -899,7 +912,7 @@ const FavoriteButton = React.memo(function FavButton({ animatedAccentColor }: { 
   );
 });
 
-const DisabledControlPanelButton = React.memo(function ControlPanelButton({ icon, label }: { icon: string; label: string }) {
+const DisabledControlPanelButton = memo(function ControlPanelButton({ icon, label }: { icon: string; label: string }) {
   const { isDarkMode } = useColorMode();
 
   const disabledColor = opacity(isDarkMode ? globalColors.white80 : globalColors.grey80, 1);
@@ -931,7 +944,7 @@ const DisabledControlPanelButton = React.memo(function ControlPanelButton({ icon
   );
 });
 
-const ConnectButton = React.memo(function ControlPanelButton({
+const ConnectButton = memo(function ControlPanelButton({
   isConnected,
   onConnect,
   onDisconnect,
@@ -949,7 +962,7 @@ const ConnectButton = React.memo(function ControlPanelButton({
     return withTiming(isConnected ? red : green, TIMING_CONFIGS.slowerFadeConfig);
   });
 
-  const buttonIcon = useDerivedValue(() => {
+  const buttonIcon = useDerivedValue<string>(() => {
     return isConnected ? '􀋪' : '􀋦';
   });
 
@@ -986,30 +999,37 @@ const ConnectButton = React.memo(function ControlPanelButton({
   }, [isConnected, onConnect, onDisconnect]);
 
   return (
-    <GestureHandlerButton
-      buttonPressWrapperStyleIOS={controlPanelStyles.connectButtonContainer}
-      onPressWorklet={handlePress}
-      pointerEvents="auto"
-      scaleTo={0.82}
-      style={[controlPanelStyles.buttonContainer]}
-    >
-      <Box paddingHorizontal={IS_IOS ? '16px' : undefined} paddingVertical={IS_IOS ? '10px' : undefined}>
-        <Stack alignHorizontal="center" space="10px">
-          <Box as={Animated.View} style={[controlPanelStyles.button, controlPanelStyles.connectButton, buttonBackground]}>
-            <Bleed space="16px">
-              <AnimatedText align="center" size="icon 20px" style={[buttonIconStyle, controlPanelStyles.connectButtonIcon]} weight="heavy">
-                {buttonIcon}
+    <View style={controlPanelStyles.connectButtonContainer}>
+      <GestureHandlerButton
+        hapticTrigger="tap-end"
+        onPressWorklet={handlePress}
+        pointerEvents="auto"
+        scaleTo={0.82}
+        style={[controlPanelStyles.buttonContainer]}
+      >
+        <Box paddingHorizontal={IS_IOS ? '16px' : undefined} paddingVertical={IS_IOS ? '10px' : undefined}>
+          <Stack alignHorizontal="center" space="10px">
+            <Box as={Animated.View} style={[controlPanelStyles.button, controlPanelStyles.connectButton, buttonBackground]}>
+              <Bleed space="16px">
+                <AnimatedText
+                  align="center"
+                  size="icon 20px"
+                  style={[buttonIconStyle, controlPanelStyles.connectButtonIcon]}
+                  weight="heavy"
+                >
+                  {buttonIcon}
+                </AnimatedText>
+              </Bleed>
+            </Box>
+            <Bleed horizontal="20px">
+              <AnimatedText align="center" color="labelQuaternary" numberOfLines={1} size="12pt" weight="bold">
+                {buttonLabel}
               </AnimatedText>
             </Bleed>
-          </Box>
-          <Bleed horizontal="20px">
-            <AnimatedText align="center" color="labelQuaternary" numberOfLines={1} size="12pt" weight="bold">
-              {buttonLabel}
-            </AnimatedText>
-          </Bleed>
-        </Stack>
-      </Box>
-    </GestureHandlerButton>
+          </Stack>
+        </Box>
+      </GestureHandlerButton>
+    </View>
   );
 });
 
@@ -1160,10 +1180,10 @@ const controlPanelStyles = StyleSheet.create({
     backgroundColor: globalColors.white10,
   },
   menuItemSelectedLight: {
-    backgroundColor: '#FBFCFD',
+    backgroundColor: '#F7F7F9',
   },
   panelContainer: {
-    bottom: 91,
+    bottom: Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30),
     pointerEvents: 'box-none',
     position: 'absolute',
     zIndex: 30000,

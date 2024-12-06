@@ -29,7 +29,7 @@ const smallFallbackIconStyle = {
   position: 'absolute' as ViewStyle['position'],
 };
 
-export const AnimatedSwapCoinIcon = memo(function FeedCoinIcon({
+export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
   assetType,
   large = true,
   small,

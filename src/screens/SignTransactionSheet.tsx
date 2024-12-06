@@ -266,7 +266,7 @@ export const SignTransactionSheet = () => {
     const txPayload = req;
     let { gas } = txPayload;
     const gasLimitFromPayload = txPayload?.gasLimit;
-    if (!chainId) return;
+
     try {
       logger.debug(
         '[SignTransactionSheet]: gas suggested by dapp',
@@ -280,6 +280,9 @@ export const SignTransactionSheet = () => {
       // Estimate the tx with gas limit padding before sending
       const rawGasLimit = await estimateGasWithPadding(txPayload, null, null, provider);
       if (!rawGasLimit) {
+        logger.error(new RainbowError('[SignTransactionSheet]: error estimating gas'), {
+          rawGasLimit,
+        });
         return;
       }
 
@@ -321,9 +324,6 @@ export const SignTransactionSheet = () => {
 
     let response = null;
     try {
-      if (!chainId) {
-        return;
-      }
       const existingWallet = await performanceTracking.getState().executeFn({
         fn: loadWallet,
         screen: SCREEN_FOR_REQUEST_SOURCE[source],
@@ -551,18 +551,54 @@ export const SignTransactionSheet = () => {
     handleConfirmTransaction,
   });
 
-  const { submitFn } = useTransactionSubmission({
+  const { submitFn, isAuthorizing } = useTransactionSubmission({
+    isMessageRequest,
     isBalanceEnough,
     accountInfo,
     onConfirm,
     source,
   });
 
+  const canPressConfirm = useMemo(() => {
+    if (isMessageRequest) {
+      return !isAuthorizing; // Only check authorization state for message requests
+    }
+
+    return !isAuthorizing && isBalanceEnough && !!chainId && !!selectedGasFee?.gasFee?.estimatedFee;
+  }, [isAuthorizing, isMessageRequest, isBalanceEnough, chainId, selectedGasFee?.gasFee?.estimatedFee]);
+
+  const primaryActionButtonLabel = useMemo(() => {
+    if (isAuthorizing) {
+      return i18n.t(i18n.l.walletconnect.simulation.buttons.confirming);
+    }
+
+    if (!txSimulationLoading && isBalanceEnough === false) {
+      return i18n.t(i18n.l.walletconnect.simulation.buttons.buy_native_token, { symbol: walletBalance?.symbol });
+    }
+
+    return i18n.t(i18n.l.walletconnect.simulation.buttons.confirm);
+  }, [txSimulationLoading, isBalanceEnough, isAuthorizing, walletBalance]);
+
+  const primaryActionButtonColor = useMemo(() => {
+    let color = colors.appleBlue;
+
+    if (
+      simulationResult?.simulationError ||
+      (simulationResult?.simulationScanResult && simulationResult.simulationScanResult !== TransactionScanResultType.Ok)
+    ) {
+      if (simulationResult?.simulationScanResult === TransactionScanResultType.Warning) {
+        color = colors.orange;
+      } else {
+        color = colors.red;
+      }
+    }
+
+    return colors.alpha(color, canPressConfirm ? 1 : 0.6);
+  }, [colors, simulationResult?.simulationError, simulationResult?.simulationScanResult, canPressConfirm]);
+
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
   const expandedCardBottomInset = EXPANDED_CARD_BOTTOM_INSET + (isMessageRequest ? 0 : GAS_BUTTON_SPACE);
-
-  const canPressConfirm = isMessageRequest || (!!walletBalance?.isLoaded && !!chainId && !!selectedGasFee?.gasFee?.estimatedFee);
 
   return (
     <PanGestureHandler enabled={IS_IOS}>
@@ -733,24 +769,13 @@ export const SignTransactionSheet = () => {
                     weight="bold"
                   />
                   <SheetActionButton
-                    label={
-                      !txSimulationLoading && isBalanceEnough === false
-                        ? i18n.t(i18n.l.walletconnect.simulation.buttons.buy_native_token, { symbol: walletBalance?.symbol })
-                        : i18n.t(i18n.l.walletconnect.simulation.buttons.confirm)
-                    }
+                    label={primaryActionButtonLabel}
                     newShadows
                     onPress={submitFn}
                     disabled={!canPressConfirm}
                     size="big"
                     weight="heavy"
-                    color={
-                      simulationResult?.simulationError ||
-                      (simulationResult?.simulationScanResult && simulationResult?.simulationScanResult !== TransactionScanResultType.Ok)
-                        ? simulationResult?.simulationScanResult === TransactionScanResultType.Warning
-                          ? 'orange'
-                          : colors.red
-                        : undefined
-                    }
+                    color={primaryActionButtonColor}
                   />
                 </Columns>
               </Box>

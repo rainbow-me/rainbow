@@ -38,6 +38,8 @@ import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useTimeoutEffect } from '@/hooks/useTimeout';
+import { analyticsV2 } from '@/analytics';
 
 const defaultCarouselHeight = 60;
 const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
@@ -253,6 +255,19 @@ export default function ChartExpandedState({ asset }) {
       return test;
     },
     [nativeCurrency]
+  );
+
+  const mountedAt = useRef(Date.now());
+  useTimeoutEffect(
+    () => {
+      const { address, chainId, symbol, name, icon_url, price } = assetWithPrice;
+      analyticsV2.track(analyticsV2.event.tokenDetailsErc20, {
+        eventSentAfterMs: Date.now() - mountedAt.current,
+        token: { address, chainId, symbol, name, icon_url, price },
+        available_data: { chart: showChart, description: !!data?.description, iconUrl: !!icon_url },
+      });
+    },
+    5 * 1000 // 5s
   );
 
   return (
