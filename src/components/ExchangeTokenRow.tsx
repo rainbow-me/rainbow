@@ -2,7 +2,7 @@ import React from 'react';
 import isEqual from 'react-fast-compare';
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
-import { useAsset, useDimensions } from '@/hooks';
+import { useAsset } from '@/hooks';
 import { ButtonPressAnimation } from '@/components/animations';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { IS_IOS } from '@/env';
@@ -34,7 +34,6 @@ export default React.memo(function ExchangeTokenRow({
     disabled,
   },
 }: ExchangeTokenRowProps) {
-  const { width: deviceWidth } = useDimensions();
   const item = useAsset({
     address,
     chainId,
@@ -101,10 +100,8 @@ export default React.memo(function ExchangeTokenRow({
               {isInfoButtonVisible && <Info contextMenuProps={contextMenuProps} showFavoriteButton={showFavoriteButton} theme={theme} />}
               {showFavoriteButton &&
                 (IS_IOS ? (
-                  // @ts-ignore
                   <FloatingEmojis
                     centerVertically
-                    deviceWidth={deviceWidth}
                     disableHorizontalMovement
                     disableVerticalMovement
                     distance={70}

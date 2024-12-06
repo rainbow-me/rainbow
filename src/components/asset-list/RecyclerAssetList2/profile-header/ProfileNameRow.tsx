@@ -103,7 +103,6 @@ export function ProfileNameRow({
         scaleTo={0}
         size={50}
         wiggleFactor={0}
-        // @ts-expect-error – JS component
         setOnNewEmoji={newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji)}
       />
     </Box>
