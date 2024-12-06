@@ -63,7 +63,7 @@ export const HardwareWalletTxNavigator = () => {
 
   const { navigate } = useNavigation();
 
-  const deviceId = selectedWallet?.deviceId;
+  const deviceId = selectedWallet.deviceId ?? '';
   const [isReady, setIsReady] = useRecoilState(LedgerIsReadyAtom);
   const [readyForPolling, setReadyForPolling] = useRecoilState(readyForPollingAtom);
   const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(triggerPollerCleanupAtom);

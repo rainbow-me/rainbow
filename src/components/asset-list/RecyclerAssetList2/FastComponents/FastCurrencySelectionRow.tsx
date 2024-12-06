@@ -174,10 +174,8 @@ export default React.memo(function FastCurrencySelectionRow({
           {showFavoriteButton &&
             chainId === ChainId.mainnet &&
             (ios ? (
-              // @ts-ignore
               <FloatingEmojis
                 centerVertically
-                deviceWidth={deviceWidth}
                 disableHorizontalMovement
                 disableVerticalMovement
                 distance={70}

@@ -1,4 +1,3 @@
-import { IS_TESTING } from 'react-native-dotenv';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
 import { runLocalCampaignChecks } from '@/components/remote-promo-sheet/localCampaignChecks';
@@ -6,18 +5,15 @@ import { EthereumAddress } from '@/entities';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { featureUnlockChecks } from '@/featuresToUnlock';
-import { AllRainbowWallets, RainbowAccount, RainbowWallet } from '@/model/wallet';
+import { AllRainbowWallets, RainbowAccount } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 
 import store from '@/redux/store';
 import { checkKeychainIntegrity } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
-import { checkWalletsForBackupStatus } from '@/screens/SettingsSheet/utils';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { InteractionManager } from 'react-native';
-
-const BACKUP_SHEET_DELAY_MS = 3000;
+import { IS_TEST } from '@/env';
+import { backupsStore, LoadingStates } from '@/state/backups/backups';
 
 export const runKeychainIntegrityChecks = async () => {
   const keychainIntegrityState = await getKeychainIntegrityState();
@@ -26,60 +22,38 @@ export const runKeychainIntegrityChecks = async () => {
   }
 };
 
-export const runWalletBackupStatusChecks = () => {
-  const {
-    selected,
-    wallets,
-  }: {
-    wallets: AllRainbowWallets | null;
-    selected: RainbowWallet | undefined;
-  } = store.getState().wallets;
-
-  // count how many visible, non-imported and non-readonly wallets are not backed up
-  if (!wallets) return;
-
-  const { backupProvider } = checkWalletsForBackupStatus(wallets);
-
-  const rainbowWalletsNotBackedUp = Object.values(wallets).filter(wallet => {
-    const hasVisibleAccount = wallet.addresses?.find((account: RainbowAccount) => account.visible);
-    return (
-      !wallet.imported &&
-      !!hasVisibleAccount &&
-      wallet.type !== WalletTypes.readOnly &&
-      wallet.type !== WalletTypes.bluetooth &&
-      !wallet.backedUp
-    );
+const delay = (ms: number) =>
+  new Promise(resolve => {
+    setTimeout(resolve, ms);
   });
 
-  if (!rainbowWalletsNotBackedUp.length) return;
-
-  logger.debug('[walletReadyEvents]: there is a rainbow wallet not backed up');
-
-  const hasSelectedWallet = rainbowWalletsNotBackedUp.find(notBackedUpWallet => notBackedUpWallet.id === selected!.id);
-  logger.debug('[walletReadyEvents]: rainbow wallet not backed up that is selected?', {
-    hasSelectedWallet,
-  });
-
-  // if one of them is selected, show the default BackupSheet
-  if (selected && hasSelectedWallet && IS_TESTING !== 'true') {
-    let stepType: string = WalletBackupStepTypes.no_provider;
-    if (backupProvider === walletBackupTypes.cloud) {
-      stepType = WalletBackupStepTypes.backup_now_to_cloud;
-    } else if (backupProvider === walletBackupTypes.manual) {
-      stepType = WalletBackupStepTypes.backup_now_manually;
-    }
-
-    setTimeout(() => {
-      logger.debug(`[walletReadyEvents]: showing ${stepType} backup sheet for selected wallet`);
-      triggerOnSwipeLayout(() =>
-        Navigation.handleAction(Routes.BACKUP_SHEET, {
-          step: stepType,
-        })
-      );
-    }, BACKUP_SHEET_DELAY_MS);
-    return;
+const promptForBackupOnceReadyOrNotAvailable = async (): Promise<boolean> => {
+  const { status } = backupsStore.getState();
+  if (LoadingStates.includes(status)) {
+    await delay(1000);
+    return promptForBackupOnceReadyOrNotAvailable();
   }
-  return;
+
+  logger.debug(`[walletReadyEvents]: BackupSheet: showing backup now sheet for selected wallet`);
+  triggerOnSwipeLayout(() =>
+    Navigation.handleAction(Routes.BACKUP_SHEET, {
+      step: WalletBackupStepTypes.backup_prompt,
+    })
+  );
+  return true;
+};
+
+export const runWalletBackupStatusChecks = async (): Promise<boolean> => {
+  const { selected } = store.getState().wallets;
+  if (!selected || IS_TEST) return false;
+
+  const selectedWalletNeedsBackedUp =
+    !selected.backedUp && !selected.damaged && selected.type !== WalletTypes.readOnly && selected.type !== WalletTypes.bluetooth;
+  if (selectedWalletNeedsBackedUp) {
+    logger.debug('[walletReadyEvents]: Selected wallet is not backed up, prompting backup sheet');
+    return promptForBackupOnceReadyOrNotAvailable();
+  }
+  return false;
 };
 
 export const runFeatureUnlockChecks = async (): Promise<boolean> => {
@@ -107,19 +81,24 @@ export const runFeatureUnlockChecks = async (): Promise<boolean> => {
 
   // short circuits once the first feature is unlocked
   for (const featureUnlockCheck of featureUnlockChecks) {
-    InteractionManager.runAfterInteractions(async () => {
-      const unlockNow = await featureUnlockCheck(walletsToCheck);
-      if (unlockNow) {
-        return true;
-      }
-    });
+    const unlockNow = await featureUnlockCheck(walletsToCheck);
+    if (unlockNow) {
+      return true;
+    }
   }
   return false;
 };
 
-export const runFeatureAndLocalCampaignChecks = async () => {
-  const showingFeatureUnlock: boolean = await runFeatureUnlockChecks();
-  if (!showingFeatureUnlock) {
-    await runLocalCampaignChecks();
+export const runFeaturesLocalCampaignAndBackupChecks = async () => {
+  if (await runFeatureUnlockChecks()) {
+    return true;
   }
+  if (await runLocalCampaignChecks()) {
+    return true;
+  }
+  if (await runWalletBackupStatusChecks()) {
+    return true;
+  }
+
+  return false;
 };
