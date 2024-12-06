@@ -1,9 +1,7 @@
 import { GestureResponderEvent, NativeSyntheticEvent } from 'react-native';
 import { runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useCallback, useRef } from 'react';
-import Routes from '@/navigation/routesNames';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { EXTRA_WEBVIEW_HEIGHT, GROW_WEBVIEW_THRESHOLD, SHRINK_WEBVIEW_THRESHOLD, WEBVIEW_HEIGHT } from '../Dimensions';
 import { ActiveTabCloseGestures, BrowserContextType, GestureManagerState, TabViewGestureStates, WebViewScrollEvent } from '../types';
@@ -34,8 +32,6 @@ export function useGestureManager({
   const tabViewGestureHoldDuration = useSharedValue(0);
   const tabViewGestureProgress = useSharedValue(0);
   const tabViewGestureState = useSharedValue(TabViewGestureStates.INACTIVE);
-
-  const activeSwipeRoute = useNavigationStore(state => state.animatedActiveSwipeRoute);
 
   const scrollPositionRef = useRef<number | undefined>(undefined);
   const startScrollPositionRef = useRef<number | undefined>(undefined);
@@ -123,18 +119,6 @@ export function useGestureManager({
         runOnJS(setShouldExpandWebView)(true);
       } else if (wasExpanded && !shouldExpand) {
         runOnJS(setShouldExpandWebView)(false);
-      }
-    },
-    []
-  );
-
-  // Ensures the tab bar never remains collapsed when navigating away from the browser screen
-  useAnimatedReaction(
-    () => ({ isOnBrowserTab: activeSwipeRoute.value === Routes.DAPP_BROWSER_SCREEN }),
-    (current, prev) => {
-      const resetForInactiveBrowserTab = !current.isOnBrowserTab && prev?.isOnBrowserTab && shouldCollapseBottomBar.value;
-      if (resetForInactiveBrowserTab) {
-        shouldCollapseBottomBar.value = false;
       }
     },
     []

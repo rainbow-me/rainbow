@@ -2926,6 +2926,7 @@
         "buttons": {
           "cancel": "Cancel",
           "confirm": "􀎽 Confirm",
+          "confirming": "Confirming",
           "get_native_token": "Get %{symbol}",
           "buy_native_token": "Buy %{symbol}"
         },
