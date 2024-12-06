@@ -11,6 +11,7 @@ export const PerformanceMetrics = {
   initializeWalletconnect: 'Performance WalletConnect Initialize Time',
 
   quoteFetching: 'Performance Quote Fetching Time',
+  timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
 } as const;
 
 export type PerformanceMetricsType = (typeof PerformanceMetrics)[keyof typeof PerformanceMetrics];

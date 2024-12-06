@@ -1,7 +1,7 @@
 import { INITIAL_SLIDER_POSITION, MIN_FLASHBOTS_PRIORITY_FEE } from '@/__swaps__/screens/Swap/constants';
 import { getCustomGasSettings, setCustomMaxPriorityFee } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { getSelectedGasSpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { RecentSwap } from '@/__swaps__/types/swap';
@@ -49,6 +49,8 @@ export interface SwapsState {
   // degen mode preferences
   preferredNetwork: ChainId | undefined;
   setPreferredNetwork: (preferredNetwork: ChainId | undefined) => void;
+
+  lastNavigatedTrendingToken: UniqueId | undefined;
 }
 
 type StateWithTransforms = Omit<Partial<SwapsState>, 'latestSwapAt' | 'recentSwaps'> & {
@@ -188,6 +190,8 @@ export const swapsStore = createRainbowStore<SwapsState>(
         latestSwapAt: new Map(latestSwapAt),
       });
     },
+
+    lastNavigatedTrendingToken: undefined,
   }),
   {
     storageKey: 'swapsStore',

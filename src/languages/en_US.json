@@ -2990,6 +2990,7 @@
       }
     },
     "trending_tokens": {
+      "all": "All",
       "no_results": {
         "title": "No results",
         "body": "Try browsing a larger timeframe or a different network or category."
