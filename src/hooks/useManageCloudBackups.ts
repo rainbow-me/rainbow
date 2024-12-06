@@ -16,6 +16,8 @@ import { IS_ANDROID } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import * as i18n from '@/languages';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+import * as keychain from '@/keychain';
+import { authenticateWithPIN } from '@/handlers/authentication';
 
 export default function useManageCloudBackups() {
   const dispatch = useDispatch();
@@ -96,14 +98,36 @@ export default function useManageCloudBackups() {
             },
             async (buttonIndex: any) => {
               if (buttonIndex === 0) {
-                if (IS_ANDROID) {
-                  logoutFromGoogleDrive();
-                  setAccountDetails(undefined);
-                }
-                removeBackupStateFromAllWallets();
+                try {
+                  let userPIN: string | undefined;
+                  const hasBiometricsEnabled = await keychain.getSupportedBiometryType();
+                  if (IS_ANDROID && !hasBiometricsEnabled) {
+                    try {
+                      userPIN = (await authenticateWithPIN()) ?? undefined;
+                    } catch (e) {
+                      Alert.alert(i18n.t(i18n.l.back_up.wrong_pin));
+                      return;
+                    }
+                  }
 
-                await deleteAllBackups();
-                Alert.alert(lang.t('back_up.backup_deleted_successfully'));
+                  // Prompt for authentication before allowing them to delete backups
+                  await keychain.getAllKeys();
+
+                  if (IS_ANDROID) {
+                    logoutFromGoogleDrive();
+                    setAccountDetails(undefined);
+                  }
+                  removeBackupStateFromAllWallets();
+
+                  await deleteAllBackups();
+                  Alert.alert(lang.t('back_up.backup_deleted_successfully'));
+                } catch (e) {
+                  logger.error(new RainbowError(`[useManageCloudBackups]: Error deleting all backups`), {
+                    error: (e as Error).message,
+                  });
+
+                  Alert.alert(lang.t('back_up.errors.keychain_access'));
+                }
               }
             }
           );
