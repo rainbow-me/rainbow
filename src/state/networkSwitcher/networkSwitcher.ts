@@ -43,8 +43,6 @@ export const customizeNetworksBannerStore = createRainbowStore<{
 const twoWeeks = 1000 * 60 * 60 * 24 * 7 * 2;
 export const shouldShowCustomizeNetworksBanner = (dismissedAt: number) => Date.now() - dismissedAt > twoWeeks;
 export const dismissCustomizeNetworksBanner = () => {
-  const { dismissedAt } = customizeNetworksBannerStore.getState();
-  if (shouldShowCustomizeNetworksBanner(dismissedAt)) return;
   customizeNetworksBannerStore.setState({ dismissedAt: Date.now() });
 };
 export const showCustomizeNetworksBanner = shouldShowCustomizeNetworksBanner(customizeNetworksBannerStore.getState().dismissedAt);

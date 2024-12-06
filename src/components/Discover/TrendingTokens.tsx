@@ -95,14 +95,12 @@ function useTrendingTokensData() {
     sort: state.sort,
   }));
 
-  const { data, isLoading } = useTrendingTokens({
+  return useTrendingTokens({
     chainId,
     // category,
     // timeframe,
     // sort,
   });
-
-  return { data, isLoading };
 }
 
 function ReportAnalytics() {
@@ -487,7 +485,7 @@ function NetworkFilter() {
   );
 
   const label = useMemo(() => {
-    if (!chainId) return 'All';
+    if (!chainId) return i18n.t(t.all);
     return chainsLabel[chainId];
   }, [chainId]);
 
