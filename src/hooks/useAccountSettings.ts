@@ -5,7 +5,6 @@ import { createSelector } from 'reselect';
 import { updateLanguageLocale, Language } from '../languages';
 import {
   settingsChangeAppIcon as changeAppIcon,
-  settingsChangeFlashbotsEnabled as changeFlashbotsEnabled,
   settingsChangeLanguage as changeLanguage,
   settingsChangeNativeCurrency as changeNativeCurrency,
   settingsChangeTestnetsEnabled as changeTestnetsEnabled,
@@ -29,11 +28,10 @@ export default function useAccountSettings() {
   const { language } = useSelector(createLanguageSelector);
   const dispatch = useDispatch();
   const settingsData = useSelector(
-    ({ settings: { accountAddress, appIcon, chainId, flashbotsEnabled, nativeCurrency, network, testnetsEnabled } }: AppState) => ({
+    ({ settings: { accountAddress, appIcon, chainId, nativeCurrency, network, testnetsEnabled } }: AppState) => ({
       accountAddress,
       appIcon,
       chainId,
-      flashbotsEnabled,
       language,
       nativeCurrency,
       nativeCurrencySymbol: supportedNativeCurrencies[nativeCurrency as keyof typeof supportedNativeCurrencies].symbol,
@@ -53,14 +51,8 @@ export default function useAccountSettings() {
     [dispatch]
   );
 
-  const settingsChangeFlashbotsEnabled = useCallback(
-    (flashbotsEnabled: boolean) => dispatch(changeFlashbotsEnabled(flashbotsEnabled)),
-    [dispatch]
-  );
-
   return {
     settingsChangeAppIcon,
-    settingsChangeFlashbotsEnabled,
     settingsChangeLanguage,
     settingsChangeNativeCurrency,
     settingsChangeTestnetsEnabled,
