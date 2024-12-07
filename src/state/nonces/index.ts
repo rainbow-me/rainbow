@@ -44,6 +44,8 @@ export async function getNextNonce({ address, chainId }: { address: string; chai
       if (!pendingTx.timestamp) continue;
       if (pendingTx.nonce === pendingTxCountFromPublicRpc) {
         if (Date.now() - pendingTx.timestamp > privateMempoolTimeout) {
+          // if the pending txn is older than the private mempool timeout,
+          // we assume it has been dropped and use the next available public pending tx count
           nextNonce = pendingTxCountFromPublicRpc;
           break;
         } else {
