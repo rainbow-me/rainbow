@@ -20,7 +20,7 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
       const { pendingTransactions } = get();
       const pendingTransactionsForAddress = pendingTransactions[address] || [];
       // returns pending txns for display from most recent to oldest
-      const orderedPendingTransactions = pendingTransactionsForAddress.sort((a, b) => {
+      const orderedPendingTransactions = [...pendingTransactionsForAddress].sort((a, b) => {
         return (b.nonce || 0) - (a.nonce || 0);
       });
       return orderedPendingTransactions;
