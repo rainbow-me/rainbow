@@ -2,6 +2,7 @@ import { analytics } from '@/analytics';
 import React, { createContext, Dispatch, SetStateAction, RefObject, useState, useRef, useCallback } from 'react';
 import { SectionList, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { useTrackDiscoverScreenTime } from './useTrackDiscoverScreenTime';
 
 type DiscoverScreenContextType = {
   scrollViewRef: RefObject<Animated.ScrollView>;
@@ -79,6 +80,8 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
     setSearchQuery('');
     setIsSearching(false);
   }, [searchQuery]);
+
+  useTrackDiscoverScreenTime();
 
   return (
     <DiscoverScreenContext.Provider
