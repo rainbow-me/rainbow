@@ -18,6 +18,7 @@ type NavbarProps = {
 };
 
 export const navbarHeight = 60;
+export const NAVBAR_HORIZONTAL_INSET = 20;
 
 export function Navbar({
   hasStatusBarInset = false,
@@ -36,7 +37,7 @@ export function Navbar({
       <Box alignItems="center" height={{ custom: navbarHeight }} justifyContent="center" style={{ backgroundColor: 'transparent' }}>
         <Cover alignVertical="center" alignHorizontal="justify">
           <Box style={{ backgroundColor: 'transparent' }} width="full">
-            <Inset horizontal="20px">
+            <Inset horizontal={{ custom: NAVBAR_HORIZONTAL_INSET }}>
               <Inline alignHorizontal="justify" alignVertical="center">
                 {leftComponent}
                 {rightComponent}
