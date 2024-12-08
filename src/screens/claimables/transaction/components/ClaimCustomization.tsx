@@ -61,7 +61,6 @@ export function ClaimCustomization() {
               networks: {},
               decimals: nativeToken.decimals,
               isNativeAsset: true,
-              isDefaultAsset: false,
             };
           }
           nativeTokenDict[nativeToken.symbol].networks[chainId] = { address: nativeToken.address };
@@ -82,7 +81,6 @@ export function ClaimCustomization() {
         networks: claimableAsset.networks,
         decimals: claimableAsset.decimals,
         isNativeAsset: !!claimableAsset.isNativeAsset,
-        isDefaultAsset: true,
       },
       ...(usdc && {
         [usdc.symbol]: {
@@ -93,7 +91,6 @@ export function ClaimCustomization() {
           networks: usdc.networks,
           decimals: usdc.decimals,
           isNativeAsset: false,
-          isDefaultAsset: false,
         },
       }),
     }),
@@ -110,7 +107,6 @@ export function ClaimCustomization() {
         networks: claimableAsset.networks,
         decimals: claimableAsset.decimals,
         isNativeAsset: !!claimableAsset.isNativeAsset,
-        isDefaultAsset: true,
       },
       chainId: claimableAsset.chainId,
     });
@@ -137,10 +133,6 @@ export function ClaimCustomization() {
         // exclude if token is already selected
         if (token.symbol === outputToken?.symbol) {
           return false;
-        }
-
-        if (token.isDefaultAsset) {
-          return true;
         }
 
         // if token is ETH, include if ANY are true:

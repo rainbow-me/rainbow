@@ -126,7 +126,6 @@ export function TransactionClaimableContextProvider({
       networks: claimable.asset.networks,
       decimals: claimable.asset.decimals,
       isNativeAsset: !!claimable.asset.isNativeAsset,
-      isDefaultAsset: true,
     },
   });
 

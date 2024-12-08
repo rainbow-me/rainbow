@@ -34,6 +34,5 @@ export interface TokenToReceive {
   name: string;
   isNativeAsset: boolean;
   mainnetAddress: string;
-  isDefaultAsset: boolean;
   decimals: number;
 }
