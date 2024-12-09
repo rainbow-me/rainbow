@@ -40,6 +40,7 @@ import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { estimateClaimUnlockSwapGasLimit } from '../estimateGas';
 import { chainsNativeAsset } from '@/chains';
+import showWalletErrorAlert from '@/helpers/support';
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
@@ -346,11 +347,15 @@ export function TransactionClaimableContextProvider({
         return;
       }
 
-      const wallet = await loadWallet({
-        address: accountAddress,
-        showErrorIfNotLoaded: false,
-        provider,
-      });
+      let wallet;
+      try {
+        wallet = await loadWallet({
+          address: accountAddress,
+          provider,
+        });
+      } catch {
+        showWalletErrorAlert();
+      }
 
       if (!wallet) {
         // Biometrics auth failure (retry possible)
