@@ -3,13 +3,14 @@ import { ScrollView } from 'react-native';
 import { Box, Inset, Space, Stack } from '@/design-system';
 
 interface MenuContainerProps {
+  scrollviewRef?: React.RefObject<ScrollView>;
   children: React.ReactNode;
   Footer?: React.ReactNode;
   testID?: string;
   space?: Space;
 }
 
-const MenuContainer = ({ children, testID, Footer, space = '36px' }: MenuContainerProps) => {
+const MenuContainer = ({ scrollviewRef, children, testID, Footer, space = '36px' }: MenuContainerProps) => {
   return (
     // ios scroll fix
     <Inset
@@ -19,6 +20,7 @@ const MenuContainer = ({ children, testID, Footer, space = '36px' }: MenuContain
       })}
     >
       <ScrollView
+        ref={scrollviewRef}
         scrollEventThrottle={32}
         // ios scroll fix
         {...(ios && { style: { overflow: 'visible' } })}

@@ -1,16 +1,14 @@
-import { captureException } from '@sentry/react-native';
-import lang from 'i18n-js';
 import { values } from 'lodash';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { addWalletToCloudBackup, backupWalletToCloud, findLatestBackUp } from '../model/backup';
+import { backupWalletToCloud } from '../model/backup';
 import { setWalletBackedUp } from '../redux/wallets';
 import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
-import { CLOUD_BACKUP_ERRORS, isCloudBackupAvailable } from '@/handlers/cloudBackup';
+import { CLOUD_BACKUP_ERRORS, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { logger, RainbowError } from '@/logger';
 import { getSupportedBiometryType } from '@/keychain';
@@ -41,7 +39,6 @@ export function getUserError(e: Error) {
 export default function useWalletCloudBackup() {
   const dispatch = useDispatch();
   const { wallets } = useWallets();
-  const latestBackup = useMemo(() => findLatestBackUp(wallets), [wallets]);
 
   const walletCloudBackup = useCallback(
     async ({
@@ -52,36 +49,63 @@ export default function useWalletCloudBackup() {
     }: {
       handleNoLatestBackup?: () => void;
       handlePasswordNotFound?: () => void;
-      onError?: (error: string) => void;
-      onSuccess?: () => void;
+      onError?: (error: string, isDamaged?: boolean) => void;
+      onSuccess?: (password: string) => void;
       password: string;
       walletId: string;
     }): Promise<boolean> => {
-      const isAvailable = await isCloudBackupAvailable();
-      if (!isAvailable) {
-        analytics.track('iCloud not enabled', {
-          category: 'backup',
-        });
-        Alert.alert(lang.t('modal.back_up.alerts.cloud_not_enabled.label'), lang.t('modal.back_up.alerts.cloud_not_enabled.description'), [
-          {
-            onPress: () => {
-              Linking.openURL('https://support.apple.com/en-us/HT204025');
-              analytics.track('View how to Enable iCloud', {
-                category: 'backup',
-              });
-            },
-            text: lang.t('modal.back_up.alerts.cloud_not_enabled.show_me'),
-          },
-          {
-            onPress: () => {
-              analytics.track('Ignore how to enable iCloud', {
-                category: 'backup',
-              });
-            },
-            style: 'cancel',
-            text: lang.t('modal.back_up.alerts.cloud_not_enabled.no_thanks'),
-          },
-        ]);
+      if (IS_ANDROID) {
+        try {
+          await login();
+          const userData = await getGoogleAccountUserData();
+          if (!userData) {
+            Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+            return false;
+          }
+        } catch (e) {
+          logger.error(new RainbowError('[BackupSheetSectionNoProvider]: No account found'), {
+            error: e,
+          });
+          Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+          return false;
+        }
+      } else {
+        const isAvailable = await isCloudBackupAvailable();
+        if (!isAvailable) {
+          analytics.track('iCloud not enabled', {
+            category: 'backup',
+          });
+          Alert.alert(
+            i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.label),
+            i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.description),
+            [
+              {
+                onPress: () => {
+                  Linking.openURL('https://support.apple.com/en-us/HT204025');
+                  analytics.track('View how to Enable iCloud', {
+                    category: 'backup',
+                  });
+                },
+                text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
+              },
+              {
+                onPress: () => {
+                  analytics.track('Ignore how to enable iCloud', {
+                    category: 'backup',
+                  });
+                },
+                style: 'cancel',
+                text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
+              },
+            ]
+          );
+          return false;
+        }
+      }
+
+      const wallet = wallets?.[walletId];
+      if (wallet?.damaged) {
+        onError?.(i18n.t(i18n.l.back_up.errors.damaged_wallet), true);
         return false;
       }
 
@@ -101,23 +125,14 @@ export default function useWalletCloudBackup() {
       logger.debug('[useWalletCloudBackup]: password fetched correctly');
 
       let updatedBackupFile = null;
+
       try {
-        if (!latestBackup) {
-          logger.debug(`[useWalletCloudBackup]: backing up to ${cloudPlatform}: ${wallets![walletId]}`);
-          updatedBackupFile = await backupWalletToCloud({
-            password,
-            wallet: wallets![walletId],
-            userPIN,
-          });
-        } else {
-          logger.debug(`[useWalletCloudBackup]: adding wallet to ${cloudPlatform} backup: ${wallets![walletId]}`);
-          updatedBackupFile = await addWalletToCloudBackup({
-            password,
-            wallet: wallets![walletId],
-            filename: latestBackup,
-            userPIN,
-          });
-        }
+        logger.debug(`[useWalletCloudBackup]: backing up to ${cloudPlatform}: ${(wallets || {})[walletId]}`);
+        updatedBackupFile = await backupWalletToCloud({
+          password,
+          wallet: (wallets || {})[walletId],
+          userPIN,
+        });
       } catch (e: any) {
         const userError = getUserError(e);
         !!onError && onError(userError);
@@ -134,7 +149,7 @@ export default function useWalletCloudBackup() {
         logger.debug('[useWalletCloudBackup]: backup completed!');
         await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.cloud, updatedBackupFile));
         logger.debug('[useWalletCloudBackup]: backup saved everywhere!');
-        !!onSuccess && onSuccess();
+        !!onSuccess && onSuccess(password);
         return true;
       } catch (e) {
         logger.error(new RainbowError(`[useWalletCloudBackup]: error while trying to save wallet backup state: ${e}`));
@@ -148,7 +163,7 @@ export default function useWalletCloudBackup() {
 
       return false;
     },
-    [dispatch, latestBackup, wallets]
+    [dispatch, wallets]
   );
 
   return walletCloudBackup;
