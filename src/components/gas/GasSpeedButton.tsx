@@ -150,7 +150,6 @@ type GasSpeedButtonProps = {
   canGoBack?: boolean;
   showGasOptions?: boolean;
   validateGasParams?: React.RefObject<(callback?: () => void) => void>;
-  flashbotTransaction?: boolean;
   loading?: boolean;
 };
 
@@ -167,7 +166,6 @@ const GasSpeedButton = ({
   canGoBack = true,
   showGasOptions = false,
   validateGasParams = undefined,
-  flashbotTransaction = false,
   loading = false,
 }: GasSpeedButtonProps) => {
   const { colors } = useTheme();
@@ -225,13 +223,12 @@ const GasSpeedButton = ({
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
       fallbackColor,
-      flashbotTransaction,
       focusTo: shouldOpenCustomGasSheet.focusTo,
       openCustomOptions: (focusTo: string) => openCustomOptionsRef?.current?.(focusTo),
       speeds: speeds ?? GasSpeedOrder,
       type: 'custom_gas',
     });
-  }, [gasIsNotReady, navigate, asset, shouldOpenCustomGasSheet.focusTo, flashbotTransaction, speeds, fallbackColor]);
+  }, [gasIsNotReady, navigate, asset, shouldOpenCustomGasSheet.focusTo, speeds, fallbackColor]);
 
   const openCustomOptions = useCallback(
     (focusTo: string) => {

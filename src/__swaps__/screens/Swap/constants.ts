@@ -1,4 +1,3 @@
-import { gweiToWei } from '@/parsers';
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { Easing, WithSpringConfig, WithTimingConfig } from 'react-native-reanimated';
@@ -85,5 +84,3 @@ export const highPriceImpactThreshold = 0.05;
 export const severePriceImpactThreshold = 0.1;
 
 export const slippageStep = 0.5;
-
-export const MIN_FLASHBOTS_PRIORITY_FEE = gweiToWei('6');

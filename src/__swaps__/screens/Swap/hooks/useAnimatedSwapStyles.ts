@@ -23,7 +23,6 @@ import { safeAreaInsetValues } from '@/utils';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { DerivedValue, SharedValue, interpolate, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { NavigationSteps } from './useSwapNavigation';
-import { ChainId } from '@/chains/types';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 const INSET_BOTTOM = IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16;
@@ -169,15 +168,11 @@ export function useAnimatedSwapStyles({
     const isSettingsOpen = configProgress.value === NavigationSteps.SHOW_SETTINGS;
     const isBottomSheetOpen = isReviewing || isSettingsOpen || configProgress.value === NavigationSteps.SHOW_GAS;
 
-    const shouldHideFlashbotsRow = (internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet) !== ChainId.mainnet;
-
     let heightForCurrentSheet = HEIGHT_FOR_PANEL[configProgress.value];
-    if (isReviewing && shouldHideFlashbotsRow) {
-      // Remove height when the Flashbots row in the review sheet is hidden
+    if (isReviewing) {
       heightForCurrentSheet -= REVIEW_SHEET_ROW_HEIGHT + REVIEW_SHEET_ROW_GAP;
     } else if (degenMode.value && isSettingsOpen && swapInfo.value.areBothAssetsSet) {
       heightForCurrentSheet += REVIEW_SHEET_ROW_HEIGHT + SETTINGS_SHEET_ROW_GAP * 2 + THICK_BORDER_WIDTH;
-      if (!shouldHideFlashbotsRow) heightForCurrentSheet += REVIEW_SHEET_ROW_HEIGHT + SETTINGS_SHEET_ROW_GAP;
     }
 
     return {
