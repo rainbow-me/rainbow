@@ -3,7 +3,7 @@ import { MMKV } from 'react-native-mmkv';
 import { Account, Cards, Campaigns, Device, Review, WatchedWalletCohort } from '@/storage/schema';
 import { EthereumAddress, RainbowTransaction } from '@/entities';
 import { SecureStorage } from '@coinbase/mobile-wallet-protocol-host';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 /**
  * Generic storage class. DO NOT use this directly. Instead, use the exported

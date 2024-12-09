@@ -20,7 +20,7 @@ import DegenBadge from '@/assets/badges/degenBadge.png';
 import DegenBadgeDark from '@/assets/badges/degenBadgeDark.png';
 import ApechainBadge from '@/assets/badges/apechainBadge.png';
 import ApechainBadgeDark from '@/assets/badges/apechainBadgeDark.png';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 interface FastChainBadgeProps {
   chainId: ChainId;

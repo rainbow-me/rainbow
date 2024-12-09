@@ -24,9 +24,9 @@ import {
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { defaultChains } from '@/chains';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -91,7 +91,8 @@ export type NewTransactionNonNullable = {
  * @return Whether or not the network is a L2 network.
  */
 export const isL2Chain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }): boolean => {
-  return defaultChains[chainId].id !== ChainId.mainnet && !defaultChains[chainId].testnet;
+  const defaultChains = useBackendNetworksStore.getState().getDefaultChains();
+  return defaultChains[chainId]?.id !== ChainId.mainnet && !defaultChains[chainId]?.testnet;
 };
 
 /**
@@ -100,7 +101,7 @@ export const isL2Chain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }):
  * @return Whether or not the network is a testnet.
  */
 export const isTestnetChain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }): boolean => {
-  return !!defaultChains[chainId].testnet;
+  return !!useBackendNetworksStore.getState().getDefaultChains()[chainId]?.testnet;
 };
 
 // TODO: should figure out better way to include this in networks
@@ -127,7 +128,7 @@ export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number })
 
   const cachedProvider = chainsProviders.get(chainId);
 
-  const providerUrl = defaultChains[chainId]?.rpcUrls?.default?.http?.[0];
+  const providerUrl = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.rpcUrls?.default?.http?.[0];
 
   if (cachedProvider && cachedProvider?.connection.url === providerUrl) {
     return cachedProvider;

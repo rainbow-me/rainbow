@@ -19,7 +19,7 @@ import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { useRoute } from '@react-navigation/native';
-import { Network } from '@/chains/types';
+import { Network } from '@/state/backendNetworks/types';
 
 const ContainerWidth = 261;
 

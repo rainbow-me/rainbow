@@ -18,7 +18,7 @@ import {
 import { add, convertAmountToNativeDisplay, convertRawAmountToNativeDisplay, lessThan, subtract } from '@/helpers/utilities';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ethereumUtils } from '@/utils';
-import { chainsIdByName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const PROTOCOL_VERSION_REGEX = /-[vV]\d+$/;
 const LP_POOL_SYMBOL = 'LP-POOL';
@@ -394,6 +394,7 @@ export function parsePositions(data: AddysPositionsResponse, currency: NativeCur
 
   // these are tokens that would be represented twice if shown in the token list, such as a Sushiswap LP token
   const tokensToExcludeFromTokenList: string[] = [];
+  const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
 
   positions.forEach(({ deposits }) => {
     deposits.forEach(({ asset }) => {

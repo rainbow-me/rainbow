@@ -1,6 +1,6 @@
 import { Address } from 'viem';
 import { AddysAsset, AddysConsolidatedError, AddysResponseStatus } from '../types';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { ParsedAddressAsset } from '@/entities';
 
 interface Colors {

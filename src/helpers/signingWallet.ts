@@ -3,7 +3,7 @@ import { generateMnemonic } from 'bip39';
 import { default as LibWallet } from 'ethereumjs-wallet';
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import { loadString, publicAccessControlOptions, saveString } from '../model/keychain';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { loadWallet } from '../model/wallet';
 import { signingWalletAddress, signingWallet as signingWalletKeychain } from '../utils/keychainConstants';
 import { EthereumAddress } from '@/entities';

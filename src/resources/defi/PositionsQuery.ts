@@ -7,12 +7,12 @@ import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { AddysPositionsResponse, PositionsArgs } from './types';
 import { parsePositions } from './utils';
-import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { DEFI_POSITIONS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 
 export const buildPositionsUrl = (address: string) => {
-  const networkString = SUPPORTED_CHAIN_IDS.join(',');
+  const networkString = useBackendNetworksStore.getState().getSupportedChainIds().join(',');
   return `https://addys.p.rainbow.me/v3/${networkString}/${address}/positions`;
 };
 

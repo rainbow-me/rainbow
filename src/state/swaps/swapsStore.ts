@@ -2,7 +2,7 @@ import { INITIAL_SLIDER_POSITION, MIN_FLASHBOTS_PRIORITY_FEE } from '@/__swaps__
 import { getCustomGasSettings, setCustomMaxPriorityFee } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { getSelectedGasSpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { RecentSwap } from '@/__swaps__/types/swap';
 import { getCachedGasSuggestions } from '@/__swaps__/utils/meteorology';
