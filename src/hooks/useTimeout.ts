@@ -38,6 +38,7 @@ export function useTimeoutEffect(
       });
     }, timeout);
     return () => {
+      if (!timeoutRef.current) return;
       clearTimeout(timeoutRef.current);
       const elapsedTime = Date.now() - startedAt;
       if (elapsedTime < timeout) {
