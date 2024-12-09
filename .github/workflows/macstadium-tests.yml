@@ -111,7 +111,7 @@ jobs:
 
   # iOS build and e2e tests
   e2e-ios:
-    runs-on: ["self-hosted"]
+    runs-on: ["self-hosted", "CI-9"]
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
