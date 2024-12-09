@@ -3,8 +3,7 @@ import { gretch } from 'gretchen';
 import { paths } from '@reservoir0x/reservoir-sdk';
 import { RainbowError, logger } from '@/logger';
 import { handleSignificantDecimals } from '@/helpers/utilities';
-import { IS_PROD } from '@/env';
-import { RESERVOIR_API_KEY_DEV, RESERVOIR_API_KEY_PROD } from 'react-native-dotenv';
+import { RESERVOIR_API_KEY } from 'react-native-dotenv';
 import { Network } from '@/chains/types';
 
 const SUPPORTED_NETWORKS = [Network.mainnet, Network.polygon, Network.bsc, Network.arbitrum, Network.optimism, Network.base, Network.zora];
@@ -27,7 +26,7 @@ export async function fetchReservoirNFTFloorPrice(nft: UniqueAsset): Promise<str
         {
           method: 'GET',
           headers: {
-            'x-api-key': IS_PROD ? RESERVOIR_API_KEY_PROD : RESERVOIR_API_KEY_DEV,
+            'x-api-key': RESERVOIR_API_KEY,
           },
         }
       ).json();
