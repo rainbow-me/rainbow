@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
@@ -23,7 +23,6 @@ import {
   useChartThrottledPoints,
   useDelayedValueWithLayoutAnimation,
   useDimensions,
-  useTimeout,
 } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';

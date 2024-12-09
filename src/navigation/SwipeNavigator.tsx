@@ -15,7 +15,7 @@ import RecyclerListViewScrollToTopProvider, {
   useRecyclerListViewScrollToTopContext,
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import DappBrowserScreen from '@/screens/dapp-browser/DappBrowserScreen';
-import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
+import { discoverOpenSearchFnRef } from '@/components/Discover/DiscoverSearchContainer';
 import { PointsScreen } from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen';
 import { useTheme } from '@/theme';
@@ -39,7 +39,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import ProfileScreen from '../screens/ProfileScreen';
-import DiscoverScreen, { discoverScrollToTopFnRef } from '../screens/discover/DiscoverScreen';
+import DiscoverScreen, { discoverScrollToTopFnRef } from '@/screens/DiscoverScreen';
 import { ScrollPositionContext } from './ScrollPositionContext';
 import SectionListScrollToTopProvider, { useSectionListScrollToTopContext } from './SectionListScrollToTopContext';
 import Routes from './routesNames';

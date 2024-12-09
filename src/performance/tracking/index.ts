@@ -18,7 +18,7 @@ function logDurationIfAppropriate(metric: PerformanceMetricsType, durationInMs: 
   }
 }
 
-const currentlyTrackedMetrics = new Map<PerformanceMetricsType, PerformanceMetricData>();
+export const currentlyTrackedMetrics = new Map<PerformanceMetricsType, PerformanceMetricData>();
 
 interface AdditionalParams extends Record<string, any> {
   tag?: PerformanceTagsType;
