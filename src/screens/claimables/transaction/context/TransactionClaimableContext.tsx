@@ -289,7 +289,6 @@ export function TransactionClaimableContextProvider({
     accountAddress,
     quoteState.quote,
     gasSettings,
-    userNativeNetworkAsset?.decimals,
     userNativeNetworkAsset?.balance?.amount,
     userNativeNetworkAsset?.price?.value,
     gasState.status,
