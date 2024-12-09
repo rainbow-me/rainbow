@@ -34,7 +34,7 @@ import { TrendingTokens } from '@/components/Discover/TrendingTokens';
 export const HORIZONTAL_PADDING = 20;
 
 export default function DiscoverHome() {
-  const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results } = useRemoteConfig();
+  const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results, trending_tokens_enabled } = useRemoteConfig();
   const { chainId } = useAccountSettings();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
@@ -44,7 +44,7 @@ export default function DiscoverHome() {
   const mintsEnabled = (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
-  const trendingTokensEnabled = useExperimentalFlag(TRENDING_TOKENS);
+  const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
   const testNetwork = isTestnetChain({ chainId });
   const { navigate } = useNavigation();
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
