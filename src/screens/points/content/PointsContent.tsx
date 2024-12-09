@@ -735,7 +735,7 @@ export function PointsContent() {
             <Box gap={24}>
               {rewardsEnabled && (showClaimYourPoints || showMyEarnings) && (
                 <Box gap={20}>
-                  {showClaimYourPoints && !isReadOnlyWallet && <ClaimCard claim={claimableBalance.display} value={claimablePrice} />}
+                  {showClaimYourPoints && <ClaimCard claim={claimableBalance.display} value={claimablePrice} />}
                   {showMyEarnings && <EarningsCard claimed={claimedBalance.display} value={claimedPrice} />}
                 </Box>
               )}

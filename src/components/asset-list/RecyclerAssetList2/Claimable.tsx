@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { useClaimables } from '@/resources/addys/claimables/query';
@@ -7,12 +7,22 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { ExtendedState } from './core/RawRecyclerList';
-import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, convertRawAmountToBalance } from '@/helpers/utilities';
 import { analyticsV2 } from '@/analytics';
+import { ChainBadge } from '@/components/coin-icon';
+import { useNativeAsset } from '@/utils/ethereumUtils';
+import { ChainId } from '@/chains/types';
+import { usePoints } from '@/resources/points';
+
+const RAINBOW_ICON_URL = 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png';
 
 export const Claimable = React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const { navigate } = extendedState;
+
+  const isETHRewards = uniqueId === 'rainbow-eth-rewards';
+
+  const eth = useNativeAsset({ chainId: ChainId.mainnet });
 
   const { data = [] } = useClaimables(
     {
@@ -21,27 +31,61 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
     },
     {
       select: data => data?.filter(claimable => claimable.uniqueId === uniqueId),
+      enabled: !isETHRewards,
     }
   );
 
-  const [claimable] = data;
-  if (!claimable) return null;
+  const { data: points } = usePoints({
+    walletAddress: accountAddress,
+  });
 
-  const nativeDisplay = convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true);
+  const [claimable] = data;
+  const claimableETHRewardsRawAmount = points?.points?.user?.rewards?.claimable;
+
+  if (isETHRewards) {
+    if (!claimableETHRewardsRawAmount) return null;
+  } else {
+    if (!claimable) return null;
+  }
+
+  const { display: claimableETHRewardsDisplay, amount: claimableETHRewardsAmount } = isETHRewards
+    ? convertRawAmountToBalance(claimableETHRewardsRawAmount ?? '0', {
+        decimals: 18,
+        symbol: 'ETH',
+      })
+    : { display: undefined, amount: undefined };
+
+  const nativeDisplay = convertAmountToNativeDisplayWorklet(
+    isETHRewards
+      ? convertAmountAndPriceToNativeDisplay(claimableETHRewardsAmount ?? '0', eth?.price?.value || 0, nativeCurrency)?.amount
+      : claimable?.value.nativeAsset.amount,
+    nativeCurrency,
+    true
+  );
+
+  if (isETHRewards) {
+    if (!claimableETHRewardsDisplay) return null;
+  }
+
+  if (!nativeDisplay) return null;
 
   return (
     <Box
       as={ButtonPressAnimation}
       onPress={() => {
-        analyticsV2.track(analyticsV2.event.claimablePanelOpened, {
-          claimableType: claimable.type,
-          claimableId: claimable.uniqueId,
-          chainId: claimable.chainId,
-          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-          amount: claimable.value.claimAsset.amount,
-          usdValue: claimable.value.usd,
-        });
-        navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable });
+        if (!isETHRewards) {
+          analyticsV2.track(analyticsV2.event.claimablePanelOpened, {
+            claimableType: claimable?.type,
+            claimableId: claimable?.analyticsId,
+            chainId: claimable?.chainId,
+            asset: { symbol: claimable?.asset.symbol, address: claimable?.asset.address },
+            amount: claimable?.value.claimAsset.amount,
+            usdValue: claimable?.value.usd,
+          });
+          navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable });
+        } else {
+          navigate(Routes.CLAIM_REWARDS_PANEL);
+        }
       }}
       scaleTo={0.96}
       paddingHorizontal="20px"
@@ -51,8 +95,9 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
     >
       <Inline alignVertical="center" space="12px">
         <Box borderRadius={11} borderWidth={1} borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}>
-          <FasterImageView source={{ url: claimable.iconUrl }} style={{ height: 40, width: 40 }} />
+          <FasterImageView source={{ url: isETHRewards ? RAINBOW_ICON_URL : claimable?.iconUrl }} style={{ height: 40, width: 40 }} />
         </Box>
+        <ChainBadge chainId={isETHRewards ? ChainId.mainnet : claimable?.chainId} position="absolute" size="small" forceDark={true} />
         <Stack space={{ custom: 11 }}>
           <Text
             weight="semibold"
@@ -62,10 +107,10 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
             numberOfLines={1}
             style={{ maxWidth: deviceUtils.dimensions.width - 220 }}
           >
-            {claimable.name}
+            {isETHRewards ? 'Rainbow ETH Rewards' : claimable?.name}
           </Text>
           <Text weight="semibold" color="labelTertiary" size="13pt">
-            {claimable.value.claimAsset.display}
+            {isETHRewards ? claimableETHRewardsDisplay : claimable?.value.claimAsset.display}
           </Text>
         </Stack>
       </Inline>
