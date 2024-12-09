@@ -122,7 +122,6 @@ const INITIAL_PERSISTED_TAB_URLS: Record<TabId, string> = { [INITIAL_TAB_IDS[0]]
 export interface BrowserStore {
   activeTabIndex: number;
   persistedTabUrls: Record<TabId, string>;
-  shouldExpandWebView: boolean;
   tabIds: TabId[];
   tabsData: Map<TabId, TabData>;
   getActiveTabId: () => TabId;
@@ -138,7 +137,6 @@ export interface BrowserStore {
   setActiveTabIndex: (index: number) => void;
   setLogo: (logoUrl: string | undefined, tabId: TabId) => void;
   setNavState: (navState: { canGoBack: boolean; canGoForward: boolean }, tabId: TabId) => void;
-  setShouldExpandWebView: (shouldExpandWebView: boolean) => void;
   setTabIds: (tabIds: TabId[]) => void;
   setTitle: (title: string | undefined, tabId: TabId) => void;
   silentlySetPersistedTabUrls: (persistedTabUrls: Record<TabId, string>) => void;
