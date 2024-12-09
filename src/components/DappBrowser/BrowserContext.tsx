@@ -83,7 +83,9 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   const currentlyOpenTabIds = useSharedValue(useBrowserStore.getState().tabIds);
   const currentlyBeingClosedTabIds = useSharedValue<string[]>([]);
 
-  const lastActiveHomepageTab = useSharedValue<string | null>(useBrowserStore.getState().isOnHomepage() ? activeTabId.value : null);
+  const lastActiveHomepageTab = useSharedValue<string | null>(
+    useBrowserStore.getState().isOnHomepage() ? useBrowserStore.getState().getActiveTabId() : null
+  );
   const loadProgress = useSharedValue(0);
   const scrollViewOffset = useSharedValue(0);
   const searchViewProgress = useSharedValue(0);
