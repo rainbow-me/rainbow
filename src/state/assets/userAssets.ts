@@ -5,14 +5,79 @@ import reduxStore, { AppState } from '@/redux/store';
 import { supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useStore } from 'zustand';
+import { ParsedAddressAsset } from '@/entities';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { ChainId } from '@/chains/types';
-import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { chainsName, SUPPORTED_CHAIN_IDS } from '@/chains';
 import { useSelector } from 'react-redux';
+
+type UserAssetsStateToPersist = Omit<
+  Partial<UserAssetsState>,
+  | 'currentAbortController'
+  | 'inputSearchQuery'
+  | 'searchCache'
+  | 'getBalanceSortedChainList'
+  | 'getChainsWithBalance'
+  | 'getFilteredUserAssetIds'
+  | 'getHighestValueNativeAsset'
+  | 'getUserAsset'
+  | 'getUserAssets'
+  | 'selectUserAssetIds'
+  | 'selectUserAssets'
+  | 'setSearchCache'
+  | 'setSearchQuery'
+  | 'setUserAssets'
+>;
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
+const parsedSearchAssetToParsedAddressAsset = (asset: ParsedSearchAsset): ParsedAddressAsset => ({
+  address: asset.address,
+  balance: {
+    amount: asset.balance.amount,
+    display: asset.balance.display,
+  },
+  network: chainsName[asset.chainId],
+  name: asset.name,
+  chainId: asset.chainId,
+  color: asset.colors?.primary ?? asset.colors?.fallback,
+  colors: asset.colors?.primary
+    ? {
+        primary: asset.colors.primary,
+        fallback: asset.colors.fallback,
+        shadow: asset.colors.shadow,
+      }
+    : undefined,
+  decimals: asset.decimals,
+  highLiquidity: asset.highLiquidity,
+  icon_url: asset.icon_url,
+  id: asset.networks?.[ChainId.mainnet]?.address,
+  isNativeAsset: asset.isNativeAsset,
+  price: {
+    changed_at: undefined,
+    relative_change_24h: asset.price?.relative_change_24h,
+    value: asset.price?.value,
+  },
+  mainnet_address: asset.mainnetAddress,
+  native: {
+    balance: {
+      amount: asset.native.balance.amount,
+      display: asset.native.balance.display,
+    },
+    change: asset.native.price?.change,
+    price: {
+      amount: asset.native.price?.amount?.toString(),
+      display: asset.native.price?.display,
+    },
+  },
+  shadowColor: asset.colors?.shadow,
+  symbol: asset.symbol,
+  type: asset.type,
+  uniqueId: asset.uniqueId,
+});
+
 const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 const getSearchQueryKey = ({ filter, searchQuery }: { filter: UserAssetFilter; searchQuery: string }) => `${filter}${searchQuery}`;
 
 const getDefaultCacheKeys = (): Set<string> => {
@@ -35,40 +100,25 @@ export interface UserAssetsState {
   inputSearchQuery: string;
   searchCache: Map<string, UniqueId[]>;
   userAssets: Map<UniqueId, ParsedSearchAsset>;
+  legacyUserAssets: ParsedAddressAsset[];
+  isLoadingUserAssets: boolean;
   getBalanceSortedChainList: () => ChainId[];
   getChainsWithBalance: () => ChainId[];
   getFilteredUserAssetIds: () => UniqueId[];
   getHighestValueNativeAsset: () => ParsedSearchAsset | null;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
+  getLegacyUserAsset: (uniqueId: UniqueId) => ParsedAddressAsset | null;
   getUserAssets: () => ParsedSearchAsset[];
   selectUserAssetIds: (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) => Generator<UniqueId, void, unknown>;
   selectUserAssets: (selector: (asset: ParsedSearchAsset) => boolean) => Generator<[UniqueId, ParsedSearchAsset], void, unknown>;
   setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
   setSearchQuery: (query: string) => void;
-  setUserAssets: (userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) => void;
+  setUserAssets: (userAssets: ParsedSearchAsset[]) => void;
 
   hiddenAssets: Set<UniqueId>;
   getHiddenAssetsIds: () => UniqueId[];
   setHiddenAssets: (uniqueIds: UniqueId[]) => void;
 }
-
-type UserAssetsStateToPersist = Omit<
-  Partial<UserAssetsState>,
-  | 'currentAbortController'
-  | 'inputSearchQuery'
-  | 'searchCache'
-  | 'getBalanceSortedChainList'
-  | 'getChainsWithBalance'
-  | 'getFilteredUserAssetIds'
-  | 'getHighestValueNativeAsset'
-  | 'getUserAsset'
-  | 'getUserAssets'
-  | 'selectUserAssetIds'
-  | 'selectUserAssets'
-  | 'setSearchCache'
-  | 'setSearchQuery'
-  | 'setUserAssets'
->;
 
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
 type UserAssetsStateToPersistWithTransforms = Omit<
@@ -170,6 +220,8 @@ export const createUserAssetsStore = (address: Address | string) =>
       inputSearchQuery: '',
       searchCache: new Map(),
       userAssets: new Map(),
+      legacyUserAssets: [],
+      isLoadingUserAssets: false,
 
       getBalanceSortedChainList: () => {
         const chainBalances = [...get().chainBalances.entries()];
@@ -223,7 +275,7 @@ export const createUserAssetsStore = (address: Address | string) =>
         const preferredNetwork = swapsStore.getState().preferredNetwork;
         const assets = get().userAssets;
 
-        let highestValueEth = null;
+        let highestValueNativeAsset = null;
 
         for (const [, asset] of assets) {
           if (!asset.isNativeAsset) continue;
@@ -232,15 +284,21 @@ export const createUserAssetsStore = (address: Address | string) =>
             return asset;
           }
 
-          if (!highestValueEth || asset.balance > highestValueEth.balance) {
-            highestValueEth = asset;
+          if (!highestValueNativeAsset || asset.balance > highestValueNativeAsset.balance) {
+            highestValueNativeAsset = asset;
           }
         }
 
-        return highestValueEth;
+        return highestValueNativeAsset;
       },
 
       getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
+
+      getLegacyUserAsset: (uniqueId: UniqueId) => {
+        const asset = get().userAssets.get(uniqueId);
+        if (!asset) return null;
+        return parsedSearchAssetToParsedAddressAsset(asset);
+      },
 
       getUserAssets: () => Array.from(get().userAssets.values()) || [],
 
@@ -305,7 +363,7 @@ export const createUserAssetsStore = (address: Address | string) =>
         });
       },
 
-      setUserAssets: (userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) =>
+      setUserAssets: (userAssets: ParsedSearchAsset[]) =>
         set(() => {
           const idsByChain = new Map<UserAssetFilter, UniqueId[]>();
           const unsortedChainBalances = new Map<ChainId, number>();
@@ -333,9 +391,9 @@ export const createUserAssetsStore = (address: Address | string) =>
             idsByChain.set(chainId, idsByChain.get(chainId) || []);
           });
 
-          const isMap = userAssets instanceof Map;
-          const allIdsArray = isMap ? Array.from(userAssets.keys()) : userAssets.map(asset => asset.uniqueId);
-          const userAssetsMap = isMap ? userAssets : new Map(userAssets.map(asset => [asset.uniqueId, asset]));
+          const allIdsArray = userAssets.map(asset => asset.uniqueId);
+          const userAssetsMap = new Map(userAssets.map(asset => [asset.uniqueId, asset]));
+          const legacyUserAssets = userAssets.map(asset => parsedSearchAssetToParsedAddressAsset(asset));
 
           idsByChain.set('all', allIdsArray);
 
@@ -355,15 +413,13 @@ export const createUserAssetsStore = (address: Address | string) =>
 
           searchCache.set('all', filteredAllIdsArray);
 
-          if (isMap) {
-            return { chainBalances, idsByChain, searchCache, userAssets };
-          } else
-            return {
-              chainBalances,
-              idsByChain,
-              searchCache,
-              userAssets: userAssetsMap,
-            };
+          return {
+            chainBalances,
+            idsByChain,
+            legacyUserAssets,
+            searchCache,
+            userAssets: userAssetsMap,
+          };
         }),
 
       hiddenAssets: new Set<UniqueId>(),
@@ -380,7 +436,6 @@ export const createUserAssetsStore = (address: Address | string) =>
               hiddenAssets.add(uniqueId);
             }
           });
-
           return { hiddenAssets };
         });
       },

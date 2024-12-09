@@ -140,6 +140,7 @@ export interface ZerionAsset {
     bridgeable: boolean;
     networks: { [id in ChainId]?: { bridgeable: boolean } };
   };
+  defi_position?: boolean;
 }
 
 // protocols https://github.com/rainbow-me/go-utils-lib/blob/master/pkg/enums/token_type.go#L44

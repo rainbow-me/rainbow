@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useAccountSettings } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -12,7 +13,7 @@ export const UserAssetsSync = function UserAssetsSync() {
   const isUserAssetsStoreMissingData = userAssetsStore.getState().getUserAssets()?.length === 0;
   const enabled = (!isSwapsOpen || isUserAssetsStoreMissingData) && !!accountAddress && !!currentCurrency;
 
-  useUserAssets(
+  const { isLoading } = useUserAssets(
     {
       address: accountAddress,
       currency: currentCurrency,
@@ -37,6 +38,11 @@ export const UserAssetsSync = function UserAssetsSync() {
       },
     }
   );
+
+  useEffect(() => {
+    userAssetsStore.setState({ isLoadingUserAssets: isLoading });
+    return () => userAssetsStore.setState({ isLoadingUserAssets: false });
+  }, [isLoading]);
 
   return null;
 };
