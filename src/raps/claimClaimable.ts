@@ -45,16 +45,11 @@ export async function createClaimClaimableRap(parameters: RapSwapActionParameter
   }
 
   if (swapAssetNeedsUnlocking) {
-    if (!quote.to) {
-      logger.error(new RainbowError('[raps/claimClaimable]: quote.to is undefined'));
-      return { actions: [] };
-    }
-
     const unlock = createNewAction('unlock', {
       fromAddress: accountAddress,
       assetToUnlock: assetToSell,
       chainId,
-      contractAddress: quote.to as Address,
+      contractAddress: allowanceTarget,
     });
     actions = actions.concat(unlock);
   }

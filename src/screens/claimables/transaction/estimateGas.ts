@@ -1,4 +1,4 @@
-import { CrosschainQuote, Quote, getRainbowRouterContractAddress } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import { getProvider } from '@/handlers/web3';
 import { Address } from 'viem';
 import { metadataPOSTClient } from '@/graphql';
@@ -34,10 +34,8 @@ export const estimateClaimUnlockSwapGasLimit = async ({
 
   let swapAssetNeedsUnlocking = false;
 
-  const spender = getRainbowRouterContractAddress(chainId as number);
-
   if (quote) {
-    const { from: accountAddress, sellTokenAddress, allowanceNeeded, sellTokenAsset, sellAmount } = quote;
+    const { from: accountAddress, sellTokenAddress, allowanceNeeded, allowanceTarget, sellTokenAsset, sellAmount } = quote;
 
     if (!sellTokenAsset) {
       logger.error(new RainbowError('[estimateClaimUnlockSwapGasLimit]: Quote is missing sellTokenAsset'));
@@ -48,7 +46,7 @@ export const estimateClaimUnlockSwapGasLimit = async ({
       const allowance = await getAssetRawAllowance({
         owner: accountAddress as Address,
         assetAddress: sellTokenAddress as Address,
-        spender,
+        spender: allowanceTarget as Address,
         chainId,
       });
 
@@ -62,7 +60,7 @@ export const estimateClaimUnlockSwapGasLimit = async ({
       const approveTransaction = await populateApprove({
         owner: accountAddress as Address,
         tokenAddress: sellTokenAddress as Address,
-        spender,
+        spender: allowanceTarget as Address,
         chainId,
       });
 
@@ -125,7 +123,7 @@ export const estimateClaimUnlockSwapGasLimit = async ({
               gasEstimate = await estimateApprove({
                 owner: quote.from as Address,
                 tokenAddress: quote.sellTokenAddress as Address,
-                spender,
+                spender: quote.allowanceTarget as Address,
                 chainId,
               });
             } else if (step === 'swap') {
