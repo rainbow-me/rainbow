@@ -455,7 +455,7 @@ function SectionSeparator({
 
   const unpinnedNetworksLength = useDerivedValue(() => networks.value[Section.unpinned].length.toString());
   const showMoreAmountStyle = useAnimatedStyle(() => ({ opacity: expanded.value || editing.value ? 0 : 1 }));
-  const showMoreOrLessIcon = useDerivedValue(() => (expanded.value ? '􀆇' : '􀆈'));
+  const showMoreOrLessIcon = useDerivedValue(() => (expanded.value ? '􀆇' : '􀆈') as string);
   const showMoreOrLessIconStyle = useAnimatedStyle(() => ({ opacity: editing.value ? 0 : 1 }));
 
   return (
