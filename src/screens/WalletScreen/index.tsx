@@ -32,12 +32,17 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
 import walletTypes from '@/helpers/walletTypes';
 
+enum WalletLoadingStates {
+  IDLE = 0,
+  INITIALIZING = 1,
+  INITIALIZED = 2,
+}
+
 function WalletScreen() {
   const { params } = useRoute<RouteProp<RootStackParamList, 'WalletScreen'>>();
   const { setParams, getState: dangerouslyGetState, getParent: dangerouslyGetParent } = useNavigation();
   const removeFirst = useRemoveFirst();
-  const initializedWallet = useRef(false);
-  const initializingWallet = useRef(false);
+  const walletState = useRef(WalletLoadingStates.IDLE);
   const initializeWallet = useInitializeWallet();
   const { network: currentNetwork, accountAddress, appIcon } = useAccountSettings();
 
@@ -123,15 +128,18 @@ function WalletScreen() {
 
   useEffect(() => {
     const initializeAndSetParams = async () => {
-      initializingWallet.current = true;
+      walletState.current = WalletLoadingStates.INITIALIZING;
       // @ts-expect-error messed up initializeWallet types
       await initializeWallet(null, null, null, !params?.emptyWallet);
-      initializingWallet.current = false;
-      initializedWallet.current = true;
+      walletState.current = WalletLoadingStates.INITIALIZED;
       setParams({ emptyWallet: false });
     };
 
-    if (!initializingWallet.current && (!initializedWallet.current || (params?.emptyWallet && initializedWallet.current))) {
+    if (
+      walletState.current !== WalletLoadingStates.INITIALIZING &&
+      (walletState.current !== WalletLoadingStates.INITIALIZED ||
+        (params?.emptyWallet && walletState.current === WalletLoadingStates.INITIALIZED))
+    ) {
       // We run the migrations only once on app launch
       initializeAndSetParams();
     }
