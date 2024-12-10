@@ -1,3 +1,4 @@
+import { WALLET_VARS } from 'e2e/testVariables';
 import * as Helpers from '../helpers';
 import { device } from 'detox';
 
@@ -51,7 +52,7 @@ describe.skip('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should send ETH to test wallet"', async () => {
-    await Helpers.sendETHtoTestWallet();
+    await Helpers.sendETHToWallet(WALLET_VARS.EMPTY_WALLET.ADDRESS);
   });
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
