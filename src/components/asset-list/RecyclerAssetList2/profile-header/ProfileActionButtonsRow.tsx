@@ -69,7 +69,7 @@ export function ProfileActionButtonsRow() {
             </Column>
             <Column>
               <Animated.View style={[expandStyle]}>
-                <MoreButton />
+                <CopyButton />
               </Animated.View>
             </Column>
           </Columns>
@@ -216,13 +216,17 @@ function SendButton() {
   );
 }
 
-export function MoreButton() {
-  // ////////////////////////////////////////////////////
-  // Handlers
-
+export function CopyButton() {
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
   const { accountAddress } = useAccountProfile();
+  const { isDamaged } = useWallets();
+
   const handlePressCopy = React.useCallback(() => {
+    if (isDamaged) {
+      showWalletErrorAlert();
+      return;
+    }
+
     if (!isToastActive) {
       setToastActive(true);
       setTimeout(() => {
@@ -230,7 +234,7 @@ export function MoreButton() {
       }, 2000);
     }
     Clipboard.setString(accountAddress);
-  }, [accountAddress, isToastActive, setToastActive]);
+  }, [accountAddress, isDamaged, isToastActive, setToastActive]);
 
   return (
     <>
