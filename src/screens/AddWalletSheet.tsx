@@ -18,7 +18,6 @@ import CreateNewWallet from '@/assets/CreateNewWallet.png';
 import PairHairwareWallet from '@/assets/PairHardwareWallet.png';
 import ImportSecretPhraseOrPrivateKey from '@/assets/ImportSecretPhraseOrPrivateKey.png';
 import WatchWalletIcon from '@/assets/watchWallet.png';
-import { captureException } from '@sentry/react-native';
 import { useDispatch } from 'react-redux';
 import {
   backupUserDataIntoCloud,

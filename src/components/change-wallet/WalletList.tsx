@@ -27,7 +27,7 @@ import { useTheme } from '@/theme';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const listTopPadding = 7.5;
-const rowHeight = 59;
+const listBottomPadding = 9.5;
 const transitionDuration = 75;
 
 const RowTypes = {
@@ -66,7 +66,7 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
 
 const WalletFlatList: FlatList = styled(FlatList).attrs(({ showDividers }: { showDividers: boolean }) => ({
   contentContainerStyle: {
-    paddingBottom: showDividers ? 9.5 : 0,
+    paddingBottom: showDividers ? listBottomPadding : 0,
     paddingTop: listTopPadding,
   },
   getItemLayout,
@@ -118,6 +118,7 @@ const EditButtonLabel = styled(Text).attrs(({ theme: { colors }, editMode }: { t
   height: 40,
 });
 
+const HEADER_HEIGHT = 40;
 const FOOTER_HEIGHT = getExperimetalFlag(HARDWARE_WALLETS) ? 100 : 60;
 const LIST_PADDING_BOTTOM = 6;
 export const MAX_LIST_HEIGHT = DEVICE_HEIGHT - 220;
@@ -125,8 +126,10 @@ const WALLET_ROW_HEIGHT = 59;
 const WATCH_ONLY_BOTTOM_PADDING = IS_ANDROID ? 20 : 0;
 
 const getWalletListHeight = (numWallets: number, watchOnly: boolean) => {
-  const baseHeight = !watchOnly ? FOOTER_HEIGHT + LIST_PADDING_BOTTOM : WATCH_ONLY_BOTTOM_PADDING;
-  const calculatedHeight = baseHeight + numWallets * (WALLET_ROW_HEIGHT + 6);
+  const baseHeight = !watchOnly ? FOOTER_HEIGHT + LIST_PADDING_BOTTOM + HEADER_HEIGHT : WATCH_ONLY_BOTTOM_PADDING;
+  const paddingBetweenRows = 6 * (numWallets - 1);
+  const rowHeight = WALLET_ROW_HEIGHT * numWallets;
+  const calculatedHeight = baseHeight + rowHeight + paddingBetweenRows;
   return Math.min(calculatedHeight, MAX_LIST_HEIGHT);
 };
 
@@ -181,7 +184,7 @@ export default function WalletList({
         const row = {
           ...account,
           editMode,
-          height: rowHeight,
+          height: WALLET_ROW_HEIGHT,
           id: account.address,
           isOnlyAddress: filteredAccounts.length === 1,
           isReadOnly: wallet.type === WalletTypes.readOnly,
@@ -264,7 +267,7 @@ export default function WalletList({
 
   return (
     <Container height={containerHeight}>
-      <Column height={40} justify="space-between">
+      <Column height={HEADER_HEIGHT} justify="space-between">
         <Centered>
           <SheetTitle testID="change-wallet-sheet-title">{lang.t('wallet.label')}</SheetTitle>
 
