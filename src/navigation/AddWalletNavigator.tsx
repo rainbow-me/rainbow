@@ -7,6 +7,7 @@ import { ImportOrWatchWalletSheet, ImportOrWatchWalletSheetParams } from '@/scre
 import { BackgroundProvider } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { ChooseWalletGroup } from './ChooseWalletGroup';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -35,6 +36,16 @@ export const AddWalletNavigator = () => {
               component={AddWalletSheet}
               initialParams={{ isFirstWallet }}
               name={Routes.ADD_WALLET_SHEET}
+              listeners={{
+                focus: () => {
+                  setScrollEnabled(true);
+                },
+              }}
+            />
+            <Swipe.Screen
+              component={ChooseWalletGroup}
+              initialParams={{ isFirstWallet }}
+              name={Routes.CHOOSE_WALLET_GROUP}
               listeners={{
                 focus: () => {
                   setScrollEnabled(true);
