@@ -431,7 +431,6 @@ export const swap = async ({
         parameters.assetToBuy.chainId !== parameters.assetToSell.chainId &&
         parameters.assetToSell.address === parameters.assetToBuy.address,
     },
-    flashbots: parameters.flashbots,
     ...gasParamsToUse,
   } satisfies NewTransaction;
 

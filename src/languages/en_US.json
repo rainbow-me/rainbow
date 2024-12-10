@@ -653,7 +653,6 @@
       "high": "High",
       "slippage_tolerance": "Max Slippage",
       "source_picker": "Route Swaps via",
-      "use_flashbots": "Use Flashbots",
       "swapping_for_prefix": "Swapping for",
       "view_details": "View Details",
       "token_sections": {
@@ -734,7 +733,6 @@
       "swap": {
         "swap": "Swap",
         "bridge": "Bridge",
-        "flashbots_protect": "Flashbots Protect",
         "losing": "Losing",
         "on": "On",
         "off": "Off",
@@ -1044,15 +1042,6 @@
           "fragment1": "Still curious? ",
           "fragment2": "Read more",
           "fragment3": " about slippage and how it affects swaps."
-        }
-      },
-      "flashbots": {
-        "text": "Flashbots protects your transactions from frontrunning and sandwich attacks which might result in you getting a worse price or your transaction failing.",
-        "title": "Flashbots",
-        "still_curious": {
-          "fragment1": "Still curious? ",
-          "fragment2": "Read more",
-          "fragment3": " about Flashbots and the protection it offers."
         }
       },
       "swap_refuel": {
@@ -2054,7 +2043,6 @@
       "find_a_token_to_buy": "Find a token to buy",
       "search_your_tokens": "Search your tokens",
       "error_executing_swap": "Error executing swap",
-      "flashbots_protection": "Flashbots Protection",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Sort",

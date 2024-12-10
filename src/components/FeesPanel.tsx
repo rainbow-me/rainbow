@@ -19,7 +19,7 @@ import { IS_ANDROID } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
 
 const MAX_TEXT_WIDTH = 210;
-const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
+const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
 
 const GAS_FEE_INCREMENT = 3;
 const GAS_FEE_L2_INCREMENT = 0.02;
@@ -55,7 +55,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
 
   const {
     // @ts-expect-error ts-migrate(2339)
-    params: { type, focusTo, flashbotTransaction = false },
+    params: { type, focusTo },
   } = useRoute();
 
   const isFocused = useIsFocused();
@@ -204,8 +204,6 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
 
       const newMaxPriorityFeePerGas = parseGasFeeParam(gweiToWei(newGweiMaxPriorityFeePerGas));
 
-      if (flashbotTransaction && greaterThan(FLASHBOTS_MIN_TIP, newMaxPriorityFeePerGas.gwei)) return;
-
       if (greaterThan(0, newMaxPriorityFeePerGas.amount)) return;
 
       setCustomFees({
@@ -219,7 +217,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
       };
       updateToCustomGasFee(newGasParams);
     },
-    [flashbotTransaction, minerTipFieldRef, selectedGasFee.gasFeeParams, setLastFocusedInputHandle, updateToCustomGasFee]
+    [minerTipFieldRef, selectedGasFee.gasFeeParams, setLastFocusedInputHandle, updateToCustomGasFee]
   );
 
   const updateFeePerGas = useCallback(
@@ -607,7 +605,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
               <Box marginRight="-5px (Deprecated)">
                 <FeesGweiInput
                   buttonColor={colorForAsset}
-                  editable={!flashbotTransaction}
+                  editable
                   inputRef={minerTipFieldRef}
                   minusAction={substMinerTip}
                   onChange={onMinerTipChange}
