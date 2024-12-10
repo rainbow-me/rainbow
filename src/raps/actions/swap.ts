@@ -171,6 +171,7 @@ export const estimateSwapGasLimit = async ({
       }
 
       const gasLimit = await estimateGasWithPadding(params, method, methodArgs, provider, SWAP_GAS_PADDING);
+
       if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit))) {
         return getDefaultGasLimitForTrade(quote, chainId);
       }

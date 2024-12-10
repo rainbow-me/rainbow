@@ -27,7 +27,7 @@ export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCu
         chainId: claimable.network,
         name: claimable.name,
         uniqueId: claimable.unique_id,
-        analyticsId: `claimables${claimable.type.replace(/(^|-)([a-z])/g, (_, __, letter) => letter.toUpperCase())}`, // one-two-three -> OneTwoThree
+        analyticsId: claimable.type,
         iconUrl: claimable.dapp.icon_url,
         value: {
           claimAsset: convertRawAmountToBalance(claimable.amount, claimable.asset),
@@ -53,6 +53,5 @@ export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCu
         };
       }
     })
-    .filter((c): c is Claimable => !!c)
-    .sort((a, b) => (greaterThan(a.value.claimAsset.amount ?? '0', b.value.claimAsset.amount ?? '0') ? -1 : 1));
+    .filter((c): c is Claimable => !!c);
 };
