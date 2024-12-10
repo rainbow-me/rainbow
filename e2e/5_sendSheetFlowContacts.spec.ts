@@ -2,7 +2,6 @@ import { device } from 'detox';
 import {
   beforeAllcleanApp,
   importWalletFlow,
-  sendETHtoTestWallet,
   waitAndTap,
   checkIfVisible,
   swipe,
@@ -12,7 +11,9 @@ import {
   tapByText,
   delayTime,
   afterAllcleanApp,
+  sendETHToWallet,
 } from './helpers';
+import { WALLET_VARS } from './testVariables';
 
 const android = device.getPlatform() === 'android';
 
@@ -29,7 +30,7 @@ describe('Send Sheet Interaction Flow Contacts', () => {
   });
 
   it('Should send ETH to test wallet"', async () => {
-    await sendETHtoTestWallet();
+    await sendETHToWallet(WALLET_VARS.EMPTY_WALLET.ADDRESS);
   });
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
