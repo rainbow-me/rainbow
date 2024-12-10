@@ -43,6 +43,7 @@ import { ChainId, Network } from '@/chains/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 import { chainsIdByName, chainsName, chainsNativeAsset, defaultChains, getChainGasUnits } from '@/chains';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 /**
  * @deprecated - use `getUniqueId` instead for chainIds
@@ -148,23 +149,6 @@ const getAsset = (accountAssets: Record<string, ParsedAddressAsset>, uniqueId: E
   const loweredUniqueId = uniqueId.toLowerCase();
   return accountAssets[loweredUniqueId];
 };
-
-const getUserAssetFromCache = (uniqueId: string) => {
-  const { accountAddress, nativeCurrency } = store.getState().settings;
-  const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
-
-  const cache = queryClient.getQueryCache();
-
-  const cachedAddressAssets = (cache.find(
-    userAssetsQueryKey({
-      address: accountAddress,
-      currency: nativeCurrency,
-      testnetMode: connectedToHardhat,
-    })
-  )?.state?.data || {}) as RainbowAddressAssets;
-  return cachedAddressAssets?.[uniqueId];
-};
-
 const getExternalAssetFromCache = (uniqueId: string) => {
   const { nativeCurrency } = store.getState().settings;
   const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
@@ -186,15 +170,14 @@ const getExternalAssetFromCache = (uniqueId: string) => {
 
 const getAssetFromAllAssets = (uniqueId: EthereumAddress | undefined) => {
   const loweredUniqueId = uniqueId?.toLowerCase() ?? '';
-  const accountAsset = getUserAssetFromCache(loweredUniqueId);
+  const accountAsset = userAssetsStore.getState().getLegacyUserAsset(loweredUniqueId);
   const externalAsset = getExternalAssetFromCache(loweredUniqueId);
   return accountAsset ?? externalAsset;
 };
 
 const getAccountAsset = (uniqueId: EthereumAddress | undefined): ParsedAddressAsset | undefined => {
   const loweredUniqueId = uniqueId?.toLowerCase() ?? '';
-  const accountAsset = getUserAssetFromCache(loweredUniqueId);
-  return accountAsset;
+  return userAssetsStore.getState().getLegacyUserAsset(loweredUniqueId) ?? undefined;
 };
 
 const getAssetPrice = (
