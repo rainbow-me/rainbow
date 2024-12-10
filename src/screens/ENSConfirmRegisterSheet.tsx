@@ -39,7 +39,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { ActionTypes } from '@/hooks/useENSRegistrationActionHandler';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 560;

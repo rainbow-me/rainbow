@@ -22,8 +22,8 @@ import { isL2Chain } from '@/handlers/web3';
 import { IS_ANDROID } from '@/env';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ChainId } from '@/chains/types';
-import { chainsLabel } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -76,7 +76,7 @@ const SENDING_FUNDS_TO_CONTRACT = lang.t('explain.sending_to_contract.text');
 const FLOOR_PRICE_EXPLAINER = lang.t('explain.floor_price.text');
 
 const networkExplainer = ({ emoji = '⛽️', chainId, ...props }) => {
-  const chainName = chainsLabel[chainId];
+  const chainName = useBackendNetworksStore.getState().getChainsLabel()[chainId];
 
   let title = lang.t(`explain.default_network_explainer.title`, { chainName });
   let text = lang.t(`explain.default_network_explainer.text`, { chainName });
@@ -107,6 +107,7 @@ const networkExplainer = ({ emoji = '⛽️', chainId, ...props }) => {
 const gasExplainer = network => lang.t('explain.gas.text', { networkName: network });
 
 const availableNetworksExplainer = (tokenSymbol, chainIds) => {
+  const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
   const readableNetworks = chainIds?.map(chainId => chainsLabel[chainId])?.join(', ');
 
   return lang.t('explain.available_networks.text', {
@@ -171,6 +172,9 @@ export const explainers = (params, theme) => {
   const chainId = params?.chainId;
   const fromChainId = params?.fromChainId;
   const toChainId = params?.toChainId;
+
+  const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
+
   return {
     op_rewards_airdrop_timing: {
       emoji: '📦',

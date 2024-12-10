@@ -14,7 +14,7 @@ const OptimismBadge = require('@/assets/badges/optimism.png');
 const PolygonBadge = require('@/assets/badges/polygon.png');
 const ZoraBadge = require('@/assets/badges/zora.png');
 
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { globalColors } from '@/design-system';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
 import { useSwapsStore } from '@/state/swaps/swapsStore';

@@ -5,7 +5,7 @@ import { parseUnits } from '@ethersproject/units';
 import { getProvider, toHex } from '@/handlers/web3';
 import { Address, erc20Abi, erc721Abi } from 'viem';
 
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { NewTransaction, TransactionStatus, TxHash } from '@/entities';
 import { addNewTransaction } from '@/state/pendingTransactions';
@@ -19,7 +19,7 @@ import { ActionProps, RapActionResult } from '../references';
 import { overrideWithFastSpeedIfNeeded } from './../utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
-import { chainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const getAssetRawAllowance = async ({
   owner,
@@ -265,6 +265,8 @@ export const unlock = async ({
   }
 
   if (!approval) throw new RainbowError('[raps/unlock]: error executeApprove');
+
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
 
   const transaction = {
     asset: {

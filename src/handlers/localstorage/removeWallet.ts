@@ -4,7 +4,7 @@ import { accountLocalKeys } from './accountLocal';
 import { getKey } from './common';
 import { logger, RainbowError } from '@/logger';
 import { removeNotificationSettingsForWallet } from '@/notifications/settings';
-import { Network } from '@/chains/types';
+import { Network } from '@/state/backendNetworks/types';
 
 export const removeWalletData = async (accountAddress: any) => {
   logger.debug('[localstorage/removeWallet]: removing wallet data', { accountAddress });

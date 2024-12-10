@@ -6,7 +6,7 @@ import { logger } from '@/logger';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as lang from '@/languages';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const showAlert = () => {
   Alert.alert(

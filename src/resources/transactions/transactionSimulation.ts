@@ -5,7 +5,7 @@ import { metadataPOSTClient } from '@/graphql';
 import { TransactionErrorType, TransactionScanResultType, TransactionSimulationResult } from '@/graphql/__generated__/metadataPOST';
 import { isNil } from 'lodash';
 import { RequestData } from '@/walletConnect/types';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 type SimulationArgs = {
   address: string;

@@ -1,7 +1,7 @@
 import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
@@ -686,7 +686,7 @@ export function useSwapInputsController({
     () => ({
       assetToBuyId: internalSelectedOutputAsset.value?.uniqueId,
       assetToSellId: internalSelectedInputAsset.value?.uniqueId,
-      assetToSellNetwork: internalSelectedInputAsset.value?.chainId,
+      assetToSellChainId: internalSelectedInputAsset.value?.chainId,
     }),
     (current, previous) => {
       const didInputAssetChange = current.assetToSellId !== previous?.assetToSellId;
@@ -694,12 +694,12 @@ export function useSwapInputsController({
 
       if (!didInputAssetChange && !didOutputAssetChange) return;
 
-      if (current.assetToSellNetwork !== previous?.assetToSellNetwork) {
-        const previousDefaultSlippage = getDefaultSlippageWorklet(previous?.assetToSellNetwork || ChainId.mainnet, REMOTE_CONFIG);
+      if (current.assetToSellChainId !== previous?.assetToSellChainId) {
+        const previousDefaultSlippage = getDefaultSlippageWorklet(previous?.assetToSellChainId || ChainId.mainnet, REMOTE_CONFIG);
 
         // If the user has not overridden the default slippage, update it
         if (slippage.value === previousDefaultSlippage) {
-          const newSlippage = getDefaultSlippageWorklet(current.assetToSellNetwork || ChainId.mainnet, REMOTE_CONFIG);
+          const newSlippage = getDefaultSlippageWorklet(current.assetToSellChainId || ChainId.mainnet, REMOTE_CONFIG);
           slippage.value = newSlippage;
           runOnJS(setSlippage)(newSlippage);
         }

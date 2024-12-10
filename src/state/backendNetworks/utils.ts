@@ -2,7 +2,7 @@ import { Chain } from 'viem';
 import { mainnet } from 'viem/chains';
 
 import { IS_DEV, RPC_PROXY_API_KEY } from '@/env';
-import { BackendNetwork } from '../types';
+import { BackendNetwork } from './types';
 
 const proxyBackendNetworkRpcEndpoint = (endpoint: string) => {
   return `${endpoint}${RPC_PROXY_API_KEY}`;

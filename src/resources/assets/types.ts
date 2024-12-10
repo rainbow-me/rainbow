@@ -1,6 +1,6 @@
 import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import { Network } from '@/chains/types';
+import { Network } from '@/state/backendNetworks/types';
 
 export type AddysAccountAssetsResponse = {
   meta: AddysAccountAssetsMeta;

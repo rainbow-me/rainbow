@@ -7,7 +7,7 @@ import { SwapType } from '@rainbow-me/swaps';
 import { SwapMetadata } from '@/raps/references';
 import { UniqueAsset } from '../uniqueAssets';
 import { ParsedAsset, AddysAsset } from '@/resources/assets/types';
-import { ChainId, Network } from '@/chains/types';
+import { ChainId, Network } from '@/state/backendNetworks/types';
 import { TransactionResponse } from '@ethersproject/providers';
 
 import { BytesLike } from '@ethersproject/bytes';

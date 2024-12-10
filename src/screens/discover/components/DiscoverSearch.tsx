@@ -18,13 +18,13 @@ import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { ChainId, Network } from '@/chains/types';
-import { chainsIdByName } from '@/chains';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { IS_TEST } from '@/env';
 import { uniqBy } from 'lodash';
 import { useTheme } from '@/theme';
 import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId, Network } from '@/state/backendNetworks/types';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -71,7 +71,7 @@ export default function DiscoverSearch() {
   const lastSearchQuery = usePrevious(searchQueryForSearch);
 
   const [ensResults, setEnsResults] = useState<EnsSearchResult[]>([]);
-  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch, ChainId.mainnet, true);
+  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch, ChainId.mainnet);
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const marginBottom = TAB_BAR_HEIGHT + safeAreaInsetValues.bottom + 16;
@@ -148,7 +148,7 @@ export default function DiscoverSearch() {
         const mintdotfunURL = seachQueryForMint.split('https://mint.fun/');
         const query = mintdotfunURL[1];
         const [networkName] = query.split('/');
-        let chainId = chainsIdByName[networkName];
+        let chainId = useBackendNetworksStore.getState().getChainsIdByName()[networkName];
         if (!chainId) {
           switch (networkName) {
             case 'op':
