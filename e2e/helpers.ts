@@ -7,8 +7,6 @@ import { expect, device, element, by, waitFor } from 'detox';
 import { parseEther } from '@ethersproject/units';
 import { IosElementAttributes, AndroidElementAttributes } from 'detox/detox';
 
-const TESTING_WALLET = '0x3637f053D542E6D00Eee42D656dD7C59Fa33a62F';
-
 const DEFAULT_TIMEOUT = 20_000;
 const android = device.getPlatform() === 'android';
 
@@ -466,17 +464,17 @@ export const getProvider: ProviderFunction = () => {
   return getProvider._instance;
 };
 
-export async function sendETHtoTestWallet() {
+export async function sendETHToWallet(toWallet: string) {
   const provider = getProvider();
   // Hardhat account 0 that has 10000 ETH
   const wallet = new Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', provider);
   // Sending 20 ETH so we have enough to pay the tx fees even when the gas is too high
   await wallet.sendTransaction({
-    to: TESTING_WALLET,
+    to: toWallet,
     value: parseEther('20'),
   });
   await delayTime('long');
-  const balance = await provider.getBalance(TESTING_WALLET);
+  const balance = await provider.getBalance(toWallet);
   if (balance.lt(parseEther('20'))) {
     throw Error('Error sending ETH to test wallet');
   }

@@ -5,6 +5,7 @@ import registrarABI from '@/references/ens/ENSETHRegistrarController.json';
 import publicResolverABI from '@/references/ens/ENSPublicResolver.json';
 import registryWithFallbackABI from '@/references/ens/ENSRegistryWithFallback.json';
 import { device } from 'detox';
+import { WALLET_VARS } from 'e2e/testVariables';
 
 const ensETHRegistrarControllerAddress = '0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5';
 const ensPublicResolverAddress = '0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41';
@@ -152,7 +153,7 @@ describe.skip('Register ENS Flow', () => {
   });
 
   it('Should send ETH to test wallet"', async () => {
-    await Helpers.sendETHtoTestWallet();
+    await Helpers.sendETHToWallet(WALLET_VARS.EMPTY_WALLET.ADDRESS);
   });
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {

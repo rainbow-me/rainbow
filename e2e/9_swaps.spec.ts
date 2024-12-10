@@ -14,7 +14,7 @@
 
 import {
   importWalletFlow,
-  sendETHtoTestWallet,
+  sendETHToWallet,
   checkIfVisible,
   beforeAllcleanApp,
   afterAllcleanApp,
@@ -23,7 +23,6 @@ import {
   delayTime,
   swipeUntilVisible,
   tapAndLongPress,
-  swipe,
 } from './helpers';
 
 import { expect } from '@jest/globals';
@@ -38,12 +37,12 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Import a wallet and go to welcome', async () => {
-    await importWalletFlow(WALLET_VARS.EMPTY_WALLET.PK);
+    await importWalletFlow(WALLET_VARS.SEED_WALLET.PK);
   });
 
   it('Should send ETH to test wallet', async () => {
     // send 20 eth
-    await sendETHtoTestWallet();
+    await sendETHToWallet(WALLET_VARS.SEED_WALLET.ADDRESS);
   });
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {

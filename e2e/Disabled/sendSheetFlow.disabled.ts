@@ -3,7 +3,7 @@ import {
   startHardhat,
   killHardhat,
   importWalletFlow,
-  sendETHtoTestWallet,
+  sendETHToWallet,
   waitAndTap,
   checkIfVisible,
   checkIfElementByTextIsVisible,
@@ -12,6 +12,7 @@ import {
   clearField,
   replaceTextInField,
 } from '../helpers';
+import { WALLET_VARS } from 'e2e/testVariables';
 
 describe.skip('Send Sheet Interaction Flow', () => {
   beforeAll(async () => {
@@ -28,7 +29,7 @@ describe.skip('Send Sheet Interaction Flow', () => {
   });
 
   it('Should send ETH to test wallet"', async () => {
-    await sendETHtoTestWallet();
+    await sendETHToWallet(WALLET_VARS.EMPTY_WALLET.ADDRESS);
   });
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
