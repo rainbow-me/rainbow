@@ -6,8 +6,7 @@ import useAccountSettings from './useAccountSettings';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
-import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
-import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
+import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { Address } from 'viem';
@@ -35,9 +34,8 @@ export default function useRefreshAccountData() {
     queryClient.invalidateQueries(positionsQueryKey({ address: accountAddress as Address, currency: nativeCurrency }));
     queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
     queryClient.invalidateQueries(addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }));
-    queryClient.invalidateQueries(userAssetsQueryKey({ address: accountAddress, currency: nativeCurrency, connectedToHardhat }));
     queryClient.invalidateQueries(
-      swapsUserAssetsQueryKey({ address: accountAddress as Address, currency: nativeCurrency, testnetMode: !!connectedToHardhat })
+      userAssetsQueryKey({ address: accountAddress, currency: nativeCurrency, testnetMode: connectedToHardhat })
     );
 
     try {

@@ -9,14 +9,13 @@ import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { useLegacyNFTs } from '@/resources/nfts';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import { useClaimables } from '@/resources/addys/claimables/query';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { analyticsV2 } from '@/analytics';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { throttle } from 'lodash';
@@ -55,13 +54,16 @@ export default function useWalletSectionsData({
 }: {
   type?: string;
 } = {}) {
+  const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { selectedWallet, isReadOnlyWallet } = useWallets();
-  const { isLoading: isLoadingUserAssets, data: sortedAssets = [] } = useSortedUserAssets();
+  const { isLoadingUserAssets, sortedAssets = [] } = useUserAssetsStore(state => ({
+    sortedAssets: state.legacyUserAssets,
+    isLoadingUserAssets: state.isLoadingUserAssets,
+  }));
   const isWalletEthZero = useIsWalletEthZero();
 
   const { nftSort, nftSortDirection } = useNftSort();
 
-  const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     data: { nfts: allUniqueTokens },

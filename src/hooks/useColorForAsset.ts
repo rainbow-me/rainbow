@@ -19,6 +19,10 @@ export default function useColorForAsset(
   const isDarkMode = forceLightMode || isDarkModeTheme;
 
   const colorDerivedFromAddress = useMemo(() => {
+    if (!resolvedAddress) {
+      return undefined;
+    }
+
     const color = isETH(resolvedAddress)
       ? isDarkMode
         ? forceETHColor

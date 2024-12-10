@@ -70,7 +70,7 @@ async function userAssetsByChainQueryFunction({
       },
     });
     const chainIdsInResponse = res?.data?.meta?.chain_ids || [];
-    const assets = res?.data?.payload?.assets || [];
+    const assets = res?.data?.payload?.assets?.filter(asset => !asset.asset.defi_position) || [];
     if (assets.length && chainIdsInResponse.length) {
       const parsedAssetsDict = await parseUserAssets({
         assets,
