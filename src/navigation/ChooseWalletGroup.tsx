@@ -31,7 +31,6 @@ function NewWalletGroup() {
   const initializeWallet = useInitializeWallet();
 
   const onNewWallet = () => {
-    navigate(Routes.WALLET_SCREEN);
     navigate(Routes.MODAL_SCREEN, {
       actionType: 'Create',
       asset: [],
@@ -110,7 +109,6 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
   const initializeWallet = useInitializeWallet();
 
   const onAddToGroup = () => {
-    navigate(Routes.WALLET_SCREEN);
     navigate(Routes.MODAL_SCREEN, {
       actionType: 'Create',
       asset: [],
