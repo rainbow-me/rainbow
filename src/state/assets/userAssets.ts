@@ -447,6 +447,7 @@ export const createUserAssetsStore = (address: Address | string) =>
         filter: state.filter,
         idsByChain: state.idsByChain,
         userAssets: state.userAssets,
+        legacyUserAssets: state.legacyUserAssets,
         hiddenAssets: state.hiddenAssets,
       }),
       version: 1,
