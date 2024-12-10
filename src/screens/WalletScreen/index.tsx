@@ -46,7 +46,12 @@ function WalletScreen() {
   const { wallets } = useWallets();
 
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
-  const { isWalletEthZero, isLoadingUserAssets, isLoadingBalance, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData();
+  const {
+    isWalletEthZero,
+    isLoadingUserAssets,
+    isLoadingBalance,
+    briefSectionsData: walletBriefSectionsData,
+  } = useWalletSectionsData({ type: 'wallet' });
 
   const trackWallets = useCallback(() => {
     const identify = Object.values(wallets || {}).reduce(
