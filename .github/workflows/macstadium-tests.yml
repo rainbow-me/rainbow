@@ -63,7 +63,7 @@ jobs:
 
   # Job for linting and unit tests
   linting-and-unit-tests:
-    runs-on: []
+    runs-on: ["self-hosted"]
     permissions:
       contents: read
     needs: install-deps
