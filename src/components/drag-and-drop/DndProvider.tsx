@@ -280,10 +280,10 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
           }
         }
       })
-      .onUpdate(event => {
+      .onChange(event => {
         // console.log(draggableStates.value);
-        const { state, translationX, translationY } = event;
-        debug && console.log('update', { state, translationX, translationY });
+        const { state, translationX, translationY, changeX, changeY } = event;
+        debug && console.log('update', { state, changeX, changeY });
         // Track current state for cancellation purposes
         panGestureState.value = state;
         const { value: activeId } = draggableActiveId;
@@ -307,8 +307,10 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
         }
         // Update our active offset to pan the active item
         const activeOffset = offsets[activeId];
-        activeOffset.x.value = draggableInitialOffset.x.value + translationX;
-        activeOffset.y.value = draggableInitialOffset.y.value + translationY;
+
+        activeOffset.x.value += changeX;
+        activeOffset.y.value += changeY;
+
         // Check potential droppable candidates
         const activeLayout = layouts[activeId].value;
         draggableActiveLayout.value = applyOffset(activeLayout, {
