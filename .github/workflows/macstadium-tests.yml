@@ -63,7 +63,7 @@ jobs:
 
   # Job for linting and unit tests
   linting-and-unit-tests:
-    runs-on: ["self-hosted"]
+    runs-on: []
     permissions:
       contents: read
     needs: install-deps
@@ -170,4 +170,5 @@ jobs:
 
       - name: Detox iOS e2e tests
         run: |
-          ./scripts/run-retry-tests.sh 3
+          ./scripts/run-parallel-e2e.sh 3
+          ./scripts/run-serial-e2e.sh 3

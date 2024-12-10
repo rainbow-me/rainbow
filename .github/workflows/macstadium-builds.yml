@@ -7,7 +7,7 @@ on:
 jobs:
   # Job to install dependencies
   build:
-    runs-on: ["self-hosted"]
+    runs-on: []
     timeout-minutes: 75
     if: github.event.pull_request.draft == false && github.event.pull_request.merged == false
     concurrency: 
