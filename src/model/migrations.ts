@@ -47,8 +47,7 @@ import { selectorFilterByUserChains, selectUserAssetsList } from '@/__swaps__/sc
 
 export default async function runMigrations() {
   // get current version
-  // const currentVersion = Number(await getMigrationVersion());
-  const currentVersion = 22;
+  const currentVersion = Number(await getMigrationVersion());
   const migrations = [];
   const mmkv = new MMKV();
 
