@@ -8,8 +8,9 @@ import { useStore } from 'zustand';
 import { ParsedAddressAsset } from '@/entities';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { ChainId } from '@/chains/types';
-import { chainsName, SUPPORTED_CHAIN_IDS } from '@/chains';
+import { chainsName, chainsNativeAsset, SUPPORTED_CHAIN_IDS } from '@/chains';
 import { useSelector } from 'react-redux';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 type UserAssetsStateToPersist = Omit<
   Partial<UserAssetsState>,
@@ -108,6 +109,7 @@ export interface UserAssetsState {
   getHighestValueNativeAsset: () => ParsedSearchAsset | null;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
   getLegacyUserAsset: (uniqueId: UniqueId) => ParsedAddressAsset | null;
+  getNativeAssetForChain: (chainId: ChainId) => ParsedSearchAsset | null;
   getUserAssets: () => ParsedSearchAsset[];
   selectUserAssetIds: (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) => Generator<UniqueId, void, unknown>;
   selectUserAssets: (selector: (asset: ParsedSearchAsset) => boolean) => Generator<[UniqueId, ParsedSearchAsset], void, unknown>;
@@ -290,6 +292,12 @@ export const createUserAssetsStore = (address: Address | string) =>
         }
 
         return highestValueNativeAsset;
+      },
+
+      getNativeAssetForChain: (chainId: ChainId) => {
+        const nativeAssetAddress = chainsNativeAsset[chainId].address;
+        const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, chainId);
+        return get().userAssets.get(nativeAssetUniqueId) || null;
       },
 
       getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,

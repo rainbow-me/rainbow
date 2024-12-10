@@ -15,7 +15,6 @@ import {
   convertAmountToNativeDisplayWorklet,
   add,
 } from '@/helpers/utilities';
-import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { getGasSettingsBySpeed, useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
@@ -41,6 +40,7 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 import { estimateClaimUnlockSwapGasLimit } from '../estimateGas';
 import { chainsNativeAsset } from '@/chains';
 import showWalletErrorAlert from '@/helpers/support';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
@@ -141,8 +141,6 @@ export function TransactionClaimableContextProvider({
 
   const gasSettings = useGasSettings(claimable.chainId, GasSpeed.FAST);
 
-  const { data: userNativeNetworkAsset, isLoading: isLoadingNativeNetworkAsset } = useUserNativeNetworkAsset(claimable.chainId);
-
   const updateQuoteState = useCallback(async () => {
     if (!outputConfig?.token || !outputConfig.chainId || !outputTokenAddress) {
       logger.warn('[TransactionClaimableContext]: Somehow entered unreachable state in updateQuote');
@@ -220,11 +218,7 @@ export function TransactionClaimableContextProvider({
   const provider = useMemo(() => getProvider({ chainId: claimable.chainId }), [claimable.chainId]);
 
   // make sure we have necessary data before attempting gas estimation
-  const canEstimateGas = !!(
-    !isLoadingNativeNetworkAsset &&
-    gasSettings &&
-    (!requiresSwap || (quoteState.quote && quoteState.status === 'success'))
-  );
+  const canEstimateGas = !!(gasSettings && (!requiresSwap || (quoteState.quote && quoteState.status === 'success')));
 
   const updateGasState = useCallback(async () => {
     try {
@@ -252,12 +246,13 @@ export function TransactionClaimableContextProvider({
       const gasFeeWei = calculateGasFeeWorklet(gasSettings, gasLimit);
 
       const nativeAsset = chainsNativeAsset[claimable.chainId];
+      const userNativeAsset = userAssetsStore.getState().getNativeAssetForChain(claimable.chainId);
 
       const gasFeeNativeToken = formatUnits(safeBigInt(gasFeeWei), nativeAsset.decimals);
-      const userBalance = userNativeNetworkAsset?.balance?.amount || '0';
+      const userBalance = userNativeAsset?.balance?.amount || '0';
 
       const sufficientGas = lessThanOrEqualToWorklet(gasFeeNativeToken, userBalance);
-      const networkAssetPrice = userNativeNetworkAsset?.price?.value?.toString();
+      const networkAssetPrice = userNativeAsset?.price?.value?.toString();
 
       let gasFeeNativeCurrencyDisplay;
       if (!networkAssetPrice) {
@@ -290,8 +285,6 @@ export function TransactionClaimableContextProvider({
     accountAddress,
     quoteState.quote,
     gasSettings,
-    userNativeNetworkAsset?.balance?.amount,
-    userNativeNetworkAsset?.price?.value,
     gasState.status,
     nativeCurrency,
   ]);
