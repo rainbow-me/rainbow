@@ -19,6 +19,10 @@ import { useExperimentalConfig } from '@/config/experimentalHooks';
 import { analyticsV2 } from '@/analytics';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { throttle } from 'lodash';
+import { usePoints } from '@/resources/points';
+import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
+import { useNativeAsset } from '@/utils/ethereumUtils';
+import { ChainId } from '@/chains/types';
 
 // user properties analytics for claimables that executes at max once every 2 min
 const throttledClaimablesAnalytics = throttle(
@@ -29,7 +33,7 @@ const throttledClaimablesAnalytics = throttle(
     } = {};
 
     claimables.forEach(claimable => {
-      const attribute = `${claimable.analyticsId}USDValue`;
+      const attribute = `claimable-${claimable.analyticsId}-USDValue`;
       totalUSDValue += claimable.value.usd;
 
       if (claimablesUSDValues[attribute] !== undefined) {
@@ -71,6 +75,25 @@ export default function useWalletSectionsData({
   });
   const { data: positions } = usePositions({ address: accountAddress, currency: nativeCurrency });
   const { data: claimables } = useClaimables({ address: accountAddress, currency: nativeCurrency });
+  const { data: points } = usePoints({
+    walletAddress: accountAddress,
+  });
+
+  const claimableETHRewardsRawAmount = points?.points?.user?.rewards?.claimable;
+
+  const eth = useNativeAsset({ chainId: ChainId.mainnet });
+
+  const claimableETHRewardsNativeAmount = useMemo(() => {
+    if (!eth) return undefined;
+
+    const claimableETH = convertRawAmountToBalance(claimableETHRewardsRawAmount || '0', {
+      decimals: 18,
+      symbol: 'ETH',
+    });
+    const { amount } = convertAmountAndPriceToNativeDisplay(claimableETH.amount, eth?.price?.value || 0, nativeCurrency);
+
+    return amount;
+  }, [claimableETHRewardsRawAmount, eth, nativeCurrency]);
 
   // claimables analytics
   useEffect(() => {
@@ -126,6 +149,7 @@ export default function useWalletSectionsData({
       experimentalConfig,
       positions,
       claimables,
+      claimableETHRewardsNativeAmount,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo);
@@ -163,6 +187,7 @@ export default function useWalletSectionsData({
     experimentalConfig,
     positions,
     claimables,
+    claimableETHRewardsNativeAmount,
   ]);
   return walletSections;
 }
