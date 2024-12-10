@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { forwardRef, useMemo } from 'react';
 import { ChainId } from '@/chains/types';
 
 import ArbitrumBadge from '@/assets/badges/arbitrum.png';
@@ -12,9 +12,21 @@ import AvalancheBadge from '@/assets/badges/avalanche.png';
 import BlastBadge from '@/assets/badges/blast.png';
 import DegenBadge from '@/assets/badges/degen.png';
 import ApechainBadge from '@/assets/badges/apechain.png';
-import FastImage, { Source } from 'react-native-fast-image';
+import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
+import Animated from 'react-native-reanimated';
 
-export function ChainImage({ chainId, size = 20 }: { chainId: ChainId | null | undefined; size?: number }) {
+export const ChainImage = forwardRef(function ChainImage(
+  {
+    chainId,
+    size = 20,
+    style,
+  }: {
+    chainId: ChainId | null | undefined;
+    size?: number;
+    style?: FastImageProps['style'];
+  },
+  ref
+) {
   const source = useMemo(() => {
     switch (chainId) {
       case ChainId.apechain:
@@ -47,6 +59,14 @@ export function ChainImage({ chainId, size = 20 }: { chainId: ChainId | null | u
   if (!chainId) return null;
 
   return (
-    <FastImage key={`${chainId}-badge-${size}`} source={source as Source} style={{ borderRadius: size / 2, height: size, width: size }} />
+    <FastImage
+      // @ts-expect-error couldn't figure out how to type this ref to make ts happy
+      ref={ref}
+      key={`${chainId}-badge-${size}`}
+      source={source as Source}
+      style={[{ borderRadius: size / 2, height: size, width: size }, style]}
+    />
   );
-}
+});
+
+export const AnimatedChainImage = Animated.createAnimatedComponent(ChainImage);
