@@ -1,71 +1,53 @@
-import { useRoute } from '@react-navigation/native';
-import lang from 'i18n-js';
-import React, { useCallback, useMemo, useState } from 'react';
-import { Alert, InteractionManager, View } from 'react-native';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import * as i18n from '@/languages';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Alert, InteractionManager, View, StyleSheet, StatusBar, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
-import Divider from '@/components/Divider';
 import { ButtonPressAnimation } from '@/components/animations';
-import WalletList from '@/components/change-wallet/WalletList';
-import { Centered, Column, Row } from '../components/layout';
-import { Sheet, SheetTitle } from '../components/sheet';
-import { Text } from '../components/text';
-import { removeWalletData } from '../handlers/localstorage/removeWallet';
-import { cleanUpWalletKeys } from '../model/wallet';
-import { useNavigation } from '../navigation/Navigation';
-import { addressSetSelected, walletsSetSelected, walletsUpdate } from '../redux/wallets';
+import { WalletList } from '@/components/change-wallet/WalletList';
+import { removeWalletData } from '../../handlers/localstorage/removeWallet';
+import { cleanUpWalletKeys } from '../../model/wallet';
+import { useNavigation } from '../../navigation/Navigation';
+import { addressSetSelected, walletsSetSelected, walletsUpdate } from '../../redux/wallets';
+import WalletTypes from '@/helpers/walletTypes';
 import { analytics, analyticsV2 } from '@/analytics';
-import { getExperimetalFlag, HARDWARE_WALLETS } from '@/config';
-import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
+import { useAccountSettings, useDimensions, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { doesWalletsContainAddress, showActionSheetWithOptions } from '@/utils';
+import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID } from '@/env';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
+import { RootStackParamList } from '@/navigation/types';
+import { address } from '@/utils/abbreviations';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { Box, Stack, Text } from '@/design-system';
+import { addDisplay } from '@/helpers/utilities';
+import { useSharedValue } from 'react-native-reanimated';
+import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
+import { SheetHandle } from '@/components/sheet';
 
-const FOOTER_HEIGHT = getExperimetalFlag(HARDWARE_WALLETS) ? 100 : 60;
 const LIST_PADDING_BOTTOM = 6;
 const MAX_LIST_HEIGHT = DEVICE_HEIGHT - 220;
 const WALLET_ROW_HEIGHT = 59;
 const WATCH_ONLY_BOTTOM_PADDING = IS_ANDROID ? 20 : 0;
 
-const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }: { editMode: boolean }) => ({
-  scaleTo: 0.96,
-  wrapperStyle: {
-    width: editMode ? 70 : 58,
-  },
-  width: editMode ? 100 : 100,
-}))(
-  IS_IOS
-    ? {
-        position: 'absolute',
-        right: 20,
-        top: -11,
-      }
-    : {
-        elevation: 10,
-        position: 'relative',
-        right: 20,
-        top: 6,
-      }
-);
+// TODO: calc
+const PANEL_BOTTOM_OFFSET = 41;
 
-const EditButtonLabel = styled(Text).attrs(({ theme: { colors }, editMode }: { theme: any; editMode: boolean }) => ({
-  align: 'right',
-  color: colors.appleBlue,
-  letterSpacing: 'roundedMedium',
-  size: 'large',
-  weight: editMode ? 'bold' : 'semibold',
-  numberOfLines: 1,
-  ellipsizeMode: 'tail',
-}))({
-  height: 40,
-});
+export const MAX_PANEL_HEIGHT = 640;
+export const PANEL_HEADER_HEIGHT = 64;
+export const FOOTER_HEIGHT = 91;
+
+const RowTypes = {
+  ADDRESS: 1,
+  EMPTY: 2,
+};
 
 const Whitespace = styled(View)({
   backgroundColor: ({ theme: { colors } }: any) => colors.white,
@@ -75,6 +57,7 @@ const Whitespace = styled(View)({
   width: '100%',
 });
 
+// TODO:
 const getWalletListHeight = (wallets: any, watchOnly: boolean) => {
   let listHeight = !watchOnly ? FOOTER_HEIGHT + LIST_PADDING_BOTTOM : WATCH_ONLY_BOTTOM_PADDING;
 
@@ -97,15 +80,33 @@ export type EditWalletContextMenuActions = {
   remove: (walletId: string, address: EthereumAddress) => void;
 };
 
+export interface AddressItem {
+  address: EthereumAddress;
+  color: number;
+  editMode: boolean;
+  height: number;
+  id: EthereumAddress;
+  isOnlyAddress: boolean;
+  isReadOnly: boolean;
+  isLedger: boolean;
+  isSelected: boolean;
+  label: string;
+  secondaryLabel: string;
+  rowType: number;
+  walletId: string;
+  image: string | null | undefined;
+}
+
 export default function ChangeWalletSheet() {
-  const { params = {} as any } = useRoute();
+  const { params = {} } = useRoute<RouteProp<RootStackParamList, 'ChangeWalletSheet'>>();
+
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
   const { selectedWallet, wallets } = useWallets();
 
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
-  const { accountAddress } = useAccountSettings();
-  const { goBack, navigate } = useNavigation();
+  const { accountAddress, network } = useAccountSettings();
+  const { goBack, navigate, setParams } = useNavigation();
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
@@ -113,15 +114,84 @@ export default function ChangeWalletSheet() {
   const [editMode, setEditMode] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(currentAccountAddress || accountAddress);
   const [currentSelectedWallet, setCurrentSelectedWallet] = useState(selectedWallet);
+  const scrollContentOffsetY = useSharedValue(0);
 
-  const [headerHeight, listHeight, scrollEnabled, showDividers] = useMemo(() => {
-    const { listHeight, scrollEnabled } = getWalletListHeight(wallets, watchOnly);
+  // TODO: maybe wallet accounts is a better name
+  const allWalletItems = useMemo(() => {
+    const sortedWallets: AddressItem[] = [];
+    const bluetoothWallets: AddressItem[] = [];
+    const readOnlyWallets: AddressItem[] = [];
 
-    const headerHeight = scrollEnabled ? 40 : 30;
-    const showDividers = scrollEnabled;
+    Object.values(walletsWithBalancesAndNames).forEach(wallet => {
+      const visibleAccounts = (wallet.addresses || []).filter(account => account.visible);
+      visibleAccounts.forEach(account => {
+        const balanceText = account.balancesMinusHiddenBalances
+          ? account.balancesMinusHiddenBalances
+          : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
 
-    return [headerHeight, listHeight, scrollEnabled, showDividers];
-  }, [wallets, watchOnly]);
+        const item: AddressItem = {
+          id: account.address,
+          address: account.address,
+          image: account.image,
+          color: account.color,
+          editMode,
+          height: WALLET_ROW_HEIGHT,
+          label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
+          // TODO: what does this do?
+          // label:
+          //   network !== Network.mainnet && account.ens === account.label
+          //     ? address(account.address, 6, 4)
+          //     : removeFirstEmojiFromString(account.label),
+          secondaryLabel: balanceText,
+          isOnlyAddress: visibleAccounts.length === 1,
+          isLedger: wallet.type === WalletTypes.bluetooth,
+          isReadOnly: wallet.type === WalletTypes.readOnly,
+          isSelected: account.address === currentAddress,
+          rowType: RowTypes.ADDRESS,
+          walletId: wallet?.id,
+        };
+
+        if ([WalletTypes.mnemonic, WalletTypes.seed, WalletTypes.privateKey].includes(wallet.type)) {
+          sortedWallets.push(item);
+        } else if (wallet.type === WalletTypes.bluetooth) {
+          bluetoothWallets.push(item);
+        } else if (wallet.type === WalletTypes.readOnly) {
+          readOnlyWallets.push(item);
+        }
+      });
+    });
+
+    // sorts by order wallets were added
+    return [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets].sort((a, b) => a.walletId.localeCompare(b.walletId));
+  }, [walletsWithBalancesAndNames, currentAddress, editMode, network]);
+
+  // TODO: maybe move this to its own hook
+  const ownedWalletsTotalBalance = useMemo(() => {
+    let isLoadingBalance = false;
+
+    const totalBalance = Object.values(walletsWithBalancesAndNames).reduce((acc, wallet) => {
+      // only include owned wallet balances
+      if (wallet.type === WalletTypes.readOnly) return acc;
+
+      const visibleAccounts = wallet.addresses.filter(account => account.visible);
+
+      // TODO: if these are not in the native currency 0 format the end number will also not have the format
+      let walletTotalBalance = '0';
+
+      visibleAccounts.forEach(account => {
+        if (!account.balancesMinusHiddenBalances) {
+          isLoadingBalance = true;
+        }
+        walletTotalBalance = addDisplay(walletTotalBalance, account.balancesMinusHiddenBalances || '0');
+      });
+
+      return addDisplay(acc, walletTotalBalance);
+    }, '0');
+
+    if (isLoadingBalance) return i18n.t(i18n.l.wallet.change_wallet.loading_balance);
+
+    return totalBalance;
+  }, [walletsWithBalancesAndNames]);
 
   const onChangeAccount = useCallback(
     async (walletId: string, address: string, fromDeletion = false) => {
@@ -277,7 +347,7 @@ export default function ChangeWalletSheet() {
           screen: Routes.WALLET_NOTIFICATIONS_SETTINGS,
         });
       } else {
-        Alert.alert(lang.t('wallet.action.notifications.alert_title'), lang.t('wallet.action.notifications.alert_message'), [
+        Alert.alert(i18n.t(i18n.l.wallet.action.notifications.alert_title), i18n.t(i18n.l.wallet.action.notifications.alert_message), [
           { text: 'OK' },
         ]);
       }
@@ -306,8 +376,8 @@ export default function ChangeWalletSheet() {
         {
           cancelButtonIndex: 1,
           destructiveButtonIndex: 0,
-          message: lang.t('wallet.action.remove_confirm'),
-          options: [lang.t('wallet.action.remove'), lang.t('button.cancel')],
+          message: i18n.t(i18n.l.wallet.action.remove_confirm),
+          options: [i18n.t(i18n.l.wallet.action.remove), i18n.t(i18n.l.button.cancel)],
         },
         async (buttonIndex: number) => {
           if (buttonIndex === 0) {
@@ -372,42 +442,100 @@ export default function ChangeWalletSheet() {
   }, []);
 
   return (
-    <Sheet borderRadius={30}>
-      {IS_ANDROID && <Whitespace />}
-      <Column height={headerHeight} justify="space-between">
-        <Centered>
-          <SheetTitle testID="change-wallet-sheet-title">{lang.t('wallet.label')}</SheetTitle>
-
-          {!watchOnly && (
-            <Row style={{ position: 'absolute', right: 0 }}>
-              <EditButton editMode={editMode} onPress={onPressEditMode}>
-                <EditButtonLabel editMode={editMode}>{editMode ? lang.t('button.done') : lang.t('button.edit')}</EditButtonLabel>
-              </EditButton>
-            </Row>
-          )}
-        </Centered>
-        {showDividers && <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />}
-      </Column>
-      <WalletList
-        accountAddress={currentAddress}
-        allWallets={walletsWithBalancesAndNames}
-        contextMenuActions={
+    <>
+      <Box
+        style={[
           {
-            edit: onPressEdit,
-            notifications: onPressNotifications,
-            remove: onPressRemove,
-          } as EditWalletContextMenuActions
-        }
-        currentWallet={currentSelectedWallet}
-        editMode={editMode}
-        height={listHeight}
-        onChangeAccount={onChangeAccount}
-        onPressAddAnotherWallet={onPressAddAnotherWallet}
-        onPressPairHardwareWallet={onPressPairHardwareWallet}
-        scrollEnabled={scrollEnabled}
-        showDividers={showDividers}
-        watchOnly={watchOnly}
-      />
-    </Sheet>
+            bottom: PANEL_BOTTOM_OFFSET,
+            alignItems: 'center',
+            width: '100%',
+            pointerEvents: 'box-none',
+            position: 'absolute',
+            zIndex: 30000,
+          },
+        ]}
+      >
+        <Panel>
+          <View style={{ maxHeight: MAX_PANEL_HEIGHT }}>
+            <View style={{ width: '100%' }}>
+              {/* TODO: align with design spec */}
+              <Box
+                height={{ custom: PANEL_HEADER_HEIGHT }}
+                paddingTop="28px"
+                paddingBottom="24px"
+                width="full"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Box position="absolute" top={{ custom: 10 }}>
+                  <SheetHandle />
+                </Box>
+                <Text align="center" color="label" size="20pt" weight="heavy">
+                  {'Wallets'}
+                </Text>
+                <Box position="absolute" right={{ custom: 20 }}>
+                  <ButtonPressAnimation onPress={onPressEditMode}>
+                    <Text color="blue" size="17pt" weight="heavy">
+                      {editMode ? i18n.t(i18n.l.button.done) : i18n.t(i18n.l.button.edit)}
+                    </Text>
+                  </ButtonPressAnimation>
+                </Box>
+              </Box>
+              {/* TODO: why is this here? */}
+              {IS_ANDROID && <Whitespace />}
+              <WalletList
+                walletItems={allWalletItems}
+                contextMenuActions={
+                  {
+                    edit: onPressEdit,
+                    notifications: onPressNotifications,
+                    remove: onPressRemove,
+                  } as EditWalletContextMenuActions
+                }
+                editMode={editMode}
+                onChangeAccount={onChangeAccount}
+              />
+            </View>
+          </View>
+          {/* TODO: progressive blurview */}
+          <Box height={{ custom: 98 }} position="absolute" bottom="0px" width="full" backgroundColor="rgba(0,0,0,0.9)">
+            <Box
+              flexDirection="row"
+              justifyContent="space-between"
+              alignItems="center"
+              paddingHorizontal="24px"
+              paddingBottom="20px"
+              paddingTop="24px"
+            >
+              <Stack space="10px">
+                <Text color="label" size="13pt" weight="medium">
+                  {'Total Balance'}
+                </Text>
+                <Text color="label" size="17pt" weight="heavy">
+                  {ownedWalletsTotalBalance}
+                </Text>
+              </Stack>
+              <ButtonPressAnimation onPress={onPressAddAnotherWallet}>
+                <Box
+                  background="blue"
+                  justifyContent="center"
+                  alignItems="center"
+                  height={{ custom: 44 }}
+                  paddingHorizontal="16px"
+                  borderRadius={22}
+                  borderWidth={1}
+                  borderColor={{ custom: colors.alpha(colors.appleBlue, 0.06) }}
+                >
+                  <Text color="label" size="17pt" weight="heavy">
+                    {'􀅼 Add'}
+                  </Text>
+                </Box>
+              </ButtonPressAnimation>
+            </Box>
+          </Box>
+        </Panel>
+      </Box>
+      <TapToDismiss />
+    </>
   );
 }

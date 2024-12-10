@@ -5,7 +5,7 @@ import React, { useContext } from 'react';
 import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../components/backup/BackupSheet';
-import ChangeWalletSheet from '../screens/ChangeWalletSheet';
+import ChangeWalletSheet from '../screens/change-wallet/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import ENSAdditionalRecordsSheet from '../screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
@@ -184,17 +184,7 @@ function NativeStackNavigator() {
         {...externalLinkWarningSheetConfig}
       />
       <NativeStack.Screen component={WalletDiagnosticsSheet} name={Routes.DIAGNOSTICS_SHEET} {...walletDiagnosticsSheetConfig} />
-      <NativeStack.Screen
-        component={ChangeWalletSheet}
-        name={Routes.CHANGE_WALLET_SHEET}
-        options={{
-          allowsDragToDismiss: true,
-          backgroundOpacity: 0.7,
-          customStack: true,
-          springDamping: 1,
-          transitionDuration: 0.25,
-        }}
-      />
+      <NativeStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} {...panelConfig} />
       <NativeStack.Screen
         component={ConnectedDappsSheet}
         name={Routes.CONNECTED_DAPPS}

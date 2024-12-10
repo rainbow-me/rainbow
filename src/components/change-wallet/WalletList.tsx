@@ -1,54 +1,26 @@
-import lang from 'i18n-js';
-import { isEmpty } from 'lodash';
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import WalletTypes from '../../helpers/walletTypes';
-import { address } from '../../utils/abbreviations';
-import Divider from '@/components/Divider';
 import { EmptyAssetList } from '../asset-list';
-import { Column } from '../layout';
-import AddressRow from './AddressRow';
-import WalletOption from './WalletOption';
+import { AddressRow } from './AddressRow';
 import { EthereumAddress } from '@rainbow-me/entities';
-import { useAccountSettings } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
-import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
-import { Inset, Stack } from '@/design-system';
-import { Network } from '@/chains/types';
+import {
+  AddressItem,
+  EditWalletContextMenuActions,
+  FOOTER_HEIGHT,
+  MAX_PANEL_HEIGHT,
+  PANEL_HEADER_HEIGHT,
+} from '@/screens/change-wallet/ChangeWalletSheet';
+import { Box, Inset, Separator, Text } from '@/design-system';
+import { DndProvider, DraggableFlatList, DraggableFlatListProps, UniqueIdentifier } from '../drag-and-drop';
+import { PinnedWalletsGrid } from '@/screens/change-wallet/PinnedWalletsGrid';
+import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 
-const listTopPadding = 7.5;
-const rowHeight = 59;
-const transitionDuration = 75;
-
-const RowTypes = {
-  ADDRESS: 1,
-  EMPTY: 2,
-};
-
-const getItemLayout = (data: any, index: number) => {
-  const { height } = data[index];
-  return {
-    index,
-    length: height,
-    offset: height * index,
-  };
-};
-
-const keyExtractor = (item: any) => `${item.walletId}-${item?.id}`;
-
-// @ts-ignore
-const Container = styled.View({
-  height: ({ height }: { height: number }) => height,
-  marginTop: -2,
-});
-
-const WalletsContainer = styled(Animated.View)({
-  flex: 1,
-});
+const LIST_TOP_PADDING = 7.5;
+const TRANSITION_DURATION = 75;
+const LIST_MAX_HEIGHT = MAX_PANEL_HEIGHT - PANEL_HEADER_HEIGHT;
 
 const EmptyWalletList = styled(EmptyAssetList).attrs({
   descendingOpacity: true,
@@ -56,138 +28,60 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
 })({
   ...position.coverAsObject,
   backgroundColor: ({ theme: { colors } }: any) => colors.white,
-  paddingTop: listTopPadding,
-});
-
-const WalletFlatList = styled(FlatList).attrs(({ showDividers }: { showDividers: boolean }) => ({
-  contentContainerStyle: {
-    paddingBottom: showDividers ? 9.5 : 0,
-    paddingTop: listTopPadding,
-  },
-  getItemLayout,
-  keyExtractor,
-  removeClippedSubviews: true,
-}))({
-  flex: 1,
-  minHeight: 1,
-});
-
-const WalletListDivider = styled(Divider).attrs(({ theme: { colors } }: any) => ({
-  color: colors.rowDividerExtraLight,
-  inset: [0, 15],
-}))({
-  marginBottom: 1,
-  marginTop: -1,
+  paddingTop: LIST_TOP_PADDING,
 });
 
 interface Props {
-  accountAddress: EthereumAddress;
-  allWallets: any;
+  walletItems: AddressItem[];
   contextMenuActions: EditWalletContextMenuActions;
-  currentWallet: any;
   editMode: boolean;
-  height: number;
   onChangeAccount: (walletId: string, address: EthereumAddress) => void;
-  onPressAddAnotherWallet: () => void;
-  onPressPairHardwareWallet: () => void;
-  scrollEnabled: boolean;
-  showDividers: boolean;
-  watchOnly: boolean;
 }
 
-export default function WalletList({
-  accountAddress,
-  allWallets,
-  contextMenuActions,
-  currentWallet,
-  editMode,
-  height,
-  onChangeAccount,
-  onPressAddAnotherWallet,
-  onPressPairHardwareWallet,
-  scrollEnabled,
-  showDividers,
-  watchOnly,
-}: Props) {
-  const [rows, setRows] = useState<any[]>([]);
+export function WalletList({ walletItems, contextMenuActions, editMode, onChangeAccount }: Props) {
+  const pinnedAddresses = usePinnedWalletsStore(state => state.pinnedAddresses);
+  const unpinnedAddresses = usePinnedWalletsStore(state => state.unpinnedAddresses);
+
+  const pinnedWalletItems = useMemo(() => {
+    return walletItems
+      .filter(item => pinnedAddresses.includes(item.id))
+      .sort((a, b) => pinnedAddresses.indexOf(a.id) - pinnedAddresses.indexOf(b.id));
+  }, [walletItems, pinnedAddresses]);
+
+  // it would be more efficient to map the addresses to the wallet items, but the wallet items should be the source of truth
+  const unpinnedWalletItems = useMemo(() => {
+    return walletItems
+      .filter(item => !pinnedAddresses.includes(item.id))
+      .sort((a, b) => unpinnedAddresses.indexOf(a.id) - unpinnedAddresses.indexOf(b.id));
+  }, [walletItems, pinnedAddresses, unpinnedAddresses]);
+
   const [ready, setReady] = useState(false);
-  const scrollView = useRef(null);
-  const { network } = useAccountSettings();
-  const opacityAnimation = useSharedValue(0);
-  const emptyOpacityAnimation = useSharedValue(1);
-  const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
+  const opacityAnimation = useSharedValue(walletItems.length ? 1 : 0);
+  const emptyOpacityAnimation = useSharedValue(walletItems.length ? 0 : 1);
 
-  // Update the rows when allWallets changes
+  const reorderUnpinnedAddresses = usePinnedWalletsStore(state => state.reorderUnpinnedAddresses);
+
+  // TODO: convert the effect below into an animated reaction
   useEffect(() => {
-    const seedRows: any[] = [];
-    const privateKeyRows: any[] = [];
-    const readOnlyRows: any[] = [];
-
-    if (isEmpty(allWallets)) return;
-    const sortedKeys = Object.keys(allWallets).sort();
-    sortedKeys.forEach(key => {
-      const wallet = allWallets[key];
-      const filteredAccounts = (wallet.addresses || []).filter((account: any) => account.visible);
-      filteredAccounts.forEach((account: any) => {
-        const row = {
-          ...account,
-          editMode,
-          height: rowHeight,
-          id: account.address,
-          isOnlyAddress: filteredAccounts.length === 1,
-          isReadOnly: wallet.type === WalletTypes.readOnly,
-          isLedger: wallet.type === WalletTypes.bluetooth,
-          isSelected: accountAddress === account.address && (watchOnly || wallet?.id === currentWallet?.id),
-          label: network !== Network.mainnet && account.ens === account.label ? address(account.address, 6, 4) : account.label,
-          onPress: () => onChangeAccount(wallet?.id, account.address),
-          rowType: RowTypes.ADDRESS,
-          walletId: wallet?.id,
-        };
-        switch (wallet.type) {
-          case WalletTypes.mnemonic:
-          case WalletTypes.seed:
-          case WalletTypes.bluetooth:
-            seedRows.push(row);
-            break;
-          case WalletTypes.privateKey:
-            privateKeyRows.push(row);
-            break;
-          case WalletTypes.readOnly:
-            readOnlyRows.push(row);
-            break;
-          default:
-            break;
-        }
-      });
-    });
-
-    const newRows = [...seedRows, ...privateKeyRows, ...readOnlyRows];
-    setRows(newRows);
-  }, [accountAddress, allWallets, currentWallet?.id, editMode, network, onChangeAccount, watchOnly]);
-
-  // Update the data provider when rows change
-  useEffect(() => {
-    if (rows?.length && !ready) {
+    if (walletItems.length && !ready) {
       setTimeout(() => {
         setReady(true);
         emptyOpacityAnimation.value = withTiming(0, {
-          duration: transitionDuration,
+          duration: TRANSITION_DURATION,
           easing: Easing.out(Easing.ease),
         });
       }, 50);
     }
-  }, [rows, ready, emptyOpacityAnimation]);
+  }, [walletItems, ready, emptyOpacityAnimation]);
 
   useLayoutEffect(() => {
-    if (ready) {
+    if (walletItems.length) {
       opacityAnimation.value = withTiming(1, {
-        duration: transitionDuration,
+        duration: TRANSITION_DURATION,
         easing: Easing.in(Easing.ease),
       });
-    } else {
-      opacityAnimation.value = 0;
     }
-  }, [ready, opacityAnimation]);
+  }, [walletItems, opacityAnimation]);
 
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: opacityAnimation.value,
@@ -197,59 +91,60 @@ export default function WalletList({
     opacity: emptyOpacityAnimation.value,
   }));
 
-  const renderItem = useCallback(
-    ({ item }: any) => {
-      switch (item.rowType) {
-        case RowTypes.ADDRESS:
-          return (
-            <Column height={item.height}>
-              <AddressRow contextMenuActions={contextMenuActions} data={item} editMode={editMode} onPress={item.onPress} />
-            </Column>
-          );
-        default:
-          return null;
-      }
+  const onOrderChange: DraggableFlatListProps<AddressItem>['onOrderChange'] = useCallback(
+    (value: UniqueIdentifier[]) => {
+      // TODO: once upstream dnd fixes integrated
+      // reorderUnpinnedAddresses(value as string[]);
     },
-    [contextMenuActions, editMode]
+    [reorderUnpinnedAddresses]
   );
 
+  const renderHeader = useCallback(() => {
+    return (
+      <>
+        {pinnedWalletItems.length > 0 && (
+          <PinnedWalletsGrid walletItems={pinnedWalletItems} onPress={onChangeAccount} editMode={editMode} />
+        )}
+        {pinnedWalletItems.length > 0 && unpinnedWalletItems.length > 0 && (
+          <>
+            <Inset horizontal="16px" vertical="28px">
+              <Separator color="separatorSecondary" thickness={1} />
+            </Inset>
+            <Box paddingHorizontal="16px" paddingBottom="28px">
+              <Text color="label" size="17pt" weight="heavy">
+                {'All Wallets'}
+              </Text>
+            </Box>
+          </>
+        )}
+      </>
+    );
+  }, [pinnedWalletItems, onChangeAccount, editMode, unpinnedWalletItems.length]);
+
   return (
-    <Container height={height}>
+    <Box>
       <Animated.View style={[StyleSheet.absoluteFill, emptyOpacityStyle]}>
         <EmptyWalletList />
       </Animated.View>
-      <WalletsContainer style={opacityStyle}>
-        <WalletFlatList
-          data={rows}
-          initialNumToRender={rows.length}
-          ref={scrollView}
-          renderItem={renderItem}
-          scrollEnabled={scrollEnabled}
-          showDividers={showDividers}
-        />
-        {showDividers && <WalletListDivider />}
-        {!watchOnly && (
-          <Inset space="20px">
-            <Stack space="24px">
-              <WalletOption
+      <Animated.View style={opacityStyle}>
+        <DndProvider activationDelay={150}>
+          <DraggableFlatList
+            onOrderChange={onOrderChange}
+            style={{ maxHeight: LIST_MAX_HEIGHT }}
+            data={unpinnedWalletItems}
+            ListHeaderComponent={renderHeader}
+            contentInset={{ bottom: FOOTER_HEIGHT }}
+            renderItem={({ item }) => (
+              <AddressRow
+                contextMenuActions={contextMenuActions}
+                data={item}
                 editMode={editMode}
-                label={`􀁍 ${lang.t('wallet.action.add_another')}`}
-                onPress={onPressAddAnotherWallet}
-                testID="add-another-wallet-button"
+                onPress={() => onChangeAccount(item.walletId, item.id)}
               />
-
-              {hardwareWalletsEnabled && (
-                <WalletOption
-                  editMode={editMode}
-                  label={`􀱝 ${lang.t('wallet.action.pair_hardware_wallet')}`}
-                  onPress={onPressPairHardwareWallet}
-                  testID="pair-hardware-wallet-button"
-                />
-              )}
-            </Stack>
-          </Inset>
-        )}
-      </WalletsContainer>
-    </Container>
+            )}
+          />
+        </DndProvider>
+      </Animated.View>
+    </Box>
   );
 }

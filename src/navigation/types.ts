@@ -9,6 +9,7 @@ import { ParsedAddressAsset, PendingTransaction, UniqueAsset } from '@/entities'
 import { Claimable } from '@/resources/addys/claimables/types';
 import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/walletConnect/types';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
+import { RainbowWallet } from '@/model/wallet';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -28,9 +29,9 @@ export type RootStackParamList = {
     fromProfile?: boolean;
   };
   [Routes.CHANGE_WALLET_SHEET]: {
-    watchOnly: boolean;
-    currentAccountAddress: string;
-    onChangeWallet: (address: string) => void;
+    watchOnly?: boolean;
+    currentAccountAddress?: string;
+    onChangeWallet?: (address: string, wallet?: RainbowWallet) => void;
   };
   [Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET]: {
     accentColor?: string;

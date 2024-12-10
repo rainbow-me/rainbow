@@ -1,106 +1,66 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
-import { BottomRowText } from '../coin-row';
 import ConditionalWrap from 'conditional-wrap';
-import CoinCheckButton from '../coin-row/CoinCheckButton';
-import { ContactAvatar } from '../contacts';
-import ImageAvatar from '../contacts/ImageAvatar';
-import { Icon } from '../icons';
-import { Centered, Column, ColumnWithMargins, Row } from '../layout';
-import { Text, TruncatedText } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import useExperimentalFlag, { NOTIFICATIONS } from '@/config/experimentalHooks';
-import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import styled from '@/styled-thing';
-import { fonts, fontWithWidth, getFontSize } from '@/styles';
-import { abbreviations, deviceUtils, profileUtils } from '@/utils';
-import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
-import { toChecksumAddress } from '@/handlers/web3';
-import { IS_IOS, IS_ANDROID } from '@/env';
+import { IS_IOS } from '@/env';
 import { ContextMenu } from '../context-menu';
-import { useForegroundColor } from '@/design-system';
+import { Box, Column, Columns, Inline, Stack, Text, Inset, useForegroundColor, useColorMode, TextIcon } from '@/design-system';
 import { MenuActionConfig } from 'react-native-ios-context-menu';
+import { AddressItem, EditWalletContextMenuActions } from '@/screens/change-wallet/ChangeWalletSheet';
+import { TextSize } from '@/design-system/typography/typeHierarchy';
+import { TextWeight } from '@/design-system/components/Text/Text';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
+import { AddressAvatar } from '@/screens/change-wallet/AddressAvatar';
+import { SelectedAddressBadge } from '@/screens/change-wallet/SelectedAddressBadge';
 
-const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
-const NOOP = () => undefined;
+const ROW_HEIGHT_WITH_PADDING = 64;
 
-const sx = StyleSheet.create({
-  accountLabel: {
-    fontFamily: fonts.family.SFProRounded,
-    fontSize: getFontSize(fonts.size.lmedium),
-    fontWeight: fonts.weight.medium as '500',
-    letterSpacing: fonts.letterSpacing.roundedMedium,
-    maxWidth: maxAccountLabelWidth,
-  },
-  accountRow: {
-    flex: 1,
-    justifyContent: 'center',
-    marginLeft: 19,
-  },
-  bottomRowText: {
-    fontWeight: fonts.weight.medium as '500',
-    letterSpacing: fonts.letterSpacing.roundedMedium,
-  },
-  coinCheckIcon: {
-    width: 60,
-  },
-  editIcon: {
-    color: '#0E76FD',
-    fontFamily: fonts.family.SFProRounded,
-    fontSize: getFontSize(fonts.size.large),
-    fontWeight: fonts.weight.heavy as '800',
-    textAlign: 'center',
-  },
-  gradient: {
-    alignSelf: 'center',
-    borderRadius: 24,
-    height: 26,
-    justifyContent: 'center',
-    marginLeft: 19,
-    textAlign: 'center',
-  },
-  rightContent: {
-    flex: 0,
-    flexDirection: 'row',
-    marginLeft: 48,
-  },
-});
+export const AddressRowButton = ({
+  color,
+  icon,
+  onPress,
+  size,
+  weight,
+  disabled,
+}: {
+  color?: string;
+  icon: string;
+  onPress?: () => void;
+  size?: TextSize;
+  weight?: TextWeight;
+  disabled?: boolean;
+}) => {
+  const { isDarkMode } = useColorMode();
+  const fillTertiary = useForegroundColor('fillTertiary');
+  const fillQuaternary = useForegroundColor('fillQuaternary');
 
-const gradientProps = {
-  pointerEvents: 'none',
-  style: sx.gradient,
-};
-
-const StyledTruncatedText = styled(TruncatedText)({
-  ...sx.accountLabel,
-  ...fontWithWidth(sx.accountLabel.fontWeight),
-});
-
-const StyledBottomRowText = styled(BottomRowText)({
-  ...sx.bottomRowText,
-  ...fontWithWidth(sx.bottomRowText.fontWeight),
-});
-
-const ReadOnlyText = styled(Text).attrs({
-  align: 'center',
-  letterSpacing: 'roundedMedium',
-  size: 'smedium',
-  weight: 'semibold',
-})({
-  paddingHorizontal: 8,
-});
-
-const OptionsIcon = ({ onPress }: { onPress: () => void }) => {
-  const { colors } = useTheme();
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
-      <Centered height={40} width={60}>
-        {IS_ANDROID ? <Icon circle color={colors.appleBlue} name="threeDots" tightDots /> : <Text style={sx.editIcon}>􀍡</Text>}
-      </Centered>
+    <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.8} disabled={disabled}>
+      <Box
+        alignItems="center"
+        borderRadius={14}
+        height={{ custom: 28 }}
+        justifyContent="center"
+        style={{
+          backgroundColor: color ? opacity(color, isDarkMode ? 0.16 : 0.25) : isDarkMode ? fillQuaternary : opacity(fillTertiary, 0.04),
+        }}
+        width={{ custom: 28 }}
+      >
+        <TextIcon
+          color={color ? { custom: color } : 'labelQuaternary'}
+          containerSize={28}
+          opacity={isDarkMode ? 1 : 0.75}
+          size={size || 'icon 12px'}
+          weight={weight || 'heavy'}
+        >
+          {icon}
+        </TextIcon>
+      </Box>
     </ButtonPressAnimation>
   );
 };
@@ -113,50 +73,29 @@ const ContextMenuKeys = {
 
 interface AddressRowProps {
   contextMenuActions: EditWalletContextMenuActions;
-  data: any;
+  data: AddressItem;
   editMode: boolean;
   onPress: () => void;
 }
 
-export default function AddressRow({ contextMenuActions, data, editMode, onPress }: AddressRowProps) {
+export function AddressRow({ contextMenuActions, data, editMode, onPress }: AddressRowProps) {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
-  const {
-    address,
-    balancesMinusHiddenBalances,
-    color: accountColor,
-    ens,
-    image: accountImage,
-    isSelected,
-    isReadOnly,
-    isLedger,
-    label,
-    walletId,
-  } = data;
+  const { address, color, secondaryLabel, isSelected, isReadOnly, isLedger, label: walletName, walletId, image } = data;
+
+  const addPinnedAddress = usePinnedWalletsStore(state => state.addPinnedAddress);
 
   const { colors, isDarkMode } = useTheme();
 
-  const labelQuaternary = useForegroundColor('labelQuaternary');
-
-  const balanceText = useMemo(() => {
-    if (!balancesMinusHiddenBalances) {
-      return lang.t('wallet.change_wallet.loading_balance');
-    }
-
-    return balancesMinusHiddenBalances;
-  }, [balancesMinusHiddenBalances]);
-
-  const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(label), [label]);
-
-  const emoji = useMemo(() => returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address), [address, label]);
-
-  const displayAddress = useMemo(() => abbreviations.address(toChecksumAddress(address) || address, 4, 6), [address]);
-
-  const walletName = cleanedUpLabel || ens || displayAddress;
-
   const linearGradientProps = useMemo(
     () => ({
-      ...gradientProps,
+      pointerEvents: 'none' as const,
+      style: {
+        borderRadius: 12,
+        height: 22,
+        justifyContent: 'center',
+        paddingHorizontal: 8,
+      } as const,
       colors: [colors.alpha(colors.blueGreyDark, 0.03), colors.alpha(colors.blueGreyDark, isDarkMode ? 0.02 : 0.06)],
       end: { x: 1, y: 1 },
       start: { x: 0, y: 0 },
@@ -167,7 +106,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
   const contextMenuItems = [
     {
       actionKey: ContextMenuKeys.Edit,
-      actionTitle: lang.t('wallet.action.edit'),
+      actionTitle: i18n.t(i18n.l.wallet.action.edit),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'pencil',
@@ -178,7 +117,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
       ? ([
           {
             actionKey: ContextMenuKeys.Notifications,
-            actionTitle: lang.t('wallet.action.notifications.action_title'),
+            actionTitle: i18n.t(i18n.l.wallet.action.notifications.action_title),
             icon: {
               iconType: 'SYSTEM',
               iconValue: 'bell.fill',
@@ -188,7 +127,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
       : []),
     {
       actionKey: ContextMenuKeys.Remove,
-      actionTitle: lang.t('wallet.action.remove'),
+      actionTitle: i18n.t(i18n.l.wallet.action.remove),
       icon: { iconType: 'SYSTEM', iconValue: 'trash.fill' },
       menuAttributes: ['destructive'],
     },
@@ -239,7 +178,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
   );
 
   return (
-    <View style={sx.accountRow}>
+    <Box height={{ custom: ROW_HEIGHT_WITH_PADDING }}>
       <ConditionalWrap
         condition={!editMode}
         wrap={(children: React.ReactNode) => (
@@ -248,62 +187,71 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
           </ButtonPressAnimation>
         )}
       >
-        <Row align="center">
-          <Row align="center" flex={1} height={59}>
-            {accountImage ? (
-              <ImageAvatar image={accountImage} marginRight={10} size="medium" />
-            ) : (
-              <ContactAvatar color={accountColor} marginRight={10} size="medium" value={emoji} />
+        <Inset horizontal="16px">
+          <Columns alignVertical="center" space="12px">
+            {editMode && (
+              <Column width="content">
+                <TextIcon color="labelTertiary" size="icon 14px" weight="heavy">
+                  􀍠
+                </TextIcon>
+              </Column>
             )}
-            <ColumnWithMargins margin={IS_ANDROID ? -6 : 3}>
-              <StyledTruncatedText color={colors.dark} testID={`change-wallet-address-row-label-${walletName}`}>
+            <Column width="content">
+              <AddressAvatar url={image} size={40} address={address} color={color} label={walletName} />
+            </Column>
+            <Stack space="10px">
+              <Text numberOfLines={1} color="label" size="17pt" weight="medium" testID={`change-wallet-address-row-label-${walletName}`}>
                 {walletName}
-              </StyledTruncatedText>
-              <StyledBottomRowText color={labelQuaternary}>{balanceText}</StyledBottomRowText>
-            </ColumnWithMargins>
-          </Row>
-          <Column style={sx.rightContent}>
-            {isReadOnly && (
-              <LinearGradient
-                {...linearGradientProps}
-                // @ts-expect-error JavaScript component
-                marginRight={editMode || isSelected ? -9 : 19}
-              >
-                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>{lang.t('wallet.change_wallet.watching')}</ReadOnlyText>
-              </LinearGradient>
-            )}
-            {isLedger && (
-              <LinearGradient
-                {...linearGradientProps}
-                // @ts-expect-error JavaScript component
-                marginRight={editMode || isSelected ? -9 : 19}
-              >
-                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>{lang.t('wallet.change_wallet.ledger')}</ReadOnlyText>
-              </LinearGradient>
-            )}
-            {!editMode && isSelected && (
-              // @ts-expect-error JavaScript component
-              <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
-            )}
-            {editMode &&
-              (IS_IOS ? (
-                <ContextMenuButton isMenuPrimaryAction menuConfig={menuConfig} onPressMenuItem={handleSelectMenuItem}>
-                  <OptionsIcon onPress={NOOP} />
-                </ContextMenuButton>
-              ) : (
-                <ContextMenu
-                  options={menuConfig.menuItems.map(item => item.actionTitle)}
-                  isAnchoredToRight
-                  onPressActionSheet={handleSelectActionMenuItem}
-                >
-                  <Centered>
-                    <OptionsIcon onPress={NOOP} />
-                  </Centered>
-                </ContextMenu>
-              ))}
-          </Column>
-        </Row>
+              </Text>
+              <Text numberOfLines={1} color="labelQuaternary" size="13pt" weight="bold">
+                {secondaryLabel}
+              </Text>
+            </Stack>
+            <Column width="content" style={{ backgroundColor: 'transparent' }}>
+              <Inline space="10px" alignVertical="center">
+                {isReadOnly && (
+                  <LinearGradient {...linearGradientProps}>
+                    <Text color="labelTertiary" size="13pt" weight="bold">
+                      {i18n.t(i18n.l.wallet.change_wallet.watching)}
+                    </Text>
+                  </LinearGradient>
+                )}
+                {isLedger && (
+                  <LinearGradient {...linearGradientProps}>
+                    <Text color="labelTertiary" size="13pt" weight="bold">
+                      {i18n.t(i18n.l.wallet.change_wallet.ledger)}
+                    </Text>
+                  </LinearGradient>
+                )}
+                {!editMode && isSelected && <SelectedAddressBadge />}
+                {editMode && (
+                  <>
+                    <AddressRowButton onPress={() => addPinnedAddress(address)} color={colors.appleBlue} icon="􀎧" size="icon 12px" />
+                    {IS_IOS ? (
+                      <ContextMenuButton
+                        isMenuPrimaryAction
+                        menuConfig={menuConfig}
+                        onPressMenuItem={handleSelectMenuItem}
+                        testID={`address-row-info-button-${address}`}
+                      >
+                        <AddressRowButton icon="􀍠" size="icon 12px" />
+                      </ContextMenuButton>
+                    ) : (
+                      <ContextMenu
+                        options={menuConfig.menuItems.map(item => item.actionTitle)}
+                        isAnchoredToRight
+                        onPressActionSheet={handleSelectActionMenuItem}
+                      >
+                        <AddressRowButton icon="􀍠" size="icon 12px" />
+                      </ContextMenu>
+                    )}
+                  </>
+                )}
+              </Inline>
+            </Column>
+          </Columns>
+        </Inset>
       </ConditionalWrap>
-    </View>
+    </Box>
   );
 }
