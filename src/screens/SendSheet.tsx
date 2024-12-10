@@ -885,7 +885,7 @@ export default function SendSheet() {
 
   useEffect(() => {
     if (isLoadingUserAssets || !sortedAssets) return;
-    const params = { screen: 'wallet' as const, no_icon: 0, no_price: 0, total_tokens: sortedAssets.length };
+    const params = { screen: 'send' as const, no_icon: 0, no_price: 0, total_tokens: sortedAssets.length };
     for (const asset of sortedAssets) {
       if (!asset.icon_url) params.no_icon += 1;
       if (!asset.price?.relative_change_24h) params.no_price += 1;
