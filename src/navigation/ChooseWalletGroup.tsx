@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Separator, Text, useForegroundColor } from '@/design-system';
-import { View, Text as NativeText } from 'react-native';
+import { View, Text as NativeText, Dimensions, InteractionManager } from 'react-native';
 import chroma from 'chroma-js';
 import { useInitializeWallet, useWallets } from '@/hooks';
 import { PROFILES, useExperimentalFlag } from '@/config';
@@ -21,8 +21,10 @@ import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/em
 import { profileUtils } from '@/utils';
 import * as i18n from '@/languages';
 import showWalletErrorAlert from '@/helpers/support';
+import { ScrollView } from 'react-native-gesture-handler';
+import { BackButton } from '@/components/header';
 
-function NewWalletGroup() {
+function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
   const blue = useForegroundColor('blue');
 
   const { navigate } = useNavigation();
@@ -30,11 +32,10 @@ function NewWalletGroup() {
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
 
-  const onNewWallet = () => {
+  const onNewWalletGroup = () => {
     navigate(Routes.MODAL_SCREEN, {
       actionType: 'Create',
-      asset: [],
-      isNewProfile: true,
+      numWalletGroups,
       onCloseModal: async (args: { name: string; color: number }) => {
         if (!args) return;
         try {
@@ -43,17 +44,18 @@ function NewWalletGroup() {
           await dispatch(walletsLoadState(profilesEnabled));
           // @ts-ignore
           await initializeWallet();
+          navigate(Routes.WALLET_SCREEN, {}, true);
         } catch (error) {
           logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), { error });
         }
       },
       profile: { color: null, name: `` },
-      type: 'wallet_profile',
+      type: 'new_wallet_group',
     });
   };
 
   return (
-    <ButtonPressAnimation onPress={onNewWallet} scaleTo={0.95} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+    <ButtonPressAnimation onPress={onNewWalletGroup} scaleTo={0.95} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
       <View
         style={[
           { height: 36, width: 36 },
@@ -131,6 +133,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
               throw error;
             }
           }
+          navigate(Routes.WALLET_SCREEN, {}, true);
         } catch (e) {
           logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), {
             error: e,
@@ -152,7 +155,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
           { flexWrap: 'wrap', flexDirection: 'row' },
         ]}
       >
-        {accounts.map(account => (
+        {accounts.slice(0, 4).map(account => (
           <AccountAvatar key={account.address} account={account} size={14} />
         ))}
       </View>
@@ -184,9 +187,13 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
 }
 
 export function ChooseWalletGroup() {
+  const { goBack } = useNavigation();
   const { wallets } = useWallets();
 
-  if (!wallets) return;
+  if (!wallets) {
+    showWalletErrorAlert();
+    return;
+  }
 
   const groups = Object.values(wallets).filter(wallet => wallet.type === WalletTypes.mnemonic);
 
@@ -195,14 +202,26 @@ export function ChooseWalletGroup() {
       height="full"
       width="full"
       background="surfaceSecondary"
-      style={{ paddingHorizontal: 24, paddingTop: 72, gap: 20, alignItems: 'center' }}
+      style={{ paddingHorizontal: 24, gap: 20, alignItems: 'center', paddingBottom: 64 }}
     >
+      <View style={{ paddingTop: 24, paddingBottom: 12, width: '100%' }}>
+        <ButtonPressAnimation scaleTo={0.9} onPress={goBack} hitSlop={64} style={{ width: 20, height: 20 }}>
+          <Text color="blue" size="22pt" weight="bold">
+            􀆉
+          </Text>
+        </ButtonPressAnimation>
+      </View>
       <Text color="label" size="22pt" weight="heavy">
         {i18n.t(i18n.l.wallet.new.choose_wallet_group.title)}
       </Text>
       <Text color="labelQuaternary" size="15pt" weight="semibold" align="center">
         {i18n.t(i18n.l.wallet.new.choose_wallet_group.description)}
       </Text>
+
+      <View style={{ width: 106 }}>
+        <Separator color={'separatorTertiary'} />
+      </View>
+
       <Box
         background="surfaceSecondaryElevated"
         // shadow="12px" // TODO: adding shadow clips height (?)
@@ -210,13 +229,17 @@ export function ChooseWalletGroup() {
         borderRadius={32}
         borderWidth={1}
         width="full"
-        style={{ padding: 20, gap: 16 }}
+        style={{ maxHeight: Dimensions.get('window').height * 0.6 }}
       >
-        <NewWalletGroup />
-        <Separator color={'separatorTertiary'} />
-        {groups.map(wallet => (
-          <WalletGroup key={wallet.id} wallet={wallet} />
-        ))}
+        <View style={{ gap: 16, paddingHorizontal: 20, paddingTop: 20 }}>
+          <NewWalletGroup numWalletGroups={groups.length} />
+          <Separator color={'separatorTertiary'} />
+        </View>
+        <ScrollView contentContainerStyle={{ gap: 16, paddingHorizontal: 20, paddingVertical: 16 }}>
+          {groups.map(wallet => (
+            <WalletGroup key={wallet.id} wallet={wallet} />
+          ))}
+        </ScrollView>
       </Box>
     </Box>
   );
