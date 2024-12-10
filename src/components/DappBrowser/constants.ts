@@ -24,8 +24,8 @@ export const BLANK_BASE64_PIXEL = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCA
 export const TAB_SCREENSHOT_FASTER_IMAGE_CONFIG: Partial<ImageOptions> = {
   // This placeholder avoids an occasional loading spinner flash
   base64Placeholder: BLANK_BASE64_PIXEL,
-  cachePolicy: 'discNoCacheControl',
-  resizeMode: 'cover',
+  cachePolicy: 'memory',
+  resizeMode: IS_IOS ? 'topContain' : 'cover',
   showActivityIndicator: false,
   transitionDuration: 0,
 };

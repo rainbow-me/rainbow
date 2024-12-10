@@ -161,3 +161,29 @@ export function handleGestureEnd({ multipleTabsOpen, tabViewVisible, translation
 
   return { shouldClose };
 }
+
+export function resetTabCloseGestures({
+  activeTabCloseGestures,
+  currentlyBeingClosedTabIds,
+}: {
+  activeTabCloseGestures: SharedValue<ActiveTabCloseGestures>;
+  currentlyBeingClosedTabIds: TabId[];
+}) {
+  'worklet';
+  const gesturesNeedReset = Object.entries(activeTabCloseGestures.value).some(
+    ([tabId, gesture]) => gesture?.isActive && !currentlyBeingClosedTabIds.includes(tabId)
+  );
+
+  if (!gesturesNeedReset) return;
+
+  activeTabCloseGestures.modify(gestures => {
+    const updatedGestures = { ...gestures };
+    const initialState = { isActive: false, gestureScale: 1, gestureX: 0 };
+    for (const tabId in gestures) {
+      if (gestures[tabId]?.isActive && !currentlyBeingClosedTabIds.includes(tabId)) {
+        updatedGestures[tabId] = { ...gestures[tabId], ...initialState };
+      }
+    }
+    return updatedGestures;
+  });
+}
