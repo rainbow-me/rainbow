@@ -12,7 +12,7 @@ import { useSelectedGas } from './useSelectedGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 
-function safeBigInt(value: string) {
+export function safeBigInt(value: string) {
   try {
     return BigInt(value);
   } catch {

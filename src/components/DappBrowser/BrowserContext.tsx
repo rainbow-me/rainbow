@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useRef } from 'react';
 import Animated, {
+  runOnJS,
   runOnUI,
   useAnimatedReaction,
   useAnimatedRef,
@@ -10,7 +11,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import Routes from '@/navigation/routesNames';
 import { useBrowserStore } from '@/state/browser/browserStore';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { EXTRA_WEBVIEW_HEIGHT } from './Dimensions';
 import { RAINBOW_HOME } from './constants';
 import { useGestureManager } from './hooks/useGestureManager';
@@ -69,6 +72,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   const { activeTabRef, extraWebViewHeight, goBack, goForward, shouldCollapseBottomBar, tabViewProgress } = useBrowserTabBarContext();
 
   const activeTabId = useSharedValue(useBrowserStore.getState().getActiveTabId());
+  const animatedActiveSwipeRoute = useNavigationStore(state => state.animatedActiveSwipeRoute);
   const animatedActiveTabIndex = useSharedValue(useBrowserStore.getState().activeTabIndex);
   const animatedScreenshotData = useSharedValue<AnimatedScreenshotData>({});
   const animatedTabUrls = useSharedValue<AnimatedTabUrls>(useBrowserStore.getState().persistedTabUrls);
@@ -152,12 +156,38 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
       }
 
       runOnUI(() => {
-        'worklet';
         const tabIdToUse = tabId || activeTabId.value;
         animatedTabUrls.modify(urls => ({ ...urls, [tabIdToUse]: normalizeUrlWorklet(url) }));
       })();
     },
     [activeTabId, activeTabInfo, animatedTabUrls, goToPage, refreshPage]
+  );
+
+  const setWebViewHandlersEnabled = useCallback(
+    (enabled: boolean) => {
+      activeTabRef.current?.setActive(enabled);
+    },
+    [activeTabRef]
+  );
+
+  // Enables or disables WebView JS handlers when navigating to or away from the browser
+  // tab, and ensures the tab bar is always revealed when leaving the browser tab
+  useAnimatedReaction(
+    () => animatedActiveSwipeRoute.value === Routes.DAPP_BROWSER_SCREEN,
+    (isOnBrowserTab, prev) => {
+      if (activeTabInfo.value.isOnHomepage) return;
+
+      const browserBecameActive = isOnBrowserTab && prev === false;
+      const browserBecameInactive = !isOnBrowserTab && prev;
+
+      if (browserBecameActive) {
+        runOnJS(setWebViewHandlersEnabled)(true);
+      } else if (browserBecameInactive) {
+        runOnJS(setWebViewHandlersEnabled)(false);
+        if (shouldCollapseBottomBar.value) shouldCollapseBottomBar.value = false;
+      }
+    },
+    []
   );
 
   return (

@@ -9,7 +9,7 @@ import { watchingAlert } from '@/utils';
 import Routes from '@/navigation/routesNames';
 
 export type SwapsParams = Partial<
-  Pick<SwapsState, 'inputAsset' | 'outputAsset' | 'percentageToSell' | 'flashbots' | 'slippage'> & {
+  Pick<SwapsState, 'inputAsset' | 'outputAsset' | 'percentageToSell' | 'slippage'> & {
     inputAmount: string;
     outputAmount: string;
     gasSpeed: GasSpeed;

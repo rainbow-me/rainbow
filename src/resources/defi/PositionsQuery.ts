@@ -21,7 +21,7 @@ const getPositions = async (address: string, currency: NativeCurrencyKey): Promi
     method: 'get',
     params: {
       currency,
-      enableThirdParty: 'false',
+      enableThirdParty: 'true',
     },
     headers: {
       Authorization: `Bearer ${ADDYS_API_KEY}`,
@@ -42,7 +42,7 @@ const getPositions = async (address: string, currency: NativeCurrencyKey): Promi
 export const POSITIONS_QUERY_KEY = 'positions';
 
 export const positionsQueryKey = ({ address, currency }: PositionsArgs) =>
-  createQueryKey(POSITIONS_QUERY_KEY, { address, currency }, { persisterVersion: 2 });
+  createQueryKey(POSITIONS_QUERY_KEY, { address, currency }, { persisterVersion: 3 });
 
 type PositionsQueryKey = ReturnType<typeof positionsQueryKey>;
 
