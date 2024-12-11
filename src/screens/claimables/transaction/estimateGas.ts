@@ -2,7 +2,7 @@ import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import { getProvider } from '@/handlers/web3';
 import { Address } from 'viem';
 import { metadataPOSTClient } from '@/graphql';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { add, convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { populateSwap } from '@/raps/utils';
 import { estimateApprove, getAssetRawAllowance, populateApprove } from '@/raps/actions/unlock';

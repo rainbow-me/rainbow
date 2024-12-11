@@ -10,7 +10,7 @@ import { FallbackIcon as CoinIconTextFallback, isETH } from '@/utils';
 import { FastFallbackCoinIconImage } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
 import Animated from 'react-native-reanimated';
 import FastImage, { Source } from 'react-native-fast-image';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 // TODO: Delete this and replace with RainbowCoinIcon
 // ⚠️ When replacing this component with RainbowCoinIcon, make sure

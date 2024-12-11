@@ -8,14 +8,14 @@ import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { SupportedCurrencyKey } from '@/references';
 import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/helpers/utilities';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
-import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { IS_TEST } from '@/env';
@@ -132,7 +132,7 @@ async function userAssetsQueryFunction({
   try {
     staleBalancesStore.getState().clearExpiredData(address);
     const staleBalanceParam = staleBalancesStore.getState().getStaleBalancesQueryParam(address);
-    let url = `/${SUPPORTED_CHAIN_IDS.join(',')}/${address}/assets?currency=${currency.toLowerCase()}`;
+    let url = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/assets?currency=${currency.toLowerCase()}`;
     if (staleBalanceParam) {
       url += staleBalanceParam;
     }

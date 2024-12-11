@@ -13,7 +13,7 @@ import {
   toScaledIntegerWorklet,
 } from '@/safe-math/SafeMath';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { ParsedAddressAsset } from '@/entities';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { deepEqualWorklet } from '@/worklets/comparisons';
@@ -27,8 +27,8 @@ import { useSwapEstimatedGasLimit } from '../hooks/useSwapEstimatedGasLimit';
 import { useSwapContext } from './swap-provider';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { chainsNativeAsset } from '@/chains';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const BUFFER_RATIO = 0.5;
 
@@ -147,7 +147,7 @@ export function SyncGasStateToSharedValues() {
   const gasSettings = useSelectedGas(chainId);
 
   const { userNativeNetworkAsset, isLoadingNativeNetworkAsset } = useUserAssetsStore(state => {
-    const { address: nativeCurrencyAddress } = chainsNativeAsset[chainId];
+    const { address: nativeCurrencyAddress } = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
     const uniqueId = getUniqueId(nativeCurrencyAddress, chainId);
     return { userNativeNetworkAsset: state.getLegacyUserAsset(uniqueId), isLoadingNativeNetworkAsset: state.isLoadingUserAssets };
   });

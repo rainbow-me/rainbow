@@ -25,8 +25,8 @@ import { gasUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { ChainId } from '@/chains/types';
-import { chainsGasSpeeds, chainsNativeAsset } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { ParsedAddressAsset } from '@/entities';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -302,7 +302,7 @@ const GasSpeedButton = ({
 
   const openGasHelper = useCallback(async () => {
     Keyboard.dismiss();
-    const nativeAsset = chainsNativeAsset[chainId];
+    const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
     navigate(Routes.EXPLAIN_SHEET, {
       chainId,
       type: 'gas',
@@ -336,7 +336,7 @@ const GasSpeedButton = ({
 
   const speedOptions = useMemo(() => {
     if (speeds) return speeds;
-    return chainsGasSpeeds[chainId];
+    return useBackendNetworksStore.getState().getChainsGasSpeeds()[chainId];
   }, [chainId, speeds]);
 
   const menuConfig = useMemo(() => {

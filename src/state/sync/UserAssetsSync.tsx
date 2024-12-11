@@ -5,7 +5,7 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { selectUserAssetsList, selectorFilterByUserChains } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { IS_TEST } from '@/env';
 
 function UserAssetsSyncComponent() {

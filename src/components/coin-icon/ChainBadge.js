@@ -44,7 +44,7 @@ import { Centered } from '../layout';
 import styled from '@/styled-thing';
 import { position as positions } from '@/styles';
 import { ChainBadgeSizeConfigs } from '@/components/coin-icon/ChainBadgeSizeConfigs';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const ChainIcon = styled(FastImage)({
   height: ({ containerSize }) => containerSize,

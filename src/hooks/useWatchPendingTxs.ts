@@ -11,7 +11,7 @@ import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { Address } from 'viem';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({
@@ -118,11 +118,13 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         queryKey: userAssetsQueryKey({ address, currency: nativeCurrency, testnetMode: connectedToHardhat }),
       });
 
+      const supportedMainnetChainIds = useBackendNetworksStore.getState().getSupportedMainnetChainIds();
+
       await queryClient.refetchQueries({
         queryKey: consolidatedTransactionsQueryKey({
           address,
           currency: nativeCurrency,
-          chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
+          chainIds: supportedMainnetChainIds,
         }),
       });
 
@@ -132,7 +134,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           queryKey: consolidatedTransactionsQueryKey({
             address,
             currency: nativeCurrency,
-            chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
+            chainIds: supportedMainnetChainIds,
           }),
         });
       }, 2000);

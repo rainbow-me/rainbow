@@ -1,7 +1,6 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
-import { RainbowAddressAssets } from '@/resources/assets/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { queryClient } from '@/react-query';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
@@ -38,11 +37,9 @@ import {
   fetchExternalToken,
   useExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
-import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
-import { ChainId, Network } from '@/chains/types';
+import { ChainId, Network } from '@/state/backendNetworks/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { chainsIdByName, chainsName, chainsNativeAsset, defaultChains, getChainGasUnits } from '@/chains';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 
 /**
@@ -76,7 +73,7 @@ export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: A
   const networkOrChainId = parts[1];
   // if the second part is a string, it's probably a network
   if (isNaN(Number(networkOrChainId))) {
-    const chainId = chainsIdByName[networkOrChainId] || ChainId.mainnet; // Default to mainnet if unknown
+    const chainId = useBackendNetworksStore.getState().getChainsIdByName()[networkOrChainId] || ChainId.mainnet; // Default to mainnet if unknown
     return { address, chainId };
   }
 
@@ -84,7 +81,7 @@ export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: A
 };
 
 const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }) => {
-  const nativeAssetAddress = chainsNativeAsset[chainId].address;
+  const nativeAssetAddress = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId].address;
   const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, chainId);
   return getAccountAsset(nativeAssetUniqueId);
 };
@@ -103,7 +100,7 @@ export const getNativeAssetForNetwork = async ({
 
   // If the asset is on a different wallet, or not available in this wallet
   if (differentWallet || !nativeAsset) {
-    const chainNativeAsset = chainsNativeAsset[chainId];
+    const chainNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
     const mainnetAddress = chainNativeAsset?.address || ETH_ADDRESS;
     const nativeAssetAddress = chainNativeAsset.address as AddressOrEth;
 
@@ -118,7 +115,7 @@ export const getNativeAssetForNetwork = async ({
       // @ts-ignore
       nativeAsset = {
         ...externalAsset,
-        network: chainsName[chainId],
+        network: useBackendNetworksStore.getState().getChainsName()[chainId],
         uniqueId: getUniqueId(chainNativeAsset.address, chainId),
         address: chainNativeAsset.address,
         decimals: chainNativeAsset.decimals,
@@ -194,7 +191,7 @@ const getAssetPrice = (
 
 export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
   const { nativeCurrency } = store.getState().settings;
-  const address = (chainsNativeAsset[chainId]?.address || ETH_ADDRESS) as AddressOrEth;
+  const address = (useBackendNetworksStore.getState().getChainsNativeAsset()[chainId]?.address || ETH_ADDRESS) as AddressOrEth;
 
   const { data: nativeAsset } = useExternalToken({
     address,
@@ -206,6 +203,7 @@ export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
 };
 
 const getPriceOfNativeAssetForNetwork = ({ chainId }: { chainId: ChainId }) => {
+  const chainsNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset();
   const address = (chainsNativeAsset[chainId]?.address || ETH_ADDRESS) as AddressOrEth;
   return getAssetPrice({ address, chainId });
 };
@@ -280,8 +278,8 @@ const getDataString = (func: string, arrVals: string[]) => {
  */
 function getEtherscanHostForNetwork({ chainId }: { chainId: ChainId }): string {
   const base_host = 'etherscan.io';
-  const blockExplorer = defaultChains[chainId]?.blockExplorers?.default?.url;
-  const network = chainsName[chainId];
+  const blockExplorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
+  const network = useBackendNetworksStore.getState().getChainsName()[chainId];
 
   if (network && isTestnetChain({ chainId })) {
     return `${network}.${base_host}`;
@@ -356,29 +354,29 @@ export const getFirstTransactionTimestamp = async (address: EthereumAddress): Pr
 };
 
 function getBlockExplorer({ chainId }: { chainId: ChainId }) {
-  return defaultChains[chainId]?.blockExplorers?.default.name || 'etherscan';
+  return useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default.name || 'etherscan';
 }
 
 function openAddressInBlockExplorer({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
-  const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
+  const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/address/${address}`);
 }
 
 function openTokenEtherscanURL({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
   if (!isString(address)) return;
-  const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
+  const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/token/${address}`);
 }
 
 function openNftInBlockExplorer({ contractAddress, tokenId, chainId }: { contractAddress: string; tokenId: string; chainId: ChainId }) {
-  const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
+  const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/token/${contractAddress}?a=${tokenId}`);
 }
 
 function openTransactionInBlockExplorer({ hash, chainId }: { hash: string; chainId: ChainId }) {
   const normalizedHash = hash.replace(/-.*/g, '');
   if (!isString(hash)) return;
-  const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
+  const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/tx/${normalizedHash}`);
 }
 
@@ -394,14 +392,14 @@ async function parseEthereumUrl(data: string) {
   const functionName = ethUrl.function_name;
   let asset = null;
   const chainId = (ethUrl.chain_id as ChainId) || ChainId.mainnet;
-  const network = chainsName[chainId];
+  const network = useBackendNetworksStore.getState().getChainsName()[chainId];
   let address: any = null;
   let nativeAmount: any = null;
   const { nativeCurrency } = store.getState().settings;
 
   if (!functionName) {
     // Send native asset
-    const chainId = chainsIdByName[network];
+    const chainId = useBackendNetworksStore.getState().getChainsIdByName()[network];
     asset = getNetworkNativeAsset({ chainId });
 
     // @ts-ignore
@@ -489,7 +487,7 @@ const calculateL1FeeOptimism = async (
 };
 
 const getBasicSwapGasLimit = (chainId: ChainId) => {
-  return Number(getChainGasUnits(chainId).basic.swap);
+  return Number(useBackendNetworksStore.getState().getChainGasUnits(chainId).basic.swap);
 };
 
 export default {

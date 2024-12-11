@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { TokenToReceive } from '../types';
 import { CrosschainQuote, ETH_ADDRESS, getCrosschainQuote, getQuote, Quote, QuoteParams } from '@rainbow-me/swaps';
 import { Claimable, TransactionClaimable } from '@/resources/addys/claimables/types';
@@ -38,7 +38,7 @@ import { analyticsV2 } from '@/analytics';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { estimateClaimUnlockSwapGasLimit } from '../estimateGas';
-import { chainsNativeAsset } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import showWalletErrorAlert from '@/helpers/support';
 import { userAssetsStore } from '@/state/assets/userAssets';
 
@@ -245,7 +245,7 @@ export function TransactionClaimableContextProvider({
 
       const gasFeeWei = calculateGasFeeWorklet(gasSettings, gasLimit);
 
-      const nativeAsset = chainsNativeAsset[claimable.chainId];
+      const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[claimable.chainId];
       const userNativeAsset = userAssetsStore.getState().getNativeAssetForChain(claimable.chainId);
 
       const gasFeeNativeToken = formatUnits(safeBigInt(gasFeeWei), nativeAsset.decimals);
