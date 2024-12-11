@@ -1,8 +1,7 @@
 import { debounce } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
-import { create } from 'zustand';
+import { StateCreator, create } from 'zustand';
 import { PersistOptions, StorageValue, persist, subscribeWithSelector } from 'zustand/middleware';
-import { StateCreator } from 'zustand/vanilla';
 import { RainbowError, logger } from '@/logger';
 
 const PERSIST_RATE_LIMIT_MS = 3000;
@@ -12,7 +11,7 @@ const rainbowStorage = new MMKV({ id: 'rainbow-storage' });
 /**
  * Configuration options for creating a persistable Rainbow store.
  */
-interface RainbowPersistConfig<S> {
+export interface RainbowPersistConfig<S> {
   /**
    * A function to convert the serialized string back into the state object.
    * If not provided, the default deserializer is used.
