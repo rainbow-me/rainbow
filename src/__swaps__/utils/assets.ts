@@ -10,7 +10,7 @@ import {
   ZerionAsset,
   ZerionAssetPrice,
 } from '@/__swaps__/types/assets';
-import { ChainId, ChainName } from '@/chains/types';
+import { ChainId, ChainName } from '@/state/backendNetworks/types';
 
 import * as i18n from '@/languages';
 import { SearchAsset } from '@/__swaps__/types/search';
@@ -24,7 +24,7 @@ import {
   convertRawAmountToDecimalFormat,
 } from '@/helpers/utilities';
 import { isLowerCaseMatch } from '@/utils';
-import { chainsIdByName, chainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
   +a1.chainId === +a2.chainId && isLowerCaseMatch(a1.address, a2.address);
@@ -62,7 +62,10 @@ const getUniqueIdForAsset = ({ asset }: { asset: ZerionAsset | AssetApiResponse 
   const address = asset.asset_code;
   const chainName = asset.network ?? ChainName.mainnet;
   const networks = 'networks' in asset ? asset.networks || {} : {};
-  const chainId = ('chain_id' in asset && asset.chain_id) || chainsIdByName[chainName] || Number(Object.keys(networks)[0]);
+  const chainId =
+    ('chain_id' in asset && asset.chain_id) ||
+    useBackendNetworksStore.getState().getChainsIdByName()[chainName] ||
+    Number(Object.keys(networks)[0]);
 
   // ZerionAsset should be removed when we move fully away from websckets/refraction api
   const mainnetAddress = isZerionAsset(asset)
@@ -76,7 +79,10 @@ export function parseAsset({ asset, currency }: { asset: ZerionAsset | AssetApiR
   const address = asset.asset_code;
   const chainName = asset.network ?? ChainName.mainnet;
   const networks = 'networks' in asset ? asset.networks || {} : {};
-  const chainId = ('chain_id' in asset && asset.chain_id) || chainsIdByName[chainName] || Number(Object.keys(networks)[0]);
+  const chainId =
+    ('chain_id' in asset && asset.chain_id) ||
+    useBackendNetworksStore.getState().getChainsIdByName()[chainName] ||
+    Number(Object.keys(networks)[0]);
 
   // ZerionAsset should be removed when we move fully away from websckets/refraction api
   const mainnetAddress = isZerionAsset(asset)
@@ -154,7 +160,7 @@ export function parseAssetMetadata({
   const parsedAsset = {
     address,
     chainId,
-    chainName: chainsName[chainId],
+    chainName: useBackendNetworksStore.getState().getChainsName()[chainId],
     colors: asset?.colors,
     decimals: asset?.decimals,
     icon_url: asset?.iconUrl,
@@ -264,7 +270,7 @@ export const parseSearchAsset = ({
   searchAsset,
   userAsset,
 }: {
-  assetWithPrice?: ParsedAsset;
+  assetWithPrice?: Partial<ParsedAsset>;
   searchAsset: ParsedSearchAsset | SearchAsset;
   userAsset?: ParsedUserAsset;
 }): ParsedSearchAsset => ({
@@ -272,13 +278,13 @@ export const parseSearchAsset = ({
   isNativeAsset: isNativeAsset(searchAsset.address, searchAsset.chainId),
   address: searchAsset.address,
   chainId: searchAsset.chainId,
-  chainName: chainsName[searchAsset.chainId],
+  chainName: useBackendNetworksStore.getState().getChainsName()[searchAsset.chainId],
   native: {
     balance: userAsset?.native.balance || {
       amount: '0',
       display: '0.00',
     },
-    price: assetWithPrice?.native.price || userAsset?.native?.price,
+    price: assetWithPrice?.native?.price || userAsset?.native?.price,
   },
   price: assetWithPrice?.price || userAsset?.price,
   balance: userAsset?.balance || { amount: '0', display: '0.00' },

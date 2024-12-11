@@ -5,7 +5,7 @@ import { RainbowError, logger } from '@/logger';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { parseTransaction } from '@/parsers/transactions';
-import { chainsIdByName, SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
 const CONSOLIDATED_TRANSACTIONS_TIMEOUT = 20000;
@@ -106,6 +106,8 @@ async function parseConsolidatedTransactions(
 ): Promise<RainbowTransaction[]> {
   const data = message?.payload?.transactions || [];
 
+  const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
+
   const parsedTransactionPromises = data.map((tx: TransactionApiResponse) => parseTransaction(tx, currency, chainsIdByName[tx.network]));
   // Filter out undefined values immediately
 
@@ -125,7 +127,7 @@ export function useConsolidatedTransactions(
     consolidatedTransactionsQueryKey({
       address,
       currency,
-      chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
+      chainIds: useBackendNetworksStore.getState().getSupportedMainnetChainIds(),
     }),
     consolidatedTransactionsQueryFunction,
     {

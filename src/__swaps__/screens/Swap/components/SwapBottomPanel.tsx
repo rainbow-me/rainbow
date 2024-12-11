@@ -2,10 +2,18 @@ import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { Box, Separator, globalColors, useColorMode } from '@/design-system';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import Animated, { Easing, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  runOnJS,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useBottomPanelGestureHandler } from '../hooks/useBottomPanelGestureHandler';
 import { GasButton } from './GasButton';
@@ -14,6 +22,10 @@ import { ReviewPanel } from './ReviewPanel';
 import { SwapActionButton } from './SwapActionButton';
 import { SettingsPanel } from './SettingsPanel';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { useWallets } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { logger, RainbowError } from '@/logger';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 
@@ -55,6 +67,24 @@ export function SwapBottomPanel() {
   const disabled = useDerivedValue(() => confirmButtonProps.value.disabled);
   const opacity = useDerivedValue(() => confirmButtonProps.value.opacity);
   const type = useDerivedValue(() => confirmButtonProps.value.type);
+
+  const { isHardwareWallet } = useWallets();
+  const { navigate } = useNavigation();
+  const handleHwConnectionAndSwap = useCallback(() => {
+    try {
+      if (isHardwareWallet && configProgress.value === NavigationSteps.SHOW_REVIEW) {
+        navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+          submit: SwapNavigation.handleSwapAction,
+        });
+      } else {
+        SwapNavigation.handleSwapAction();
+      }
+    } catch (e) {
+      logger.error(new RainbowError('[SwapBottomPanel.tsx]: handleHwConnectionAndSwap Error: '), {
+        message: (e as Error).message,
+      });
+    }
+  }, [configProgress.value, navigate, isHardwareWallet, SwapNavigation]);
 
   return (
     <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler}>
@@ -102,7 +132,7 @@ export function SwapBottomPanel() {
               onPressWorklet={() => {
                 'worklet';
                 if (type.value !== 'hold') {
-                  SwapNavigation.handleSwapAction();
+                  runOnJS(handleHwConnectionAndSwap)();
                 }
               }}
               onLongPressEndWorklet={success => {
@@ -116,7 +146,7 @@ export function SwapBottomPanel() {
                 'worklet';
                 if (type.value === 'hold') {
                   triggerHaptics('notificationSuccess');
-                  SwapNavigation.handleSwapAction();
+                  runOnJS(handleHwConnectionAndSwap)();
                 }
               }}
               onPressStartWorklet={() => {

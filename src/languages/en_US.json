@@ -461,7 +461,13 @@
     },
     "claimables": {
       "panel": {
-        "calculating_gas_fee": "Calculating gas fee...",
+        "estimating_gas_fee": "Estimating Gas Fee...",
+        "gas_error": "Gas Error",
+        "quote_error": "Quote Error",
+        "no_route_found": "No Route Found",
+        "fetching_quote": "Fetching Quote...",
+        "select_a_network": "Select a Network",
+        "select_a_token": "Select a Token",
         "amount_to_claim_on_network": "%{amount} to claim on %{network}",
         "claim": "Claim",
         "claiming": "Claiming",
@@ -472,7 +478,12 @@
         "claim_amount": "Claim %{amount}",
         "done": "Done",
         "try_again": "Try Again",
-        "tokens_on_the_way": "Tokens on the way!"
+        "tokens_on_the_way": "Tokens on the way!",
+        "a_token": "a token",
+        "a_network": "a network",
+        "swap_failed": "Swap Failed",
+        "receive": "Receive",
+        "on": "on"
       }
     },
     "cloud": {
@@ -651,7 +662,6 @@
       "high": "High",
       "slippage_tolerance": "Max Slippage",
       "source_picker": "Route Swaps via",
-      "use_flashbots": "Use Flashbots",
       "swapping_for_prefix": "Swapping for",
       "view_details": "View Details",
       "token_sections": {
@@ -732,7 +742,6 @@
       "swap": {
         "swap": "Swap",
         "bridge": "Bridge",
-        "flashbots_protect": "Flashbots Protect",
         "losing": "Losing",
         "on": "On",
         "off": "Off",
@@ -1042,15 +1051,6 @@
           "fragment1": "Still curious? ",
           "fragment2": "Read more",
           "fragment3": " about slippage and how it affects swaps."
-        }
-      },
-      "flashbots": {
-        "text": "Flashbots protects your transactions from frontrunning and sandwich attacks which might result in you getting a worse price or your transaction failing.",
-        "title": "Flashbots",
-        "still_curious": {
-          "fragment1": "Still curious? ",
-          "fragment2": "Read more",
-          "fragment3": " about Flashbots and the protection it offers."
         }
       },
       "swap_refuel": {
@@ -1883,10 +1883,17 @@
       }
     },
     "positions": {
+      "lp_range_status": {
+        "full_range": "Full Range",
+        "out_of_range": "Out of Range",
+        "in_range": "In Range"
+      },
       "open_dapp": "Open 􀮶",
       "deposits": "Deposits",
       "borrows": "Borrows",
-      "rewards": "Rewards"
+      "stakes": "Staked",
+      "rewards": "Rewards",
+      "pools": "Pools"
     },
     "savings": {
       "deposit": "Deposit",
@@ -2051,7 +2058,6 @@
       "find_a_token_to_buy": "Find a token to buy",
       "search_your_tokens": "Search your tokens",
       "error_executing_swap": "Error executing swap",
-      "flashbots_protection": "Flashbots Protection",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Sort",
@@ -2923,6 +2929,7 @@
         "buttons": {
           "cancel": "Cancel",
           "confirm": "􀎽 Confirm",
+          "confirming": "Confirming",
           "get_native_token": "Get %{symbol}",
           "buy_native_token": "Buy %{symbol}"
         },
@@ -2983,10 +2990,17 @@
       },
       "menus": {
         "favorite": "Favorite",
+        "home": "Home",
         "undo_favorite": "Undo Favorite",
         "remove": "Remove",
         "forward": "Forward",
-        "back": "Back"
+        "back": "Back",
+        "share": "Share",
+        "close_all_tabs": "Close All %{numberOfClosableTabs} Tabs",
+        "close_both_tabs": "Close Both Tabs",
+        "close_this_tab": "Close This Tab",
+        "close_tab": "Close Tab",
+        "new_tab": "New Tab"
       }
     },
     "copy": "Copy",

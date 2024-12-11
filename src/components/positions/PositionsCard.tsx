@@ -1,4 +1,4 @@
-import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
+import { Box, Column, Columns, Inline, Stack, Text, globalColors } from '@/design-system';
 import React, { useCallback, useMemo } from 'react';
 import { useTheme } from '@/theme';
 
@@ -12,13 +12,13 @@ import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
 import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
-import { RainbowDeposit, RainbowPosition } from '@/resources/defi/types';
-import { Network } from '@/chains/types';
+import { RainbowBorrow, RainbowClaimable, RainbowDeposit, RainbowPosition, RainbowStake } from '@/resources/defi/types';
+import { Network } from '@/state/backendNetworks/types';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { useAccountSettings } from '@/hooks';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { chainsIdByName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type PositionCardProps = {
   position: RainbowPosition;
@@ -33,7 +33,7 @@ type CoinStackToken = {
 function CoinIconForStack({ token }: { token: CoinStackToken }) {
   const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
-  const chainId = chainsIdByName[token.network];
+  const chainId = useBackendNetworksStore.getState().getChainsIdByName()[token.network];
   const { data: externalAsset } = useExternalToken({ address: token.address as AddressOrEth, chainId, currency: nativeCurrency });
 
   return (
@@ -77,7 +77,9 @@ function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
 
 export const PositionCard = ({ position }: PositionCardProps) => {
   const { colors, isDarkMode } = useTheme();
-  const totalPositions = (position.borrows?.length || 0) + (position.deposits?.length || 0) + (position.claimables?.length || 0);
+  const totalPositions =
+    (position.borrows.length || 0) + (position.deposits.length || 0) + (position.claimables.length || 0) + (position.stakes.length || 0);
+
   const { navigate } = useNavigation();
 
   const onPressHandler = useCallback(() => {
@@ -96,8 +98,8 @@ export const PositionCard = ({ position }: PositionCardProps) => {
         });
       });
     });
-    position.borrows.forEach((deposit: RainbowDeposit) => {
-      deposit.underlying.forEach(({ asset }) => {
+    position.stakes.forEach((stake: RainbowStake) => {
+      stake.underlying.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
           network: asset.network,
@@ -105,17 +107,15 @@ export const PositionCard = ({ position }: PositionCardProps) => {
         });
       });
     });
-    position.borrows.forEach((deposit: RainbowDeposit) => {
-      deposit.underlying.forEach(({ asset }) => {
-        tokens.push({
-          address: asset.asset_code,
-          network: asset.network,
-          symbol: asset.symbol,
-        });
+    position.claimables.forEach((claimable: RainbowClaimable) => {
+      tokens.push({
+        address: claimable.asset.asset_code,
+        network: claimable.asset.network,
+        symbol: claimable.asset.symbol,
       });
     });
-    position.borrows.forEach((deposit: RainbowDeposit) => {
-      deposit.underlying.forEach(({ asset }) => {
+    position.borrows.forEach((borrow: RainbowBorrow) => {
+      borrow.underlying.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
           network: asset.network,
@@ -124,11 +124,13 @@ export const PositionCard = ({ position }: PositionCardProps) => {
       });
     });
 
+    // TODO: if more than 5 unique tokens but duplicates of a token across networks, use different asset
     const dedupedTokens = uniqBy(tokens, 'symbol');
     return dedupedTokens?.slice(0, 5);
   }, [position]);
 
-  const positionColor = position.dapp.colors.primary || position.dapp.colors.fallback;
+  const positionColor =
+    position.dapp.colors.primary || position.dapp.colors.fallback || (isDarkMode ? globalColors.white100 : globalColors.white10);
 
   return (
     <Box width="full" height={{ custom: 117 }}>

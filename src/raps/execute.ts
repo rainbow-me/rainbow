@@ -2,7 +2,7 @@
 /* eslint-disable no-async-promise-executor */
 /* eslint-disable no-promise-executor-return */
 import { Signer } from '@ethersproject/abstract-signer';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { RainbowError, logger } from '@/logger';
 
 import { claim, swap, unlock } from './actions';
@@ -24,6 +24,10 @@ import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { createClaimClaimableRap } from './claimClaimable';
+import { claimClaimable } from './actions/claimClaimable';
+
+const PERF_TRACKING_EXEMPTIONS: RapTypes[] = ['claimBridge', 'claimClaimable'];
 
 export function createSwapRapByType<T extends RapTypes>(
   type: T,
@@ -36,6 +40,8 @@ export function createSwapRapByType<T extends RapTypes>(
       return createUnlockAndCrosschainSwapRap(swapParameters as RapSwapActionParameters<'crosschainSwap'>);
     case 'swap':
       return createUnlockAndSwapRap(swapParameters as RapSwapActionParameters<'swap'>);
+    case 'claimClaimable':
+      return createClaimClaimableRap(swapParameters as RapSwapActionParameters<'claimClaimable'>);
     default:
       return Promise.resolve({ actions: [] });
   }
@@ -53,6 +59,8 @@ function typeAction<T extends RapActionTypes>(type: T, props: ActionProps<T>) {
       return () => claimBridge(props as ActionProps<'claimBridge'>);
     case 'crosschainSwap':
       return () => crosschainSwap(props as ActionProps<'crosschainSwap'>);
+    case 'claimClaimable':
+      return () => claimClaimable(props as ActionProps<'claimClaimable'>);
     default:
       // eslint-disable-next-line react/display-name
       return () => null;
@@ -66,7 +74,6 @@ export async function executeAction<T extends RapActionTypes>({
   index,
   baseNonce,
   rapName,
-  flashbots,
   gasParams,
   gasFeeParamsBySpeed,
 }: {
@@ -76,7 +83,6 @@ export async function executeAction<T extends RapActionTypes>({
   index: number;
   baseNonce?: number;
   rapName: string;
-  flashbots?: boolean;
   gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }): Promise<RapActionResponse> {
@@ -86,7 +92,7 @@ export async function executeAction<T extends RapActionTypes>({
       wallet,
       currentRap: rap,
       index,
-      parameters: { ...parameters, flashbots },
+      parameters,
       baseNonce,
       gasParams,
       gasFeeParamsBySpeed,
@@ -98,9 +104,9 @@ export async function executeAction<T extends RapActionTypes>({
       message: (error as Error)?.message,
     });
     if (index === 0) {
-      return { baseNonce: null, errorMessage: String(error) };
+      return { baseNonce: null, errorMessage: error?.toString() ?? null };
     }
-    return { baseNonce: null, errorMessage: null };
+    return { baseNonce: null, errorMessage: error?.toString() ?? null };
   }
 }
 
@@ -139,20 +145,19 @@ const waitForNodeAck = async (hash: string, provider: Signer['provider'], tries 
 export const walletExecuteRap = async (
   wallet: Signer,
   type: RapTypes,
-  parameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimBridge'>
+  parameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimBridge' | 'claimClaimable'>
 ): Promise<{ nonce: number | undefined; errorMessage: string | null }> => {
   // NOTE: We don't care to track claimBridge raps
-  const rap =
-    type === 'claimBridge'
-      ? await createSwapRapByType(type, parameters)
-      : await performanceTracking.getState().executeFn({
-          fn: createSwapRapByType,
-          screen: Screens.SWAPS,
-          operation: TimeToSignOperation.CreateRap,
-          metadata: {
-            degenMode: swapsStore.getState().degenMode,
-          },
-        })(type, parameters);
+  const rap = PERF_TRACKING_EXEMPTIONS.includes(type)
+    ? await createSwapRapByType(type, parameters)
+    : await performanceTracking.getState().executeFn({
+        fn: createSwapRapByType,
+        screen: Screens.SWAPS,
+        operation: TimeToSignOperation.CreateRap,
+        metadata: {
+          degenMode: swapsStore.getState().degenMode,
+        },
+      })(type, parameters);
 
   const { actions } = rap;
   const rapName = getRapFullName(rap.actions);
@@ -167,7 +172,6 @@ export const walletExecuteRap = async (
       index: 0,
       baseNonce: nonce,
       rapName,
-      flashbots: parameters?.flashbots,
       gasParams: parameters?.gasParams,
       gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
     };
@@ -187,11 +191,14 @@ export const walletExecuteRap = async (
           index,
           baseNonce,
           rapName,
-          flashbots: parameters?.flashbots,
           gasParams: parameters?.gasParams,
           gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
         };
-        const { hash: nextHash } = await executeAction(actionParams);
+        const { hash: nextHash, errorMessage: error } = await executeAction(actionParams);
+        // if previous action didn't fail, but the current one did, set the error message
+        if (!errorMessage && error) {
+          errorMessage = error;
+        }
         latestHash = nextHash;
       }
       nonce = baseNonce + actions.length - 1;

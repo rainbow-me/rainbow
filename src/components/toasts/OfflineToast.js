@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React from 'react';
 import Toast from './Toast';
 import { useAccountSettings, useInternetStatus } from '@/hooks';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const OfflineToast = () => {

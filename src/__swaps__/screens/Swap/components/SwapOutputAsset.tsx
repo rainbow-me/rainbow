@@ -17,7 +17,7 @@ import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenLi
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -83,8 +83,9 @@ function SwapOutputAmount({ handleTapWhileDisabled }: { handleTapWhileDisabled: 
       }
     >
       <GestureHandlerButton
-        disableButtonPressWrapper
-        onPressStartWorklet={() => {
+        disableHaptics
+        disableScale
+        onPressWorklet={() => {
           'worklet';
           if (outputQuotesAreDisabled.value) {
             runOnJS(handleTapWhileDisabled)();

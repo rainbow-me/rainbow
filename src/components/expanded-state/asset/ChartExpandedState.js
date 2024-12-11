@@ -36,8 +36,10 @@ import { Box } from '@/design-system';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';
-import { chainsName, supportedSwapChainIds } from '@/chains';
-import { ChainId } from '@/chains/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useTimeoutEffect } from '@/hooks/useTimeout';
+import { analyticsV2 } from '@/analytics';
 
 const defaultCarouselHeight = 60;
 const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
@@ -166,7 +168,7 @@ export default function ChartExpandedState({ asset }) {
             chainId: asset.chainId,
             network: asset.network,
             address: asset.address,
-            mainnetAddress: asset?.networks?.[chainsName[ChainId.mainnet]]?.address,
+            mainnetAddress: asset?.networks?.[useBackendNetworksStore.getState().getChainsName()[ChainId.mainnet]]?.address,
           }
         : asset;
   }, [asset, genericAsset, hasBalance]);
@@ -243,7 +245,7 @@ export default function ChartExpandedState({ asset }) {
   const assetChainId = assetWithPrice.chainId;
 
   const { swagg_enabled, f2c_enabled } = useRemoteConfig();
-  const swapEnabled = swagg_enabled && supportedSwapChainIds.includes(assetChainId);
+  const swapEnabled = swagg_enabled && useBackendNetworksStore.getState().getSwapSupportedChainIds().includes(assetChainId);
   const addCashEnabled = f2c_enabled;
 
   const format = useCallback(
@@ -253,6 +255,19 @@ export default function ChartExpandedState({ asset }) {
       return test;
     },
     [nativeCurrency]
+  );
+
+  const mountedAt = useRef(Date.now());
+  useTimeoutEffect(
+    () => {
+      const { address, chainId, symbol, name, icon_url, price } = assetWithPrice;
+      analyticsV2.track(analyticsV2.event.tokenDetailsErc20, {
+        eventSentAfterMs: Date.now() - mountedAt.current,
+        token: { address, chainId, symbol, name, icon_url, price },
+        available_data: { chart: showChart, description: !!data?.description, iconUrl: !!icon_url },
+      });
+    },
+    5 * 1000 // 5s
   );
 
   return (

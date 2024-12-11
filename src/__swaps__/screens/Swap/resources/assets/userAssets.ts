@@ -8,15 +8,16 @@ import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { SupportedCurrencyKey } from '@/references';
 import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/helpers/utilities';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
-import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import store from '@/redux/store';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -70,8 +71,21 @@ type UserAssetsQueryKey = ReturnType<typeof userAssetsQueryKey>;
 // Query Function
 
 export const userAssetsFetchQuery = ({ address, currency, testnetMode }: FetchUserAssetsArgs) => {
-  queryClient.fetchQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction);
+  return queryClient.fetchQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction);
 };
+
+export async function queryUserAssets({
+  address = store.getState().settings.accountAddress,
+  currency = store.getState().settings.nativeCurrency,
+  testnetMode = false,
+}: Partial<FetchUserAssetsArgs> = {}) {
+  const queryKey = userAssetsQueryKey({ address, currency, testnetMode });
+
+  const cachedData = queryClient.getQueryData<ParsedAssetsDictByChain>(queryKey);
+  if (cachedData) return cachedData;
+
+  return userAssetsFetchQuery({ address, currency, testnetMode });
+}
 
 export const userAssetsSetQueryDefaults = ({ address, currency, staleTime, testnetMode }: SetUserDefaultsArgs) => {
   queryClient.setQueryDefaults(userAssetsQueryKey({ address, currency, testnetMode }), {
@@ -113,7 +127,7 @@ async function userAssetsQueryFunction({
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
     {}) as ParsedAssetsDictByChain;
   try {
-    const url = `/${SUPPORTED_CHAIN_IDS.join(',')}/${address}/assets`;
+    const url = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/assets`;
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
       params: {
         currency: currency.toLowerCase(),

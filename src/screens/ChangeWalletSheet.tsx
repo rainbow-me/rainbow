@@ -1,95 +1,24 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { useCallback, useMemo, useState } from 'react';
-import { Alert, InteractionManager, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { Alert, InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
-import Divider from '@/components/Divider';
-import { ButtonPressAnimation } from '@/components/animations';
 import WalletList from '@/components/change-wallet/WalletList';
-import { Centered, Column, Row } from '../components/layout';
-import { Sheet, SheetTitle } from '../components/sheet';
-import { Text } from '../components/text';
+import { Sheet } from '../components/sheet';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
 import { cleanUpWalletKeys } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { addressSetSelected, walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { analytics, analyticsV2 } from '@/analytics';
-import { getExperimetalFlag, HARDWARE_WALLETS } from '@/config';
 import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
 import { doesWalletsContainAddress, showActionSheetWithOptions } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
-
-const FOOTER_HEIGHT = getExperimetalFlag(HARDWARE_WALLETS) ? 100 : 60;
-const LIST_PADDING_BOTTOM = 6;
-const MAX_LIST_HEIGHT = DEVICE_HEIGHT - 220;
-const WALLET_ROW_HEIGHT = 59;
-const WATCH_ONLY_BOTTOM_PADDING = IS_ANDROID ? 20 : 0;
-
-const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }: { editMode: boolean }) => ({
-  scaleTo: 0.96,
-  wrapperStyle: {
-    width: editMode ? 70 : 58,
-  },
-  width: editMode ? 100 : 100,
-}))(
-  IS_IOS
-    ? {
-        position: 'absolute',
-        right: 20,
-        top: -11,
-      }
-    : {
-        elevation: 10,
-        position: 'relative',
-        right: 20,
-        top: 6,
-      }
-);
-
-const EditButtonLabel = styled(Text).attrs(({ theme: { colors }, editMode }: { theme: any; editMode: boolean }) => ({
-  align: 'right',
-  color: colors.appleBlue,
-  letterSpacing: 'roundedMedium',
-  size: 'large',
-  weight: editMode ? 'bold' : 'semibold',
-  numberOfLines: 1,
-  ellipsizeMode: 'tail',
-}))({
-  height: 40,
-});
-
-const Whitespace = styled(View)({
-  backgroundColor: ({ theme: { colors } }: any) => colors.white,
-  bottom: -398,
-  height: 400,
-  position: 'absolute',
-  width: '100%',
-});
-
-const getWalletListHeight = (wallets: any, watchOnly: boolean) => {
-  let listHeight = !watchOnly ? FOOTER_HEIGHT + LIST_PADDING_BOTTOM : WATCH_ONLY_BOTTOM_PADDING;
-
-  if (wallets) {
-    for (const key of Object.keys(wallets)) {
-      const visibleAccounts = wallets[key].addresses.filter((account: any) => account.visible);
-      listHeight += visibleAccounts.length * WALLET_ROW_HEIGHT;
-
-      if (listHeight > MAX_LIST_HEIGHT) {
-        return { listHeight: MAX_LIST_HEIGHT, scrollEnabled: true };
-      }
-    }
-  }
-  return { listHeight, scrollEnabled: false };
-};
 
 export type EditWalletContextMenuActions = {
   edit: (walletId: string, address: EthereumAddress) => void;
@@ -113,15 +42,6 @@ export default function ChangeWalletSheet() {
   const [editMode, setEditMode] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(currentAccountAddress || accountAddress);
   const [currentSelectedWallet, setCurrentSelectedWallet] = useState(selectedWallet);
-
-  const [headerHeight, listHeight, scrollEnabled, showDividers] = useMemo(() => {
-    const { listHeight, scrollEnabled } = getWalletListHeight(wallets, watchOnly);
-
-    const headerHeight = scrollEnabled ? 40 : 30;
-    const showDividers = scrollEnabled;
-
-    return [headerHeight, listHeight, scrollEnabled, showDividers];
-  }, [wallets, watchOnly]);
 
   const onChangeAccount = useCallback(
     async (walletId: string, address: string, fromDeletion = false) => {
@@ -373,21 +293,6 @@ export default function ChangeWalletSheet() {
 
   return (
     <Sheet borderRadius={30}>
-      {IS_ANDROID && <Whitespace />}
-      <Column height={headerHeight} justify="space-between">
-        <Centered>
-          <SheetTitle testID="change-wallet-sheet-title">{lang.t('wallet.label')}</SheetTitle>
-
-          {!watchOnly && (
-            <Row style={{ position: 'absolute', right: 0 }}>
-              <EditButton editMode={editMode} onPress={onPressEditMode}>
-                <EditButtonLabel editMode={editMode}>{editMode ? lang.t('button.done') : lang.t('button.edit')}</EditButtonLabel>
-              </EditButton>
-            </Row>
-          )}
-        </Centered>
-        {showDividers && <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />}
-      </Column>
       <WalletList
         accountAddress={currentAddress}
         allWallets={walletsWithBalancesAndNames}
@@ -400,12 +305,10 @@ export default function ChangeWalletSheet() {
         }
         currentWallet={currentSelectedWallet}
         editMode={editMode}
-        height={listHeight}
+        onPressEditMode={onPressEditMode}
         onChangeAccount={onChangeAccount}
         onPressAddAnotherWallet={onPressAddAnotherWallet}
         onPressPairHardwareWallet={onPressPairHardwareWallet}
-        scrollEnabled={scrollEnabled}
-        showDividers={showDividers}
         watchOnly={watchOnly}
       />
     </Sheet>

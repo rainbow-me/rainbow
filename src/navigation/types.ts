@@ -9,6 +9,7 @@ import { ParsedAddressAsset, PendingTransaction, UniqueAsset } from '@/entities'
 import { Claimable } from '@/resources/addys/claimables/types';
 import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/walletConnect/types';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
+import { RainbowPosition } from '@/resources/defi/types';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -99,5 +100,8 @@ export type RootStackParamList = {
     longFormHeight: number;
     type: 'token' | 'unique_token';
     asset: ParsedAddressAsset | UniqueAsset;
+  };
+  [Routes.POSITION_SHEET]: {
+    position: RainbowPosition;
   };
 };
