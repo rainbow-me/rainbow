@@ -87,15 +87,24 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
   const [verifiedAssets, setVerifiedAssets] = useState<RainbowToken[]>([]);
   const [fetchingCrosschainAssets, setFetchingCrosschainAssets] = useState(false);
   const [crosschainVerifiedAssets, setCrosschainVerifiedAssets] = useState<CrosschainVerifiedAssets>({
+    [ChainId.apechain]: [],
+    [ChainId.arbitrum]: [],
+    [ChainId.avalanche]: [],
+    [ChainId.base]: [],
+    [ChainId.bsc]: [],
+    [ChainId.blast]: [],
+    [ChainId.degen]: [],
+    [ChainId.gnosis]: [],
+    [ChainId.gravity]: [],
+    [ChainId.ink]: [],
+    [ChainId.linea]: [],
     [ChainId.mainnet]: [],
     [ChainId.optimism]: [],
     [ChainId.polygon]: [],
-    [ChainId.bsc]: [],
-    [ChainId.arbitrum]: [],
-    [ChainId.base]: [],
-    [ChainId.avalanche]: [],
-    [ChainId.blast]: [],
-    [ChainId.apechain]: [],
+    [ChainId.sanko]: [],
+    [ChainId.scroll]: [],
+    [ChainId.zksync]: [],
+    [ChainId.zora]: [],
   });
 
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
