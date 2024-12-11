@@ -12,10 +12,10 @@ import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import { deviceUtils } from '@/utils';
-import { chainsName } from '@/chains';
 import { ThemeContextProps } from '@/theme';
-import { ChainId } from '@/chains/types';
 import { useDiscoverScreenContext } from '@/screens/discover/DiscoverScreenContext';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const SearchHeight = 40;
 const SearchWidth = deviceUtils.dimensions.width - 30;
@@ -151,7 +151,7 @@ const DiscoverSearchInput = ({
   const placeholder = useMemo(() => {
     if (!currentChainId) return placeholderText;
     return lang.t('button.exchange_search_placeholder_network', {
-      network: chainsName[currentChainId],
+      network: useBackendNetworksStore.getState().getChainsName()[currentChainId],
     });
   }, [currentChainId, placeholderText]);
 

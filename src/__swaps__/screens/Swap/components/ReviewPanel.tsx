@@ -41,8 +41,8 @@ import { useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { chainsLabel, chainsNativeAsset } from '@/chains';
-import { ChainId } from '@/chains/types';
+import { getChainsLabelWorklet, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
@@ -245,6 +245,7 @@ export const SlippageRow = () => {
 export function ReviewPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
+  const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
   const { configProgress, lastTypedInput, internalSelectedInputAsset, internalSelectedOutputAsset, quote } = useSwapContext();
 
   const labelTertiary = useForegroundColor('labelTertiary');
@@ -252,7 +253,9 @@ export function ReviewPanel() {
 
   const unknown = i18n.t(i18n.l.swap.unknown);
 
-  const chainName = useDerivedValue(() => chainsLabel[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]);
+  const chainName = useDerivedValue(
+    () => getChainsLabelWorklet(backendNetworks)[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]
+  );
 
   const minReceivedOrMaxSoldLabel = useDerivedValue(() => {
     const isInputBasedTrade = lastTypedInput.value === 'inputAmount' || lastTypedInput.value === 'inputNativeValue';
@@ -281,6 +284,7 @@ export function ReviewPanel() {
   });
 
   const openGasExplainer = useCallback(async () => {
+    const chainsNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset();
     const nativeAsset = chainsNativeAsset[swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet];
     navigate(Routes.EXPLAIN_SHEET, {
       chainId: swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet,

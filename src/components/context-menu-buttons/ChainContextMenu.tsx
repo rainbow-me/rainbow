@@ -5,8 +5,8 @@ import { Bleed, Box, Inline, Text, TextProps } from '@/design-system';
 import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { showActionSheetWithOptions } from '@/utils';
-import { ChainId } from '@/chains/types';
-import { chainsLabel, chainsName } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 interface DefaultButtonOptions {
   iconColor?: TextProps['color'];
@@ -56,12 +56,13 @@ export const ChainContextMenu = ({
 
   const menuConfig = useMemo(() => {
     const chainItems = balanceSortedChains.map(chainId => {
+      const chainName = useBackendNetworksStore.getState().getChainsName()[chainId];
       return {
         actionKey: `${chainId}`,
-        actionTitle: chainsLabel[chainId],
+        actionTitle: useBackendNetworksStore.getState().getChainsLabel()[chainId],
         icon: {
           iconType: 'ASSET',
-          iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${chainsName[chainId]}BadgeNoShadow`,
+          iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${chainName}BadgeNoShadow`,
         },
       };
     });
@@ -111,7 +112,7 @@ export const ChainContextMenu = ({
 
   const displayName = useMemo(() => {
     if (!selectedChainId) return allNetworksText;
-    const name = chainsLabel[selectedChainId];
+    const name = useBackendNetworksStore.getState().getChainsLabel()[selectedChainId];
     return name.endsWith(' Chain') ? name.slice(0, -6) : name;
   }, [allNetworksText, selectedChainId]);
 

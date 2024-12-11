@@ -1,6 +1,6 @@
 import { Address } from 'viem';
 
-import { Network, ChainId } from '@/chains/types';
+import { Network, ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 const chainsIdByNetwork: Record<Network, ChainId> = {

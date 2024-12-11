@@ -20,8 +20,8 @@ import { deviceUtils } from '@/utils';
 import { TokenStandard } from '@/handlers/web3';
 import { handleNFTImages } from '@/utils/handleNFTImages';
 import { SimpleHashNft } from '@/graphql/__generated__/arc';
-import { Network } from '@/chains/types';
-import { chainsIdByName } from '@/chains';
+import { Network } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const ENS_COLLECTION_NAME = 'ENS';
 const SVG_MIME_TYPE = 'image/svg+xml';
@@ -59,6 +59,8 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
   const isPoap = nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
 
   const ownerEntry = nft.owners?.find(o => o.owner_address === address);
+
+  const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
 
   return {
     animation_url: nft?.video_url ?? nft.audio_url ?? nft.model_url ?? nft.extra_metadata?.animation_original_url ?? undefined,

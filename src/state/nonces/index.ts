@@ -1,9 +1,9 @@
 import create from 'zustand';
 import { createStore } from '../internal/createStore';
 import { RainbowTransaction } from '@/entities/transactions';
-import { Network, ChainId } from '@/chains/types';
+import { Network, ChainId } from '@/state/backendNetworks/types';
 import { getBatchedProvider } from '@/handlers/web3';
-import { chainsIdByName, chainsPrivateMempoolTimeout } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
 
 type NonceData = {
@@ -23,7 +23,7 @@ export async function getNextNonce({ address, chainId }: { address: string; chai
   const localNonceData = getNonce({ address, chainId });
   const localNonce = localNonceData?.currentNonce || 0;
   const provider = getBatchedProvider({ chainId });
-  const privateMempoolTimeout = chainsPrivateMempoolTimeout[chainId];
+  const privateMempoolTimeout = useBackendNetworksStore.getState().getChainsPrivateMempoolTimeout()[chainId];
 
   const pendingTxCountRequest = provider.getTransactionCount(address, 'pending');
   const latestTxCountRequest = provider.getTransactionCount(address, 'latest');
@@ -109,6 +109,7 @@ export const nonceStore = createStore<CurrentNonceState<Nonces>>(
       version: 1,
       migrate: (persistedState: unknown, version: number) => {
         if (version === 0) {
+          const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
           const oldState = persistedState as CurrentNonceState<NoncesV0>;
           const newNonces: CurrentNonceState<Nonces>['nonces'] = {};
           for (const [address, networkNonces] of Object.entries(oldState.nonces)) {

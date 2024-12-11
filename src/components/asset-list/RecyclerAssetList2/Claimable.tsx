@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { useClaimables } from '@/resources/addys/claimables/query';
@@ -11,7 +11,7 @@ import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorkl
 import { analyticsV2 } from '@/analytics';
 import { ChainBadge } from '@/components/coin-icon';
 import { useNativeAsset } from '@/utils/ethereumUtils';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { usePoints } from '@/resources/points';
 
 const RAINBOW_ICON_URL = 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png';
