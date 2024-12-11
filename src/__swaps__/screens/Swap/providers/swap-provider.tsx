@@ -29,7 +29,7 @@ import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { getFlashbotsProvider, getProvider } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
@@ -58,7 +58,7 @@ import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './Sync
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { chainsNativeAsset, supportedFlashbotsChainIds } from '@/chains';
+import { chainsNativeAsset } from '@/chains';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 
@@ -225,10 +225,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const NotificationManager = IS_IOS ? NativeModules.NotificationManager : null;
       NotificationManager?.postNotification('rapInProgress');
 
-      const provider =
-        parameters.flashbots && supportedFlashbotsChainIds.includes(parameters.chainId)
-          ? getFlashbotsProvider()
-          : getProvider({ chainId: parameters.chainId });
+      const provider = getProvider({ chainId: parameters.chainId });
       const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
 
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
@@ -328,7 +325,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           mainnetAddress: (parameters.assetToBuy.chainId === ChainId.mainnet
             ? parameters.assetToBuy.address
             : parameters.assetToSell.mainnetAddress) as AddressOrEth,
-          flashbots: parameters.flashbots ?? false,
           tradeAmountUSD: parameters.quote.tradeAmountUSD,
           degenMode: isDegenModeEnabled,
           isSwappingToPopularAsset,
@@ -401,7 +397,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         mainnetAddress: (parameters.assetToBuy.chainId === ChainId.mainnet
           ? parameters.assetToBuy.address
           : parameters.assetToSell.mainnetAddress) as AddressOrEth,
-        flashbots: parameters.flashbots ?? false,
         tradeAmountUSD: parameters.quote.tradeAmountUSD,
         degenMode: isDegenModeEnabled,
         isSwappingToPopularAsset,
@@ -449,8 +444,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
       const quoteData = q as QuoteTypeMap[typeof type];
-      const flashbots = (SwapSettings.flashbots.value && !!supportedFlashbotsChainIds.includes(inputAsset.chainId)) ?? false;
-
       const isNativeWrapOrUnwrap = quoteData.swapType === SwapType.wrap || quoteData.swapType === SwapType.unwrap;
 
       const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
@@ -465,7 +458,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           sellAmountDisplay: isNativeWrapOrUnwrap ? quoteData.sellAmount : quoteData.sellAmountDisplay,
           feeInEth: isNativeWrapOrUnwrap ? '0' : quoteData.feeInEth,
         },
-        flashbots,
       };
 
       runOnJS(getNonceAndPerformSwap)({

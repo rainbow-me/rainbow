@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.47-1",
+  "version": "1.9.49-1",
   "private": true,
   "scripts": {
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn graphql-codegen && yarn fetch:networks",
@@ -254,7 +254,7 @@
     "react-native-quick-md5": "3.0.6",
     "react-native-radial-gradient": "rainbow-me/react-native-radial-gradient#b99ab59d27dba70364ef516bd5193c37657ba95c",
     "react-native-randombytes": "3.5.3",
-    "react-native-reanimated": "3.16.2",
+    "react-native-reanimated": "3.16.3",
     "react-native-redash": "16.3.0",
     "react-native-restart": "0.0.22",
     "react-native-safe-area-context": "4.14.0",

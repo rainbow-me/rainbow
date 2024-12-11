@@ -42,7 +42,7 @@ import { chainsNativeAsset, chainsSwapPollingInterval, meteorologySupportedChain
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { addBuffer } from '@/helpers/utilities';
 
-const { CUSTOM, SLOW, NORMAL, FAST, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
+const { CUSTOM, NORMAL, URGENT } = gasUtils;
 
 const mutex = new Mutex();
 
@@ -291,7 +291,7 @@ export const getMeteorologyGasParams = async (chainId: ChainId): Promise<Meterol
 };
 
 export const gasPricesStartPolling =
-  (chainId = ChainId.mainnet, flashbots = false) =>
+  (chainId = ChainId.mainnet) =>
   async (dispatch: AppDispatch, getState: AppGetState) => {
     dispatch(gasPricesStopPolling());
 
@@ -363,25 +363,6 @@ export const gasPricesStartPolling =
                   if (meteorologyGasParams.feeType === 'eip1559') {
                     const { gasFeeParamsBySpeed, baseFeePerGas, trend, currentBaseFee, blocksToConfirmation, secondsPerNewBlock } =
                       meteorologyGasParams as MeterologyGasParams;
-
-                    if (flashbots) {
-                      [SLOW, NORMAL, FAST, URGENT].forEach(speed => {
-                        // Override min tip to 5 if needed, when flashbots is enabled
-                        // See https://docs.flashbots.net/flashbots-protect/rpc/quick-start#choosing-the-right-gas-price
-                        if (gasFeeParamsBySpeed[speed]) {
-                          if (Number(gasFeeParamsBySpeed[speed].maxPriorityFeePerGas.gwei) < FLASHBOTS_MIN_TIP) {
-                            gasFeeParamsBySpeed[speed] = {
-                              ...gasFeeParamsBySpeed[speed],
-                              maxPriorityFeePerGas: {
-                                amount: `${FLASHBOTS_MIN_TIP}000000000`,
-                                display: `${FLASHBOTS_MIN_TIP} gwei`,
-                                gwei: `${FLASHBOTS_MIN_TIP}`,
-                              },
-                            };
-                          }
-                        }
-                      });
-                    }
 
                     // Set a really gas estimate to guarantee that we're gonna be over
                     // the basefee at the time we fork mainnet during our hardhat tests

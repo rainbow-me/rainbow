@@ -33,7 +33,6 @@ export interface UserProperties {
   currency?: NativeCurrencyKey;
   language?: Language;
   enabledTestnets?: boolean;
-  enabledFlashbots?: boolean;
   pinnedCoins?: string[];
   hiddenCOins?: string[];
   appIcon?: string;

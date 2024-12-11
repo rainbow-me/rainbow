@@ -1,5 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
-import React, { useCallback, useMemo } from 'react';
+import ConditionalWrap from 'conditional-wrap';
+import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, TextInput } from 'react-native';
 import { AnimatedRef, runOnJS, runOnUI, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -8,10 +9,10 @@ import { IS_IOS } from '@/env';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import * as i18n from '@/languages';
 import { useBrowserStore } from '@/state/browser/browserStore';
+import position from '@/styles/position';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
-import position from '@/styles/position';
 import { haptics, showActionSheetWithOptions } from '@/utils';
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
@@ -36,7 +37,6 @@ export const TabButton = React.memo(function TabButton({
 
   const { isDarkMode } = useColorMode();
   const fillSecondary = useForegroundColor('fillSecondary');
-  const separatorSecondary = useForegroundColor('separatorSecondary');
 
   const isFocusedState = useSharedValueState(isFocused, { initialValue: false });
 
@@ -53,21 +53,14 @@ export const TabButton = React.memo(function TabButton({
   const label = useForegroundColor('label');
   const labelSecondary = useForegroundColor('labelSecondary');
 
-  const tabButtonIcon = useDerivedValue<string>(() => {
-    return isFocused.value ? '􀆈' : '􀐅';
-  });
-
-  const tabButtonIconStyle = useAnimatedStyle(() => {
-    return {
-      color: isFocused.value ? labelSecondary : label,
-    };
-  });
+  const tabButtonIcon = useDerivedValue<string>(() => (isFocused.value ? '􀆈' : '􀐅'));
+  const tabButtonIconStyle = useAnimatedStyle(() => ({ color: isFocused.value ? labelSecondary : label }));
 
   const blurInput = useCallback(() => {
-    inputRef?.current?.blur();
+    inputRef.current?.blur();
   }, [inputRef]);
 
-  const onPress = useCallback(() => {
+  const onPressWorklet = useCallback(() => {
     'worklet';
     if (!isFocused.value) {
       toggleTabViewWorklet();
@@ -77,13 +70,6 @@ export const TabButton = React.memo(function TabButton({
   }, [blurInput, isFocused, toggleTabViewWorklet]);
 
   const longPressMenuConfig = useMemo(() => {
-    if (isFocusedState) {
-      return {
-        menuTitle: '',
-        menuItems: [],
-      };
-    }
-
     let closeAllTabsTitle: string;
     switch (numberOfClosableTabs) {
       case 1:
@@ -142,7 +128,7 @@ export const TabButton = React.memo(function TabButton({
       menuTitle: '',
       menuItems,
     };
-  }, [isFocusedState, numberOfClosableTabs]);
+  }, [numberOfClosableTabs]);
 
   const goHome = useCallback(() => {
     goToUrl(RAINBOW_HOME);
@@ -191,10 +177,22 @@ export const TabButton = React.memo(function TabButton({
   return (
     <BrowserButtonShadows borderRadius={TAB_BUTTON_SIZE / 2} hideDarkModeShadows>
       <Bleed space="8px">
-        <ContextMenuButton isMenuPrimaryAction={false} menuConfig={longPressMenuConfig} onPressMenuItem={onPressMenuItem}>
+        <ConditionalWrap
+          condition={IS_IOS}
+          wrap={children => (
+            <ContextMenuButton
+              enableContextMenu={IS_IOS ? !isFocusedState : undefined}
+              isMenuPrimaryAction={IS_IOS ? isFocusedState : undefined}
+              menuConfig={longPressMenuConfig}
+              onPressMenuItem={onPressMenuItem}
+            >
+              {children}
+            </ContextMenuButton>
+          )}
+        >
           <GestureHandlerButton
             onLongPressJS={IS_IOS || isFocusedState ? undefined : onLongPressAndroid}
-            onPressWorklet={onPress}
+            onPressWorklet={onPressWorklet}
             style={{ padding: 8 }}
           >
             <Box
@@ -203,45 +201,51 @@ export const TabButton = React.memo(function TabButton({
               alignItems="center"
               justifyContent="center"
             >
+              <BlurLayer buttonColor={buttonColor} />
               <AnimatedText align="center" size="icon 17px" style={[styles.tabButtonIcon, tabButtonIconStyle]} weight="heavy">
                 {tabButtonIcon}
               </AnimatedText>
-              {IS_IOS && (
-                <Box
-                  as={BlurView}
-                  blurAmount={20}
-                  blurType={isDarkMode ? 'dark' : 'light'}
-                  style={[
-                    {
-                      borderRadius: TAB_BUTTON_SIZE / 2,
-                      elevation: -1,
-                      zIndex: -1,
-                    },
-                    position.coverAsObject,
-                  ]}
-                />
-              )}
-              <Box
-                style={[
-                  {
-                    backgroundColor: buttonColor,
-                    borderColor: separatorSecondary,
-                    borderRadius: TAB_BUTTON_SIZE / 2,
-                    borderWidth: IS_IOS && isDarkMode ? THICK_BORDER_WIDTH : 0,
-                    zIndex: -1,
-                  },
-                  position.coverAsObject,
-                ]}
-              />
             </Box>
           </GestureHandlerButton>
-        </ContextMenuButton>
+        </ConditionalWrap>
       </Bleed>
     </BrowserButtonShadows>
   );
 });
 
+const BlurLayer = memo(function BlurLayer({ buttonColor }: { buttonColor: string }) {
+  const { isDarkMode } = useColorMode();
+  const separatorSecondary = useForegroundColor('separatorSecondary');
+
+  return (
+    <>
+      {IS_IOS && <Box as={BlurView} blurAmount={20} blurType={isDarkMode ? 'dark' : 'light'} style={styles.blurLayer} />}
+      <Box
+        style={[
+          styles.blurTint,
+          {
+            backgroundColor: buttonColor,
+            borderColor: separatorSecondary,
+            borderWidth: IS_IOS && isDarkMode ? THICK_BORDER_WIDTH : 0,
+          },
+        ]}
+      />
+    </>
+  );
+});
+
 const styles = StyleSheet.create({
+  blurLayer: {
+    ...position.coverAsObject,
+    borderRadius: TAB_BUTTON_SIZE / 2,
+    elevation: -1,
+    zIndex: -1,
+  },
+  blurTint: {
+    ...position.coverAsObject,
+    borderRadius: TAB_BUTTON_SIZE / 2,
+    zIndex: -1,
+  },
   tabButtonIcon: {
     width: TAB_BUTTON_SIZE,
   },
