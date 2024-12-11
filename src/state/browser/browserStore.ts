@@ -122,7 +122,6 @@ const INITIAL_PERSISTED_TAB_URLS: Record<TabId, string> = { [INITIAL_TAB_IDS[0]]
 export interface BrowserStore {
   activeTabIndex: number;
   persistedTabUrls: Record<TabId, string>;
-  shouldExpandWebView: boolean;
   tabIds: TabId[];
   tabsData: Map<TabId, TabData>;
   getActiveTabId: () => TabId;
@@ -138,7 +137,6 @@ export interface BrowserStore {
   setActiveTabIndex: (index: number) => void;
   setLogo: (logoUrl: string | undefined, tabId: TabId) => void;
   setNavState: (navState: { canGoBack: boolean; canGoForward: boolean }, tabId: TabId) => void;
-  setShouldExpandWebView: (shouldExpandWebView: boolean) => void;
   setTabIds: (tabIds: TabId[]) => void;
   setTitle: (title: string | undefined, tabId: TabId) => void;
   silentlySetPersistedTabUrls: (persistedTabUrls: Record<TabId, string>) => void;
@@ -152,7 +150,6 @@ export const useBrowserStore = create<BrowserStore>()(
       (set, get) => ({
         activeTabIndex: INITIAL_ACTIVE_TAB_INDEX,
         persistedTabUrls: INITIAL_PERSISTED_TAB_URLS,
-        shouldExpandWebView: false,
         tabIds: INITIAL_TAB_IDS,
         tabsData: INITIAL_TABS_DATA,
 
@@ -252,8 +249,6 @@ export const useBrowserStore = create<BrowserStore>()(
             }
             return state;
           }),
-
-        setShouldExpandWebView: shouldExpandWebView => set(() => ({ shouldExpandWebView })),
 
         setTabIds: newTabIds =>
           set(state => {
