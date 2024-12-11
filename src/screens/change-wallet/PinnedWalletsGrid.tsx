@@ -10,6 +10,7 @@ import { BlurView } from '@react-native-community/blur';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { View } from 'react-native';
 import { SelectedAddressBadge } from './SelectedAddressBadge';
+import { JiggleAnimation } from '@/components/animations/JiggleAnimation';
 
 const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;
@@ -60,49 +61,54 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode }: PinnedWall
               <Draggable activationTolerance={DEVICE_WIDTH} activeScale={1.06} id={account.address} key={account.address}>
                 <View style={{ width: avatarSize }}>
                   <Stack space="12px" alignHorizontal="center">
-                    <Box>
-                      <ButtonPressAnimation disallowInterruption onPress={() => onPress(account.walletId, account.address)} scaleTo={0.8}>
-                        <Box
-                          borderRadius={avatarSize / 2}
-                          borderWidth={account.isSelected ? 4 : undefined}
-                          borderColor={account.isSelected ? { custom: '#268FFF' } : undefined}
-                          // shadow={'30px blue'}
-                        >
-                          <AddressAvatar
-                            url={account.image}
-                            size={avatarSize}
-                            address={account.address}
-                            color={account.color}
-                            label={account.label}
-                          />
-                        </Box>
-                        {account.isSelected && (
-                          <Box position="absolute" bottom={{ custom: 4 }} right={{ custom: 4 }}>
-                            <SelectedAddressBadge />
-                          </Box>
-                        )}
-                      </ButtonPressAnimation>
-                      {editMode && (
-                        <ButtonPressAnimation onPress={() => removePinnedAddress(account.address)}>
+                    <JiggleAnimation enabled={editMode}>
+                      <Box
+                        // required to prevent artifacts when jiggle animation is active
+                        shouldRasterizeIOS
+                      >
+                        <ButtonPressAnimation disallowInterruption onPress={() => onPress(account.walletId, account.address)} scaleTo={0.8}>
                           <Box
-                            as={BlurView}
-                            width={{ custom: UNPIN_BADGE_SIZE }}
-                            height={{ custom: UNPIN_BADGE_SIZE }}
-                            position="absolute"
-                            bottom={'0px'}
-                            right={'0px'}
-                            justifyContent="center"
-                            alignItems="center"
-                            borderRadius={UNPIN_BADGE_SIZE / 2}
-                            blurAmount={24}
+                            borderRadius={avatarSize / 2}
+                            borderWidth={account.isSelected ? 4 : undefined}
+                            borderColor={account.isSelected ? { custom: '#268FFF' } : undefined}
+                            // shadow={'30px blue'}
                           >
-                            <Text color="label" size="icon 12px" weight="bold">
-                              {'􀅽'}
-                            </Text>
+                            <AddressAvatar
+                              url={account.image}
+                              size={avatarSize}
+                              address={account.address}
+                              color={account.color}
+                              label={account.label}
+                            />
                           </Box>
+                          {account.isSelected && (
+                            <Box position="absolute" bottom={{ custom: 4 }} right={{ custom: 4 }}>
+                              <SelectedAddressBadge />
+                            </Box>
+                          )}
                         </ButtonPressAnimation>
-                      )}
-                    </Box>
+                        {editMode && (
+                          <ButtonPressAnimation onPress={() => removePinnedAddress(account.address)}>
+                            <Box
+                              as={BlurView}
+                              width={{ custom: UNPIN_BADGE_SIZE }}
+                              height={{ custom: UNPIN_BADGE_SIZE }}
+                              position="absolute"
+                              bottom={'0px'}
+                              right={'0px'}
+                              justifyContent="center"
+                              alignItems="center"
+                              borderRadius={UNPIN_BADGE_SIZE / 2}
+                              blurAmount={24}
+                            >
+                              <Text color="label" size="icon 12px" weight="bold">
+                                {'􀅽'}
+                              </Text>
+                            </Box>
+                          </ButtonPressAnimation>
+                        )}
+                      </Box>
+                    </JiggleAnimation>
                     <Inline wrap={false} space="4px" alignHorizontal="center" alignVertical="center">
                       {account.isLedger && (
                         <Text color="label" size="icon 10px">
