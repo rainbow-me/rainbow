@@ -2,7 +2,7 @@ import { Box, Inline, Text } from '@/design-system';
 import React, { useEffect } from 'react';
 import * as i18n from '@/languages';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { chainsLabel } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
 
 export function GasDetails() {
@@ -52,7 +52,7 @@ export function GasDetails() {
             <Text color="labelQuaternary" size="13pt" weight="bold">
               {i18n.t(i18n.l.claimables.panel.amount_to_claim_on_network, {
                 amount: gasFeeDisplay,
-                network: chainsLabel[chainId],
+                network: useBackendNetworksStore.getState().getChainsLabel()[chainId],
               })}
             </Text>
           </Inline>

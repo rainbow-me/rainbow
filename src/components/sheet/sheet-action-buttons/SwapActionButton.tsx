@@ -11,8 +11,8 @@ import { SwapAssetType } from '@/__swaps__/types/swap';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { chainsIdByName, chainsName } from '@/chains';
 import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
@@ -29,7 +29,9 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, weight =
   const color = givenColor || colors.swapPurple;
 
   const goToSwap = useCallback(async () => {
-    const chainId = asset.chainId || chainsIdByName[asset.network];
+    const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
+    const chainsName = useBackendNetworksStore.getState().getChainsName();
+    const chainId = chainsIdByName[asset.network];
     const uniqueId = `${asset.address}_${chainId}`;
     const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 

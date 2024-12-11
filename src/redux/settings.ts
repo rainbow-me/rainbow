@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error - changeIcon has no declaration file
 import { changeIcon } from 'react-native-change-icon';
 import lang from 'i18n-js';
 import { Dispatch } from 'redux';
@@ -23,7 +23,7 @@ import {
 import { getProvider } from '@/handlers/web3';
 import { AppState } from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
-import { Network, ChainId } from '@/chains/types';
+import { Network, ChainId } from '@/state/backendNetworks/types';
 import { Address } from 'viem';
 
 // -- Constants ------------------------------------------------------------- //

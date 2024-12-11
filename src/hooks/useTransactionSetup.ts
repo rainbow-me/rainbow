@@ -6,7 +6,7 @@ import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 type TransactionSetupParams = {
   chainId: ChainId;

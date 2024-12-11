@@ -1,4 +1,4 @@
-import { chainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { NewTransaction, TransactionStatus } from '@/entities';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { getProvider } from '@/handlers/web3';
@@ -21,6 +21,7 @@ export async function executeClaim({
   wallet: Signer;
 }) {
   const provider = getProvider({ chainId: claimTx.chainId });
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
 
   const result = await sendTransaction({ transaction: claimTx, existingWallet: wallet, provider });
 

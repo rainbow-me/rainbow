@@ -21,8 +21,8 @@ import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
-import { ChainId } from '@/chains/types';
-import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const NOOP = () => null;
 
@@ -68,6 +68,7 @@ const AvailableNetworksv2 = ({
       goBack();
 
       const uniqueId = `${newAsset.address}_${asset.chainId}`;
+      const chainsName = useBackendNetworksStore.getState().getChainsName();
       const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 
       const parsedAsset = parseSearchAsset({
@@ -134,15 +135,17 @@ const AvailableNetworksv2 = ({
     convertAssetAndNavigate(availableChainIds[0]);
   }, [availableChainIds, convertAssetAndNavigate]);
 
-  const networkMenuItems = supportedSwapChainIds
-    .filter(chainId => chainId !== ChainId.mainnet && availableChainIds.includes(chainId))
-    .map(chainId => defaultChains[chainId])
+  const networkMenuItems = useBackendNetworksStore
+    .getState()
+    .getSupportedChainIds()
+    .filter(chainId => chainId !== ChainId.mainnet)
+    .map(chainId => useBackendNetworksStore.getState().getDefaultChains()[chainId])
     .map(chain => ({
       actionKey: `${chain.id}`,
-      actionTitle: chainsLabel[chain.id],
+      actionTitle: useBackendNetworksStore.getState().getChainsLabel()[chain.id],
       icon: {
         iconType: 'ASSET',
-        iconValue: `${chainsName[chain.id]}Badge${chain.id === ChainId.mainnet ? '' : 'NoShadow'}`,
+        iconValue: `${useBackendNetworksStore.getState().getChainsName()[chain.id]}Badge${chain.id === ChainId.mainnet ? '' : 'NoShadow'}`,
       },
     }));
 
@@ -204,7 +207,7 @@ const AvailableNetworksv2 = ({
                           availableNetworks: availableChainIds?.length,
                         })
                       : lang.t('expanded_state.asset.available_networkv2', {
-                          availableNetwork: chainsName[availableChainIds[0]],
+                          availableNetwork: useBackendNetworksStore.getState().getChainsName()[availableChainIds[0]],
                         })}
                   </Text>
                 </Box>

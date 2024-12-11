@@ -1,5 +1,5 @@
-import React, { forwardRef, useMemo } from 'react';
-import { ChainId } from '@/chains/types';
+import React, { useMemo, forwardRef } from 'react';
+import { ChainId } from '@/state/backendNetworks/types';
 
 import ArbitrumBadge from '@/assets/badges/arbitrum.png';
 import BaseBadge from '@/assets/badges/base.png';

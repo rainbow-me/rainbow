@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export interface RainbowConfig extends Record<string, string | boolean | number> {
   default_slippage_bips: string;
+  default_slippage_bips_chainId: string;
   f2c_enabled: boolean;
   op_nft_network: string;
   op_rewards_enabled: boolean;
@@ -73,6 +74,19 @@ export const DEFAULT_CONFIG: RainbowConfig = {
     polygon: 200,
     zora: 200,
   }),
+  default_slippage_bips_chainId: JSON.stringify({
+    '33139': 200,
+    '42161': 200,
+    '43114': 200,
+    '8453': 200,
+    '81457': 200,
+    '56': 200,
+    '666666666': 200,
+    '1': 100,
+    '10': 200,
+    '137': 200,
+    '7777777': 200,
+  }),
   f2c_enabled: true,
   op_nft_network: 'op-mainnet',
   op_rewards_enabled: false,
@@ -138,7 +152,7 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
     const parameters = remoteConfig().getAll();
     Object.entries(parameters).forEach($ => {
       const [key, entry] = $;
-      if (key === 'default_slippage_bips') {
+      if (key === 'default_slippage_bips' || key === 'default_slippage_bips_chainId') {
         config[key] = JSON.parse(entry.asString());
       } else if (
         key === 'f2c_enabled' ||

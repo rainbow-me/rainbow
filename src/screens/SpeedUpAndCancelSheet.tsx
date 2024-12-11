@@ -30,7 +30,7 @@ import { gasUtils, safeAreaInsetValues } from '@/utils';
 import * as i18n from '@/languages';
 import { updateTransaction } from '@/state/pendingTransactions';
 import { logger, RainbowError } from '@/logger';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { RootStackParamList } from '@/navigation/types';

@@ -1,8 +1,8 @@
 import { INITIAL_SLIDER_POSITION } from '@/__swaps__/screens/Swap/constants';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ChainId } from '@/state/backendNetworks/types';
 import { RecentSwap } from '@/__swaps__/types/swap';
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
-import { ChainId } from '@/chains/types';
 import { RainbowError, logger } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
