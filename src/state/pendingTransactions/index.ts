@@ -84,7 +84,7 @@ export const addNewTransaction = ({
   const parsedTransaction = convertNewTransactionToRainbowTransaction(transaction);
   addPendingTransaction({ address, pendingTransaction: parsedTransaction });
   const localNonceData = getNonce({ address, chainId });
-  const localNonce = localNonceData?.currentNonce || 0;
+  const localNonce = localNonceData?.currentNonce || -1;
   if (transaction.nonce > localNonce) {
     setNonce({
       address,
