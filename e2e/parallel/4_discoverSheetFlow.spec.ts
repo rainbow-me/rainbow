@@ -11,7 +11,7 @@ import {
   delayTime,
   importWalletFlow,
   afterAllcleanApp,
-} from './helpers';
+} from '../helpers';
 
 const ios = device.getPlatform() === 'ios';
 
