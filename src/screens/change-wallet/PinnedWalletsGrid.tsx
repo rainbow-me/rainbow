@@ -4,9 +4,6 @@ import { Box, Inline, Stack, Text } from '@/design-system';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import React, { useCallback, useMemo } from 'react';
 import { AddressItem } from './ChangeWalletSheet';
-import { GenericCard } from '@/components/cards/GenericCard';
-import { useTheme } from '@/theme';
-import { IS_ANDROID } from '@/env';
 import { AddressAvatar } from './AddressAvatar';
 import { ButtonPressAnimation } from '@/components/animations';
 import { BlurView } from '@react-native-community/blur';
@@ -18,28 +15,6 @@ const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;
 const MAX_AVATAR_SIZE = 91;
 const HORIZONTAL_PAGE_INSET = 24;
-
-function EmptyPinnedWallets() {
-  const { colors, isDarkMode } = useTheme();
-
-  return (
-    <GenericCard
-      type={'stretch'}
-      color={colors.alpha('#268FFF', 0.1)}
-      borderColor={colors.alpha('#268FFF', 0.05)}
-      ignoreShadow={IS_ANDROID && isDarkMode}
-    >
-      <Stack space="16px">
-        <Text color="label" size="17pt" weight="bold">
-          No pinned wallets yet
-        </Text>
-        <Text color="labelSecondary" size="13pt">
-          Pin your favorite wallets here for quick access at the top of your list
-        </Text>
-      </Stack>
-    </GenericCard>
-  );
-}
 
 type PinnedWalletsGridProps = {
   walletItems: AddressItem[];
@@ -53,12 +28,11 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode }: PinnedWall
 
   const onGridOrderChange: DraggableGridProps['onOrderChange'] = useCallback(
     (value: UniqueIdentifier[]) => {
-      reorderPinnedAddresses(value as string[]);
+      // TODO: once upstream dnd is integrated
+      // reorderPinnedAddresses(value as string[]);
     },
     [reorderPinnedAddresses]
   );
-
-  const gridKey = useMemo(() => walletItems.map(item => item.address).join('-'), [walletItems]);
 
   const fillerItems = useMemo(() => {
     const itemsInLastRow = walletItems.length % PINS_PER_ROW;
@@ -69,18 +43,17 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode }: PinnedWall
   const avatarSize = MAX_AVATAR_SIZE;
 
   return (
-    <Box alignItems="center" backgroundColor="transparent" paddingHorizontal="24px">
+    <Box paddingTop="20px" paddingBottom="28px" alignItems="center" justifyContent="center" paddingHorizontal="24px">
       {walletItems.length > 0 ? (
         <DndProvider activationDelay={150}>
           <DraggableGrid
             direction="row"
-            gap={8}
-            key={gridKey}
+            // TODO: design spec is 28px, but is too large
+            gap={24}
             onOrderChange={onGridOrderChange}
             size={PINS_PER_ROW}
             style={{
-              width: DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2,
-              justifyContent: 'space-between',
+              width: '100%',
             }}
           >
             {walletItems.map(account => (

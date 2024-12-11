@@ -26,11 +26,12 @@ import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoShe
 import { RootStackParamList } from '@/navigation/types';
 import { address } from '@/utils/abbreviations';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { Box, Stack, Text } from '@/design-system';
+import { Box, globalColors, Stack, Text } from '@/design-system';
 import { addDisplay } from '@/helpers/utilities';
 import { useSharedValue } from 'react-native-reanimated';
 import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-import { SheetHandle } from '@/components/sheet';
+import { SheetHandle, SheetHandleFixedToTop } from '@/components/sheet';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 
 const LIST_PADDING_BOTTOM = 6;
 const MAX_LIST_HEIGHT = DEVICE_HEIGHT - 220;
@@ -41,7 +42,7 @@ const WATCH_ONLY_BOTTOM_PADDING = IS_ANDROID ? 20 : 0;
 const PANEL_BOTTOM_OFFSET = 41;
 
 export const MAX_PANEL_HEIGHT = 640;
-export const PANEL_HEADER_HEIGHT = 64;
+export const PANEL_HEADER_HEIGHT = 58;
 export const FOOTER_HEIGHT = 91;
 
 const RowTypes = {
@@ -456,65 +457,63 @@ export default function ChangeWalletSheet() {
         ]}
       >
         <Panel>
-          <View style={{ maxHeight: MAX_PANEL_HEIGHT }}>
-            <View style={{ width: '100%' }}>
-              {/* TODO: align with design spec */}
-              <Box
-                height={{ custom: PANEL_HEADER_HEIGHT }}
-                paddingTop="28px"
-                paddingBottom="24px"
-                width="full"
-                justifyContent="center"
-                alignItems="center"
-              >
-                <Box position="absolute" top={{ custom: 10 }}>
-                  <SheetHandle />
-                </Box>
-                <Text align="center" color="label" size="20pt" weight="heavy">
-                  {'Wallets'}
-                </Text>
-                <Box position="absolute" right={{ custom: 20 }}>
-                  <ButtonPressAnimation onPress={onPressEditMode}>
-                    <Text color="blue" size="17pt" weight="heavy">
-                      {editMode ? i18n.t(i18n.l.button.done) : i18n.t(i18n.l.button.edit)}
-                    </Text>
-                  </ButtonPressAnimation>
-                </Box>
+          <Box style={{ maxHeight: MAX_PANEL_HEIGHT }}>
+            <SheetHandleFixedToTop />
+            <Box paddingTop="32px" paddingBottom="12px" width="full" justifyContent="center" alignItems="center">
+              <Text align="center" color="label" size="20pt" weight="heavy">
+                {'Wallets'}
+              </Text>
+              {/* TODO: this positioning is jank */}
+              <Box position="absolute" style={{ right: 24, top: 32 + 3 }}>
+                <ButtonPressAnimation onPress={onPressEditMode}>
+                  <Text color="blue" size="17pt" weight="medium">
+                    {editMode ? i18n.t(i18n.l.button.done) : i18n.t(i18n.l.button.edit)}
+                  </Text>
+                </ButtonPressAnimation>
               </Box>
-              {/* TODO: why is this here? */}
-              {IS_ANDROID && <Whitespace />}
-              <WalletList
-                walletItems={allWalletItems}
-                contextMenuActions={
-                  {
-                    edit: onPressEdit,
-                    notifications: onPressNotifications,
-                    remove: onPressRemove,
-                  } as EditWalletContextMenuActions
-                }
-                editMode={editMode}
-                onChangeAccount={onChangeAccount}
-              />
-            </View>
-          </View>
-          {/* TODO: progressive blurview */}
-          <Box height={{ custom: 98 }} position="absolute" bottom="0px" width="full" backgroundColor="rgba(0,0,0,0.9)">
+            </Box>
+            {/* TODO: why is this here? */}
+            {IS_ANDROID && <Whitespace />}
+            <WalletList
+              walletItems={allWalletItems}
+              contextMenuActions={
+                {
+                  edit: onPressEdit,
+                  notifications: onPressNotifications,
+                  remove: onPressRemove,
+                } as EditWalletContextMenuActions
+              }
+              editMode={editMode}
+              onChangeAccount={onChangeAccount}
+            />
+          </Box>
+          <Box height={{ custom: FOOTER_HEIGHT }} position="absolute" bottom="0px" width="full">
+            {/* TODO: progressive blurview on iOS */}
+            <EasingGradient
+              endColor={'#191A1C'}
+              endOpacity={1}
+              startColor={'#191A1C'}
+              startOpacity={0}
+              style={{ height: '100%', position: 'absolute', width: '100%' }}
+            />
             <Box
               flexDirection="row"
               justifyContent="space-between"
               alignItems="center"
-              paddingHorizontal="24px"
+              paddingHorizontal="20px"
               paddingBottom="20px"
               paddingTop="24px"
             >
-              <Stack space="10px">
-                <Text color="label" size="13pt" weight="medium">
-                  {'Total Balance'}
-                </Text>
-                <Text color="label" size="17pt" weight="heavy">
-                  {ownedWalletsTotalBalance}
-                </Text>
-              </Stack>
+              {!editMode ? (
+                <Stack space="10px">
+                  <Text color="label" size="13pt" weight="medium">
+                    {'Total Balance'}
+                  </Text>
+                  <Text color="label" size="17pt" weight="heavy">
+                    {ownedWalletsTotalBalance}
+                  </Text>
+                </Stack>
+              ) : null}
               <ButtonPressAnimation onPress={onPressAddAnotherWallet}>
                 <Box
                   background="blue"

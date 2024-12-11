@@ -1,7 +1,7 @@
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 const MIN_WALLETS_TO_SHOW_PINNING = 6;
-const MAX_PINNED_WALLETS = 12;
+const MAX_PINNED_WALLETS = 6;
 
 // TODO: fix
 type Address = string;

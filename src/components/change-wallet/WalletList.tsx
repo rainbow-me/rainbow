@@ -107,10 +107,10 @@ export function WalletList({ walletItems, contextMenuActions, editMode, onChange
         )}
         {pinnedWalletItems.length > 0 && unpinnedWalletItems.length > 0 && (
           <>
-            <Inset horizontal="16px" vertical="28px">
+            <Inset horizontal="16px">
               <Separator color="separatorSecondary" thickness={1} />
             </Inset>
-            <Box paddingHorizontal="16px" paddingBottom="28px">
+            <Box paddingHorizontal="16px" paddingVertical="28px">
               <Text color="label" size="17pt" weight="heavy">
                 {'All Wallets'}
               </Text>
@@ -131,9 +131,11 @@ export function WalletList({ walletItems, contextMenuActions, editMode, onChange
           <DraggableFlatList
             onOrderChange={onOrderChange}
             style={{ maxHeight: LIST_MAX_HEIGHT }}
+            // we have to subtract 24px because the footer has 24px top padding that will look wrong if we have less items than needed to fill the list
+            contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT - 24 }}
             data={unpinnedWalletItems}
             ListHeaderComponent={renderHeader}
-            contentInset={{ bottom: FOOTER_HEIGHT }}
+            automaticallyAdjustContentInsets={false}
             renderItem={({ item }) => (
               <AddressRow
                 contextMenuActions={contextMenuActions}

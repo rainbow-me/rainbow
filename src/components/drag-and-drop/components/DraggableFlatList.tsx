@@ -82,8 +82,8 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
     (offset: number) => {
       'worklet';
 
-      // round to the nearest 0.5 to make scrolling smoother
-      const smoothedOffset = Math.round(offset * 2) / 2;
+      // round to the nearest integer to make scrolling smoother
+      const smoothedOffset = Math.round(offset);
 
       const { value: activeId } = draggableActiveId;
 
@@ -256,6 +256,7 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
       onContentSizeChange={(_, height) => {
         contentHeight.value = height;
       }}
+      // TODO: implement
       // onViewableItemsChanged={onViewableItemsChanged}
       ref={animatedFlatListRef}
       removeClippedSubviews={false}
