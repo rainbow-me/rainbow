@@ -192,7 +192,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     [ChainId.scroll]: '#000', // TODO: Add color
     [ChainId.linea]: '#000', // TODO: Add color
     [ChainId.gravity]: '#000', // TODO: Add color
-    [ChainId.ink]: '#000', // TODO: Add color
+    [ChainId.ink]: '#8049f2',
     [ChainId.arbitrum]: '#2D374B',
     [ChainId.base]: '#0052FF',
     [ChainId.goerli]: '#f6c343',
@@ -341,7 +341,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
       [ChainId.scroll]: '#fff', // TODO: Add color
       [ChainId.linea]: '#fff', // TODO: Add color
       [ChainId.gravity]: '#fff', // TODO: Add color
-      [ChainId.ink]: '#fff', // TODO: Add color
+      [ChainId.ink]: '#8049f2',
       [ChainId.arbitrum]: '#ADBFE3',
       [ChainId.base]: '#3979FF',
       [ChainId.goerli]: '#f6c343',
