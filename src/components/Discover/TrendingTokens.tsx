@@ -332,19 +332,10 @@ function TrendingTokenLoadingRow() {
 function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']['data'][number] }) {
   const separatorColor = useForegroundColor('separator');
 
-  const marketCap = useMemo(
-    () => formatNumber(item.market.market_cap?.value || 0, { useOrderSuffix: true, decimals: 1 }),
-    [item.market.market_cap?.value]
-  );
-
-  const isPositiveChange = useMemo(
-    () => item.market.price?.change_24h && item.market.price?.change_24h > 0,
-    [item.market.price?.change_24h]
-  );
-
-  const price = useMemo(() => `$${item.market.price?.value ?? '0'}`, [item.market.price?.value]);
-
-  const volume = useMemo(() => formatNumber(item.market.volume_24h || 0, { useOrderSuffix: true, decimals: 1 }), [item.market.volume_24h]);
+  const isPositiveChange = item.market.price?.change_24h && item.market.price?.change_24h > 0;
+  const price = `$${item.market.price?.value ?? '0'}`;
+  const marketCap = `$` + formatNumber(item.market.market_cap?.value || 0, { useOrderSuffix: true, decimals: 1 });
+  const volume = `$` + formatNumber(item.market.volume_24h || 0, { useOrderSuffix: true, decimals: 1 });
 
   const handleNavigateToToken = useCallback(() => {
     analyticsV2.track(analyticsV2.event.viewTrendingToken, {
@@ -369,7 +360,7 @@ function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']
 
   return (
     <GestureHandlerButton onPressJS={handleNavigateToToken} scaleTo={0.94}>
-      <View style={{ padding: 12, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+      <View style={{ paddingVertical: 12, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
         <SwapCoinIcon
           iconUrl={item.icon_url}
           color={item.colors.primary}
@@ -428,7 +419,7 @@ function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']
                   {isPositiveChange ? '􀄨' : '􀄩'}
                 </Text>
                 <Text color={isPositiveChange ? 'green' : 'red'} size="15pt" weight="bold">
-                  {formatNumber(item.market.price?.change_24h || 0, { decimals: 2 })}%
+                  {formatNumber(item.market.price?.change_24h || 0, { decimals: 2, useOrderSuffix: true })}%
                 </Text>
               </View>
               <View style={{ flexDirection: 'row', gap: 5, justifyContent: 'flex-end' }}>
@@ -436,7 +427,7 @@ function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']
                   1H
                 </Text>
                 <Text color={isPositiveChange ? 'green' : 'red'} size="11pt" weight="bold">
-                  {formatNumber(item.market.price?.change_24h || 0, { decimals: 2 })}%
+                  {formatNumber(item.market.price?.change_24h || 0, { decimals: 2, useOrderSuffix: true })}%
                 </Text>
               </View>
             </View>
@@ -528,6 +519,8 @@ function TimeFilter() {
 function SortFilter() {
   const sort = useTrendingTokensStore(state => state.sort);
 
+  const iconColor = useForegroundColor('labelQuaternary');
+
   return (
     <DropdownMenu
       menuConfig={{
@@ -542,7 +535,14 @@ function SortFilter() {
         useTrendingTokensStore.getState().setSort(selection);
       }}
     >
-      <FilterButton label={i18n.t(t.filters.sort[sort || 'sort'])} icon="􀄬" />
+      <FilterButton
+        label={i18n.t(t.filters.sort[sort || 'sort'])}
+        icon={
+          <Text color={{ custom: iconColor }} size="icon 13px" weight="heavy" style={{ width: 20 }}>
+            􀄬
+          </Text>
+        }
+      />
     </DropdownMenu>
   );
 }
@@ -560,6 +560,8 @@ function TrendingTokenData() {
 
   return (
     <FlatList
+      style={{ marginHorizontal: -20 }}
+      contentContainerStyle={{ paddingHorizontal: 20 }}
       ListEmptyComponent={<NoResults />}
       data={data?.trendingTokens.data}
       renderItem={({ item }) => <TrendingTokenRow item={item} />}
@@ -595,7 +597,7 @@ export function TrendingTokens() {
           />
           <CategoryFilterButton
             category="farcaster"
-            label={i18n.t(t.filters.categories.farcaster) + 'aaaaaaaa'}
+            label={i18n.t(t.filters.categories.farcaster)}
             icon="􀌥"
             iconColor={'#5F5AFA'}
             highlightedBackgroundColor={'#B9B7F7'}
