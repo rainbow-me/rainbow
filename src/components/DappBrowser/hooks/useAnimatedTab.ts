@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import {
   convertToRGBA,
   interpolate,
@@ -7,38 +8,91 @@ import {
   useDerivedValue,
   useSharedValue,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode } from '@/design-system';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { IS_ANDROID } from '@/env';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from '../BrowserContext';
+import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import {
   COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
+  EXTRA_WEBVIEW_HEIGHT,
+  MULTI_TAB_SCALE,
+  MULTI_TAB_SCALE_DIFF,
+  SINGLE_TAB_SCALE,
   TAB_VIEW_COLUMN_WIDTH,
-  TAB_VIEW_EXTRA_TOP_PADDING,
   TAB_VIEW_ROW_HEIGHT,
+  WEBVIEW_HEIGHT,
   ZOOMED_TAB_BORDER_RADIUS,
 } from '../Dimensions';
+import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
+import { TabViewGestureStates } from '../types';
+import { getTabInfo } from '../utils/getTabInfo';
+import { getTabStyles, getTabSwitchGestureStyles } from '../utils/styleUtils';
 
 export function useAnimatedTab({ tabId }: { tabId: string }) {
   const {
+    activeTabCloseGestures,
     animatedActiveTabIndex,
     animatedMultipleTabsOpen,
-    animatedTabViewBorderRadius,
-    animatedWebViewHeight,
+    animatedTabUrls,
+    currentlyBeingClosedTabIds,
     currentlyOpenTabIds,
+    extraWebViewHeight,
+    pendingTabSwitchOffset,
     scrollViewOffset,
+    tabSwitchGestureX,
+    tabViewBorderRadius,
+    tabViewGestureHoldDuration,
+    tabViewGestureProgress,
+    tabViewGestureState,
     tabViewProgress,
-    tabViewVisible,
   } = useBrowserContext();
+  const { closeTabWorklet } = useBrowserWorkletsContext();
 
   const animatedTabIndex = useSharedValue(useBrowserStore.getState().tabIds.indexOf(tabId));
-  const gestureScale = useSharedValue(1);
-  const gestureX = useSharedValue(0);
+
+  const animatedTabXPosition = useDerivedValue(() =>
+    withSpring((animatedTabIndex.value % 2) * (TAB_VIEW_COLUMN_WIDTH + 20) - (TAB_VIEW_COLUMN_WIDTH + 20) / 2, SPRING_CONFIGS.slowSpring)
+  );
+
+  const animatedTabYPosition = useDerivedValue(() =>
+    withSpring(Math.floor(animatedTabIndex.value / 2) * TAB_VIEW_ROW_HEIGHT, SPRING_CONFIGS.slowSpring)
+  );
+
+  const gestureScale = useDerivedValue(() =>
+    activeTabCloseGestures.value[tabId]?.gestureScale === 0
+      ? 0
+      : withTiming(activeTabCloseGestures.value[tabId]?.gestureScale ?? 1, TIMING_CONFIGS.tabPressConfig)
+  );
+
+  const gestureX = useDerivedValue(() =>
+    activeTabCloseGestures.value[tabId]?.isActive
+      ? activeTabCloseGestures.value[tabId].gestureX
+      : withTiming(activeTabCloseGestures.value[tabId]?.gestureX ?? 0, TIMING_CONFIGS.tabPressConfig, isFinished => {
+          // Handle tab removal after tab close animation completion
+          if (isFinished && currentlyBeingClosedTabIds.value.includes(tabId) && activeTabCloseGestures.value[tabId]) {
+            // Zero out scale to ensure the tab is hidden while unmounting
+            activeTabCloseGestures.modify(gestures => ({ ...gestures, [tabId]: { ...gestures[tabId], gestureScale: 0 } }));
+            // Finalize tab close
+            closeTabWorklet({ tabId, tabIndex: activeTabCloseGestures.value[tabId].tabIndex });
+            currentlyBeingClosedTabIds.modify(closingTabs => {
+              const index = closingTabs.indexOf(tabId);
+              if (index !== -1) {
+                closingTabs.splice(index, 1);
+              }
+              return closingTabs;
+            });
+          }
+        })
+  );
 
   const { isDarkMode } = useColorMode();
   const defaultBackgroundColor = isDarkMode ? '#191A1C' : globalColors.white100;
+  const homepageBackgroundColor = isDarkMode ? HOMEPAGE_BACKGROUND_COLOR_DARK : HOMEPAGE_BACKGROUND_COLOR_LIGHT;
+
   const backgroundColor = useSharedValue<string>(defaultBackgroundColor);
 
   const safeBackgroundColor = useDerivedValue(() => {
@@ -58,116 +112,153 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
     return defaultBackgroundColor;
   });
 
-  const animatedTabXPosition = useDerivedValue(() =>
-    withSpring((animatedTabIndex.value % 2) * (TAB_VIEW_COLUMN_WIDTH + 20) - (TAB_VIEW_COLUMN_WIDTH + 20) / 2, SPRING_CONFIGS.slowSpring)
-  );
+  const animatedWebViewBackgroundColorStyle = useAnimatedStyle(() => {
+    const tabUrl = animatedTabUrls.value[tabId] || RAINBOW_HOME;
+    const isOnHomepage = tabUrl === RAINBOW_HOME;
 
-  const animatedTabYPosition = useDerivedValue(() =>
-    withSpring(Math.floor(animatedTabIndex.value / 2) * TAB_VIEW_ROW_HEIGHT - 181, SPRING_CONFIGS.slowSpring)
-  );
+    const { isFullSizeTab } = getTabInfo({
+      animatedActiveTabIndex: animatedActiveTabIndex.value,
+      currentlyOpenTabIds: currentlyOpenTabIds.value,
+      pendingTabSwitchOffset: pendingTabSwitchOffset.value,
+      tabId,
+      tabViewGestureState: tabViewGestureState.value,
+      tabViewProgress: tabViewProgress.value,
+    });
 
-  const animatedWebViewBackgroundColorStyle = useAnimatedStyle(() => ({
-    backgroundColor: safeBackgroundColor.value,
-  }));
+    const backgroundColor = isOnHomepage ? homepageBackgroundColor : safeBackgroundColor.value;
 
-  const animatedWebViewStyle = useAnimatedStyle(() => {
-    const isTabBeingClosed = currentlyOpenTabIds.value.indexOf(tabId) === -1 && currentlyOpenTabIds.value.length !== 0;
-    const animatedIsActiveTab = animatedActiveTabIndex.value === animatedTabIndex.value;
+    if (IS_ANDROID) return { backgroundColor };
 
-    const opacity = interpolate(tabViewProgress.value, [0, 100], [animatedIsActiveTab ? 1 : 0, 1], 'clamp');
-
-    const scaleDiff = 0.7 - TAB_VIEW_COLUMN_WIDTH / DEVICE_WIDTH;
-    const scale = interpolate(
-      tabViewProgress.value,
-      [0, 100],
-      [
-        animatedIsActiveTab && !isTabBeingClosed ? 1 : TAB_VIEW_COLUMN_WIDTH / DEVICE_WIDTH,
-        0.7 - scaleDiff * (isTabBeingClosed ? 1 : animatedMultipleTabsOpen.value),
-      ]
-    );
-
-    const xPositionStart = animatedIsActiveTab && !isTabBeingClosed ? 0 : animatedTabXPosition.value;
-    const xPositionEnd = (isTabBeingClosed ? 1 : animatedMultipleTabsOpen.value) * animatedTabXPosition.value;
-    const xPositionForTab = interpolate(tabViewProgress.value, [0, 100], [xPositionStart, xPositionEnd]);
-
-    const yPositionStart =
-      (animatedIsActiveTab && !isTabBeingClosed ? 0 : animatedTabYPosition.value + TAB_VIEW_EXTRA_TOP_PADDING) +
-      (animatedIsActiveTab && !isTabBeingClosed ? (1 - tabViewProgress.value / 100) * scrollViewOffset.value : 0);
-    const yPositionEnd =
-      (animatedTabYPosition.value + TAB_VIEW_EXTRA_TOP_PADDING) * animatedMultipleTabsOpen.value +
-      (animatedIsActiveTab ? (1 - tabViewProgress.value / 100) * scrollViewOffset.value : 0);
-    const yPositionForTab = interpolate(tabViewProgress.value, [0, 100], [yPositionStart, yPositionEnd]);
-
-    const shouldHideTab = !animatedIsActiveTab && tabViewProgress.value <= 1;
+    const paddingBottom = isFullSizeTab ? EXTRA_WEBVIEW_HEIGHT - extraWebViewHeight.value : EXTRA_WEBVIEW_HEIGHT;
 
     return {
-      opacity: shouldHideTab ? 0 : opacity,
-      transform: [
-        { translateX: shouldHideTab ? 0 : xPositionForTab + gestureX.value },
-        { translateY: shouldHideTab ? 0 : yPositionForTab },
-        { scale: shouldHideTab ? 0 : scale * gestureScale.value },
-      ],
+      backgroundColor: isOnHomepage ? homepageBackgroundColor : safeBackgroundColor.value,
+      paddingBottom,
     };
   });
 
-  const expensiveAnimatedWebViewStyles = useAnimatedStyle(() => {
-    const isTabBeingClosed = currentlyOpenTabIds.value.indexOf(tabId) === -1;
-    const animatedIsActiveTab = animatedActiveTabIndex.value === animatedTabIndex.value;
+  const animatedWebViewStyle = useAnimatedStyle(() => {
+    const { isFullSizeTab, isPendingActiveTab: animatedIsActiveTab } = getTabInfo({
+      animatedActiveTabIndex: animatedActiveTabIndex.value,
+      currentlyOpenTabIds: currentlyOpenTabIds.value,
+      pendingTabSwitchOffset: pendingTabSwitchOffset.value,
+      tabId,
+      tabViewGestureState: tabViewGestureState.value,
+      tabViewProgress: tabViewProgress.value,
+    });
+
+    const activeIndex = Math.abs(animatedActiveTabIndex.value);
+    const pendingActiveIndex = activeIndex + pendingTabSwitchOffset.value;
+    const tabIndex = currentlyOpenTabIds.value.indexOf(tabId);
+    const isRunningEnterTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING;
+    const isSwitchingTabs = tabViewGestureState.value !== TabViewGestureStates.INACTIVE;
 
     const borderRadius = interpolate(
+      isSwitchingTabs && isFullSizeTab ? tabViewGestureProgress.value : tabViewProgress.value,
+      [0, 0, 100],
+      [ZOOMED_TAB_BORDER_RADIUS, isFullSizeTab ? ZOOMED_TAB_BORDER_RADIUS : tabViewBorderRadius.value, tabViewBorderRadius.value],
+      'clamp'
+    );
+    const height = interpolate(
       tabViewProgress.value,
       [0, 100],
-      // eslint-disable-next-line no-nested-ternary
-      [animatedIsActiveTab ? ZOOMED_TAB_BORDER_RADIUS : animatedTabViewBorderRadius.value, animatedTabViewBorderRadius.value],
+      [isFullSizeTab ? WEBVIEW_HEIGHT + extraWebViewHeight.value : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, COLLAPSED_WEBVIEW_HEIGHT_UNSCALED],
       'clamp'
     );
 
+    const isTabBeingClosed = !currentlyOpenTabIds.value.includes(tabId);
+    const pointerEvents = isTabBeingClosed
+      ? 'none'
+      : animatedIsActiveTab && tabViewGestureState.value !== TabViewGestureStates.ACTIVE
+        ? 'auto'
+        : 'none';
+
+    const shouldUseTabSwitchStyles = isSwitchingTabs && isFullSizeTab;
+
     return {
       borderRadius,
-      height: animatedIsActiveTab ? animatedWebViewHeight.value : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
-      // eslint-disable-next-line no-nested-ternary
-      pointerEvents: isTabBeingClosed ? 'none' : tabViewVisible.value ? 'auto' : animatedIsActiveTab ? 'auto' : 'none',
+      height,
+      pointerEvents,
+      ...(shouldUseTabSwitchStyles
+        ? getTabSwitchGestureStyles({
+            activeIndex,
+            animatedIsActiveTab,
+            animatedMultipleTabsOpen: animatedMultipleTabsOpen.value,
+            animatedTabXPosition: animatedTabXPosition.value,
+            animatedTabYPosition: animatedTabYPosition.value,
+            extraWebViewHeight: extraWebViewHeight.value,
+            gestureScale: gestureScale.value,
+            gestureX: gestureX.value,
+            isRunningEnterTabViewAnimation,
+            pendingActiveIndex,
+            pendingTabSwitchOffset: pendingTabSwitchOffset.value,
+            scrollViewOffset: scrollViewOffset.value,
+            tabIndex,
+            tabSwitchGestureX: tabSwitchGestureX.value,
+            tabViewGestureHoldDuration: tabViewGestureHoldDuration.value,
+            tabViewGestureProgress: tabViewGestureProgress.value,
+            tabViewGestureState: tabViewGestureState.value,
+            tabViewProgress: tabViewProgress.value,
+          })
+        : getTabStyles({
+            animatedIsActiveTab,
+            animatedMultipleTabsOpen: animatedMultipleTabsOpen.value,
+            animatedTabXPosition: animatedTabXPosition.value,
+            animatedTabYPosition: animatedTabYPosition.value,
+            currentlyBeingClosedTabIds: currentlyBeingClosedTabIds.value,
+            currentlyOpenTabIds: currentlyOpenTabIds.value,
+            gestureScale: gestureScale.value,
+            gestureX: gestureX.value,
+            scrollViewOffset: scrollViewOffset.value,
+            tabId,
+            tabViewProgress: tabViewProgress.value,
+          })),
     };
   });
 
   const zIndexAnimatedStyle = useAnimatedStyle(() => {
-    const animatedIsActiveTab = animatedActiveTabIndex.value === animatedTabIndex.value;
-    const wasCloseButtonPressed = gestureScale.value === 1 && gestureX.value < 0;
+    const { isFullSizeTab, isPendingActiveTab } = getTabInfo({
+      animatedActiveTabIndex: animatedActiveTabIndex.value,
+      currentlyOpenTabIds: currentlyOpenTabIds.value,
+      pendingTabSwitchOffset: pendingTabSwitchOffset.value,
+      tabId,
+      tabViewGestureState: tabViewGestureState.value,
+      tabViewProgress: tabViewProgress.value,
+    });
 
-    const scaleDiff = 0.7 - TAB_VIEW_COLUMN_WIDTH / DEVICE_WIDTH;
+    const isRunningEnterTabViewAnimation = tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING;
+
     const scaleWeighting =
       gestureScale.value *
       interpolate(
-        tabViewProgress.value,
+        isRunningEnterTabViewAnimation ? tabViewGestureProgress.value : tabViewProgress.value,
         [0, 100],
-        [animatedIsActiveTab ? 1 : TAB_VIEW_COLUMN_WIDTH / DEVICE_WIDTH, 0.7 - scaleDiff * animatedMultipleTabsOpen.value],
+        [isFullSizeTab ? 1 : MULTI_TAB_SCALE, SINGLE_TAB_SCALE - MULTI_TAB_SCALE_DIFF * animatedMultipleTabsOpen.value],
         'clamp'
       );
-    const zIndex = scaleWeighting * (animatedIsActiveTab || gestureScale.value > 1 ? 9999 : 1) + (wasCloseButtonPressed ? 9999 : 0);
+
+    const wasCloseButtonPressed = gestureScale.value === 1 && gestureX.value < 0;
+    const zIndex = scaleWeighting * (isPendingActiveTab || gestureScale.value > 1 ? 9999 : 1) + (wasCloseButtonPressed ? 9999 : 0);
 
     return { zIndex };
   });
 
   useAnimatedReaction(
-    () => ({ currentlyOpenTabIds: currentlyOpenTabIds.value }),
-    current => {
-      const currentIndex = current.currentlyOpenTabIds.indexOf(tabId);
+    () => currentlyOpenTabIds.value.indexOf(tabId),
+    currentIndex => {
       // This allows us to give the tab its previous animated index when it's being closed, so that the close
       // animation is allowed to complete with the X and Y coordinates it had based on its last real index.
       if (currentIndex >= 0) {
         animatedTabIndex.value = currentIndex;
       }
-    }
+    },
+    []
   );
 
   return {
-    animatedTabIndex,
     animatedWebViewBackgroundColorStyle,
     animatedWebViewStyle,
     backgroundColor,
-    expensiveAnimatedWebViewStyles,
-    gestureScale,
-    gestureX,
     zIndexAnimatedStyle,
   };
 }

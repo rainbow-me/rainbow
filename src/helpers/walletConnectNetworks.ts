@@ -1,14 +1,14 @@
 import store from '@/redux/store';
 import { showActionSheetWithOptions } from '@/utils';
 import * as i18n from '@/languages';
-import { ChainId } from '@/chains/types';
-import { chainsLabel, defaultChains } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { isL2Chain } from '@/handlers/web3';
 import { MenuActionConfig } from 'react-native-ios-context-menu';
 
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;
-  return Object.values(defaultChains)
+  return Object.values(useBackendNetworksStore.getState().getDefaultChains())
     .filter(chain => testnetsEnabled || !chain.testnet)
     .map(chain => chain.id);
 };
@@ -18,11 +18,11 @@ export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
 export const networksMenuItems: () => MenuActionConfig[] = () => {
   const { testnetsEnabled } = store.getState().settings;
 
-  return Object.values(defaultChains)
+  return Object.values(useBackendNetworksStore.getState().getDefaultChains())
     .filter(chain => testnetsEnabled || !chain.testnet)
     .map(chain => ({
       actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${chain.id}`,
-      actionTitle: chainsLabel[chain.id],
+      actionTitle: useBackendNetworksStore.getState().getChainsLabel()[chain.id],
       icon: {
         iconType: 'ASSET',
         iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
@@ -78,6 +78,7 @@ export const androidShowNetworksActionSheet = (callback: any) => {
     },
     (idx: number) => {
       if (idx !== undefined) {
+        const defaultChains = useBackendNetworksStore.getState().getDefaultChains();
         const networkActions = androidNetworkActions();
         const chain = defaultChains[networkActions[idx]] || defaultChains[ChainId.mainnet];
         callback({ chainId: chain.id });

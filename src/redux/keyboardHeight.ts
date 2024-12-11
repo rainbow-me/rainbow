@@ -8,6 +8,7 @@ import { deviceUtils } from '@/utils';
 // -- Constants --------------------------------------- //
 const LOAD = 'keyboardHeight/LOAD';
 const SAVE = 'keyboardHeight/SAVE';
+const FALLBACK_KEYBOARD_HEIGHT = Math.floor(deviceUtils.dimensions.height / 3);
 
 // -- Interfaces --------------------------------------- //
 
@@ -40,6 +41,7 @@ interface SetKeyboardHeightFunctionParameter {
   height: number;
   keyboardType: keyof typeof KeyboardTypes;
 }
+
 // -- Actions --------------------------------------- //
 export function getDefaultKeyboardHeight(): number {
   let keyboardHeight = 0;
@@ -53,15 +55,20 @@ export function getDefaultKeyboardHeight(): number {
       break;
     case 812:
     case 844:
-    case 852:
+    case 852: // 15 Pro
+    case 874: // 16 Pro
       keyboardHeight = 291;
       break;
-    case 896:
+    case 896: // 15 Pro Max
       keyboardHeight = 301;
       break;
+    case 956: // 16 Pro Max
+      keyboardHeight = 318;
+      break;
     default:
-      keyboardHeight = Math.floor(deviceUtils.dimensions.height * 0.333);
+      keyboardHeight = FALLBACK_KEYBOARD_HEIGHT;
   }
+
   return keyboardHeight;
 }
 

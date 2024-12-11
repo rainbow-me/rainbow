@@ -1,12 +1,7 @@
-import { MIN_FLASHBOTS_PRIORITY_FEE } from '@/__swaps__/screens/Swap/constants';
-import { getCustomGasSettings, setCustomMaxPriorityFee } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
-import { getSelectedGasSpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
+import { INITIAL_SLIDER_POSITION } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
-import { GasSpeed } from '@/__swaps__/types/gas';
+import { ChainId } from '@/state/backendNetworks/types';
 import { RecentSwap } from '@/__swaps__/types/swap';
-import { getCachedGasSuggestions } from '@/__swaps__/utils/meteorology';
-import { lessThan } from '@/helpers/utilities';
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
 import { RainbowError, logger } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
@@ -27,9 +22,10 @@ export interface SwapsState {
   selectedOutputChainId: ChainId;
   outputSearchQuery: string;
 
+  percentageToSell: number; // Value between 0 and 1, e.g., 0.5, 0.1, 0.25
+  setPercentageToSell: (percentageToSell: number) => void; // Accepts values from 0 to 1
+
   // settings
-  flashbots: boolean;
-  setFlashbots: (flashbots: boolean) => void;
   slippage: string;
   setSlippage: (slippage: string) => void;
   source: Source | 'auto';
@@ -110,25 +106,6 @@ function deserialize(serializedState: string) {
   };
 }
 
-const updateCustomGasSettingsForFlashbots = (flashbots: boolean, chainId: ChainId) => {
-  const gasSpeed = getSelectedGasSpeed(chainId);
-  if (gasSpeed !== GasSpeed.CUSTOM) return;
-
-  const customGasSettings = getCustomGasSettings(chainId);
-  if (!customGasSettings?.isEIP1559) return;
-
-  const currentMaxPriorityFee = customGasSettings.maxPriorityFee;
-  if (flashbots && lessThan(currentMaxPriorityFee, MIN_FLASHBOTS_PRIORITY_FEE)) {
-    setCustomMaxPriorityFee(chainId, MIN_FLASHBOTS_PRIORITY_FEE);
-    return;
-  }
-
-  if (!flashbots) {
-    const suggestion = getCachedGasSuggestions(chainId, false)?.[GasSpeed.FAST];
-    setCustomMaxPriorityFee(chainId, suggestion?.maxPriorityFee);
-  }
-};
-
 export const swapsStore = createRainbowStore<SwapsState>(
   (set, get) => ({
     isSwapsOpen: false,
@@ -142,11 +119,8 @@ export const swapsStore = createRainbowStore<SwapsState>(
     selectedOutputChainId: ChainId.mainnet,
     outputSearchQuery: '',
 
-    flashbots: false,
-    setFlashbots: (flashbots: boolean) => {
-      updateCustomGasSettingsForFlashbots(flashbots, get().inputAsset?.chainId || ChainId.mainnet);
-      set({ flashbots });
-    },
+    percentageToSell: INITIAL_SLIDER_POSITION,
+    setPercentageToSell: (percentageToSell: number) => set({ percentageToSell }),
     slippage: getDefaultSlippage(ChainId.mainnet, getRemoteConfig()),
     setSlippage: (slippage: string) => set({ slippage }),
     source: 'auto',
@@ -192,7 +166,6 @@ export const swapsStore = createRainbowStore<SwapsState>(
     partialize(state) {
       return {
         degenMode: state.degenMode,
-        flashbots: state.flashbots,
         preferredNetwork: state.preferredNetwork,
         source: state.source,
         latestSwapAt: state.latestSwapAt,

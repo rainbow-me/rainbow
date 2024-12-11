@@ -1,13 +1,11 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { globalColors } from '@/design-system';
-import { IS_ANDROID } from '@/env';
-import { PIXEL_RATIO } from '@/utils/deviceUtils';
 import { useSwapContext } from '../providers/swap-provider';
 import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
 
@@ -74,7 +72,7 @@ export function AnimatedChainImage({
     source: {
       ...DEFAULT_FASTER_IMAGE_CONFIG,
       base64Placeholder: BLANK_BASE64_PIXEL,
-      borderRadius: IS_ANDROID ? (size / 2) * PIXEL_RATIO : size / 2,
+      borderRadius: size / 2,
       url: url.value,
     },
   }));

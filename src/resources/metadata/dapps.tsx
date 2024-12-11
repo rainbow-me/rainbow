@@ -45,7 +45,7 @@ export function useDapps(config?: UseQueryOptions<Dapp[]>): { dapps: Dapp[] } {
           .map(dapp => ({
             name: dapp!.name,
             shortName: dapp!.shortName,
-            description: dapp!.description,
+            description: '', // Remove to cut down on total object size
             trending: dapp!.trending || false,
             url: dapp!.url,
             urlDisplay: formatUrl(dapp!.url),

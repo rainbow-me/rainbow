@@ -16,7 +16,7 @@ import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { Address } from 'viem';
 
 import { metadataPOSTClient } from '@/graphql';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { NewTransaction, TxHash, TransactionStatus, TransactionDirection } from '@/entities';
 import { add } from '@/helpers/utilities';
 import { addNewTransaction } from '@/state/pendingTransactions';
@@ -41,7 +41,7 @@ import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { chainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const WRAP_GAS_PADDING = 1.002;
 
@@ -171,6 +171,7 @@ export const estimateSwapGasLimit = async ({
       }
 
       const gasLimit = await estimateGasWithPadding(params, method, methodArgs, provider, SWAP_GAS_PADDING);
+
       if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit))) {
         return getDefaultGasLimitForTrade(quote, chainId);
       }
@@ -373,6 +374,8 @@ export const swap = async ({
       }
     : parameters.assetToSell.price;
 
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
+
   const assetToBuy = {
     ...parameters.assetToBuy,
     network: chainsName[parameters.assetToBuy.chainId],
@@ -430,7 +433,6 @@ export const swap = async ({
         parameters.assetToBuy.chainId !== parameters.assetToSell.chainId &&
         parameters.assetToSell.address === parameters.assetToBuy.address,
     },
-    flashbots: parameters.flashbots,
     ...gasParamsToUse,
   } satisfies NewTransaction;
 
