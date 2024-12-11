@@ -6,12 +6,11 @@ import {
   tap,
   tapByText,
   delayTime,
-  tapAtPoint,
   checkIfExistsByText,
   checkIfExists,
   waitAndTap,
   checkIfDoesntExist,
-} from './helpers';
+} from '../helpers';
 
 describe('Backups', () => {
   beforeAll(async () => {

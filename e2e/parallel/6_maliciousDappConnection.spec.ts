@@ -10,8 +10,8 @@ import {
   delayTime,
   tapAtPoint,
   checkIfExists,
-} from './helpers';
-import { WALLET_VARS } from './testVariables';
+} from '../helpers';
+import { WALLET_VARS } from '../testVariables';
 
 describe('Check malicious dapp warning', () => {
   beforeAll(async () => {
