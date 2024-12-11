@@ -29,7 +29,7 @@ import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { getFlashbotsProvider, getProvider } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
@@ -58,15 +58,9 @@ import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './Sync
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import {
-  useBackendNetworksStore,
-  getFlashbotsSupportedChainIdsWorklet,
-  getChainsNativeAssetWorklet,
-} from '@/state/backendNetworks/backendNetworks';
+import { useBackendNetworksStore, getChainsNativeAssetWorklet } from '@/state/backendNetworks/backendNetworks';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
-import { EventProperties } from '@/analytics/event';
-import { isEqual } from 'lodash';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -161,7 +155,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const { nativeCurrency } = useAccountSettings();
 
   const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
-  const getFlashbotsSupportedChainIds = useBackendNetworksStore(state => state.getFlashbotsSupportedChainIds);
   const initialValues = getSwapsNavigationParams();
 
   const isFetching = useSharedValue(false);
@@ -233,10 +226,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const NotificationManager = IS_IOS ? NativeModules.NotificationManager : null;
       NotificationManager?.postNotification('rapInProgress');
 
-      const provider =
-        parameters.flashbots && getFlashbotsSupportedChainIds().includes(parameters.chainId)
-          ? getFlashbotsProvider()
-          : getProvider({ chainId: parameters.chainId });
+      const provider = getProvider({ chainId: parameters.chainId });
       const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
 
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
@@ -333,7 +323,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           mainnetAddress: (parameters.assetToBuy.chainId === ChainId.mainnet
             ? parameters.assetToBuy.address
             : parameters.assetToSell.mainnetAddress) as AddressOrEth,
-          flashbots: parameters.flashbots ?? false,
           tradeAmountUSD: parameters.quote.tradeAmountUSD,
           degenMode: isDegenModeEnabled,
           isSwappingToPopularAsset,
@@ -405,7 +394,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         mainnetAddress: (parameters.assetToBuy.chainId === ChainId.mainnet
           ? parameters.assetToBuy.address
           : parameters.assetToSell.mainnetAddress) as AddressOrEth,
-        flashbots: parameters.flashbots ?? false,
         tradeAmountUSD: parameters.quote.tradeAmountUSD,
         degenMode: isDegenModeEnabled,
         isSwappingToPopularAsset,
@@ -447,9 +435,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
       const quoteData = q as QuoteTypeMap[typeof type];
-      const flashbots =
-        (SwapSettings.flashbots.value && !!getFlashbotsSupportedChainIdsWorklet(backendNetworks).includes(inputAsset.chainId)) ?? false;
-
       const isNativeWrapOrUnwrap = quoteData.swapType === SwapType.wrap || quoteData.swapType === SwapType.unwrap;
 
       const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
@@ -464,7 +449,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           sellAmountDisplay: isNativeWrapOrUnwrap ? quoteData.sellAmount : quoteData.sellAmountDisplay,
           feeInEth: isNativeWrapOrUnwrap ? '0' : quoteData.feeInEth,
         },
-        flashbots,
       };
 
       runOnJS(getNonceAndPerformSwap)({

@@ -291,7 +291,6 @@ export const crosschainSwap = async ({
     nonce: swap.nonce,
     status: TransactionStatus.pending,
     type: 'swap',
-    flashbots: parameters.flashbots,
     ...gasParamsToUse,
   } satisfies NewTransaction;
 

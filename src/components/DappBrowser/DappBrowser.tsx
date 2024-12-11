@@ -44,7 +44,7 @@ type RouteParams = {
 export const DappBrowser = () => {
   const { isDarkMode } = useColorMode();
   return (
-    <Box as={Page} height="full" style={[isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight]} width="full">
+    <Box as={Page} height="full" style={[isDarkMode ? styles.rootViewBackgroundDark : styles.rootViewBackgroundLight]} width="full">
       <BrowserContextProvider>
         <BrowserWorkletsContextProvider>
           <DappBrowserComponent />
@@ -185,7 +185,7 @@ const TabViewContent = () => {
 };
 
 const styles = StyleSheet.create({
-  rootViewBackground: {
+  rootViewBackgroundDark: {
     backgroundColor: globalColors.grey100,
     flex: 1,
     position: 'absolute',

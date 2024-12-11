@@ -171,6 +171,7 @@ export const estimateSwapGasLimit = async ({
       }
 
       const gasLimit = await estimateGasWithPadding(params, method, methodArgs, provider, SWAP_GAS_PADDING);
+
       if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit))) {
         return getDefaultGasLimitForTrade(quote, chainId);
       }
@@ -432,7 +433,6 @@ export const swap = async ({
         parameters.assetToBuy.chainId !== parameters.assetToSell.chainId &&
         parameters.assetToSell.address === parameters.assetToBuy.address,
     },
-    flashbots: parameters.flashbots,
     ...gasParamsToUse,
   } satisfies NewTransaction;
 

@@ -400,9 +400,6 @@ async function handleSwapsDeeplink(url: string) {
   const inputAsset = querySwapAsset(query.inputAsset);
   const outputAsset = querySwapAsset(query.outputAsset);
 
-  if ('flashbots' in query) {
-    params.flashbots = query.flashbots === 'true';
-  }
   if ('slippage' in query && isNumericString(query.slippage)) {
     params.slippage = query.slippage;
   }

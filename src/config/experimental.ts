@@ -14,7 +14,6 @@ export const NOTIFICATIONS = 'Notifications';
 export const REVIEW_ANDROID = 'reviewAndroid';
 export const PROFILES = 'ENS Profiles';
 export const L2_TXS = 'L2 Transactions';
-export const FLASHBOTS_WC = 'Flashbots for WC';
 export const CROSSCHAIN_SWAPS = 'Crosschain Swaps';
 export const OP_REWARDS = '$OP Rewards';
 export const DEFI_POSITIONS = 'Defi Positions';
@@ -45,7 +44,6 @@ export type ExperimentalValue = {
 
 export const defaultConfig: Record<string, ExperimentalValue> = {
   // this flag is not reactive. We use this in a static context
-  [FLASHBOTS_WC]: { settings: true, value: false },
   [HARDWARE_WALLETS]: { settings: true, value: true },
   [L2_TXS]: { needsRestart: true, settings: true, value: true },
   [LANGUAGE_SETTINGS]: { settings: true, value: true },

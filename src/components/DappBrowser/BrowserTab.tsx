@@ -234,8 +234,6 @@ const FreezableWebView = memo(React.forwardRef(FreezableWebViewComponent));
 const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
   const { onScrollWebView, onTouchEnd, onTouchMove, onTouchStart } = useBrowserContext();
 
-  const shouldExpandWebView = useBrowserStore(state => state.shouldExpandWebView);
-
   return (
     <DappBrowserWebview
       // eslint-disable-next-line react/jsx-props-no-spreading
@@ -258,7 +256,7 @@ const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
       ref={ref}
       renderError={() => <ErrorPage />}
       renderLoading={() => <></>}
-      style={[styles.webView, shouldExpandWebView ? styles.webViewExpanded : {}]}
+      style={styles.webView}
       userAgent={USER_AGENT[IS_IOS ? 'IOS' : 'ANDROID']}
       webviewDebuggingEnabled={IS_DEV}
     />
@@ -269,38 +267,29 @@ const TabWebView = memo(React.forwardRef(TabWebViewComponent));
 
 const styles = StyleSheet.create({
   screenshotContainer: {
-    height: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
+    height: IS_IOS ? WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT : WEBVIEW_HEIGHT,
     left: 0,
     position: 'absolute',
-    resizeMode: 'contain',
+    right: 0,
     top: 0,
     width: DEVICE_WIDTH,
     zIndex: 20000,
   },
   viewShotContainer: {
-    height: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
+    height: IS_IOS ? WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT : WEBVIEW_HEIGHT,
     width: DEVICE_WIDTH,
   },
   webViewContainer: {
     borderCurve: 'continuous',
-    height: WEBVIEW_HEIGHT,
-    left: 0,
-    position: 'absolute',
     overflow: 'hidden',
+    position: 'absolute',
     top: TOP_INSET,
     width: DEVICE_WIDTH,
   },
   webView: {
     backgroundColor: 'transparent',
     flex: 0,
-    height: WEBVIEW_HEIGHT,
-    maxHeight: WEBVIEW_HEIGHT,
-    minHeight: WEBVIEW_HEIGHT,
+    height: '100%',
     width: DEVICE_WIDTH,
-  },
-  webViewExpanded: {
-    height: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
-    maxHeight: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
-    minHeight: WEBVIEW_HEIGHT + EXTRA_WEBVIEW_HEIGHT,
   },
 });

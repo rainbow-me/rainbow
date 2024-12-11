@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React, { PropsWithChildren, ReactNode, useMemo } from 'react';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 
-import { MIN_FLASHBOTS_PRIORITY_FEE, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -318,10 +318,6 @@ function EditMaxBaseFee() {
 
 function EditPriorityFee() {
   const { navigate } = useNavigation();
-
-  const isFlashbotsEnabled = useSwapsStore(s => s.flashbots);
-  const min = isFlashbotsEnabled ? MIN_FLASHBOTS_PRIORITY_FEE : '0';
-
   const maxPriorityFee = useGasPanelState('maxPriorityFee');
 
   return (
@@ -329,7 +325,7 @@ function EditPriorityFee() {
       <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MINER_TIP_TYPE })}>
         {i18n.t(i18n.l.gas.miner_tip)}
       </PressableLabel>
-      <GasSettingInput value={maxPriorityFee} onChange={maxPriorityFee => setGasPanelState({ maxPriorityFee })} min={min} />
+      <GasSettingInput value={maxPriorityFee} onChange={maxPriorityFee => setGasPanelState({ maxPriorityFee })} min={'0'} />
     </Inline>
   );
 }

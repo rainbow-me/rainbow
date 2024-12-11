@@ -677,36 +677,6 @@ export const explainers = (params, theme) => {
         networkName: params?.networkName,
       }),
     },
-    flashbots: {
-      extraHeight: android ? 20 : 0,
-      emoji: '🤖',
-      stillCurious: (
-        <Text {...getBodyTextPropsWithColor(colors)}>
-          {lang.t('explain.flashbots.still_curious.fragment1')}
-          <Text
-            color={colors?.appleBlue}
-            onPress={() =>
-              Linking.openURL(
-                buildRainbowLearnUrl({
-                  url: 'https://learn.rainbow.me/protecting-transactions-with-flashbots',
-                  query: {
-                    campaign: 'explain',
-                  },
-                })
-              )
-            }
-            size="large"
-            suppressHighlighting
-            weight="semibold"
-          >
-            {lang.t('explain.flashbots.still_curious.fragment2')}
-          </Text>
-          {lang.t('explain.flashbots.still_curious.fragment3')}
-        </Text>
-      ),
-      text: lang.t('explain.flashbots.text'),
-      title: lang.t('explain.flashbots.title'),
-    },
     routeSwaps: {
       extraHeight: android ? 20 : 0,
       emoji: '🔀',

@@ -202,7 +202,6 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     nonce: swap.nonce,
     status: TransactionStatus.pending,
     type: 'bridge',
-    flashbots: false,
     ...gasParams,
   } satisfies NewTransaction;
 

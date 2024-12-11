@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error - changeIcon has no declaration file
 import { changeIcon } from 'react-native-change-icon';
 import lang from 'i18n-js';
 import { Dispatch } from 'redux';
@@ -11,13 +11,11 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   getAppIcon,
   getChainId,
-  getFlashbotsEnabled,
   getLanguage,
   getNativeCurrency,
   getTestnetsEnabled,
   saveAppIcon,
   saveChainId,
-  saveFlashbotsEnabled,
   saveLanguage,
   saveNativeCurrency,
   saveTestnetsEnabled,
@@ -34,7 +32,6 @@ const SETTINGS_UPDATE_APP_ICON_SUCCESS = 'settings/SETTINGS_UPDATE_APP_ICON_SUCC
 const SETTINGS_UPDATE_LANGUAGE_SUCCESS = 'settings/SETTINGS_UPDATE_LANGUAGE_SUCCESS';
 const SETTINGS_UPDATE_NETWORK_SUCCESS = 'settings/SETTINGS_UPDATE_NETWORK_SUCCESS';
 const SETTINGS_UPDATE_TESTNET_PREF_SUCCESS = 'settings/SETTINGS_UPDATE_TESTNET_PREF_SUCCESS';
-const SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS = 'settings/SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS';
 const SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS = 'settings/SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS';
 
 // -- Actions --------------------------------------------------------------- //
@@ -46,7 +43,6 @@ interface SettingsState {
   appIcon: string;
   accountAddress: string;
   chainId: number;
-  flashbotsEnabled: boolean;
   language: Language;
   nativeCurrency: NativeCurrencyKey;
   network: Network;
@@ -62,7 +58,6 @@ type SettingsStateUpdateAction =
   | SettingsStateUpdateAppIconSuccessAction
   | SettingsStateUpdateNetworkSuccessAction
   | SettingsStateUpdateTestnetPrefAction
-  | SettingsStateUpdateFlashbotsPrefAction
   | SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction
   | SettingsStateUpdateLanguageSuccessAction;
 
@@ -85,18 +80,12 @@ interface SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction {
   payload: {
     nativeCurrency: SettingsState['nativeCurrency'];
     testnetsEnabled: SettingsState['testnetsEnabled'];
-    flashbotsEnabled: SettingsState['flashbotsEnabled'];
   };
 }
 
 interface SettingsStateUpdateTestnetPrefAction {
   type: typeof SETTINGS_UPDATE_TESTNET_PREF_SUCCESS;
   payload: SettingsState['testnetsEnabled'];
-}
-
-interface SettingsStateUpdateFlashbotsPrefAction {
-  type: typeof SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS;
-  payload: SettingsState['flashbotsEnabled'];
 }
 
 interface SettingsStateUpdateNetworkSuccessAction {
@@ -129,16 +118,13 @@ export const settingsLoadState =
         type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
       });
 
-      const flashbotsEnabled = await getFlashbotsEnabled();
-
       analytics.identify({
         currency: nativeCurrency,
-        enabledFlashbots: flashbotsEnabled,
         enabledTestnets: testnetsEnabled,
       });
 
       dispatch({
-        payload: { flashbotsEnabled, nativeCurrency, testnetsEnabled },
+        payload: { nativeCurrency, testnetsEnabled },
         type: SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS,
       });
     } catch (error) {
@@ -216,15 +202,6 @@ export const settingsChangeAppIcon = (appIcon: string) => (dispatch: Dispatch<Se
   }
 };
 
-export const settingsChangeFlashbotsEnabled =
-  (flashbotsEnabled: boolean) => async (dispatch: Dispatch<SettingsStateUpdateFlashbotsPrefAction>) => {
-    dispatch({
-      payload: flashbotsEnabled,
-      type: SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS,
-    });
-    saveFlashbotsEnabled(flashbotsEnabled);
-  };
-
 export const settingsUpdateAccountAddress =
   (accountAddress: string) => async (dispatch: Dispatch<SettingsStateUpdateSettingsAddressAction>) => {
     dispatch({
@@ -280,7 +257,6 @@ export const INITIAL_STATE: SettingsState = {
   accountAddress: '',
   appIcon: 'og',
   chainId: 1,
-  flashbotsEnabled: false,
   language: Language.EN_US,
   nativeCurrency: NativeCurrencyKeys.USD,
   network: Network.mainnet,
@@ -317,7 +293,6 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
     case SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS:
       return {
         ...state,
-        flashbotsEnabled: action.payload.flashbotsEnabled,
         nativeCurrency: action.payload.nativeCurrency,
         testnetsEnabled: action.payload.testnetsEnabled,
       };
@@ -325,11 +300,6 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
       return {
         ...state,
         testnetsEnabled: action.payload,
-      };
-    case SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS:
-      return {
-        ...state,
-        flashbotsEnabled: action.payload,
       };
     default:
       return state;

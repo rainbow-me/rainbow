@@ -2,6 +2,7 @@ import * as chain from 'viem/chains';
 
 const HARDHAT_CHAIN_ID = 1337;
 const HARDHAT_OP_CHAIN_ID = 1338;
+const HARDHAT_RPC_URL = 'http://127.0.0.1:8545/';
 
 export enum Network {
   apechain = 'apechain',
@@ -100,8 +101,8 @@ export const chainHardhat: chain.Chain = {
     symbol: 'ETH',
   },
   rpcUrls: {
-    public: { http: ['http://127.0.0.1:8545'] },
-    default: { http: ['http://127.0.0.1:8545'] },
+    public: { http: [HARDHAT_RPC_URL] },
+    default: { http: [HARDHAT_RPC_URL] },
   },
   testnet: true,
 };
@@ -115,8 +116,8 @@ export const chainHardhatOptimism: chain.Chain = {
     symbol: 'ETH',
   },
   rpcUrls: {
-    public: { http: ['http://127.0.0.1:8545'] },
-    default: { http: ['http://127.0.0.1:8545'] },
+    public: { http: [HARDHAT_RPC_URL] },
+    default: { http: [HARDHAT_RPC_URL] },
   },
   testnet: true,
 };
@@ -206,5 +207,6 @@ export interface BackendNetwork {
       shadow: string;
     };
   };
+  privateMempoolTimeout?: number;
   enabledServices: BackendNetworkServices;
 }

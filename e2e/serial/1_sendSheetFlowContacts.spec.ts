@@ -12,7 +12,7 @@ import {
   tapByText,
   delayTime,
   afterAllcleanApp,
-} from './helpers';
+} from '../helpers';
 
 const android = device.getPlatform() === 'android';
 

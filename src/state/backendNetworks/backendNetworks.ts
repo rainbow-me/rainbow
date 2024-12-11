@@ -11,6 +11,7 @@ import { GasSpeed } from '@/__swaps__/types/gas';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const INITIAL_BACKEND_NETWORKS = queryClient.getQueryData<BackendNetworksResponse>(backendNetworksQueryKey()) ?? buildTimeNetworks;
+const DEFAULT_PRIVATE_MEMPOOL_TIMEOUT = 2 * 60 * 1_000; // 2 minutes
 
 export interface BackendNetworksState {
   backendNetworks: BackendNetworksResponse;
@@ -26,6 +27,7 @@ export interface BackendNetworksState {
   getNeedsL1SecurityFeeChains: () => ChainId[];
   getChainsNativeAsset: () => Record<ChainId, BackendNetwork['nativeAsset']>;
   getChainsLabel: () => Record<ChainId, string>;
+  getChainsPrivateMempoolTimeout: () => Record<ChainId, number>;
   getChainsName: () => Record<ChainId, string>;
   getChainsIdByName: () => Record<string, ChainId>;
 
@@ -125,6 +127,17 @@ export const useBackendNetworksStore = createRainbowStore<BackendNetworksState>(
         return acc;
       },
       {} as Record<ChainId, string>
+    );
+  },
+
+  getChainsPrivateMempoolTimeout: () => {
+    const backendNetworks = get().backendNetworks;
+    return backendNetworks.networks.reduce(
+      (acc, backendNetwork) => {
+        acc[parseInt(backendNetwork.id, 10)] = backendNetwork.privateMempoolTimeout || DEFAULT_PRIVATE_MEMPOOL_TIMEOUT;
+        return acc;
+      },
+      {} as Record<ChainId, number>
     );
   },
 
@@ -318,7 +331,7 @@ export const useBackendNetworksStore = createRainbowStore<BackendNetworksState>(
     switch (chainId) {
       case ChainId.mainnet:
         return useConnectedToHardhatStore.getState().connectedToHardhat
-          ? 'http://127.0.0.1:8545'
+          ? chainHardhat.rpcUrls.default.http[0]
           : defaultChains[ChainId.mainnet].rpcUrls.default.http[0];
       default:
         return defaultChains[chainId].rpcUrls.default.http[0];

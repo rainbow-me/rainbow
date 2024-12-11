@@ -39,7 +39,6 @@ import Animated, {
 import { REVIEW_SHEET_ROW_HEIGHT, THICK_BORDER_WIDTH } from '../constants';
 import { useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
-import { AnimatedSwitch } from './AnimatedSwitch';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 import { getChainsLabelWorklet, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -51,7 +50,6 @@ const NETWORK_LABEL = i18n.t(i18n.l.settings.network);
 const MINIMUM_RECEIVED_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.minimum_received);
 const MAXIMUM_SOLD_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.maximum_sold);
 const RAINBOW_FEE_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.rainbow_fee);
-const FLASHBOTS_PROTECTION_LABEL = i18n.t(i18n.l.swap.flashbots_protection);
 const MAX_SLIPPAGE_LABEL = i18n.t(i18n.l.exchange.slippage_tolerance);
 const ESTIMATED_NETWORK_FEE_LABEL = i18n.t(i18n.l.gas.network_fee);
 
@@ -125,71 +123,6 @@ function EstimatedArrivalTime() {
     </Text>
   );
 }
-
-function FlashbotsToggle() {
-  const { SwapSettings } = useSwapContext();
-
-  return (
-    <AnimatedSwitch
-      onToggle={SwapSettings.onToggleFlashbots}
-      value={SwapSettings.flashbots}
-      activeLabel={i18n.t(i18n.l.expanded_state.swap.on)}
-      inactiveLabel={i18n.t(i18n.l.expanded_state.swap.off)}
-    />
-  );
-}
-
-export const FlashbotsRow = () => {
-  const { navigate } = useNavigation();
-  const { internalSelectedInputAsset } = useSwapContext();
-
-  const labelTertiary = useForegroundColor('labelTertiary');
-
-  const flashbotsVisibilityStyle = useAnimatedStyle(() => {
-    const shouldDisplay = (internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet) === ChainId.mainnet;
-    return {
-      display: shouldDisplay ? 'flex' : 'none',
-    };
-  });
-
-  const openFlashbotsExplainer = useCallback(() => {
-    navigate(Routes.EXPLAIN_SHEET, {
-      type: 'flashbots',
-    });
-  }, [navigate]);
-
-  return (
-    <Animated.View style={[flashbotsVisibilityStyle, { height: REVIEW_SHEET_ROW_HEIGHT, justifyContent: 'center' }]}>
-      <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-        <Inline wrap={false} horizontalSpace="12px">
-          <TextIcon color="labelTertiary" height={9} size="icon 13px" weight="bold" width={16}>
-            􀋦
-          </TextIcon>
-          <Inline wrap={false} horizontalSpace="4px">
-            <Text color="labelTertiary" weight="semibold" size="15pt">
-              {FLASHBOTS_PROTECTION_LABEL}
-            </Text>
-            <Bleed space="12px">
-              <ButtonPressAnimation onPress={openFlashbotsExplainer} scaleTo={0.8}>
-                <Text
-                  align="center"
-                  color={{ custom: opacity(labelTertiary, 0.24) }}
-                  size="icon 13px"
-                  style={{ padding: 12, top: 0.5 }}
-                  weight="semibold"
-                >
-                  􀅴
-                </Text>
-              </ButtonPressAnimation>
-            </Bleed>
-          </Inline>
-        </Inline>
-
-        <FlashbotsToggle />
-      </Inline>
-    </Animated.View>
-  );
-};
 
 export const SlippageRow = () => {
   const { navigate } = useNavigation();
@@ -442,8 +375,6 @@ export function ReviewPanel() {
           </Columns>
 
           <Separator color={{ custom: opacity(separator, 0.03) }} thickness={THICK_BORDER_WIDTH} />
-
-          <FlashbotsRow />
 
           <SlippageRow />
 
