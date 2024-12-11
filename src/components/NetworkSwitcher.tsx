@@ -458,6 +458,8 @@ function SectionSeparator({
   const showMoreOrLessIcon = useDerivedValue(() => (expanded.value ? '􀆇' : '􀆈') as string);
   const showMoreOrLessIconStyle = useAnimatedStyle(() => ({ opacity: editing.value ? 0 : 1 }));
 
+  const { isDarkMode } = useTheme();
+
   return (
     <GestureDetector gesture={tapExpand}>
       <Animated.View
@@ -470,7 +472,7 @@ function SectionSeparator({
         <Animated.View
           style={[
             {
-              backgroundColor: '#F5F8FF05',
+              backgroundColor: isDarkMode ? '#F5F8FF05' : '#1B1D1F0f',
               height: 24,
               width: 24,
               borderRadius: 12,

@@ -2,6 +2,24 @@ import { DropdownMenu } from '@/components/DropdownMenu';
 import { globalColors, Text, useBackgroundColor } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
+import { analyticsV2 } from '@/analytics';
+import { chainsLabel } from '@/chains';
+import { ChainId } from '@/chains/types';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { NetworkSelector } from '@/components/NetworkSwitcher';
+import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
+import { formatNumber } from '@/helpers/strings';
+import * as i18n from '@/languages';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { TrendingTokens as TrendingTokensType, useTrendingTokens } from '@/resources/trendingTokens/trendingTokens';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { categories, sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
+import { colors } from '@/styles';
+import { useTheme } from '@/theme';
 import chroma from 'chroma-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import React, { FlatList, View } from 'react-native';
@@ -9,24 +27,6 @@ import FastImage from 'react-native-fast-image';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { LinearTransition, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { NetworkSelector } from '@/components/NetworkSwitcher';
-import * as i18n from '@/languages';
-import { useTheme } from '@/theme';
-import { TrendingTokens as TrendingTokensType, useTrendingTokens } from '@/resources/trendingTokens/trendingTokens';
-import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
-import { colors } from '@/styles';
-import { categories, sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
-import { chainsLabel } from '@/chains';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { formatNumber } from '@/helpers/strings';
-import { Navigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { analyticsV2 } from '@/analytics';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { ChainId } from '@/chains/types';
-import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 const t = i18n.l.trending_tokens;
 
@@ -155,9 +155,11 @@ function CategoryFilterButton({
   const tap = Gesture.Tap()
     .onBegin(() => {
       pressed.value = true;
-      runOnJS(selectCategory)();
     })
-    .onFinalize(() => (pressed.value = false));
+    .onEnd(() => {
+      pressed.value = false;
+      runOnJS(selectCategory)();
+    });
 
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ scale: withTiming(pressed.value ? 0.95 : 1, { duration: 100 }) }],
@@ -564,26 +566,37 @@ function TrendingTokenData() {
 }
 
 export function TrendingTokens() {
+  const padding = 20;
   return (
     <View style={{ gap: 28 }}>
       <View style={{ gap: 12, justifyContent: 'center' }}>
-        <View style={{ alignItems: 'center', flexDirection: 'row', gap: 12 }}>
+        <Animated.ScrollView
+          showsHorizontalScrollIndicator={false}
+          horizontal
+          contentContainerStyle={{ alignItems: 'center', flexDirection: 'row', gap: 12, paddingHorizontal: padding }}
+          style={{ marginHorizontal: -padding }}
+        >
           <CategoryFilterButton category="trending" label={i18n.t(t.filters.categories.trending)} icon="􀙭" iconColor={'#D0281C'} />
           <CategoryFilterButton category="new" label={i18n.t(t.filters.categories.new)} icon="􀋃" iconColor={'#FFDA24'} iconWidth={18} />
           <CategoryFilterButton
             category="farcaster"
-            label={i18n.t(t.filters.categories.farcaster)}
+            label={i18n.t(t.filters.categories.farcaster) + 'aaaaaaaa'}
             icon="􀌥"
             iconColor={globalColors.purple60}
             iconWidth={20}
           />
-        </View>
+        </Animated.ScrollView>
 
-        <View style={{ alignItems: 'center', flexDirection: 'row', gap: 12 }}>
+        <Animated.ScrollView
+          showsHorizontalScrollIndicator={false}
+          horizontal
+          contentContainerStyle={{ alignItems: 'center', flexDirection: 'row', gap: 12, paddingHorizontal: padding }}
+          style={{ marginHorizontal: -padding }}
+        >
           <NetworkFilter />
           <TimeFilter />
           <SortFilter />
-        </View>
+        </Animated.ScrollView>
       </View>
 
       <TrendingTokenData />
