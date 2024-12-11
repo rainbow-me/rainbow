@@ -5,6 +5,7 @@ const HARDHAT_OP_CHAIN_ID = 1338;
 const HARDHAT_RPC_URL = 'http://127.0.0.1:8545/';
 
 export enum Network {
+  test = 'test',
   zksync = 'zksync',
   sanko = 'sanko',
   scroll = 'scroll',
@@ -27,6 +28,7 @@ export enum Network {
 }
 
 export enum ChainId {
+  test = 123123,
   zksync = chain.zksync.id,
   sanko = chain.sanko.id,
   gravity = chain.gravity.id,

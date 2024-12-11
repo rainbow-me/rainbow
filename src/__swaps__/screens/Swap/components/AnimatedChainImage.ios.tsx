@@ -20,7 +20,13 @@ import EthereumBadge from '@/assets/badges/ethereum.png';
 import OptimismBadge from '@/assets/badges/optimism.png';
 import PolygonBadge from '@/assets/badges/polygon.png';
 import ZoraBadge from '@/assets/badges/zora.png';
-
+import ZksyncBadge from '@/assets/badges/zksync.png';
+import SankoBadge from '@/assets/badges/sanko.png';
+import ScrollBadge from '@/assets/badges/scroll.png';
+import LineaBadge from '@/assets/badges/linea.png';
+import GravityBadge from '@/assets/badges/gravity.png';
+import InkBadge from '@/assets/badges/ink.png';
+import GnosisBadge from '@/assets/badges/gnosis.png';
 const networkBadges = {
   [ChainId.apechain]: Image.resolveAssetSource(ApechainBadge).uri,
   [ChainId.arbitrum]: Image.resolveAssetSource(ArbitrumBadge).uri,
@@ -43,6 +49,13 @@ const networkBadges = {
   [ChainId.sepolia]: Image.resolveAssetSource(EthereumBadge).uri,
   [ChainId.zora]: Image.resolveAssetSource(ZoraBadge).uri,
   [ChainId.zoraSepolia]: Image.resolveAssetSource(ZoraBadge).uri,
+  [ChainId.zksync]: Image.resolveAssetSource(ZksyncBadge).uri,
+  [ChainId.sanko]: Image.resolveAssetSource(SankoBadge).uri,
+  [ChainId.scroll]: Image.resolveAssetSource(ScrollBadge).uri,
+  [ChainId.linea]: Image.resolveAssetSource(LineaBadge).uri,
+  [ChainId.gravity]: Image.resolveAssetSource(GravityBadge).uri,
+  [ChainId.ink]: Image.resolveAssetSource(InkBadge).uri,
+  [ChainId.gnosis]: Image.resolveAssetSource(GnosisBadge).uri,
 };
 
 export function AnimatedChainImage({

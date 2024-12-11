@@ -20,6 +20,21 @@ import DegenBadge from '@/assets/badges/degenBadge.png';
 import DegenBadgeDark from '@/assets/badges/degenBadgeDark.png';
 import ApechainBadge from '@/assets/badges/apechainBadge.png';
 import ApechainBadgeDark from '@/assets/badges/apechainBadgeDark.png';
+import ZksyncBadge from '@/assets/badges/zksyncBadge.png';
+import ZksyncBadgeDark from '@/assets/badges/zksyncBadgeDark.png';
+import SankoBadge from '@/assets/badges/sankoBadge.png';
+import SankoBadgeDark from '@/assets/badges/sankoBadgeDark.png';
+import ScrollBadge from '@/assets/badges/scrollBadge.png';
+import ScrollBadgeDark from '@/assets/badges/scrollBadgeDark.png';
+import LineaBadge from '@/assets/badges/lineaBadge.png';
+import LineaBadgeDark from '@/assets/badges/lineaBadgeDark.png';
+import GravityBadge from '@/assets/badges/gravityBadge.png';
+import GravityBadgeDark from '@/assets/badges/gravityBadgeDark.png';
+import InkBadge from '@/assets/badges/inkBadge.png';
+import InkBadgeDark from '@/assets/badges/inkBadgeDark.png';
+import GnosisBadge from '@/assets/badges/gnosisBadge.png';
+import GnosisBadgeDark from '@/assets/badges/gnosisBadgeDark.png';
+
 import { ChainId } from '@/chains/types';
 
 interface FastChainBadgeProps {
@@ -72,6 +87,34 @@ const AssetIconsByTheme: {
   [ChainId.degen]: {
     dark: DegenBadgeDark,
     light: DegenBadge,
+  },
+  [ChainId.zksync]: {
+    dark: ZksyncBadgeDark,
+    light: ZksyncBadge,
+  },
+  [ChainId.sanko]: {
+    dark: SankoBadgeDark,
+    light: SankoBadge,
+  },
+  [ChainId.scroll]: {
+    dark: ScrollBadgeDark,
+    light: ScrollBadge,
+  },
+  [ChainId.linea]: {
+    dark: LineaBadgeDark,
+    light: LineaBadge,
+  },
+  [ChainId.gravity]: {
+    dark: GravityBadgeDark,
+    light: GravityBadge,
+  },
+  [ChainId.ink]: {
+    dark: InkBadgeDark,
+    light: InkBadge,
+  },
+  [ChainId.gnosis]: {
+    dark: GnosisBadgeDark,
+    light: GnosisBadge,
   },
 };
 

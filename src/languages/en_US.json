@@ -869,6 +869,10 @@
       "button": "Snag the icon"
     },
     "explain": {
+      "test": {
+        "text": "",
+        "title": "What's test?"
+      },
       "output_disabled": {
         "text": "For %{fromNetwork}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
         "title": "Enter %{inputToken} Instead",

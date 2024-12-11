@@ -12,6 +12,14 @@ import AvalancheBadge from '@/assets/badges/avalanche.png';
 import BlastBadge from '@/assets/badges/blast.png';
 import DegenBadge from '@/assets/badges/degen.png';
 import ApechainBadge from '@/assets/badges/apechain.png';
+import ZksyncBadge from '@/assets/badges/zksync.png';
+import SankoBadge from '@/assets/badges/sanko.png';
+import ScrollBadge from '@/assets/badges/scroll.png';
+import LineaBadge from '@/assets/badges/linea.png';
+import GravityBadge from '@/assets/badges/gravity.png';
+import InkBadge from '@/assets/badges/ink.png';
+import GnosisBadge from '@/assets/badges/gnosis.png';
+
 import FastImage, { Source } from 'react-native-fast-image';
 
 export function ChainImage({ chainId, size = 20 }: { chainId: ChainId | null | undefined; size?: number }) {
@@ -39,6 +47,20 @@ export function ChainImage({ chainId, size = 20 }: { chainId: ChainId | null | u
         return BlastBadge;
       case ChainId.degen:
         return DegenBadge;
+      case ChainId.zksync:
+        return ZksyncBadge;
+      case ChainId.sanko:
+        return SankoBadge;
+      case ChainId.scroll:
+        return ScrollBadge;
+      case ChainId.linea:
+        return LineaBadge;
+      case ChainId.gravity:
+        return GravityBadge;
+      case ChainId.ink:
+        return InkBadge;
+      case ChainId.gnosis:
+        return GnosisBadge;
       default:
         return { uri: '' };
     }

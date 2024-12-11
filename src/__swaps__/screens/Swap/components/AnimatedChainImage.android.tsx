@@ -13,6 +13,13 @@ const EthereumBadge = require('@/assets/badges/ethereum.png');
 const OptimismBadge = require('@/assets/badges/optimism.png');
 const PolygonBadge = require('@/assets/badges/polygon.png');
 const ZoraBadge = require('@/assets/badges/zora.png');
+const ZksyncBadge = require('@/assets/badges/zksync.png');
+const SankoBadge = require('@/assets/badges/sanko.png');
+const ScrollBadge = require('@/assets/badges/scroll.png');
+const LineaBadge = require('@/assets/badges/linea.png');
+const GravityBadge = require('@/assets/badges/gravity.png');
+const InkBadge = require('@/assets/badges/ink.png');
+const GnosisBadge = require('@/assets/badges/gnosis.png');
 
 import { ChainId } from '@/chains/types';
 import { globalColors } from '@/design-system';
@@ -41,6 +48,13 @@ const networkBadges = {
   [ChainId.sepolia]: EthereumBadge,
   [ChainId.zora]: ZoraBadge,
   [ChainId.zoraSepolia]: ZoraBadge,
+  [ChainId.zksync]: ZksyncBadge,
+  [ChainId.sanko]: SankoBadge,
+  [ChainId.scroll]: ScrollBadge,
+  [ChainId.linea]: LineaBadge,
+  [ChainId.gravity]: GravityBadge,
+  [ChainId.ink]: InkBadge,
+  [ChainId.gnosis]: GnosisBadge,
 };
 
 export function AnimatedChainImage({

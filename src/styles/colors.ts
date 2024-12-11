@@ -187,6 +187,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
   };
 
   let networkColors = {
+    [ChainId.test]: '#fff',
     [ChainId.zksync]: '#000', // TODO: Add color
     [ChainId.sanko]: '#000', // TODO: Add color
     [ChainId.scroll]: '#000', // TODO: Add color
@@ -336,6 +337,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     };
 
     networkColors = {
+      [ChainId.test]: '#fff',
       [ChainId.zksync]: '#fff', // TODO: Add color
       [ChainId.sanko]: '#fff', // TODO: Add color
       [ChainId.scroll]: '#fff', // TODO: Add color

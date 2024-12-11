@@ -40,6 +40,35 @@ import ApechainBadge from '../../assets/badges/apechainBadge.png';
 import ApechainBadgeDark from '../../assets/badges/apechainBadgeDark.png';
 import ApechainBadgeLarge from '../../assets/badges/apechainBadgeLarge.png';
 import ApechainBadgeLargeDark from '../../assets/badges/apechainBadgeLargeDark.png';
+import ZksyncBadge from '../../assets/badges/zksyncBadge.png';
+import ZksyncBadgeDark from '../../assets/badges/zksyncBadgeDark.png';
+import ZksyncBadgeLarge from '../../assets/badges/zksyncBadgeLarge.png';
+import ZksyncBadgeLargeDark from '../../assets/badges/zksyncBadgeLargeDark.png';
+import SankoBadge from '../../assets/badges/sankoBadge.png';
+import SankoBadgeDark from '../../assets/badges/sankoBadgeDark.png';
+import SankoBadgeLarge from '../../assets/badges/sankoBadgeLarge.png';
+import SankoBadgeLargeDark from '../../assets/badges/sankoBadgeLargeDark.png';
+import ScrollBadge from '../../assets/badges/scrollBadge.png';
+import ScrollBadgeDark from '../../assets/badges/scrollBadgeDark.png';
+import ScrollBadgeLarge from '../../assets/badges/scrollBadgeLarge.png';
+import ScrollBadgeLargeDark from '../../assets/badges/scrollBadgeLargeDark.png';
+import LineaBadge from '../../assets/badges/lineaBadge.png';
+import LineaBadgeDark from '../../assets/badges/lineaBadgeDark.png';
+import LineaBadgeLarge from '../../assets/badges/lineaBadgeLarge.png';
+import LineaBadgeLargeDark from '../../assets/badges/lineaBadgeLargeDark.png';
+import GravityBadge from '../../assets/badges/gravityBadge.png';
+import GravityBadgeDark from '../../assets/badges/gravityBadgeDark.png';
+import GravityBadgeLarge from '../../assets/badges/gravityBadgeLarge.png';
+import GravityBadgeLargeDark from '../../assets/badges/gravityBadgeLargeDark.png';
+import InkBadge from '../../assets/badges/inkBadge.png';
+import InkBadgeDark from '../../assets/badges/inkBadgeDark.png';
+import InkBadgeLarge from '../../assets/badges/inkBadgeLarge.png';
+import InkBadgeLargeDark from '../../assets/badges/inkBadgeLargeDark.png';
+import GnosisBadge from '../../assets/badges/gnosisBadge.png';
+import GnosisBadgeDark from '../../assets/badges/gnosisBadgeDark.png';
+import GnosisBadgeLarge from '../../assets/badges/gnosisBadgeLarge.png';
+import GnosisBadgeLargeDark from '../../assets/badges/gnosisBadgeLargeDark.png';
+
 import { Centered } from '../layout';
 import styled from '@/styled-thing';
 import { position as positions } from '@/styles';
@@ -100,6 +129,20 @@ export default function ChainBadge({
         val = isDarkMode ? BlastBadgeLargeDark : BlastBadgeLarge;
       } else if (chainId === ChainId.degen) {
         val = isDarkMode ? DegenBadgeLargeDark : DegenBadgeLarge;
+      } else if (chainId === ChainId.zksync) {
+        val = isDarkMode ? ZksyncBadgeLargeDark : ZksyncBadgeLarge;
+      } else if (chainId === ChainId.sanko) {
+        val = isDarkMode ? SankoBadgeLargeDark : SankoBadgeLarge;
+      } else if (chainId === ChainId.scroll) {
+        val = isDarkMode ? ScrollBadgeLargeDark : ScrollBadgeLarge;
+      } else if (chainId === ChainId.linea) {
+        val = isDarkMode ? LineaBadgeLargeDark : LineaBadgeLarge;
+      } else if (chainId === ChainId.gravity) {
+        val = isDarkMode ? GravityBadgeLargeDark : GravityBadgeLarge;
+      } else if (chainId === ChainId.ink) {
+        val = isDarkMode ? InkBadgeLargeDark : InkBadgeLarge;
+      } else if (chainId === ChainId.gnosis) {
+        val = isDarkMode ? GnosisBadgeLargeDark : GnosisBadgeLarge;
       }
     } else {
       if (chainId === ChainId.apechain) {
@@ -122,6 +165,20 @@ export default function ChainBadge({
         val = isDarkMode ? BlastBadgeDark : BlastBadge;
       } else if (chainId === ChainId.degen) {
         val = isDarkMode ? DegenBadgeDark : DegenBadge;
+      } else if (chainId === ChainId.zksync) {
+        val = isDarkMode ? ZksyncBadgeDark : ZksyncBadge;
+      } else if (chainId === ChainId.sanko) {
+        val = isDarkMode ? SankoBadgeDark : SankoBadge;
+      } else if (chainId === ChainId.scroll) {
+        val = isDarkMode ? ScrollBadgeDark : ScrollBadge;
+      } else if (chainId === ChainId.linea) {
+        val = isDarkMode ? LineaBadgeDark : LineaBadge;
+      } else if (chainId === ChainId.gravity) {
+        val = isDarkMode ? GravityBadgeDark : GravityBadge;
+      } else if (chainId === ChainId.ink) {
+        val = isDarkMode ? InkBadgeDark : InkBadge;
+      } else if (chainId === ChainId.gnosis) {
+        val = isDarkMode ? GnosisBadgeDark : GnosisBadge;
       }
     }
     return val;
