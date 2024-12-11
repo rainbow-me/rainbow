@@ -106,9 +106,10 @@ function SwapOutputAmount({ handleTapWhileDisabled }: { handleTapWhileDisabled: 
 }
 
 function SwapOutputIcon() {
+  const { internalSelectedOutputAsset } = useSwapContext();
   return (
     <Box paddingRight="10px">
-      <AnimatedSwapCoinIcon assetType="output" large />
+      <AnimatedSwapCoinIcon asset={internalSelectedOutputAsset} large />
     </Box>
   );
 }

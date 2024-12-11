@@ -6,7 +6,8 @@ import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { showActionSheetWithOptions } from '@/utils';
 import { ChainId } from '@/chains/types';
-import { chainsLabel, chainsName } from '@/chains';
+import { chainsBadges, chainsLabel, chainsName } from '@/chains';
+import { MenuActionConfig } from 'react-native-ios-context-menu';
 
 interface DefaultButtonOptions {
   iconColor?: TextProps['color'];
@@ -60,8 +61,10 @@ export const ChainContextMenu = ({
         actionKey: `${chainId}`,
         actionTitle: chainsLabel[chainId],
         icon: {
-          iconType: 'ASSET',
-          iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${chainsName[chainId]}BadgeNoShadow`,
+          type: 'IMAGE_REMOTE_URL',
+          imageValue: {
+            url: chainsBadges[chainId],
+          },
         },
       };
     });

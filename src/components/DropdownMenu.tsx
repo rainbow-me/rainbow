@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 import * as DropdownMenuPrimitive from 'zeego/dropdown-menu';
 import styled from 'styled-components';
-import { IconConfig, MenuActionConfig, MenuConfig as _MenuConfig } from 'react-native-ios-context-menu';
-import { ImageSystemSymbolConfiguration } from 'react-native-ios-context-menu/lib/typescript/types/ImageItemConfig';
+import { ImageSystemSymbolConfiguration, ImageItemConfig } from 'react-native-ios-utilities';
 import { ImageSourcePropType } from 'react-native';
 import type { SFSymbols5_0 } from 'sf-symbols-typescript';
 import type { DropdownMenuContentProps } from '@radix-ui/react-dropdown-menu';
+import { MenuActionConfig, MenuConfig as _MenuConfig } from 'react-native-ios-context-menu';
 
 export const DropdownMenuRoot = DropdownMenuPrimitive.Root;
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
@@ -30,7 +30,7 @@ export type MenuItemAssetImage = {
   iconValue: ImageSourcePropType;
 };
 
-export type MenuItemIcon = Omit<IconConfig, 'iconValue' | 'iconType'> & (MenuItemSystemImage | MenuItemAssetImage);
+export type MenuItemIcon = Omit<ImageItemConfig, 'iconValue' | 'iconType'> & (MenuItemSystemImage | MenuItemAssetImage);
 
 export type MenuItem<T> = Omit<MenuActionConfig, 'icon'> & {
   actionKey: T;

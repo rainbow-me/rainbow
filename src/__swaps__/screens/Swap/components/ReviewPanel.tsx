@@ -1,4 +1,4 @@
-import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
+import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage/AnimatedChainImage';
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
@@ -387,7 +387,7 @@ export function ReviewPanel() {
 
             <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
               <View style={sx.chainBadgeContainer}>
-                <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
+                <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
               </View>
               <AnimatedText
                 align="right"
@@ -450,7 +450,7 @@ export function ReviewPanel() {
               <Stack space="10px">
                 <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
                   <View style={sx.chainBadgeContainer}>
-                    <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
+                    <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
                   </View>
                   <UnmountOnAnimatedReaction
                     isMountedWorklet={() => {

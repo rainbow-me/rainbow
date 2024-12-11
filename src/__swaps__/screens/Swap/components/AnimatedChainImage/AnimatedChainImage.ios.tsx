@@ -1,32 +1,28 @@
 import React from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { ChainId } from '@/chains/types';
 import { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { globalColors } from '@/design-system';
-import { useSwapContext } from '../providers/swap-provider';
 import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
-import { getCustomChainIconUrl, type AnimatedChainImageProps } from './AnimatedChainImage';
+import { type AnimatedChainImageProps } from './types';
+import { chainsBadges } from '@/chains';
 
 export function AnimatedChainImage({
-  assetType,
+  asset,
   showMainnetBadge = false,
   shadowConfig = sx.shadow,
   size = 20,
   style = sx.badge,
 }: AnimatedChainImageProps) {
-  const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
-
   const url = useDerivedValue(() => {
-    const asset = assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset;
     const chainId = asset?.value?.chainId;
 
     let url = 'eth';
-
     if (chainId !== undefined && !(!showMainnetBadge && chainId === ChainId.mainnet)) {
-      url = getCustomChainIconUrl(chainId, asset?.value?.address);
+      url = chainsBadges[chainId];
     }
     return url;
   });

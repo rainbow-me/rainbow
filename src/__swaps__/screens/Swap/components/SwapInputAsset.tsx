@@ -94,9 +94,10 @@ function SwapInputAmount() {
 }
 
 function SwapInputIcon() {
+  const { internalSelectedInputAsset } = useSwapContext();
   return (
     <Box paddingRight="10px">
-      <AnimatedSwapCoinIcon assetType={'input'} large />
+      <AnimatedSwapCoinIcon asset={internalSelectedInputAsset} large />
     </Box>
   );
 }

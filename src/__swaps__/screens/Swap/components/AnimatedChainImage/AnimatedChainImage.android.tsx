@@ -4,30 +4,28 @@ import { Image, StyleSheet, View } from 'react-native';
 import { ChainId } from '@/chains/types';
 import { globalColors } from '@/design-system';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { getCustomChainIconUrl, type AnimatedChainImageProps } from './AnimatedChainImage';
+import { type AnimatedChainImageProps } from './types';
+import { chainsBadges } from '@/chains';
 
 export function AnimatedChainImage({
-  assetType,
+  asset,
   showMainnetBadge = false,
   shadowConfig = sx.shadow,
   size = 20,
   style = sx.badge,
 }: AnimatedChainImageProps) {
-  const chainIdState = useSwapsStore(state => state[assetType === 'input' ? 'inputAsset' : 'outputAsset']?.chainId);
-  const address = useSwapsStore(state => state[assetType === 'input' ? 'inputAsset' : 'outputAsset']?.address);
-
   const iconSource = useMemo(() => {
     let source = { uri: '' };
+    const chainId = asset?.value?.chainId;
 
-    if (chainIdState !== undefined && !(!showMainnetBadge && chainIdState === ChainId.mainnet)) {
-      source = { uri: getCustomChainIconUrl(chainIdState, address) };
+    if (chainId !== undefined && !(!showMainnetBadge && chainId === ChainId.mainnet)) {
+      source = { uri: chainsBadges[chainId] };
     } else {
       source = { uri: '' };
     }
 
     return source;
-  }, [chainIdState, showMainnetBadge, address]);
+  }, [asset.value?.chainId, showMainnetBadge]);
 
   return (
     <View style={[style, shadowConfig, { borderRadius: size / 2, height: size, width: size }]}>

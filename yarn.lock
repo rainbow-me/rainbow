@@ -9300,7 +9300,8 @@ __metadata:
     react-native-haptic-feedback: "npm:2.2.0"
     react-native-image-crop-picker: "npm:0.41.2"
     react-native-indicators: "npm:0.17.0"
-    react-native-ios-context-menu: "npm:1.15.3"
+    react-native-ios-context-menu: "npm:2.5.3"
+    react-native-ios-utilities: "npm:4.5.1"
     react-native-keyboard-area: "npm:1.0.6"
     react-native-keychain: "npm:8.0.0"
     react-native-level-fs: "npm:3.0.1"
@@ -23273,15 +23274,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-ios-context-menu@npm:1.15.3":
-  version: 1.15.3
-  resolution: "react-native-ios-context-menu@npm:1.15.3"
+"react-native-ios-context-menu@npm:2.5.3":
+  version: 2.5.3
+  resolution: "react-native-ios-context-menu@npm:2.5.3"
   dependencies:
     "@dominicstop/ts-event-emitter": "npm:^1.1.0"
   peerDependencies:
+    expo: "*"
     react: "*"
     react-native: "*"
-  checksum: 10c0/1b6dfdd98199b5b554d2c221ea8b38d73116f92f111bb730aa71e377661c8a8202d2d6749c76766788fa81c3c75d39b00b536e1d10677d363ce4b7d7223140ff
+    react-native-ios-utilities: ">= 4.4.x <=4.5.x"
+  checksum: 10c0/3ed5fc9dd8f74ce5035396ddf033ec42fe11f4077e7459492ee3b89b0f73ba0daa49b29eb99a4bc22252c1523539277e90cc4dc789037fda84bd2cb080092a4a
+  languageName: node
+  linkType: hard
+
+"react-native-ios-utilities@npm:4.5.1":
+  version: 4.5.1
+  resolution: "react-native-ios-utilities@npm:4.5.1"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/6906ae2513c3c56f5bb218229089693168729792ad378cf3364ea8ebd17d1d355868bdea929d837d72262d8eae9060c16d4b31a264d92e802b4b34d0b5090f6e
   languageName: node
   linkType: hard
 

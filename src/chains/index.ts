@@ -41,6 +41,14 @@ export const chainsNativeAsset: Record<number, BackendNetwork['nativeAsset']> = 
   {} as Record<number, BackendNetwork['nativeAsset']>
 );
 
+export const chainsBadges: Record<number, string> = backendNetworks.networks.reduce(
+  (acc, backendNetwork: BackendNetwork) => {
+    acc[parseInt(backendNetwork.id, 10)] = backendNetwork.icons.badgeURL;
+    return acc;
+  },
+  {} as Record<number, string>
+);
+
 export const chainsLabel: Record<number, string> = backendNetworks.networks.reduce(
   (acc, backendNetwork: BackendNetwork) => {
     acc[parseInt(backendNetwork.id, 10)] = backendNetwork.label;
