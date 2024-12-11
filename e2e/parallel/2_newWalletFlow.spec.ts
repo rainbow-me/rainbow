@@ -1,5 +1,5 @@
 import { device } from 'detox';
-import { beforeAllcleanApp, checkIfVisible, waitAndTap, authenticatePin, delayTime, afterAllcleanApp } from './helpers';
+import { beforeAllcleanApp, checkIfVisible, waitAndTap, authenticatePin, delayTime, afterAllcleanApp } from '../helpers';
 
 const android = device.getPlatform() === 'android';
 

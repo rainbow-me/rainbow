@@ -23,10 +23,10 @@ import {
   delayTime,
   swipeUntilVisible,
   tapAndLongPress,
-} from './helpers';
+} from '../helpers';
 
 import { expect } from '@jest/globals';
-import { WALLET_VARS } from './testVariables';
+import { WALLET_VARS } from '../testVariables';
 
 describe('Swap Sheet Interaction Flow', () => {
   beforeAll(async () => {

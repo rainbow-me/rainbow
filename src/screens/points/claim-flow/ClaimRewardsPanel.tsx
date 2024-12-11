@@ -7,8 +7,8 @@ import { ListHeader, ListPanel, Panel, TapToDismiss, controlPanelStyles } from '
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@/chains/types';
 import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
-import { useAccountAccentColor, useAccountProfile, useAccountSettings } from '@/hooks';
-import { safeAreaInsetValues } from '@/utils';
+import { useAccountAccentColor, useAccountProfile, useAccountSettings, useWallets } from '@/hooks';
+import { safeAreaInsetValues, watchingAlert } from '@/utils';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { EthRewardsCoinIcon } from '../content/PointsContent';
 import { View } from 'react-native';
@@ -168,6 +168,7 @@ const ClaimingRewards = ({
   setClaimStatus: React.Dispatch<React.SetStateAction<ClaimStatus>>;
 }) => {
   const { accountAddress: address, accountImage, accountColor, accountSymbol } = useAccountProfile();
+  const { isReadOnlyWallet } = useWallets();
   const { nativeCurrency: currency } = useAccountSettings();
   const { highContrastAccentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
@@ -512,16 +513,20 @@ const ClaimingRewards = ({
               <Animated.View style={claimButtonStyle}>
                 <ButtonPressAnimation
                   onPress={() => {
-                    if (claimStatus === 'idle' || isClaimError(claimStatus)) {
-                      // Almost impossible to reach here since gas prices load immediately
-                      // but in that case I'm disabling the action temporarily to prevent
-                      // any issues that might arise from the gas prices not being loaded
-                      if (!meteorologyData) return;
+                    if (isReadOnlyWallet) {
+                      watchingAlert();
+                    } else {
+                      if (claimStatus === 'idle' || isClaimError(claimStatus)) {
+                        // Almost impossible to reach here since gas prices load immediately
+                        // but in that case I'm disabling the action temporarily to prevent
+                        // any issues that might arise from the gas prices not being loaded
+                        if (!meteorologyData) return;
 
-                      setClaimStatus('claiming');
-                      claimRewards();
-                    } else if (claimStatus === 'success' || claimStatus === 'bridge-error') {
-                      closeClaimPanel();
+                        setClaimStatus('claiming');
+                        claimRewards();
+                      } else if (claimStatus === 'success' || claimStatus === 'bridge-error') {
+                        closeClaimPanel();
+                      }
                     }
                   }}
                   scaleTo={0.925}

@@ -8,7 +8,7 @@ import {
   afterAllcleanApp,
   tap,
   delayTime,
-} from './helpers';
+} from '../helpers';
 
 const RAINBOW_TEST_WALLET = 'rainbowtestwallet.eth';
 
