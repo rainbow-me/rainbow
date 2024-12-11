@@ -8,7 +8,7 @@
 
 🤖 [Android available on the Google Play Store](https://play.google.com/store/apps/details?id=me.rainbow&utm_campaign=gh&utm_source=referral&utm_medium=gh)
 
-💻 [Browser extension available on](https://rainbow.me/download?utm_campaign=gh&utm_source=referral&utm_medium=gh), [Chrome](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh), [Brave](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh), [Edge](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh), [FireFox](https://addons.mozilla.org/en-US/firefox/addon/rainbow-extension/?utm_campaign=gh&utm_source=referral&utm_medium=gh), and [Arc](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh).
+💻 [Browser extension available for](https://rainbow.me/download?utm_campaign=gh&utm_source=referral&utm_medium=gh), [Chrome](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh), [Brave](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh), [Edge](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh), [Firefox](https://addons.mozilla.org/en-US/firefox/addon/rainbow-extension/?utm_campaign=gh&utm_source=referral&utm_medium=gh), and [Arc](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh).
 
 🐦️ [Follow us on Twitter](https://twitter.com/rainbowdotme)
 
@@ -21,7 +21,7 @@
 
 ### MacOS
 
-1. Install the [latest version of XCode](https://developer.apple.com/xcode/).
+1. Install the [latest version of Xcode](https://developer.apple.com/xcode/).
 
 2. Install Watchman:
 
@@ -74,10 +74,10 @@ https://reactnative.dev/docs/getting-started
 
    - Etherscan: https://etherscan.io/apis
    - Infura: https://infura.io/
-   - ETH Gas Station: https://docs.ethgasstation.info/
+   - Etherscan Gas Tracker: https://etherscan.io/gastracker
    - Imgix: https://www.imgix.com/
 
-3. Ensure a `google-services.json` has been added to the relevant project
+3. Ensure a Google Services JSON file has been added to the relevant project
    directory/directories so the compile will not fail.
 
    This can either be the live Google Services config (for internal development)
@@ -87,7 +87,7 @@ https://reactnative.dev/docs/getting-started
 ### MacOS
 
 _Note: Darwin versions of the application can only be developed/built on Darwin
-platforms with XCode._
+platforms with Xcode._
 
 1. Start a React Native webserver with:
 
@@ -95,7 +95,7 @@ platforms with XCode._
    yarn start
    ```
 
-2. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
+2. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in Xcode.
 
 3. Run the project by clicking the play button.
 

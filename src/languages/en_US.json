@@ -2196,7 +2196,7 @@
         },
         "repay": {
           "pending": "Repaying",
-          "confirmed": "Repayed",
+          "confirmed": "Repaid",
           "failed": "Repay Failed"
         },
         "stake": {
