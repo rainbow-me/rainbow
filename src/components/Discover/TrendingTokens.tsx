@@ -131,10 +131,12 @@ function CategoryFilterButton({
   iconWidth = 16,
   iconColor,
   label,
+  highlightedBackgroundColor,
 }: {
   category: (typeof categories)[number];
   icon: string;
   iconColor: string;
+  highlightedBackgroundColor: string;
   iconWidth?: number;
   label: string;
 }) {
@@ -168,7 +170,7 @@ function CategoryFilterButton({
   return (
     <GestureDetector gesture={tap}>
       <AnimatedLinearGradient
-        colors={selected ? [chroma(iconColor).luminance(0.5).hex(), 'white'] : [fillTertiary, fillTertiary]}
+        colors={selected ? [highlightedBackgroundColor, 'white'] : [fillTertiary, fillTertiary]}
         style={[
           {
             flexDirection: 'row',
@@ -576,13 +578,27 @@ export function TrendingTokens() {
           contentContainerStyle={{ alignItems: 'center', flexDirection: 'row', gap: 12, paddingHorizontal: padding }}
           style={{ marginHorizontal: -padding }}
         >
-          <CategoryFilterButton category="trending" label={i18n.t(t.filters.categories.trending)} icon="􀙭" iconColor={'#D0281C'} />
-          <CategoryFilterButton category="new" label={i18n.t(t.filters.categories.new)} icon="􀋃" iconColor={'#FFDA24'} iconWidth={18} />
+          <CategoryFilterButton
+            category="trending"
+            label={i18n.t(t.filters.categories.trending)}
+            icon="􀙭"
+            iconColor={'#D0281C'}
+            highlightedBackgroundColor={'#E6A39E'}
+          />
+          <CategoryFilterButton
+            category="new"
+            label={i18n.t(t.filters.categories.new)}
+            icon="􀋃"
+            iconColor={'#FFDA24'}
+            highlightedBackgroundColor={'#F9EAA1'}
+            iconWidth={18}
+          />
           <CategoryFilterButton
             category="farcaster"
             label={i18n.t(t.filters.categories.farcaster) + 'aaaaaaaa'}
             icon="􀌥"
-            iconColor={globalColors.purple60}
+            iconColor={'#5F5AFA'}
+            highlightedBackgroundColor={'#B9B7F7'}
             iconWidth={20}
           />
         </Animated.ScrollView>
