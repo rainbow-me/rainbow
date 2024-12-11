@@ -74,7 +74,6 @@ export async function executeAction<T extends RapActionTypes>({
   index,
   baseNonce,
   rapName,
-  flashbots,
   gasParams,
   gasFeeParamsBySpeed,
 }: {
@@ -84,7 +83,6 @@ export async function executeAction<T extends RapActionTypes>({
   index: number;
   baseNonce?: number;
   rapName: string;
-  flashbots?: boolean;
   gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }): Promise<RapActionResponse> {
@@ -94,7 +92,7 @@ export async function executeAction<T extends RapActionTypes>({
       wallet,
       currentRap: rap,
       index,
-      parameters: { ...parameters, flashbots },
+      parameters,
       baseNonce,
       gasParams,
       gasFeeParamsBySpeed,
@@ -174,7 +172,6 @@ export const walletExecuteRap = async (
       index: 0,
       baseNonce: nonce,
       rapName,
-      flashbots: parameters?.flashbots,
       gasParams: parameters?.gasParams,
       gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
     };
@@ -194,7 +191,6 @@ export const walletExecuteRap = async (
           index,
           baseNonce,
           rapName,
-          flashbots: parameters?.flashbots,
           gasParams: parameters?.gasParams,
           gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
         };

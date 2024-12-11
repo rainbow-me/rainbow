@@ -10,7 +10,7 @@ import { THICK_BORDER_WIDTH } from '../constants';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { GestureHandlerButton } from './GestureHandlerButton';
-import { FlashbotsRow, SlippageRow } from './ReviewPanel';
+import { SlippageRow } from './ReviewPanel';
 
 const PreferredNetworkMenu = () => {
   const preferredNetwork = useSwapsStore(state => state.preferredNetwork);
@@ -98,7 +98,6 @@ export function SettingsPanel() {
 
       <Box gap={28} paddingHorizontal="12px" width="full">
         <Animated.View style={[degenSettingsVisibilityStyle, { gap: 28 }]}>
-          <FlashbotsRow />
           <SlippageRow />
           <Separator color={{ custom: opacity(separator, 0.03) }} thickness={THICK_BORDER_WIDTH} />
         </Animated.View>

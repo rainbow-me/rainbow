@@ -130,10 +130,7 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
     [gasData?.selectedGasFee?.gasFee, gasData?.selectedGasFee?.gasFeeParams]
   );
 
-  const startPollingGasFees = useCallback(
-    (chainId = ChainId.mainnet, flashbots = false) => dispatch(gasPricesStartPolling(chainId, flashbots)),
-    [dispatch]
-  );
+  const startPollingGasFees = useCallback((chainId = ChainId.mainnet) => dispatch(gasPricesStartPolling(chainId)), [dispatch]);
   const stopPollingGasFees = useCallback(() => dispatch(gasPricesStopPolling()), [dispatch]);
 
   const updateDefaultGasLimit = useCallback((defaultGasLimit?: number) => dispatch(gasUpdateDefaultGasLimit(defaultGasLimit)), [dispatch]);

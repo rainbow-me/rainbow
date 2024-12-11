@@ -1,16 +1,12 @@
 import { useMemo, useCallback } from 'react';
 import useAccountSettings from './useAccountSettings';
 import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
-import { RainbowTransaction, MinedTransaction, TransactionStatus, FlashbotsStatus } from '@/entities';
+import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
-import { getProvider } from '@/handlers/web3';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { queryClient } from '@/react-query/queryClient';
-import { getTransactionFlashbotStatus } from '@/handlers/transactions';
-import { ChainId } from '@/chains/types';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
-import { useNonceStore } from '@/state/nonces';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { Address } from 'viem';
 import { staleBalancesStore } from '@/state/staleBalances';
@@ -23,8 +19,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     setPendingTransactions: state.setPendingTransactions,
   }));
   const { connectedToHardhat } = useConnectedToHardhatStore();
-
-  const setNonce = useNonceStore(state => state.setNonce);
 
   const pendingTransactions = useMemo(() => storePendingTransactions[address] || [], [address, storePendingTransactions]);
 
@@ -44,22 +38,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     },
     [address, connectedToHardhat, nativeCurrency]
   );
-
-  const processFlashbotsTransaction = useCallback(async (tx: RainbowTransaction): Promise<RainbowTransaction> => {
-    const flashbotsTxStatus = await getTransactionFlashbotStatus(tx, tx.hash);
-    if (flashbotsTxStatus) {
-      const { flashbotsStatus, status, minedAt, title } = flashbotsTxStatus;
-
-      return {
-        ...tx,
-        status,
-        minedAt,
-        title,
-        flashbotsStatus,
-      } as MinedTransaction;
-    }
-    return tx;
-  }, []);
 
   const processSupportedNetworkTransaction = useCallback(
     async (tx: RainbowTransaction) => {
@@ -84,10 +62,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       try {
         if (tx.chainId && tx.hash && address) {
           updatedTransaction = await processSupportedNetworkTransaction(updatedTransaction);
-          // if flashbots tx and no blockNumber, check if it failed
-          if (tx.flashbots && !('blockNumber' in tx)) {
-            updatedTransaction = await processFlashbotsTransaction(updatedTransaction);
-          }
         } else {
           throw new Error('Pending transaction missing chainId, hash, or address');
         }
@@ -102,58 +76,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       }
       return updatedTransaction;
     },
-    [address, processSupportedNetworkTransaction, processFlashbotsTransaction, refreshAssets]
-  );
-
-  const processNonces = useCallback(
-    (txs: RainbowTransaction[]) => {
-      const userTxs = txs.filter(tx => address?.toLowerCase() === tx.from?.toLowerCase());
-      const chainIds = [
-        ...new Set(
-          userTxs.reduce((acc, tx) => {
-            acc.add(tx.chainId);
-            return acc;
-          }, new Set<ChainId>())
-        ),
-      ];
-      let flashbotsTxFailed = false;
-      const highestNoncePerChainId = userTxs.reduce((acc, tx) => {
-        // if tx is not on mainnet, we don't care about the nonce
-        if (tx.chainId !== ChainId.mainnet) {
-          acc.set(tx.chainId, tx.nonce);
-          return acc;
-        }
-        // if tx is flashbots and failed, we want to use the lowest nonce
-        if (tx.flashbots && tx?.flashbotsStatus === FlashbotsStatus.FAILED && tx?.nonce) {
-          // if we already have a failed flashbots tx, we want to use the lowest nonce
-          if (flashbotsTxFailed && tx.nonce < acc.get(tx.chainId)) {
-            acc.set(tx.chainId, tx.nonce);
-          } else {
-            acc.set(tx.chainId, tx.nonce);
-            flashbotsTxFailed = true;
-          }
-          // if tx succeeded, we want to use the highest nonce
-        } else if (!flashbotsTxFailed && tx?.nonce && tx.nonce > acc.get(tx.chainId)) {
-          acc.set(tx.chainId, tx.nonce);
-        }
-        return acc;
-      }, new Map());
-
-      chainIds.map(async chainId => {
-        const provider = getProvider({ chainId });
-        const providerTransactionCount = await provider.getTransactionCount(address, 'latest');
-        const currentProviderNonce = providerTransactionCount - 1;
-        const currentNonceForChainId = highestNoncePerChainId.get(chainId) - 1;
-
-        setNonce({
-          address,
-          chainId,
-          currentNonce: currentProviderNonce > currentNonceForChainId ? currentProviderNonce : currentNonceForChainId,
-          latestConfirmedNonce: currentProviderNonce,
-        });
-      });
-    },
-    [address, setNonce]
+    [address, processSupportedNetworkTransaction, refreshAssets]
   );
 
   const watchPendingTransactions = useCallback(async () => {
@@ -161,8 +84,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     const updatedPendingTransactions = await Promise.all(
       pendingTransactions.map((tx: RainbowTransaction) => processPendingTransaction(tx))
     );
-
-    processNonces(updatedPendingTransactions);
 
     const { newPendingTransactions, minedTransactions } = updatedPendingTransactions.reduce<{
       newPendingTransactions: RainbowTransaction[];
@@ -220,7 +141,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       address,
       pendingTransactions: newPendingTransactions,
     });
-  }, [address, connectedToHardhat, nativeCurrency, pendingTransactions, processNonces, processPendingTransaction, setPendingTransactions]);
+  }, [address, connectedToHardhat, nativeCurrency, pendingTransactions, processPendingTransaction, setPendingTransactions]);
 
   return { watchPendingTransactions };
 };

@@ -9,8 +9,8 @@ import {
   authenticatePin,
   delayTime,
   afterAllcleanApp,
-} from './helpers';
-import { WALLET_VARS } from './testVariables';
+} from '../helpers';
+import { WALLET_VARS } from '../testVariables';
 
 const android = device.getPlatform() === 'android';
 
