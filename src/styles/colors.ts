@@ -187,6 +187,12 @@ const getColorsByTheme = (darkMode?: boolean) => {
   };
 
   let networkColors = {
+    [ChainId.zksync]: '#000', // TODO: Add color
+    [ChainId.sanko]: '#000', // TODO: Add color
+    [ChainId.scroll]: '#000', // TODO: Add color
+    [ChainId.linea]: '#000', // TODO: Add color
+    [ChainId.gravity]: '#000', // TODO: Add color
+    [ChainId.ink]: '#000', // TODO: Add color
     [ChainId.arbitrum]: '#2D374B',
     [ChainId.base]: '#0052FF',
     [ChainId.goerli]: '#f6c343',
@@ -330,6 +336,12 @@ const getColorsByTheme = (darkMode?: boolean) => {
     };
 
     networkColors = {
+      [ChainId.zksync]: '#fff', // TODO: Add color
+      [ChainId.sanko]: '#fff', // TODO: Add color
+      [ChainId.scroll]: '#fff', // TODO: Add color
+      [ChainId.linea]: '#fff', // TODO: Add color
+      [ChainId.gravity]: '#fff', // TODO: Add color
+      [ChainId.ink]: '#fff', // TODO: Add color
       [ChainId.arbitrum]: '#ADBFE3',
       [ChainId.base]: '#3979FF',
       [ChainId.goerli]: '#f6c343',

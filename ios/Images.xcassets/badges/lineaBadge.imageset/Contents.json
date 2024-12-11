@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "lineaBadge.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "lineaBadge@2x.png",
+      "idiom" : "universal", 
+      "scale" : "2x"
+    },
+    {
+      "filename" : "lineaBadge@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

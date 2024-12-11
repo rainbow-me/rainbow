@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "zksyncBadgeLarge.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "zksyncBadgeLarge@2x.png",
+      "idiom" : "universal", 
+      "scale" : "2x"
+    },
+    {
+      "filename" : "zksyncBadgeLarge@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

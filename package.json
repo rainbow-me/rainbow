@@ -309,7 +309,7 @@
     "use-deep-compare": "1.1.0",
     "use-memo-one": "1.1.1",
     "util": "0.10.4",
-    "viem": "2.9.16",
+    "viem": "2.21.54",
     "vm-browserify": "0.0.4",
     "w2t": "3.0.2",
     "zeego": "1.10.0",

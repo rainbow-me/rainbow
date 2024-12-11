@@ -948,6 +948,34 @@
         "text": "Avalanche is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Avalanche has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Avalanche?"
       },
+      "linea": {
+        "text": "",
+        "title": "What's Linea?"
+      },
+      "gravity": {
+        "text": "",
+        "title": "What's Gravity Chain?"
+      },
+      "ink": {
+        "text": "",
+        "title": "What's Ink Chain?"
+      },
+      "gnosis": {
+        "text": "",
+        "title": "What's Gnosis?"
+      },    
+      "scroll": {
+        "text": "",
+        "title": "What's Scroll?"
+      },   
+      "sanko": {
+        "text": "",
+        "title": "What's Sanko?"
+      },
+      "zksync": {
+        "text": "",
+        "title": "What's zksync?"
+      },
       "degen": {
         "text": "Degen Chain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum.",
         "title": "What's Degen Chain?"

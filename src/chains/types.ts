@@ -5,6 +5,12 @@ const HARDHAT_OP_CHAIN_ID = 1338;
 const HARDHAT_RPC_URL = 'http://127.0.0.1:8545/';
 
 export enum Network {
+  zksync = 'zksync',
+  sanko = 'sanko',
+  scroll = 'scroll',
+  linea = 'linea',
+  gravity = 'gravity',
+  ink = 'ink',
   apechain = 'apechain',
   arbitrum = 'arbitrum',
   goerli = 'goerli',
@@ -21,7 +27,11 @@ export enum Network {
 }
 
 export enum ChainId {
-  apechain = 33139,
+  zksync = chain.zksync.id,
+  sanko = chain.sanko.id,
+  gravity = chain.gravity.id,
+  ink = -1, // TODO: need Ink chainID
+  apechain = chain.apeChain.id,
   arbitrum = chain.arbitrum.id,
   arbitrumNova = chain.arbitrumNova.id,
   arbitrumSepolia = chain.arbitrumSepolia.id,
@@ -57,6 +67,10 @@ export enum ChainId {
 }
 
 export enum ChainName {
+  zksync = 'zksync',
+  sanko = 'sanko',
+  gravity = 'gravity',
+  ink = 'ink',
   apechain = 'apechain',
   arbitrum = 'arbitrum',
   arbitrumNova = 'arbitrum-nova',
