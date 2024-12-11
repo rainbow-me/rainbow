@@ -57,7 +57,7 @@ interface RainbowPersistConfig<S> {
  * @returns An object containing the persist storage and version.
  */
 function createPersistStorage<S = unknown>(config: RainbowPersistConfig<S>) {
-  const { deserializer = defaultDeserializeState, serializer = defaultSerializeState, storageKey, version = 0, migrate } = config;
+  const { deserializer = defaultDeserializeState, serializer = defaultSerializeState, storageKey, version = 0 } = config;
 
   const persistStorage: PersistOptions<S, Partial<S>>['storage'] = {
     getItem: (name: string) => {
