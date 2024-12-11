@@ -1,8 +1,8 @@
 import { Box, Text } from '@/design-system';
 import { haptics, showActionSheetWithOptions } from '@/utils';
 import React, { useCallback, useMemo, useState } from 'react';
-import { ChainId } from '@/chains/types';
-import { chainsLabel, chainsName, chainsNativeAsset } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ETH_SYMBOL, USDC_ADDRESS } from '@/references';
 import { DropdownMenu } from '../../shared/components/DropdownMenu';
@@ -30,6 +30,9 @@ export function ClaimCustomization() {
 
   const [isInitialState, setIsInitialState] = useState(true);
 
+  const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
+
   const { data: usdcSearchData } = useTokenSearch(
     {
       keys: ['address'],
@@ -50,7 +53,7 @@ export function ClaimCustomization() {
   const nativeTokens: TokenMap = useMemo(
     () =>
       balanceSortedChainList.reduce<TokenMap>((nativeTokenDict, chainId) => {
-        const nativeToken = chainsNativeAsset[chainId];
+        const nativeToken = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
         if (nativeToken) {
           if (!nativeTokenDict[nativeToken.symbol]) {
             nativeTokenDict[nativeToken.symbol] = {
@@ -210,7 +213,7 @@ export function ClaimCustomization() {
     return {
       menuItems,
     };
-  }, [balanceSortedChainList, isInitialState, outputChainId, outputToken]);
+  }, [balanceSortedChainList, chainsLabel, chainsName, isInitialState, outputChainId, outputToken]);
 
   const handleTokenSelection = useCallback(
     ({ nativeEvent: { actionKey } }: Omit<OnPressMenuItemEventObject, 'isUsingActionSheetFallback'>) => {

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 import ApechainBadge from '@/assets/badges/apechain.png';
 import ArbitrumBadge from '@/assets/badges/arbitrum.png';

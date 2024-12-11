@@ -47,8 +47,8 @@ import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
 import { PerformanceTracking } from '@/performance/tracking';
-import { ChainId } from '@/chains/types';
-import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
@@ -451,7 +451,8 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
 
     // we already checked for eip155 namespace above
     const chainIds = chains?.map(chain => parseInt(chain.split('eip155:')[1]));
-    const supportedChainIds = chainIds.filter(chainId => SUPPORTED_CHAIN_IDS.includes(chainId));
+    const supportedChainIds = useBackendNetworksStore.getState().getSupportedChainIds();
+    const chainIdsToUse = chainIds.filter(chainId => supportedChainIds.includes(chainId));
 
     const peerMeta = proposer.metadata;
     const metadata = await fetchDappMetadata({ url: peerMeta.url, status: true });
@@ -462,7 +463,7 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
     const routeParams: WalletconnectApprovalSheetRouteParams = {
       receivedTimestamp,
       meta: {
-        chainIds: supportedChainIds,
+        chainIds: chainIdsToUse,
         dappName,
         dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
         dappUrl: peerMeta.url || lang.t(lang.l.walletconnect.unknown_url),
@@ -492,7 +493,7 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
           const supportedEvents = requiredNamespaces?.eip155?.events || SUPPORTED_SESSION_EVENTS;
 
           /** @see https://chainagnostic.org/CAIPs/caip-2 */
-          const caip2ChainIds = SUPPORTED_CHAIN_IDS.map(id => `eip155:${id}`);
+          const caip2ChainIds = supportedChainIds.map(id => `eip155:${id}`);
           const namespaces = getApprovedNamespaces({
             proposal: proposal.params,
             supportedNamespaces: {

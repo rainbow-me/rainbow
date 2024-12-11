@@ -21,7 +21,7 @@ const ScrollBadge = require('@/assets/badges/scroll.png');
 const ZksyncBadge = require('@/assets/badges/zksync.png');
 const ZoraBadge = require('@/assets/badges/zora.png');
 
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { globalColors } from '@/design-system';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
 import { useSwapsStore } from '@/state/swaps/swapsStore';

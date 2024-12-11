@@ -22,3 +22,11 @@ export function SharedValuesProvider({ children }: PropsWithChildren) {
   );
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
+
+export const useSharedValuesContext = () => {
+  const context = React.useContext(Context);
+  if (context === undefined) {
+    throw new Error('useSharedValuesContext must be used within a SharedValuesProvider');
+  }
+  return context;
+};

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, ImageSourcePropType, View, ViewStyle } from 'react-native';
+import { ChainId } from '@/state/backendNetworks/types';
 
 import ApechainBadge from '@/assets/badges/apechainBadge.png';
 import ApechainBadgeDark from '@/assets/badges/apechainBadgeDark.png';
@@ -35,8 +36,6 @@ import ZksyncBadge from '@/assets/badges/zksyncBadge.png';
 import ZksyncBadgeDark from '@/assets/badges/zksyncBadgeDark.png';
 import ZoraBadge from '@/assets/badges/zoraBadge.png';
 import ZoraBadgeDark from '@/assets/badges/zoraBadgeDark.png';
-
-import { ChainId } from '@/chains/types';
 
 interface FastChainBadgeProps {
   chainId: ChainId;

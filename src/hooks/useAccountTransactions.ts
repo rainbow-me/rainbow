@@ -8,8 +8,8 @@ import { useConsolidatedTransactions } from '@/resources/transactions/consolidat
 import { RainbowTransaction } from '@/entities';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
 import { getSortedWalletConnectRequests } from '@/state/walletConnectRequests';
-import { ChainId } from '@/chains/types';
-import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const NOE_PAGE = 30;
 
@@ -44,7 +44,12 @@ export default function useAccountTransactions() {
           }
           return latestTxMap;
         },
-        new Map(SUPPORTED_CHAIN_IDS.map(chainId => [chainId, null as RainbowTransaction | null]))
+        new Map(
+          useBackendNetworksStore
+            .getState()
+            .getSupportedChainIds()
+            .map(chainId => [chainId, null as RainbowTransaction | null])
+        )
       );
     watchForPendingTransactionsReportedByRainbowBackend({
       currentAddress: accountAddress,
