@@ -223,7 +223,7 @@ export const createUserAssetsStore = (address: Address | string) =>
       searchCache: new Map(),
       userAssets: new Map(),
       legacyUserAssets: [],
-      isLoadingUserAssets: false,
+      isLoadingUserAssets: true,
 
       getBalanceSortedChainList: () => {
         const chainBalances = [...get().chainBalances.entries()];
@@ -427,6 +427,7 @@ export const createUserAssetsStore = (address: Address | string) =>
             legacyUserAssets,
             searchCache,
             userAssets: userAssetsMap,
+            isLoadingUserAssets: false,
           };
         }),
 
