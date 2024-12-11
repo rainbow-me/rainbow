@@ -253,7 +253,7 @@ function AllNetworksOption({
 
   const overlappingBadge = useAnimatedStyle(() => {
     return {
-      borderColor: isSelected.value ? selectedStyle.borderColor : defaultStyle.borderColor,
+      borderColor: isSelected.value ? selectedStyle.backgroundColor : defaultStyle.backgroundColor,
       borderWidth: 1.67,
       borderRadius: 16,
       marginLeft: -9,
