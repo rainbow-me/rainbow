@@ -1,4 +1,4 @@
-import React, { forwardRef, useMemo } from 'react';
+import React, { useMemo, forwardRef } from 'react';
 import { ChainId } from '@/state/backendNetworks/types';
 
 import ApechainBadge from '@/assets/badges/apechain.png';

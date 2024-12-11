@@ -10,7 +10,52 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useSelector } from 'react-redux';
+<<<<<<< HEAD
 import { getUniqueId } from '@/utils/ethereumUtils';
+=======
+
+const SEARCH_CACHE_MAX_ENTRIES = 50;
+
+const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const getSearchQueryKey = ({ filter, searchQuery }: { filter: UserAssetFilter; searchQuery: string }) => `${filter}${searchQuery}`;
+
+const getDefaultCacheKeys = (): Set<string> => {
+  const queryKeysToPreserve = new Set<string>();
+  queryKeysToPreserve.add('all');
+
+  for (const chainId of useBackendNetworksStore.getState().getSupportedChainIds()) {
+    queryKeysToPreserve.add(`${chainId}`);
+  }
+  return queryKeysToPreserve;
+};
+
+const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
+
+export interface UserAssetsState {
+  chainBalances: Map<ChainId, number>;
+  currentAbortController: AbortController;
+  filter: UserAssetFilter;
+  idsByChain: Map<UserAssetFilter, UniqueId[]>;
+  inputSearchQuery: string;
+  searchCache: Map<string, UniqueId[]>;
+  userAssets: Map<UniqueId, ParsedSearchAsset>;
+  getBalanceSortedChainList: () => ChainId[];
+  getChainsWithBalance: () => ChainId[];
+  getFilteredUserAssetIds: () => UniqueId[];
+  getHighestValueNativeAsset: () => ParsedSearchAsset | null;
+  getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
+  getUserAssets: () => ParsedSearchAsset[];
+  selectUserAssetIds: (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) => Generator<UniqueId, void, unknown>;
+  selectUserAssets: (selector: (asset: ParsedSearchAsset) => boolean) => Generator<[UniqueId, ParsedSearchAsset], void, unknown>;
+  setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
+  setSearchQuery: (query: string) => void;
+  setUserAssets: (userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) => void;
+
+  hiddenAssets: Set<UniqueId>;
+  getHiddenAssetsIds: () => UniqueId[];
+  setHiddenAssets: (uniqueIds: UniqueId[]) => void;
+}
+>>>>>>> e67803ca7 (convert network accessors to functions (#6219))
 
 type UserAssetsStateToPersist = Omit<
   Partial<UserAssetsState>,
