@@ -9,7 +9,7 @@ import {
   checkIfDoesntExist,
   delayTime,
   afterAllcleanApp,
-} from './helpers';
+} from '../helpers';
 
 describe('Watched showcase and hidden actions flow', () => {
   beforeAll(async () => {

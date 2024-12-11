@@ -65,7 +65,7 @@ jobs:
           fi
 
       - name: Upload deleted comments log as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: deleted-comments-log
           path: deleted_comments_log.txt
