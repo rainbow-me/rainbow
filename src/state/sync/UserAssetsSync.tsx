@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { useAccountSettings } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -6,8 +6,9 @@ import { selectUserAssetsList, selectorFilterByUserChains } from '@/__swaps__/sc
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 import { ChainId } from '@/chains/types';
+import { IS_TEST } from '@/env';
 
-export const UserAssetsSync = function UserAssetsSync() {
+function UserAssetsSyncComponent() {
   const { accountAddress, nativeCurrency: currentCurrency } = useAccountSettings();
   const isSwapsOpen = useSwapsStore(state => state.isSwapsOpen);
   const isUserAssetsStoreMissingData = userAssetsStore.getState().getUserAssets()?.length === 0;
@@ -45,4 +46,6 @@ export const UserAssetsSync = function UserAssetsSync() {
   }, [isLoading]);
 
   return null;
-};
+}
+
+export const UserAssetsSync = IS_TEST ? UserAssetsSyncComponent : memo(UserAssetsSyncComponent);
