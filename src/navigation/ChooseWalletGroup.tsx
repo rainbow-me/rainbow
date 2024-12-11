@@ -14,7 +14,7 @@ import { logger, RainbowError } from '@/logger';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
 import { createWallet, RainbowAccount, RainbowWallet } from '@/model/wallet';
 import { ButtonPressAnimation } from '@/components/animations';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
+import { abbreviateEnsForDisplay, formatAddressForDisplay } from '@/utils/abbreviations';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -22,7 +22,6 @@ import { profileUtils } from '@/utils';
 import * as i18n from '@/languages';
 import showWalletErrorAlert from '@/helpers/support';
 import { ScrollView } from 'react-native-gesture-handler';
-import { BackButton } from '@/components/header';
 
 function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
   const blue = useForegroundColor('blue');
@@ -165,7 +164,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
         </Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
           <Text color="labelQuaternary" size="13pt" weight="bold">
-            {accounts[0].ens || formatAddressForDisplay(accounts[0].address, 4, 4)}
+            {abbreviateEnsForDisplay(accounts[0].ens) || formatAddressForDisplay(accounts[0].address, 4, 4)}
           </Text>
           {accounts.length > 1 && (
             <View
