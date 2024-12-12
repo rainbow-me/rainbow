@@ -8,7 +8,8 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import {
   AddressItem,
-  EditWalletContextMenuActions,
+  AddressMenuAction,
+  AddressMenuActionData,
   FOOTER_HEIGHT,
   MAX_PANEL_HEIGHT,
   PANEL_HEADER_HEIGHT,
@@ -17,6 +18,7 @@ import { Box, Inset, Separator, Text } from '@/design-system';
 import { DndProvider, DraggableFlatList, DraggableFlatListProps, UniqueIdentifier } from '../drag-and-drop';
 import { PinnedWalletsGrid } from '@/screens/change-wallet/PinnedWalletsGrid';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
+import { MenuItem } from '@/components/DropdownMenu';
 
 const LIST_TOP_PADDING = 7.5;
 const TRANSITION_DURATION = 75;
@@ -33,12 +35,13 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
 
 interface Props {
   walletItems: AddressItem[];
-  contextMenuActions: EditWalletContextMenuActions;
   editMode: boolean;
-  onChangeAccount: (walletId: string, address: EthereumAddress) => void;
+  menuItems: MenuItem<AddressMenuAction>[];
+  onPressMenuItem: (actionKey: AddressMenuAction, data: AddressMenuActionData) => void;
+  onPressAccount: (address: EthereumAddress) => void;
 }
 
-export function WalletList({ walletItems, contextMenuActions, editMode, onChangeAccount }: Props) {
+export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAccount, editMode }: Props) {
   const pinnedAddresses = usePinnedWalletsStore(state => state.pinnedAddresses);
   const unpinnedAddresses = usePinnedWalletsStore(state => state.unpinnedAddresses);
 
@@ -103,7 +106,13 @@ export function WalletList({ walletItems, contextMenuActions, editMode, onChange
     return (
       <>
         {pinnedWalletItems.length > 0 && (
-          <PinnedWalletsGrid walletItems={pinnedWalletItems} onPress={onChangeAccount} editMode={editMode} />
+          <PinnedWalletsGrid
+            menuItems={menuItems}
+            onPressMenuItem={onPressMenuItem}
+            walletItems={pinnedWalletItems}
+            onPress={onPressAccount}
+            editMode={editMode}
+          />
         )}
         {pinnedWalletItems.length > 0 && unpinnedWalletItems.length > 0 && (
           <>
@@ -119,7 +128,7 @@ export function WalletList({ walletItems, contextMenuActions, editMode, onChange
         )}
       </>
     );
-  }, [pinnedWalletItems, onChangeAccount, editMode, unpinnedWalletItems.length]);
+  }, [pinnedWalletItems, onPressAccount, editMode, unpinnedWalletItems.length, menuItems, onPressMenuItem]);
 
   return (
     <Box>
@@ -135,13 +144,13 @@ export function WalletList({ walletItems, contextMenuActions, editMode, onChange
             contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT - 24 }}
             data={unpinnedWalletItems}
             ListHeaderComponent={renderHeader}
-            automaticallyAdjustContentInsets={false}
             renderItem={({ item }) => (
               <AddressRow
-                contextMenuActions={contextMenuActions}
+                menuItems={menuItems}
+                onPressMenuItem={onPressMenuItem}
                 data={item}
                 editMode={editMode}
-                onPress={() => onChangeAccount(item.walletId, item.id)}
+                onPress={() => onPressAccount(item.address)}
               />
             )}
           />

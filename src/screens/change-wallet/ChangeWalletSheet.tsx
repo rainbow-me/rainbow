@@ -1,21 +1,21 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Alert, InteractionManager, View, StyleSheet, StatusBar, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Alert, InteractionManager, View } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import { ButtonPressAnimation } from '@/components/animations';
 import { WalletList } from '@/components/change-wallet/WalletList';
 import { removeWalletData } from '../../handlers/localstorage/removeWallet';
-import { cleanUpWalletKeys } from '../../model/wallet';
+import { cleanUpWalletKeys, RainbowWallet } from '../../model/wallet';
 import { useNavigation } from '../../navigation/Navigation';
 import { addressSetSelected, walletsSetSelected, walletsUpdate } from '../../redux/wallets';
 import WalletTypes from '@/helpers/walletTypes';
 import { analytics, analyticsV2 } from '@/analytics';
-import { useAccountSettings, useDimensions, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
+import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
+import { doesWalletsContainAddress, showActionSheetWithOptions } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
@@ -26,12 +26,13 @@ import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoShe
 import { RootStackParamList } from '@/navigation/types';
 import { address } from '@/utils/abbreviations';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { Box, globalColors, Stack, Text } from '@/design-system';
+import { Box, Stack, Text } from '@/design-system';
 import { addDisplay } from '@/helpers/utilities';
-import { useSharedValue } from 'react-native-reanimated';
 import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-import { SheetHandle, SheetHandleFixedToTop } from '@/components/sheet';
+import { SheetHandleFixedToTop } from '@/components/sheet';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { MenuConfig, MenuItem } from '@/components/DropdownMenu';
+import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
 
 const LIST_PADDING_BOTTOM = 6;
 const MAX_LIST_HEIGHT = DEVICE_HEIGHT - 220;
@@ -44,6 +45,18 @@ const PANEL_BOTTOM_OFFSET = 41;
 export const MAX_PANEL_HEIGHT = 640;
 export const PANEL_HEADER_HEIGHT = 58;
 export const FOOTER_HEIGHT = 91;
+
+export enum AddressMenuAction {
+  Edit = 'edit',
+  Notifications = 'notifications',
+  Remove = 'remove',
+  Copy = 'copy',
+  Settings = 'settings',
+}
+
+export type AddressMenuActionData = {
+  address: string;
+};
 
 const RowTypes = {
   ADDRESS: 1,
@@ -75,12 +88,6 @@ const getWalletListHeight = (wallets: any, watchOnly: boolean) => {
   return { listHeight, scrollEnabled: false };
 };
 
-export type EditWalletContextMenuActions = {
-  edit: (walletId: string, address: EthereumAddress) => void;
-  notifications: (walletName: string, address: EthereumAddress) => void;
-  remove: (walletId: string, address: EthereumAddress) => void;
-};
-
 export interface AddressItem {
   address: EthereumAddress;
   color: number;
@@ -103,6 +110,7 @@ export default function ChangeWalletSheet() {
 
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
   const { selectedWallet, wallets } = useWallets();
+  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
@@ -115,7 +123,18 @@ export default function ChangeWalletSheet() {
   const [editMode, setEditMode] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(currentAccountAddress || accountAddress);
   const [currentSelectedWallet, setCurrentSelectedWallet] = useState(selectedWallet);
-  const scrollContentOffsetY = useSharedValue(0);
+
+  const walletsByAddress = useMemo(() => {
+    return Object.values(wallets || {}).reduce(
+      (acc, wallet) => {
+        wallet.addresses.forEach(account => {
+          acc[account.address] = wallet;
+        });
+        return acc;
+      },
+      {} as Record<EthereumAddress, RainbowWallet>
+    );
+  }, [wallets]);
 
   // TODO: maybe wallet accounts is a better name
   const allWalletItems = useMemo(() => {
@@ -410,19 +429,19 @@ export default function ChangeWalletSheet() {
     [currentAddress, deleteWallet, goBack, navigate, onChangeAccount, wallets]
   );
 
-  const onPressPairHardwareWallet = useCallback(() => {
-    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
-      isFirstWallet: false,
-      type: 'ledger_nano_x',
-    });
-    goBack();
-    InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
-        entryPoint: Routes.CHANGE_WALLET_SHEET,
-        isFirstWallet: false,
-      });
-    });
-  }, [goBack, navigate]);
+  // const onPressPairHardwareWallet = useCallback(() => {
+  //   analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+  //     isFirstWallet: false,
+  //     type: 'ledger_nano_x',
+  //   });
+  //   goBack();
+  //   InteractionManager.runAfterInteractions(() => {
+  //     navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
+  //       entryPoint: Routes.CHANGE_WALLET_SHEET,
+  //       isFirstWallet: false,
+  //     });
+  //   });
+  // }, [goBack, navigate]);
 
   const onPressAddAnotherWallet = useCallback(() => {
     analyticsV2.track(analyticsV2.event.pressedButton, {
@@ -441,6 +460,108 @@ export default function ChangeWalletSheet() {
     analytics.track('Tapped "Edit"');
     setEditMode(e => !e);
   }, []);
+
+  const onPressAccount = useCallback(
+    (address: string) => {
+      const wallet = walletsByAddress[address];
+      if (!wallet) {
+        logger.error(new RainbowError('[ChangeWalletSheet]: No wallet for address found when pressing account'), {
+          address,
+        });
+        return;
+      }
+      onChangeAccount(wallet.id, address);
+    },
+    [onChangeAccount, walletsByAddress]
+  );
+
+  const addressMenuConfig = useMemo<MenuConfig<AddressMenuAction>>(() => {
+    let menuItems = [
+      {
+        actionKey: AddressMenuAction.Edit,
+        // TODO: localize
+        actionTitle: 'Edit Wallet',
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'pencil',
+        },
+      },
+      {
+        actionKey: AddressMenuAction.Copy,
+        actionTitle: 'Copy Address',
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'doc.fill',
+        },
+      },
+      {
+        actionKey: AddressMenuAction.Settings,
+        actionTitle: 'Wallet Settings',
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'key.fill',
+        },
+      },
+      {
+        actionKey: AddressMenuAction.Notifications,
+        actionTitle: 'Notification Settings',
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'bell.fill',
+        },
+      },
+      {
+        actionKey: AddressMenuAction.Remove,
+        actionTitle: 'Remove Wallet',
+        destructive: true,
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'trash.fill',
+        },
+      },
+    ] satisfies MenuItem<AddressMenuAction>[];
+
+    if (!notificationsEnabled) {
+      menuItems = menuItems.filter(item => item.actionKey !== AddressMenuAction.Notifications);
+    }
+
+    return {
+      menuItems,
+    };
+  }, [notificationsEnabled]);
+
+  const onPressMenuItem = useCallback(
+    (actionKey: AddressMenuAction, { address }: AddressMenuActionData) => {
+      const wallet = walletsByAddress[address];
+      if (!wallet) {
+        logger.error(new RainbowError('[ChangeWalletSheet]: No wallet for address found when pressing menu item'), {
+          // TODO: make sure this is okay to log
+          address,
+          actionKey,
+        });
+        // TODO: show user facing error
+        return;
+      }
+      switch (actionKey) {
+        case AddressMenuAction.Edit:
+          onPressEdit(wallet.id, address);
+          break;
+        case AddressMenuAction.Notifications:
+          onPressNotifications(wallet.name, address);
+          break;
+        case AddressMenuAction.Remove:
+          onPressRemove(wallet.id, address);
+          break;
+        case AddressMenuAction.Settings:
+          // onPressSettings(address);
+          break;
+        case AddressMenuAction.Copy:
+          // onPressCopy(address);
+          break;
+      }
+    },
+    [walletsByAddress, onPressEdit, onPressNotifications, onPressRemove]
+  );
 
   return (
     <>
@@ -476,15 +597,10 @@ export default function ChangeWalletSheet() {
             {IS_ANDROID && <Whitespace />}
             <WalletList
               walletItems={allWalletItems}
-              contextMenuActions={
-                {
-                  edit: onPressEdit,
-                  notifications: onPressNotifications,
-                  remove: onPressRemove,
-                } as EditWalletContextMenuActions
-              }
+              onPressMenuItem={onPressMenuItem}
+              menuItems={addressMenuConfig.menuItems}
               editMode={editMode}
-              onChangeAccount={onChangeAccount}
+              onPressAccount={onPressAccount}
             />
           </Box>
           <Box height={{ custom: FOOTER_HEIGHT }} position="absolute" bottom="0px" width="full">

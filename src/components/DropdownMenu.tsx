@@ -35,6 +35,7 @@ export type MenuItemIcon = Omit<IconConfig, 'iconValue' | 'iconType'> & (MenuIte
 export type MenuItem<T> = Omit<MenuActionConfig, 'icon'> & {
   actionKey: T;
   actionTitle: string;
+  destructive?: boolean;
   icon?: MenuItemIcon | { iconType: string; iconValue: string };
 };
 
@@ -114,7 +115,12 @@ export function DropdownMenu<T extends string, U extends Record<string, unknown>
           const Icon = buildIconConfig(item.icon as MenuItemIcon);
 
           return (
-            <DropdownMenuItem value={item.menuState ?? 'off'} key={item.actionKey} onSelect={() => handleSelectItem(item.actionKey)}>
+            <DropdownMenuItem
+              value={item.menuState ?? 'off'}
+              destructive={item.destructive}
+              key={item.actionKey}
+              onSelect={() => handleSelectItem(item.actionKey)}
+            >
               <DropdownMenuItemTitle>{item.actionTitle}</DropdownMenuItemTitle>
               {Icon}
             </DropdownMenuItem>

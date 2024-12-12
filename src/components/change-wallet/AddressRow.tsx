@@ -1,22 +1,20 @@
 import * as i18n from '@/languages';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import ConditionalWrap from 'conditional-wrap';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import useExperimentalFlag, { NOTIFICATIONS } from '@/config/experimentalHooks';
-import { IS_IOS } from '@/env';
-import { ContextMenu } from '../context-menu';
 import { Box, Column, Columns, Inline, Stack, Text, Inset, useForegroundColor, useColorMode, TextIcon } from '@/design-system';
-import { MenuActionConfig } from 'react-native-ios-context-menu';
-import { AddressItem, EditWalletContextMenuActions } from '@/screens/change-wallet/ChangeWalletSheet';
+import { AddressItem, AddressMenuAction, AddressMenuActionData } from '@/screens/change-wallet/ChangeWalletSheet';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { AddressAvatar } from '@/screens/change-wallet/AddressAvatar';
 import { SelectedAddressBadge } from '@/screens/change-wallet/SelectedAddressBadge';
+import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
+import { haptics } from '@/utils';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 
 const ROW_HEIGHT_WITH_PADDING = 64;
 
@@ -64,24 +62,16 @@ export const AddressRowButton = ({
     </ButtonPressAnimation>
   );
 };
-
-const ContextMenuKeys = {
-  Edit: 'edit',
-  Notifications: 'notifications',
-  Remove: 'remove',
-};
-
 interface AddressRowProps {
-  contextMenuActions: EditWalletContextMenuActions;
+  menuItems: MenuItem<AddressMenuAction>[];
+  onPressMenuItem: (actionKey: AddressMenuAction, data: { address: string }) => void;
   data: AddressItem;
   editMode: boolean;
   onPress: () => void;
 }
 
-export function AddressRow({ contextMenuActions, data, editMode, onPress }: AddressRowProps) {
-  const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
-
-  const { address, color, secondaryLabel, isSelected, isReadOnly, isLedger, label: walletName, walletId, image } = data;
+export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem }: AddressRowProps) {
+  const { address, color, secondaryLabel, isSelected, isReadOnly, isLedger, label: walletName, image } = data;
 
   const addPinnedAddress = usePinnedWalletsStore(state => state.addPinnedAddress);
 
@@ -103,90 +93,28 @@ export function AddressRow({ contextMenuActions, data, editMode, onPress }: Addr
     [colors, isDarkMode]
   );
 
-  const contextMenuItems = [
-    {
-      actionKey: ContextMenuKeys.Edit,
-      actionTitle: i18n.t(i18n.l.wallet.action.edit),
-      icon: {
-        iconType: 'SYSTEM',
-        iconValue: 'pencil',
-      },
-    },
-
-    ...(notificationsEnabled
-      ? ([
-          {
-            actionKey: ContextMenuKeys.Notifications,
-            actionTitle: i18n.t(i18n.l.wallet.action.notifications.action_title),
-            icon: {
-              iconType: 'SYSTEM',
-              iconValue: 'bell.fill',
-            },
-          },
-        ] as const)
-      : []),
-    {
-      actionKey: ContextMenuKeys.Remove,
-      actionTitle: i18n.t(i18n.l.wallet.action.remove),
-      icon: { iconType: 'SYSTEM', iconValue: 'trash.fill' },
-      menuAttributes: ['destructive'],
-    },
-  ] satisfies MenuActionConfig[];
-
   const menuConfig = {
-    menuItems: contextMenuItems,
+    menuItems: menuItems,
     menuTitle: walletName,
   };
 
-  const handleSelectActionMenuItem = useCallback(
-    (buttonIndex: number) => {
-      switch (buttonIndex) {
-        case 0:
-          contextMenuActions?.edit(walletId, address);
-          break;
-        case 1:
-          contextMenuActions?.notifications(walletName, address);
-          break;
-        case 2:
-          contextMenuActions?.remove(walletId, address);
-          break;
-        default:
-          break;
-      }
-    },
-    [contextMenuActions, walletName, walletId, address]
-  );
-
-  const handleSelectMenuItem = useCallback(
-    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey } }) => {
-      switch (actionKey) {
-        case ContextMenuKeys.Remove:
-          contextMenuActions?.remove(walletId, address);
-          break;
-        case ContextMenuKeys.Notifications:
-          contextMenuActions?.notifications(walletName, address);
-          break;
-        case ContextMenuKeys.Edit:
-          contextMenuActions?.edit(walletId, address);
-          break;
-        default:
-          break;
-      }
-    },
-    [address, contextMenuActions, walletName, walletId]
-  );
-
   return (
-    <Box height={{ custom: ROW_HEIGHT_WITH_PADDING }}>
-      <ConditionalWrap
-        condition={!editMode}
-        wrap={(children: React.ReactNode) => (
-          <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+    <ConditionalWrap
+      condition={!editMode}
+      wrap={(children: React.ReactElement) => (
+        <DropdownMenu<AddressMenuAction, AddressMenuActionData>
+          triggerAction="longPress"
+          menuConfig={menuConfig}
+          onPressMenuItem={action => onPressMenuItem(action, { address })}
+        >
+          {/* TODO: there is some issue with how the dropdown long press interacts with the button long press. Inconsistent behavior. */}
+          <ButtonPressAnimation minLongPressDuration={150} scaleTo={0.96} onPress={onPress}>
             {children}
           </ButtonPressAnimation>
-        )}
-      >
+        </DropdownMenu>
+      )}
+    >
+      <Box width="full" height={{ custom: ROW_HEIGHT_WITH_PADDING }}>
         <Inset horizontal="16px">
           <Columns alignVertical="center" space="12px">
             {editMode && (
@@ -225,33 +153,21 @@ export function AddressRow({ contextMenuActions, data, editMode, onPress }: Addr
                 )}
                 {!editMode && isSelected && <SelectedAddressBadge />}
                 {editMode && (
-                  <>
-                    <AddressRowButton onPress={() => addPinnedAddress(address)} color={colors.appleBlue} icon="􀎧" size="icon 12px" />
-                    {IS_IOS ? (
-                      <ContextMenuButton
-                        isMenuPrimaryAction
-                        menuConfig={menuConfig}
-                        onPressMenuItem={handleSelectMenuItem}
-                        testID={`address-row-info-button-${address}`}
-                      >
-                        <AddressRowButton icon="􀍠" size="icon 12px" />
-                      </ContextMenuButton>
-                    ) : (
-                      <ContextMenu
-                        options={menuConfig.menuItems.map(item => item.actionTitle)}
-                        isAnchoredToRight
-                        onPressActionSheet={handleSelectActionMenuItem}
-                      >
-                        <AddressRowButton icon="􀍠" size="icon 12px" />
-                      </ContextMenu>
-                    )}
-                  </>
+                  <AddressRowButton onPress={() => addPinnedAddress(address)} color={colors.appleBlue} icon="􀎧" size="icon 12px" />
+                )}
+                {editMode && (
+                  <DropdownMenu<AddressMenuAction, AddressMenuActionData>
+                    menuConfig={menuConfig}
+                    onPressMenuItem={action => onPressMenuItem(action, { address })}
+                  >
+                    <AddressRowButton icon="􀍠" size="icon 12px" />
+                  </DropdownMenu>
                 )}
               </Inline>
             </Column>
           </Columns>
         </Inset>
-      </ConditionalWrap>
-    </Box>
+      </Box>
+    </ConditionalWrap>
   );
 }

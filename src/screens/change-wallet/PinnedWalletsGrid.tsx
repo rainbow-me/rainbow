@@ -3,7 +3,7 @@ import { DndProvider } from '@/components/drag-and-drop/DndProvider';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import React, { useCallback, useMemo } from 'react';
-import { AddressItem } from './ChangeWalletSheet';
+import { AddressItem, AddressMenuAction, AddressMenuActionData } from './ChangeWalletSheet';
 import { AddressAvatar } from './AddressAvatar';
 import { ButtonPressAnimation } from '@/components/animations';
 import { BlurView } from '@react-native-community/blur';
@@ -11,6 +11,8 @@ import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { View } from 'react-native';
 import { SelectedAddressBadge } from './SelectedAddressBadge';
 import { JiggleAnimation } from '@/components/animations/JiggleAnimation';
+import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
+import ConditionalWrap from 'conditional-wrap';
 
 const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;
@@ -19,11 +21,13 @@ const HORIZONTAL_PAGE_INSET = 24;
 
 type PinnedWalletsGridProps = {
   walletItems: AddressItem[];
-  onPress: (walletId: string, address: string) => void;
+  onPress: (address: string) => void;
+  menuItems: MenuItem<AddressMenuAction>[];
+  onPressMenuItem: (actionKey: AddressMenuAction, data: AddressMenuActionData) => void;
   editMode: boolean;
 };
 
-export function PinnedWalletsGrid({ walletItems, onPress, editMode }: PinnedWalletsGridProps) {
+export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, onPressMenuItem }: PinnedWalletsGridProps) {
   const removePinnedAddress = usePinnedWalletsStore(state => state.removePinnedAddress);
   const reorderPinnedAddresses = usePinnedWalletsStore(state => state.reorderPinnedAddresses);
 
@@ -46,7 +50,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode }: PinnedWall
   return (
     <Box paddingTop="20px" paddingBottom="28px" alignItems="center" justifyContent="center" paddingHorizontal="24px">
       {walletItems.length > 0 ? (
-        <DndProvider activationDelay={150}>
+        <DndProvider disabled={!editMode} activationDelay={150}>
           <DraggableGrid
             direction="row"
             // TODO: design spec is 28px, but is too large
@@ -58,15 +62,35 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode }: PinnedWall
             }}
           >
             {walletItems.map(account => (
-              <Draggable activationTolerance={DEVICE_WIDTH} activeScale={1.06} id={account.address} key={account.address}>
-                <View style={{ width: avatarSize }}>
-                  <Stack space="12px" alignHorizontal="center">
-                    <JiggleAnimation enabled={editMode}>
-                      <Box
-                        // required to prevent artifacts when jiggle animation is active
-                        shouldRasterizeIOS
-                      >
-                        <ButtonPressAnimation disallowInterruption onPress={() => onPress(account.walletId, account.address)} scaleTo={0.8}>
+              <Draggable
+                disabled={!editMode}
+                activationTolerance={DEVICE_WIDTH}
+                activeScale={1.06}
+                id={account.address}
+                key={account.address}
+              >
+                <ConditionalWrap
+                  condition={!editMode}
+                  wrap={(children: React.ReactElement) => (
+                    <DropdownMenu<AddressMenuAction, AddressMenuActionData>
+                      triggerAction="longPress"
+                      menuConfig={{ menuItems, menuTitle: account.label }}
+                      onPressMenuItem={action => onPressMenuItem(action, { address: account.address })}
+                    >
+                      {/* TODO: there is some issue with how the dropdown long press interacts with the button long press. Inconsistent behavior. */}
+                      <ButtonPressAnimation scaleTo={0.96} onPress={() => onPress(account.address)} minLongPressDuration={150}>
+                        {children}
+                      </ButtonPressAnimation>
+                    </DropdownMenu>
+                  )}
+                >
+                  <View style={{ width: avatarSize }}>
+                    <Stack space="12px" alignHorizontal="center">
+                      <JiggleAnimation enabled={editMode}>
+                        <Box
+                          // required to prevent artifacts when jiggle animation is active
+                          shouldRasterizeIOS
+                        >
                           <Box
                             borderRadius={avatarSize / 2}
                             borderWidth={account.isSelected ? 4 : undefined}
@@ -86,49 +110,50 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode }: PinnedWall
                               <SelectedAddressBadge />
                             </Box>
                           )}
-                        </ButtonPressAnimation>
-                        {editMode && (
-                          <ButtonPressAnimation onPress={() => removePinnedAddress(account.address)}>
-                            <Box
-                              as={BlurView}
-                              width={{ custom: UNPIN_BADGE_SIZE }}
-                              height={{ custom: UNPIN_BADGE_SIZE }}
-                              position="absolute"
-                              bottom={'0px'}
-                              right={'0px'}
-                              justifyContent="center"
-                              alignItems="center"
-                              borderRadius={UNPIN_BADGE_SIZE / 2}
-                              blurAmount={24}
-                            >
-                              <Text color="label" size="icon 12px" weight="bold">
-                                {'􀅽'}
-                              </Text>
-                            </Box>
-                          </ButtonPressAnimation>
+                          {/* </ButtonPressAnimation> */}
+                          {editMode && (
+                            <ButtonPressAnimation onPress={() => removePinnedAddress(account.address)}>
+                              <Box
+                                as={BlurView}
+                                width={{ custom: UNPIN_BADGE_SIZE }}
+                                height={{ custom: UNPIN_BADGE_SIZE }}
+                                position="absolute"
+                                bottom={'0px'}
+                                right={'0px'}
+                                justifyContent="center"
+                                alignItems="center"
+                                borderRadius={UNPIN_BADGE_SIZE / 2}
+                                blurAmount={24}
+                              >
+                                <Text color="label" size="icon 12px" weight="bold">
+                                  {'􀅽'}
+                                </Text>
+                              </Box>
+                            </ButtonPressAnimation>
+                          )}
+                        </Box>
+                      </JiggleAnimation>
+                      <Inline wrap={false} space="4px" alignHorizontal="center" alignVertical="center">
+                        {account.isLedger && (
+                          <Text color="label" size="icon 10px">
+                            􀤃
+                          </Text>
                         )}
-                      </Box>
-                    </JiggleAnimation>
-                    <Inline wrap={false} space="4px" alignHorizontal="center" alignVertical="center">
-                      {account.isLedger && (
-                        <Text color="label" size="icon 10px">
-                          􀤃
+                        {account.isReadOnly && (
+                          <Text color="label" size="icon 10px">
+                            􀋮
+                          </Text>
+                        )}
+                        <Text numberOfLines={1} color="label" size="13pt" weight="bold">
+                          {account.label}
                         </Text>
-                      )}
-                      {account.isReadOnly && (
-                        <Text color="label" size="icon 10px">
-                          􀋮
-                        </Text>
-                      )}
-                      <Text numberOfLines={1} color="label" size="13pt" weight="bold">
-                        {account.label}
+                      </Inline>
+                      <Text color="labelSecondary" size="13pt" weight="medium">
+                        {account.secondaryLabel}
                       </Text>
-                    </Inline>
-                    <Text color="labelSecondary" size="13pt" weight="medium">
-                      {account.secondaryLabel}
-                    </Text>
-                  </Stack>
-                </View>
+                    </Stack>
+                  </View>
+                </ConditionalWrap>
               </Draggable>
             ))}
             {fillerItems.map((_, index) => (
