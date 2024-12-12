@@ -218,8 +218,10 @@ const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color: string) 
   const scale = useSharedValue(1);
   useAnimatedReaction(
     () => isSelected.value,
-    () => {
-      scale.value = withSequence(withTiming(0.95, { duration: 50 }), withTiming(1, { duration: 80 }));
+    current => {
+      if (current === true) {
+        scale.value = withSequence(withTiming(0.95, { duration: 50 }), withTiming(1, { duration: 80 }));
+      }
     }
   );
 
