@@ -43,10 +43,12 @@ export type MenuConfig<T extends string> = Omit<_MenuConfig, 'menuItems' | 'menu
   menuItems: Array<MenuItem<T>>;
 };
 
-type DropDownMenuProps<T extends string> = {
+type DropDownMenuProps<T extends string, U extends Record<string, unknown> = never> = {
   children: React.ReactElement;
   menuConfig: MenuConfig<T>;
   onPressMenuItem: (actionKey: T) => void;
+  triggerAction?: 'press' | 'longPress';
+  data?: U;
 } & DropdownMenuContentProps;
 
 const buildIconConfig = (icon?: MenuItemIcon) => {
@@ -65,27 +67,33 @@ const buildIconConfig = (icon?: MenuItemIcon) => {
   return null;
 };
 
-export function DropdownMenu<T extends string>({
+export function DropdownMenu<T extends string, U extends Record<string, unknown> = never>({
   children,
   menuConfig,
   onPressMenuItem,
+  data,
   loop = true,
   align = 'end',
   sideOffset = 8,
   side = 'right',
   alignOffset = 5,
   avoidCollisions = true,
-}: DropDownMenuProps<T>) {
+  triggerAction = 'press',
+}: DropDownMenuProps<T, U>) {
   const handleSelectItem = useCallback(
     (actionKey: T) => {
-      onPressMenuItem(actionKey);
+      if (data !== undefined) {
+        (onPressMenuItem as (actionKey: T, data: U) => void)(actionKey, data);
+      } else {
+        (onPressMenuItem as (actionKey: T) => void)(actionKey);
+      }
     },
-    [onPressMenuItem]
+    [onPressMenuItem, data]
   );
 
   return (
     <DropdownMenuRoot>
-      <DropdownMenuTrigger>{children}</DropdownMenuTrigger>
+      <DropdownMenuTrigger action={triggerAction}>{children}</DropdownMenuTrigger>
       <DropdownMenuContent
         loop={loop}
         side={side}
