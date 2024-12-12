@@ -6,7 +6,7 @@ import { Text } from '@/design-system';
 import { SupportedCurrencyKey } from '@/references';
 import { queryUserAssets } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { ParsedAssetsDictByChain } from '@/__swaps__/types/assets';
-import { createRemoteRainbowStore } from '../createRemoteRainbowStore';
+import { createRainbowQueryStore } from '../createRainbowQueryStore';
 
 function getRandomAddress() {
   return Math.random() < 0.5 ? '0x2e67869829c734ac13723A138a952F7A8B56e774' : '0xCFB83E14AEd465c79F3F82f4cfF4ff7965897644';
@@ -14,29 +14,29 @@ function getRandomAddress() {
 
 type QueryParams = { address: Address; currency: SupportedCurrencyKey };
 
-type UserAssetsState = {
+type TestStore = {
   userAssets: ParsedAssetsDictByChain;
   getHighestValueAsset: () => number;
+  setUserAssets: (data: ParsedAssetsDictByChain) => void;
 };
 
-export const userAssetsStore = createRemoteRainbowStore<ParsedAssetsDictByChain, QueryParams, UserAssetsState, ParsedAssetsDictByChain>(
+export const userAssetsStore = createRainbowQueryStore<ParsedAssetsDictByChain, QueryParams, TestStore, ParsedAssetsDictByChain>(
   {
-    enabled: true,
-    queryKey: ['userAssets'],
-    // staleTime: 5000, // 5s
-    staleTime: 30 * 60 * 1000, // 30m
-
-    fetcher: (/* { address, currency } */) => queryUserAssets({ address: getRandomAddress(), currency: 'USD' }),
-    onFetched: (data, store) => store.setState({ data }),
+    fetcher: () => queryUserAssets({ address: getRandomAddress(), currency: 'USD' }),
+    // onFetched: (data, store) => store.setState({ userAssets: data }),
     transform: data => {
-      const lastFetchedAt = Date.now();
-      const formattedTimeWithSeconds = lastFetchedAt
-        ? new Date(lastFetchedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-        : 'N/A';
+      const formattedTimeWithSeconds = new Date(Date.now()).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
       console.log('[Transform - Last Fetch Attempt]: ', formattedTimeWithSeconds);
-
       return data;
     },
+
+    disableDataCache: false,
+    queryKey: ['userAssets'],
+    staleTime: 30 * 60 * 1000, // 30m
   },
   (set, get) => ({
     userAssets: [],
@@ -54,6 +54,7 @@ export const userAssetsStore = createRemoteRainbowStore<ParsedAssetsDictByChain,
     setUserAssets: (data: ParsedAssetsDictByChain) => set({ userAssets: data }),
   }),
   {
+    // partialize: state => ({ userAssets: state.userAssets }),
     storageKey: 'userAssetsTesting79876',
   }
 );
@@ -62,7 +63,7 @@ export const UserAssetsTest = memo(function UserAssetsTest() {
   const data = userAssetsStore(state => state.data);
   const enabled = userAssetsStore(state => state.enabled);
 
-  console.log('RERENDER');
+  console.log('RERENDER - enabled:', enabled);
 
   useEffect(() => {
     const status = userAssetsStore.getState().status;
@@ -72,8 +73,9 @@ export const UserAssetsTest = memo(function UserAssetsTest() {
     console.log('[NEW STATUS]:', emojiForStatus, status);
 
     if (data) {
-      const allTokens = Object.values(data).flatMap(chainAssets => Object.values(chainAssets));
-      const first5Tokens = allTokens.slice(0, 5);
+      const first5Tokens = Object.values(data)
+        .flatMap(chainAssets => Object.values(chainAssets))
+        .slice(0, 5);
       console.log('[First 5 Token Symbols]:', first5Tokens.map(token => token.symbol).join(', '));
     }
   }, [data]);
@@ -93,6 +95,9 @@ export const UserAssetsTest = memo(function UserAssetsTest() {
     )
   );
 });
+
+const initialData = userAssetsStore.getState().data;
+console.log('[Initial Data Exists]:', !!initialData);
 
 const styles = StyleSheet.create({
   button: {

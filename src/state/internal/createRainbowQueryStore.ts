@@ -2,6 +2,8 @@
 
 import { StateCreator, StoreApi, UseBoundStore, create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
+import { IS_DEV } from '@/env';
+import { logger, RainbowError } from '@/logger';
 import { createRainbowStore, RainbowPersistConfig } from './createRainbowStore';
 
 /**
@@ -27,7 +29,7 @@ interface CacheEntry<TData> {
 }
 
 /**
- * The base store state including remote fields and actions.
+ * The base store state including query-related fields and actions.
  */
 type StoreState<TData, TParams extends Record<string, any>> = {
   data: TData | null;
@@ -46,7 +48,7 @@ type StoreState<TData, TParams extends Record<string, any>> = {
 /**
  * A specialized store interface combining Zustand's store API with remote fetching.
  */
-export interface RemoteStore<TData, TParams extends Record<string, any>, S extends StoreState<TData, TParams>>
+export interface QueryStore<TData, TParams extends Record<string, any>, S extends StoreState<TData, TParams>>
   extends UseBoundStore<StoreApi<S>> {
   enabled: boolean;
   fetch: (params?: TParams, options?: FetchOptions) => Promise<void>;
@@ -58,52 +60,59 @@ export interface RemoteStore<TData, TParams extends Record<string, any>, S exten
 /**
  * Configuration options for creating a remote-enabled Rainbow store.
  */
-type RemoteRainbowStoreConfig<TQueryFnData, TParams extends Record<string, any>, TData, S extends StoreState<TData, TParams>> = {
+type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string, any>, TData, S extends StoreState<TData, TParams>> = {
+  fetcher: (params: TParams) => TQueryFnData | Promise<TQueryFnData>;
+  onFetched?: (data: TData, store: QueryStore<TData, TParams, S>) => void;
+  transform?: (data: TQueryFnData) => TData;
   cacheTime?: number;
   defaultParams?: TParams;
   disableDataCache?: boolean;
   enabled?: boolean;
   queryKey: readonly unknown[] | ((params: TParams) => readonly unknown[]);
   staleTime?: number;
-  fetcher: (params: TParams) => TQueryFnData | Promise<TQueryFnData>;
-  onFetched?: (data: TData, store: RemoteStore<TData, TParams, S>) => void;
-  transform?: (data: TQueryFnData) => TData;
 };
 
 const SEVEN_DAYS = 1000 * 60 * 60 * 24 * 7;
 const TWO_MINUTES = 1000 * 60 * 2;
+const FIVE_SECONDS = 1000 * 5;
+const MIN_STALE_TIME = FIVE_SECONDS;
 
 /**
  * Creates a remote-enabled Rainbow store with data fetching capabilities.
- *
- * We use a `U` generic to represent user-defined additional state, and then define:
- * S = StoreState<TData, TParams> & U
- *
- * This ensures that the base fields are always present, and user-added fields are merged in.
+ * @template TQueryFnData - The raw data type returned by the fetcher
+ * @template TParams - Parameters passed to the fetcher function
+ * @template TData - The transformed data type (defaults to TQueryFnData)
+ * @template U - Additional user-defined state
  */
-export function createRemoteRainbowStore<
+export function createRainbowQueryStore<
   TQueryFnData,
   TParams extends Record<string, any> = Record<string, any>,
   U = unknown,
   TData = TQueryFnData,
 >(
-  config: RemoteRainbowStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & U>,
+  config: RainbowQueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & U>,
   customStateCreator?: StateCreator<U, [], [['zustand/subscribeWithSelector', never]]>,
   persistConfig?: RainbowPersistConfig<StoreState<TData, TParams> & U>
-): RemoteStore<TData, TParams, StoreState<TData, TParams> & U> {
+): QueryStore<TData, TParams, StoreState<TData, TParams> & U> {
   type S = StoreState<TData, TParams> & U;
 
   const {
+    fetcher,
+    onFetched,
+    transform,
     cacheTime = SEVEN_DAYS,
     defaultParams,
     disableDataCache = true,
     enabled = true,
     queryKey,
     staleTime = TWO_MINUTES,
-    fetcher,
-    onFetched,
-    transform,
   } = config;
+
+  if (IS_DEV && staleTime < MIN_STALE_TIME) {
+    console.warn(
+      `[RainbowQueryStore${persistConfig?.storageKey ? `: ${persistConfig.storageKey}` : ''}] ❌ Stale times under ${MIN_STALE_TIME / 1000} seconds are not recommended.`
+    );
+  }
 
   let activeFetchPromise: Promise<void> | null = null;
   let activeRefetchTimeout: NodeJS.Timeout | null = null;
@@ -114,15 +123,15 @@ export function createRemoteRainbowStore<
     return JSON.stringify(key);
   };
 
-  const initialData: Omit<S, 'fetch' | 'isStale' | 'isDataExpired' | 'reset'> = {
+  const initialData = {
     data: null,
     enabled,
     error: null,
     lastFetchedAt: null,
     queryCache: {},
-    status: 'idle',
+    status: 'idle' as const,
     subscriptionCount: 0,
-  } as unknown as Omit<S, 'fetch' | 'isStale' | 'isDataExpired' | 'reset'>;
+  };
 
   const createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]> = (set, get, api) => {
     let isRefetchScheduled = false;
@@ -146,9 +155,8 @@ export function createRemoteRainbowStore<
       isRefetchScheduled = true;
       activeRefetchTimeout = setTimeout(() => {
         isRefetchScheduled = false;
-        const store = get();
-        if (store.subscriptionCount > 0) {
-          store.fetch(params, { force: true });
+        if (get().subscriptionCount > 0) {
+          get().fetch(params, { force: true });
         }
       }, staleTime);
     };
@@ -165,20 +173,20 @@ export function createRemoteRainbowStore<
         }
 
         if (!options?.force && !disableDataCache) {
-          const currentState = get();
-          const cached = currentState.queryCache[currentQueryKey];
+          const cached = get().queryCache[currentQueryKey];
           if (cached && Date.now() - cached.lastFetchedAt <= (options?.staleTime ?? staleTime)) {
             set(state => ({ ...state, data: cached.data }));
             return;
           }
         }
 
-        set(state => ({ ...state, status: 'loading', error: null }));
+        set(state => ({ ...state, error: null, status: 'loading' }));
         lastFetchKey = currentQueryKey;
 
         const fetchOperation = async () => {
           try {
-            const rawData = await fetcher(effectiveParams);
+            const result = await fetcher(effectiveParams);
+            const rawData = result instanceof Promise ? await result : result;
             const transformedData = transform ? transform(rawData) : (rawData as TData);
 
             set(state => {
@@ -207,10 +215,14 @@ export function createRemoteRainbowStore<
             scheduleNextFetch(effectiveParams);
 
             if (onFetched) {
-              onFetched(transformedData, remoteCapableStore);
+              onFetched(transformedData, queryCapableStore);
             }
-          } catch (error: any) {
-            console.log('[ERROR]:', error);
+          } catch (error) {
+            logger.error(
+              new RainbowError(`[createRainbowQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: Failed to fetch data`),
+              { error }
+            );
+            // TODO: Improve retry logic
             set(state => ({ ...state, error, status: 'error' as const }));
             scheduleNextFetch(effectiveParams);
           } finally {
@@ -245,7 +257,7 @@ export function createRemoteRainbowStore<
         activeFetchPromise = null;
         lastFetchKey = null;
         isRefetchScheduled = false;
-        set(initialData as Partial<S> as S);
+        set(state => ({ ...state, ...initialData }));
       },
     };
 
@@ -275,9 +287,10 @@ export function createRemoteRainbowStore<
         }
       });
 
-      const currentState = get();
-      if (!currentState.data || currentState.isStale()) {
-        currentState.fetch(defaultParams, { force: true });
+      const { data, fetch, isStale } = get();
+
+      if (!data || isStale()) {
+        fetch(defaultParams, { force: true });
       } else {
         scheduleNextFetch(defaultParams ?? ({} as TParams));
       }
@@ -304,20 +317,20 @@ export function createRemoteRainbowStore<
       ...initialData,
       ...userState,
       ...baseMethods,
-    } satisfies S;
+    };
   };
 
   const baseStore = persistConfig?.storageKey
     ? createRainbowStore<StoreState<TData, TParams> & U>(createState, persistConfig)
     : create<StoreState<TData, TParams> & U>()(subscribeWithSelector(createState));
 
-  const remoteCapableStore: RemoteStore<TData, TParams, S> = Object.assign(baseStore, {
-    enabled,
+  const queryCapableStore: QueryStore<TData, TParams, S> = Object.assign(baseStore, {
     fetch: (params?: TParams, options?: FetchOptions) => baseStore.getState().fetch(params, options),
     isDataExpired: (override?: number) => baseStore.getState().isDataExpired(override),
     isStale: (override?: number) => baseStore.getState().isStale(override),
     reset: () => baseStore.getState().reset(),
+    enabled,
   });
 
-  return remoteCapableStore;
+  return queryCapableStore;
 }
