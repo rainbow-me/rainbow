@@ -13,7 +13,8 @@ import AppIconZorb from '@/assets/appIconZorb.png';
 import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconAdworld from '@/assets/appIconAdworld.png';
 import AppIconFarcaster from '@/assets/appIconFarcaster.png';
-import { TokenGateCheckerNetwork } from '@/featuresToUnlock/tokenGatedUtils';
+import AppIconTest1155 from '@/assets/appIconTest1155.png';
+import { TokenGateCheckerNetwork, TokenInfo } from '@/featuresToUnlock/tokenGatedUtils';
 import { Network } from '@/state/backendNetworks/types';
 
 // optimism app icon unlocking NFTs
@@ -64,7 +65,7 @@ export interface AppIcon {
 }
 
 export interface UnlockableAppIcon extends AppIcon {
-  unlockingNFTs: Partial<Record<TokenGateCheckerNetwork, EthereumAddress[]>>;
+  unlockingNFTs: Partial<Record<TokenGateCheckerNetwork, EthereumAddress[] | TokenInfo[]>>;
 }
 
 export type FreeAppIconKey = 'og' | 'pixel';
@@ -80,7 +81,8 @@ export type UnlockableAppIconKey =
   | 'zorb'
   | 'poolboy'
   | 'adworld'
-  | 'farcaster';
+  | 'farcaster'
+  | 'newTest_1155';
 
 export type AppIconKey = FreeAppIconKey | UnlockableAppIconKey;
 
@@ -172,5 +174,11 @@ export const unlockableAppIcons: Record<UnlockableAppIconKey, UnlockableAppIcon>
     displayName: 'Rainbowcast',
     image: AppIconFarcaster,
     unlockingNFTs: { [Network.base]: [FARCASTER_NFT_ADDRESS] },
+  },
+  newTest_1155: {
+    accentColor: '#FF0000',
+    displayName: 'NewTest1155',
+    image: AppIconTest1155,
+    unlockingNFTs: { [Network.base]: [{ account: '0xae2e09aAB7a190664E36daB48c576230E19a0B44', id: 2 }] },
   },
 };

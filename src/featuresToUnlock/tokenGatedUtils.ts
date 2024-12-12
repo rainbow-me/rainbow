@@ -1,9 +1,9 @@
-import { Contract } from '@ethersproject/contracts';
 import { EthereumAddress } from '@/entities';
 import { getProvider } from '@/handlers/web3';
 import { tokenGateCheckerAbi } from '@/references';
 import { Network } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { Interface } from '@ethersproject/abi';
 
 export type TokenGateCheckerNetwork =
   | Network.arbitrum
@@ -27,17 +27,48 @@ const TOKEN_GATE_CHECKER_ADDRESS: Record<TokenGateCheckerNetwork, EthereumAddres
   [Network.avalanche]: '0x2a0332E28913A06Fa924d40A3E2160f763010417',
 };
 
+/***
+ * Check if wallets own NFTs of type ERC-721
+ * We only need the NFT address to check for ownership
+ */
+
 export const checkIfWalletsOwnNft = async (
-  tokenAddress: EthereumAddress[],
+  tokenAddresses: EthereumAddress[],
   network: TokenGateCheckerNetwork,
   walletsToCheck: EthereumAddress[]
 ) => {
-  const p = getProvider({ chainId: useBackendNetworksStore.getState().getChainsIdByName()[network] });
-
-  const contractInstance = new Contract(TOKEN_GATE_CHECKER_ADDRESS[network], tokenGateCheckerAbi, p);
-
   try {
-    const found = contractInstance.areOwners(tokenAddress, walletsToCheck);
+    const p = getProvider({ chainId: useBackendNetworksStore.getState().getChainsIdByName()[network] });
+    const iface = new Interface(tokenGateCheckerAbi);
+    const data = iface.encodeFunctionData('areOwners(address[], address[])', [tokenAddresses, walletsToCheck]);
+    const found = await p.call({ to: TOKEN_GATE_CHECKER_ADDRESS[network], data });
+    return found;
+  } catch (e) {
+    return false;
+  }
+};
+
+export interface TokenInfo {
+  account: EthereumAddress;
+  id: number;
+}
+
+/***
+ * Check if wallets own NFTs of type ERC-1155
+ * In this case we need to also check the id of the NFTs
+ */
+
+export const checkIfWalletsOwnNft1155 = async (
+  tokenInfo: TokenInfo[],
+  network: TokenGateCheckerNetwork,
+  walletsToCheck: EthereumAddress[]
+) => {
+  try {
+    const p = getProvider({ chainId: useBackendNetworksStore.getState().getChainsIdByName()[network] });
+    const iface = new Interface(tokenGateCheckerAbi);
+    const data = iface.encodeFunctionData('areOwners(TokenInfo[], address[])', [tokenInfo, walletsToCheck]);
+    const found = await p.call({ to: TOKEN_GATE_CHECKER_ADDRESS[network], data });
+
     return found;
   } catch (e) {
     return false;
