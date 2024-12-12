@@ -151,6 +151,7 @@ const AvailableNetworksv2 = ({
 
   const MenuWrapper = availableChainIds.length > 1 ? ContextMenuButton : Box;
 
+  console.log('availableChainIds', availableChainIds);
   if (availableChainIds.length === 0) return null;
   return (
     <>
@@ -190,11 +191,7 @@ const AvailableNetworksv2 = ({
                           borderRadius: 30,
                         }}
                       >
-                        {chainId !== ChainId.mainnet ? (
-                          <ChainBadge chainId={chainId} position="relative" size="small" />
-                        ) : (
-                          <EthCoinIcon size={20} />
-                        )}
+                        <ChainBadge chainId={chainId} position="relative" size="tiny" />
                       </Box>
                     );
                   })}

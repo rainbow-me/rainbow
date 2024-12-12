@@ -1,12 +1,14 @@
 import React from 'react';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
-import { CoinIconIndicator, CoinIconSize } from '../coin-icon';
+import { CoinIconIndicator } from '../coin-icon';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { useCoinListFinishEditingOptions } from '@/hooks';
 import styled from '@/styled-thing';
 import { borders, padding, position, shadow } from '@/styles';
+
+const CoinIconSize = 40;
 
 const Container = styled.View({
   ...position.sizeAsObject(CoinIconSize),

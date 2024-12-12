@@ -1,11 +1,11 @@
 import React, { createElement } from 'react';
-import { CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { useAccountSettings } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 
+const CoinIconSize = 40;
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
 export const CoinRowHeight = CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom;

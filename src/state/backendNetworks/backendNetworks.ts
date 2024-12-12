@@ -29,6 +29,7 @@ export interface BackendNetworksState {
   getChainsLabel: () => Record<ChainId, string>;
   getChainsPrivateMempoolTimeout: () => Record<ChainId, number>;
   getChainsName: () => Record<ChainId, string>;
+  getChainsBadge: () => Record<ChainId, string>;
   getChainsIdByName: () => Record<string, ChainId>;
 
   defaultGasSpeeds: (chainId: ChainId) => GasSpeed[];
@@ -146,6 +147,17 @@ export const useBackendNetworksStore = createRainbowStore<BackendNetworksState>(
     return backendNetworks.networks.reduce(
       (acc, backendNetwork) => {
         acc[parseInt(backendNetwork.id, 10)] = backendNetwork.name;
+        return acc;
+      },
+      {} as Record<ChainId, string>
+    );
+  },
+
+  getChainsBadge: () => {
+    const backendNetworks = get().backendNetworks;
+    return backendNetworks.networks.reduce(
+      (acc, backendNetwork) => {
+        acc[parseInt(backendNetwork.id, 10)] = backendNetwork.icons.badgeURL;
         return acc;
       },
       {} as Record<ChainId, string>

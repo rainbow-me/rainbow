@@ -5,11 +5,12 @@ import { initials } from '../../utils';
 import ChainBadge from './ChainBadge';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { CoinIconSize } from './CoinIcon';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
+
+const RequestVendorLogoIconSize = 40;
 
 const RVLIBorderRadius = 16.25;
 const RVLIShadows = colors => ({
@@ -32,7 +33,7 @@ export default function RequestVendorLogoIcon({
   noShadow,
   shouldPrioritizeImageLoading,
   showLargeShadow,
-  size = CoinIconSize,
+  size = RequestVendorLogoIconSize,
   chainId,
   ...props
 }) {
