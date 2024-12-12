@@ -2,7 +2,6 @@ import { DropdownMenu } from '@/components/DropdownMenu';
 import { globalColors, Text, useBackgroundColor } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
 import { analyticsV2 } from '@/analytics';
 import { chainsLabel } from '@/chains';
@@ -20,13 +19,13 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { categories, sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
 import { colors } from '@/styles';
 import { useTheme } from '@/theme';
-import chroma from 'chroma-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import React, { FlatList, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { LinearTransition, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { ButtonPressAnimation } from '../animations';
 
 const t = i18n.l.trending_tokens;
 
@@ -332,10 +331,11 @@ function TrendingTokenLoadingRow() {
 function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']['data'][number] }) {
   const separatorColor = useForegroundColor('separator');
 
+  const priceValue = item.market.price?.value || 0;
   const isPositiveChange = item.market.price?.change_24h && item.market.price?.change_24h > 0;
-  const price = `$${item.market.price?.value ?? '0'}`;
-  const marketCap = `$` + formatNumber(item.market.market_cap?.value || 0, { useOrderSuffix: true, decimals: 1 });
-  const volume = `$` + formatNumber(item.market.volume_24h || 0, { useOrderSuffix: true, decimals: 1 });
+  const price = priceValue < 0.001 ? `< $0.001` : formatNumber(priceValue, { useOrderSuffix: true, decimals: 4, style: '$' });
+  const marketCap = formatNumber(item.market.market_cap?.value || 0, { useOrderSuffix: true, decimals: 1, style: '$' });
+  const volume = formatNumber(item.market.volume_24h || 0, { useOrderSuffix: true, decimals: 1, style: '$' });
 
   const handleNavigateToToken = useCallback(() => {
     analyticsV2.track(analyticsV2.event.viewTrendingToken, {
@@ -359,7 +359,7 @@ function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']
   if (!item) return null;
 
   return (
-    <GestureHandlerButton onPressJS={handleNavigateToToken} scaleTo={0.94}>
+    <ButtonPressAnimation onPress={handleNavigateToToken} scaleTo={0.94}>
       <View style={{ paddingVertical: 12, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
         <SwapCoinIcon
           iconUrl={item.icon_url}
@@ -380,10 +380,10 @@ function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']
                 <Text color="label" size="15pt" weight="bold" style={{ maxWidth: 100 }} numberOfLines={1}>
                   {item.name}
                 </Text>
-                <Text color="labelTertiary" size="11pt" weight="bold" style={{ maxWidth: 50 }} numberOfLines={1}>
+                <Text color="labelTertiary" size="11pt" weight="bold" style={{ maxWidth: 100 }} numberOfLines={1}>
                   {item.symbol}
                 </Text>
-                <Text color="label" size="15pt" weight="bold" style={{ maxWidth: 100 }} numberOfLines={1}>
+                <Text color="label" size="15pt" weight="bold">
                   {price}
                 </Text>
               </View>
@@ -434,7 +434,7 @@ function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']
           </View>
         </View>
       </View>
-    </GestureHandlerButton>
+    </ButtonPressAnimation>
   );
 }
 
