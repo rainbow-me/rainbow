@@ -151,7 +151,6 @@ const AvailableNetworksv2 = ({
 
   const MenuWrapper = availableChainIds.length > 1 ? ContextMenuButton : Box;
 
-  console.log('availableChainIds', availableChainIds);
   if (availableChainIds.length === 0) return null;
   return (
     <>
