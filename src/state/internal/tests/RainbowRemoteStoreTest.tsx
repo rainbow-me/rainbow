@@ -6,7 +6,7 @@ import { Text } from '@/design-system';
 import { SupportedCurrencyKey } from '@/references';
 import { queryUserAssets } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { ParsedAssetsDictByChain } from '@/__swaps__/types/assets';
-import { createRemoteRainbowStore } from '../internal/createRemoteRainbowStore';
+import { createRemoteRainbowStore } from '../createRemoteRainbowStore';
 
 function getRandomAddress() {
   return Math.random() < 0.5 ? '0x2e67869829c734ac13723A138a952F7A8B56e774' : '0xCFB83E14AEd465c79F3F82f4cfF4ff7965897644';
