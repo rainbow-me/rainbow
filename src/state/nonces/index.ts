@@ -21,7 +21,7 @@ type UpdateNonceArgs = NonceData & GetNonceArgs;
 export async function getNextNonce({ address, chainId }: { address: string; chainId: ChainId }): Promise<number> {
   const { getNonce } = nonceStore.getState();
   const localNonceData = getNonce({ address, chainId });
-  const localNonce = localNonceData?.currentNonce || 0;
+  const localNonce = localNonceData?.currentNonce || -1;
   const provider = getBatchedProvider({ chainId });
   const privateMempoolTimeout = useBackendNetworksStore.getState().getChainsPrivateMempoolTimeout()[chainId];
 
