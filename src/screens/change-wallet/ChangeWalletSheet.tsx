@@ -27,7 +27,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { address } from '@/utils/abbreviations';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { Box, Stack, Text } from '@/design-system';
-import { addDisplay } from '@/helpers/utilities';
+import { addDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
@@ -114,7 +114,7 @@ export default function ChangeWalletSheet() {
 
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
-  const { accountAddress, network } = useAccountSettings();
+  const { accountAddress, network, nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   const { goBack, navigate, setParams } = useNavigation();
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
@@ -157,12 +157,6 @@ export default function ChangeWalletSheet() {
           editMode,
           height: WALLET_ROW_HEIGHT,
           label: account.label,
-          // label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
-          // TODO: what does this do?
-          // label:
-          //   network !== Network.mainnet && account.ens === account.label
-          //     ? address(account.address, 6, 4)
-          //     : removeFirstEmojiFromString(account.label),
           secondaryLabel: balanceText,
           isOnlyAddress: visibleAccounts.length === 1,
           isLedger: wallet.type === WalletTypes.bluetooth,
@@ -211,8 +205,8 @@ export default function ChangeWalletSheet() {
 
     if (isLoadingBalance) return i18n.t(i18n.l.wallet.change_wallet.loading_balance);
 
-    return totalBalance;
-  }, [walletsWithBalancesAndNames]);
+    return convertAmountToNativeDisplay(totalBalance, nativeCurrency);
+  }, [walletsWithBalancesAndNames, nativeCurrency]);
 
   const onChangeAccount = useCallback(
     async (walletId: string, address: string, fromDeletion = false) => {
