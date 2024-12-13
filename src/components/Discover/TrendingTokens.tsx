@@ -23,12 +23,12 @@ import { darkModeThemeColors } from '@/styles/colors';
 import { useTheme } from '@/theme';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import React, { FlatList, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { LinearTransition, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
 import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWallets';
+import { ImgixImage } from '../images';
 
 const t = i18n.l.trending_tokens;
 
@@ -206,7 +206,7 @@ function CategoryFilterButton({
 function FriendPfp({ pfp_url }: { pfp_url: string }) {
   const backgroundColor = useBackgroundColor('surfacePrimary');
   return (
-    <FastImage
+    <ImgixImage
       source={{ uri: pfp_url }}
       style={{
         height: 12 + 2,
