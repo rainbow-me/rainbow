@@ -224,7 +224,7 @@ function FriendHolders({ friends }: { friends: FarcasterUser[] }) {
   if (friends.length === 0) return null;
   return (
     <View style={{ flexDirection: 'row', gap: 5.67, alignItems: 'center', marginTop: -2 }}>
-      <View style={{ flexDirection: 'row-reverse', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row-reverse', alignItems: 'center', paddingLeft: 6 }}>
         <FriendPfp pfp_url={friends[0].pfp_url} />
         {friends[1] && <FriendPfp pfp_url={friends[1].pfp_url} />}
       </View>
