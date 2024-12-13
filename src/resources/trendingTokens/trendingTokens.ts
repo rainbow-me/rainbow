@@ -23,7 +23,7 @@ export type TrendingToken = {
   price: number;
   priceChange: {
     hr: number;
-    timeframe: number;
+    day: number;
   };
   marketCap: number;
   volume: number;
@@ -89,11 +89,7 @@ async function fetchTrendingTokens({
       price: market.price?.value || 0,
       priceChange: {
         hr: trending.pool_data.h1_price_change || 0,
-        timeframe: {
-          H24: trending.pool_data.h24_price_change || 0,
-          D7: trending.pool_data.h24_price_change || 0, // TODO: WRONG TIMEFRAME DATA
-          D3: trending.pool_data.h24_price_change || 0, // TODO: WRONG TIMEFRAME DATA
-        }[timeframe],
+        day: trending.pool_data.h24_price_change || 0,
       },
       marketCap: market.market_cap?.value || 0,
       volume: market.volume_24h || 0,
@@ -119,6 +115,5 @@ export function useTrendingTokens<T = TrendingToken[]>(
     ...config,
     staleTime: 60_000, // 1 minute
     cacheTime: 60_000 * 30, // 30 minutes
-    // keepPreviousData: true,
   });
 }

@@ -104,8 +104,8 @@ function formatFraction(fraction: string) {
   const significantDigits = fraction.slice(leadingZeros, leadingZeros + 2);
   if (+significantDigits === 0) return '00';
 
-  if (leadingZeros >= 4) return `0${toSubscript(leadingZeros - 1)}${significantDigits}`;
-  return significantDigits.replace(/0+$/, '');
+  if (leadingZeros >= 4) return `0${toSubscript(leadingZeros)}${significantDigits}`;
+  return `${'0'.repeat(leadingZeros)}${significantDigits}`;
 }
 
 export function formatCurrency(
