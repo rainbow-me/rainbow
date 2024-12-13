@@ -45,4 +45,3 @@ export const shouldShowCustomizeNetworksBanner = (dismissedAt: number) => Date.n
 export const dismissCustomizeNetworksBanner = () => {
   customizeNetworksBannerStore.setState({ dismissedAt: Date.now() });
 };
-export const showCustomizeNetworksBanner = shouldShowCustomizeNetworksBanner(customizeNetworksBannerStore.getState().dismissedAt);

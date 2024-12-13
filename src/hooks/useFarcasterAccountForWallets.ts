@@ -12,12 +12,12 @@ import { AllRainbowWallets } from '@/model/wallet';
 
 type SummaryData = ReturnType<typeof useAddysSummary>['data'];
 
-const getWalletForAddress = (wallets: AllRainbowWallets, address: string) => {
+const getWalletForAddress = (wallets: AllRainbowWallets | null, address: string) => {
   return Object.values(wallets || {}).find(wallet => wallet.addresses.some(addr => isLowerCaseMatch(addr.address, address)));
 };
 
-export const useFarcasterWalletAddress = () => {
-  const [farcasterWalletAddress, setFarcasterWalletAddress] = useState<string | null>(null);
+export const useFarcasterAccountForWallets = () => {
+  const [farcasterWalletAddress, setFarcasterWalletAddress] = useState<Address | undefined>();
   const { accountAddress } = useAccountSettings();
   const { wallets } = useWallets();
 
@@ -33,32 +33,35 @@ export const useFarcasterWalletAddress = () => {
         currency: store.getState().settings.nativeCurrency,
       })
     );
-    if (isEmpty(summaryData?.data.addresses) || isEmpty(wallets)) {
-      setFarcasterWalletAddress(null);
+    const addresses = summaryData?.data.addresses;
+
+    if (!addresses || isEmpty(addresses) || isEmpty(wallets)) {
+      setFarcasterWalletAddress(undefined);
       return;
     }
 
-    const selectedAddressFid = summaryData?.data.addresses[accountAddress as Address]?.meta?.farcaster?.fid;
-
-    if (selectedAddressFid && getWalletForAddress(wallets || {}, accountAddress)?.type !== walletTypes.readOnly) {
+    const selectedAddressFid = addresses[accountAddress]?.meta?.farcaster?.fid;
+    if (selectedAddressFid && getWalletForAddress(wallets, accountAddress)?.type !== walletTypes.readOnly) {
       setFarcasterWalletAddress(accountAddress);
       return;
     }
 
-    const farcasterWalletAddress = Object.keys(summaryData?.data.addresses || {}).find(addr => {
+    const farcasterWalletAddress = Object.keys(addresses).find(addr => {
       const address = addr as Address;
       const faracsterId = summaryData?.data.addresses[address]?.meta?.farcaster?.fid;
-      if (faracsterId && getWalletForAddress(wallets || {}, address)?.type !== walletTypes.readOnly) {
-        return faracsterId;
+      if (faracsterId && getWalletForAddress(wallets, address)?.type !== walletTypes.readOnly) {
+        return address;
       }
-    });
+    }) as Address | undefined;
 
     if (farcasterWalletAddress) {
       setFarcasterWalletAddress(farcasterWalletAddress);
       return;
     }
-    setFarcasterWalletAddress(null);
+    setFarcasterWalletAddress(undefined);
   }, [wallets, allAddresses, accountAddress]);
+
+  console.log('farcasterWalletAddress', farcasterWalletAddress);
 
   return farcasterWalletAddress;
 };

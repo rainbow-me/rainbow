@@ -42,7 +42,6 @@ import {
   dismissCustomizeNetworksBanner,
   networkSwitcherStore,
   shouldShowCustomizeNetworksBanner,
-  showCustomizeNetworksBanner,
 } from '@/state/networkSwitcher/networkSwitcher';
 
 const t = i18n.l.network_switcher;
@@ -107,7 +106,7 @@ function Header({ editing }: { editing: SharedValue<boolean> }) {
   );
 }
 
-const CustomizeNetworksBanner = !showCustomizeNetworksBanner
+const CustomizeNetworksBanner = !shouldShowCustomizeNetworksBanner(customizeNetworksBannerStore.getState().dismissedAt)
   ? () => null
   : function CustomizeNetworksBanner({ editing }: { editing: SharedValue<boolean> }) {
       useAnimatedReaction(
@@ -176,15 +175,11 @@ const CustomizeNetworksBanner = !showCustomizeNetworksBanner
                       {i18n.t(t.customize_networks_banner.title)}
                     </Text>
                     <Text weight="semibold" size="13pt" color="labelQuaternary">
-                      {/* 
-                    is there a way to render a diferent component mid sentence?
-                    like i18n.t(t.customize_networks_banner.description, { Edit: <Text... /> })
-                  */}
-                      Tap the{' '}
+                      {i18n.t(t.customize_networks_banner.tap_the)}{' '}
                       <Text weight="bold" size="13pt" color={{ custom: blue }}>
-                        Edit
+                        {i18n.t(t.edit)}
                       </Text>{' '}
-                      button below to set up
+                      {i18n.t(t.customize_networks_banner.button_to_set_up)}
                     </Text>
                   </View>
                   <Pressable style={{ marginLeft: 'auto', height: '100%' }} onPress={dismissCustomizeNetworksBanner}>
@@ -308,7 +303,7 @@ function AllNetworksSection({
   selected: SharedValue<ChainId | undefined>;
 }) {
   const style = useAnimatedStyle(() => ({
-    opacity: editing.value ? withTiming(0, { duration: 50 }) : withDelay(250, withTiming(1, { duration: 250 })),
+    opacity: editing.value ? withTiming(0, { duration: 200 }) : withDelay(200, withTiming(1, { duration: 200 })),
     height: withTiming(
       editing.value ? 0 : ITEM_HEIGHT + 14, // 14 is the gap to the separator
       { duration: 250 }
@@ -356,6 +351,7 @@ const ITEM_HEIGHT = 48;
 const SEPARATOR_HEIGHT = 68;
 const enum Section {
   pinned,
+  separator,
   unpinned,
 }
 
@@ -369,7 +365,7 @@ function Draggable({
 }: PropsWithChildren<{
   chainId: ChainId;
   dragging: SharedValue<DraggingState | null>;
-  networks: SharedValue<Record<Section, ChainId[]>>;
+  networks: SharedValue<Record<Section.pinned | Section.unpinned, ChainId[]>>;
   sectionsOffsets: SharedValue<Record<Section, { y: number }>>;
   isUnpinnedHidden: SharedValue<boolean>;
 }>) {
@@ -432,22 +428,35 @@ type DraggingState = {
 };
 
 function SectionSeparator({
-  y,
+  sectionsOffsets,
   editing,
   expanded,
   networks,
-  tapExpand,
-  pressedExpand,
 }: {
-  y: SharedValue<number>;
+  sectionsOffsets: SharedValue<Record<Section, { y: number }>>;
   editing: SharedValue<boolean>;
   expanded: SharedValue<boolean>;
-  networks: SharedValue<Record<Section, ChainId[]>>;
-  tapExpand: TapGesture;
-  pressedExpand: SharedValue<boolean>;
+  networks: SharedValue<Record<Section.pinned | Section.unpinned, ChainId[]>>;
 }) {
+  const pressed = useSharedValue(false);
+
+  const visible = useDerivedValue(() => {
+    return networks.value[Section.unpinned].length > 0 || editing.value;
+  });
+
+  const tapExpand = Gesture.Tap()
+    .onTouchesDown((e, s) => {
+      if (editing.value || !visible.value) return s.fail();
+      pressed.value = true;
+    })
+    .onEnd(() => {
+      pressed.value = false;
+      expanded.value = !expanded.value;
+    });
+
   const separatorStyles = useAnimatedStyle(() => ({
-    transform: [{ translateY: y.value }, { scale: withTiming(pressedExpand.value ? 0.95 : 1) }],
+    opacity: visible.value ? 1 : 0,
+    transform: [{ translateY: sectionsOffsets.value[Section.separator].y }, { scale: withTiming(pressed.value ? 0.95 : 1) }],
   }));
 
   const text = useDerivedValue(() => {
@@ -501,6 +510,40 @@ function SectionSeparator({
   );
 }
 
+function EmptyUnpinnedPlaceholder({
+  sectionsOffsets,
+  networks,
+  isUnpinnedHidden,
+}: {
+  sectionsOffsets: SharedValue<Record<Section, { y: number }>>;
+  networks: SharedValue<Record<Section.pinned | Section.unpinned, ChainId[]>>;
+  isUnpinnedHidden: SharedValue<boolean>;
+}) {
+  const styles = useAnimatedStyle(() => {
+    const isVisible = networks.value[Section.unpinned].length === 0 && !isUnpinnedHidden.value;
+    return {
+      opacity: isVisible ? withTiming(1, { duration: 800 }) : 0,
+      transform: [{ translateY: sectionsOffsets.value[Section.unpinned].y }],
+    };
+  });
+  const { isDarkMode } = useTheme();
+  return (
+    <Animated.View
+      style={[
+        { height: 48, width: '100%' },
+        { paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center' },
+        { borderRadius: 24, borderWidth: 1.33 },
+        { backgroundColor: isDarkMode ? globalColors.white10 : globalColors.grey20, borderColor: '#F5F8FF05' },
+        styles,
+      ]}
+    >
+      <Text color="labelQuaternary" size="15pt" weight="semibold" align="center" style={{ flex: 1 }}>
+        {i18n.t(t.drag_here_to_unpin)}
+      </Text>
+    </Animated.View>
+  );
+}
+
 function NetworksGrid({
   editing,
   setSelected,
@@ -527,18 +570,28 @@ function NetworksGrid({
 
   const dragging = useSharedValue<DraggingState | null>(null);
 
-  const pinnedHeight = useDerivedValue(() => Math.ceil(networks.value[Section.pinned].length / 2) * (ITEM_HEIGHT + GAP) - GAP);
-  const sectionsOffsets = useDerivedValue(() => ({
-    [Section.pinned]: { y: 0 },
-    [Section.unpinned]: { y: pinnedHeight.value + SEPARATOR_HEIGHT },
-  }));
-  const containerStyle = useAnimatedStyle(() => {
-    const unpinnedHeight = isUnpinnedHidden.value
-      ? 0
-      : Math.ceil(networks.value[Section.unpinned].length / 2) * (ITEM_HEIGHT + GAP) - GAP + 32;
-    const height = pinnedHeight.value + SEPARATOR_HEIGHT + unpinnedHeight;
-    return { height: withTiming(height) };
+  const sectionsOffsets = useDerivedValue(() => {
+    const pinnedHeight = Math.ceil(networks.value[Section.pinned].length / 2) * (ITEM_HEIGHT + GAP) - GAP;
+    return {
+      [Section.pinned]: { y: 0 },
+      [Section.separator]: { y: pinnedHeight },
+      [Section.unpinned]: { y: pinnedHeight + SEPARATOR_HEIGHT },
+    };
   });
+  const containerHeight = useDerivedValue(() => {
+    const length = networks.value[Section.unpinned].length;
+    const paddingBottom = 32;
+    const unpinnedHeight = isUnpinnedHidden.value
+      ? length === 0
+        ? -SEPARATOR_HEIGHT + paddingBottom
+        : 0
+      : length === 0
+        ? ITEM_HEIGHT + paddingBottom
+        : Math.ceil((length + 1) / 2) * (ITEM_HEIGHT + GAP) - GAP + paddingBottom;
+    const height = sectionsOffsets.value[Section.unpinned].y + unpinnedHeight;
+    return height;
+  });
+  const containerStyle = useAnimatedStyle(() => ({ height: containerHeight.value }));
 
   const dragNetwork = Gesture.Pan()
     .maxPointers(1)
@@ -565,7 +618,7 @@ function NetworksGrid({
       const chainId = dragging.value.chainId;
       if (!chainId) return;
 
-      const section = e.y > sectionsOffsets.value[Section.unpinned].y ? Section.unpinned : Section.pinned;
+      const section = e.y > sectionsOffsets.value[Section.unpinned].y - SEPARATOR_HEIGHT / 2 ? Section.unpinned : Section.pinned;
       const sectionArray = networks.value[section];
 
       const currentIndex = sectionArray.indexOf(chainId);
@@ -575,7 +628,7 @@ function NetworksGrid({
         if (currentIndex === -1) {
           // Pin/Unpin
           if (section === Section.unpinned) networks[Section.pinned].splice(currentIndex, 1);
-          else networks[Section.pinned].splice(newIndex, 0, chainId);
+          else networks[Section.pinned].push(chainId);
           networks[Section.unpinned] = SUPPORTED_CHAIN_IDS_ALPHABETICAL.filter(chainId => !networks[Section.pinned].includes(chainId));
         } else if (section === Section.pinned && newIndex !== currentIndex) {
           // Reorder
@@ -595,34 +648,9 @@ function NetworksGrid({
       dragging.value = null;
     });
 
-  const pressedExpand = useSharedValue(false);
-
-  // TODO: Need to prevent this from firing the tapNetwork as well
-  const tapExpand = Gesture.Tap()
-    .onBegin(e => {
-      if (editing.value) {
-        e.state = State.FAILED;
-      }
-      pressedExpand.value = true;
-    })
-    .onEnd(() => {
-      pressedExpand.value = false;
-      expanded.value = !expanded.value;
-    });
-
   const tapNetwork = Gesture.Tap()
     .onTouchesDown((e, s) => {
-      if (editing.value) {
-        s.fail();
-      }
-
-      const touches = e.allTouches[0];
-      const section = touches.y > sectionsOffsets.value[Section.unpinned].y ? Section.unpinned : Section.pinned;
-      const index = indexFromPosition(touches.x, touches.y, sectionsOffsets.value[section]);
-      const chainId = networks.value[section][index];
-      if (!chainId) {
-        s.fail();
-      }
+      if (editing.value) return s.fail();
     })
     .onEnd(e => {
       const section = e.y > sectionsOffsets.value[Section.unpinned].y ? Section.unpinned : Section.pinned;
@@ -651,22 +679,10 @@ function NetworksGrid({
           </Draggable>
         ))}
 
-        <SectionSeparator
-          y={pinnedHeight}
-          expanded={expanded}
-          editing={editing}
-          networks={networks}
-          tapExpand={tapExpand}
-          pressedExpand={pressedExpand}
-        />
+        <SectionSeparator sectionsOffsets={sectionsOffsets} expanded={expanded} editing={editing} networks={networks} />
 
-        {/* {initialUnpinned.length === 0 && (
-          <View style={{ borderRadius: 20, flex: 1, height: ITEM_HEIGHT }}>
-            <Text color="labelQuaternary" size="15pt" weight="semibold" align="center">
-              Drag here to unpin networks
-            </Text>
-          </View>
-        )} */}
+        <EmptyUnpinnedPlaceholder sectionsOffsets={sectionsOffsets} networks={networks} isUnpinnedHidden={isUnpinnedHidden} />
+
         {initialUnpinned.map(chainId => (
           <Draggable
             key={chainId}
