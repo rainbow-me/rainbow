@@ -320,6 +320,11 @@ function TrendingTokenLoadingRow() {
   );
 }
 
+function getPriceChangeColor(priceChange: number) {
+  if (priceChange === 0) return 'labelTertiary';
+  return priceChange > 0 ? 'green' : 'red';
+}
+
 function TrendingTokenRow({ token }: { token: TrendingToken }) {
   const separatorColor = useForegroundColor('separator');
 
@@ -405,18 +410,20 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
 
             <View style={{ gap: 12, marginLeft: 'auto' }}>
               <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center' }}>
-                <Text color={token.priceChange.timeframe > 0 ? 'green' : 'red'} size="11pt" weight="bold">
-                  {token.priceChange.timeframe > 0 ? '􀄨' : '􀄩'}
-                </Text>
-                <Text color={token.priceChange.timeframe > 0 ? 'green' : 'red'} size="15pt" weight="bold">
-                  {formatNumber(token.priceChange.timeframe, { decimals: 2, useOrderSuffix: true })}%
+                {token.priceChange.day !== 0 && (
+                  <Text color={getPriceChangeColor(token.priceChange.day)} size="11pt" weight="bold">
+                    {token.priceChange.day > 0 ? '􀄨' : '􀄩'}
+                  </Text>
+                )}
+                <Text color={getPriceChangeColor(token.priceChange.day)} size="15pt" weight="bold">
+                  {formatNumber(token.priceChange.day, { decimals: 2, useOrderSuffix: true })}%
                 </Text>
               </View>
               <View style={{ flexDirection: 'row', gap: 5, justifyContent: 'flex-end' }}>
                 <Text color="labelQuaternary" size="11pt" weight="bold">
                   1H
                 </Text>
-                <Text color={token.priceChange.hr > 0 ? 'green' : 'red'} size="11pt" weight="bold">
+                <Text color={getPriceChangeColor(token.priceChange.hr)} size="11pt" weight="bold">
                   {formatNumber(token.priceChange.hr, { decimals: 2, useOrderSuffix: true })}%
                 </Text>
               </View>
