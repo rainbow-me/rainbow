@@ -140,10 +140,14 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
           <DraggableFlatList
             onOrderChange={onOrderChange}
             style={{ maxHeight: LIST_MAX_HEIGHT }}
-            // we have to subtract 24px because the footer has 24px top padding that will look wrong if we have less items than needed to fill the list
+            // we subtract 24px because the footer has 24px top padding that will look wrong if we have less items than needed to fill the list
             contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT - 24 }}
+            autoScrollInsets={{ bottom: FOOTER_HEIGHT - 24 }}
             data={unpinnedWalletItems}
             ListHeaderComponent={renderHeader}
+            draggableProps={{
+              disabled: !editMode,
+            }}
             renderItem={({ item }) => (
               <AddressRow
                 menuItems={menuItems}

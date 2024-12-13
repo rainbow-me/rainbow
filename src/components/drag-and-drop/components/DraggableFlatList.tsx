@@ -16,9 +16,13 @@ import type { UniqueIdentifier } from '../types';
 import { applyOffset, swapByItemCenterPoint } from '../utils';
 import { Draggable } from './Draggable';
 
+// IMPROVEMENT: expose these as props
 const AUTOSCROLL_THRESHOLD = 50;
 const AUTOSCROLL_MIN_SPEED = 1;
 const AUTOSCROLL_MAX_SPEED = 3;
+
+// this is an arbitrary distance from the start of the autoscroll threshold in which the max speed is applied
+const AUTOSCROLL_THRESHOLD_MAX_DISTANCE = 100;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnimatedFlatListProps<ItemT = any> = AnimatedProps<ComponentProps<typeof FlatList<ItemT>>>;
@@ -28,17 +32,55 @@ export type ViewableRange = {
   last: number | null;
 };
 
+type DraggableProps = ComponentProps<typeof Draggable>;
+type DraggablePropsWithoutId = Omit<DraggableProps, 'id' | 'children'>;
+
 export type DraggableFlatListProps<T extends { id: UniqueIdentifier }> = AnimatedFlatListProps<T> &
   Pick<UseDraggableStackOptions, 'onOrderChange' | 'onOrderUpdate' | 'shouldSwapWorklet'> & {
     debug?: boolean;
     gap?: number;
     horizontal?: boolean;
+    draggableProps?: DraggablePropsWithoutId;
+    autoScrollInsets?: {
+      top?: number;
+      bottom?: number;
+    };
   };
 
 function normalizeWorklet(value: number, fromMin: number, fromMax: number, toMin: number, toMax: number) {
   'worklet';
   return ((value - fromMin) * (toMax - toMin)) / (fromMax - fromMin) + toMin;
 }
+
+const canScrollToWorklet = ({
+  newOffset,
+  contentHeight,
+  layoutHeight,
+  currentOffset = 0,
+}: {
+  newOffset: number;
+  contentHeight: number;
+  layoutHeight: number;
+  currentOffset: number;
+}) => {
+  'worklet';
+
+  const maxOffset = contentHeight - layoutHeight;
+
+  if (newOffset < 0) {
+    return false;
+  }
+
+  if (newOffset > maxOffset) {
+    return false;
+  }
+
+  if (newOffset === currentOffset) {
+    return false;
+  }
+
+  return true;
+};
 
 export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
   data,
@@ -50,13 +92,15 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
   onOrderUpdate,
   renderItem,
   shouldSwapWorklet = swapByItemCenterPoint,
+  draggableProps,
+  autoScrollInsets,
   ...otherProps
 }: DraggableFlatListProps<T>): ReactElement => {
   const { draggableActiveId, draggableContentOffset, draggableLayouts, draggableOffsets, draggableRestingOffsets, draggableActiveLayout } =
     useDndContext();
   const animatedFlatListRef = useAnimatedRef<FlatList<T>>();
   const contentHeight = useSharedValue(0);
-  const visibleHeight = useSharedValue(0);
+  const layoutHeight = useSharedValue(0);
   const scrollOffset = useSharedValue(0);
 
   // @ts-expect-error TODO: fix
@@ -95,17 +139,20 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
         const activeLayout = layouts[activeId].value;
         const activeOffset = offsets[activeId];
 
-        // if we have reached the bottom of the list, stop scrolling
-        if (draggableActiveLayout.value && draggableActiveLayout.value.y + smoothedOffset > contentHeight.value - AUTOSCROLL_THRESHOLD) {
+        const newOffset = scrollOffset.value + smoothedOffset;
+
+        if (
+          !canScrollToWorklet({
+            newOffset: newOffset,
+            contentHeight: contentHeight.value,
+            layoutHeight: layoutHeight.value,
+            currentOffset: scrollOffset.value,
+          })
+        ) {
           return;
         }
 
-        // if we have reached the top of the list, stop scrolling
-        if (scrollOffset.value + smoothedOffset < 0) {
-          return;
-        }
-
-        scrollTo(animatedFlatListRef, 0, scrollOffset.value + smoothedOffset, false);
+        scrollTo(animatedFlatListRef, 0, newOffset, false);
 
         activeOffset.y.value += smoothedOffset;
 
@@ -115,7 +162,16 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
         });
       }
     },
-    [draggableActiveId, draggableLayouts, draggableOffsets, draggableActiveLayout, contentHeight, animatedFlatListRef, scrollOffset]
+    [
+      draggableActiveId,
+      draggableLayouts,
+      draggableOffsets,
+      scrollOffset,
+      contentHeight,
+      layoutHeight,
+      animatedFlatListRef,
+      draggableActiveLayout,
+    ]
   );
 
   // Track sort order changes and update the offsets
@@ -174,7 +230,7 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
     []
   );
 
-  /* ⚠️ TODO: Expose visible range to the parent */
+  /* ⚠️ IMPROVEMENT: Optionally expose visible range to the parent */
   // const viewableRange = useSharedValue<ViewableRange>({
   //   first: null,
   //   last: null,
@@ -201,28 +257,42 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
     activeItemY => {
       if (activeItemY === undefined) return;
 
-      const bottomThreshold = scrollOffset.value + visibleHeight.value - AUTOSCROLL_THRESHOLD;
+      const bottomThreshold = scrollOffset.value + layoutHeight.value - AUTOSCROLL_THRESHOLD - (autoScrollInsets?.bottom ?? 0);
       const isNearBottom = activeItemY >= bottomThreshold;
 
-      const topThreshold = scrollOffset.value + AUTOSCROLL_THRESHOLD;
+      const topThreshold = scrollOffset.value + AUTOSCROLL_THRESHOLD + (autoScrollInsets?.top ?? 0);
       const isNearTop = activeItemY <= topThreshold;
 
       if (isNearTop) {
         const distanceFromTopThreshold = topThreshold - activeItemY;
-        const scrollSpeed = normalizeWorklet(distanceFromTopThreshold, 0, AUTOSCROLL_THRESHOLD, AUTOSCROLL_MIN_SPEED, AUTOSCROLL_MAX_SPEED);
-        autoscroll(-scrollSpeed);
-      } else if (isNearBottom) {
-        const distanceFromBottomThreshold = activeItemY - bottomThreshold;
         const scrollSpeed = normalizeWorklet(
-          distanceFromBottomThreshold,
+          distanceFromTopThreshold,
           0,
-          AUTOSCROLL_THRESHOLD,
+          AUTOSCROLL_THRESHOLD_MAX_DISTANCE,
           AUTOSCROLL_MIN_SPEED,
           AUTOSCROLL_MAX_SPEED
         );
+        autoscroll(-scrollSpeed);
+      } else if (isNearBottom) {
+        const distanceFromBottomThreshold = activeItemY - bottomThreshold;
+
+        const scrollSpeed = normalizeWorklet(
+          distanceFromBottomThreshold,
+          0,
+          AUTOSCROLL_THRESHOLD_MAX_DISTANCE,
+          AUTOSCROLL_MIN_SPEED,
+          AUTOSCROLL_MAX_SPEED
+        );
+
+        console.log('scrollSpeed', scrollSpeed, distanceFromBottomThreshold);
         autoscroll(scrollSpeed);
       }
     }
+  );
+
+  const CellRenderer = useCallback(
+    (cellProps: CellRendererProps<T>) => <DraggableFlatListCellRenderer {...cellProps} draggableProps={draggableProps} />,
+    [draggableProps]
   );
 
   /** 🛠️ DEBUGGING */
@@ -247,16 +317,16 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
 
   return (
     <AnimatedFlatList
-      CellRendererComponent={DraggableFlatListCellRenderer}
+      CellRendererComponent={CellRenderer}
       data={data}
       onScroll={scrollHandler}
       onLayout={event => {
-        visibleHeight.value = event.nativeEvent.layout.height;
+        layoutHeight.value = event.nativeEvent.layout.height;
       }}
       onContentSizeChange={(_, height) => {
         contentHeight.value = height;
       }}
-      // TODO: implement
+      // IMPROVEMENT: optionally implement
       // onViewableItemsChanged={onViewableItemsChanged}
       ref={animatedFlatListRef}
       removeClippedSubviews={false}
@@ -278,12 +348,16 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
   );
 };
 
+type DraggableCellRendererProps<ItemT extends { id: UniqueIdentifier }> = CellRendererProps<ItemT> & {
+  draggableProps?: DraggablePropsWithoutId;
+};
+
 export const DraggableFlatListCellRenderer = function DraggableFlatListCellRenderer<ItemT extends { id: UniqueIdentifier }>(
-  props: CellRendererProps<ItemT>
+  props: DraggableCellRendererProps<ItemT>
 ) {
-  const { item, children, ...otherProps } = props;
+  const { item, children, draggableProps, ...otherProps } = props;
   return (
-    <Draggable activationDelay={200} activeScale={1.025} dragDirection="y" id={item.id.toString()} {...otherProps}>
+    <Draggable activationDelay={200} activeScale={1.025} dragDirection="y" id={item.id.toString()} {...draggableProps} {...otherProps}>
       {children}
     </Draggable>
   );
