@@ -80,7 +80,25 @@ const TWO_MINUTES = 1000 * 60 * 2;
 const FIVE_SECONDS = 1000 * 5;
 const MIN_STALE_TIME = FIVE_SECONDS;
 
-const DISCARDABLE_INTERNAL_STATE: InternalStateKey[] = ['fetch', 'isDataExpired', 'isStale', 'reset', 'subscriptionCount'];
+/**
+ * A map of internal state keys to whether they should be included in the persisted state.
+ */
+const SHOULD_PERSIST_INTERNAL_STATE_MAP: Record<string, boolean> = {
+  /* State to persist */
+  data: true,
+  enabled: true,
+  error: true,
+  lastFetchedAt: true,
+  queryCache: true,
+  status: true,
+
+  /* State and methods to discard */
+  fetch: false,
+  isDataExpired: false,
+  isStale: false,
+  reset: false,
+  subscriptionCount: false,
+} satisfies Record<InternalStateKey, boolean>;
 
 /**
  * Creates a remote-enabled Rainbow store with data fetching capabilities.
@@ -266,7 +284,7 @@ export function createRainbowQueryStore<
       },
     };
 
-    // If customStateCreator is provided, it will return user-defined fields (U)
+    /* If customStateCreator is provided, it will return user-defined fields (U) */
     const userState = customStateCreator?.(set, get, api) ?? ({} as U);
 
     const subscribeWithSelector = api.subscribe;
@@ -348,13 +366,6 @@ export function createRainbowQueryStore<
 }
 
 /**
- * Checks whether a state key is internal and should be discarded from persistence.
- */
-function shouldDiscardInternalState(key: InternalStateKey | string): key is InternalStateKey {
-  return DISCARDABLE_INTERNAL_STATE.includes(key as InternalStateKey);
-}
-
-/**
  * Creates a combined partialize function that ensures internal query state is always
  * persisted while respecting user-defined persistence preferences.
  */
@@ -362,22 +373,18 @@ function createBlendedPartialize<TData, TParams extends Record<string, unknown>,
   userPartialize: ((state: StoreState<TData, TParams> & U) => Partial<StoreState<TData, TParams> & U>) | undefined
 ) {
   return (state: S) => {
-    const internalStateToPersist = {
-      data: state.data,
-      enabled: state.enabled,
-      error: state.error,
-      lastFetchedAt: state.lastFetchedAt,
-      queryCache: state.queryCache,
-      status: state.status,
-    };
+    const internalStateToPersist: Partial<S> = {};
 
     for (const key in state) {
-      if (shouldDiscardInternalState(key)) delete state[key];
+      if (key in SHOULD_PERSIST_INTERNAL_STATE_MAP) {
+        if (SHOULD_PERSIST_INTERNAL_STATE_MAP[key]) internalStateToPersist[key] = state[key];
+        delete state[key];
+      }
     }
 
     return {
       ...(userPartialize ? userPartialize(state) : state),
       ...internalStateToPersist,
-    };
+    } satisfies Partial<S>;
   };
 }
