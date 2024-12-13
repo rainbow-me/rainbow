@@ -1,17 +1,14 @@
 {
   "images" : [
     {
-      "filename" : "scrollBadgeLargeDark.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "scrollBadgeLargeDark@2x.png",
-      "idiom" : "universal", 
+      "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "scrollBadgeLargeDark@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
