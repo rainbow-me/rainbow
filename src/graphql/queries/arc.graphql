@@ -514,8 +514,24 @@ mutation trackFeaturedResult(
   }
 }
 
-query trendingTokens($chainId: Int) {
-  trendingTokens(chainId: $chainId) {
+query trendingTokens(
+  $chainId: Int
+  $currency: String
+  $timeframe: Timeframe
+  $category: TrendingCategory
+  $sortBy: TrendingSort
+  $sortDirection: SortDirection
+  $walletAddress: String
+) {
+  trendingTokens(
+    chainId: $chainId
+    currency: $currency
+    timeframe: $timeframe
+    category: $category
+    sortBy: $sortBy
+    sortDirection: $sortDirection
+    walletAddress: $walletAddress
+  ) {
     data {
       colors {
         primary
@@ -563,6 +579,51 @@ query trendingTokens($chainId: Int) {
           date
         }
         updated_at
+      }
+      trending {
+        rank
+        trending_since
+        pool_data {
+          currency_used
+          reserve
+          m5_volume
+          h1_volume
+          h6_volume
+          h24_volume
+          m5_price_change
+          h1_price_change
+          h6_price_change
+          h24_price_change
+        }
+        swap_data {
+          currency_used
+          bought_stats {
+            unique_users
+            total_transactions
+            total_volume
+            farcaster_users {
+              fid
+              username
+              pfp_url
+              follower_count
+              following_count
+              power_badge
+            }
+          }
+          sold_stats {
+            unique_users
+            total_transactions
+            total_volume
+            farcaster_users {
+              fid
+              username
+              pfp_url
+              follower_count
+              following_count
+              power_badge
+            }
+          }
+        }
       }
       bridging {
         bridgeable
