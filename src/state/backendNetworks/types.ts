@@ -7,6 +7,7 @@ const HARDHAT_RPC_URL = 'http://127.0.0.1:8545/';
 export enum Network {
   apechain = 'apechain',
   arbitrum = 'arbitrum',
+  avalanche = 'avalanche',
   base = 'base',
   blast = 'blast',
   bsc = 'bsc',
