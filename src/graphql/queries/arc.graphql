@@ -595,6 +595,12 @@ query trendingTokens(
             }
           }
         }
+        pool_data {
+          h24_price_change
+          h6_price_change
+          h1_price_change
+          m5_price_change
+        }
       }
       bridging {
         bridgeable

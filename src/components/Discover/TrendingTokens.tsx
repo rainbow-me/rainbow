@@ -323,7 +323,6 @@ function TrendingTokenLoadingRow() {
 function TrendingTokenRow({ token }: { token: TrendingToken }) {
   const separatorColor = useForegroundColor('separator');
 
-  const isPositiveChange = token.priceChange > 0;
   const price = formatCurrency(token.price);
   const marketCap = formatNumber(token.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' });
   const volume = formatNumber(token.volume, { useOrderSuffix: true, decimals: 1, style: '$' });
@@ -406,19 +405,19 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
 
             <View style={{ gap: 12, marginLeft: 'auto' }}>
               <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center' }}>
-                <Text color={isPositiveChange ? 'green' : 'red'} size="11pt" weight="bold">
-                  {isPositiveChange ? '􀄨' : '􀄩'}
+                <Text color={token.priceChange.timeframe > 0 ? 'green' : 'red'} size="11pt" weight="bold">
+                  {token.priceChange.timeframe > 0 ? '􀄨' : '􀄩'}
                 </Text>
-                <Text color={isPositiveChange ? 'green' : 'red'} size="15pt" weight="bold">
-                  {formatNumber(token.priceChange, { decimals: 2, useOrderSuffix: true })}%
+                <Text color={token.priceChange.timeframe > 0 ? 'green' : 'red'} size="15pt" weight="bold">
+                  {formatNumber(token.priceChange.timeframe, { decimals: 2, useOrderSuffix: true })}%
                 </Text>
               </View>
               <View style={{ flexDirection: 'row', gap: 5, justifyContent: 'flex-end' }}>
                 <Text color="labelQuaternary" size="11pt" weight="bold">
                   1H
                 </Text>
-                <Text color={isPositiveChange ? 'green' : 'red'} size="11pt" weight="bold">
-                  {formatNumber(token.priceChange, { decimals: 2, useOrderSuffix: true })}%
+                <Text color={token.priceChange.hr > 0 ? 'green' : 'red'} size="11pt" weight="bold">
+                  {formatNumber(token.priceChange.hr, { decimals: 2, useOrderSuffix: true })}%
                 </Text>
               </View>
             </View>

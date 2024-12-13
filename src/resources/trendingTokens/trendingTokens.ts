@@ -21,7 +21,10 @@ export type TrendingToken = {
   symbol: string;
   decimals: number;
   price: number;
-  priceChange: number;
+  priceChange: {
+    hr: number;
+    timeframe: number;
+  };
   marketCap: number;
   volume: number;
   highlightedFriends: FarcasterUser[];
@@ -84,7 +87,14 @@ async function fetchTrendingTokens({
       symbol,
       decimals,
       price: market.price?.value || 0,
-      priceChange: market.price?.change_24h || 0,
+      priceChange: {
+        hr: trending.pool_data.h1_price_change || 0,
+        timeframe: {
+          H24: trending.pool_data.h24_price_change || 0,
+          D7: trending.pool_data.h24_price_change || 0, // TODO: WRONG TIMEFRAME DATA
+          D3: trending.pool_data.h24_price_change || 0, // TODO: WRONG TIMEFRAME DATA
+        }[timeframe],
+      },
       marketCap: market.market_cap?.value || 0,
       volume: market.volume_24h || 0,
       highlightedFriends,
