@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "sankoBadgeLargeDark.png",
+      "filename" : "sankoBadgeLarge.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "sankoBadgeLargeDark@2x.png",
-      "idiom" : "universal", 
+      "filename" : "sankoBadgeLarge@2x.png",
+      "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "sankoBadgeLargeDark@3x.png",
+      "filename" : "sankoBadgeLarge@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

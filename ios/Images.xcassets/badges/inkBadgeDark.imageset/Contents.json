@@ -1,17 +1,14 @@
 {
   "images" : [
     {
-      "filename" : "inkBadgeDark.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "inkBadgeDark@2x.png",
-      "idiom" : "universal", 
+      "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "inkBadgeDark@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
