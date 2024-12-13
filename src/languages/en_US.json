@@ -2994,31 +2994,35 @@
         "title": "No results",
         "body": "Try browsing a larger timeframe or a different network or category."
       },
+      "and_others": "and %{count} others",
       "filters": {
         "categories": {
-          "trending": "Trending",
-          "new": "New",
-          "farcaster": "Farcaster"
+          "TRENDING": "Trending",
+          "NEW": "New",
+          "FARCASTER": "Farcaster"
         },
         "sort": {
-          "sort": "Sort",
-          "volume": "Volume",
-          "market_cap": "Market Cap",
-          "top_gainers": "Top Gainers",
-          "top_losers": "Top Losers"
+          "RECOMMENDED": "Sort",
+          "VOLUME": "Volume",
+          "MARKET_CAP": "Market Cap",
+          "TOP_GAINERS": "Top Gainers",
+          "TOP_LOSERS": "Top Losers"
         },
         "time": {
-          "day": "24h",
-          "week": "1 Week",
-          "month": "1 Month"
+          "H12": "12h",
+          "H24": "24h",
+          "D7": "1 Week",
+          "D3": "1 Month"
         }
       }
     },
     "network_switcher": {
       "customize_networks_banner": {
         "title": "Customize Networks",
-        "description": "Tap the edit button below to set up"
+        "tap_the": "Tap the",
+        "button_to_set_up": "button below to set up"
       },
+      "drag_here_to_unpin": "Drag here to unpin networks",
       "edit": "Edit",
       "networks": "Networks",
       "drag_to_rearrange": "Drag to rearrange",

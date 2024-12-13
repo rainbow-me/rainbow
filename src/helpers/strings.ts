@@ -1,4 +1,7 @@
+import store from '@/redux/store';
 import { memoFn } from '../utils/memoFn';
+import { supportedNativeCurrencies } from '@/references';
+import { NativeCurrencyKey } from '@/entities';
 /**
  * @desc subtracts two numbers
  * @param  {String}   str
@@ -65,4 +68,62 @@ export function formatNumber(
     orderSuffix +
     (style === '%' ? '%' : '')
   );
+}
+
+type CurrencyFormatterOptions = {
+  decimals?: number;
+  valueIfNaN?: string;
+  currency?: NativeCurrencyKey;
+};
+
+const toSubscript = (str: string | number) => str.toString().replace(/[0-9]/g, num => String.fromCharCode(0x2080 + +num));
+
+/*
+  converts 6.9e-7 to 0.00000069
+*/
+const toDecimalString = (num: number): string => {
+  const [coefficient, exponent] = num.toExponential(20).split('e');
+  const exp = parseInt(exponent);
+  const digits = coefficient.replace('.', '').replace(/0+$/, '');
+
+  if (exp >= 0) {
+    const position = exp + 1;
+    if (position >= digits.length) return digits + '0'.repeat(position - digits.length);
+    return digits.slice(0, position) + (digits.slice(position) && '.' + digits.slice(position));
+  }
+  return '0.' + '0'.repeat(Math.abs(exp) - 1) + digits;
+};
+
+/*
+  formats a numeric string like 00000069 to 0₅69
+*/
+function formatFraction(fraction: string) {
+  const leadingZeros = fraction.match(/^[0]+/)?.[0].length || 0;
+  if (+fraction === 0) return '00';
+
+  const significantDigits = fraction.slice(leadingZeros, leadingZeros + 2);
+  if (+significantDigits === 0) return '00';
+
+  if (leadingZeros >= 4) return `0${toSubscript(leadingZeros - 1)}${significantDigits}`;
+  return significantDigits.replace(/0+$/, '');
+}
+
+export function formatCurrency(
+  value: string | number,
+  { valueIfNaN = '', currency = store.getState().settings.nativeCurrency }: CurrencyFormatterOptions = {}
+): string {
+  const numericString = typeof value === 'number' ? toDecimalString(value) : String(value);
+  if (isNaN(+numericString)) return valueIfNaN;
+
+  const currencySymbol = supportedNativeCurrencies[currency].symbol;
+
+  const [whole, fraction = '00'] = numericString.split('.');
+
+  const formattedWhole = formatNumber(whole, { decimals: 0, useOrderSuffix: true });
+  const formattedFraction = formatFraction(fraction);
+
+  // if it ends with a non-numeric character, it's in compact notation like '1.2K'
+  if (isNaN(+formattedWhole[formattedWhole.length - 1])) return `${currencySymbol}${formattedWhole}`;
+
+  return `${currencySymbol}${formattedWhole}.${formattedFraction}`;
 }

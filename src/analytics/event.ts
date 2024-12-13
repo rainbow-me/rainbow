@@ -9,7 +9,7 @@ import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
 import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
-import { TrendingTokens } from '@/resources/trendingTokens/trendingTokens';
+import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 
 /**
  * All events, used by `analytics.track()`
@@ -718,10 +718,10 @@ export type EventProperties = {
   };
 
   [event.viewTrendingToken]: {
-    address: TrendingTokens['trendingTokens']['data'][number]['address'];
-    chainId: TrendingTokens['trendingTokens']['data'][number]['chainId'];
-    symbol: TrendingTokens['trendingTokens']['data'][number]['symbol'];
-    name: TrendingTokens['trendingTokens']['data'][number]['name'];
+    address: TrendingToken['address'];
+    chainId: TrendingToken['chainId'];
+    symbol: TrendingToken['symbol'];
+    name: TrendingToken['name'];
     highlightedFriends: number;
   };
 

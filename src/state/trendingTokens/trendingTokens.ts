@@ -1,17 +1,30 @@
+import { analyticsV2 } from '@/analytics';
 import { ChainId } from '@/chains/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
-import { makeMutable, SharedValue } from 'react-native-reanimated';
-import { analyticsV2 } from '@/analytics';
+import {
+  TrendingCategory as ArcTrendingCategory,
+  Timeframe as ArcTimeframe,
+  TrendingSort as ArcTrendingSort,
+} from '@/graphql/__generated__/arc';
 
-export const categories = ['trending', 'new', 'farcaster'] as const;
-export const sortFilters = ['volume', 'market_cap', 'top_gainers', 'top_losers'] as const;
-export const timeFilters = ['day', 'week', 'month'] as const;
+export const categories = [ArcTrendingCategory.Trending, ArcTrendingCategory.New, ArcTrendingCategory.Farcaster] as const;
+export type TrendingCategory = (typeof categories)[number];
+export const sortFilters = [
+  ArcTrendingSort.Recommended,
+  ArcTrendingSort.Volume,
+  ArcTrendingSort.MarketCap,
+  ArcTrendingSort.TopGainers,
+  ArcTrendingSort.TopLosers,
+] as const;
+export type TrendingSort = (typeof sortFilters)[number];
+export const timeFilters = [ArcTimeframe.H24, ArcTimeframe.D7, ArcTimeframe.D3] as const;
+export type TrendingTimeframe = (typeof timeFilters)[number];
 
 type TrendingTokensState = {
-  category: 'trending' | 'new' | 'farcaster';
+  category: (typeof categories)[number];
   chainId: undefined | ChainId;
   timeframe: (typeof timeFilters)[number];
-  sort: (typeof sortFilters)[number] | undefined;
+  sort: (typeof sortFilters)[number];
 
   setCategory: (category: TrendingTokensState['category']) => void;
   setChainId: (chainId: TrendingTokensState['chainId']) => void;
@@ -21,10 +34,10 @@ type TrendingTokensState = {
 
 export const useTrendingTokensStore = createRainbowStore<TrendingTokensState>(
   set => ({
-    category: 'trending',
+    category: ArcTrendingCategory.Trending,
     chainId: undefined,
-    timeframe: 'day',
-    sort: 'volume',
+    timeframe: ArcTimeframe.H24,
+    sort: ArcTrendingSort.Recommended,
     setCategory: category => set({ category }),
     setChainId: chainId => {
       analyticsV2.track(analyticsV2.event.changeNetworkFilter, { chainId });
@@ -41,6 +54,6 @@ export const useTrendingTokensStore = createRainbowStore<TrendingTokensState>(
   }),
   {
     storageKey: 'trending-tokens',
-    version: 0,
+    version: 1,
   }
 );
