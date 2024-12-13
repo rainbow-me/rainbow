@@ -50,7 +50,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
   return (
     <Box paddingTop="20px" paddingBottom="28px" alignItems="center" justifyContent="center" paddingHorizontal="24px">
       {walletItems.length > 0 ? (
-        <DndProvider disabled={!editMode} activationDelay={150}>
+        <DndProvider disabled={!editMode} activationDelay={0}>
           <DraggableGrid
             direction="row"
             // TODO: design spec is 28px, but is too large
@@ -78,7 +78,12 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                       onPressMenuItem={action => onPressMenuItem(action, { address: account.address })}
                     >
                       {/* TODO: there is some issue with how the dropdown long press interacts with the button long press. Inconsistent behavior. */}
-                      <ButtonPressAnimation scaleTo={0.96} onPress={() => onPress(account.address)} minLongPressDuration={150}>
+                      <ButtonPressAnimation
+                        disallowInterruption
+                        scaleTo={0.96}
+                        onPress={() => onPress(account.address)}
+                        minLongPressDuration={150}
+                      >
                         {children}
                       </ButtonPressAnimation>
                     </DropdownMenu>
@@ -92,10 +97,41 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                           shouldRasterizeIOS
                         >
                           <Box
+                            width={{ custom: avatarSize }}
+                            height={{ custom: avatarSize }}
+                            background="blue"
+                            shadow={
+                              account.isSelected
+                                ? {
+                                    custom: {
+                                      ios: [
+                                        {
+                                          x: 0,
+                                          y: 10,
+                                          blur: 30,
+                                          opacity: 0.3,
+                                          color: 'blue',
+                                        },
+                                        {
+                                          x: 0,
+                                          y: 2,
+                                          blur: 6,
+                                          opacity: 0.02,
+                                          color: 'shadowFar',
+                                        },
+                                      ],
+                                      android: {
+                                        elevation: 30,
+                                        opacity: 0.3,
+                                        color: 'blue',
+                                      },
+                                    },
+                                  }
+                                : undefined
+                            }
                             borderRadius={avatarSize / 2}
                             borderWidth={account.isSelected ? 4 : undefined}
                             borderColor={account.isSelected ? { custom: '#268FFF' } : undefined}
-                            // shadow={'30px blue'}
                           >
                             <AddressAvatar
                               url={account.image}
@@ -110,7 +146,6 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                               <SelectedAddressBadge />
                             </Box>
                           )}
-                          {/* </ButtonPressAnimation> */}
                           {editMode && (
                             <ButtonPressAnimation onPress={() => removePinnedAddress(account.address)}>
                               <Box
@@ -135,16 +170,16 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                       </JiggleAnimation>
                       <Inline wrap={false} space="4px" alignHorizontal="center" alignVertical="center">
                         {account.isLedger && (
-                          <Text color="label" size="icon 10px">
+                          <Text color="labelTertiary" size="icon 10px">
                             􀤃
                           </Text>
                         )}
                         {account.isReadOnly && (
-                          <Text color="label" size="icon 10px">
+                          <Text color="labelTertiary" size="icon 10px">
                             􀋮
                           </Text>
                         )}
-                        <Text numberOfLines={1} color="label" size="13pt" weight="bold">
+                        <Text numberOfLines={1} ellipsizeMode="middle" color="label" size="13pt" weight="bold">
                           {account.label}
                         </Text>
                       </Inline>

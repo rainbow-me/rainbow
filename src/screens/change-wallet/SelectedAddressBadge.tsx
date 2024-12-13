@@ -1,7 +1,8 @@
 import React from 'react';
 import { Box, TextIcon } from '@/design-system';
+import { Shadow } from '@/design-system/layout/shadow';
 
-export function SelectedAddressBadge({ size = 22 }: { size?: number }) {
+export function SelectedAddressBadge({ size = 22, shadow = '12px' }: { size?: number; shadow?: Shadow }) {
   return (
     <Box
       width={{ custom: size }}
@@ -10,7 +11,7 @@ export function SelectedAddressBadge({ size = 22 }: { size?: number }) {
       background="blue"
       alignItems="center"
       justifyContent="center"
-      shadow="12px blue"
+      shadow={shadow}
     >
       <TextIcon color="label" size="icon 13px" weight="bold">
         􀆅

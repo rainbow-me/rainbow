@@ -13,8 +13,7 @@ import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { AddressAvatar } from '@/screens/change-wallet/AddressAvatar';
 import { SelectedAddressBadge } from '@/screens/change-wallet/SelectedAddressBadge';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
-import { haptics } from '@/utils';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { Icon } from '../icons';
 
 const ROW_HEIGHT_WITH_PADDING = 64;
 
@@ -81,10 +80,12 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
     () => ({
       pointerEvents: 'none' as const,
       style: {
-        borderRadius: 12,
-        height: 22,
+        borderRadius: 22,
         justifyContent: 'center',
         paddingHorizontal: 8,
+        paddingVertical: 6,
+        borderWidth: 1,
+        borderColor: colors.alpha('#F5F8FF', 0.03),
       } as const,
       colors: [colors.alpha(colors.blueGreyDark, 0.03), colors.alpha(colors.blueGreyDark, isDarkMode ? 0.02 : 0.06)],
       end: { x: 1, y: 1 },
@@ -119,16 +120,21 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
           <Columns alignVertical="center" space="12px">
             {editMode && (
               <Column width="content">
-                <TextIcon color="labelTertiary" size="icon 14px" weight="heavy">
-                  􀍠
-                </TextIcon>
+                {/* Fix on light mode */}
+                <Icon name="dragHandler" color={'rgba(255, 255, 255, 0.1)'} />
               </Column>
             )}
             <Column width="content">
               <AddressAvatar url={image} size={40} address={address} color={color} label={walletName} />
             </Column>
             <Stack space="10px">
-              <Text numberOfLines={1} color="label" size="17pt" weight="medium" testID={`change-wallet-address-row-label-${walletName}`}>
+              <Text
+                numberOfLines={1}
+                color={isSelected ? 'blue' : 'label'}
+                size="17pt"
+                weight="medium"
+                testID={`change-wallet-address-row-label-${walletName}`}
+              >
                 {walletName}
               </Text>
               <Text numberOfLines={1} color="labelQuaternary" size="13pt" weight="bold">
@@ -137,21 +143,36 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
             </Stack>
             <Column width="content" style={{ backgroundColor: 'transparent' }}>
               <Inline space="10px" alignVertical="center">
-                {isReadOnly && (
-                  <LinearGradient {...linearGradientProps}>
-                    <Text color="labelTertiary" size="13pt" weight="bold">
-                      {i18n.t(i18n.l.wallet.change_wallet.watching)}
+                {isReadOnly &&
+                  (!editMode ? (
+                    <LinearGradient {...linearGradientProps}>
+                      <Text color="labelTertiary" size="13pt" weight="bold">
+                        {i18n.t(i18n.l.wallet.change_wallet.watching)}
+                      </Text>
+                    </LinearGradient>
+                  ) : (
+                    <Text color="labelTertiary" size="11pt" weight="bold">
+                      􀋮
                     </Text>
-                  </LinearGradient>
-                )}
-                {isLedger && (
-                  <LinearGradient {...linearGradientProps}>
-                    <Text color="labelTertiary" size="13pt" weight="bold">
-                      {i18n.t(i18n.l.wallet.change_wallet.ledger)}
+                  ))}
+                {isLedger &&
+                  (!editMode ? (
+                    <LinearGradient {...linearGradientProps}>
+                      <Inline space="4px" alignVertical="center">
+                        <Text color="labelTertiary" size="11pt" weight="bold">
+                          􀤃
+                        </Text>
+                        <Text color="labelTertiary" size="13pt" weight="bold">
+                          {i18n.t(i18n.l.wallet.change_wallet.ledger)}
+                        </Text>
+                      </Inline>
+                    </LinearGradient>
+                  ) : (
+                    <Text color="labelTertiary" size="11pt" weight="bold">
+                      􀤃
                     </Text>
-                  </LinearGradient>
-                )}
-                {!editMode && isSelected && <SelectedAddressBadge />}
+                  ))}
+                {!editMode && isSelected && <SelectedAddressBadge shadow="12px blue" />}
                 {editMode && (
                   <AddressRowButton onPress={() => addPinnedAddress(address)} color={colors.appleBlue} icon="􀎧" size="icon 12px" />
                 )}

@@ -629,7 +629,9 @@ export default function ChangeWalletSheet() {
                     {ownedWalletsTotalBalance}
                   </Text>
                 </Stack>
-              ) : null}
+              ) : (
+                <Box />
+              )}
               <ButtonPressAnimation onPress={onPressAddAnotherWallet}>
                 <Box
                   background="blue"
