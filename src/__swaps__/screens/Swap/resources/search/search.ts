@@ -12,7 +12,7 @@ import { parseTokenSearch } from './utils';
 const ALL_VERIFIED_TOKENS_PARAM = '/?list=verifiedAssets';
 
 const tokenSearchHttp = new RainbowFetchClient({
-  baseURL: 'https://token-search.rainbow.me/v2',
+  baseURL: 'https://token-search.rainbow.me/v3/tokens',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -83,6 +83,7 @@ async function tokenSearchQueryFunction({
         return parseTokenSearch(tokenSearch.data.data, chainId);
       }
 
+      // search for address on other chains
       const allVerifiedTokens = await tokenSearchHttp.get<{ data: SearchAsset[] }>(ALL_VERIFIED_TOKENS_PARAM);
 
       const addressQuery = query.trim().toLowerCase();
