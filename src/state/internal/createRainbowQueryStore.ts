@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { StateCreator, StoreApi, UseBoundStore, create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { IS_DEV } from '@/env';
@@ -31,7 +29,7 @@ interface CacheEntry<TData> {
 /**
  * The base store state including query-related fields and actions.
  */
-type StoreState<TData, TParams extends Record<string, any>> = {
+type StoreState<TData, TParams extends Record<string, unknown>> = {
   data: TData | null;
   enabled: boolean;
   error: Error | null;
@@ -46,9 +44,14 @@ type StoreState<TData, TParams extends Record<string, any>> = {
 };
 
 /**
+ * The keys that make up the internal state of the store.
+ */
+type InternalStateKey = keyof StoreState<unknown, Record<string, unknown>>;
+
+/**
  * A specialized store interface combining Zustand's store API with remote fetching.
  */
-export interface QueryStore<TData, TParams extends Record<string, any>, S extends StoreState<TData, TParams>>
+export interface QueryStore<TData, TParams extends Record<string, unknown>, S extends StoreState<TData, TParams>>
   extends UseBoundStore<StoreApi<S>> {
   enabled: boolean;
   fetch: (params?: TParams, options?: FetchOptions) => Promise<void>;
@@ -60,7 +63,7 @@ export interface QueryStore<TData, TParams extends Record<string, any>, S extend
 /**
  * Configuration options for creating a remote-enabled Rainbow store.
  */
-type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string, any>, TData, S extends StoreState<TData, TParams>> = {
+type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string, unknown>, TData, S extends StoreState<TData, TParams>> = {
   fetcher: (params: TParams) => TQueryFnData | Promise<TQueryFnData>;
   onFetched?: (data: TData, store: QueryStore<TData, TParams, S>) => void;
   transform?: (data: TQueryFnData) => TData;
@@ -77,6 +80,8 @@ const TWO_MINUTES = 1000 * 60 * 2;
 const FIVE_SECONDS = 1000 * 5;
 const MIN_STALE_TIME = FIVE_SECONDS;
 
+const DISCARDABLE_INTERNAL_STATE: InternalStateKey[] = ['fetch', 'isDataExpired', 'isStale', 'reset', 'subscriptionCount'];
+
 /**
  * Creates a remote-enabled Rainbow store with data fetching capabilities.
  * @template TQueryFnData - The raw data type returned by the fetcher
@@ -86,7 +91,7 @@ const MIN_STALE_TIME = FIVE_SECONDS;
  */
 export function createRainbowQueryStore<
   TQueryFnData,
-  TParams extends Record<string, any> = Record<string, any>,
+  TParams extends Record<string, unknown> = Record<string, unknown>,
   U = unknown,
   TData = TQueryFnData,
 >(
@@ -320,8 +325,15 @@ export function createRainbowQueryStore<
     };
   };
 
+  const combinedPersistConfig = persistConfig
+    ? {
+        ...persistConfig,
+        partialize: createBlendedPartialize(persistConfig.partialize),
+      }
+    : undefined;
+
   const baseStore = persistConfig?.storageKey
-    ? createRainbowStore<StoreState<TData, TParams> & U>(createState, persistConfig)
+    ? createRainbowStore<StoreState<TData, TParams> & U>(createState, combinedPersistConfig)
     : create<StoreState<TData, TParams> & U>()(subscribeWithSelector(createState));
 
   const queryCapableStore: QueryStore<TData, TParams, S> = Object.assign(baseStore, {
@@ -333,4 +345,39 @@ export function createRainbowQueryStore<
   });
 
   return queryCapableStore;
+}
+
+/**
+ * Checks whether a state key is internal and should be discarded from persistence.
+ */
+function shouldDiscardInternalState(key: InternalStateKey | string): key is InternalStateKey {
+  return DISCARDABLE_INTERNAL_STATE.includes(key as InternalStateKey);
+}
+
+/**
+ * Creates a combined partialize function that ensures internal query state is always
+ * persisted while respecting user-defined persistence preferences.
+ */
+function createBlendedPartialize<TData, TParams extends Record<string, unknown>, S extends StoreState<TData, TParams> & U, U = unknown>(
+  userPartialize: ((state: StoreState<TData, TParams> & U) => Partial<StoreState<TData, TParams> & U>) | undefined
+) {
+  return (state: S) => {
+    const internalStateToPersist = {
+      data: state.data,
+      enabled: state.enabled,
+      error: state.error,
+      lastFetchedAt: state.lastFetchedAt,
+      queryCache: state.queryCache,
+      status: state.status,
+    };
+
+    for (const key in state) {
+      if (shouldDiscardInternalState(key)) delete state[key];
+    }
+
+    return {
+      ...(userPartialize ? userPartialize(state) : state),
+      ...internalStateToPersist,
+    };
+  };
 }
