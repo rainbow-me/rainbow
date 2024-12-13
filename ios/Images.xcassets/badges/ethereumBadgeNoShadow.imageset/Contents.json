@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "ethereumBadgeDark.png",
+      "filename" : "ethereumBadgeNoShadow.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "ethereumBadgeDark@2x.png",
+      "filename" : "ethereumBadgeNoShadow@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "ethereumBadgeDark@3x.png",
+      "filename" : "ethereumBadgeNoShadow@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
