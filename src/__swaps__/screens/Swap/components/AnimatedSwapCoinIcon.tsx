@@ -148,7 +148,7 @@ export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
         />
       </Animated.View>
 
-      {showBadge && <AnimatedChainImage assetType={assetType} size={16} />}
+      {showBadge && <AnimatedChainImage assetType={assetType} size={20} />}
     </View>
   );
 });

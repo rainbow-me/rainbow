@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
@@ -8,42 +8,7 @@ import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { globalColors } from '@/design-system';
 import { useSwapContext } from '../providers/swap-provider';
 import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
-
-import ApechainBadge from '@/assets/badges/apechain.png';
-import ArbitrumBadge from '@/assets/badges/arbitrum.png';
-import AvalancheBadge from '@/assets/badges/avalanche.png';
-import BaseBadge from '@/assets/badges/base.png';
-import BlastBadge from '@/assets/badges/blast.png';
-import BscBadge from '@/assets/badges/bsc.png';
-import DegenBadge from '@/assets/badges/degen.png';
-import EthereumBadge from '@/assets/badges/ethereum.png';
-import OptimismBadge from '@/assets/badges/optimism.png';
-import PolygonBadge from '@/assets/badges/polygon.png';
-import ZoraBadge from '@/assets/badges/zora.png';
-
-const networkBadges = {
-  [ChainId.apechain]: Image.resolveAssetSource(ApechainBadge).uri,
-  [ChainId.arbitrum]: Image.resolveAssetSource(ArbitrumBadge).uri,
-  [ChainId.arbitrumSepolia]: Image.resolveAssetSource(ArbitrumBadge).uri,
-  [ChainId.avalanche]: Image.resolveAssetSource(AvalancheBadge).uri,
-  [ChainId.avalancheFuji]: Image.resolveAssetSource(AvalancheBadge).uri,
-  [ChainId.base]: Image.resolveAssetSource(BaseBadge).uri,
-  [ChainId.baseSepolia]: Image.resolveAssetSource(BaseBadge).uri,
-  [ChainId.blast]: Image.resolveAssetSource(BlastBadge).uri,
-  [ChainId.blastSepolia]: Image.resolveAssetSource(BlastBadge).uri,
-  [ChainId.bsc]: Image.resolveAssetSource(BscBadge).uri,
-  [ChainId.bscTestnet]: Image.resolveAssetSource(BscBadge).uri,
-  [ChainId.degen]: Image.resolveAssetSource(DegenBadge).uri,
-  [ChainId.holesky]: Image.resolveAssetSource(EthereumBadge).uri,
-  [ChainId.mainnet]: Image.resolveAssetSource(EthereumBadge).uri,
-  [ChainId.optimism]: Image.resolveAssetSource(OptimismBadge).uri,
-  [ChainId.optimismSepolia]: Image.resolveAssetSource(OptimismBadge).uri,
-  [ChainId.polygon]: Image.resolveAssetSource(PolygonBadge).uri,
-  [ChainId.polygonAmoy]: Image.resolveAssetSource(PolygonBadge).uri,
-  [ChainId.sepolia]: Image.resolveAssetSource(EthereumBadge).uri,
-  [ChainId.zora]: Image.resolveAssetSource(ZoraBadge).uri,
-  [ChainId.zoraSepolia]: Image.resolveAssetSource(ZoraBadge).uri,
-};
+import { getChainsBadgeWorklet, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export function AnimatedChainImage({
   assetType,
@@ -54,6 +19,7 @@ export function AnimatedChainImage({
   showMainnetBadge?: boolean;
   size?: number;
 }) {
+  const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
   const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
   const url = useDerivedValue(() => {
@@ -63,7 +29,7 @@ export function AnimatedChainImage({
     let url = 'eth';
 
     if (chainId !== undefined && !(!showMainnetBadge && chainId === ChainId.mainnet)) {
-      url = networkBadges[chainId];
+      url = getChainsBadgeWorklet(backendNetworks)[chainId];
     }
     return url;
   });

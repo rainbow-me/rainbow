@@ -23,7 +23,6 @@ import { useTheme } from '@/theme';
 import { changeAccount, disconnectSession } from '@/walletConnect';
 import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
@@ -216,11 +215,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
                             borderRadius: 30,
                           }}
                         >
-                          {chainId !== ChainId.mainnet ? (
-                            <ChainBadge chainId={chainId} position="relative" size="small" />
-                          ) : (
-                            <EthCoinIcon size={20} />
-                          )}
+                          <ChainBadge chainId={chainId} position="relative" size="small" />
                         </Box>
                       );
                     })}

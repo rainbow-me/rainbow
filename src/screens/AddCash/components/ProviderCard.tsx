@@ -15,7 +15,6 @@ import { FiatProviderName } from '@/entities/f2c';
 import { convertAPINetworkToInternalChainIds } from '@/screens/AddCash/utils';
 import { ProviderConfig, CalloutType, PaymentMethod } from '@/screens/AddCash/types';
 import * as i18n from '@/languages';
-import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { ChainId } from '@/state/backendNetworks/types';
 
 type PaymentMethodConfig = {
@@ -94,7 +93,7 @@ function NetworkIcons({ chainIds }: { chainIds?: ChainId[] }) {
               borderRadius: 30,
             }}
           >
-            {chainId !== ChainId.mainnet ? <ChainBadge chainId={chainId} position="relative" size="small" /> : <EthCoinIcon size={20} />}
+            <ChainBadge chainId={chainId} position="relative" size="small" />
           </Box>
         );
       })}
@@ -225,10 +224,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
                       : i18n.t(i18n.l.wallet.add_cash_v2.network_title);
                   content = (
                     <Box flexDirection="row" alignItems="center" paddingTop="8px">
-                      <NetworkIcons
-                        /* @ts-ignore */
-                        chainIds={callout.networks.map(convertAPINetworkToInternalChainIds).filter(Boolean)}
-                      />
+                      <NetworkIcons chainIds={callout.networks.map(convertAPINetworkToInternalChainIds).filter(Boolean)} />
                     </Box>
                   );
                 }

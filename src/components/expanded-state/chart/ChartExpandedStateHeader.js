@@ -112,8 +112,7 @@ export default function ChartExpandedStateHeader({
           icon={asset?.icon_url}
           chainId={asset?.chainId}
           symbol={asset?.symbol}
-          theme={theme}
-          colors={asset?.colors}
+          color={asset?.colors?.primary || asset?.colors?.fallback || undefined}
         />
 
         <ChartContextButton asset={asset} color={color} />

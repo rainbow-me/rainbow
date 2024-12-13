@@ -90,8 +90,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
                     icon={assetData?.icon_url}
                     chainId={assetData?.chainId || ChainId.mainnet}
                     symbol={assetData?.symbol || ''}
-                    theme={theme}
-                    colors={assetData?.colors}
+                    color={assetData?.colors?.primary || assetData?.colors?.fallback || undefined}
                   />
                 )
               }

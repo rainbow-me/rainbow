@@ -33,7 +33,6 @@ type Props = {
 export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, isConcentratedLiquidity, dappVersion }) => {
   const { colors } = useTheme();
   const { nativeCurrency } = useAccountSettings();
-  const theme = useTheme();
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
   const totalAssetsValueNative = convertRawAmountToNativeDisplay(totalAssetsValue, 0, 1, nativeCurrency);
@@ -75,8 +74,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
             icon={assets[0].asset.icon_url ?? undefined}
             chainId={assets[0].asset.chain_id}
             symbol={assets[0].asset.symbol}
-            theme={theme}
-            colors={assets[0].asset.colors}
+            color={assets[0].asset.colors?.primary || assets[0].asset.colors?.fallback || undefined}
           />
         )}
         {/* TODO: add three+ coins icon */}

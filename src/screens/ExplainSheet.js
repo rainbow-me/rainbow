@@ -2,7 +2,7 @@
 import { useRoute } from '@react-navigation/native';
 import * as lang from '@/languages';
 import React, { useCallback, useMemo } from 'react';
-import { Linking, View } from 'react-native';
+import { Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChainBadge, DashedWrapper } from '../components/coin-icon';
 import { Centered, Column, ColumnWithMargins, Row, RowWithMargins } from '../components/layout';
@@ -18,11 +18,8 @@ import { ethereumUtils, gasUtils } from '@/utils';
 import { buildRainbowLearnUrl } from '@/utils/buildRainbowUrl';
 import { cloudPlatformAccountName } from '@/utils/platform';
 import { useTheme } from '@/theme';
-import { isL2Chain } from '@/handlers/web3';
 import { IS_ANDROID } from '@/env';
-import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const { GAS_TRENDS } = gasUtils;
@@ -241,11 +238,7 @@ export const explainers = (params, theme) => {
             inputToken: params?.inputToken,
             outputToken: params?.outputToken,
           }),
-      logo: !isL2Chain({ chainId: fromChainId }) ? (
-        <EthCoinIcon size={40} />
-      ) : (
-        <ChainBadge chainId={fromChainId} marginBottom={8} position="relative" size="large" />
-      ),
+      logo: <ChainBadge chainId={fromChainId} marginBottom={8} position="relative" size="large" />,
     },
     floor_price: {
       emoji: '📊',
@@ -260,8 +253,7 @@ export const explainers = (params, theme) => {
           icon={params?.nativeAsset?.icon_url}
           symbol={params?.nativeAsset?.symbol}
           chainId={chainId}
-          colors={params?.nativeAsset?.colors}
-          theme={theme}
+          color={params?.nativeAsset?.colors?.primary || params?.nativeAsset?.colors?.fallback || undefined}
         />
       ),
       extraHeight: 2,
@@ -439,12 +431,7 @@ export const explainers = (params, theme) => {
       extraHeight: -90,
       text: SWAP_RESET_EXPLAINER,
       title: `Switching to ${chainsLabel[chainId]}`,
-      logo:
-        chainId !== ChainId.mainnet ? (
-          <ChainBadge chainId={chainId} marginBottom={8} position="relative" size="large" />
-        ) : (
-          <EthCoinIcon size={40} />
-        ),
+      logo: <ChainBadge chainId={chainId} marginBottom={8} position="relative" size="large" />,
     },
     f2cSemiSupportedAssetPurchased: {
       emoji: '🎉',
@@ -490,8 +477,7 @@ export const explainers = (params, theme) => {
             icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
             chainId={params?.inputCurrency?.chainId}
-            colors={params?.inputCurrency?.colors}
-            theme={theme}
+            color={params?.inputCurrency?.colors?.primary || params?.inputCurrency?.colors?.fallback || undefined}
           />
         </RowWithMargins>
       ),
@@ -546,8 +532,7 @@ export const explainers = (params, theme) => {
             icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
             chainId={params?.inputCurrency?.chainId}
-            colors={params?.inputCurrency?.colors}
-            theme={theme}
+            color={params?.inputCurrency?.colors?.primary || params?.inputCurrency?.colors?.fallback || undefined}
           />
           <DoubleChevron />
           <RainbowCoinIcon
@@ -555,8 +540,7 @@ export const explainers = (params, theme) => {
             icon={params?.outputCurrency?.icon_url}
             symbol={params?.outputCurrency?.symbol}
             chainId={params?.outputCurrency?.chainId}
-            colors={params?.outputCurrency?.colors}
-            theme={theme}
+            color={params?.outputCurrency?.colors?.primary || params?.outputCurrency?.colors?.fallback || undefined}
           />
         </RowWithMargins>
       ),
@@ -572,8 +556,7 @@ export const explainers = (params, theme) => {
             icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
             chainId={params?.inputCurrency?.chainId}
-            colors={params?.inputCurrency?.colors}
-            theme={theme}
+            color={params?.inputCurrency?.colors?.primary || params?.inputCurrency?.colors?.fallback || undefined}
           />
           <DoubleChevron />
           <RainbowCoinIcon
@@ -581,8 +564,7 @@ export const explainers = (params, theme) => {
             icon={params?.outputCurrency?.icon_url}
             symbol={params?.outputCurrency?.symbol}
             chainId={params?.outputCurrency?.chainId}
-            colors={params?.outputCurrency?.colors}
-            theme={theme}
+            color={params?.outputCurrency?.colors?.primary || params?.outputCurrency?.colors?.fallback || undefined}
           />
         </RowWithMargins>
       ),
@@ -618,13 +600,7 @@ export const explainers = (params, theme) => {
                 width={{ custom: 40 }}
                 zIndex={params?.chainIds?.length - index}
               >
-                {chainId !== ChainId.mainnet ? (
-                  <ChainBadge chainId={chainId} position="relative" size="large" />
-                ) : (
-                  <View style={{ marginTop: 4 }}>
-                    <EthCoinIcon size={40} />
-                  </View>
-                )}
+                <ChainBadge chainId={chainId} position="relative" size="large" />
               </Box>
             );
           })}
@@ -736,9 +712,8 @@ export const explainers = (params, theme) => {
             icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
             chainId={params?.nativeAsset?.chainId}
-            colors={params?.nativeAssety?.colors}
-            theme={theme}
-            ignoreBadge
+            color={params?.nativeAsset?.colors?.primary || params?.nativeAsset?.colors?.fallback || undefined}
+            showBadge={false}
           />
         </DashedWrapper>
       ),
@@ -774,9 +749,8 @@ export const explainers = (params, theme) => {
             icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
             chainId={params?.nativeAsset?.chainId}
-            colors={params?.nativeAsset?.colors}
-            theme={theme}
-            ignoreBadge
+            color={params?.nativeAsset?.colors?.primary || params?.nativeAsset?.colors?.fallback || undefined}
+            showBadge={false}
           />
         </DashedWrapper>
       ),
@@ -813,8 +787,7 @@ export const explainers = (params, theme) => {
             icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
             chainId={params?.nativeAsset?.chainId}
-            colors={params?.nativeAsset?.colors}
-            theme={theme}
+            color={params?.nativeAsset?.colors?.primary || params?.nativeAsset?.colors?.fallback || undefined}
           />
         </DashedWrapper>
       ),

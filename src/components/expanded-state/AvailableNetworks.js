@@ -12,8 +12,6 @@ import { Column, Row } from '../layout';
 import { ChainBadge } from '../coin-icon';
 import Divider from '@/components/Divider';
 import { Text } from '../text';
-import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, marginHorizontal = 19, prominent }) => {
@@ -66,11 +64,7 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, 
                   width={{ custom: 22 }}
                   zIndex={availableChainIds?.length - index}
                 >
-                  {chainId !== ChainId.mainnet ? (
-                    <ChainBadge chainId={chainId} position="relative" size="small" />
-                  ) : (
-                    <EthCoinIcon size={20} />
-                  )}
+                  <ChainBadge chainId={chainId} position="relative" size="small" />
                 </Box>
               );
             })}

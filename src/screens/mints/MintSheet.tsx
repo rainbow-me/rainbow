@@ -49,7 +49,6 @@ import { RainbowError, logger } from '@/logger';
 import { QuantityButton } from './components/QuantityButton';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { getNextNonce } from '@/state/nonces';
@@ -704,11 +703,8 @@ const MintSheet = () => {
                   value={
                     <Inset vertical={{ custom: -4 }}>
                       <Inline space="4px" alignVertical="center" alignHorizontal="right">
-                        {chainId === ChainId.mainnet ? (
-                          <EthCoinIcon size={16} />
-                        ) : (
-                          <ChainBadge chainId={chainId} position="relative" size="small" forceDark={true} />
-                        )}
+                        <ChainBadge chainId={chainId} position="relative" size="tiny" />
+
                         <Text color="labelSecondary" align="right" size="17pt" weight="medium">
                           {`${useBackendNetworksStore.getState().getDefaultChains()[chainId].name}`}
                         </Text>

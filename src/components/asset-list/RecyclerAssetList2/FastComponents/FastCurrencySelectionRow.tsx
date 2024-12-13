@@ -123,8 +123,7 @@ export default React.memo(function FastCurrencySelectionRow({
               icon={item?.iconUrl || ''}
               chainId={chainId}
               symbol={item?.symbol || symbol}
-              theme={theme}
-              colors={item?.colors || undefined}
+              color={item?.colors?.primary || item?.colors?.fallback || undefined}
             />
           </View>
           <View style={sx.innerContainer}>

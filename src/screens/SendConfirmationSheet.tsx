@@ -328,6 +328,7 @@ export const SendConfirmationSheet = () => {
   }, [
     accountAddress,
     asset,
+    chainId,
     checkboxes,
     ensProfile?.data?.coinAddresses,
     ensProfile?.data?.contenthash,
@@ -513,8 +514,7 @@ export const SendConfirmationSheet = () => {
                       icon={asset?.icon_url}
                       chainId={asset?.chainId}
                       symbol={asset?.symbol || ''}
-                      theme={theme}
-                      colors={asset?.colors}
+                      color={asset?.colors?.primary || asset?.colors?.fallback || undefined}
                     />
                   )}
                 </Row>
@@ -592,7 +592,6 @@ export const SendConfirmationSheet = () => {
               <Stack space="19px (Deprecated)">
                 {isL2 && (
                   <Fragment>
-                    {/* @ts-expect-error JavaScript component */}
                     <L2Disclaimer
                       chainId={asset.chainId}
                       colors={theme.colors}

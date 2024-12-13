@@ -170,8 +170,7 @@ function CurrencyTile({
                 icon={asset?.icon_url}
                 chainId={asset?.chainId || ChainId.mainnet}
                 symbol={asset?.symbol || ''}
-                theme={theme}
-                colors={asset?.colors}
+                color={asset?.colors?.primary || asset?.colors?.fallback || undefined}
               />
             ) : (
               <>

@@ -1,8 +1,8 @@
 import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { CoinIconIndicator } from '../../../../components/coin-icon';
-import { Icon } from '../../../../components/icons';
-import { ButtonPressAnimation } from '../../../animations';
+import { CoinIconIndicator } from '@/components/coin-icon';
+import { Icon } from '@/components/icons';
+import { ButtonPressAnimation } from '@/components/animations';
 
 import { ExtendedState } from '../core/RawRecyclerList';
 
@@ -100,12 +100,11 @@ const MemoizedBalanceCoinRow = React.memo(
           <View style={[sx.container]}>
             <View style={sx.iconContainer}>
               <RainbowCoinIcon
-                size={40}
                 icon={item?.icon_url}
                 chainId={chainId}
                 symbol={item?.symbol || ''}
-                theme={theme}
-                colors={item?.colors}
+                color={item?.colors?.primary || item?.colors?.fallback || undefined}
+                showBadge={chainId !== ChainId.mainnet}
               />
             </View>
 

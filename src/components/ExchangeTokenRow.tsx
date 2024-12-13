@@ -62,8 +62,7 @@ export default React.memo(function ExchangeTokenRow({
                   icon={item?.icon_url || ''}
                   chainId={chainId}
                   symbol={item?.symbol || symbol}
-                  theme={theme}
-                  colors={item?.colors || undefined}
+                  color={item?.colors?.primary || item?.colors?.fallback || undefined}
                 />
               </View>
             </Column>

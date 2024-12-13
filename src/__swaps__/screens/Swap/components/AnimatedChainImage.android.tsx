@@ -2,46 +2,11 @@
 import React, { useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
-const ApechainBadge = require('@/assets/badges/apechain.png');
-const ArbitrumBadge = require('@/assets/badges/arbitrum.png');
-const AvalancheBadge = require('@/assets/badges/avalanche.png');
-const BaseBadge = require('@/assets/badges/base.png');
-const BlastBadge = require('@/assets/badges/blast.png');
-const BscBadge = require('@/assets/badges/bsc.png');
-const DegenBadge = require('@/assets/badges/degen.png');
-const EthereumBadge = require('@/assets/badges/ethereum.png');
-const OptimismBadge = require('@/assets/badges/optimism.png');
-const PolygonBadge = require('@/assets/badges/polygon.png');
-const ZoraBadge = require('@/assets/badges/zora.png');
-
 import { ChainId } from '@/state/backendNetworks/types';
 import { globalColors } from '@/design-system';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-
-const networkBadges = {
-  [ChainId.apechain]: ApechainBadge,
-  [ChainId.arbitrum]: ArbitrumBadge,
-  [ChainId.arbitrumSepolia]: ArbitrumBadge,
-  [ChainId.avalanche]: AvalancheBadge,
-  [ChainId.avalancheFuji]: AvalancheBadge,
-  [ChainId.base]: BaseBadge,
-  [ChainId.baseSepolia]: BaseBadge,
-  [ChainId.blast]: BlastBadge,
-  [ChainId.blastSepolia]: BlastBadge,
-  [ChainId.bsc]: BscBadge,
-  [ChainId.bscTestnet]: BscBadge,
-  [ChainId.degen]: DegenBadge,
-  [ChainId.holesky]: EthereumBadge,
-  [ChainId.mainnet]: EthereumBadge,
-  [ChainId.optimism]: OptimismBadge,
-  [ChainId.optimismSepolia]: OptimismBadge,
-  [ChainId.polygon]: PolygonBadge,
-  [ChainId.polygonAmoy]: PolygonBadge,
-  [ChainId.sepolia]: EthereumBadge,
-  [ChainId.zora]: ZoraBadge,
-  [ChainId.zoraSepolia]: ZoraBadge,
-};
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export function AnimatedChainImage({
   assetType,
@@ -58,7 +23,7 @@ export function AnimatedChainImage({
     let source = { uri: '' };
 
     if (chainIdState !== undefined && !(!showMainnetBadge && chainIdState === ChainId.mainnet)) {
-      source = networkBadges[chainIdState];
+      source = { uri: useBackendNetworksStore.getState().getChainsBadge()[chainIdState] };
     } else {
       source = { uri: '' };
     }

@@ -1,7 +1,6 @@
 import React from 'react';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Bleed, Box, globalColors, Text, TextShadow, useColorMode } from '@/design-system';
-import { useTheme } from '@/theme';
 import { View } from 'react-native';
 import { IS_IOS } from '@/env';
 import { ShimmerAnimation } from '@/components/animations';
@@ -18,7 +17,6 @@ export function ClaimValueDisplay({
   chainId: number | undefined;
 }) {
   const { isDarkMode } = useColorMode();
-  const theme = useTheme();
 
   return (
     <Bleed vertical={{ custom: 4.5 }}>
@@ -36,7 +34,7 @@ export function ClaimValueDisplay({
                 : {}
             }
           >
-            <RainbowCoinIcon size={40} icon={tokenIconUrl} chainId={chainId} symbol={tokenSymbol} theme={theme} colors={undefined} />
+            <RainbowCoinIcon size={40} icon={tokenIconUrl} chainId={chainId} symbol={tokenSymbol} />
           </View>
           {label ? (
             <TextShadow blur={12} color={globalColors.grey100} shadowOpacity={0.1} y={4}>

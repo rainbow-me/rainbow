@@ -132,9 +132,8 @@ export function CollectionCell({ collection }: { collection: MintableCollection 
               size={12}
               chainId={collection.chainId}
               symbol={currency?.symbol || ''}
-              theme={theme}
-              colors={currency?.colors}
-              ignoreBadge
+              color={currency?.colors?.primary || currency?.colors?.fallback || undefined}
+              showBadge={false}
             />
           </View>
         )}

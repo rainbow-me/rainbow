@@ -24,7 +24,6 @@ import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import { gasUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
-import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ThemeContextProps, useTheme } from '@/theme';
@@ -478,11 +477,7 @@ const GasSpeedButton = ({
                       type: 'timing',
                     }}
                   >
-                    {chainId === ChainId.mainnet ? (
-                      <EthCoinIcon size={18} />
-                    ) : (
-                      <ChainBadge chainId={chainId} size="gas" position="relative" />
-                    )}
+                    <ChainBadge chainId={chainId} size="tiny" position="relative" />
                   </MotiView>
                 )}
               </AnimatePresence>
