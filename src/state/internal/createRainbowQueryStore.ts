@@ -80,24 +80,23 @@ const TWO_MINUTES = 1000 * 60 * 2;
 const FIVE_SECONDS = 1000 * 5;
 const MIN_STALE_TIME = FIVE_SECONDS;
 
-/**
- * A map of internal state keys to whether they should be included in the persisted state.
- */
-const SHOULD_PERSIST_INTERNAL_STATE_MAP: Record<string, boolean> = {
-  /* State to persist */
-  data: true,
-  enabled: true,
-  error: true,
-  lastFetchedAt: true,
-  queryCache: true,
-  status: true,
+const [persist, discard] = [true, false];
 
-  /* State and methods to discard */
-  fetch: false,
-  isDataExpired: false,
-  isStale: false,
-  reset: false,
-  subscriptionCount: false,
+const SHOULD_PERSIST_INTERNAL_STATE_MAP: Record<string, boolean> = {
+  /* Internal state to persist if the store is persisted */
+  data: persist,
+  enabled: persist,
+  error: persist,
+  lastFetchedAt: persist,
+  queryCache: persist,
+  status: persist,
+
+  /* Internal state and methods to discard */
+  fetch: discard,
+  isDataExpired: discard,
+  isStale: discard,
+  reset: discard,
+  subscriptionCount: discard,
 } satisfies Record<InternalStateKey, boolean>;
 
 /**
