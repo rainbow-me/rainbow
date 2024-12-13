@@ -156,7 +156,8 @@ export default function ChangeWalletSheet() {
           color: account.color,
           editMode,
           height: WALLET_ROW_HEIGHT,
-          label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
+          label: account.label,
+          // label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
           // TODO: what does this do?
           // label:
           //   network !== Network.mainnet && account.ens === account.label
@@ -644,7 +645,7 @@ export default function ChangeWalletSheet() {
                   borderColor={{ custom: colors.alpha(colors.appleBlue, 0.06) }}
                 >
                   <Text color="label" size="17pt" weight="heavy">
-                    {'􀅼 Add'}
+                    {`􀅼 ${i18n.t(i18n.l.button.add)}`}
                   </Text>
                 </Box>
               </ButtonPressAnimation>

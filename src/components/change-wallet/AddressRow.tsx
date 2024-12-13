@@ -14,6 +14,8 @@ import { AddressAvatar } from '@/screens/change-wallet/AddressAvatar';
 import { SelectedAddressBadge } from '@/screens/change-wallet/SelectedAddressBadge';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 import { Icon } from '../icons';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { address as abbreviateAddress } from '@/utils/abbreviations';
 
 const ROW_HEIGHT_WITH_PADDING = 64;
 
@@ -70,7 +72,11 @@ interface AddressRowProps {
 }
 
 export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem }: AddressRowProps) {
-  const { address, color, secondaryLabel, isSelected, isReadOnly, isLedger, label: walletName, image } = data;
+  const { address, color, secondaryLabel, isSelected, isReadOnly, isLedger, label, image } = data;
+
+  const walletName = useMemo(() => {
+    return removeFirstEmojiFromString(label) || abbreviateAddress(address, 4, 6);
+  }, [label, address]);
 
   const addPinnedAddress = usePinnedWalletsStore(state => state.addPinnedAddress);
 

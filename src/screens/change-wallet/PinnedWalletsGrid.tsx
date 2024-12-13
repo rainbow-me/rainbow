@@ -13,6 +13,8 @@ import { SelectedAddressBadge } from './SelectedAddressBadge';
 import { JiggleAnimation } from '@/components/animations/JiggleAnimation';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 import ConditionalWrap from 'conditional-wrap';
+import { address } from '@/utils/abbreviations';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 
 const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;
@@ -89,105 +91,104 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                     </DropdownMenu>
                   )}
                 >
-                  <View style={{ width: avatarSize }}>
-                    <Stack space="12px" alignHorizontal="center">
-                      <JiggleAnimation enabled={editMode}>
+                  <Stack width={{ custom: avatarSize }} space="12px" alignHorizontal="center">
+                    <JiggleAnimation enabled={editMode}>
+                      <Box
+                        // required to prevent artifacts when jiggle animation is active
+                        shouldRasterizeIOS
+                      >
                         <Box
-                          // required to prevent artifacts when jiggle animation is active
-                          shouldRasterizeIOS
-                        >
-                          <Box
-                            width={{ custom: avatarSize }}
-                            height={{ custom: avatarSize }}
-                            background="blue"
-                            shadow={
-                              account.isSelected
-                                ? {
-                                    custom: {
-                                      ios: [
-                                        {
-                                          x: 0,
-                                          y: 10,
-                                          blur: 30,
-                                          opacity: 0.3,
-                                          color: 'blue',
-                                        },
-                                        {
-                                          x: 0,
-                                          y: 2,
-                                          blur: 6,
-                                          opacity: 0.02,
-                                          color: 'shadowFar',
-                                        },
-                                      ],
-                                      android: {
-                                        elevation: 30,
+                          width={{ custom: avatarSize }}
+                          height={{ custom: avatarSize }}
+                          background="blue"
+                          shadow={
+                            account.isSelected
+                              ? {
+                                  custom: {
+                                    ios: [
+                                      {
+                                        x: 0,
+                                        y: 10,
+                                        blur: 30,
                                         opacity: 0.3,
                                         color: 'blue',
                                       },
+                                      {
+                                        x: 0,
+                                        y: 2,
+                                        blur: 6,
+                                        opacity: 0.02,
+                                        color: 'shadowFar',
+                                      },
+                                    ],
+                                    android: {
+                                      elevation: 30,
+                                      opacity: 0.3,
+                                      color: 'blue',
                                     },
-                                  }
-                                : undefined
-                            }
-                            borderRadius={avatarSize / 2}
-                            borderWidth={account.isSelected ? 4 : undefined}
-                            borderColor={account.isSelected ? { custom: '#268FFF' } : undefined}
-                          >
-                            <AddressAvatar
-                              url={account.image}
-                              size={avatarSize}
-                              address={account.address}
-                              color={account.color}
-                              label={account.label}
-                            />
-                          </Box>
-                          {account.isSelected && (
-                            <Box position="absolute" bottom={{ custom: 4 }} right={{ custom: 4 }}>
-                              <SelectedAddressBadge />
-                            </Box>
-                          )}
-                          {editMode && (
-                            <ButtonPressAnimation onPress={() => removePinnedAddress(account.address)}>
-                              <Box
-                                as={BlurView}
-                                width={{ custom: UNPIN_BADGE_SIZE }}
-                                height={{ custom: UNPIN_BADGE_SIZE }}
-                                position="absolute"
-                                bottom={'0px'}
-                                right={'0px'}
-                                justifyContent="center"
-                                alignItems="center"
-                                borderRadius={UNPIN_BADGE_SIZE / 2}
-                                blurAmount={24}
-                              >
-                                <Text color="label" size="icon 12px" weight="bold">
-                                  {'􀅽'}
-                                </Text>
-                              </Box>
-                            </ButtonPressAnimation>
-                          )}
+                                  },
+                                }
+                              : undefined
+                          }
+                          borderRadius={avatarSize / 2}
+                          borderWidth={account.isSelected ? 4 : undefined}
+                          borderColor={account.isSelected ? { custom: '#268FFF' } : undefined}
+                        >
+                          <AddressAvatar
+                            url={account.image}
+                            size={avatarSize}
+                            address={account.address}
+                            color={account.color}
+                            label={account.label}
+                          />
                         </Box>
-                      </JiggleAnimation>
-                      <Inline wrap={false} space="4px" alignHorizontal="center" alignVertical="center">
-                        {account.isLedger && (
-                          <Text color="labelTertiary" size="icon 10px">
-                            􀤃
-                          </Text>
+                        {account.isSelected && (
+                          <Box position="absolute" bottom={{ custom: 4 }} right={{ custom: 4 }}>
+                            <SelectedAddressBadge />
+                          </Box>
                         )}
-                        {account.isReadOnly && (
-                          <Text color="labelTertiary" size="icon 10px">
-                            􀋮
-                          </Text>
+                        {editMode && (
+                          <ButtonPressAnimation onPress={() => removePinnedAddress(account.address)}>
+                            <Box
+                              as={BlurView}
+                              width={{ custom: UNPIN_BADGE_SIZE }}
+                              height={{ custom: UNPIN_BADGE_SIZE }}
+                              position="absolute"
+                              bottom={'0px'}
+                              right={'0px'}
+                              justifyContent="center"
+                              alignItems="center"
+                              borderRadius={UNPIN_BADGE_SIZE / 2}
+                              blurAmount={24}
+                            >
+                              <Text color="label" size="icon 12px" weight="bold">
+                                {'􀅽'}
+                              </Text>
+                            </Box>
+                          </ButtonPressAnimation>
                         )}
-                        <Text numberOfLines={1} ellipsizeMode="middle" color="label" size="13pt" weight="bold">
-                          {account.label}
+                      </Box>
+                    </JiggleAnimation>
+                    <Inline wrap={false} space="4px" alignHorizontal="center" alignVertical="center">
+                      {account.isLedger && (
+                        <Text color="labelTertiary" size="icon 10px">
+                          􀤃
                         </Text>
-                      </Inline>
-                      <Text color="labelSecondary" size="13pt" weight="medium">
-                        {account.secondaryLabel}
+                      )}
+                      {account.isReadOnly && (
+                        <Text color="labelTertiary" size="icon 10px">
+                          􀋮
+                        </Text>
+                      )}
+                      <Text numberOfLines={1} ellipsizeMode="middle" color="label" size="13pt" weight="bold">
+                        {/* TODO: can ens names have emojis? If so this logic is wrong */}
+                        {removeFirstEmojiFromString(account.label) || address(account.address, 4, 4)}
                       </Text>
-                    </Stack>
-                  </View>
+                    </Inline>
+                    <Text color="labelSecondary" size="13pt" weight="medium">
+                      {account.secondaryLabel}
+                    </Text>
+                  </Stack>
                 </ConditionalWrap>
               </Draggable>
             ))}
