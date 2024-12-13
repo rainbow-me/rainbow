@@ -329,7 +329,7 @@ function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: Shar
     <Animated.View
       layout={LinearTransition.springify().mass(0.4)}
       style={[
-        { height: 48, width: ITEM_WIDTH },
+        { height: ITEM_HEIGHT, width: ITEM_WIDTH },
         { paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center' },
         { borderRadius: 24, borderWidth: 1.33 },
         animatedStyle,
@@ -408,7 +408,7 @@ const indexFromPosition = (x: number, y: number, offset: { y: number }) => {
   'worklet';
   const yoffsets = y > offset.y ? offset.y : 0;
   const column = x > ITEM_WIDTH + GAP / 2 ? 1 : 0;
-  const row = Math.floor((y - yoffsets) / (ITEM_HEIGHT + GAP / 2));
+  const row = Math.floor((y - yoffsets) / (ITEM_HEIGHT + GAP));
   const index = row * 2 + column;
   return index < 0 ? 0 : index; // row can be negative if the dragged item is above the first row
 };
@@ -604,8 +604,10 @@ function NetworksGrid({
       const section = touch.y > sectionsOffsets.value[Section.unpinned].y ? Section.unpinned : Section.pinned;
       const sectionOffset = sectionsOffsets.value[section];
       const index = indexFromPosition(touch.x, touch.y, sectionOffset);
-      const chainId = networks.value[section][index];
-      if (!chainId) {
+      const sectionNetworks = networks.value[section];
+      const chainId = sectionNetworks[index];
+
+      if (!chainId || (section === Section.pinned && sectionNetworks.length === 1)) {
         s.fail();
         return;
       }
