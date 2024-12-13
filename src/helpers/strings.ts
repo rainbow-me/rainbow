@@ -95,7 +95,7 @@ const toDecimalString = (num: number): string => {
 };
 
 /*
-  formats a numeric string like 00000069 to 0₅69
+  formats a numeric string like 0000069 to 0₅69
 */
 function formatFraction(fraction: string) {
   const leadingZeros = fraction.match(/^[0]+/)?.[0].length || 0;
