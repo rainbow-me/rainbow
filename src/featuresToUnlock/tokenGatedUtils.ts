@@ -40,6 +40,7 @@ export const checkIfWalletsOwnNft = async (
   try {
     const p = getProvider({ chainId: useBackendNetworksStore.getState().getChainsIdByName()[network] });
     const iface = new Interface(tokenGateCheckerAbi);
+
     const data = iface.encodeFunctionData('areOwners(address[], address[])', [tokenAddresses, walletsToCheck]);
     const found = await p.call({ to: TOKEN_GATE_CHECKER_ADDRESS[network], data });
     return found;

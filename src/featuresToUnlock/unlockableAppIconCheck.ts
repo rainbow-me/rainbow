@@ -22,9 +22,9 @@ export const unlockableAppIconCheck = async (appIconKey: UnlockableAppIconKey, w
 
   const handled = unlockableAppIconStorage.getBoolean(appIconKey);
 
-  logger.debug(`[unlockableAppIconCheck]: ${appIconKey} was handled? ${handled}`);
+  if (handled) return false;
 
-  if (handled && appIconKey !== 'newTest_1155') return false;
+  logger.debug(`[unlockableAppIconCheck]: ${appIconKey} was handled? ${handled}`);
 
   try {
     const found = (
