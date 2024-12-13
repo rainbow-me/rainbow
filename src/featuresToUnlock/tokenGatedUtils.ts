@@ -72,10 +72,15 @@ export const checkIfWalletsOwnNft1155 = async (
     const iface = new Interface(tokenGateCheckerAbi);
     const data = iface.encodeFunctionData('areOwners(TokenInfo[], address[])', [tokenInfo, walletsToCheck]);
     const found = await p.call({ to: TOKEN_GATE_CHECKER_ADDRESS[network], data });
+<<<<<<< HEAD
     if (found === '0x0000000000000000000000000000000000000000000000000000000000000000') {
       return false;
     }
     return true;
+=======
+
+    return found;
+>>>>>>> 2f81bceac (NFT checker 2.0 (#6293))
   } catch (e) {
     return false;
   }
