@@ -9,6 +9,7 @@ type Address = string;
 interface PinnedWalletsStore {
   pinnedAddresses: Address[];
   unpinnedAddresses: Address[];
+  hasShownEditHintTooltip: boolean;
   canPinAddresses: () => boolean;
   addPinnedAddress: (address: Address) => void;
   removePinnedAddress: (address: Address) => void;
@@ -21,6 +22,7 @@ export const usePinnedWalletsStore = createRainbowStore<PinnedWalletsStore>(
   (set, get) => ({
     pinnedAddresses: [],
     unpinnedAddresses: [],
+    hasShownEditHintTooltip: false,
 
     canPinAddresses: () => {
       const { pinnedAddresses } = get();

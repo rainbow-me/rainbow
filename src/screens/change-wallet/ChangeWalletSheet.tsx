@@ -1,6 +1,6 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, InteractionManager, View } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
@@ -24,15 +24,16 @@ import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { IS_ANDROID } from '@/env';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { RootStackParamList } from '@/navigation/types';
-import { address } from '@/utils/abbreviations';
-import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { Box, Stack, Text } from '@/design-system';
+import { Box, globalColors, Inline, Stack, Text } from '@/design-system';
 import { addDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { MenuConfig, MenuItem } from '@/components/DropdownMenu';
 import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
+import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHintTooltip';
+import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
+import ConditionalWrap from 'conditional-wrap';
 
 const LIST_PADDING_BOTTOM = 6;
 const MAX_LIST_HEIGHT = DEVICE_HEIGHT - 220;
@@ -72,21 +73,21 @@ const Whitespace = styled(View)({
 });
 
 // TODO:
-const getWalletListHeight = (wallets: any, watchOnly: boolean) => {
-  let listHeight = !watchOnly ? FOOTER_HEIGHT + LIST_PADDING_BOTTOM : WATCH_ONLY_BOTTOM_PADDING;
+// const getWalletListHeight = (wallets: any, watchOnly: boolean) => {
+//   let listHeight = !watchOnly ? FOOTER_HEIGHT + LIST_PADDING_BOTTOM : WATCH_ONLY_BOTTOM_PADDING;
 
-  if (wallets) {
-    for (const key of Object.keys(wallets)) {
-      const visibleAccounts = wallets[key].addresses.filter((account: any) => account.visible);
-      listHeight += visibleAccounts.length * WALLET_ROW_HEIGHT;
+//   if (wallets) {
+//     for (const key of Object.keys(wallets)) {
+//       const visibleAccounts = wallets[key].addresses.filter((account: any) => account.visible);
+//       listHeight += visibleAccounts.length * WALLET_ROW_HEIGHT;
 
-      if (listHeight > MAX_LIST_HEIGHT) {
-        return { listHeight: MAX_LIST_HEIGHT, scrollEnabled: true };
-      }
-    }
-  }
-  return { listHeight, scrollEnabled: false };
-};
+//       if (listHeight > MAX_LIST_HEIGHT) {
+//         return { listHeight: MAX_LIST_HEIGHT, scrollEnabled: true };
+//       }
+//     }
+//   }
+//   return { listHeight, scrollEnabled: false };
+// };
 
 export interface AddressItem {
   address: EthereumAddress;
@@ -114,15 +115,24 @@ export default function ChangeWalletSheet() {
 
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
-  const { accountAddress, network, nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
+  const { accountAddress, nativeCurrency } = useAccountSettings();
   const { goBack, navigate, setParams } = useNavigation();
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
+  const initialHasShownEditHintTooltip = useMemo(() => usePinnedWalletsStore.getState().hasShownEditHintTooltip, []);
+  const featureHintTooltipRef = useRef<TooltipRef>(null);
 
   const [editMode, setEditMode] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(currentAccountAddress || accountAddress);
   const [currentSelectedWallet, setCurrentSelectedWallet] = useState(selectedWallet);
+
+  // Feature hint tooltip should only ever been shown once.
+  useEffect(() => {
+    if (!initialHasShownEditHintTooltip) {
+      usePinnedWalletsStore.setState({ hasShownEditHintTooltip: true });
+    }
+  }, [initialHasShownEditHintTooltip]);
 
   const walletsByAddress = useMemo(() => {
     return Object.values(wallets || {}).reduce(
@@ -178,7 +188,7 @@ export default function ChangeWalletSheet() {
 
     // sorts by order wallets were added
     return [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets].sort((a, b) => a.walletId.localeCompare(b.walletId));
-  }, [walletsWithBalancesAndNames, currentAddress, editMode, network]);
+  }, [walletsWithBalancesAndNames, currentAddress, editMode]);
 
   // TODO: maybe move this to its own hook
   const ownedWalletsTotalBalance = useMemo(() => {
@@ -453,8 +463,11 @@ export default function ChangeWalletSheet() {
 
   const onPressEditMode = useCallback(() => {
     analytics.track('Tapped "Edit"');
+    if (featureHintTooltipRef.current) {
+      featureHintTooltipRef.current.dismiss();
+    }
     setEditMode(e => !e);
-  }, []);
+  }, [featureHintTooltipRef]);
 
   const onPressAccount = useCallback(
     (address: string) => {
@@ -575,17 +588,46 @@ export default function ChangeWalletSheet() {
         <Panel>
           <Box style={{ maxHeight: MAX_PANEL_HEIGHT }}>
             <SheetHandleFixedToTop />
-            <Box paddingTop="32px" paddingBottom="12px" width="full" justifyContent="center" alignItems="center">
+            <Box zIndex={1000} paddingTop="32px" paddingBottom="12px" width="full" justifyContent="center" alignItems="center">
               <Text align="center" color="label" size="20pt" weight="heavy">
                 {'Wallets'}
               </Text>
               {/* TODO: this positioning is jank */}
               <Box position="absolute" style={{ right: 24, top: 32 + 3 }}>
-                <ButtonPressAnimation onPress={onPressEditMode}>
-                  <Text color="blue" size="17pt" weight="medium">
-                    {editMode ? i18n.t(i18n.l.button.done) : i18n.t(i18n.l.button.edit)}
-                  </Text>
-                </ButtonPressAnimation>
+                <ConditionalWrap
+                  condition={!initialHasShownEditHintTooltip}
+                  wrap={children => (
+                    <FeatureHintTooltip
+                      ref={featureHintTooltipRef}
+                      side="bottom"
+                      align="end"
+                      alignOffset={18}
+                      sideOffset={12}
+                      title="Customize Your Wallets"
+                      SubtitleComponent={
+                        <Inline>
+                          <Text color={{ custom: globalColors.grey60 }} size="13pt" weight="semibold">
+                            {'Tap the'}
+                          </Text>
+                          <Text color="blue" size="13pt" weight="semibold">
+                            {' Edit '}
+                          </Text>
+                          <Text color={{ custom: globalColors.grey60 }} size="13pt" weight="semibold">
+                            {'button above to set up'}
+                          </Text>
+                        </Inline>
+                      }
+                    >
+                      {children}
+                    </FeatureHintTooltip>
+                  )}
+                >
+                  <ButtonPressAnimation onPress={onPressEditMode}>
+                    <Text color="blue" size="17pt" weight="medium">
+                      {editMode ? i18n.t(i18n.l.button.done) : i18n.t(i18n.l.button.edit)}
+                    </Text>
+                  </ButtonPressAnimation>
+                </ConditionalWrap>
               </Box>
             </Box>
             {/* TODO: why is this here? */}
@@ -648,6 +690,7 @@ export default function ChangeWalletSheet() {
         </Panel>
       </Box>
       <TapToDismiss />
+      {/* <EditWalletsTooltip /> */}
     </>
   );
 }
