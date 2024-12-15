@@ -14,7 +14,6 @@ const ANIMATION_CONFIG = {
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
 interface CollapsibleSectionProps {
-  accentColor: string;
   content: React.ReactNode;
   icon: string;
   id: SectionId;
@@ -23,15 +22,14 @@ interface CollapsibleSectionProps {
 }
 
 interface SectionHeaderProps {
-  accentColor: string;
   icon: string;
   primaryText: string;
   secondaryText?: string;
   id: SectionId;
 }
 
-const SectionHeader = React.memo(function SectionHeader({ accentColor, icon, primaryText, secondaryText, id }: SectionHeaderProps) {
-  const { expandedSections } = useExpandedAssetSheetContext();
+const SectionHeader = React.memo(function SectionHeader({ icon, primaryText, secondaryText, id }: SectionHeaderProps) {
+  const { accentColors, expandedSections } = useExpandedAssetSheetContext();
 
   const rotationStyle = useAnimatedStyle(
     () => ({
@@ -55,11 +53,11 @@ const SectionHeader = React.memo(function SectionHeader({ accentColor, icon, pri
       }}
       scaleTo={0.96}
     >
-      <AccentColorProvider color={accentColor}>
+      <AccentColorProvider color={accentColors.opacity100}>
         <Box height={{ custom: 14 }} flexDirection="row" justifyContent="space-between">
           <Box flexDirection="row" gap={10}>
             <IconContainer height={14} width={24}>
-              <TextShadow blur={12} color={accentColor} shadowOpacity={0.24}>
+              <TextShadow blur={12} color={accentColors.opacity100} shadowOpacity={0.24}>
                 <Text weight="bold" align="center" size="17pt" color="accent">
                   {icon}
                 </Text>
@@ -70,7 +68,7 @@ const SectionHeader = React.memo(function SectionHeader({ accentColor, icon, pri
                 {primaryText}
               </Text>
               {secondaryText && (
-                <TextShadow blur={12} color={accentColor} shadowOpacity={0.24}>
+                <TextShadow blur={12} color={accentColors.opacity100} shadowOpacity={0.24}>
                   <Text weight="heavy" size="20pt" color="accent">
                     {secondaryText}
                   </Text>
@@ -80,7 +78,7 @@ const SectionHeader = React.memo(function SectionHeader({ accentColor, icon, pri
           </Box>
           <AnimatedBox style={rotationStyle}>
             <IconContainer height={14} width={24}>
-              <TextShadow blur={12} color={accentColor} shadowOpacity={0.24}>
+              <TextShadow blur={12} color={accentColors.opacity100} shadowOpacity={0.24}>
                 <Text weight="heavy" align="center" size="17pt" color="accent">
                   􀆈
                 </Text>
@@ -93,7 +91,7 @@ const SectionHeader = React.memo(function SectionHeader({ accentColor, icon, pri
   );
 });
 
-export function CollapsibleSection({ accentColor, content, icon, id, primaryText, secondaryText }: CollapsibleSectionProps) {
+export function CollapsibleSection({ content, icon, id, primaryText, secondaryText }: CollapsibleSectionProps) {
   const { expandedSections } = useExpandedAssetSheetContext();
 
   const contentStyle = useAnimatedStyle(
@@ -106,7 +104,7 @@ export function CollapsibleSection({ accentColor, content, icon, id, primaryText
 
   return (
     <AnimatedBox layout={LinearTransition.duration(ANIMATION_CONFIG.duration)} gap={24}>
-      <SectionHeader accentColor={accentColor} icon={icon} primaryText={primaryText} secondaryText={secondaryText} id={id} />
+      <SectionHeader icon={icon} primaryText={primaryText} secondaryText={secondaryText} id={id} />
       <AnimatedBox style={contentStyle}>{content}</AnimatedBox>
     </AnimatedBox>
   );

@@ -77,7 +77,7 @@ const MemoizedBalanceCoinRow = React.memo(
         maybeCallback.current();
       } else {
         if (expandedStateV2Enabled) {
-          navigate(Routes.EXPANDED_ASSET_SHEET_V2);
+          navigate(Routes.EXPANDED_ASSET_SHEET_V2, { asset: item });
         } else {
           navigate(Routes.EXPANDED_ASSET_SHEET, {
             asset: item,
