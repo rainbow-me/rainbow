@@ -218,13 +218,10 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
 
     const panGesture = Gesture.Pan()
       .maxPointers(1)
+      .enabled(!disabled)
       .onBegin(event => {
         const { state, x, y } = event;
         debug && console.log('begin', { state, x, y });
-        // Gesture is globally disabled
-        if (disabled) {
-          return;
-        }
         // console.log("begin", { state, x, y });
         // Track current state for cancellation purposes
         panGestureState.value = state;
