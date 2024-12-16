@@ -9,7 +9,7 @@ import { ChainId } from '@/chains/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { NetworkSelector } from '@/components/NetworkSwitcher';
 import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
-import { TrendingCategory, TrendingSort } from '@/graphql/__generated__/arc';
+import { SortDirection, TrendingCategory, TrendingSort } from '@/graphql/__generated__/arc';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
@@ -104,7 +104,7 @@ function useTrendingTokensData() {
     category,
     timeframe,
     sortBy: sort,
-    sortDirection: undefined,
+    sortDirection: SortDirection.Desc,
     walletAddress: walletAddress,
   });
 }
