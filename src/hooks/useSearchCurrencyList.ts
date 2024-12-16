@@ -296,16 +296,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
     await Promise.all(categories.map(assetType => getResultsForAssetType(assetType)));
   }, [searchChainId, getResultsForAssetType]);
 
-  const slowSearch = useCallback(async () => {
-    try {
-      await getResultsForAssetType('lowLiquidityAssets');
-      // eslint-disable-next-line no-empty
-    } catch (e) {
-    } finally {
-      setLoading(false);
-    }
-  }, [getResultsForAssetType]);
-
   const clearSearch = useCallback(() => {
     getResultsForAssetType('curatedAssets');
     setLowLiquidityAssets([]);
@@ -329,7 +319,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
       if ((searching && !wasSearching) || (searching && previousSearchQuery !== searchQuery) || searchChainId !== previousChainId) {
         if (searchChainId === ChainId.mainnet) {
           search();
-          slowSearch();
         } else {
           await search();
           setLowLiquidityAssets([]);
