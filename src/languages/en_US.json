@@ -2994,7 +2994,11 @@
         "title": "No results",
         "body": "Try browsing a larger timeframe or a different network or category."
       },
-      "and_others": "and %{count} others",
+      "and": "and",
+      "and_others": {
+        "one": "and %{count} other",
+        "other": "and %{count} others"
+      },
       "filters": {
         "categories": {
           "TRENDING": "Trending",
