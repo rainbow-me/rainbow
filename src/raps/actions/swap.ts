@@ -3,11 +3,11 @@ import { Transaction } from '@ethersproject/transactions';
 import {
   CrosschainQuote,
   Quote,
-  ChainId as SwapChainId,
   SwapType,
   fillQuote,
   getQuoteExecutionDetails,
   getRainbowRouterContractAddress,
+  getWrappedAssetAddress,
   getWrappedAssetMethod,
   unwrapNativeAsset,
   wrapNativeAsset,
@@ -138,7 +138,7 @@ export const estimateSwapGasLimit = async ({
           from: quote.from,
           value: isWrapNativeAsset ? quote.buyAmount.toString() : '0',
         },
-        getWrappedAssetMethod(isWrapNativeAsset ? 'deposit' : 'withdraw', provider, chainId as unknown as SwapChainId),
+        getWrappedAssetMethod(isWrapNativeAsset ? 'deposit' : 'withdraw', provider, getWrappedAssetAddress(quote)),
         isWrapNativeAsset ? [] : [quote.buyAmount.toString()],
         provider,
         WRAP_GAS_PADDING
@@ -285,10 +285,10 @@ export const executeSwap = async ({
 
   // Wrap Eth
   if (quote.swapType === SwapType.wrap) {
-    return wrapNativeAsset(quote.buyAmount, wallet, chainId as unknown as SwapChainId, transactionParams);
+    return wrapNativeAsset(quote.buyAmount, wallet, getWrappedAssetAddress(quote), transactionParams);
     // Unwrap Weth
   } else if (quote.swapType === SwapType.unwrap) {
-    return unwrapNativeAsset(quote.sellAmount, wallet, chainId as unknown as SwapChainId, transactionParams);
+    return unwrapNativeAsset(quote.sellAmount, wallet, getWrappedAssetAddress(quote), transactionParams);
     // Swap
   } else {
     return fillQuote(quote, transactionParams, wallet, permit, chainId as number, REFERRER);
