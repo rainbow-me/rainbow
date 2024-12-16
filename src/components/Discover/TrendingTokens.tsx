@@ -222,6 +222,9 @@ function FriendPfp({ pfp_url }: { pfp_url: string }) {
 }
 function FriendHolders({ friends }: { friends: FarcasterUser[] }) {
   if (friends.length === 0) return null;
+  const howManyOthers = Math.max(1, friends.length - 2);
+  const othersKey = howManyOthers > 1 ? t.and_others : t.and_other;
+
   return (
     <View style={{ flexDirection: 'row', gap: 5.67, alignItems: 'center', marginTop: -2 }}>
       <View style={{ flexDirection: 'row-reverse', alignItems: 'center', paddingLeft: 6 }}>
@@ -230,12 +233,12 @@ function FriendHolders({ friends }: { friends: FarcasterUser[] }) {
       </View>
 
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text color="labelSecondary" size="11pt" weight="bold" numberOfLines={1} style={{ maxWidth: 148 }}>
-          {friends[0].username}{' '}
+        <Text color="labelSecondary" size="11pt" weight="bold" numberOfLines={1}>
+          {friends[0].username} {friends[1] && `, ${friends[1].username} `}
         </Text>
         {friends.length > 1 && (
           <Text color="labelTertiary" size="11pt" weight="bold">
-            {i18n.t(t.and_others, { count: friends.length - 1 })}
+            {i18n.t(othersKey, { count: howManyOthers })}
           </Text>
         )}
       </View>

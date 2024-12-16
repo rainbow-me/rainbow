@@ -2995,6 +2995,7 @@
         "body": "Try browsing a larger timeframe or a different network or category."
       },
       "and_others": "and %{count} others",
+      "and_other": "and %{count} other",
       "filters": {
         "categories": {
           "TRENDING": "Trending",
