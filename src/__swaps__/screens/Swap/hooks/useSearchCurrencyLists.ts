@@ -417,7 +417,7 @@ export function useSearchCurrencyLists() {
     {
       enabled: memoizedData.enableUnverifiedSearch,
       select: (data: TokenSearchResult) => {
-        return getExactMatches(data, query).slice(0, MAX_UNVERIFIED_RESULTS);
+        return isAddress(query) ? getExactMatches(data, query).slice(0, MAX_UNVERIFIED_RESULTS) : data.slice(0, MAX_UNVERIFIED_RESULTS);
       },
     }
   );
