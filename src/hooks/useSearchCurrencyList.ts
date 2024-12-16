@@ -10,7 +10,7 @@ import { RainbowToken, TokenSearchTokenListId } from '@/entities';
 import { tokenSearch } from '@/handlers/tokenSearch';
 import { addHexPrefix, getProvider } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
-import { DAI_ADDRESS, erc20ABI, ETH_ADDRESS, rainbowTokenList, USDC_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
+import { erc20ABI } from '@/references';
 import { filterList, isLowerCaseMatch } from '@/utils';
 import { logger } from '@/logger';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
@@ -20,13 +20,7 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
-type swapCurrencyListType =
-  | 'verifiedAssets'
-  | 'highLiquidityAssets'
-  | 'lowLiquidityAssets'
-  | 'favoriteAssets'
-  | 'curatedAssets'
-  | 'importedAssets';
+type swapCurrencyListType = 'verifiedAssets' | 'highLiquidityAssets' | 'lowLiquidityAssets' | 'favoriteAssets' | 'importedAssets';
 
 type CrosschainVerifiedAssets = Record<
   ChainId.mainnet | ChainId.optimism | ChainId.polygon | ChainId.bsc | ChainId.arbitrum,
@@ -76,7 +70,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
   const searching = useMemo(() => searchQuery !== '' || ChainId.mainnet !== searchChainId, [searchChainId, searchQuery]);
 
   const { favorites: favoriteAddresses, favoritesMetadata: favoriteMap } = useFavorites();
-  const curatedMap = rainbowTokenList.CURATED_TOKENS;
   const unfilteredFavorites = Object.values(favoriteMap).filter(token => token.networks[searchChainId]);
 
   const [loading, setLoading] = useState(true);
@@ -130,28 +123,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
     [isFavorite]
   );
 
-  const getCurated = useCallback(() => {
-    const addresses = favoriteAddresses.map(a => a.toLowerCase());
-    return Object.values(curatedMap)
-      .filter(({ address }) => !addresses.includes(address.toLowerCase()))
-      .sort((t1, t2) => {
-        const { address: address1, name: name1 } = t1;
-        const { address: address2, name: name2 } = t2;
-        const mainnetPriorityTokens = [ETH_ADDRESS, WETH_ADDRESS, DAI_ADDRESS, USDC_ADDRESS, WBTC_ADDRESS];
-        const rankA = mainnetPriorityTokens.findIndex(address => address === address1.toLowerCase());
-        const rankB = mainnetPriorityTokens.findIndex(address => address === address2.toLowerCase());
-        const aIsRanked = rankA > -1;
-        const bIsRanked = rankB > -1;
-        if (aIsRanked) {
-          if (bIsRanked) {
-            return rankA > rankB ? -1 : 1;
-          }
-          return -1;
-        }
-        return bIsRanked ? 1 : name1?.localeCompare(name2);
-      });
-  }, [curatedMap, favoriteAddresses]);
-
   const getFavorites = useCallback(async () => {
     return searching
       ? await searchCurrencyList({
@@ -166,10 +137,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
     async (searchQuery: string, chainId: number): Promise<RainbowToken[] | null> => {
       if (searching) {
         if (isAddress(searchQuery)) {
-          const tokenListEntry = rainbowTokenList.RAINBOW_TOKEN_LIST[searchQuery.toLowerCase()];
-          if (tokenListEntry) {
-            return [tokenListEntry];
-          }
           const provider = getProvider({ chainId });
           const tokenContract = new Contract(searchQuery, erc20ABI, provider);
           try {
@@ -297,7 +264,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
   }, [searchChainId, getResultsForAssetType]);
 
   const clearSearch = useCallback(() => {
-    getResultsForAssetType('curatedAssets');
     setLowLiquidityAssets([]);
     setHighLiquidityAssets([]);
     setVerifiedAssets([]);
@@ -390,22 +356,12 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
         });
       }
     } else {
-      const curatedAssets = searchChainId === ChainId.mainnet && getCurated();
-
       if (unfilteredFavorites?.length) {
         list.push({
           color: colors.yellowFavorite,
           data: abcSort(unfilteredFavorites, 'name'),
           key: 'unfilteredFavorites',
           title: lang.t(`exchange.token_sections.${tokenSectionTypes.favoriteTokenSection}`),
-        });
-      }
-      if (curatedAssets && curatedAssets.length) {
-        list.push({
-          data: curatedAssets,
-          key: 'curated',
-          title: lang.t(`exchange.token_sections.${tokenSectionTypes.verifiedTokenSection}`),
-          useGradientText: !IS_TEST,
         });
       }
     }
@@ -420,7 +376,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
     favoriteAssets,
     searchChainId,
     colors.yellowFavorite,
-    getCurated,
     unfilteredFavorites,
   ]);
 
