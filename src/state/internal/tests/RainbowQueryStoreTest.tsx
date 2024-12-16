@@ -33,7 +33,7 @@ const useAddressStore = createRainbowStore<AddressStore>((set, get) => ({
 
   setAddress: (address: Address) => {
     set({ address });
-    console.log('DID ADDRESS SET?', 'new address:', get().address);
+    if (ENABLE_LOGS) console.log('[👤 useAddressStore 👤] New address set:', get().address);
   },
 }));
 
@@ -45,19 +45,25 @@ type TestStore = {
 type QueryParams = { address: Address; currency: SupportedCurrencyKey };
 
 function logFetchInfo(params: QueryParams) {
-  console.log('[PARAMS]:', JSON.stringify(params, null, 2));
+  console.log('[🔄 logFetchInfo 🔄] Current params:', JSON.stringify(Object.values(params), null, 2));
   const formattedTimeWithSeconds = new Date(Date.now()).toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
   });
-  if (ENABLE_LOGS) {
-    console.log('[🔄 Requesting Fetch] - Last Fetch Attempt:', formattedTimeWithSeconds, '\nParams:', {
-      address: params.address,
-      currency: params.currency,
-    });
-  }
+  console.log('[🔄 Requesting Fetch 🔄] Last fetch attempt:', formattedTimeWithSeconds, '\nParams:', {
+    address: params.address,
+    currency: params.currency,
+  });
 }
+
+const time = {
+  seconds: (n: number) => n * 1000,
+  minutes: (n: number) => time.seconds(n * 60),
+  hours: (n: number) => time.minutes(n * 60),
+  days: (n: number) => time.hours(n * 24),
+  weeks: (n: number) => time.days(n * 7),
+};
 
 export const userAssetsTestStore = createRainbowQueryStore<ParsedAssetsDictByChain, QueryParams, TestStore>(
   {
@@ -71,7 +77,7 @@ export const userAssetsTestStore = createRainbowQueryStore<ParsedAssetsDictByCha
       address: $ => $(useAddressStore).address,
       currency: $ => $(useAddressStore).currency,
     },
-    staleTime: 20 * 1000, // 20s
+    staleTime: time.minutes(1),
   },
 
   (set, get) => ({
@@ -138,7 +144,7 @@ export const UserAssetsTest = memo(function UserAssetsTest() {
             style={styles.button}
           >
             <Text color="label" size="17pt" weight="heavy">
-              {userAssetsTestStore.getState().enabled ? 'Disable fetching' : 'Enable fetching'}
+              {userAssetsTestStore.getState().enabled ? 'Disable Fetching' : 'Enable Fetching'}
             </Text>
           </ButtonPressAnimation>
         </View>
@@ -147,7 +153,7 @@ export const UserAssetsTest = memo(function UserAssetsTest() {
   );
 });
 
-if (ENABLE_LOGS) console.log('[💾 UserAssetsTest 💾] initial data exists:', !!userAssetsTestStore.getState().userAssets);
+if (ENABLE_LOGS) console.log('[💾 UserAssetsTest 💾] Initial data exists:', !!userAssetsTestStore.getState().userAssets);
 
 const styles = StyleSheet.create({
   button: {
@@ -161,8 +167,8 @@ const styles = StyleSheet.create({
   buttonGroup: {
     alignItems: 'center',
     flexDirection: 'column',
-    justifyContent: 'center',
     gap: 24,
+    justifyContent: 'center',
   },
   container: {
     alignItems: 'center',

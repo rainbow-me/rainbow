@@ -125,6 +125,13 @@ const TWO_MINUTES = 1000 * 60 * 2;
 const FIVE_SECONDS = 1000 * 5;
 const MIN_STALE_TIME = FIVE_SECONDS;
 
+/**
+ * Creates a query-enabled Rainbow store with data fetching capabilities.
+ * @template TQueryFnData - The raw data type returned by the fetcher
+ * @template TParams - Parameters passed to the fetcher function
+ * @template U - User-defined custom store state
+ * @template TData - The transformed data type, if applicable (defaults to `TQueryFnData`)
+ */
 export function createRainbowQueryStore<
   TQueryFnData,
   TParams extends Record<string, unknown> = Record<string, unknown>,

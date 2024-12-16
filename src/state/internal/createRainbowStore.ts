@@ -45,6 +45,35 @@ export interface RainbowPersistConfig<S> {
 }
 
 /**
+ * Creates a Rainbow store with optional persistence functionality.
+ * @param createState - The state creator function for the Rainbow store.
+ * @param persistConfig - The configuration options for the persistable Rainbow store.
+ * @returns A Zustand store with the specified state and optional persistence.
+ */
+export function createRainbowStore<S = unknown>(
+  createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]>,
+  persistConfig?: RainbowPersistConfig<S>
+) {
+  if (!persistConfig) {
+    return create<S>()(subscribeWithSelector(createState));
+  }
+
+  const { persistStorage, version } = createPersistStorage(persistConfig);
+
+  return create<S>()(
+    subscribeWithSelector(
+      persist(createState, {
+        migrate: persistConfig.migrate,
+        name: persistConfig.storageKey,
+        partialize: persistConfig.partialize || (state => state),
+        storage: persistStorage,
+        version,
+      })
+    )
+  );
+}
+
+/**
  * Creates a persist storage object for the Rainbow store.
  * @param config - The configuration options for the persistable Rainbow store.
  * @returns An object containing the persist storage and version.
@@ -130,33 +159,4 @@ function defaultDeserializeState<S>(serializedState: string): StorageValue<Parti
     logger.error(new RainbowError(`[createRainbowStore]: Failed to deserialize persisted Rainbow store data`), { error });
     throw error;
   }
-}
-
-/**
- * Creates a Rainbow store with optional persistence functionality.
- * @param createState - The state creator function for the Rainbow store.
- * @param persistConfig - The configuration options for the persistable Rainbow store.
- * @returns A Zustand store with the specified state and optional persistence.
- */
-export function createRainbowStore<S = unknown>(
-  createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]>,
-  persistConfig?: RainbowPersistConfig<S>
-) {
-  if (!persistConfig) {
-    return create<S>()(subscribeWithSelector(createState));
-  }
-
-  const { persistStorage, version } = createPersistStorage(persistConfig);
-
-  return create<S>()(
-    subscribeWithSelector(
-      persist(createState, {
-        migrate: persistConfig.migrate,
-        name: persistConfig.storageKey,
-        partialize: persistConfig.partialize || (state => state),
-        storage: persistStorage,
-        version,
-      })
-    )
-  );
 }
