@@ -113,6 +113,7 @@ export default function ChartExpandedStateHeader({
           chainId={asset?.chainId}
           symbol={asset?.symbol}
           color={asset?.colors?.primary || asset?.colors?.fallback || undefined}
+          chainBadgePosition={{ x: -12, y: -6 }}
         />
 
         <ChartContextButton asset={asset} color={color} />

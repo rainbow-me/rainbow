@@ -13,7 +13,7 @@ import ImgixImage from '../../components/images/ImgixImage';
 import { SlackSheet } from '../../components/sheet';
 import { CardSize } from '../../components/unique-token/CardSize';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { Box, ColorModeProvider, Column, Columns, Inline, Inset, Separator, Stack, Text } from '@/design-system';
+import { Bleed, Box, ColorModeProvider, Column, Columns, DebugLayout, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import { useAccountProfile, useAccountSettings, useDimensions, useENSAvatar, useGas, usePersistentAspectRatio } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
@@ -35,7 +35,7 @@ import { fetchReverseRecord } from '@/handlers/ens';
 import { ContactAvatar } from '@/components/contacts';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
 import { loadPrivateKey } from '@/model/wallet';
-import { ChainBadge } from '@/components/coin-icon';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import {
   add,
   convertAmountToBalanceDisplay,
@@ -703,7 +703,9 @@ const MintSheet = () => {
                   value={
                     <Inset vertical={{ custom: -4 }}>
                       <Inline space="4px" alignVertical="center" alignHorizontal="right">
-                        <ChainBadge chainId={chainId} position="relative" size="tiny" />
+                        <Bleed vertical="4px" horizontal="6px">
+                          <ChainImage chainId={chainId} size={32} />
+                        </Bleed>
 
                         <Text color="labelSecondary" align="right" size="17pt" weight="medium">
                           {`${useBackendNetworksStore.getState().getDefaultChains()[chainId].name}`}

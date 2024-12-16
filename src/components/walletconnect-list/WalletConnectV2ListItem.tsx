@@ -22,7 +22,7 @@ import * as lang from '@/languages';
 import { useTheme } from '@/theme';
 import { changeAccount, disconnectSession } from '@/walletConnect';
 import { Box, Inline } from '@/design-system';
-import ChainBadge from '@/components/coin-icon/ChainBadge';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
@@ -215,7 +215,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
                             borderRadius: 30,
                           }}
                         >
-                          <ChainBadge chainId={chainId} position="relative" size="small" />
+                          <ChainImage chainId={chainId} size={20} />
                         </Box>
                       );
                     })}

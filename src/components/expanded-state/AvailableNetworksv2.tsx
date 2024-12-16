@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from '../Divider';
-import ChainBadge from '../coin-icon/ChainBadge';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box, Inline, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -189,7 +189,7 @@ const AvailableNetworksv2 = ({
                           borderRadius: 30,
                         }}
                       >
-                        <ChainBadge chainId={chainId} position="relative" size="tiny" />
+                        <ChainImage chainId={chainId} size={20} />
                       </Box>
                     );
                   })}

@@ -30,7 +30,8 @@ export default React.memo(function RainbowCoinIcon({
   forceDarkMode,
   color,
   showBadge = true,
-  chainSize = size / 2,
+  chainSize = (size * 1.5) / 2,
+  chainBadgePosition = {},
 }: {
   size?: number;
   icon?: string;
@@ -40,6 +41,10 @@ export default React.memo(function RainbowCoinIcon({
   color?: string;
   showBadge?: boolean;
   chainSize?: number;
+  chainBadgePosition?: {
+    x?: number;
+    y?: number;
+  };
 }) {
   const theme = useTheme();
   const fallbackIconColor = color ?? theme.colors.purpleUniswap;
@@ -60,22 +65,13 @@ export default React.memo(function RainbowCoinIcon({
         )}
       </FastFallbackCoinIconImage>
 
-      {showBadge && (
-        <View
-          style={[
-            sx.badge,
-            {
-              height: chainSize,
-              width: chainSize,
-              borderRadius: chainSize / 2,
-              bottom: -chainSize / 2 + 2,
-              left: -chainSize / 2 + 2,
-            },
-          ]}
-        >
-          <ChainImage showBadge={showBadge} chainId={chainId} size={chainSize} />
-        </View>
-      )}
+      <ChainImage
+        showBadge={showBadge}
+        chainId={chainId}
+        size={chainSize}
+        badgeXPosition={chainBadgePosition?.x}
+        badgeYPosition={chainBadgePosition?.y}
+      />
     </View>
   );
 });

@@ -79,11 +79,6 @@ const TopRow = ({ item, name, selected }) => {
   );
 };
 
-const buildSendCoinRowIdentifier = props => {
-  const uniqueId = buildAssetUniqueIdentifier(props.item);
-  return [uniqueId, !!props?.showNativeValue];
-};
-
 const SendCoinRow = ({
   children,
   disablePressAnimation,
@@ -124,10 +119,11 @@ const SendCoinRow = ({
         mainnetAddress={item?.mainnet_address}
         icon={item?.icon_url}
         colors={item?.colors}
-        badgeYPosition={0}
         bottomRowRender={BottomRow}
         containerStyles={selected ? containerSelectedStyles : containerStyles}
         coinIconRender={RainbowCoinIcon}
+        badgeXPosition={-12}
+        badgeYPosition={-6}
         isHidden={false}
         item={item}
         selected={selected}

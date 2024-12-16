@@ -4,7 +4,7 @@ import * as lang from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChainBadge, DashedWrapper } from '../components/coin-icon';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Centered, Column, ColumnWithMargins, Row, RowWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
@@ -89,7 +89,7 @@ const networkExplainer = ({ emoji = '⛽️', chainId, ...props }) => {
     emoji,
     title,
     text,
-    logo: <ChainBadge chainId={chainId} marginBottom={8} position="relative" size="large" />,
+    logo: <ChainImage chainId={chainId} size={40} position="relative" />,
     extraHeight: IS_ANDROID ? 120 : 144,
     readMoreLink: buildRainbowLearnUrl({
       url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
@@ -238,7 +238,7 @@ export const explainers = (params, theme) => {
             inputToken: params?.inputToken,
             outputToken: params?.outputToken,
           }),
-      logo: <ChainBadge chainId={fromChainId} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainImage chainId={fromChainId} size={40} position="relative" />,
     },
     floor_price: {
       emoji: '📊',
@@ -254,6 +254,7 @@ export const explainers = (params, theme) => {
           symbol={params?.nativeAsset?.symbol}
           chainId={chainId}
           color={params?.nativeAsset?.colors?.primary || params?.nativeAsset?.colors?.fallback || undefined}
+          chainBadgePosition={{ x: -12, y: -6 }}
         />
       ),
       extraHeight: 2,
@@ -431,7 +432,7 @@ export const explainers = (params, theme) => {
       extraHeight: -90,
       text: SWAP_RESET_EXPLAINER,
       title: `Switching to ${chainsLabel[chainId]}`,
-      logo: <ChainBadge chainId={chainId} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainImage chainId={chainId} size={40} position="relative" />,
     },
     f2cSemiSupportedAssetPurchased: {
       emoji: '🎉',
@@ -478,6 +479,7 @@ export const explainers = (params, theme) => {
             symbol={params?.inputCurrency?.symbol}
             chainId={params?.inputCurrency?.chainId}
             color={params?.inputCurrency?.colors?.primary || params?.inputCurrency?.colors?.fallback || undefined}
+            chainBadgePosition={{ x: -12, y: -6 }}
           />
         </RowWithMargins>
       ),
@@ -533,6 +535,7 @@ export const explainers = (params, theme) => {
             symbol={params?.inputCurrency?.symbol}
             chainId={params?.inputCurrency?.chainId}
             color={params?.inputCurrency?.colors?.primary || params?.inputCurrency?.colors?.fallback || undefined}
+            chainBadgePosition={{ x: -12, y: -6 }}
           />
           <DoubleChevron />
           <RainbowCoinIcon
@@ -541,6 +544,7 @@ export const explainers = (params, theme) => {
             symbol={params?.outputCurrency?.symbol}
             chainId={params?.outputCurrency?.chainId}
             color={params?.outputCurrency?.colors?.primary || params?.outputCurrency?.colors?.fallback || undefined}
+            chainBadgePosition={{ x: -12, y: -6 }}
           />
         </RowWithMargins>
       ),
@@ -557,6 +561,7 @@ export const explainers = (params, theme) => {
             symbol={params?.inputCurrency?.symbol}
             chainId={params?.inputCurrency?.chainId}
             color={params?.inputCurrency?.colors?.primary || params?.inputCurrency?.colors?.fallback || undefined}
+            chainBadgePosition={{ x: -12, y: -6 }}
           />
           <DoubleChevron />
           <RainbowCoinIcon
@@ -565,6 +570,7 @@ export const explainers = (params, theme) => {
             symbol={params?.outputCurrency?.symbol}
             chainId={params?.outputCurrency?.chainId}
             color={params?.outputCurrency?.colors?.primary || params?.outputCurrency?.colors?.fallback || undefined}
+            chainBadgePosition={{ x: -12, y: -6 }}
           />
         </RowWithMargins>
       ),
@@ -600,7 +606,7 @@ export const explainers = (params, theme) => {
                 width={{ custom: 40 }}
                 zIndex={params?.chainIds?.length - index}
               >
-                <ChainBadge chainId={chainId} position="relative" size="large" />
+                <ChainImage chainId={chainId} size={40} position="relative" />
               </Box>
             );
           })}
@@ -648,7 +654,7 @@ export const explainers = (params, theme) => {
           {lang.t('explain.obtain_l2_asset.fragment3')}
         </Text>
       ),
-      logo: <ChainBadge chainId={chainId} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainImage chainId={chainId} size={40} position="relative" />,
       title: lang.t('explain.obtain_l2_asset.title', {
         networkName: params?.networkName,
       }),
@@ -703,114 +709,6 @@ export const explainers = (params, theme) => {
       ),
       text: lang.t('explain.slippage.text'),
       title: lang.t('explain.slippage.title'),
-    },
-    swap_refuel_add: {
-      logo: (
-        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[chainId], colors?.appleBlue]}>
-          <RainbowCoinIcon
-            size={30}
-            icon={params?.nativeAsset?.icon_url}
-            symbol={params?.nativeAsset?.symbol}
-            chainId={params?.nativeAsset?.chainId}
-            color={params?.nativeAsset?.colors?.primary || params?.nativeAsset?.colors?.fallback || undefined}
-            showBadge={false}
-          />
-        </DashedWrapper>
-      ),
-      title: lang.t('explain.swap_refuel.title', {
-        networkName: params?.networkName,
-        gasToken: params?.gasToken,
-      }),
-      text: lang.t('explain.swap_refuel.text', {
-        networkName: params?.networkName,
-        gasToken: params?.gasToken,
-      }),
-      button: {
-        label: lang.t('button.no_thanks'),
-        textColor: 'blueGreyDark60',
-        bgColor: colors?.transparent,
-        onPress: params?.onContinue,
-      },
-      secondaryButton: {
-        label: lang.t('explain.swap_refuel.button', {
-          networkName: params?.networkName,
-          gasToken: params?.gasToken,
-        }),
-        textColor: colors?.networkColors[chainId],
-        bgColor: colors?.networkColors[chainId] && colors?.alpha(colors?.networkColors[chainId], 0.05),
-        onPress: params?.onRefuel,
-      },
-    },
-    swap_refuel_deduct: {
-      logo: (
-        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[chainId], colors?.appleBlue]}>
-          <RainbowCoinIcon
-            size={30}
-            icon={params?.nativeAsset?.icon_url}
-            symbol={params?.nativeAsset?.symbol}
-            chainId={params?.nativeAsset?.chainId}
-            color={params?.nativeAsset?.colors?.primary || params?.nativeAsset?.colors?.fallback || undefined}
-            showBadge={false}
-          />
-        </DashedWrapper>
-      ),
-      title: lang.t('explain.swap_refuel_deduct.title', {
-        networkName: params?.networkName,
-        gasToken: params?.gasToken,
-      }),
-      text: lang.t('explain.swap_refuel_deduct.text', {
-        networkName: params?.networkName,
-        gasToken: params?.gasToken,
-      }),
-      button: {
-        label: lang.t('button.no_thanks'),
-        textColor: 'blueGreyDark60',
-        bgColor: colors?.transparent,
-        onPress: params?.onContinue,
-      },
-      secondaryButton: {
-        label: lang.t('explain.swap_refuel_deduct.button', {
-          networkName: params?.networkName,
-          gasToken: params?.gasToken,
-        }),
-        textColor: colors?.networkColors[chainId],
-        bgColor: colors?.networkColors[chainId] && colors?.alpha(colors?.networkColors[chainId], 0.05),
-        onPress: params?.onRefuel,
-      },
-    },
-    swap_refuel_notice: {
-      extraHeight: 50,
-      logo: (
-        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[chainId], colors?.appleBlue]}>
-          <RainbowCoinIcon
-            size={30}
-            icon={params?.nativeAsset?.icon_url}
-            symbol={params?.nativeAsset?.symbol}
-            chainId={params?.nativeAsset?.chainId}
-            color={params?.nativeAsset?.colors?.primary || params?.nativeAsset?.colors?.fallback || undefined}
-          />
-        </DashedWrapper>
-      ),
-      title: lang.t('explain.swap_refuel_notice.title', {
-        networkName: params?.networkName,
-        gasToken: params?.gasToken,
-      }),
-      text: lang.t('explain.swap_refuel_notice.text', {
-        networkName: params?.networkName,
-        gasToken: params?.gasToken,
-      }),
-      button: {
-        label: lang.t('button.go_back'),
-        textColor: 'blueGreyDark60',
-        bgColor: colors?.transparent,
-        onPress: params?.onContinue,
-      },
-      secondaryButton: {
-        label: lang.t('button.proceed_anyway'),
-        textColor: colors?.appleBlue,
-        bgColor: colors?.alpha(colors?.appleBlue, 0.05),
-        onPress: params?.onProceed,
-      },
     },
   };
 };

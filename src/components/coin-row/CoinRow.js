@@ -52,8 +52,10 @@ export default function CoinRow({
     <Container style={containerStyles}>
       {createElement(coinIconRender, {
         address,
-        badgeXPosition,
-        badgeYPosition,
+        chainBadgePosition: {
+          x: badgeXPosition,
+          y: badgeYPosition,
+        },
         isFirstCoinRow,
         isHidden,
         isPinned,

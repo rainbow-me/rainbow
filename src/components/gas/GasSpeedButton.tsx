@@ -9,7 +9,7 @@ import { InteractionManager, Keyboard, View } from 'react-native';
 import { Easing } from 'react-native-reanimated';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
-import { ChainBadge } from '../coin-icon';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
@@ -477,7 +477,7 @@ const GasSpeedButton = ({
                       type: 'timing',
                     }}
                   >
-                    <ChainBadge chainId={chainId} size="tiny" position="relative" />
+                    <ChainImage chainId={chainId} size={28} />
                   </MotiView>
                 )}
               </AnimatePresence>
@@ -522,7 +522,7 @@ const GasSpeedButton = ({
           <Centered>
             {isLegacyGasNetwork ? (
               <ChainBadgeContainer>
-                <ChainBadge chainId={chainId} position="relative" />
+                <ChainImage chainId={chainId} />
               </ChainBadgeContainer>
             ) : showGasOptions ? (
               <CustomGasButton

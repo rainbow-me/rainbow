@@ -21,7 +21,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { Box, Columns, Column as RDSColumn, Inline, Text, TextProps } from '@/design-system';
-import ChainBadge from '@/components/coin-icon/ChainBadge';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import * as lang from '@/languages';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
@@ -36,7 +36,6 @@ import { Address } from 'viem';
 import { RainbowWallet } from '@/model/wallet';
 import { IS_IOS } from '@/env';
 import { WalletconnectMeta } from '@/walletConnect/types';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 
 type WithThemeProps = {
   theme: ThemeContextProps;
@@ -112,14 +111,14 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
                       borderColor: colors.white,
                     }}
                   >
-                    <ChainBadge chainId={chainId} position="relative" size="small" />
+                    <ChainImage chainId={chainId} size={20} />
                   </Box>
                 );
               })}
             </>
           ) : (
             <Inline alignVertical="center" wrap={false}>
-              <ChainBadge chainId={availableNetworkChainIds[0]} position="relative" size="small" />
+              <ChainImage chainId={availableNetworkChainIds[0]} size={20} />
 
               <Box paddingLeft="6px">
                 <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold">

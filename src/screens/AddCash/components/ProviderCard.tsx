@@ -5,7 +5,7 @@ import chroma from 'chroma-js';
 
 import { IS_IOS } from '@/env';
 import { Box, Text, Inline, Bleed, useBackgroundColor } from '@/design-system';
-import ChainBadge from '@/components/coin-icon/ChainBadge';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 
 import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';
 import { Coinbase as CoinbaseLogo } from '@/components/icons/svg/Coinbase';
@@ -93,7 +93,7 @@ function NetworkIcons({ chainIds }: { chainIds?: ChainId[] }) {
               borderRadius: 30,
             }}
           >
-            <ChainBadge chainId={chainId} position="relative" size="small" />
+            <ChainImage chainId={chainId} size={20} />
           </Box>
         );
       })}

@@ -9,12 +9,12 @@ import { padding, position } from '@/styles';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import { Column, Row } from '../layout';
-import { ChainBadge } from '../coin-icon';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import Divider from '@/components/Divider';
 import { Text } from '../text';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
-const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, marginHorizontal = 19, prominent }) => {
+const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginHorizontal = 19, prominent }) => {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
   const radialGradientProps = {
@@ -64,7 +64,7 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, 
                   width={{ custom: 22 }}
                   zIndex={availableChainIds?.length - index}
                 >
-                  <ChainBadge chainId={chainId} position="relative" size="small" />
+                  <ChainImage chainId={chainId} size={20} />
                 </Box>
               );
             })}

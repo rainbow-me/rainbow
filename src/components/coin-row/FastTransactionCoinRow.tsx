@@ -9,7 +9,6 @@ import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { ImgixImage } from '../images';
 import { CardSize } from '../unique-token/CardSize';
-import { ChainBadge } from '../coin-icon';
 import { ChainId } from '@/state/backendNetworks/types';
 import { address } from '@/utils/abbreviations';
 import {
@@ -25,6 +24,7 @@ import Spinner from '../Spinner';
 import * as lang from '@/languages';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
+import { ChainImage } from '../coin-icon/ChainImage';
 
 export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;
@@ -262,7 +262,8 @@ export const ActivityIcon = ({
     const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
     const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
 
-    if (!!inAsset?.icon_url && !!outAsset?.icon_url) return <TwoCoinsIcon over={inAsset} under={outAsset} badge={badge} />;
+    if (!!inAsset?.icon_url && !!outAsset?.icon_url)
+      return <TwoCoinsIcon over={inAsset} under={outAsset} badge={badge && transaction.chainId !== ChainId.mainnet} />;
   }
   if (transaction?.contract?.iconUrl) {
     return (
@@ -295,7 +296,7 @@ export const ActivityIcon = ({
             }}
           />
         </View>
-        <ChainBadge showBadge={badge && transaction.chainId !== ChainId.mainnet} chainId={transaction.chainId} badgeYPosition={0} />
+        <ChainImage showBadge={badge && transaction.chainId !== ChainId.mainnet} chainId={transaction.chainId} size={32} />
       </View>
     );
   }
@@ -368,7 +369,7 @@ export const ActivityIcon = ({
             </Box>
           )}
         </View>
-        <ChainBadge showBadge={badge && transaction.chainId !== ChainId.mainnet} chainId={transaction.chainId} badgeYPosition={0} />
+        <ChainImage showBadge={badge && transaction.chainId !== ChainId.mainnet} chainId={transaction.chainId} size={32} />
       </View>
     );
   }

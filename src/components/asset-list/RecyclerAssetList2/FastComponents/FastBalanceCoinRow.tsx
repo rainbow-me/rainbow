@@ -105,6 +105,7 @@ const MemoizedBalanceCoinRow = React.memo(
                 symbol={item?.symbol || ''}
                 color={item?.colors?.primary || item?.colors?.fallback || undefined}
                 showBadge={chainId !== ChainId.mainnet}
+                chainBadgePosition={{ x: -12, y: -6 }}
               />
             </View>
 

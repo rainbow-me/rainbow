@@ -9,7 +9,7 @@ import { View } from 'react-native';
 import { useTheme } from '@/theme';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
-import ChainBadge from '@/components/coin-icon/ChainBadge';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
@@ -51,7 +51,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
             </Inset>
             <Cover alignVertical="top" alignHorizontal="right">
               <Bleed vertical="3px">
-                <ChainBadge chainId={collection.chainId} position="relative" size="medium" />
+                <ChainImage chainId={collection.chainId} size={20} />
               </Bleed>
             </Cover>
           </Box>
