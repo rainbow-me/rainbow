@@ -55,7 +55,6 @@ async function fetchTrendingTokens({
 }: {
   queryKey: TrendingTokensQueryKey;
 }) {
-  console.log('fetching trending tokens');
   const response = await arcClient.trendingTokens({
     category,
     sortBy,
