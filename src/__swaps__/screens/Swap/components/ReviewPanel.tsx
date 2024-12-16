@@ -324,7 +324,7 @@ export function ReviewPanel() {
 
             <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
               <View style={sx.chainBadgeContainer}>
-                <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
+                <AnimatedChainImage showMainnetBadge assetType="input" size={24} />
               </View>
               <AnimatedText
                 align="right"
@@ -385,7 +385,7 @@ export function ReviewPanel() {
               <Stack space="10px">
                 <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
                   <View style={sx.chainBadgeContainer}>
-                    <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
+                    <AnimatedChainImage showMainnetBadge assetType="input" size={24} />
                   </View>
                   <UnmountOnAnimatedReaction
                     isMountedWorklet={() => {
@@ -434,7 +434,7 @@ const sx = StyleSheet.create({
     height: 8,
     left: 8,
     justifyContent: 'center',
-    top: 4,
-    width: 16,
+    top: 8,
+    width: 20,
   },
 });

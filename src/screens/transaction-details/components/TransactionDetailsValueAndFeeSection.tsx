@@ -91,6 +91,10 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
                     chainId={assetData?.chainId || ChainId.mainnet}
                     symbol={assetData?.symbol || ''}
                     color={assetData?.colors?.primary || assetData?.colors?.fallback || undefined}
+                    chainBadgePosition={{
+                      x: -12,
+                      y: -6,
+                    }}
                   />
                 )
               }
