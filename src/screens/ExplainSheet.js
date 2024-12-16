@@ -250,7 +250,7 @@ export const explainers = (params, theme) => {
       logo: (
         <RainbowCoinIcon
           size={40}
-          icon={params?.nativeAsset?.icon_url}
+          icon={params?.nativeAsset?.icon_url || params?.nativeAsset?.iconURL}
           symbol={params?.nativeAsset?.symbol}
           chainId={chainId}
           color={params?.nativeAsset?.colors?.primary || params?.nativeAsset?.colors?.fallback || undefined}
