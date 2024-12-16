@@ -223,8 +223,7 @@ function FriendPfp({ pfp_url }: { pfp_url: string }) {
 function FriendHolders({ friends }: { friends: FarcasterUser[] }) {
   if (friends.length === 0) return null;
   const howManyOthers = Math.max(1, friends.length - 2);
-  const othersKey = howManyOthers > 1 ? t.and_others : t.and_other;
-  const separator = howManyOthers === 1 && friends.length === 2 ? i18n.t(t.and) : ',';
+  const separator = howManyOthers === 1 && friends.length === 2 ? ` ${i18n.t(t.and)} ` : ', ';
 
   return (
     <View style={{ flexDirection: 'row', gap: 5.67, alignItems: 'center', marginTop: -2 }}>
@@ -235,11 +234,20 @@ function FriendHolders({ friends }: { friends: FarcasterUser[] }) {
 
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Text color="labelSecondary" size="11pt" weight="bold" numberOfLines={1}>
-          {friends[0].username} {friends[1] && `${separator} ${friends[1].username} `}
+          {friends[0].username}
+          {friends[1] && (
+            <>
+              <Text color="labelTertiary" size="11pt" weight="bold">
+                {separator}
+              </Text>
+              {friends[1].username}
+            </>
+          )}
         </Text>
         {friends.length > 2 && (
           <Text color="labelTertiary" size="11pt" weight="bold">
-            {i18n.t(othersKey, { count: howManyOthers })}
+            {' '}
+            {i18n.t('trending_tokens.and_others', { count: howManyOthers })}
           </Text>
         )}
       </View>
@@ -413,7 +421,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
             </View>
 
             <View style={{ gap: 12, marginLeft: 'auto' }}>
-              <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center', justifyContent: 'flex-end' }}>
                 <Text color={getPriceChangeColor(token.priceChange.day)} size="15pt" weight="bold">
                   {formatNumber(token.priceChange.day, { decimals: 2, useOrderSuffix: true })}%
                 </Text>
