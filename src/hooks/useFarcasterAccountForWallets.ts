@@ -60,6 +60,5 @@ export const useFarcasterWalletAddress = () => {
     setFarcasterWalletAddress(null);
   }, [wallets, allAddresses, accountAddress]);
 
-
   return farcasterWalletAddress;
 };
