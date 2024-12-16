@@ -476,9 +476,11 @@ const NextDistributionCountdown = ({ nextDistribution }: { nextDistribution: Dat
   const minuteStr = minutes ? `${minutes}m` : '';
 
   return (
-    <Text align="center" color="labelSecondary" size="17pt" weight="heavy">
-      {`${dayStr} ${hourStr} ${minuteStr}`.trim()}
-    </Text>
+    <TextShadow shadowOpacity={0.24}>
+      <Text align="center" color="labelSecondary" size="17pt" weight="heavy">
+        {`${dayStr} ${hourStr} ${minuteStr}`.trim()}
+      </Text>
+    </TextShadow>
   );
 };
 
@@ -529,9 +531,7 @@ const NextDropCard = memo(function NextDropCard({ nextDistribution }: { nextDist
             overflow: 'hidden',
           }}
         >
-          <TextShadow shadowOpacity={0.24}>
-            <NextDistributionCountdown nextDistribution={nextDistribution} />
-          </TextShadow>
+          <NextDistributionCountdown nextDistribution={nextDistribution} />
         </Box>
       </Box>
     </Card>

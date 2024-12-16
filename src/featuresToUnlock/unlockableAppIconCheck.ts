@@ -1,4 +1,4 @@
-import { TokenGateCheckerNetwork, checkIfWalletsOwnNft } from './tokenGatedUtils';
+import { TokenGateCheckerNetwork, TokenInfo, checkIfWalletsOwnNft, checkIfWalletsOwnNft1155 } from './tokenGatedUtils';
 import { EthereumAddress } from '@/entities';
 import { Navigation } from '@/navigation';
 import { RainbowError, logger } from '@/logger';
@@ -22,9 +22,9 @@ export const unlockableAppIconCheck = async (appIconKey: UnlockableAppIconKey, w
 
   const handled = unlockableAppIconStorage.getBoolean(appIconKey);
 
-  logger.debug(`[unlockableAppIconCheck]: ${appIconKey} was handled? ${handled}`);
-
   if (handled) return false;
+
+  logger.debug(`[unlockableAppIconCheck]: ${appIconKey} was handled? ${handled}`);
 
   try {
     const found = (
@@ -33,7 +33,25 @@ export const unlockableAppIconCheck = async (appIconKey: UnlockableAppIconKey, w
           const nfts = appIcon.unlockingNFTs[network];
           if (!nfts) return;
           logger.debug(`[unlockableAppIconCheck]: Checking ${appIconKey} on network ${network}`);
-          return await checkIfWalletsOwnNft(nfts, network, walletsToCheck);
+          const non1155s: EthereumAddress[] = [];
+          const all1155s: TokenInfo[] = [];
+
+          const values = Object.values(nfts);
+          values.forEach(value => {
+            if (typeof value === 'string') {
+              non1155s.push(value);
+            } else {
+              all1155s.push(value);
+            }
+          });
+          const allChecks = [];
+          if (non1155s.length > 0) {
+            allChecks.push(checkIfWalletsOwnNft(non1155s, network, walletsToCheck));
+          }
+          if (all1155s.length > 0) {
+            allChecks.push(checkIfWalletsOwnNft1155(all1155s, network, walletsToCheck));
+          }
+          return Promise.all(allChecks);
         })
       )
     ).some(result => !!result);
