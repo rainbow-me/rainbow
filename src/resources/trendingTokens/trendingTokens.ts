@@ -69,15 +69,12 @@ async function fetchTrendingTokens({
 
   for (const token of response.trendingTokens.data) {
     const { uniqueId, address, name, symbol, chainId, decimals, trending, market, icon_url, colors } = token;
-    const { bought_stats, sold_stats } = trending.swap_data;
-    const highlightedFriends = [...(bought_stats.farcaster_users || []), ...(sold_stats.farcaster_users || [])].reduce(
-      (friends, friend) => {
-        const { username, pfp_url } = friend;
-        if (username && pfp_url) friends.push({ username, pfp_url });
-        return friends;
-      },
-      [] as FarcasterUser[]
-    );
+    const { bought_stats } = trending.swap_data;
+    const highlightedFriends = [...(bought_stats.farcaster_users || [])].reduce((friends, friend) => {
+      const { username, pfp_url } = friend;
+      if (username && pfp_url) friends.push({ username, pfp_url });
+      return friends;
+    }, [] as FarcasterUser[]);
 
     trendingTokens.push({
       uniqueId,
