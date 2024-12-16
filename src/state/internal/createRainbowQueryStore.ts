@@ -74,11 +74,11 @@ type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
   onFetched?: (data: TData, store: QueryStore<TData, TParams, S>) => void;
   transform?: (data: TQueryFnData) => TData;
   cacheTime?: number;
+  disableDataCache?: boolean;
+  enabled?: boolean;
   params?: {
     [K in keyof TParams]: ParamResolvable<TParams[K]>;
   };
-  disableDataCache?: boolean;
-  enabled?: boolean;
   staleTime?: number;
 };
 
@@ -120,10 +120,15 @@ const SHOULD_PERSIST_INTERNAL_STATE_MAP: Record<string, boolean> = {
   subscriptionCount: discard,
 } satisfies Record<InternalStateKeys, boolean>;
 
-const SEVEN_DAYS = 1000 * 60 * 60 * 24 * 7;
-const TWO_MINUTES = 1000 * 60 * 2;
-const FIVE_SECONDS = 1000 * 5;
-const MIN_STALE_TIME = FIVE_SECONDS;
+export const time = {
+  seconds: (n: number) => n * 1000,
+  minutes: (n: number) => time.seconds(n * 60),
+  hours: (n: number) => time.minutes(n * 60),
+  days: (n: number) => time.hours(n * 24),
+  weeks: (n: number) => time.days(n * 7),
+};
+
+const MIN_STALE_TIME = time.seconds(5);
 
 /**
  * Creates a query-enabled Rainbow store with data fetching capabilities.
@@ -152,21 +157,12 @@ export function createRainbowQueryStore<
     fetcher,
     onFetched,
     transform,
-    cacheTime = SEVEN_DAYS,
-    params,
+    cacheTime = time.days(7),
     disableDataCache = true,
     enabled = true,
-    staleTime = TWO_MINUTES,
+    params,
+    staleTime = time.minutes(2),
   } = config;
-
-  let paramAttachVals: Partial<Record<keyof TParams, AttachValue<unknown>>> = {};
-  let directValues: Partial<TParams> = {};
-
-  if (params) {
-    const result = resolveParams<TParams>(params);
-    paramAttachVals = result.paramAttachVals;
-    directValues = result.directValues;
-  }
 
   if (IS_DEV && staleTime < MIN_STALE_TIME) {
     console.warn(
@@ -174,6 +170,15 @@ export function createRainbowQueryStore<
         MIN_STALE_TIME / 1000
       } seconds are not recommended.`
     );
+  }
+
+  let directValues: Partial<TParams> = {};
+  let paramAttachVals: Partial<Record<keyof TParams, AttachValue<unknown>>> = {};
+
+  if (params) {
+    const result = resolveParams<TParams>(params);
+    paramAttachVals = result.paramAttachVals;
+    directValues = result.directValues;
   }
 
   let activeFetchPromise: Promise<void> | null = null;
@@ -392,7 +397,7 @@ export function createRainbowQueryStore<
       };
     };
 
-    // Merge base data, user state, and methods into the final store state
+    /* Merge base data, user state, and methods into the final store state */
     return {
       ...initialData,
       ...userState,
