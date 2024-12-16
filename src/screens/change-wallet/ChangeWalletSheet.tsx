@@ -690,7 +690,6 @@ export default function ChangeWalletSheet() {
         </Panel>
       </Box>
       <TapToDismiss />
-      {/* <EditWalletsTooltip /> */}
     </>
   );
 }

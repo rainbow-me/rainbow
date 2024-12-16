@@ -114,8 +114,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
           menuConfig={menuConfig}
           onPressMenuItem={action => onPressMenuItem(action, { address })}
         >
-          {/* TODO: there is some issue with how the dropdown long press interacts with the button long press. Inconsistent behavior. */}
-          <ButtonPressAnimation minLongPressDuration={150} scaleTo={0.96} onPress={onPress}>
+          <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
             {children}
           </ButtonPressAnimation>
         </DropdownMenu>

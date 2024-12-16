@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { EmptyAssetList } from '../asset-list';
 import { AddressRow } from './AddressRow';
@@ -15,11 +15,13 @@ import {
   PANEL_HEADER_HEIGHT,
 } from '@/screens/change-wallet/ChangeWalletSheet';
 import { Box, Inset, Separator, Text } from '@/design-system';
-import { DndProvider, DraggableFlatList, DraggableFlatListProps, UniqueIdentifier } from '../drag-and-drop';
+import { DndProvider, Draggable, DraggableFlatListProps, UniqueIdentifier } from '../drag-and-drop';
 import { PinnedWalletsGrid } from '@/screens/change-wallet/PinnedWalletsGrid';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { MenuItem } from '@/components/DropdownMenu';
+import { DraggableScrollView } from '@/components/drag-and-drop/components/DraggableScrollView';
 
+const DRAG_ACTIVATION_DELAY = 150;
 const LIST_TOP_PADDING = 7.5;
 const TRANSITION_DURATION = 75;
 const LIST_MAX_HEIGHT = MAX_PANEL_HEIGHT - PANEL_HEADER_HEIGHT;
@@ -103,18 +105,21 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
   );
 
   const renderHeader = useCallback(() => {
+    const hasPinnedWallets = pinnedWalletItems.length > 0;
     return (
       <>
-        {pinnedWalletItems.length > 0 && (
-          <PinnedWalletsGrid
-            menuItems={menuItems}
-            onPressMenuItem={onPressMenuItem}
-            walletItems={pinnedWalletItems}
-            onPress={onPressAccount}
-            editMode={editMode}
-          />
+        {hasPinnedWallets && (
+          <DndProvider activationDelay={DRAG_ACTIVATION_DELAY} disabled={!editMode}>
+            <PinnedWalletsGrid
+              menuItems={menuItems}
+              onPressMenuItem={onPressMenuItem}
+              walletItems={pinnedWalletItems}
+              onPress={onPressAccount}
+              editMode={editMode}
+            />
+          </DndProvider>
         )}
-        {pinnedWalletItems.length > 0 && unpinnedWalletItems.length > 0 && (
+        {hasPinnedWallets && unpinnedWalletItems.length > 0 && (
           <>
             <Inset horizontal="16px">
               <Separator color="separatorSecondary" thickness={1} />
@@ -126,9 +131,25 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
             </Box>
           </>
         )}
+        {!hasPinnedWallets && <View style={{ height: 20 }} />}
       </>
     );
   }, [pinnedWalletItems, onPressAccount, editMode, unpinnedWalletItems.length, menuItems, onPressMenuItem]);
+
+  const renderItem = useCallback(
+    (item: AddressItem) => (
+      <Draggable key={item.id.toString()} dragDirection="y" id={item.id.toString()}>
+        <AddressRow
+          menuItems={menuItems}
+          onPressMenuItem={onPressMenuItem}
+          data={item}
+          editMode={editMode}
+          onPress={() => onPressAccount(item.address)}
+        />
+      </Draggable>
+    ),
+    [menuItems, onPressMenuItem, onPressAccount, editMode]
+  );
 
   return (
     <Box>
@@ -136,28 +157,17 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
         <EmptyWalletList />
       </Animated.View>
       <Animated.View style={opacityStyle}>
-        <DndProvider activationDelay={150}>
-          <DraggableFlatList
+        <DndProvider activationDelay={DRAG_ACTIVATION_DELAY} disabled={!editMode}>
+          <DraggableScrollView
             onOrderChange={onOrderChange}
             style={{ maxHeight: LIST_MAX_HEIGHT }}
-            // we subtract 24px because the footer has 24px top padding that will look wrong if we have less items than needed to fill the list
-            contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT - 24 }}
             autoScrollInsets={{ bottom: FOOTER_HEIGHT - 24 }}
+            contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT - 24 }}
             data={unpinnedWalletItems}
-            ListHeaderComponent={renderHeader}
-            draggableProps={{
-              disabled: !editMode,
-            }}
-            renderItem={({ item }) => (
-              <AddressRow
-                menuItems={menuItems}
-                onPressMenuItem={onPressMenuItem}
-                data={item}
-                editMode={editMode}
-                onPress={() => onPressAccount(item.address)}
-              />
-            )}
-          />
+          >
+            {renderHeader()}
+            {unpinnedWalletItems.map(item => renderItem(item))}
+          </DraggableScrollView>
         </DndProvider>
       </Animated.View>
     </Box>
