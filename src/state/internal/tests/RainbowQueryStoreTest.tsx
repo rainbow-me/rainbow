@@ -7,78 +7,101 @@ import { SupportedCurrencyKey } from '@/references';
 import { queryUserAssets } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { ParsedAssetsDictByChain } from '@/__swaps__/types/assets';
 import { createRainbowQueryStore } from '../createRainbowQueryStore';
+import { createRainbowStore } from '../createRainbowStore';
 
-function getRandomAddress() {
-  return Math.random() < 0.5 ? '0x2e67869829c734ac13723A138a952F7A8B56e774' : '0xCFB83E14AEd465c79F3F82f4cfF4ff7965897644';
-}
+const ENABLE_LOGS = false;
 
-type QueryParams = { address: Address; currency: SupportedCurrencyKey };
+type AddressStore = {
+  address: Address;
+  currency: SupportedCurrencyKey;
+  nestedAddressTest: {
+    address: Address;
+  };
+  setAddress: (address: Address) => void;
+};
+
+const testAddresses: Address[] = [
+  '0x2e67869829c734ac13723A138a952F7A8B56e774',
+  '0xCFB83E14AEd465c79F3F82f4cfF4ff7965897644',
+  '0x17cd072cBd45031EFc21Da538c783E0ed3b25DCc',
+];
+
+const useAddressStore = createRainbowStore<AddressStore>((set, get) => ({
+  address: testAddresses[0],
+  currency: 'USD',
+  nestedAddressTest: { address: testAddresses[0] },
+
+  setAddress: (address: Address) => {
+    set({ address });
+    console.log('DID ADDRESS SET?', 'new address:', get().address);
+  },
+}));
 
 type TestStore = {
   userAssets: ParsedAssetsDictByChain;
   getHighestValueAsset: () => number;
   setUserAssets: (data: ParsedAssetsDictByChain) => void;
 };
+type QueryParams = { address: Address; currency: SupportedCurrencyKey };
 
-export const userAssetsStore = createRainbowQueryStore<ParsedAssetsDictByChain, QueryParams, TestStore, ParsedAssetsDictByChain>(
+function logFetchInfo(params: QueryParams) {
+  console.log('[PARAMS]:', JSON.stringify(params, null, 2));
+  const formattedTimeWithSeconds = new Date(Date.now()).toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+  if (ENABLE_LOGS) {
+    console.log('[🔄 Requesting Fetch] - Last Fetch Attempt:', formattedTimeWithSeconds, '\nParams:', {
+      address: params.address,
+      currency: params.currency,
+    });
+  }
+}
+
+export const userAssetsTestStore = createRainbowQueryStore<ParsedAssetsDictByChain, QueryParams, TestStore>(
   {
-    fetcher: () => queryUserAssets({ address: getRandomAddress(), currency: 'USD' }),
-    // onFetched: (data, store) => store.setState({ userAssets: data }),
-    transform: data => {
-      const formattedTimeWithSeconds = new Date(Date.now()).toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      });
-      console.log('[Transform - Last Fetch Attempt]: ', formattedTimeWithSeconds);
-      return data;
+    fetcher: ({ address, currency }) => {
+      if (ENABLE_LOGS) logFetchInfo({ address, currency });
+      return queryUserAssets({ address, currency });
     },
+    onFetched: (data, store) => store.setState({ userAssets: data }),
 
-    disableDataCache: false,
-    queryKey: ['userAssets'],
-    staleTime: 30 * 60 * 1000, // 30m
+    params: {
+      address: $ => $(useAddressStore).address,
+      currency: $ => $(useAddressStore).currency,
+    },
+    staleTime: 20 * 1000, // 20s
   },
+
   (set, get) => ({
     userAssets: [],
 
-    getHighestValueAsset: () => {
-      const data = get().userAssets;
-      const highestValueAsset = Object.values(data)
+    getHighestValueAsset: () =>
+      Object.values(get().userAssets)
         .flatMap(chainAssets => Object.values(chainAssets))
-        .reduce((max, asset) => {
-          return Math.max(max, Number(asset.balance.display));
-        }, 0);
-      return highestValueAsset;
-    },
+        .reduce((max, asset) => Math.max(max, Number(asset.balance.display)), 0),
 
     setUserAssets: (data: ParsedAssetsDictByChain) => set({ userAssets: data }),
-  }),
-  {
-    // partialize: state => ({ userAssets: state.userAssets }),
-    storageKey: 'userAssetsTesting79876',
-  }
+  })
 );
 
 export const UserAssetsTest = memo(function UserAssetsTest() {
-  const data = userAssetsStore(state => state.data);
-  const enabled = userAssetsStore(state => state.enabled);
-
-  console.log('RERENDER - enabled:', enabled);
+  const data = userAssetsTestStore(state => state.userAssets);
+  const enabled = userAssetsTestStore(state => state.enabled);
 
   useEffect(() => {
-    const status = userAssetsStore.getState().status;
-    const isFetching = status === 'loading';
-    // eslint-disable-next-line no-nested-ternary
-    const emojiForStatus = isFetching ? '🔄' : status === 'success' ? '✅' : '❌';
-    console.log('[NEW STATUS]:', emojiForStatus, status);
-
-    if (data) {
+    if (ENABLE_LOGS) {
       const first5Tokens = Object.values(data)
         .flatMap(chainAssets => Object.values(chainAssets))
         .slice(0, 5);
-      console.log('[First 5 Token Symbols]:', first5Tokens.map(token => token.symbol).join(', '));
+      console.log('[🔔 UserAssetsTest 🔔] userAssets data updated - first 5 tokens:', first5Tokens.map(token => token.symbol).join(', '));
     }
   }, [data]);
+
+  useEffect(() => {
+    if (ENABLE_LOGS) console.log(`[🔔 UserAssetsTest 🔔] enabled updated to: ${enabled ? '✅ ENABLED' : '🛑 DISABLED'}`);
+  }, [enabled]);
 
   return (
     data && (
@@ -86,18 +109,45 @@ export const UserAssetsTest = memo(function UserAssetsTest() {
         <Text color="label" size="17pt" weight="heavy">
           Number of assets: {Object.values(data).reduce((acc, chainAssets) => acc + Object.keys(chainAssets).length, 0)}
         </Text>
-        <ButtonPressAnimation onPress={() => userAssetsStore.setState({ enabled: !enabled })} style={styles.button}>
-          <Text color="label" size="17pt" weight="heavy">
-            {enabled ? 'Disable fetching' : 'Enable fetching'}
-          </Text>
-        </ButtonPressAnimation>
+        <View style={styles.buttonGroup}>
+          <ButtonPressAnimation
+            onPress={() => {
+              const currentAddress = useAddressStore.getState().nestedAddressTest.address;
+              switch (currentAddress) {
+                case testAddresses[0]:
+                  useAddressStore.getState().setAddress(testAddresses[1]);
+                  break;
+                case testAddresses[1]:
+                  useAddressStore.getState().setAddress(testAddresses[2]);
+                  break;
+                case testAddresses[2]:
+                  useAddressStore.getState().setAddress(testAddresses[0]);
+                  break;
+              }
+            }}
+            style={styles.button}
+          >
+            <Text color="label" size="17pt" weight="heavy">
+              Shuffle Address
+            </Text>
+          </ButtonPressAnimation>
+          <ButtonPressAnimation
+            onPress={() => {
+              userAssetsTestStore.setState({ enabled: !enabled });
+            }}
+            style={styles.button}
+          >
+            <Text color="label" size="17pt" weight="heavy">
+              {userAssetsTestStore.getState().enabled ? 'Disable fetching' : 'Enable fetching'}
+            </Text>
+          </ButtonPressAnimation>
+        </View>
       </View>
     )
   );
 });
 
-const initialData = userAssetsStore.getState().data;
-console.log('[Initial Data Exists]:', !!initialData);
+if (ENABLE_LOGS) console.log('[💾 UserAssetsTest 💾] initial data exists:', !!userAssetsTestStore.getState().userAssets);
 
 const styles = StyleSheet.create({
   button: {
@@ -107,6 +157,12 @@ const styles = StyleSheet.create({
     height: 44,
     justifyContent: 'center',
     paddingHorizontal: 20,
+  },
+  buttonGroup: {
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    gap: 24,
   },
   container: {
     alignItems: 'center',

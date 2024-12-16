@@ -3,11 +3,21 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { IS_DEV } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import { createRainbowStore, RainbowPersistConfig } from './createRainbowStore';
+import { $, AttachValue, attachValueSubscriptionMap, SignalFunction, Unsubscribe } from './signal';
+
+const ENABLE_LOGS = false;
+
+export const QueryStatuses = {
+  Idle: 'idle',
+  Loading: 'loading',
+  Success: 'success',
+  Error: 'error',
+} as const;
 
 /**
  * Represents the status of the remote data fetching process.
  */
-type RemoteStatus = 'idle' | 'loading' | 'success' | 'error';
+export type QueryStatus = (typeof QueryStatuses)[keyof typeof QueryStatuses];
 
 /**
  * Configuration options for remote data fetching.
@@ -27,6 +37,19 @@ interface CacheEntry<TData> {
 }
 
 /**
+ * A specialized store interface combining Zustand's store API with remote fetching.
+ */
+export interface QueryStore<TData, TParams extends Record<string, unknown>, S extends StoreState<TData, TParams>>
+  extends UseBoundStore<StoreApi<S>> {
+  enabled: boolean;
+  destroy: () => void;
+  fetch: (params?: TParams, options?: FetchOptions) => Promise<void>;
+  isDataExpired: (override?: number) => boolean;
+  isStale: (override?: number) => boolean;
+  reset: () => void;
+}
+
+/**
  * The base store state including query-related fields and actions.
  */
 type StoreState<TData, TParams extends Record<string, unknown>> = {
@@ -35,30 +58,13 @@ type StoreState<TData, TParams extends Record<string, unknown>> = {
   error: Error | null;
   lastFetchedAt: number | null;
   queryCache: Record<string, CacheEntry<TData>>;
-  status: RemoteStatus;
+  status: QueryStatus;
   subscriptionCount: number;
   fetch: (params?: TParams, options?: FetchOptions) => Promise<void>;
   isDataExpired: (cacheTimeOverride?: number) => boolean;
   isStale: (staleTimeOverride?: number) => boolean;
   reset: () => void;
 };
-
-/**
- * The keys that make up the internal state of the store.
- */
-type InternalStateKey = keyof StoreState<unknown, Record<string, unknown>>;
-
-/**
- * A specialized store interface combining Zustand's store API with remote fetching.
- */
-export interface QueryStore<TData, TParams extends Record<string, unknown>, S extends StoreState<TData, TParams>>
-  extends UseBoundStore<StoreApi<S>> {
-  enabled: boolean;
-  fetch: (params?: TParams, options?: FetchOptions) => Promise<void>;
-  isDataExpired: (override?: number) => boolean;
-  isStale: (override?: number) => boolean;
-  reset: () => void;
-}
 
 /**
  * Configuration options for creating a remote-enabled Rainbow store.
@@ -68,17 +74,32 @@ type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
   onFetched?: (data: TData, store: QueryStore<TData, TParams, S>) => void;
   transform?: (data: TQueryFnData) => TData;
   cacheTime?: number;
-  defaultParams?: TParams;
+  params?: {
+    [K in keyof TParams]: ParamResolvable<TParams[K]>;
+  };
   disableDataCache?: boolean;
   enabled?: boolean;
-  queryKey: readonly unknown[] | ((params: TParams) => readonly unknown[]);
   staleTime?: number;
 };
 
-const SEVEN_DAYS = 1000 * 60 * 60 * 24 * 7;
-const TWO_MINUTES = 1000 * 60 * 2;
-const FIVE_SECONDS = 1000 * 5;
-const MIN_STALE_TIME = FIVE_SECONDS;
+/**
+ * A function that resolves to a value or an AttachValue wrapper.
+ */
+type ParamResolvable<T> = T | ((resolve: SignalFunction) => AttachValue<T>);
+
+/**
+ * The result of resolving parameters into their direct values and AttachValue wrappers.
+ */
+interface ResolvedParamsResult<TParams> {
+  directValues: Partial<TParams>;
+  paramAttachVals: Partial<Record<keyof TParams, AttachValue<unknown>>>;
+  resolvedParams: TParams;
+}
+
+/**
+ * The keys that make up the internal state of the store.
+ */
+type InternalStateKeys = keyof StoreState<unknown, Record<string, unknown>>;
 
 const [persist, discard] = [true, false];
 
@@ -97,22 +118,24 @@ const SHOULD_PERSIST_INTERNAL_STATE_MAP: Record<string, boolean> = {
   isStale: discard,
   reset: discard,
   subscriptionCount: discard,
-} satisfies Record<InternalStateKey, boolean>;
+} satisfies Record<InternalStateKeys, boolean>;
 
-/**
- * Creates a remote-enabled Rainbow store with data fetching capabilities.
- * @template TQueryFnData - The raw data type returned by the fetcher
- * @template TParams - Parameters passed to the fetcher function
- * @template TData - The transformed data type (defaults to TQueryFnData)
- * @template U - Additional user-defined state
- */
+const SEVEN_DAYS = 1000 * 60 * 60 * 24 * 7;
+const TWO_MINUTES = 1000 * 60 * 2;
+const FIVE_SECONDS = 1000 * 5;
+const MIN_STALE_TIME = FIVE_SECONDS;
+
 export function createRainbowQueryStore<
   TQueryFnData,
   TParams extends Record<string, unknown> = Record<string, unknown>,
   U = unknown,
   TData = TQueryFnData,
 >(
-  config: RainbowQueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & U>,
+  config: RainbowQueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & U> & {
+    params?: {
+      [K in keyof TParams]: ParamResolvable<TParams[K]>;
+    };
+  },
   customStateCreator?: StateCreator<U, [], [['zustand/subscribeWithSelector', never]]>,
   persistConfig?: RainbowPersistConfig<StoreState<TData, TParams> & U>
 ): QueryStore<TData, TParams, StoreState<TData, TParams> & U> {
@@ -123,27 +146,32 @@ export function createRainbowQueryStore<
     onFetched,
     transform,
     cacheTime = SEVEN_DAYS,
-    defaultParams,
+    params,
     disableDataCache = true,
     enabled = true,
-    queryKey,
     staleTime = TWO_MINUTES,
   } = config;
 
+  let paramAttachVals: Partial<Record<keyof TParams, AttachValue<unknown>>> = {};
+  let directValues: Partial<TParams> = {};
+
+  if (params) {
+    const result = resolveParams<TParams>(params);
+    paramAttachVals = result.paramAttachVals;
+    directValues = result.directValues;
+  }
+
   if (IS_DEV && staleTime < MIN_STALE_TIME) {
     console.warn(
-      `[RainbowQueryStore${persistConfig?.storageKey ? `: ${persistConfig.storageKey}` : ''}] ❌ Stale times under ${MIN_STALE_TIME / 1000} seconds are not recommended.`
+      `[RainbowQueryStore${persistConfig?.storageKey ? `: ${persistConfig.storageKey}` : ''}] ❌ Stale times under ${
+        MIN_STALE_TIME / 1000
+      } seconds are not recommended.`
     );
   }
 
   let activeFetchPromise: Promise<void> | null = null;
   let activeRefetchTimeout: NodeJS.Timeout | null = null;
   let lastFetchKey: string | null = null;
-
-  const getQueryKey = (params: TParams): string => {
-    const key = typeof queryKey === 'function' ? queryKey(params) : queryKey;
-    return JSON.stringify(key);
-  };
 
   const initialData = {
     data: null,
@@ -155,9 +183,32 @@ export function createRainbowQueryStore<
     subscriptionCount: 0,
   };
 
-  const createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]> = (set, get, api) => {
-    let isRefetchScheduled = false;
+  const getQueryKey = (params: TParams): string => JSON.stringify(Object.values(params));
 
+  const getCurrentResolvedParams = () => {
+    const currentParams = { ...directValues };
+    for (const k in paramAttachVals) {
+      const attachVal = paramAttachVals[k as keyof TParams];
+      if (!attachVal) continue;
+      currentParams[k as keyof TParams] = attachVal.value as TParams[keyof TParams];
+    }
+    return currentParams as TParams;
+  };
+
+  const scheduleNextFetch = (params: TParams) => {
+    if (staleTime <= 0) return;
+    if (activeRefetchTimeout) {
+      clearTimeout(activeRefetchTimeout);
+      activeRefetchTimeout = null;
+    }
+    activeRefetchTimeout = setTimeout(() => {
+      if (baseStore.getState().subscriptionCount > 0) {
+        baseStore.getState().fetch(params, { force: true });
+      }
+    }, staleTime);
+  };
+
+  const createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]> = (set, get, api) => {
     const pruneCache = (state: S): S => {
       if (disableDataCache) return state;
       const now = Date.now();
@@ -170,27 +221,14 @@ export function createRainbowQueryStore<
       return { ...state, queryCache: newCache };
     };
 
-    const scheduleNextFetch = (params: TParams) => {
-      if (isRefetchScheduled || staleTime <= 0) return;
-      if (activeRefetchTimeout) clearTimeout(activeRefetchTimeout);
-
-      isRefetchScheduled = true;
-      activeRefetchTimeout = setTimeout(() => {
-        isRefetchScheduled = false;
-        if (get().subscriptionCount > 0) {
-          get().fetch(params, { force: true });
-        }
-      }, staleTime);
-    };
-
     const baseMethods = {
       async fetch(params: TParams | undefined, options: FetchOptions | undefined) {
         if (!get().enabled) return;
-
-        const effectiveParams = params ?? defaultParams ?? ({} as TParams);
+        const effectiveParams = params ?? getCurrentResolvedParams();
         const currentQueryKey = getQueryKey(effectiveParams);
+        const isLoading = get().status === 'loading';
 
-        if (activeFetchPromise && lastFetchKey === currentQueryKey && get().status === 'loading' && !options?.force) {
+        if (activeFetchPromise && lastFetchKey === currentQueryKey && isLoading && !options?.force) {
           return activeFetchPromise;
         }
 
@@ -207,9 +245,15 @@ export function createRainbowQueryStore<
 
         const fetchOperation = async () => {
           try {
-            const result = await fetcher(effectiveParams);
-            const rawData = result instanceof Promise ? await result : result;
-            const transformedData = transform ? transform(rawData) : (rawData as TData);
+            const rawResult = await fetcher(effectiveParams);
+            let transformedData: TData;
+            try {
+              transformedData = transform ? transform(rawResult) : (rawResult as TData);
+            } catch (transformError) {
+              throw new RainbowError(`[createRainbowQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: transform failed`, {
+                cause: transformError,
+              });
+            }
 
             set(state => {
               const newState = {
@@ -237,15 +281,23 @@ export function createRainbowQueryStore<
             scheduleNextFetch(effectiveParams);
 
             if (onFetched) {
-              onFetched(transformedData, queryCapableStore);
+              try {
+                onFetched(transformedData, queryCapableStore);
+              } catch (onFetchedError) {
+                logger.error(
+                  new RainbowError(
+                    `[createRainbowQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: onFetched callback failed`,
+                    { cause: onFetchedError }
+                  )
+                );
+              }
             }
           } catch (error) {
             logger.error(
               new RainbowError(`[createRainbowQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: Failed to fetch data`),
               { error }
             );
-            // TODO: Improve retry logic
-            set(state => ({ ...state, error, status: 'error' as const }));
+            set(state => ({ ...state, error: error as Error, status: 'error' as const }));
             scheduleNextFetch(effectiveParams);
           } finally {
             activeFetchPromise = null;
@@ -278,12 +330,10 @@ export function createRainbowQueryStore<
         }
         activeFetchPromise = null;
         lastFetchKey = null;
-        isRefetchScheduled = false;
         set(state => ({ ...state, ...initialData }));
       },
     };
 
-    /* If customStateCreator is provided, it will return user-defined fields (U) */
     const userState = customStateCreator?.(set, get, api) ?? ({} as U);
 
     const subscribeWithSelector = api.subscribe;
@@ -294,17 +344,19 @@ export function createRainbowQueryStore<
       const handleSetEnabled = subscribeWithSelector((state: S, prev: S) => {
         if (state.enabled !== prev.enabled) {
           if (state.enabled) {
-            if (!state.data || state.isStale()) {
-              state.fetch(defaultParams);
+            const currentKey = getQueryKey(getCurrentResolvedParams());
+            if (currentKey !== lastFetchKey) {
+              state.fetch(getCurrentResolvedParams(), { force: true });
+            } else if (!state.data || state.isStale()) {
+              state.fetch();
             } else {
-              scheduleNextFetch(defaultParams ?? ({} as TParams));
+              scheduleNextFetch(getCurrentResolvedParams());
             }
           } else {
             if (activeRefetchTimeout) {
               clearTimeout(activeRefetchTimeout);
               activeRefetchTimeout = null;
             }
-            isRefetchScheduled = false;
           }
         }
       });
@@ -312,9 +364,9 @@ export function createRainbowQueryStore<
       const { data, fetch, isStale } = get();
 
       if (!data || isStale()) {
-        fetch(defaultParams, { force: true });
+        fetch(getCurrentResolvedParams(), { force: true });
       } else {
-        scheduleNextFetch(defaultParams ?? ({} as TParams));
+        scheduleNextFetch(getCurrentResolvedParams());
       }
 
       return () => {
@@ -327,7 +379,6 @@ export function createRainbowQueryStore<
               clearTimeout(activeRefetchTimeout);
               activeRefetchTimeout = null;
             }
-            isRefetchScheduled = false;
           }
           return { ...prev, subscriptionCount: newCount };
         });
@@ -359,30 +410,88 @@ export function createRainbowQueryStore<
     isStale: (override?: number) => baseStore.getState().isStale(override),
     reset: () => baseStore.getState().reset(),
     enabled,
+    destroy: () => {
+      for (const unsub of paramUnsubscribes) {
+        unsub();
+      }
+      paramUnsubscribes.length = 0;
+      queryCapableStore.getState().reset();
+    },
   });
+
+  const onParamChange = () => {
+    const newParams = getCurrentResolvedParams();
+    queryCapableStore.fetch(newParams, { force: true });
+  };
+
+  const paramUnsubscribes: Unsubscribe[] = [];
+
+  for (const k in paramAttachVals) {
+    const attachVal = paramAttachVals[k];
+    if (!attachVal) continue;
+
+    const subscribeFn = attachValueSubscriptionMap.get(attachVal);
+    if (ENABLE_LOGS) console.log('[🌀 ParamSubscription 🌀] Subscribed to param:', k);
+
+    if (subscribeFn) {
+      let oldVal = attachVal.value;
+      const unsub = subscribeFn(() => {
+        const newVal = attachVal.value;
+        if (!Object.is(oldVal, newVal)) {
+          oldVal = newVal;
+          if (ENABLE_LOGS) console.log('[🌀 ParamChange 🌀] Param changed:', k);
+          onParamChange();
+        }
+      });
+      paramUnsubscribes.push(unsub);
+    }
+  }
 
   return queryCapableStore;
 }
 
-/**
- * Creates a combined partialize function that ensures internal query state is always
- * persisted while respecting user-defined persistence preferences.
- */
+function isParamFn<T>(param: T | ((resolve: SignalFunction) => AttachValue<T>)): param is (resolve: SignalFunction) => AttachValue<T> {
+  return typeof param === 'function';
+}
+
+function resolveParams<TParams extends Record<string, unknown>>(params: {
+  [K in keyof TParams]: ParamResolvable<TParams[K]>;
+}): ResolvedParamsResult<TParams> {
+  const resolvedParams = {} as TParams;
+  const paramAttachVals: Partial<Record<keyof TParams, AttachValue<unknown>>> = {};
+  const directValues: Partial<TParams> = {};
+
+  for (const key in params) {
+    const param = params[key];
+    if (isParamFn(param)) {
+      const attachVal = param($);
+      resolvedParams[key] = attachVal.value as TParams[typeof key];
+      paramAttachVals[key] = attachVal;
+    } else {
+      resolvedParams[key] = param as TParams[typeof key];
+      directValues[key] = param as TParams[typeof key];
+    }
+  }
+
+  return { resolvedParams, paramAttachVals, directValues };
+}
+
 function createBlendedPartialize<TData, TParams extends Record<string, unknown>, S extends StoreState<TData, TParams> & U, U = unknown>(
   userPartialize: ((state: StoreState<TData, TParams> & U) => Partial<StoreState<TData, TParams> & U>) | undefined
 ) {
   return (state: S) => {
+    const clonedState = { ...state };
     const internalStateToPersist: Partial<S> = {};
 
-    for (const key in state) {
+    for (const key in clonedState) {
       if (key in SHOULD_PERSIST_INTERNAL_STATE_MAP) {
-        if (SHOULD_PERSIST_INTERNAL_STATE_MAP[key]) internalStateToPersist[key] = state[key];
-        delete state[key];
+        if (SHOULD_PERSIST_INTERNAL_STATE_MAP[key]) internalStateToPersist[key] = clonedState[key];
+        delete clonedState[key];
       }
     }
 
     return {
-      ...(userPartialize ? userPartialize(state) : state),
+      ...(userPartialize ? userPartialize(clonedState) : clonedState),
       ...internalStateToPersist,
     } satisfies Partial<S>;
   };
