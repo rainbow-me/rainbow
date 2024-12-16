@@ -1,7 +1,7 @@
 /** @refresh reset */
 import React from 'react';
 import Animated, { LinearTransition, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { AccentColorProvider, Box, IconContainer, Text, TextShadow } from '@/design-system';
+import { Box, IconContainer, Text, TextShadow } from '@/design-system';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SectionId, useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
 
@@ -29,7 +29,7 @@ interface SectionHeaderProps {
 }
 
 const SectionHeader = React.memo(function SectionHeader({ icon, primaryText, secondaryText, id }: SectionHeaderProps) {
-  const { accentColors, expandedSections } = useExpandedAssetSheetContext();
+  const { expandedSections } = useExpandedAssetSheetContext();
 
   const rotationStyle = useAnimatedStyle(
     () => ({
@@ -39,7 +39,7 @@ const SectionHeader = React.memo(function SectionHeader({ icon, primaryText, sec
         },
       ],
     }),
-    []
+    [expandedSections]
   );
 
   return (
@@ -53,40 +53,38 @@ const SectionHeader = React.memo(function SectionHeader({ icon, primaryText, sec
       }}
       scaleTo={0.96}
     >
-      <AccentColorProvider color={accentColors.opacity100}>
-        <Box height={{ custom: 14 }} flexDirection="row" justifyContent="space-between">
-          <Box flexDirection="row" gap={10}>
-            <IconContainer height={14} width={24}>
-              <TextShadow blur={12} color={accentColors.opacity100} shadowOpacity={0.24}>
-                <Text weight="bold" align="center" size="17pt" color="accent">
-                  {icon}
-                </Text>
-              </TextShadow>
-            </IconContainer>
-            <Box flexDirection="row" gap={5}>
-              <Text weight="heavy" size="20pt" color="label">
-                {primaryText}
+      <Box height={{ custom: 14 }} flexDirection="row" justifyContent="space-between" alignItems="center">
+        <Box flexDirection="row" gap={10} alignItems="center">
+          <IconContainer height={14} width={24}>
+            <TextShadow blur={12} shadowOpacity={0.24}>
+              <Text weight="bold" align="center" size="17pt" color="accent">
+                {icon}
               </Text>
-              {secondaryText && (
-                <TextShadow blur={12} color={accentColors.opacity100} shadowOpacity={0.24}>
-                  <Text weight="heavy" size="20pt" color="accent">
-                    {secondaryText}
-                  </Text>
-                </TextShadow>
-              )}
-            </Box>
-          </Box>
-          <AnimatedBox style={rotationStyle}>
-            <IconContainer height={14} width={24}>
-              <TextShadow blur={12} color={accentColors.opacity100} shadowOpacity={0.24}>
-                <Text weight="heavy" align="center" size="17pt" color="accent">
-                  􀆈
+            </TextShadow>
+          </IconContainer>
+          <Box flexDirection="row" gap={5}>
+            <Text weight="heavy" size="20pt" color="label">
+              {primaryText}
+            </Text>
+            {secondaryText && (
+              <TextShadow blur={12} shadowOpacity={0.24}>
+                <Text weight="heavy" size="20pt" color="accent">
+                  {secondaryText}
                 </Text>
               </TextShadow>
-            </IconContainer>
-          </AnimatedBox>
+            )}
+          </Box>
         </Box>
-      </AccentColorProvider>
+        <AnimatedBox style={rotationStyle}>
+          <IconContainer height={14} width={24}>
+            <TextShadow blur={12} shadowOpacity={0.24}>
+              <Text weight="heavy" align="center" size="17pt" color="accent">
+                􀆈
+              </Text>
+            </TextShadow>
+          </IconContainer>
+        </AnimatedBox>
+      </Box>
     </GestureHandlerButton>
   );
 });
@@ -98,8 +96,9 @@ export function CollapsibleSection({ content, icon, id, primaryText, secondaryTe
     () => ({
       maxHeight: withTiming(expandedSections.value[id] ? ARBITRARILY_LARGE_MAX_HEIGHT : 0, ANIMATION_CONFIG),
       opacity: withTiming(expandedSections.value[id] ? 1 : 0, ANIMATION_CONFIG),
+      display: expandedSections.value[id] ? 'flex' : 'none',
     }),
-    []
+    [expandedSections]
   );
 
   return (
