@@ -410,11 +410,6 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
 
             <View style={{ gap: 12, marginLeft: 'auto' }}>
               <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center' }}>
-                {token.priceChange.day !== 0 && (
-                  <Text color={getPriceChangeColor(token.priceChange.day)} size="11pt" weight="bold">
-                    {token.priceChange.day > 0 ? '􀄨' : '􀄩'}
-                  </Text>
-                )}
                 <Text color={getPriceChangeColor(token.priceChange.day)} size="15pt" weight="bold">
                   {formatNumber(token.priceChange.day, { decimals: 2, useOrderSuffix: true })}%
                 </Text>
