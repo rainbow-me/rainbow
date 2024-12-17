@@ -171,6 +171,10 @@ function CurrencyTile({
                 chainId={asset?.chainId || ChainId.mainnet}
                 symbol={asset?.symbol || ''}
                 color={asset?.colors?.primary || asset?.colors?.fallback || undefined}
+                chainBadgePosition={{
+                  x: -12,
+                  y: -6,
+                }}
               />
             ) : (
               <>

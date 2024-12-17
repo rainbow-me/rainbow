@@ -134,17 +134,19 @@ const AvailableNetworksv2 = ({
     convertAssetAndNavigate(availableChainIds[0]);
   }, [availableChainIds, convertAssetAndNavigate]);
 
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
   const networkMenuItems = useBackendNetworksStore
     .getState()
     .getSupportedChainIds()
     .filter(chainId => chainId !== ChainId.mainnet)
+    .filter(chainId => availableChainIds.includes(chainId))
     .map(chainId => useBackendNetworksStore.getState().getDefaultChains()[chainId])
     .map(chain => ({
       actionKey: `${chain.id}`,
       actionTitle: useBackendNetworksStore.getState().getChainsLabel()[chain.id],
       icon: {
         iconType: 'ASSET',
-        iconValue: `${useBackendNetworksStore.getState().getChainsName()[chain.id]}Badge${chain.id === ChainId.mainnet ? '' : 'NoShadow'}`,
+        iconValue: chain.id === ChainId.mainnet ? 'ethereumBadge' : `${chainsName[chain.id]}BadgeNoShadow`,
       },
     }));
 

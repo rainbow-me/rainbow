@@ -701,17 +701,20 @@ const MintSheet = () => {
                   symbol="􀤆"
                   label={i18n.t(i18n.l.minting.network)}
                   value={
-                    <Inset vertical={{ custom: -4 }}>
-                      <Inline space="4px" alignVertical="center" alignHorizontal="right">
-                        <Bleed vertical="4px" horizontal="6px">
-                          <ChainImage chainId={chainId} size={32} />
-                        </Bleed>
-
-                        <Text color="labelSecondary" align="right" size="17pt" weight="medium">
-                          {`${useBackendNetworksStore.getState().getDefaultChains()[chainId].name}`}
-                        </Text>
-                      </Inline>
-                    </Inset>
+                    <Inline space="4px" alignVertical="center" alignHorizontal="right">
+                      <Columns>
+                        <Column width="content">
+                          <Box marginTop={{ custom: -6 }}>
+                            <ChainImage chainId={chainId} size={32} />
+                          </Box>
+                        </Column>
+                        <Column width="content">
+                          <Text color="labelSecondary" align="right" size="17pt" weight="medium">
+                            {`${useBackendNetworksStore.getState().getDefaultChains()[chainId].name}`}
+                          </Text>
+                        </Column>
+                      </Columns>
+                    </Inline>
                   }
                 />
               </Stack>

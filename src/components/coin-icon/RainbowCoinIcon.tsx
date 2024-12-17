@@ -29,7 +29,7 @@ export default React.memo(function RainbowCoinIcon({
   symbol,
   forceDarkMode,
   color,
-  showBadge = true,
+  showBadge = chainId !== ChainId.mainnet,
   chainSize = (size * 1.5) / 2,
   chainBadgePosition = {},
 }: {

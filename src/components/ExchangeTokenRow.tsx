@@ -43,6 +43,9 @@ export default React.memo(function ExchangeTokenRow({
   const rowTestID = `${testID}-exchange-coin-row-${symbol ?? item?.symbol ?? ''}-${chainId || ChainId.mainnet}`;
 
   const isInfoButtonVisible = !item?.isNativeAsset || (!isNativeAsset(address ?? item?.address, chainId) && !showBalance);
+
+  console.log('chainId', chainId);
+
   return (
     <Columns alignVertical="center" space="10px">
       <Column>
@@ -63,6 +66,10 @@ export default React.memo(function ExchangeTokenRow({
                   chainId={chainId}
                   symbol={item?.symbol || symbol}
                   color={item?.colors?.primary || item?.colors?.fallback || undefined}
+                  chainBadgePosition={{
+                    x: -12,
+                    y: -6,
+                  }}
                 />
               </View>
             </Column>

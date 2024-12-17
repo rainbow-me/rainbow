@@ -124,6 +124,10 @@ export default React.memo(function FastCurrencySelectionRow({
               chainId={chainId}
               symbol={item?.symbol || symbol}
               color={item?.colors?.primary || item?.colors?.fallback || undefined}
+              chainBadgePosition={{
+                x: -12,
+                y: -6,
+              }}
             />
           </View>
           <View style={sx.innerContainer}>

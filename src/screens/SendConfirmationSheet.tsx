@@ -515,6 +515,10 @@ export const SendConfirmationSheet = () => {
                       chainId={asset?.chainId}
                       symbol={asset?.symbol || ''}
                       color={asset?.colors?.primary || asset?.colors?.fallback || undefined}
+                      chainBadgePosition={{
+                        x: -14,
+                        y: -8,
+                      }}
                     />
                   )}
                 </Row>
