@@ -1,14 +1,14 @@
 /** @refresh reset */
 import React from 'react';
-import Animated, { LinearTransition, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { LinearTransition, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { Box, IconContainer, Text, TextShadow } from '@/design-system';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { SectionId, useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
+import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
 const ARBITRARILY_LARGE_MAX_HEIGHT = 1000;
 
-const ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
+const ANIMATION_CONFIG = SPRING_CONFIGS.snappySpringConfig;
 
 export const LAYOUT_ANIMATION = LinearTransition.springify()
   .mass(ANIMATION_CONFIG.mass as number)
@@ -107,7 +107,9 @@ export function CollapsibleSection({ content, icon, id, primaryText, secondaryTe
   return (
     <AnimatedBox layout={LAYOUT_ANIMATION}>
       <SectionHeader icon={icon} primaryText={primaryText} secondaryText={secondaryText} id={id} />
-      <AnimatedBox style={contentStyle}>{content}</AnimatedBox>
+      <AnimatedBox style={contentStyle}>
+        <Box paddingTop="24px">{content}</Box>
+      </AnimatedBox>
     </AnimatedBox>
   );
 }
