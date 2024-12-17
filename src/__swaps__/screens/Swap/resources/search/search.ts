@@ -28,7 +28,7 @@ export type TokenSearchArgs = {
   chainId?: ChainId;
   fromChainId?: ChainId | '';
   keys?: TokenSearchAssetKey[];
-  list: TokenSearchListId;
+  list?: TokenSearchListId;
   threshold?: TokenSearchThreshold;
   query?: string;
   shouldPersist?: boolean;
@@ -55,7 +55,7 @@ async function tokenSearchQueryFunction({
 }: QueryFunctionArgs<typeof tokenSearchQueryKey>) {
   const queryParams: {
     keys?: string;
-    list: TokenSearchListId;
+    list?: TokenSearchListId;
     threshold?: TokenSearchThreshold;
     query?: string;
     fromChainId?: number | string;
@@ -74,7 +74,7 @@ async function tokenSearchQueryFunction({
   }
 
   const url = `${chainId ? `/${chainId}` : ''}/?${qs.stringify(queryParams)}`;
-  const isSearchingVerifiedAssets = queryParams.list === 'verifiedAssets';
+  const isSearchingVerifiedAssets = (queryParams.list && queryParams.list === 'verifiedAssets') || !queryParams.list;
 
   try {
     if (isAddressSearch && isSearchingVerifiedAssets) {
@@ -147,7 +147,7 @@ export function useTokenSearch(
 }
 
 export function useTokenSearchAllNetworks(
-  { list, query }: Omit<TokenSearchArgs, 'chainId' | 'fromChainId'>,
+  { query }: Omit<TokenSearchArgs, 'list' | 'chainId' | 'fromChainId'>,
   config: QueryConfigWithSelect<TokenSearchResult, Error, TokenSearchResult, TokenSearchQueryKey> = {}
 ) {
   const getSupportedChainIds = useBackendNetworksStore(state => state.getSupportedChainIds);
@@ -156,7 +156,7 @@ export function useTokenSearchAllNetworks(
   const queries = useQueries({
     queries: supportedChains.map(id => {
       return {
-        queryKey: tokenSearchQueryKey({ chainId: id, list, query }),
+        queryKey: tokenSearchQueryKey({ chainId: id, query }),
         queryFn: tokenSearchQueryFunction,
         refetchOnWindowFocus: false,
         ...config,
