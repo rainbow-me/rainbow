@@ -22,10 +22,10 @@ import { colors } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
 import { useTheme } from '@/theme';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import React, { FlatList, View } from 'react-native';
+import React, { Dimensions, FlatList, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated, { LinearTransition, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
 import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWallets';
 import { ImgixImage } from '../images';
@@ -190,12 +190,16 @@ function CategoryFilterButton({
           },
           animatedStyles,
         ]}
-        layout={LinearTransition}
       >
         <Text color={{ custom: iconColor }} size="icon 13px" weight="heavy" style={{ width: iconWidth }}>
           {icon}
         </Text>
-        <Text color={selected ? { custom: 'black' } : 'labelSecondary'} size="17pt" weight={selected ? 'heavy' : 'bold'}>
+        <Text
+          color={selected ? { custom: 'black' } : 'labelSecondary'}
+          size="17pt"
+          style={{ letterSpacing: selected ? 0 : 0.9 }}
+          weight={selected ? 'heavy' : 'bold'}
+        >
           {label}
         </Text>
       </AnimatedLinearGradient>
@@ -383,11 +387,22 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
 
           <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
             <View style={{ gap: 12 }}>
-              <View style={{ flexDirection: 'row', gap: 6, alignItems: 'baseline' }}>
-                <Text color="label" size="15pt" weight="bold" style={{ maxWidth: 100 }} numberOfLines={1}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: 6,
+                  alignItems: 'baseline',
+                  maxWidth:
+                    Dimensions.get('screen').width -
+                    40 - // 40 screen paddings
+                    (40 + 12) - // 40 token icon, 12 gap
+                    70, // 70 width for price change %
+                }}
+              >
+                <Text color="label" size="15pt" weight="bold" style={{ maxWidth: 100, flexShrink: 1 }} numberOfLines={1}>
                   {token.name}
                 </Text>
-                <Text color="labelTertiary" size="11pt" weight="bold" style={{ maxWidth: 100 }} numberOfLines={1}>
+                <Text color="labelTertiary" size="11pt" weight="bold" style={{ flexGrow: 1 }} numberOfLines={1}>
                   {token.symbol}
                 </Text>
                 <Text color="label" size="15pt" weight="bold">
