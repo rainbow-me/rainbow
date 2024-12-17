@@ -377,7 +377,6 @@ export const ActivityIcon = ({
   return (
     <View style={sx.iconContainer}>
       <RainbowCoinIcon
-        size={40}
         icon={transaction?.asset?.icon_url}
         chainId={transaction?.asset?.chainId || ChainId.mainnet}
         symbol={transaction?.asset?.symbol || ''}
@@ -412,7 +411,7 @@ export default React.memo(function TransactionCoinRow({
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96} uniqueId={`${item.hash}-${item.chainId}`}>
       <View style={sx.wholeRow} testID={`${item.title}-${item.description}-${item.balance?.display}`}>
         <View style={sx.icon}>
-          <ActivityIcon size={40} transaction={item} theme={theme} />
+          <ActivityIcon transaction={item} theme={theme} />
         </View>
 
         <View style={sx.column}>

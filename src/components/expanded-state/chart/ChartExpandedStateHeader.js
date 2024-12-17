@@ -11,7 +11,6 @@ import { useAccountSettings, useBooleanState } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ChainId } from '@/state/backendNetworks/types';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -109,7 +108,6 @@ export default function ChartExpandedStateHeader({
     <Container showChart={showChart}>
       <Row align="center" justify="space-between" testID={testID ? `${testID}-expanded-state-header` : 'expanded-state-header'}>
         <RainbowCoinIcon
-          size={40}
           icon={asset?.icon_url}
           chainId={asset?.chainId}
           symbol={asset?.symbol}

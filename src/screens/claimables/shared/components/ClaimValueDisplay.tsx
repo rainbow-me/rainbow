@@ -35,7 +35,6 @@ export function ClaimValueDisplay({
             }
           >
             <RainbowCoinIcon
-              size={40}
               icon={tokenIconUrl}
               chainId={chainId}
               symbol={tokenSymbol}

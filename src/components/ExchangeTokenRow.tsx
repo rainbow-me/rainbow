@@ -61,7 +61,6 @@ export default React.memo(function ExchangeTokenRow({
             <Column width="content">
               <View style={{ height: 59, paddingTop: 9 }}>
                 <RainbowCoinIcon
-                  size={40}
                   icon={item?.icon_url || ''}
                   chainId={chainId}
                   symbol={item?.symbol || symbol}

@@ -166,7 +166,6 @@ function CurrencyTile({
           <Box>
             {showAsset ? (
               <RainbowCoinIcon
-                size={40}
                 icon={asset?.icon_url}
                 chainId={asset?.chainId || ChainId.mainnet}
                 symbol={asset?.symbol || ''}

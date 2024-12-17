@@ -75,6 +75,10 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
             chainId={assets[0].asset.chain_id}
             symbol={assets[0].asset.symbol}
             color={assets[0].asset.colors?.primary || assets[0].asset.colors?.fallback || undefined}
+            chainBadgePosition={{
+              x: -12,
+              y: -6,
+            }}
           />
         )}
         {/* TODO: add three+ coins icon */}

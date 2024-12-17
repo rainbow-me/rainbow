@@ -129,7 +129,6 @@ export function CoinRow({ isFavorite, onPress, output, uniqueId, testID, ...asse
                 <Box flexDirection="row" gap={10} flexShrink={1} justifyContent="center">
                   <RainbowCoinIcon
                     icon={icon_url}
-                    size={40}
                     chainId={chainId}
                     symbol={symbol || ''}
                     color={colors?.primary}

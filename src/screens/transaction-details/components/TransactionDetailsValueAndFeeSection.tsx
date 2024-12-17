@@ -86,7 +86,6 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
                   </View>
                 ) : (
                   <RainbowCoinIcon
-                    size={40}
                     icon={assetData?.icon_url}
                     chainId={assetData?.chainId || ChainId.mainnet}
                     symbol={assetData?.symbol || ''}

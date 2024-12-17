@@ -249,7 +249,6 @@ export const explainers = (params, theme) => {
     gas: {
       logo: (
         <RainbowCoinIcon
-          size={40}
           icon={params?.nativeAsset?.icon_url || params?.nativeAsset?.iconURL}
           symbol={params?.nativeAsset?.symbol}
           chainId={chainId}
@@ -474,7 +473,6 @@ export const explainers = (params, theme) => {
       logo: (
         <RowWithMargins justify="center" margin={35} marginBottom={10}>
           <RainbowCoinIcon
-            size={40}
             icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
             chainId={params?.inputCurrency?.chainId}
@@ -530,7 +528,6 @@ export const explainers = (params, theme) => {
       logo: (
         <RowWithMargins justify="center" margin={35} marginBottom={10}>
           <RainbowCoinIcon
-            size={40}
             icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
             chainId={params?.inputCurrency?.chainId}
@@ -539,7 +536,6 @@ export const explainers = (params, theme) => {
           />
           <DoubleChevron />
           <RainbowCoinIcon
-            size={40}
             icon={params?.outputCurrency?.icon_url}
             symbol={params?.outputCurrency?.symbol}
             chainId={params?.outputCurrency?.chainId}
@@ -556,7 +552,6 @@ export const explainers = (params, theme) => {
       logo: (
         <RowWithMargins justify="center" margin={35} marginBottom={10}>
           <RainbowCoinIcon
-            size={40}
             icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
             chainId={params?.inputCurrency?.chainId}
@@ -565,7 +560,6 @@ export const explainers = (params, theme) => {
           />
           <DoubleChevron />
           <RainbowCoinIcon
-            size={40}
             icon={params?.outputCurrency?.icon_url}
             symbol={params?.outputCurrency?.symbol}
             chainId={params?.outputCurrency?.chainId}

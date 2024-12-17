@@ -119,7 +119,6 @@ export default React.memo(function FastCurrencySelectionRow({
         <View style={sx.rootContainer}>
           <View style={sx.iconContainer}>
             <RainbowCoinIcon
-              size={40}
               icon={item?.iconUrl || ''}
               chainId={chainId}
               symbol={item?.symbol || symbol}
