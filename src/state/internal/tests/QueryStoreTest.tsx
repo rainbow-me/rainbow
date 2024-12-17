@@ -57,7 +57,7 @@ function logFetchInfo(params: QueryParams) {
   });
 }
 
-export const userAssetsTestStore = createQueryStore<ParsedAssetsDictByChain, QueryParams, TestStore>(
+export const useUserAssetsTestStore = createQueryStore<ParsedAssetsDictByChain, QueryParams, TestStore>(
   {
     fetcher: ({ address, currency }) => {
       if (ENABLE_LOGS) logFetchInfo({ address, currency });
@@ -89,8 +89,8 @@ export const userAssetsTestStore = createQueryStore<ParsedAssetsDictByChain, Que
 );
 
 export const UserAssetsTest = memo(function UserAssetsTest() {
-  const data = userAssetsTestStore(state => state.userAssets);
-  const enabled = userAssetsTestStore(state => state.enabled);
+  const data = useUserAssetsTestStore(state => state.userAssets);
+  const enabled = useUserAssetsTestStore(state => state.enabled);
 
   useEffect(() => {
     if (ENABLE_LOGS) {
@@ -135,12 +135,12 @@ export const UserAssetsTest = memo(function UserAssetsTest() {
           </ButtonPressAnimation>
           <ButtonPressAnimation
             onPress={() => {
-              userAssetsTestStore.setState({ enabled: !enabled });
+              useUserAssetsTestStore.setState({ enabled: !enabled });
             }}
             style={styles.button}
           >
             <Text color="label" size="17pt" weight="heavy">
-              {userAssetsTestStore.getState().enabled ? 'Disable Fetching' : 'Enable Fetching'}
+              {useUserAssetsTestStore.getState().enabled ? 'Disable Fetching' : 'Enable Fetching'}
             </Text>
           </ButtonPressAnimation>
         </View>
@@ -149,7 +149,7 @@ export const UserAssetsTest = memo(function UserAssetsTest() {
   );
 });
 
-if (ENABLE_LOGS) console.log('[💾 UserAssetsTest 💾] Initial data exists:', !!userAssetsTestStore.getState().userAssets);
+if (ENABLE_LOGS) console.log('[💾 UserAssetsTest 💾] Initial data exists:', !!useUserAssetsTestStore.getState().userAssets);
 
 const styles = StyleSheet.create({
   button: {
