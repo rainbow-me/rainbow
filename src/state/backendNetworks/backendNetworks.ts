@@ -433,6 +433,17 @@ export const getChainsLabelWorklet = (backendNetworks: SharedValue<BackendNetwor
   );
 };
 
+export const getChainsBadgeWorklet = (backendNetworks: SharedValue<BackendNetworksResponse>) => {
+  'worklet';
+  return backendNetworks.value.networks.reduce(
+    (acc, backendNetwork: BackendNetwork) => {
+      acc[parseInt(backendNetwork.id, 10)] = backendNetwork.icons.badgeURL;
+      return acc;
+    },
+    {} as Record<number, string>
+  );
+};
+
 export const getChainsNameWorklet = (backendNetworks: SharedValue<BackendNetworksResponse>) => {
   'worklet';
   return backendNetworks.value.networks.reduce(
