@@ -38,7 +38,7 @@ export const TapToDismiss = memo(function TapToDismiss() {
 });
 
 const PANEL_INSET = 8;
-const PANEL_WIDTH = DEVICE_WIDTH - PANEL_INSET * 2;
+export const PANEL_WIDTH = DEVICE_WIDTH - PANEL_INSET * 2;
 const PANEL_BORDER_RADIUS = 42;
 const LIST_SCROLL_INDICATOR_BOTTOM_INSET = { bottom: PANEL_BORDER_RADIUS };
 

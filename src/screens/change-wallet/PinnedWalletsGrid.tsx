@@ -1,6 +1,5 @@
 import { Draggable, DraggableGrid, DraggableGridProps, UniqueIdentifier } from '@/components/drag-and-drop';
 import { Box, Inline, Stack, Text } from '@/design-system';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import React, { useCallback, useMemo } from 'react';
 import { AddressItem, AddressMenuAction, AddressMenuActionData } from './ChangeWalletSheet';
 import { AddressAvatar } from './AddressAvatar';
@@ -13,11 +12,13 @@ import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 import ConditionalWrap from 'conditional-wrap';
 import { address } from '@/utils/abbreviations';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 
 const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;
+const GRID_GAP = 28;
 const MAX_AVATAR_SIZE = 91;
-const HORIZONTAL_PAGE_INSET = 24;
+const PAGE_INSET_HORIZONTAL = 24;
 
 type PinnedWalletsGridProps = {
   walletItems: AddressItem[];
@@ -49,15 +50,22 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletItems.length]);
 
-  // TODO: scale down if cannot fit three items in row
-  const avatarSize = MAX_AVATAR_SIZE;
+  const avatarSize = useMemo(
+    () => Math.min((PANEL_WIDTH - PAGE_INSET_HORIZONTAL * 2 - GRID_GAP * (PINS_PER_ROW - 1)) / PINS_PER_ROW, MAX_AVATAR_SIZE),
+    []
+  );
 
   return (
-    <Box paddingTop="20px" paddingBottom="28px" alignItems="center" justifyContent="center" paddingHorizontal="24px">
+    <Box
+      paddingTop="20px"
+      paddingBottom="28px"
+      alignItems="center"
+      justifyContent="center"
+      paddingHorizontal={{ custom: PAGE_INSET_HORIZONTAL }}
+    >
       <DraggableGrid
         direction="row"
-        // TODO: design spec is 28px, but is too large
-        gap={24}
+        gap={GRID_GAP}
         onOrderChange={onOrderChange}
         size={PINS_PER_ROW}
         style={{
