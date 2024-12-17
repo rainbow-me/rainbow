@@ -6,7 +6,7 @@ import { Text } from '@/design-system';
 import { SupportedCurrencyKey } from '@/references';
 import { queryUserAssets } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { ParsedAssetsDictByChain } from '@/__swaps__/types/assets';
-import { createRainbowQueryStore, time } from '../createRainbowQueryStore';
+import { createQueryStore, time } from '../createQueryStore';
 import { createRainbowStore } from '../createRainbowStore';
 
 const ENABLE_LOGS = false;
@@ -45,25 +45,25 @@ type TestStore = {
 type QueryParams = { address: Address; currency: SupportedCurrencyKey };
 
 function logFetchInfo(params: QueryParams) {
-  console.log('[🔄 logFetchInfo 🔄] Current params:', JSON.stringify(Object.values(params), null, 2));
   const formattedTimeWithSeconds = new Date(Date.now()).toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
   });
-  console.log('[🔄 Requesting Fetch 🔄] Last fetch attempt:', formattedTimeWithSeconds, '\nParams:', {
+  console.log('[🔄 UserAssetsTest - logFetchInfo 🔄]', '\nTime:', formattedTimeWithSeconds, '\nParams:', {
     address: params.address,
     currency: params.currency,
+    raw: JSON.stringify(Object.values(params), null, 2),
   });
 }
 
-export const userAssetsTestStore = createRainbowQueryStore<ParsedAssetsDictByChain, QueryParams, TestStore>(
+export const userAssetsTestStore = createQueryStore<ParsedAssetsDictByChain, QueryParams, TestStore>(
   {
     fetcher: ({ address, currency }) => {
       if (ENABLE_LOGS) logFetchInfo({ address, currency });
       return queryUserAssets({ address, currency });
     },
-    onFetched: (data, store) => store.setState({ userAssets: data }),
+    setData: (data, set) => set({ userAssets: data }),
 
     params: {
       address: $ => $(useAddressStore).address,
@@ -81,7 +81,11 @@ export const userAssetsTestStore = createRainbowQueryStore<ParsedAssetsDictByCha
         .reduce((max, asset) => Math.max(max, Number(asset.balance.display)), 0),
 
     setUserAssets: (data: ParsedAssetsDictByChain) => set({ userAssets: data }),
-  })
+  }),
+
+  {
+    storageKey: 'userAssetsQueryStoreTest',
+  }
 );
 
 export const UserAssetsTest = memo(function UserAssetsTest() {
@@ -110,7 +114,7 @@ export const UserAssetsTest = memo(function UserAssetsTest() {
         <View style={styles.buttonGroup}>
           <ButtonPressAnimation
             onPress={() => {
-              const currentAddress = useAddressStore.getState().nestedAddressTest.address;
+              const currentAddress = useAddressStore.getState().address;
               switch (currentAddress) {
                 case testAddresses[0]:
                   useAddressStore.getState().setAddress(testAddresses[1]);

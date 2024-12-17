@@ -7,92 +7,212 @@ import { $, AttachValue, attachValueSubscriptionMap, SignalFunction, Unsubscribe
 
 const ENABLE_LOGS = false;
 
+/**
+ * A set of constants representing the various stages of a query's remote data fetching process.
+ */
 export const QueryStatuses = {
+  Error: 'error',
   Idle: 'idle',
   Loading: 'loading',
   Success: 'success',
-  Error: 'error',
 } as const;
 
 /**
- * Represents the status of the remote data fetching process.
+ * Represents the current status of the query's remote data fetching operation.
+ *
+ * Possible values:
+ * - **`'error'`**  : The most recent request encountered an error.
+ * - **`'idle'`**   : No request in progress, no error, no data yet.
+ * - **`'loading'`** : A request is currently in progress.
+ * - **`'success'`** : The most recent request has succeeded, and `data` is available.
  */
 export type QueryStatus = (typeof QueryStatuses)[keyof typeof QueryStatuses];
 
 /**
- * Configuration options for remote data fetching.
+ * Defines additional options for a data fetch operation.
  */
 interface FetchOptions {
+  /**
+   * Overrides the default cache duration for this fetch, in milliseconds.
+   * When data in the cache is older than this duration, it will be considered expired and
+   * become eligible for pruning.
+   */
   cacheTime?: number;
+  /**
+   * Forces a fetch request even if the current data is fresh and not stale.
+   * If `true`, the fetch operation bypasses existing cached data.
+   */
   force?: boolean;
+  /**
+   * Overrides the default stale duration for this fetch, in milliseconds.
+   * When data is older than this duration, it is considered stale and if the query is active,
+   * a background refetch will occur.
+   */
   staleTime?: number;
 }
 
 /**
- * Represents a cached query result.
+ * Represents an entry in the query cache, which stores fetched data along with metadata.
  */
 interface CacheEntry<TData> {
-  data: TData;
+  data: TData | null;
   lastFetchedAt: number;
 }
 
 /**
- * A specialized store interface combining Zustand's store API with remote fetching.
+ * A specialized store interface that combines Zustand's store capabilities with remote data fetching support.
+ *
+ * In addition to Zustand's store API (such as `getState()` and `subscribe()`), this interface provides:
+ * - **`enabled`**: A boolean indicating if the store is actively fetching data.
+ * - **`fetch(params, options)`**: Initiates a data fetch operation.
+ * - **`isDataExpired(override?)`**: Checks if the current data has expired based on `cacheTime`.
+ * - **`isStale(override?)`**: Checks if the current data is stale based on `staleTime`.
+ * - **`reset()`**: Resets the store to its initial state, clearing data and errors.
  */
 export interface QueryStore<TData, TParams extends Record<string, unknown>, S extends StoreState<TData, TParams>>
   extends UseBoundStore<StoreApi<S>> {
+  /**
+   * Indicates whether the store should actively fetch data.
+   * When `false`, the store won't automatically refetch data.
+   */
   enabled: boolean;
-  destroy: () => void;
+  /**
+   * Initiates a data fetch for the given parameters. If no parameters are provided, the store's
+   * current parameters are used.
+   * @param params - Optional parameters to pass to the fetcher function.
+   * @param options - Optional {@link FetchOptions} to customize the fetch behavior.
+   * @returns A promise that resolves when the fetch operation completes.
+   */
   fetch: (params?: TParams, options?: FetchOptions) => Promise<void>;
+  /**
+   * Returns the cached data, if available, for the current query params.
+   * @returns The cached data, or `null` if no data is available.
+   */
+  getData: (params?: TParams) => TData | null;
+  /**
+   * Determines if the current data is expired, meaning it has exceeded the `cacheTime` duration.
+   * @param override - An optional override for the default cache time, in milliseconds.
+   * @returns `true` if the data is expired, otherwise `false`.
+   */
   isDataExpired: (override?: number) => boolean;
+  /**
+   * Determines if the current data is stale, meaning it has exceeded the `staleTime` duration.
+   * Stale data may be refreshed automatically in the background.
+   * @param override - An optional override for the default stale time, in milliseconds.
+   * @returns `true` if the data is stale, otherwise `false`.
+   */
   isStale: (override?: number) => boolean;
+  /**
+   * Resets the store to its initial state, clearing data, error, and any cached values.
+   */
   reset: () => void;
 }
 
 /**
- * The base store state including query-related fields and actions.
+ * The state structure managed by the query store, including query-related fields and actions.
+ * This type is generally internal, and extended by user-defined states when creating a store.
  */
 type StoreState<TData, TParams extends Record<string, unknown>> = {
-  data: TData | null;
   enabled: boolean;
   error: Error | null;
   lastFetchedAt: number | null;
-  queryCache: Record<string, CacheEntry<TData>>;
+  queryCache: Record<string, CacheEntry<TData> | undefined>;
   status: QueryStatus;
   subscriptionCount: number;
   fetch: (params?: TParams, options?: FetchOptions) => Promise<void>;
+  getData: (params?: TParams) => TData | null;
   isDataExpired: (cacheTimeOverride?: number) => boolean;
   isStale: (staleTimeOverride?: number) => boolean;
   reset: () => void;
 };
 
 /**
- * Configuration options for creating a remote-enabled Rainbow store.
+ * Configuration options for creating a query-enabled Rainbow store.
  */
-type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string, unknown>, TData, S extends StoreState<TData, TParams>> = {
+export type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string, unknown>, TData, S extends StoreState<TData, TParams>> = {
+  /**
+   * A function responsible for fetching data from a remote source.
+   * Receives parameters of type `TParams` and returns either a promise or a raw data value of type `TQueryFnData`.
+   */
   fetcher: (params: TParams) => TQueryFnData | Promise<TQueryFnData>;
+  /**
+   * A callback invoked whenever fresh data is successfully fetched.
+   * Receives the transformed data and the store instance, allowing for side effects or additional updates.
+   */
   onFetched?: (data: TData, store: QueryStore<TData, TParams, S>) => void;
+  /**
+   * A function that overrides the default behavior of setting the fetched data in the store's query cache.
+   * Receives the transformed data and a set function that updates the store state.
+   */
+  setData?: (data: TData, set: (partial: S | Partial<S> | ((state: S) => S | Partial<S>)) => void) => void;
+  /**
+   * Suppresses warnings in the event a `staleTime` under the minimum is desired.
+   * @default false
+   */
+  suppressStaleTimeWarning?: boolean;
+  /**
+   * A function to transform the raw fetched data (`TQueryFnData`) into another form (`TData`).
+   * If not provided, the raw data returned by `fetcher` is used.
+   */
   transform?: (data: TQueryFnData) => TData;
+  /**
+   * The maximum duration, in milliseconds, that fetched data is considered fresh.
+   * After this time, data is considered expired and will be refetched when requested.
+   * @default time.days(7)
+   */
   cacheTime?: number;
-  disableDataCache?: boolean;
+  /**
+   * If `true`, the store's caching mechanisms will be fully disabled, meaning that the store will
+   * always refetch data on every call to `fetch()`, and the fetched data will not be stored unless
+   * a `setData` function is provided.
+   *
+   * Disable caching if you always want fresh data on refetch.
+   * @default false
+   */
+  disableCache?: boolean;
+  /**
+   * When `true`, the store actively fetches and refetches data as needed.
+   * When `false`, the store will not automatically fetch data until explicitly enabled.
+   * @default true
+   */
   enabled?: boolean;
+  /**
+   * Parameters to be passed to the fetcher, defined as either direct values or `ParamResolvable` functions.
+   * Dynamic parameters using `AttachValue` will cause the store to refetch when their values change.
+   */
   params?: {
     [K in keyof TParams]: ParamResolvable<TParams[K]>;
   };
+  /**
+   * The duration, in milliseconds, that data is considered fresh after fetching.
+   * After becoming stale, the store may automatically refetch data in the background if there are active subscribers.
+   *
+   * **Note:** Stale times under 5 seconds are strongly discouraged.
+   * @default time.minutes(2)
+   */
   staleTime?: number;
 };
 
 /**
- * A function that resolves to a value or an AttachValue wrapper.
+ * Represents a parameter that can be provided directly or defined via a reactive `AttachValue`.
+ * A parameter can be:
+ * - A static value (e.g. `string`, `number`).
+ * - A function that returns an `AttachValue<T>` when given a `SignalFunction`.
  */
 type ParamResolvable<T> = T | ((resolve: SignalFunction) => AttachValue<T>);
 
-/**
- * The result of resolving parameters into their direct values and AttachValue wrappers.
- */
 interface ResolvedParamsResult<TParams> {
+  /**
+   * Direct, non-reactive values resolved from the initial configuration.
+   */
   directValues: Partial<TParams>;
+  /**
+   * Reactive parameter values wrapped in `AttachValue`, which trigger refetches when they change.
+   */
   paramAttachVals: Partial<Record<keyof TParams, AttachValue<unknown>>>;
+  /**
+   * Fully resolved parameters, merging both direct and reactive values.
+   */
   resolvedParams: TParams;
 }
 
@@ -105,7 +225,6 @@ const [persist, discard] = [true, false];
 
 const SHOULD_PERSIST_INTERNAL_STATE_MAP: Record<string, boolean> = {
   /* Internal state to persist if the store is persisted */
-  data: persist,
   enabled: persist,
   error: persist,
   lastFetchedAt: persist,
@@ -114,6 +233,7 @@ const SHOULD_PERSIST_INTERNAL_STATE_MAP: Record<string, boolean> = {
 
   /* Internal state and methods to discard */
   fetch: discard,
+  getData: discard,
   isDataExpired: discard,
   isStale: discard,
   reset: discard,
@@ -137,7 +257,7 @@ const MIN_STALE_TIME = time.seconds(5);
  * @template U - User-defined custom store state
  * @template TData - The transformed data type, if applicable (defaults to `TQueryFnData`)
  */
-export function createRainbowQueryStore<
+export function createQueryStore<
   TQueryFnData,
   TParams extends Record<string, unknown> = Record<string, unknown>,
   U = unknown,
@@ -158,13 +278,15 @@ export function createRainbowQueryStore<
     onFetched,
     transform,
     cacheTime = time.days(7),
-    disableDataCache = true,
+    disableCache = false,
     enabled = true,
     params,
+    setData,
     staleTime = time.minutes(2),
+    suppressStaleTimeWarning = false,
   } = config;
 
-  if (IS_DEV && staleTime < MIN_STALE_TIME) {
+  if (IS_DEV && !suppressStaleTimeWarning && staleTime < MIN_STALE_TIME) {
     console.warn(
       `[RainbowQueryStore${persistConfig?.storageKey ? `: ${persistConfig.storageKey}` : ''}] ❌ Stale times under ${
         MIN_STALE_TIME / 1000
@@ -186,7 +308,6 @@ export function createRainbowQueryStore<
   let lastFetchKey: string | null = null;
 
   const initialData = {
-    data: null,
     enabled,
     error: null,
     lastFetchedAt: null,
@@ -207,30 +328,32 @@ export function createRainbowQueryStore<
     return currentParams as TParams;
   };
 
-  const scheduleNextFetch = (params: TParams) => {
-    if (staleTime <= 0) return;
-    if (activeRefetchTimeout) {
-      clearTimeout(activeRefetchTimeout);
-      activeRefetchTimeout = null;
-    }
-    activeRefetchTimeout = setTimeout(() => {
-      if (baseStore.getState().subscriptionCount > 0) {
-        baseStore.getState().fetch(params, { force: true });
-      }
-    }, staleTime);
-  };
-
   const createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]> = (set, get, api) => {
     const pruneCache = (state: S): S => {
-      if (disableDataCache) return state;
       const now = Date.now();
       const newCache: Record<string, CacheEntry<TData>> = {};
       Object.entries(state.queryCache).forEach(([key, entry]) => {
-        if (now - entry.lastFetchedAt <= cacheTime) {
+        if (entry && now - entry.lastFetchedAt <= cacheTime) {
           newCache[key] = entry;
         }
       });
       return { ...state, queryCache: newCache };
+    };
+
+    const scheduleNextFetch = (params: TParams) => {
+      if (staleTime <= 0) return;
+      if (activeRefetchTimeout) {
+        clearTimeout(activeRefetchTimeout);
+        activeRefetchTimeout = null;
+      }
+      const lastFetchedAt = get().queryCache[getQueryKey(params)]?.lastFetchedAt;
+      const timeUntilRefetch = lastFetchedAt ? staleTime - (Date.now() - lastFetchedAt) : staleTime;
+
+      activeRefetchTimeout = setTimeout(() => {
+        if (get().subscriptionCount > 0) {
+          get().fetch(params, { force: true });
+        }
+      }, timeUntilRefetch);
     };
 
     const baseMethods = {
@@ -244,10 +367,9 @@ export function createRainbowQueryStore<
           return activeFetchPromise;
         }
 
-        if (!options?.force && !disableDataCache) {
-          const cached = get().queryCache[currentQueryKey];
-          if (cached && Date.now() - cached.lastFetchedAt <= (options?.staleTime ?? staleTime)) {
-            set(state => ({ ...state, data: cached.data }));
+        if (!options?.force && !disableCache) {
+          const lastFetchedAt = get().queryCache[currentQueryKey]?.lastFetchedAt;
+          if (lastFetchedAt && Date.now() - lastFetchedAt <= (options?.staleTime ?? staleTime)) {
             return;
           }
         }
@@ -262,32 +384,43 @@ export function createRainbowQueryStore<
             try {
               transformedData = transform ? transform(rawResult) : (rawResult as TData);
             } catch (transformError) {
-              throw new RainbowError(`[createRainbowQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: transform failed`, {
+              throw new RainbowError(`[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: transform failed`, {
                 cause: transformError,
               });
             }
 
             set(state => {
-              const newState = {
+              const lastFetchedAt = Date.now();
+              let newState: S = {
                 ...state,
                 error: null,
-                lastFetchedAt: Date.now(),
+                lastFetchedAt,
                 status: 'success' as const,
               };
 
-              if (!disableDataCache) {
+              if (!setData && !disableCache) {
                 newState.queryCache = {
                   ...newState.queryCache,
                   [currentQueryKey]: {
                     data: transformedData,
-                    lastFetchedAt: Date.now(),
+                    lastFetchedAt,
                   },
                 };
+              } else if (setData) {
+                setData(transformedData, (partial: S | Partial<S> | ((state: S) => S | Partial<S>)) => {
+                  newState = typeof partial === 'function' ? { ...newState, ...partial(newState) } : { ...newState, ...partial };
+                });
+                if (!disableCache) {
+                  newState.queryCache = {
+                    [currentQueryKey]: {
+                      data: null,
+                      lastFetchedAt,
+                    },
+                  };
+                }
               }
 
-              if (!onFetched) newState.data = transformedData;
-
-              return pruneCache(newState);
+              return disableCache ? newState : pruneCache(newState);
             });
 
             scheduleNextFetch(effectiveParams);
@@ -297,18 +430,16 @@ export function createRainbowQueryStore<
                 onFetched(transformedData, queryCapableStore);
               } catch (onFetchedError) {
                 logger.error(
-                  new RainbowError(
-                    `[createRainbowQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: onFetched callback failed`,
-                    { cause: onFetchedError }
-                  )
+                  new RainbowError(`[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: onFetched callback failed`, {
+                    cause: onFetchedError,
+                  })
                 );
               }
             }
           } catch (error) {
-            logger.error(
-              new RainbowError(`[createRainbowQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: Failed to fetch data`),
-              { error }
-            );
+            logger.error(new RainbowError(`[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: Failed to fetch data`), {
+              error,
+            });
             set(state => ({ ...state, error: error as Error, status: 'error' as const }));
             scheduleNextFetch(effectiveParams);
           } finally {
@@ -321,18 +452,24 @@ export function createRainbowQueryStore<
         return activeFetchPromise;
       },
 
-      isStale(staleTimeOverride?: number) {
-        const { lastFetchedAt } = get();
-        const effectiveStaleTime = staleTimeOverride ?? staleTime;
-        if (lastFetchedAt === null) return true;
-        return Date.now() - lastFetchedAt > effectiveStaleTime;
+      getData(params?: TParams) {
+        if (disableCache) return null;
+        const currentQueryKey = getQueryKey(params ?? getCurrentResolvedParams());
+        return get().queryCache[currentQueryKey]?.data ?? null;
       },
 
       isDataExpired(cacheTimeOverride?: number) {
-        const { lastFetchedAt } = get();
+        const lastFetchedAt = get().queryCache[getQueryKey(getCurrentResolvedParams())]?.lastFetchedAt;
         const effectiveCacheTime = cacheTimeOverride ?? cacheTime;
-        if (lastFetchedAt === null) return true;
+        if (!lastFetchedAt) return true;
         return Date.now() - lastFetchedAt > effectiveCacheTime;
+      },
+
+      isStale(staleTimeOverride?: number) {
+        const lastFetchedAt = get().queryCache[getQueryKey(getCurrentResolvedParams())]?.lastFetchedAt;
+        const effectiveStaleTime = staleTimeOverride ?? staleTime;
+        if (!lastFetchedAt) return true;
+        return Date.now() - lastFetchedAt > effectiveStaleTime;
       },
 
       reset() {
@@ -356,13 +493,14 @@ export function createRainbowQueryStore<
       const handleSetEnabled = subscribeWithSelector((state: S, prev: S) => {
         if (state.enabled !== prev.enabled) {
           if (state.enabled) {
-            const currentKey = getQueryKey(getCurrentResolvedParams());
+            const currentParams = getCurrentResolvedParams();
+            const currentKey = getQueryKey(currentParams);
             if (currentKey !== lastFetchKey) {
-              state.fetch(getCurrentResolvedParams(), { force: true });
-            } else if (!state.data || state.isStale()) {
+              state.fetch(currentParams, { force: true });
+            } else if (!state.queryCache[currentKey] || state.isStale()) {
               state.fetch();
             } else {
-              scheduleNextFetch(getCurrentResolvedParams());
+              scheduleNextFetch(currentParams);
             }
           } else {
             if (activeRefetchTimeout) {
@@ -373,9 +511,9 @@ export function createRainbowQueryStore<
         }
       });
 
-      const { data, fetch, isStale } = get();
+      const { fetch, isStale } = get();
 
-      if (!data || isStale()) {
+      if (!get().queryCache[getQueryKey(getCurrentResolvedParams())] || isStale()) {
         fetch(getCurrentResolvedParams(), { force: true });
       } else {
         scheduleNextFetch(getCurrentResolvedParams());
@@ -417,10 +555,6 @@ export function createRainbowQueryStore<
     : create<StoreState<TData, TParams> & U>()(subscribeWithSelector(createState));
 
   const queryCapableStore: QueryStore<TData, TParams, S> = Object.assign(baseStore, {
-    fetch: (params?: TParams, options?: FetchOptions) => baseStore.getState().fetch(params, options),
-    isDataExpired: (override?: number) => baseStore.getState().isDataExpired(override),
-    isStale: (override?: number) => baseStore.getState().isStale(override),
-    reset: () => baseStore.getState().reset(),
     enabled,
     destroy: () => {
       for (const unsub of paramUnsubscribes) {
@@ -429,6 +563,11 @@ export function createRainbowQueryStore<
       paramUnsubscribes.length = 0;
       queryCapableStore.getState().reset();
     },
+    fetch: (params?: TParams, options?: FetchOptions) => baseStore.getState().fetch(params, options),
+    getData: () => baseStore.getState().getData(),
+    isDataExpired: (override?: number) => baseStore.getState().isDataExpired(override),
+    isStale: (override?: number) => baseStore.getState().isStale(override),
+    reset: () => baseStore.getState().reset(),
   });
 
   const onParamChange = () => {
