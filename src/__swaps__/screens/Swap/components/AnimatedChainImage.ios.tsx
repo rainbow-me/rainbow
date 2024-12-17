@@ -44,7 +44,7 @@ export function AnimatedChainImage({
   }));
 
   return (
-    <View style={[sx.badge, { borderRadius: size / 2, height: size, width: size }]}>
+    <View style={[sx.badge, { borderRadius: size / 2, height: size, width: size, bottom: -size / 2 + 2, left: -size / 2 + 2 }]}>
       {/* ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error */}
       {/* @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps */}
       <AnimatedFasterImage style={{ height: size, width: size }} animatedProps={animatedIconSource} />
@@ -54,8 +54,6 @@ export function AnimatedChainImage({
 
 const sx = StyleSheet.create({
   badge: {
-    bottom: 0,
-    left: -8,
     position: 'absolute',
     shadowColor: globalColors.grey100,
     shadowOffset: {

@@ -32,7 +32,7 @@ export function AnimatedChainImage({
   }, [chainIdState, showMainnetBadge]);
 
   return (
-    <View style={[sx.badge, { borderRadius: size / 2, height: size, width: size }]}>
+    <View style={[sx.badge, { borderRadius: size / 2, height: size, width: size, bottom: -size / 2 + 2, left: -size / 2 + 2 }]}>
       <Image resizeMode="cover" source={iconSource} style={{ width: size, height: size, borderRadius: (size / 2) * PIXEL_RATIO }} />
     </View>
   );
@@ -40,8 +40,6 @@ export function AnimatedChainImage({
 
 const sx = StyleSheet.create({
   badge: {
-    bottom: 0,
-    left: -8,
     position: 'absolute',
     shadowColor: globalColors.grey100,
     shadowOffset: {

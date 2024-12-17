@@ -434,7 +434,6 @@ const sx = StyleSheet.create({
     height: 8,
     left: 8,
     justifyContent: 'center',
-    top: 8,
     width: 20,
   },
 });
