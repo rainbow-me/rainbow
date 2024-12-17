@@ -43,7 +43,10 @@ export const checkIfWalletsOwnNft = async (
 
     const data = iface.encodeFunctionData('areOwners(address[], address[])', [tokenAddresses, walletsToCheck]);
     const found = await p.call({ to: TOKEN_GATE_CHECKER_ADDRESS[network], data });
-    return found;
+    if (found === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+      return false;
+    }
+    return true;
   } catch (e) {
     return false;
   }
@@ -69,8 +72,10 @@ export const checkIfWalletsOwnNft1155 = async (
     const iface = new Interface(tokenGateCheckerAbi);
     const data = iface.encodeFunctionData('areOwners(TokenInfo[], address[])', [tokenInfo, walletsToCheck]);
     const found = await p.call({ to: TOKEN_GATE_CHECKER_ADDRESS[network], data });
-
-    return found;
+    if (found === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+      return false;
+    }
+    return true;
   } catch (e) {
     return false;
   }
