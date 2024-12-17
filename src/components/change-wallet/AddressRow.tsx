@@ -39,7 +39,7 @@ export const AddressRowButton = ({
   const fillQuaternary = useForegroundColor('fillQuaternary');
 
   return (
-    <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.8} disabled={disabled}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.8} disabled={disabled}>
       <Box
         alignItems="center"
         borderRadius={14}
@@ -114,7 +114,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
           menuConfig={menuConfig}
           onPressMenuItem={action => onPressMenuItem(action, { address })}
         >
-          <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
+          <ButtonPressAnimation scaleTo={0.92} onPress={onPress}>
             {children}
           </ButtonPressAnimation>
         </DropdownMenu>
@@ -130,7 +130,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
               </Column>
             )}
             <Column width="content">
-              <AddressAvatar url={image} size={40} address={address} color={color} label={walletName} />
+              <AddressAvatar url={image} size={40} address={address} color={color} label={label} />
             </Column>
             <Stack space="10px">
               <Text
