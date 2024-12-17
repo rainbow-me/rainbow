@@ -41,6 +41,7 @@ import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
 import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import FastImage from 'react-native-fast-image';
 
 export default async function runMigrations() {
   // get current version
@@ -695,6 +696,26 @@ export default async function runMigrations() {
   };
 
   migrations.push(v21);
+
+  /**
+   *************** Migration v22 ******************
+   * Clear FastImage cache to fix mainnet badge sizing issue
+   */
+  const v22 = async () => {
+    try {
+      FastImage.clearDiskCache();
+    } catch (e) {
+      logger.error(new RainbowError(`Error clearing FastImage disk cache: ${e}`));
+    }
+
+    try {
+      FastImage.clearMemoryCache();
+    } catch (e) {
+      logger.error(new RainbowError(`Error clearing FastImage memory cache: ${e}`));
+    }
+  };
+
+  migrations.push(v22);
 
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
