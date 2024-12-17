@@ -2,34 +2,30 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ChainId } from '@/state/backendNetworks/types';
-import { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
+import { DerivedValue, useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { globalColors } from '@/design-system';
-import { useSwapContext } from '../providers/swap-provider';
 import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
 import { getChainsBadgeWorklet, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export function AnimatedChainImage({
-  assetType,
+  chainId,
   showMainnetBadge = false,
   size = 20,
 }: {
-  assetType: 'input' | 'output';
+  chainId: DerivedValue<ChainId | undefined>;
   showMainnetBadge?: boolean;
   size?: number;
 }) {
   const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
-  const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
   const url = useDerivedValue(() => {
-    const asset = assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset;
-    const chainId = asset?.value?.chainId;
+    const value = typeof chainId === 'number' ? chainId : chainId?.value;
 
     let url = 'eth';
-
-    if (chainId !== undefined && !(!showMainnetBadge && chainId === ChainId.mainnet)) {
-      url = getChainsBadgeWorklet(backendNetworks)[chainId];
+    if (value !== undefined && !(!showMainnetBadge && value === ChainId.mainnet)) {
+      url = getChainsBadgeWorklet(backendNetworks)[value];
     }
     return url;
   });

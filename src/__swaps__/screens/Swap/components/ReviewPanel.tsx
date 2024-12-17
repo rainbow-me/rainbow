@@ -29,6 +29,7 @@ import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   runOnJS,
+  SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -43,6 +44,7 @@ import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGas
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 import { getChainsLabelWorklet, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
@@ -242,6 +244,17 @@ export const SlippageRow = () => {
   );
 };
 
+type ChainImageProps = {
+  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  showMainnetBadge?: boolean;
+  size?: number;
+};
+
+const ChainImage = ({ asset, size = 24, showMainnetBadge = false }: ChainImageProps) => {
+  const chainId = useDerivedValue(() => asset?.value?.chainId);
+  return <AnimatedChainImage chainId={chainId} size={size} showMainnetBadge={showMainnetBadge} />;
+};
+
 export function ReviewPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
@@ -324,7 +337,7 @@ export function ReviewPanel() {
 
             <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
               <View style={sx.chainBadgeContainer}>
-                <AnimatedChainImage showMainnetBadge assetType="input" size={24} />
+                <ChainImage showMainnetBadge asset={internalSelectedInputAsset} />
               </View>
               <AnimatedText
                 align="right"
@@ -385,7 +398,7 @@ export function ReviewPanel() {
               <Stack space="10px">
                 <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
                   <View style={sx.chainBadgeContainer}>
-                    <AnimatedChainImage showMainnetBadge assetType="input" size={24} />
+                    <ChainImage asset={internalSelectedInputAsset} showMainnetBadge />
                   </View>
                   <UnmountOnAnimatedReaction
                     isMountedWorklet={() => {
@@ -434,6 +447,6 @@ const sx = StyleSheet.create({
     height: 8,
     left: 8,
     justifyContent: 'center',
-    width: 20,
+    width: 16,
   },
 });

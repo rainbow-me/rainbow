@@ -11,6 +11,7 @@ import { useAccountSettings, useBooleanState } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -114,6 +115,7 @@ export default function ChartExpandedStateHeader({
           symbol={asset?.symbol}
           color={asset?.colors?.primary || asset?.colors?.fallback || undefined}
           chainBadgePosition={{ x: -12, y: -6 }}
+          showBadge={asset?.chainId !== ChainId.mainnet}
         />
 
         <ChartContextButton asset={asset} color={color} />
