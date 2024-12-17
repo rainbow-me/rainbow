@@ -65,31 +65,8 @@ const useSearchCurrencyList = (searchQuery: string) => {
 
   const { colors } = useTheme();
 
-  // TODO JIN - consolidate this shit below
-  // TODO JIN - remove the list param
-  const { data: verifiedAssets, isFetching: loading } = useTokenSearchAllNetworks(
+  const { data: searchResultAssets, isFetching: loading } = useTokenSearchAllNetworks(
     {
-      list: 'verifiedAssets',
-      query: searchQuery,
-    },
-    {
-      staleTime: 10 * 60 * 1_000, // 10 min
-    }
-  );
-
-  const { data: highLiquidityAssets } = useTokenSearchAllNetworks(
-    {
-      list: 'highLiquidityAssets',
-      query: searchQuery,
-    },
-    {
-      staleTime: 10 * 60 * 1_000, // 10 min
-    }
-  );
-
-  const { data: lowLiquidityAssets } = useTokenSearchAllNetworks(
-    {
-      list: 'lowLiquidityAssets',
       query: searchQuery,
     },
     {
@@ -100,9 +77,12 @@ const useSearchCurrencyList = (searchQuery: string) => {
   // TODO JIN - update this and split up the results above
   const currencyList = useMemo(() => {
     const list = [];
+    // TODO JIN - placeholders
+    const highLiquidityAssets = searchResultAssets;
+    const lowLiquidityAssets = searchResultAssets;
 
     if (searching) {
-      let verifiedAssetsWithImport = verifiedAssets;
+      let verifiedAssetsWithImport = searchResultAssets;
       let highLiquidityAssetsWithImport = highLiquidityAssets;
       let lowLiquidityAssetsWithoutImport = lowLiquidityAssets;
 
@@ -137,17 +117,17 @@ const useSearchCurrencyList = (searchQuery: string) => {
         });
       }
     } else {
-      if (unfilteredFavorites?.length) {
+      if (favoriteAssets?.length) {
         list.push({
           color: colors.yellowFavorite,
-          data: abcSort(unfilteredFavorites, 'name'),
+          data: abcSort(favoriteAssets, 'name'),
           key: 'unfilteredFavorites',
           title: lang.t(`exchange.token_sections.${tokenSectionTypes.favoriteTokenSection}`),
         });
       }
     }
     return list;
-  }, [verifiedAssets, searching, highLiquidityAssets, lowLiquidityAssets, favoriteAssets, colors.yellowFavorite, unfilteredFavorites]);
+  }, [searchResultAssets, searching, favoriteAssets, colors.yellowFavorite]);
 
   return {
     swapCurrencyList: currencyList,
