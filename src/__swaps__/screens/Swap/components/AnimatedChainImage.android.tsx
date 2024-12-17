@@ -10,8 +10,15 @@ const BlastBadge = require('@/assets/badges/blast.png');
 const BscBadge = require('@/assets/badges/bsc.png');
 const DegenBadge = require('@/assets/badges/degen.png');
 const EthereumBadge = require('@/assets/badges/ethereum.png');
+// const GnosisBadge = require('@/assets/badges/gnosis.png');
+// const GravityBadge = require('@/assets/badges/gravity.png');
+const InkBadge = require('@/assets/badges/ink.png');
+// const LineaBadge = require('@/assets/badges/linea.png');
 const OptimismBadge = require('@/assets/badges/optimism.png');
 const PolygonBadge = require('@/assets/badges/polygon.png');
+// const SankoBadge = require('@/assets/badges/sanko.png');
+// const ScrollBadge = require('@/assets/badges/scroll.png');
+// const ZksyncBadge = require('@/assets/badges/zksync.png');
 const ZoraBadge = require('@/assets/badges/zora.png');
 
 import { ChainId } from '@/state/backendNetworks/types';
@@ -32,13 +39,20 @@ const networkBadges = {
   [ChainId.bsc]: BscBadge,
   [ChainId.bscTestnet]: BscBadge,
   [ChainId.degen]: DegenBadge,
+  // [ChainId.gnosis]: GnosisBadge,
+  // [ChainId.gravity]: GravityBadge,
   [ChainId.holesky]: EthereumBadge,
+  [ChainId.ink]: InkBadge,
+  // [ChainId.linea]: LineaBadge,
   [ChainId.mainnet]: EthereumBadge,
   [ChainId.optimism]: OptimismBadge,
   [ChainId.optimismSepolia]: OptimismBadge,
   [ChainId.polygon]: PolygonBadge,
   [ChainId.polygonAmoy]: PolygonBadge,
+  // [ChainId.sanko]: SankoBadge,
+  // [ChainId.scroll]: ScrollBadge,
   [ChainId.sepolia]: EthereumBadge,
+  // [ChainId.zksync]: ZksyncBadge,
   [ChainId.zora]: ZoraBadge,
   [ChainId.zoraSepolia]: ZoraBadge,
 };

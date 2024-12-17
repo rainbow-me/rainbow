@@ -7,7 +7,7 @@ import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey, UserAssetsResult } from '@/resources/assets/UserAssetsQuery';
-import { convertAmountAndPriceToNativeDisplay, add, isEqual, multiply } from '@/helpers/utilities';
+import { add, isEqual, multiply } from '@/helpers/utilities';
 import { isEqual as _isEqual } from 'lodash';
 
 export type WalletBalanceResult = {
