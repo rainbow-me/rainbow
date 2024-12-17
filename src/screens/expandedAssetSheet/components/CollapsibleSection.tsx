@@ -1,15 +1,19 @@
 /** @refresh reset */
 import React from 'react';
-import Animated, { LinearTransition, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { LinearTransition, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { Box, IconContainer, Text, TextShadow } from '@/design-system';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SectionId, useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
-const ARBITRARILY_LARGE_MAX_HEIGHT = 10000;
+const ARBITRARILY_LARGE_MAX_HEIGHT = 1000;
 
-const ANIMATION_CONFIG = {
-  duration: 300,
-};
+const ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
+
+export const LAYOUT_ANIMATION = LinearTransition.springify()
+  .mass(ANIMATION_CONFIG.mass as number)
+  .damping(ANIMATION_CONFIG.damping as number)
+  .stiffness(ANIMATION_CONFIG.stiffness as number);
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
@@ -35,7 +39,7 @@ const SectionHeader = React.memo(function SectionHeader({ icon, primaryText, sec
     () => ({
       transform: [
         {
-          rotate: withTiming(expandedSections.value[id] ? '0deg' : '-90deg', ANIMATION_CONFIG),
+          rotate: withSpring(expandedSections.value[id] ? '0deg' : '-90deg', ANIMATION_CONFIG),
         },
       ],
     }),
@@ -94,15 +98,14 @@ export function CollapsibleSection({ content, icon, id, primaryText, secondaryTe
 
   const contentStyle = useAnimatedStyle(
     () => ({
-      maxHeight: withTiming(expandedSections.value[id] ? ARBITRARILY_LARGE_MAX_HEIGHT : 0, ANIMATION_CONFIG),
-      opacity: withTiming(expandedSections.value[id] ? 1 : 0, ANIMATION_CONFIG),
-      display: expandedSections.value[id] ? 'flex' : 'none',
+      maxHeight: withSpring(expandedSections.value[id] ? ARBITRARILY_LARGE_MAX_HEIGHT : 0, ANIMATION_CONFIG),
+      opacity: withSpring(expandedSections.value[id] ? 1 : 0, ANIMATION_CONFIG),
     }),
     [expandedSections]
   );
 
   return (
-    <AnimatedBox layout={LinearTransition.duration(ANIMATION_CONFIG.duration)} gap={24}>
+    <AnimatedBox layout={LAYOUT_ANIMATION}>
       <SectionHeader icon={icon} primaryText={primaryText} secondaryText={secondaryText} id={id} />
       <AnimatedBox style={contentStyle}>{content}</AnimatedBox>
     </AnimatedBox>

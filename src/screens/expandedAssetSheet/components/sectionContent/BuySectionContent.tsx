@@ -67,7 +67,7 @@ export function BuySectionContent() {
   // );
 
   return (
-    <Box gap={12}>
+    <Box gap={12} paddingTop="24px">
       <Stack space="4px">
         <Row highlighted>
           <Inline alignVertical="center" space="12px">
