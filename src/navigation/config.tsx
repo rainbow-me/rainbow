@@ -266,7 +266,7 @@ export const expandedAssetSheetV2Config = {
     ...buildCoolModalConfig({
       ...params,
       backgroundOpacity: 1,
-      cornerRadius: 0,
+      cornerRadius: 'device',
       springDamping: 1,
       topOffset: 0,
       transitionDuration: 0.3,
