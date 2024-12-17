@@ -269,9 +269,6 @@ const UniqueTokenExpandedStateHeader = ({
         {
           ...AssetActions[AssetActionsEnum.refresh],
         },
-        {
-          ...AssetActions[AssetActionsEnum.report],
-        },
         ...(isModificationActionsEnabled
           ? [
               {
