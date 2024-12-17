@@ -29,7 +29,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, weight =
   const color = givenColor || colors.swapPurple;
 
   const goToSwap = useCallback(async () => {
-    const chainId = chainsIdByName[asset.network];
+    const chainId = asset.chainId || chainsIdByName[asset.network];
     const uniqueId = `${asset.address}_${chainId}`;
     const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 
