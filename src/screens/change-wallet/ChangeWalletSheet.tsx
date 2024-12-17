@@ -15,13 +15,13 @@ import { analytics, analyticsV2 } from '@/analytics';
 import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { doesWalletsContainAddress, showActionSheetWithOptions } from '@/utils';
+import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { RootStackParamList } from '@/navigation/types';
 import { Box, globalColors, Inline, Stack, Text } from '@/design-system';
@@ -41,10 +41,9 @@ const LIST_PADDING_BOTTOM = 6;
 const MAX_LIST_HEIGHT = DEVICE_HEIGHT - 220;
 const WALLET_ROW_HEIGHT = 59;
 const WATCH_ONLY_BOTTOM_PADDING = IS_ANDROID ? 20 : 0;
+const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 
-// TODO: calc
-const PANEL_BOTTOM_OFFSET = 41;
-
+export const PANEL_INSET_HORIZONTAL = 20;
 export const MAX_PANEL_HEIGHT = 640;
 export const PANEL_HEADER_HEIGHT = 58;
 export const FOOTER_HEIGHT = 91;
@@ -98,7 +97,7 @@ export default function ChangeWalletSheet() {
   const { selectedWallet, wallets } = useWallets();
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const { updateWebProfile } = useWebData();
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const { goBack, navigate, setParams } = useNavigation();
@@ -581,14 +580,14 @@ export default function ChangeWalletSheet() {
         ]}
       >
         <Panel>
-          <Box style={{ maxHeight: MAX_PANEL_HEIGHT }}>
+          <Box style={{ maxHeight: MAX_PANEL_HEIGHT, paddingHorizontal: PANEL_INSET_HORIZONTAL }}>
             <SheetHandleFixedToTop />
             <Box zIndex={1000} paddingTop="32px" paddingBottom="12px" width="full" justifyContent="center" alignItems="center">
               <Text align="center" color="label" size="20pt" weight="heavy">
                 {i18n.t(i18n.l.wallet.change_wallet.wallets)}
               </Text>
               {/* TODO: this positioning is jank */}
-              <Box position="absolute" style={{ right: 24, top: 32 + 3 }}>
+              <Box position="absolute" style={{ right: 4, top: 32 + 3 }}>
                 <ConditionalWrap
                   condition={!initialHasShownEditHintTooltip}
                   wrap={children => (
@@ -626,7 +625,7 @@ export default function ChangeWalletSheet() {
               </Box>
             </Box>
             {/* TODO: why is this here? */}
-            {IS_ANDROID && <Whitespace />}
+            {/* {IS_ANDROID && <Whitespace />} */}
             <WalletList
               walletItems={allWalletItems}
               onPressMenuItem={onPressMenuItem}
@@ -638,9 +637,9 @@ export default function ChangeWalletSheet() {
           <Box height={{ custom: FOOTER_HEIGHT }} position="absolute" bottom="0px" width="full">
             {/* TODO: progressive blurview on iOS */}
             <EasingGradient
-              endColor={'#191A1C'}
+              endColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
               endOpacity={1}
-              startColor={'#191A1C'}
+              startColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
               startOpacity={0}
               style={{ height: '100%', position: 'absolute', width: '100%' }}
             />

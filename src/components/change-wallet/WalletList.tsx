@@ -14,8 +14,9 @@ import {
   FOOTER_HEIGHT,
   MAX_PANEL_HEIGHT,
   PANEL_HEADER_HEIGHT,
+  PANEL_INSET_HORIZONTAL,
 } from '@/screens/change-wallet/ChangeWalletSheet';
-import { Box, Inset, Separator, Text } from '@/design-system';
+import { Box, Separator, Text } from '@/design-system';
 import { DndProvider, Draggable, DraggableFlatListProps, UniqueIdentifier } from '../drag-and-drop';
 import { PinnedWalletsGrid } from '@/screens/change-wallet/PinnedWalletsGrid';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
@@ -121,10 +122,8 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
         )}
         {hasPinnedWallets && unpinnedWalletItems.length > 0 && (
           <>
-            <Inset horizontal="16px">
-              <Separator color="separatorSecondary" thickness={1} />
-            </Inset>
-            <Box paddingHorizontal="16px" paddingVertical="28px">
+            <Separator color="separatorSecondary" thickness={1} />
+            <Box paddingVertical="28px">
               <Text color="label" size="17pt" weight="heavy">
                 {i18n.t(i18n.l.wallet.change_wallet.all_wallets)}
               </Text>
@@ -166,7 +165,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
         <DndProvider activationDelay={DRAG_ACTIVATION_DELAY} disabled={!editMode}>
           <DraggableScrollView
             onOrderChange={onOrderChange}
-            style={{ maxHeight: LIST_MAX_HEIGHT }}
+            style={{ maxHeight: LIST_MAX_HEIGHT, marginHorizontal: -PANEL_INSET_HORIZONTAL, paddingHorizontal: PANEL_INSET_HORIZONTAL }}
             autoScrollInsets={{ bottom: FOOTER_HEIGHT - 24 }}
             contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT - 24 }}
           >

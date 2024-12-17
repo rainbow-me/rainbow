@@ -114,85 +114,82 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
           menuConfig={menuConfig}
           onPressMenuItem={action => onPressMenuItem(action, { address })}
         >
-          <ButtonPressAnimation scaleTo={0.92} onPress={onPress}>
+          <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
             {children}
           </ButtonPressAnimation>
         </DropdownMenu>
       )}
     >
-      <Box width="full" height={{ custom: ROW_HEIGHT_WITH_PADDING }}>
-        <Inset horizontal="16px">
-          <Columns alignVertical="center" space="12px">
-            {editMode && (
-              <Column width="content">
-                {/* Fix on light mode */}
-                <Icon name="dragHandler" color={'rgba(255, 255, 255, 0.1)'} />
-              </Column>
-            )}
+      <Box width="full" height={{ custom: ROW_HEIGHT_WITH_PADDING }} overflow="visible">
+        <Columns alignVertical="center" space="12px">
+          {editMode && (
             <Column width="content">
-              <AddressAvatar url={image} size={40} address={address} color={color} label={label} />
+              <Icon name="dragHandler" color={colors.alpha(colors.black, 0.2)} />
             </Column>
-            <Stack space="10px">
-              <Text
-                numberOfLines={1}
-                color={isSelected ? 'blue' : 'label'}
-                size="17pt"
-                weight="medium"
-                testID={`change-wallet-address-row-label-${walletName}`}
-              >
-                {walletName}
-              </Text>
-              <Text numberOfLines={1} color="labelQuaternary" size="13pt" weight="bold">
-                {secondaryLabel}
-              </Text>
-            </Stack>
-            <Column width="content" style={{ backgroundColor: 'transparent' }}>
-              <Inline space="10px" alignVertical="center">
-                {isReadOnly &&
-                  (!editMode ? (
-                    <LinearGradient {...linearGradientProps}>
-                      <Text color="labelTertiary" size="13pt" weight="bold">
-                        {i18n.t(i18n.l.wallet.change_wallet.watching)}
+          )}
+          <Column width="content">
+            <AddressAvatar url={image} size={40} address={address} color={color} label={label} />
+          </Column>
+          <Stack space="10px">
+            <Text
+              numberOfLines={1}
+              color={isSelected ? 'blue' : 'label'}
+              size="17pt"
+              weight="medium"
+              testID={`change-wallet-address-row-label-${walletName}`}
+            >
+              {walletName}
+            </Text>
+            <Text numberOfLines={1} color="labelSecondary" size="13pt" weight="medium">
+              {secondaryLabel}
+            </Text>
+          </Stack>
+          <Column width="content" style={{ backgroundColor: 'transparent' }}>
+            <Inline space="10px" alignVertical="center">
+              {isReadOnly &&
+                (!editMode ? (
+                  <LinearGradient {...linearGradientProps}>
+                    <Text color="labelTertiary" size="13pt" weight="bold">
+                      {i18n.t(i18n.l.wallet.change_wallet.watching)}
+                    </Text>
+                  </LinearGradient>
+                ) : (
+                  <Text color="labelTertiary" size="11pt" weight="bold">
+                    􀋮
+                  </Text>
+                ))}
+              {isLedger &&
+                (!editMode ? (
+                  <LinearGradient {...linearGradientProps}>
+                    <Inline space="4px" alignVertical="center">
+                      <Text color="labelTertiary" size="11pt" weight="bold">
+                        􀤃
                       </Text>
-                    </LinearGradient>
-                  ) : (
-                    <Text color="labelTertiary" size="11pt" weight="bold">
-                      􀋮
-                    </Text>
-                  ))}
-                {isLedger &&
-                  (!editMode ? (
-                    <LinearGradient {...linearGradientProps}>
-                      <Inline space="4px" alignVertical="center">
-                        <Text color="labelTertiary" size="11pt" weight="bold">
-                          􀤃
-                        </Text>
-                        <Text color="labelTertiary" size="13pt" weight="bold">
-                          {i18n.t(i18n.l.wallet.change_wallet.ledger)}
-                        </Text>
-                      </Inline>
-                    </LinearGradient>
-                  ) : (
-                    <Text color="labelTertiary" size="11pt" weight="bold">
-                      􀤃
-                    </Text>
-                  ))}
-                {!editMode && isSelected && <SelectedAddressBadge shadow="12px blue" />}
-                {editMode && (
-                  <AddressRowButton onPress={() => addPinnedAddress(address)} color={colors.appleBlue} icon="􀎧" size="icon 12px" />
-                )}
-                {editMode && (
-                  <DropdownMenu<AddressMenuAction, AddressMenuActionData>
-                    menuConfig={menuConfig}
-                    onPressMenuItem={action => onPressMenuItem(action, { address })}
-                  >
-                    <AddressRowButton icon="􀍠" size="icon 12px" />
-                  </DropdownMenu>
-                )}
-              </Inline>
-            </Column>
-          </Columns>
-        </Inset>
+                      <Text color="labelTertiary" size="13pt" weight="bold">
+                        {i18n.t(i18n.l.wallet.change_wallet.ledger)}
+                      </Text>
+                    </Inline>
+                  </LinearGradient>
+                ) : (
+                  <Text color="labelTertiary" size="11pt" weight="bold">
+                    􀤃
+                  </Text>
+                ))}
+              {!editMode && isSelected && <SelectedAddressBadge shadow="12px blue" />}
+              {editMode && (
+                <AddressRowButton onPress={() => addPinnedAddress(address)} color={colors.appleBlue} icon="􀎧" size="icon 12px" />
+              )}
+              {editMode && (
+                <DropdownMenu<AddressMenuAction, AddressMenuActionData>
+                  menuConfig={menuConfig}
+                  onPressMenuItem={action => onPressMenuItem(action, { address })}
+                >
+                  <AddressRowButton icon="􀍠" size="icon 12px" />
+                </DropdownMenu>
+              )}
+            </Inline>
+          </Column>
+        </Columns>
       </Box>
     </ConditionalWrap>
   );
