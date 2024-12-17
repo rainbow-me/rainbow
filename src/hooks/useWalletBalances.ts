@@ -6,7 +6,7 @@ import { useAddysSummary } from '@/resources/summary/summary';
 import { useQueries } from '@tanstack/react-query';
 import { fetchPositions, positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';
-import { add, convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
+import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { queryClient } from '@/react-query';
 
 const QUERY_CONFIG = {

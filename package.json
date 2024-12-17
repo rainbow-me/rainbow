@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.49-1",
+  "version": "1.9.50-1",
   "private": true,
   "scripts": {
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn graphql-codegen && yarn fetch:networks",
