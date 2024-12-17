@@ -1,9 +1,9 @@
 import React from 'react';
 import { SectionId, useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
-import { AccentColorProvider, Box, ColorModeProvider, Separator, Stack, Text } from '@/design-system';
-import { CollapsibleSection, LAYOUT_ANIMATION } from './CollapsibleSection';
-import { BuySectionContent } from './sectionContent/BuySectionContent';
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import { AccentColorProvider, Box, ColorModeProvider, Separator, Stack } from '@/design-system';
+import { CollapsibleSection, LAYOUT_ANIMATION } from './shared/CollapsibleSection';
+import Animated from 'react-native-reanimated';
+import { BalanceSection, BuySection } from './sections';
 
 export function SheetContent() {
   const { accentColors, asset } = useExpandedAssetSheetContext();
@@ -26,20 +26,9 @@ export function SheetContent() {
                 </Animated.View>
               }
             >
-              <CollapsibleSection
-                content={<BuySectionContent />}
-                icon="􀋥"
-                id={SectionId.BRIDGE}
-                primaryText="Buy"
-                secondaryText={asset.symbol}
-              />
-              <CollapsibleSection
-                content={<BuySectionContent />}
-                icon="􀋥"
-                id={SectionId.BUY}
-                primaryText="Buy"
-                secondaryText={asset.symbol}
-              />
+              <BalanceSection />
+              <CollapsibleSection content={<BuySection />} icon="􀋥" id={SectionId.BRIDGE} primaryText="Buy" secondaryText={asset.symbol} />
+              <CollapsibleSection content={<BuySection />} icon="􀋥" id={SectionId.BUY} primaryText="Buy" secondaryText={asset.symbol} />
             </Stack>
           </Box>
         </ColorModeProvider>

@@ -3,7 +3,7 @@ import { Bleed, Box, IconContainer, Inline, Stack, Text, TextShadow } from '@/de
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ScrollView } from 'react-native-gesture-handler';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Row } from '../generic/Row';
+import { Row } from '../shared/Row';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
@@ -33,7 +33,7 @@ function BuyButton({ usdAmount }: { usdAmount: number }) {
   );
 }
 
-export function BuySectionContent() {
+export function BuySection() {
   // const [currency, setCurrency] = useState<Currency>(Currency.USD);
 
   // const menuConfig = useMemo<MenuConfig<MintsFilter>>(() => {
@@ -67,7 +67,7 @@ export function BuySectionContent() {
   // );
 
   return (
-    <Box gap={12} paddingTop="24px">
+    <Box gap={12}>
       <Stack space="4px">
         <Row highlighted>
           <Inline alignVertical="center" space="12px">
