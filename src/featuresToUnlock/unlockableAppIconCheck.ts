@@ -70,6 +70,26 @@ export const unlockableAppIconCheck = async (appIconKey: UnlockableAppIconKey, w
         unlockableAppIconStorage.set(appIconKey, true);
         logger.debug(`[unlockableAppIconCheck]: Feature check ${appIconKey} set to true. Wont show up anymore!`);
 
+        // Temporarily ignore some icons
+        // We can get rid of this in 2025!
+        const iconsToIgnore = [
+          'optimism',
+          'smol',
+          'zora',
+          'golddoge',
+          'raindoge',
+          'pooly',
+          'finiliar',
+          'zorb',
+          'poolboy',
+          'adworld',
+          'farcaster',
+        ];
+
+        if (iconsToIgnore.includes(appIconKey)) {
+          return false;
+        }
+
         Navigation.handleAction(Routes.APP_ICON_UNLOCK_SHEET, { appIconKey });
         return true;
       }
