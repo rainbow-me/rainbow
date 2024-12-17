@@ -1,5 +1,6 @@
 import lang from 'i18n-js';
 import { rankings } from 'match-sorter';
+import { groupBy } from 'lodash';
 import { useMemo } from 'react';
 import { useTheme } from '../theme/ThemeContext';
 import { addHexPrefix } from '@/handlers/web3';
@@ -74,18 +75,19 @@ const useSearchCurrencyList = (searchQuery: string) => {
     }
   );
 
-  // TODO JIN - update this and split up the results above
   const currencyList = useMemo(() => {
     const list = [];
-    // TODO JIN - placeholders
-    const highLiquidityAssets = searchResultAssets;
-    const lowLiquidityAssets = searchResultAssets;
+    const { verifiedAssets, highLiquidityAssets, lowLiquidityAssets } = groupBy(searchResultAssets, searchResult => {
+      if (searchResult.isVerified) {
+        return 'verifiedAssets';
+      } else if (!searchResult.isVerified && searchResult.highLiquidity) {
+        return 'highLiquidityAssets';
+      } else {
+        return 'lowLiquidityAssets';
+      }
+    });
 
     if (searching) {
-      let verifiedAssetsWithImport = searchResultAssets;
-      let highLiquidityAssetsWithImport = highLiquidityAssets;
-      let lowLiquidityAssetsWithoutImport = lowLiquidityAssets;
-
       if (favoriteAssets?.length) {
         list.push({
           color: colors.yellowFavorite,
@@ -94,24 +96,24 @@ const useSearchCurrencyList = (searchQuery: string) => {
           title: lang.t(`exchange.token_sections.${tokenSectionTypes.favoriteTokenSection}`),
         });
       }
-      if (verifiedAssetsWithImport?.length) {
+      if (verifiedAssets?.length) {
         list.push({
-          data: verifiedAssetsWithImport,
+          data: verifiedAssets,
           key: 'verified',
           title: lang.t(`exchange.token_sections.${tokenSectionTypes.verifiedTokenSection}`),
           useGradientText: !IS_TEST,
         });
       }
-      if (highLiquidityAssetsWithImport?.length) {
+      if (highLiquidityAssets?.length) {
         list.push({
-          data: highLiquidityAssetsWithImport,
+          data: highLiquidityAssets,
           key: 'highLiquidity',
           title: lang.t(`exchange.token_sections.${tokenSectionTypes.unverifiedTokenSection}`),
         });
       }
-      if (lowLiquidityAssetsWithoutImport?.length) {
+      if (lowLiquidityAssets?.length) {
         list.push({
-          data: lowLiquidityAssetsWithoutImport,
+          data: lowLiquidityAssets,
           key: 'lowLiquidity',
           title: lang.t(`exchange.token_sections.${tokenSectionTypes.lowLiquidityTokenSection}`),
         });
@@ -123,6 +125,14 @@ const useSearchCurrencyList = (searchQuery: string) => {
           data: abcSort(favoriteAssets, 'name'),
           key: 'unfilteredFavorites',
           title: lang.t(`exchange.token_sections.${tokenSectionTypes.favoriteTokenSection}`),
+        });
+      }
+      if (verifiedAssets?.length) {
+        list.push({
+          data: verifiedAssets,
+          key: 'verified',
+          title: lang.t(`exchange.token_sections.${tokenSectionTypes.verifiedTokenSection}`),
+          useGradientText: !IS_TEST,
         });
       }
     }
