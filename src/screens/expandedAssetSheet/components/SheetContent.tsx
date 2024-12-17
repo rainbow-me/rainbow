@@ -1,8 +1,9 @@
 import React from 'react';
 import { SectionId, useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
 import { AccentColorProvider, Box, ColorModeProvider, Separator, Stack, Text } from '@/design-system';
-import { CollapsibleSection } from './CollapsibleSection';
+import { CollapsibleSection, LAYOUT_ANIMATION } from './CollapsibleSection';
 import { BuySectionContent } from './sectionContent/BuySectionContent';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 
 export function SheetContent() {
   const { accentColors, asset } = useExpandedAssetSheetContext();
@@ -17,33 +18,25 @@ export function SheetContent() {
             paddingTop={{ custom: 200 }}
             paddingHorizontal="24px"
           >
-            <Stack space="28px" separator={<Separator color={{ custom: 'rgba(245, 248, 255, 0.03)' }} thickness={1} />}>
+            <Stack
+              space="28px"
+              separator={
+                <Animated.View layout={LAYOUT_ANIMATION}>
+                  <Separator color={{ custom: 'rgba(245, 248, 255, 0.03)' }} thickness={1} />
+                </Animated.View>
+              }
+            >
               <CollapsibleSection
-                content={
-                  <Box background="blue">
-                    <Text weight="heavy" align="center" size="17pt" color="label">
-                      fdsfdsfdsfdsfdsfdsafeasfds
-                    </Text>
-                    <Text weight="heavy" align="center" size="17pt" color="label">
-                      fdsfdsfdsfdsfdsfdsafeasfds
-                    </Text>
-                    <Text weight="heavy" align="center" size="17pt" color="label">
-                      fdsfdsfdsfdsfdsfdsafeasfds
-                    </Text>
-                    <Text weight="heavy" align="center" size="17pt" color="label">
-                      fdsfdsfdsfdsfdsfdsafeasfds
-                    </Text>
-                  </Box>
-                }
+                content={<BuySectionContent />}
                 icon="􀋥"
-                id={SectionId.PROFIT}
+                id={SectionId.BRIDGE}
                 primaryText="Buy"
-                secondaryText="ETH"
+                secondaryText={asset.symbol}
               />
               <CollapsibleSection
                 content={<BuySectionContent />}
                 icon="􀋥"
-                id={SectionId.MARKET_STATS}
+                id={SectionId.BUY}
                 primaryText="Buy"
                 secondaryText={asset.symbol}
               />
