@@ -98,8 +98,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
 
   const onOrderChange: DraggableFlatListProps<AddressItem>['onOrderChange'] = useCallback(
     (value: UniqueIdentifier[]) => {
-      // TODO: once upstream dnd fixes integrated
-      // reorderUnpinnedAddresses(value as string[]);
+      reorderUnpinnedAddresses(value as string[]);
     },
     [reorderUnpinnedAddresses]
   );
@@ -136,7 +135,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
     );
   }, [pinnedWalletItems, onPressAccount, editMode, unpinnedWalletItems.length, menuItems, onPressMenuItem]);
 
-  const renderItem = useCallback(
+  const renderScrollItem = useCallback(
     (item: AddressItem) => (
       <Draggable key={item.id.toString()} dragDirection="y" id={item.id.toString()}>
         <AddressRow
@@ -151,6 +150,12 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
     [menuItems, onPressMenuItem, onPressAccount, editMode]
   );
 
+  // the draggable context should only layout its children when the number of children changes
+  const draggableUnpinnedWalletItems = useMemo(() => {
+    return unpinnedWalletItems;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unpinnedWalletItems.length]);
+
   return (
     <Box>
       <Animated.View style={[StyleSheet.absoluteFill, emptyOpacityStyle]}>
@@ -163,10 +168,9 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
             style={{ maxHeight: LIST_MAX_HEIGHT }}
             autoScrollInsets={{ bottom: FOOTER_HEIGHT - 24 }}
             contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT - 24 }}
-            data={unpinnedWalletItems}
           >
             {renderHeader()}
-            {unpinnedWalletItems.map(item => renderItem(item))}
+            {draggableUnpinnedWalletItems.map(item => renderScrollItem(item))}
           </DraggableScrollView>
         </DndProvider>
       </Animated.View>

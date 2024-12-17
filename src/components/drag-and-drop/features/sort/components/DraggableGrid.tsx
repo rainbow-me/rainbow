@@ -1,6 +1,6 @@
-import React, { Children, useMemo, type FunctionComponent, type PropsWithChildren } from 'react';
-import { StyleProp, View, ViewStyle, type FlexStyle, type ViewProps } from 'react-native';
-import type { UniqueIdentifier } from '../../../types';
+import React, { useMemo, type FunctionComponent, type PropsWithChildren } from 'react';
+import { View, type FlexStyle, type ViewProps } from 'react-native';
+import { useChildrenIds } from '../../../hooks';
 import { useDraggableGrid, type UseDraggableGridOptions } from '../hooks/useDraggableGrid';
 
 export type DraggableGridProps = Pick<ViewProps, 'style'> &
@@ -20,31 +20,26 @@ export const DraggableGrid: FunctionComponent<PropsWithChildren<DraggableGridPro
   size,
   style: styleProp,
 }) => {
-  const initialOrder = useMemo(
-    () =>
-      Children.map(children, child => {
-        if (React.isValidElement(child)) {
-          return child.props.id;
-        }
-        return null;
-      })?.filter(Boolean) as UniqueIdentifier[],
-    [children]
-  );
+  const childrenIds = useChildrenIds(children);
 
-  const style: StyleProp<ViewStyle> = useMemo(
-    () => ({
-      flexDirection: direction,
-      gap,
-      flexWrap: 'wrap',
-      ...(styleProp as object),
-    }),
+  const style = useMemo(
+    () =>
+      // eslint-disable-next-line prefer-object-spread
+      Object.assign(
+        {
+          flexDirection: direction,
+          gap,
+          flexWrap: 'wrap',
+        },
+        styleProp
+      ),
     [gap, direction, styleProp]
   );
 
   useDraggableGrid({
     direction: style.flexDirection,
     gap: style.gap,
-    initialOrder,
+    childrenIds,
     onOrderChange,
     onOrderUpdate,
     shouldSwapWorklet,

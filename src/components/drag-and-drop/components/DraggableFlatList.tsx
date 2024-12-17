@@ -108,7 +108,7 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
 
   const { draggableSortOrder } = useDraggableSort({
     horizontal,
-    initialOrder,
+    childrenIds: initialOrder,
     onOrderChange,
     onOrderUpdate,
     shouldSwapWorklet,

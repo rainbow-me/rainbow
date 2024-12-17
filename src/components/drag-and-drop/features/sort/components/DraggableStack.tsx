@@ -1,6 +1,6 @@
-import React, { Children, useMemo, type FunctionComponent, type PropsWithChildren } from 'react';
+import React, { useMemo, type FunctionComponent, type PropsWithChildren } from 'react';
 import { View, type FlexStyle, type ViewProps } from 'react-native';
-import type { UniqueIdentifier } from '../../../types';
+import { useChildrenIds } from '../../../hooks';
 import { useDraggableStack, type UseDraggableStackOptions } from '../hooks/useDraggableStack';
 
 export type DraggableStackProps = Pick<ViewProps, 'style'> &
@@ -18,17 +18,7 @@ export const DraggableStack: FunctionComponent<PropsWithChildren<DraggableStackP
   shouldSwapWorklet,
   style: styleProp,
 }) => {
-  const initialOrder = useMemo(
-    () =>
-      Children.map(children, child => {
-        // console.log("in");
-        if (React.isValidElement(child)) {
-          return child.props.id;
-        }
-        return null;
-      })?.filter(Boolean) as UniqueIdentifier[],
-    [children]
-  );
+  const childrenIds = useChildrenIds(children);
 
   const style = useMemo(
     () => ({
@@ -44,7 +34,7 @@ export const DraggableStack: FunctionComponent<PropsWithChildren<DraggableStackP
   useDraggableStack({
     gap: style.gap,
     horizontal,
-    initialOrder,
+    childrenIds,
     onOrderChange,
     onOrderUpdate,
     shouldSwapWorklet,

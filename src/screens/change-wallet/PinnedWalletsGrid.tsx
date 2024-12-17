@@ -31,10 +31,9 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
   const removePinnedAddress = usePinnedWalletsStore(state => state.removePinnedAddress);
   const reorderPinnedAddresses = usePinnedWalletsStore(state => state.reorderPinnedAddresses);
 
-  const onGridOrderChange: DraggableGridProps['onOrderChange'] = useCallback(
+  const onOrderChange: DraggableGridProps['onOrderChange'] = useCallback(
     (value: UniqueIdentifier[]) => {
-      // TODO: once upstream dnd is integrated
-      // reorderPinnedAddresses(value as string[]);
+      reorderPinnedAddresses(value as string[]);
     },
     [reorderPinnedAddresses]
   );
@@ -42,6 +41,12 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
   const fillerItems = useMemo(() => {
     const itemsInLastRow = walletItems.length % PINS_PER_ROW;
     return Array.from({ length: itemsInLastRow === 0 ? 0 : PINS_PER_ROW - itemsInLastRow });
+  }, [walletItems.length]);
+
+  // the draggable context should only layout its children when the number of children changes
+  const draggableItems = useMemo(() => {
+    return walletItems;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletItems.length]);
 
   // TODO: scale down if cannot fit three items in row
@@ -53,13 +58,13 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
         direction="row"
         // TODO: design spec is 28px, but is too large
         gap={24}
-        onOrderChange={onGridOrderChange}
+        onOrderChange={onOrderChange}
         size={PINS_PER_ROW}
         style={{
           width: '100%',
         }}
       >
-        {walletItems.map(account => {
+        {draggableItems.map(account => {
           //  TODO: can ens names have emojis? If so this logic is wrong
           const walletName = removeFirstEmojiFromString(account.label) || address(account.address, 4, 4);
           return (
