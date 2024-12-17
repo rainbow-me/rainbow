@@ -1,4 +1,4 @@
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
 import { analyticsV2 } from '@/analytics';
 import { nonceStore } from '@/state/nonces';
