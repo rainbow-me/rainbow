@@ -41,6 +41,8 @@ import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
 import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
+import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
 
 export default async function runMigrations() {
   // get current version
@@ -695,6 +697,20 @@ export default async function runMigrations() {
   };
 
   migrations.push(v21);
+
+  /**
+   *************** Migration v22 ******************
+   * Reset icon checks
+   */
+  const v22 = async () => {
+    // For each appIcon, delete the handled flag
+    (Object.keys(unlockableAppIcons) as UnlockableAppIconKey[]).map(appIconKey => {
+      unlockableAppIconStorage.delete(appIconKey);
+      logger.debug('Resetting icon status for ' + appIconKey);
+    });
+  };
+
+  migrations.push(v22);
 
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
