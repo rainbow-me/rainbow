@@ -21,6 +21,7 @@ import PolygonBadge from '@/assets/badges/polygon.png';
 import ZoraBadge from '@/assets/badges/zora.png';
 
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
+import Animated from 'react-native-reanimated';
 
 export const ChainImage = forwardRef(function ChainImage(
   {

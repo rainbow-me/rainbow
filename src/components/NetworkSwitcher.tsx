@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { getChainColorWorklet } from '@/__swaps__/utils/swaps';
-import { chainsLabel, SUPPORTED_CHAIN_IDS_ALPHABETICAL } from '@/chains';
-import { ChainId } from '@/chains/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 import { AbsolutePortal } from '@/components/AbsolutePortal';
 import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -325,7 +325,7 @@ function AllNetworksSection({
 }
 
 function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: SharedValue<ChainId | undefined> }) {
-  const name = chainsLabel[chainId];
+  const chainName = useBackendNetworksStore.getState().getChainsName()[chainId];
   const chainColor = getChainColorWorklet(chainId, true);
   const isSelected = useDerivedValue(() => selected.value === chainId);
   const { animatedStyle } = useNetworkOptionStyle(isSelected, chainColor);
@@ -342,7 +342,7 @@ function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: Shar
     >
       <ChainImage chainId={chainId} size={24} />
       <Text color="label" size="17pt" weight="bold" style={{ textAlign: 'center', flex: 1 }}>
-        {name}
+        {chainName}
       </Text>
     </Animated.View>
   );
@@ -511,7 +511,8 @@ function NetworksGrid({
   selected: SharedValue<ChainId | undefined>;
 }) {
   const initialPinned = networkSwitcherStore.getState().pinnedNetworks;
-  const initialUnpinned = SUPPORTED_CHAIN_IDS_ALPHABETICAL.filter(chainId => !initialPinned.includes(chainId));
+  const sortedSupportedChainIds = useBackendNetworksStore.getState().getSortedSupportedChainIds();
+  const initialUnpinned = sortedSupportedChainIds.filter(chainId => !initialPinned.includes(chainId));
   const networks = useSharedValue({ [Section.pinned]: initialPinned, [Section.unpinned]: initialUnpinned });
 
   useEffect(() => {
@@ -576,7 +577,7 @@ function NetworksGrid({
           // Pin/Unpin
           if (section === Section.unpinned) networks[Section.pinned].splice(currentIndex, 1);
           else networks[Section.pinned].splice(newIndex, 0, chainId);
-          networks[Section.unpinned] = SUPPORTED_CHAIN_IDS_ALPHABETICAL.filter(chainId => !networks[Section.pinned].includes(chainId));
+          networks[Section.unpinned] = sortedSupportedChainIds.filter(chainId => !networks[Section.pinned].includes(chainId));
         } else if (section === Section.pinned && newIndex !== currentIndex) {
           // Reorder
           networks[Section.pinned].splice(currentIndex, 1);

@@ -1,6 +1,5 @@
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
-import { makeMutable, SharedValue } from 'react-native-reanimated';
 import { analyticsV2 } from '@/analytics';
 
 export const categories = ['trending', 'new', 'farcaster'] as const;

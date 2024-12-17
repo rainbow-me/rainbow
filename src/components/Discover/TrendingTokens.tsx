@@ -4,8 +4,8 @@ import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
 import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
 import { analyticsV2 } from '@/analytics';
-import { chainsLabel } from '@/chains';
-import { ChainId } from '@/chains/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { NetworkSelector } from '@/components/NetworkSwitcher';
 import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
@@ -465,6 +465,7 @@ function NoResults() {
 function NetworkFilter() {
   const [isOpen, setOpen] = useState(false);
   const selected = useSharedValue<ChainId | undefined>(undefined);
+
   const { chainId, setChainId } = useTrendingTokensStore(state => ({
     chainId: state.chainId,
     setChainId: state.setChainId,
@@ -481,7 +482,7 @@ function NetworkFilter() {
 
   const label = useMemo(() => {
     if (!chainId) return i18n.t(t.all);
-    return chainsLabel[chainId];
+    return useBackendNetworksStore.getState().getChainsLabel()[chainId];
   }, [chainId]);
 
   const icon = useMemo(() => {
