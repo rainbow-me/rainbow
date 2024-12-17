@@ -42,7 +42,7 @@ function AddressEmojiAvatar({
       style={{ backgroundColor }}
       width={{ custom: size }}
     >
-      <Text align="center" color="label" containsEmoji size={size > 40 ? '30pt' : 'icon 18px'} weight="heavy">
+      <Text align="center" color="label" containsEmoji size={size > 50 ? '44pt' : 'icon 18px'} weight="heavy">
         {accountSymbol}
       </Text>
     </Box>

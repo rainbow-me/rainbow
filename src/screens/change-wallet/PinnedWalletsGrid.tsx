@@ -82,7 +82,10 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                 wrap={(children: React.ReactElement) => (
                   <DropdownMenu<AddressMenuAction, AddressMenuActionData>
                     triggerAction="longPress"
-                    menuConfig={{ menuItems, menuTitle: walletName }}
+                    menuConfig={{
+                      menuItems: menuItems.filter(item => (account.isReadOnly ? item.actionKey !== AddressMenuAction.Settings : true)),
+                      menuTitle: walletName,
+                    }}
                     onPressMenuItem={action => onPressMenuItem(action, { address: account.address })}
                   >
                     <ButtonPressAnimation scaleTo={0.92} onPress={() => onPress(account.address)}>

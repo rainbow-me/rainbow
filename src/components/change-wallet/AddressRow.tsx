@@ -39,7 +39,7 @@ export const AddressRowButton = ({
   const fillQuaternary = useForegroundColor('fillQuaternary');
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.8} disabled={disabled}>
+    <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.8} disabled={disabled}>
       <Box
         alignItems="center"
         borderRadius={14}
@@ -101,7 +101,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
   );
 
   const menuConfig = {
-    menuItems: menuItems,
+    menuItems: menuItems.filter(item => (isReadOnly ? item.actionKey !== AddressMenuAction.Settings : true)),
     menuTitle: walletName,
   };
 

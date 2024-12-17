@@ -34,6 +34,8 @@ import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
 import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHintTooltip';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import ConditionalWrap from 'conditional-wrap';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { SettingsPages } from '../SettingsSheet/SettingsPages';
 
 const LIST_PADDING_BOTTOM = 6;
 const MAX_LIST_HEIGHT = DEVICE_HEIGHT - 220;
@@ -71,23 +73,6 @@ const Whitespace = styled(View)({
   position: 'absolute',
   width: '100%',
 });
-
-// TODO:
-// const getWalletListHeight = (wallets: any, watchOnly: boolean) => {
-//   let listHeight = !watchOnly ? FOOTER_HEIGHT + LIST_PADDING_BOTTOM : WATCH_ONLY_BOTTOM_PADDING;
-
-//   if (wallets) {
-//     for (const key of Object.keys(wallets)) {
-//       const visibleAccounts = wallets[key].addresses.filter((account: any) => account.visible);
-//       listHeight += visibleAccounts.length * WALLET_ROW_HEIGHT;
-
-//       if (listHeight > MAX_LIST_HEIGHT) {
-//         return { listHeight: MAX_LIST_HEIGHT, scrollEnabled: true };
-//       }
-//     }
-//   }
-//   return { listHeight, scrollEnabled: false };
-// };
 
 export interface AddressItem {
   address: EthereumAddress;
@@ -146,7 +131,6 @@ export default function ChangeWalletSheet() {
     );
   }, [wallets]);
 
-  // TODO: maybe wallet accounts is a better name
   const allWalletItems = useMemo(() => {
     const sortedWallets: AddressItem[] = [];
     const bluetoothWallets: AddressItem[] = [];
@@ -190,7 +174,6 @@ export default function ChangeWalletSheet() {
     return [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets].sort((a, b) => a.walletId.localeCompare(b.walletId));
   }, [walletsWithBalancesAndNames, currentAddress, editMode]);
 
-  // TODO: maybe move this to its own hook
   const ownedWalletsTotalBalance = useMemo(() => {
     let isLoadingBalance = false;
 
@@ -200,7 +183,6 @@ export default function ChangeWalletSheet() {
 
       const visibleAccounts = wallet.addresses.filter(account => account.visible);
 
-      // TODO: if these are not in the native currency 0 format the end number will also not have the format
       let walletTotalBalance = '0';
 
       visibleAccounts.forEach(account => {
@@ -434,19 +416,33 @@ export default function ChangeWalletSheet() {
     [currentAddress, deleteWallet, goBack, navigate, onChangeAccount, wallets]
   );
 
-  // const onPressPairHardwareWallet = useCallback(() => {
-  //   analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
-  //     isFirstWallet: false,
-  //     type: 'ledger_nano_x',
-  //   });
-  //   goBack();
-  //   InteractionManager.runAfterInteractions(() => {
-  //     navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
-  //       entryPoint: Routes.CHANGE_WALLET_SHEET,
-  //       isFirstWallet: false,
-  //     });
-  //   });
-  // }, [goBack, navigate]);
+  const onPressCopyAddress = useCallback((address: string) => {
+    Clipboard.setString(address);
+  }, []);
+
+  const onPressWalletSettings = useCallback(
+    (address: string) => {
+      const wallet = walletsByAddress[address];
+
+      if (!wallet) {
+        logger.error(new RainbowError('[ChangeWalletSheet]: No wallet for address found when pressing wallet settings'), {
+          address,
+        });
+        return;
+      }
+
+      InteractionManager.runAfterInteractions(() => {
+        navigate(Routes.SETTINGS_SHEET, {
+          params: {
+            walletId: wallet.id,
+            initialRoute: SettingsPages.backup,
+          },
+          screen: SettingsPages.backup.key,
+        });
+      });
+    },
+    [navigate, walletsByAddress]
+  );
 
   const onPressAddAnotherWallet = useCallback(() => {
     analyticsV2.track(analyticsV2.event.pressedButton, {
@@ -547,7 +543,7 @@ export default function ChangeWalletSheet() {
           address,
           actionKey,
         });
-        // TODO: show user facing error
+        // TODO: should show user facing error?
         return;
       }
       switch (actionKey) {
@@ -561,14 +557,14 @@ export default function ChangeWalletSheet() {
           onPressRemove(wallet.id, address);
           break;
         case AddressMenuAction.Settings:
-          // onPressSettings(address);
+          onPressWalletSettings(address);
           break;
         case AddressMenuAction.Copy:
-          // onPressCopy(address);
+          onPressCopyAddress(address);
           break;
       }
     },
-    [walletsByAddress, onPressEdit, onPressNotifications, onPressRemove]
+    [walletsByAddress, onPressEdit, onPressNotifications, onPressRemove, onPressCopyAddress, onPressWalletSettings]
   );
 
   return (
