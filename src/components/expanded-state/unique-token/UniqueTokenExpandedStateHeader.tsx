@@ -95,14 +95,6 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
         iconValue: 'arrow.clockwise',
       },
     },
-    [AssetActionsEnum.report]: {
-      actionKey: AssetActionsEnum.report,
-      actionTitle: lang.t('expanded_state.unique_expanded.report'),
-      icon: {
-        iconType: 'SYSTEM',
-        iconValue: 'exclamationmark.triangle',
-      },
-    },
     [AssetActionsEnum.looksrare]: {
       actionKey: AssetActionsEnum.looksrare,
       actionTitle: 'LooksRare',
