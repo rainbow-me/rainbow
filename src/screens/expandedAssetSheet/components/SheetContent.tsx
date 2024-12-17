@@ -3,21 +3,17 @@ import { SectionId, useExpandedAssetSheetContext } from '../context/ExpandedAsse
 import { AccentColorProvider, Box, ColorModeProvider, Separator, Stack } from '@/design-system';
 import { CollapsibleSection, LAYOUT_ANIMATION } from './shared/CollapsibleSection';
 import Animated from 'react-native-reanimated';
-import { BalanceSection, BuySection } from './sections';
+import { AboutSection, BalanceSection, BuySection } from './sections';
+import { ScrollView } from 'react-native';
+import { deviceUtils } from '@/utils';
 
 export function SheetContent() {
   const { accentColors, asset } = useExpandedAssetSheetContext();
   return (
     <AccentColorProvider color={accentColors.opacity100}>
-      <Box height="full" width="full" background="accent">
+      <ScrollView style={{ height: deviceUtils.dimensions.height }} contentContainerStyle={{ minHeight: deviceUtils.dimensions.height }}>
         <ColorModeProvider value="dark">
-          <Box
-            height="full"
-            width="full"
-            style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}
-            paddingTop={{ custom: 200 }}
-            paddingHorizontal="24px"
-          >
+          <Box height="full" width="full" paddingTop={{ custom: 96 }} paddingBottom={{ custom: 47 }} paddingHorizontal="24px">
             <Stack
               space="28px"
               separator={
@@ -28,11 +24,11 @@ export function SheetContent() {
             >
               <BalanceSection />
               <CollapsibleSection content={<BuySection />} icon="􀋥" id={SectionId.BRIDGE} primaryText="Buy" secondaryText={asset.symbol} />
-              <CollapsibleSection content={<BuySection />} icon="􀋥" id={SectionId.BUY} primaryText="Buy" secondaryText={asset.symbol} />
+              <CollapsibleSection content={<AboutSection />} icon="􁜾" id={SectionId.ABOUT} primaryText="About" />
             </Stack>
           </Box>
         </ColorModeProvider>
-      </Box>
+      </ScrollView>
     </AccentColorProvider>
   );
 }

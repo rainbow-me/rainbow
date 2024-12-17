@@ -15,6 +15,7 @@ export enum SectionId {
 
 interface AccentColors {
   opacity100: string;
+  opacity56: string;
   opacity24: string;
   opacity12: string;
   opacity10: string;
@@ -57,6 +58,7 @@ export function ExpandedAssetSheetContextProvider({ asset, children }: { asset: 
 
     return {
       opacity100,
+      opacity56: colors.alpha(opacity100, 0.56),
       opacity24: colors.alpha(opacity100, 0.24),
       opacity12: colors.alpha(opacity100, 0.12),
       opacity10: colors.alpha(opacity100, 0.1),

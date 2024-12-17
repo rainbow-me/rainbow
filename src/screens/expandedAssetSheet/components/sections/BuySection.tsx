@@ -1,14 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Bleed, Box, IconContainer, Inline, Stack, Text, TextShadow } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ScrollView } from 'react-native-gesture-handler';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Row } from '../shared/Row';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { getUniqueId } from '@/utils/ethereumUtils';
-import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
-import { USDC_ADDRESS } from '@/references';
-import { SearchAsset } from '@/__swaps__/types/search';
 
 function BuyButton({ usdAmount }: { usdAmount: number }) {
   const { accentColors } = useExpandedAssetSheetContext();
