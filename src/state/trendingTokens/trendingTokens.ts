@@ -1,5 +1,5 @@
 import { analyticsV2 } from '@/analytics';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
 import {
   TrendingCategory as ArcTrendingCategory,
