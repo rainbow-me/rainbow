@@ -1,13 +1,14 @@
 import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { arcClient } from '@/graphql';
-import { ChainId } from '@/chains/types';
+
 import { TrendingCategory, TrendingSort, TrendingTimeframe } from '@/state/trendingTokens/trendingTokens';
 import { Address } from 'viem';
 import { NativeCurrencyKey } from '@/entities';
 import store from '@/redux/store';
 import { SortDirection } from '@/graphql/__generated__/arc';
 import { UniqueId } from '@/__swaps__/types/assets';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export type FarcasterUser = {
   username: string;
