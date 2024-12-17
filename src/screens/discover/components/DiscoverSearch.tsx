@@ -71,7 +71,7 @@ export default function DiscoverSearch() {
   const lastSearchQuery = usePrevious(searchQueryForSearch);
 
   const [ensResults, setEnsResults] = useState<EnsSearchResult[]>([]);
-  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch, ChainId.mainnet);
+  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch);
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const marginBottom = TAB_BAR_HEIGHT + safeAreaInsetValues.bottom + 16;
@@ -82,7 +82,7 @@ export default function DiscoverSearch() {
     // 1. favorites
     // 2. verified
     // 3. profiles
-    // 4. unverified
+    // 4. unverified high liquidity
     // 5. low liquidity
     let list = swapCurrencyList;
     const listKeys = swapCurrencyList.map(item => item.key);
