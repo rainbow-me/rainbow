@@ -40,7 +40,7 @@ export function ExpandedAssetSheet() {
         additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
         yPosition={yPosition}
       >
-        <Box position="absolute" height="full" width="full" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }} />
+        <Box position="absolute" width="full" style={{ height: '200%', backgroundColor: 'rgba(0, 0, 0, 0.8)' }} />
         <Box
           height={{ custom: 5 }}
           width={{ custom: 36 }}
