@@ -1,7 +1,6 @@
 import { Box, Text } from '@/design-system';
 import { haptics } from '@/utils';
 import React, { useCallback, useMemo, useState } from 'react';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ETH_SYMBOL, USDC_ADDRESS } from '@/references';
@@ -13,7 +12,7 @@ import { SearchAsset } from '@/__swaps__/types/search';
 import * as i18n from '@/languages';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { IS_ANDROID } from '@/env';
-import { MenuConfig, MenuItem } from '@/components/DropdownMenu';
+import { MenuItem } from '@/components/DropdownMenu';
 
 type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 
@@ -165,8 +164,15 @@ export function ClaimCustomization() {
       .map(token => ({
         actionKey: token.symbol,
         actionTitle: token.name,
-      }))
-      .sort((a, b) => (a.actionTitle < b.actionTitle ? 1 : -1));
+        icon: {
+          iconType: 'REMOTE',
+          iconValue: {
+            uri: token.iconUrl,
+          },
+        },
+      }));
+
+    availableTokens = availableTokens.sort((a, b) => (a.actionTitle < b.actionTitle ? 1 : -1));
 
     availableTokens = [
       {
