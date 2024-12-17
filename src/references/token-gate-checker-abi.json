@@ -2,11 +2,25 @@
   {
     "inputs": [
       { "internalType": "address[]", "name": "targets", "type": "address[]" },
+      { "internalType": "address[]", "name": "potentialOwners", "type": "address[]" }
+    ],
+    "name": "areOwners",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
-        "internalType": "address[]",
-        "name": "potentialOwners",
-        "type": "address[]"
-      }
+        "components": [
+          { "internalType": "address", "name": "account", "type": "address" },
+          { "internalType": "uint256", "name": "id", "type": "uint256" }
+        ],
+        "internalType": "struct NftChecker.TokenInfo[]",
+        "name": "targets",
+        "type": "tuple[]"
+      },
+      { "internalType": "address[]", "name": "potentialOwners", "type": "address[]" }
     ],
     "name": "areOwners",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],

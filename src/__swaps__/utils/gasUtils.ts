@@ -11,7 +11,7 @@ import * as i18n from '@/languages';
 import { OVM_GAS_PRICE_ORACLE, gasUnits, supportedNativeCurrencies, optimismGasOracleAbi, SupportedCurrencyKey } from '@/references';
 
 import { ParsedAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { BlocksToConfirmation, GasFeeLegacyParams, GasFeeParam, GasFeeParams, GasSpeed } from '@/__swaps__/types/gas';
 
 import { gweiToWei, weiToGwei } from '@/parsers';

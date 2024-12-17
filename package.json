@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.49-1",
+  "version": "1.9.50-1",
   "private": true,
   "scripts": {
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn graphql-codegen && yarn fetch:networks",
@@ -108,7 +108,7 @@
     "@notifee/react-native": "7.8.2",
     "@rainbow-me/provider": "0.1.1",
     "@rainbow-me/react-native-animated-number": "0.0.2",
-    "@rainbow-me/swaps": "0.28.0",
+    "@rainbow-me/swaps": "0.30.1",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-camera-roll/camera-roll": "7.7.0",
     "@react-native-clipboard/clipboard": "1.13.2",
@@ -309,7 +309,7 @@
     "use-deep-compare": "1.1.0",
     "use-memo-one": "1.1.1",
     "util": "0.10.4",
-    "viem": "2.9.16",
+    "viem": "2.21.54",
     "vm-browserify": "0.0.4",
     "w2t": "3.0.2",
     "zeego": "1.10.0",

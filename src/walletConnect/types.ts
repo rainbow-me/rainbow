@@ -1,4 +1,4 @@
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { Address } from 'viem';
 import { SignClientTypes, Verify } from '@walletconnect/types';
 import { RequestSource } from '@/utils/requestNavigationHandlers';

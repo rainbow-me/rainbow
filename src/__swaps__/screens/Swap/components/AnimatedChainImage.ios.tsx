@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
@@ -17,8 +17,15 @@ import BlastBadge from '@/assets/badges/blast.png';
 import BscBadge from '@/assets/badges/bsc.png';
 import DegenBadge from '@/assets/badges/degen.png';
 import EthereumBadge from '@/assets/badges/ethereum.png';
+// import GnosisBadge from '@/assets/badges/gnosis.png';
+// import GravityBadge from '@/assets/badges/gravity.png';
+import InkBadge from '@/assets/badges/ink.png';
+// import LineaBadge from '@/assets/badges/linea.png';
 import OptimismBadge from '@/assets/badges/optimism.png';
 import PolygonBadge from '@/assets/badges/polygon.png';
+// import SankoBadge from '@/assets/badges/sanko.png';
+// import ScrollBadge from '@/assets/badges/scroll.png';
+// import ZksyncBadge from '@/assets/badges/zksync.png';
 import ZoraBadge from '@/assets/badges/zora.png';
 
 const networkBadges = {
@@ -34,13 +41,20 @@ const networkBadges = {
   [ChainId.bsc]: Image.resolveAssetSource(BscBadge).uri,
   [ChainId.bscTestnet]: Image.resolveAssetSource(BscBadge).uri,
   [ChainId.degen]: Image.resolveAssetSource(DegenBadge).uri,
+  // [ChainId.gnosis]: Image.resolveAssetSource(GnosisBadge).uri,
+  // [ChainId.gravity]: Image.resolveAssetSource(GravityBadge).uri,
   [ChainId.holesky]: Image.resolveAssetSource(EthereumBadge).uri,
+  [ChainId.ink]: Image.resolveAssetSource(InkBadge).uri,
+  // [ChainId.linea]: Image.resolveAssetSource(LineaBadge).uri,
   [ChainId.mainnet]: Image.resolveAssetSource(EthereumBadge).uri,
   [ChainId.optimism]: Image.resolveAssetSource(OptimismBadge).uri,
   [ChainId.optimismSepolia]: Image.resolveAssetSource(OptimismBadge).uri,
   [ChainId.polygon]: Image.resolveAssetSource(PolygonBadge).uri,
   [ChainId.polygonAmoy]: Image.resolveAssetSource(PolygonBadge).uri,
+  // [ChainId.sanko]: Image.resolveAssetSource(SankoBadge).uri,
+  // [ChainId.scroll]: Image.resolveAssetSource(ScrollBadge).uri,
   [ChainId.sepolia]: Image.resolveAssetSource(EthereumBadge).uri,
+  // [ChainId.zksync]: Image.resolveAssetSource(ZksyncBadge).uri,
   [ChainId.zora]: Image.resolveAssetSource(ZoraBadge).uri,
   [ChainId.zoraSepolia]: Image.resolveAssetSource(ZoraBadge).uri,
 };

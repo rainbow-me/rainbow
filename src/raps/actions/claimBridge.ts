@@ -14,12 +14,12 @@ import { REFERRER_CLAIM } from '@/references';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { AddressZero } from '@ethersproject/constants';
-import { CrosschainQuote, QuoteError, SwapType, getClaimBridgeQuote } from '@rainbow-me/swaps';
+import { CrosschainQuote, QuoteError, getClaimBridgeQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
-import { ChainId } from '@/chains/types';
-import { chainsName } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 // This action is used to bridge the claimed funds to another chain
 export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {
@@ -157,6 +157,8 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   if (!swap) {
     throw new Error('[CLAIM-BRIDGE]: executeCrosschainSwap returned undefined');
   }
+
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
 
   const typedAssetToBuy: ParsedAddressAsset = {
     ...parameters.assetToBuy,

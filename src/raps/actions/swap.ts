@@ -3,11 +3,11 @@ import { Transaction } from '@ethersproject/transactions';
 import {
   CrosschainQuote,
   Quote,
-  ChainId as SwapChainId,
   SwapType,
   fillQuote,
   getQuoteExecutionDetails,
   getRainbowRouterContractAddress,
+  getWrappedAssetAddress,
   getWrappedAssetMethod,
   unwrapNativeAsset,
   wrapNativeAsset,
@@ -16,7 +16,7 @@ import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { Address } from 'viem';
 
 import { metadataPOSTClient } from '@/graphql';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { NewTransaction, TxHash, TransactionStatus, TransactionDirection } from '@/entities';
 import { add } from '@/helpers/utilities';
 import { addNewTransaction } from '@/state/pendingTransactions';
@@ -41,7 +41,7 @@ import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { chainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const WRAP_GAS_PADDING = 1.002;
 
@@ -138,7 +138,7 @@ export const estimateSwapGasLimit = async ({
           from: quote.from,
           value: isWrapNativeAsset ? quote.buyAmount.toString() : '0',
         },
-        getWrappedAssetMethod(isWrapNativeAsset ? 'deposit' : 'withdraw', provider, chainId as unknown as SwapChainId),
+        getWrappedAssetMethod(isWrapNativeAsset ? 'deposit' : 'withdraw', provider, getWrappedAssetAddress(quote)),
         isWrapNativeAsset ? [] : [quote.buyAmount.toString()],
         provider,
         WRAP_GAS_PADDING
@@ -285,10 +285,10 @@ export const executeSwap = async ({
 
   // Wrap Eth
   if (quote.swapType === SwapType.wrap) {
-    return wrapNativeAsset(quote.buyAmount, wallet, chainId as unknown as SwapChainId, transactionParams);
+    return wrapNativeAsset(quote.buyAmount, wallet, getWrappedAssetAddress(quote), transactionParams);
     // Unwrap Weth
   } else if (quote.swapType === SwapType.unwrap) {
-    return unwrapNativeAsset(quote.sellAmount, wallet, chainId as unknown as SwapChainId, transactionParams);
+    return unwrapNativeAsset(quote.sellAmount, wallet, getWrappedAssetAddress(quote), transactionParams);
     // Swap
   } else {
     return fillQuote(quote, transactionParams, wallet, permit, chainId as number, REFERRER);
@@ -373,6 +373,8 @@ export const swap = async ({
         value: (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice,
       }
     : parameters.assetToSell.price;
+
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
 
   const assetToBuy = {
     ...parameters.assetToBuy,

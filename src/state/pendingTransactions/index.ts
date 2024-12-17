@@ -3,7 +3,7 @@ import { createStore } from '../internal/createStore';
 import create from 'zustand';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
 import { nonceStore } from '../nonces';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export interface PendingTransactionsState {
   pendingTransactions: Record<string, RainbowTransaction[]>;
@@ -84,7 +84,7 @@ export const addNewTransaction = ({
   const parsedTransaction = convertNewTransactionToRainbowTransaction(transaction);
   addPendingTransaction({ address, pendingTransaction: parsedTransaction });
   const localNonceData = getNonce({ address, chainId });
-  const localNonce = localNonceData?.currentNonce || 0;
+  const localNonce = localNonceData?.currentNonce || -1;
   if (transaction.nonce > localNonce) {
     setNonce({
       address,
