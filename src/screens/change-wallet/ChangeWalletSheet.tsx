@@ -483,8 +483,7 @@ export default function ChangeWalletSheet() {
     let menuItems = [
       {
         actionKey: AddressMenuAction.Edit,
-        // TODO: localize
-        actionTitle: 'Edit Wallet',
+        actionTitle: i18n.t(i18n.l.wallet.change_wallet.address_menu.edit),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'pencil',
@@ -492,7 +491,7 @@ export default function ChangeWalletSheet() {
       },
       {
         actionKey: AddressMenuAction.Copy,
-        actionTitle: 'Copy Address',
+        actionTitle: i18n.t(i18n.l.wallet.change_wallet.address_menu.copy),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'doc.fill',
@@ -500,7 +499,7 @@ export default function ChangeWalletSheet() {
       },
       {
         actionKey: AddressMenuAction.Settings,
-        actionTitle: 'Wallet Settings',
+        actionTitle: i18n.t(i18n.l.wallet.change_wallet.address_menu.settings),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'key.fill',
@@ -508,7 +507,7 @@ export default function ChangeWalletSheet() {
       },
       {
         actionKey: AddressMenuAction.Notifications,
-        actionTitle: 'Notification Settings',
+        actionTitle: i18n.t(i18n.l.wallet.change_wallet.address_menu.notifications),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'bell.fill',
@@ -516,7 +515,7 @@ export default function ChangeWalletSheet() {
       },
       {
         actionKey: AddressMenuAction.Remove,
-        actionTitle: 'Remove Wallet',
+        actionTitle: i18n.t(i18n.l.wallet.change_wallet.address_menu.remove),
         destructive: true,
         icon: {
           iconType: 'SYSTEM',
@@ -586,7 +585,7 @@ export default function ChangeWalletSheet() {
             <SheetHandleFixedToTop />
             <Box zIndex={1000} paddingTop="32px" paddingBottom="12px" width="full" justifyContent="center" alignItems="center">
               <Text align="center" color="label" size="20pt" weight="heavy">
-                {'Wallets'}
+                {i18n.t(i18n.l.wallet.change_wallet.wallets)}
               </Text>
               {/* TODO: this positioning is jank */}
               <Box position="absolute" style={{ right: 24, top: 32 + 3 }}>
@@ -599,7 +598,7 @@ export default function ChangeWalletSheet() {
                       align="end"
                       alignOffset={18}
                       sideOffset={12}
-                      title="Customize Your Wallets"
+                      title={i18n.t(i18n.l.wallet.change_wallet.edit_hint_tooltip.title)}
                       SubtitleComponent={
                         <Inline>
                           <Text color={{ custom: globalColors.grey60 }} size="13pt" weight="semibold">
@@ -656,7 +655,7 @@ export default function ChangeWalletSheet() {
               {!editMode ? (
                 <Stack space="10px">
                   <Text color="label" size="13pt" weight="medium">
-                    {'Total Balance'}
+                    {i18n.t(i18n.l.wallet.change_wallet.total_balance)}
                   </Text>
                   <Text color="label" size="17pt" weight="heavy">
                     {ownedWalletsTotalBalance}

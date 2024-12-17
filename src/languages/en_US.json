@@ -2528,7 +2528,21 @@
         "loading_balance": "Loading Balance...",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Watching",
-        "ledger": "Ledger"
+        "ledger": "Ledger",
+        "wallets": "Wallets",
+        "all_wallets": "All Wallets",
+        "total_balance": "Total Balance",
+        "edit_hint_tooltip": {
+          "title": "Customize Your Wallets",
+          "subtitle": "Tap the Edit button above to set up"
+        },
+        "address_menu": {
+          "edit": "Edit Wallet",
+          "copy": "Copy Address",
+          "settings": "Wallet Settings",
+          "notifications": "Notification Settings",
+          "remove": "Remove Wallet"
+        }
       },
       "connected_apps": "Connected Apps",
       "copy": "Copy",

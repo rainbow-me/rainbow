@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import * as i18n from '@/languages';
 import { EmptyAssetList } from '../asset-list';
 import { AddressRow } from './AddressRow';
 import { EthereumAddress } from '@rainbow-me/entities';
@@ -125,7 +126,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
             </Inset>
             <Box paddingHorizontal="16px" paddingVertical="28px">
               <Text color="label" size="17pt" weight="heavy">
-                {'All Wallets'}
+                {i18n.t(i18n.l.wallet.change_wallet.all_wallets)}
               </Text>
             </Box>
           </>
