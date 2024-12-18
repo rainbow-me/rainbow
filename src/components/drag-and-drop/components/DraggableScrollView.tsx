@@ -1,7 +1,7 @@
 import React, { ComponentProps, ReactElement } from 'react';
 import Animated, { useAnimatedRef, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useDndContext } from '../DndContext';
-import { UseDraggableStackOptions } from '../features';
+import { UseDraggableSortOptions } from '../features';
 import { swapByItemCenterPoint } from '../utils';
 import { useChildrenIds } from '../hooks';
 import { useDraggableScroll } from '../features/sort/hooks/useDraggableScroll';
@@ -9,7 +9,7 @@ import { useDraggableScroll } from '../features/sort/hooks/useDraggableScroll';
 type AnimatedScrollViewProps = ComponentProps<typeof Animated.ScrollView>;
 
 export type DraggableScrollViewProps = AnimatedScrollViewProps &
-  Pick<UseDraggableStackOptions, 'onOrderChange' | 'onOrderUpdate' | 'shouldSwapWorklet'> & {
+  Pick<UseDraggableSortOptions, 'onOrderChange' | 'onOrderUpdate' | 'onOrderUpdateWorklet' | 'shouldSwapWorklet'> & {
     children: React.ReactNode;
     gap?: number;
     horizontal?: boolean;
@@ -27,6 +27,7 @@ export const DraggableScrollView = ({
   horizontal = false,
   onOrderChange,
   onOrderUpdate,
+  onOrderUpdateWorklet,
   shouldSwapWorklet = swapByItemCenterPoint,
   autoScrollInsets,
   ...otherProps
@@ -44,6 +45,7 @@ export const DraggableScrollView = ({
     childrenIds,
     onOrderChange,
     onOrderUpdate,
+    onOrderUpdateWorklet,
     shouldSwapWorklet,
     horizontal,
     contentHeight,

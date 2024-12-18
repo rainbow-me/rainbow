@@ -12,6 +12,7 @@ export type UseDraggableSortOptions = {
   horizontal?: boolean;
   onOrderChange?: (order: UniqueIdentifier[]) => void;
   onOrderUpdate?: (nextOrder: UniqueIdentifier[], prevOrder: UniqueIdentifier[]) => void;
+  onOrderUpdateWorklet?: (nextOrder: UniqueIdentifier[], prevOrder: UniqueIdentifier[]) => void;
   shouldSwapWorklet?: ShouldSwapWorklet;
 };
 
@@ -20,6 +21,7 @@ export const useDraggableSort = ({
   childrenIds,
   onOrderChange,
   onOrderUpdate,
+  onOrderUpdateWorklet,
   shouldSwapWorklet = doesOverlapOnAxis,
 }: UseDraggableSortOptions) => {
   const { draggableActiveId, draggableStates, draggableRestingOffsets, draggableActiveLayout, draggableOffsets, draggableLayouts } =
@@ -175,8 +177,11 @@ export const useDraggableSort = ({
       // Finally update the sort order
       const nextOrder = moveArrayIndex(prevOrder, prevPlaceholderIndex, nextPlaceholderIndex);
       // Notify the parent component of the order update
-      if (onOrderUpdate) {
-        runOnJS(onOrderUpdate)(nextOrder, prevOrder);
+      if (prevPlaceholderIndex !== nextPlaceholderIndex && nextActiveId !== null) {
+        if (onOrderUpdate) {
+          runOnJS(onOrderUpdate)(nextOrder, prevOrder);
+        }
+        onOrderUpdateWorklet?.(nextOrder, prevOrder);
       }
 
       draggableSortOrder.value = nextOrder;

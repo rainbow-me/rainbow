@@ -16,6 +16,7 @@ import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
 import { DRAGGABLE_ACTIVATION_DELAY } from '@/components/change-wallet/WalletList';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;
@@ -43,6 +44,11 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
     [setPinnedAddresses]
   );
 
+  const onOrderUpdateWorklet: DraggableGridProps['onOrderUpdateWorklet'] = useCallback(() => {
+    'worklet';
+    triggerHaptics('impactLight');
+  }, []);
+
   const fillerItems = useMemo(() => {
     const itemsInLastRow = walletItems.length % PINS_PER_ROW;
     return Array.from({ length: itemsInLastRow === 0 ? 0 : PINS_PER_ROW - itemsInLastRow });
@@ -65,6 +71,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
         direction="row"
         gap={GRID_GAP}
         onOrderChange={onOrderChange}
+        onOrderUpdateWorklet={onOrderUpdateWorklet}
         size={PINS_PER_ROW}
         style={{
           width: '100%',

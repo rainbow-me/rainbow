@@ -52,7 +52,7 @@ function getRemainingScrollDistanceWorklet({
 
 export type UseDraggableScrollOptions = Pick<
   UseDraggableSortOptions,
-  'childrenIds' | 'onOrderChange' | 'onOrderUpdate' | 'shouldSwapWorklet'
+  'childrenIds' | 'onOrderChange' | 'onOrderUpdate' | 'onOrderUpdateWorklet' | 'shouldSwapWorklet'
 > & {
   contentHeight: SharedValue<number>;
   layoutHeight: SharedValue<number>;
@@ -67,6 +67,7 @@ export const useDraggableScroll = ({
   childrenIds,
   onOrderChange,
   onOrderUpdate,
+  onOrderUpdateWorklet,
   shouldSwapWorklet = doesOverlapOnAxis,
   horizontal = false,
   contentHeight,
@@ -83,6 +84,7 @@ export const useDraggableScroll = ({
     childrenIds,
     onOrderChange,
     onOrderUpdate,
+    onOrderUpdateWorklet,
     shouldSwapWorklet,
   });
 

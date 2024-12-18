@@ -17,7 +17,7 @@ import {
   PANEL_INSET_HORIZONTAL,
 } from '@/screens/change-wallet/ChangeWalletSheet';
 import { Box, Separator, Text } from '@/design-system';
-import { DndProvider, Draggable, DraggableFlatListProps, UniqueIdentifier } from '@/components/drag-and-drop';
+import { DndProvider, Draggable, DraggableScrollViewProps, UniqueIdentifier } from '@/components/drag-and-drop';
 import { PinnedWalletsGrid } from '@/screens/change-wallet/PinnedWalletsGrid';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { MenuItem } from '@/components/DropdownMenu';
@@ -65,19 +65,26 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
 
   const setUnpinnedAddresses = usePinnedWalletsStore(state => state.setUnpinnedAddresses);
 
-  const onOrderChange: DraggableFlatListProps<AddressItem>['onOrderChange'] = useCallback(
+  const onOrderChange: DraggableScrollViewProps['onOrderChange'] = useCallback(
     (value: UniqueIdentifier[]) => {
+      console.log('ON ORDER CHANGE');
       setUnpinnedAddresses(value as string[]);
     },
     [setUnpinnedAddresses]
   );
 
-  const onDraggableActivationWorklet = useCallback(() => {
+  // Fires when order updates but drag is still active
+  const onOrderUpdateWorklet: DraggableScrollViewProps['onOrderUpdateWorklet'] = useCallback(() => {
     'worklet';
-    triggerHaptics('selection');
+    triggerHaptics('impactLight');
   }, []);
 
-  const renderHeader = useCallback(() => {
+  const onDraggableActivationWorklet = useCallback(() => {
+    'worklet';
+    triggerHaptics('impactLight');
+  }, []);
+
+  const renderPinnedWalletsSection = useCallback(() => {
     const hasPinnedWallets = pinnedWalletItems.length > 0;
     return (
       <>
@@ -129,7 +136,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
   }, [unpinnedWalletItems.length]);
 
   return (
-    <Box>
+    <>
       {walletItems.length === 0 && (
         <Animated.View exiting={FadeOut.duration(FADE_TRANSITION_DURATION)} style={StyleSheet.absoluteFill}>
           <EmptyWalletList />
@@ -140,17 +147,19 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
           <DndProvider onActivationWorklet={onDraggableActivationWorklet} activationDelay={DRAG_ACTIVATION_DELAY} disabled={!editMode}>
             <DraggableScrollView
               onOrderChange={onOrderChange}
+              onOrderUpdateWorklet={onOrderUpdateWorklet}
+              scrollIndicatorInsets={{ bottom: FOOTER_HEIGHT - 24 }}
               style={{ maxHeight: LIST_MAX_HEIGHT, marginHorizontal: -PANEL_INSET_HORIZONTAL, paddingHorizontal: PANEL_INSET_HORIZONTAL }}
               // subtract 24px to account for the footers tappering gradient
               autoScrollInsets={{ bottom: FOOTER_HEIGHT - 24 }}
               contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT - 24 }}
             >
-              {renderHeader()}
+              {renderPinnedWalletsSection()}
               {draggableUnpinnedWalletItems.map(item => renderScrollItem(item))}
             </DraggableScrollView>
           </DndProvider>
         </Animated.View>
       )}
-    </Box>
+    </>
   );
 }

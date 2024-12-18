@@ -6,7 +6,7 @@ import { useDraggableSort, type UseDraggableSortOptions } from './useDraggableSo
 
 export type UseDraggableGridOptions = Pick<
   UseDraggableSortOptions,
-  'childrenIds' | 'onOrderChange' | 'onOrderUpdate' | 'shouldSwapWorklet'
+  'childrenIds' | 'onOrderChange' | 'onOrderUpdate' | 'onOrderUpdateWorklet' | 'shouldSwapWorklet'
 > & {
   gap?: number;
   size: number;
@@ -17,6 +17,7 @@ export const useDraggableGrid = ({
   childrenIds,
   onOrderChange,
   onOrderUpdate,
+  onOrderUpdateWorklet,
   gap = 0,
   size,
   direction = 'row',
@@ -30,6 +31,7 @@ export const useDraggableGrid = ({
     childrenIds,
     onOrderChange,
     onOrderUpdate,
+    onOrderUpdateWorklet,
     shouldSwapWorklet,
   });
 

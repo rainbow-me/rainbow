@@ -4,7 +4,7 @@ import { useChildrenIds } from '../../../hooks';
 import { useDraggableGrid, type UseDraggableGridOptions } from '../hooks/useDraggableGrid';
 
 export type DraggableGridProps = Pick<ViewProps, 'style'> &
-  Pick<UseDraggableGridOptions, 'onOrderChange' | 'onOrderUpdate' | 'shouldSwapWorklet'> & {
+  Pick<UseDraggableGridOptions, 'onOrderChange' | 'onOrderUpdate' | 'onOrderUpdateWorklet' | 'shouldSwapWorklet'> & {
     direction?: FlexStyle['flexDirection'];
     size: number;
     gap?: number;
@@ -16,6 +16,7 @@ export const DraggableGrid: FunctionComponent<PropsWithChildren<DraggableGridPro
   gap = 0,
   onOrderChange,
   onOrderUpdate,
+  onOrderUpdateWorklet,
   shouldSwapWorklet,
   size,
   style: styleProp,
@@ -42,6 +43,7 @@ export const DraggableGrid: FunctionComponent<PropsWithChildren<DraggableGridPro
     childrenIds,
     onOrderChange,
     onOrderUpdate,
+    onOrderUpdateWorklet,
     shouldSwapWorklet,
     size,
   });
