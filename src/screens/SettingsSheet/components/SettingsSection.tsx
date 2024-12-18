@@ -28,9 +28,11 @@ import { showActionSheetWithOptions } from '@/utils';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { SettingsExternalURLs } from '../constants';
-import { capitalizeFirstLetter, checkWalletsForBackupStatus } from '../utils';
+import { checkLocalWalletsForBackupStatus } from '../utils';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { Box } from '@/design-system';
+import { capitalize } from 'lodash';
+import { backupsStore } from '@/state/backups/backups';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
@@ -59,10 +61,14 @@ const SettingsSection = ({
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
+  const { backupProvider, backups } = backupsStore(state => ({
+    backupProvider: state.backupProvider,
+    backups: state.backups,
+  }));
+
   const { isDarkMode, setTheme, colorScheme } = useTheme();
 
   const onSendFeedback = useSendFeedback();
-  const { backupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const onPressReview = useCallback(async () => {
     if (ios) {
@@ -85,7 +91,7 @@ const SettingsSection = ({
 
   const onPressLearn = useCallback(() => Linking.openURL(SettingsExternalURLs.rainbowLearn), []);
 
-  const { allBackedUp, canBeBackedUp } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
+  const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets, backups), [wallets, backups]);
 
   const themeMenuConfig = useMemo(() => {
     return {
@@ -170,21 +176,19 @@ const SettingsSection = ({
   return (
     <MenuContainer testID="settings-menu-container" Footer={<AppVersionStamp />}>
       <Menu>
-        {canBeBackedUp && (
-          <MenuItem
-            hasRightArrow
-            leftComponent={<MenuItem.ImageIcon source={WalletsAndBackupIcon} />}
-            onPress={onPressBackup}
-            rightComponent={
-              <Box paddingBottom="2px" paddingRight="8px">
-                <MenuItem.ImageIcon size={44} source={getWalletsAndBackupAlertIcon()} />
-              </Box>
-            }
-            size={60}
-            testID={'backup-section'}
-            titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.backup)} />}
-          />
-        )}
+        <MenuItem
+          hasRightArrow
+          leftComponent={<MenuItem.ImageIcon source={WalletsAndBackupIcon} />}
+          onPress={onPressBackup}
+          rightComponent={
+            <Box paddingBottom="2px" paddingRight="8px">
+              <MenuItem.ImageIcon size={44} source={getWalletsAndBackupAlertIcon()} />
+            </Box>
+          }
+          size={60}
+          testID={'backup-section'}
+          titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.backup)} />}
+        />
         {isNotificationsEnabled && (
           <MenuItem
             hasRightArrow
@@ -215,7 +219,7 @@ const SettingsSection = ({
           <MenuItem
             hasChevron
             leftComponent={<MenuItem.ImageIcon source={isDarkMode ? DarkModeIconDark : DarkModeIcon} />}
-            rightComponent={<MenuItem.Selection>{colorScheme ? capitalizeFirstLetter(colorScheme) : ''}</MenuItem.Selection>}
+            rightComponent={<MenuItem.Selection>{colorScheme ? capitalize(colorScheme) : ''}</MenuItem.Selection>}
             size={60}
             testID={`theme-section-${isDarkMode ? 'dark' : 'light'}`}
             titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.theme)} />}

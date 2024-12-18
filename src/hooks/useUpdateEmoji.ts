@@ -17,11 +17,11 @@ export default function useUpdateEmoji() {
   const saveInfo = useCallback(
     async (name: string, color: number) => {
       const walletId = selectedWallet.id;
-      const newWallets: typeof wallets = {
+      const newWallets = {
         ...wallets,
         [walletId]: {
           ...wallets![walletId],
-          addresses: wallets![walletId].addresses.map((singleAddress: { address: string }) =>
+          addresses: wallets![walletId].addresses.map(singleAddress =>
             singleAddress.address.toLowerCase() === accountAddress.toLowerCase()
               ? {
                   ...singleAddress,

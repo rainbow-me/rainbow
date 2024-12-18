@@ -5,11 +5,10 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import React, { useRef } from 'react';
 import * as i18n from '@/languages';
-import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
+import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
-import { InteractionManager, Linking } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
-import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { createWallet } from '@/model/wallet';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
@@ -19,20 +18,13 @@ import PairHairwareWallet from '@/assets/PairHardwareWallet.png';
 import ImportSecretPhraseOrPrivateKey from '@/assets/ImportSecretPhraseOrPrivateKey.png';
 import WatchWalletIcon from '@/assets/watchWallet.png';
 import { useDispatch } from 'react-redux';
-import {
-  backupUserDataIntoCloud,
-  getGoogleAccountUserData,
-  GoogleDriveUserData,
-  isCloudBackupAvailable,
-  login,
-  logoutFromGoogleDrive,
-} from '@/handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
 import { cloudPlatform } from '@/utils/platform';
-import { IS_ANDROID } from '@/env';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useInitializeWallet, useWallets } from '@/hooks';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { executeFnIfCloudBackupAvailable } from '@/model/backup';
+import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
@@ -52,7 +44,6 @@ export const AddWalletSheet = () => {
   const { goBack, navigate } = useNavigation();
 
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
-  const profilesEnabled = useExperimentalFlag(PROFILES);
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const creatingWallet = useRef<boolean>();
@@ -83,6 +74,10 @@ export const AddWalletSheet = () => {
             },
             onCloseModal: async (args: any) => {
               if (args) {
+                walletLoadingStore.setState({
+                  loadingState: WalletLoadingStates.CREATING_WALLET,
+                });
+
                 const name = args?.name ?? '';
                 const color = args?.color ?? null;
                 // Check if the selected wallet is the primary
@@ -113,31 +108,18 @@ export const AddWalletSheet = () => {
                 try {
                   // If we found it and it's not damaged use it to create the new account
                   if (primaryWalletKey && !wallets?.[primaryWalletKey].damaged) {
-                    const newWallets = await dispatch(createAccountForWallet(primaryWalletKey, color, name));
+                    await dispatch(createAccountForWallet(primaryWalletKey, color, name));
                     // @ts-ignore
                     await initializeWallet();
-                    // If this wallet was previously backed up to the cloud
-                    // We need to update userData backup so it can be restored too
-                    if (wallets?.[primaryWalletKey].backedUp && wallets[primaryWalletKey].backupType === WalletBackupTypes.cloud) {
-                      try {
-                        await backupUserDataIntoCloud({ wallets: newWallets });
-                      } catch (e) {
-                        logger.error(new RainbowError('[AddWalletSheet]: Updating wallet userdata failed after new account creation'), {
-                          error: e,
-                        });
-                        throw e;
-                      }
-                    }
-
-                    // If doesn't exist, we need to create a new wallet
                   } else {
+                    // If doesn't exist, we need to create a new wallet
                     await createWallet({
                       color,
                       name,
                       clearCallbackOnStartCreation: true,
                     });
-                    await dispatch(walletsLoadState(profilesEnabled));
-                    // @ts-ignore
+                    await dispatch(walletsLoadState());
+                    // @ts-expect-error - needs refactor to object params
                     await initializeWallet();
                   }
                 } catch (e) {
@@ -149,6 +131,10 @@ export const AddWalletSheet = () => {
                       showWalletErrorAlert();
                     }, 1000);
                   }
+                } finally {
+                  walletLoadingStore.setState({
+                    loadingState: null,
+                  });
                 }
               }
               creatingWallet.current = false;
@@ -197,47 +183,11 @@ export const AddWalletSheet = () => {
       isFirstWallet,
       type: 'seed',
     });
-    if (IS_ANDROID) {
-      try {
-        await logoutFromGoogleDrive();
-        await login();
 
-        getGoogleAccountUserData().then((accountDetails: GoogleDriveUserData | undefined) => {
-          if (accountDetails) {
-            return navigate(Routes.RESTORE_SHEET);
-          }
-          Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
-        });
-      } catch (e) {
-        Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
-        logger.error(new RainbowError('[AddWalletSheet]: Error while trying to restore from cloud'), {
-          error: e,
-        });
-      }
-    } else {
-      const isAvailable = await isCloudBackupAvailable();
-      if (!isAvailable) {
-        Alert.alert(
-          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.label),
-          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.description),
-          [
-            {
-              onPress: () => {
-                Linking.openURL('https://support.apple.com/en-us/HT204025');
-              },
-              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
-            },
-            {
-              style: 'cancel',
-              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
-            },
-          ]
-        );
-        return;
-      }
-
-      navigate(Routes.RESTORE_SHEET);
-    }
+    executeFnIfCloudBackupAvailable({
+      fn: () => navigate(Routes.RESTORE_SHEET),
+      logout: true,
+    });
   };
 
   const restoreFromCloudDescription = i18n.t(TRANSLATIONS.options.cloud.description_restore_sheet, {
