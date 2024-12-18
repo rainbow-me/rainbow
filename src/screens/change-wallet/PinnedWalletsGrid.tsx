@@ -15,6 +15,7 @@ import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
+import { DRAGGABLE_ACTIVATION_DELAY } from '@/components/change-wallet/WalletList';
 
 const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;
@@ -33,13 +34,13 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
   const { colors, isDarkMode } = useTheme();
 
   const removePinnedAddress = usePinnedWalletsStore(state => state.removePinnedAddress);
-  const reorderPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);
+  const setPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);
 
   const onOrderChange: DraggableGridProps['onOrderChange'] = useCallback(
     (value: UniqueIdentifier[]) => {
-      reorderPinnedAddresses(value as string[]);
+      setPinnedAddresses(value as string[]);
     },
-    [reorderPinnedAddresses]
+    [setPinnedAddresses]
   );
 
   const fillerItems = useMemo(() => {
@@ -74,7 +75,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
           //  TODO: can ens names have emojis? If so this logic is wrong
           const walletName = removeFirstEmojiFromString(account.label) || address(account.address, 4, 4);
           return (
-            <Draggable id={account.address} key={account.address}>
+            <Draggable id={account.address} key={account.address} activationDelay={DRAGGABLE_ACTIVATION_DELAY}>
               <ConditionalWrap
                 condition={!editMode}
                 wrap={(children: React.ReactElement) => (

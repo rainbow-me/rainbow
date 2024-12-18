@@ -57,6 +57,7 @@ export type DndProviderProps = {
     event: GestureUpdateEvent<PanGestureHandlerEventPayload>,
     meta: { activeId: UniqueIdentifier; activeLayout: LayoutRectangle }
   ) => void;
+  onActivationWorklet?: (next: UniqueIdentifier | null, prev: UniqueIdentifier | null) => void;
   simultaneousHandlers?: RefObject<ComponentType<object>>;
   springConfig?: WithSpringConfig;
   style?: StyleProp<ViewStyle>;
@@ -81,6 +82,7 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
     onDragEnd,
     onFinalize,
     onUpdate,
+    onActivationWorklet,
     simultaneousHandlers,
     springConfig = {},
     style,
@@ -149,6 +151,17 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
       };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  // Handle activation changes
+  useAnimatedReaction(
+    () => draggableActiveId.value,
+    (next, prev) => {
+      if (next !== null) {
+        onActivationWorklet?.(next, prev);
+      }
+    },
     []
   );
 

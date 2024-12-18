@@ -22,7 +22,10 @@ import { PinnedWalletsGrid } from '@/screens/change-wallet/PinnedWalletsGrid';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { MenuItem } from '@/components/DropdownMenu';
 import { DraggableScrollView } from '@/components/drag-and-drop/components/DraggableScrollView';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
+export const DRAGGABLE_ACTIVATION_DELAY = 150;
+// how long after the touch gesture begins before the draggable registers
 const DRAG_ACTIVATION_DELAY = 150;
 const FADE_TRANSITION_DURATION = 75;
 const LIST_MAX_HEIGHT = MAX_PANEL_HEIGHT - PANEL_HEADER_HEIGHT;
@@ -47,34 +50,39 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
   const pinnedAddresses = usePinnedWalletsStore(state => state.pinnedAddresses);
   const unpinnedAddresses = usePinnedWalletsStore(state => state.unpinnedAddresses);
 
+  // it would be more efficient to map the addresses to the wallet items, but the wallet items should be the source of truth
   const pinnedWalletItems = useMemo(() => {
     return walletItems
       .filter(item => pinnedAddresses.includes(item.id))
       .sort((a, b) => pinnedAddresses.indexOf(a.id) - pinnedAddresses.indexOf(b.id));
   }, [walletItems, pinnedAddresses]);
 
-  // it would be more efficient to map the addresses to the wallet items, but the wallet items should be the source of truth
   const unpinnedWalletItems = useMemo(() => {
     return walletItems
       .filter(item => !pinnedAddresses.includes(item.id))
       .sort((a, b) => unpinnedAddresses.indexOf(a.id) - unpinnedAddresses.indexOf(b.id));
   }, [walletItems, pinnedAddresses, unpinnedAddresses]);
 
-  const reorderUnpinnedAddresses = usePinnedWalletsStore(state => state.setUnpinnedAddresses);
+  const setUnpinnedAddresses = usePinnedWalletsStore(state => state.setUnpinnedAddresses);
 
   const onOrderChange: DraggableFlatListProps<AddressItem>['onOrderChange'] = useCallback(
     (value: UniqueIdentifier[]) => {
-      reorderUnpinnedAddresses(value as string[]);
+      setUnpinnedAddresses(value as string[]);
     },
-    [reorderUnpinnedAddresses]
+    [setUnpinnedAddresses]
   );
+
+  const onDraggableActivationWorklet = useCallback(() => {
+    'worklet';
+    triggerHaptics('selection');
+  }, []);
 
   const renderHeader = useCallback(() => {
     const hasPinnedWallets = pinnedWalletItems.length > 0;
     return (
       <>
         {hasPinnedWallets && (
-          <DndProvider activationDelay={DRAG_ACTIVATION_DELAY} disabled={!editMode}>
+          <DndProvider onActivationWorklet={onDraggableActivationWorklet} activationDelay={DRAG_ACTIVATION_DELAY} disabled={!editMode}>
             <PinnedWalletsGrid
               menuItems={menuItems}
               onPressMenuItem={onPressMenuItem}
@@ -97,11 +105,11 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
         {!hasPinnedWallets && <View style={{ height: 20 }} />}
       </>
     );
-  }, [pinnedWalletItems, onPressAccount, editMode, unpinnedWalletItems.length, menuItems, onPressMenuItem]);
+  }, [pinnedWalletItems, onPressAccount, editMode, unpinnedWalletItems.length, menuItems, onPressMenuItem, onDraggableActivationWorklet]);
 
   const renderScrollItem = useCallback(
     (item: AddressItem) => (
-      <Draggable key={item.id} dragDirection="y" id={item.id.toString()}>
+      <Draggable key={item.id} dragDirection="y" activationDelay={DRAGGABLE_ACTIVATION_DELAY} id={item.id.toString()}>
         <AddressRow
           menuItems={menuItems}
           onPressMenuItem={onPressMenuItem}
@@ -129,10 +137,11 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
       )}
       {walletItems.length > 0 && (
         <Animated.View entering={FadeIn.duration(FADE_TRANSITION_DURATION)}>
-          <DndProvider activationDelay={DRAG_ACTIVATION_DELAY} disabled={!editMode}>
+          <DndProvider onActivationWorklet={onDraggableActivationWorklet} activationDelay={DRAG_ACTIVATION_DELAY} disabled={!editMode}>
             <DraggableScrollView
               onOrderChange={onOrderChange}
               style={{ maxHeight: LIST_MAX_HEIGHT, marginHorizontal: -PANEL_INSET_HORIZONTAL, paddingHorizontal: PANEL_INSET_HORIZONTAL }}
+              // subtract 24px to account for the footers tappering gradient
               autoScrollInsets={{ bottom: FOOTER_HEIGHT - 24 }}
               contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT - 24 }}
             >

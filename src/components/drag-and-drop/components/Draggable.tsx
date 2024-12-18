@@ -73,7 +73,7 @@ export const Draggable: FunctionComponent<PropsWithChildren<DraggableProps>> = (
           translateX:
             // eslint-disable-next-line no-nested-ternary
             dragDirection !== 'y'
-              ? isActive || isActing || isSleeping
+              ? isActive || isSleeping
                 ? offset.x.value
                 : withTiming(offset.x.value, TIMING_CONFIGS.slowestFadeConfig)
               : 0,
@@ -82,7 +82,7 @@ export const Draggable: FunctionComponent<PropsWithChildren<DraggableProps>> = (
           translateY:
             // eslint-disable-next-line no-nested-ternary
             dragDirection !== 'x'
-              ? isActive || isActing || isSleeping
+              ? isActive || isSleeping
                 ? offset.y.value
                 : withTiming(offset.y.value, TIMING_CONFIGS.slowestFadeConfig)
               : 0,

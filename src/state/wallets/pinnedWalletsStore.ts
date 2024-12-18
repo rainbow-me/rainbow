@@ -2,7 +2,6 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 export const MAX_PINNED_ADDRESSES = 6;
 
-// TODO: fix
 type Address = string;
 
 interface PinnedWalletsStore {

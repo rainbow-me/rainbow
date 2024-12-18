@@ -113,7 +113,7 @@ export const useDraggableSort = ({
 
       resetOffsets();
     },
-    [childrenIds, onOrderChange]
+    [childrenIds]
   );
 
   // Track active layout changes and update the placeholder index
