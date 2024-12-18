@@ -78,6 +78,8 @@ export const event = {
   wcNewSessionApproved: 'Approved new WalletConnect session',
   wcShowingSigningRequest: 'Showing Walletconnect signing request',
 
+  wcRequestFailed: 'wc.failed_request',
+
   nftOffersOpenedOffersSheet: 'Opened NFT Offers Sheet',
   nftOffersOpenedSingleOfferSheet: 'Opened NFT Single Offer Sheet',
   nftOffersViewedExternalOffer: 'Viewed external NFT Offer',
@@ -167,6 +169,9 @@ export const event = {
   // token details
   tokenDetailsErc20: 'token_details.erc20',
   tokenDetailsNFT: 'token_details.nft',
+
+  // token lists (wallet, swap, send)
+  tokenList: 'token_list',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -362,6 +367,8 @@ export type EventProperties = {
     dappName: string;
     dappUrl: string;
   };
+  [event.wcRequestFailed]: { reason: string };
+
   [event.nftOffersOpenedOffersSheet]: {
     entryPoint: string;
   };
@@ -705,5 +712,13 @@ export type EventProperties = {
     };
     eventSentAfterMs: number;
     available_data: { description: boolean; image_url: boolean; floorPrice: boolean };
+  };
+
+  [event.tokenList]: {
+    screen: 'wallet' | 'swap' | 'send' | 'discover';
+    total_tokens: number;
+    no_icon: number;
+    no_price?: number;
+    query?: string; // query is only sent for the swap screen
   };
 };
