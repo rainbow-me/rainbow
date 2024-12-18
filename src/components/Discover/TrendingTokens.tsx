@@ -1,5 +1,5 @@
 import { DropdownMenu } from '@/components/DropdownMenu';
-import { DebugLayout, globalColors, Text, useBackgroundColor } from '@/design-system';
+import { globalColors, Text, useBackgroundColor } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
 import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
