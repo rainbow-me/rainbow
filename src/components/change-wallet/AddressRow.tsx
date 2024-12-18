@@ -40,7 +40,7 @@ export const AddressRowButton = ({
   const fillQuaternary = useForegroundColor('fillQuaternary');
 
   return (
-    <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.8} disabled={disabled}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.8} disabled={disabled}>
       <Box
         alignItems="center"
         borderRadius={14}

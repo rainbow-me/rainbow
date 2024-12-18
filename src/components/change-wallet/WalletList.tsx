@@ -25,7 +25,6 @@ import { DraggableScrollView } from '@/components/drag-and-drop/components/Dragg
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 export const DRAGGABLE_ACTIVATION_DELAY = 150;
-// how long after the touch gesture begins before the draggable registers
 const DRAG_ACTIVATION_DELAY = 150;
 const FADE_TRANSITION_DURATION = 75;
 const LIST_MAX_HEIGHT = MAX_PANEL_HEIGHT - PANEL_HEADER_HEIGHT;
@@ -67,7 +66,6 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
 
   const onOrderChange: DraggableScrollViewProps['onOrderChange'] = useCallback(
     (value: UniqueIdentifier[]) => {
-      console.log('ON ORDER CHANGE');
       setUnpinnedAddresses(value as string[]);
     },
     [setUnpinnedAddresses]
@@ -149,10 +147,19 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
               onOrderChange={onOrderChange}
               onOrderUpdateWorklet={onOrderUpdateWorklet}
               scrollIndicatorInsets={{ bottom: FOOTER_HEIGHT - 24 }}
-              style={{ maxHeight: LIST_MAX_HEIGHT, marginHorizontal: -PANEL_INSET_HORIZONTAL, paddingHorizontal: PANEL_INSET_HORIZONTAL }}
-              // subtract 24px to account for the footers tappering gradient
+              style={{
+                maxHeight: LIST_MAX_HEIGHT,
+                marginHorizontal: -PANEL_INSET_HORIZONTAL,
+                paddingHorizontal: PANEL_INSET_HORIZONTAL,
+              }}
+              // subtract 24px to account for the footers tapering gradient
               autoScrollInsets={{ bottom: FOOTER_HEIGHT - 24 }}
-              contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT - 24 }}
+              contentContainerStyle={{
+                paddingBottom: FOOTER_HEIGHT - 24,
+                // required here also for Android
+                marginHorizontal: -PANEL_INSET_HORIZONTAL,
+                paddingHorizontal: PANEL_INSET_HORIZONTAL,
+              }}
             >
               {renderPinnedWalletsSection()}
               {draggableUnpinnedWalletItems.map(item => renderScrollItem(item))}

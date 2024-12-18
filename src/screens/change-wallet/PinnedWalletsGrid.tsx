@@ -1,5 +1,5 @@
 import { Draggable, DraggableGrid, DraggableGridProps, UniqueIdentifier } from '@/components/drag-and-drop';
-import { Box, Inline, Stack, Text } from '@/design-system';
+import { Box, HitSlop, Inline, Stack, Text } from '@/design-system';
 import React, { useCallback, useMemo } from 'react';
 import { AddressItem, AddressMenuAction, AddressMenuActionData, PANEL_INSET_HORIZONTAL } from './ChangeWalletSheet';
 import { AddressAvatar } from './AddressAvatar';
@@ -17,6 +17,7 @@ import { IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
 import { DRAGGABLE_ACTIVATION_DELAY } from '@/components/change-wallet/WalletList';
 import { triggerHaptics } from 'react-native-turbo-haptics';
+import { PixelRatio } from 'react-native';
 
 const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;
@@ -61,7 +62,10 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
   }, [walletItems.length]);
 
   const avatarSize = useMemo(
-    () => Math.min((PANEL_WIDTH - PANEL_INSET_HORIZONTAL * 2 - GRID_GAP * (PINS_PER_ROW - 1)) / PINS_PER_ROW, MAX_AVATAR_SIZE),
+    () =>
+      PixelRatio.roundToNearestPixel(
+        Math.min((PANEL_WIDTH - PANEL_INSET_HORIZONTAL * 2 - GRID_GAP * (PINS_PER_ROW - 1)) / PINS_PER_ROW, MAX_AVATAR_SIZE)
+      ),
     []
   );
 
@@ -70,6 +74,10 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
       <DraggableGrid
         direction="row"
         gap={GRID_GAP}
+        // This is a hack to force the DraggableGrid to re-layout its children when the number of children changes
+        // A fix was implemented for the DraggableStack and DraggableScrollView, but it does not account for wrapping columns / rows
+        // This is fine as there are a max of 6 pinned addresses
+        key={draggableItems.length}
         onOrderChange={onOrderChange}
         onOrderUpdateWorklet={onOrderUpdateWorklet}
         size={PINS_PER_ROW}
@@ -157,26 +165,27 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                         </Box>
                       )}
                       {editMode && (
-                        <ButtonPressAnimation onPress={() => removePinnedAddress(account.address)}>
-                          <Box
-                            as={IS_IOS ? BlurView : Box}
-                            width={{ custom: UNPIN_BADGE_SIZE }}
-                            height={{ custom: UNPIN_BADGE_SIZE }}
-                            position="absolute"
-                            bottom={'0px'}
-                            right={'0px'}
-                            justifyContent="center"
-                            alignItems="center"
-                            blurAmount={24}
-                            blurType={isDarkMode ? 'materialDark' : 'materialLight'}
-                            backgroundColor={IS_IOS ? 'transparent' : colors.darkGrey}
-                            borderRadius={UNPIN_BADGE_SIZE / 2}
-                          >
-                            <Text color="label" size="icon 12px" weight="bold">
-                              {'􀅽'}
-                            </Text>
-                          </Box>
-                        </ButtonPressAnimation>
+                        <Box position="absolute" bottom={'0px'} right={'0px'}>
+                          <ButtonPressAnimation onPress={() => removePinnedAddress(account.address)}>
+                            <HitSlop space="16px">
+                              <Box
+                                as={IS_IOS ? BlurView : Box}
+                                width={{ custom: UNPIN_BADGE_SIZE }}
+                                height={{ custom: UNPIN_BADGE_SIZE }}
+                                justifyContent="center"
+                                alignItems="center"
+                                blurAmount={24}
+                                blurType={isDarkMode ? 'materialDark' : 'materialLight'}
+                                backgroundColor={IS_IOS ? 'transparent' : colors.darkGrey}
+                                borderRadius={UNPIN_BADGE_SIZE / 2}
+                              >
+                                <Text color="label" size="icon 12px" weight="bold">
+                                  {'􀅽'}
+                                </Text>
+                              </Box>
+                            </HitSlop>
+                          </ButtonPressAnimation>
+                        </Box>
                       )}
                     </Box>
                   </JiggleAnimation>

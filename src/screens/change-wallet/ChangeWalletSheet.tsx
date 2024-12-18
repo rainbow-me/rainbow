@@ -14,7 +14,6 @@ import WalletTypes from '@/helpers/walletTypes';
 import { analytics, analyticsV2 } from '@/analytics';
 import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
 import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { useTheme } from '@/theme';
@@ -23,7 +22,7 @@ import { getNotificationSettingsForWalletWithAddress } from '@/notifications/set
 import { IS_IOS } from '@/env';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { RootStackParamList } from '@/navigation/types';
-import { Box, globalColors, Inline, Stack, Text } from '@/design-system';
+import { Box, globalColors, HitSlop, Inline, Stack, Text } from '@/design-system';
 import { addDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 import { SheetHandleFixedToTop } from '@/components/sheet';
@@ -60,14 +59,6 @@ const RowTypes = {
   ADDRESS: 1,
   EMPTY: 2,
 };
-
-const Whitespace = styled(View)({
-  backgroundColor: ({ theme: { colors } }: any) => colors.white,
-  bottom: -398,
-  height: 400,
-  position: 'absolute',
-  width: '100%',
-});
 
 export interface AddressItem {
   id: EthereumAddress;
@@ -557,11 +548,8 @@ export default function ChangeWalletSheet() {
       const wallet = walletsByAddress[address];
       if (!wallet) {
         logger.error(new RainbowError('[ChangeWalletSheet]: No wallet for address found when pressing menu item'), {
-          // TODO: make sure this is okay to log
-          address,
           actionKey,
         });
-        // TODO: should show user facing error?
         return;
       }
       switch (actionKey) {
@@ -602,11 +590,11 @@ export default function ChangeWalletSheet() {
         <Panel>
           <Box style={{ maxHeight: MAX_PANEL_HEIGHT, paddingHorizontal: PANEL_INSET_HORIZONTAL }}>
             <SheetHandleFixedToTop />
-            <Box zIndex={1000} paddingTop="32px" paddingBottom="12px" width="full" justifyContent="center" alignItems="center">
+            <Box paddingTop="32px" paddingBottom="12px" width="full" justifyContent="center" alignItems="center">
               <Text align="center" color="label" size="20pt" weight="heavy">
                 {i18n.t(i18n.l.wallet.change_wallet.wallets)}
               </Text>
-              {/* TODO: this positioning is jank */}
+              {/* +3 to account for font size difference */}
               <Box position="absolute" style={{ right: 4, top: 32 + 3 }}>
                 <ConditionalWrap
                   condition={!initialHasShownEditHintTooltip}
@@ -637,15 +625,15 @@ export default function ChangeWalletSheet() {
                   )}
                 >
                   <ButtonPressAnimation onPress={onPressEditMode}>
-                    <Text color="blue" size="17pt" weight="medium">
-                      {editMode ? i18n.t(i18n.l.button.done) : i18n.t(i18n.l.button.edit)}
-                    </Text>
+                    <HitSlop horizontal={'32px'} vertical={'12px'}>
+                      <Text color="blue" size="17pt" weight="medium">
+                        {editMode ? i18n.t(i18n.l.button.done) : i18n.t(i18n.l.button.edit)}
+                      </Text>
+                    </HitSlop>
                   </ButtonPressAnimation>
                 </ConditionalWrap>
               </Box>
             </Box>
-            {/* TODO: why is this here? */}
-            {/* {IS_ANDROID && <Whitespace />} */}
             <WalletList
               walletItems={allWalletItems}
               onPressMenuItem={onPressMenuItem}
