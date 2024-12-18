@@ -11,6 +11,12 @@ export const DropdownMenuRoot = DropdownMenuPrimitive.Root;
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 export const DropdownMenuContent = DropdownMenuPrimitive.Content;
 export const DropdownMenuItem = DropdownMenuPrimitive.create(
+  styled(DropdownMenuPrimitive.Item)({
+    height: 34,
+  }),
+  'Item'
+);
+export const DropdownMenuCheckboxItem = DropdownMenuPrimitive.create(
   styled(DropdownMenuPrimitive.CheckboxItem)({
     height: 34,
   }),
@@ -50,6 +56,7 @@ type DropDownMenuProps<T extends string, U extends Record<string, unknown> = nev
   onPressMenuItem: (actionKey: T) => void;
   triggerAction?: 'press' | 'longPress';
   data?: U;
+  menuItemType?: 'checkbox';
 } & DropdownMenuContentProps;
 
 const buildIconConfig = (icon?: MenuItemIcon) => {
@@ -80,6 +87,7 @@ export function DropdownMenu<T extends string, U extends Record<string, unknown>
   alignOffset = 5,
   avoidCollisions = true,
   triggerAction = 'press',
+  menuItemType,
 }: DropDownMenuProps<T, U>) {
   const handleSelectItem = useCallback(
     (actionKey: T) => {
@@ -91,6 +99,8 @@ export function DropdownMenu<T extends string, U extends Record<string, unknown>
     },
     [onPressMenuItem, data]
   );
+
+  const MenuItemComponent = menuItemType === 'checkbox' ? DropdownMenuCheckboxItem : DropdownMenuItem;
 
   return (
     <DropdownMenuRoot>
@@ -106,16 +116,16 @@ export function DropdownMenu<T extends string, U extends Record<string, unknown>
       >
         {!!menuConfig.menuTitle?.trim() && (
           <DropdownMenuPrimitive.Group>
-            <DropdownMenuItem disabled>
+            <MenuItemComponent disabled>
               <DropdownMenuItemTitle>{menuConfig.menuTitle}</DropdownMenuItemTitle>
-            </DropdownMenuItem>
+            </MenuItemComponent>
           </DropdownMenuPrimitive.Group>
         )}
         {menuConfig.menuItems?.map(item => {
           const Icon = buildIconConfig(item.icon as MenuItemIcon);
 
           return (
-            <DropdownMenuItem
+            <MenuItemComponent
               value={item.menuState ?? 'off'}
               destructive={item.destructive}
               key={item.actionKey}
@@ -123,7 +133,7 @@ export function DropdownMenu<T extends string, U extends Record<string, unknown>
             >
               <DropdownMenuItemTitle>{item.actionTitle}</DropdownMenuItemTitle>
               {Icon}
-            </DropdownMenuItem>
+            </MenuItemComponent>
           );
         })}
       </DropdownMenuContent>
