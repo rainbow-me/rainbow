@@ -4,6 +4,7 @@ import { findKey, isEmpty, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
+import FastImage from 'react-native-fast-image';
 import { deprecatedRemoveLocal, getGlobal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import { getMigrationVersion, setMigrationVersion } from '../handlers/localstorage/migrations';
@@ -41,7 +42,8 @@ import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
 import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import FastImage from 'react-native-fast-image';
+import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
+import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
 
 export default async function runMigrations() {
   // get current version
@@ -699,9 +701,23 @@ export default async function runMigrations() {
 
   /**
    *************** Migration v22 ******************
-   * Clear FastImage cache to fix mainnet badge sizing issue
+   * Reset icon checks
    */
   const v22 = async () => {
+    // For each appIcon, delete the handled flag
+    (Object.keys(unlockableAppIcons) as UnlockableAppIconKey[]).map(appIconKey => {
+      unlockableAppIconStorage.delete(appIconKey);
+      logger.debug('Resetting icon status for ' + appIconKey);
+    });
+  };
+
+  migrations.push(v22);
+
+  /**
+   *************** Migration v23 ******************
+   * Clear FastImage cache to fix mainnet badge sizing issue
+   */
+  const v23 = () => {
     try {
       FastImage.clearDiskCache();
     } catch (e) {
@@ -715,7 +731,7 @@ export default async function runMigrations() {
     }
   };
 
-  migrations.push(v22);
+  migrations.push(v23);
 
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
@@ -726,7 +742,6 @@ export default async function runMigrations() {
 
   for (let i = currentVersion; i < migrations.length; i++) {
     logger.debug(`[runMigrations]: Running migration v${i}`);
-    // @ts-expect-error
     await migrations[i].apply(null);
     logger.debug(`[runMigrations]: Migration ${i} completed succesfully`);
     await setMigrationVersion(i + 1);
