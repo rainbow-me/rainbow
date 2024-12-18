@@ -39,6 +39,7 @@ import Animated, {
 import Svg, { Path } from 'react-native-svg';
 import {
   customizeNetworksBannerStore,
+  defaultPinnedNetworks,
   dismissCustomizeNetworksBanner,
   networkSwitcherStore,
   shouldShowCustomizeNetworksBanner,
@@ -562,7 +563,11 @@ function NetworksGrid({
     // persists pinned networks when closing the sheet
     // should be the only time this component is unmounted
     return () => {
-      networkSwitcherStore.setState({ pinnedNetworks: networks.value[Section.pinned] });
+      if (networks.value[Section.pinned].length > 0) {
+        networkSwitcherStore.setState({ pinnedNetworks: networks.value[Section.pinned] });
+      } else {
+        networkSwitcherStore.setState({ pinnedNetworks: defaultPinnedNetworks });
+      }
     };
   }, [networks]);
 
