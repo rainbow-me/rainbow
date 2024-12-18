@@ -411,7 +411,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
                 <Text color="labelTertiary" size="11pt" weight="bold" style={{ flexGrow: 0 }} numberOfLines={1}>
                   {token.symbol}
                 </Text>
-                <Text color="label" size="15pt" weight="bold" align="right">
+                <Text color="label" size="15pt" weight="bold">
                   {price}
                 </Text>
               </View>
