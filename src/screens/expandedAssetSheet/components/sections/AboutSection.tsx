@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Box, IconContainer, Inline, Stack, Text, TextShadow } from '@/design-system';
 import { Row } from '../shared/Row';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
@@ -71,7 +71,7 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
   );
 }
 
-export function AboutSection() {
+export const AboutSection = memo(function AboutSection() {
   const { asset } = useExpandedAssetSheetContext();
   const { nativeCurrency } = useAccountSettings();
   const { data: metadata } = useAdditionalAssetData({
@@ -137,4 +137,4 @@ export function AboutSection() {
       )}
     </Box>
   );
-}
+});
