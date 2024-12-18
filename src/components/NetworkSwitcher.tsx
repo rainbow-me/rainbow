@@ -320,7 +320,7 @@ function AllNetworksSection({
 }
 
 function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: SharedValue<ChainId | undefined> }) {
-  const chainName = useBackendNetworksStore.getState().getChainsName()[chainId];
+  const chainName = useBackendNetworksStore.getState().getChainsLabel()[chainId];
   const chainColor = getChainColorWorklet(chainId, true);
   const isSelected = useDerivedValue(() => selected.value === chainId);
   const { animatedStyle } = useNetworkOptionStyle(isSelected, chainColor);
