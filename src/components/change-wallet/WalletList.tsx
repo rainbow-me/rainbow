@@ -66,7 +66,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
   const opacityAnimation = useSharedValue(walletItems.length ? 1 : 0);
   const emptyOpacityAnimation = useSharedValue(walletItems.length ? 0 : 1);
 
-  const reorderUnpinnedAddresses = usePinnedWalletsStore(state => state.reorderUnpinnedAddresses);
+  const reorderUnpinnedAddresses = usePinnedWalletsStore(state => state.setUnpinnedAddresses);
 
   // TODO: convert the effect below into an animated reaction
   useEffect(() => {
@@ -137,7 +137,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
 
   const renderScrollItem = useCallback(
     (item: AddressItem) => (
-      <Draggable key={item.id.toString()} dragDirection="y" id={item.id.toString()}>
+      <Draggable key={item.id} dragDirection="y" id={item.id.toString()}>
         <AddressRow
           menuItems={menuItems}
           onPressMenuItem={onPressMenuItem}

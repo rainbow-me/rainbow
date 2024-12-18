@@ -33,7 +33,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
   const { colors, isDarkMode } = useTheme();
 
   const removePinnedAddress = usePinnedWalletsStore(state => state.removePinnedAddress);
-  const reorderPinnedAddresses = usePinnedWalletsStore(state => state.reorderPinnedAddresses);
+  const reorderPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);
 
   const onOrderChange: DraggableGridProps['onOrderChange'] = useCallback(
     (value: UniqueIdentifier[]) => {

@@ -32,7 +32,7 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { MenuConfig, MenuItem } from '@/components/DropdownMenu';
 import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
 import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHintTooltip';
-import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
+import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import ConditionalWrap from 'conditional-wrap';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { SettingsPages } from '../SettingsSheet/SettingsPages';
@@ -89,6 +89,7 @@ export interface AddressItem {
 }
 
 export default function ChangeWalletSheet() {
+  console.log('CHANGE WALLET SHEET RENDER');
   const { params = {} } = useRoute<RouteProp<RootStackParamList, 'ChangeWalletSheet'>>();
 
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
@@ -98,16 +99,22 @@ export default function ChangeWalletSheet() {
   const { colors, isDarkMode } = useTheme();
   const { updateWebProfile } = useWebData();
   const { accountAddress, nativeCurrency } = useAccountSettings();
-  const { goBack, navigate, setParams } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
+
   const initialHasShownEditHintTooltip = useMemo(() => usePinnedWalletsStore.getState().hasShownEditHintTooltip, []);
+  const initialHasAutoPinnedAddresses = useMemo(() => usePinnedWalletsStore.getState().hasAutoPinnedAddresses, []);
+  const initialPinnedAddressCount = useMemo(() => usePinnedWalletsStore.getState().pinnedAddresses.length, []);
+
   const featureHintTooltipRef = useRef<TooltipRef>(null);
 
   const [editMode, setEditMode] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(currentAccountAddress || accountAddress);
   const [currentSelectedWallet, setCurrentSelectedWallet] = useState(selectedWallet);
+
+  const setPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);
 
   // Feature hint tooltip should only ever been shown once.
   useEffect(() => {
@@ -167,6 +174,21 @@ export default function ChangeWalletSheet() {
     // sorts by order wallets were added
     return [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets].sort((a, b) => a.walletId.localeCompare(b.walletId));
   }, [walletsWithBalancesAndNames, currentAddress]);
+
+  // On first use of this feature, auto-pin the users most used owned addresses
+  useEffect(() => {
+    if (initialHasAutoPinnedAddresses || initialPinnedAddressCount > 0) return;
+
+    // TODO: this is a placeholder until backend adds the info needed in the return of the summary endpoint
+    const pinnableAddresses = allWalletItems.filter(item => !item.isReadOnly).map(item => item.address);
+
+    // sanity check, there should always be at least one pinnable address
+    if (pinnableAddresses.length === 0) return;
+
+    const addressesToAutoPin = pinnableAddresses.slice(0, MAX_PINNED_ADDRESSES);
+
+    setPinnedAddresses(addressesToAutoPin);
+  }, [allWalletItems, setPinnedAddresses, initialHasAutoPinnedAddresses, initialPinnedAddressCount]);
 
   const ownedWalletsTotalBalance = useMemo(() => {
     let isLoadingBalance = false;

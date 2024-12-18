@@ -1,7 +1,6 @@
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
-const MIN_WALLETS_TO_SHOW_PINNING = 6;
-const MAX_PINNED_WALLETS = 6;
+export const MAX_PINNED_ADDRESSES = 6;
 
 // TODO: fix
 type Address = string;
@@ -10,11 +9,12 @@ interface PinnedWalletsStore {
   pinnedAddresses: Address[];
   unpinnedAddresses: Address[];
   hasShownEditHintTooltip: boolean;
+  hasAutoPinnedAddresses: boolean;
   canPinAddresses: () => boolean;
   addPinnedAddress: (address: Address) => void;
   removePinnedAddress: (address: Address) => void;
-  reorderPinnedAddresses: (newOrder: Address[]) => void;
-  reorderUnpinnedAddresses: (newOrder: Address[]) => void;
+  setPinnedAddresses: (newOrder: Address[]) => void;
+  setUnpinnedAddresses: (newOrder: Address[]) => void;
   isPinnedAddress: (address: Address) => boolean;
 }
 
@@ -23,10 +23,10 @@ export const usePinnedWalletsStore = createRainbowStore<PinnedWalletsStore>(
     pinnedAddresses: [],
     unpinnedAddresses: [],
     hasShownEditHintTooltip: false,
+    hasAutoPinnedAddresses: false,
 
     canPinAddresses: () => {
-      const { pinnedAddresses } = get();
-      return pinnedAddresses.length >= MIN_WALLETS_TO_SHOW_PINNING && pinnedAddresses.length < MAX_PINNED_WALLETS;
+      return get().pinnedAddresses.length < MAX_PINNED_ADDRESSES;
     },
 
     isPinnedAddress: address => {
@@ -36,7 +36,7 @@ export const usePinnedWalletsStore = createRainbowStore<PinnedWalletsStore>(
     addPinnedAddress: address => {
       const { pinnedAddresses } = get();
 
-      if (pinnedAddresses.length >= MAX_PINNED_WALLETS) return;
+      if (pinnedAddresses.length >= MAX_PINNED_ADDRESSES) return;
 
       set({ pinnedAddresses: [...pinnedAddresses, address] });
     },
@@ -51,11 +51,16 @@ export const usePinnedWalletsStore = createRainbowStore<PinnedWalletsStore>(
       }
     },
 
-    reorderPinnedAddresses: newPinnedAddresses => {
+    setPinnedAddresses: newPinnedAddresses => {
+      // TODO: this batches the state update right?
+      if (!get().hasAutoPinnedAddresses) {
+        set({ hasAutoPinnedAddresses: true });
+      }
+
       set({ pinnedAddresses: newPinnedAddresses });
     },
 
-    reorderUnpinnedAddresses: newUnpinnedAddresses => {
+    setUnpinnedAddresses: newUnpinnedAddresses => {
       set({ unpinnedAddresses: newUnpinnedAddresses });
     },
   }),
