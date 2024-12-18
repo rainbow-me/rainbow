@@ -30,6 +30,7 @@ import { ButtonPressAnimation } from '../animations';
 import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWallets';
 import { ImgixImage } from '../images';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import { useAccountSettings } from '@/hooks';
 
 const t = i18n.l.trending_tokens;
 
@@ -91,6 +92,7 @@ function FilterButton({ icon, label, onPress }: { onPress?: VoidFunction; label:
 }
 
 function useTrendingTokensData() {
+  const { nativeCurrency } = useAccountSettings();
   const remoteConfig = useRemoteConfig();
   const { chainId, category, timeframe, sort } = useTrendingTokensStore(state => ({
     chainId: state.chainId,
@@ -109,6 +111,7 @@ function useTrendingTokensData() {
     sortDirection: SortDirection.Desc,
     limit: remoteConfig.trending_tokens_limit,
     walletAddress: walletAddress,
+    currency: nativeCurrency,
   });
 }
 
@@ -569,16 +572,21 @@ function SortFilter() {
   );
 }
 
+function TrendingTokensLoader() {
+  const { trending_tokens_limit } = useRemoteConfig();
+
+  return (
+    <View style={{ flex: 1 }}>
+      {Array.from({ length: trending_tokens_limit }).map((_, index) => (
+        <TrendingTokenLoadingRow key={index} />
+      ))}
+    </View>
+  );
+}
+
 function TrendingTokenData() {
   const { data: trendingTokens, isLoading } = useTrendingTokensData();
-  if (isLoading)
-    return (
-      <View style={{ flex: 1 }}>
-        {Array.from({ length: 10 }).map((_, index) => (
-          <TrendingTokenLoadingRow key={index} />
-        ))}
-      </View>
-    );
+  if (isLoading) return <TrendingTokensLoader />;
 
   return (
     <FlatList

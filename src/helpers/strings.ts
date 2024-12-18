@@ -112,16 +112,19 @@ export function formatCurrency(
   value: string | number,
   { valueIfNaN = '', currency = store.getState().settings.nativeCurrency }: CurrencyFormatterOptions = {}
 ): string {
+  const decimals = supportedNativeCurrencies[currency].decimals;
   const numericString = typeof value === 'number' ? toDecimalString(value) : String(value);
   if (isNaN(+numericString)) return valueIfNaN;
 
   const currencySymbol = supportedNativeCurrencies[currency].symbol;
-
-  const [whole, fraction = '00'] = numericString.split('.');
+  const [whole, fraction = ''] = numericString.split('.');
+  if (fraction === '') {
+    const formattedWhole = formatNumber(numericString, { decimals, useOrderSuffix: true });
+    return `${currencySymbol}${formattedWhole}`;
+  }
 
   const formattedWhole = formatNumber(whole, { decimals: 0, useOrderSuffix: true });
   const formattedFraction = formatFraction(fraction);
-
   // if it ends with a non-numeric character, it's in compact notation like '1.2K'
   if (isNaN(+formattedWhole[formattedWhole.length - 1])) return `${currencySymbol}${formattedWhole}`;
 
