@@ -9,7 +9,6 @@ import store from '@/redux/store';
 import { SortDirection } from '@/graphql/__generated__/arc';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
-import { getRemoteConfig } from '@/model/remoteConfig';
 
 export type FarcasterUser = {
   username: string;
