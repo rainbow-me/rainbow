@@ -1,5 +1,5 @@
 import { DropdownMenu } from '@/components/DropdownMenu';
-import { globalColors, Text, useBackgroundColor } from '@/design-system';
+import { DebugLayout, globalColors, Text, useBackgroundColor } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
 import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
@@ -408,10 +408,10 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
                 <Text color="label" size="15pt" weight="bold" style={{ maxWidth: 100, flexShrink: 1 }} numberOfLines={1}>
                   {token.name}
                 </Text>
-                <Text color="labelTertiary" size="11pt" weight="bold" style={{ flexGrow: 1 }} numberOfLines={1}>
+                <Text color="labelTertiary" size="11pt" weight="bold" style={{ flexGrow: 0 }} numberOfLines={1}>
                   {token.symbol}
                 </Text>
-                <Text color="label" size="15pt" weight="bold">
+                <Text color="label" size="15pt" weight="bold" align="right">
                   {price}
                 </Text>
               </View>
