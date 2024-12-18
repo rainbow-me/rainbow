@@ -7,13 +7,29 @@ import { ImageSourcePropType, ImageURISource } from 'react-native';
 import type { SFSymbols5_0 } from 'sf-symbols-typescript';
 import type { DropdownMenuContentProps } from '@radix-ui/react-dropdown-menu';
 import { ButtonPressAnimation } from './animations';
+import { DebugLayout, HitSlop } from '@/design-system';
 
 type ExtendedDropdownMenuTriggerProps = ComponentProps<typeof DropdownMenuPrimitive.Trigger> & {
+  hitSlop?: number;
   testID?: string;
 };
 
 export const DropdownMenuRoot = DropdownMenuPrimitive.Root;
-export const DropdownMenuTrigger = DropdownMenuPrimitive.create<ExtendedDropdownMenuTriggerProps>(DropdownMenuPrimitive.Trigger, 'Trigger');
+export const DropdownMenuTrigger = DropdownMenuPrimitive.create<ExtendedDropdownMenuTriggerProps>(
+  (props: ExtendedDropdownMenuTriggerProps) => {
+    // TODO: This hitslop isn't working properly...
+    return (
+      <DropdownMenuPrimitive.Trigger {...props} style={[props.style, { padding: props.hitSlop ?? 0 }]}>
+        <DebugLayout>
+          <ButtonPressAnimation testID={props.testID}>
+            <HitSlop space={{ custom: props.hitSlop ?? 0 }}>{props.children}</HitSlop>
+          </ButtonPressAnimation>
+        </DebugLayout>
+      </DropdownMenuPrimitive.Trigger>
+    );
+  },
+  'Trigger'
+);
 export const DropdownMenuContent = DropdownMenuPrimitive.Content;
 export const DropdownMenuItem = DropdownMenuPrimitive.create(
   styled(DropdownMenuPrimitive.CheckboxItem)({
@@ -92,7 +108,7 @@ export function DropdownMenu<T extends string>({
   side = 'right',
   alignOffset = 5,
   avoidCollisions = true,
-  hitSlop = 12, // TODO: Figure out how to make the trigger hit slop work
+  hitSlop = 20,
   testID,
 }: DropDownMenuProps<T>) {
   const handleSelectItem = useCallback(
@@ -104,8 +120,8 @@ export function DropdownMenu<T extends string>({
 
   return (
     <DropdownMenuRoot>
-      <DropdownMenuTrigger asChild testID={testID}>
-        <ButtonPressAnimation>{children}</ButtonPressAnimation>
+      <DropdownMenuTrigger asChild testID={testID} hitSlop={hitSlop}>
+        {children}
       </DropdownMenuTrigger>
       <DropdownMenuContent
         loop={loop}
