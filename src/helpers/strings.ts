@@ -2,6 +2,7 @@ import store from '@/redux/store';
 import { memoFn } from '../utils/memoFn';
 import { supportedNativeCurrencies } from '@/references';
 import { NativeCurrencyKey } from '@/entities';
+import { convertAmountToNativeDisplayWorklet } from './utilities';
 /**
  * @desc subtracts two numbers
  * @param  {String}   str
@@ -116,12 +117,22 @@ export function formatCurrency(
   if (isNaN(+numericString)) return valueIfNaN;
 
   const currencySymbol = supportedNativeCurrencies[currency].symbol;
+  const [whole, fraction = ''] = numericString.split('.');
 
-  const [whole, fraction = '00'] = numericString.split('.');
+  if (fraction === '') {
+    // if the fraction is empty and the numeric string is less than 6 characters, we can just run it through our native currency display worklet
+    if (numericString.length <= 6) {
+      return convertAmountToNativeDisplayWorklet(numericString, currency, false, true);
+    }
+
+    const decimals = supportedNativeCurrencies[currency].decimals;
+    // otherwise for > 6 figs native value we need to format in compact notation
+    const formattedWhole = formatNumber(numericString, { decimals, useOrderSuffix: true });
+    return `${currencySymbol}${formattedWhole}`;
+  }
 
   const formattedWhole = formatNumber(whole, { decimals: 0, useOrderSuffix: true });
   const formattedFraction = formatFraction(fraction);
-
   // if it ends with a non-numeric character, it's in compact notation like '1.2K'
   if (isNaN(+formattedWhole[formattedWhole.length - 1])) return `${currencySymbol}${formattedWhole}`;
 
