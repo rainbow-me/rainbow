@@ -24,6 +24,7 @@ import { getProvider } from '@/handlers/web3';
 import { AppState } from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
 import { Network, ChainId } from '@/state/backendNetworks/types';
+import { Address } from 'viem';
 
 // -- Constants ------------------------------------------------------------- //
 const SETTINGS_UPDATE_SETTINGS_ADDRESS = 'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
@@ -41,7 +42,7 @@ const SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS = 'settings/SETTINGS_UPDATE_ACCOU
  */
 interface SettingsState {
   appIcon: string;
-  accountAddress: string;
+  accountAddress: Address;
   chainId: number;
   language: Language;
   nativeCurrency: NativeCurrencyKey;
@@ -205,7 +206,7 @@ export const settingsChangeAppIcon = (appIcon: string) => (dispatch: Dispatch<Se
 export const settingsUpdateAccountAddress =
   (accountAddress: string) => async (dispatch: Dispatch<SettingsStateUpdateSettingsAddressAction>) => {
     dispatch({
-      payload: accountAddress,
+      payload: accountAddress as Address,
       type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
     });
   };
@@ -254,7 +255,7 @@ export const settingsChangeNativeCurrency =
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_STATE: SettingsState = {
-  accountAddress: '',
+  accountAddress: '' as Address,
   appIcon: 'og',
   chainId: 1,
   language: Language.EN_US,

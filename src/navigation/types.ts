@@ -10,6 +10,7 @@ import { Claimable } from '@/resources/addys/claimables/types';
 import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/walletConnect/types';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { RainbowPosition } from '@/resources/defi/types';
+import { Address } from 'viem';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -31,7 +32,7 @@ export type RootStackParamList = {
   [Routes.CHANGE_WALLET_SHEET]: {
     watchOnly: boolean;
     currentAccountAddress: string;
-    onChangeWallet: (address: string) => void;
+    onChangeWallet: (address: Address) => void;
   };
   [Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET]: {
     accentColor?: string;

@@ -9,7 +9,7 @@ import useExperimentalFlag, {
   TRENDING_TOKENS,
 } from '@rainbow-me/config/experimentalHooks';
 import { isTestnetChain } from '@/handlers/web3';
-import { Inline, Inset, Stack, Box } from '@/design-system';
+import { Inline, Inset, Stack, Box, Separator } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
@@ -70,7 +70,12 @@ export default function DiscoverHome() {
             <GasCard />
             {isProfilesEnabled && <ENSSearchCard />}
           </Inline>
-          {trendingTokensEnabled && <TrendingTokens />}
+          {trendingTokensEnabled && (
+            <>
+              <Separator color="separatorSecondary" thickness={1} />
+              <TrendingTokens />
+            </>
+          )}
           <RemoteCardCarousel />
           {mintsEnabled && (
             <Stack space="20px">

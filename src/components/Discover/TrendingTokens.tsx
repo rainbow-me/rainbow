@@ -9,23 +9,28 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { NetworkSelector } from '@/components/NetworkSwitcher';
 import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
-import { formatNumber } from '@/helpers/strings';
+import { SortDirection, TrendingCategory, TrendingSort } from '@/graphql/__generated__/arc';
+import { formatCurrency, formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { TrendingTokens as TrendingTokensType, useTrendingTokens } from '@/resources/trendingTokens/trendingTokens';
+import { FarcasterUser, TrendingToken, useTrendingTokens } from '@/resources/trendingTokens/trendingTokens';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { categories, sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
+import { sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
 import { colors } from '@/styles';
+import { darkModeThemeColors } from '@/styles/colors';
 import { useTheme } from '@/theme';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import React, { FlatList, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import React, { Dimensions, FlatList, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated, { LinearTransition, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
+import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWallets';
+import { ImgixImage } from '../images';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { useAccountSettings } from '@/hooks';
 
 const t = i18n.l.trending_tokens;
 
@@ -87,6 +92,8 @@ function FilterButton({ icon, label, onPress }: { onPress?: VoidFunction; label:
 }
 
 function useTrendingTokensData() {
+  const { nativeCurrency } = useAccountSettings();
+  const remoteConfig = useRemoteConfig();
   const { chainId, category, timeframe, sort } = useTrendingTokensStore(state => ({
     chainId: state.chainId,
     category: state.category,
@@ -94,24 +101,30 @@ function useTrendingTokensData() {
     sort: state.sort,
   }));
 
+  const walletAddress = useFarcasterAccountForWallets();
+
   return useTrendingTokens({
     chainId,
-    // category,
-    // timeframe,
-    // sort,
+    category,
+    timeframe,
+    sortBy: sort,
+    sortDirection: SortDirection.Desc,
+    limit: remoteConfig.trending_tokens_limit,
+    walletAddress: walletAddress,
+    currency: nativeCurrency,
   });
 }
 
 function ReportAnalytics() {
   const activeSwipeRoute = useNavigationStore(state => state.activeSwipeRoute);
   const { category, chainId } = useTrendingTokensStore(state => ({ category: state.category, chainId: state.chainId }));
-  const { data, isLoading } = useTrendingTokensData();
+  const { data: trendingTokens, isLoading } = useTrendingTokensData();
 
   useEffect(() => {
     if (isLoading || activeSwipeRoute !== Routes.DISCOVER_SCREEN) return;
 
-    const isEmpty = (data?.trendingTokens?.data?.length ?? 0) === 0;
-    const isLimited = !isEmpty && (data?.trendingTokens?.data?.length ?? 0) < 6;
+    const isEmpty = (trendingTokens?.length ?? 0) === 0;
+    const isLimited = !isEmpty && (trendingTokens?.length ?? 0) < 6;
 
     analyticsV2.track(analyticsV2.event.viewRankedCategory, {
       category,
@@ -119,7 +132,7 @@ function ReportAnalytics() {
       isLimited,
       isEmpty,
     });
-  }, [isLoading, activeSwipeRoute, data?.trendingTokens.data.length, category, chainId]);
+  }, [isLoading, activeSwipeRoute, trendingTokens?.length, category, chainId]);
 
   return null;
 }
@@ -132,7 +145,7 @@ function CategoryFilterButton({
   label,
   highlightedBackgroundColor,
 }: {
-  category: (typeof categories)[number];
+  category: TrendingCategory;
   icon: string;
   iconColor: string;
   highlightedBackgroundColor: string;
@@ -183,12 +196,16 @@ function CategoryFilterButton({
           },
           animatedStyles,
         ]}
-        layout={LinearTransition}
       >
         <Text color={{ custom: iconColor }} size="icon 13px" weight="heavy" style={{ width: iconWidth }}>
           {icon}
         </Text>
-        <Text color={selected ? { custom: 'black' } : 'labelSecondary'} size="17pt" weight={selected ? 'heavy' : 'bold'}>
+        <Text
+          color={selected ? { custom: 'black' } : 'labelSecondary'}
+          size="17pt"
+          style={{ letterSpacing: selected ? 0 : 0.9 }}
+          weight={selected ? 'heavy' : 'bold'}
+        >
           {label}
         </Text>
       </AnimatedLinearGradient>
@@ -196,56 +213,65 @@ function CategoryFilterButton({
   );
 }
 
-function FriendHolders() {
+function FriendPfp({ pfp_url }: { pfp_url: string }) {
   const backgroundColor = useBackgroundColor('surfacePrimary');
   return (
-    <View style={{ flexDirection: 'row', gap: 5.67, alignItems: 'center', marginTop: -2 }}>
-      <View style={{ flexDirection: 'row-reverse', alignItems: 'center' }}>
-        <FastImage
-          source={{
-            uri: 'https://rainbowme-res.cloudinary.com/image/upload/v1654696359/assets/ethereum/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png',
-          }}
-          style={{
-            height: 12 + 2,
-            width: 12 + 2,
-            borderRadius: 6,
-            borderWidth: 1,
-            borderColor: backgroundColor,
-            marginVertical: -1,
-            marginLeft: -6,
-          }}
-        />
-        <FastImage
-          source={{
-            uri: 'https://rainbowme-res.cloudinary.com/image/upload/v1654696359/assets/ethereum/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png',
-          }}
-          style={{
-            height: 12 + 2,
-            width: 12 + 2,
-            borderRadius: 6,
-            borderWidth: 1,
-            borderColor: backgroundColor,
-            marginVertical: -1,
-            marginLeft: -6,
-          }}
-        />
+    <ImgixImage
+      source={{ uri: pfp_url }}
+      style={{
+        height: 12 + 2,
+        width: 12 + 2,
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: backgroundColor,
+        marginVertical: -1,
+        marginLeft: -6,
+      }}
+    />
+  );
+}
+function FriendHolders({ friends }: { friends: FarcasterUser[] }) {
+  if (friends.length === 0) return null;
+  const howManyOthers = Math.max(1, friends.length - 2);
+  const separator = howManyOthers === 1 && friends.length === 2 ? ` ${i18n.t(t.and)} ` : ', ';
+
+  return (
+    <View style={{ flexDirection: 'row', gap: 5.67, height: 12, alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row-reverse', alignItems: 'center', paddingLeft: 6 }}>
+        <FriendPfp pfp_url={friends[0].pfp_url} />
+        {friends[1] && <FriendPfp pfp_url={friends[1].pfp_url} />}
       </View>
 
-      <Text color="labelSecondary" size="11pt" weight="bold">
-        mikedemarais{' '}
-        <Text color="labelTertiary" size="11pt" weight="bold">
-          and 2 others
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text color="labelSecondary" size="11pt" weight="bold" numberOfLines={1}>
+          {friends[0].username}
+          {friends[1] && (
+            <>
+              <Text color="labelTertiary" size="11pt" weight="bold">
+                {separator}
+              </Text>
+              {friends[1].username}
+            </>
+          )}
         </Text>
-      </Text>
+        {friends.length > 2 && (
+          <Text color="labelTertiary" size="11pt" weight="bold">
+            {' '}
+            {i18n.t('trending_tokens.and_others', { count: howManyOthers })}
+          </Text>
+        )}
+      </View>
     </View>
   );
 }
 
 function TrendingTokenLoadingRow() {
+  const backgroundColor = useBackgroundColor('surfacePrimary');
+  const { isDarkMode } = useTheme();
   return (
-    <View style={{ flex: 1, gap: 0, height: 78, width: '100%' }}>
+    <View style={{ flex: 1, height: 78, width: '100%' }}>
       <Skeleton>
-        <View style={{ padding: 12, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+        <View style={{ paddingVertical: 12, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
           <FakeAvatar />
 
           <View style={{ gap: 12, flex: 1 }}>
@@ -257,8 +283,8 @@ function TrendingTokenLoadingRow() {
                     width: 12 + 2,
                     borderRadius: 6,
                     borderWidth: 1,
-                    borderColor: colors.dark,
-                    backgroundColor: colors.alpha(colors.dark, 0.8),
+                    borderColor: backgroundColor,
+                    backgroundColor: isDarkMode ? darkModeThemeColors.skeleton : colors.skeleton,
                     marginVertical: -1,
                     marginLeft: -6,
                   }}
@@ -269,20 +295,8 @@ function TrendingTokenLoadingRow() {
                     width: 12 + 2,
                     borderRadius: 6,
                     borderWidth: 1,
-                    borderColor: colors.dark,
-                    backgroundColor: colors.alpha(colors.dark, 0.6),
-                    marginVertical: -1,
-                    marginLeft: -6,
-                  }}
-                />
-                <View
-                  style={{
-                    height: 12 + 2,
-                    width: 12 + 2,
-                    borderRadius: 6,
-                    borderWidth: 1,
-                    borderColor: colors.dark,
-                    backgroundColor: colors.alpha(colors.dark, 0.4),
+                    borderColor: backgroundColor,
+                    backgroundColor: isDarkMode ? darkModeThemeColors.skeleton : colors.skeleton,
                     marginVertical: -1,
                   }}
                 />
@@ -328,67 +342,82 @@ function TrendingTokenLoadingRow() {
   );
 }
 
-function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']['data'][number] }) {
+function getPriceChangeColor(priceChange: number) {
+  if (priceChange === 0) return 'labelTertiary';
+  return priceChange > 0 ? 'green' : 'red';
+}
+
+function TrendingTokenRow({ token }: { token: TrendingToken }) {
   const separatorColor = useForegroundColor('separator');
 
-  const priceValue = item.market.price?.value || 0;
-  const isPositiveChange = item.market.price?.change_24h && item.market.price?.change_24h > 0;
-  const price = priceValue < 0.001 ? `< $0.001` : formatNumber(priceValue, { useOrderSuffix: true, decimals: 4, style: '$' });
-  const marketCap = formatNumber(item.market.market_cap?.value || 0, { useOrderSuffix: true, decimals: 1, style: '$' });
-  const volume = formatNumber(item.market.volume_24h || 0, { useOrderSuffix: true, decimals: 1, style: '$' });
+  const price = formatCurrency(token.price);
+  const marketCap = formatNumber(token.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' });
+  const volume = formatNumber(token.volume, { useOrderSuffix: true, decimals: 1, style: '$' });
 
   const handleNavigateToToken = useCallback(() => {
     analyticsV2.track(analyticsV2.event.viewTrendingToken, {
-      address: item.address,
-      chainId: item.chainId,
-      symbol: item.symbol,
-      name: item.name,
-      highlightedFriends: 0, // TODO: Once data is available from backend
+      address: token.address,
+      chainId: token.chainId,
+      symbol: token.symbol,
+      name: token.name,
+      highlightedFriends: token.highlightedFriends.length,
     });
 
     swapsStore.setState({
-      lastNavigatedTrendingToken: item.uniqueId,
+      lastNavigatedTrendingToken: token.uniqueId,
     });
 
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
-      asset: item,
+      asset: token,
       type: 'token',
     });
-  }, [item]);
+  }, [token]);
 
-  if (!item) return null;
+  if (!token) return null;
 
   return (
     <ButtonPressAnimation onPress={handleNavigateToToken} scaleTo={0.94}>
-      <View style={{ paddingVertical: 12, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+      <View style={{ height: 48, overflow: 'visible', flexDirection: 'row', gap: 12, alignItems: 'center' }}>
         <SwapCoinIcon
-          iconUrl={item.icon_url}
-          color={item.colors.primary}
-          chainId={item.chainId}
-          address={item.address}
-          symbol={item.symbol}
+          iconUrl={token.icon_url}
+          color={token.colors.primary}
+          chainId={token.chainId}
+          address={token.address}
+          symbol={token.symbol}
           size={40}
           chainSize={20}
         />
 
         <View style={{ gap: 12, flex: 1 }}>
-          <FriendHolders />
+          <FriendHolders friends={token.highlightedFriends} />
 
           <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
             <View style={{ gap: 12 }}>
-              <View style={{ flexDirection: 'row', gap: 6, alignItems: 'baseline' }}>
-                <Text color="label" size="15pt" weight="bold" style={{ maxWidth: 100 }} numberOfLines={1}>
-                  {item.name}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: 6,
+                  height: 10,
+                  alignItems: 'baseline',
+                  maxWidth:
+                    Dimensions.get('screen').width -
+                    40 - // 40 screen paddings
+                    (40 + 12) - // 40 token icon, 12 gap
+                    70, // 70 width for price change %
+                }}
+              >
+                <Text color="label" size="15pt" weight="bold" style={{ maxWidth: 100, flexShrink: 1 }} numberOfLines={1}>
+                  {token.name}
                 </Text>
-                <Text color="labelTertiary" size="11pt" weight="bold" style={{ maxWidth: 100 }} numberOfLines={1}>
-                  {item.symbol}
+                <Text color="labelTertiary" size="11pt" weight="bold" style={{ flexGrow: 0 }} numberOfLines={1}>
+                  {token.symbol}
                 </Text>
                 <Text color="label" size="15pt" weight="bold">
                   {price}
                 </Text>
               </View>
 
-              <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', gap: 8, height: 7, alignItems: 'center' }}>
                 <View style={{ flexDirection: 'row', gap: 4 }}>
                   <Text color="labelQuaternary" size="11pt" weight="bold">
                     VOL
@@ -414,20 +443,17 @@ function TrendingTokenRow({ item }: { item: TrendingTokensType['trendingTokens']
             </View>
 
             <View style={{ gap: 12, marginLeft: 'auto' }}>
-              <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center' }}>
-                <Text color={isPositiveChange ? 'green' : 'red'} size="11pt" weight="bold">
-                  {isPositiveChange ? '􀄨' : '􀄩'}
-                </Text>
-                <Text color={isPositiveChange ? 'green' : 'red'} size="15pt" weight="bold">
-                  {formatNumber(item.market.price?.change_24h || 0, { decimals: 2, useOrderSuffix: true })}%
+              <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center', justifyContent: 'flex-end' }}>
+                <Text color={getPriceChangeColor(token.priceChange.day)} size="15pt" weight="bold">
+                  {formatNumber(token.priceChange.day, { decimals: 2, useOrderSuffix: true })}%
                 </Text>
               </View>
               <View style={{ flexDirection: 'row', gap: 5, justifyContent: 'flex-end' }}>
                 <Text color="labelQuaternary" size="11pt" weight="bold">
                   1H
                 </Text>
-                <Text color={isPositiveChange ? 'green' : 'red'} size="11pt" weight="bold">
-                  {formatNumber(item.market.price?.change_24h || 0, { decimals: 2, useOrderSuffix: true })}%
+                <Text color={getPriceChangeColor(token.priceChange.hr)} size="11pt" weight="bold">
+                  {formatNumber(token.priceChange.hr, { decimals: 2, useOrderSuffix: true })}%
                 </Text>
               </View>
             </View>
@@ -480,10 +506,7 @@ function NetworkFilter() {
     [selected, setChainId]
   );
 
-  const label = useMemo(() => {
-    if (!chainId) return i18n.t(t.all);
-    return useBackendNetworksStore.getState().getChainsLabel()[chainId];
-  }, [chainId]);
+  const label = !chainId ? i18n.t(t.all) : useBackendNetworksStore.getState().getChainsLabel()[chainId];
 
   const icon = useMemo(() => {
     if (!chainId) return '􀤆';
@@ -525,19 +548,21 @@ function SortFilter() {
   return (
     <DropdownMenu
       menuConfig={{
-        menuItems: sortFilters.map(sort => ({
-          actionTitle: i18n.t(t.filters.sort[sort]),
-          actionKey: sort,
-        })),
+        menuItems: sortFilters
+          .filter(s => s !== 'RECOMMENDED')
+          .map(sort => ({
+            actionTitle: i18n.t(t.filters.sort[sort]),
+            actionKey: sort,
+          })),
       }}
       side="bottom"
       onPressMenuItem={selection => {
-        if (selection === sort) return useTrendingTokensStore.getState().setSort(undefined);
+        if (selection === sort) return useTrendingTokensStore.getState().setSort(TrendingSort.Recommended);
         useTrendingTokensStore.getState().setSort(selection);
       }}
     >
       <FilterButton
-        label={i18n.t(t.filters.sort[sort || 'sort'])}
+        label={i18n.t(t.filters.sort[sort])}
         icon={
           <Text color={{ custom: iconColor }} size="icon 13px" weight="heavy" style={{ width: 20 }}>
             􀄬
@@ -548,30 +573,36 @@ function SortFilter() {
   );
 }
 
+function TrendingTokensLoader() {
+  const { trending_tokens_limit } = useRemoteConfig();
+
+  return (
+    <View style={{ flex: 1 }}>
+      {Array.from({ length: trending_tokens_limit }).map((_, index) => (
+        <TrendingTokenLoadingRow key={index} />
+      ))}
+    </View>
+  );
+}
+
 function TrendingTokenData() {
-  const { data, isLoading } = useTrendingTokensData();
-  if (isLoading)
-    return (
-      <View style={{ flex: 1 }}>
-        {Array.from({ length: 10 }).map((_, index) => (
-          <TrendingTokenLoadingRow key={index} />
-        ))}
-      </View>
-    );
+  const { data: trendingTokens, isLoading } = useTrendingTokensData();
+  if (isLoading) return <TrendingTokensLoader />;
 
   return (
     <FlatList
-      style={{ marginHorizontal: -20 }}
-      contentContainerStyle={{ paddingHorizontal: 20 }}
+      style={{ marginHorizontal: -20, paddingVertical: 12, marginVertical: -12 }}
+      contentContainerStyle={{ paddingHorizontal: 20, gap: 28 }}
       ListEmptyComponent={<NoResults />}
-      data={data?.trendingTokens.data}
-      renderItem={({ item }) => <TrendingTokenRow item={item} />}
+      data={trendingTokens}
+      renderItem={({ item }) => <TrendingTokenRow token={item} />}
     />
   );
 }
 
+const padding = 20;
+
 export function TrendingTokens() {
-  const padding = 20;
   return (
     <View style={{ gap: 28 }}>
       <View style={{ gap: 12, justifyContent: 'center' }}>
@@ -582,23 +613,23 @@ export function TrendingTokens() {
           style={{ marginHorizontal: -padding }}
         >
           <CategoryFilterButton
-            category="trending"
-            label={i18n.t(t.filters.categories.trending)}
+            category={TrendingCategory.Trending}
+            label={i18n.t(t.filters.categories.TRENDING)}
             icon="􀙭"
             iconColor={'#D0281C'}
             highlightedBackgroundColor={'#E6A39E'}
           />
           <CategoryFilterButton
-            category="new"
-            label={i18n.t(t.filters.categories.new)}
+            category={TrendingCategory.New}
+            label={i18n.t(t.filters.categories.NEW)}
             icon="􀋃"
             iconColor={'#FFDA24'}
             highlightedBackgroundColor={'#F9EAA1'}
             iconWidth={18}
           />
           <CategoryFilterButton
-            category="farcaster"
-            label={i18n.t(t.filters.categories.farcaster)}
+            category={TrendingCategory.Farcaster}
+            label={i18n.t(t.filters.categories.FARCASTER)}
             icon="􀌥"
             iconColor={'#5F5AFA'}
             highlightedBackgroundColor={'#B9B7F7'}

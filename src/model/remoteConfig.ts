@@ -52,12 +52,13 @@ export interface RainbowConfig extends Record<string, string | boolean | number>
   dapp_browser: boolean;
   idfa_check_enabled: boolean;
   rewards_enabled: boolean;
-  trending_tokens_enabled: boolean;
 
   degen_mode: boolean;
   featured_results: boolean;
   claimables: boolean;
   nfts_enabled: boolean;
+
+  trending_tokens_limit: number;
 }
 
 export const DEFAULT_CONFIG: RainbowConfig = {
@@ -143,12 +144,13 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   dapp_browser: true,
   idfa_check_enabled: true,
   rewards_enabled: true,
-  trending_tokens_enabled: false,
 
   degen_mode: true,
   featured_results: true,
   claimables: true,
   nfts_enabled: true,
+
+  trending_tokens_limit: 10,
 };
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
@@ -201,13 +203,14 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'dapp_browser' ||
         key === 'idfa_check_enabled' ||
         key === 'rewards_enabled' ||
-        key === 'trending_tokens_enabled' ||
         key === 'degen_mode' ||
         key === 'featured_results' ||
         key === 'claimables' ||
         key === 'nfts_enabled'
       ) {
         config[key] = entry.asBoolean();
+      } else if (key === 'trending_tokens_limit') {
+        config[key] = entry.asNumber();
       } else {
         config[key] = entry.asString();
       }
