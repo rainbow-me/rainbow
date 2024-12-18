@@ -3,7 +3,7 @@ import { SectionId, useExpandedAssetSheetContext } from '../context/ExpandedAsse
 import { AccentColorProvider, Box, ColorModeProvider, Separator, Stack } from '@/design-system';
 import { CollapsibleSection, LAYOUT_ANIMATION } from './shared/CollapsibleSection';
 import Animated from 'react-native-reanimated';
-import { AboutSection, BalanceSection, BuySection } from './sections';
+import { AboutSection, BalanceSection, BridgeSection, BuySection } from './sections';
 import { ScrollView } from 'react-native';
 import { deviceUtils } from '@/utils';
 
@@ -23,7 +23,8 @@ export function SheetContent() {
               }
             >
               <BalanceSection />
-              <CollapsibleSection content={<BuySection />} icon="􀋥" id={SectionId.BRIDGE} primaryText="Buy" secondaryText={asset.symbol} />
+              <CollapsibleSection content={<BuySection />} icon="􀋥" id={SectionId.BUY} primaryText="Buy" secondaryText={asset.symbol} />
+              <CollapsibleSection content={<BridgeSection />} icon="􀄹" id={SectionId.BRIDGE} primaryText="Bridge" secondaryText="to" />
               <CollapsibleSection content={<AboutSection />} icon="􁜾" id={SectionId.ABOUT} primaryText="About" />
             </Stack>
           </Box>

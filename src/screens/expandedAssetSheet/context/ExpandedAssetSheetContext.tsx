@@ -22,6 +22,7 @@ interface AccentColors {
   opacity6: string;
   opacity3: string;
   opacity2: string;
+  opacity1: string;
 }
 
 const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
@@ -65,6 +66,7 @@ export function ExpandedAssetSheetContextProvider({ asset, children }: { asset: 
       opacity6: colors.alpha(opacity100, 0.06),
       opacity3: colors.alpha(opacity100, 0.03),
       opacity2: colors.alpha(opacity100, 0.02),
+      opacity1: colors.alpha(opacity100, 0.01),
     };
   }, [asset.colors?.primary]);
 
