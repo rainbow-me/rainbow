@@ -20,8 +20,7 @@ import { logger, RainbowError } from '@/logger';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_IOS } from '@/env';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { RootStackParamList } from '@/navigation/types';
 import { Box, globalColors, Inline, Stack, Text } from '@/design-system';
@@ -36,12 +35,8 @@ import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pin
 import ConditionalWrap from 'conditional-wrap';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { SettingsPages } from '../SettingsSheet/SettingsPages';
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 
-const LIST_PADDING_BOTTOM = 6;
-const MAX_LIST_HEIGHT = DEVICE_HEIGHT - 220;
-const WALLET_ROW_HEIGHT = 59;
-const WATCH_ONLY_BOTTOM_PADDING = IS_ANDROID ? 20 : 0;
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 
 export const PANEL_INSET_HORIZONTAL = 20;
@@ -89,7 +84,6 @@ export interface AddressItem {
 }
 
 export default function ChangeWalletSheet() {
-  console.log('CHANGE WALLET SHEET RENDER');
   const { params = {} } = useRoute<RouteProp<RootStackParamList, 'ChangeWalletSheet'>>();
 
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
@@ -107,6 +101,7 @@ export default function ChangeWalletSheet() {
   const initialHasShownEditHintTooltip = useMemo(() => usePinnedWalletsStore.getState().hasShownEditHintTooltip, []);
   const initialHasAutoPinnedAddresses = useMemo(() => usePinnedWalletsStore.getState().hasAutoPinnedAddresses, []);
   const initialPinnedAddressCount = useMemo(() => usePinnedWalletsStore.getState().pinnedAddresses.length, []);
+  const { transactionCounts, isLoading: isLoadingTransactionCounts } = useWalletTransactionCounts(wallets || {});
 
   const featureHintTooltipRef = useRef<TooltipRef>(null);
 
@@ -175,20 +170,28 @@ export default function ChangeWalletSheet() {
     return [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets].sort((a, b) => a.walletId.localeCompare(b.walletId));
   }, [walletsWithBalancesAndNames, currentAddress]);
 
-  // On first use of this feature, auto-pin the users most used owned addresses
+  // If user has never seen pinned addresses feature, auto-pin the users most used owned addresses
   useEffect(() => {
-    if (initialHasAutoPinnedAddresses || initialPinnedAddressCount > 0) return;
+    if (initialHasAutoPinnedAddresses || initialPinnedAddressCount > 0 || isLoadingTransactionCounts) return;
 
-    // TODO: this is a placeholder until backend adds the info needed in the return of the summary endpoint
     const pinnableAddresses = allWalletItems.filter(item => !item.isReadOnly).map(item => item.address);
 
-    // sanity check, there should always be at least one pinnable address
+    // Do not auto-pin if user only has read-only wallets
     if (pinnableAddresses.length === 0) return;
 
-    const addressesToAutoPin = pinnableAddresses.slice(0, MAX_PINNED_ADDRESSES);
+    const addressesToAutoPin = pinnableAddresses
+      .sort((a, b) => transactionCounts[b.toLowerCase()] - transactionCounts[a.toLowerCase()])
+      .slice(0, MAX_PINNED_ADDRESSES);
 
     setPinnedAddresses(addressesToAutoPin);
-  }, [allWalletItems, setPinnedAddresses, initialHasAutoPinnedAddresses, initialPinnedAddressCount]);
+  }, [
+    allWalletItems,
+    setPinnedAddresses,
+    initialHasAutoPinnedAddresses,
+    initialPinnedAddressCount,
+    transactionCounts,
+    isLoadingTransactionCounts,
+  ]);
 
   const ownedWalletsTotalBalance = useMemo(() => {
     let isLoadingBalance = false;
@@ -653,6 +656,22 @@ export default function ChangeWalletSheet() {
           </Box>
           <Box height={{ custom: FOOTER_HEIGHT }} position="absolute" bottom="0px" width="full">
             {/* TODO: progressive blurview on iOS */}
+            {/* {IS_IOS ? (
+              <BlurView
+                style={{ height: '100%', position: 'absolute', width: '100%' }}
+                blurType="dark"
+                blurAmount={10}
+                reducedTransparencyFallbackColor="white"
+              />
+            ) : (
+              <EasingGradient
+                endColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
+                endOpacity={1}
+                startColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
+                startOpacity={0}
+                style={{ height: '100%', position: 'absolute', width: '100%' }}
+              />
+            )} */}
             <EasingGradient
               endColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
               endOpacity={1}
@@ -670,10 +689,10 @@ export default function ChangeWalletSheet() {
             >
               {!editMode ? (
                 <Stack space="10px">
-                  <Text color="label" size="13pt" weight="medium">
+                  <Text color="labelSecondary" size="13pt" weight="bold">
                     {i18n.t(i18n.l.wallet.change_wallet.total_balance)}
                   </Text>
-                  <Text color="label" size="17pt" weight="heavy">
+                  <Text color="label" size="17pt" weight="bold">
                     {ownedWalletsTotalBalance}
                   </Text>
                 </Stack>
