@@ -570,7 +570,8 @@ function SortFilter() {
 }
 
 function TrendingTokenData() {
-  const { data: trendingTokens, isLoading } = useTrendingTokensData();
+  const { data, isLoading } = useTrendingTokensData();
+  const trendingTokens = data?.slice(0, 12);
   if (isLoading)
     return (
       <View style={{ flex: 1 }}>
