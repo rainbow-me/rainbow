@@ -4,7 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import ConditionalWrap from 'conditional-wrap';
-import { Box, Column, Columns, Inline, Stack, Text, Inset, useForegroundColor, useColorMode, TextIcon } from '@/design-system';
+import { Box, Column, Columns, Inline, Stack, Text, useForegroundColor, useColorMode, TextIcon } from '@/design-system';
 import { AddressItem, AddressMenuAction, AddressMenuActionData } from '@/screens/change-wallet/ChangeWalletSheet';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { TextWeight } from '@/design-system/components/Text/Text';
@@ -46,6 +46,7 @@ export const AddressRowButton = ({
         height={{ custom: 28 }}
         justifyContent="center"
         style={{
+          // eslint-disable-next-line no-nested-ternary
           backgroundColor: color ? opacity(color, isDarkMode ? 0.16 : 0.25) : isDarkMode ? fillQuaternary : opacity(fillTertiary, 0.04),
         }}
         width={{ custom: 28 }}
@@ -72,7 +73,7 @@ interface AddressRowProps {
 }
 
 export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem }: AddressRowProps) {
-  const { address, color, secondaryLabel, isSelected, isReadOnly, isLedger, label, image } = data;
+  const { address, color, balance, isSelected, isReadOnly, isLedger, label, image } = data;
 
   const walletName = useMemo(() => {
     return removeFirstEmojiFromString(label) || abbreviateAddress(address, 4, 6);
@@ -141,40 +142,48 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
               {walletName}
             </Text>
             <Text numberOfLines={1} color="labelSecondary" size="13pt" weight="medium">
-              {secondaryLabel}
+              {balance}
             </Text>
           </Stack>
           <Column width="content" style={{ backgroundColor: 'transparent' }}>
             <Inline space="10px" alignVertical="center">
-              {isReadOnly &&
-                (!editMode ? (
-                  <LinearGradient {...linearGradientProps}>
-                    <Text color="labelTertiary" size="13pt" weight="bold">
-                      {i18n.t(i18n.l.wallet.change_wallet.watching)}
-                    </Text>
-                  </LinearGradient>
-                ) : (
-                  <Text color="labelTertiary" size="11pt" weight="bold">
-                    􀋮
-                  </Text>
-                ))}
-              {isLedger &&
-                (!editMode ? (
-                  <LinearGradient {...linearGradientProps}>
-                    <Inline space="4px" alignVertical="center">
-                      <Text color="labelTertiary" size="11pt" weight="bold">
-                        􀤃
-                      </Text>
+              {isReadOnly && (
+                <>
+                  {!editMode ? (
+                    // eslint-disable-next-line react/jsx-props-no-spreading
+                    <LinearGradient {...linearGradientProps}>
                       <Text color="labelTertiary" size="13pt" weight="bold">
-                        {i18n.t(i18n.l.wallet.change_wallet.ledger)}
+                        {i18n.t(i18n.l.wallet.change_wallet.watching)}
                       </Text>
-                    </Inline>
-                  </LinearGradient>
-                ) : (
-                  <Text color="labelTertiary" size="11pt" weight="bold">
-                    􀤃
-                  </Text>
-                ))}
+                    </LinearGradient>
+                  ) : (
+                    <Text color="labelTertiary" size="11pt" weight="bold">
+                      􀋮
+                    </Text>
+                  )}
+                </>
+              )}
+              {isLedger && (
+                <>
+                  {!editMode ? (
+                    // eslint-disable-next-line react/jsx-props-no-spreading
+                    <LinearGradient {...linearGradientProps}>
+                      <Inline space="4px" alignVertical="center">
+                        <Text color="labelTertiary" size="11pt" weight="bold">
+                          􀤃
+                        </Text>
+                        <Text color="labelTertiary" size="13pt" weight="bold">
+                          {i18n.t(i18n.l.wallet.change_wallet.ledger)}
+                        </Text>
+                      </Inline>
+                    </LinearGradient>
+                  ) : (
+                    <Text color="labelTertiary" size="11pt" weight="bold">
+                      􀤃
+                    </Text>
+                  )}
+                </>
+              )}
               {!editMode && isSelected && <SelectedAddressBadge shadow="12px blue" />}
               {editMode && (
                 <AddressRowButton onPress={() => addPinnedAddress(address)} color={colors.appleBlue} icon="􀎧" size="icon 12px" />

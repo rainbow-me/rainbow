@@ -188,7 +188,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                     </Text>
                   </Inline>
                   <Text color="labelSecondary" size="13pt" weight="medium">
-                    {account.secondaryLabel}
+                    {account.balance}
                   </Text>
                 </Stack>
               </ConditionalWrap>

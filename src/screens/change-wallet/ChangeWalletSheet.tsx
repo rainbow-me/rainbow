@@ -75,19 +75,16 @@ const Whitespace = styled(View)({
 });
 
 export interface AddressItem {
+  id: EthereumAddress;
   address: EthereumAddress;
   color: number;
-  editMode: boolean;
-  height: number;
-  id: EthereumAddress;
-  isOnlyAddress: boolean;
   isReadOnly: boolean;
   isLedger: boolean;
   isSelected: boolean;
   label: string;
-  secondaryLabel: string;
   rowType: number;
   walletId: string;
+  balance: string;
   image: string | null | undefined;
 }
 
@@ -148,11 +145,8 @@ export default function ChangeWalletSheet() {
           address: account.address,
           image: account.image,
           color: account.color,
-          editMode,
-          height: WALLET_ROW_HEIGHT,
           label: account.label,
-          secondaryLabel: balanceText,
-          isOnlyAddress: visibleAccounts.length === 1,
+          balance: balanceText,
           isLedger: wallet.type === WalletTypes.bluetooth,
           isReadOnly: wallet.type === WalletTypes.readOnly,
           isSelected: account.address === currentAddress,
@@ -172,7 +166,7 @@ export default function ChangeWalletSheet() {
 
     // sorts by order wallets were added
     return [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets].sort((a, b) => a.walletId.localeCompare(b.walletId));
-  }, [walletsWithBalancesAndNames, currentAddress, editMode]);
+  }, [walletsWithBalancesAndNames, currentAddress]);
 
   const ownedWalletsTotalBalance = useMemo(() => {
     let isLoadingBalance = false;
