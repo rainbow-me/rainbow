@@ -29,6 +29,7 @@ import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 
 import { ButtonPressAnimation } from '../animations';
 import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWallets';
 import { ImgixImage } from '../images';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 const t = i18n.l.trending_tokens;
 
@@ -90,6 +91,7 @@ function FilterButton({ icon, label, onPress }: { onPress?: VoidFunction; label:
 }
 
 function useTrendingTokensData() {
+  const remoteConfig = useRemoteConfig();
   const { chainId, category, timeframe, sort } = useTrendingTokensStore(state => ({
     chainId: state.chainId,
     category: state.category,
@@ -105,6 +107,7 @@ function useTrendingTokensData() {
     timeframe,
     sortBy: sort,
     sortDirection: SortDirection.Desc,
+    limit: remoteConfig.trending_tokens_limit,
     walletAddress: walletAddress,
   });
 }
