@@ -9,7 +9,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { NetworkSelector } from '@/components/NetworkSwitcher';
 import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
-import { SortDirection, TrendingCategory, TrendingSort } from '@/graphql/__generated__/arc';
+import { SortDirection, Timeframe, TrendingCategory, TrendingSort } from '@/graphql/__generated__/arc';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
@@ -36,8 +36,25 @@ const t = i18n.l.trending_tokens;
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
-function FilterButton({ icon, label, onPress }: { onPress?: VoidFunction; label: string; icon: string | JSX.Element }) {
+function FilterButton({
+  icon,
+  label,
+  onPress,
+  selected,
+  iconColor,
+  highlightedBackgroundColor,
+}: {
+  onPress?: VoidFunction;
+  label: string;
+  icon: string | JSX.Element;
+  selected: boolean;
+  iconColor?: string;
+  highlightedBackgroundColor?: string;
+}) {
+  const { isDarkMode } = useTheme();
   const pressed = useSharedValue(false);
+  const fillTertiary = useBackgroundColor('fillTertiary');
+  const fillSecondary = useBackgroundColor('fillSecondary');
 
   const tap = Gesture.Tap()
     .onBegin(() => {
@@ -51,13 +68,14 @@ function FilterButton({ icon, label, onPress }: { onPress?: VoidFunction; label:
   }));
 
   const backgroundColor = useBackgroundColor('fillTertiary');
-  const borderColor = useBackgroundColor('fillSecondary');
+  const borderColor = selected && isDarkMode ? globalColors.white80 : fillSecondary;
 
-  const iconColor = useForegroundColor('labelQuaternary');
+  const defaultIconColor = useForegroundColor('labelQuaternary');
 
   return (
     <GestureDetector gesture={tap}>
-      <Animated.View
+      <AnimatedLinearGradient
+        colors={selected ? [highlightedBackgroundColor || fillTertiary, 'white'] : [fillTertiary, fillTertiary]}
         style={[
           {
             flexDirection: 'row',
@@ -74,7 +92,7 @@ function FilterButton({ icon, label, onPress }: { onPress?: VoidFunction; label:
         ]}
       >
         {typeof icon === 'string' ? (
-          <Text color={{ custom: iconColor }} size="icon 13px" weight="heavy" style={{ width: 16 }}>
+          <Text color={{ custom: iconColor || defaultIconColor }} size="icon 13px" weight="heavy" style={{ width: 16 }}>
             {icon}
           </Text>
         ) : (
@@ -83,10 +101,10 @@ function FilterButton({ icon, label, onPress }: { onPress?: VoidFunction; label:
         <Text color="labelSecondary" size="17pt" weight="bold">
           {label}
         </Text>
-        <Text color={{ custom: iconColor }} size="13pt" weight="bold" style={{ width: 14 }}>
+        <Text color={{ custom: iconColor || defaultIconColor }} size="13pt" weight="bold" style={{ width: 14 }}>
           􀆏
         </Text>
-      </Animated.View>
+      </AnimatedLinearGradient>
     </GestureDetector>
   );
 }
@@ -236,7 +254,7 @@ function FriendHolders({ friends }: { friends: FarcasterUser[] }) {
   const separator = howManyOthers === 1 && friends.length === 2 ? ` ${i18n.t(t.and)} ` : ', ';
 
   return (
-    <View style={{ flexDirection: 'row', gap: 5.67, alignItems: 'center', marginTop: -2 }}>
+    <View style={{ flexDirection: 'row', gap: 5.67, height: 12, alignItems: 'center' }}>
       <View style={{ flexDirection: 'row-reverse', alignItems: 'center', paddingLeft: 6 }}>
         <FriendPfp pfp_url={friends[0].pfp_url} />
         {friends[1] && <FriendPfp pfp_url={friends[1].pfp_url} />}
@@ -377,7 +395,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
 
   return (
     <ButtonPressAnimation onPress={handleNavigateToToken} scaleTo={0.94}>
-      <View style={{ paddingVertical: 12, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+      <View style={{ height: 48, overflow: 'visible', flexDirection: 'row', gap: 12, alignItems: 'center' }}>
         <SwapCoinIcon
           iconUrl={token.icon_url}
           color={token.colors.primary}
@@ -388,7 +406,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
           chainSize={20}
         />
 
-        <View style={{ gap: 12, flex: 1 }}>
+        <View style={{ gap: 8, flex: 1 }}>
           <FriendHolders friends={token.highlightedFriends} />
 
           <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
@@ -397,6 +415,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
                 style={{
                   flexDirection: 'row',
                   gap: 6,
+                  height: 10,
                   alignItems: 'baseline',
                   maxWidth:
                     Dimensions.get('screen').width -
@@ -416,7 +435,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
                 </Text>
               </View>
 
-              <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', gap: 8, height: 7, alignItems: 'center' }}>
                 <View style={{ flexDirection: 'row', gap: 4 }}>
                   <Text color="labelQuaternary" size="11pt" weight="bold">
                     VOL
@@ -488,9 +507,9 @@ function NoResults() {
 }
 
 function NetworkFilter() {
+  const { colors } = useTheme();
   const [isOpen, setOpen] = useState(false);
   const selected = useSharedValue<ChainId | undefined>(undefined);
-
   const { chainId, setChainId } = useTrendingTokensStore(state => ({
     chainId: state.chainId,
     setChainId: state.setChainId,
@@ -514,7 +533,13 @@ function NetworkFilter() {
 
   return (
     <>
-      <FilterButton label={label} icon={icon} onPress={() => setOpen(true)} />
+      <FilterButton
+        selected={!!chainId}
+        highlightedBackgroundColor={chainId ? colors.networkColors[chainId] : undefined}
+        label={label}
+        icon={icon}
+        onPress={() => setOpen(true)}
+      />
       {isOpen && <NetworkSelector selected={selected} setSelected={setSelected} onClose={() => setOpen(false)} />}
     </>
   );
@@ -534,7 +559,13 @@ function TimeFilter() {
       side="bottom"
       onPressMenuItem={timeframe => useTrendingTokensStore.getState().setTimeframe(timeframe)}
     >
-      <FilterButton label={i18n.t(t.filters.time[timeframe])} icon="􀐫" />
+      <FilterButton
+        selected={timeframe !== Timeframe.H24}
+        iconColor={undefined}
+        highlightedBackgroundColor={undefined}
+        label={i18n.t(t.filters.time[timeframe])}
+        icon="􀐫"
+      />
     </DropdownMenu>
   );
 }
@@ -561,6 +592,9 @@ function SortFilter() {
       }}
     >
       <FilterButton
+        selected={sort !== TrendingSort.Recommended}
+        iconColor={undefined}
+        highlightedBackgroundColor={undefined}
         label={i18n.t(t.filters.sort[sort])}
         icon={
           <Text color={{ custom: iconColor }} size="icon 13px" weight="heavy" style={{ width: 20 }}>
@@ -590,8 +624,8 @@ function TrendingTokenData() {
 
   return (
     <FlatList
-      style={{ marginHorizontal: -20 }}
-      contentContainerStyle={{ paddingHorizontal: 20 }}
+      style={{ marginHorizontal: -20, paddingVertical: 12, marginVertical: -12 }}
+      contentContainerStyle={{ paddingHorizontal: 20, gap: 28 }}
       ListEmptyComponent={<NoResults />}
       data={trendingTokens}
       renderItem={({ item }) => <TrendingTokenRow token={item} />}
@@ -599,8 +633,9 @@ function TrendingTokenData() {
   );
 }
 
+const padding = 20;
+
 export function TrendingTokens() {
-  const padding = 20;
   return (
     <View style={{ gap: 28 }}>
       <View style={{ gap: 12, justifyContent: 'center' }}>
