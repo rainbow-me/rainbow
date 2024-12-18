@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Bleed, Box, IconContainer, Inline, Stack, Text, TextShadow } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -28,7 +28,7 @@ function BuyButton({ usdAmount }: { usdAmount: number }) {
   );
 }
 
-export function BuySection() {
+export const BuySection = memo(function BuySection() {
   // const [currency, setCurrency] = useState<Currency>(Currency.USD);
 
   // const menuConfig = useMemo<MenuConfig<MintsFilter>>(() => {
@@ -107,4 +107,4 @@ export function BuySection() {
       </Bleed>
     </Box>
   );
-}
+});
