@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from '@/design-system';
 import { ParsedAddressAsset } from '@/entities';
 import { useTheme } from '@/theme';
-import ChainBadge from './ChainBadge';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import RainbowCoinIcon from './RainbowCoinIcon';
 import { ChainId } from '@/state/backendNetworks/types';
 
@@ -43,27 +43,19 @@ export function TwoCoinsIcon({
         >
           <RainbowCoinIcon
             icon={under?.icon_url}
-            theme={theme}
             size={underSize}
             chainId={under.chainId as ChainId}
             symbol={under.symbol}
-            ignoreBadge
+            showBadge={false}
           />
         </Box>
         <Box
           borderRadius={100}
           style={{ zIndex: 10, position: 'absolute', top: 0, right: 0, borderRadius: 99, borderColor: theme.colors.white, borderWidth: 2 }}
         >
-          <RainbowCoinIcon
-            icon={over?.icon_url}
-            theme={theme}
-            size={overSize}
-            chainId={over.chainId as ChainId}
-            symbol={over.symbol}
-            ignoreBadge
-          />
+          <RainbowCoinIcon icon={over?.icon_url} size={overSize} chainId={over.chainId as ChainId} symbol={over.symbol} showBadge={false} />
         </Box>
-        {badge && <ChainBadge chainId={over.chainId} badgeYPosition={9} badgeXPosition={-7.5} />}
+        <ChainImage showBadge={badge} chainId={over.chainId} badgeYPosition={8.5} badgeXPosition={-10} size={32} />
       </Box>
     </Box>
   );

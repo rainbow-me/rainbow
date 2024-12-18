@@ -242,9 +242,8 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
             icon={externalAsset?.icon_url}
             chainId={offerChainId}
             symbol={offer.paymentToken.symbol}
-            theme={theme}
-            colors={externalAsset?.colors}
-            ignoreBadge
+            color={externalAsset?.colors?.primary || externalAsset?.colors?.fallback || undefined}
+            showBadge={false}
           />
         </View>
         <Text color="label" size="13pt" weight="heavy">

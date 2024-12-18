@@ -9,7 +9,6 @@ import { useAccountSettings } from '@/hooks';
 import { ETH_ADDRESS, WBTC_ADDRESS, emojis, supportedNativeCurrencies } from '@/references';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { useTheme } from '@/theme';
 import { ChainId } from '@/state/backendNetworks/types';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [name, emoji]);
@@ -23,7 +22,6 @@ const currencyListItems = Object.values(supportedNativeCurrencies).map(({ curren
 
 const CurrencySection = () => {
   const { nativeCurrency, settingsChangeNativeCurrency } = useAccountSettings();
-  const theme = useTheme();
   const { data: WBTC } = useExternalToken({ address: WBTC_ADDRESS, chainId: ChainId.mainnet, currency: nativeCurrency });
   const { data: ETH } = useExternalToken({ address: ETH_ADDRESS, chainId: ChainId.mainnet, currency: nativeCurrency });
 
@@ -55,7 +53,6 @@ const CurrencySection = () => {
                     size={23}
                     symbol={currency}
                     chainId={ChainId.mainnet}
-                    theme={theme}
                   />
                 </View>
               )

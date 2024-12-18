@@ -36,6 +36,7 @@ import { pendingTransactionsStore } from '@/state/pendingTransactions';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { addDefaultNotificationGroupSettings } from '@/notifications/settings/initialization';
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
+import FastImage from 'react-native-fast-image';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -103,10 +104,30 @@ const DevSection = () => {
   };
 
   const clearImageCache = async () => {
-    ImgixImage.clearDiskCache();
-    // clearImageCache doesn't exist on ImgixImage
-    // @ts-ignore
-    ImgixImage.clearImageCache();
+    try {
+      ImgixImage.clearDiskCache();
+    } catch (e) {
+      logger.error(new RainbowError(`Error clearing ImgixImage disk cache: ${e}`));
+    }
+
+    try {
+      // @ts-expect-error - clearImageCache doesn't exist on ImgixImage
+      ImgixImage.clearImageCache();
+    } catch (e) {
+      logger.error(new RainbowError(`Error clearing ImgixImage cache: ${e}`));
+    }
+
+    try {
+      FastImage.clearDiskCache();
+    } catch (e) {
+      logger.error(new RainbowError(`Error clearing FastImage disk cache: ${e}`));
+    }
+
+    try {
+      FastImage.clearMemoryCache();
+    } catch (e) {
+      logger.error(new RainbowError(`Error clearing FastImage memory cache: ${e}`));
+    }
   };
 
   const [errorObj, setErrorObj] = useState(null as any);

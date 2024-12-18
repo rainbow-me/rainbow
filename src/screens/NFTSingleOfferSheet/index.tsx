@@ -525,9 +525,8 @@ export function NFTSingleOfferSheet() {
                         icon={externalAsset?.icon_url}
                         chainId={offerChainId}
                         symbol={offer.paymentToken.symbol}
-                        theme={theme}
-                        colors={externalAsset?.colors}
-                        ignoreBadge
+                        color={externalAsset?.colors?.primary || externalAsset?.colors?.fallback || undefined}
+                        showBadge={false}
                       />
                       <Text color="label" align="right" size="17pt" weight="bold">
                         {listPrice} {offer.paymentToken.symbol}
@@ -563,9 +562,8 @@ export function NFTSingleOfferSheet() {
                         icon={externalAsset?.icon_url}
                         chainId={offerChainId}
                         symbol={offer.paymentToken.symbol}
-                        theme={theme}
-                        colors={externalAsset?.colors}
-                        ignoreBadge
+                        color={externalAsset?.colors?.primary || externalAsset?.colors?.fallback || undefined}
+                        showBadge={false}
                       />
 
                       <Text color="labelSecondary" align="right" size="17pt" weight="medium">
@@ -651,9 +649,8 @@ export function NFTSingleOfferSheet() {
                         icon={externalAsset?.icon_url}
                         chainId={offerChainId}
                         symbol={offer.paymentToken.symbol}
-                        theme={theme}
-                        colors={externalAsset?.colors}
-                        ignoreBadge
+                        color={externalAsset?.colors?.primary || externalAsset?.colors?.fallback || undefined}
+                        showBadge={false}
                       />
                       <Text color="label" align="right" size="17pt" weight="bold">
                         {netCrypto} {offer.paymentToken.symbol}
@@ -670,12 +667,10 @@ export function NFTSingleOfferSheet() {
               </Inset>
               {isReadOnlyWallet || isExpired ? (
                 <AccentColorProvider color={offer.nft.predominantColor || buttonColorFallback}>
-                  {/* @ts-ignore js component */}
                   <Box
                     as={ButtonPressAnimation}
                     background="accent"
                     height="46px"
-                    // @ts-ignore
                     disabled={isExpired}
                     width="full"
                     borderRadius={99}

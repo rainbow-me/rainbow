@@ -1,6 +1,5 @@
 import React, { Fragment, useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
-import { CoinIconSize } from '../coin-icon';
 import { Centered, FlexItem, Row } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
@@ -10,6 +9,7 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ethereumUtils, magicMemo } from '@/utils';
 
+const CoinIconSize = 40;
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
 
