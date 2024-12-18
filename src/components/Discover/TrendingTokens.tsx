@@ -388,7 +388,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
           chainSize={20}
         />
 
-        <View style={{ gap: 10, flex: 1 }}>
+        <View style={{ gap: 12, flex: 1 }}>
           <FriendHolders friends={token.highlightedFriends} />
 
           <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
