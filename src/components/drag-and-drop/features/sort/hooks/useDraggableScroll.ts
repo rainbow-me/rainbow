@@ -6,15 +6,24 @@ import { useCallback } from 'react';
 
 const AUTOSCROLL_THRESHOLD = 50;
 const AUTOSCROLL_MIN_SPEED = 1;
-const AUTOSCROLL_MAX_SPEED = 3;
+const AUTOSCROLL_MAX_SPEED = 5;
 const AUTOSCROLL_THRESHOLD_MAX_DISTANCE = 100;
 
-function normalizeWorklet(value: number, fromMin: number, fromMax: number, toMin: number, toMax: number) {
+function easeInOutCubicWorklet(x: number): number {
   'worklet';
-  return ((value - fromMin) * (toMax - toMin)) / (fromMax - fromMin) + toMin;
+  return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 }
 
-const canScrollToWorklet = ({
+function getScrollSpeedWorklet(distanceFromThreshold: number): number {
+  'worklet';
+  const normalizedDistance = Math.min(distanceFromThreshold / AUTOSCROLL_THRESHOLD_MAX_DISTANCE, 1);
+
+  const eased = easeInOutCubicWorklet(normalizedDistance);
+
+  return AUTOSCROLL_MIN_SPEED + (AUTOSCROLL_MAX_SPEED - AUTOSCROLL_MIN_SPEED) * eased;
+}
+
+function getRemainingScrollDistanceWorklet({
   newOffset,
   contentHeight,
   layoutHeight,
@@ -24,11 +33,22 @@ const canScrollToWorklet = ({
   contentHeight: number;
   layoutHeight: number;
   currentOffset: number;
-}) => {
+}): number {
   'worklet';
   const maxOffset = contentHeight - layoutHeight;
-  return newOffset >= 0 && newOffset <= maxOffset && newOffset !== currentOffset;
-};
+
+  if (newOffset < 0) {
+    // Distance to scroll back to top
+    return -currentOffset;
+  }
+
+  if (newOffset > maxOffset) {
+    // Distance to scroll to bottom
+    return maxOffset - currentOffset;
+  }
+
+  return newOffset - currentOffset;
+}
 
 export type UseDraggableScrollOptions = Pick<
   UseDraggableSortOptions,
@@ -72,7 +92,6 @@ export const useDraggableScroll = ({
   const autoscroll = useCallback(
     (offset: number) => {
       'worklet';
-      const smoothedOffset = Math.round(offset);
       const { value: activeId } = draggableActiveId;
 
       if (activeId) {
@@ -80,21 +99,25 @@ export const useDraggableScroll = ({
         const { value: offsets } = draggableOffsets;
         const activeLayout = layouts[activeId].value;
         const activeOffset = offsets[activeId];
-        const newOffset = scrollOffset.value + smoothedOffset;
+        const requestedOffset = scrollOffset.value + offset;
+
+        // ensures we always scroll to the end even if the requested offset would exceed it
+        const remainingScrollDistance = getRemainingScrollDistanceWorklet({
+          newOffset: requestedOffset,
+          contentHeight: contentHeight.value,
+          layoutHeight: layoutHeight.value,
+          currentOffset: scrollOffset.value,
+        });
 
         if (
-          !canScrollToWorklet({
-            newOffset,
-            contentHeight: contentHeight.value,
-            layoutHeight: layoutHeight.value,
-            currentOffset: scrollOffset.value,
-          })
+          (offset > 0 && remainingScrollDistance < AUTOSCROLL_MIN_SPEED) ||
+          (offset < 0 && remainingScrollDistance > -AUTOSCROLL_MIN_SPEED)
         ) {
           return;
         }
 
-        scrollTo(animatedScrollViewRef, 0, newOffset, false);
-        activeOffset.y.value += smoothedOffset;
+        scrollTo(animatedScrollViewRef, 0, scrollOffset.value + remainingScrollDistance, false);
+        activeOffset.y.value += remainingScrollDistance;
         draggableActiveLayout.value = applyOffset(activeLayout, {
           x: activeOffset.x.value,
           y: activeOffset.y.value,
@@ -171,23 +194,11 @@ export const useDraggableScroll = ({
 
       if (isNearTop) {
         const distanceFromTopThreshold = topThreshold - activeItemY;
-        const scrollSpeed = normalizeWorklet(
-          distanceFromTopThreshold,
-          0,
-          AUTOSCROLL_THRESHOLD_MAX_DISTANCE,
-          AUTOSCROLL_MIN_SPEED,
-          AUTOSCROLL_MAX_SPEED
-        );
+        const scrollSpeed = getScrollSpeedWorklet(distanceFromTopThreshold);
         autoscroll(-scrollSpeed);
       } else if (isNearBottom) {
         const distanceFromBottomThreshold = activeItemY - bottomThreshold;
-        const scrollSpeed = normalizeWorklet(
-          distanceFromBottomThreshold,
-          0,
-          AUTOSCROLL_THRESHOLD_MAX_DISTANCE,
-          AUTOSCROLL_MIN_SPEED,
-          AUTOSCROLL_MAX_SPEED
-        );
+        const scrollSpeed = getScrollSpeedWorklet(distanceFromBottomThreshold);
         autoscroll(scrollSpeed);
       }
     }
