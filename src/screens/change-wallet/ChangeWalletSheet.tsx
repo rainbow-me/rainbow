@@ -36,6 +36,7 @@ import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import ConditionalWrap from 'conditional-wrap';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { SettingsPages } from '../SettingsSheet/SettingsPages';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 
 const LIST_PADDING_BOTTOM = 6;
 const MAX_LIST_HEIGHT = DEVICE_HEIGHT - 220;
@@ -601,13 +602,13 @@ export default function ChangeWalletSheet() {
                       SubtitleComponent={
                         <Inline>
                           <Text color={{ custom: globalColors.grey60 }} size="13pt" weight="semibold">
-                            {'Tap the'}
+                            {i18n.t(i18n.l.wallet.change_wallet.edit_hint_tooltip.subtitle.prefix)}
                           </Text>
                           <Text color="blue" size="13pt" weight="semibold">
-                            {' Edit '}
+                            {` ${i18n.t(i18n.l.wallet.change_wallet.edit_hint_tooltip.subtitle.action)} `}
                           </Text>
                           <Text color={{ custom: globalColors.grey60 }} size="13pt" weight="semibold">
-                            {'button above to set up'}
+                            {i18n.t(i18n.l.wallet.change_wallet.edit_hint_tooltip.subtitle.suffix)}
                           </Text>
                         </Inline>
                       }

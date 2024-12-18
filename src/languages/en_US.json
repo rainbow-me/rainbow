@@ -2534,7 +2534,11 @@
         "total_balance": "Total Balance",
         "edit_hint_tooltip": {
           "title": "Customize Your Wallets",
-          "subtitle": "Tap the Edit button above to set up"
+          "subtitle": {
+            "prefix": "Tap the",
+            "action": "Edit",
+            "suffix": "button above to set up"
+          }
         },
         "address_menu": {
           "edit": "Edit Wallet",
