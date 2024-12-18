@@ -42,12 +42,15 @@ export const usePinnedWalletsStore = createRainbowStore<PinnedWalletsStore>(
     },
 
     removePinnedAddress: address => {
-      const { pinnedAddresses } = get();
+      const { pinnedAddresses, unpinnedAddresses } = get();
 
       const match = pinnedAddresses.find(pinnedAddress => pinnedAddress === address);
 
       if (match) {
-        set({ pinnedAddresses: pinnedAddresses.filter(pinnedAddress => pinnedAddress !== address) });
+        set({
+          pinnedAddresses: pinnedAddresses.filter(pinnedAddress => pinnedAddress !== address),
+          unpinnedAddresses: [address, ...unpinnedAddresses],
+        });
       }
     },
 
