@@ -4,7 +4,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId } from '@/state/backendNetworks/types';
 import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
 import { ButtonPressAnimation } from '@/components/animations';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedChainImage, ChainImage } from '@/components/coin-icon/ChainImage';
 import { AnimatedText, Box, DesignSystemProvider, globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
@@ -309,10 +309,10 @@ function AllNetworksSection({
   selected: SharedValue<ChainId | undefined>;
 }) {
   const style = useAnimatedStyle(() => ({
-    opacity: editing.value ? withTiming(0, { duration: 200 }) : withDelay(200, withTiming(1, { duration: 200 })),
+    opacity: editing.value ? withTiming(0, TIMING_CONFIGS.fastFadeConfig) : withTiming(1, TIMING_CONFIGS.fastFadeConfig),
     height: withTiming(
       editing.value ? 0 : ITEM_HEIGHT + 14, // 14 is the gap to the separator
-      { duration: 250 }
+      TIMING_CONFIGS.fastFadeConfig
     ),
     marginTop: editing.value ? 0 : 14,
     pointerEvents: editing.value ? 'none' : 'auto',
@@ -602,7 +602,7 @@ function NetworksGrid({
     const height = sectionsOffsets.value[Section.unpinned].y + unpinnedHeight;
     return height;
   });
-  const containerStyle = useAnimatedStyle(() => ({ height: containerHeight.value }));
+  const containerStyle = useAnimatedStyle(() => ({ height: withTiming(containerHeight.value, TIMING_CONFIGS.slowerFadeConfig) }));
 
   const dragNetwork = Gesture.Pan()
     .maxPointers(1)
