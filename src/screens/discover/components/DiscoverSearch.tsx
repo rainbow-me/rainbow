@@ -7,7 +7,7 @@ import deviceUtils from '@/utils/deviceUtils';
 import CurrencySelectionList from '@/components/CurrencySelectionList';
 import { Row } from '@/components/layout';
 import { useDiscoverScreenContext } from '../DiscoverScreenContext';
-import { analytics } from '@/analytics';
+import { analytics, analyticsV2 } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { useAccountSettings, useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -25,6 +25,7 @@ import { useTheme } from '@/theme';
 import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, Network } from '@/state/backendNetworks/types';
+import { useTimeoutEffect } from '@/hooks/useTimeout';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -269,6 +270,29 @@ export default function DiscoverSearch() {
       animated: true,
     });
   }, [sectionListRef, isSearching]);
+
+  useTimeoutEffect(
+    () => {
+      const assets = currencyList
+        .filter(a => a.key !== 'profiles')
+        .map(asset => asset.data)
+        .flat();
+      if (assets.length === 0) return;
+      const params = {
+        screen: 'discover' as const,
+        no_icon: 0,
+        no_price: 0,
+        total_tokens: assets.length,
+        query: searchQueryForSearch,
+      };
+      for (const asset of assets) {
+        if (!asset.icon_url) params.no_icon += 1;
+        if (!isNaN(asset.price?.value)) params.no_price += 1;
+      }
+      analyticsV2.track(analyticsV2.event.tokenList, params);
+    },
+    { timeout: 3000, enabled: !isLoading }
+  );
 
   return (
     <View key={currencyListDataKey} style={{ height: deviceUtils.dimensions.height - TOP_OFFSET - marginBottom }}>
