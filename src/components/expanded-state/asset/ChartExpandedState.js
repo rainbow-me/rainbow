@@ -336,7 +336,7 @@ export default function ChartExpandedState({ asset }) {
       {!data?.networks && isL2 && (
         <L2Disclaimer chainId={assetChainId} colors={colors} onPress={handleL2DisclaimerPress} symbol={assetWithPrice.symbol} />
       )}
-      {data?.networks && !hasBalance && (
+      {data?.networks && assetWithPrice && (
         <Box paddingBottom={{ custom: 27 }}>
           <AvailableNetworks asset={assetWithPrice} networks={data?.networks} />
         </Box>
