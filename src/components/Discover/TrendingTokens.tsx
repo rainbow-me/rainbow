@@ -7,7 +7,6 @@ import { analyticsV2 } from '@/analytics';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { NetworkSelector } from '@/components/NetworkSwitcher';
 import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
 import { SortDirection, Timeframe, TrendingCategory, TrendingSort } from '@/graphql/__generated__/arc';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
@@ -21,7 +20,7 @@ import { sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendi
 import { colors } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
 import { useTheme } from '@/theme';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import React, { Dimensions, FlatList, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
@@ -406,7 +405,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
           chainSize={20}
         />
 
-        <View style={{ gap: 8, flex: 1 }}>
+        <View style={{ gap: 12, flex: 1 }}>
           <FriendHolders friends={token.highlightedFriends} />
 
           <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
@@ -507,9 +506,8 @@ function NoResults() {
 }
 
 function NetworkFilter() {
-  const { colors } = useTheme();
-  const [isOpen, setOpen] = useState(false);
   const selected = useSharedValue<ChainId | undefined>(undefined);
+
   const { chainId, setChainId } = useTrendingTokensStore(state => ({
     chainId: state.chainId,
     setChainId: state.setChainId,
@@ -531,17 +529,21 @@ function NetworkFilter() {
     return <ChainImage chainId={chainId} size={16} />;
   }, [chainId]);
 
+  const navigateToNetworkSelector = useCallback(() => {
+    Navigation.handleAction(Routes.NETWORK_SELECTOR, {
+      selected,
+      setSelected,
+    });
+  }, [selected, setSelected]);
+
   return (
-    <>
-      <FilterButton
-        selected={!!chainId}
-        highlightedBackgroundColor={chainId ? colors.networkColors[chainId] : undefined}
-        label={label}
-        icon={icon}
-        onPress={() => setOpen(true)}
-      />
-      {isOpen && <NetworkSelector selected={selected} setSelected={setSelected} onClose={() => setOpen(false)} />}
-    </>
+    <FilterButton
+      selected={!!chainId}
+      highlightedBackgroundColor={chainId ? colors.networkColors[chainId] : undefined}
+      label={label}
+      icon={icon}
+      onPress={navigateToNetworkSelector}
+    />
   );
 }
 

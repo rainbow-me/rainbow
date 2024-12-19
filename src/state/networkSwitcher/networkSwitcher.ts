@@ -2,20 +2,30 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
 import { analyticsV2 } from '@/analytics';
 import { nonceStore } from '@/state/nonces';
+import { logger } from '@/logger';
+
+export const defaultPinnedNetworks = [ChainId.base, ChainId.mainnet, ChainId.optimism, ChainId.arbitrum, ChainId.polygon, ChainId.zora];
 
 function getMostUsedChains() {
-  const noncesByAddress = nonceStore.getState().nonces;
-  const summedNoncesByChainId: Record<string, number> = {};
-  for (const addressNonces of Object.values(noncesByAddress)) {
-    for (const [chainId, { currentNonce }] of Object.entries(addressNonces)) {
-      summedNoncesByChainId[chainId] ??= 0;
-      summedNoncesByChainId[chainId] += currentNonce || 0;
+  try {
+    const noncesByAddress = nonceStore.getState().nonces;
+    const summedNoncesByChainId: Record<string, number> = {};
+    for (const addressNonces of Object.values(noncesByAddress)) {
+      for (const [chainId, { currentNonce }] of Object.entries(addressNonces)) {
+        summedNoncesByChainId[chainId] ??= 0;
+        summedNoncesByChainId[chainId] += currentNonce || 0;
+      }
     }
-  }
 
-  return Object.entries(summedNoncesByChainId)
-    .sort((a, b) => b[1] - a[1])
-    .map(([chainId]) => parseInt(chainId));
+    const mostUsedNetworks = Object.entries(summedNoncesByChainId)
+      .sort((a, b) => b[1] - a[1])
+      .map(([chainId]) => parseInt(chainId));
+
+    return mostUsedNetworks.length ? mostUsedNetworks.slice(0, 5) : defaultPinnedNetworks;
+  } catch (error) {
+    logger.warn('[networkSwitcher]: Error getting most used chains', { error });
+    return defaultPinnedNetworks;
+  }
 }
 
 export const networkSwitcherStore = createRainbowStore<{
