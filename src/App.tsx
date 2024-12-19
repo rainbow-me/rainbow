@@ -1,6 +1,6 @@
 import '@/languages';
 import * as Sentry from '@sentry/react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, memo } from 'react';
 import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native';
 import { Toaster } from 'sonner-native';
 import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
@@ -9,9 +9,8 @@ import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
-import { connect, Provider as ReduxProvider } from 'react-redux';
+import { connect, Provider as ReduxProvider, shallowEqual } from 'react-redux';
 import { RecoilRoot } from 'recoil';
-import PortalConsumer from '@/components/PortalConsumer';
 import ErrorBoundary from '@/components/error-boundary/ErrorBoundary';
 import { OfflineToast } from '@/components/toasts';
 import { designSystemPlaygroundEnabled, reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
@@ -24,7 +23,6 @@ import store, { AppDispatch, type AppState } from '@/redux/store';
 import { MainThemeProvider } from '@/theme/ThemeContext';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
-import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { analyticsV2 } from '@/analytics';
 import { getOrCreateDeviceId } from '@/analytics/utils';
@@ -39,6 +37,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { IS_ANDROID, IS_DEV } from '@/env';
 import { prefetchDefaultFavorites } from '@/resources/favorites';
 import Routes from '@/navigation/Routes';
+import { BackupsSync } from '@/state/sync/BackupsSync';
 import { BackendNetworks } from '@/components/BackendNetworks';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
 
@@ -68,13 +67,11 @@ function App({ walletReady }: AppProps) {
   }, []);
 
   return (
-    <Portal>
+    <>
       <View style={[sx.container, { paddingBottom: IS_ANDROID ? bottom : 0 }]}>
         {initialRoute && (
           <InitialRouteContext.Provider value={initialRoute}>
             <Routes ref={handleNavigatorRef} />
-            <PortalConsumer />
-            <AbsolutePortalRoot />
           </InitialRouteContext.Provider>
         )}
         <OfflineToast />
@@ -82,14 +79,27 @@ function App({ walletReady }: AppProps) {
       </View>
       <NotificationsHandler walletReady={walletReady} />
       <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
+      <BackupsSync />
       <BackendNetworks />
-    </Portal>
+      <AbsolutePortalRoot />
+    </>
   );
 }
 
-const AppWithRedux = connect<AppProps, AppDispatch, AppProps, AppState>(state => ({
-  walletReady: state.appState.walletReady,
-}))(App);
+const AppWithRedux = connect<AppProps, AppDispatch, AppProps, AppState>(
+  state => ({
+    walletReady: state.appState.walletReady,
+  }),
+  null,
+  null,
+  {
+    areStatesEqual: (next, prev) => {
+      // Only update if walletReady actually changed
+      return next.appState.walletReady === prev.appState.walletReady;
+    },
+    areOwnPropsEqual: shallowEqual,
+  }
+)(memo(App));
 
 function Root() {
   const [initializing, setInitializing] = useState(true);
