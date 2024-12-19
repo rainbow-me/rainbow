@@ -57,6 +57,7 @@ export type DndProviderProps = {
     event: GestureUpdateEvent<PanGestureHandlerEventPayload>,
     meta: { activeId: UniqueIdentifier; activeLayout: LayoutRectangle }
   ) => void;
+  onActivationWorklet?: (next: UniqueIdentifier | null, prev: UniqueIdentifier | null) => void;
   simultaneousHandlers?: RefObject<ComponentType<object>>;
   springConfig?: WithSpringConfig;
   style?: StyleProp<ViewStyle>;
@@ -81,6 +82,7 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
     onDragEnd,
     onFinalize,
     onUpdate,
+    onActivationWorklet,
     simultaneousHandlers,
     springConfig = {},
     style,
@@ -152,6 +154,17 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
     []
   );
 
+  // Handle activation changes
+  useAnimatedReaction(
+    () => draggableActiveId.value,
+    (next, prev) => {
+      if (next !== null) {
+        onActivationWorklet?.(next, prev);
+      }
+    },
+    []
+  );
+
   const setActiveId = useCallback(() => {
     'worklet';
     const id = draggablePendingId.value;
@@ -218,13 +231,10 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
 
     const panGesture = Gesture.Pan()
       .maxPointers(1)
+      .enabled(!disabled)
       .onBegin(event => {
         const { state, x, y } = event;
         debug && console.log('begin', { state, x, y });
-        // Gesture is globally disabled
-        if (disabled) {
-          return;
-        }
         // console.log("begin", { state, x, y });
         // Track current state for cancellation purposes
         panGestureState.value = state;
@@ -280,10 +290,10 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
           }
         }
       })
-      .onUpdate(event => {
+      .onChange(event => {
         // console.log(draggableStates.value);
-        const { state, translationX, translationY } = event;
-        debug && console.log('update', { state, translationX, translationY });
+        const { state, translationX, translationY, changeX, changeY } = event;
+        debug && console.log('update', { state, changeX, changeY });
         // Track current state for cancellation purposes
         panGestureState.value = state;
         const { value: activeId } = draggableActiveId;
@@ -307,8 +317,10 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
         }
         // Update our active offset to pan the active item
         const activeOffset = offsets[activeId];
-        activeOffset.x.value = draggableInitialOffset.x.value + translationX;
-        activeOffset.y.value = draggableInitialOffset.y.value + translationY;
+
+        activeOffset.x.value += changeX;
+        activeOffset.y.value += changeY;
+
         // Check potential droppable candidates
         const activeLayout = layouts[activeId].value;
         draggableActiveLayout.value = applyOffset(activeLayout, {

@@ -17,6 +17,9 @@ interface AddysSummary {
     addresses: {
       [key: Address]: {
         meta: {
+          rainbow: {
+            transactions: number;
+          };
           farcaster?: {
             object: string;
             fid: number;
@@ -52,17 +55,17 @@ interface AddysSummary {
           last_activity: number;
           asset_value: number | null;
         };
-      };
-      summary_by_chain: {
-        [key: number]: {
-          native_balance: {
-            symbol: string;
-            quantity: string;
-            decimals: number;
+        summary_by_chain: {
+          [key: number]: {
+            native_balance: {
+              symbol: string;
+              quantity: string;
+              decimals: number;
+            };
+            num_erc20s: number;
+            last_activity: number;
+            asset_value: number | null;
           };
-          num_erc20s: number;
-          last_activity: number;
-          asset_value: number | null;
         };
       };
     };
@@ -81,7 +84,7 @@ export type AddysSummaryArgs = {
 // Query Key
 
 export const addysSummaryQueryKey = ({ addresses, currency }: AddysSummaryArgs) =>
-  createQueryKey('addysSummary', { addresses, currency }, { persisterVersion: 1 });
+  createQueryKey('addysSummary', { addresses, currency }, { persisterVersion: 2 });
 
 type AddysSummaryQueryKey = ReturnType<typeof addysSummaryQueryKey>;
 

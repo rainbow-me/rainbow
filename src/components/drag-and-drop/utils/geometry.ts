@@ -15,6 +15,8 @@ export type Rectangle = {
   height: number;
 };
 
+export type Direction = 'horizontal' | 'vertical';
+
 /**
  * @summary Split a `Rectangle` in two
  * @worklet

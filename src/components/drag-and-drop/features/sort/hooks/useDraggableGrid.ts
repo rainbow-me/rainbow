@@ -1,12 +1,12 @@
 import { type FlexStyle } from 'react-native';
 import { useAnimatedReaction } from 'react-native-reanimated';
-import { swapByItemCenterPoint } from '../../../utils';
+import { doesCenterPointOverlap } from '../../../utils';
 import { useDndContext } from './../../../DndContext';
 import { useDraggableSort, type UseDraggableSortOptions } from './useDraggableSort';
 
 export type UseDraggableGridOptions = Pick<
   UseDraggableSortOptions,
-  'initialOrder' | 'onOrderChange' | 'onOrderUpdate' | 'shouldSwapWorklet'
+  'childrenIds' | 'onOrderChange' | 'onOrderUpdate' | 'onOrderUpdateWorklet' | 'shouldSwapWorklet'
 > & {
   gap?: number;
   size: number;
@@ -14,22 +14,24 @@ export type UseDraggableGridOptions = Pick<
 };
 
 export const useDraggableGrid = ({
-  initialOrder,
+  childrenIds,
   onOrderChange,
   onOrderUpdate,
+  onOrderUpdateWorklet,
   gap = 0,
   size,
   direction = 'row',
-  shouldSwapWorklet = swapByItemCenterPoint,
+  shouldSwapWorklet = doesCenterPointOverlap,
 }: UseDraggableGridOptions) => {
   const { draggableActiveId, draggableOffsets, draggableRestingOffsets, draggableLayouts } = useDndContext();
   const horizontal = ['row', 'row-reverse'].includes(direction);
 
   const { draggablePlaceholderIndex, draggableSortOrder } = useDraggableSort({
     horizontal,
-    initialOrder,
+    childrenIds,
     onOrderChange,
     onOrderUpdate,
+    onOrderUpdateWorklet,
     shouldSwapWorklet,
   });
 
@@ -69,10 +71,6 @@ export const useDraggableGrid = ({
         const moveRow = nextRow - prevRow;
 
         const offset = itemId === activeId ? restingOffset : offsets[itemId];
-
-        if (!restingOffset || !offsets[itemId]) {
-          continue;
-        }
 
         switch (direction) {
           case 'row':
