@@ -13,20 +13,17 @@ import { useTheme } from '@/theme';
 import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
 import chroma from 'chroma-js';
-import { PropsWithChildren, ReactElement, useEffect } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import React, { Pressable, StyleSheet, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   FadeIn,
-  FadeOut,
   FadeOutUp,
   LinearTransition,
   runOnJS,
   SharedValue,
-  SlideInDown,
-  SlideOutDown,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -391,7 +388,9 @@ function Draggable({
     const slotPosition = positionFromIndex(itemIndex, sectionsOffsets.value[section]);
 
     const opacity =
-      section === Section.unpinned && isUnpinnedHidden.value ? withTiming(0, { duration: 150 }) : withDelay(150, withTiming(1));
+      section === Section.unpinned && isUnpinnedHidden.value
+        ? withTiming(0, TIMING_CONFIGS.fastFadeConfig)
+        : withDelay(100, withTiming(1, TIMING_CONFIGS.fadeConfig));
 
     const isBeingDragged = dragging.value?.chainId === chainId;
     const position = isBeingDragged ? dragging.value!.position : slotPosition;
@@ -602,7 +601,9 @@ function NetworksGrid({
     const height = sectionsOffsets.value[Section.unpinned].y + unpinnedHeight;
     return height;
   });
-  const containerStyle = useAnimatedStyle(() => ({ height: withTiming(containerHeight.value, TIMING_CONFIGS.slowerFadeConfig) }));
+  const containerStyle = useAnimatedStyle(() => ({
+    height: withDelay(expanded.value ? 0 : 25, withTiming(containerHeight.value, TIMING_CONFIGS.slowerFadeConfig)),
+  }));
 
   const dragNetwork = Gesture.Pan()
     .maxPointers(1)
