@@ -66,13 +66,13 @@ export default function DiscoverHome() {
     <Inset top="20px" bottom={{ custom: 200 }} horizontal={{ custom: HORIZONTAL_PADDING }}>
       {!testNetwork ? (
         <Box gap={20}>
-          <Inline wrap={false} space="20px">
+          {/* <Inline wrap={false} space="20px">
             <GasCard />
             {isProfilesEnabled && <ENSSearchCard />}
-          </Inline>
+          </Inline> */}
           {trendingTokensEnabled && (
             <>
-              <Separator color="separatorSecondary" thickness={1} />
+              {/* <Separator color="separatorSecondary" thickness={1} /> */}
               <TrendingTokens />
             </>
           )}

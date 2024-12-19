@@ -41,7 +41,8 @@ export const useFarcasterAccountForWallets = () => {
     }
 
     const selectedAddressFid = addresses[accountAddress]?.meta?.farcaster?.fid;
-    if (selectedAddressFid && getWalletForAddress(wallets, accountAddress)?.type !== walletTypes.readOnly) {
+    console.log('selectedAddressFid', selectedAddressFid);
+    if (selectedAddressFid) {
       setFarcasterWalletAddress(accountAddress);
       return;
     }
@@ -61,5 +62,5 @@ export const useFarcasterAccountForWallets = () => {
     setFarcasterWalletAddress(undefined);
   }, [wallets, allAddresses, accountAddress]);
 
-  return farcasterWalletAddress;
+  return '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
 };
