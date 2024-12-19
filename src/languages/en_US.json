@@ -3033,6 +3033,54 @@
         "new_tab": "New Tab"
       }
     },
+    "trending_tokens": {
+      "all": "All",
+      "no_results": {
+        "title": "No results",
+        "body": "Try browsing a larger timeframe or a different network or category."
+      },
+      "and": "and",
+      "and_others": {
+        "one": "and %{count} other",
+        "other": "and %{count} others"
+      },
+      "filters": {
+        "categories": {
+          "TRENDING": "Trending",
+          "NEW": "New",
+          "FARCASTER": "Farcaster"
+        },
+        "sort": {
+          "RECOMMENDED": "Sort",
+          "VOLUME": "Volume",
+          "MARKET_CAP": "Market Cap",
+          "TOP_GAINERS": "Top Gainers",
+          "TOP_LOSERS": "Top Losers"
+        },
+        "time": {
+          "H12": "12h",
+          "H24": "24h",
+          "D7": "1 Week",
+          "D3": "1 Month"
+        }
+      }
+    },
+    "network_switcher": {
+      "customize_networks_banner": {
+        "title": "Customize Networks",
+        "tap_the": "Tap the",
+        "button_to_set_up": "button below to set up"
+      },
+      "drag_here_to_unpin": "Drag here to unpin networks",
+      "edit": "Edit",
+      "networks": "Networks",
+      "drag_to_rearrange": "Drag to rearrange",
+      "show_less": "Show less",
+      "more": "More",
+      "show_more": "More Networks",
+      "all_networks": "All Networks"
+    },
+    "done": "Done",
     "copy": "Copy",
     "paste": "Paste"
   }

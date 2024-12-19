@@ -32,17 +32,15 @@ export const AbsolutePortalRoot = ({ style }: { style?: StyleProp<ViewStyle> }) 
     return () => unsubscribe();
   }, []);
 
-  return (
-    <View style={[style, { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'box-none' }]}>
-      <View style={{ position: 'relative', pointerEvents: 'box-none' }}>{nodes}</View>
-    </View>
-  );
+  return <View style={[style, { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'box-none' }]}>{nodes}</View>;
 };
 
 export const AbsolutePortal = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     absolutePortal.addNode(children);
-    return () => absolutePortal.removeNode(children);
+    return () => {
+      absolutePortal.removeNode(children);
+    };
   }, [children]);
 
   return null;

@@ -38,6 +38,8 @@ import { IS_ANDROID, IS_DEV } from '@/env';
 import { prefetchDefaultFavorites } from '@/resources/favorites';
 import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
+import { BackendNetworks } from '@/components/BackendNetworks';
+import { AbsolutePortalRoot } from './components/AbsolutePortal';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -78,6 +80,8 @@ function App({ walletReady }: AppProps) {
       <NotificationsHandler walletReady={walletReady} />
       <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
       <BackupsSync />
+      <BackendNetworks />
+      <AbsolutePortalRoot />
     </>
   );
 }

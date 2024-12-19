@@ -246,6 +246,20 @@ export const consoleSheetConfig = {
   }),
 };
 
+export const networkSelectorConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundColor: '#000000B2',
+      backgroundOpacity: 0.7,
+      cornerRadius: 0,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
 export const panelConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
