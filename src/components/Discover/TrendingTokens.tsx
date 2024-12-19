@@ -170,7 +170,7 @@ function CategoryFilterButton({
 }: {
   category: TrendingCategory;
   icon: string;
-  iconColor: string;
+  iconColor: string | { default: string; selected: string };
   highlightedBackgroundColor: string;
   iconWidth?: number;
   label: string;
@@ -208,7 +208,7 @@ function CategoryFilterButton({
         }}
       >
         <TextIcon
-          color={{ custom: iconColor }}
+          color={{ custom: typeof iconColor === 'string' ? iconColor : selected ? iconColor.selected : iconColor.default }}
           size="icon 13px"
           textStyle={IS_IOS ? { marginTop: -3.5 } : undefined}
           weight="heavy"
@@ -655,6 +655,7 @@ function TrendingTokenData() {
 const padding = 20;
 
 export function TrendingTokens() {
+  const { isDarkMode } = useColorMode();
   return (
     <View style={{ gap: 28 }}>
       <View style={{ gap: 12, justifyContent: 'center' }}>
@@ -675,8 +676,8 @@ export function TrendingTokens() {
             category={TrendingCategory.New}
             label={i18n.t(t.filters.categories.NEW)}
             icon="􀋃"
-            iconColor={'#FFDA24'}
-            highlightedBackgroundColor={'#F9EAA1'}
+            iconColor={{ default: isDarkMode ? globalColors.yellow60 : '#FFBB00', selected: '#F5A200' }}
+            highlightedBackgroundColor={'#FFEAC2'}
             iconWidth={18}
           />
           <CategoryFilterButton
