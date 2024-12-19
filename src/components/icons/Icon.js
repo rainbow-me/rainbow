@@ -91,6 +91,7 @@ import WalletSwitcherCaret from './svg/WalletSwitcherCaret';
 import WarningCircledIcon from './svg/WarningCircledIcon';
 import WarningIcon from './svg/WarningIcon';
 import BridgeIcon from './svg/BridgeIcon';
+import { DragHandlerIcon } from './svg/DragHandlerIcon';
 
 const IconTypes = {
   applePay: ApplePayIcon,
@@ -118,6 +119,7 @@ const IconTypes = {
   dogeCoin: DOGEIcon,
   dot: DotIcon,
   doubleCaret: DoubleCaretIcon,
+  dragHandler: DragHandlerIcon,
   emojiActivities: EmojiActivitiesIcon,
   emojiAnimals: EmojiAnimalsIcon,
   emojiFlags: EmojiFlagsIcon,

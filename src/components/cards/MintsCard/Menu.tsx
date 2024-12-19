@@ -39,7 +39,7 @@ export function Menu() {
   );
 
   return (
-    <DropdownMenu<MintsFilter> menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
+    <DropdownMenu<MintsFilter> menuItemType="checkbox" menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
       <ButtonPressAnimation>
         <Inset top="2px">
           <Inline alignVertical="center" space={{ custom: 5 }}>
