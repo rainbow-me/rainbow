@@ -1,6 +1,6 @@
 import { type FlexStyle } from 'react-native';
 import { useAnimatedReaction } from 'react-native-reanimated';
-import { doesCenterPointOverlap } from '../../../utils';
+import { doesCenterPointOverlap, getFlexLayoutPosition } from '../../../utils';
 import { useDndContext } from './../../../DndContext';
 import { useDraggableSort, type UseDraggableSortOptions } from './useDraggableSort';
 
@@ -35,66 +35,41 @@ export const useDraggableGrid = ({
     shouldSwapWorklet,
   });
 
-  // Track sort order changes and update the offsets
+  // Track sort order changes and update the offsets based on base positions
   useAnimatedReaction(
     () => draggableSortOrder.value,
     (nextOrder, prevOrder) => {
-      // Ignore initial reaction
-      if (prevOrder === null) {
-        return;
-      }
+      if (prevOrder === null) return;
+
       const { value: activeId } = draggableActiveId;
       const { value: layouts } = draggableLayouts;
       const { value: offsets } = draggableOffsets;
       const { value: restingOffsets } = draggableRestingOffsets;
-      if (!activeId) {
-        return;
-      }
+      if (!activeId) return;
 
       const activeLayout = layouts[activeId].value;
       const { width, height } = activeLayout;
-      const restingOffset = restingOffsets[activeId];
 
       for (let nextIndex = 0; nextIndex < nextOrder.length; nextIndex++) {
         const itemId = nextOrder[nextIndex];
+
+        const originalIndex = childrenIds.indexOf(itemId);
         const prevIndex = prevOrder.findIndex(id => id === itemId);
-        // Skip items that haven't changed position
-        if (nextIndex === prevIndex) {
-          continue;
-        }
 
-        const prevRow = Math.floor(prevIndex / size);
-        const prevCol = prevIndex % size;
-        const nextRow = Math.floor(nextIndex / size);
-        const nextCol = nextIndex % size;
-        const moveCol = nextCol - prevCol;
-        const moveRow = nextRow - prevRow;
+        if (nextIndex === prevIndex) continue;
 
-        const offset = itemId === activeId ? restingOffset : offsets[itemId];
+        const offset = itemId === activeId ? restingOffsets[activeId] : offsets[itemId];
+        if (!restingOffsets[itemId] || !offsets[itemId]) continue;
 
-        switch (direction) {
-          case 'row':
-            offset.x.value += moveCol * (width + gap);
-            offset.y.value += moveRow * (height + gap);
-            break;
-          case 'row-reverse':
-            offset.x.value += -1 * moveCol * (width + gap);
-            offset.y.value += moveRow * (height + gap);
-            break;
-          case 'column':
-            offset.y.value += moveCol * (width + gap);
-            offset.x.value += moveRow * (height + gap);
-            break;
-          case 'column-reverse':
-            offset.y.value += -1 * moveCol * (width + gap);
-            offset.x.value += moveRow * (height + gap);
-            break;
-          default:
-            break;
-        }
+        const originalPosition = getFlexLayoutPosition({ index: originalIndex, width, height, gap, direction, size });
+        const newPosition = getFlexLayoutPosition({ index: nextIndex, width, height, gap, direction, size });
+
+        // Set offset as the difference between new and original position
+        offset.x.value = newPosition.x - originalPosition.x;
+        offset.y.value = newPosition.y - originalPosition.y;
       }
     },
-    [direction, gap, size]
+    [direction, gap, size, childrenIds]
   );
 
   return { draggablePlaceholderIndex, draggableSortOrder };

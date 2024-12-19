@@ -61,7 +61,6 @@ export const useDraggableSort = ({
         // console.log(`Found placeholder index ${itemIndex} using custom shouldSwapWorklet!`);
         return itemIndex;
       }
-      continue;
     }
     // Fallback to current index
     return activeIndex;
@@ -110,7 +109,7 @@ export const useDraggableSort = ({
       if (prev.length === next.length) return;
 
       // this assumes the order is sorted in the layout, which might not be the case
-      // if it's not, would need to sort based on the layout but requires waitign for requestAnimationFrame
+      // if it's not, would need to sort based on the layout but requires waiting for requestAnimationFrame
       draggableSortOrder.value = next;
 
       resetOffsets();
@@ -126,7 +125,6 @@ export const useDraggableSort = ({
       if (prev === null) {
         return;
       }
-      const [_prevActiveId, _prevActiveLayout] = prev;
       // No active layout
       if (nextActiveLayout === null) {
         return;

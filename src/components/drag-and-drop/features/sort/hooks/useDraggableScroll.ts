@@ -1,7 +1,7 @@
 import { useDndContext } from '@/components/drag-and-drop/DndContext';
 import { useDraggableSort, type UseDraggableSortOptions } from './useDraggableSort';
 import Animated, { AnimatedRef, SharedValue, scrollTo, useAnimatedReaction } from 'react-native-reanimated';
-import { applyOffset, doesOverlapOnAxis } from '@/components/drag-and-drop/utils';
+import { applyOffset, doesOverlapOnAxis, getFlexLayoutPosition } from '@/components/drag-and-drop/utils';
 import { useCallback } from 'react';
 
 const AUTOSCROLL_THRESHOLD = 50;
@@ -152,34 +152,28 @@ export const useDraggableScroll = ({
 
       const activeLayout = layouts[activeId].value;
       const { width, height } = activeLayout;
-      const restingOffset = restingOffsets[activeId];
 
       for (let nextIndex = 0; nextIndex < nextOrder.length; nextIndex++) {
         const itemId = nextOrder[nextIndex];
+        const originalIndex = childrenIds.indexOf(itemId);
         const prevIndex = prevOrder.findIndex(id => id === itemId);
+
         if (nextIndex === prevIndex) continue;
 
-        const prevRow = Math.floor(prevIndex / size);
-        const prevCol = prevIndex % size;
-        const nextRow = Math.floor(nextIndex / size);
-        const nextCol = nextIndex % size;
-        const moveCol = nextCol - prevCol;
-        const moveRow = nextRow - prevRow;
+        const offset = itemId === activeId ? restingOffsets[activeId] : offsets[itemId];
+        if (!restingOffsets[itemId] || !offsets[itemId]) continue;
 
-        const offset = itemId === activeId ? restingOffset : offsets[itemId];
-        if (!restingOffset || !offsets[itemId]) continue;
+        const originalPosition = getFlexLayoutPosition({ index: originalIndex, width, height, gap, direction, size });
+        const newPosition = getFlexLayoutPosition({ index: nextIndex, width, height, gap, direction, size });
 
-        switch (direction) {
-          case 'row':
-            offset.y.value += moveRow * (height + gap);
-            break;
-          case 'column':
-            offset.x.value += moveCol * (width + gap);
-            break;
+        if (direction === 'row') {
+          offset.y.value = newPosition.y - originalPosition.y;
+        } else if (direction === 'column') {
+          offset.x.value = newPosition.x - originalPosition.x;
         }
       }
     },
-    []
+    [direction, gap, size, childrenIds]
   );
 
   // React to active item position and autoscroll if necessary
