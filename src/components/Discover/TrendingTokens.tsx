@@ -1,5 +1,5 @@
 import { DropdownMenu } from '@/components/DropdownMenu';
-import { globalColors, Text, useBackgroundColor } from '@/design-system';
+import { globalColors, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
 import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
@@ -22,18 +22,18 @@ import { darkModeThemeColors } from '@/styles/colors';
 import { useTheme } from '@/theme';
 import { useCallback, useEffect, useMemo } from 'react';
 import React, { Dimensions, FlatList, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { runOnJS, useSharedValue } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
 import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWallets';
 import { ImgixImage } from '../images';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountSettings } from '@/hooks';
+import { getColorWorklet, getMixedColor, opacity } from '@/__swaps__/utils/swaps';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { IS_IOS } from '@/env';
 
 const t = i18n.l.trending_tokens;
-
-const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 function FilterButton({
   icon,
@@ -50,61 +50,67 @@ function FilterButton({
   iconColor?: string;
   highlightedBackgroundColor?: string;
 }) {
-  const { isDarkMode } = useTheme();
-  const pressed = useSharedValue(false);
+  const { isDarkMode } = useColorMode();
   const fillTertiary = useBackgroundColor('fillTertiary');
-  const fillSecondary = useBackgroundColor('fillSecondary');
+  const separatorSecondary = useForegroundColor('separatorSecondary');
+  const borderColor = selected && isDarkMode ? globalColors.white80 : separatorSecondary;
+  const defaultIconColor = getColorWorklet('labelSecondary', selected ? false : isDarkMode);
 
-  const tap = Gesture.Tap()
-    .onBegin(() => {
-      pressed.value = true;
-      if (onPress) runOnJS(onPress)();
-    })
-    .onFinalize(() => (pressed.value = false));
-
-  const animatedStyles = useAnimatedStyle(() => ({
-    transform: [{ scale: withTiming(pressed.value ? 0.95 : 1, { duration: 100 }) }],
-  }));
-
-  const backgroundColor = useBackgroundColor('fillTertiary');
-  const borderColor = selected && isDarkMode ? globalColors.white80 : fillSecondary;
-
-  const defaultIconColor = useForegroundColor('labelQuaternary');
+  const gradientColors = useMemo(() => {
+    if (!selected) return [fillTertiary, fillTertiary];
+    return highlightedBackgroundColor
+      ? [highlightedBackgroundColor, globalColors.white100]
+      : [
+          isDarkMode ? opacity(globalColors.white100, 0.72) : opacity(fillTertiary, 0.2),
+          isDarkMode ? opacity(globalColors.white100, 0.92) : opacity(fillTertiary, 0),
+        ];
+  }, [fillTertiary, highlightedBackgroundColor, selected, isDarkMode]);
 
   return (
-    <GestureDetector gesture={tap}>
-      <AnimatedLinearGradient
-        colors={selected ? [highlightedBackgroundColor || fillTertiary, 'white'] : [fillTertiary, fillTertiary]}
-        style={[
-          {
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 4,
-            height: 36,
-            paddingHorizontal: 12,
-            borderRadius: 18,
-            borderWidth: 1.33,
-            borderColor,
-            backgroundColor,
-          },
-          animatedStyles,
-        ]}
+    <ButtonPressAnimation scaleTo={0.92} onPress={onPress}>
+      <LinearGradient
+        colors={gradientColors}
+        end={{ x: 0.5, y: 1 }}
+        start={{ x: 0.5, y: 0 }}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 4,
+          height: 36,
+          paddingHorizontal: 12 - THICK_BORDER_WIDTH,
+          borderRadius: 18,
+          borderWidth: THICK_BORDER_WIDTH,
+          borderColor,
+        }}
       >
         {typeof icon === 'string' ? (
-          <Text color={{ custom: iconColor || defaultIconColor }} size="icon 13px" weight="heavy" style={{ width: 16 }}>
+          <TextIcon color={{ custom: iconColor || defaultIconColor }} size="icon 13px" weight="heavy" width={16}>
             {icon}
-          </Text>
+          </TextIcon>
         ) : (
           icon
         )}
-        <Text color="labelSecondary" size="17pt" weight="bold">
-          {label}
-        </Text>
+        <View>
+          {/* This first Text element sets the width of the container */}
+          <Text align="center" color="label" size="17pt" weight="heavy" style={{ opacity: 0 }}>
+            {label}
+          </Text>
+          {/* This second Text element is the visible label, positioned absolutely within the established frame */}
+          <Text
+            align="center"
+            color={selected ? { custom: globalColors.grey100 } : 'labelSecondary'}
+            size="17pt"
+            style={{ bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }}
+            weight={selected ? 'heavy' : 'bold'}
+          >
+            {label}
+          </Text>
+        </View>
         <Text color={{ custom: iconColor || defaultIconColor }} size="13pt" weight="bold" style={{ width: 14 }}>
           􀆏
         </Text>
-      </AnimatedLinearGradient>
-    </GestureDetector>
+      </LinearGradient>
+    </ButtonPressAnimation>
   );
 }
 
@@ -169,64 +175,65 @@ function CategoryFilterButton({
   iconWidth?: number;
   label: string;
 }) {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode } = useColorMode();
   const fillTertiary = useBackgroundColor('fillTertiary');
-  const fillSecondary = useBackgroundColor('fillSecondary');
+  const separatorSecondary = useForegroundColor('separatorSecondary');
 
   const selected = useTrendingTokensStore(state => state.category === category);
 
-  const borderColor = selected && isDarkMode ? globalColors.white80 : fillSecondary;
+  const borderColor = selected && isDarkMode ? globalColors.white80 : separatorSecondary;
 
-  const pressed = useSharedValue(false);
+  const gradientColors = useMemo(() => {
+    if (!selected) return [fillTertiary, fillTertiary];
+    return [highlightedBackgroundColor, globalColors.white100];
+  }, [fillTertiary, highlightedBackgroundColor, selected]);
 
   const selectCategory = useCallback(() => {
     useTrendingTokensStore.getState().setCategory(category);
   }, [category]);
 
-  const tap = Gesture.Tap()
-    .onBegin(() => {
-      pressed.value = true;
-    })
-    .onEnd(() => {
-      pressed.value = false;
-      runOnJS(selectCategory)();
-    });
-
-  const animatedStyles = useAnimatedStyle(() => ({
-    transform: [{ scale: withTiming(pressed.value ? 0.95 : 1, { duration: 100 }) }],
-  }));
-
   return (
-    <GestureDetector gesture={tap}>
-      <AnimatedLinearGradient
-        colors={selected ? [highlightedBackgroundColor, 'white'] : [fillTertiary, fillTertiary]}
-        style={[
-          {
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 4,
-            height: 36,
-            paddingHorizontal: 12,
-            borderRadius: 18,
-            borderWidth: 1.33,
-            borderColor,
-          },
-          animatedStyles,
-        ]}
+    <ButtonPressAnimation scaleTo={0.92} onPress={selectCategory}>
+      <LinearGradient
+        colors={gradientColors}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 4,
+          height: 36,
+          paddingHorizontal: 12,
+          borderRadius: 18,
+          borderWidth: THICK_BORDER_WIDTH,
+          borderColor,
+        }}
       >
-        <Text color={{ custom: iconColor }} size="icon 13px" weight="heavy" style={{ width: iconWidth }}>
-          {icon}
-        </Text>
-        <Text
-          color={selected ? { custom: 'black' } : 'labelSecondary'}
-          size="17pt"
-          style={{ letterSpacing: selected ? 0 : 0.9 }}
-          weight={selected ? 'heavy' : 'bold'}
+        <TextIcon
+          color={{ custom: iconColor }}
+          size="icon 13px"
+          textStyle={IS_IOS ? { marginTop: -3.5 } : undefined}
+          weight="heavy"
+          width={iconWidth}
         >
-          {label}
-        </Text>
-      </AnimatedLinearGradient>
-    </GestureDetector>
+          {icon}
+        </TextIcon>
+        <View>
+          {/* This first Text element sets the width of the container */}
+          <Text align="center" color="label" size="17pt" weight="heavy" style={{ opacity: 0 }}>
+            {label}
+          </Text>
+          {/* This second Text element is the visible label, positioned absolutely within the established frame */}
+          <Text
+            align="center"
+            color={selected ? { custom: globalColors.grey100 } : 'labelSecondary'}
+            size="17pt"
+            style={{ bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }}
+            weight={selected ? 'heavy' : 'bold'}
+          >
+            {label}
+          </Text>
+        </View>
+      </LinearGradient>
+    </ButtonPressAnimation>
   );
 }
 
@@ -284,7 +291,7 @@ function FriendHolders({ friends }: { friends: FarcasterUser[] }) {
 
 function TrendingTokenLoadingRow() {
   const backgroundColor = useBackgroundColor('surfacePrimary');
-  const { isDarkMode } = useTheme();
+  const { isDarkMode } = useColorMode();
   return (
     <View style={{ flex: 1, height: 78, width: '100%' }}>
       <Skeleton>
@@ -482,7 +489,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
 }
 
 function NoResults() {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode } = useColorMode();
   const fillQuaternary = useBackgroundColor('fillQuaternary');
   const backgroundColor = isDarkMode ? '#191A1C' : fillQuaternary;
 
@@ -506,12 +513,27 @@ function NoResults() {
 }
 
 function NetworkFilter() {
-  const selected = useSharedValue<ChainId | undefined>(undefined);
+  const { isDarkMode } = useColorMode();
+  const { colors } = useTheme();
 
-  const { chainId, setChainId } = useTrendingTokensStore(state => ({
-    chainId: state.chainId,
-    setChainId: state.setChainId,
-  }));
+  const selected = useSharedValue<ChainId | undefined>(undefined);
+  const chainId = useTrendingTokensStore(state => state.chainId);
+  const setChainId = useTrendingTokensStore(state => state.setChainId);
+
+  const { icon, label, lightenedNetworkColor } = useMemo(() => {
+    if (!chainId) return { icon: '􀤆', label: i18n.t(t.all), lightenedNetworkColor: undefined };
+    return {
+      icon: (
+        <View style={{ marginRight: 2 }}>
+          <ChainImage chainId={chainId} size={16} />
+        </View>
+      ),
+      label: useBackendNetworksStore.getState().getChainsLabel()[chainId],
+      lightenedNetworkColor: colors.networkColors[chainId]
+        ? getMixedColor(colors.networkColors[chainId], globalColors.white100, isDarkMode ? 0.55 : 0.6)
+        : undefined,
+    };
+  }, [chainId, colors.networkColors, isDarkMode]);
 
   const setSelected = useCallback(
     (chainId: ChainId | undefined) => {
@@ -521,13 +543,6 @@ function NetworkFilter() {
     },
     [selected, setChainId]
   );
-
-  const label = !chainId ? i18n.t(t.all) : useBackendNetworksStore.getState().getChainsLabel()[chainId];
-
-  const icon = useMemo(() => {
-    if (!chainId) return '􀤆';
-    return <ChainImage chainId={chainId} size={16} />;
-  }, [chainId]);
 
   const navigateToNetworkSelector = useCallback(() => {
     Navigation.handleAction(Routes.NETWORK_SELECTOR, {
@@ -539,7 +554,7 @@ function NetworkFilter() {
   return (
     <FilterButton
       selected={!!chainId}
-      highlightedBackgroundColor={chainId ? colors.networkColors[chainId] : undefined}
+      highlightedBackgroundColor={lightenedNetworkColor}
       label={label}
       icon={icon}
       onPress={navigateToNetworkSelector}
@@ -549,6 +564,7 @@ function NetworkFilter() {
 
 function TimeFilter() {
   const timeframe = useTrendingTokensStore(state => state.timeframe);
+  const shouldAbbreviate = timeframe === Timeframe.H24;
 
   return (
     <DropdownMenu
@@ -565,7 +581,7 @@ function TimeFilter() {
         selected={timeframe !== Timeframe.H24}
         iconColor={undefined}
         highlightedBackgroundColor={undefined}
-        label={i18n.t(t.filters.time[timeframe])}
+        label={shouldAbbreviate ? i18n.t(t.filters.time[`${timeframe}_ABBREVIATED`]) : i18n.t(t.filters.time[timeframe])}
         icon="􀐫"
       />
     </DropdownMenu>
@@ -574,8 +590,9 @@ function TimeFilter() {
 
 function SortFilter() {
   const sort = useTrendingTokensStore(state => state.sort);
+  const selected = sort !== TrendingSort.Recommended;
 
-  const iconColor = useForegroundColor('labelQuaternary');
+  const iconColor = useForegroundColor(selected ? 'labelSecondary' : 'labelTertiary');
 
   return (
     <DropdownMenu
@@ -594,7 +611,7 @@ function SortFilter() {
       }}
     >
       <FilterButton
-        selected={sort !== TrendingSort.Recommended}
+        selected={selected}
         iconColor={undefined}
         highlightedBackgroundColor={undefined}
         label={i18n.t(t.filters.sort[sort])}
@@ -626,8 +643,8 @@ function TrendingTokenData() {
 
   return (
     <FlatList
-      style={{ marginHorizontal: -20, paddingVertical: 12, marginVertical: -12 }}
-      contentContainerStyle={{ paddingHorizontal: 20, gap: 28 }}
+      style={{ marginHorizontal: -20, marginVertical: -12, paddingBottom: 20, paddingTop: 12 }}
+      contentContainerStyle={{ gap: 28, paddingHorizontal: 20 }}
       ListEmptyComponent={<NoResults />}
       data={trendingTokens}
       renderItem={({ item }) => <TrendingTokenRow token={item} />}

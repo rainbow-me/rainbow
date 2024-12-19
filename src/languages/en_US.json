@@ -3043,8 +3043,10 @@
           "TOP_LOSERS": "Top Losers"
         },
         "time": {
-          "H12": "12h",
-          "H24": "24h",
+          "H12": "12 Hours",
+          "H12_ABBREVIATED": "12h",
+          "H24": "24 Hours",
+          "H24_ABBREVIATED": "24h",
           "D7": "1 Week",
           "D3": "1 Month"
         }
