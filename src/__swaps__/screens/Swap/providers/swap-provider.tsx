@@ -231,6 +231,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
       const isDegenModeEnabled = swapsStore.getState().degenMode;
       const isSwappingToPopularAsset = swapsStore.getState().outputAsset?.sectionId === 'popular';
+      const lastNavigatedTrendingToken = swapsStore.getState().lastNavigatedTrendingToken;
+      const isSwappingToTrendingAsset =
+        lastNavigatedTrendingToken === parameters.assetToBuy.uniqueId || lastNavigatedTrendingToken === parameters.assetToSell.uniqueId;
 
       const selectedGas = getSelectedGas(parameters.chainId);
       if (!selectedGas) {
@@ -325,6 +328,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           tradeAmountUSD: parameters.quote.tradeAmountUSD,
           degenMode: isDegenModeEnabled,
           isSwappingToPopularAsset,
+          isSwappingToTrendingAsset,
           errorMessage,
           isHardwareWallet,
         });
@@ -389,6 +393,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         tradeAmountUSD: parameters.quote.tradeAmountUSD,
         degenMode: isDegenModeEnabled,
         isSwappingToPopularAsset,
+        isSwappingToTrendingAsset,
         isHardwareWallet,
       });
     } catch (error) {
@@ -403,6 +408,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         },
       });
     }
+
+    // reset the last navigated trending token after a swap has taken place
+    swapsStore.setState({
+      lastNavigatedTrendingToken: undefined,
+    });
   };
 
   const executeSwap = performanceTracking.getState().executeFn({

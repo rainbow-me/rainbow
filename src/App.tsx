@@ -40,6 +40,7 @@ import { IS_ANDROID, IS_DEV } from '@/env';
 import { prefetchDefaultFavorites } from '@/resources/favorites';
 import Routes from '@/navigation/Routes';
 import { BackendNetworks } from '@/components/BackendNetworks';
+import { AbsolutePortalRoot } from './components/AbsolutePortal';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -73,6 +74,7 @@ function App({ walletReady }: AppProps) {
           <InitialRouteContext.Provider value={initialRoute}>
             <Routes ref={handleNavigatorRef} />
             <PortalConsumer />
+            <AbsolutePortalRoot />
           </InitialRouteContext.Provider>
         )}
         <OfflineToast />

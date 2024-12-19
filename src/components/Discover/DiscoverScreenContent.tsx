@@ -1,12 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
 import { FlexItem, Page } from '@/components/layout';
-import DiscoverHome from './DiscoverHome';
-import DiscoverSearch from './DiscoverSearch';
-import DiscoverSearchContainer from './DiscoverSearchContainer';
+import DiscoverHome from '@/components/Discover/DiscoverHome';
+import DiscoverSearch from '@/components/Discover/DiscoverSearch';
+import DiscoverSearchContainer from '@/components/Discover/DiscoverSearchContainer';
 import { Box, Inset } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useDiscoverScreenContext } from '../DiscoverScreenContext';
+import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 
 function Switcher({ children }: { children: React.ReactNode[] }) {
   const { isSearching } = useDiscoverScreenContext();
