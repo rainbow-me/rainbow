@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text, useForegroundColor } from '@/design-system';
+import { Box, Text } from '@/design-system';
 
 type InfoAlertProps = {
   title: string;
