@@ -1,15 +1,15 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, InteractionManager, View } from 'react-native';
+import { Alert, InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import { ButtonPressAnimation } from '@/components/animations';
 import { WalletList } from '@/components/change-wallet/WalletList';
-import { removeWalletData } from '../../handlers/localstorage/removeWallet';
-import { cleanUpWalletKeys, RainbowWallet } from '../../model/wallet';
-import { useNavigation } from '../../navigation/Navigation';
-import { addressSetSelected, walletsSetSelected, walletsUpdate } from '../../redux/wallets';
+import { removeWalletData } from '@/handlers/localstorage/removeWallet';
+import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
+import { useNavigation } from '@/navigation/Navigation';
+import { addressSetSelected, walletsSetSelected, walletsUpdate } from '@/redux/wallets';
 import WalletTypes from '@/helpers/walletTypes';
 import { analytics, analyticsV2 } from '@/analytics';
 import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
@@ -33,7 +33,7 @@ import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHin
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import ConditionalWrap from 'conditional-wrap';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { SettingsPages } from '../SettingsSheet/SettingsPages';
+import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);

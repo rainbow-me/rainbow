@@ -87,7 +87,6 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
         }}
       >
         {draggableItems.map(account => {
-          //  TODO: can ens names have emojis? If so this logic is wrong
           const walletName = removeFirstEmojiFromString(account.label) || address(account.address, 4, 4);
           return (
             <Draggable id={account.address} key={account.address} activationDelay={DRAGGABLE_ACTIVATION_DELAY}>

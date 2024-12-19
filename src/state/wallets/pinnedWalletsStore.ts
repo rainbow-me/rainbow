@@ -54,7 +54,6 @@ export const usePinnedWalletsStore = createRainbowStore<PinnedWalletsStore>(
     },
 
     setPinnedAddresses: newPinnedAddresses => {
-      // TODO: this batches the state update right?
       if (!get().hasAutoPinnedAddresses) {
         set({ hasAutoPinnedAddresses: true });
       }
