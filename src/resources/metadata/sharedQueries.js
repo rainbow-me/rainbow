@@ -4,6 +4,10 @@ const BACKEND_NETWORKS_QUERY = `
       id
       name
       label
+      colors {
+        light
+        dark
+      }
       icons {
         badgeURL
       }

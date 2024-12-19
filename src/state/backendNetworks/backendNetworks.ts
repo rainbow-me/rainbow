@@ -9,6 +9,7 @@ import { IS_TEST } from '@/env';
 import { BackendNetwork, BackendNetworkServices, chainHardhat, chainHardhatOptimism, ChainId } from '@/state/backendNetworks/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { colors as globalColors } from '@/styles';
 
 const INITIAL_BACKEND_NETWORKS = queryClient.getQueryData<BackendNetworksResponse>(backendNetworksQueryKey()) ?? buildTimeNetworks;
 const DEFAULT_PRIVATE_MEMPOOL_TIMEOUT = 2 * 60 * 1_000; // 2 minutes
@@ -30,6 +31,8 @@ export interface BackendNetworksState {
   getChainsPrivateMempoolTimeout: () => Record<ChainId, number>;
   getChainsName: () => Record<ChainId, string>;
   getChainsIdByName: () => Record<string, ChainId>;
+
+  getColorsForChainId: (chainId: ChainId, isDarkMode: boolean) => string;
 
   defaultGasSpeeds: (chainId: ChainId) => GasSpeed[];
 
@@ -161,6 +164,17 @@ export const useBackendNetworksStore = createRainbowStore<BackendNetworksState>(
       },
       {} as Record<string, ChainId>
     );
+  },
+
+  getColorsForChainId: (chainId: ChainId, isDarkMode: boolean) => {
+    const { backendNetworks } = get();
+
+    const colors = backendNetworks.networks.find(chain => +chain.id === chainId)?.colors;
+    if (!colors) {
+      return isDarkMode ? globalColors.white : globalColors.black;
+    }
+
+    return isDarkMode ? colors.dark : colors.light;
   },
 
   // TODO: This should come from the backend at some point
