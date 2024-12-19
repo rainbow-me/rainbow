@@ -146,11 +146,11 @@ export function SyncGasStateToSharedValues() {
 
   const gasSettings = useSelectedGas(chainId);
 
-  const { userNativeNetworkAsset, isLoadingNativeNetworkAsset } = useUserAssetsStore(state => {
-    const { address: nativeCurrencyAddress } = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
-    const uniqueId = getUniqueId(nativeCurrencyAddress, chainId);
-    return { userNativeNetworkAsset: state.getLegacyUserAsset(uniqueId), isLoadingNativeNetworkAsset: state.isLoadingUserAssets };
-  });
+  const { address: nativeCurrencyAddress } = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
+
+  const isLoadingNativeNetworkAsset = useUserAssetsStore(state => state.isLoadingUserAssets);
+  const userNativeNetworkAsset = useUserAssetsStore(state => state.getLegacyUserAsset(getUniqueId(nativeCurrencyAddress, chainId)));
+
   const { data: estimatedGasLimit } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
 
   const gasFeeRange = useSharedValue<[string, string] | null>(null);

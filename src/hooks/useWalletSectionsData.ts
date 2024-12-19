@@ -56,10 +56,8 @@ export default function useWalletSectionsData({
 } = {}) {
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { selectedWallet, isReadOnlyWallet } = useWallets();
-  const { isLoadingUserAssets, sortedAssets = [] } = useUserAssetsStore(state => ({
-    sortedAssets: state.legacyUserAssets,
-    isLoadingUserAssets: state.isLoadingUserAssets,
-  }));
+  const isLoadingUserAssets = useUserAssetsStore(state => state.isLoadingUserAssets);
+  const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const isWalletEthZero = useIsWalletEthZero();
 
   const { nftSort, nftSortDirection } = useNftSort();

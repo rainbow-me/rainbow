@@ -32,10 +32,9 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
   const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
 
   // chains sorted by balance on output, chains without balance hidden on input
-  const { balanceSortedChainList, filter } = useUserAssetsStore(state => ({
-    balanceSortedChainList: output ? state.getBalanceSortedChainList() : state.getChainsWithBalance(),
-    filter: state.filter,
-  }));
+  const balanceSortedChainList = useUserAssetsStore(state => (output ? state.getBalanceSortedChainList() : state.getChainsWithBalance()));
+  const filter = useUserAssetsStore(state => state.filter);
+
   const inputListFilter = useSharedValue(filter);
 
   const accentColor = useMemo(() => {
