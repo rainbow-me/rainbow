@@ -4,7 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '@/theme/ThemeContext';
 import { ButtonPressAnimation } from '@/components/animations';
 import ConditionalWrap from 'conditional-wrap';
-import { Box, Inline, Stack, Text, useForegroundColor, useColorMode, TextIcon } from '@/design-system';
+import { Box, Inline, Stack, Text, useForegroundColor, useColorMode, TextIcon, globalColors } from '@/design-system';
 import { AddressItem, AddressMenuAction, AddressMenuActionData } from '@/screens/change-wallet/ChangeWalletSheet';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { TextWeight } from '@/design-system/components/Text/Text';
@@ -129,7 +129,17 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
               <Icon name="dragHandler" color={colors.alpha(colors.black, 0.2)} />
             </Box>
           )}
-          <AddressAvatar url={image} size={40} address={address} color={color} label={label} />
+          <Box
+            as={AddressAvatar}
+            url={image}
+            size={40}
+            borderRadius={20}
+            address={address}
+            color={color}
+            label={label}
+            shadow="12px"
+            background="surfaceSecondaryElevated"
+          />
           <Box style={{ flex: 1 }} paddingLeft="10px" paddingRight="8px">
             <Stack space="10px">
               <Text

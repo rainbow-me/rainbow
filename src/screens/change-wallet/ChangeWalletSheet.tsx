@@ -672,8 +672,7 @@ export default function ChangeWalletSheet() {
               flexDirection="row"
               justifyContent="space-between"
               alignItems="center"
-              paddingHorizontal="20px"
-              paddingBottom="20px"
+              paddingHorizontal={{ custom: PANEL_INSET_HORIZONTAL }}
               paddingTop="24px"
             >
               {!editMode ? (

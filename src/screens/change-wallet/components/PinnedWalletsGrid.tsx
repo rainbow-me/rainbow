@@ -63,9 +63,8 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
 
   const avatarSize = useMemo(
     () =>
-      PixelRatio.roundToNearestPixel(
-        Math.min((PANEL_WIDTH - PANEL_INSET_HORIZONTAL * 2 - GRID_GAP * (PINS_PER_ROW - 1)) / PINS_PER_ROW, MAX_AVATAR_SIZE)
-      ),
+      // math.floor to prevent pixel rounding causing premature grid wrapping
+      Math.floor(Math.min((PANEL_WIDTH - PANEL_INSET_HORIZONTAL * 2 - GRID_GAP * (PINS_PER_ROW - 1)) / PINS_PER_ROW, MAX_AVATAR_SIZE)),
     []
   );
 
@@ -116,7 +115,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                       <Box
                         width={{ custom: avatarSize }}
                         height={{ custom: avatarSize }}
-                        background="fill"
+                        background="surfaceSecondaryElevated"
                         shadow={
                           account.isSelected
                             ? {
@@ -144,7 +143,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                                   },
                                 },
                               }
-                            : undefined
+                            : '30px'
                         }
                         borderRadius={avatarSize / 2}
                         borderWidth={account.isSelected ? 4 : undefined}
