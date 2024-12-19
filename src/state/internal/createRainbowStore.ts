@@ -65,12 +65,29 @@ export function createRainbowStore<S = unknown>(
       persist(createState, {
         migrate: persistConfig.migrate,
         name: persistConfig.storageKey,
-        partialize: persistConfig.partialize || (state => state),
+        partialize: persistConfig.partialize || omitStoreMethods,
         storage: persistStorage,
         version,
       })
     )
   );
+}
+
+/**
+ * Default partialize function if none is provided. It omits top-level store
+ * methods and keeps all other state.
+ */
+export function omitStoreMethods<S>(state: S): Partial<S> {
+  if (state !== null && typeof state === 'object') {
+    const result: Record<string, unknown> = {};
+    Object.entries(state).forEach(([key, val]) => {
+      if (typeof val !== 'function') {
+        result[key] = val;
+      }
+    });
+    return result as Partial<S>;
+  }
+  return state;
 }
 
 /**
@@ -88,7 +105,7 @@ function createPersistStorage<S = unknown>(config: RainbowPersistConfig<S>) {
       if (!serializedValue) return null;
       return deserializer(serializedValue);
     },
-    setItem: (name, value) =>
+    setItem: (name: string, value: StorageValue<Partial<S>>) =>
       lazyPersist({
         serializer,
         storageKey,

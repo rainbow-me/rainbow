@@ -1,3 +1,6 @@
+// ⚠️ Uncomment everything below to experiment with the QueryStore creator
+// TODO: Comment out test code below before merging
+
 import React, { memo, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Address } from 'viem';
@@ -83,9 +86,7 @@ export const useUserAssetsTestStore = createQueryStore<ParsedAssetsDictByChain, 
     setUserAssets: (data: ParsedAssetsDictByChain) => set({ userAssets: data }),
   }),
 
-  {
-    storageKey: 'userAssetsQueryStoreTest',
-  }
+  { storageKey: 'userAssetsQueryStoreTest' }
 );
 
 export const UserAssetsTest = memo(function UserAssetsTest() {
