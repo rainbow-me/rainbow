@@ -1,14 +1,14 @@
 import React from 'react';
 import { GenericCard, Gradient } from './GenericCard';
-import { AccentColorProvider, Box, Cover, globalColors, Stack, Text } from '@/design-system';
+import { AccentColorProvider, Box, Cover, globalColors, Stack, Text, useColorMode } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Image } from 'react-native';
 import OpRewardsCardBackgroundImage from '../../assets/opRewardsCardBackgroundImage.png';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { colors } from '@/styles';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const GRADIENT: Gradient = {
   colors: ['#520907', '#B22824'],
@@ -18,13 +18,16 @@ const GRADIENT: Gradient = {
 
 export const OpRewardsCard: React.FC = () => {
   const { navigate } = useNavigation();
+  const { isDarkMode } = useColorMode();
+
+  const color = useBackendNetworksStore.getState().getColorsForChainId(ChainId.optimism, isDarkMode);
 
   const navigateToRewardsSheet = () => {
     navigate(Routes.OP_REWARDS_SHEET);
   };
 
   return (
-    <AccentColorProvider color={colors.networkColors[ChainId.optimism]}>
+    <AccentColorProvider color={color}>
       <GenericCard type="stretch" gradient={GRADIENT} onPress={navigateToRewardsSheet} color="accent">
         <Cover>
           <Box

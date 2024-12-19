@@ -172,6 +172,9 @@ export const explainers = (params, theme) => {
   const chainId = params?.chainId;
   const fromChainId = params?.fromChainId;
   const toChainId = params?.toChainId;
+  const isDarkMode = theme?.isDarkMode;
+
+  const color = useBackendNetworksStore.getState().getColorsForChainId(chainId, isDarkMode);
 
   const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
 
@@ -432,8 +435,8 @@ export const explainers = (params, theme) => {
     swapResetInputs: {
       button: {
         label: `Continue with ${chainsLabel[chainId]}`,
-        bgColor: colors?.networkColors[chainId] && colors?.alpha(colors?.networkColors[chainId], 0.06),
-        textColor: colors?.networkColors?.[chainId],
+        bgColor: color && colors?.alpha(color, 0.06),
+        textColor: color,
       },
       emoji: '🔐',
       extraHeight: -90,
@@ -730,7 +733,7 @@ export const explainers = (params, theme) => {
     },
     swap_refuel_add: {
       logo: (
-        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[chainId], colors?.appleBlue]}>
+        <DashedWrapper size={50} childXPosition={10} colors={[color, colors?.appleBlue]}>
           <RainbowCoinIcon
             size={30}
             icon={params?.nativeAsset?.icon_url}
@@ -761,14 +764,14 @@ export const explainers = (params, theme) => {
           networkName: params?.networkName,
           gasToken: params?.gasToken,
         }),
-        textColor: colors?.networkColors[chainId],
-        bgColor: colors?.networkColors[chainId] && colors?.alpha(colors?.networkColors[chainId], 0.05),
+        textColor: color,
+        bgColor: color && colors?.alpha(color, 0.05),
         onPress: params?.onRefuel,
       },
     },
     swap_refuel_deduct: {
       logo: (
-        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[chainId], colors?.appleBlue]}>
+        <DashedWrapper size={50} childXPosition={10} colors={[color, colors?.appleBlue]}>
           <RainbowCoinIcon
             size={30}
             icon={params?.nativeAsset?.icon_url}
@@ -799,15 +802,15 @@ export const explainers = (params, theme) => {
           networkName: params?.networkName,
           gasToken: params?.gasToken,
         }),
-        textColor: colors?.networkColors[chainId],
-        bgColor: colors?.networkColors[chainId] && colors?.alpha(colors?.networkColors[chainId], 0.05),
+        textColor: color,
+        bgColor: color && colors?.alpha(color, 0.05),
         onPress: params?.onRefuel,
       },
     },
     swap_refuel_notice: {
       extraHeight: 50,
       logo: (
-        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[chainId], colors?.appleBlue]}>
+        <DashedWrapper size={50} childXPosition={10} colors={[color, colors?.appleBlue]}>
           <RainbowCoinIcon
             size={30}
             icon={params?.nativeAsset?.icon_url}
