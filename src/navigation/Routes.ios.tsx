@@ -10,6 +10,7 @@ import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import ENSAdditionalRecordsSheet from '../screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
+import { ExpandedAssetSheet as ExpandedAssetSheetV2 } from '@/screens/expandedAssetSheet/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
 import ModalScreen from '../screens/ModalScreen';
@@ -70,6 +71,7 @@ import {
   swapConfig,
   checkIdentifierSheetConfig,
   recieveModalSheetConfig,
+  expandedAssetSheetV2Config,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -277,6 +279,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
       <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
+      <NativeStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} {...expandedAssetSheetV2Config} />
     </NativeStack.Navigator>
   );
 }

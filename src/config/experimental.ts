@@ -29,7 +29,7 @@ export const DEGEN_MODE = 'Degen Mode';
 export const FEATURED_RESULTS = 'Featured Results';
 export const CLAIMABLES = 'Claimables';
 export const NFTS_ENABLED = 'Nfts Enabled';
-
+export const EXPANDED_STATE_V2 = 'Expanded State V2';
 /**
  * A developer setting that pushes log lines to an array in-memory so that
  * they can be "dumped" or copied out of the app and analyzed.
@@ -66,6 +66,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [FEATURED_RESULTS]: { settings: true, value: false },
   [CLAIMABLES]: { settings: true, value: false },
   [NFTS_ENABLED]: { settings: true, value: !!IS_TEST },
+  [EXPANDED_STATE_V2]: { settings: true, value: false },
 };
 
 export const defaultConfigValues: Record<string, boolean> = Object.fromEntries(

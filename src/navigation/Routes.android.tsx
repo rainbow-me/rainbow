@@ -10,6 +10,7 @@ import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import ENSAdditionalRecordsSheet from '../screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
+import { ExpandedAssetSheet as ExpandedAssetSheetV2 } from '@/screens/expandedAssetSheet/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
 import ModalScreen from '../screens/ModalScreen';
@@ -246,6 +247,7 @@ function BSNavigator() {
       <BSStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} />
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
       <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
+      <BSStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} />
     </BSStack.Navigator>
   );
 }
