@@ -733,7 +733,7 @@ export const explainers = (params, theme) => {
     },
     swap_refuel_add: {
       logo: (
-        <DashedWrapper size={50} childXPosition={10} colors={[color, colors?.appleBlue]}>
+        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[chainId], colors?.appleBlue]}>
           <RainbowCoinIcon
             size={30}
             icon={params?.nativeAsset?.icon_url}
@@ -764,14 +764,14 @@ export const explainers = (params, theme) => {
           networkName: params?.networkName,
           gasToken: params?.gasToken,
         }),
-        textColor: color,
-        bgColor: color && colors?.alpha(color, 0.05),
+        textColor: colors?.networkColors[chainId],
+        bgColor: colors?.networkColors[chainId] && colors?.alpha(colors?.networkColors[chainId], 0.05),
         onPress: params?.onRefuel,
       },
     },
     swap_refuel_deduct: {
       logo: (
-        <DashedWrapper size={50} childXPosition={10} colors={[color, colors?.appleBlue]}>
+        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[chainId], colors?.appleBlue]}>
           <RainbowCoinIcon
             size={30}
             icon={params?.nativeAsset?.icon_url}
@@ -802,15 +802,15 @@ export const explainers = (params, theme) => {
           networkName: params?.networkName,
           gasToken: params?.gasToken,
         }),
-        textColor: color,
-        bgColor: color && colors?.alpha(color, 0.05),
+        textColor: colors?.networkColors[chainId],
+        bgColor: colors?.networkColors[chainId] && colors?.alpha(colors?.networkColors[chainId], 0.05),
         onPress: params?.onRefuel,
       },
     },
     swap_refuel_notice: {
       extraHeight: 50,
       logo: (
-        <DashedWrapper size={50} childXPosition={10} colors={[color, colors?.appleBlue]}>
+        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[chainId], colors?.appleBlue]}>
           <RainbowCoinIcon
             size={30}
             icon={params?.nativeAsset?.icon_url}

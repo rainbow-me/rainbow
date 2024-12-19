@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Image } from 'react-native';
+import { Image, ImageBackground } from 'react-native';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import { AccentColorProvider, Box, Columns, Inline, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
@@ -63,7 +63,7 @@ export const RewardsEarnings: React.FC<Props> = ({
       airdropTitle,
       airdropTime,
     };
-  }, [pendingEarningsToken, tokenSymbol, totalEarnings.token, totalEarnings.usd, nextAirdropTimestamp]);
+  }, [pendingEarningsToken, tokenSymbol, totalEarnings.token, totalEarnings.usd, assetPrice, nativeCurrency, nextAirdropTimestamp]);
 
   const navigateToTimingExplainer = () => {
     analyticsV2.track(analyticsV2.event.rewardsPressedPendingEarningsCard);
@@ -85,7 +85,7 @@ export const RewardsEarnings: React.FC<Props> = ({
                   </Text>
                   <Inline space="6px" alignVertical="center">
                     <Box
-                      as={Image}
+                      as={ImageBackground}
                       source={{
                         uri: tokenImageUrl,
                       }}
@@ -106,7 +106,7 @@ export const RewardsEarnings: React.FC<Props> = ({
                   </Text>
                   <Inline space="6px" alignVertical="center">
                     <Box
-                      as={Image}
+                      as={ImageBackground}
                       source={{
                         uri: tokenImageUrl,
                       }}
