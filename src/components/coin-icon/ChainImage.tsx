@@ -18,7 +18,6 @@ const ChainIcon = styled(FastImage)(({ containerSize, iconSize }: ChainIconProps
 }));
 
 type ChainIconPositionWrapperProps = {
-  marginBottom: number;
   iconSize: number;
   badgeXPosition: number;
   badgeYPosition: number;
@@ -26,12 +25,11 @@ type ChainIconPositionWrapperProps = {
 };
 
 const ChainIconPositionWrapper = styled(Centered)(
-  ({ marginBottom, iconSize, badgeXPosition, badgeYPosition, position }: ChainIconPositionWrapperProps) => ({
+  ({ iconSize, badgeXPosition, badgeYPosition, position }: ChainIconPositionWrapperProps) => ({
     bottom: position === 'relative' ? 0 : badgeYPosition,
     left: position === 'relative' ? 0 : badgeXPosition,
     ...positions.sizeAsObject(iconSize),
     elevation: 10,
-    marginBottom,
     overflow: 'visible',
     position: position || 'absolute',
     zIndex: 10,
@@ -68,13 +66,7 @@ export function ChainImage({
   if (!badgeUrl || !showBadge) return null;
 
   return badgeXPosition || badgeYPosition ? (
-    <ChainIconPositionWrapper
-      badgeXPosition={badgeXPosition}
-      badgeYPosition={badgeYPosition}
-      iconSize={iconSize}
-      marginBottom={0}
-      position={position}
-    >
+    <ChainIconPositionWrapper badgeXPosition={badgeXPosition} badgeYPosition={badgeYPosition} iconSize={iconSize} position={position}>
       <ChainIcon containerSize={containerSize} iconSize={iconSize} source={{ uri: badgeUrl }} />
     </ChainIconPositionWrapper>
   ) : (
