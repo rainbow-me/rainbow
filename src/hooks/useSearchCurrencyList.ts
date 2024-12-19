@@ -97,6 +97,8 @@ const useSearchCurrencyList = (searchQuery: string) => {
       const topResults = results
         .sort((a, b) => {
           if (a.isNativeAsset !== b.isNativeAsset) return a.isNativeAsset ? -1 : 1;
+          if (a.market?.market_cap?.value !== b.market?.market_cap?.value)
+            return (b.market?.market_cap?.value || 0) - (a.market?.market_cap?.value || 0);
           if (a.highLiquidity !== b.highLiquidity) return a.highLiquidity ? -1 : 1;
           return Object.keys(b.networks).length - Object.keys(a.networks).length;
         })
