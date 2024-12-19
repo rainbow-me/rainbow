@@ -14,7 +14,7 @@ const STALE_TIME = 10000;
 
 async function fetchAccountENSDomains({ accountAddress }: { accountAddress: string }) {
   const result = await fetchAccountDomains(accountAddress);
-  if (!result.account) return [];
+  if (!result?.account) return [];
 
   const { domains: controlledDomains, registrations } = result.account;
   const registarDomains = registrations?.map(({ domain }) => domain);
