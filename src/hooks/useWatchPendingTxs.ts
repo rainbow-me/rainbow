@@ -1,8 +1,7 @@
 import { useMemo, useCallback } from 'react';
 import useAccountSettings from './useAccountSettings';
+import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities';
-import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
-import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
@@ -32,14 +31,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         userAssetsQueryKey({
           address,
           currency: nativeCurrency,
-          connectedToHardhat,
-        })
-      );
-      queryClient.invalidateQueries(
-        swapsUserAssetsQueryKey({
-          address: address as Address,
-          currency: nativeCurrency,
-          testnetMode: !!connectedToHardhat,
+          testnetMode: connectedToHardhat,
         })
       );
       invalidateAddressNftsQueries(address);
@@ -123,7 +115,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       });
 
       queryClient.refetchQueries({
-        queryKey: userAssetsQueryKey({ address, currency: nativeCurrency, connectedToHardhat }),
+        queryKey: userAssetsQueryKey({ address, currency: nativeCurrency, testnetMode: connectedToHardhat }),
       });
 
       const supportedMainnetChainIds = useBackendNetworksStore.getState().getSupportedMainnetChainIds();
