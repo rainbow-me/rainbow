@@ -17,7 +17,6 @@ import { IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
 import { DRAGGABLE_ACTIVATION_DELAY } from '@/screens/change-wallet/components/WalletList';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { PixelRatio } from 'react-native';
 
 const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;
@@ -87,6 +86,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
       >
         {draggableItems.map(account => {
           const walletName = removeFirstEmojiFromString(account.label) || address(account.address, 4, 4);
+          const filteredMenuItems = menuItems.filter(item => (account.isReadOnly ? item.actionKey !== AddressMenuAction.Settings : true));
           return (
             <Draggable id={account.address} key={account.address} activationDelay={DRAGGABLE_ACTIVATION_DELAY}>
               <ConditionalWrap
@@ -95,7 +95,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                   <DropdownMenu<AddressMenuAction, AddressMenuActionData>
                     triggerAction="longPress"
                     menuConfig={{
-                      menuItems: menuItems.filter(item => (account.isReadOnly ? item.actionKey !== AddressMenuAction.Settings : true)),
+                      menuItems: filteredMenuItems,
                       menuTitle: walletName,
                     }}
                     onPressMenuItem={action => onPressMenuItem(action, { address: account.address })}

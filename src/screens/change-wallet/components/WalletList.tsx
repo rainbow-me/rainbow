@@ -112,7 +112,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
     );
   }, [pinnedWalletItems, onPressAccount, editMode, unpinnedWalletItems.length, menuItems, onPressMenuItem, onDraggableActivationWorklet]);
 
-  const renderScrollItem = useCallback(
+  const renderAddressRow = useCallback(
     (item: AddressItem) => (
       <Draggable key={item.id} dragDirection="y" activationDelay={DRAGGABLE_ACTIVATION_DELAY} id={item.id.toString()}>
         <AddressRow
@@ -162,7 +162,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
               }}
             >
               {renderPinnedWalletsSection()}
-              {draggableUnpinnedWalletItems.map(item => renderScrollItem(item))}
+              {draggableUnpinnedWalletItems.map(item => renderAddressRow(item))}
             </DraggableScrollView>
           </DndProvider>
         </Animated.View>

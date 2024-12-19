@@ -591,7 +591,15 @@ export default function ChangeWalletSheet() {
         <Panel>
           <Box style={{ maxHeight: MAX_PANEL_HEIGHT, paddingHorizontal: PANEL_INSET_HORIZONTAL }}>
             <SheetHandleFixedToTop />
-            <Box paddingTop="32px" paddingBottom="12px" width="full" justifyContent="center" alignItems="center">
+            <Box
+              style={{ position: 'relative' }}
+              zIndex={30001}
+              paddingTop="32px"
+              paddingBottom="12px"
+              width="full"
+              justifyContent="center"
+              alignItems="center"
+            >
               <Text align="center" color="label" size="20pt" weight="heavy">
                 {i18n.t(i18n.l.wallet.change_wallet.wallets)}
               </Text>

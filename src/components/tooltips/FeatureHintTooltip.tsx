@@ -120,7 +120,8 @@ interface FeatureHintTooltipProps {
   onDismissed?: () => void;
 }
 
-// currently only used for first time feature hints, but if needed can be better abstracted for general tooltips
+// Currently only used for first time feature hints, but if needed can be better abstracted for general tooltips
+// If need to show above / on top of navigation elements, will need to refactor to use AbsolutePortal
 export const FeatureHintTooltip = forwardRef<TooltipRef, FeatureHintTooltipProps>(
   (
     {
@@ -225,63 +226,69 @@ export const FeatureHintTooltip = forwardRef<TooltipRef, FeatureHintTooltipProps
     });
 
     return (
-      <View pointerEvents="box-none">
+      <>
         <View onLayout={measureChildLayout}>{children}</View>
-        <Animated.View style={[styles.tooltipContainer, { width: tooltipWidth }, tooltipStyle]}>
-          <MaskedView
-            style={styles.maskedContainer}
-            maskElement={
-              <Svg width={tooltipWidth} height={TOOLTIP_HEIGHT + ARROW_SIZE} viewBox={`0 0 ${tooltipWidth} ${TOOLTIP_HEIGHT + ARROW_SIZE}`}>
-                <Path d={tooltipPath} fill="black" />
-              </Svg>
-            }
-          >
-            <Box
-              style={[
-                styles.background,
-                {
-                  backgroundColor,
-                },
-              ]}
+        <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
+          <Animated.View style={[styles.tooltipContainer, { width: tooltipWidth }, tooltipStyle]}>
+            <MaskedView
+              style={styles.maskedContainer}
+              maskElement={
+                <Svg
+                  width={tooltipWidth}
+                  height={TOOLTIP_HEIGHT + ARROW_SIZE}
+                  viewBox={`0 0 ${tooltipWidth} ${TOOLTIP_HEIGHT + ARROW_SIZE}`}
+                >
+                  <Path d={tooltipPath} fill="black" />
+                </Svg>
+              }
             >
-              <BlurView blurAmount={30} blurType="light" overlayColor="transparent" style={StyleSheet.absoluteFill} />
-              <View
+              <Box
                 style={[
-                  styles.contentContainer,
-                  { marginTop: side === 'top' ? 0 : ARROW_SIZE, marginBottom: side === 'bottom' ? 0 : ARROW_SIZE },
+                  styles.background,
+                  {
+                    backgroundColor,
+                  },
                 ]}
               >
-                <LinearGradient colors={['#268FFF1F', '#268FFF14']} angle={135} useAngle style={styles.iconContainer}>
-                  <Text weight="heavy" size="17pt" color={{ custom: '#268FFF' }}>
-                    􀍱
-                  </Text>
-                </LinearGradient>
-                <View style={styles.textContainer}>
-                  {TitleComponent || (
-                    <Text weight="heavy" size="15pt" color={{ custom: globalColors.grey80 }}>
-                      {title}
+                <BlurView blurAmount={30} blurType="light" overlayColor="transparent" style={StyleSheet.absoluteFill} />
+                <View
+                  style={[
+                    styles.contentContainer,
+                    { marginTop: side === 'top' ? 0 : ARROW_SIZE, marginBottom: side === 'bottom' ? 0 : ARROW_SIZE },
+                  ]}
+                >
+                  <LinearGradient colors={['#268FFF1F', '#268FFF14']} angle={135} useAngle style={styles.iconContainer}>
+                    <Text weight="heavy" size="17pt" color={{ custom: '#268FFF' }}>
+                      􀍱
                     </Text>
-                  )}
-                  {SubtitleComponent || (
-                    <Text weight="semibold" size="13pt" color={{ custom: globalColors.grey60 }}>
-                      {subtitle}
-                    </Text>
-                  )}
-                </View>
-                <View style={{ paddingVertical: 4 }}>
-                  <ButtonPressAnimation onPress={hideTooltip}>
-                    <HitSlop space="4px">
-                      <Text size="13pt" weight="heavy" color={{ custom: globalColors.grey60 }}>
-                        􀆄
+                  </LinearGradient>
+                  <View style={styles.textContainer}>
+                    {TitleComponent || (
+                      <Text weight="heavy" size="15pt" color={{ custom: globalColors.grey80 }}>
+                        {title}
                       </Text>
-                    </HitSlop>
-                  </ButtonPressAnimation>
+                    )}
+                    {SubtitleComponent || (
+                      <Text weight="semibold" size="13pt" color={{ custom: globalColors.grey60 }}>
+                        {subtitle}
+                      </Text>
+                    )}
+                  </View>
+                  <View style={{ paddingVertical: 4 }}>
+                    <ButtonPressAnimation onPress={hideTooltip}>
+                      <HitSlop space="4px">
+                        <Text size="13pt" weight="heavy" color={{ custom: globalColors.grey60 }}>
+                          􀆄
+                        </Text>
+                      </HitSlop>
+                    </ButtonPressAnimation>
+                  </View>
                 </View>
-              </View>
-            </Box>
-          </MaskedView>
-        </Animated.View>
-      </View>
+              </Box>
+            </MaskedView>
+          </Animated.View>
+        </View>
+      </>
     );
   }
 );
@@ -292,7 +299,15 @@ const styles = StyleSheet.create({
   tooltipContainer: {
     position: 'absolute',
     height: TOOLTIP_HEIGHT + ARROW_SIZE,
-    zIndex: 1000,
+    zIndex: 99999999,
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 50,
+    elevation: 25,
   },
   maskedContainer: {
     flex: 1,
