@@ -2,31 +2,28 @@
 import { getChainColorWorklet } from '@/__swaps__/utils/swaps';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { AbsolutePortal } from '@/components/AbsolutePortal';
 import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
 import { ButtonPressAnimation } from '@/components/animations';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedChainImage, ChainImage } from '@/components/coin-icon/ChainImage';
-import { AnimatedText, DesignSystemProvider, globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
+import { AnimatedText, Box, DesignSystemProvider, globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
 import chroma from 'chroma-js';
-import { PropsWithChildren, ReactElement, useEffect } from 'react';
-import React, { Pressable, View } from 'react-native';
+import { PropsWithChildren, useEffect } from 'react';
+import React, { Pressable, StyleSheet, View } from 'react-native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   FadeIn,
-  FadeOut,
   FadeOutUp,
   LinearTransition,
   runOnJS,
   SharedValue,
-  SlideInDown,
-  SlideOutDown,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -44,6 +41,11 @@ import {
   networkSwitcherStore,
   shouldShowCustomizeNetworksBanner,
 } from '@/state/networkSwitcher/networkSwitcher';
+import { RootStackParamList } from '@/navigation/types';
+import { IS_IOS } from '@/env';
+import { safeAreaInsetValues } from '@/utils';
+import { noop } from 'lodash';
+import { TapToDismiss } from './DappBrowser/control-panel/ControlPanel';
 
 const t = i18n.l.network_switcher;
 
@@ -310,10 +312,10 @@ function AllNetworksSection({
   selected: SharedValue<ChainId | undefined>;
 }) {
   const style = useAnimatedStyle(() => ({
-    opacity: editing.value ? withTiming(0, { duration: 200 }) : withDelay(200, withTiming(1, { duration: 200 })),
+    opacity: editing.value ? withTiming(0, TIMING_CONFIGS.fastFadeConfig) : withTiming(1, TIMING_CONFIGS.fastFadeConfig),
     height: withTiming(
       editing.value ? 0 : ITEM_HEIGHT + 14, // 14 is the gap to the separator
-      { duration: 250 }
+      TIMING_CONFIGS.fastFadeConfig
     ),
     marginTop: editing.value ? 0 : 14,
     pointerEvents: editing.value ? 'none' : 'auto',
@@ -392,7 +394,9 @@ function Draggable({
     const slotPosition = positionFromIndex(itemIndex, sectionsOffsets.value[section]);
 
     const opacity =
-      section === Section.unpinned && isUnpinnedHidden.value ? withTiming(0, { duration: 150 }) : withDelay(150, withTiming(1));
+      section === Section.unpinned && isUnpinnedHidden.value
+        ? withTiming(0, TIMING_CONFIGS.fastFadeConfig)
+        : withDelay(100, withTiming(1, TIMING_CONFIGS.fadeConfig));
 
     const isBeingDragged = dragging.value?.chainId === chainId;
     const position = isBeingDragged ? dragging.value!.position : slotPosition;
@@ -625,7 +629,9 @@ function NetworksGrid({
     const height = sectionsOffsets.value[Section.unpinned].y + unpinnedHeight;
     return height;
   });
-  const containerStyle = useAnimatedStyle(() => ({ height: containerHeight.value }));
+  const containerStyle = useAnimatedStyle(() => ({
+    height: withDelay(expanded.value ? 0 : 25, withTiming(containerHeight.value, TIMING_CONFIGS.slowerFadeConfig)),
+  }));
 
   const dragNetwork = Gesture.Pan()
     .maxPointers(1)
@@ -736,80 +742,64 @@ function NetworksGrid({
   );
 }
 
-function SheetBackdrop({ onPress }: { onPress: VoidFunction }) {
-  const tapGesture = Gesture.Tap().onEnd(onPress);
-  return (
-    <GestureDetector gesture={tapGesture}>
-      <Animated.View
-        entering={FadeIn.delay(100)}
-        exiting={FadeOut}
-        style={{ flex: 1, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#000000B2' }}
-      />
-    </GestureDetector>
-  );
-}
-
-function Sheet({ children, header, onClose }: PropsWithChildren<{ header: ReactElement; onClose: VoidFunction }>) {
+function Sheet({ children, editing, onClose }: PropsWithChildren<{ editing: SharedValue<boolean>; onClose: VoidFunction }>) {
   const { isDarkMode } = useTheme();
   const surfacePrimary = useBackgroundColor('surfacePrimary');
   const backgroundColor = isDarkMode ? '#191A1C' : surfacePrimary;
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const translationY = useSharedValue<number>(0);
-
-  const swipeToClose = Gesture.Pan()
-    .onChange(event => {
-      if (event.translationY < 0) return;
-      translationY.value = event.translationY;
-    })
-    .onFinalize(() => {
-      if (translationY.value > 120) runOnJS(onClose)();
-      else translationY.value = withSpring(0);
-    });
-
-  const sheetStyle = useAnimatedStyle(() => ({ transform: [{ translateY: translationY.value }] }));
+  // make sure the onClose function is called when the sheet unmounts
+  useEffect(() => {
+    return () => onClose?.();
+  }, [onClose]);
 
   return (
-    <AbsolutePortal>
-      <View style={{ flex: 1 }}>
-        <SheetBackdrop onPress={onClose} />
-
-        <Animated.View
-          layout={LinearTransition.springify().mass(0.5)}
-          entering={SlideInDown.duration(200).springify().mass(0.4)}
-          exiting={SlideOutDown.duration(200)}
-          style={[
-            { position: 'absolute', bottom: 32, left: 8, right: 8 },
-            { paddingHorizontal: 16 },
-            { backgroundColor, borderColor: separatorSecondary },
-            { borderRadius: 42, borderWidth: 1.33 },
-            sheetStyle,
-          ]}
-        >
-          <GestureDetector gesture={swipeToClose}>{header}</GestureDetector>
-          {children}
-        </Animated.View>
-      </View>
-    </AbsolutePortal>
+    <>
+      <Box
+        style={[
+          sx.sheet,
+          {
+            backgroundColor,
+            borderColor: separatorSecondary,
+          },
+        ]}
+      >
+        <Header editing={editing} />
+        {children}
+      </Box>
+      <TapToDismiss />
+    </>
   );
 }
 
-export function NetworkSelector({
-  onClose,
-  selected,
-  setSelected,
-}: {
-  onClose: VoidFunction;
-  selected: SharedValue<ChainId | undefined>;
-  setSelected: (chainId: ChainId | undefined) => void;
-}) {
+export function NetworkSelector() {
+  const {
+    params: { onClose = noop, selected, setSelected },
+  } = useRoute<RouteProp<RootStackParamList, 'NetworkSelector'>>();
+
   const editing = useSharedValue(false);
 
   return (
-    <Sheet header={<Header editing={editing} />} onClose={onClose}>
+    <Sheet editing={editing} onClose={onClose}>
       <CustomizeNetworksBanner editing={editing} />
       <AllNetworksSection editing={editing} setSelected={setSelected} selected={selected} />
       <NetworksGrid editing={editing} setSelected={setSelected} selected={selected} />
     </Sheet>
   );
 }
+
+const sx = StyleSheet.create({
+  sheet: {
+    flex: 1,
+    width: deviceUtils.dimensions.width - 16,
+    bottom: Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30),
+    pointerEvents: 'box-none',
+    position: 'absolute',
+    zIndex: 30000,
+    left: 8,
+    right: 8,
+    paddingHorizontal: 16,
+    borderRadius: 42,
+    borderWidth: 1.33,
+  },
+});

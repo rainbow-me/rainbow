@@ -7,7 +7,6 @@ import { analyticsV2 } from '@/analytics';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { NetworkSelector } from '@/components/NetworkSwitcher';
 import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
 import { SortDirection, TrendingCategory, TrendingSort } from '@/graphql/__generated__/arc';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
@@ -21,7 +20,7 @@ import { sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendi
 import { colors } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
 import { useTheme } from '@/theme';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import React, { Dimensions, FlatList, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
@@ -489,7 +488,6 @@ function NoResults() {
 }
 
 function NetworkFilter() {
-  const [isOpen, setOpen] = useState(false);
   const selected = useSharedValue<ChainId | undefined>(undefined);
 
   const { chainId, setChainId } = useTrendingTokensStore(state => ({
@@ -513,12 +511,14 @@ function NetworkFilter() {
     return <ChainImage chainId={chainId} size={16} />;
   }, [chainId]);
 
-  return (
-    <>
-      <FilterButton label={label} icon={icon} onPress={() => setOpen(true)} />
-      {isOpen && <NetworkSelector selected={selected} setSelected={setSelected} onClose={() => setOpen(false)} />}
-    </>
-  );
+  const navigateToNetworkSelector = useCallback(() => {
+    Navigation.handleAction(Routes.NETWORK_SELECTOR, {
+      selected,
+      setSelected,
+    });
+  }, [selected, setSelected]);
+
+  return <FilterButton label={label} icon={icon} onPress={navigateToNetworkSelector} />;
 }
 
 function TimeFilter() {
