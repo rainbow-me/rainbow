@@ -1,8 +1,8 @@
 import * as i18n from '@/languages';
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import { useTheme } from '../../theme/ThemeContext';
-import { ButtonPressAnimation } from '../animations';
+import { useTheme } from '@/theme/ThemeContext';
+import { ButtonPressAnimation } from '@/components/animations';
 import ConditionalWrap from 'conditional-wrap';
 import { Box, Inline, Stack, Text, useForegroundColor, useColorMode, TextIcon } from '@/design-system';
 import { AddressItem, AddressMenuAction, AddressMenuActionData } from '@/screens/change-wallet/ChangeWalletSheet';
@@ -10,10 +10,10 @@ import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
-import { AddressAvatar } from '@/screens/change-wallet/AddressAvatar';
-import { SelectedAddressBadge } from '@/screens/change-wallet/SelectedAddressBadge';
+import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
+import { SelectedAddressBadge } from '@/screens/change-wallet/components/SelectedAddressBadge';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
-import { Icon } from '../icons';
+import { Icon } from '@/components/icons';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
 

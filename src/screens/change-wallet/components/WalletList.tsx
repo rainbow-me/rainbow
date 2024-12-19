@@ -18,7 +18,7 @@ import {
 } from '@/screens/change-wallet/ChangeWalletSheet';
 import { Box, Separator, Text } from '@/design-system';
 import { DndProvider, Draggable, DraggableScrollViewProps, UniqueIdentifier } from '@/components/drag-and-drop';
-import { PinnedWalletsGrid } from '@/screens/change-wallet/PinnedWalletsGrid';
+import { PinnedWalletsGrid } from '@/screens/change-wallet/components/PinnedWalletsGrid';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { MenuItem } from '@/components/DropdownMenu';
 import { DraggableScrollView } from '@/components/drag-and-drop/components/DraggableScrollView';

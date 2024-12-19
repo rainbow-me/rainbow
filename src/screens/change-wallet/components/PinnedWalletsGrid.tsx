@@ -1,7 +1,7 @@
 import { Draggable, DraggableGrid, DraggableGridProps, UniqueIdentifier } from '@/components/drag-and-drop';
 import { Box, HitSlop, Inline, Stack, Text } from '@/design-system';
 import React, { useCallback, useMemo } from 'react';
-import { AddressItem, AddressMenuAction, AddressMenuActionData, PANEL_INSET_HORIZONTAL } from './ChangeWalletSheet';
+import { AddressItem, AddressMenuAction, AddressMenuActionData, PANEL_INSET_HORIZONTAL } from '../ChangeWalletSheet';
 import { AddressAvatar } from './AddressAvatar';
 import { ButtonPressAnimation } from '@/components/animations';
 import { BlurView } from '@react-native-community/blur';
@@ -15,7 +15,7 @@ import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
-import { DRAGGABLE_ACTIVATION_DELAY } from '@/components/change-wallet/WalletList';
+import { DRAGGABLE_ACTIVATION_DELAY } from '@/screens/change-wallet/components/WalletList';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { PixelRatio } from 'react-native';
 
