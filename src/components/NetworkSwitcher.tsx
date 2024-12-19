@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { getChainColorWorklet } from '@/__swaps__/utils/swaps';
+import { getChainColorWorklet, opacity } from '@/__swaps__/utils/swaps';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
@@ -9,7 +9,6 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AnimatedText, Box, DesignSystemProvider, globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import * as i18n from '@/languages';
-import { useTheme } from '@/theme';
 import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
 import chroma from 'chroma-js';
@@ -219,10 +218,11 @@ const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color?: string)
 
   const surfacePrimary = useBackgroundColor('surfacePrimary');
   const networkSwitcherBackgroundColor = isDarkMode ? '#191A1C' : surfacePrimary;
+  const separatorTertiary = useForegroundColor('separatorTertiary');
 
   const defaultStyle = {
     backgroundColor: isDarkMode ? globalColors.white10 : globalColors.grey20,
-    borderColor: '#F5F8FF05',
+    borderColor: isDarkMode ? opacity(separatorTertiary, 0.02) : separatorTertiary,
   };
   const selectedStyle = {
     backgroundColor: chroma
@@ -510,7 +510,7 @@ function SectionSeparator({
   const showMoreOrLessIcon = useDerivedValue(() => (expanded.value ? '􀆇' : '􀆈') as string);
   const showMoreOrLessIconStyle = useAnimatedStyle(() => ({ opacity: editing.value ? 0 : 1 }));
 
-  const { isDarkMode } = useTheme();
+  const { isDarkMode } = useColorMode();
 
   const separatorContainerStyles = useAnimatedStyle(() => {
     if (showExpandButtonAsNetworkChip.value) {
@@ -523,7 +523,7 @@ function SectionSeparator({
         flexDirection: 'row',
         alignItems: 'center',
         borderRadius: 24,
-        borderWidth: 1.33,
+        borderWidth: THICK_BORDER_WIDTH,
         transform: [{ translateX: position.x }, { translateY: position.y }],
       };
     }
@@ -587,7 +587,7 @@ function EmptyUnpinnedPlaceholder({
       transform: [{ translateY: sectionsOffsets.value[Section.unpinned].y }],
     };
   });
-  const { isDarkMode } = useTheme();
+  const { isDarkMode } = useColorMode();
   return (
     <Animated.View
       style={[
@@ -771,7 +771,7 @@ function NetworksGrid({
 }
 
 function Sheet({ children, editing, onClose }: PropsWithChildren<{ editing: SharedValue<boolean>; onClose: VoidFunction }>) {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode } = useColorMode();
   const surfacePrimary = useBackgroundColor('surfacePrimary');
   const backgroundColor = isDarkMode ? '#191A1C' : surfacePrimary;
   const separatorSecondary = useForegroundColor('separatorSecondary');
@@ -788,7 +788,7 @@ function Sheet({ children, editing, onClose }: PropsWithChildren<{ editing: Shar
           sx.sheet,
           {
             backgroundColor,
-            borderColor: separatorSecondary,
+            borderColor: isDarkMode ? separatorSecondary : globalColors.white100,
           },
         ]}
       >
@@ -834,7 +834,9 @@ const sx = StyleSheet.create({
     left: 8,
     right: 8,
     paddingHorizontal: 16,
+    borderCurve: 'continuous',
     borderRadius: 42,
-    borderWidth: 1.33,
+    borderWidth: THICKER_BORDER_WIDTH,
+    overflow: 'hidden',
   },
 });
