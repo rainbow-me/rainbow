@@ -5,7 +5,7 @@ import { Alert, InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import { ButtonPressAnimation } from '@/components/animations';
-import { WalletList } from '@/components/change-wallet/WalletList';
+import { WalletList } from '@/screens/change-wallet/components/WalletList';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
@@ -35,11 +35,12 @@ import ConditionalWrap from 'conditional-wrap';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 
 export const PANEL_INSET_HORIZONTAL = 20;
-export const MAX_PANEL_HEIGHT = 640;
+export const MAX_PANEL_HEIGHT = Math.min(690, DEVICE_HEIGHT - 100);
 export const PANEL_HEADER_HEIGHT = 58;
 export const FOOTER_HEIGHT = 91;
 
