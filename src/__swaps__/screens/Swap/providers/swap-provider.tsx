@@ -22,7 +22,7 @@ import { NavigationSteps, useSwapNavigation } from '@/__swaps__/screens/Swap/hoo
 import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
+import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
@@ -41,7 +41,6 @@ import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
-import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getNextNonce } from '@/state/nonces';
@@ -232,6 +231,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
       const isDegenModeEnabled = swapsStore.getState().degenMode;
       const isSwappingToPopularAsset = swapsStore.getState().outputAsset?.sectionId === 'popular';
+      const lastNavigatedTrendingToken = swapsStore.getState().lastNavigatedTrendingToken;
+      const isSwappingToTrendingAsset =
+        lastNavigatedTrendingToken === parameters.assetToBuy.uniqueId || lastNavigatedTrendingToken === parameters.assetToSell.uniqueId;
 
       const selectedGas = getSelectedGas(parameters.chainId);
       if (!selectedGas) {
@@ -326,6 +328,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           tradeAmountUSD: parameters.quote.tradeAmountUSD,
           degenMode: isDegenModeEnabled,
           isSwappingToPopularAsset,
+          isSwappingToTrendingAsset,
           errorMessage,
           isHardwareWallet,
         });
@@ -342,14 +345,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         userAssetsQueryKey({
           address: parameters.quote.from,
           currency: nativeCurrency,
-          connectedToHardhat,
-        })
-      );
-      queryClient.invalidateQueries(
-        swapsUserAssetsQueryKey({
-          address: parameters.quote.from as Address,
-          currency: nativeCurrency,
-          testnetMode: !!connectedToHardhat,
+          testnetMode: connectedToHardhat,
         })
       );
 
@@ -397,6 +393,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         tradeAmountUSD: parameters.quote.tradeAmountUSD,
         degenMode: isDegenModeEnabled,
         isSwappingToPopularAsset,
+        isSwappingToTrendingAsset,
         isHardwareWallet,
       });
     } catch (error) {
@@ -411,6 +408,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         },
       });
     }
+
+    // reset the last navigated trending token after a swap has taken place
+    swapsStore.setState({
+      lastNavigatedTrendingToken: undefined,
+    });
   };
 
   const executeSwap = performanceTracking.getState().executeFn({

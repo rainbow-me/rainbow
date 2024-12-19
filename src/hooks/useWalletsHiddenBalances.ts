@@ -1,12 +1,8 @@
 import { AllRainbowWallets } from '@/model/wallet';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { Address } from 'viem';
-import useAccountSettings from './useAccountSettings';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { queryClient } from '@/react-query';
-import { userAssetsQueryKey, UserAssetsResult } from '@/resources/assets/UserAssetsQuery';
 import { add, isEqual, multiply } from '@/helpers/utilities';
 import { isEqual as _isEqual } from 'lodash';
 
@@ -14,22 +10,11 @@ export type WalletBalanceResult = {
   hiddenBalances: Record<Address, string>;
 };
 
-const getHiddenAssetBalance = ({
-  address,
-  nativeCurrency,
-  connectedToHardhat,
-}: {
-  address: Address;
-  nativeCurrency: NativeCurrencyKey;
-  connectedToHardhat: boolean;
-}) => {
+const getHiddenAssetBalance = ({ address }: { address: Address }) => {
   const hiddenAssetIds = userAssetsStore.getState(address).getHiddenAssetsIds();
-  const assetData = queryClient.getQueryData<UserAssetsResult>(
-    userAssetsQueryKey({ address, currency: nativeCurrency, connectedToHardhat })
-  );
 
   const balance = hiddenAssetIds.reduce((acc, uniqueId) => {
-    const asset = assetData?.[uniqueId];
+    const asset = userAssetsStore.getState(address).getUserAsset(uniqueId);
     if (!asset) return acc;
     const assetNativeBalance = multiply(asset.price?.value || 0, asset.balance?.amount || 0);
     return add(acc, assetNativeBalance);
@@ -39,8 +24,6 @@ const getHiddenAssetBalance = ({
 };
 
 const useWalletsHiddenBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
-  const { nativeCurrency } = useAccountSettings();
-  const connectedToHardhat = useConnectedToHardhatStore(state => state.connectedToHardhat);
   const [hiddenBalances, setHiddenBalances] = useState<Record<Address, string>>({});
 
   const allAddresses = useMemo(
@@ -48,24 +31,21 @@ const useWalletsHiddenBalances = (wallets: AllRainbowWallets): WalletBalanceResu
     [wallets]
   );
 
-  const calculateHiddenBalanceForAddress = useCallback(
-    (address: Address) => {
-      const lowerCaseAddress = address.toLowerCase() as Address;
-      const hiddenAssetBalance = getHiddenAssetBalance({ address, nativeCurrency, connectedToHardhat });
+  const calculateHiddenBalanceForAddress = useCallback((address: Address) => {
+    const lowerCaseAddress = address.toLowerCase() as Address;
+    const hiddenAssetBalance = getHiddenAssetBalance({ address });
 
-      setHiddenBalances(prev => {
-        const newBalance = hiddenAssetBalance;
-        if (!prev[lowerCaseAddress] || !isEqual(prev[lowerCaseAddress], newBalance)) {
-          return {
-            ...prev,
-            [lowerCaseAddress]: newBalance,
-          };
-        }
-        return prev;
-      });
-    },
-    [nativeCurrency, connectedToHardhat]
-  );
+    setHiddenBalances(prev => {
+      const newBalance = hiddenAssetBalance;
+      if (!prev[lowerCaseAddress] || !isEqual(prev[lowerCaseAddress], newBalance)) {
+        return {
+          ...prev,
+          [lowerCaseAddress]: newBalance,
+        };
+      }
+      return prev;
+    });
+  }, []);
 
   useEffect(() => {
     allAddresses.forEach(address => {
@@ -97,7 +77,7 @@ const useWalletsHiddenBalances = (wallets: AllRainbowWallets): WalletBalanceResu
       subscriptions.forEach(sub => sub());
       unsubscribeFromQueryCache();
     };
-  }, [allAddresses, calculateHiddenBalanceForAddress, connectedToHardhat, nativeCurrency]);
+  }, [allAddresses, calculateHiddenBalanceForAddress]);
 
   return { hiddenBalances };
 };

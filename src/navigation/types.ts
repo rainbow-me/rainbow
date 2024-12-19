@@ -11,6 +11,9 @@ import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { RainbowWallet } from '@/model/wallet';
 import { RainbowPosition } from '@/resources/defi/types';
+import { Address } from 'viem';
+import { SharedValue } from 'react-native-reanimated';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -104,5 +107,10 @@ export type RootStackParamList = {
   };
   [Routes.POSITION_SHEET]: {
     position: RainbowPosition;
+  };
+  [Routes.NETWORK_SELECTOR]: {
+    onClose?: VoidFunction;
+    selected: SharedValue<ChainId | undefined>;
+    setSelected: (chainId: ChainId | undefined) => void;
   };
 };

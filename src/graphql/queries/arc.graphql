@@ -522,6 +522,7 @@ query trendingTokens(
   $sortBy: TrendingSort
   $sortDirection: SortDirection
   $walletAddress: String
+  $limit: Int
 ) {
   trendingTokens(
     chainId: $chainId
@@ -531,6 +532,7 @@ query trendingTokens(
     sortBy: $sortBy
     sortDirection: $sortDirection
     walletAddress: $walletAddress
+    limit: $limit
   ) {
     data {
       colors {
