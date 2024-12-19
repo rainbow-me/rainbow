@@ -61,14 +61,9 @@ export const SwapWarning = () => {
             {warningTitle}
           </AnimatedText>
         </Inline>
-        <AnimatedText
-          style={warningSubtitleStyles}
-          color="labelQuaternary"
-          align="center"
-          size="13pt"
-          weight="bold"
-          text={warningSubtitle}
-        />
+        <AnimatedText style={warningSubtitleStyles} color="labelQuaternary" align="center" size="13pt" weight="bold">
+          {warningSubtitle}
+        </AnimatedText>
       </Box>
     </Box>
   );

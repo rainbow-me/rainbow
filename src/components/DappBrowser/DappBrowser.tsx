@@ -1,12 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 import { InteractionManager, StyleSheet } from 'react-native';
-import Animated, {
-  interpolateColor,
-  useAnimatedProps,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useDerivedValue,
-} from 'react-native-reanimated';
+import { GestureDetector } from 'react-native-gesture-handler';
+import Animated, { interpolateColor, runOnJS, useAnimatedReaction, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Page } from '@/components/layout';
 import { Box, globalColors, useColorMode } from '@/design-system';
@@ -15,21 +10,32 @@ import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { useNavigation } from '@/navigation';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserHistoryStore } from '@/state/browserHistory';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
 import { BrowserTab } from './BrowserTab';
 import { BrowserWorkletsContextProvider, useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { ProgressBar } from './ProgressBar';
 import { TabViewToolbar } from './TabViewToolbar';
-import { calculateScrollPositionToCenterTab, useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTriggers';
-import { useSmoothScrollView } from './hooks/useSmoothScrollView';
+import {
+  BROWSER_BACKGROUND_COLOR_DARK,
+  BROWSER_BACKGROUND_COLOR_LIGHT,
+  HOMEPAGE_BACKGROUND_COLOR_LIGHT,
+  TAB_VIEW_BACKGROUND_COLOR_DARK,
+  TAB_VIEW_BACKGROUND_COLOR_LIGHT,
+} from './constants';
+import { useBrowserScrollView } from './hooks/useBrowserScrollView';
+import { useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTriggers';
 import { pruneScreenshots } from './screenshots';
 import { Search } from './search/Search';
 import { SearchContextProvider } from './search/SearchContext';
+import { AnimatedTabUrls, TabViewGestureStates } from './types';
+import { generateUniqueIdWorklet } from './utils';
 
-export type DappBrowserParams = {
-  url: string;
-};
+export type DappBrowserParams =
+  | {
+      url?: string;
+    }
+  | undefined;
 
 type RouteParams = {
   DappBrowserParams: DappBrowserParams;
@@ -38,12 +44,7 @@ type RouteParams = {
 export const DappBrowser = () => {
   const { isDarkMode } = useColorMode();
   return (
-    <Box
-      as={Page}
-      height="full"
-      style={[isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight, styles.overflowHidden]}
-      width="full"
-    >
+    <Box as={Page} height="full" style={[isDarkMode ? styles.rootViewBackgroundDark : styles.rootViewBackgroundLight]} width="full">
       <BrowserContextProvider>
         <BrowserWorkletsContextProvider>
           <DappBrowserComponent />
@@ -53,7 +54,7 @@ export const DappBrowser = () => {
   );
 };
 
-const DappBrowserComponent = () => {
+const DappBrowserComponent = memo(function DappBrowserComponent() {
   useScreenshotAndScrollTriggers();
   useScreenshotPruner();
 
@@ -71,34 +72,32 @@ const DappBrowserComponent = () => {
       </SearchContextProvider>
     </>
   );
-};
+});
 
 const NewTabTrigger = () => {
+  const { animatedTabUrls } = useBrowserContext();
   const { newTabWorklet } = useBrowserWorkletsContext();
   const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
-  const { goToUrl } = useBrowserContext();
   const { setParams } = useNavigation();
+
+  const setNewTabUrl = (updatedTabUrls: AnimatedTabUrls) => {
+    // Set the new tab URL ahead of creating the tab so the URL is available when the tab is rendered
+    useBrowserStore.getState().silentlySetPersistedTabUrls(updatedTabUrls);
+    setParams({ url: undefined });
+  };
 
   useAnimatedReaction(
     () => route.params?.url,
     (current, previous) => {
-      if (current !== previous && route.params?.url) {
-        newTabWorklet(current);
-      }
-    },
-    [newTabWorklet, route.params?.url]
-  );
+      if (current && current !== previous) {
+        const newTabId = generateUniqueIdWorklet();
+        const updatedTabUrls = { ...animatedTabUrls.value, [newTabId]: current };
 
-  // TODO: make newTabWorklet work without this.
-  // In the meantime, this is am ugly hack for opening a new tab with a URL
-  useEffect(() => {
-    if (route.params?.url) {
-      setTimeout(() => {
-        goToUrl(route.params?.url);
-        setParams({ url: undefined });
-      }, 300);
+        runOnJS(setNewTabUrl)(updatedTabUrls);
+        newTabWorklet({ newTabId, newTabUrl: current });
+      }
     }
-  }, [goToUrl, route.params?.url, setParams]);
+  );
 
   return null;
 };
@@ -122,8 +121,10 @@ const TabViewBackground = () => {
       backgroundColor: interpolateColor(
         tabViewProgress.value,
         [0, 100],
-        // eslint-disable-next-line no-nested-ternary
-        [isDarkMode ? globalColors.grey100 : IS_ANDROID ? '#F2F2F5' : '#FBFCFD', isDarkMode ? '#0A0A0A' : '#F2F2F5']
+        [
+          isDarkMode ? BROWSER_BACKGROUND_COLOR_DARK : BROWSER_BACKGROUND_COLOR_LIGHT,
+          isDarkMode ? TAB_VIEW_BACKGROUND_COLOR_DARK : TAB_VIEW_BACKGROUND_COLOR_LIGHT,
+        ]
       ),
     };
   });
@@ -132,39 +133,29 @@ const TabViewBackground = () => {
 };
 
 const TabViewScrollView = ({ children }: { children: React.ReactNode }) => {
-  const { animatedActiveTabIndex, currentlyOpenTabIds, scrollViewRef, tabViewVisible } = useBrowserContext();
-  const { jitterCorrection, scrollViewHeight, smoothScrollHandler } = useSmoothScrollView();
-
-  const scrollEnabledProp = useAnimatedProps(() => ({
-    scrollEnabled: tabViewVisible.value,
-  }));
-
-  useEffect(() => {
-    scrollViewRef.current?.scrollTo({
-      x: 0,
-      y: calculateScrollPositionToCenterTab(animatedActiveTabIndex.value, currentlyOpenTabIds.value.length),
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { scrollViewOffset, scrollViewRef } = useBrowserContext();
+  const { animatedProps, gestureManager, gestureManagerStyle, scrollViewContainerStyle, scrollViewStyle } = useBrowserScrollView();
 
   return (
-    <Animated.ScrollView
-      animatedProps={scrollEnabledProp}
-      onScroll={smoothScrollHandler}
-      pinchGestureEnabled={false}
-      ref={scrollViewRef}
-      showsVerticalScrollIndicator={false}
-      testID={'browser-screen'}
-    >
-      <Animated.View style={[styles.scrollViewHeight, { height: scrollViewHeight, transform: [{ translateY: jitterCorrection }] }]}>
-        {children}
-      </Animated.View>
-    </Animated.ScrollView>
+    <Animated.View style={[styles.scrollViewContainer, gestureManagerStyle]} testID="browser-screen">
+      <GestureDetector gesture={gestureManager}>
+        <Animated.ScrollView
+          animatedProps={animatedProps}
+          ref={scrollViewRef}
+          scrollViewOffset={scrollViewOffset}
+          showsVerticalScrollIndicator={false}
+          style={[styles.scrollView, scrollViewContainerStyle]}
+        >
+          <Animated.View style={[styles.scrollViewHeight, scrollViewStyle]} />
+        </Animated.ScrollView>
+      </GestureDetector>
+      {children}
+    </Animated.View>
   );
 };
 
 const TabViewContent = () => {
-  const { currentlyBeingClosedTabIds, currentlyOpenTabIds } = useBrowserContext();
+  const { currentlyBeingClosedTabIds, currentlyOpenTabIds, tabViewGestureState } = useBrowserContext();
 
   const tabIds = useBrowserStore(state => state.tabIds);
   const addRecent = useBrowserHistoryStore(state => state.addRecent);
@@ -172,10 +163,12 @@ const TabViewContent = () => {
   const setTabIds = useBrowserStore(state => state.setTabIds);
   const setTitle = useBrowserStore(state => state.setTitle);
 
-  const areTabCloseAnimationsRunning = useDerivedValue(() => currentlyBeingClosedTabIds.value.length > 0);
+  const shouldPauseSync = useDerivedValue(
+    () => currentlyBeingClosedTabIds.value.length > 0 || tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING
+  );
 
   useSyncSharedValue({
-    pauseSync: areTabCloseAnimationsRunning,
+    pauseSync: shouldPauseSync,
     setState: setTabIds,
     sharedValue: currentlyOpenTabIds,
     state: tabIds,
@@ -192,18 +185,30 @@ const TabViewContent = () => {
 };
 
 const styles = StyleSheet.create({
-  overflowHidden: {
-    overflow: 'hidden',
-  },
-  rootViewBackground: {
+  rootViewBackgroundDark: {
     backgroundColor: globalColors.grey100,
     flex: 1,
+    position: 'absolute',
   },
   rootViewBackgroundLight: {
-    backgroundColor: '#FBFCFD',
+    backgroundColor: HOMEPAGE_BACKGROUND_COLOR_LIGHT,
     flex: 1,
+    position: 'absolute',
+  },
+  scrollView: {
+    flex: 1,
+    height: DEVICE_HEIGHT,
+    position: 'absolute',
+    width: DEVICE_WIDTH,
+    zIndex: 10000,
+  },
+  scrollViewContainer: {
+    height: DEVICE_HEIGHT,
+    position: 'absolute',
+    width: DEVICE_WIDTH,
   },
   scrollViewHeight: {
+    height: DEVICE_HEIGHT,
     pointerEvents: 'box-none',
     width: DEVICE_WIDTH,
   },

@@ -1,9 +1,9 @@
 import { NativeCurrencyKey } from '@/entities';
 import { AddysClaimable, Claimable } from './types';
-import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, greaterThan } from '@/helpers/utilities';
+import { convertRawAmountToBalance, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
 import { parseAsset } from '@/resources/assets/assets';
-import { Network } from '@/chains/types';
-import { chainsName } from '@/chains';
+import { Network } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCurrencyKey): Claimable[] => {
   return claimables
@@ -20,14 +20,14 @@ export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCu
           address: claimable.asset.asset_code,
           asset: {
             ...claimable.asset,
-            network: chainsName[claimable.network] as Network,
+            network: useBackendNetworksStore.getState().getChainsName()[claimable.network] as Network,
             transferable: claimable.asset.transferable ?? false,
           },
         }),
         chainId: claimable.network,
         name: claimable.name,
         uniqueId: claimable.unique_id,
-        analyticsId: `claimables${claimable.type.replace(/(^|-)([a-z])/g, (_, __, letter) => letter.toUpperCase())}`, // one-two-three -> OneTwoThree
+        analyticsId: claimable.type,
         iconUrl: claimable.dapp.icon_url,
         value: {
           claimAsset: convertRawAmountToBalance(claimable.amount, claimable.asset),
@@ -53,6 +53,5 @@ export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCu
         };
       }
     })
-    .filter((c): c is Claimable => !!c)
-    .sort((a, b) => (greaterThan(a.value.claimAsset.amount ?? '0', b.value.claimAsset.amount ?? '0') ? -1 : 1));
+    .filter((c): c is Claimable => !!c);
 };

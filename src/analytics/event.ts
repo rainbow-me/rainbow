@@ -1,5 +1,5 @@
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId, Network } from '@/chains/types';
+import { ChainId, Network } from '@/state/backendNetworks/types';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { CardType } from '@/components/cards/GenericCard';
@@ -186,7 +186,6 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   outputAssetChainId: ChainId;
   outputAssetAmount: number;
   mainnetAddress: string;
-  flashbots: boolean;
   tradeAmountUSD: number;
   degenMode: boolean;
   isSwappingToPopularAsset: boolean;
@@ -636,6 +635,12 @@ export type EventProperties = {
       symbol: string;
       address: string;
     };
+    outputAsset: {
+      symbol: string;
+      address: string;
+    };
+    outputChainId: ChainId;
+    isSwapping: boolean;
     amount: string;
     usdValue: number;
   };
@@ -648,6 +653,13 @@ export type EventProperties = {
       symbol: string;
       address: string;
     };
+    isSwapping: boolean;
+    outputAsset: {
+      symbol: string;
+      address: string;
+    };
+    outputChainId: ChainId;
+    failureStep: 'claim' | 'swap' | 'unknown';
     amount: string;
     usdValue: number;
     errorMessage: string;

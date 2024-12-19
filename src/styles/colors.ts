@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { globalColors } from '@/design-system';
 import currentColors from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export type Colors = ReturnType<typeof getColorsByTheme>;
 
@@ -187,10 +187,16 @@ const getColorsByTheme = (darkMode?: boolean) => {
   };
 
   let networkColors = {
+    [ChainId.zksync]: '#25292E',
+    [ChainId.sanko]: '#594BA7',
+    [ChainId.scroll]: '#A6855D',
+    [ChainId.linea]: '#25292E',
+    [ChainId.gravity]: '#B75E2C',
+    [ChainId.ink]: '#7132F5',
     [ChainId.arbitrum]: '#2D374B',
     [ChainId.base]: '#0052FF',
     [ChainId.goerli]: '#f6c343',
-    [ChainId.gnosis]: '#479E9C',
+    [ChainId.gnosis]: '#133629',
     [ChainId.mainnet]: '#25292E',
     [ChainId.optimism]: '#FF4040',
     [ChainId.polygon]: '#8247E5',
@@ -330,10 +336,16 @@ const getColorsByTheme = (darkMode?: boolean) => {
     };
 
     networkColors = {
+      [ChainId.zksync]: '#FFFFFF',
+      [ChainId.sanko]: '#7F6FC9',
+      [ChainId.scroll]: '#EBC28E',
+      [ChainId.linea]: '#FFFFFF',
+      [ChainId.gravity]: '#B75E2C',
+      [ChainId.ink]: '#864DFF',
       [ChainId.arbitrum]: '#ADBFE3',
       [ChainId.base]: '#3979FF',
       [ChainId.goerli]: '#f6c343',
-      [ChainId.gnosis]: '#479E9C',
+      [ChainId.gnosis]: '#F0EBDE',
       [ChainId.mainnet]: '#E0E8FF',
       [ChainId.optimism]: '#FF6A6A',
       [ChainId.polygon]: '#A275EE',

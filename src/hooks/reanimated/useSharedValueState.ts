@@ -23,10 +23,11 @@ export function useSharedValueState<T>(
   sharedValue: DerivedValue<T> | SharedValue<T>,
   options: {
     compareDepth?: 'shallow' | 'deep';
+    initialValue?: T;
     pauseSync?: boolean;
   } = { compareDepth: 'deep' }
 ): T {
-  const [state, setState] = useState<T>(sharedValue.value);
+  const [state, setState] = useState<T>(options?.initialValue ?? sharedValue.value);
 
   useSyncSharedValue({
     compareDepth: options?.compareDepth,

@@ -6,18 +6,19 @@ import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import Routes from '@/navigation/routesNames';
 import { ContactAvatar } from '@/components/contacts';
-import { Bleed } from '@/design-system';
+import { Bleed, useColorMode } from '@/design-system';
 
 import { useAppSessionsStore } from '@/state/appSessions';
 import { getDappHost } from '../handleProviderRequest';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserContext } from '../BrowserContext';
-import { RAINBOW_HOME } from '../constants';
+import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
 
 export const AccountIcon = React.memo(function AccountIcon() {
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
+  const { isDarkMode } = useColorMode();
   const { wallets, walletNames } = useWallets();
 
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
@@ -68,7 +69,11 @@ export const AccountIcon = React.memo(function AccountIcon() {
     <Bleed space="8px">
       <ButtonPressAnimation onPress={handleOnPress} scaleTo={0.8} overflowMargin={30}>
         {accountInfo?.accountImage ? (
-          <ImageAvatar image={accountInfo.accountImage} size="signing" />
+          <ImageAvatar
+            backgroundColor={isDarkMode ? HOMEPAGE_BACKGROUND_COLOR_DARK : HOMEPAGE_BACKGROUND_COLOR_LIGHT}
+            image={accountInfo.accountImage}
+            size="signing"
+          />
         ) : (
           <ContactAvatar color={accountInfo.accountColor} size="signing" value={accountInfo.accountSymbol} />
         )}

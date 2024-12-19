@@ -7,7 +7,9 @@ import { analyticsV2 } from '@/analytics';
 import * as ls from '@/storage';
 import { logger, RainbowError } from '@/logger';
 
-export const branchListener = async (handleOpenLinkingURL: (url: any) => void) => {
+const isEmpty = <T extends object>(obj: T | undefined): obj is undefined => !obj || Object.keys(obj).length === 0;
+
+export const branchListener = async (handleOpenLinkingURL: (url: string) => void) => {
   logger.debug(`[branchListener]: setting up listener`, {}, logger.DebugContext.deeplinks);
 
   /*
@@ -27,10 +29,10 @@ export const branchListener = async (handleOpenLinkingURL: (url: any) => void) =
 
     logger.debug(`[branchListener]: handling event`, { params, uri }, logger.DebugContext.deeplinks);
 
-    if (!params && uri) {
+    if (isEmpty(params) && uri) {
       logger.debug(`[branchListener]: no params but we have a URI`, {}, logger.DebugContext.deeplinks);
       handleOpenLinkingURL(uri);
-    } else if (!params) {
+    } else if (isEmpty(params)) {
       // We got absolutely nothing to work with.
       logger.warn(`[branchListener]: received no params or URI when handling event`, {
         params,
@@ -41,37 +43,39 @@ export const branchListener = async (handleOpenLinkingURL: (url: any) => void) =
 
       logger.debug(`[branchListener]: handling non-Branch link`, {}, logger.DebugContext.deeplinks);
 
-      if (typeof nonBranchUrl === 'string' && nonBranchUrl?.startsWith('rainbow://open')) {
-        logger.debug(`[branchListener]: aggressive Safari redirect mode`, {}, logger.DebugContext.deeplinks);
+      if (typeof nonBranchUrl === 'string') {
+        if (nonBranchUrl?.startsWith('rainbow://open')) {
+          logger.debug(`[branchListener]: aggressive Safari redirect mode`, {}, logger.DebugContext.deeplinks);
 
-        /**
-         * This happens when the user hits the Branch-hosted fallback page in
-         * their browser.
-         *
-         * When they click the button to open Rainbow, Branch
-         * uses a native deeplink to refocus the app. This deeplink has a
-         * base64 encoded parameter that contains the original universal link.
-         *
-         *    Example: rainbow://open?_branch_referrer=A&link_click_id=B
-         *
-         * We decode that here and then handle it normally.
-         */
-        let url = nonBranchUrl;
+          /**
+           * This happens when the user hits the Branch-hosted fallback page in
+           * their browser.
+           *
+           * When they click the button to open Rainbow, Branch
+           * uses a native deeplink to refocus the app. This deeplink has a
+           * base64 encoded parameter that contains the original universal link.
+           *
+           *    Example: rainbow://open?_branch_referrer=A&link_click_id=B
+           *
+           * We decode that here and then handle it normally.
+           */
+          let url = nonBranchUrl;
 
-        try {
-          url = decodeBranchUrl(nonBranchUrl);
-        } finally {
-          handleOpenLinkingURL(url);
+          try {
+            url = decodeBranchUrl(nonBranchUrl);
+          } finally {
+            handleOpenLinkingURL(url);
+          }
+        } else {
+          logger.debug(`[branchListener]: non-Branch link handled directly`, {}, logger.DebugContext.deeplinks);
+
+          /**
+           * This can happen when the user clicks on a deeplink and we pass its handling on to Branch.
+           *
+           *   Example: WC connections on Android, looks like `wc:...`
+           */
+          handleOpenLinkingURL(nonBranchUrl);
         }
-      } else {
-        logger.debug(`[branchListener]: non-Branch link handled directly`, {}, logger.DebugContext.deeplinks);
-
-        /**
-         * This can happen when the user clicks on a deeplink and we pass its handling on to Branch.
-         *
-         *   Example: WC connections on Android, looks like `wc:...`
-         */
-        handleOpenLinkingURL(nonBranchUrl);
       }
     } else if (!params['+clicked_branch_link']) {
       /*
@@ -85,7 +89,7 @@ export const branchListener = async (handleOpenLinkingURL: (url: any) => void) =
       if (IS_TESTING === 'true' && !!uri) {
         handleOpenLinkingURL(uri);
       }
-    } else if (params.uri) {
+    } else if (params.uri && typeof params.uri === 'string') {
       /**
        * Sometimes `params.uri` differs from `uri`, and in these cases we
        * should use `params.uri`. This happens about 8k times per week, so it's

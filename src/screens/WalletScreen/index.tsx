@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
@@ -32,11 +32,17 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
 import walletTypes from '@/helpers/walletTypes';
 
+enum WalletLoadingStates {
+  IDLE = 0,
+  INITIALIZING = 1,
+  INITIALIZED = 2,
+}
+
 function WalletScreen() {
   const { params } = useRoute<RouteProp<RootStackParamList, 'WalletScreen'>>();
   const { setParams, getState: dangerouslyGetState, getParent: dangerouslyGetParent } = useNavigation();
   const removeFirst = useRemoveFirst();
-  const [initialized, setInitialized] = useState(!!params?.initialized);
+  const walletState = useRef(WalletLoadingStates.IDLE);
   const initializeWallet = useInitializeWallet();
   const { network: currentNetwork, accountAddress, appIcon } = useAccountSettings();
 
@@ -53,8 +59,10 @@ function WalletScreen() {
     briefSectionsData: walletBriefSectionsData,
   } = useWalletSectionsData({ type: 'wallet' });
 
-  const trackWallets = useCallback(() => {
-    const identify = Object.values(wallets || {}).reduce(
+  useEffect(() => {
+    if (!wallets) return;
+
+    const identify = Object.values(wallets).reduce(
       (result, wallet) => {
         switch (wallet.type) {
           case walletTypes.mnemonic:
@@ -125,18 +133,22 @@ function WalletScreen() {
 
   useEffect(() => {
     const initializeAndSetParams = async () => {
+      walletState.current = WalletLoadingStates.INITIALIZING;
       // @ts-expect-error messed up initializeWallet types
       await initializeWallet(null, null, null, !params?.emptyWallet);
-      setInitialized(true);
+      walletState.current = WalletLoadingStates.INITIALIZED;
       setParams({ emptyWallet: false });
-      trackWallets();
     };
 
-    if (!initialized || (params?.emptyWallet && initialized)) {
+    if (
+      walletState.current !== WalletLoadingStates.INITIALIZING &&
+      (walletState.current !== WalletLoadingStates.INITIALIZED ||
+        (params?.emptyWallet && walletState.current === WalletLoadingStates.INITIALIZED))
+    ) {
       // We run the migrations only once on app launch
       initializeAndSetParams();
     }
-  }, [initializeWallet, initialized, params, setParams, trackWallets]);
+  }, [initializeWallet, params, setParams]);
 
   useEffect(() => {
     if (walletReady) {

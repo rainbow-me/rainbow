@@ -1,0 +1,59 @@
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
+index 97dc50e..6e4a466 100644
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
+@@ -131,7 +131,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
+     return mDelegate
+   }
+ 
+-  class ButtonViewGroup(context: Context?) :
++  open class ButtonViewGroup(context: Context?) :
+     ViewGroup(context),
+     NativeViewGestureHandler.NativeViewGestureHandlerHook {
+     // Using object because of handling null representing no value set.
+diff --git a/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm b/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm
+index 667d600..9054037 100644
+--- a/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm
++++ b/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm
+@@ -161,7 +161,7 @@ - (void)bindToView:(UIView *)view
+   // because gesture handler system can handle cancellation of scroll recognizer when JS responder
+   // is set
+   UIScrollView *scrollView = [self retrieveScrollView:view];
+-  scrollView.delaysContentTouches = YES;
++  scrollView.delaysContentTouches = NO;
+ }
+ 
+ - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
+diff --git a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
+index 43d11b4..276024c 100644
+--- a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
++++ b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
+@@ -390,12 +390,28 @@ - (void)setManualActivation:(BOOL)manualActivation
+     if (_recognizer.view != nil) {
+       [_recognizer.view addGestureRecognizer:_manualActivationRecognizer];
+     }
++
++    [[NSNotificationCenter defaultCenter] addObserver:self
++                                             selector:@selector(handleAppWillResignActive:)
++                                                 name:UIApplicationWillResignActiveNotification
++                                               object:nil];
+   } else if (_manualActivationRecognizer != nil) {
++    [[NSNotificationCenter defaultCenter] removeObserver:self
++                                                    name:UIApplicationWillResignActiveNotification
++                                                  object:nil];
+     [_manualActivationRecognizer.view removeGestureRecognizer:_manualActivationRecognizer];
+     _manualActivationRecognizer = nil;
+   }
+ }
+ 
++- (void)handleAppWillResignActive:(NSNotification *)notification
++{
++  if (_manualActivationRecognizer != nil && _manualActivationRecognizer.enabled) {
++    _manualActivationRecognizer.enabled = NO;
++    _manualActivationRecognizer.enabled = YES;
++  }
++}
++
+ - (void)bindManualActivationToView:(RNGHUIView *)view
+ {
+   if (_manualActivationRecognizer != nil) {

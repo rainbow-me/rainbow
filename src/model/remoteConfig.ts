@@ -6,8 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 
 export interface RainbowConfig extends Record<string, string | boolean | number> {
   default_slippage_bips: string;
+  default_slippage_bips_chainId: string;
   f2c_enabled: boolean;
-  flashbots_enabled: boolean;
   op_nft_network: string;
   op_rewards_enabled: boolean;
   swagg_enabled: boolean;
@@ -65,16 +65,35 @@ export const DEFAULT_CONFIG: RainbowConfig = {
     arbitrum: 200,
     avalanche: 200,
     base: 200,
-    blast: 200,
     bsc: 200,
+    blast: 200,
     degen: 200,
+    gnosis: 200,
+    gravity: 200,
+    ink: 200,
+    linea: 200,
     mainnet: 100,
     optimism: 200,
     polygon: 200,
+    sanko: 200,
+    scroll: 200,
+    zksync: 200,
     zora: 200,
   }),
+  default_slippage_bips_chainId: JSON.stringify({
+    '33139': 200,
+    '42161': 200,
+    '43114': 200,
+    '8453': 200,
+    '81457': 200,
+    '56': 200,
+    '666666666': 200,
+    '1': 100,
+    '10': 200,
+    '137': 200,
+    '7777777': 200,
+  }),
   f2c_enabled: true,
-  flashbots_enabled: true,
   op_nft_network: 'op-mainnet',
   op_rewards_enabled: false,
   swagg_enabled: true,
@@ -138,10 +157,9 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
     const parameters = remoteConfig().getAll();
     Object.entries(parameters).forEach($ => {
       const [key, entry] = $;
-      if (key === 'default_slippage_bips') {
+      if (key === 'default_slippage_bips' || key === 'default_slippage_bips_chainId') {
         config[key] = JSON.parse(entry.asString());
       } else if (
-        key === 'flashbots_enabled' ||
         key === 'f2c_enabled' ||
         key === 'swagg_enabled' ||
         key === 'op_rewards_enabled' ||

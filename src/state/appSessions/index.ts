@@ -1,6 +1,6 @@
 import { Address } from 'viem';
 
-import { Network, ChainId } from '@/chains/types';
+import { Network, ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 const chainsIdByNetwork: Record<Network, ChainId> = {
@@ -9,6 +9,12 @@ const chainsIdByNetwork: Record<Network, ChainId> = {
   [Network.polygon]: ChainId.polygon,
   [Network.avalanche]: ChainId.avalanche,
   [Network.bsc]: ChainId.bsc,
+  [Network.gravity]: ChainId.gravity,
+  [Network.scroll]: ChainId.scroll,
+  [Network.zksync]: ChainId.zksync,
+  [Network.ink]: ChainId.ink,
+  [Network.linea]: ChainId.linea,
+  [Network.sanko]: ChainId.sanko,
   [Network.arbitrum]: ChainId.arbitrum,
   [Network.optimism]: ChainId.optimism,
   [Network.zora]: ChainId.zora,
