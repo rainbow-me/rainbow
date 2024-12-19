@@ -132,7 +132,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                                       x: 0,
                                       y: 10,
                                       blur: 30,
-                                      opacity: 1,
+                                      opacity: 0.3,
                                       color: 'blue',
                                     },
                                   ],
@@ -202,7 +202,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                       {walletName}
                     </Text>
                   </Inline>
-                  <Text color="labelSecondary" size="13pt" weight="medium">
+                  <Text numberOfLines={1} ellipsizeMode="tail" color="labelSecondary" size="13pt" weight="medium">
                     {account.balance}
                   </Text>
                 </Stack>

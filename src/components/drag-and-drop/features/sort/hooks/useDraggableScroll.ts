@@ -138,6 +138,46 @@ export const useDraggableScroll = ({
     ]
   );
 
+  // TODO: This is a fix to offsets drifting when interacting too quickly that works for useDraggableGrid, but autoscrolling here breaks it
+  // useAnimatedReaction(
+  //   () => draggableSortOrder.value,
+  //   (nextOrder, prevOrder) => {
+  //     if (prevOrder === null) return;
+
+  //     const { value: activeId } = draggableActiveId;
+  //     const { value: layouts } = draggableLayouts;
+  //     const { value: offsets } = draggableOffsets;
+  //     const { value: restingOffsets } = draggableRestingOffsets;
+
+  //     if (!activeId) return;
+
+  //     const activeLayout = layouts[activeId].value;
+  //     const { width, height } = activeLayout;
+
+  //     for (let nextIndex = 0; nextIndex < nextOrder.length; nextIndex++) {
+  //       const itemId = nextOrder[nextIndex];
+  //       const originalIndex = childrenIds.indexOf(itemId);
+  //       const prevIndex = prevOrder.findIndex(id => id === itemId);
+
+  //       if (nextIndex === prevIndex) continue;
+
+  //       const offset = itemId === activeId ? restingOffsets[activeId] : offsets[itemId];
+
+  //       if (!restingOffsets[itemId] || !offsets[itemId]) continue;
+
+  //       const originalPosition = getFlexLayoutPosition({ index: originalIndex, width, height, gap, direction, size });
+  //       const newPosition = getFlexLayoutPosition({ index: nextIndex, width, height, gap, direction, size });
+
+  //       if (direction === 'row') {
+  //         offset.y.value = newPosition.y - originalPosition.y;
+  //       } else if (direction === 'column') {
+  //         offset.x.value = newPosition.x - originalPosition.x;
+  //       }
+  //     }
+  //   },
+  //   [direction, gap, size, childrenIds]
+  // );
+
   useAnimatedReaction(
     () => draggableSortOrder.value,
     (nextOrder, prevOrder) => {
@@ -152,28 +192,34 @@ export const useDraggableScroll = ({
 
       const activeLayout = layouts[activeId].value;
       const { width, height } = activeLayout;
+      const restingOffset = restingOffsets[activeId];
 
       for (let nextIndex = 0; nextIndex < nextOrder.length; nextIndex++) {
         const itemId = nextOrder[nextIndex];
-        const originalIndex = childrenIds.indexOf(itemId);
         const prevIndex = prevOrder.findIndex(id => id === itemId);
-
         if (nextIndex === prevIndex) continue;
 
-        const offset = itemId === activeId ? restingOffsets[activeId] : offsets[itemId];
-        if (!restingOffsets[itemId] || !offsets[itemId]) continue;
+        const prevRow = Math.floor(prevIndex / size);
+        const prevCol = prevIndex % size;
+        const nextRow = Math.floor(nextIndex / size);
+        const nextCol = nextIndex % size;
+        const moveCol = nextCol - prevCol;
+        const moveRow = nextRow - prevRow;
 
-        const originalPosition = getFlexLayoutPosition({ index: originalIndex, width, height, gap, direction, size });
-        const newPosition = getFlexLayoutPosition({ index: nextIndex, width, height, gap, direction, size });
+        const offset = itemId === activeId ? restingOffset : offsets[itemId];
+        if (!restingOffset || !offsets[itemId]) continue;
 
-        if (direction === 'row') {
-          offset.y.value = newPosition.y - originalPosition.y;
-        } else if (direction === 'column') {
-          offset.x.value = newPosition.x - originalPosition.x;
+        switch (direction) {
+          case 'row':
+            offset.y.value += moveRow * (height + gap);
+            break;
+          case 'column':
+            offset.x.value += moveCol * (width + gap);
+            break;
         }
       }
     },
-    [direction, gap, size, childrenIds]
+    []
   );
 
   // React to active item position and autoscroll if necessary
