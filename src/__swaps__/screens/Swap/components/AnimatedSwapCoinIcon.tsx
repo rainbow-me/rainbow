@@ -3,7 +3,14 @@ import React, { memo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
-import Animated, { useAnimatedProps, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  SharedValue,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { AnimatedChainImage } from './AnimatedChainImage';
@@ -12,44 +19,26 @@ import { SwapCoinIconTextFallback } from './SwapCoinIconTextFallback';
 import { Box } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
-import { useSwapContext } from '../providers/swap-provider';
-
-const fallbackIconStyle = {
-  ...borders.buildCircleAsObject(32),
-  position: 'absolute' as ViewStyle['position'],
-};
-
-const largeFallbackIconStyle = {
-  ...borders.buildCircleAsObject(36),
-  position: 'absolute' as ViewStyle['position'],
-};
-
-const smallFallbackIconStyle = {
-  ...borders.buildCircleAsObject(16),
-  position: 'absolute' as ViewStyle['position'],
-};
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
-  assetType,
-  large = true,
-  small,
+  asset,
+  size = 32,
+  chainSize = size / 2,
   showBadge = true,
 }: {
-  assetType: 'input' | 'output';
-  large?: boolean;
-  small?: boolean;
+  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  size?: number;
+  chainSize?: number;
   showBadge?: boolean;
 }) {
   const { isDarkMode, colors } = useTheme();
-  const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
-
-  const asset = assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset;
-  const size = small ? 16 : large ? 36 : 32;
 
   const didErrorForUniqueId = useSharedValue<string | undefined>(undefined);
 
   // Shield animated props from unnecessary updates to avoid flicker
   const coinIconUrl = useDerivedValue(() => asset.value?.icon_url || '');
+  const chainId = useDerivedValue(() => asset.value?.chainId);
 
   const animatedIconSource = useAnimatedProps(() => {
     return {
@@ -91,15 +80,8 @@ export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
   }));
 
   return (
-    <View style={small ? sx.containerSmall : large ? sx.containerLarge : sx.container}>
-      <Animated.View
-        style={[
-          sx.reactCoinIconContainer,
-          small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
-          sx.withShadow,
-          animatedCoinIconWrapperStyles,
-        ]}
-      >
+    <View style={containerStyle(size)}>
+      <Animated.View style={[sx.reactCoinIconContainer, coinIconFallbackStyle(size), sx.withShadow, animatedCoinIconWrapperStyles]}>
         <Animated.View style={animatedCoinIconStyles}>
           {/* ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error */}
           {/* @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps */}
@@ -122,76 +104,43 @@ export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
           />
         </Animated.View>
 
-        <Animated.View
-          style={[animatedFallbackStyles, small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback]}
-        >
-          <SwapCoinIconTextFallback
-            asset={asset}
-            height={size}
-            width={size}
-            style={small ? smallFallbackIconStyle : large ? largeFallbackIconStyle : fallbackIconStyle}
-          />
+        <Animated.View style={[animatedFallbackStyles, coinIconFallbackStyle(size)]}>
+          <SwapCoinIconTextFallback asset={asset} height={size} width={size} style={fallbackIconStyle(size)} />
         </Animated.View>
 
         <Box
           as={Animated.View}
           background={isDarkMode ? 'fillQuaternary' : 'fillTertiary'}
-          style={[
-            animatedEmptyStateStyles,
-            small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
-            {
-              borderRadius: size / 2,
-              height: size,
-              width: size,
-            },
-          ]}
+          style={[animatedEmptyStateStyles, coinIconFallbackStyle(size)]}
         />
       </Animated.View>
 
-      {showBadge && <AnimatedChainImage assetType={assetType} size={16} />}
+      {showBadge && <AnimatedChainImage chainId={chainId} size={chainSize} />}
     </View>
   );
+});
+
+const fallbackIconStyle = (size: number) => ({
+  ...borders.buildCircleAsObject(size),
+  position: 'absolute' as ViewStyle['position'],
+});
+
+const coinIconFallbackStyle = (size: number) => ({
+  borderRadius: size / 2,
+  height: size,
+  width: size,
+  overflow: 'visible' as const,
+});
+
+const containerStyle = (size: number) => ({
+  elevation: 6,
+  height: size,
+  overflow: 'visible' as const,
 });
 
 const sx = StyleSheet.create({
   coinIcon: {
     overflow: 'hidden',
-  },
-  coinIconFallback: {
-    borderRadius: 16,
-    height: 32,
-    overflow: 'visible',
-    width: 32,
-  },
-  coinIconFallbackLarge: {
-    borderRadius: 18,
-    height: 36,
-    overflow: 'visible',
-    width: 36,
-  },
-  coinIconFallbackSmall: {
-    borderRadius: 8,
-    height: 16,
-    overflow: 'visible',
-    width: 16,
-  },
-  container: {
-    elevation: 6,
-    height: 32,
-    overflow: 'visible',
-  },
-  containerLarge: {
-    elevation: 6,
-    height: 36,
-    overflow: 'visible',
-  },
-  containerSmall: {
-    elevation: 6,
-    height: 16,
-    overflow: 'visible',
-  },
-  emptyState: {
-    pointerEvents: 'none',
   },
   reactCoinIconContainer: {
     position: 'relative',

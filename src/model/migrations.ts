@@ -4,6 +4,7 @@ import { findKey, isEmpty, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
+import FastImage from 'react-native-fast-image';
 import { deprecatedRemoveLocal, getGlobal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import { getMigrationVersion, setMigrationVersion } from '../handlers/localstorage/migrations';
@@ -745,6 +746,26 @@ export default async function runMigrations() {
 
   migrations.push(v23);
 
+  /**
+   *************** Migration v24 ******************
+   * Clear FastImage cache to fix mainnet badge sizing issue
+   */
+  const v24 = () => {
+    try {
+      FastImage.clearDiskCache();
+    } catch (e) {
+      logger.error(new RainbowError(`Error clearing FastImage disk cache: ${e}`));
+    }
+
+    try {
+      FastImage.clearMemoryCache();
+    } catch (e) {
+      logger.error(new RainbowError(`Error clearing FastImage memory cache: ${e}`));
+    }
+  };
+
+  migrations.push(v24);
+
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
   if (migrations.length === currentVersion) {
@@ -754,7 +775,6 @@ export default async function runMigrations() {
 
   for (let i = currentVersion; i < migrations.length; i++) {
     logger.debug(`[runMigrations]: Running migration v${i}`);
-    // @ts-expect-error
     await migrations[i].apply(null);
     logger.debug(`[runMigrations]: Migration ${i} completed succesfully`);
     await setMigrationVersion(i + 1);

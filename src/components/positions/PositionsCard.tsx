@@ -31,7 +31,6 @@ type CoinStackToken = {
 };
 
 function CoinIconForStack({ token }: { token: CoinStackToken }) {
-  const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
   const chainId = useBackendNetworksStore.getState().getChainsIdByName()[token.network];
   const { data: externalAsset } = useExternalToken({ address: token.address as AddressOrEth, chainId, currency: nativeCurrency });
@@ -42,9 +41,8 @@ function CoinIconForStack({ token }: { token: CoinStackToken }) {
       icon={externalAsset?.icon_url}
       chainId={chainId}
       symbol={token.symbol}
-      theme={theme}
-      colors={externalAsset?.colors}
-      ignoreBadge
+      color={externalAsset?.colors?.primary || externalAsset?.colors?.fallback || undefined}
+      showBadge={false}
     />
   );
 }

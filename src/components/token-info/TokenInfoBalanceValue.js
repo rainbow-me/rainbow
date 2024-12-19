@@ -5,16 +5,13 @@ import { useColorForAsset } from '@/hooks';
 import styled from '@/styled-thing';
 import { magicMemo } from '@/utils';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
-import { useTheme } from '@/theme';
 import { View } from 'react-native';
 
 const InfoValue = styled(TokenInfoValue)(android ? { height: 37.7 } : {});
 
 const TokenInfoBalanceValue = ({ align, asset, ...props }) => {
-  const { address, balance, symbol, type, value } = asset;
+  const { balance, value } = asset;
   const color = useColorForAsset(asset);
-
-  const theme = useTheme();
 
   return (
     <RowWithMargins
@@ -30,9 +27,8 @@ const TokenInfoBalanceValue = ({ align, asset, ...props }) => {
           icon={asset?.icon_url}
           chainId={asset?.chainId}
           symbol={asset?.symbol}
-          theme={theme}
-          colors={asset?.colors}
-          ignoreBadge
+          color={asset?.colors?.primary || asset?.colors?.fallback || undefined}
+          showBadge={false}
         />
       </View>
       <InfoValue color={color}>{balance?.display || value}</InfoValue>

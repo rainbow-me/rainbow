@@ -13,7 +13,7 @@ import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
 import ImgixImage from '@/components/images/ImgixImage';
 import { View } from 'react-native';
-import ChainBadge from '@/components/coin-icon/ChainBadge';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 import { ChainId } from '@/state/backendNetworks/types';
 
@@ -82,16 +82,18 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
                         }}
                       />
                     </View>
-                    {transaction.chainId !== ChainId.mainnet && <ChainBadge chainId={transaction.chainId} badgeYPosition={10} />}
+                    <ChainImage showBadge={transaction.chainId !== ChainId.mainnet} chainId={transaction.chainId} badgeYPosition={10} />
                   </View>
                 ) : (
                   <RainbowCoinIcon
-                    size={40}
                     icon={assetData?.icon_url}
                     chainId={assetData?.chainId || ChainId.mainnet}
                     symbol={assetData?.symbol || ''}
-                    theme={theme}
-                    colors={assetData?.colors}
+                    color={assetData?.colors?.primary || assetData?.colors?.fallback || undefined}
+                    chainBadgePosition={{
+                      x: -12,
+                      y: -6,
+                    }}
                   />
                 )
               }
