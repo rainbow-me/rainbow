@@ -1,18 +1,32 @@
 import lang from 'i18n-js';
 import { rankings } from 'match-sorter';
 import { groupBy } from 'lodash';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTheme } from '../theme/ThemeContext';
 import { addHexPrefix } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
-import { filterList } from '@/utils';
+import { isLowerCaseMatch, filterList } from '@/utils';
 import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { useTokenSearchAllNetworks } from '@/__swaps__/screens/Swap/resources/search/search';
+import { TokenSearchResult, useTokenSearchAllNetworks } from '@/__swaps__/screens/Swap/resources/search/search';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { isAddress } from '@ethersproject/address';
+
+const MAX_VERIFIED_RESULTS = 48;
+
+const getExactMatches = (data: TokenSearchResult, query: string) => {
+  const isQueryAddress = isAddress(query.trim());
+  return data.filter(asset => {
+    if (isQueryAddress) {
+      return !!(asset.address?.toLowerCase() === query.trim().toLowerCase());
+    }
+    const symbolMatch = isLowerCaseMatch(asset.symbol, query);
+    const nameMatch = isLowerCaseMatch(asset.name, query);
+    return symbolMatch || nameMatch;
+  });
+};
 
 const abcSort = (list: any[], key?: string) => {
   return list.sort((a, b) => {
@@ -66,11 +80,39 @@ const useSearchCurrencyList = (searchQuery: string) => {
 
   const { colors } = useTheme();
 
+  const selectTopSearchResults = useCallback(
+    (data: TokenSearchResult) => {
+      const results = data.filter(asset => {
+        const hasIcon = asset.icon_url;
+        const isMatch = hasIcon || searchQuery.length > 2;
+
+        if (!isMatch) {
+          const crosschainMatch = getExactMatches([asset], searchQuery);
+          return crosschainMatch.length > 0;
+        }
+
+        return isMatch;
+      });
+
+      const topResults = results
+        .sort((a, b) => {
+          if (a.isNativeAsset !== b.isNativeAsset) return a.isNativeAsset ? -1 : 1;
+          if (a.highLiquidity !== b.highLiquidity) return a.highLiquidity ? -1 : 1;
+          return Object.keys(b.networks).length - Object.keys(a.networks).length;
+        })
+        .slice(0, MAX_VERIFIED_RESULTS);
+
+      return [...topResults];
+    },
+    [searchQuery]
+  );
+
   const { data: searchResultAssets, isFetching: loading } = useTokenSearchAllNetworks(
     {
       query: searchQuery,
     },
     {
+      select: selectTopSearchResults,
       staleTime: 10 * 60 * 1_000, // 10 min
     }
   );
