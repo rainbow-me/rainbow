@@ -1,4 +1,4 @@
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { weiToGwei } from '@/parsers';
 import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/helpers/utilities';
 import { useNativeAsset } from '@/utils/ethereumUtils';
@@ -12,7 +12,7 @@ import { useSelectedGas } from './useSelectedGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 
-function safeBigInt(value: string) {
+export function safeBigInt(value: string) {
   try {
     return BigInt(value);
   } catch {

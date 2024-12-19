@@ -15,6 +15,78 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.50] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.50)
+
+### Fixed
+
+- Fixed an issue with unlocking app icons (#6342, #6345)
+
+## [1.9.49] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.49)
+
+### Added
+
+- Claim as X (#6193)
+- NFT checker 2.0 (#6293)
+- Added support for inkchain (#6323)
+
+### Changed
+
+- Improved nonce management logic for private mempool handling (#6277)
+- Split e2e into parallel and serial flows to improve CI runs (#6317)
+- Browser animation code cleanup (#6306)
+- Converted network accessors to functions (#6219)
+- Bumped nanoid from 3.3.7 to 3.3.8 in /src/design-system/docs (#6320)
+- Updated default currentNonce value to -1 (#6324)
+- Updated trending tokens query to support backend changes (#6312)
+- Replaced node ack retires with a small delay (#6326)
+- Updated swaps sdk (#6327)
+
+### Fixed
+
+- Fixed an issue with SignTransactionSheet not disabling button on authorization (#6242)
+- Fixed an issue where the sticky header on the wallet screen couldn’t be tapped when scrolled down the page (#6309)
+- Fixed a duplicate wallet initialization issue where initializeWallet was being called multiple times (#6310)
+- Fixed an issue where the wallet height calculation caused a break in the wallet switcher list with wallets up to two accounts (#6315)
+- Fixed a crash on develop regarding TextShadow (#6329)
+
+## [1.9.48] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.48)
+
+### Fixed
+
+- Bumped persist version for positions query. Otherwise, app will crash when serving stale query that does not have new parser that guarantees non-null array fields (#6307)
+
+## [1.9.47] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.47)
+
+### Added
+
+- Added react-native-turbo-haptics on both OS's (#6264)
+- Added trending tokens query (#6288)
+- Implemented active tab flag for dapp browser (#6279)
+- Added translations for claimables, DeFi Positions, WC loading state and swaps v2 bridging (#6295)
+- Added more analytics events for token details, erc20s and nfts (#6287)
+- Added ability to deeplink to swaps (#6178)
+
+### Changed
+
+- Replaced custom native review module with expo-store-review (#6268)
+- Updated mobile app's id'ing number of wallets to match BX (#6278)
+- Dapp Browser upgrades (#6269, #6300)
+- Enable third party defi positions & fix token list exclusion logic (#6299)
+
+### Fixed
+
+- Fixed a crash that would happen when attempting to swap tokens with 0 decimals (#6263)
+- Fixed app store deep links in dapp browser (#6267)
+- Fixed address searches on discover screen (#6272)
+- Fixed wallet telemetry identify for analytics (#6258)
+- Fixed a bug where users weren't able to open points breakdown from points screen (#6284)
+- Fixed an issue where we showed NaN wallet balance (#6283)
+- We now use MMKVObject initial value which fixes the empty default object being recreated (#6290)
+- Fixed the issue where we weren't showing the ledger pairing sheet during swaps confirmation (#6275)
+- Fixed build failures by using appstore connect key for CI (#6294)
+- Fixed a race condition where the wallet list would be static and users couldn't scroll (#6286)
+- Fixed lp badge gradient overflow and android shadows (#6296)
+
 ## [1.9.46] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.46)
 
 ### Changed

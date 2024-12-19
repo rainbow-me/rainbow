@@ -18,7 +18,7 @@ import { useTheme } from '@/theme';
 import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations';
 import { noop } from 'lodash';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',

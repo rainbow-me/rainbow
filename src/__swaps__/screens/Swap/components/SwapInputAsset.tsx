@@ -68,8 +68,9 @@ function SwapInputAmount() {
       }}
     >
       <GestureHandlerButton
-        disableButtonPressWrapper
-        onPressStartWorklet={() => {
+        disableHaptics
+        disableScale
+        onPressWorklet={() => {
           'worklet';
           focusedInput.value = 'inputAmount';
         }}

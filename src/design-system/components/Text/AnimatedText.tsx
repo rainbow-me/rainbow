@@ -1,16 +1,22 @@
 import React, { ElementRef, forwardRef, useMemo } from 'react';
 import { StyleProp, TextStyle } from 'react-native';
 import AnimateableText from 'react-native-animateable-text';
-import { SharedValue, useAnimatedProps } from 'react-native-reanimated';
+import { DerivedValue, SharedValue, useAnimatedProps } from 'react-native-reanimated';
 import { TextColor } from '../../color/palettes';
 import { CustomColor } from '../../color/useForegroundColor';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
 import { TextSize, TextWeight } from './Text';
 import { useTextStyle } from './useTextStyle';
 
+export type SharedOrDerivedValueText =
+  | (SharedValue<string> | DerivedValue<string>)
+  | (SharedValue<string | null> | DerivedValue<string | null>)
+  | (SharedValue<string | undefined> | DerivedValue<string | undefined>)
+  | (SharedValue<string | null | undefined> | DerivedValue<string | null | undefined>);
+
 export type AnimatedTextProps = {
   align?: 'center' | 'left' | 'right';
-  children?: SharedValue<string | null | undefined> | string | null | undefined;
+  children?: SharedOrDerivedValueText | string | null | undefined;
   color?: TextColor | CustomColor;
   ellipsizeMode?: 'head' | 'middle' | 'tail' | 'clip' | undefined;
   numberOfLines?: number;
@@ -40,7 +46,7 @@ export type AnimatedTextProps = {
    * const text = useDerivedValue(() => `Hello ${someOtherValue.value}`);
    * ```
    **/
-  text?: SharedValue<string | null | undefined>;
+  text?: SharedOrDerivedValueText;
   testID?: string;
   uppercase?: boolean;
   weight?: TextWeight;

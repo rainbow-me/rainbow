@@ -77,6 +77,9 @@ jobs:
           xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
           APP_DIR=$(find . -name "*.app" | head -n 1)
           cd $APP_DIR && zip -r ../../../../../../App.zip .
+      - name: Set up Appstore Key
+        run: |
+          cp ~/appstore/AuthKey_63N65C2G2S.p8 ios/fastlane/AuthKey_63N65C2G2S.p8
 
         # TOPHAT iOS DEVICE  
       - name: Build the app in release mode for iOS devices
@@ -85,7 +88,7 @@ jobs:
           FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         run: |
-            cd ios && bundle update fastlane && bundle exec fastlane ios build_device
+            cd ios && gem update fastlane && bundle exec fastlane ios build_device
       - name: Upload builds to AWS S3
         env:
           AWS_BUCKET: rainbow-app-team-production

@@ -6,7 +6,7 @@ import { useAddysSummary } from '@/resources/summary/summary';
 import { useQueries } from '@tanstack/react-query';
 import { fetchPositions, positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';
-import { add, convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
+import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { queryClient } from '@/react-query';
 
 const QUERY_CONFIG = {
@@ -71,7 +71,7 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
       const lowerCaseAddress = address.toLowerCase() as Address;
       const assetBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.asset_value?.toString() || '0';
       const positionData = queryClient.getQueryData<RainbowPositions | undefined>(positionsQueryKey({ address, currency: nativeCurrency }));
-      const positionsBalance = positionData ? subtract(positionData.totals.total.amount, positionData.totals.totalLocked) : '0';
+      const positionsBalance = positionData ? positionData.totals.total.amount : '0';
       const totalAccountBalance = add(assetBalance, positionsBalance);
 
       result[lowerCaseAddress] = {

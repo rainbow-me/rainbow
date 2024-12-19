@@ -1,1 +1,0 @@
-export { claimTransactionClaimable } from './claimTransactionClaimableAction';

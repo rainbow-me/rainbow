@@ -210,7 +210,7 @@ export const ControlPanelMenuItem = memo(function ControlPanelMenuItem({
     const selected = !disableSelectedStyle && selectedItemId?.value === uniqueId;
     return {
       // eslint-disable-next-line no-nested-ternary
-      backgroundColor: selected ? (isDarkMode ? globalColors.white10 : '#FBFCFD') : 'transparent',
+      backgroundColor: selected ? (isDarkMode ? globalColors.white10 : '#F7F7F9') : 'transparent',
       borderColor: selected ? borderColor : 'transparent',
       borderWidth: !selected || IS_ANDROID ? 0 : THICK_BORDER_WIDTH,
       paddingLeft: !selected || IS_ANDROID ? 10 : 10 - THICK_BORDER_WIDTH,
@@ -419,7 +419,7 @@ export const controlPanelStyles = StyleSheet.create({
     backgroundColor: globalColors.white10,
   },
   menuItemSelectedLight: {
-    backgroundColor: '#FBFCFD',
+    backgroundColor: '#F7F7F9',
   },
   panelContainer: {
     bottom: 91,

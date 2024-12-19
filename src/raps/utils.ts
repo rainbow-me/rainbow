@@ -8,9 +8,10 @@ import { Chain, erc20Abi } from 'viem';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { gasUtils } from '@/utils';
 import { add, greaterThan, multiply } from '@/helpers/utilities';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { gasUnits } from '@/references';
 import { toHexNoLeadingZeros } from '@/handlers/web3';
+import { BigNumber } from '@ethersproject/bignumber';
 
 export const CHAIN_IDS_WITH_TRACE_SUPPORT: ChainId[] = [mainnet.id];
 export const SWAP_GAS_PADDING = 1.1;
@@ -196,15 +197,24 @@ export const populateSwap = async ({
   provider: Provider;
   quote: Quote | CrosschainQuote;
 }): Promise<PopulatedTransaction | null> => {
-  try {
-    const { router, methodName, params, methodArgs } = getQuoteExecutionDetails(
-      quote,
-      { from: quote.from },
-      provider as StaticJsonRpcProvider
-    );
-    const swapTransaction = await router.populateTransaction[methodName](...(methodArgs ?? []), params);
-    return swapTransaction;
-  } catch (e) {
-    return null;
+  if (quote.swapType === 'cross-chain') {
+    return {
+      to: quote.to,
+      from: quote.from,
+      data: quote.data,
+      value: BigNumber.from(quote.value),
+    };
+  } else {
+    try {
+      const { router, methodName, params, methodArgs } = getQuoteExecutionDetails(
+        quote,
+        { from: quote.from },
+        provider as StaticJsonRpcProvider
+      );
+      const swapTransaction = await router.populateTransaction[methodName](...(methodArgs ?? []), params);
+      return swapTransaction;
+    } catch (e) {
+      return null;
+    }
   }
 };
