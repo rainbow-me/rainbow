@@ -157,7 +157,7 @@ const lazyPersist = <S>({ name, serializer, storageKey, value }: LazyPersistPara
  */
 function defaultSerializeState<S>(state: StorageValue<Partial<S>>['state'], version: StorageValue<Partial<S>>['version']): string {
   try {
-    return JSON.stringify({ state, version });
+    return JSON.stringify({ state, version }, replacer);
   } catch (error) {
     logger.error(new RainbowError(`[createRainbowStore]: Failed to serialize Rainbow store data`), { error });
     throw error;
@@ -171,9 +171,51 @@ function defaultSerializeState<S>(state: StorageValue<Partial<S>>['state'], vers
  */
 function defaultDeserializeState<S>(serializedState: string): StorageValue<Partial<S>> {
   try {
-    return JSON.parse(serializedState);
+    return JSON.parse(serializedState, reviver);
   } catch (error) {
     logger.error(new RainbowError(`[createRainbowStore]: Failed to deserialize persisted Rainbow store data`), { error });
     throw error;
   }
+}
+
+interface SerializedMap {
+  __type: 'Map';
+  entries: [unknown, unknown][];
+}
+
+function isSerializedMap(value: unknown): value is SerializedMap {
+  return typeof value === 'object' && value !== null && (value as Record<string, unknown>).__type === 'Map';
+}
+
+interface SerializedSet {
+  __type: 'Set';
+  values: unknown[];
+}
+
+function isSerializedSet(value: unknown): value is SerializedSet {
+  return typeof value === 'object' && value !== null && (value as Record<string, unknown>).__type === 'Set';
+}
+
+/**
+ * Replacer function to handle serialization of Maps and Sets.
+ */
+function replacer(key: string, value: unknown): unknown {
+  if (value instanceof Map) {
+    return { __type: 'Map', entries: Array.from(value.entries()) };
+  } else if (value instanceof Set) {
+    return { __type: 'Set', values: Array.from(value) };
+  }
+  return value;
+}
+
+/**
+ * Reviver function to handle deserialization of Maps and Sets.
+ */
+function reviver(key: string, value: unknown): unknown {
+  if (isSerializedMap(value)) {
+    return new Map(value.entries);
+  } else if (isSerializedSet(value)) {
+    return new Set(value.values);
+  }
+  return value;
 }
