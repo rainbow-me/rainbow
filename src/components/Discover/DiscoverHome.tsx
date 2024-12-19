@@ -70,10 +70,11 @@ export default function DiscoverHome() {
             <GasCard />
             {isProfilesEnabled && <ENSSearchCard />}
           </Inline>
+          <Separator color="separatorTertiary" thickness={1} />
           {trendingTokensEnabled && (
             <>
-              <Separator color="separatorSecondary" thickness={1} />
               <TrendingTokens />
+              <Separator color="separatorTertiary" thickness={1} />
             </>
           )}
           <RemoteCardCarousel />

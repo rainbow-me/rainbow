@@ -3043,8 +3043,10 @@
           "TOP_LOSERS": "Top Losers"
         },
         "time": {
-          "H12": "12h",
-          "H24": "24h",
+          "H12": "12 Hours",
+          "H12_ABBREVIATED": "12h",
+          "H24": "24 Hours",
+          "H24_ABBREVIATED": "24h",
           "D7": "1 Week",
           "D3": "1 Month"
         }
@@ -3056,11 +3058,11 @@
         "tap_the": "Tap the",
         "button_to_set_up": "button below to set up"
       },
-      "drag_here_to_unpin": "Drag here to unpin networks",
+      "drag_here_to_unpin": "Drop Here to Unpin",
       "edit": "Edit",
       "networks": "Networks",
-      "drag_to_rearrange": "Drag to rearrange",
-      "show_less": "Show less",
+      "drag_to_rearrange": "Drag to Rearrange",
+      "show_less": "Show Less",
       "more": "More",
       "show_more": "More Networks",
       "all_networks": "All Networks"
