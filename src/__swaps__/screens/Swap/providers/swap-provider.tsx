@@ -22,14 +22,14 @@ import { NavigationSteps, useSwapNavigation } from '@/__swaps__/screens/Swap/hoo
 import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
+import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { getFlashbotsProvider, getProvider } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
@@ -41,7 +41,6 @@ import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
-import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getNextNonce } from '@/state/nonces';
@@ -58,11 +57,9 @@ import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './Sync
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { chainsNativeAsset, supportedFlashbotsChainIds } from '@/chains';
+import { useBackendNetworksStore, getChainsNativeAssetWorklet } from '@/state/backendNetworks/backendNetworks';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
-import { EventProperties } from '@/analytics/event';
-import { isEqual } from 'lodash';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -156,6 +153,7 @@ const getInitialSliderXPosition = ({
 export const SwapProvider = ({ children }: SwapProviderProps) => {
   const { nativeCurrency } = useAccountSettings();
 
+  const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
   const initialValues = getSwapsNavigationParams();
 
   const isFetching = useSharedValue(false);
@@ -227,10 +225,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const NotificationManager = IS_IOS ? NativeModules.NotificationManager : null;
       NotificationManager?.postNotification('rapInProgress');
 
-      const provider =
-        parameters.flashbots && supportedFlashbotsChainIds.includes(parameters.chainId)
-          ? getFlashbotsProvider()
-          : getProvider({ chainId: parameters.chainId });
+      const provider = getProvider({ chainId: parameters.chainId });
       const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
 
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
@@ -327,7 +322,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           mainnetAddress: (parameters.assetToBuy.chainId === ChainId.mainnet
             ? parameters.assetToBuy.address
             : parameters.assetToSell.mainnetAddress) as AddressOrEth,
-          flashbots: parameters.flashbots ?? false,
           tradeAmountUSD: parameters.quote.tradeAmountUSD,
           degenMode: isDegenModeEnabled,
           isSwappingToPopularAsset,
@@ -347,14 +341,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         userAssetsQueryKey({
           address: parameters.quote.from,
           currency: nativeCurrency,
-          connectedToHardhat,
-        })
-      );
-      queryClient.invalidateQueries(
-        swapsUserAssetsQueryKey({
-          address: parameters.quote.from as Address,
-          currency: nativeCurrency,
-          testnetMode: !!connectedToHardhat,
+          testnetMode: connectedToHardhat,
         })
       );
 
@@ -399,7 +386,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         mainnetAddress: (parameters.assetToBuy.chainId === ChainId.mainnet
           ? parameters.assetToBuy.address
           : parameters.assetToSell.mainnetAddress) as AddressOrEth,
-        flashbots: parameters.flashbots ?? false,
         tradeAmountUSD: parameters.quote.tradeAmountUSD,
         degenMode: isDegenModeEnabled,
         isSwappingToPopularAsset,
@@ -441,8 +427,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
       const quoteData = q as QuoteTypeMap[typeof type];
-      const flashbots = (SwapSettings.flashbots.value && !!supportedFlashbotsChainIds.includes(inputAsset.chainId)) ?? false;
-
       const isNativeWrapOrUnwrap = quoteData.swapType === SwapType.wrap || quoteData.swapType === SwapType.unwrap;
 
       const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
@@ -457,7 +441,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           sellAmountDisplay: isNativeWrapOrUnwrap ? quoteData.sellAmount : quoteData.sellAmountDisplay,
           feeInEth: isNativeWrapOrUnwrap ? '0' : quoteData.feeInEth,
         },
-        flashbots,
       };
 
       runOnJS(getNonceAndPerformSwap)({
@@ -792,7 +775,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (hasEnoughFundsForGas.value === false) {
-      const nativeCurrency = chainsNativeAsset[sellAsset?.chainId || ChainId.mainnet];
+      const nativeCurrency = getChainsNativeAssetWorklet(backendNetworks)[sellAsset?.chainId || ChainId.mainnet];
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
         disabled: true,

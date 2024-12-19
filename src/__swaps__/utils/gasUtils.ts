@@ -11,7 +11,7 @@ import * as i18n from '@/languages';
 import { OVM_GAS_PRICE_ORACLE, gasUnits, supportedNativeCurrencies, optimismGasOracleAbi, SupportedCurrencyKey } from '@/references';
 
 import { ParsedAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { BlocksToConfirmation, GasFeeLegacyParams, GasFeeParam, GasFeeParams, GasSpeed } from '@/__swaps__/types/gas';
 
 import { gweiToWei, weiToGwei } from '@/parsers';
@@ -30,8 +30,6 @@ import {
 import { addHexPrefix, toHex } from '@/handlers/web3';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
-
-export const FLASHBOTS_MIN_TIP = 6;
 
 export const parseGasDataConfirmationTime = ({
   maxBaseFee,
@@ -463,7 +461,6 @@ export const parseGasFeeParamsBySpeed = ({
   nativeAsset,
   currency,
   optimismL1SecurityFee,
-  flashbotsEnabled,
   additionalTime = 0,
 }: {
   chainId: ChainId;
@@ -472,7 +469,6 @@ export const parseGasFeeParamsBySpeed = ({
   nativeAsset?: ParsedAsset;
   currency: SupportedCurrencyKey;
   optimismL1SecurityFee?: string | null;
-  flashbotsEnabled?: boolean;
   additionalTime?: number;
 }) => {
   if (meteorologySupportsType2ForChain(chainId)) {
@@ -485,16 +481,6 @@ export const parseGasFeeParamsBySpeed = ({
       byBaseFee: response.data.blocksToConfirmationByBaseFee,
       byPriorityFee: response.data.blocksToConfirmationByPriorityFee,
     };
-
-    if (flashbotsEnabled) {
-      for (const speed in maxPriorityFeeSuggestions) {
-        type gasSpeed = 'fast' | 'normal' | 'urgent';
-        maxPriorityFeeSuggestions[speed as gasSpeed] = Math.max(
-          Number(gweiToWei(FLASHBOTS_MIN_TIP.toString())),
-          Number(maxPriorityFeeSuggestions[speed as gasSpeed])
-        ).toString();
-      }
-    }
 
     const parseGasFeeParamsSpeed = ({ speed }: { speed: GasSpeed }) =>
       parseGasFeeParams({

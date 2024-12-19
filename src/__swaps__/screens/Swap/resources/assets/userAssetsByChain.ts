@@ -3,7 +3,7 @@ import { Address } from 'viem';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { SupportedCurrencyKey } from '@/references';
 import { ParsedAssetsDictByChain, ParsedUserAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { RainbowError, logger } from '@/logger';
 
@@ -70,7 +70,7 @@ async function userAssetsByChainQueryFunction({
       },
     });
     const chainIdsInResponse = res?.data?.meta?.chain_ids || [];
-    const assets = res?.data?.payload?.assets || [];
+    const assets = res?.data?.payload?.assets?.filter(asset => !asset.asset.defi_position) || [];
     if (assets.length && chainIdsInResponse.length) {
       const parsedAssetsDict = await parseUserAssets({
         assets,

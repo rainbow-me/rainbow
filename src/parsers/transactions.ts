@@ -21,8 +21,8 @@ import { NewTransaction, RainbowTransactionFee } from '@/entities/transactions/t
 import { parseAddressAsset, parseAsset } from '@/resources/assets/assets';
 import { ParsedAsset } from '@/resources/assets/types';
 
-import { ChainId } from '@/chains/types';
-import { chainsNativeAsset } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const TransactionOutTypes = [
   'burn',
@@ -148,9 +148,9 @@ export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): R
     hash: tx.hash,
     nonce: tx.nonce,
     protocol: tx.protocol,
+    timestamp: Date.now(),
     to: tx.to,
     type: tx.type,
-    flashbots: tx.flashbots,
     gasPrice: tx.gasPrice,
     maxFeePerGas: tx.maxFeePerGas,
     maxPriorityFeePerGas: tx.maxPriorityFeePerGas,
@@ -169,7 +169,7 @@ const getTransactionFee = (
     return undefined;
   }
 
-  const chainNativeAsset = chainsNativeAsset[chainId];
+  const chainNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
 
   const zerionFee = txn.fee;
   return {

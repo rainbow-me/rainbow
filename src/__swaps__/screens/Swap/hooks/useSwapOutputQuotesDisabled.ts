@@ -1,6 +1,10 @@
 import { SharedValue, useDerivedValue } from 'react-native-reanimated';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { supportedSwapExactOutputChainIds, supportedBridgeExactOutputChainIds } from '@/chains';
+import {
+  useBackendNetworksStore,
+  getSwapExactOutputSupportedChainIdsWorklet,
+  getBridgeExactOutputSupportedChainIdsWorklet,
+} from '@/state/backendNetworks/backendNetworks';
 
 export const useSwapOutputQuotesDisabled = ({
   inputAsset,
@@ -9,13 +13,15 @@ export const useSwapOutputQuotesDisabled = ({
   inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   outputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
 }): SharedValue<boolean> => {
+  const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
+
   const outputQuotesAreDisabled = useDerivedValue(() => {
     if (!inputAsset.value || !outputAsset.value) return false;
 
     if (inputAsset.value.chainId === outputAsset.value.chainId) {
-      return !supportedSwapExactOutputChainIds.includes(inputAsset.value.chainId);
+      return !getSwapExactOutputSupportedChainIdsWorklet(backendNetworks).includes(inputAsset.value.chainId);
     } else {
-      return !supportedBridgeExactOutputChainIds.includes(inputAsset.value.chainId);
+      return !getBridgeExactOutputSupportedChainIdsWorklet(backendNetworks).includes(inputAsset.value.chainId);
     }
   });
 

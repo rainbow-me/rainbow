@@ -3,7 +3,7 @@ import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
-import { Block, StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
+import { Block, JsonRpcBatchProvider, StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
@@ -24,9 +24,9 @@ import {
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
-import { ChainId } from '@/chains/types';
+import { ChainId, chainHardhat } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { defaultChains } from '@/chains';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -34,6 +34,8 @@ export enum TokenStandard {
 }
 
 export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
+
+export const chainsBatchProviders = new Map<ChainId, JsonRpcBatchProvider>();
 
 /**
  * Creates an rpc endpoint for a given chain id using the Rainbow rpc proxy.
@@ -91,7 +93,8 @@ export type NewTransactionNonNullable = {
  * @return Whether or not the network is a L2 network.
  */
 export const isL2Chain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }): boolean => {
-  return defaultChains[chainId].id !== ChainId.mainnet && !defaultChains[chainId].testnet;
+  const defaultChains = useBackendNetworksStore.getState().getDefaultChains();
+  return defaultChains[chainId]?.id !== ChainId.mainnet && !defaultChains[chainId]?.testnet;
 };
 
 /**
@@ -100,26 +103,36 @@ export const isL2Chain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }):
  * @return Whether or not the network is a testnet.
  */
 export const isTestnetChain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }): boolean => {
-  return !!defaultChains[chainId].testnet;
-};
-
-// TODO: should figure out better way to include this in networks
-export const getFlashbotsProvider = () => {
-  return new StaticJsonRpcProvider(
-    proxyCustomRpcEndpoint(
-      ChainId.mainnet,
-      'https://rpc.flashbots.net/?hint=hash&builder=flashbots&builder=f1b.io&builder=rsync&builder=beaverbuild.org&builder=builder0x69&builder=titan&builder=eigenphi&builder=boba-builder'
-    )
-  );
+  return !!useBackendNetworksStore.getState().getDefaultChains()[chainId]?.testnet;
 };
 
 export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet): StaticJsonRpcProvider | undefined => {
   return chainsProviders.get(chainId);
 };
 
+export const getBatchedProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): JsonRpcBatchProvider => {
+  if (useConnectedToHardhatStore.getState().connectedToHardhat) {
+    const provider = new JsonRpcBatchProvider(chainHardhat.rpcUrls.default.http[0], ChainId.mainnet);
+    chainsBatchProviders.set(chainId, provider);
+
+    return provider;
+  }
+
+  const cachedProvider = chainsBatchProviders.get(chainId);
+  const providerUrl = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.rpcUrls?.default?.http?.[0];
+
+  if (cachedProvider && cachedProvider?.connection.url === providerUrl) {
+    return cachedProvider;
+  }
+  const provider = new JsonRpcBatchProvider(providerUrl, chainId);
+  chainsBatchProviders.set(chainId, provider);
+
+  return provider;
+};
+
 export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): StaticJsonRpcProvider => {
   if (useConnectedToHardhatStore.getState().connectedToHardhat) {
-    const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545/', ChainId.mainnet);
+    const provider = new StaticJsonRpcProvider(chainHardhat.rpcUrls.default.http[0], ChainId.mainnet);
     chainsProviders.set(chainId, provider);
 
     return provider;
@@ -127,7 +140,7 @@ export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number })
 
   const cachedProvider = chainsProviders.get(chainId);
 
-  const providerUrl = defaultChains[chainId]?.rpcUrls?.default?.http?.[0];
+  const providerUrl = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.rpcUrls?.default?.http?.[0];
 
   if (cachedProvider && cachedProvider?.connection.url === providerUrl) {
     return cachedProvider;

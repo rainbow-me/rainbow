@@ -7,7 +7,7 @@ import { TextColor } from '@/design-system/color/palettes';
 
 import { abbreviations, ethereumUtils } from '@/utils';
 import { TransactionSimulationMeta } from '@/graphql/__generated__/metadataPOST';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 import { TransactionDetailsRow } from '@/components/Transactions/TransactionDetailsRow';
 import { FadedScrollCard } from '@/components/FadedScrollCard';
@@ -20,7 +20,7 @@ import {
   CARD_BORDER_WIDTH,
   EXPANDED_CARD_TOP_INSET,
 } from '@/components/Transactions/constants';
-import { chainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 interface TransactionDetailsCardProps {
   chainId: ChainId;
@@ -93,7 +93,13 @@ export const TransactionDetailsCard = ({
         </Box>
         <Animated.View style={listStyle}>
           <Stack space="24px">
-            {<TransactionDetailsRow chainId={chainId} detailType="chain" value={chainsName[chainId]} />}
+            {
+              <TransactionDetailsRow
+                chainId={chainId}
+                detailType="chain"
+                value={useBackendNetworksStore.getState().getChainsName()[chainId]}
+              />
+            }
             {!!(meta?.to?.address || toAddress || showTransferToRow) && (
               <TransactionDetailsRow
                 detailType={isContract ? 'contract' : 'to'}
