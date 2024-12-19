@@ -53,6 +53,7 @@ const translations = {
   edit: i18n.t(t.edit),
   done: i18n.t(i18n.l.done),
   networks: i18n.t(t.networks),
+  more: i18n.t(t.more),
   show_more: i18n.t(t.show_more),
   show_less: i18n.t(t.show_less),
   drag_to_rearrange: i18n.t(t.drag_to_rearrange),
@@ -198,8 +199,9 @@ const CustomizeNetworksBanner = !shouldShowCustomizeNetworksBanner(customizeNetw
       );
     };
 
-const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color: string) => {
+const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color?: string) => {
   const { isDarkMode } = useColorMode();
+  const label = useForegroundColor('labelTertiary');
 
   const surfacePrimary = useBackgroundColor('surfacePrimary');
   const networkSwitcherBackgroundColor = isDarkMode ? '#191A1C' : surfacePrimary;
@@ -209,8 +211,12 @@ const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color: string) 
     borderColor: '#F5F8FF05',
   };
   const selectedStyle = {
-    backgroundColor: chroma.scale([networkSwitcherBackgroundColor, color])(0.16).hex(),
-    borderColor: chroma(color).alpha(0.16).hex(),
+    backgroundColor: chroma
+      .scale([networkSwitcherBackgroundColor, color || label])(0.16)
+      .hex(),
+    borderColor: chroma(color || label)
+      .alpha(0.16)
+      .hex(),
   };
 
   const scale = useSharedValue(1);
@@ -445,6 +451,10 @@ function SectionSeparator({
 }) {
   const pressed = useSharedValue(false);
 
+  const showExpandButtonAsNetworkChip = useDerivedValue(() => {
+    return !expanded.value && !editing.value && networks.value[Section.pinned].length % 2 !== 0;
+  });
+
   const visible = useDerivedValue(() => {
     return networks.value[Section.unpinned].length > 0 || editing.value;
   });
@@ -459,32 +469,50 @@ function SectionSeparator({
       expanded.value = !expanded.value;
     });
 
-  const separatorStyles = useAnimatedStyle(() => ({
-    opacity: visible.value ? 1 : 0,
-    transform: [{ translateY: sectionsOffsets.value[Section.separator].y }, { scale: withTiming(pressed.value ? 0.95 : 1) }],
-  }));
-
   const text = useDerivedValue(() => {
     if (editing.value) return translations.drag_to_rearrange;
+    if (showExpandButtonAsNetworkChip.value) return translations.more;
     return expanded.value ? translations.show_less : translations.show_more;
   });
 
   const unpinnedNetworksLength = useDerivedValue(() => networks.value[Section.unpinned].length.toString());
-  const showMoreAmountStyle = useAnimatedStyle(() => ({ opacity: expanded.value || editing.value ? 0 : 1 }));
+  const showMoreAmountStyle = useAnimatedStyle(() => ({
+    opacity: expanded.value || editing.value ? 0 : 1,
+  }));
   const showMoreOrLessIcon = useDerivedValue(() => (expanded.value ? '􀆇' : '􀆈') as string);
   const showMoreOrLessIconStyle = useAnimatedStyle(() => ({ opacity: editing.value ? 0 : 1 }));
 
   const { isDarkMode } = useTheme();
 
+  const separatorContainerStyles = useAnimatedStyle(() => {
+    if (showExpandButtonAsNetworkChip.value) {
+      const position = positionFromIndex(networks.value[Section.pinned].length, sectionsOffsets.value[Section.pinned]);
+      return {
+        backgroundColor: isDarkMode ? globalColors.white10 : globalColors.grey20,
+        borderColor: '#F5F8FF05',
+        height: ITEM_HEIGHT,
+        width: ITEM_WIDTH,
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderRadius: 24,
+        borderWidth: 1.33,
+        transform: [{ translateX: position.x }, { translateY: position.y }],
+      };
+    }
+
+    return {
+      backgroundColor: 'transparent',
+      opacity: visible.value ? 1 : 0,
+      transform: [{ translateY: sectionsOffsets.value[Section.separator].y }, { scale: withTiming(pressed.value ? 0.95 : 1) }],
+      position: 'absolute',
+      width: '100%',
+      height: SEPARATOR_HEIGHT,
+    };
+  });
+
   return (
     <GestureDetector gesture={tapExpand}>
-      <Animated.View
-        style={[
-          { position: 'absolute', width: '100%', height: SEPARATOR_HEIGHT, justifyContent: 'center', alignItems: 'center' },
-          { flexDirection: 'row', gap: 8 },
-          separatorStyles,
-        ]}
-      >
+      <Animated.View style={[separatorContainerStyles, { gap: 8, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }]}>
         <Animated.View
           style={[
             {
