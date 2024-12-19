@@ -74,11 +74,18 @@ function EditButton({ editing }: { editing: SharedValue<boolean> }) {
         editing.value = !editing.value;
       }}
       scaleTo={0.95}
-      style={[
-        { position: 'absolute', right: 0 },
-        { paddingHorizontal: 10, height: 28, justifyContent: 'center' },
-        { borderColor, borderCurve: 'continuous', borderWidth: THICK_BORDER_WIDTH, borderRadius: 14, overflow: 'hidden' },
-      ]}
+      style={{
+        borderColor,
+        borderCurve: 'continuous',
+        borderRadius: 14,
+        borderWidth: THICK_BORDER_WIDTH,
+        height: 28,
+        justifyContent: 'center',
+        overflow: 'hidden',
+        paddingHorizontal: 10,
+        position: 'absolute',
+        right: 0,
+      }}
     >
       <AnimatedText color="blue" size="17pt" weight="bold" style={{ shadowColor: '#268FFF', shadowOpacity: 0.4, shadowRadius: 12 }}>
         {text}
@@ -374,9 +381,17 @@ function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: Shar
     <Animated.View
       layout={LinearTransition.springify().mass(0.4)}
       style={[
-        { height: ITEM_HEIGHT, width: ITEM_WIDTH },
-        { paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center' },
-        { borderCurve: 'continuous', borderRadius: 24, borderWidth: THICK_BORDER_WIDTH, overflow: 'hidden' },
+        {
+          alignItems: 'center',
+          borderCurve: 'continuous',
+          borderRadius: 24,
+          borderWidth: THICK_BORDER_WIDTH,
+          flexDirection: 'row',
+          height: ITEM_HEIGHT,
+          overflow: 'hidden',
+          paddingHorizontal: 12,
+          width: ITEM_WIDTH,
+        },
         animatedStyle,
       ]}
     >
