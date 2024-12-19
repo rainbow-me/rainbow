@@ -6,7 +6,7 @@ import { useCallback } from 'react';
 
 const AUTOSCROLL_THRESHOLD = 50;
 const AUTOSCROLL_MIN_SPEED = 1;
-const AUTOSCROLL_MAX_SPEED = 5;
+const AUTOSCROLL_MAX_SPEED = 7;
 const AUTOSCROLL_THRESHOLD_MAX_DISTANCE = 100;
 
 function easeInOutCubicWorklet(x: number): number {

@@ -21,7 +21,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;
 const GRID_GAP = 26;
-const MAX_AVATAR_SIZE = 91;
+const MAX_AVATAR_SIZE = 105;
 
 type PinnedWalletsGridProps = {
   walletItems: AddressItem[];
@@ -113,8 +113,8 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                       shouldRasterizeIOS
                     >
                       <Box
-                        width={{ custom: avatarSize }}
-                        height={{ custom: avatarSize }}
+                        width={avatarSize}
+                        height={avatarSize}
                         background="surfaceSecondaryElevated"
                         shadow={
                           account.isSelected
