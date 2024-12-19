@@ -1,8 +1,8 @@
 import lang from 'i18n-js';
-import isEmpty from 'lodash/isEmpty';
-import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
+import isEmpty from 'lodash/isEmpty';
+import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { queryClient } from '@/react-query';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';

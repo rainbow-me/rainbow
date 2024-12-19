@@ -46,7 +46,6 @@ import { loadWallet, sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { rainbowTokenList } from '@/references';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
@@ -129,7 +128,7 @@ type OnSubmitProps = {
 
 export default function SendSheet() {
   const { goBack, navigate } = useNavigation();
-  const { data: sortedAssets } = useSortedUserAssets();
+  const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const {
     gasFeeParamsBySpeed,
     gasLimit,

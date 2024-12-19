@@ -875,6 +875,8 @@
       "adworld_title": "Welcome to Rainbow World!",
       "farcaster_description": "Our most boring app icon ever, inspired by Warpcast's bland minimalism.",
       "farcaster_title": "You've unlocked\nRainbowcast",
+      "redacted_description": "A stupi-exclusive Rainbow icon for the true Gdupi enjoyers.",
+      "redacted_title": "You've unlocked\n Redacted Rainbow",
       "button": "Snag the icon"
     },
     "explain": {
@@ -945,41 +947,69 @@
         "text": "The miner tip goes directly to the miner who confirms your transaction on the network.\n\nA higher tip makes your transaction more likely to be confirmed quickly.",
         "title": "Miner tip"
       },
-      "optimism": {
-        "text": "Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
-        "title": "What's Optimism?"
-      },
-      "base": {
-        "text": "Base is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
-        "title": "What's Base?"
+      "apechain": {
+        "text": "ApeChain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum.\n\nIt significantly enhances ApeCoin's utility, fostering a robust and dynamic economy driven by $APE.",
+        "title": "What's ApeChain?"
       },
       "avalanche": {
         "text": "Avalanche is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Avalanche has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Avalanche?"
       },
-      "degen": {
-        "text": "Degen Chain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum.",
-        "title": "What's Degen Chain?"
+      "base": {
+        "text": "Base is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "title": "What's Base?"
       },
       "blast": {
         "text": "Blast is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
         "title": "What's Blast?"
       },
-      "apechain": {
-        "text": "ApeChain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum.\n\nIt significantly enhances ApeCoin's utility, fostering a robust and dynamic economy driven by $APE.",
-        "title": "What's ApeChain?"
+      "bsc": {
+        "text": "Binance Smart Chain (BSC) is the blockchain for the trading platform Binance. \n\nBSC allows for cheaper and faster transactions, but unlike a Layer 2 network, it has its own security and consensus mechanisms that differ from Ethereum.",
+        "title": "What's Binance Smart Chain?"
       },
-      "zora": {
-        "text": "Zora is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
-        "title": "What's Zora?"
+      "degen": {
+        "text": "Degen Chain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum.",
+        "title": "What's Degen Chain?"
+      },
+      "gravity": {
+        "text": "Gravity is a high-performance Layer 1 blockchain built by Galxe, achieving over one gigagas per second throughput and sub-second finality.\n\nIt utilizes a pipelined AptosBFT consensus engine and a parallel EVM runtime, maintaining Proof-of-Stake security through restaking technology.",
+        "title": "What's Gravity?"
+      },
+      "gnosis": {
+        "text": "Gnosis Chain is a community-owned Ethereum sidechain operated by a diverse set of validators worldwide.\n\nIt focuses on resilience and credible neutrality, offering cheaper and faster transactions while maintaining its own security and consensus mechanisms.",
+        "title": "What's Gnosis?"
+      },
+      "ink": {
+        "text": "Ink is a Layer 2 network built on the OP Stack, designed to scale Ethereum by providing sub-second block times and low transaction fees.\n\nUnleashed by Kraken, and part of the Superchain, Ink aims to enhance performance and accessibility for decentralized finance (DeFi) applications.",
+        "title": "What's Ink?"
+      },
+      "linea": {
+        "text": "Linea is a secure, low-cost, Ethereum-equivalent Layer 2 blockchain developed by ConsenSys.\n\nIt enables faster and more affordable transactions without compromising security and decentralization, aiming to onboard the next billion users to web3.",
+        "title": "What's Linea?"
+      },
+      "optimism": {
+        "text": "Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "title": "What's Optimism?"
       },
       "polygon": {
         "text": "Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Polygon?"
       },
-      "bsc": {
-        "text": "Binance Smart Chain (BSC) is the blockchain for the trading platform Binance. \n\nBSC allows for cheaper and faster transactions, but unlike a Layer 2 network, it has its own security and consensus mechanisms that differ from Ethereum.",
-        "title": "What's Binance Smart Chain?"
+      "scroll": {
+        "text": "Scroll is a Layer 2 solution built atop Ethereum, aiming to enhance scalability and transaction efficiency.\n\nIt employs roll-up technology to bundle transactions, which are then submitted to Ethereum, benefiting from its security infrastructure.",
+        "title": "What's Scroll?"
+      },
+      "sanko": {
+        "text": "Sanko is a Layer 3 network that runs on top of Arbitrum and Ethereum, focusing on NFTs and gaming.\n\nIt uses AnyTrust Data Availability and fraud proofs for state validation, allowing for faster and cheaper transactions while leveraging Ethereum's security. Sanko features a native token called DMT and employs whitelisted validators for proposing and challenging state roots.",
+        "title": "What's Sanko?"
+      },
+      "zksync": {
+        "text": "ZKsync is a Layer 2 protocol designed to scale Ethereum using advanced zero-knowledge cryptographic proofs.\n\nIt enhances Ethereum’s throughput while maintaining decentralization and security, enabling faster and cheaper transactions.",
+        "title": "What's Zksync?"
+      },
+      "zora": {
+        "text": "Zora is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "title": "What's Zora?"
       },
       "read_more": "Read More",
       "learn_more": "Learn More",
