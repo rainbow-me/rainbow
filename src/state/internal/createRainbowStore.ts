@@ -1,8 +1,7 @@
 import { debounce } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
-import { create } from 'zustand';
+import { StateCreator, create } from 'zustand';
 import { PersistOptions, StorageValue, persist, subscribeWithSelector } from 'zustand/middleware';
-import { StateCreator } from 'zustand/vanilla';
 import { RainbowError, logger } from '@/logger';
 
 const PERSIST_RATE_LIMIT_MS = 3000;
@@ -12,12 +11,17 @@ const rainbowStorage = new MMKV({ id: 'rainbow-storage' });
 /**
  * Configuration options for creating a persistable Rainbow store.
  */
-interface RainbowPersistConfig<S> {
+export interface RainbowPersistConfig<S> {
   /**
    * A function to convert the serialized string back into the state object.
    * If not provided, the default deserializer is used.
    */
   deserializer?: (serializedState: string) => StorageValue<Partial<S>>;
+  /**
+   * A function to perform persisted state migration.
+   * This function will be called when persisted state versions mismatch with the one specified here.
+   */
+  migrate?: (persistedState: unknown, version: number) => S | Promise<S>;
   /**
    * A function that determines which parts of the state should be persisted.
    * By default, the entire state is persisted.
@@ -38,11 +42,35 @@ interface RainbowPersistConfig<S> {
    * @default 0
    */
   version?: number;
-  /**
-   * A function to perform persisted state migration.
-   * This function will be called when persisted state versions mismatch with the one specified here.
-   */
-  migrate?: (persistedState: unknown, version: number) => S | Promise<S>;
+}
+
+/**
+ * Creates a Rainbow store with optional persistence functionality.
+ * @param createState - The state creator function for the Rainbow store.
+ * @param persistConfig - The configuration options for the persistable Rainbow store.
+ * @returns A Zustand store with the specified state and optional persistence.
+ */
+export function createRainbowStore<S = unknown>(
+  createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]>,
+  persistConfig?: RainbowPersistConfig<S>
+) {
+  if (!persistConfig) {
+    return create<S>()(subscribeWithSelector(createState));
+  }
+
+  const { persistStorage, version } = createPersistStorage(persistConfig);
+
+  return create<S>()(
+    subscribeWithSelector(
+      persist(createState, {
+        migrate: persistConfig.migrate,
+        name: persistConfig.storageKey,
+        partialize: persistConfig.partialize || (state => state),
+        storage: persistStorage,
+        version,
+      })
+    )
+  );
 }
 
 /**
@@ -131,33 +159,4 @@ function defaultDeserializeState<S>(serializedState: string): StorageValue<Parti
     logger.error(new RainbowError(`[createRainbowStore]: Failed to deserialize persisted Rainbow store data`), { error });
     throw error;
   }
-}
-
-/**
- * Creates a Rainbow store with optional persistence functionality.
- * @param createState - The state creator function for the Rainbow store.
- * @param persistConfig - The configuration options for the persistable Rainbow store.
- * @returns A Zustand store with the specified state and optional persistence.
- */
-export function createRainbowStore<S = unknown>(
-  createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]>,
-  persistConfig?: RainbowPersistConfig<S>
-) {
-  if (!persistConfig) {
-    return create<S>()(subscribeWithSelector(createState));
-  }
-
-  const { persistStorage, version } = createPersistStorage(persistConfig);
-
-  return create<S>()(
-    subscribeWithSelector(
-      persist(createState, {
-        name: persistConfig.storageKey,
-        partialize: persistConfig.partialize || (state => state),
-        storage: persistStorage,
-        version,
-        migrate: persistConfig.migrate,
-      })
-    )
-  );
 }
