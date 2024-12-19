@@ -77,7 +77,7 @@ function EditButton({ editing }: { editing: SharedValue<boolean> }) {
       style={[
         { position: 'absolute', right: 0 },
         { paddingHorizontal: 10, height: 28, justifyContent: 'center' },
-        { borderColor, borderWidth: THICK_BORDER_WIDTH, borderRadius: 14 },
+        { borderColor, borderCurve: 'continuous', borderWidth: THICK_BORDER_WIDTH, borderRadius: 14, overflow: 'hidden' },
       ]}
     >
       <AnimatedText color="blue" size="17pt" weight="bold" style={{ shadowColor: '#268FFF', shadowOpacity: 0.4, shadowRadius: 12 }}>
@@ -98,7 +98,17 @@ function Header({ editing }: { editing: SharedValue<boolean> }) {
   return (
     <View style={{ height: 66, borderBottomWidth: 1, borderBottomColor: separatorTertiary, paddingTop: 20 }}>
       <View style={{ position: 'absolute', left: 0, right: 0, top: 6 }}>
-        <View style={{ height: 5, width: 36, marginHorizontal: 'auto', borderRadius: 3, backgroundColor: fill }} />
+        <View
+          style={{
+            height: 5,
+            width: 36,
+            marginHorizontal: 'auto',
+            borderRadius: 3,
+            borderCurve: 'continuous',
+            backgroundColor: fill,
+            overflow: 'hidden',
+          }}
+        />
       </View>
 
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 28 }}>
@@ -300,6 +310,8 @@ function AllNetworksOption({
             alignItems: 'center',
             borderRadius: 24,
             borderWidth: THICK_BORDER_WIDTH,
+            borderCurve: 'continuous',
+            overflow: 'hidden',
           },
           animatedStyle,
         ]}
@@ -364,7 +376,7 @@ function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: Shar
       style={[
         { height: ITEM_HEIGHT, width: ITEM_WIDTH },
         { paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center' },
-        { borderRadius: 24, borderWidth: THICK_BORDER_WIDTH },
+        { borderCurve: 'continuous', borderRadius: 24, borderWidth: THICK_BORDER_WIDTH, overflow: 'hidden' },
         animatedStyle,
       ]}
     >
@@ -836,7 +848,7 @@ const sx = StyleSheet.create({
     paddingHorizontal: 16,
     borderCurve: 'continuous',
     borderRadius: 42,
-    borderWidth: THICKER_BORDER_WIDTH,
+    borderWidth: THICK_BORDER_WIDTH,
     overflow: 'hidden',
   },
 });
