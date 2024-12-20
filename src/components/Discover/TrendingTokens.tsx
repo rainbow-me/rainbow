@@ -564,7 +564,7 @@ function NetworkFilter() {
 
 function TimeFilter() {
   const timeframe = useTrendingTokensStore(state => state.timeframe);
-  const shouldAbbreviate = timeframe === Timeframe.H24;
+  const shouldAbbreviate = timeframe === Timeframe.H24 || timeframe === Timeframe.H12;
 
   return (
     <DropdownMenu
