@@ -50,7 +50,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { convertAmountAndPriceToNativeDisplay, convertAmountFromNativeValue, formatInputDecimals, lessThan } from '@/helpers/utilities';
-import { deviceUtils, ethereumUtils, getUniqueTokenType, safeAreaInsetValues } from '@/utils';
+import { deviceUtils, ethereumUtils, getUniqueTokenType, isLowerCaseMatch, safeAreaInsetValues } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { NoResults } from '@/components/list';
@@ -62,13 +62,14 @@ import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { RootStackParamList } from '@/navigation/types';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Contact } from '@/redux/contacts';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import store from '@/redux/store';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -95,6 +96,17 @@ const SheetContainer = styled(Column).attrs({
 });
 
 const validateRecipient = (toAddress?: string, tokenAddress?: string) => {
+  const { wallets } = store.getState().wallets;
+  // check for if the recipient is in a damaged wallet state and prevent
+  if (wallets) {
+    const internalWallet = Object.values(wallets).find(wallet =>
+      wallet.addresses.some(address => isLowerCaseMatch(address.address, toAddress))
+    );
+    if (internalWallet?.damaged) {
+      return false;
+    }
+  }
+
   if (!toAddress || toAddress?.toLowerCase() === tokenAddress?.toLowerCase()) {
     return false;
   }

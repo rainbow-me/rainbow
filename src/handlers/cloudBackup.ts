@@ -1,14 +1,15 @@
 import { sortBy } from 'lodash';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import RNCloudFs from 'react-native-cloud-fs';
-import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
 import AesEncryptor from '../handlers/aesEncryption';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { CloudBackups } from '@/model/backup';
+import { BackupFile, CloudBackups } from '@/model/backup';
+
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
-const USERDATA_FILE = 'UserData.json';
+export const USERDATA_FILE = 'UserData.json';
+
 const encryptor = new AesEncryptor();
 
 export const CLOUD_BACKUP_ERRORS = {
@@ -65,13 +66,18 @@ export async function fetchAllBackups(): Promise<CloudBackups> {
   if (android) {
     await RNCloudFs.loginIfNeeded();
   }
-  return RNCloudFs.listFiles({
+
+  const files = await RNCloudFs.listFiles({
     scope: 'hidden',
     targetPath: REMOTE_BACKUP_WALLET_DIR,
   });
+
+  return {
+    files: files?.files?.filter((file: BackupFile) => normalizeAndroidBackupFilename(file.name) !== USERDATA_FILE) || [],
+  };
 }
 
-export async function encryptAndSaveDataToCloud(data: any, password: any, filename: any) {
+export async function encryptAndSaveDataToCloud(data: Record<string, unknown>, password: string, filename: string) {
   // Encrypt the data
   try {
     const encryptedData = await encryptor.encrypt(password, JSON.stringify(data));
@@ -100,6 +106,7 @@ export async function encryptAndSaveDataToCloud(data: any, password: any, filena
       scope,
       sourcePath: sourceUri,
       targetPath: destinationPath,
+      update: true,
     });
     // Now we need to verify the file has been stored in the cloud
     const exists = await RNCloudFs.fileExists(
@@ -199,19 +206,6 @@ export async function getDataFromCloud(backupPassword: any, filename: string | n
   logger.error(new RainbowError('[cloudBackup]: We couldnt get the encrypted data'));
   const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_GETTING_ENCRYPTED_DATA);
   throw error;
-}
-
-export async function backupUserDataIntoCloud(data: any) {
-  const filename = USERDATA_FILE;
-  const password = RAINBOW_MASTER_KEY;
-  return encryptAndSaveDataToCloud(data, password, filename);
-}
-
-export async function fetchUserDataFromCloud() {
-  const filename = USERDATA_FILE;
-  const password = RAINBOW_MASTER_KEY;
-
-  return getDataFromCloud(password, filename);
 }
 
 export const cloudBackupPasswordMinLength = 8;

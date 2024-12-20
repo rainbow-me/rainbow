@@ -54,6 +54,8 @@ interface AddysSummary {
           num_erc20s: number;
           last_activity: number;
           asset_value: number | null;
+          claimables_value: number | null;
+          positions_value: number | null;
         };
         summary_by_chain: {
           [key: number]: {
@@ -65,6 +67,8 @@ interface AddysSummary {
             num_erc20s: number;
             last_activity: number;
             asset_value: number | null;
+            claimables_value: number | null;
+            positions_value: number | null;
           };
         };
       };
