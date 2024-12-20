@@ -339,24 +339,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                     });
                   }, 1_000);
 
-                  setTimeout(() => {
-                    // If it's not read only or hardware, show the backup sheet
-                    if (
-                      !(
-                        isENSAddressFormat(input) ||
-                        isUnstoppableAddressFormat(input) ||
-                        isValidAddress(input) ||
-                        isValidBluetoothDeviceId(input)
-                      )
-                    ) {
-                      if (!IS_TEST) {
-                        Navigation.handleAction(Routes.BACKUP_SHEET, {
-                          step: WalletBackupStepTypes.backup_prompt,
-                        });
-                      }
-                    }
-                  }, 1000);
-
                   analytics.track('Imported seed phrase', {
                     isWalletEthZero,
                   });
