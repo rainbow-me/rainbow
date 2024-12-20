@@ -23,6 +23,12 @@ export interface RainbowPersistConfig<S> {
    */
   migrate?: (persistedState: unknown, version: number) => S | Promise<S>;
   /**
+   * A function returning another (optional) function.
+   * The main function will be called before the state rehydration.
+   * The returned function will be called after the state rehydration or when an error occurred.
+   */
+  onRehydrateStorage?: PersistOptions<S, Partial<S>>['onRehydrateStorage'];
+  /**
    * A function that determines which parts of the state should be persisted.
    * By default, the entire state is persisted.
    */
@@ -54,9 +60,7 @@ export function createRainbowStore<S = unknown>(
   createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]>,
   persistConfig?: RainbowPersistConfig<S>
 ) {
-  if (!persistConfig) {
-    return create<S>()(subscribeWithSelector(createState));
-  }
+  if (!persistConfig) return create<S>()(subscribeWithSelector(createState));
 
   const { persistStorage, version } = createPersistStorage(persistConfig);
 
@@ -65,6 +69,7 @@ export function createRainbowStore<S = unknown>(
       persist(createState, {
         migrate: persistConfig.migrate,
         name: persistConfig.storageKey,
+        onRehydrateStorage: persistConfig.onRehydrateStorage,
         partialize: persistConfig.partialize || omitStoreMethods,
         storage: persistStorage,
         version,
