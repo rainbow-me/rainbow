@@ -378,26 +378,18 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
         const restingOffset = restingOffsets[activeId];
         states[activeId].value = 'acting';
         const [targetX, targetY] = [restingOffset.x.value, restingOffset.y.value];
-        animatePointWithSpring(
-          activeOffset,
-          [targetX, targetY],
-          [
-            { ...springConfig, velocity: velocityX / 4 },
-            { ...springConfig, velocity: velocityY / 4 },
-          ],
-          () => {
-            // Cancel if we are interacting again with this item
-            if (panGestureState.value !== State.END && panGestureState.value !== State.FAILED && states[activeId].value !== 'acting') {
-              return;
-            }
-            if (states[activeId]) {
-              states[activeId].value = 'resting';
-            }
-            // for (const [id, offset] of Object.entries(offsets)) {
-            //   console.log({ [id]: [offset.x.value.toFixed(2), offset.y.value.toFixed(2)] });
-            // }
+        animatePointWithSpring(activeOffset, [targetX, targetY], [springConfig, springConfig], () => {
+          // Cancel if we are interacting again with this item
+          if (panGestureState.value !== State.END && panGestureState.value !== State.FAILED && states[activeId].value !== 'acting') {
+            return;
           }
-        );
+          if (states[activeId]) {
+            states[activeId].value = 'resting';
+          }
+          // for (const [id, offset] of Object.entries(offsets)) {
+          //   console.log({ [id]: [offset.x.value.toFixed(2), offset.y.value.toFixed(2)] });
+          // }
+        });
       })
       .withTestId('DndProvider.pan');
 

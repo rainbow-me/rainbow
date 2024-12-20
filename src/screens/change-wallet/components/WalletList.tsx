@@ -23,6 +23,7 @@ import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { MenuItem } from '@/components/DropdownMenu';
 import { DraggableScrollView } from '@/components/drag-and-drop/components/DraggableScrollView';
 import { triggerHaptics } from 'react-native-turbo-haptics';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
 export const DRAGGABLE_ACTIVATION_DELAY = 150;
 const DRAG_ACTIVATION_DELAY = 150;
@@ -87,7 +88,12 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
     return (
       <>
         {hasPinnedWallets && (
-          <DndProvider onActivationWorklet={onDraggableActivationWorklet} activationDelay={DRAG_ACTIVATION_DELAY} disabled={!editMode}>
+          <DndProvider
+            springConfig={SPRING_CONFIGS.walletDraggableConfig}
+            onActivationWorklet={onDraggableActivationWorklet}
+            activationDelay={DRAG_ACTIVATION_DELAY}
+            disabled={!editMode}
+          >
             <PinnedWalletsGrid
               menuItems={menuItems}
               onPressMenuItem={onPressMenuItem}
@@ -142,7 +148,12 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
       )}
       {walletItems.length > 0 && (
         <Animated.View entering={FadeIn.duration(FADE_TRANSITION_DURATION)}>
-          <DndProvider onActivationWorklet={onDraggableActivationWorklet} activationDelay={DRAG_ACTIVATION_DELAY} disabled={!editMode}>
+          <DndProvider
+            springConfig={SPRING_CONFIGS.walletDraggableConfig}
+            onActivationWorklet={onDraggableActivationWorklet}
+            activationDelay={DRAG_ACTIVATION_DELAY}
+            disabled={!editMode}
+          >
             <DraggableScrollView
               onOrderChange={onOrderChange}
               onOrderUpdateWorklet={onOrderUpdateWorklet}
