@@ -280,7 +280,7 @@ function FriendHolders({ friends }: { friends: FarcasterUser[] }) {
         {friends.length > 2 && (
           <Text color="labelTertiary" size="11pt" weight="bold">
             {' '}
-            {i18n.t('trending_tokens.and_others', { count: howManyOthers })}
+            {i18n.t(t.and_others[howManyOthers === 1 ? 'one' : 'other'], { count: howManyOthers })}
           </Text>
         )}
       </View>
