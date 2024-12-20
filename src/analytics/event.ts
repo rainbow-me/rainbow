@@ -368,7 +368,11 @@ export type EventProperties = {
     dappName: string;
     dappUrl: string;
   };
-  [event.wcRequestFailed]: { reason: string };
+  [event.wcRequestFailed]: {
+    type: 'session_proposal' | 'session_request' | 'read only wallet' | 'method not supported' | 'invalid namespaces' | 'dapp browser';
+    reason: string;
+    method?: string;
+  };
 
   [event.nftOffersOpenedOffersSheet]: {
     entryPoint: string;
