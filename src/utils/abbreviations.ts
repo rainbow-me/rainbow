@@ -16,7 +16,7 @@ export function formatAddressForDisplay(text: string, truncationLength = 4, firs
   return isValidDomainFormat(text) ? text : address(text, truncationLength, firstSectionLength);
 }
 
-export function abbreviateEnsForDisplay(text: string, truncationLength = 20, truncationLengthBuffer = 2): string | null {
+export function abbreviateEnsForDisplay(text: string | undefined, truncationLength = 20, truncationLengthBuffer = 2): string | undefined {
   if (typeof text !== 'string' || !isValidDomainFormat(text)) {
     return text;
   }

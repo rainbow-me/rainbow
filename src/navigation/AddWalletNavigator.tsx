@@ -7,6 +7,7 @@ import { ImportOrWatchWalletSheet, ImportOrWatchWalletSheetParams } from '@/scre
 import { BackgroundProvider } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { ChooseWalletGroup } from './ChooseWalletGroup';
 
 const Swipe = createMaterialTopTabNavigator();
 
