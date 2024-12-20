@@ -185,12 +185,16 @@ export default function ChangeWalletSheet() {
     isLoadingTransactionCounts,
   ]);
 
+  // TODO: bug where this can display as NaN
   const ownedWalletsTotalBalance = useMemo(() => {
     let isLoadingBalance = false;
+    let hasOwnedWallets = false;
 
     const totalBalance = Object.values(walletsWithBalancesAndNames).reduce((acc, wallet) => {
       // only include owned wallet balances
       if (wallet.type === WalletTypes.readOnly) return acc;
+
+      hasOwnedWallets = true;
 
       const visibleAccounts = wallet.addresses.filter(account => account.visible);
 
@@ -205,6 +209,9 @@ export default function ChangeWalletSheet() {
 
       return addDisplay(acc, walletTotalBalance);
     }, '0');
+
+    // If user has no owned wallets, return null so we can conditionally hide the balance
+    if (!hasOwnedWallets) return null;
 
     if (isLoadingBalance) return i18n.t(i18n.l.wallet.change_wallet.loading_balance);
 
@@ -683,7 +690,7 @@ export default function ChangeWalletSheet() {
               paddingHorizontal={{ custom: PANEL_INSET_HORIZONTAL }}
               paddingTop="24px"
             >
-              {!editMode ? (
+              {!editMode && ownedWalletsTotalBalance ? (
                 <Stack space="10px">
                   <Text color="labelSecondary" size="13pt" weight="bold">
                     {i18n.t(i18n.l.wallet.change_wallet.total_balance)}
