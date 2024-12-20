@@ -3,14 +3,12 @@ import { getGoogleAccountUserData, GoogleDriveUserData, logoutFromGoogleDrive } 
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { showActionSheetWithOptions } from '@/utils';
 import * as i18n from '@/languages';
-import { clearAllWalletsBackupStatus, updateWalletBackupStatusesBasedOnCloudUserData } from '@/redux/wallets';
-import { useDispatch } from 'react-redux';
 import Menu from './Menu';
 import MenuItem from './MenuItem';
 import { logger, RainbowError } from '@/logger';
+import { backupsStore } from '@/state/backups/backups';
 
 export const GoogleAccountSection: React.FC = () => {
-  const dispatch = useDispatch();
   const [accountDetails, setAccountDetails] = useState<GoogleDriveUserData | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 
@@ -29,12 +27,6 @@ export const GoogleAccountSection: React.FC = () => {
       });
   }, []);
 
-  const removeBackupStateFromAllWallets = async () => {
-    setLoading(true);
-    await dispatch(clearAllWalletsBackupStatus());
-    setLoading(false);
-  };
-
   const onGoogleAccountPress = () => {
     showActionSheetWithOptions(
       {
@@ -49,11 +41,10 @@ export const GoogleAccountSection: React.FC = () => {
         if (buttonIndex === 0) {
           logoutFromGoogleDrive();
           setAccountDetails(undefined);
-          removeBackupStateFromAllWallets().then(() => loginToGoogleDrive());
+          loginToGoogleDrive();
         } else if (buttonIndex === 1) {
           logoutFromGoogleDrive();
           setAccountDetails(undefined);
-          removeBackupStateFromAllWallets();
         }
       }
     );
@@ -61,10 +52,10 @@ export const GoogleAccountSection: React.FC = () => {
 
   const loginToGoogleDrive = async () => {
     setLoading(true);
-    await dispatch(updateWalletBackupStatusesBasedOnCloudUserData());
     try {
       const accountDetails = await getGoogleAccountUserData();
       setAccountDetails(accountDetails ?? undefined);
+      backupsStore.getState().syncAndFetchBackups();
     } catch (error) {
       logger.error(new RainbowError(`[GoogleAccountSection]: Logging into Google Drive failed`), {
         error: (error as Error).message,
