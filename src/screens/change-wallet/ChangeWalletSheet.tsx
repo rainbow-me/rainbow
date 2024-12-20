@@ -23,7 +23,7 @@ import { IS_IOS } from '@/env';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { RootStackParamList } from '@/navigation/types';
 import { Box, globalColors, HitSlop, Inline, Stack, Text } from '@/design-system';
-import { addDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { addDisplay } from '@/helpers/utilities';
 import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
@@ -84,7 +84,7 @@ export default function ChangeWalletSheet() {
 
   const { colors, isDarkMode } = useTheme();
   const { updateWebProfile } = useWebData();
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
   const { goBack, navigate } = useNavigation();
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
@@ -145,7 +145,7 @@ export default function ChangeWalletSheet() {
           isReadOnly: wallet.type === WalletTypes.readOnly,
           isSelected: account.address === currentAddress,
           rowType: RowTypes.ADDRESS,
-          walletId: wallet?.id,
+          walletId: wallet.id,
         };
 
         if ([WalletTypes.mnemonic, WalletTypes.seed, WalletTypes.privateKey].includes(wallet.type)) {
@@ -185,38 +185,54 @@ export default function ChangeWalletSheet() {
     isLoadingTransactionCounts,
   ]);
 
-  // TODO: bug where this can display as NaN
   const ownedWalletsTotalBalance = useMemo(() => {
     let isLoadingBalance = false;
     let hasOwnedWallets = false;
 
-    const totalBalance = Object.values(walletsWithBalancesAndNames).reduce((acc, wallet) => {
-      // only include owned wallet balances
-      if (wallet.type === WalletTypes.readOnly) return acc;
+    // We have to explicitly handle the null case because the addDisplay function expects the currency symbol, and we cannot assume the position of the currency symbol
+    const totalBalance: string | null = Object.values(walletsWithBalancesAndNames).reduce(
+      (acc, wallet) => {
+        // only include owned wallet balances
+        if (wallet.type === WalletTypes.readOnly) return acc;
 
-      hasOwnedWallets = true;
+        hasOwnedWallets = true;
+        const visibleAccounts = wallet.addresses.filter(account => account.visible);
+        let walletTotalBalance: string | null = null;
 
-      const visibleAccounts = wallet.addresses.filter(account => account.visible);
+        visibleAccounts.forEach(account => {
+          if (!account.balancesMinusHiddenBalances) {
+            isLoadingBalance = true;
+            return;
+          }
+          if (walletTotalBalance === null) {
+            walletTotalBalance = account.balancesMinusHiddenBalances;
+            return;
+          }
 
-      let walletTotalBalance = '0';
+          walletTotalBalance = addDisplay(walletTotalBalance, account.balancesMinusHiddenBalances);
+        });
 
-      visibleAccounts.forEach(account => {
-        if (!account.balancesMinusHiddenBalances) {
-          isLoadingBalance = true;
+        if (acc === null) {
+          return walletTotalBalance;
         }
-        walletTotalBalance = addDisplay(walletTotalBalance, account.balancesMinusHiddenBalances || '0');
-      });
+        if (walletTotalBalance === null) {
+          return acc;
+        }
 
-      return addDisplay(acc, walletTotalBalance);
-    }, '0');
+        return addDisplay(acc, walletTotalBalance);
+      },
+      null as string | null
+    );
 
     // If user has no owned wallets, return null so we can conditionally hide the balance
     if (!hasOwnedWallets) return null;
 
     if (isLoadingBalance) return i18n.t(i18n.l.wallet.change_wallet.loading_balance);
 
-    return convertAmountToNativeDisplay(totalBalance, nativeCurrency);
-  }, [walletsWithBalancesAndNames, nativeCurrency]);
+    if (totalBalance === null) return null;
+
+    return totalBalance;
+  }, [walletsWithBalancesAndNames]);
 
   const onChangeAccount = useCallback(
     async (walletId: string, address: string, fromDeletion = false) => {
