@@ -564,7 +564,7 @@ function NetworkFilter() {
 
 function TimeFilter() {
   const timeframe = useTrendingTokensStore(state => state.timeframe);
-  const shouldAbbreviate = timeframe === Timeframe.H24;
+  const shouldAbbreviate = timeframe === Timeframe.H24 || timeframe === Timeframe.H12;
 
   return (
     <DropdownMenu
@@ -578,7 +578,7 @@ function TimeFilter() {
       onPressMenuItem={timeframe => useTrendingTokensStore.getState().setTimeframe(timeframe)}
     >
       <FilterButton
-        selected={timeframe !== Timeframe.H24}
+        selected={timeframe !== Timeframe.D3}
         iconColor={undefined}
         highlightedBackgroundColor={undefined}
         label={shouldAbbreviate ? i18n.t(t.filters.time[`${timeframe}_ABBREVIATED`]) : i18n.t(t.filters.time[timeframe])}
