@@ -373,9 +373,10 @@ function AllNetworksSection({
 }
 
 function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: SharedValue<ChainId | undefined> }) {
-  const { colors } = useTheme();
+  const { isDarkMode } = useColorMode();
+  const getColorsForChainId = useBackendNetworksStore(state => state.getColorsForChainId);
   const chainName = useBackendNetworksStore.getState().getChainsLabel()[chainId];
-  const chainColor = colors.networkColors[chainId] ? colors.networkColors[chainId] : undefined;
+  const chainColor = getColorsForChainId(chainId, isDarkMode);
   const isSelected = useDerivedValue(() => selected.value === chainId);
   const { animatedStyle } = useNetworkOptionStyle(isSelected, chainColor);
 
