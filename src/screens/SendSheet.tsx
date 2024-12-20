@@ -10,7 +10,7 @@ import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../co
 import { SheetActionButton } from '../components/sheet';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@/analytics';
+import { analytics, analyticsV2 } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetTypes, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
@@ -129,6 +129,7 @@ type OnSubmitProps = {
 export default function SendSheet() {
   const { goBack, navigate } = useNavigation();
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
+  const isLoadingUserAssets = useUserAssetsStore(state => state.isLoadingUserAssets);
   const {
     gasFeeParamsBySpeed,
     gasLimit,
@@ -893,6 +894,16 @@ export default function SendSheet() {
     currentChainId,
     isUniqueAsset,
   ]);
+
+  useEffect(() => {
+    if (isLoadingUserAssets || !sortedAssets) return;
+    const params = { screen: 'send' as const, no_icon: 0, no_price: 0, total_tokens: sortedAssets.length };
+    for (const asset of sortedAssets) {
+      if (!asset.icon_url) params.no_icon += 1;
+      if (!asset.price?.relative_change_24h) params.no_price += 1;
+    }
+    analyticsV2.track(analyticsV2.event.tokenList, params);
+  }, [isLoadingUserAssets, sortedAssets]);
 
   const sendContactListDataKey = useMemo(() => `${ensSuggestions?.[0]?.address || '_'}`, [ensSuggestions]);
 
