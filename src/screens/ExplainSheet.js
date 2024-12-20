@@ -172,6 +172,9 @@ export const explainers = (params, theme) => {
   const chainId = params?.chainId;
   const fromChainId = params?.fromChainId;
   const toChainId = params?.toChainId;
+  const isDarkMode = theme?.isDarkMode;
+
+  const color = useBackendNetworksStore.getState().getColorsForChainId(chainId, isDarkMode);
 
   const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
 
@@ -432,8 +435,8 @@ export const explainers = (params, theme) => {
     swapResetInputs: {
       button: {
         label: `Continue with ${chainsLabel[chainId]}`,
-        bgColor: colors?.networkColors[chainId] && colors?.alpha(colors?.networkColors[chainId], 0.06),
-        textColor: colors?.networkColors?.[chainId],
+        bgColor: color && colors?.alpha(color, 0.06),
+        textColor: color,
       },
       emoji: '🔐',
       extraHeight: -90,
