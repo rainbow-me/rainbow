@@ -88,8 +88,11 @@ interface CacheEntry<TData> {
  * - **`isStale(override?)`**: Checks if the current data is stale based on `staleTime`.
  * - **`reset()`**: Resets the store to its initial state, clearing data and errors.
  */
-export interface QueryStore<TData, TParams extends Record<string, unknown>, S extends StoreState<TData, TParams>>
-  extends UseBoundStore<StoreApi<S>> {
+export interface QueryStore<
+  TData,
+  TParams extends Record<string, unknown>,
+  S extends Omit<StoreState<TData, TParams>, keyof PrivateStoreState>,
+> extends UseBoundStore<StoreApi<S>> {
   /**
    * Indicates whether the store should actively fetch data.
    * When `false`, the store won't automatically refetch data.
@@ -138,8 +141,15 @@ export interface QueryStore<TData, TParams extends Record<string, unknown>, S ex
 }
 
 /**
- * The state structure managed by the query store, including query-related fields and actions.
- * This type is generally internal, and extended by user-defined states when creating a store.
+ * The private state managed by the query store, omitted from the store's public interface.
+ */
+type PrivateStoreState = {
+  subscriptionCount: number;
+};
+
+/**
+ * The full state structure managed by the query store. This type is generally internal,
+ * though the state it defines can be accessed via the store's public interface.
  */
 type StoreState<TData, TParams extends Record<string, unknown>> = Pick<
   QueryStore<TData, TParams, StoreState<TData, TParams>>,
@@ -149,7 +159,6 @@ type StoreState<TData, TParams extends Record<string, unknown>> = Pick<
   lastFetchedAt: number | null;
   queryCache: Record<string, CacheEntry<TData> | undefined>;
   status: QueryStatus;
-  subscriptionCount: number;
 };
 
 /**
@@ -263,7 +272,7 @@ interface ResolvedParamsResult<TParams> {
 /**
  * The keys that make up the internal state of the store.
  */
-type InternalStateKeys = keyof StoreState<unknown, Record<string, unknown>>;
+type InternalStateKeys = keyof (StoreState<unknown, Record<string, unknown>> & PrivateStoreState);
 
 const [persist, discard] = [true, false];
 
@@ -308,13 +317,13 @@ export function createQueryStore<
   U = unknown,
   TData = TQueryFnData,
 >(
-  config: RainbowQueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & U> & {
-    params?: { [K in keyof TParams]: ParamResolvable<TParams[K], TParams, StoreState<TData, TParams> & U, TData> };
+  config: RainbowQueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & PrivateStoreState & U> & {
+    params?: { [K in keyof TParams]: ParamResolvable<TParams[K], TParams, StoreState<TData, TParams> & PrivateStoreState & U, TData> };
   },
   customStateCreator?: StateCreator<U, [], [['zustand/subscribeWithSelector', never]]>,
-  persistConfig?: RainbowPersistConfig<StoreState<TData, TParams> & U>
+  persistConfig?: RainbowPersistConfig<StoreState<TData, TParams> & PrivateStoreState & U>
 ): QueryStore<TData, TParams, StoreState<TData, TParams> & U> {
-  type S = StoreState<TData, TParams> & U;
+  type S = StoreState<TData, TParams> & PrivateStoreState & U;
 
   const {
     fetcher,
@@ -669,8 +678,8 @@ export function createQueryStore<
     : undefined;
 
   const baseStore = persistConfig?.storageKey
-    ? createRainbowStore<StoreState<TData, TParams> & U>(createState, combinedPersistConfig)
-    : create<StoreState<TData, TParams> & U>()(subscribeWithSelector(createState));
+    ? createRainbowStore<StoreState<TData, TParams> & PrivateStoreState & U>(createState, combinedPersistConfig)
+    : create<StoreState<TData, TParams> & PrivateStoreState & U>()(subscribeWithSelector(createState));
 
   const queryCapableStore: QueryStore<TData, TParams, S> = Object.assign(baseStore, {
     enabled,
