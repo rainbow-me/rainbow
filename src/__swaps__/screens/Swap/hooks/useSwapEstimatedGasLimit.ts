@@ -2,7 +2,7 @@ import { CrosschainQuote, Quote, QuoteError, SwapType } from '@rainbow-me/swaps'
 import { useQuery } from '@tanstack/react-query';
 
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey } from '@/react-query';

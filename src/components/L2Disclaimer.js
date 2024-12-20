@@ -10,7 +10,7 @@ import { darkModeThemeColors } from '@/styles/colors';
 import * as lang from '@/languages';
 import { isL2Chain } from '@/handlers/web3';
 import { EthCoinIcon } from './coin-icon/EthCoinIcon';
-import { chainsName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const L2Disclaimer = ({
   chainId,
@@ -57,7 +57,7 @@ const L2Disclaimer = ({
                 ? customText
                 : lang.t(lang.l.expanded_state.asset.l2_disclaimer, {
                     symbol,
-                    network: chainsName[chainId],
+                    network: useBackendNetworksStore.getState().getChainsName()[chainId],
                   })}
             </Text>
           </Column>

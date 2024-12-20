@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
@@ -109,6 +109,18 @@ export async function fetchTokenSearch(
     tokenSearchQueryFunction,
     config
   );
+}
+
+export async function queryTokenSearch(
+  { chainId, fromChainId, keys, list, threshold, query }: TokenSearchArgs,
+  config: QueryConfigWithSelect<TokenSearchResult, Error, TokenSearchResult, TokenSearchQueryKey> = {}
+) {
+  const queryKey = tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query });
+
+  const cachedData = queryClient.getQueryData<SearchAsset[]>(queryKey);
+  if (cachedData?.length) return cachedData;
+
+  return await queryClient.fetchQuery(queryKey, tokenSearchQueryFunction, config);
 }
 
 // ///////////////////////////////////////////////

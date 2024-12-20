@@ -3,10 +3,10 @@ import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import store from '@/redux/store';
 import { ClaimableExtraData, PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { DEFI_POSITIONS, CLAIMABLES, ExperimentalValue } from '@/config/experimental';
+import { DEFI_POSITIONS, CLAIMABLES, ExperimentalValue, ETH_REWARDS } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
 import { Claimable } from '@/resources/addys/claimables/types';
-import { add, convertAmountToNativeDisplay, lessThan } from './utilities';
+import { add, convertAmountToNativeDisplay, greaterThan, lessThan } from './utilities';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { IS_TEST } from '@/env';
 import { UniqueId } from '@/__swaps__/types/assets';
@@ -60,6 +60,7 @@ const remoteConfigSelector = (state: any) => state.remoteConfig;
 const experimentalConfigSelector = (state: any) => state.experimentalConfig;
 const positionsSelector = (state: any) => state.positions;
 const claimablesSelector = (state: any) => state.claimables;
+const claimableETHRewardsNativeAmountSelector = (state: any) => state.claimableETHRewardsNativeAmount;
 
 const buildBriefWalletSections = (
   balanceSectionData: any,
@@ -67,15 +68,19 @@ const buildBriefWalletSections = (
   remoteConfig: RainbowConfig,
   experimentalConfig: Record<string, ExperimentalValue>,
   positions: RainbowPositions | undefined,
-  claimables: Claimable[] | undefined
+  claimables: Claimable[] | undefined,
+  claimableETHRewardsNativeAmount: string | undefined
 ) => {
   const { balanceSection, isEmpty, isLoadingUserAssets } = balanceSectionData;
 
   const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
   const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
+  const ethRewardsEnabled = (remoteConfig.rewards_enabled || experimentalConfig[ETH_REWARDS]) && !IS_TEST;
 
   const positionSection = positionsEnabled ? withPositionsSection(positions, isLoadingUserAssets) : [];
-  const claimablesSection = claimablesEnabled ? withClaimablesSection(claimables, isLoadingUserAssets) : [];
+  const claimablesSection = claimablesEnabled
+    ? withClaimablesSection(claimables, ethRewardsEnabled, claimableETHRewardsNativeAmount, isLoadingUserAssets)
+    : [];
   const sections = [balanceSection, claimablesSection, positionSection, uniqueTokenFamiliesSection];
 
   const filteredSections = sections.filter(section => section.length !== 0).flat(1);
@@ -120,12 +125,28 @@ const withPositionsSection = (positionsObj: RainbowPositions | undefined, isLoad
   return [];
 };
 
-const withClaimablesSection = (claimables: Claimable[] | undefined, isLoadingUserAssets: boolean) => {
+const withClaimablesSection = (
+  claimables: Claimable[] | undefined,
+  ethRewardsEnabled: boolean,
+  claimableETHRewardsNativeAmount: string | undefined,
+  isLoadingUserAssets: boolean
+) => {
   const { nativeCurrency: currency } = store.getState().settings;
 
-  const result: ClaimableExtraData[] = [];
+  const ethRewards = {
+    value: { nativeAsset: { amount: claimableETHRewardsNativeAmount } },
+    uniqueId: 'rainbow-eth-rewards',
+  };
+
+  let result: ClaimableExtraData[] = [];
   let totalNativeValue = '0';
-  claimables?.forEach(claimable => {
+
+  const sortedClaimables = [
+    ...(claimables ?? []),
+    ...(ethRewardsEnabled && claimableETHRewardsNativeAmount && claimableETHRewardsNativeAmount !== '0' ? [ethRewards] : []),
+  ]?.sort((a, b) => (greaterThan(a.value.nativeAsset.amount ?? '0', b.value.nativeAsset.amount ?? '0') ? -1 : 1));
+
+  sortedClaimables?.forEach(claimable => {
     totalNativeValue = add(totalNativeValue, claimable.value.nativeAsset.amount ?? '0');
     const listData = {
       type: 'CLAIMABLE',
@@ -202,7 +223,7 @@ const withBriefBalanceSection = (
       type: 'PROFILE_NAME_ROW_SPACE_AFTER',
       uid: 'profile-name-space-after',
     },
-    ...(!hasTokens && !isLoadingUserAssets && !isLoadingBalance
+    ...(!hasTokens && !isLoadingBalance
       ? []
       : [
           {
@@ -293,6 +314,7 @@ export const buildBriefWalletSectionsSelector = createSelector(
     experimentalConfigSelector,
     positionsSelector,
     claimablesSelector,
+    claimableETHRewardsNativeAmountSelector,
   ],
   buildBriefWalletSections
 );

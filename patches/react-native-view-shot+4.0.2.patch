@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-view-shot/ios/RNViewShot.mm b/node_modules/react-native-view-shot/ios/RNViewShot.mm
+index d92bbaa..2cf632f 100644
+--- a/node_modules/react-native-view-shot/ios/RNViewShot.mm
++++ b/node_modules/react-native-view-shot/ios/RNViewShot.mm
+@@ -45,7 +45,7 @@ - (dispatch_queue_t)methodQueue
+   }
+ }
+ 
+-RCT_EXPORT_METHOD(captureRef:(NSNumber *)target
++RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
+                   withOptions:(NSDictionary *)options
+                   resolve:(RCTPromiseResolveBlock)resolve
+                   reject:(RCTPromiseRejectBlock)reject)

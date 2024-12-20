@@ -68,8 +68,9 @@ function SwapInputAmount() {
       }}
     >
       <GestureHandlerButton
-        disableButtonPressWrapper
-        onPressStartWorklet={() => {
+        disableHaptics
+        disableScale
+        onPressWorklet={() => {
           'worklet';
           focusedInput.value = 'inputAmount';
         }}
@@ -95,7 +96,7 @@ function SwapInputAmount() {
 function SwapInputIcon() {
   return (
     <Box paddingRight="10px">
-      <AnimatedSwapCoinIcon assetType={'input'} large />
+      <AnimatedSwapCoinIcon assetType={'input'} size={36} />
     </Box>
   );
 }

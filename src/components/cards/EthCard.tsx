@@ -22,7 +22,7 @@ import * as i18n from '@/languages';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import assetTypes from '@/entities/assetTypes';
-import { Network, ChainId } from '@/chains/types';
+import { Network, ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 

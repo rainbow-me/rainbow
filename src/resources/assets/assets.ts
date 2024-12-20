@@ -1,15 +1,15 @@
 import lang from 'i18n-js';
-import isEmpty from 'lodash/isEmpty';
-import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
+import isEmpty from 'lodash/isEmpty';
+import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { queryClient } from '@/react-query';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';
 import { AddysAddressAsset, AddysAsset, ParsedAsset, RainbowAddressAssets } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { chainsIdByName } from '@/chains';
-import { ChainId } from '@/chains/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export const filterPositionsData = (
   address: string,
@@ -34,7 +34,7 @@ export const filterPositionsData = (
 
 export function parseAsset({ address, asset }: { address: string; asset: AddysAsset }): ParsedAsset {
   const network = asset?.network;
-  const chainId = chainsIdByName[network];
+  const chainId = useBackendNetworksStore.getState().getChainsIdByName()[network];
   const mainnetAddress = asset?.networks?.[ChainId.mainnet]?.address;
   const uniqueId = getUniqueId(address, chainId);
 

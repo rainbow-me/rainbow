@@ -1,10 +1,10 @@
 import React from 'react';
+import { Source } from 'react-native-fast-image';
+import GoogleSearchIcon from '@/assets/googleSearchIcon.png';
+import { ButtonPressAnimation } from '@/components/animations';
 import { ImgixImage } from '@/components/images';
 import { Box, Inline, Stack, Text } from '@/design-system';
-import { ButtonPressAnimation } from '@/components/animations';
 import { formatUrl } from '../utils';
-import GoogleSearchIcon from '@/assets/googleSearchIcon.png';
-import { Source } from 'react-native-fast-image';
 
 export const SearchResult = ({
   iconUrl,

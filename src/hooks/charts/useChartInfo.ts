@@ -5,7 +5,7 @@ import { metadataClient } from '@/graphql';
 import { useQuery } from '@tanstack/react-query';
 import { createQueryKey } from '@/react-query';
 import { SupportedCurrencyKey } from '@/references';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
 type ChartTime = (typeof chartTimes)[number];

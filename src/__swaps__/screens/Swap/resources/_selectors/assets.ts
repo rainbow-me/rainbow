@@ -1,5 +1,5 @@
 import { ParsedAssetsDict, ParsedAssetsDictByChain, ParsedUserAsset, UniqueId } from '@/__swaps__/types/assets';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { add } from '@/helpers/utilities';
 

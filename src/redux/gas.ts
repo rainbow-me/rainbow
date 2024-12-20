@@ -36,13 +36,13 @@ import {
 } from '@/parsers';
 import { ethUnits } from '@/references';
 import { ethereumUtils, gasUtils } from '@/utils';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { chainsNativeAsset, chainsSwapPollingInterval, meteorologySupportedChainIds, needsL1SecurityFeeChains } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { addBuffer } from '@/helpers/utilities';
 
-const { CUSTOM, SLOW, NORMAL, FAST, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
+const { CUSTOM, NORMAL, URGENT } = gasUtils;
 
 const mutex = new Mutex();
 
@@ -124,6 +124,8 @@ const getUpdatedGasFeeParams = (
 ) => {
   let nativeTokenPriceUnit = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
 
+  const chainsNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset();
+
   // we want to fetch the specific chain native token if anything but ETH
   const networkNativeAsset = chainsNativeAsset[chainId];
   if (networkNativeAsset.symbol.toLowerCase() !== 'eth') {
@@ -191,6 +193,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (dispa
   const _gasLimit = gasLimit || getDefaultGasLimit(chainId, defaultGasLimit);
 
   let nativeTokenPriceUnit = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
+  const chainsNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset();
 
   // we want to fetch the specific chain native token if anything but ETH
   const networkNativeAsset = chainsNativeAsset[chainId];
@@ -291,7 +294,7 @@ export const getMeteorologyGasParams = async (chainId: ChainId): Promise<Meterol
 };
 
 export const gasPricesStartPolling =
-  (chainId = ChainId.mainnet, flashbots = false) =>
+  (chainId = ChainId.mainnet) =>
   async (dispatch: AppDispatch, getState: AppGetState) => {
     dispatch(gasPricesStopPolling());
 
@@ -320,7 +323,7 @@ export const gasPricesStartPolling =
               const { nativeCurrency } = getState().settings;
 
               let dataIsReady = true;
-              const meteorologySupportsChainId = meteorologySupportedChainIds.includes(chainId);
+              const meteorologySupportsChainId = useBackendNetworksStore.getState().getMeteorologySupportedChainIds().includes(chainId);
               if (!meteorologySupportsChainId) {
                 const adjustedGasFees = await getProviderGasPrices({ chainId });
                 if (!adjustedGasFees) return;
@@ -356,32 +359,13 @@ export const gasPricesStartPolling =
               } else {
                 try {
                   // OP chains have an additional fee we need to load
-                  if (needsL1SecurityFeeChains.includes(chainId)) {
+                  if (useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(chainId)) {
                     dataIsReady = l1GasFeeOptimism !== null;
                   }
                   const meteorologyGasParams = await getMeteorologyGasParams(chainId);
                   if (meteorologyGasParams.feeType === 'eip1559') {
                     const { gasFeeParamsBySpeed, baseFeePerGas, trend, currentBaseFee, blocksToConfirmation, secondsPerNewBlock } =
                       meteorologyGasParams as MeterologyGasParams;
-
-                    if (flashbots) {
-                      [SLOW, NORMAL, FAST, URGENT].forEach(speed => {
-                        // Override min tip to 5 if needed, when flashbots is enabled
-                        // See https://docs.flashbots.net/flashbots-protect/rpc/quick-start#choosing-the-right-gas-price
-                        if (gasFeeParamsBySpeed[speed]) {
-                          if (Number(gasFeeParamsBySpeed[speed].maxPriorityFeePerGas.gwei) < FLASHBOTS_MIN_TIP) {
-                            gasFeeParamsBySpeed[speed] = {
-                              ...gasFeeParamsBySpeed[speed],
-                              maxPriorityFeePerGas: {
-                                amount: `${FLASHBOTS_MIN_TIP}000000000`,
-                                display: `${FLASHBOTS_MIN_TIP} gwei`,
-                                gwei: `${FLASHBOTS_MIN_TIP}`,
-                              },
-                            };
-                          }
-                        }
-                      });
-                    }
 
                     // Set a really gas estimate to guarantee that we're gonna be over
                     // the basefee at the time we fork mainnet during our hardhat tests
@@ -492,7 +476,7 @@ export const gasPricesStartPolling =
       }
     };
 
-    const pollingInterval = chainsSwapPollingInterval[chainId];
+    const pollingInterval = useBackendNetworksStore.getState().getChainsPollingInterval()[chainId];
     watchGasPrices(chainId, pollingInterval);
   };
 
@@ -528,7 +512,10 @@ export const gasUpdateTxFee =
       const { defaultGasLimit, gasLimit, gasFeeParamsBySpeed, selectedGasFee, chainId, currentBlockParams } = getState().gas;
 
       const { nativeCurrency } = getState().settings;
-      if (isEmpty(gasFeeParamsBySpeed) || (needsL1SecurityFeeChains.includes(chainId) && l1GasFeeOptimism === null)) {
+      if (
+        isEmpty(gasFeeParamsBySpeed) ||
+        (useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(chainId) && l1GasFeeOptimism === null)
+      ) {
         // if fee prices not ready, we need to store the gas limit for future calculations
         // the rest is as the initial state value
         if (updatedGasLimit) {

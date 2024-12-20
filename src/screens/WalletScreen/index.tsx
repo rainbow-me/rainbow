@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
@@ -25,21 +25,26 @@ import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
-import { runWalletBackupStatusChecks } from '@/handlers/walletReadyEvents';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
+import { BackendNetworks } from '@/components/BackendNetworks';
 import walletTypes from '@/helpers/walletTypes';
+
+enum WalletLoadingStates {
+  IDLE = 0,
+  INITIALIZING = 1,
+  INITIALIZED = 2,
+}
 
 function WalletScreen() {
   const { params } = useRoute<RouteProp<RootStackParamList, 'WalletScreen'>>();
   const { setParams, getState: dangerouslyGetState, getParent: dangerouslyGetParent } = useNavigation();
   const removeFirst = useRemoveFirst();
-  const [initialized, setInitialized] = useState(!!params?.initialized);
+  const walletState = useRef(WalletLoadingStates.IDLE);
   const initializeWallet = useInitializeWallet();
   const { network: currentNetwork, accountAddress, appIcon } = useAccountSettings();
-
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const insets = useSafeAreaInsets();
@@ -48,8 +53,10 @@ function WalletScreen() {
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
   const { isWalletEthZero, isLoadingUserAssets, isLoadingBalance, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData();
 
-  const trackWallets = useCallback(() => {
-    const identify = Object.values(wallets || {}).reduce(
+  useEffect(() => {
+    if (!wallets) return;
+
+    const identify = Object.values(wallets).reduce(
       (result, wallet) => {
         switch (wallet.type) {
           case walletTypes.mnemonic:
@@ -120,24 +127,27 @@ function WalletScreen() {
 
   useEffect(() => {
     const initializeAndSetParams = async () => {
+      walletState.current = WalletLoadingStates.INITIALIZING;
       // @ts-expect-error messed up initializeWallet types
       await initializeWallet(null, null, null, !params?.emptyWallet);
-      setInitialized(true);
+      walletState.current = WalletLoadingStates.INITIALIZED;
       setParams({ emptyWallet: false });
-      trackWallets();
     };
 
-    if (!initialized || (params?.emptyWallet && initialized)) {
+    if (
+      walletState.current !== WalletLoadingStates.INITIALIZING &&
+      (walletState.current !== WalletLoadingStates.INITIALIZED ||
+        (params?.emptyWallet && walletState.current === WalletLoadingStates.INITIALIZED))
+    ) {
       // We run the migrations only once on app launch
       initializeAndSetParams();
     }
-  }, [initializeWallet, initialized, params, setParams, trackWallets]);
+  }, [initializeWallet, params, setParams]);
 
   useEffect(() => {
     if (walletReady) {
       loadAccountLateData();
       loadGlobalLateData();
-      runWalletBackupStatusChecks();
     }
   }, [loadAccountLateData, loadGlobalLateData, walletReady]);
 
@@ -173,6 +183,7 @@ function WalletScreen() {
       <UserAssetsSync />
       <RemoteCardsSync />
       <RemotePromoSheetSync />
+      <BackendNetworks />
 
       {/* NOTE: This component listens for Mobile Wallet Protocol requests and handles them */}
       <MobileWalletProtocolListener />

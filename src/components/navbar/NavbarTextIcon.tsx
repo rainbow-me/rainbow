@@ -2,6 +2,8 @@ import React from 'react';
 import { Box, Cover, Text } from '@/design-system';
 import { useTheme } from '@/theme';
 
+export const NAVBAR_ICON_SIZE = 36;
+
 type NavbarIconProps = {
   backgroundOpacity?: number;
   icon: string;
@@ -14,12 +16,12 @@ export function NavbarTextIcon({ backgroundOpacity, icon, color }: NavbarIconPro
 
   return (
     <Box
-      borderRadius={18}
-      height={{ custom: 36 }}
+      borderRadius={NAVBAR_ICON_SIZE / 2}
+      height={{ custom: NAVBAR_ICON_SIZE }}
       style={{
         backgroundColor: colors.alpha(accentColor, backgroundOpacity ?? (isDarkMode ? 0.2 : 0.1)),
       }}
-      width={{ custom: 36 }}
+      width={{ custom: NAVBAR_ICON_SIZE }}
     >
       <Box
         height="full"

@@ -50,7 +50,7 @@ import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Signer } from '@ethersproject/abstract-signer';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { ExecuteFnParamsWithoutFn, performanceTracking, Screen } from '@/state/performance/performance';
-import { Network } from '@/chains/types';
+import { Network } from '@/state/backendNetworks/types';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;

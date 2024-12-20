@@ -12,11 +12,11 @@ import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useUserAssetCount } from '@/resources/assets/useUserAssetCount';
 import styled from '@/styled-thing';
 import { fonts, position } from '@/styles';
 import { useTheme } from '@/theme';
 import * as lang from '@/languages';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 export const AssetListHeaderHeight = ListHeaderHeight;
 
@@ -104,7 +104,7 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
   const { width: deviceWidth } = useDimensions();
   const { accountName } = useAccountProfile();
   const { navigate } = useNavigation();
-  const { isLoading: isLoadingUserAssets } = useUserAssetCount();
+  const { isLoadingUserAssets } = useUserAssetsStore(state => state.isLoadingUserAssets);
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);

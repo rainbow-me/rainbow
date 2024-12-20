@@ -7,7 +7,7 @@ import { SwapType } from '@rainbow-me/swaps';
 import { SwapMetadata } from '@/raps/references';
 import { UniqueAsset } from '../uniqueAssets';
 import { ParsedAsset, AddysAsset } from '@/resources/assets/types';
-import { ChainId, Network } from '@/chains/types';
+import { ChainId, Network } from '@/state/backendNetworks/types';
 import { TransactionResponse } from '@ethersproject/providers';
 
 import { BytesLike } from '@ethersproject/bytes';
@@ -99,8 +99,6 @@ export interface RainbowTransaction {
   nft?: UniqueAsset;
   nonce?: number | null;
   protocol?: ProtocolType | null;
-  flashbots?: boolean;
-  flashbotsStatus?: FlashbotsStatus;
   approvalAmount?: 'UNLIMITED' | (string & Record<string, never>);
   ensCommitRegistrationName?: string;
   ensRegistration?: boolean;
@@ -123,14 +121,6 @@ export interface RainbowTransaction {
   fee?: RainbowTransactionFee;
   explorerLabel?: string;
   explorerUrl?: string;
-}
-
-export enum FlashbotsStatus {
-  PENDING = 'PENDING',
-  INCLUDED = 'INCLUDED',
-  FAILED = 'FAILED',
-  CANCELLED = 'CANCELLED',
-  UNKNOWN = 'UNKNOWN',
 }
 
 export type MinedTransaction = RainbowTransaction & {

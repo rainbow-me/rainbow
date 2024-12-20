@@ -88,8 +88,11 @@ import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
-import { ClaimClaimablePanel } from '@/screens/claimables/ClaimClaimablePanel';
+import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
 import { RootStackParamList } from './types';
+import WalletLoadingListener from '@/components/WalletLoadingListener';
+import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
+import { NetworkSelector } from '@/components/NetworkSwitcher';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -212,7 +215,7 @@ function BSNavigator() {
             step === walletBackupStepTypes.restore_from_backup
           ) {
             heightForStep = backupSheetSizes.long;
-          } else if (step === walletBackupStepTypes.no_provider) {
+          } else if (step === walletBackupStepTypes.backup_prompt) {
             heightForStep = backupSheetSizes.medium;
           }
 
@@ -242,6 +245,7 @@ function BSNavigator() {
       <BSStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} options={consoleSheetPreset} />
       <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
       <BSStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} />
+      <BSStack.Screen component={NetworkSelector} name={Routes.NETWORK_SELECTOR} />
       <BSStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} />
       <BSStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} />
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
@@ -272,6 +276,10 @@ const AppContainerWithAnalytics = React.forwardRef<NavigationContainerRef<RootSt
     <PointsProfileProvider>
       <AuthNavigator />
     </PointsProfileProvider>
+
+    {/* NOTE: Internally, these use some navigational checks */}
+    <CMPortal />
+    <WalletLoadingListener />
   </NavigationContainer>
 ));
 

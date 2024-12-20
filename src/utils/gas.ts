@@ -106,12 +106,9 @@ const getGasFallback = (nativeCurrency: NativeCurrencyKey) => {
   return convertAmountToNativeDisplay(fallbackPrice, nativeCurrency);
 };
 
-const FLASHBOTS_MIN_TIP = 6;
-
 export default {
   CUSTOM,
   FAST,
-  FLASHBOTS_MIN_TIP,
   getGasLabel,
   getGasFallback,
   GAS_EMOJIS,

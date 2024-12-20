@@ -19,7 +19,6 @@ import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
-import { DebugLayout } from '@/design-system';
 
 export type EditWalletContextMenuActions = {
   edit: (walletId: string, address: EthereumAddress) => void;

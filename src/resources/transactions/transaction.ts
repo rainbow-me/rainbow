@@ -7,8 +7,8 @@ import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { parseTransaction } from '@/parsers/transactions';
 import { RainbowError, logger } from '@/logger';
-import { ChainId } from '@/chains/types';
-import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export type ConsolidatedTransactionsResult = QueryFunctionResult<typeof consolidatedTransactionsQueryFunction>;
 export type PaginatedTransactions = { pages: ConsolidatedTransactionsResult[] };
@@ -81,7 +81,7 @@ export function useBackendTransaction({ hash, chainId }: BackendTransactionArgs)
   const paginatedTransactionsKey = consolidatedTransactionsQueryKey({
     address: accountAddress,
     currency: nativeCurrency,
-    chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
+    chainIds: useBackendNetworksStore.getState().getSupportedMainnetChainIds(),
   });
 
   const params: TransactionArgs = {

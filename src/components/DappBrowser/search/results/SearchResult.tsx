@@ -19,7 +19,7 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
   const { width: deviceWidth } = useDimensions();
 
   const dapp = useDerivedValue(() => searchResults?.value[index]);
-  const iconUrl = useDerivedValue(() => dapp.value?.iconUrl ?? '');
+  const iconUrl = useDerivedValue(() => dapp.value?.iconUrl ?? dapp.value?.name);
   const name = useDerivedValue(() => dapp.value?.name);
   const urlDisplay = useDerivedValue(() => dapp.value?.urlDisplay);
 
@@ -52,6 +52,12 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
     return { display: dapp.value?.iconUrl ? 'none' : 'flex' };
   });
 
+  const imageStyle = useAnimatedStyle(() => {
+    return {
+      display: dapp.value?.iconUrl ? 'flex' : 'none',
+    };
+  });
+
   return (
     <Animated.View style={animatedStyle}>
       <Box
@@ -80,7 +86,7 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
               </Animated.View>
               {/* ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error */}
               {/* @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps */}
-              <AnimatedFasterImage animatedProps={animatedIconSource} style={styles.iconImage} />
+              <AnimatedFasterImage animatedProps={animatedIconSource} style={[imageStyle, styles.iconImage]} />
             </Box>
           </Box>
           <Box width={{ custom: deviceWidth - 100 }}>

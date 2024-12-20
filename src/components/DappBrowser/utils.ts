@@ -39,6 +39,9 @@ export const normalizeUrlWorklet = (url: string): string => {
   if (!url) {
     return '';
   }
+  if (url === RAINBOW_HOME) {
+    return url;
+  }
   let normalizedUrl = url;
   if (isMissingValidProtocolWorklet(normalizedUrl)) {
     normalizedUrl = HTTPS + normalizedUrl;

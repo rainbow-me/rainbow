@@ -131,6 +131,15 @@
 				<key>UIPrerenderedIcon</key>
 				<false/>
 			</dict>
+			<key>redacted</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>redacted</string>
+				</array>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+			</dict>
 		</dict>
 		<key>CFBundlePrimaryIcon</key>
 		<dict>

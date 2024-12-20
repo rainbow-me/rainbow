@@ -1,5 +1,5 @@
 import { NativeCurrencyKey } from '@/entities';
-import { ChainId, Network } from '@/chains/types';
+import { Network, ChainId } from '@/state/backendNetworks/types';
 import { AddysAsset } from '@/resources/addys/types';
 
 export type AddysPositionsResponse =

@@ -4,8 +4,8 @@ import { RainbowFetchClient } from '../rainbow-fetch';
 import { TokenSearchThreshold, TokenSearchTokenListId } from '@/entities';
 import { logger, RainbowError } from '@/logger';
 import { RainbowToken, TokenSearchToken } from '@/entities/tokens';
-import { chainsName } from '@/chains';
-import { ChainId } from '@/chains/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const ALL_VERIFIED_TOKENS_PARAM = '/?list=verifiedAssets';
 
@@ -19,6 +19,7 @@ const tokenSearchHttp = new RainbowFetchClient({
 });
 
 function parseTokenSearch(assets: TokenSearchToken[]): RainbowToken[] {
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
   return assets.map(token => {
     const networkKeys = Object.keys(token.networks);
     const chainId = Number(networkKeys[0]);

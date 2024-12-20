@@ -10,7 +10,7 @@ import { NativeDisplay, PositionAsset } from '@/resources/defi/types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useAccountSettings } from '@/hooks';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { chainsIdByName } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type Props = {
   asset: PositionAsset;
@@ -24,7 +24,7 @@ type Props = {
 export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, native, positionColor, dappVersion }) => {
   const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
-  const chainId = chainsIdByName[asset.network];
+  const chainId = useBackendNetworksStore.getState().getChainsIdByName()[asset.network];
   const { data: externalAsset } = useExternalToken({ address: asset.asset_code, chainId, currency: nativeCurrency });
 
   const separatorSecondary = useForegroundColor('separatorSecondary');

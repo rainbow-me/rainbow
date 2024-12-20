@@ -1,0 +1,91 @@
+diff --git a/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Shareables.cpp b/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Shareables.cpp
+index 4087065..f22bd06 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Shareables.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Shareables.cpp
+@@ -47,7 +47,12 @@ jsi::Value makeShareableClone(
+   if (value.isObject()) {
+     auto object = value.asObject(rt);
+     if (!object.getProperty(rt, "__workletHash").isUndefined()) {
+-      shareable = std::make_shared<ShareableWorklet>(rt, object);
++      if (shouldRetainRemote.isBool() && shouldRetainRemote.getBool()) {
++        shareable =
++            std::make_shared<RetainingShareable<ShareableWorklet>>(rt, object);
++      } else {
++        shareable = std::make_shared<ShareableWorklet>(rt, object);
++      }
+     } else if (!object.getProperty(rt, "__init").isUndefined()) {
+       shareable = std::make_shared<ShareableHandle>(rt, object);
+     } else if (object.isFunction(rt)) {
+diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
+index ec86d08..b043442 100644
+--- a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
++++ b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
+@@ -176,7 +176,11 @@ - (READisplayLink *)getDisplayLink
+   if (!_displayLink) {
+     _displayLink = [READisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
+ #if !TARGET_OS_OSX
++  if (@available(iOS 15.0, *)) {
++    _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(80, 120, 80);
++  } else {
+     _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
++  }
+ #endif // TARGET_OS_OSX
+     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+   }
+diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
+index 1b556f6..8cd4fcb 100644
+--- a/node_modules/react-native-reanimated/apple/reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
++++ b/node_modules/react-native-reanimated/apple/reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
+@@ -51,7 +51,11 @@ - (READisplayLink *)getDisplayLink
+   if (!_displayLink) {
+     _displayLink = [READisplayLink displayLinkWithTarget:self selector:@selector(updateKeyboardFrame)];
+ #if !TARGET_OS_OSX
++  if (@available(iOS 15.0, *)) {
++    _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(80, 120, 80);
++  } else {
+     _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
++  }
+ #endif
+     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+   }
+diff --git a/node_modules/react-native-reanimated/src/propsAllowlists.ts b/node_modules/react-native-reanimated/src/propsAllowlists.ts
+index 39c77a1..8bcbc7e 100644
+--- a/node_modules/react-native-reanimated/src/propsAllowlists.ts
++++ b/node_modules/react-native-reanimated/src/propsAllowlists.ts
+@@ -84,6 +84,7 @@ export const PropsAllowlists: AllowlistsHolder = {
+     elevation: true,
+     fontSize: true,
+     lineHeight: true,
++    textShadowColor: true,
+     textShadowRadius: true,
+     textShadowOffset: true,
+     letterSpacing: true,
+diff --git a/node_modules/react-native-reanimated/src/shareables.ts b/node_modules/react-native-reanimated/src/shareables.ts
+index 44e961f..1b57980 100644
+--- a/node_modules/react-native-reanimated/src/shareables.ts
++++ b/node_modules/react-native-reanimated/src/shareables.ts
+@@ -128,6 +128,7 @@ export function makeShareableCloneRecursive<T>(
+   const type = typeof value;
+   const isTypeObject = type === 'object';
+   const isTypeFunction = type === 'function';
++  let isCacheableWorklet = false;
+   if ((isTypeObject || isTypeFunction) && value !== null) {
+     const cached = shareableMappingCache.get(value);
+     if (cached === shareableMappingFlag) {
+@@ -166,6 +167,7 @@ export function makeShareableCloneRecursive<T>(
+       } else if (isPlainJSObject(value) || isTypeFunction) {
+         toAdapt = {};
+         if (isWorkletFunction(value)) {
++          isCacheableWorklet = true;
+           if (__DEV__) {
+             const babelVersion = value.__initData.version;
+             if (babelVersion !== undefined && babelVersion !== jsVersion) {
+@@ -275,7 +277,7 @@ Offending code was: \`${getWorkletCode(value)}\``);
+       }
+       const adapted = NativeReanimatedModule.makeShareableClone(
+         toAdapt,
+-        shouldPersistRemote,
++        shouldPersistRemote || isCacheableWorklet,
+         value
+       );
+       shareableMappingCache.set(value, adapted);

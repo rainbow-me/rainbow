@@ -9,7 +9,7 @@ import { Box, Inline, Text } from '@/design-system';
 import { DetailIcon, DetailBadge, IconContainer } from '@/components/Transactions/TransactionIcons';
 import { SMALL_CARD_ROW_HEIGHT } from '@/components/Transactions/constants';
 import { DetailType, DetailInfo } from '@/components/Transactions/types';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 interface TransactionDetailsRowProps {
   chainId?: ChainId;

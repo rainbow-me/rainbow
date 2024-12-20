@@ -8,8 +8,8 @@ import { analytics } from '@/analytics';
 import { Separator, Stack } from '@/design-system';
 import { useAccountSettings, useLoadAccountData } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
-import { ChainId } from '@/chains/types';
-import { defaultChains } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { isL2Chain } from '@/handlers/web3';
 
 interface NetworkSectionProps {
@@ -33,7 +33,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   );
 
   const renderNetworkList = useCallback(() => {
-    return Object.values(defaultChains)
+    return Object.values(useBackendNetworksStore.getState().getDefaultChains())
       .filter(({ id }) => !isL2Chain({ chainId: id }))
       .map(({ name, id, testnet }) => (
         <MenuItem

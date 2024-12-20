@@ -24,7 +24,7 @@ import { prefetchENSAddress } from '@/resources/ens/ensAddressQuery';
 import { MimeType, handleNFTImages } from '@/utils/handleNFTImages';
 import store from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
-import { ChainId, Network } from '@/chains/types';
+import { ChainId, Network } from '@/state/backendNetworks/types';
 
 const DUMMY_RECORDS = {
   description: 'description',

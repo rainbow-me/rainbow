@@ -9,17 +9,20 @@ import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { useLegacyNFTs } from '@/resources/nfts';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import { useClaimables } from '@/resources/addys/claimables/query';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { analyticsV2 } from '@/analytics';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { throttle } from 'lodash';
+import { usePoints } from '@/resources/points';
+import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
+import { useNativeAsset } from '@/utils/ethereumUtils';
+import { ChainId } from '@/state/backendNetworks/types';
 
 // user properties analytics for claimables that executes at max once every 2 min
 const throttledClaimablesAnalytics = throttle(
@@ -30,7 +33,7 @@ const throttledClaimablesAnalytics = throttle(
     } = {};
 
     claimables.forEach(claimable => {
-      const attribute = `${claimable.analyticsId}USDValue`;
+      const attribute = `claimable-${claimable.analyticsId}-USDValue`;
       totalUSDValue += claimable.value.usd;
 
       if (claimablesUSDValues[attribute] !== undefined) {
@@ -51,13 +54,16 @@ export default function useWalletSectionsData({
 }: {
   type?: string;
 } = {}) {
+  const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { selectedWallet, isReadOnlyWallet } = useWallets();
-  const { isLoading: isLoadingUserAssets, data: sortedAssets = [] } = useSortedUserAssets();
+  const { isLoadingUserAssets, sortedAssets = [] } = useUserAssetsStore(state => ({
+    sortedAssets: state.legacyUserAssets,
+    isLoadingUserAssets: state.isLoadingUserAssets,
+  }));
   const isWalletEthZero = useIsWalletEthZero();
 
   const { nftSort, nftSortDirection } = useNftSort();
 
-  const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     data: { nfts: allUniqueTokens },
@@ -69,6 +75,25 @@ export default function useWalletSectionsData({
   });
   const { data: positions } = usePositions({ address: accountAddress, currency: nativeCurrency });
   const { data: claimables } = useClaimables({ address: accountAddress, currency: nativeCurrency });
+  const { data: points } = usePoints({
+    walletAddress: accountAddress,
+  });
+
+  const claimableETHRewardsRawAmount = points?.points?.user?.rewards?.claimable;
+
+  const eth = useNativeAsset({ chainId: ChainId.mainnet });
+
+  const claimableETHRewardsNativeAmount = useMemo(() => {
+    if (!eth) return undefined;
+
+    const claimableETH = convertRawAmountToBalance(claimableETHRewardsRawAmount || '0', {
+      decimals: 18,
+      symbol: 'ETH',
+    });
+    const { amount } = convertAmountAndPriceToNativeDisplay(claimableETH.amount, eth?.price?.value || 0, nativeCurrency);
+
+    return amount;
+  }, [claimableETHRewardsRawAmount, eth, nativeCurrency]);
 
   // claimables analytics
   useEffect(() => {
@@ -134,6 +159,7 @@ export default function useWalletSectionsData({
       experimentalConfig,
       positions,
       claimables,
+      claimableETHRewardsNativeAmount,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo);
@@ -171,6 +197,7 @@ export default function useWalletSectionsData({
     experimentalConfig,
     positions,
     claimables,
+    claimableETHRewardsNativeAmount,
   ]);
   return walletSections;
 }

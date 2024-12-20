@@ -28,8 +28,8 @@ import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { SignTransactionSheetRouteProp } from '@/screens/SignTransactionSheet';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
-import { ChainId } from '@/chains/types';
-import { chainsName } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -103,12 +103,10 @@ export const getHeightForStep = (step: string) => {
     case WalletBackupStepTypes.backup_manual:
     case WalletBackupStepTypes.restore_from_backup:
       return backupSheetSizes.long;
-    case WalletBackupStepTypes.no_provider:
+    case WalletBackupStepTypes.backup_prompt:
       return backupSheetSizes.medium;
     case WalletBackupStepTypes.check_identifier:
       return backupSheetSizes.check_identifier;
-    case WalletBackupStepTypes.backup_now_manually:
-      return backupSheetSizes.shorter;
     default:
       return backupSheetSizes.short;
   }
@@ -240,6 +238,20 @@ export const consoleSheetConfig = {
     ...buildCoolModalConfig({
       ...params,
       backgroundOpacity: 1,
+      cornerRadius: 0,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
+export const networkSelectorConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundColor: '#000000B2',
+      backgroundOpacity: 0.7,
       cornerRadius: 0,
       springDamping: 1,
       topOffset: 0,
@@ -491,7 +503,7 @@ export const ensAdditionalRecordsSheetConfig: PartialNavigatorConfigOptions = {
 };
 
 export const explainSheetConfig: PartialNavigatorConfigOptions = {
-  options: ({ route: { params = { network: chainsName[ChainId.mainnet] } } }) => {
+  options: ({ route: { params = { network: useBackendNetworksStore.getState().getChainsName()[ChainId.mainnet] } } }) => {
     // @ts-ignore
     const explainerConfig = explainers(params.network)[params?.type];
     return buildCoolModalConfig({

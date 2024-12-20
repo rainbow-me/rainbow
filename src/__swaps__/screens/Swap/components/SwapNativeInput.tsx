@@ -1,12 +1,12 @@
-import { AnimatedText, Box } from '@/design-system';
+import { AnimatedText } from '@/design-system';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, { runOnJS, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
+import { equalWorklet } from '@/safe-math/SafeMath';
 import { SwapInputValuesCaret } from '@/__swaps__/screens/Swap/components/SwapInputValuesCaret';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { equalWorklet } from '@/safe-math/SafeMath';
 
 export function SwapNativeInput({
   nativeInputType,
@@ -51,8 +51,9 @@ export function SwapNativeInput({
 
   return (
     <GestureHandlerButton
-      disableButtonPressWrapper
-      onPressStartWorklet={() => {
+      disableHaptics
+      disableScale
+      onPressWorklet={() => {
         'worklet';
         if (outputQuotesAreDisabled.value && handleTapWhileDisabled && nativeInputType === 'outputNativeValue') {
           runOnJS(handleTapWhileDisabled)();
@@ -61,22 +62,30 @@ export function SwapNativeInput({
         }
       }}
     >
-      <Box as={Animated.View} style={[styles.nativeRowContainer, pointerEventsStyle]}>
-        <AnimatedText numberOfLines={1} size="17pt" style={textStyle} weight="heavy">
+      <Animated.View style={[styles.nativeRowContainer, pointerEventsStyle]}>
+        <AnimatedText color="labelTertiary" numberOfLines={1} size="17pt" style={textStyle} weight="heavy">
           {nativeCurrencySymbol}
         </AnimatedText>
-        <Box as={Animated.View} style={styles.nativeContainer}>
-          <AnimatedText numberOfLines={1} size="17pt" style={textStyle} weight="heavy">
+        <View style={styles.nativeContainer}>
+          <AnimatedText color="labelTertiary" numberOfLines={1} size="17pt" style={textStyle} weight="heavy">
             {formattedNativeValue}
           </AnimatedText>
           <SwapInputValuesCaret inputCaretType={nativeInputType} disabled={disabled} />
-        </Box>
-      </Box>
+        </View>
+      </Animated.View>
     </GestureHandlerButton>
   );
 }
 
 export const styles = StyleSheet.create({
-  nativeContainer: { alignItems: 'center', flexDirection: 'row', height: 17, pointerEvents: 'box-only' },
-  nativeRowContainer: { alignItems: 'center', flexDirection: 'row' },
+  nativeContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    height: 17,
+    pointerEvents: 'box-only',
+  },
+  nativeRowContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
 });

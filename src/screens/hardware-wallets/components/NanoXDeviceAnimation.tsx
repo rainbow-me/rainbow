@@ -232,7 +232,8 @@ function AnimatedCircle({
 
       // color animation
       colorValue.value = interpolateColor(isConnectedValue, [0, 1], [color, connectedColor]);
-    }
+    },
+    []
   );
 
   return <Circle color={colorValue} cx={x} cy={y} opacity={opacity} r={circleRadius} />;

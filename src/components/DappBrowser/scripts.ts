@@ -1,6 +1,69 @@
-// ⚠️ TODO: Ensure this background color logic isn't too slow
-export const getWebsiteMetadata = `
+import { IS_IOS } from '@/env';
+
+export const freezeWebsite = `(function() {
+    // Pause media elements
+    var mediaElements = document.querySelectorAll('video:not([paused]), audio:not([paused])');
+    mediaElements.forEach(function(element) {
+      element.setAttribute('data-frozen-playback-state', element.paused ? 'paused' : 'playing');
+      element.setAttribute('data-frozen', 'true');
+      element.pause();
+    });
+  
+    // Suspend expensive animations and transitions
+    var animatedElements = document.querySelectorAll('*[style*="animation"], *[style*="transition"]');
+    animatedElements.forEach(function(element) {
+      element.setAttribute('data-frozen-animation-play-state', element.style.animationPlayState);
+      element.setAttribute('data-frozen-transition-property', element.style.transitionProperty);
+      element.style.animationPlayState = 'paused';
+      element.style.transitionProperty = 'none';
+    });
+
+    // Suspend keyframe animations
+    var keyframeAnimatedElements = document.querySelectorAll('*[style*="animation-name"]');
+    keyframeAnimatedElements.forEach(function(element) {
+      element.setAttribute('data-frozen-animation-name', element.style.animationName);
+      element.style.animationName = 'none';
+    });
+  })();`;
+
+export const unfreezeWebsite = `(function() {
+    // Resume media elements
+    var pausedMediaElements = document.querySelectorAll('video[data-frozen="true"], audio[data-frozen="true"]');
+    pausedMediaElements.forEach(function(element) {
+      if (element.getAttribute('data-frozen-playback-state') === 'playing') {
+        element.play();
+      }
+      element.removeAttribute('data-frozen');
+      element.removeAttribute('data-frozen-playback-state');
+    });
+
+    // Resume animations and transitions
+    var animatedElements = document.querySelectorAll('*[style*="animation"], *[style*="transition"]');
+    animatedElements.forEach(function(element) {
+      element.style.animationPlayState = element.getAttribute('data-frozen-animation-play-state') || 'running';
+      element.style.transitionProperty = element.getAttribute('data-frozen-transition-property') || '';
+      element.removeAttribute('data-frozen-animation-play-state');
+      element.removeAttribute('data-frozen-transition-property');
+    });
+
+    // Resume keyframe animations
+    var keyframeAnimatedElements = document.querySelectorAll('*[style*="animation-name"]');
+    keyframeAnimatedElements.forEach(function(element) {
+      element.style.animationName = element.getAttribute('data-frozen-animation-name') || '';
+      element.removeAttribute('data-frozen-animation-name');
+    });
+  })();`;
+
+const getWebsiteMetadata = `
   requestAnimationFrame(() => {
+    ${
+      IS_IOS
+        ? `
+    function getActualBackgroundColor() {
+      return undefined;
+    }
+    `
+        : `
     function getActualBackgroundColor() {
       if (document.readyState !== 'interactive' && document.readyState !== 'complete' && !document.styleSheets.length) return undefined;
 
@@ -47,6 +110,8 @@ export const getWebsiteMetadata = `
 
       const traversedColor = traverseElement(document.documentElement) || traverseElement(document.body);
       return traversedColor || '#FFFFFF';
+    }
+    `
     }
 
     const bgColor = getActualBackgroundColor();
@@ -106,56 +171,34 @@ export const getWebsiteMetadata = `
   });
   `;
 
-export const freezeWebsite = `(function() {
-    // Pause media elements
-    var mediaElements = document.querySelectorAll('video:not([paused]), audio:not([paused])');
-    mediaElements.forEach(function(element) {
-      element.setAttribute('data-frozen-playback-state', element.paused ? 'paused' : 'playing');
-      element.setAttribute('data-frozen', 'true');
-      element.pause();
+const hideBanners = `(function () {
+    // Only run on Uniswap
+    if (!window.location.hostname.includes('uniswap.org')) {
+      return;
+    }
+  
+    const observer = new MutationObserver(() => {
+      const bannerCloseButton = document.querySelector('[data-testid="mobile-promo-banner-close-button"]');
+      if (bannerCloseButton) {
+        const banner = bannerCloseButton.parentElement;
+        if (banner?.parentElement) {
+          banner.parentElement.style.display = 'none';
+          observer.disconnect();
+        }
+      }
     });
   
-    // Suspend expensive animations and transitions
-    var animatedElements = document.querySelectorAll('*[style*="animation"], *[style*="transition"]');
-    animatedElements.forEach(function(element) {
-      element.setAttribute('data-frozen-animation-play-state', element.style.animationPlayState);
-      element.setAttribute('data-frozen-transition-property', element.style.transitionProperty);
-      element.style.animationPlayState = 'paused';
-      element.style.transitionProperty = 'none';
+    // Observe changes to catch React mounting
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
     });
+  
+    // Clean up after 3 seconds if not found
+    setTimeout(() => observer.disconnect(), 3000);
+  })()`;
 
-    // Suspend keyframe animations
-    var keyframeAnimatedElements = document.querySelectorAll('*[style*="animation-name"]');
-    keyframeAnimatedElements.forEach(function(element) {
-      element.setAttribute('data-frozen-animation-name', element.style.animationName);
-      element.style.animationName = 'none';
-    });
-  })();`;
-
-export const unfreezeWebsite = `(function() {
-    // Resume media elements
-    var pausedMediaElements = document.querySelectorAll('video[data-frozen="true"], audio[data-frozen="true"]');
-    pausedMediaElements.forEach(function(element) {
-      if (element.getAttribute('data-frozen-playback-state') === 'playing') {
-        element.play();
-      }
-      element.removeAttribute('data-frozen');
-      element.removeAttribute('data-frozen-playback-state');
-    });
-
-    // Resume animations and transitions
-    var animatedElements = document.querySelectorAll('*[style*="animation"], *[style*="transition"]');
-    animatedElements.forEach(function(element) {
-      element.style.animationPlayState = element.getAttribute('data-frozen-animation-play-state') || 'running';
-      element.style.transitionProperty = element.getAttribute('data-frozen-transition-property') || '';
-      element.removeAttribute('data-frozen-animation-play-state');
-      element.removeAttribute('data-frozen-transition-property');
-    });
-
-    // Resume keyframe animations
-    var keyframeAnimatedElements = document.querySelectorAll('*[style*="animation-name"]');
-    keyframeAnimatedElements.forEach(function(element) {
-      element.style.animationName = element.getAttribute('data-frozen-animation-name') || '';
-      element.removeAttribute('data-frozen-animation-name');
-    });
-  })();`;
+export const SCRIPTS_TO_INJECT = `
+  ${getWebsiteMetadata}
+  ${hideBanners}
+`;

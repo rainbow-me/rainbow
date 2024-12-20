@@ -9,14 +9,14 @@ interface BaseSyncParams<T> {
   /** A boolean or shared value boolean that controls whether synchronization is paused. */
   pauseSync?: DerivedValue<boolean> | SharedValue<boolean> | boolean;
   /** The JS state to be synchronized. */
-  state: T | undefined;
+  state: T;
 }
 
 interface SharedToStateParams<T> extends BaseSyncParams<T> {
   /** The setter function for the JS state (only applicable when `syncDirection` is `'sharedValueToState'`). */
   setState: (value: T) => void;
   /** The shared value to be synchronized. */
-  sharedValue: DerivedValue<T | undefined> | SharedValue<T | undefined>;
+  sharedValue: DerivedValue<T> | SharedValue<T>;
   /** The direction of synchronization. */
   syncDirection: 'sharedValueToState';
 }
@@ -24,7 +24,7 @@ interface SharedToStateParams<T> extends BaseSyncParams<T> {
 interface StateToSharedParams<T> extends BaseSyncParams<T> {
   setState?: never;
   /** The shared value to be synchronized. */
-  sharedValue: SharedValue<T | undefined>;
+  sharedValue: SharedValue<T>;
   /** The direction of synchronization. */
   syncDirection: 'stateToSharedValue';
 }
@@ -73,7 +73,7 @@ export function useSyncSharedValue<T>({ compareDepth = 'deep', pauseSync, setSta
     },
     shouldSync => {
       if (shouldSync) {
-        if (syncDirection === 'sharedValueToState' && sharedValue.value !== undefined) {
+        if (syncDirection === 'sharedValueToState') {
           runOnJS(setState)(sharedValue.value);
         } else if (syncDirection === 'stateToSharedValue') {
           sharedValue.value = state;

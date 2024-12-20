@@ -17,9 +17,6 @@ jobs:
       - name: Set up github keys
         run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
 
-      - name: Clean iOS app
-        run: yarn cache clean && yarn clean:ios > /dev/null 2>&1 || true
-
       - name: Set up ENV vars & scripts
         env:
           CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
@@ -168,6 +165,10 @@ jobs:
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
           yarn detox build --configuration ios.sim.release
 
-      - name: Detox iOS e2e tests
+      - name: Detox iOS e2e tests parallel
         run: |
-          ./scripts/run-retry-tests.sh 3
+          ./scripts/run-parallel-e2e.sh 3
+
+      - name: Detox iOS e2e tests serial
+        run: |
+          ./scripts/run-serial-e2e.sh 3

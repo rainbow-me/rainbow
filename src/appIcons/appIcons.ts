@@ -13,8 +13,9 @@ import AppIconZorb from '@/assets/appIconZorb.png';
 import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconAdworld from '@/assets/appIconAdworld.png';
 import AppIconFarcaster from '@/assets/appIconFarcaster.png';
-import { TokenGateCheckerNetwork } from '@/featuresToUnlock/tokenGatedUtils';
-import { Network } from '@/chains/types';
+import AppIconRedacted from '@/assets/appIconRedacted.png';
+import { TokenGateCheckerNetwork, TokenInfo } from '@/featuresToUnlock/tokenGatedUtils';
+import { Network } from '@/state/backendNetworks/types';
 
 // optimism app icon unlocking NFTs
 const OPTIMISTIC_EXPLORER_NFT_ADDRESS: EthereumAddress = '0x81b30ff521D1fEB67EDE32db726D95714eb00637';
@@ -57,6 +58,9 @@ const ADWORLD_NFT_ADDRESS: EthereumAddress = '0x6171f829e107f70b58d67594c6b62a7d
 // farcaster app icon unlocking NFTs
 const FARCASTER_NFT_ADDRESS: EthereumAddress = '0x76843c8f8a369d29c719141a065ff561abe2420b';
 
+// redacted app icon unlocking NFTs
+const REDACTED_NFT_ADDRESS: EthereumAddress = '0x8C3f001A893f3B561dBCaa80f075ecc7A5B92690';
+
 export interface AppIcon {
   accentColor: string;
   displayName: string;
@@ -64,7 +68,7 @@ export interface AppIcon {
 }
 
 export interface UnlockableAppIcon extends AppIcon {
-  unlockingNFTs: Partial<Record<TokenGateCheckerNetwork, EthereumAddress[]>>;
+  unlockingNFTs: Partial<Record<TokenGateCheckerNetwork, EthereumAddress[] | TokenInfo[]>>;
 }
 
 export type FreeAppIconKey = 'og' | 'pixel';
@@ -80,7 +84,8 @@ export type UnlockableAppIconKey =
   | 'zorb'
   | 'poolboy'
   | 'adworld'
-  | 'farcaster';
+  | 'farcaster'
+  | 'redacted';
 
 export type AppIconKey = FreeAppIconKey | UnlockableAppIconKey;
 
@@ -173,4 +178,18 @@ export const unlockableAppIcons: Record<UnlockableAppIconKey, UnlockableAppIcon>
     image: AppIconFarcaster,
     unlockingNFTs: { [Network.base]: [FARCASTER_NFT_ADDRESS] },
   },
+  redacted: {
+    accentColor: '#001E59',
+    displayName: 'Redacted Rainbow',
+    image: AppIconRedacted,
+    unlockingNFTs: { [Network.base]: [REDACTED_NFT_ADDRESS] },
+  },
+
+  // This is an example of how to add a new test app icon with an ERC-1155 NFT
+  // newTest_1155: {
+  //   accentColor: '#FF0000',
+  //   displayName: 'NewTest1155',
+  //   image: AppIconTest1155,
+  //   unlockingNFTs: { [Network.base]: [{ account: '0xae2e09aAB7a190664E36daB48c576230E19a0B44', id: 2 }] },
+  // }
 };

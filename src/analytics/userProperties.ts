@@ -1,3 +1,4 @@
+import { ChainId } from '@/state/backendNetworks/types';
 import { NativeCurrencyKey } from '@/entities';
 import { Language } from '@/languages';
 
@@ -32,10 +33,12 @@ export interface UserProperties {
   currency?: NativeCurrencyKey;
   language?: Language;
   enabledTestnets?: boolean;
-  enabledFlashbots?: boolean;
   pinnedCoins?: string[];
   hiddenCOins?: string[];
   appIcon?: string;
+
+  // most used networks at the time the user first opens the network switcher
+  mostUsedNetworks?: ChainId[];
 
   // assets
   NFTs?: number;

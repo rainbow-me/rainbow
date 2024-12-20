@@ -32,8 +32,8 @@ import { noop } from 'lodash';
 import { toUtf8String } from '@ethersproject/strings';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Address } from 'viem';
-import { ChainId } from '@/chains/types';
-import { chainsName, SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { removeWalletConnectRequest } from '@/state/walletConnectRequests';
@@ -122,7 +122,7 @@ export const handleMobileWalletProtocolRequest = async ({
         const routeParams: WalletconnectApprovalSheetRouteParams = {
           receivedTimestamp,
           meta: {
-            chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
+            chainIds: useBackendNetworksStore.getState().getSupportedMainnetChainIds(),
             dappName: dappMetadata?.appName || dappMetadata?.appUrl || action.appName || action.appIconUrl || action.appId || '',
             dappUrl: dappMetadata?.appUrl || action.appId || '',
             imageUrl: maybeSignUri(dappMetadata?.iconUrl || action.appIconUrl),
@@ -168,7 +168,10 @@ export const handleMobileWalletProtocolRequest = async ({
       }
 
       if (action.method === 'wallet_switchEthereumChain') {
-        const isSupportedChain = SUPPORTED_MAINNET_CHAIN_IDS.includes(BigNumber.from(action.params.chainId).toNumber());
+        const isSupportedChain = useBackendNetworksStore
+          .getState()
+          .getSupportedMainnetChainIds()
+          .includes(BigNumber.from(action.params.chainId).toNumber());
         if (!isSupportedChain) {
           await rejectAction(action, {
             message: 'Unsupported chain',
@@ -300,7 +303,7 @@ export const handleDappBrowserConnectionPrompt = (
     const routeParams: WalletconnectApprovalSheetRouteParams = {
       receivedTimestamp,
       meta: {
-        chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
+        chainIds: useBackendNetworksStore.getState().getSupportedMainnetChainIds(),
         dappName: dappData?.dappName || dappData.dappUrl,
         dappUrl: dappData.dappUrl,
         imageUrl: maybeSignUri(dappData.imageUrl),
@@ -400,7 +403,7 @@ export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displ
 export const handleWalletConnectRequest = async (request: WalletconnectRequestData) => {
   const chainId = request?.walletConnectV2RequestValues?.chainId;
   if (!chainId) return;
-  const network = chainsName[chainId];
+  const network = useBackendNetworksStore.getState().getChainsName()[chainId];
   const address = request?.walletConnectV2RequestValues?.address;
 
   const onSuccess = async (result: string) => {

@@ -13,7 +13,7 @@ import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
 import { deviceUtils } from '@/utils';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const SafeRadialGradient = (IS_TESTING === 'true' ? View : RadialGradient) as typeof RadialGradient;
 
@@ -174,10 +174,8 @@ export default React.memo(function FastCurrencySelectionRow({
           {showFavoriteButton &&
             chainId === ChainId.mainnet &&
             (ios ? (
-              // @ts-ignore
               <FloatingEmojis
                 centerVertically
-                deviceWidth={deviceWidth}
                 disableHorizontalMovement
                 disableVerticalMovement
                 distance={70}

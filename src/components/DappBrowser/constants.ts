@@ -1,5 +1,7 @@
 import { ImageOptions } from '@candlefinance/faster-image';
 import { CaptureOptions } from 'react-native-view-shot';
+import { globalColors } from '@/design-system';
+import { IS_IOS } from '@/env';
 
 export const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';
 export const HTTP = 'http://';
@@ -22,10 +24,19 @@ export const BLANK_BASE64_PIXEL = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCA
 export const TAB_SCREENSHOT_FASTER_IMAGE_CONFIG: Partial<ImageOptions> = {
   // This placeholder avoids an occasional loading spinner flash
   base64Placeholder: BLANK_BASE64_PIXEL,
-  cachePolicy: 'discNoCacheControl',
-  resizeMode: 'cover',
+  cachePolicy: 'memory',
+  resizeMode: IS_IOS ? 'topContain' : 'cover',
   showActivityIndicator: false,
   transitionDuration: 0,
 };
 
 export const TAB_SCREENSHOT_FILE_FORMAT: CaptureOptions = { format: 'jpg' };
+
+export const TAB_VIEW_BACKGROUND_COLOR_DARK = '#0A0A0A';
+export const TAB_VIEW_BACKGROUND_COLOR_LIGHT = '#F2F2F5';
+
+export const HOMEPAGE_BACKGROUND_COLOR_DARK = globalColors.grey100;
+export const HOMEPAGE_BACKGROUND_COLOR_LIGHT = '#F7F7F9';
+
+export const BROWSER_BACKGROUND_COLOR_DARK = HOMEPAGE_BACKGROUND_COLOR_DARK;
+export const BROWSER_BACKGROUND_COLOR_LIGHT = IS_IOS ? HOMEPAGE_BACKGROUND_COLOR_LIGHT : TAB_VIEW_BACKGROUND_COLOR_LIGHT;

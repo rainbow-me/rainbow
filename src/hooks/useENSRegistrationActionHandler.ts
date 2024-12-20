@@ -25,7 +25,7 @@ import store from '@/redux/store';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { noop } from 'lodash';
 import { logger, RainbowError } from '@/logger';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { IS_IOS } from '@/env';
 
 // Generic type for action functions

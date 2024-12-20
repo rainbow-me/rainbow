@@ -3,17 +3,21 @@ import { useRecoilState } from 'recoil';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Icon } from '@/components/icons';
-import { Bleed, Box, Inline, Inset, Text, useForegroundColor } from '@/design-system';
+import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { haptics } from '@/utils';
-import { Space } from '@/design-system/docs/system/tokens.css';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { NAVBAR_HORIZONTAL_INSET } from '@/components/navbar/Navbar';
+import { NAVBAR_ICON_SIZE } from '@/components/navbar/NavbarTextIcon';
 
 export const ProfileNameRowHeight = 16;
+const CARET_ICON_WIDTH = 22;
+const HIT_SLOP = 16;
+const GAP = 4;
 
 export function ProfileNameRow({
   disableOnPress,
@@ -66,31 +70,33 @@ export function ProfileNameRow({
 
   const { width: deviceWidth } = useDimensions();
 
-  const horizontalInset = 19;
-  const accountNameLeftOffset = 15;
-  const caretIconWidth = 22;
-  const maxWidth = deviceWidth - (caretIconWidth + accountNameLeftOffset) - horizontalInset * 2;
+  const maxWidth = deviceWidth - 2 * (NAVBAR_ICON_SIZE + NAVBAR_HORIZONTAL_INSET + HIT_SLOP) - CARET_ICON_WIDTH - GAP;
 
-  const hitSlop: Space = '16px';
   return (
-    <Box pointerEvents={disableOnPress ? 'none' : 'auto'} position="absolute" style={{ zIndex: 100 }}>
+    <Box
+      pointerEvents={disableOnPress ? 'none' : 'auto'}
+      position="absolute"
+      style={{
+        zIndex: 100,
+      }}
+    >
       {name && (
-        <Bleed space={hitSlop}>
+        <Bleed space={`${HIT_SLOP}px`}>
           <ButtonPressAnimation
             onLongPress={onLongPressName}
             onPress={onPressName}
             scaleTo={0.84}
             testID={testIDPrefix ? `${testIDPrefix}-${name}` : undefined}
           >
-            <Inset space={hitSlop}>
-              <Inline alignVertical="center" space="4px" wrap={false}>
+            <Inset space={`${HIT_SLOP}px`}>
+              <Box flexDirection="row" alignItems="center" gap={GAP}>
                 <Box style={{ maxWidth }}>
-                  <Text color="label" numberOfLines={1} size={variant === 'header' ? '22pt' : '22pt'} weight="bold">
+                  <Text color="label" numberOfLines={1} size={variant === 'header' ? '22pt' : '22pt'} weight="bold" ellipsizeMode="middle">
                     {name}
                   </Text>
                 </Box>
-                <Icon color={iconColor} height={9} name="caretDownIcon" width={caretIconWidth} />
-              </Inline>
+                <Icon color={iconColor} height={9} name="caretDownIcon" width={CARET_ICON_WIDTH} />
+              </Box>
             </Inset>
           </ButtonPressAnimation>
         </Bleed>
@@ -103,7 +109,6 @@ export function ProfileNameRow({
         scaleTo={0}
         size={50}
         wiggleFactor={0}
-        // @ts-expect-error – JS component
         setOnNewEmoji={newOnNewEmoji => (onNewEmoji.current = newOnNewEmoji)}
       />
     </Box>

@@ -14,7 +14,6 @@ export const NOTIFICATIONS = 'Notifications';
 export const REVIEW_ANDROID = 'reviewAndroid';
 export const PROFILES = 'ENS Profiles';
 export const L2_TXS = 'L2 Transactions';
-export const FLASHBOTS_WC = 'Flashbots for WC';
 export const CROSSCHAIN_SWAPS = 'Crosschain Swaps';
 export const OP_REWARDS = '$OP Rewards';
 export const DEFI_POSITIONS = 'Defi Positions';
@@ -30,6 +29,7 @@ export const DEGEN_MODE = 'Degen Mode';
 export const FEATURED_RESULTS = 'Featured Results';
 export const CLAIMABLES = 'Claimables';
 export const NFTS_ENABLED = 'Nfts Enabled';
+export const TRENDING_TOKENS = 'Trending Tokens';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -45,7 +45,6 @@ export type ExperimentalValue = {
 
 export const defaultConfig: Record<string, ExperimentalValue> = {
   // this flag is not reactive. We use this in a static context
-  [FLASHBOTS_WC]: { settings: true, value: false },
   [HARDWARE_WALLETS]: { settings: true, value: true },
   [L2_TXS]: { needsRestart: true, settings: true, value: true },
   [LANGUAGE_SETTINGS]: { settings: true, value: true },
@@ -68,6 +67,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [FEATURED_RESULTS]: { settings: true, value: false },
   [CLAIMABLES]: { settings: true, value: false },
   [NFTS_ENABLED]: { settings: true, value: !!IS_TEST },
+  [TRENDING_TOKENS]: { settings: true, value: false },
 };
 
 export const defaultConfigValues: Record<string, boolean> = Object.fromEntries(

@@ -28,6 +28,8 @@ const springAnimations = createSpringConfigs({
   snappierSpringConfig: disableForTestingEnvironment({ damping: 42, mass: 0.8, stiffness: 800 }),
   snappySpringConfig: disableForTestingEnvironment({ damping: 100, mass: 0.8, stiffness: 275 }),
   springConfig: disableForTestingEnvironment({ damping: 100, mass: 1.2, stiffness: 750 }),
+  tabGestureConfig: disableForTestingEnvironment({ damping: 36, mass: 1.4, stiffness: 350 }),
+  tabSwitchConfig: disableForTestingEnvironment({ damping: 40, mass: 1.25, stiffness: 420 }),
 });
 
 export const SPRING_CONFIGS: Record<keyof typeof springAnimations, WithSpringConfig> = springAnimations;

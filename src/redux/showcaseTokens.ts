@@ -5,7 +5,7 @@ import { getPreference } from '../model/preferences';
 import { AppGetState } from './store';
 import { getShowcaseTokens, getWebDataEnabled, saveShowcaseTokens, saveWebDataEnabled } from '@/handlers/localstorage/accountLocal';
 import WalletTypes from '@/helpers/walletTypes';
-import { Network } from '@/chains/types';
+import { Network } from '@/state/backendNetworks/types';
 
 // -- Constants --------------------------------------- //
 

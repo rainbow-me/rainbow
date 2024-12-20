@@ -17,8 +17,8 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { chainsName } from '@/chains';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type swapCurrencyListType =
   | 'verifiedAssets'
@@ -70,7 +70,7 @@ const searchCurrencyList = async (searchParams: {
   }
 };
 
-const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.mainnet, isDiscover = false) => {
+const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.mainnet) => {
   const previousChainId = usePrevious(searchChainId);
 
   const searching = useMemo(() => searchQuery !== '' || ChainId.mainnet !== searchChainId, [searchChainId, searchQuery]);
@@ -87,15 +87,24 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
   const [verifiedAssets, setVerifiedAssets] = useState<RainbowToken[]>([]);
   const [fetchingCrosschainAssets, setFetchingCrosschainAssets] = useState(false);
   const [crosschainVerifiedAssets, setCrosschainVerifiedAssets] = useState<CrosschainVerifiedAssets>({
+    [ChainId.apechain]: [],
+    [ChainId.arbitrum]: [],
+    [ChainId.avalanche]: [],
+    [ChainId.base]: [],
+    [ChainId.bsc]: [],
+    [ChainId.blast]: [],
+    [ChainId.degen]: [],
+    [ChainId.gnosis]: [],
+    [ChainId.gravity]: [],
+    [ChainId.ink]: [],
+    [ChainId.linea]: [],
     [ChainId.mainnet]: [],
     [ChainId.optimism]: [],
     [ChainId.polygon]: [],
-    [ChainId.bsc]: [],
-    [ChainId.arbitrum]: [],
-    [ChainId.base]: [],
-    [ChainId.avalanche]: [],
-    [ChainId.blast]: [],
-    [ChainId.apechain]: [],
+    [ChainId.sanko]: [],
+    [ChainId.scroll]: [],
+    [ChainId.zksync]: [],
+    [ChainId.zora]: [],
   });
 
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
@@ -189,7 +198,7 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
                   },
                 },
                 symbol,
-                network: chainsName[chainId],
+                network: useBackendNetworksStore.getState().getChainsName()[chainId],
                 uniqueId,
               } as RainbowToken,
             ];
@@ -434,7 +443,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
       const currentNetworkChainId = Number(chainId);
       if (currentNetworkChainId !== searchChainId) {
         // including goerli in our networks type is causing this type issue
-        // @ts-ignore
         const exactMatch = crosschainVerifiedAssets[currentNetworkChainId].find((asset: RainbowToken) => {
           const symbolMatch = isLowerCaseMatch(asset?.symbol, searchQuery);
           const nameMatch = isLowerCaseMatch(asset?.name, searchQuery);

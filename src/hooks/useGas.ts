@@ -30,9 +30,9 @@ import {
   fetchExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
 import useAccountSettings from './useAccountSettings';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { useQueries } from '@tanstack/react-query';
-import { chainsNativeAsset } from '@/chains';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {
   const isLegacyGasNetwork = !(txFee as GasFee)?.maxFee;
@@ -65,6 +65,8 @@ const checkGasReady = (txFee: LegacyGasFee | GasFee, selectedGasParams: LegacyGa
 export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAsset } = {}) {
   const dispatch = useDispatch();
   const { nativeCurrency } = useAccountSettings();
+
+  const chainsNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset();
 
   // keep native assets up to date for gas price calculations
   // NOTE: We only fetch the native asset for mainnet and chains that don't use ETH as their native token
@@ -130,10 +132,7 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
     [gasData?.selectedGasFee?.gasFee, gasData?.selectedGasFee?.gasFeeParams]
   );
 
-  const startPollingGasFees = useCallback(
-    (chainId = ChainId.mainnet, flashbots = false) => dispatch(gasPricesStartPolling(chainId, flashbots)),
-    [dispatch]
-  );
+  const startPollingGasFees = useCallback((chainId = ChainId.mainnet) => dispatch(gasPricesStartPolling(chainId)), [dispatch]);
   const stopPollingGasFees = useCallback(() => dispatch(gasPricesStopPolling()), [dispatch]);
 
   const updateDefaultGasLimit = useCallback((defaultGasLimit?: number) => dispatch(gasUpdateDefaultGasLimit(defaultGasLimit)), [dispatch]);

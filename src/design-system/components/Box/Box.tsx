@@ -41,7 +41,7 @@ export type BoxProps = {
   flexGrow?: 0 | 1;
   flexShrink?: 0 | 1;
   flexWrap?: 'wrap';
-  height?: Height;
+  height?: Height | number;
   left?: PositionSpace;
   gap?: number;
   zIndex?: number;
@@ -64,7 +64,7 @@ export type BoxProps = {
   position?: Position;
   right?: PositionSpace;
   top?: PositionSpace;
-  width?: Width;
+  width?: Width | number;
   backgroundColor?: string;
   shadowColor?: string;
   elevation?: number;

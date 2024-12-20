@@ -12,7 +12,7 @@ export default function useLoadGlobalEarlyData() {
     logger.debug('[useLoadGlobalEarlyData]: Load wallet global early data');
     const promises = [];
 
-    // native currency, app icon, testnetsEnabled, flashbotsEnabled
+    // native currency, app icon, testnetsEnabled
     const p1 = dispatch(settingsLoadState());
     // language
     const p2 = dispatch(settingsLoadLanguage());

@@ -1,5 +1,5 @@
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId, Network } from '@/chains/types';
+import { ChainId, Network } from '@/state/backendNetworks/types';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { CardType } from '@/components/cards/GenericCard';
@@ -9,6 +9,7 @@ import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
 import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
+import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 
 /**
  * All events, used by `analytics.track()`
@@ -172,6 +173,14 @@ export const event = {
 
   // token lists (wallet, swap, send)
   tokenList: 'token_list',
+
+  // trending tokens
+  viewTrendingToken: 'trending_tokens.view_trending_token',
+  viewRankedCategory: 'trending_tokens.view_ranked_category',
+  changeNetworkFilter: 'trending_tokens.change_network_filter',
+  changeTimeframeFilter: 'trending_tokens.change_timeframe_filter',
+  changeSortFilter: 'trending_tokens.change_sort_filter',
+  hasLinkedFarcaster: 'trending_tokens.has_linked_farcaster',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -188,10 +197,10 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   outputAssetChainId: ChainId;
   outputAssetAmount: number;
   mainnetAddress: string;
-  flashbots: boolean;
   tradeAmountUSD: number;
   degenMode: boolean;
   isSwappingToPopularAsset: boolean;
+  isSwappingToTrendingAsset: boolean;
   isHardwareWallet: boolean;
 };
 
@@ -644,6 +653,12 @@ export type EventProperties = {
       symbol: string;
       address: string;
     };
+    outputAsset: {
+      symbol: string;
+      address: string;
+    };
+    outputChainId: ChainId;
+    isSwapping: boolean;
     amount: string;
     usdValue: number;
   };
@@ -656,6 +671,13 @@ export type EventProperties = {
       symbol: string;
       address: string;
     };
+    isSwapping: boolean;
+    outputAsset: {
+      symbol: string;
+      address: string;
+    };
+    outputChainId: ChainId;
+    failureStep: 'claim' | 'swap' | 'unknown';
     amount: string;
     usdValue: number;
     errorMessage: string;
@@ -712,5 +734,38 @@ export type EventProperties = {
     no_icon: number;
     no_price?: number;
     query?: string; // query is only sent for the swap screen
+  };
+
+  [event.viewTrendingToken]: {
+    address: TrendingToken['address'];
+    chainId: TrendingToken['chainId'];
+    symbol: TrendingToken['symbol'];
+    name: TrendingToken['name'];
+    highlightedFriends: number;
+  };
+
+  [event.viewRankedCategory]: {
+    category: string;
+    chainId: ChainId | undefined;
+    isLimited: boolean;
+    isEmpty: boolean;
+  };
+
+  [event.changeNetworkFilter]: {
+    chainId: ChainId | undefined;
+  };
+
+  [event.changeTimeframeFilter]: {
+    timeframe: string;
+  };
+
+  [event.changeSortFilter]: {
+    sort: string | undefined;
+  };
+
+  [event.hasLinkedFarcaster]: {
+    hasFarcaster: boolean;
+    personalizedTrending: boolean;
+    walletHash: string;
   };
 };

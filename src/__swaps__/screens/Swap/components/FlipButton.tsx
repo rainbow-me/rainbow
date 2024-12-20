@@ -14,7 +14,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { GestureHandlerButton } from './GestureHandlerButton';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export const FlipButton = () => {
   const { isDarkMode } = useColorMode();

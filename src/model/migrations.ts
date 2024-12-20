@@ -39,8 +39,13 @@ import { EthereumAddress, RainbowToken } from '@/entities';
 import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
 import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
 import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
-import { UniqueId } from '@/__swaps__/types/assets';
+import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { selectorFilterByUserChains, selectUserAssetsList } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
+import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
+import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
 
 export default async function runMigrations() {
   // get current version
@@ -695,6 +700,50 @@ export default async function runMigrations() {
   };
 
   migrations.push(v21);
+
+  /**
+   *************** Migration v22 ******************
+   * Reset icon checks
+   */
+  const v22 = async () => {
+    // For each appIcon, delete the handled flag
+    (Object.keys(unlockableAppIcons) as UnlockableAppIconKey[]).map(appIconKey => {
+      unlockableAppIconStorage.delete(appIconKey);
+      logger.debug('Resetting icon status for ' + appIconKey);
+    });
+  };
+
+  migrations.push(v22);
+
+  /**
+   *************** Migration v23 ******************
+   * Populate `legacyUserAssets` attribute in `userAssetsStore`
+   */
+  const v23 = async () => {
+    const state = store.getState();
+    const { wallets } = state.wallets;
+    const { nativeCurrency } = state.settings;
+
+    if (!wallets) return;
+
+    for (const wallet of Object.values(wallets)) {
+      for (const { address } of (wallet as RainbowWallet).addresses) {
+        const { connectedToHardhat } = useConnectedToHardhatStore.getState();
+        const queryKey = userAssetsQueryKey({ address, currency: nativeCurrency, testnetMode: connectedToHardhat });
+        const queryData: ParsedAssetsDictByChain | undefined = queryClient.getQueryData(queryKey);
+
+        if (!queryData) continue;
+
+        const userAssets = selectorFilterByUserChains({
+          data: queryData,
+          selector: selectUserAssetsList,
+        });
+        userAssetsStore.getState(address).setUserAssets(userAssets as ParsedSearchAsset[]);
+      }
+    }
+  };
+
+  migrations.push(v23);
 
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);

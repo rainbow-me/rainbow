@@ -201,7 +201,8 @@ const SmoothPagerComponent = (
           }
         }
       }
-    }
+    },
+    []
   );
 
   const pagerWrapperStyle = useAnimatedStyle(() => {

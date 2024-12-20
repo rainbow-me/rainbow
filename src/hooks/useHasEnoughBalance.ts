@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { fromWei, greaterThanOrEqualTo } from '@/helpers/utilities';
 import BigNumber from 'bignumber.js';
 import { SelectedGasFee } from '@/entities';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 type WalletBalance = {
   amount: string | number;
@@ -20,11 +20,10 @@ type BalanceCheckParams = {
 };
 
 export const useHasEnoughBalance = ({ isMessageRequest, walletBalance, chainId, selectedGasFee, req }: BalanceCheckParams) => {
-  const [isBalanceEnough, setIsBalanceEnough] = useState<boolean>();
+  const [isBalanceEnough, setIsBalanceEnough] = useState<boolean>(isMessageRequest);
 
   useEffect(() => {
     if (isMessageRequest) {
-      setIsBalanceEnough(true);
       return;
     }
 

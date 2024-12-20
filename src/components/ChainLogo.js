@@ -21,7 +21,7 @@ import BaseBadgeNoShadow from '../assets/badges/baseBadgeNoShadow.png';
 import { Centered } from './layout';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const ChainIcon = styled(FastImage)({
   height: ({ size }) => size,

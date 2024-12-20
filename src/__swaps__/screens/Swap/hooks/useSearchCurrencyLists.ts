@@ -1,5 +1,5 @@
 import { TokenSearchResult, useTokenSearch } from '@/__swaps__/screens/Swap/resources/search/search';
-import { ChainId } from '@/chains/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { addHexPrefix } from '@/handlers/web3';
 import { isLowerCaseMatch, filterList } from '@/utils';
