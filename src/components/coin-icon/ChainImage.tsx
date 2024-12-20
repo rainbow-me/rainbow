@@ -89,5 +89,3 @@ export const ChainImage = forwardRef(function ChainImage(
     />
   );
 });
-
-export const AnimatedChainImage = Animated.createAnimatedComponent(ChainImage);

@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { getChainColorWorklet } from '@/__swaps__/utils/swaps';
+import { getChainColorWorklet, opacity } from '@/__swaps__/utils/swaps';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedChainImage, ChainImage } from '@/components/coin-icon/ChainImage';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AnimatedText, Box, DesignSystemProvider, globalColors, Separator, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import * as i18n from '@/languages';
-import { useTheme } from '@/theme';
 import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
 import chroma from 'chroma-js';
@@ -19,6 +18,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
+  Easing,
   FadeIn,
   FadeOutUp,
   LinearTransition,
@@ -46,6 +46,8 @@ import { IS_IOS } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 import { noop } from 'lodash';
 import { TapToDismiss } from './DappBrowser/control-panel/ControlPanel';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 
 const t = i18n.l.network_switcher;
 
@@ -72,11 +74,18 @@ function EditButton({ editing }: { editing: SharedValue<boolean> }) {
         editing.value = !editing.value;
       }}
       scaleTo={0.95}
-      style={[
-        { position: 'absolute', right: 0 },
-        { paddingHorizontal: 10, height: 28, justifyContent: 'center' },
-        { borderColor, borderWidth: 1.33, borderRadius: 14 },
-      ]}
+      style={{
+        borderColor,
+        borderCurve: 'continuous',
+        borderRadius: 14,
+        borderWidth: THICK_BORDER_WIDTH,
+        height: 28,
+        justifyContent: 'center',
+        overflow: 'hidden',
+        paddingHorizontal: 10,
+        position: 'absolute',
+        right: 0,
+      }}
     >
       <AnimatedText color="blue" size="17pt" weight="bold" style={{ shadowColor: '#268FFF', shadowOpacity: 0.4, shadowRadius: 12 }}>
         {text}
@@ -96,7 +105,17 @@ function Header({ editing }: { editing: SharedValue<boolean> }) {
   return (
     <View style={{ height: 66, borderBottomWidth: 1, borderBottomColor: separatorTertiary, paddingTop: 20 }}>
       <View style={{ position: 'absolute', left: 0, right: 0, top: 6 }}>
-        <View style={{ height: 5, width: 36, marginHorizontal: 'auto', borderRadius: 3, backgroundColor: fill }} />
+        <View
+          style={{
+            height: 5,
+            width: 36,
+            marginHorizontal: 'auto',
+            borderRadius: 3,
+            borderCurve: 'continuous',
+            backgroundColor: fill,
+            overflow: 'hidden',
+          }}
+        />
       </View>
 
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 28 }}>
@@ -199,16 +218,28 @@ const CustomizeNetworksBanner = !shouldShowCustomizeNetworksBanner(customizeNetw
       );
     };
 
+const BADGE_BORDER_COLORS = {
+  default: {
+    dark: globalColors.white10,
+    light: '#F2F3F4',
+  },
+  selected: {
+    dark: '#1E2E40',
+    light: '#D7E9FD',
+  },
+};
+
 const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color?: string) => {
   const { isDarkMode } = useColorMode();
   const label = useForegroundColor('labelTertiary');
 
   const surfacePrimary = useBackgroundColor('surfacePrimary');
   const networkSwitcherBackgroundColor = isDarkMode ? '#191A1C' : surfacePrimary;
+  const separatorTertiary = useForegroundColor('separatorTertiary');
 
   const defaultStyle = {
     backgroundColor: isDarkMode ? globalColors.white10 : globalColors.grey20,
-    borderColor: '#F5F8FF05',
+    borderColor: isDarkMode ? opacity(separatorTertiary, 0.02) : separatorTertiary,
   };
   const selectedStyle = {
     backgroundColor: chroma
@@ -222,9 +253,12 @@ const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color?: string)
   const scale = useSharedValue(1);
   useAnimatedReaction(
     () => isSelected.value,
-    current => {
-      if (current === true) {
-        scale.value = withSequence(withTiming(0.95, { duration: 50 }), withTiming(1, { duration: 80 }));
+    (current, prev) => {
+      if (current === true && prev === false) {
+        scale.value = withSequence(
+          withTiming(0.9, { duration: 120, easing: Easing.bezier(0.25, 0.46, 0.45, 0.94) }),
+          withTiming(1, TIMING_CONFIGS.fadeConfig)
+        );
       }
     }
   );
@@ -252,29 +286,28 @@ function AllNetworksOption({
   selected: SharedValue<ChainId | undefined>;
   setSelected: (chainId: ChainId | undefined) => void;
 }) {
+  const { isDarkMode } = useColorMode();
   const blue = useForegroundColor('blue');
 
   const isSelected = useDerivedValue(() => selected.value === undefined);
-  const { animatedStyle, selectedStyle, defaultStyle } = useNetworkOptionStyle(isSelected, blue);
+  const { animatedStyle } = useNetworkOptionStyle(isSelected, blue);
 
   const overlappingBadge = useAnimatedStyle(() => {
     return {
-      borderColor: isSelected.value ? selectedStyle.backgroundColor : defaultStyle.backgroundColor,
-      borderWidth: 1.67,
-      borderRadius: 16,
-      marginLeft: -9,
-      width: 16 + 1.67 * 2, // size + borders
-      height: 16 + 1.67 * 2,
+      borderColor: isSelected.value
+        ? BADGE_BORDER_COLORS.selected[isDarkMode ? 'dark' : 'light']
+        : BADGE_BORDER_COLORS.default[isDarkMode ? 'dark' : 'light'],
     };
   });
 
-  const tapGesture = Gesture.Tap().onTouchesDown(() => {
-    'worklet';
-    setSelected(undefined);
-  });
-
   return (
-    <GestureDetector gesture={tapGesture}>
+    <GestureHandlerButton
+      onPressWorklet={() => {
+        'worklet';
+        setSelected(undefined);
+      }}
+      scaleTo={0.95}
+    >
       <Animated.View
         style={[
           {
@@ -283,22 +316,32 @@ function AllNetworksOption({
             flexDirection: 'row',
             alignItems: 'center',
             borderRadius: 24,
-            borderWidth: 1.33,
+            borderWidth: THICK_BORDER_WIDTH,
+            borderCurve: 'continuous',
+            overflow: 'hidden',
           },
           animatedStyle,
         ]}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', position: 'absolute', marginLeft: 16 }}>
-          <AnimatedChainImage chainId={ChainId.base} size={16} />
-          <AnimatedChainImage chainId={ChainId.mainnet} size={16} style={overlappingBadge} />
-          <AnimatedChainImage chainId={ChainId.optimism} size={16} style={overlappingBadge} />
-          <AnimatedChainImage chainId={ChainId.arbitrum} size={16} style={overlappingBadge} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', position: 'absolute', marginLeft: 20 }}>
+          <Animated.View style={[sx.overlappingBadge, overlappingBadge]}>
+            <ChainImage chainId={ChainId.base} size={16} />
+          </Animated.View>
+          <Animated.View style={[sx.overlappingBadge, overlappingBadge]}>
+            <ChainImage chainId={ChainId.mainnet} size={16} />
+          </Animated.View>
+          <Animated.View style={[sx.overlappingBadge, overlappingBadge]}>
+            <ChainImage chainId={ChainId.optimism} size={16} />
+          </Animated.View>
+          <Animated.View style={[sx.overlappingBadge, overlappingBadge]}>
+            <ChainImage chainId={ChainId.arbitrum} size={16} />
+          </Animated.View>
         </View>
         <Text color="label" size="17pt" weight="bold" style={{ textAlign: 'center', flex: 1 }}>
           {i18n.t(t.all_networks)}
         </Text>
       </Animated.View>
-    </GestureDetector>
+    </GestureHandlerButton>
   );
 }
 
@@ -338,9 +381,17 @@ function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: Shar
     <Animated.View
       layout={LinearTransition.springify().mass(0.4)}
       style={[
-        { height: ITEM_HEIGHT, width: ITEM_WIDTH },
-        { paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center' },
-        { borderRadius: 24, borderWidth: 1.33 },
+        {
+          alignItems: 'center',
+          borderCurve: 'continuous',
+          borderRadius: 24,
+          borderWidth: THICK_BORDER_WIDTH,
+          flexDirection: 'row',
+          height: ITEM_HEIGHT,
+          overflow: 'hidden',
+          paddingHorizontal: 12,
+          width: ITEM_WIDTH,
+        },
         animatedStyle,
       ]}
     >
@@ -358,6 +409,10 @@ const GAP = 12;
 const ITEM_WIDTH = (DEVICE_WIDTH - SHEET_INNER_PADDING * 2 - SHEET_OUTER_INSET * 2 - GAP) / 2;
 const ITEM_HEIGHT = 48;
 const SEPARATOR_HEIGHT = 68;
+
+const ALL_NETWORKS_BADGE_SIZE = 16;
+const THICKER_BORDER_WIDTH = 5 / 3;
+
 const enum Section {
   pinned,
   separator,
@@ -482,7 +537,7 @@ function SectionSeparator({
   const showMoreOrLessIcon = useDerivedValue(() => (expanded.value ? '􀆇' : '􀆈') as string);
   const showMoreOrLessIconStyle = useAnimatedStyle(() => ({ opacity: editing.value ? 0 : 1 }));
 
-  const { isDarkMode } = useTheme();
+  const { isDarkMode } = useColorMode();
 
   const separatorContainerStyles = useAnimatedStyle(() => {
     if (showExpandButtonAsNetworkChip.value) {
@@ -495,7 +550,7 @@ function SectionSeparator({
         flexDirection: 'row',
         alignItems: 'center',
         borderRadius: 24,
-        borderWidth: 1.33,
+        borderWidth: THICK_BORDER_WIDTH,
         transform: [{ translateX: position.x }, { translateY: position.y }],
       };
     }
@@ -559,13 +614,13 @@ function EmptyUnpinnedPlaceholder({
       transform: [{ translateY: sectionsOffsets.value[Section.unpinned].y }],
     };
   });
-  const { isDarkMode } = useTheme();
+  const { isDarkMode } = useColorMode();
   return (
     <Animated.View
       style={[
         { height: 48, width: '100%' },
         { paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center' },
-        { borderRadius: 24, borderWidth: 1.33 },
+        { borderRadius: 24, borderWidth: THICK_BORDER_WIDTH },
         { backgroundColor: isDarkMode ? globalColors.white10 : globalColors.grey20, borderColor: '#F5F8FF05' },
         styles,
       ]}
@@ -743,7 +798,7 @@ function NetworksGrid({
 }
 
 function Sheet({ children, editing, onClose }: PropsWithChildren<{ editing: SharedValue<boolean>; onClose: VoidFunction }>) {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode } = useColorMode();
   const surfacePrimary = useBackgroundColor('surfacePrimary');
   const backgroundColor = isDarkMode ? '#191A1C' : surfacePrimary;
   const separatorSecondary = useForegroundColor('separatorSecondary');
@@ -760,7 +815,7 @@ function Sheet({ children, editing, onClose }: PropsWithChildren<{ editing: Shar
           sx.sheet,
           {
             backgroundColor,
-            borderColor: separatorSecondary,
+            borderColor: isDarkMode ? separatorSecondary : globalColors.white100,
           },
         ]}
       >
@@ -789,6 +844,13 @@ export function NetworkSelector() {
 }
 
 const sx = StyleSheet.create({
+  overlappingBadge: {
+    borderWidth: THICKER_BORDER_WIDTH,
+    borderRadius: ALL_NETWORKS_BADGE_SIZE,
+    marginLeft: -9,
+    width: ALL_NETWORKS_BADGE_SIZE + THICKER_BORDER_WIDTH * 2,
+    height: ALL_NETWORKS_BADGE_SIZE + THICKER_BORDER_WIDTH * 2,
+  },
   sheet: {
     flex: 1,
     width: deviceUtils.dimensions.width - 16,
@@ -799,7 +861,9 @@ const sx = StyleSheet.create({
     left: 8,
     right: 8,
     paddingHorizontal: 16,
+    borderCurve: 'continuous',
     borderRadius: 42,
-    borderWidth: 1.33,
+    borderWidth: THICK_BORDER_WIDTH,
+    overflow: 'hidden',
   },
 });

@@ -5,9 +5,9 @@ import { PerformanceTracking, currentlyTrackedMetrics } from '@/performance/trac
 import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
 
 export const useTrackDiscoverScreenTime = () => {
-  const activeSwipeRoute = useNavigationStore(state => state.activeSwipeRoute);
+  const isOnDiscoverScreen = useNavigationStore(state => state.isRouteActive(Routes.DISCOVER_SCREEN));
+
   useEffect(() => {
-    const isOnDiscoverScreen = activeSwipeRoute === Routes.DISCOVER_SCREEN;
     const data = currentlyTrackedMetrics.get(PerformanceMetrics.timeSpentOnDiscoverScreen);
 
     if (!isOnDiscoverScreen && data?.startTimestamp) {
@@ -17,5 +17,5 @@ export const useTrackDiscoverScreenTime = () => {
     if (isOnDiscoverScreen) {
       PerformanceTracking.startMeasuring(PerformanceMetrics.timeSpentOnDiscoverScreen);
     }
-  }, [activeSwipeRoute]);
+  }, [isOnDiscoverScreen]);
 };
