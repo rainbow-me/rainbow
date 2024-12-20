@@ -370,10 +370,9 @@ export function createQueryStore<
 
   const createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]> = (set, get, api) => {
     const pruneCache = (state: S): S => {
-      const now = Date.now();
       const newCache: Record<string, CacheEntry<TData>> = {};
       Object.entries(state.queryCache).forEach(([key, entry]) => {
-        if (entry && now - entry.lastFetchedAt <= cacheTime) {
+        if (entry && Date.now() - entry.lastFetchedAt <= cacheTime) {
           newCache[key] = entry;
         }
       });
