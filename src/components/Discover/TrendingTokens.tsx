@@ -1,4 +1,4 @@
-import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
+import { DropdownMenu } from '@/components/DropdownMenu';
 import { globalColors, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
@@ -19,7 +19,6 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
 import { colors } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
-import { useTheme } from '@/theme';
 import { useCallback, useEffect, useMemo } from 'react';
 import React, { Dimensions, FlatList, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -514,7 +513,6 @@ function NoResults() {
 
 function NetworkFilter() {
   const { isDarkMode } = useColorMode();
-  const { colors } = useTheme();
 
   const selected = useSharedValue<ChainId | undefined>(undefined);
   const chainId = useTrendingTokensStore(state => state.chainId);
@@ -522,6 +520,8 @@ function NetworkFilter() {
 
   const { icon, label, lightenedNetworkColor } = useMemo(() => {
     if (!chainId) return { icon: '􀤆', label: i18n.t(t.all), lightenedNetworkColor: undefined };
+    const lightenedNetworkColor = useBackendNetworksStore.getState().getColorsForChainId(chainId, isDarkMode);
+
     return {
       icon: (
         <View style={{ marginRight: 2 }}>
@@ -529,11 +529,11 @@ function NetworkFilter() {
         </View>
       ),
       label: useBackendNetworksStore.getState().getChainsLabel()[chainId],
-      lightenedNetworkColor: colors.networkColors[chainId]
-        ? getMixedColor(colors.networkColors[chainId], globalColors.white100, isDarkMode ? 0.55 : 0.6)
+      lightenedNetworkColor: lightenedNetworkColor
+        ? getMixedColor(lightenedNetworkColor, globalColors.white100, isDarkMode ? 0.55 : 0.6)
         : undefined,
     };
-  }, [chainId, colors.networkColors, isDarkMode]);
+  }, [chainId, isDarkMode]);
 
   const setSelected = useCallback(
     (chainId: ChainId | undefined) => {
