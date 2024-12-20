@@ -57,6 +57,7 @@ export type DndProviderProps = {
     event: GestureUpdateEvent<PanGestureHandlerEventPayload>,
     meta: { activeId: UniqueIdentifier; activeLayout: LayoutRectangle }
   ) => void;
+  onActivationWorklet?: (next: UniqueIdentifier | null, prev: UniqueIdentifier | null) => void;
   simultaneousHandlers?: RefObject<ComponentType<object>>;
   springConfig?: WithSpringConfig;
   style?: StyleProp<ViewStyle>;
@@ -81,6 +82,7 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
     onDragEnd,
     onFinalize,
     onUpdate,
+    onActivationWorklet,
     simultaneousHandlers,
     springConfig = {},
     style,
@@ -152,6 +154,17 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
     []
   );
 
+  // Handle activation changes
+  useAnimatedReaction(
+    () => draggableActiveId.value,
+    (next, prev) => {
+      if (next !== null) {
+        onActivationWorklet?.(next, prev);
+      }
+    },
+    []
+  );
+
   const setActiveId = useCallback(() => {
     'worklet';
     const id = draggablePendingId.value;
@@ -218,13 +231,10 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
 
     const panGesture = Gesture.Pan()
       .maxPointers(1)
+      .enabled(!disabled)
       .onBegin(event => {
         const { state, x, y } = event;
         debug && console.log('begin', { state, x, y });
-        // Gesture is globally disabled
-        if (disabled) {
-          return;
-        }
         // console.log("begin", { state, x, y });
         // Track current state for cancellation purposes
         panGestureState.value = state;
@@ -280,10 +290,10 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
           }
         }
       })
-      .onUpdate(event => {
+      .onChange(event => {
         // console.log(draggableStates.value);
-        const { state, translationX, translationY } = event;
-        debug && console.log('update', { state, translationX, translationY });
+        const { state, translationX, translationY, changeX, changeY } = event;
+        debug && console.log('update', { state, changeX, changeY });
         // Track current state for cancellation purposes
         panGestureState.value = state;
         const { value: activeId } = draggableActiveId;
@@ -307,8 +317,10 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
         }
         // Update our active offset to pan the active item
         const activeOffset = offsets[activeId];
-        activeOffset.x.value = draggableInitialOffset.x.value + translationX;
-        activeOffset.y.value = draggableInitialOffset.y.value + translationY;
+
+        activeOffset.x.value += changeX;
+        activeOffset.y.value += changeY;
+
         // Check potential droppable candidates
         const activeLayout = layouts[activeId].value;
         draggableActiveLayout.value = applyOffset(activeLayout, {
@@ -366,26 +378,18 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
         const restingOffset = restingOffsets[activeId];
         states[activeId].value = 'acting';
         const [targetX, targetY] = [restingOffset.x.value, restingOffset.y.value];
-        animatePointWithSpring(
-          activeOffset,
-          [targetX, targetY],
-          [
-            { ...springConfig, velocity: velocityX / 4 },
-            { ...springConfig, velocity: velocityY / 4 },
-          ],
-          () => {
-            // Cancel if we are interacting again with this item
-            if (panGestureState.value !== State.END && panGestureState.value !== State.FAILED && states[activeId].value !== 'acting') {
-              return;
-            }
-            if (states[activeId]) {
-              states[activeId].value = 'resting';
-            }
-            // for (const [id, offset] of Object.entries(offsets)) {
-            //   console.log({ [id]: [offset.x.value.toFixed(2), offset.y.value.toFixed(2)] });
-            // }
+        animatePointWithSpring(activeOffset, [targetX, targetY], [springConfig, springConfig], () => {
+          // Cancel if we are interacting again with this item
+          if (panGestureState.value !== State.END && panGestureState.value !== State.FAILED && states[activeId].value !== 'acting') {
+            return;
           }
-        );
+          if (states[activeId]) {
+            states[activeId].value = 'resting';
+          }
+          // for (const [id, offset] of Object.entries(offsets)) {
+          //   console.log({ [id]: [offset.x.value.toFixed(2), offset.y.value.toFixed(2)] });
+          // }
+        });
       })
       .withTestId('DndProvider.pan');
 

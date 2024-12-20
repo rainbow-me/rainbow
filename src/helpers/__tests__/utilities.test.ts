@@ -131,6 +131,11 @@ it('addDisplay', () => {
   expect(result).toBe('$1,062.71');
 });
 
+it('addDisplay with large numbers', () => {
+  const result = addDisplay('$1,002,000.50', '$13,912.21');
+  expect(result).toBe('$1,015,912.71');
+});
+
 it('addDisplay with left-aligned currency', () => {
   const result = addDisplay('A$150.50', 'A$912.21');
   expect(result).toBe('A$1,062.71');

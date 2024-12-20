@@ -1,26 +1,13 @@
-import React, {
-  ComponentProps,
-  ReactElement,
-  // useCallback,
-} from 'react';
-import {
-  CellRendererProps,
-  // FlatListProps,
-} from 'react-native';
+import React, { ComponentProps, ReactElement, useCallback, useMemo } from 'react';
+import { CellRendererProps } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import Animated, {
-  AnimatedProps,
-  // runOnJS,
-  useAnimatedReaction,
-  useAnimatedRef,
-  useAnimatedScrollHandler,
-  // useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { AnimatedProps, useAnimatedRef, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useDndContext } from '../DndContext';
-import { useDraggableSort, UseDraggableStackOptions } from '../features';
+import { UseDraggableStackOptions } from '../features';
 import type { UniqueIdentifier } from '../types';
 import { swapByItemCenterPoint } from '../utils';
 import { Draggable } from './Draggable';
+import { useDraggableScroll } from '../features/sort/hooks/useDraggableScroll';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnimatedFlatListProps<ItemT = any> = AnimatedProps<ComponentProps<typeof FlatList<ItemT>>>;
@@ -30,115 +17,63 @@ export type ViewableRange = {
   last: number | null;
 };
 
+type DraggableProps = ComponentProps<typeof Draggable>;
+type DraggablePropsWithoutId = Omit<DraggableProps, 'id' | 'children'>;
+
 export type DraggableFlatListProps<T extends { id: UniqueIdentifier }> = AnimatedFlatListProps<T> &
   Pick<UseDraggableStackOptions, 'onOrderChange' | 'onOrderUpdate' | 'shouldSwapWorklet'> & {
     debug?: boolean;
     gap?: number;
     horizontal?: boolean;
-    initialOrder?: UniqueIdentifier[];
+    draggableProps?: DraggablePropsWithoutId;
+    autoScrollInsets?: {
+      top?: number;
+      bottom?: number;
+    };
   };
 
 export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
   data,
-  // debug,
+  debug,
   gap = 0,
   horizontal = false,
-  initialOrder,
   onOrderChange,
   onOrderUpdate,
   renderItem,
   shouldSwapWorklet = swapByItemCenterPoint,
+  draggableProps,
+  autoScrollInsets,
   ...otherProps
 }: DraggableFlatListProps<T>): ReactElement => {
-  const { draggableActiveId, draggableContentOffset, draggableLayouts, draggableOffsets, draggableRestingOffsets } = useDndContext();
-  const animatedFlatListRef = useAnimatedRef<FlatList<T>>();
+  const { draggableContentOffset } = useDndContext();
+  const animatedFlatListRef = useAnimatedRef<Animated.ScrollView>();
+  const contentHeight = useSharedValue(0);
+  const layoutHeight = useSharedValue(0);
+  const scrollOffset = useSharedValue(0);
 
-  const {
-    // draggablePlaceholderIndex,
-    draggableSortOrder,
-  } = useDraggableSort({
-    horizontal,
-    initialOrder,
-    onOrderChange,
-    onOrderUpdate,
-    shouldSwapWorklet,
-  });
-
-  const direction = horizontal ? 'column' : 'row';
-  const size = 1;
-
-  // Track sort order changes and update the offsets
-  useAnimatedReaction(
-    () => draggableSortOrder.value,
-    (nextOrder, prevOrder) => {
-      // Ignore initial reaction
-      if (prevOrder === null) {
-        return;
-      }
-      const { value: activeId } = draggableActiveId;
-      const { value: layouts } = draggableLayouts;
-      const { value: offsets } = draggableOffsets;
-      const { value: restingOffsets } = draggableRestingOffsets;
-      if (!activeId) {
-        return;
-      }
-
-      const activeLayout = layouts[activeId].value;
-      const { width, height } = activeLayout;
-      const restingOffset = restingOffsets[activeId];
-
-      for (let nextIndex = 0; nextIndex < nextOrder.length; nextIndex++) {
-        const itemId = nextOrder[nextIndex];
-        const prevIndex = prevOrder.findIndex(id => id === itemId);
-        // Skip items that haven't changed position
-        if (nextIndex === prevIndex) {
-          continue;
-        }
-
-        const prevRow = Math.floor(prevIndex / size);
-        const prevCol = prevIndex % size;
-        const nextRow = Math.floor(nextIndex / size);
-        const nextCol = nextIndex % size;
-        const moveCol = nextCol - prevCol;
-        const moveRow = nextRow - prevRow;
-
-        const offset = itemId === activeId ? restingOffset : offsets[itemId];
-
-        if (!restingOffset || !offsets[itemId]) {
-          continue;
-        }
-
-        switch (direction) {
-          case 'row':
-            offset.y.value += moveRow * (height + gap);
-            break;
-          case 'column':
-            offset.x.value += moveCol * (width + gap);
-            break;
-          default:
-            break;
-        }
-      }
-    },
-    []
-  );
+  // @ts-expect-error reanimated type issue
+  const childrenIds = useMemo(() => data?.map((item: T) => item.id) ?? [], [data]);
 
   const scrollHandler = useAnimatedScrollHandler(event => {
+    scrollOffset.value = event.contentOffset.y;
     draggableContentOffset.y.value = event.contentOffset.y;
   });
 
-  /** ⚠️ TODO: Implement auto scrolling when dragging above or below the visible range */
-  // const scrollToIndex = useCallback(
-  //   (index: number) => {
-  //     animatedFlatListRef.current?.scrollToIndex({
-  //       index,
-  //       viewPosition: 0,
-  //       animated: true,
-  //     });
-  //   },
-  //   [animatedFlatListRef]
-  // );
+  useDraggableScroll({
+    childrenIds,
+    onOrderChange,
+    onOrderUpdate,
+    shouldSwapWorklet,
+    horizontal,
+    contentHeight,
+    layoutHeight,
+    autoScrollInsets,
+    animatedScrollViewRef: animatedFlatListRef,
+    scrollOffset,
+    gap,
+  });
 
+  /* ⚠️ IMPROVEMENT: Optionally expose visible range to the parent */
   // const viewableRange = useSharedValue<ViewableRange>({
   //   first: null,
   //   last: null,
@@ -155,29 +90,12 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
   //   },
   //   [debug, viewableRange]
   // );
-
-  // useAnimatedReaction(
-  //   () => draggablePlaceholderIndex.value,
-  //   (next, prev) => {
-  //     if (!Array.isArray(data)) {
-  //       return;
-  //     }
-  //     if (debug) console.log(`placeholderIndex: ${prev} -> ${next}}, last visible= ${viewableRange.value.last}`);
-  //     const {
-  //       value: { first, last },
-  //     } = viewableRange;
-  //     if (last !== null && next >= last && last < data.length - 1) {
-  //       if (next < data.length) {
-  //         runOnJS(scrollToIndex)(next + 1);
-  //       }
-  //     } else if (first !== null && first > 0 && next <= first) {
-  //       if (next > 0) {
-  //         runOnJS(scrollToIndex)(next - 1);
-  //       }
-  //     }
-  //   }
-  // );
   /** END */
+
+  const CellRenderer = useCallback(
+    (cellProps: CellRendererProps<T>) => <DraggableFlatListCellRenderer {...cellProps} draggableProps={draggableProps} />,
+    [draggableProps]
+  );
 
   /** 🛠️ DEBUGGING */
   // useAnimatedReaction(
@@ -201,14 +119,23 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
 
   return (
     <Animated.FlatList
-      CellRendererComponent={DraggableFlatListCellRenderer}
+      CellRendererComponent={CellRenderer}
       data={data}
       onScroll={scrollHandler}
+      onLayout={event => {
+        layoutHeight.value = event.nativeEvent.layout.height;
+      }}
+      onContentSizeChange={(_, height) => {
+        contentHeight.value = height;
+      }}
+      // IMPROVEMENT: optionally implement
       // onViewableItemsChanged={onViewableItemsChanged}
       ref={animatedFlatListRef}
       removeClippedSubviews={false}
       renderItem={renderItem}
-      renderScrollComponent={props => {
+      keyExtractor={(item: T) => item.id.toString()}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      renderScrollComponent={(props: any) => {
         return (
           <Animated.ScrollView
             // eslint-disable-next-line react/jsx-props-no-spreading
@@ -216,19 +143,23 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
           />
         );
       }}
-      viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+      // viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
       // eslint-disable-next-line react/jsx-props-no-spreading, @typescript-eslint/no-explicit-any
       {...(otherProps as any)}
     />
   );
 };
 
+type DraggableCellRendererProps<ItemT extends { id: UniqueIdentifier }> = CellRendererProps<ItemT> & {
+  draggableProps?: DraggablePropsWithoutId;
+};
+
 export const DraggableFlatListCellRenderer = function DraggableFlatListCellRenderer<ItemT extends { id: UniqueIdentifier }>(
-  props: CellRendererProps<ItemT>
+  props: DraggableCellRendererProps<ItemT>
 ) {
-  const { item, children } = props;
+  const { item, children, draggableProps, ...otherProps } = props;
   return (
-    <Draggable activationDelay={200} activeScale={1.025} dragDirection="y" id={item.id.toString()}>
+    <Draggable activeScale={1.025} dragDirection="y" id={item.id.toString()} {...draggableProps} {...otherProps}>
       {children}
     </Draggable>
   );
