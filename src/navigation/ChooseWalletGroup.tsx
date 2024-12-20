@@ -1,5 +1,5 @@
 import React from 'react';
-import { BackgroundProvider, Box, Separator, Text, useForegroundColor } from '@/design-system';
+import { Separator, Text, useBackgroundColor, useForegroundColor } from '@/design-system';
 import { View, Text as NativeText } from 'react-native';
 import chroma from 'chroma-js';
 import { useInitializeWallet, useWallets } from '@/hooks';
@@ -23,7 +23,7 @@ import * as i18n from '@/languages';
 import showWalletErrorAlert from '@/helpers/support';
 import { ScrollView } from 'react-native-gesture-handler';
 import CreateNewWalletGroupIcon from '@/assets/CreateNewWalletGroup.png';
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { SlackSheet } from '@/components/sheet';
 
 function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
   const blue = useForegroundColor('blue');
@@ -196,6 +196,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
 export function ChooseWalletGroup() {
   const { goBack } = useNavigation();
   const { wallets } = useWallets();
+  const surfaceSecondary = useBackgroundColor('surfaceSecondary');
 
   if (!wallets) {
     showWalletErrorAlert();
@@ -205,39 +206,35 @@ export function ChooseWalletGroup() {
   const groups = Object.values(wallets).filter(wallet => wallet.type === WalletTypes.mnemonic);
 
   return (
-    <BackgroundProvider color="surfaceSecondary">
-      {({ backgroundColor }) => (
-        <SimpleSheet backgroundColor={backgroundColor as string} scrollEnabled={false}>
-          <Box width="full" style={{ paddingHorizontal: 24, gap: 20, alignItems: 'center', paddingBottom: 64 }}>
-            <View style={{ paddingTop: 24, paddingBottom: 12, width: '100%' }}>
-              <ButtonPressAnimation scaleTo={0.9} onPress={goBack} hitSlop={64} style={{ width: 20, height: 20 }}>
-                <Text color="blue" size="22pt" weight="bold">
-                  􀆉
-                </Text>
-              </ButtonPressAnimation>
-            </View>
-            <Text color="label" size="22pt" weight="heavy">
-              {i18n.t(i18n.l.wallet.new.choose_wallet_group.title)}
+    <SlackSheet removeTopPadding additionalTopPadding={false} backgroundColor={surfaceSecondary} onDismiss={goBack}>
+      <View style={{ width: '100%', paddingHorizontal: 24, gap: 20, alignItems: 'center', paddingBottom: 64 }}>
+        <View style={{ paddingTop: 24, paddingBottom: 12, width: '100%' }}>
+          <ButtonPressAnimation scaleTo={0.9} onPress={goBack} hitSlop={64} style={{ width: 20, height: 20 }}>
+            <Text color="blue" size="22pt" weight="bold">
+              􀆉
             </Text>
-            <Text color="labelQuaternary" size="15pt" weight="semibold" align="center">
-              {i18n.t(i18n.l.wallet.new.choose_wallet_group.description)}
-            </Text>
+          </ButtonPressAnimation>
+        </View>
+        <Text color="label" size="22pt" weight="heavy">
+          {i18n.t(i18n.l.wallet.new.choose_wallet_group.title)}
+        </Text>
+        <Text color="labelQuaternary" size="15pt" weight="semibold" align="center">
+          {i18n.t(i18n.l.wallet.new.choose_wallet_group.description)}
+        </Text>
 
-            <View style={{ width: '100%' }}>
-              <Separator color={'separatorTertiary'} />
-            </View>
+        <View style={{ width: '100%' }}>
+          <Separator color={'separatorTertiary'} />
+        </View>
 
-            <NewWalletGroup numWalletGroups={groups.length} />
-            {groups.length > 0 && (
-              <ScrollView style={{ width: '100%' }} contentContainerStyle={{ gap: 16, paddingHorizontal: 12 }}>
-                {groups.map(wallet => (
-                  <WalletGroup key={wallet.id} wallet={wallet} />
-                ))}
-              </ScrollView>
-            )}
-          </Box>
-        </SimpleSheet>
-      )}
-    </BackgroundProvider>
+        <NewWalletGroup numWalletGroups={groups.length} />
+        {groups.length > 0 && (
+          <ScrollView style={{ width: '100%' }} contentContainerStyle={{ gap: 16, paddingHorizontal: 12 }}>
+            {groups.map(wallet => (
+              <WalletGroup key={wallet.id} wallet={wallet} />
+            ))}
+          </ScrollView>
+        )}
+      </View>
+    </SlackSheet>
   );
 }
