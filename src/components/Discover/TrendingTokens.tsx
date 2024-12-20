@@ -578,7 +578,7 @@ function TimeFilter() {
       onPressMenuItem={timeframe => useTrendingTokensStore.getState().setTimeframe(timeframe)}
     >
       <FilterButton
-        selected={timeframe !== Timeframe.H24}
+        selected={timeframe !== Timeframe.D3}
         iconColor={undefined}
         highlightedBackgroundColor={undefined}
         label={shouldAbbreviate ? i18n.t(t.filters.time[`${timeframe}_ABBREVIATED`]) : i18n.t(t.filters.time[timeframe])}
