@@ -1,5 +1,5 @@
 import * as lang from '@/languages';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Centered } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
@@ -9,6 +9,7 @@ import { useTheme } from '@/theme';
 import { Colors } from '../styles/colors';
 import { Box } from '@/design-system';
 import { useRoute } from '@react-navigation/native';
+import { analyticsV2 } from '@/analytics';
 
 const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: { colors: Colors } }) => ({
   align: 'center',
@@ -24,6 +25,13 @@ const WalletConnectRedirectSheet = () => {
   const { colors } = useTheme();
   const { goBack } = useNavigation();
   const { params } = useRoute();
+
+  useEffect(() => {
+    analyticsV2.track(analyticsV2.event.wcRequestFailed, {
+      type: 'dapp browser',
+      reason: 'tried to connect with WalletConnect in the dapp browser',
+    });
+  }, []);
 
   const handleOnPress = useCallback(() => {
     (params as { cb?: () => void })?.cb?.();

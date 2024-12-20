@@ -8,13 +8,14 @@ import { useFavorites } from '@/resources/favorites';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { isAddress } from '@ethersproject/address';
 import { rankings } from 'match-sorter';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { TokenToBuyListItem } from '../components/TokenList/TokenToBuyList';
 import { useSwapContext } from '../providers/swap-provider';
 import { RecentSwap } from '@/__swaps__/types/swap';
 import { useTokenDiscovery } from '../resources/search';
+import { analyticsV2 } from '@/analytics';
 
 export type AssetToBuySectionId = 'bridge' | 'recent' | 'favorites' | 'verified' | 'unverified' | 'other_networks' | 'popular';
 
@@ -422,28 +423,29 @@ export function useSearchCurrencyLists() {
     }
   );
 
-  return useMemo(() => {
+  const searchCurrencyLists = useMemo(() => {
     const toChainId = selectedOutputChainId.value ?? ChainId.mainnet;
     const bridgeResult = memoizedData.filteredBridgeAsset ?? undefined;
     const crosschainMatches = query === '' ? undefined : verifiedAssets?.filter(asset => asset.chainId !== toChainId);
     const verifiedResults = query === '' ? verifiedAssets : verifiedAssets?.filter(asset => asset.chainId === toChainId);
     const unverifiedResults = memoizedData.enableUnverifiedSearch ? unverifiedAssets : undefined;
 
-    return {
-      results: buildListSectionsData({
-        combinedData: {
-          bridgeAsset: bridgeResult,
-          crosschainExactMatches: crosschainMatches,
-          unverifiedAssets: unverifiedResults,
-          verifiedAssets: verifiedResults,
-          recentSwaps: recentsForChain,
-          popularAssets: popularAssetsForChain,
-        },
-        favoritesList,
-        filteredBridgeAssetAddress: memoizedData.filteredBridgeAsset?.address,
-      }),
-      isLoading: isLoadingVerifiedAssets || isLoadingUnverifiedAssets || isLoadingPopularAssets,
-    };
+    const results = buildListSectionsData({
+      combinedData: {
+        bridgeAsset: bridgeResult,
+        crosschainExactMatches: crosschainMatches,
+        unverifiedAssets: unverifiedResults,
+        verifiedAssets: verifiedResults,
+        recentSwaps: recentsForChain,
+        popularAssets: popularAssetsForChain,
+      },
+      favoritesList,
+      filteredBridgeAssetAddress: memoizedData.filteredBridgeAsset?.address,
+    });
+
+    const isLoading = isLoadingVerifiedAssets || isLoadingUnverifiedAssets || isLoadingPopularAssets;
+
+    return { results, isLoading };
   }, [
     favoritesList,
     isLoadingUnverifiedAssets,
@@ -458,4 +460,17 @@ export function useSearchCurrencyLists() {
     recentsForChain,
     popularAssetsForChain,
   ]);
+
+  useEffect(() => {
+    if (searchCurrencyLists.isLoading) return;
+    const params = { screen: 'swap' as const, total_tokens: 0, no_icon: 0, query };
+    for (const assetOrHeader of searchCurrencyLists.results) {
+      if (assetOrHeader.listItemType === 'header') continue;
+      if (!assetOrHeader.icon_url) params.no_icon += 1;
+      params.total_tokens += 1;
+    }
+    analyticsV2.track(analyticsV2.event.tokenList, params);
+  }, [searchCurrencyLists.results, searchCurrencyLists.isLoading, query]);
+
+  return searchCurrencyLists;
 }
