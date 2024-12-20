@@ -46,7 +46,6 @@ import { loadWallet, sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { rainbowTokenList } from '@/references';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
@@ -63,13 +62,13 @@ import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { RootStackParamList } from '@/navigation/types';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Contact } from '@/redux/contacts';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -117,7 +116,7 @@ type OnSubmitProps = {
 
 export default function SendSheet() {
   const { goBack, navigate } = useNavigation();
-  const { data: sortedAssets } = useSortedUserAssets();
+  const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const {
     gasFeeParamsBySpeed,
     gasLimit,

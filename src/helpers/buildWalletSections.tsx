@@ -223,7 +223,7 @@ const withBriefBalanceSection = (
       type: 'PROFILE_NAME_ROW_SPACE_AFTER',
       uid: 'profile-name-space-after',
     },
-    ...(!hasTokens && !isLoadingUserAssets && !isLoadingBalance
+    ...(!hasTokens && !isLoadingBalance
       ? []
       : [
           {

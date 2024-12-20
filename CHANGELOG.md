@@ -15,6 +15,40 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.50] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.50)
+
+### Fixed
+
+- Fixed an issue with unlocking app icons (#6342, #6345)
+
+## [1.9.49] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.49)
+
+### Added
+
+- Claim as X (#6193)
+- NFT checker 2.0 (#6293)
+- Added support for inkchain (#6323)
+
+### Changed
+
+- Improved nonce management logic for private mempool handling (#6277)
+- Split e2e into parallel and serial flows to improve CI runs (#6317)
+- Browser animation code cleanup (#6306)
+- Converted network accessors to functions (#6219)
+- Bumped nanoid from 3.3.7 to 3.3.8 in /src/design-system/docs (#6320)
+- Updated default currentNonce value to -1 (#6324)
+- Updated trending tokens query to support backend changes (#6312)
+- Replaced node ack retires with a small delay (#6326)
+- Updated swaps sdk (#6327)
+
+### Fixed
+
+- Fixed an issue with SignTransactionSheet not disabling button on authorization (#6242)
+- Fixed an issue where the sticky header on the wallet screen couldn’t be tapped when scrolled down the page (#6309)
+- Fixed a duplicate wallet initialization issue where initializeWallet was being called multiple times (#6310)
+- Fixed an issue where the wallet height calculation caused a break in the wallet switcher list with wallets up to two accounts (#6315)
+- Fixed a crash on develop regarding TextShadow (#6329)
+
 ## [1.9.48] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.48)
 
 ### Fixed
