@@ -91,9 +91,9 @@ export default function ChangeWalletSheet() {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
   const initialHasShownEditHintTooltip = useMemo(() => usePinnedWalletsStore.getState().hasShownEditHintTooltip, []);
-  const initialHasAutoPinnedAddresses = useMemo(() => usePinnedWalletsStore.getState().hasAutoPinnedAddresses, []);
   const initialPinnedAddressCount = useMemo(() => usePinnedWalletsStore.getState().pinnedAddresses.length, []);
   const { transactionCounts, isLoading: isLoadingTransactionCounts } = useWalletTransactionCounts(wallets || {});
+  const hasAutoPinnedAddresses = usePinnedWalletsStore(state => state.hasAutoPinnedAddresses);
 
   const featureHintTooltipRef = useRef<TooltipRef>(null);
 
@@ -164,7 +164,7 @@ export default function ChangeWalletSheet() {
 
   // If user has never seen pinned addresses feature, auto-pin the users most used owned addresses
   useEffect(() => {
-    if (initialHasAutoPinnedAddresses || initialPinnedAddressCount > 0 || isLoadingTransactionCounts) return;
+    if (hasAutoPinnedAddresses || initialPinnedAddressCount > 0 || isLoadingTransactionCounts) return;
 
     const pinnableAddresses = allWalletItems.filter(item => !item.isReadOnly).map(item => item.address);
 
@@ -179,7 +179,7 @@ export default function ChangeWalletSheet() {
   }, [
     allWalletItems,
     setPinnedAddresses,
-    initialHasAutoPinnedAddresses,
+    hasAutoPinnedAddresses,
     initialPinnedAddressCount,
     transactionCounts,
     isLoadingTransactionCounts,
@@ -706,7 +706,8 @@ export default function ChangeWalletSheet() {
               paddingHorizontal={{ custom: PANEL_INSET_HORIZONTAL }}
               paddingTop="24px"
             >
-              {!editMode && ownedWalletsTotalBalance ? (
+              {/* TODO: enable when blurview is implemented */}
+              {/* {!editMode && ownedWalletsTotalBalance ? (
                 <Stack space="10px">
                   <Text color="labelSecondary" size="13pt" weight="bold">
                     {i18n.t(i18n.l.wallet.change_wallet.total_balance)}
@@ -717,7 +718,8 @@ export default function ChangeWalletSheet() {
                 </Stack>
               ) : (
                 <Box />
-              )}
+              )} */}
+              <Box />
               <ButtonPressAnimation onPress={onPressAddAnotherWallet}>
                 <Box
                   background="blue"
