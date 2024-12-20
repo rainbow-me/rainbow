@@ -38,7 +38,6 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { isEmpty } from 'lodash';
 import { backupsStore } from '@/state/backups/backups';
-import { useExperimentalFlag, PROFILES } from '@/config';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 
 type ComponentProps = {
@@ -107,7 +106,6 @@ export default function RestoreCloudStep() {
   }, [canGoBack, goBack]);
 
   const dispatch = useDispatch();
-  const profilesEnabled = useExperimentalFlag(PROFILES);
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
@@ -247,7 +245,7 @@ export default function RestoreCloudStep() {
         loadingState: null,
       });
     }
-  }, [password, selectedBackup.name, dispatch, onRestoreSuccess, profilesEnabled, initializeWallet]);
+  }, [password, selectedBackup.name, dispatch, onRestoreSuccess, initializeWallet]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
