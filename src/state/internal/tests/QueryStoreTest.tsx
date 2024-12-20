@@ -14,13 +14,12 @@ import { createRainbowStore } from '../createRainbowStore';
 
 const ENABLE_LOGS = false;
 
-type AddressStore = {
-  address: Address;
+type CurrencyStore = {
   currency: SupportedCurrencyKey;
-  nestedAddressTest: {
-    address: Address;
+  nestedParamTest: {
+    currency: SupportedCurrencyKey;
   };
-  setAddress: (address: Address) => void;
+  setCurrency: (currency: SupportedCurrencyKey) => void;
 };
 
 const testAddresses: Address[] = [
@@ -29,20 +28,20 @@ const testAddresses: Address[] = [
   '0x17cd072cBd45031EFc21Da538c783E0ed3b25DCc',
 ];
 
-const useAddressStore = createRainbowStore<AddressStore>((set, get) => ({
-  address: testAddresses[0],
+const useCurrencyStore = createRainbowStore<CurrencyStore>((set, get) => ({
   currency: 'USD',
-  nestedAddressTest: { address: testAddresses[0] },
+  nestedParamTest: { currency: 'USD' },
 
-  setAddress: (address: Address) => {
-    set({ address });
-    if (ENABLE_LOGS) console.log('[👤 useAddressStore 👤] New address set:', get().address);
+  setCurrency: (currency: SupportedCurrencyKey) => {
+    set({ currency });
+    if (ENABLE_LOGS) console.log('[👤 useCurrencyStore 👤] New currency set:', get().currency);
   },
 }));
 
 type TestStore = {
+  address: Address;
   userAssets: ParsedAssetsDictByChain;
-  getHighestValueAsset: () => number;
+  setAddress: (address: Address) => void;
   setUserAssets: (data: ParsedAssetsDictByChain) => void;
 };
 type QueryParams = { address: Address; currency: SupportedCurrencyKey };
@@ -69,20 +68,16 @@ export const useUserAssetsTestStore = createQueryStore<ParsedAssetsDictByChain, 
     setData: (data, set) => set({ userAssets: data }),
 
     params: {
-      address: $ => $(useAddressStore).address,
-      currency: $ => $(useAddressStore).currency,
+      address: ($, store) => $(store).address,
+      currency: $ => $(useCurrencyStore).currency,
     },
     staleTime: time.minutes(1),
   },
 
-  (set, get) => ({
+  set => ({
+    address: testAddresses[0],
     userAssets: [],
-
-    getHighestValueAsset: () =>
-      Object.values(get().userAssets)
-        .flatMap(chainAssets => Object.values(chainAssets))
-        .reduce((max, asset) => Math.max(max, Number(asset.balance.display)), 0),
-
+    setAddress: (address: Address) => set({ address }),
     setUserAssets: (data: ParsedAssetsDictByChain) => set({ userAssets: data }),
   }),
 
@@ -115,16 +110,16 @@ export const UserAssetsTest = memo(function UserAssetsTest() {
         <View style={styles.buttonGroup}>
           <ButtonPressAnimation
             onPress={() => {
-              const currentAddress = useAddressStore.getState().address;
+              const currentAddress = useUserAssetsTestStore.getState().address;
               switch (currentAddress) {
                 case testAddresses[0]:
-                  useAddressStore.getState().setAddress(testAddresses[1]);
+                  useUserAssetsTestStore.getState().setAddress(testAddresses[1]);
                   break;
                 case testAddresses[1]:
-                  useAddressStore.getState().setAddress(testAddresses[2]);
+                  useUserAssetsTestStore.getState().setAddress(testAddresses[2]);
                   break;
                 case testAddresses[2]:
-                  useAddressStore.getState().setAddress(testAddresses[0]);
+                  useUserAssetsTestStore.getState().setAddress(testAddresses[0]);
                   break;
               }
             }}

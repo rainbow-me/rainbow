@@ -25,6 +25,16 @@ export type Subscribe = (callback: () => void) => Unsubscribe;
 export type GetValue = () => unknown;
 export type SetValue = (path: unknown[], value: unknown) => void;
 
+export function $<T>(store: StoreApi<T>): AttachValue<T>;
+export function $<T, S>(store: StoreApi<T>, selector: (state: T) => S, equalityFn?: (a: S, b: S) => boolean): AttachValue<S>;
+export function $(
+  store: StoreApi<unknown>,
+  selector: (state: unknown) => unknown = identity,
+  equalityFn: (a: unknown, b: unknown) => boolean = Object.is
+) {
+  return getOrCreateAttachValue(store, selector, equalityFn);
+}
+
 const identity = <T>(x: T): T => x;
 
 const updateValue = <T>(obj: T, path: unknown[], value: unknown): T => {
@@ -152,14 +162,4 @@ function getOrCreateAttachValue<T, S>(store: StoreApi<T>, selector: (state: T) =
   attachValueSubscriptionMap.set(rootVal, subscribe);
   byEqFn.set(equalityFn as (a: unknown, b: unknown) => boolean, rootVal);
   return rootVal as AttachValue<S>;
-}
-
-export function $<T>(store: StoreApi<T>): AttachValue<T>;
-export function $<T, S>(store: StoreApi<T>, selector: (state: T) => S, equalityFn?: (a: S, b: S) => boolean): AttachValue<S>;
-export function $(
-  store: StoreApi<unknown>,
-  selector: (state: unknown) => unknown = identity,
-  equalityFn: (a: unknown, b: unknown) => boolean = Object.is
-) {
-  return getOrCreateAttachValue(store, selector, equalityFn);
 }

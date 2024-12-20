@@ -179,12 +179,12 @@ export type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string,
   onError?: (error: Error, retryCount: number) => void;
   /**
    * A callback invoked whenever fresh data is successfully fetched.
-   * Receives the transformed data and the store instance, allowing for side effects or additional updates.
+   * Receives the transformed data and the store's set function, which can optionally be used to update store state.
    */
-  onFetched?: (data: TData, store: QueryStore<TData, TParams, S>) => void;
+  onFetched?: (data: TData, set: (partial: S | Partial<S> | ((state: S) => S | Partial<S>)) => void) => void;
   /**
    * A function that overrides the default behavior of setting the fetched data in the store's query cache.
-   * Receives the transformed data and a set function that updates the store state.
+   * Receives the transformed data and the store's set function.
    */
   setData?: (data: TData, set: (partial: S | Partial<S> | ((state: S) => S | Partial<S>)) => void) => void;
   /**
@@ -223,7 +223,7 @@ export type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string,
    * Dynamic parameters using `AttachValue` will cause the store to refetch when their values change.
    */
   params?: {
-    [K in keyof TParams]: ParamResolvable<TParams[K]>;
+    [K in keyof TParams]: ParamResolvable<TParams[K], TParams, S, TData>;
   };
   /**
    * The duration, in milliseconds, that data is considered fresh after fetching.
@@ -241,7 +241,9 @@ export type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string,
  * - A static value (e.g. `string`, `number`).
  * - A function that returns an `AttachValue<T>` when given a `SignalFunction`.
  */
-type ParamResolvable<T> = T | ((resolve: SignalFunction) => AttachValue<T>);
+type ParamResolvable<T, TParams extends Record<string, unknown>, S extends StoreState<TData, TParams>, TData> =
+  | T
+  | (($: SignalFunction, store: QueryStore<TData, TParams, S>) => AttachValue<T>);
 
 interface ResolvedParamsResult<TParams> {
   /**
@@ -307,9 +309,7 @@ export function createQueryStore<
   TData = TQueryFnData,
 >(
   config: RainbowQueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & U> & {
-    params?: {
-      [K in keyof TParams]: ParamResolvable<TParams[K]>;
-    };
+    params?: { [K in keyof TParams]: ParamResolvable<TParams[K], TParams, StoreState<TData, TParams> & U, TData> };
   },
   customStateCreator?: StateCreator<U, [], [['zustand/subscribeWithSelector', never]]>,
   persistConfig?: RainbowPersistConfig<StoreState<TData, TParams> & U>
@@ -342,12 +342,6 @@ export function createQueryStore<
 
   let directValues: Partial<TParams> = {};
   let paramAttachVals: Partial<Record<keyof TParams, AttachValue<unknown>>> = {};
-
-  if (params) {
-    const result = resolveParams<TParams>(params);
-    paramAttachVals = result.paramAttachVals;
-    directValues = result.directValues;
-  }
 
   let activeFetchPromise: Promise<void> | null = null;
   let activeRefetchTimeout: NodeJS.Timeout | null = null;
@@ -479,7 +473,7 @@ export function createQueryStore<
 
             if (onFetched) {
               try {
-                onFetched(transformedData, queryCapableStore);
+                onFetched(transformedData, set);
               } catch (onFetchedError) {
                 logger.error(
                   new RainbowError(`[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: onFetched callback failed`, {
@@ -634,7 +628,7 @@ export function createQueryStore<
       });
 
       const { fetch, isStale } = get();
-      const currentParams = getCurrentResolvedParams()
+      const currentParams = getCurrentResolvedParams();
 
       if (!get().queryCache[getQueryKey(currentParams)] || isStale()) {
         fetch(currentParams, { force: true });
@@ -682,10 +676,8 @@ export function createQueryStore<
   const queryCapableStore: QueryStore<TData, TParams, S> = Object.assign(baseStore, {
     enabled,
     destroy: () => {
-      for (const unsub of paramUnsubscribes) {
-        unsub();
-      }
-      paramUnsubscribes.length = 0;
+      for (const unsub of paramUnsubscribes) unsub();
+      paramUnsubscribes = [];
       queryCapableStore.getState().reset();
     },
     fetch: (params?: TParams, options?: FetchOptions) => baseStore.getState().fetch(params, options),
@@ -696,12 +688,18 @@ export function createQueryStore<
     reset: () => baseStore.getState().reset(),
   });
 
+  if (params) {
+    const result = resolveParams<TParams, S, TData>(params, queryCapableStore);
+    paramAttachVals = result.paramAttachVals;
+    directValues = result.directValues;
+  }
+
   const onParamChange = () => {
     const newParams = getCurrentResolvedParams();
     queryCapableStore.fetch(newParams, { force: true });
   };
 
-  const paramUnsubscribes: Unsubscribe[] = [];
+  let paramUnsubscribes: Unsubscribe[] = [];
 
   for (const k in paramAttachVals) {
     const attachVal = paramAttachVals[k];
@@ -727,21 +725,18 @@ export function createQueryStore<
   return queryCapableStore;
 }
 
-function isParamFn<T>(param: T | ((resolve: SignalFunction) => AttachValue<T>)): param is (resolve: SignalFunction) => AttachValue<T> {
-  return typeof param === 'function';
-}
-
-function resolveParams<TParams extends Record<string, unknown>>(params: {
-  [K in keyof TParams]: ParamResolvable<TParams[K]>;
-}): ResolvedParamsResult<TParams> {
+function resolveParams<TParams extends Record<string, unknown>, S extends StoreState<TData, TParams> & U, TData, U = unknown>(
+  params: { [K in keyof TParams]: ParamResolvable<TParams[K], TParams, S, TData> },
+  store: QueryStore<TData, TParams, S>
+): ResolvedParamsResult<TParams> {
   const directValues: Partial<TParams> = {};
   const paramAttachVals: Partial<Record<keyof TParams, AttachValue<unknown>>> = {};
   const resolvedParams = {} as TParams;
 
   for (const key in params) {
     const param = params[key];
-    if (isParamFn(param)) {
-      const attachVal = param($);
+    if (typeof param === 'function') {
+      const attachVal = param($, store);
       resolvedParams[key] = attachVal.value as TParams[typeof key];
       paramAttachVals[key] = attachVal;
     } else {
