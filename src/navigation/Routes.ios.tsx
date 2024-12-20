@@ -102,6 +102,7 @@ import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPane
 import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
 import { RootStackParamList } from './types';
+import { ChooseWalletGroup } from './ChooseWalletGroup';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -233,6 +234,7 @@ function NativeStackNavigator() {
         {...hardwareWalletTxNavigatorConfig}
       />
       <NativeStack.Screen component={AddWalletNavigator} name={Routes.ADD_WALLET_NAVIGATOR} {...addWalletNavigatorConfig} />
+      <NativeStack.Screen component={ChooseWalletGroup} name={Routes.CHOOSE_WALLET_GROUP} {...addWalletNavigatorConfig} />
       <NativeStack.Screen component={Portal} name={Routes.PORTAL} {...portalSheetConfig} />
       {profilesEnabled && (
         <>
