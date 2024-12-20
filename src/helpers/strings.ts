@@ -119,9 +119,10 @@ export function formatCurrency(
   const currencySymbol = supportedNativeCurrencies[currency].symbol;
   const [whole, fraction = ''] = numericString.split('.');
 
-  if (fraction === '') {
+  const numericalWholeNumber = +whole;
+  if (numericalWholeNumber > 0) {
     // if the fraction is empty and the numeric string is less than 6 characters, we can just run it through our native currency display worklet
-    if (numericString.length <= 6) {
+    if (whole.length <= 6) {
       return convertAmountToNativeDisplayWorklet(numericString, currency, false, true);
     }
 
