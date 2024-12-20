@@ -1,4 +1,4 @@
-import { DropdownMenu } from '@/components/DropdownMenu';
+import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 import { globalColors, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
@@ -571,6 +571,7 @@ function TimeFilter() {
       menuConfig={{
         menuItems: timeFilters.map(time => ({
           actionTitle: i18n.t(t.filters.time[time]),
+          menuState: time === timeframe ? 'on' : 'off',
           actionKey: time,
         })),
       }}
@@ -597,12 +598,11 @@ function SortFilter() {
   return (
     <DropdownMenu
       menuConfig={{
-        menuItems: sortFilters
-          .filter(s => s !== 'RECOMMENDED')
-          .map(sort => ({
-            actionTitle: i18n.t(t.filters.sort[sort]),
-            actionKey: sort,
-          })),
+        menuItems: sortFilters.map(s => ({
+          actionTitle: i18n.t(t.filters.sort[s]),
+          menuState: s === sort ? 'on' : 'off',
+          actionKey: s,
+        })),
       }}
       side="bottom"
       onPressMenuItem={selection => {
