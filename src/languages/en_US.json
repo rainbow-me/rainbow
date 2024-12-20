@@ -3051,7 +3051,10 @@
           "FARCASTER": "Farcaster"
         },
         "sort": {
-          "RECOMMENDED": "Sort",
+          "RECOMMENDED": {
+            "label": "Sort",
+            "menuOption": "Default"
+          },
           "VOLUME": "Volume",
           "MARKET_CAP": "Market Cap",
           "TOP_GAINERS": "Top Gainers",

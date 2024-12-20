@@ -1,4 +1,4 @@
-import { DropdownMenu } from '@/components/DropdownMenu';
+import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 import { globalColors, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
@@ -571,6 +571,7 @@ function TimeFilter() {
       menuConfig={{
         menuItems: timeFilters.map(time => ({
           actionTitle: i18n.t(t.filters.time[time]),
+          menuState: time === timeframe ? 'on' : 'off',
           actionKey: time,
         })),
       }}
@@ -594,15 +595,19 @@ function SortFilter() {
 
   const iconColor = useForegroundColor(selected ? 'labelSecondary' : 'labelTertiary');
 
+  const sortLabel = useMemo(() => {
+    if (sort === TrendingSort.Recommended) return i18n.t(t.filters.sort.RECOMMENDED.label);
+    return i18n.t(t.filters.sort[sort]);
+  }, [sort]);
+
   return (
     <DropdownMenu
       menuConfig={{
-        menuItems: sortFilters
-          .filter(s => s !== 'RECOMMENDED')
-          .map(sort => ({
-            actionTitle: i18n.t(t.filters.sort[sort]),
-            actionKey: sort,
-          })),
+        menuItems: sortFilters.map(s => ({
+          actionTitle: s === TrendingSort.Recommended ? i18n.t(t.filters.sort.RECOMMENDED.menuOption) : i18n.t(t.filters.sort[s]),
+          menuState: s === sort ? 'on' : 'off',
+          actionKey: s,
+        })),
       }}
       side="bottom"
       onPressMenuItem={selection => {
@@ -614,7 +619,7 @@ function SortFilter() {
         selected={selected}
         iconColor={undefined}
         highlightedBackgroundColor={undefined}
-        label={i18n.t(t.filters.sort[sort])}
+        label={sortLabel}
         icon={
           <Text color={{ custom: iconColor }} size="icon 13px" weight="heavy" style={{ width: 20 }}>
             􀄬
