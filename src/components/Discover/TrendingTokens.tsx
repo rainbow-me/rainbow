@@ -595,11 +595,16 @@ function SortFilter() {
 
   const iconColor = useForegroundColor(selected ? 'labelSecondary' : 'labelTertiary');
 
+  const sortLabel = useMemo(() => {
+    if (sort === TrendingSort.Recommended) return i18n.t(t.filters.sort.RECOMMENDED.label);
+    return i18n.t(t.filters.sort[sort]);
+  }, [sort]);
+
   return (
     <DropdownMenu
       menuConfig={{
         menuItems: sortFilters.map(s => ({
-          actionTitle: i18n.t(t.filters.sort[s]),
+          actionTitle: s === TrendingSort.Recommended ? i18n.t(t.filters.sort.RECOMMENDED.menuOption) : i18n.t(t.filters.sort[s]),
           menuState: s === sort ? 'on' : 'off',
           actionKey: s,
         })),
@@ -614,7 +619,7 @@ function SortFilter() {
         selected={selected}
         iconColor={undefined}
         highlightedBackgroundColor={undefined}
-        label={i18n.t(t.filters.sort[sort])}
+        label={sortLabel}
         icon={
           <Text color={{ custom: iconColor }} size="icon 13px" weight="heavy" style={{ width: 20 }}>
             􀄬
