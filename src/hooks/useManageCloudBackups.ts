@@ -3,12 +3,21 @@ import lang from 'i18n-js';
 import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { GoogleDriveUserData, getGoogleAccountUserData, deleteAllBackups, logoutFromGoogleDrive } from '@/handlers/cloudBackup';
-import { clearAllWalletsBackupStatus, updateWalletBackupStatusesBasedOnCloudUserData } from '@/redux/wallets';
+import {
+  GoogleDriveUserData,
+  getGoogleAccountUserData,
+  deleteAllBackups,
+  logoutFromGoogleDrive as logout,
+  login,
+} from '@/handlers/cloudBackup';
+import { clearAllWalletsBackupStatus } from '@/redux/wallets';
 import { showActionSheetWithOptions } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import * as i18n from '@/languages';
+import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+import * as keychain from '@/keychain';
+import { authenticateWithPIN } from '@/handlers/authentication';
 
 export default function useManageCloudBackups() {
   const dispatch = useDispatch();
@@ -48,10 +57,21 @@ export default function useManageCloudBackups() {
       await dispatch(clearAllWalletsBackupStatus());
     };
 
+    const logoutFromGoogleDrive = async () => {
+      await logout();
+      backupsStore.setState({
+        backupProvider: undefined,
+        backups: { files: [] },
+        mostRecentBackup: undefined,
+        status: CloudBackupState.NotAvailable,
+      });
+    };
+
     const loginToGoogleDrive = async () => {
-      await dispatch(updateWalletBackupStatusesBasedOnCloudUserData());
       try {
+        await login();
         const accountDetails = await getGoogleAccountUserData();
+        backupsStore.getState().syncAndFetchBackups();
         setAccountDetails(accountDetails ?? undefined);
       } catch (error) {
         logger.error(new RainbowError(`[useManageCloudBackups]: Logging into Google Drive failed.`), {
@@ -78,14 +98,36 @@ export default function useManageCloudBackups() {
             },
             async (buttonIndex: any) => {
               if (buttonIndex === 0) {
-                if (IS_ANDROID) {
-                  logoutFromGoogleDrive();
-                  setAccountDetails(undefined);
-                }
-                removeBackupStateFromAllWallets();
+                try {
+                  let userPIN: string | undefined;
+                  const hasBiometricsEnabled = await keychain.getSupportedBiometryType();
+                  if (IS_ANDROID && !hasBiometricsEnabled) {
+                    try {
+                      userPIN = (await authenticateWithPIN()) ?? undefined;
+                    } catch (e) {
+                      Alert.alert(i18n.t(i18n.l.back_up.wrong_pin));
+                      return;
+                    }
+                  }
 
-                await deleteAllBackups();
-                Alert.alert(lang.t('back_up.backup_deleted_successfully'));
+                  // Prompt for authentication before allowing them to delete backups
+                  await keychain.getAllKeys();
+
+                  if (IS_ANDROID) {
+                    logoutFromGoogleDrive();
+                    setAccountDetails(undefined);
+                  }
+                  removeBackupStateFromAllWallets();
+
+                  await deleteAllBackups();
+                  Alert.alert(lang.t('back_up.backup_deleted_successfully'));
+                } catch (e) {
+                  logger.error(new RainbowError(`[useManageCloudBackups]: Error deleting all backups`), {
+                    error: (e as Error).message,
+                  });
+
+                  Alert.alert(lang.t('back_up.errors.keychain_access'));
+                }
               }
             }
           );
@@ -94,7 +136,7 @@ export default function useManageCloudBackups() {
         if (_buttonIndex === 1 && IS_ANDROID) {
           logoutFromGoogleDrive();
           setAccountDetails(undefined);
-          removeBackupStateFromAllWallets().then(() => loginToGoogleDrive());
+          loginToGoogleDrive();
         }
       }
     );

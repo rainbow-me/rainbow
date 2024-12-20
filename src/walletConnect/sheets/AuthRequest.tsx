@@ -149,7 +149,7 @@ export function AuthRequest({
               navigate(Routes.CHANGE_WALLET_SHEET, {
                 watchOnly: true,
                 currentAccountAddress: address,
-                onChangeWallet(address: string) {
+                onChangeWallet(address) {
                   setAddress(address);
                   goBack();
                 },

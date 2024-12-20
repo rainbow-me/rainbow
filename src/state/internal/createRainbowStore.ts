@@ -43,6 +43,12 @@ interface RainbowPersistConfig<S> {
    * This function will be called when persisted state versions mismatch with the one specified here.
    */
   migrate?: (persistedState: unknown, version: number) => S | Promise<S>;
+  /**
+   * A function returning another (optional) function.
+   * The main function will be called before the state rehydration.
+   * The returned function will be called after the state rehydration or when an error occurred.
+   */
+  onRehydrateStorage?: PersistOptions<S, Partial<S>>['onRehydrateStorage'];
 }
 
 /**
@@ -157,6 +163,7 @@ export function createRainbowStore<S = unknown>(
         storage: persistStorage,
         version,
         migrate: persistConfig.migrate,
+        onRehydrateStorage: persistConfig.onRehydrateStorage,
       })
     )
   );

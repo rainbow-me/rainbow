@@ -19,6 +19,7 @@ export interface BackendNetworksState {
 
   getBackendChains: () => Chain[];
   getSupportedChains: () => Chain[];
+  getSortedSupportedChainIds: () => number[];
 
   getDefaultChains: () => Record<ChainId, Chain>;
   getSupportedChainIds: () => ChainId[];
@@ -73,6 +74,11 @@ export const useBackendNetworksStore = createRainbowStore<BackendNetworksState>(
   getSupportedChains: () => {
     const backendChains = get().getBackendChains();
     return IS_TEST ? [...backendChains, chainHardhat, chainHardhatOptimism] : backendChains;
+  },
+
+  getSortedSupportedChainIds: () => {
+    const supportedChains = get().getSupportedChains();
+    return supportedChains.sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
   },
 
   getDefaultChains: () => {

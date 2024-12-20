@@ -25,11 +25,11 @@ import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
-import { runWalletBackupStatusChecks } from '@/handlers/walletReadyEvents';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
+import { BackendNetworks } from '@/components/BackendNetworks';
 import walletTypes from '@/helpers/walletTypes';
 
 enum WalletLoadingStates {
@@ -45,7 +45,6 @@ function WalletScreen() {
   const walletState = useRef(WalletLoadingStates.IDLE);
   const initializeWallet = useInitializeWallet();
   const { network: currentNetwork, accountAddress, appIcon } = useAccountSettings();
-
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const insets = useSafeAreaInsets();
@@ -154,7 +153,6 @@ function WalletScreen() {
     if (walletReady) {
       loadAccountLateData();
       loadGlobalLateData();
-      runWalletBackupStatusChecks();
     }
   }, [loadAccountLateData, loadGlobalLateData, walletReady]);
 
@@ -190,6 +188,7 @@ function WalletScreen() {
       <UserAssetsSync />
       <RemoteCardsSync />
       <RemotePromoSheetSync />
+      <BackendNetworks />
 
       {/* NOTE: This component listens for Mobile Wallet Protocol requests and handles them */}
       <MobileWalletProtocolListener />
