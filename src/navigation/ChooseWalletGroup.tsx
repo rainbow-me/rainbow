@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Separator, Text, useForegroundColor } from '@/design-system';
-import { View, Text as NativeText, Dimensions, InteractionManager } from 'react-native';
+import { BackgroundProvider, Box, Separator, Text, useForegroundColor } from '@/design-system';
+import { View, Text as NativeText } from 'react-native';
 import chroma from 'chroma-js';
 import { useInitializeWallet, useWallets } from '@/hooks';
 import { PROFILES, useExperimentalFlag } from '@/config';
@@ -22,6 +22,8 @@ import { profileUtils } from '@/utils';
 import * as i18n from '@/languages';
 import showWalletErrorAlert from '@/helpers/support';
 import { ScrollView } from 'react-native-gesture-handler';
+import CreateNewWalletGroupIcon from '@/assets/CreateNewWalletGroup.png';
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 
 function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
   const blue = useForegroundColor('blue');
@@ -54,20 +56,26 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
   };
 
   return (
-    <ButtonPressAnimation onPress={onNewWalletGroup} scaleTo={0.95} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-      <View
-        style={[
-          { height: 36, width: 36 },
-          { borderRadius: 9, borderColor: chroma(blue).alpha(0.2).hex(), borderWidth: 2, borderStyle: 'dashed' },
-          { alignItems: 'center', justifyContent: 'center' },
-        ]}
-      >
-        <Text color="blue" size="icon 14px" weight="heavy">
-          􀅼
-        </Text>
-      </View>
-      <View style={{ gap: 8 }}>
-        <Text color="label" size="15pt" weight="semibold">
+    <ButtonPressAnimation
+      onPress={onNewWalletGroup}
+      scaleTo={0.95}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        borderRadius: 30,
+        height: 60,
+        width: '100%',
+        backgroundColor: chroma(blue).alpha(0.05).hex(),
+        borderWidth: 1,
+        borderColor: chroma(blue).alpha(0.06).hex(),
+      }}
+    >
+      <ImgixImage style={{ height: 36, width: 36, borderRadius: 18 }} source={CreateNewWalletGroupIcon} />
+      <View style={{ gap: 10 }}>
+        <Text color="blue" size="17pt" weight="heavy">
           {i18n.t(i18n.l.wallet.new.new_wallet_group.title)}
         </Text>
         <Text color="labelQuaternary" size="13pt" weight="bold">
@@ -197,49 +205,39 @@ export function ChooseWalletGroup() {
   const groups = Object.values(wallets).filter(wallet => wallet.type === WalletTypes.mnemonic);
 
   return (
-    <Box
-      height="full"
-      width="full"
-      background="surfaceSecondary"
-      style={{ paddingHorizontal: 24, gap: 20, alignItems: 'center', paddingBottom: 64 }}
-    >
-      <View style={{ paddingTop: 24, paddingBottom: 12, width: '100%' }}>
-        <ButtonPressAnimation scaleTo={0.9} onPress={goBack} hitSlop={64} style={{ width: 20, height: 20 }}>
-          <Text color="blue" size="22pt" weight="bold">
-            􀆉
-          </Text>
-        </ButtonPressAnimation>
-      </View>
-      <Text color="label" size="22pt" weight="heavy">
-        {i18n.t(i18n.l.wallet.new.choose_wallet_group.title)}
-      </Text>
-      <Text color="labelQuaternary" size="15pt" weight="semibold" align="center">
-        {i18n.t(i18n.l.wallet.new.choose_wallet_group.description)}
-      </Text>
+    <BackgroundProvider color="surfaceSecondary">
+      {({ backgroundColor }) => (
+        <SimpleSheet backgroundColor={backgroundColor as string} scrollEnabled={false}>
+          <Box width="full" style={{ paddingHorizontal: 24, gap: 20, alignItems: 'center', paddingBottom: 64 }}>
+            <View style={{ paddingTop: 24, paddingBottom: 12, width: '100%' }}>
+              <ButtonPressAnimation scaleTo={0.9} onPress={goBack} hitSlop={64} style={{ width: 20, height: 20 }}>
+                <Text color="blue" size="22pt" weight="bold">
+                  􀆉
+                </Text>
+              </ButtonPressAnimation>
+            </View>
+            <Text color="label" size="22pt" weight="heavy">
+              {i18n.t(i18n.l.wallet.new.choose_wallet_group.title)}
+            </Text>
+            <Text color="labelQuaternary" size="15pt" weight="semibold" align="center">
+              {i18n.t(i18n.l.wallet.new.choose_wallet_group.description)}
+            </Text>
 
-      <View style={{ width: 106 }}>
-        <Separator color={'separatorTertiary'} />
-      </View>
+            <View style={{ width: '100%' }}>
+              <Separator color={'separatorTertiary'} />
+            </View>
 
-      <Box
-        background="surfaceSecondaryElevated"
-        // shadow="12px" // TODO: adding shadow clips height (?)
-        borderColor="buttonStroke"
-        borderRadius={32}
-        borderWidth={1}
-        width="full"
-        style={{ maxHeight: Dimensions.get('window').height * 0.6 }}
-      >
-        <View style={{ gap: 16, paddingHorizontal: 20, paddingTop: 20 }}>
-          <NewWalletGroup numWalletGroups={groups.length} />
-          <Separator color={'separatorTertiary'} />
-        </View>
-        <ScrollView contentContainerStyle={{ gap: 16, paddingHorizontal: 20, paddingVertical: 16 }}>
-          {groups.map(wallet => (
-            <WalletGroup key={wallet.id} wallet={wallet} />
-          ))}
-        </ScrollView>
-      </Box>
-    </Box>
+            <NewWalletGroup numWalletGroups={groups.length} />
+            {groups.length > 0 && (
+              <ScrollView style={{ width: '100%' }} contentContainerStyle={{ gap: 16, paddingHorizontal: 12 }}>
+                {groups.map(wallet => (
+                  <WalletGroup key={wallet.id} wallet={wallet} />
+                ))}
+              </ScrollView>
+            )}
+          </Box>
+        </SimpleSheet>
+      )}
+    </BackgroundProvider>
   );
 }
