@@ -1,4 +1,4 @@
-import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
+import { DropdownMenu } from '@/components/DropdownMenu';
 import { globalColors, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
@@ -514,11 +514,12 @@ function NoResults() {
 
 function NetworkFilter() {
   const { isDarkMode } = useColorMode();
-  const { colors } = useTheme();
 
   const selected = useSharedValue<ChainId | undefined>(undefined);
   const chainId = useTrendingTokensStore(state => state.chainId);
   const setChainId = useTrendingTokensStore(state => state.setChainId);
+
+  const color = useBackendNetworksStore.getState().getColorsForChainId(chainId || ChainId.mainnet, isDarkMode);
 
   const { icon, label, lightenedNetworkColor } = useMemo(() => {
     if (!chainId) return { icon: '􀤆', label: i18n.t(t.all), lightenedNetworkColor: undefined };
@@ -529,11 +530,9 @@ function NetworkFilter() {
         </View>
       ),
       label: useBackendNetworksStore.getState().getChainsLabel()[chainId],
-      lightenedNetworkColor: colors.networkColors[chainId]
-        ? getMixedColor(colors.networkColors[chainId], globalColors.white100, isDarkMode ? 0.55 : 0.6)
-        : undefined,
+      lightenedNetworkColor: color ? getMixedColor(color, globalColors.white100, isDarkMode ? 0.55 : 0.6) : undefined,
     };
-  }, [chainId, colors.networkColors, isDarkMode]);
+  }, [chainId, color, isDarkMode]);
 
   const setSelected = useCallback(
     (chainId: ChainId | undefined) => {

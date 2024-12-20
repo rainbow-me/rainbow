@@ -48,7 +48,6 @@ import { noop } from 'lodash';
 import { TapToDismiss } from './DappBrowser/control-panel/ControlPanel';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { useTheme } from '@/theme';
 
 const t = i18n.l.network_switcher;
 
@@ -373,11 +372,11 @@ function AllNetworksSection({
 }
 
 function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: SharedValue<ChainId | undefined> }) {
-  const { colors } = useTheme();
+  const { isDarkMode } = useColorMode();
+  const color = useBackendNetworksStore.getState().getColorsForChainId(chainId, isDarkMode);
   const chainName = useBackendNetworksStore.getState().getChainsLabel()[chainId];
-  const chainColor = colors.networkColors[chainId] ? colors.networkColors[chainId] : undefined;
   const isSelected = useDerivedValue(() => selected.value === chainId);
-  const { animatedStyle } = useNetworkOptionStyle(isSelected, chainColor);
+  const { animatedStyle } = useNetworkOptionStyle(isSelected, color);
 
   return (
     <Animated.View
