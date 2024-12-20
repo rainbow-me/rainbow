@@ -119,13 +119,13 @@ export interface QueryStore<TData, TParams extends Record<string, unknown>, S ex
    */
   getStatus: () => QueryStatusInfo;
   /**
-   * Determines if the current data is expired, meaning it has exceeded the `cacheTime` duration.
+   * Determines if the current data is expired based on whether `cacheTime` has been exceeded.
    * @param override - An optional override for the default cache time, in milliseconds.
    * @returns `true` if the data is expired, otherwise `false`.
    */
   isDataExpired: (override?: number) => boolean;
   /**
-   * Determines if the current data is stale, meaning it has exceeded the `staleTime` duration.
+   * Determines if the current data is stale based on whether `staleTime` has been exceeded.
    * Stale data may be refreshed automatically in the background.
    * @param override - An optional override for the default stale time, in milliseconds.
    * @returns `true` if the data is stale, otherwise `false`.
