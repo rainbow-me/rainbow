@@ -256,7 +256,7 @@ const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color?: string)
     (current, prev) => {
       if (current === true && prev === false) {
         scale.value = withSequence(
-          withTiming(0.88, { duration: 120, easing: Easing.bezier(0.25, 0.46, 0.45, 0.94) }),
+          withTiming(0.9, { duration: 120, easing: Easing.bezier(0.25, 0.46, 0.45, 0.94) }),
           withTiming(1, TIMING_CONFIGS.fadeConfig)
         );
       }
