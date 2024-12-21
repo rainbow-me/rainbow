@@ -15,16 +15,16 @@ import {
 } from '@/helpers/ens';
 import { updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 const checkRegisterBlockTimestamp = async ({
   registrationParameters,
   secondsSinceCommitConfirmed,
-  connectedToHardhat,
+  connectedToAnvil,
 }: {
   registrationParameters: RegistrationParameters;
   secondsSinceCommitConfirmed: number;
-  connectedToHardhat: boolean;
+  connectedToAnvil: boolean;
 }) => {
   try {
     const provider = getProvider({ chainId: ChainId.mainnet });
@@ -35,7 +35,7 @@ const checkRegisterBlockTimestamp = async ({
       (secs > ENS_SECONDS_WAIT_WITH_PADDING && secondsSinceCommitConfirmed > ENS_SECONDS_WAIT_WITH_PADDING) ||
       // sometimes the provider.getBlock('latest) takes a long time to update to newest block
       secondsSinceCommitConfirmed > ENS_SECONDS_WAIT_PROVIDER_PADDING ||
-      connectedToHardhat
+      connectedToAnvil
     ) {
       return true;
     }
@@ -62,12 +62,12 @@ export default function useENSRegistrationStepHandler(observer = true) {
       -1
   );
 
-  const { connectedToHardhat } = useConnectedToHardhatStore();
+  const { connectedToAnvil } = useConnectedToAnvilStore();
 
   const [readyToRegister, setReadyToRegister] = useState<boolean>(secondsSinceCommitConfirmed > ENS_SECONDS_WAIT);
 
   // flag to wait 10 secs before we get the tx block, to be able to simulate not confirmed tx when testing
-  const shouldLoopForConfirmation = useRef(connectedToHardhat);
+  const shouldLoopForConfirmation = useRef(connectedToAnvil);
 
   const registrationStep = useMemo(() => {
     if (mode === REGISTRATION_MODES.EDIT) return REGISTRATION_STEPS.EDIT;
@@ -100,8 +100,8 @@ export default function useENSRegistrationStepHandler(observer = true) {
     if (!shouldLoopForConfirmation.current && block?.timestamp) {
       const now = Date.now();
       const msBlockTimestamp = getBlockMsTimestamp(block);
-      // hardhat block timestamp is behind
-      const timeDifference = connectedToHardhat ? now - msBlockTimestamp : 0;
+      // anvil block timestamp is behind
+      const timeDifference = connectedToAnvil ? now - msBlockTimestamp : 0;
       const commitTransactionConfirmedAt = msBlockTimestamp + timeDifference;
       const secs = differenceInSeconds(now, commitTransactionConfirmedAt);
       setSecondsSinceCommitConfirmed(secondsSinceCommitConfirmed < 0 ? 0 : secs);
@@ -115,7 +115,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
       shouldLoopForConfirmation.current = false;
     }
     return confirmed;
-  }, [observer, commitTransactionHash, connectedToHardhat, secondsSinceCommitConfirmed, dispatch]);
+  }, [observer, commitTransactionHash, connectedToAnvil, secondsSinceCommitConfirmed, dispatch]);
 
   const startPollingWatchCommitTransaction = useCallback(async () => {
     if (observer) return;
@@ -168,7 +168,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
     if (!observer && secondsSinceCommitConfirmed % 2 === 0 && secondsSinceCommitConfirmed >= ENS_SECONDS_WAIT && !readyToRegister) {
       const checkIfReadyToRegister = async () => {
         const readyToRegister = await checkRegisterBlockTimestamp({
-          connectedToHardhat,
+          connectedToAnvil,
           registrationParameters,
           secondsSinceCommitConfirmed,
         });
@@ -176,7 +176,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
       };
       checkIfReadyToRegister();
     }
-  }, [connectedToHardhat, observer, readyToRegister, registrationParameters, secondsSinceCommitConfirmed]);
+  }, [connectedToAnvil, observer, readyToRegister, registrationParameters, secondsSinceCommitConfirmed]);
 
   useEffect(
     () => () => {

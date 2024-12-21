@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
 import { abbreviations, magicMemo, measureText } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -17,6 +16,7 @@ import { fonts, position } from '@/styles';
 import { useTheme } from '@/theme';
 import * as lang from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { IS_TEST } from '@/env';
 
 export const AssetListHeaderHeight = ListHeaderHeight;
 
@@ -82,7 +82,7 @@ const WalletSelectButton = ({ accountName, onChangeWallet, deviceWidth, textWidt
         </AccountName>
         {truncatedAccountName ? (
           <DropdownArrow>
-            {IS_TESTING !== 'true' && (
+            {!IS_TEST && (
               <LinearGradient
                 borderRadius={15}
                 colors={colors.gradients.lightestGrey}

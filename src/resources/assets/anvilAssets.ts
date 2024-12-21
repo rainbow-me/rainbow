@@ -13,7 +13,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 
 const MAINNET_BALANCE_CHECKER = '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b';
 
-const fetchHardhatBalancesWithBalanceChecker = async (
+const fetchAnvilBalancesWithBalanceChecker = async (
   tokens: string[],
   address: string
 ): Promise<{ [tokenAddress: string]: string } | null> => {
@@ -32,19 +32,19 @@ const fetchHardhatBalancesWithBalanceChecker = async (
     });
     return balances;
   } catch (e) {
-    logger.error(new RainbowError(`[hardhatAssets]: Error fetching balances from balanceCheckerContract: ${e}`));
+    logger.error(new RainbowError(`[anvilAssets]: Error fetching balances from balanceCheckerContract: ${e}`));
     return null;
   }
 };
 
 /**
  * @deprecated - to be removed once rest of the app is converted to new userAssetsStore
- * Fetches the balances of the hardhat assets for the given account address and network.
+ * Fetches the balances of the anvil assets for the given account address and network.
  * @param accountAddress - The address of the account to fetch the balances for.
  * @param network - The network to fetch the balances for.
- * @returns The balances of the hardhat assets for the given account address and network.
+ * @returns The balances of the anvil assets for the given account address and network.
  */
-export const fetchHardhatBalances = async (accountAddress: string, chainId: ChainId = ChainId.mainnet): Promise<RainbowAddressAssets> => {
+export const fetchAnvilBalances = async (accountAddress: string, chainId: ChainId = ChainId.mainnet): Promise<RainbowAddressAssets> => {
   const chainAssetsMap = keyBy(
     chainAssets[`${chainId}` as keyof typeof chainAssets],
     ({ asset }) => `${asset.asset_code}_${asset.chainId}`
@@ -53,7 +53,7 @@ export const fetchHardhatBalances = async (accountAddress: string, chainId: Chai
   const tokenAddresses = Object.values(chainAssetsMap).map(({ asset: { asset_code } }) =>
     asset_code === ETH_ADDRESS ? AddressZero : asset_code.toLowerCase()
   );
-  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress);
+  const balances = await fetchAnvilBalancesWithBalanceChecker(tokenAddresses, accountAddress);
   if (!balances) return {};
 
   const updatedAssets = mapValues(chainAssetsMap, chainAsset => {
@@ -70,7 +70,7 @@ export const fetchHardhatBalances = async (accountAddress: string, chainId: Chai
   return updatedAssets;
 };
 
-export const fetchHardhatBalancesByChainId = async (
+export const fetchAnvilBalancesByChainId = async (
   accountAddress: string,
   chainId: ChainId = ChainId.mainnet
 ): Promise<{
@@ -88,7 +88,7 @@ export const fetchHardhatBalancesByChainId = async (
     asset.asset_code === ETH_ADDRESS ? AddressZero : asset.asset_code.toLowerCase()
   );
 
-  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress);
+  const balances = await fetchAnvilBalancesWithBalanceChecker(tokenAddresses, accountAddress);
   if (!balances)
     return {
       assets: {},

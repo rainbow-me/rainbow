@@ -3,7 +3,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { IS_TESTING } from 'react-native-dotenv';
+import { IS_TEST } from '@/env';
 
 const timingConfig = {
   duration: 2500,
@@ -59,7 +59,7 @@ export default function ShimmerAnimation({
     transform: [{ translateX: positionX.value }],
   }));
 
-  if (IS_TESTING === 'true') {
+  if (IS_TEST) {
     return null;
   }
 

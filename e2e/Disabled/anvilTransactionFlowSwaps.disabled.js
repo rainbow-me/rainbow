@@ -6,7 +6,7 @@ const ios = device.getPlatform() === 'ios';
 const android = device.getPlatform() === 'android';
 
 beforeAll(async () => {
-  await Helpers.startHardhat();
+  await Helpers.startAnvil();
   await Helpers.startIosSimulator();
 });
 
@@ -29,11 +29,11 @@ const checkIfSwapCompleted = async (assetName, amount) => {
 };
 
 // FIXME: Mainnet DAI doesn't show up in the swap search results
-//        This might be related to @Jin's latest work on changes to hardhat as
+//        This might be related to @Jin's latest work on changes to anvil as
 //        part of the addy's REST API migration
 //
 //        marking the test as SKIP for now
-describe.skip('Hardhat Transaction Flow', () => {
+describe.skip('Anvil Transaction Flow', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
@@ -74,9 +74,9 @@ describe.skip('Hardhat Transaction Flow', () => {
     await Helpers.sendETHtoTestWallet();
   });
 
-  it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    await Helpers.waitAndTap('dev-button-hardhat');
-    await Helpers.checkIfVisible('testnet-toast-Hardhat');
+  it('Should show Anvil Toast after pressing Connect To Anvil', async () => {
+    await Helpers.waitAndTap('dev-button-anvil');
+    await Helpers.checkIfVisible('testnet-toast-Anvil');
   });
 
   it.skip('Should deposit DAI (via Compound)', async () => {
@@ -414,6 +414,6 @@ describe.skip('Hardhat Transaction Flow', () => {
     await connector?.killSession();
     connector = null;
     await device.clearKeychain();
-    await Helpers.killHardhat();
+    await Helpers.killAnvil();
   });
 });

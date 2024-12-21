@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
 // @ts-expect-error - no declaration file
 import TextInputMask from 'react-native-text-input-mask';
@@ -9,7 +8,7 @@ import { buildTextStyles, margin, padding } from '@/styles';
 import { useTheme } from '@/theme';
 import { TextInput } from 'react-native';
 import { Box, Inline, Inset, Text } from '@/design-system';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
@@ -98,7 +97,7 @@ function GweiInputPill(
               testID={testID}
               value={value}
             />
-            {IS_TESTING !== 'true' && (
+            {!IS_TEST && (
               <Text align="center" color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy">
                 Gwei
               </Text>

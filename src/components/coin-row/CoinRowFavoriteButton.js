@@ -1,6 +1,5 @@
 import React from 'react';
 import { View } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { BaseButton } from 'react-native-gesture-handler';
 import RadialGradient from 'react-native-radial-gradient';
 import { useTheme } from '../../theme/ThemeContext';
@@ -10,6 +9,7 @@ import { CoinRowHeight } from './CoinRow';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { magicMemo } from '@/utils';
+import { IS_TEST } from '@/env';
 
 const FavoriteButtonPadding = 19;
 
@@ -24,7 +24,7 @@ const FavoriteButton = styled(Centered)({
   width: 68,
 });
 
-const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(({ isFavorited, theme: { colors, isDarkMode } }) => ({
+const Circle = styled(IS_TEST ? View : RadialGradient).attrs(({ isFavorited, theme: { colors, isDarkMode } }) => ({
   center: [0, 15],
   colors: isFavorited
     ? [colors.alpha('#FFB200', isDarkMode ? 0.15 : 0), colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2)]

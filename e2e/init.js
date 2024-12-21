@@ -8,7 +8,7 @@ beforeAll(async () => {
   if (device.getPlatform() === 'android') {
     // connecting to metro
     await device.reverseTcpPort(8081);
-    // connecting to hardhat
+    // connecting to anvil
     await device.reverseTcpPort(8545); // TODO: WIP for android connecting in dev
 
     // make sure we don't have gesture navigation what might cause collisions

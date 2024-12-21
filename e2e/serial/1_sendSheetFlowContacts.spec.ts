@@ -18,10 +18,10 @@ const android = device.getPlatform() === 'android';
 
 describe('Send Sheet Interaction Flow Contacts', () => {
   beforeAll(async () => {
-    await beforeAllcleanApp({ hardhat: true });
+    await beforeAllcleanApp({});
   });
   afterAll(async () => {
-    await afterAllcleanApp({ hardhat: true });
+    await afterAllcleanApp({});
   });
 
   it('Import a wallet and go to welcome', async () => {
@@ -32,9 +32,9 @@ describe('Send Sheet Interaction Flow Contacts', () => {
     await sendETHtoTestWallet();
   });
 
-  it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    await waitAndTap('dev-button-hardhat');
-    await checkIfVisible('testnet-toast-Hardhat');
+  it('Should show Anvil Toast after pressing Connect To Anvil', async () => {
+    await waitAndTap('dev-button-anvil');
+    await checkIfVisible('testnet-toast-Anvil');
   });
 
   it('Should open send sheet after tapping send fab', async () => {

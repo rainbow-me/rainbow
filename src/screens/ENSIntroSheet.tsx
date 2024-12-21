@@ -1,6 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useRoute } from '@react-navigation/native';
-import { IS_TESTING } from 'react-native-dotenv';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { InteractionManager, View } from 'react-native';
@@ -16,7 +15,7 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useAccountENSDomains, useDimensions, useENSAvatar, useENSRecords, useENSRegistration } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 import ContextMenu from '@/components/context-menu/ContextMenu.android';
 
 enum AnotherENSEnum {
@@ -187,7 +186,7 @@ export default function ENSIntroSheet() {
                   </Heading>
                 </Stack>
                 <Stack space={{ custom: isSmallPhone ? 30 : 40 }}>
-                  <Bleed left="10px">{IS_TESTING !== 'true' && <IntroMarquee isSmallPhone={isSmallPhone} />}</Bleed>
+                  <Bleed left="10px">{!IS_TEST && <IntroMarquee isSmallPhone={isSmallPhone} />}</Bleed>
                   <Inset horizontal="34px (Deprecated)">
                     <Separator color="divider60 (Deprecated)" />
                   </Inset>

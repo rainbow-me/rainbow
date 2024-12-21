@@ -14,10 +14,10 @@ import {
 
 describe('Backups', () => {
   beforeAll(async () => {
-    await beforeAllcleanApp({ hardhat: false });
+    await beforeAllcleanApp({ anvil: false });
   });
   afterAll(async () => {
-    await afterAllcleanApp({ hardhat: false });
+    await afterAllcleanApp({ anvil: false });
   });
 
   it('Imports wallet', async () => {

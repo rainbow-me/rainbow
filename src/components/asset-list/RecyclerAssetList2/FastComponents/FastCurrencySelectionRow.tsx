@@ -1,7 +1,6 @@
 import React from 'react';
 import isEqual from 'react-fast-compare';
 import { Text as RNText, StyleSheet, View } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../../../animations';
 import { CoinRowHeight } from '../../../coin-row';
@@ -14,8 +13,9 @@ import { deviceUtils } from '@/utils';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { ChainId } from '@/state/backendNetworks/types';
+import { IS_TEST } from '@/env';
 
-const SafeRadialGradient = (IS_TESTING === 'true' ? View : RadialGradient) as typeof RadialGradient;
+const SafeRadialGradient = (IS_TEST ? View : RadialGradient) as typeof RadialGradient;
 
 interface FastCurrencySelectionRowProps {
   item: any;

@@ -14,10 +14,10 @@ const RAINBOW_TEST_WALLET = 'rainbowtestwallet.eth';
 
 describe('Home Screen', () => {
   beforeAll(async () => {
-    await beforeAllcleanApp({ hardhat: false });
+    await beforeAllcleanApp({ anvil: false });
   });
   afterAll(async () => {
-    await afterAllcleanApp({ hardhat: false });
+    await afterAllcleanApp({ anvil: false });
   });
 
   it('imports wallet', async () => {

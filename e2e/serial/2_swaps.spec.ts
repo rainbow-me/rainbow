@@ -30,10 +30,10 @@ import { WALLET_VARS } from '../testVariables';
 
 describe('Swap Sheet Interaction Flow', () => {
   beforeAll(async () => {
-    await beforeAllcleanApp({ hardhat: true });
+    await beforeAllcleanApp({});
   });
   afterAll(async () => {
-    await afterAllcleanApp({ hardhat: true });
+    await afterAllcleanApp({});
   });
 
   it('Import a wallet and go to welcome', async () => {
@@ -45,9 +45,9 @@ describe('Swap Sheet Interaction Flow', () => {
     await sendETHtoTestWallet();
   });
 
-  it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    await tap('dev-button-hardhat');
-    await checkIfVisible('testnet-toast-Hardhat');
+  it('Should show Anvil Toast after pressing Connect To Anvil', async () => {
+    await tap('dev-button-anvil');
+    await checkIfVisible('testnet-toast-Anvil');
 
     // doesn't work atm
     // validate it has the expected funds of 20 eth

@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from './animations';
@@ -12,7 +11,7 @@ import { Text } from './text';
 import { useClipboard } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding } from '@/styles';
-
+import { IS_TEST } from '@/env';
 import { abbreviations, ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
 
 const InfoButton = styled(Centered)({
@@ -27,7 +26,7 @@ const InfoButton = styled(Centered)({
   ...padding.object(0, 0),
 });
 
-const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(({ theme: { colors } }) => ({
+const Circle = styled(IS_TEST ? View : RadialGradient).attrs(({ theme: { colors } }) => ({
   center: [0, 15],
   colors: colors.gradients.lightestGrey,
 }))({

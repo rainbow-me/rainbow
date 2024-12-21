@@ -3,8 +3,8 @@ import * as ls from '@/storage';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { logger, RainbowError } from '@/logger';
-import { IS_TESTING } from 'react-native-dotenv';
 import * as StoreReview from 'expo-store-review';
+import { IS_TEST } from '@/env';
 
 export const AppleReviewAddress = 'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review';
 
@@ -29,7 +29,7 @@ export const numberOfTimesBeforePrompt: {
 export const handleReviewPromptAction = async (action: ReviewPromptAction) => {
   logger.debug(`[reviewAlert]: handleReviewPromptAction: ${action}`);
 
-  if (IS_TESTING === 'true') {
+  if (IS_TEST) {
     return;
   }
 

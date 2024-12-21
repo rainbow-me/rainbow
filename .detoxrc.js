@@ -4,6 +4,8 @@ module.exports = {
     args: {
       config: 'e2e/jest.e2e.config.js',
       _: ['e2e'],
+      bail: true,
+      forceExit: true,
     },
   },
   devices: {

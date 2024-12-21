@@ -13,10 +13,10 @@ import {
 
 describe('Watched showcase and hidden actions flow', () => {
   beforeAll(async () => {
-    await beforeAllcleanApp({ hardhat: false });
+    await beforeAllcleanApp({ anvil: false });
   });
   afterAll(async () => {
-    await afterAllcleanApp({ hardhat: false });
+    await afterAllcleanApp({ anvil: false });
   });
 
   it('watches a wallet and loads wallet screen', async () => {

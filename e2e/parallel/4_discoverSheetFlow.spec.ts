@@ -17,10 +17,10 @@ const ios = device.getPlatform() === 'ios';
 
 describe('Discover Screen Flow', () => {
   beforeAll(async () => {
-    await beforeAllcleanApp({ hardhat: false });
+    await beforeAllcleanApp({ anvil: false });
   });
   afterAll(async () => {
-    await afterAllcleanApp({ hardhat: false });
+    await afterAllcleanApp({ anvil: false });
   });
   it('Should import wallet and go to wallet screen', async () => {
     await importWalletFlow();
