@@ -1,8 +1,8 @@
 import * as chain from 'viem/chains';
 
-const HARDHAT_CHAIN_ID = 1337;
-const HARDHAT_OP_CHAIN_ID = 1338;
-const HARDHAT_RPC_URL = 'http://127.0.0.1:8545/';
+const ANVIL_CHAIN_ID = 1337;
+const ANVIL_OP_CHAIN_ID = 1338;
+const ANVIL_RPC_URL = 'http://127.0.0.1:8545/';
 
 export enum Network {
   apechain = 'apechain',
@@ -44,8 +44,8 @@ export enum ChainId {
   gnosis = chain.gnosis.id,
   goerli = chain.goerli.id,
   gravity = chain.gravity.id,
-  anvil = HARDHAT_CHAIN_ID,
-  anvilOptimism = HARDHAT_OP_CHAIN_ID,
+  anvil = ANVIL_CHAIN_ID,
+  anvilOptimism = ANVIL_OP_CHAIN_ID,
   holesky = chain.holesky.id,
   ink = 57073,
   linea = chain.linea.id,
@@ -107,7 +107,7 @@ export enum ChainName {
 }
 
 export const chainAnvil: chain.Chain = {
-  id: HARDHAT_CHAIN_ID,
+  id: ANVIL_CHAIN_ID,
   name: 'Anvil',
   nativeCurrency: {
     decimals: 18,
@@ -115,14 +115,14 @@ export const chainAnvil: chain.Chain = {
     symbol: 'ETH',
   },
   rpcUrls: {
-    public: { http: [HARDHAT_RPC_URL] },
-    default: { http: [HARDHAT_RPC_URL] },
+    public: { http: [ANVIL_RPC_URL] },
+    default: { http: [ANVIL_RPC_URL] },
   },
   testnet: true,
 };
 
 export const chainAnvilOptimism: chain.Chain = {
-  id: HARDHAT_OP_CHAIN_ID,
+  id: ANVIL_OP_CHAIN_ID,
   name: 'Anvil OP',
   nativeCurrency: {
     decimals: 18,
@@ -130,8 +130,8 @@ export const chainAnvilOptimism: chain.Chain = {
     symbol: 'ETH',
   },
   rpcUrls: {
-    public: { http: [HARDHAT_RPC_URL] },
-    default: { http: [HARDHAT_RPC_URL] },
+    public: { http: [ANVIL_RPC_URL] },
+    default: { http: [ANVIL_RPC_URL] },
   },
   testnet: true,
 };

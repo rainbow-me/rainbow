@@ -1,7 +1,6 @@
 import { Mutex } from 'async-mutex';
 import BigNumber from 'bignumber.js';
 import { isEmpty } from 'lodash';
-import { IS_TESTING } from 'react-native-dotenv';
 import { AppDispatch, AppGetState } from './store';
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
@@ -41,6 +40,7 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { addBuffer } from '@/helpers/utilities';
+import { IS_TEST } from '@/env';
 
 const { CUSTOM, NORMAL, URGENT } = gasUtils;
 
@@ -370,7 +370,7 @@ export const gasPricesStartPolling =
                     // Set a really gas estimate to guarantee that we're gonna be over
                     // the basefee at the time we fork mainnet during our anvil tests
                     let baseFee = baseFeePerGas;
-                    if (chainId === ChainId.mainnet && IS_TESTING === 'true' && useConnectedToAnvilStore.getState().connectedToAnvil) {
+                    if (chainId === ChainId.mainnet && IS_TEST && useConnectedToAnvilStore.getState().connectedToAnvil) {
                       baseFee = parseGasFeeParam(gweiToWei(1000));
                     }
 

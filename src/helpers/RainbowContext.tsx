@@ -9,11 +9,11 @@ import { useDispatch } from 'react-redux';
 
 import { useTheme } from '../theme/ThemeContext';
 import { STORAGE_IDS } from '@/model/mmkv';
-import { IS_TESTING } from 'react-native-dotenv';
 import { logger, RainbowError } from '@/logger';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { IS_TEST } from '@/env';
 
 export type RainbowContextType = {
   config: Record<keyof typeof defaultConfig, boolean>;
@@ -89,7 +89,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
       {children}
       {/* @ts-expect-error ts-migrate(2741) FIXME: Property 'color' is missing in type... Remove this comment to see the full error message */}
       {showReloadButton && __DEV__ && <DevButton initialDisplacement={200} />}
-      {((showConnectToAnvilButton && __DEV__) || IS_TESTING === 'true') && (
+      {((showConnectToAnvilButton && __DEV__) || IS_TEST) && (
         <DevButton color={colors.purple} onPress={connectToAnvil} initialDisplacement={150} testID={'dev-button-anvil'} size={20}>
           {/* @ts-ignore */}
           <Emoji>👷</Emoji>
