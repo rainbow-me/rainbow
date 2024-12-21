@@ -118,8 +118,6 @@ function getOrCreateAttachValue<T, S>(store: StoreApi<T>, selector: (state: T) =
 
   const [subscribe, getVal, setVal] = createSignal(store, selector, equalityFn);
 
-  if (ENABLE_LOGS) console.log('[🌀 AttachValue 🌀] Created root attachValue:', { selector: selector.toString() });
-
   const localCache = new Map<string, AttachValue<unknown>>();
 
   const createAttachValue = (fullPath: string): AttachValue<unknown> => {
@@ -138,6 +136,8 @@ function getOrCreateAttachValue<T, S>(store: StoreApi<T>, selector: (state: T) =
         if (cached) {
           if (ENABLE_LOGS) console.log('[🌀 AttachValue 🌀] Cache hit for:', pathKey);
           return cached;
+        } else if (ENABLE_LOGS) {
+          console.log('[🌀 AttachValue 🌀] Created root attachValue:', pathKey);
         }
         const val = createAttachValue(pathKey);
         attachValueSubscriptionMap.set(val, subscribe);
