@@ -37,7 +37,7 @@ import {
 import { ethUnits } from '@/references';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { addBuffer } from '@/helpers/utilities';
@@ -368,9 +368,9 @@ export const gasPricesStartPolling =
                       meteorologyGasParams as MeterologyGasParams;
 
                     // Set a really gas estimate to guarantee that we're gonna be over
-                    // the basefee at the time we fork mainnet during our hardhat tests
+                    // the basefee at the time we fork mainnet during our anvil tests
                     let baseFee = baseFeePerGas;
-                    if (chainId === ChainId.mainnet && IS_TESTING === 'true' && useConnectedToHardhatStore.getState().connectedToHardhat) {
+                    if (chainId === ChainId.mainnet && IS_TESTING === 'true' && useConnectedToAnvilStore.getState().connectedToAnvil) {
                       baseFee = parseGasFeeParam(gweiToWei(1000));
                     }
 

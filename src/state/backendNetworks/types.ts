@@ -44,8 +44,8 @@ export enum ChainId {
   gnosis = chain.gnosis.id,
   goerli = chain.goerli.id,
   gravity = chain.gravity.id,
-  hardhat = HARDHAT_CHAIN_ID,
-  hardhatOptimism = HARDHAT_OP_CHAIN_ID,
+  anvil = HARDHAT_CHAIN_ID,
+  anvilOptimism = HARDHAT_OP_CHAIN_ID,
   holesky = chain.holesky.id,
   ink = 57073,
   linea = chain.linea.id,
@@ -84,8 +84,8 @@ export enum ChainName {
   gnosis = 'gnosis',
   goerli = 'goerli',
   gravity = 'gravity',
-  hardhat = 'hardhat',
-  hardhatOptimism = 'hardhat-optimism',
+  anvil = 'anvil',
+  anvilOptimism = 'anvil-optimism',
   holesky = 'holesky',
   ink = 'ink',
   linea = 'linea',
@@ -106,12 +106,12 @@ export enum ChainName {
   zoraSepolia = 'zora-sepolia',
 }
 
-export const chainHardhat: chain.Chain = {
+export const chainAnvil: chain.Chain = {
   id: HARDHAT_CHAIN_ID,
-  name: 'Hardhat',
+  name: 'Anvil',
   nativeCurrency: {
     decimals: 18,
-    name: 'Hardhat',
+    name: 'Anvil',
     symbol: 'ETH',
   },
   rpcUrls: {
@@ -121,12 +121,12 @@ export const chainHardhat: chain.Chain = {
   testnet: true,
 };
 
-export const chainHardhatOptimism: chain.Chain = {
+export const chainAnvilOptimism: chain.Chain = {
   id: HARDHAT_OP_CHAIN_ID,
-  name: 'Hardhat OP',
+  name: 'Anvil OP',
   nativeCurrency: {
     decimals: 18,
-    name: 'Hardhat OP',
+    name: 'Anvil OP',
     symbol: 'ETH',
   },
   rpcUrls: {

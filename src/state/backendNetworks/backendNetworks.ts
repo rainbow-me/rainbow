@@ -6,9 +6,9 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { Chain } from 'viem/chains';
 import { transformBackendNetworksToChains } from '@/state/backendNetworks/utils';
 import { IS_TEST } from '@/env';
-import { BackendNetwork, BackendNetworkServices, chainHardhat, chainHardhatOptimism, ChainId } from '@/state/backendNetworks/types';
+import { BackendNetwork, BackendNetworkServices, chainAnvil, chainAnvilOptimism, ChainId } from '@/state/backendNetworks/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { colors as globalColors } from '@/styles';
 
 const INITIAL_BACKEND_NETWORKS = queryClient.getQueryData<BackendNetworksResponse>(backendNetworksQueryKey()) ?? buildTimeNetworks;
@@ -76,7 +76,7 @@ export const useBackendNetworksStore = createRainbowStore<BackendNetworksState>(
 
   getSupportedChains: () => {
     const backendChains = get().getBackendChains();
-    return IS_TEST ? [...backendChains, chainHardhat, chainHardhatOptimism] : backendChains;
+    return IS_TEST ? [...backendChains, chainAnvil, chainAnvilOptimism] : backendChains;
   },
 
   getSortedSupportedChainIds: () => {
@@ -363,8 +363,8 @@ export const useBackendNetworksStore = createRainbowStore<BackendNetworksState>(
     const defaultChains = get().getDefaultChains();
     switch (chainId) {
       case ChainId.mainnet:
-        return useConnectedToHardhatStore.getState().connectedToHardhat
-          ? chainHardhat.rpcUrls.default.http[0]
+        return useConnectedToAnvilStore.getState().connectedToAnvil
+          ? chainAnvil.rpcUrls.default.http[0]
           : defaultChains[ChainId.mainnet].rpcUrls.default.http[0];
       default:
         return defaultChains[chainId].rpcUrls.default.http[0];
@@ -391,7 +391,7 @@ export const getBackendChainsWorklet = (backendNetworks: SharedValue<BackendNetw
 export const getSupportedChainsWorklet = (backendNetworks: SharedValue<BackendNetworksResponse>) => {
   'worklet';
   const backendChains = getBackendChainsWorklet(backendNetworks);
-  return IS_TEST ? [...backendChains, chainHardhat, chainHardhatOptimism] : backendChains;
+  return IS_TEST ? [...backendChains, chainAnvil, chainAnvilOptimism] : backendChains;
 };
 
 export const getDefaultChainsWorklet = (backendNetworks: SharedValue<BackendNetworksResponse>) => {
@@ -660,7 +660,7 @@ export const getChainDefaultRpcWorklet = (backendNetworks: SharedValue<BackendNe
   const defaultChains = getDefaultChainsWorklet(backendNetworks);
   switch (chainId) {
     case ChainId.mainnet:
-      return useConnectedToHardhatStore.getState().connectedToHardhat
+      return useConnectedToAnvilStore.getState().connectedToAnvil
         ? 'http://127.0.0.1:8545'
         : defaultChains[ChainId.mainnet].rpcUrls.default.http[0];
     default:

@@ -154,6 +154,9 @@ jobs:
         run: |
           rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
           yarn install-bundle && yarn install-pods
+      
+      - name: Install Anvil
+        uses: foundry-rs/foundry-toolchain@v1
 
       - uses: irgaly/xcode-cache@v1
         with:
