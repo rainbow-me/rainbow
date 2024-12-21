@@ -103,12 +103,12 @@ export const titleForBackupState: Partial<Record<CloudBackupState, string>> = {
 };
 
 export const isWalletBackedUpForCurrentAccount = ({ backupType, backedUp, backupFile }: Partial<RainbowWallet>) => {
-  if (!backupType || !backupFile) {
-    return false;
-  }
-
   if (IS_IOS || backupType === WalletBackupTypes.manual) {
     return backedUp;
+  }
+
+  if (!backupType || !backupFile) {
+    return false;
   }
 
   // NOTE: For Android, we also need to check if the current google account has the matching backup file
