@@ -31,11 +31,10 @@ for test_file in ./e2e/serial/*.ts; do
     # 4) Kill the Anvil process
     echo "Killing Anvil (PID: $ANVIL_PID)"
     kill "$ANVIL_PID"
+    # kill any other processes using port 8545
+    kill $(lsof -t -i:8545)  
 
-    # 5) Wait for Anvil to truly exit
-    wait "$ANVIL_PID" 2>/dev/null || true
-
-    # 5.1) Remove the Anvil log file
+    # 5) Remove the Anvil log file
     rm -rf anvil.log
 
     # 6) Decide what to do if Detox failed or succeeded
