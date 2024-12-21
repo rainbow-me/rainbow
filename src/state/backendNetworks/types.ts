@@ -168,6 +168,10 @@ export interface BackendNetwork {
   id: string;
   name: string;
   label: string;
+  colors: {
+    light: string;
+    dark: string;
+  };
   icons: {
     badgeURL: string;
   };

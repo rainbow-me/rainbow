@@ -169,6 +169,9 @@ export const event = {
   tokenDetailsErc20: 'token_details.erc20',
   tokenDetailsNFT: 'token_details.nft',
 
+  // token lists (wallet, swap, send)
+  tokenList: 'token_list',
+
   // trending tokens
   viewTrendingToken: 'trending_tokens.view_trending_token',
   viewRankedCategory: 'trending_tokens.view_ranked_category',
@@ -715,6 +718,14 @@ export type EventProperties = {
     };
     eventSentAfterMs: number;
     available_data: { description: boolean; image_url: boolean; floorPrice: boolean };
+  };
+
+  [event.tokenList]: {
+    screen: 'wallet' | 'swap' | 'send' | 'discover';
+    total_tokens: number;
+    no_icon: number;
+    no_price?: number;
+    query?: string; // query is only sent for the swap screen
   };
 
   [event.viewTrendingToken]: {

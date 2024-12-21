@@ -3,11 +3,7 @@ import { useMemo } from 'react';
 import { Address } from 'viem';
 import useAccountSettings from './useAccountSettings';
 import { useAddysSummary } from '@/resources/summary/summary';
-import { useQueries } from '@tanstack/react-query';
-import { fetchPositions, positionsQueryKey } from '@/resources/defi/PositionsQuery';
-import { RainbowPositions } from '@/resources/defi/types';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { queryClient } from '@/react-query';
 
 const QUERY_CONFIG = {
   staleTime: 60_000, // 1 minute
@@ -43,24 +39,13 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
     [wallets]
   );
 
-  const { data: summaryData, isLoading: isSummaryLoading } = useAddysSummary(
+  const { data: summaryData, isLoading } = useAddysSummary(
     {
       addresses: allAddresses,
       currency: nativeCurrency,
     },
     QUERY_CONFIG
   );
-
-  const positionQueries = useQueries({
-    queries: allAddresses.map(address => ({
-      queryKey: positionsQueryKey({ address, currency: nativeCurrency }),
-      queryFn: () => fetchPositions({ address, currency: nativeCurrency }),
-      enabled: !!address,
-      ...QUERY_CONFIG,
-    })),
-  });
-
-  const isLoading = isSummaryLoading || positionQueries.some(query => query.isLoading);
 
   const balances = useMemo(() => {
     const result: Record<Address, WalletBalance> = {};
@@ -70,9 +55,10 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
     for (const address of allAddresses) {
       const lowerCaseAddress = address.toLowerCase() as Address;
       const assetBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.asset_value?.toString() || '0';
-      const positionData = queryClient.getQueryData<RainbowPositions | undefined>(positionsQueryKey({ address, currency: nativeCurrency }));
-      const positionsBalance = positionData ? positionData.totals.total.amount : '0';
-      const totalAccountBalance = add(assetBalance, positionsBalance);
+      const positionsBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.positions_value?.toString() || '0';
+      const claimablesBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.claimables_value?.toString() || '0';
+
+      const totalAccountBalance = add(assetBalance, add(positionsBalance, claimablesBalance));
 
       result[lowerCaseAddress] = {
         assetBalanceAmount: assetBalance,
