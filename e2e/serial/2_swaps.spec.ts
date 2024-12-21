@@ -30,10 +30,10 @@ import { WALLET_VARS } from '../testVariables';
 
 describe('Swap Sheet Interaction Flow', () => {
   beforeAll(async () => {
-    await beforeAllcleanApp({ anvil: true });
+    await beforeAllcleanApp({});
   });
   afterAll(async () => {
-    await afterAllcleanApp({ anvil: true });
+    await afterAllcleanApp({});
   });
 
   it('Import a wallet and go to welcome', async () => {

@@ -18,10 +18,10 @@ const android = device.getPlatform() === 'android';
 
 describe('Send Sheet Interaction Flow Contacts', () => {
   beforeAll(async () => {
-    await beforeAllcleanApp({ anvil: true });
+    await beforeAllcleanApp({});
   });
   afterAll(async () => {
-    await afterAllcleanApp({ anvil: true });
+    await afterAllcleanApp({});
   });
 
   it('Import a wallet and go to welcome', async () => {
