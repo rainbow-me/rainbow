@@ -166,7 +166,7 @@ jobs:
           yarn detox build --configuration ios.sim.release
       - name: Detox iOS e2e tests serial
         run: |
-          ./scripts/run-serial-e2e.sh
+          ./scripts/run-serial-e2e.sh 3
 
       - name: Detox iOS e2e tests parallel
         run: |
