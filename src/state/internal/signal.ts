@@ -131,7 +131,8 @@ function getOrCreateAttachValue<T, S>(store: StoreApi<T>, selector: (state: T) =
           }
           return v;
         }
-        const pathKey = fullPath ? `${fullPath}.${key.toString()}` : key.toString();
+        const keyString = typeof key === 'string' ? key : key.toString();
+        const pathKey = fullPath ? `${fullPath}.${keyString}` : keyString;
         const cached = localCache.get(pathKey);
         if (cached) {
           if (ENABLE_LOGS) console.log('[🌀 AttachValue 🌀] Cache hit for:', pathKey);

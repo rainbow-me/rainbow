@@ -96,7 +96,7 @@ export const UserAssetsTest = memo(function UserAssetsTest() {
           )
         )}
       </View>
-      <Text color="label" size="17pt" weight="heavy">
+      <Text align="center" color="label" size="17pt" weight="heavy">
         {data
           ? `Number of assets: ${Object.values(data).reduce((acc, chainAssets) => acc + Object.keys(chainAssets).length, 0)}`
           : 'Loading…'}
@@ -119,7 +119,7 @@ export const UserAssetsTest = memo(function UserAssetsTest() {
           }}
           style={styles.button}
         >
-          <Text color="label" size="17pt" weight="heavy">
+          <Text align="center" color="label" size="17pt" weight="heavy">
             Shuffle Address
           </Text>
         </ButtonPressAnimation>
@@ -129,7 +129,7 @@ export const UserAssetsTest = memo(function UserAssetsTest() {
           }}
           style={styles.button}
         >
-          <Text color="label" size="17pt" weight="heavy">
+          <Text align="center" color="label" size="17pt" weight="heavy">
             {useUserAssetsTestStore.getState().enabled ? 'Disable Fetching' : 'Enable Fetching'}
           </Text>
         </ButtonPressAnimation>
@@ -194,7 +194,7 @@ export async function simpleUserAssetsQuery({ address, currency }: FetchUserAsse
     }
     return {};
   } catch (e) {
-    logger.error(new RainbowError('[userAssetsQueryFunction]: Failed to fetch user assets'), {
+    logger.error(new RainbowError('[simpleUserAssetsQuery]: Failed to fetch user assets'), {
       message: (e as Error)?.message,
     });
     return {};

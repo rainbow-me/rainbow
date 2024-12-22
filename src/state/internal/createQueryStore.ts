@@ -175,17 +175,6 @@ export type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string,
    */
   fetcher: (params: TParams) => TQueryFnData | Promise<TQueryFnData>;
   /**
-   * The maximum number of times to retry a failed fetch operation.
-   * @default 3
-   */
-  maxRetries?: number;
-  /**
-   * The delay between retries after a fetch error occurs, in milliseconds, defined as a number or a function that
-   * receives the error and current retry count and returns a number.
-   * @default time.seconds(5)
-   */
-  retryDelay?: number | ((retryCount: number, error: Error) => number);
-  /**
    * A callback invoked whenever a fetch operation fails.
    * Receives the error and the current retry count.
    */
@@ -199,7 +188,7 @@ export type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string,
    * A function that overrides the default behavior of setting the fetched data in the store's query cache.
    * Receives an object containing the transformed data, the query parameters, the query key, and the store's set function.
    *
-   * When using `setData`, it’s important to note that you are taking full responsibility for managing query data. if your
+   * When using `setData`, it’s important to note that you are taking full responsibility for managing query data. If your
    * query supports variable parameters (and thus multiple query keys) and you want to cache data for each key, you’ll need
    * to manually handle storing data based on the provided `params` or `queryKey`. Naturally, you will also bear
    * responsibility for pruning this data in the event you do not want it persisted indefinitely.
@@ -214,11 +203,6 @@ export type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string,
     queryKey: string;
     set: (partial: S | Partial<S> | ((state: S) => S | Partial<S>)) => void;
   }) => void;
-  /**
-   * Suppresses warnings in the event a `staleTime` under the minimum is desired.
-   * @default false
-   */
-  suppressStaleTimeWarning?: boolean;
   /**
    * A function to transform the raw fetched data (`TQueryFnData`) into another form (`TData`).
    * If not provided, the raw data returned by `fetcher` is used.
@@ -246,12 +230,23 @@ export type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string,
    */
   enabled?: boolean;
   /**
+   * The maximum number of times to retry a failed fetch operation.
+   * @default 3
+   */
+  maxRetries?: number;
+  /**
    * Parameters to be passed to the fetcher, defined as either direct values or `ParamResolvable` functions.
    * Dynamic parameters using `AttachValue` will cause the store to refetch when their values change.
    */
   params?: {
     [K in keyof TParams]: ParamResolvable<TParams[K], TParams, S, TData>;
   };
+  /**
+   * The delay between retries after a fetch error occurs, in milliseconds, defined as a number or a function that
+   * receives the error and current retry count and returns a number.
+   * @default time.seconds(5)
+   */
+  retryDelay?: number | ((retryCount: number, error: Error) => number);
   /**
    * The duration, in milliseconds, that data is considered fresh after fetching.
    * After becoming stale, the store may automatically refetch data in the background if there are active subscribers.
@@ -260,6 +255,11 @@ export type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string,
    * @default time.minutes(2)
    */
   staleTime?: number;
+  /**
+   * Suppresses warnings in the event a `staleTime` under the minimum is desired.
+   * @default false
+   */
+  suppressStaleTimeWarning?: boolean;
 };
 
 /**
