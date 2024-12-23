@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { parseTokenSearch } from './utils';
 
 const tokenSearchHttp = new RainbowFetchClient({
-  baseURL: 'https://token-search.rainbow.me/v3/discovery',
+  baseURL: 'https://token-search.rainbow.me/v3/trending/swaps',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',

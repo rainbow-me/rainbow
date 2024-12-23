@@ -13,7 +13,7 @@ import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import { deviceUtils } from '@/utils';
 import { ThemeContextProps } from '@/theme';
-import { useDiscoverScreenContext } from '@/screens/discover/DiscoverScreenContext';
+import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 

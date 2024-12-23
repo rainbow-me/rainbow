@@ -131,8 +131,6 @@ const MINER_TIP_EXPLAINER = lang.t('explain.miner_tip.text');
 
 const VERIFIED_EXPLAINER = lang.t('explain.verified.text');
 
-const SWAP_RESET_EXPLAINER = `Rainbow doesn’t have the ability to swap across networks yet, but we’re on it. For now, Rainbow will match networks between selected tokens.`;
-
 const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
   cloudPlatformName: cloudPlatformAccountName,
 });
@@ -420,18 +418,6 @@ export const explainers = (params, theme) => {
         feePercentage: params?.feePercentage,
       }),
       title: 'Rainbow Fee',
-    },
-    swapResetInputs: {
-      button: {
-        label: `Continue with ${chainsLabel[chainId]}`,
-        bgColor: colors?.networkColors[chainId] && colors?.alpha(colors?.networkColors[chainId], 0.06),
-        textColor: colors?.networkColors?.[chainId],
-      },
-      emoji: '🔐',
-      extraHeight: -90,
-      text: SWAP_RESET_EXPLAINER,
-      title: `Switching to ${chainsLabel[chainId]}`,
-      logo: <ChainImage chainId={chainId} size={40} position="relative" />,
     },
     f2cSemiSupportedAssetPurchased: {
       emoji: '🎉',

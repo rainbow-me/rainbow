@@ -311,7 +311,7 @@ export const ControlPanel = () => {
   );
 };
 
-const TapToDismiss = memo(function TapToDismiss() {
+export const TapToDismiss = memo(function TapToDismiss() {
   const { goBack } = useNavigation();
   return (
     <TouchableWithoutFeedback onPress={goBack}>

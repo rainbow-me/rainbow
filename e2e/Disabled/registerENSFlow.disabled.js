@@ -110,7 +110,7 @@ const validatePrimaryName = async name => {
 };
 
 beforeAll(async () => {
-  await Helpers.startHardhat();
+  await Helpers.startAnvil();
   await Helpers.startIosSimulator();
 });
 
@@ -155,9 +155,9 @@ describe.skip('Register ENS Flow', () => {
     await Helpers.sendETHtoTestWallet();
   });
 
-  it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    await Helpers.waitAndTap('dev-button-hardhat');
-    await Helpers.checkIfVisible('testnet-toast-Hardhat');
+  it('Should show Anvil Toast after pressing Connect To Anvil', async () => {
+    await Helpers.waitAndTap('dev-button-anvil');
+    await Helpers.checkIfVisible('testnet-toast-Anvil');
   });
 
   it('Should navigate to the Discover sheet screen after swiping left', async () => {
@@ -637,6 +637,6 @@ describe.skip('Register ENS Flow', () => {
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    await Helpers.killHardhat();
+    await Helpers.killAnvil();
   });
 });

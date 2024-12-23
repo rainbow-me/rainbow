@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
-import { ChainId } from '@/state/backendNetworks/types';
+import React, { useMemo, forwardRef } from 'react';
 import FastImage from 'react-native-fast-image';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 import styled from '@/styled-thing';
 import { Centered } from '../layout';
 import { position as positions } from '@/styles';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type ChainIconProps = {
   containerSize: number;
@@ -36,40 +36,45 @@ const ChainIconPositionWrapper = styled(Centered)(
   })
 );
 
-export function ChainImage({
-  chainId,
-  size = 20,
-  showBadge = true,
-  badgeXPosition = 0,
-  badgeYPosition = 0,
-  position = 'absolute',
-}: {
+type ChainImageProps = {
   chainId: ChainId | null | undefined;
   size?: number;
   position?: 'absolute' | 'relative';
   showBadge?: boolean;
   badgeXPosition?: number;
   badgeYPosition?: number;
-}) {
-  const { containerSize, iconSize } = useMemo(
-    () => ({
-      containerSize: size,
-      iconSize: size,
-    }),
-    [size]
-  );
+};
 
-  if (!chainId) return null;
+export const ChainImage = forwardRef<React.ElementRef<typeof FastImage>, ChainImageProps>(
+  ({ chainId, size = 20, showBadge = true, badgeXPosition = 0, badgeYPosition = 0, position = 'absolute' }, ref) => {
+    const { containerSize, iconSize } = useMemo(
+      () => ({
+        containerSize: size,
+        iconSize: size,
+      }),
+      [size]
+    );
 
-  const badgeUrl = useBackendNetworksStore.getState().getChainsBadge()[chainId];
+    if (!chainId) return null;
 
-  if (!badgeUrl || !showBadge) return null;
+    const badgeUrl = useBackendNetworksStore.getState().getChainsBadge()[chainId];
 
-  return badgeXPosition || badgeYPosition ? (
-    <ChainIconPositionWrapper badgeXPosition={badgeXPosition} badgeYPosition={badgeYPosition} iconSize={iconSize} position={position}>
-      <ChainIcon containerSize={containerSize} iconSize={iconSize} source={{ uri: badgeUrl }} />
-    </ChainIconPositionWrapper>
-  ) : (
-    <FastImage key={`${chainId}-badge-${size}`} source={{ uri: badgeUrl }} style={{ borderRadius: size / 2, height: size, width: size }} />
-  );
-}
+    if (!badgeUrl || !showBadge) return null;
+
+    return badgeXPosition || badgeYPosition ? (
+      <ChainIconPositionWrapper badgeXPosition={badgeXPosition} badgeYPosition={badgeYPosition} iconSize={iconSize} position={position}>
+        <ChainIcon containerSize={containerSize} iconSize={iconSize} source={{ uri: badgeUrl }} ref={ref} />
+      </ChainIconPositionWrapper>
+    ) : (
+      <FastImage
+        // @ts-expect-error couldn't figure out how to type this ref to make ts happy
+        ref={ref}
+        key={`${chainId}-badge-${size}`}
+        source={{ uri: badgeUrl }}
+        style={{ borderRadius: size / 2, height: size, width: size }}
+      />
+    );
+  }
+);
+
+ChainImage.displayName = 'ChainImage';

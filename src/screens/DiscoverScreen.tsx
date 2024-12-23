@@ -4,7 +4,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { Box } from '@/design-system';
 import { Page } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
-import DiscoverScreenContent from './components/DiscoverScreenContent';
+import DiscoverScreenContent from '@/components/Discover/DiscoverScreenContent';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -14,7 +14,7 @@ import { useNavigation } from '@/navigation';
 import { safeAreaInsetValues } from '@/utils';
 import * as i18n from '@/languages';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
-import DiscoverScreenProvider, { useDiscoverScreenContext } from './DiscoverScreenContext';
+import DiscoverScreenProvider, { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 
 export let discoverScrollToTopFnRef: () => number | null = () => null;
 
@@ -30,17 +30,17 @@ const Content = () => {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
-  React.useEffect(() => {
-    if (isSearching && !isFocused) {
-      Keyboard.dismiss();
-    }
-  }, [isFocused, isSearching]);
-
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
       scrollY.value = event.contentOffset.y;
     },
   });
+
+  useEffect(() => {
+    if (isSearching && !isFocused) {
+      Keyboard.dismiss();
+    }
+  }, [isFocused, isSearching]);
 
   useEffect(() => {
     discoverScrollToTopFnRef = scrollToTop;

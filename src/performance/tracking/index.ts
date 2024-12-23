@@ -1,15 +1,16 @@
-import { IS_TESTING, SENTRY_ENVIRONMENT } from 'react-native-dotenv';
+import { SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import { PerformanceMetricData } from './types/PerformanceMetricData';
 import { PerformanceMetricsType } from './types/PerformanceMetrics';
 import { PerformanceTagsType } from './types/PerformanceTags';
 import { analytics } from '@/analytics';
+import { IS_TEST } from '@/env';
 /*
 This will be a version for all performance tracking events.
 If we make breaking changes we will be able to take it into consideration when doing analytics
  */
 const performanceTrackingVersion = 2;
 const shouldLogToConsole = __DEV__ || SENTRY_ENVIRONMENT === 'LocalRelease';
-const shouldReportMeasurement = IS_TESTING === 'false' && !__DEV__ && SENTRY_ENVIRONMENT !== 'LocalRelease';
+const shouldReportMeasurement = !IS_TEST && !__DEV__ && SENTRY_ENVIRONMENT !== 'LocalRelease';
 const logTag = '[PERFORMANCE]: ';
 
 function logDurationIfAppropriate(metric: PerformanceMetricsType, durationInMs: number, ...additionalArgs: any[]) {
@@ -18,7 +19,7 @@ function logDurationIfAppropriate(metric: PerformanceMetricsType, durationInMs: 
   }
 }
 
-const currentlyTrackedMetrics = new Map<PerformanceMetricsType, PerformanceMetricData>();
+export const currentlyTrackedMetrics = new Map<PerformanceMetricsType, PerformanceMetricData>();
 
 interface AdditionalParams extends Record<string, any> {
   tag?: PerformanceTagsType;
