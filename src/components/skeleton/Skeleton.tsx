@@ -75,7 +75,7 @@ function Skeleton({
   skeletonColor?: string;
   width?: number;
 }) {
-  if (animated && IS_TEST) {
+  if (animated && !IS_TEST) {
     return (
       <MaskedView maskElement={<Wrapper style={style}>{children}</Wrapper>} style={{ flex: 1 }}>
         <ShimmerWrapper color={skeletonColor}>
