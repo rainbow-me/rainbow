@@ -296,7 +296,13 @@ export const ActivityIcon = ({
             }}
           />
         </View>
-        <ChainImage showBadge={badge && transaction.chainId !== ChainId.mainnet} chainId={transaction.chainId} size={32} />
+        <ChainImage
+          showBadge={badge && transaction.chainId !== ChainId.mainnet}
+          chainId={transaction.chainId}
+          size={32}
+          badgeYPosition={-10}
+          badgeXPosition={-14}
+        />
       </View>
     );
   }
@@ -369,7 +375,13 @@ export const ActivityIcon = ({
             </Box>
           )}
         </View>
-        <ChainImage showBadge={badge && transaction.chainId !== ChainId.mainnet} chainId={transaction.chainId} size={32} />
+        <ChainImage
+          showBadge={badge && transaction.chainId !== ChainId.mainnet}
+          chainId={transaction.chainId}
+          size={32}
+          badgeYPosition={-10}
+          badgeXPosition={-14}
+        />
       </View>
     );
   }
@@ -381,7 +393,10 @@ export const ActivityIcon = ({
         chainId={transaction?.asset?.chainId || ChainId.mainnet}
         symbol={transaction?.asset?.symbol || ''}
         color={transaction?.asset?.colors?.primary || transaction?.asset?.colors?.fallback || undefined}
-        showBadge={false}
+        chainBadgePosition={{
+          x: -12,
+          y: -6,
+        }}
       />
     </View>
   );

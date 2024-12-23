@@ -2,7 +2,7 @@ import { DropdownMenu } from '@/components/DropdownMenu';
 import { globalColors, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
-import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { analyticsV2 } from '@/analytics';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -401,14 +401,15 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
   return (
     <ButtonPressAnimation onPress={handleNavigateToToken} scaleTo={0.94}>
       <View style={{ height: 48, overflow: 'visible', flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-        <SwapCoinIcon
-          iconUrl={token.icon_url}
+        <RainbowCoinIcon
+          icon={token.icon_url}
           color={token.colors.primary}
           chainId={token.chainId}
-          address={token.address}
           symbol={token.symbol}
-          size={40}
-          chainSize={20}
+          chainBadgePosition={{
+            x: -12,
+            y: -6,
+          }}
         />
 
         <View style={{ gap: 12, flex: 1 }}>

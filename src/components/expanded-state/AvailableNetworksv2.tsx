@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from '../Divider';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { Box, Inline, Text } from '@/design-system';
+import { Box, Column, Columns, Inline, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors, position } from '@/styles';
@@ -158,7 +158,7 @@ const AvailableNetworksv2 = ({
         marginHorizontal={{ custom: marginHorizontal }}
         testID={'available-networks-v2'}
       >
-        <Box borderRadius={99} paddingVertical="8px" paddingHorizontal="12px" justifyContent="center">
+        <Box borderRadius={99} paddingVertical="8px" paddingHorizontal="12px" justifyContent="center" alignItems="stretch">
           <RadialGradient
             {...radialGradientProps}
             // @ts-ignore overloaded props
@@ -167,40 +167,67 @@ const AvailableNetworksv2 = ({
           />
           <Inline alignVertical="center" alignHorizontal="justify">
             <Inline alignVertical="center">
-              <Box style={{ flexDirection: 'row' }}>
-                {availableChainIds?.map((chainId, index) => {
-                  return (
-                    <Box
-                      background="body (Deprecated)"
-                      key={`availableNetwork-${chainId}`}
-                      marginLeft="-4px"
-                      style={{
-                        backgroundColor: colors.transparent,
-                        zIndex: availableChainIds?.length - index,
-                        borderRadius: 30,
-                      }}
-                    >
-                      <ChainImage chainId={chainId} size={20} />
-                    </Box>
-                  );
-                })}
-              </Box>
-
-              <Box paddingLeft="6px">
-                <Text color="secondary60 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold" numberOfLines={2}>
-                  {availableChainIds?.length > 1
-                    ? lang.t('expanded_state.asset.available_networks', {
-                        availableNetworks: availableChainIds?.length,
-                      })
-                    : lang.t('expanded_state.asset.available_networkv2', {
-                        availableNetwork: useBackendNetworksStore.getState().getChainsName()[availableChainIds[0]],
+              <Columns>
+                <Column style={{ justifyContent: 'center' }} width={availableChainIds.length > 1 ? 'content' : undefined}>
+                  <Box style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
+                    <Box style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      {availableChainIds.slice(0, 6).map((chainId, index) => {
+                        return (
+                          <Box
+                            background="body (Deprecated)"
+                            key={`availableNetwork-${chainId}`}
+                            marginLeft="-4px"
+                            style={{
+                              backgroundColor: colors.transparent,
+                              zIndex: availableChainIds?.length - index,
+                              borderRadius: 30,
+                            }}
+                          >
+                            <ChainImage chainId={chainId} size={20} />
+                          </Box>
+                        );
                       })}
-                </Text>
-              </Box>
+                    </Box>
+                    {availableChainIds.length > 6 && (
+                      <Text color="labelSecondary" size="13pt" weight="semibold" numberOfLines={2}>
+                        +{availableChainIds.length - 6}
+                      </Text>
+                    )}
+                  </Box>
+                </Column>
+                <Column style={{ justifyContent: 'center', flex: 1 }}>
+                  <Box
+                    style={{
+                      flexDirection: 'row',
+                      gap: 8,
+                      alignItems: 'center',
+                      justifyContent: availableChainIds.length > 1 ? 'flex-end' : 'space-between',
+                    }}
+                    paddingLeft="6px"
+                  >
+                    <Text
+                      color="secondary60 (Deprecated)"
+                      size="14px / 19px (Deprecated)"
+                      weight="semibold"
+                      numberOfLines={1}
+                      align="right"
+                    >
+                      {availableChainIds?.length > 1
+                        ? lang.t('expanded_state.asset.available_networks', {
+                            availableNetworks: availableChainIds?.length,
+                          })
+                        : lang.t('expanded_state.asset.available_networkv2', {
+                            availableNetwork: useBackendNetworksStore.getState().getChainsName()[availableChainIds[0]],
+                          })}
+                    </Text>
+
+                    <Text align="center" color="secondary40 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold">
+                      {availableChainIds?.length > 1 ? '􀁱' : '􀯻'}
+                    </Text>
+                  </Box>
+                </Column>
+              </Columns>
             </Inline>
-            <Text align="center" color="secondary40 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold">
-              {availableChainIds?.length > 1 ? '􀁱' : '􀯻'}
-            </Text>
           </Inline>
         </Box>
       </Box>

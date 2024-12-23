@@ -82,7 +82,13 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
                         }}
                       />
                     </View>
-                    <ChainImage showBadge={transaction.chainId !== ChainId.mainnet} chainId={transaction.chainId} badgeYPosition={10} />
+                    <ChainImage
+                      showBadge={transaction.chainId !== ChainId.mainnet}
+                      chainId={transaction.chainId}
+                      size={32}
+                      badgeYPosition={0}
+                      badgeXPosition={-12}
+                    />
                   </View>
                 ) : (
                   <RainbowCoinIcon
