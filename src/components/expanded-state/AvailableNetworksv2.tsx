@@ -6,13 +6,13 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box, Inline, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { position } from '@/styles';
+import { colors, position } from '@/styles';
 import { watchingAlert } from '@/utils';
 import { useWallets } from '@/hooks';
 import { RainbowToken } from '@/entities';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 import { implementation } from '@/entities/dispersion';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { userAssetsStore } from '@/state/assets/userAssets';
@@ -24,6 +24,16 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const NOOP = () => null;
+
+const radialGradientProps = {
+  center: [0, 1],
+  colors: colors.gradients.lightGreyWhite,
+  pointerEvents: 'none',
+  style: {
+    ...position.coverAsObject,
+    overflow: 'hidden',
+  },
+};
 
 const AvailableNetworksv2 = ({
   asset,
@@ -39,16 +49,6 @@ const AvailableNetworksv2 = ({
   const { colors } = useTheme();
   const { goBack, navigate } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
-
-  const radialGradientProps = {
-    center: [0, 1],
-    colors: colors.gradients.lightGreyWhite,
-    pointerEvents: 'none',
-    style: {
-      ...position.coverAsObject,
-      overflow: 'hidden',
-    },
-  };
 
   const convertAssetAndNavigate = useCallback(
     (chainId: ChainId) => {
@@ -115,13 +115,7 @@ const AvailableNetworksv2 = ({
     [asset, goBack, isReadOnlyWallet, navigate, networks]
   );
 
-  const handlePressContextMenu = useCallback(
-    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey: chainId } }) => {
-      convertAssetAndNavigate(chainId);
-    },
-    [convertAssetAndNavigate]
-  );
+  const handlePressContextMenu = useCallback((chainId: string) => convertAssetAndNavigate(+chainId), [convertAssetAndNavigate]);
 
   const availableChainIds = useMemo(() => {
     // we dont want to show mainnet
@@ -134,88 +128,101 @@ const AvailableNetworksv2 = ({
     convertAssetAndNavigate(availableChainIds[0]);
   }, [availableChainIds, convertAssetAndNavigate]);
 
-  const chainsName = useBackendNetworksStore.getState().getChainsName();
-  const networkMenuItems = useBackendNetworksStore
+  const defaultChains = useBackendNetworksStore.getState().getDefaultChains();
+  const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
+  const chainsBadge = useBackendNetworksStore.getState().getChainsBadge();
+
+  const networkMenuItems: MenuItem<string>[] = useBackendNetworksStore
     .getState()
     .getSupportedChainIds()
     .filter(chainId => chainId !== ChainId.mainnet)
     .filter(chainId => availableChainIds.includes(chainId))
-    .map(chainId => useBackendNetworksStore.getState().getDefaultChains()[chainId])
+    .map(chainId => defaultChains[chainId])
     .map(chain => ({
       actionKey: `${chain.id}`,
-      actionTitle: useBackendNetworksStore.getState().getChainsLabel()[chain.id],
+      actionTitle: chainsLabel[chain.id],
       icon: {
-        iconType: 'ASSET',
-        iconValue: chain.id === ChainId.mainnet ? 'ethereumBadge' : `${chainsName[chain.id]}BadgeNoShadow`,
+        iconType: 'REMOTE',
+        iconValue: {
+          uri: chainsBadge[chain.id],
+        },
       },
     }));
 
-  const MenuWrapper = availableChainIds.length > 1 ? ContextMenuButton : Box;
+  const Children = useMemo(() => {
+    return (
+      <Box
+        as={ButtonPressAnimation}
+        scaleTo={0.96}
+        onPress={availableChainIds.length === 1 ? handlePressButton : NOOP}
+        marginHorizontal={{ custom: marginHorizontal }}
+        testID={'available-networks-v2'}
+      >
+        <Box borderRadius={99} paddingVertical="8px" paddingHorizontal="12px" justifyContent="center">
+          <RadialGradient
+            {...radialGradientProps}
+            // @ts-ignore overloaded props
+            borderRadius={99}
+            radius={600}
+          />
+          <Inline alignVertical="center" alignHorizontal="justify">
+            <Inline alignVertical="center">
+              <Box style={{ flexDirection: 'row' }}>
+                {availableChainIds?.map((chainId, index) => {
+                  return (
+                    <Box
+                      background="body (Deprecated)"
+                      key={`availableNetwork-${chainId}`}
+                      marginLeft="-4px"
+                      style={{
+                        backgroundColor: colors.transparent,
+                        zIndex: availableChainIds?.length - index,
+                        borderRadius: 30,
+                      }}
+                    >
+                      <ChainImage chainId={chainId} size={20} />
+                    </Box>
+                  );
+                })}
+              </Box>
+
+              <Box paddingLeft="6px">
+                <Text color="secondary60 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold" numberOfLines={2}>
+                  {availableChainIds?.length > 1
+                    ? lang.t('expanded_state.asset.available_networks', {
+                        availableNetworks: availableChainIds?.length,
+                      })
+                    : lang.t('expanded_state.asset.available_networkv2', {
+                        availableNetwork: useBackendNetworksStore.getState().getChainsName()[availableChainIds[0]],
+                      })}
+                </Text>
+              </Box>
+            </Inline>
+            <Text align="center" color="secondary40 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold">
+              {availableChainIds?.length > 1 ? '􀁱' : '􀯻'}
+            </Text>
+          </Inline>
+        </Box>
+      </Box>
+    );
+  }, [availableChainIds, colors.transparent, handlePressButton, marginHorizontal]);
 
   if (availableChainIds.length === 0) return null;
+
+  if (availableChainIds.length === 1) {
+    return (
+      <>
+        {Children}
+        {hideDivider ? null : <Divider color={colors.rowDividerExtraLight} backgroundColor={undefined} />}
+      </>
+    );
+  }
+
   return (
     <>
-      <MenuWrapper
-        // @ts-ignore overloaded props
-        menuConfig={{ menuItems: networkMenuItems, menuTitle: '' }}
-        isMenuPrimaryAction
-        onPressMenuItem={handlePressContextMenu}
-        useActionSheetFallback={false}
-      >
-        <Box
-          as={ButtonPressAnimation}
-          scaleTo={0.96}
-          onPress={availableChainIds.length === 1 ? handlePressButton : NOOP}
-          marginHorizontal={{ custom: marginHorizontal }}
-          testID={'available-networks-v2'}
-        >
-          <Box borderRadius={99} paddingVertical="8px" paddingHorizontal="12px" justifyContent="center">
-            <RadialGradient
-              {...radialGradientProps}
-              // @ts-ignore overloaded props
-              borderRadius={99}
-              radius={600}
-            />
-            <Inline alignVertical="center" alignHorizontal="justify">
-              <Inline alignVertical="center">
-                <Box style={{ flexDirection: 'row' }}>
-                  {availableChainIds?.map((chainId, index) => {
-                    return (
-                      <Box
-                        background="body (Deprecated)"
-                        key={`availableNetwork-${chainId}`}
-                        marginLeft="-4px"
-                        style={{
-                          backgroundColor: colors.transparent,
-                          zIndex: availableChainIds?.length - index,
-                          borderRadius: 30,
-                        }}
-                      >
-                        <ChainImage chainId={chainId} size={20} />
-                      </Box>
-                    );
-                  })}
-                </Box>
-
-                <Box paddingLeft="6px">
-                  <Text color="secondary60 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold" numberOfLines={2}>
-                    {availableChainIds?.length > 1
-                      ? lang.t('expanded_state.asset.available_networks', {
-                          availableNetworks: availableChainIds?.length,
-                        })
-                      : lang.t('expanded_state.asset.available_networkv2', {
-                          availableNetwork: useBackendNetworksStore.getState().getChainsName()[availableChainIds[0]],
-                        })}
-                  </Text>
-                </Box>
-              </Inline>
-              <Text align="center" color="secondary40 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold">
-                {availableChainIds?.length > 1 ? '􀁱' : '􀯻'}
-              </Text>
-            </Inline>
-          </Box>
-        </Box>
-      </MenuWrapper>
+      <DropdownMenu menuConfig={{ menuItems: networkMenuItems }} onPressMenuItem={handlePressContextMenu}>
+        {Children}
+      </DropdownMenu>
       {hideDivider ? null : <Divider color={colors.rowDividerExtraLight} backgroundColor={undefined} />}
     </>
   );

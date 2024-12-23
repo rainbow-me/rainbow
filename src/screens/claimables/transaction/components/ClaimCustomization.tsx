@@ -1,19 +1,18 @@
 import { Box, Text } from '@/design-system';
-import { haptics, showActionSheetWithOptions } from '@/utils';
+import { haptics } from '@/utils';
 import React, { useCallback, useMemo, useState } from 'react';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ETH_SYMBOL, USDC_ADDRESS } from '@/references';
-import { DropdownMenu } from '../../shared/components/DropdownMenu';
+import { ClaimableMenu } from '../../shared/components/ClaimableMenu';
 import { TokenToReceive } from '../types';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
 import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
 import { SearchAsset } from '@/__swaps__/types/search';
 import * as i18n from '@/languages';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { IS_ANDROID } from '@/env';
+import { MenuItem } from '@/components/DropdownMenu';
 
 type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 
@@ -32,6 +31,7 @@ export function ClaimCustomization() {
 
   const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
   const chainsName = useBackendNetworksStore.getState().getChainsName();
+  const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
 
   const { data: usdcSearchData } = useTokenSearch(
     {
@@ -131,7 +131,8 @@ export function ClaimCustomization() {
   ]);
 
   const tokenMenuConfig = useMemo(() => {
-    const availableTokens = Object.values(tokens)
+    let availableTokens: MenuItem<string>[] = [];
+    availableTokens = Object.values(tokens)
       .filter(token => {
         // exclude if token is already selected
         if (token.symbol === outputToken?.symbol) {
@@ -163,10 +164,17 @@ export function ClaimCustomization() {
       .map(token => ({
         actionKey: token.symbol,
         actionTitle: token.name,
-      }))
-      .sort((a, b) => (a.actionTitle < b.actionTitle ? 1 : -1));
+        icon: {
+          iconType: 'REMOTE',
+          iconValue: {
+            uri: token.iconUrl,
+          },
+        },
+      }));
 
-    let menuItems = [
+    availableTokens = availableTokens.sort((a, b) => (a.actionTitle < b.actionTitle ? 1 : -1));
+
+    availableTokens = [
       {
         actionKey: 'reset',
         actionTitle: 'Reset',
@@ -176,28 +184,37 @@ export function ClaimCustomization() {
     ];
 
     if (IS_ANDROID) {
-      menuItems = menuItems.reverse();
+      availableTokens = availableTokens.reverse();
     }
 
     return {
-      menuItems,
+      menuItems: availableTokens,
     };
   }, [tokens, outputToken?.symbol, isInitialState, outputChainId]);
 
   const networkMenuConfig = useMemo(() => {
-    const supportedChains = balanceSortedChainList
+    const chainsBadge = useBackendNetworksStore.getState().getChainsBadge();
+
+    let supportedChains: MenuItem<string>[] = [];
+
+    supportedChains = balanceSortedChainList
       .filter(chainId => isInitialState || (chainId !== outputChainId && (!outputToken || chainId in outputToken.networks)))
       .map(chainId => ({
         actionKey: `${chainId}`,
         actionTitle: chainsLabel[chainId],
         icon: {
-          iconType: 'ASSET',
-          iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${chainsName[chainId]}BadgeNoShadow`,
+          iconType: 'REMOTE',
+          iconValue: {
+            uri: chainsBadge[chainId],
+          },
         },
-      }))
-      .reverse();
+      }));
 
-    let menuItems = [
+    if (!IS_ANDROID) {
+      supportedChains.reverse();
+    }
+
+    supportedChains = [
       {
         actionKey: 'reset',
         actionTitle: 'Reset',
@@ -206,17 +223,13 @@ export function ClaimCustomization() {
       ...supportedChains,
     ];
 
-    if (IS_ANDROID) {
-      menuItems = menuItems.reverse();
-    }
-
     return {
-      menuItems,
+      menuItems: supportedChains,
     };
-  }, [balanceSortedChainList, chainsLabel, chainsName, isInitialState, outputChainId, outputToken]);
+  }, [balanceSortedChainList, chainsLabel, isInitialState, outputChainId, outputToken]);
 
   const handleTokenSelection = useCallback(
-    ({ nativeEvent: { actionKey } }: Omit<OnPressMenuItemEventObject, 'isUsingActionSheetFallback'>) => {
+    (actionKey: string) => {
       haptics.selection();
       if (actionKey === 'reset') {
         resetState();
@@ -238,7 +251,7 @@ export function ClaimCustomization() {
   );
 
   const handleNetworkSelection = useCallback(
-    ({ nativeEvent: { actionKey } }: Omit<OnPressMenuItemEventObject, 'isUsingActionSheetFallback'>) => {
+    (actionKey: string) => {
       haptics.selection();
       if (actionKey === 'reset') {
         resetState();
@@ -259,42 +272,6 @@ export function ClaimCustomization() {
     [resetState, setOutputConfig, setQuoteState, setGasState]
   );
 
-  const onShowTokenActionSheet = useCallback(() => {
-    const tokenTitles = tokenMenuConfig.menuItems.map(token => token.actionTitle);
-
-    showActionSheetWithOptions(
-      {
-        options: tokenTitles,
-        showSeparators: true,
-      },
-      (index: number | undefined) => {
-        // NOTE: When they click away from the menu, the index is undefined
-        if (typeof index === 'undefined') return;
-        handleTokenSelection({
-          nativeEvent: { actionKey: tokenMenuConfig.menuItems[index].actionKey, actionTitle: '' },
-        });
-      }
-    );
-  }, [handleTokenSelection, tokenMenuConfig.menuItems]);
-
-  const onShowNetworkActionSheet = useCallback(() => {
-    const networkTitles = networkMenuConfig.menuItems.map(network => network.actionTitle);
-
-    showActionSheetWithOptions(
-      {
-        options: networkTitles,
-        showSeparators: true,
-      },
-      (index: number | undefined) => {
-        // NOTE: When they click away from the menu, the index is undefined
-        if (typeof index === 'undefined') return;
-        handleNetworkSelection({
-          nativeEvent: { actionKey: networkMenuConfig.menuItems[index].actionKey, actionTitle: '' },
-        });
-      }
-    );
-  }, [handleNetworkSelection, networkMenuConfig.menuItems]);
-
   const isDisabled =
     claimStatus === 'success' || claimStatus === 'pending' || claimStatus === 'claiming' || claimStatus === 'unrecoverableError';
 
@@ -303,22 +280,20 @@ export function ClaimCustomization() {
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">
         {i18n.t(i18n.l.claimables.panel.receive)}
       </Text>
-      <DropdownMenu
+      <ClaimableMenu
         disabled={isDisabled}
         menuConfig={tokenMenuConfig}
         onPressMenuItem={handleTokenSelection}
-        onShowActionSheet={onShowTokenActionSheet}
         text={outputToken?.symbol ?? i18n.t(i18n.l.claimables.panel.a_token)}
         muted={isInitialState}
       />
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">
         {i18n.t(i18n.l.claimables.panel.on)}
       </Text>
-      <DropdownMenu
+      <ClaimableMenu
         disabled={isDisabled}
         menuConfig={networkMenuConfig}
         onPressMenuItem={handleNetworkSelection}
-        onShowActionSheet={onShowNetworkActionSheet}
         text={outputChainId ? chainsLabel[outputChainId] : i18n.t(i18n.l.claimables.panel.a_network)}
         muted={isInitialState}
         icon={<ChainImage chainId={outputChainId} size={24} />}

@@ -1,32 +1,20 @@
 import { Bleed, Box, Text, useColorMode } from '@/design-system';
 import React from 'react';
 import { View } from 'react-native';
-import { ContextMenuButton } from '@/components/context-menu';
-import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
+import { DropdownMenu, MenuConfig } from '@/components/DropdownMenu';
 
-export function DropdownMenu({
+export function ClaimableMenu({
   disabled,
   menuConfig,
   muted,
   onPressMenuItem,
-  onShowActionSheet,
   text,
   icon,
 }: {
   disabled: boolean;
-  menuConfig: {
-    menuItems: {
-      actionKey: string;
-      actionTitle: string;
-      icon?: {
-        iconType: string;
-        iconValue: string;
-      };
-    }[];
-  };
+  menuConfig: MenuConfig<string>;
   muted: boolean;
-  onPressMenuItem: ({ nativeEvent: { actionKey } }: Omit<OnPressMenuItemEventObject, 'isUsingActionSheetFallback'>) => void;
-  onShowActionSheet: () => void;
+  onPressMenuItem: (actionKey: string) => void;
   text: string;
   icon?: React.ReactNode; // must have size: 16
 }) {
@@ -34,14 +22,7 @@ export function DropdownMenu({
 
   return (
     <View style={{ pointerEvents: disabled ? 'none' : undefined }}>
-      <ContextMenuButton
-        hitSlop={20}
-        menuItems={menuConfig.menuItems}
-        menuTitle=""
-        onPressMenuItem={onPressMenuItem}
-        onPressAndroid={onShowActionSheet}
-        testID={undefined}
-      >
+      <DropdownMenu menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} hitSlop={20}>
         <Box
           paddingHorizontal={{ custom: 7 }}
           height={{ custom: 28 }}
@@ -62,7 +43,7 @@ export function DropdownMenu({
             􀆏
           </Text>
         </Box>
-      </ContextMenuButton>
+      </DropdownMenu>
     </View>
   );
 }
