@@ -33,7 +33,7 @@ import { isAuthenticated } from '@/utils/authentication';
 import { getFCMToken } from '@/notifications/tokens';
 import { nonceStore } from '@/state/nonces';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { addDefaultNotificationGroupSettings } from '@/notifications/settings/initialization';
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 
@@ -41,7 +41,7 @@ const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
   const { wallets } = useWallets();
-  const setConnectedToHardhat = useConnectedToHardhatStore.getState().setConnectedToHardhat;
+  const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
   const dispatch = useDispatch();
 
   const [loadingStates, setLoadingStates] = useState({
@@ -61,17 +61,17 @@ const DevSection = () => {
     [config, setConfig]
   );
 
-  const connectToHardhat = useCallback(async () => {
+  const connectToAnvil = useCallback(async () => {
     try {
-      const connectToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
-      setConnectedToHardhat(!connectToHardhat);
-      logger.debug(`[DevSection] connected to hardhat`);
+      const connectToAnvil = useConnectedToAnvilStore.getState().connectedToAnvil;
+      setConnectedToAnvil(!connectToAnvil);
+      logger.debug(`[DevSection] connected to anvil`);
     } catch (e) {
-      setConnectedToHardhat(false);
-      logger.error(new RainbowError(`[DevSection] error connecting to hardhat: ${e}`));
+      setConnectedToAnvil(false);
+      logger.error(new RainbowError(`[DevSection] error connecting to anvil: ${e}`));
     }
     navigate(Routes.PROFILE_SCREEN);
-  }, [dispatch, navigate, setConnectedToHardhat]);
+  }, [dispatch, navigate, setConnectedToAnvil]);
 
   const checkAlert = useCallback(async () => {
     try {
@@ -291,15 +291,15 @@ const DevSection = () => {
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="👷" isEmoji />}
-              onPress={connectToHardhat}
+              onPress={connectToAnvil}
               size={52}
-              testID="hardhat-section"
+              testID="anvil-section"
               titleComponent={
                 <MenuItem.Title
                   text={
-                    useConnectedToHardhatStore.getState().connectedToHardhat
-                      ? lang.t('developer_settings.disconnect_to_hardhat')
-                      : lang.t('developer_settings.connect_to_hardhat')
+                    useConnectedToAnvilStore.getState().connectedToAnvil
+                      ? lang.t('developer_settings.disconnect_to_anvil')
+                      : lang.t('developer_settings.connect_to_anvil')
                   }
                 />
               }

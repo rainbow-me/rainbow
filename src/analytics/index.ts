@@ -1,13 +1,12 @@
 import rudderClient from '@rudderstack/rudder-sdk-react-native';
-import { REACT_NATIVE_RUDDERSTACK_WRITE_KEY, RUDDERSTACK_DATA_PLANE_URL, IS_TESTING } from 'react-native-dotenv';
+import { REACT_NATIVE_RUDDERSTACK_WRITE_KEY, RUDDERSTACK_DATA_PLANE_URL } from 'react-native-dotenv';
 
 import { EventProperties, event } from '@/analytics/event';
 import { UserProperties } from '@/analytics/userProperties';
 import { logger, RainbowError } from '@/logger';
 import { device } from '@/storage';
 import { WalletContext } from './utils';
-
-const isTesting = IS_TESTING === 'true';
+import { IS_TEST } from '@/env';
 
 export class Analytics {
   client: typeof rudderClient;
@@ -19,8 +18,8 @@ export class Analytics {
 
   constructor() {
     this.client = rudderClient;
-    this.disabled = isTesting || !!device.get(['doNotTrack']);
-    if (isTesting) {
+    this.disabled = IS_TEST || !!device.get(['doNotTrack']);
+    if (IS_TEST) {
       logger.debug('[Analytics]: disabled for testing');
     } else {
       logger.debug('[Analytics]: client initialized');

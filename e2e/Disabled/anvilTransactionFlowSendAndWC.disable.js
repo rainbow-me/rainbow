@@ -40,11 +40,11 @@ const getOnchainBalance = async (address, tokenContractAddress) => {
 };
 
 beforeAll(async () => {
-  await Helpers.startHardhat();
+  await Helpers.startAnvil();
   await Helpers.startIosSimulator();
 });
 
-describe.skip('Hardhat Transaction Flow', () => {
+describe.skip('Anvil Transaction Flow', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
@@ -85,9 +85,9 @@ describe.skip('Hardhat Transaction Flow', () => {
     await Helpers.sendETHtoTestWallet();
   });
 
-  it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    await Helpers.waitAndTap('dev-button-hardhat');
-    await Helpers.checkIfVisible('testnet-toast-Hardhat');
+  it('Should show Anvil Toast after pressing Connect To Anvil', async () => {
+    await Helpers.waitAndTap('dev-button-anvil');
+    await Helpers.checkIfVisible('testnet-toast-Anvil');
   });
 
   it('Should open send sheet after tapping send fab', async () => {
@@ -392,6 +392,6 @@ describe.skip('Hardhat Transaction Flow', () => {
     await connector?.killSession();
     connector = null;
     await device.clearKeychain();
-    await Helpers.killHardhat();
+    await Helpers.killAnvil();
   });
 });

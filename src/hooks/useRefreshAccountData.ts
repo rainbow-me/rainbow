@@ -13,14 +13,14 @@ import { Address } from 'viem';
 import { addysSummaryQueryKey } from '@/resources/summary/summary';
 import useWallets from './useWallets';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { connectedToHardhat } = useConnectedToHardhatStore();
+  const { connectedToAnvil } = useConnectedToAnvilStore();
 
   const { wallets } = useWallets();
 
@@ -34,9 +34,7 @@ export default function useRefreshAccountData() {
     queryClient.invalidateQueries(positionsQueryKey({ address: accountAddress as Address, currency: nativeCurrency }));
     queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
     queryClient.invalidateQueries(addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }));
-    queryClient.invalidateQueries(
-      userAssetsQueryKey({ address: accountAddress, currency: nativeCurrency, testnetMode: connectedToHardhat })
-    );
+    queryClient.invalidateQueries(userAssetsQueryKey({ address: accountAddress, currency: nativeCurrency, testnetMode: connectedToAnvil }));
 
     try {
       const getWalletNames = dispatch(fetchWalletNames());
@@ -50,7 +48,7 @@ export default function useRefreshAccountData() {
       logger.error(new RainbowError(`[useRefreshAccountData]: Error refreshing data: ${error}`));
       throw error;
     }
-  }, [accountAddress, allAddresses, connectedToHardhat, dispatch, nativeCurrency, profilesEnabled]);
+  }, [accountAddress, allAddresses, connectedToAnvil, dispatch, nativeCurrency, profilesEnabled]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;
