@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.50] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.50)
+
+### Fixed
+
+- Fixed an issue with unlocking app icons (#6342, #6345)
+
 ## [1.9.49] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.49)
 
 ### Added

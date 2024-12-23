@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
 import { abbreviations, magicMemo, measureText } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -12,11 +11,12 @@ import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useUserAssetCount } from '@/resources/assets/useUserAssetCount';
 import styled from '@/styled-thing';
 import { fonts, position } from '@/styles';
 import { useTheme } from '@/theme';
 import * as lang from '@/languages';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { IS_TEST } from '@/env';
 
 export const AssetListHeaderHeight = ListHeaderHeight;
 
@@ -82,7 +82,7 @@ const WalletSelectButton = ({ accountName, onChangeWallet, deviceWidth, textWidt
         </AccountName>
         {truncatedAccountName ? (
           <DropdownArrow>
-            {IS_TESTING !== 'true' && (
+            {!IS_TEST && (
               <LinearGradient
                 borderRadius={15}
                 colors={colors.gradients.lightestGrey}
@@ -104,7 +104,7 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
   const { width: deviceWidth } = useDimensions();
   const { accountName } = useAccountProfile();
   const { navigate } = useNavigation();
-  const { isLoading: isLoadingUserAssets } = useUserAssetCount();
+  const { isLoadingUserAssets } = useUserAssetsStore(state => state.isLoadingUserAssets);
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);

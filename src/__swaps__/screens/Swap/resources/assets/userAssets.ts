@@ -14,9 +14,11 @@ import { parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/helpers/utilities';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
-import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
+import { fetchAnvilBalancesByChainId } from '@/resources/assets/anvilAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { staleBalancesStore } from '@/state/staleBalances';
+import { IS_TEST } from '@/env';
 import store from '@/redux/store';
 
 const addysHttp = new RainbowFetchClient({
@@ -28,7 +30,7 @@ const addysHttp = new RainbowFetchClient({
 
 const USER_ASSETS_REFETCH_INTERVAL = 60000;
 const USER_ASSETS_TIMEOUT_DURATION = 20000;
-export const USER_ASSETS_STALE_INTERVAL = 30000;
+const USER_ASSETS_STALE_INTERVAL = 30000;
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -104,7 +106,7 @@ async function userAssetsQueryFunction({
     return {};
   }
   if (testnetMode) {
-    const { assets, chainIdsInResponse } = await fetchHardhatBalancesByChainId(address);
+    const { assets, chainIdsInResponse } = await fetchAnvilBalancesByChainId(address);
     const parsedAssets: Array<{
       asset: ZerionAsset;
       quantity: string;
@@ -123,20 +125,23 @@ async function userAssetsQueryFunction({
 
     return parsedAssetsDict;
   }
+
   const cache = queryClient.getQueryCache();
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
     {}) as ParsedAssetsDictByChain;
   try {
-    const url = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/assets`;
+    staleBalancesStore.getState().clearExpiredData(address);
+    const staleBalanceParam = staleBalancesStore.getState().getStaleBalancesQueryParam(address);
+    let url = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/assets?currency=${currency.toLowerCase()}`;
+    if (staleBalanceParam) {
+      url += staleBalanceParam;
+    }
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
-      params: {
-        currency: currency.toLowerCase(),
-      },
       timeout: USER_ASSETS_TIMEOUT_DURATION,
     });
     const chainIdsInResponse = res?.data?.meta?.chain_ids || [];
     const chainIdsWithErrorsInResponse = res?.data?.meta?.chain_ids_with_errors || [];
-    const assets = res?.data?.payload?.assets || [];
+    const assets = res?.data?.payload?.assets?.filter(asset => !asset.asset.defi_position) || [];
     if (address) {
       if (chainIdsWithErrorsInResponse.length) {
         userAssetsQueryFunctionRetryByChain({
@@ -170,7 +175,7 @@ async function userAssetsQueryFunction({
   }
 }
 
-type UserAssetsResult = QueryFunctionResult<typeof userAssetsQueryFunction>;
+export type UserAssetsResult = QueryFunctionResult<typeof userAssetsQueryFunction>;
 
 async function userAssetsQueryFunctionRetryByChain({
   address,
@@ -253,11 +258,11 @@ export function useUserAssets<TSelectResult = UserAssetsResult>(
   { address, currency }: UserAssetsArgs,
   config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
-  const { connectedToHardhat } = useConnectedToHardhatStore();
-  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToHardhat }), userAssetsQueryFunction, {
+  const { connectedToAnvil } = useConnectedToAnvilStore();
+  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToAnvil }), userAssetsQueryFunction, {
     ...config,
     enabled: !!address && !!currency,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
-    staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,
+    staleTime: IS_TEST ? 0 : USER_ASSETS_STALE_INTERVAL,
   });
 }

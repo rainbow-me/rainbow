@@ -131,7 +131,7 @@ export function CoinRow({ isFavorite, onPress, output, uniqueId, testID, ...asse
                     iconUrl={icon_url}
                     address={address}
                     mainnetAddress={mainnetAddress}
-                    large
+                    size={36}
                     chainId={chainId}
                     symbol={symbol || ''}
                     color={colors?.primary}

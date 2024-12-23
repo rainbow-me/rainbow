@@ -15,7 +15,6 @@ import {
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ParsedAddressAsset } from '@/entities';
-import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { deepEqualWorklet } from '@/worklets/comparisons';
 import { debounce } from 'lodash';
@@ -26,7 +25,10 @@ import { GasSettings } from '../hooks/useCustomGas';
 import { useSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '../hooks/useSwapEstimatedGasLimit';
 import { useSwapContext } from './swap-provider';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const BUFFER_RATIO = 0.5;
 
@@ -143,7 +145,12 @@ export function SyncGasStateToSharedValues() {
   const { assetToSell, chainId = initialChainId, quote } = useSyncedSwapQuoteStore();
 
   const gasSettings = useSelectedGas(chainId);
-  const { data: userNativeNetworkAsset, isLoading: isLoadingNativeNetworkAsset } = useUserNativeNetworkAsset(chainId);
+
+  const { userNativeNetworkAsset, isLoadingNativeNetworkAsset } = useUserAssetsStore(state => {
+    const { address: nativeCurrencyAddress } = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
+    const uniqueId = getUniqueId(nativeCurrencyAddress, chainId);
+    return { userNativeNetworkAsset: state.getLegacyUserAsset(uniqueId), isLoadingNativeNetworkAsset: state.isLoadingUserAssets };
+  });
   const { data: estimatedGasLimit } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
 
   const gasFeeRange = useSharedValue<[string, string] | null>(null);
