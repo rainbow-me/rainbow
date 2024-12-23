@@ -10,7 +10,7 @@ import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { Address } from 'viem';
 import { staleBalancesStore } from '@/state/staleBalances';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
@@ -18,7 +18,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     storePendingTransactions: state.pendingTransactions,
     setPendingTransactions: state.setPendingTransactions,
   }));
-  const { connectedToHardhat } = useConnectedToHardhatStore();
+  const { connectedToAnvil } = useConnectedToAnvilStore();
 
   const pendingTransactions = useMemo(() => storePendingTransactions[address] || [], [address, storePendingTransactions]);
 
@@ -31,12 +31,12 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         userAssetsQueryKey({
           address,
           currency: nativeCurrency,
-          testnetMode: connectedToHardhat,
+          testnetMode: connectedToAnvil,
         })
       );
       invalidateAddressNftsQueries(address);
     },
-    [address, connectedToHardhat, nativeCurrency]
+    [address, connectedToAnvil, nativeCurrency]
   );
 
   const processSupportedNetworkTransaction = useCallback(
@@ -115,7 +115,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       });
 
       queryClient.refetchQueries({
-        queryKey: userAssetsQueryKey({ address, currency: nativeCurrency, testnetMode: connectedToHardhat }),
+        queryKey: userAssetsQueryKey({ address, currency: nativeCurrency, testnetMode: connectedToAnvil }),
       });
 
       const supportedMainnetChainIds = useBackendNetworksStore.getState().getSupportedMainnetChainIds();
@@ -143,7 +143,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       address,
       pendingTransactions: newPendingTransactions,
     });
-  }, [address, connectedToHardhat, nativeCurrency, pendingTransactions, processPendingTransaction, setPendingTransactions]);
+  }, [address, connectedToAnvil, nativeCurrency, pendingTransactions, processPendingTransaction, setPendingTransactions]);
 
   return { watchPendingTransactions };
 };

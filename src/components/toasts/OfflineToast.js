@@ -3,13 +3,13 @@ import React from 'react';
 import Toast from './Toast';
 import { useAccountSettings, useInternetStatus } from '@/hooks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 const OfflineToast = () => {
   const isConnected = useInternetStatus();
   const { chainId } = useAccountSettings();
-  const { connectedToHardhat } = useConnectedToHardhatStore();
-  const isMainnet = chainId === ChainId.mainnet && !connectedToHardhat;
+  const { connectedToAnvil } = useConnectedToAnvilStore();
+  const isMainnet = chainId === ChainId.mainnet && !connectedToAnvil;
   return <Toast icon="offline" isVisible={!isConnected && isMainnet} text={lang.t('button.offline')} />;
 };
 

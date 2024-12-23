@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import SpinnerImageSource from '../assets/spinner.png';
 import { useTheme } from '../theme/ThemeContext';
 import { SpinAnimation } from './animations';
 import { Centered } from './layout';
 import { ImgixImage } from '@/components/images';
 import { position } from '@/styles';
+import { IS_TEST } from '@/env';
 
 type SpinnerProps = {
   color?: string;
@@ -32,7 +32,7 @@ const Spinner = ({ color = '', duration = 1500, size = 20, ...props }: SpinnerPr
 
   return (
     <Centered {...props}>
-      {IS_TESTING !== 'true' && (
+      {!IS_TEST && (
         <SpinAnimation duration={duration}>
           <ImgixImage source={SpinnerImageSource as any} style={style} tintColor={color || colors.whiteLabel} size={30} />
         </SpinAnimation>

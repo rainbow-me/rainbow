@@ -2,10 +2,10 @@
 import pako from 'pako';
 import qs from 'qs';
 import branch from 'react-native-branch';
-import { IS_TESTING } from 'react-native-dotenv';
 import { analyticsV2 } from '@/analytics';
 import * as ls from '@/storage';
 import { logger, RainbowError } from '@/logger';
+import { IS_TEST } from '@/env';
 
 const isEmpty = <T extends object>(obj: T | undefined): obj is undefined => !obj || Object.keys(obj).length === 0;
 
@@ -86,7 +86,7 @@ export const branchListener = async (handleOpenLinkingURL: (url: string) => void
        */
       logger.debug(`[branchListener]: handling event where no link was opened`, {}, logger.DebugContext.deeplinks);
 
-      if (IS_TESTING === 'true' && !!uri) {
+      if (IS_TEST && !!uri) {
         handleOpenLinkingURL(uri);
       }
     } else if (params.uri && typeof params.uri === 'string') {
