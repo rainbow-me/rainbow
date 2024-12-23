@@ -296,7 +296,7 @@ export function ClaimCustomization() {
         onPressMenuItem={handleNetworkSelection}
         text={outputChainId ? chainsLabel[outputChainId] : i18n.t(i18n.l.claimables.panel.a_network)}
         muted={isInitialState}
-        icon={<ChainImage chainId={outputChainId} size={16} />}
+        icon={<ChainImage chainId={outputChainId} size={24} />}
       />
     </Box>
   );

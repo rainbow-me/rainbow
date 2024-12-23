@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from '../Divider';
-import ChainBadge from '../coin-icon/ChainBadge';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box, Inline, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -14,7 +14,6 @@ import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 import { implementation } from '@/entities/dispersion';
-import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
@@ -129,18 +128,23 @@ const AvailableNetworksv2 = ({
     convertAssetAndNavigate(availableChainIds[0]);
   }, [availableChainIds, convertAssetAndNavigate]);
 
+  const defaultChains = useBackendNetworksStore.getState().getDefaultChains();
+  const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
+  const chainsBadge = useBackendNetworksStore.getState().getChainsBadge();
+
   const networkMenuItems: MenuItem<string>[] = useBackendNetworksStore
     .getState()
     .getSupportedChainIds()
     .filter(chainId => chainId !== ChainId.mainnet)
-    .map(chainId => useBackendNetworksStore.getState().getDefaultChains()[chainId])
+    .filter(chainId => availableChainIds.includes(chainId))
+    .map(chainId => defaultChains[chainId])
     .map(chain => ({
       actionKey: `${chain.id}`,
-      actionTitle: useBackendNetworksStore.getState().getChainsLabel()[chain.id],
+      actionTitle: chainsLabel[chain.id],
       icon: {
         iconType: 'REMOTE',
         iconValue: {
-          uri: useBackendNetworksStore.getState().getChainsBadge()[chain.id],
+          uri: chainsBadge[chain.id],
         },
       },
     }));
@@ -176,11 +180,7 @@ const AvailableNetworksv2 = ({
                         borderRadius: 30,
                       }}
                     >
-                      {chainId !== ChainId.mainnet ? (
-                        <ChainBadge chainId={chainId} position="relative" size="small" />
-                      ) : (
-                        <EthCoinIcon size={20} />
-                      )}
+                      <ChainImage chainId={chainId} size={20} />
                     </Box>
                   );
                 })}

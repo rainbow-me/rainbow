@@ -173,9 +173,14 @@ const ChainButtonIcon = ({ output }: { output: boolean | undefined }) => {
   return (
     <Bleed vertical="6px">
       {output ? (
-        <ChainImage chainId={selectedOutputChainId ?? animatedSelectedOutputChainId.value ?? ChainId.mainnet} size={16} />
+        <ChainImage
+          chainId={selectedOutputChainId ?? animatedSelectedOutputChainId.value ?? ChainId.mainnet}
+          size={24}
+          badgeXPosition={-20}
+          badgeYPosition={-8}
+        />
       ) : userAssetsFilter && userAssetsFilter !== 'all' ? (
-        <ChainImage chainId={userAssetsFilter} size={16} />
+        <ChainImage chainId={userAssetsFilter} size={24} badgeXPosition={-20} badgeYPosition={-8} />
       ) : (
         <></>
       )}

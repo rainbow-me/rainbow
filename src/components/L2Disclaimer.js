@@ -2,14 +2,12 @@ import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from '@/components/Divider';
 import ButtonPressAnimation from './animations/ButtonPressAnimation';
-import ChainBadge from './coin-icon/ChainBadge';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Column, Row } from './layout';
 import { Text } from './text';
 import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
 import * as lang from '@/languages';
-import { isL2Chain } from '@/handlers/web3';
-import { EthCoinIcon } from './coin-icon/EthCoinIcon';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const L2Disclaimer = ({
@@ -23,7 +21,6 @@ const L2Disclaimer = ({
   prominent,
   customText,
   symbol,
-  forceDarkMode,
 }) => {
   const localColors = isNft ? darkModeThemeColors : colors;
   const radialGradientProps = {
@@ -36,17 +33,14 @@ const L2Disclaimer = ({
     },
   };
 
-  const isL2 = isL2Chain({ chainId });
-
   return (
     <>
       <ButtonPressAnimation marginBottom={marginBottom} onPress={onPress} scaleTo={0.95}>
         <Row borderRadius={16} marginHorizontal={marginHorizontal} style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}>
           <RadialGradient {...radialGradientProps} borderRadius={16} radius={600} />
-          <Column justify="center">
-            {isL2 ? <ChainBadge chainId={chainId} position="relative" size="small" forceDark={forceDarkMode} /> : <EthCoinIcon size={20} />}
-          </Column>
-          <Column flex={1} justify="center" marginHorizontal={8}>
+          <ChainImage chainId={chainId} size={24} badgeXPosition={5} badgeYPosition={8.5} />
+
+          <Column flex={1} justify="center" marginHorizontal={24}>
             <Text
               color={prominent ? colors.alpha(localColors.blueGreyDark, 0.8) : colors.alpha(localColors.blueGreyDark, 0.6)}
               numberOfLines={2}

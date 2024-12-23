@@ -9,7 +9,7 @@ import Routes from '@/navigation/routesNames';
 import { ExtendedState } from './core/RawRecyclerList';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, convertRawAmountToBalance } from '@/helpers/utilities';
 import { analyticsV2 } from '@/analytics';
-import { ChainBadge } from '@/components/coin-icon';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import { ChainId } from '@/state/backendNetworks/types';
 import { usePoints } from '@/resources/points';
@@ -97,7 +97,13 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
         <Box borderRadius={11} borderWidth={1} borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}>
           <FasterImageView source={{ url: isETHRewards ? RAINBOW_ICON_URL : claimable?.iconUrl }} style={{ height: 40, width: 40 }} />
         </Box>
-        <ChainBadge chainId={isETHRewards ? ChainId.mainnet : claimable?.chainId} position="absolute" size="small" forceDark={true} />
+        <ChainImage
+          chainId={isETHRewards ? ChainId.mainnet : claimable?.chainId}
+          size={28}
+          position="absolute"
+          badgeXPosition={-10}
+          badgeYPosition={-10}
+        />
         <Stack space={{ custom: 11 }}>
           <Text
             weight="semibold"

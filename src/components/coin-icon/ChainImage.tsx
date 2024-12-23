@@ -1,91 +1,80 @@
 import React, { useMemo, forwardRef } from 'react';
+import FastImage from 'react-native-fast-image';
 import { ChainId } from '@/state/backendNetworks/types';
+import styled from '@/styled-thing';
+import { Centered } from '../layout';
+import { position as positions } from '@/styles';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
-import ApechainBadge from '@/assets/badges/apechain.png';
-import ArbitrumBadge from '@/assets/badges/arbitrum.png';
-import AvalancheBadge from '@/assets/badges/avalanche.png';
-import BaseBadge from '@/assets/badges/base.png';
-import BlastBadge from '@/assets/badges/blast.png';
-import BscBadge from '@/assets/badges/bsc.png';
-import DegenBadge from '@/assets/badges/degen.png';
-import EthereumBadge from '@/assets/badges/ethereum.png';
-import GnosisBadge from '@/assets/badges/gnosis.png';
-import GravityBadge from '@/assets/badges/gravity.png';
-import InkBadge from '@/assets/badges/ink.png';
-import LineaBadge from '@/assets/badges/linea.png';
-import OptimismBadge from '@/assets/badges/optimism.png';
-import PolygonBadge from '@/assets/badges/polygon.png';
-import SankoBadge from '@/assets/badges/sanko.png';
-import ScrollBadge from '@/assets/badges/scroll.png';
-import ZksyncBadge from '@/assets/badges/zksync.png';
-import ZoraBadge from '@/assets/badges/zora.png';
-import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
-import Animated from 'react-native-reanimated';
+type ChainIconProps = {
+  containerSize: number;
+  iconSize: number;
+};
 
-export const ChainImage = forwardRef(function ChainImage(
-  {
-    chainId,
-    size = 20,
-    style,
-  }: {
-    chainId: ChainId | null | undefined;
-    size?: number;
-    style?: FastImageProps['style'];
-  },
-  ref
-) {
-  const source = useMemo(() => {
-    switch (chainId) {
-      case ChainId.apechain:
-        return ApechainBadge;
-      case ChainId.arbitrum:
-        return ArbitrumBadge;
-      case ChainId.avalanche:
-        return AvalancheBadge;
-      case ChainId.base:
-        return BaseBadge;
-      case ChainId.blast:
-        return BlastBadge;
-      case ChainId.bsc:
-        return BscBadge;
-      case ChainId.degen:
-        return DegenBadge;
-      case ChainId.gnosis:
-        return GnosisBadge;
-      case ChainId.gravity:
-        return GravityBadge;
-      case ChainId.ink:
-        return InkBadge;
-      case ChainId.linea:
-        return LineaBadge;
-      case ChainId.mainnet:
-        return EthereumBadge;
-      case ChainId.optimism:
-        return OptimismBadge;
-      case ChainId.polygon:
-        return PolygonBadge;
-      case ChainId.sanko:
-        return SankoBadge;
-      case ChainId.scroll:
-        return ScrollBadge;
-      case ChainId.zksync:
-        return ZksyncBadge;
-      case ChainId.zora:
-        return ZoraBadge;
-      default:
-        return { uri: '' };
-    }
-  }, [chainId]);
+const ChainIcon = styled(FastImage)(({ containerSize, iconSize }: ChainIconProps) => ({
+  height: containerSize,
+  top: iconSize / 5,
+  width: containerSize,
+}));
 
-  if (!chainId) return null;
+type ChainIconPositionWrapperProps = {
+  iconSize: number;
+  badgeXPosition: number;
+  badgeYPosition: number;
+  position: 'absolute' | 'relative';
+};
 
-  return (
-    <FastImage
-      // @ts-expect-error couldn't figure out how to type this ref to make ts happy
-      ref={ref}
-      key={`${chainId}-badge-${size}`}
-      source={source as Source}
-      style={[{ borderRadius: size / 2, height: size, width: size }, style]}
-    />
-  );
-});
+const ChainIconPositionWrapper = styled(Centered)(
+  ({ iconSize, badgeXPosition, badgeYPosition, position }: ChainIconPositionWrapperProps) => ({
+    bottom: position === 'relative' ? 0 : badgeYPosition,
+    left: position === 'relative' ? 0 : badgeXPosition,
+    ...positions.sizeAsObject(iconSize),
+    elevation: 10,
+    overflow: 'visible',
+    position: position || 'absolute',
+    zIndex: 10,
+  })
+);
+
+type ChainImageProps = {
+  chainId: ChainId | null | undefined;
+  size?: number;
+  position?: 'absolute' | 'relative';
+  showBadge?: boolean;
+  badgeXPosition?: number;
+  badgeYPosition?: number;
+};
+
+export const ChainImage = forwardRef<React.ElementRef<typeof FastImage>, ChainImageProps>(
+  ({ chainId, size = 20, showBadge = true, badgeXPosition = 0, badgeYPosition = 0, position = 'absolute' }, ref) => {
+    const { containerSize, iconSize } = useMemo(
+      () => ({
+        containerSize: size,
+        iconSize: size,
+      }),
+      [size]
+    );
+
+    if (!chainId) return null;
+
+    const badgeUrl = useBackendNetworksStore.getState().getChainsBadge()[chainId];
+
+    if (!badgeUrl || !showBadge) return null;
+
+    return badgeXPosition || badgeYPosition ? (
+      <ChainIconPositionWrapper badgeXPosition={badgeXPosition} badgeYPosition={badgeYPosition} iconSize={iconSize} position={position}>
+        <ChainIcon containerSize={containerSize} iconSize={iconSize} source={{ uri: badgeUrl }} ref={ref} />
+      </ChainIconPositionWrapper>
+    ) : (
+      <FastImage
+        // @ts-expect-error couldn't figure out how to type this ref to make ts happy
+        ref={ref}
+        key={`${chainId}-badge-${size}`}
+        source={{ uri: badgeUrl }}
+        style={{ borderRadius: size / 2, height: size, width: size }}
+      />
+    );
+  }
+);
+
+ChainImage.displayName = 'ChainImage';

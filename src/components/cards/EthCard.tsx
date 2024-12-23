@@ -24,7 +24,8 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import assetTypes from '@/entities/assetTypes';
 import { Network, ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
+import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
@@ -155,7 +156,11 @@ export const EthCard = () => {
                   </>
                 ) : (
                   <>
-                    <EthCoinIcon size={20} />
+                    <RainbowCoinIcon
+                      chainId={ChainId.mainnet}
+                      size={20}
+                      symbol={useBackendNetworksStore.getState().getChainsNativeAsset()[ChainId.mainnet].symbol}
+                    />
                     <Text size="17pt" color={{ custom: colorForAsset }} weight="heavy">
                       {ethAsset?.name}
                     </Text>

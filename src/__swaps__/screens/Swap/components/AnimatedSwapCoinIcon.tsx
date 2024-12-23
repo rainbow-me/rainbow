@@ -3,7 +3,14 @@ import React, { memo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
-import Animated, { useAnimatedProps, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  SharedValue,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { AnimatedChainImage } from './AnimatedChainImage';
@@ -12,26 +19,26 @@ import { SwapCoinIconTextFallback } from './SwapCoinIconTextFallback';
 import { Box } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
-import { useSwapContext } from '../providers/swap-provider';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
-  assetType,
+  asset,
   size = 32,
+  chainSize = size / 2,
   showBadge = true,
 }: {
-  assetType: 'input' | 'output';
+  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   size?: number;
+  chainSize?: number;
   showBadge?: boolean;
 }) {
   const { isDarkMode, colors } = useTheme();
-  const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
-
-  const asset = assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset;
 
   const didErrorForUniqueId = useSharedValue<string | undefined>(undefined);
 
   // Shield animated props from unnecessary updates to avoid flicker
   const coinIconUrl = useDerivedValue(() => asset.value?.icon_url || '');
+  const chainId = useDerivedValue(() => asset.value?.chainId);
 
   const animatedIconSource = useAnimatedProps(() => {
     return {
@@ -108,7 +115,7 @@ export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
         />
       </Animated.View>
 
-      {showBadge && <AnimatedChainImage assetType={assetType} size={16} />}
+      {showBadge && <AnimatedChainImage chainId={chainId} size={chainSize} />}
     </View>
   );
 });
@@ -134,24 +141,6 @@ const containerStyle = (size: number) => ({
 const sx = StyleSheet.create({
   coinIcon: {
     overflow: 'hidden',
-  },
-  container: {
-    elevation: 6,
-    height: 32,
-    overflow: 'visible',
-  },
-  containerLarge: {
-    elevation: 6,
-    height: 36,
-    overflow: 'visible',
-  },
-  containerSmall: {
-    elevation: 6,
-    height: 16,
-    overflow: 'visible',
-  },
-  emptyState: {
-    pointerEvents: 'none',
   },
   reactCoinIconContainer: {
     position: 'relative',

@@ -16,7 +16,7 @@ import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { GestureResponderEvent } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { SwapCoinIcon } from './SwapCoinIcon';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
@@ -127,14 +127,17 @@ export function CoinRow({ isFavorite, onPress, output, uniqueId, testID, ...asse
                 gap={12}
               >
                 <Box flexDirection="row" gap={10} flexShrink={1} justifyContent="center">
-                  <SwapCoinIcon
-                    iconUrl={icon_url}
-                    address={address}
-                    mainnetAddress={mainnetAddress}
+                  <RainbowCoinIcon
                     size={36}
+                    icon={icon_url}
                     chainId={chainId}
                     symbol={symbol || ''}
                     color={colors?.primary}
+                    chainSize={28}
+                    chainBadgePosition={{
+                      x: -12,
+                      y: -6,
+                    }}
                   />
                   <Box gap={10} flexShrink={1} justifyContent="center">
                     <Text color="label" size="17pt" weight="semibold" numberOfLines={1} ellipsizeMode="tail">

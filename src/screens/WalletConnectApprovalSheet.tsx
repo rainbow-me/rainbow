@@ -3,7 +3,6 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { ContextMenuButton, OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import ChainLogo from '@/components/ChainLogo';
 import Divider from '@/components/Divider';
 import Spinner from '@/components/Spinner';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -22,12 +21,11 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { Box, Columns, Column as RDSColumn, Inline, Text, TextProps } from '@/design-system';
-import ChainBadge from '@/components/coin-icon/ChainBadge';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import * as lang from '@/languages';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
-import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -113,22 +111,14 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
                       borderColor: colors.white,
                     }}
                   >
-                    {chainId !== ChainId.mainnet ? (
-                      <ChainBadge chainId={chainId} position="relative" size="small" />
-                    ) : (
-                      <EthCoinIcon size={20} />
-                    )}
+                    <ChainImage chainId={chainId} size={20} />
                   </Box>
                 );
               })}
             </>
           ) : (
             <Inline alignVertical="center" wrap={false}>
-              {availableNetworkChainIds[0] !== ChainId.mainnet ? (
-                <ChainBadge chainId={availableNetworkChainIds[0]} position="relative" size="small" />
-              ) : (
-                <EthCoinIcon size={20} />
-              )}
+              <ChainImage chainId={availableNetworkChainIds[0]} size={20} />
 
               <Box paddingLeft="6px">
                 <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold">
@@ -361,7 +351,10 @@ export function WalletConnectApprovalSheet() {
             }}
           >
             <Centered marginRight={5}>
-              <ChainLogo chainId={type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.chainId : Number(chainId)} />
+              <ChainImage
+                chainId={type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.chainId : Number(chainId)}
+                size={44}
+              />
             </Centered>
             <LabelText align="right" numberOfLines={1}>
               {`${

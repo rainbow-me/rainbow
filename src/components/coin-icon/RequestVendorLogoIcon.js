@@ -2,14 +2,15 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { initials } from '../../utils';
-import ChainBadge from './ChainBadge';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { CoinIconSize } from './CoinIcon';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
+import { ChainImage } from './ChainImage';
+
+const RequestVendorLogoIconSize = 40;
 
 const RVLIBorderRadius = 16.25;
 const RVLIShadows = colors => ({
@@ -32,7 +33,7 @@ export default function RequestVendorLogoIcon({
   noShadow,
   shouldPrioritizeImageLoading,
   showLargeShadow,
-  size = CoinIconSize,
+  size = RequestVendorLogoIconSize,
   chainId,
   ...props
 }) {
@@ -71,7 +72,7 @@ export default function RequestVendorLogoIcon({
           )}
         </Content>
       </ShadowStack>
-      <ChainBadge chainId={chainId} badgeYPosition={badgeYPosition} />
+      <ChainImage chainId={chainId} badgeYPosition={badgeYPosition} />
     </View>
   );
 }
