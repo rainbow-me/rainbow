@@ -2,14 +2,14 @@ import * as Helpers from '../helpers';
 import { device } from 'detox';
 
 beforeAll(async () => {
-  await Helpers.startHardhat();
+  await Helpers.startAnvil();
 });
 
 const ios = device.getPlatform() === 'ios';
 const android = device.getPlatform() === 'android';
 
 // FIXME: Mainnet DAI doesn't show up in the swap search results
-//        This might be related to @Jin's latest work on changes to hardhat as
+//        This might be related to @Jin's latest work on changes to anvil as
 //        part of the addy's REST API migration
 //
 //        marking the test as SKIP for now
@@ -54,14 +54,14 @@ describe.skip('Swap Sheet Interaction Flow', () => {
     await Helpers.sendETHtoTestWallet();
   });
 
-  it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
+  it('Should show Anvil Toast after pressing Connect To Anvil', async () => {
     // need to wait for balances to be fetched
     await Helpers.delay(10000);
-    await Helpers.waitAndTap('dev-button-hardhat');
-    await Helpers.checkIfVisible('testnet-toast-Hardhat');
+    await Helpers.waitAndTap('dev-button-anvil');
+    await Helpers.checkIfVisible('testnet-toast-Anvil');
   });
 
-  it('Should connect to hardhat', async () => {
+  it('Should connect to anvil', async () => {
     await Helpers.swipe('wallet-screen', 'right', 'slow');
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.waitAndTap('settings-button');
@@ -69,8 +69,8 @@ describe.skip('Swap Sheet Interaction Flow', () => {
     await Helpers.scrollTo('settings-menu-container', 'bottom');
     await Helpers.waitAndTap('developer-section');
     await Helpers.swipeUntilVisible('alert-section', 'developer-settings-sheet', 'up');
-    await Helpers.waitAndTap('hardhat-section');
-    await Helpers.checkIfVisible('testnet-toast-Hardhat');
+    await Helpers.waitAndTap('anvil-section');
+    await Helpers.checkIfVisible('testnet-toast-Anvil');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -474,6 +474,6 @@ describe.skip('Swap Sheet Interaction Flow', () => {
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
-    await Helpers.killHardhat();
+    await Helpers.killAnvil();
   });
 });

@@ -1,17 +1,14 @@
 #!/bin/bash
 
-max_retries="$1"
-count=0
 
-until (( count >= max_retries ))
-do
-  ./node_modules/.bin/detox test parallel/ -c ios.sim.release --maxWorkers 2 -- --forceExit --bail 1
-  ret_val=$?
-  if [ $ret_val -eq 0 ]; then
-    exit 0
-  fi
-  ((count++))
-  echo "Test failed, attempt $count/$max_retries..."
-done
+# 0) Read build type from first argument; default to "release" if not specified
+BUILD_TYPE=${1:-release}   # can be "debug" or "release"
 
+# 0.1) Decide Detox config based on BUILD_TYPE
+if [ "$BUILD_TYPE" = "debug" ]; then
+  DETOX_CONFIG="ios.sim.debug"
+else
+  DETOX_CONFIG="ios.sim.release"
+fi
 
+./node_modules/.bin/detox test ./e2e/parallel/ -c "$DETOX_CONFIG" --maxWorkers 2 --R 3

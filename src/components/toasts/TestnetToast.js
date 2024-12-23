@@ -4,11 +4,11 @@ import { Nbsp, Text } from '../text';
 import Toast from './Toast';
 import { useInternetStatus } from '@/hooks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const TestnetToast = ({ chainId }) => {
-  const { connectedToHardhat } = useConnectedToHardhatStore();
+  const { connectedToAnvil } = useConnectedToAnvilStore();
   const isConnected = useInternetStatus();
   const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
   const name = useBackendNetworksStore.getState().getChainsName()[chainId];
@@ -18,9 +18,9 @@ const TestnetToast = ({ chainId }) => {
 
   useEffect(() => {
     if (chainId === ChainId.mainnet) {
-      if (connectedToHardhat) {
+      if (connectedToAnvil) {
         setVisible(true);
-        setNetworkName('Hardhat');
+        setNetworkName('Anvil');
       } else {
         setVisible(false);
       }
@@ -28,7 +28,7 @@ const TestnetToast = ({ chainId }) => {
       setVisible(true);
       setNetworkName(name + (isConnected ? '' : ' (offline)'));
     }
-  }, [isConnected, chainId, connectedToHardhat, name]);
+  }, [isConnected, chainId, connectedToAnvil, name]);
 
   const { colors, isDarkMode } = useTheme();
 

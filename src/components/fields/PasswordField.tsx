@@ -1,14 +1,37 @@
 import React, { forwardRef, useCallback, Ref } from 'react';
-import { useTheme } from '../../theme/ThemeContext';
+import { ThemeContextProps, useTheme } from '../../theme/ThemeContext';
 import { Input } from '../inputs';
 import { cloudBackupPasswordMinLength } from '@/handlers/cloudBackup';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
-import { padding } from '@/styles';
+import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { Box } from '@/design-system';
 import { TextInput, TextInputProps, View } from 'react-native';
 import { IS_IOS, IS_ANDROID } from '@/env';
+import { Icon } from '../icons';
+
+const FieldAccessoryBadgeSize = 22;
+const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(
+  ({ theme: { colors, isDarkMode }, color }: { theme: ThemeContextProps; color: string }) => ({
+    ...position.sizeAsObject(FieldAccessoryBadgeSize),
+    borderRadius: FieldAccessoryBadgeSize,
+    shadows: [[0, 4, 12, isDarkMode ? colors.shadow : color, isDarkMode ? 0.1 : 0.4]],
+  })
+)({
+  marginBottom: 12,
+  position: 'absolute',
+  right: 12,
+  top: 12,
+});
+
+function FieldAccessoryBadge({ color, name }: { color: string; name: string }) {
+  return (
+    <FieldAccessoryBadgeWrapper color={color}>
+      <Icon color={color} name={name} size={FieldAccessoryBadgeSize} />
+    </FieldAccessoryBadgeWrapper>
+  );
+}
 
 const Container = styled(Box)({
   width: '100%',
@@ -53,9 +76,9 @@ interface PasswordFieldProps extends TextInputProps {
 }
 
 const PasswordField = forwardRef<TextInput, PasswordFieldProps>(
-  ({ password, returnKeyType = 'done', style, textContentType, ...props }, ref: Ref<TextInput>) => {
+  ({ password, isInvalid, returnKeyType = 'done', style, textContentType, ...props }, ref: Ref<TextInput>) => {
     const { width: deviceWidth } = useDimensions();
-    const { isDarkMode } = useTheme();
+    const { isDarkMode, colors } = useTheme();
 
     const handleFocus = useCallback(() => {
       if (ref && 'current' in ref && ref.current) {
@@ -67,6 +90,7 @@ const PasswordField = forwardRef<TextInput, PasswordFieldProps>(
       <Container onPress={handleFocus}>
         <ShadowContainer deviceWidth={deviceWidth} isDarkMode={isDarkMode} style={style}>
           <PasswordInput ref={ref} returnKeyType={returnKeyType} textContentType={textContentType} value={password} {...props} />
+          {isInvalid && <FieldAccessoryBadge color={colors.red} name="warningCircled" />}
         </ShadowContainer>
       </Container>
     );

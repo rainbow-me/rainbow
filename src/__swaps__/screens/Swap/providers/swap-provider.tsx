@@ -56,7 +56,7 @@ import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisable
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore, getChainsNativeAssetWorklet } from '@/state/backendNetworks/backendNetworks';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
@@ -226,11 +226,14 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       NotificationManager?.postNotification('rapInProgress');
 
       const provider = getProvider({ chainId: parameters.chainId });
-      const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
+      const connectedToAnvil = useConnectedToAnvilStore.getState().connectedToAnvil;
 
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
       const isDegenModeEnabled = swapsStore.getState().degenMode;
       const isSwappingToPopularAsset = swapsStore.getState().outputAsset?.sectionId === 'popular';
+      const lastNavigatedTrendingToken = swapsStore.getState().lastNavigatedTrendingToken;
+      const isSwappingToTrendingAsset =
+        lastNavigatedTrendingToken === parameters.assetToBuy.uniqueId || lastNavigatedTrendingToken === parameters.assetToSell.uniqueId;
 
       const selectedGas = getSelectedGas(parameters.chainId);
       if (!selectedGas) {
@@ -283,7 +286,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         };
       }
 
-      const chainId = connectedToHardhat ? ChainId.hardhat : parameters.chainId;
+      const chainId = connectedToAnvil ? ChainId.anvil : parameters.chainId;
       const nonce = await getNextNonce({ address: parameters.quote.from, chainId });
 
       const { errorMessage } = await performanceTracking.getState().executeFn({
@@ -325,6 +328,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           tradeAmountUSD: parameters.quote.tradeAmountUSD,
           degenMode: isDegenModeEnabled,
           isSwappingToPopularAsset,
+          isSwappingToTrendingAsset,
           errorMessage,
           isHardwareWallet,
         });
@@ -341,7 +345,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         userAssetsQueryKey({
           address: parameters.quote.from,
           currency: nativeCurrency,
-          testnetMode: connectedToHardhat,
+          testnetMode: connectedToAnvil,
         })
       );
 
@@ -389,6 +393,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         tradeAmountUSD: parameters.quote.tradeAmountUSD,
         degenMode: isDegenModeEnabled,
         isSwappingToPopularAsset,
+        isSwappingToTrendingAsset,
         isHardwareWallet,
       });
     } catch (error) {
@@ -403,6 +408,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         },
       });
     }
+
+    // reset the last navigated trending token after a swap has taken place
+    swapsStore.setState({
+      lastNavigatedTrendingToken: undefined,
+    });
   };
 
   const executeSwap = performanceTracking.getState().executeFn({
