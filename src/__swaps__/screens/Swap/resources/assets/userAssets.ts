@@ -14,9 +14,9 @@ import { parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/helpers/utilities';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
-import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
+import { fetchAnvilBalancesByChainId } from '@/resources/assets/anvilAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { IS_TEST } from '@/env';
 import store from '@/redux/store';
@@ -106,7 +106,7 @@ async function userAssetsQueryFunction({
     return {};
   }
   if (testnetMode) {
-    const { assets, chainIdsInResponse } = await fetchHardhatBalancesByChainId(address);
+    const { assets, chainIdsInResponse } = await fetchAnvilBalancesByChainId(address);
     const parsedAssets: Array<{
       asset: ZerionAsset;
       quantity: string;
@@ -258,8 +258,8 @@ export function useUserAssets<TSelectResult = UserAssetsResult>(
   { address, currency }: UserAssetsArgs,
   config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
-  const { connectedToHardhat } = useConnectedToHardhatStore();
-  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToHardhat }), userAssetsQueryFunction, {
+  const { connectedToAnvil } = useConnectedToAnvilStore();
+  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToAnvil }), userAssetsQueryFunction, {
     ...config,
     enabled: !!address && !!currency,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,

@@ -9,11 +9,11 @@ const android = device.getPlatform() === 'android';
 
 describe.skip('Swap Sheet Interaction Flow', () => {
   beforeAll(async () => {
-    await Helpers.startHardhat();
+    await Helpers.startAnvil();
   });
   afterAll(async () => {
     await device.clearKeychain();
-    await Helpers.killHardhat();
+    await Helpers.killAnvil();
   });
 
   it('Import a wallet and go to welcome', async () => {
@@ -24,14 +24,14 @@ describe.skip('Swap Sheet Interaction Flow', () => {
     await Helpers.sendETHtoTestWallet();
   });
 
-  it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
+  it('Should show Anvil Toast after pressing Connect To Anvil', async () => {
     await Helpers.delayTime('very-long');
-    await Helpers.waitAndTap('dev-button-hardhat');
-    await Helpers.checkIfVisible('testnet-toast-Hardhat');
+    await Helpers.waitAndTap('dev-button-anvil');
+    await Helpers.checkIfVisible('testnet-toast-Anvil');
   });
 
   // FIXME: Mainnet DAI doesn't show up in the swap search results
-  //        This might be related to @Jin's latest work on changes to hardhat as
+  //        This might be related to @Jin's latest work on changes to anvil as
   //        part of the addy's REST API migration
   //
   //        marking the test as SKIP for now

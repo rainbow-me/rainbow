@@ -1,6 +1,5 @@
 import React from 'react';
 import { View } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
@@ -9,6 +8,7 @@ import { CoinRowHeight } from './CoinRow';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { magicMemo } from '@/utils';
+import { IS_TEST } from '@/env';
 
 const AddButtonPadding = 19;
 
@@ -23,7 +23,7 @@ const AddButton = styled(Centered)({
   width: 68,
 });
 
-const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(({ theme: { colors } }) => ({
+const Circle = styled(IS_TEST ? View : RadialGradient).attrs(({ theme: { colors } }) => ({
   center: [0, 15],
   colors: colors.gradients.lightestGrey,
 }))({
