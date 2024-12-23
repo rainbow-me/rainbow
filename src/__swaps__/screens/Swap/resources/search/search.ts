@@ -5,10 +5,9 @@ import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { isAddress } from '@ethersproject/address';
-import { useQuery, useQueries } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import qs from 'qs';
 import { parseTokenSearch } from './utils';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const ALL_VERIFIED_TOKENS_PARAM = '/?list=verifiedAssets';
 
@@ -150,22 +149,8 @@ export function useTokenSearchAllNetworks(
   { query }: Omit<TokenSearchArgs, 'list' | 'chainId' | 'fromChainId'>,
   config: QueryConfigWithSelect<TokenSearchResult, Error, TokenSearchResult, TokenSearchQueryKey> = {}
 ) {
-  const getSupportedChainIds = useBackendNetworksStore(state => state.getSupportedChainIds);
-  const supportedChains = getSupportedChainIds();
-
-  const queries = useQueries({
-    queries: supportedChains.map(id => {
-      return {
-        queryKey: tokenSearchQueryKey({ chainId: id, query }),
-        queryFn: tokenSearchQueryFunction,
-        refetchOnWindowFocus: false,
-        ...config,
-      };
-    }),
+  return useQuery(tokenSearchQueryKey({ query }), tokenSearchQueryFunction, {
+    ...config,
+    keepPreviousData: true,
   });
-
-  return {
-    data: queries.map(({ data: assets }) => assets || []).flat(),
-    isFetching: queries.some(({ isFetching }) => isFetching),
-  };
 }
