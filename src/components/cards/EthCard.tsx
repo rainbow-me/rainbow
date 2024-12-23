@@ -157,8 +157,9 @@ export const EthCard = () => {
                 ) : (
                   <>
                     <RainbowCoinIcon
+                      icon={useBackendNetworksStore.getState().getChainsBadge()[ChainId.mainnet]}
                       chainId={ChainId.mainnet}
-                      size={20}
+                      size={28}
                       symbol={useBackendNetworksStore.getState().getChainsNativeAsset()[ChainId.mainnet].symbol}
                     />
                     <Text size="17pt" color={{ custom: colorForAsset }} weight="heavy">
