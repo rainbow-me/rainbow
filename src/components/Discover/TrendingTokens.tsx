@@ -17,10 +17,8 @@ import { FarcasterUser, TrendingToken, useTrendingTokens } from '@/resources/tre
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
-import { colors } from '@/styles';
-import { darkModeThemeColors } from '@/styles/colors';
 import { useCallback, useEffect, useMemo } from 'react';
-import React, { Dimensions, FlatList, View } from 'react-native';
+import React, { FlatList, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { runOnJS, useSharedValue } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
@@ -31,6 +29,7 @@ import { useAccountSettings } from '@/hooks';
 import { getColorWorklet, getMixedColor, opacity } from '@/__swaps__/utils/swaps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_IOS } from '@/env';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const t = i18n.l.trending_tokens;
 
@@ -72,18 +71,24 @@ function FilterButton({
         end={{ x: 0.5, y: 1 }}
         start={{ x: 0.5, y: 0 }}
         style={{
-          flexDirection: 'row',
           alignItems: 'center',
+          borderColor,
+          borderRadius: 18,
+          borderWidth: THICK_BORDER_WIDTH,
+          flexDirection: 'row',
           gap: 4,
           height: 36,
           paddingHorizontal: 12 - THICK_BORDER_WIDTH,
-          borderRadius: 18,
-          borderWidth: THICK_BORDER_WIDTH,
-          borderColor,
         }}
       >
         {typeof icon === 'string' ? (
-          <TextIcon color={{ custom: iconColor || defaultIconColor }} size="icon 13px" weight="heavy" width={16}>
+          <TextIcon
+            color={{ custom: iconColor || defaultIconColor }}
+            size="icon 13px"
+            textStyle={IS_IOS ? undefined : { marginTop: -2 }}
+            weight="heavy"
+            width={16}
+          >
             {icon}
           </TextIcon>
         ) : (
@@ -209,7 +214,7 @@ function CategoryFilterButton({
         <TextIcon
           color={{ custom: typeof iconColor === 'string' ? iconColor : selected ? iconColor.selected : iconColor.default }}
           size="icon 13px"
-          textStyle={IS_IOS ? { marginTop: -3.5 } : undefined}
+          textStyle={{ marginTop: IS_IOS ? -3.5 : -2 }}
           weight="heavy"
           width={iconWidth}
         >
@@ -240,15 +245,16 @@ function FriendPfp({ pfp_url }: { pfp_url: string }) {
   const backgroundColor = useBackgroundColor('surfacePrimary');
   return (
     <ImgixImage
+      enableFasterImage
       source={{ uri: pfp_url }}
       style={{
         height: 12 + 2,
         width: 12 + 2,
-        borderRadius: 6,
+        borderRadius: 7,
         borderWidth: 1,
         borderColor: backgroundColor,
         marginVertical: -1,
-        marginLeft: -6,
+        marginLeft: -4,
       }}
     />
   );
@@ -259,18 +265,18 @@ function FriendHolders({ friends }: { friends: FarcasterUser[] }) {
   const separator = howManyOthers === 1 && friends.length === 2 ? ` ${i18n.t(t.and)} ` : ', ';
 
   return (
-    <View style={{ flexDirection: 'row', gap: 5.67, height: 12, alignItems: 'center' }}>
-      <View style={{ flexDirection: 'row-reverse', alignItems: 'center', paddingLeft: 6 }}>
+    <View style={{ alignItems: 'center', flexDirection: 'row', flexWrap: 'nowrap', gap: 5.67, height: 7 }}>
+      <View style={{ flexDirection: 'row-reverse', alignItems: 'center', height: 7, paddingLeft: 4 }}>
         <FriendPfp pfp_url={friends[0].pfp_url} />
         {friends[1] && <FriendPfp pfp_url={friends[1].pfp_url} />}
       </View>
 
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text color="labelSecondary" size="11pt" weight="bold" numberOfLines={1}>
+      <View style={{ alignItems: 'center', flexDirection: 'row', marginTop: -0.5 }}>
+        <Text color="labelTertiary" size="11pt" weight="bold" numberOfLines={1}>
           {friends[0].username}
           {friends[1] && (
             <>
-              <Text color="labelTertiary" size="11pt" weight="bold">
+              <Text color="labelQuaternary" size="11pt" weight="bold">
                 {separator}
               </Text>
               {friends[1].username}
@@ -278,7 +284,7 @@ function FriendHolders({ friends }: { friends: FarcasterUser[] }) {
           )}
         </Text>
         {friends.length > 2 && (
-          <Text color="labelTertiary" size="11pt" weight="bold">
+          <Text color="labelQuaternary" size="11pt" weight="bold">
             {' '}
             {i18n.t(t.and_others[howManyOthers === 1 ? 'one' : 'other'], { count: howManyOthers })}
           </Text>
@@ -289,75 +295,21 @@ function FriendHolders({ friends }: { friends: FarcasterUser[] }) {
 }
 
 function TrendingTokenLoadingRow() {
-  const backgroundColor = useBackgroundColor('surfacePrimary');
-  const { isDarkMode } = useColorMode();
   return (
-    <View style={{ flex: 1, height: 78, width: '100%' }}>
-      <Skeleton>
-        <View style={{ paddingVertical: 12, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+    <View style={{ flex: 1, height: 48, width: '100%' }}>
+      <Skeleton style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ alignItems: 'center', flexDirection: 'row', gap: 12, height: 48, justifyContent: 'center' }}>
           <FakeAvatar />
 
-          <View style={{ gap: 12, flex: 1 }}>
-            <View style={{ flexDirection: 'row', gap: 5.67, alignItems: 'center', marginTop: -2 }}>
-              <View style={{ flexDirection: 'row-reverse', alignItems: 'center' }}>
-                <View
-                  style={{
-                    height: 12 + 2,
-                    width: 12 + 2,
-                    borderRadius: 6,
-                    borderWidth: 1,
-                    borderColor: backgroundColor,
-                    backgroundColor: isDarkMode ? darkModeThemeColors.skeleton : colors.skeleton,
-                    marginVertical: -1,
-                    marginLeft: -6,
-                  }}
-                />
-                <View
-                  style={{
-                    height: 12 + 2,
-                    width: 12 + 2,
-                    borderRadius: 6,
-                    borderWidth: 1,
-                    borderColor: backgroundColor,
-                    backgroundColor: isDarkMode ? darkModeThemeColors.skeleton : colors.skeleton,
-                    marginVertical: -1,
-                  }}
-                />
-              </View>
+          <View style={{ flex: 1, flexDirection: 'column', gap: 12 }}>
+            <FakeText height={7} width={100} />
+            <FakeText height={10} width={136} />
+            <FakeText height={7} width={104} />
+          </View>
 
-              <FakeText width={148} />
-            </View>
-
-            <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-              <View style={{ gap: 8 }}>
-                <View style={{ flexDirection: 'row', gap: 6, alignItems: 'baseline' }}>
-                  <FakeText height={16} width={84} />
-                  <FakeText height={14} width={32} />
-                  <FakeText height={16} width={60} />
-                </View>
-
-                <View style={{ flexDirection: 'row', gap: 18, alignItems: 'center' }}>
-                  <View style={{ flexDirection: 'row', gap: 4 }}>
-                    <FakeText height={14} width={32} />
-                    <FakeText height={14} width={44} />
-                  </View>
-
-                  <View style={{ flexDirection: 'row', gap: 4 }}>
-                    <FakeText height={14} width={36} />
-                    <FakeText height={14} width={52} />
-                  </View>
-                </View>
-              </View>
-
-              <View style={{ gap: 8, marginLeft: 'auto' }}>
-                <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center' }}>
-                  <FakeText height={16} width={60} />
-                </View>
-                <View style={{ flexDirection: 'row', gap: 5, justifyContent: 'flex-end' }}>
-                  <FakeText width={40} />
-                </View>
-              </View>
-            </View>
+          <View style={{ alignItems: 'flex-end', flex: 1, flexDirection: 'column', gap: 12, height: '100%', justifyContent: 'flex-end' }}>
+            <FakeText height={10} width={72} />
+            <FakeText height={7} width={60} />
           </View>
         </View>
       </Skeleton>
@@ -371,7 +323,7 @@ function getPriceChangeColor(priceChange: number) {
 }
 
 function TrendingTokenRow({ token }: { token: TrendingToken }) {
-  const separatorColor = useForegroundColor('separator');
+  const separatorSecondary = useForegroundColor('separatorSecondary');
 
   const price = formatCurrency(token.price);
   const marketCap = formatNumber(token.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' });
@@ -400,7 +352,15 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
 
   return (
     <ButtonPressAnimation onPress={handleNavigateToToken} scaleTo={0.94}>
-      <View style={{ height: 48, overflow: 'visible', flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+      <View
+        style={{
+          overflow: 'visible',
+          flexDirection: 'row',
+          gap: 12,
+          height: token.highlightedFriends.length > 0 ? 48 : 40,
+          alignItems: 'center',
+        }}
+      >
         <SwapCoinIcon
           iconUrl={token.icon_url}
           color={token.colors.primary}
@@ -418,24 +378,24 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
             <View style={{ gap: 12 }}>
               <View
                 style={{
+                  alignItems: IS_IOS ? 'baseline' : 'flex-end',
                   flexDirection: 'row',
                   gap: 6,
                   height: 10,
-                  alignItems: 'baseline',
                   maxWidth:
-                    Dimensions.get('screen').width -
-                    40 - // 40 screen paddings
-                    (40 + 12) - // 40 token icon, 12 gap
-                    70, // 70 width for price change %
+                    DEVICE_WIDTH -
+                    40 - // horizontal list padding
+                    (40 + 12) - // token icon width + 12px gap
+                    70, // approx. % price change width
                 }}
               >
-                <Text color="label" size="15pt" weight="bold" style={{ maxWidth: 100, flexShrink: 1 }} numberOfLines={1}>
+                <Text color="label" numberOfLines={1} size="15pt" style={{ flexShrink: 1, maxWidth: 100 }} weight="bold">
                   {token.name}
                 </Text>
-                <Text color="labelTertiary" size="11pt" weight="bold" style={{ flexGrow: 0 }} numberOfLines={1}>
+                <Text color="labelTertiary" numberOfLines={1} size="11pt" style={{ bottom: IS_IOS ? 0 : -0.2, flexGrow: 0 }} weight="bold">
                   {token.symbol}
                 </Text>
-                <Text color="label" size="15pt" weight="bold">
+                <Text color="label" numberOfLines={1} size="15pt" weight="bold">
                   {price}
                 </Text>
               </View>
@@ -445,20 +405,18 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
                   <Text color="labelQuaternary" size="11pt" weight="bold">
                     VOL
                   </Text>
-                  <Text color="labelTertiary" size="11pt" weight="bold">
+                  <Text color="labelTertiary" numberOfLines={1} size="11pt" weight="bold">
                     {volume}
                   </Text>
                 </View>
 
-                <Text color={{ custom: separatorColor }} size="icon 9px" weight="bold">
-                  |
-                </Text>
+                <View style={{ backgroundColor: separatorSecondary, borderRadius: 1, height: 7, marginTop: 1, width: 1 }} />
 
                 <View style={{ flexDirection: 'row', gap: 4 }}>
                   <Text color="labelQuaternary" size="11pt" weight="bold">
                     MCAP
                   </Text>
-                  <Text color="labelTertiary" size="11pt" weight="bold">
+                  <Text color="labelTertiary" numberOfLines={1} size="11pt" weight="bold">
                     {marketCap}
                   </Text>
                 </View>
@@ -512,16 +470,14 @@ function NoResults() {
 }
 
 function NetworkFilter() {
-  const { isDarkMode } = useColorMode();
-
-  const selected = useSharedValue<ChainId | undefined>(undefined);
   const chainId = useTrendingTokensStore(state => state.chainId);
+  const selected = useSharedValue<ChainId | undefined>(chainId);
+
+  const chainColor = useBackendNetworksStore(state => state.getColorsForChainId(chainId || ChainId.mainnet, false));
   const setChainId = useTrendingTokensStore(state => state.setChainId);
 
   const { icon, label, lightenedNetworkColor } = useMemo(() => {
     if (!chainId) return { icon: '􀤆', label: i18n.t(t.all), lightenedNetworkColor: undefined };
-    const lightenedNetworkColor = useBackendNetworksStore.getState().getColorsForChainId(chainId, isDarkMode);
-
     return {
       icon: (
         <View style={{ marginRight: 2 }}>
@@ -529,11 +485,9 @@ function NetworkFilter() {
         </View>
       ),
       label: useBackendNetworksStore.getState().getChainsLabel()[chainId],
-      lightenedNetworkColor: lightenedNetworkColor
-        ? getMixedColor(lightenedNetworkColor, globalColors.white100, isDarkMode ? 0.55 : 0.6)
-        : undefined,
+      lightenedNetworkColor: chainColor ? getMixedColor(chainColor, globalColors.white100, 0.6) : undefined,
     };
-  }, [chainId, isDarkMode]);
+  }, [chainColor, chainId]);
 
   const setSelected = useCallback(
     (chainId: ChainId | undefined) => {
@@ -564,7 +518,7 @@ function NetworkFilter() {
 
 function TimeFilter() {
   const timeframe = useTrendingTokensStore(state => state.timeframe);
-  const shouldAbbreviate = timeframe === Timeframe.H24 || timeframe === Timeframe.H12;
+  const shouldAbbreviate = timeframe === Timeframe.H12 || timeframe === Timeframe.H24;
 
   return (
     <DropdownMenu
@@ -580,7 +534,6 @@ function TimeFilter() {
     >
       <FilterButton
         selected={timeframe !== Timeframe.D3}
-        iconColor={undefined}
         highlightedBackgroundColor={undefined}
         label={shouldAbbreviate ? i18n.t(t.filters.time[`${timeframe}_ABBREVIATED`]) : i18n.t(t.filters.time[timeframe])}
         icon="􀐫"
@@ -590,10 +543,11 @@ function TimeFilter() {
 }
 
 function SortFilter() {
+  const { isDarkMode } = useColorMode();
   const sort = useTrendingTokensStore(state => state.sort);
   const selected = sort !== TrendingSort.Recommended;
 
-  const iconColor = useForegroundColor(selected ? 'labelSecondary' : 'labelTertiary');
+  const iconColor = getColorWorklet(selected ? 'labelSecondary' : 'labelTertiary', selected ? false : isDarkMode);
 
   const sortLabel = useMemo(() => {
     if (sort === TrendingSort.Recommended) return i18n.t(t.filters.sort.RECOMMENDED.label);
@@ -621,9 +575,15 @@ function SortFilter() {
         highlightedBackgroundColor={undefined}
         label={sortLabel}
         icon={
-          <Text color={{ custom: iconColor }} size="icon 13px" weight="heavy" style={{ width: 20 }}>
+          <TextIcon
+            color={{ custom: iconColor }}
+            size="icon 13px"
+            textStyle={IS_IOS ? undefined : { marginTop: -2 }}
+            weight="heavy"
+            width={20}
+          >
             􀄬
-          </Text>
+          </TextIcon>
         }
       />
     </DropdownMenu>
@@ -634,7 +594,7 @@ function TrendingTokensLoader() {
   const { trending_tokens_limit } = useRemoteConfig();
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, gap: 28 }}>
       {Array.from({ length: trending_tokens_limit }).map((_, index) => (
         <TrendingTokenLoadingRow key={index} />
       ))}
@@ -648,8 +608,8 @@ function TrendingTokenData() {
 
   return (
     <FlatList
-      style={{ marginHorizontal: -20, marginVertical: -12, paddingBottom: 20, paddingTop: 12 }}
-      contentContainerStyle={{ gap: 28, paddingHorizontal: 20 }}
+      style={{ marginHorizontal: -20, marginVertical: -12, paddingBottom: 8 }}
+      contentContainerStyle={{ gap: 28, paddingHorizontal: 20, paddingVertical: 12 }}
       ListEmptyComponent={<NoResults />}
       data={trendingTokens}
       renderItem={({ item }) => <TrendingTokenRow token={item} />}
