@@ -73,7 +73,7 @@ async function fetchTrendingTokens({
 
   for (const token of response.trendingTokens.data) {
     const { uniqueId, address, name, symbol, chainId, decimals, trending, market, icon_url, colors } = token;
-    const { bought_stats } = trending.swap_data;
+    const { bought_stats, sold_stats } = trending.swap_data;
     const highlightedFriends = (bought_stats.farcaster_users || []).reduce((friends, friend) => {
       const { username, pfp_url } = friend;
       if (username && pfp_url) friends.push({ username, pfp_url });
@@ -93,7 +93,7 @@ async function fetchTrendingTokens({
         day: trending.pool_data.h24_price_change || 0,
       },
       marketCap: market.market_cap?.value || 0,
-      volume: market.volume_24h || 0,
+      volume: (bought_stats?.total_volume || 0) + (sold_stats?.total_volume || 0),
       highlightedFriends,
       icon_url,
       colors: {
