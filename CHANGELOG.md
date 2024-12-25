@@ -15,6 +15,41 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.51] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.51)
+
+### Added
+
+- Retrieve FID for wallet addresses (#6330)
+- Network Expansion (#6334)
+- Track token lists (#6303)
+- Add default option to dropdown menu for sort (#6359)
+
+### Changed
+
+- User assets migration (#6038)
+- Trending tokens polishes (#6331)
+- Convert `networkColors` to backendNetworks (#6353)
+- Trending tokens / network switcher cleanup (#6372)
+- Backups V2 Follow-up Fixes / Improvements (#6213)
+- Change logic around when to parse into our native formatter (#6360)
+- Support only persisting when search query is undefined (#6358)
+- Use positions value from summary for wallet balance (#6358)
+- Remove zustand selectors that return objects (#6355)
+- Add trending tokens flag to remote config.ts (#6373)
+- Fix and others i18n (#6367)
+
+### Removed
+
+- Trending tokens + network selector + explain sheet remove local networks (#6367)
+
+### Fixed
+
+- Icons hotfixes (#6342, #6345)
+- Selected state for network, timeframe, sort (#6352)
+- Time filters and default to D3 (#6362)
+- Network colors for network switcher (#6361)
+- Prevent backup prompt from firing on import (#6364)
+
 ## [1.9.50] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.50)
 
 ### Fixed
