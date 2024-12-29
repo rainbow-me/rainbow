@@ -24,7 +24,7 @@ export const QueryStatuses = {
  * - **`'error'`**  : The most recent request encountered an error.
  * - **`'idle'`**   : No request in progress, no error, no data yet.
  * - **`'loading'`** : A request is currently in progress.
- * - **`'success'`** : The most recent request has succeeded, and `data` is available.
+ * - **`'success'`** : The most recent request has succeeded and data is available.
  */
 export type QueryStatus = (typeof QueryStatuses)[keyof typeof QueryStatuses];
 
@@ -81,6 +81,7 @@ interface CacheEntry<TData> {
  *
  * In addition to Zustand's store API (such as `getState()` and `subscribe()`), this interface provides:
  * - **`enabled`**: A boolean indicating if the store is actively fetching data.
+ * - **`queryKey`**: A string representation of the current query parameter values.
  * - **`fetch(params, options)`**: Initiates a data fetch operation.
  * - **`getData(params)`**: Returns the cached data, if available, for the current query parameters.
  * - **`getStatus()`**: Returns expanded status information for the current query parameters.
@@ -168,7 +169,7 @@ type StoreState<TData, TParams extends Record<string, unknown>> = Pick<
 /**
  * Configuration options for creating a query-enabled Rainbow store.
  */
-export type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string, unknown>, TData, S extends StoreState<TData, TParams>> = {
+export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknown>, TData, S extends StoreState<TData, TParams>> = {
   /**
    * A function responsible for fetching data from a remote source.
    * Receives parameters of type `TParams` and returns either a promise or a raw data value of type `TQueryFnData`.
@@ -208,6 +209,13 @@ export type RainbowQueryStoreConfig<TQueryFnData, TParams extends Record<string,
    * If not provided, the raw data returned by `fetcher` is used.
    */
   transform?: (data: TQueryFnData) => TData;
+  /**
+   * If `true`, the store will abort any partially completed fetches when:
+   * - A new fetch is initiated due to a change in parameters
+   * - All components subscribed to the store via selectors are unmounted
+   * @default true
+   */
+  abortInterruptedFetches?: boolean;
   /**
    * The maximum duration, in milliseconds, that fetched data is considered fresh.
    * After this time, data is considered expired and will be refetched when requested.
@@ -313,6 +321,8 @@ const SHOULD_PERSIST_INTERNAL_STATE_MAP: Record<string, boolean> = {
   subscriptionCount: discard,
 } satisfies Record<InternalStateKeys, boolean>;
 
+const ABORT_ERROR = new Error('[createQueryStore: AbortError] Fetch interrupted');
+
 export const time = {
   seconds: (n: number) => n * 1000,
   minutes: (n: number) => time.seconds(n * 60),
@@ -329,7 +339,7 @@ export function createQueryStore<
   U = unknown,
   TData = TQueryFnData,
 >(
-  config: RainbowQueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & PrivateStoreState & U> & {
+  config: QueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & PrivateStoreState & U> & {
     params?: { [K in keyof TParams]: ParamResolvable<TParams[K], TParams, StoreState<TData, TParams> & PrivateStoreState & U, TData> };
   },
   customStateCreator: StateCreator<U, [], [['zustand/subscribeWithSelector', never]]>,
@@ -342,7 +352,7 @@ export function createQueryStore<
   U = unknown,
   TData = TQueryFnData,
 >(
-  config: RainbowQueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & PrivateStoreState & U> & {
+  config: QueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & PrivateStoreState & U> & {
     params?: { [K in keyof TParams]: ParamResolvable<TParams[K], TParams, StoreState<TData, TParams> & PrivateStoreState & U, TData> };
   },
   persistConfig?: RainbowPersistConfig<StoreState<TData, TParams> & PrivateStoreState & U>
@@ -361,7 +371,7 @@ export function createQueryStore<
   U = unknown,
   TData = TQueryFnData,
 >(
-  config: RainbowQueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & PrivateStoreState & U> & {
+  config: QueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & PrivateStoreState & U> & {
     params?: { [K in keyof TParams]: ParamResolvable<TParams[K], TParams, StoreState<TData, TParams> & PrivateStoreState & U, TData> };
   },
   arg1?:
@@ -376,6 +386,7 @@ export function createQueryStore<
   const persistConfig = typeof arg1 === 'object' ? arg1 : arg2;
 
   const {
+    abortInterruptedFetches = true,
     fetcher,
     onFetched,
     transform,
@@ -393,7 +404,7 @@ export function createQueryStore<
 
   if (IS_DEV && !suppressStaleTimeWarning && staleTime < MIN_STALE_TIME) {
     console.warn(
-      `[RainbowQueryStore${persistConfig?.storageKey ? `: ${persistConfig.storageKey}` : ''}] ❌ Stale times under ${
+      `[createQueryStore${persistConfig?.storageKey ? `: ${persistConfig.storageKey}` : ''}] ❌ Stale times under ${
         MIN_STALE_TIME / 1000
       } seconds are not recommended.`
     );
@@ -402,6 +413,7 @@ export function createQueryStore<
   let directValues: Partial<TParams> = {};
   let paramAttachVals: Partial<Record<keyof TParams, AttachValue<unknown>>> = {};
 
+  let activeAbortController: AbortController | null = null;
   let activeFetchPromise: Promise<void> | null = null;
   let activeRefetchTimeout: NodeJS.Timeout | null = null;
   let lastFetchKey: string | null = null;
@@ -426,6 +438,30 @@ export function createQueryStore<
       currentParams[k as keyof TParams] = attachVal.value as TParams[keyof TParams];
     }
     return currentParams as TParams;
+  };
+
+  const fetchWithAbortControl = async (params: TParams): Promise<TQueryFnData> => {
+    const abortController = new AbortController();
+    activeAbortController = abortController;
+
+    try {
+      return await new Promise((resolve, reject) => {
+        abortController.signal.addEventListener('abort', () => reject(ABORT_ERROR), { once: true });
+
+        Promise.resolve(fetcher(params)).then(resolve, reject);
+      });
+    } finally {
+      if (activeAbortController === abortController) {
+        activeAbortController = null;
+      }
+    }
+  };
+
+  const abortActiveFetch = () => {
+    if (activeAbortController) {
+      activeAbortController.abort();
+      activeAbortController = null;
+    }
   };
 
   const createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]> = (set, get, api) => {
@@ -471,6 +507,8 @@ export function createQueryStore<
           return activeFetchPromise;
         }
 
+        if (abortInterruptedFetches) abortActiveFetch();
+
         if (!options?.force && !disableCache) {
           const { errorInfo, lastFetchedAt } = get().queryCache[currentQueryKey] ?? {};
           const errorRetriesExhausted = errorInfo && errorInfo.retryCount >= maxRetries;
@@ -485,7 +523,7 @@ export function createQueryStore<
 
         const fetchOperation = async () => {
           try {
-            const rawResult = await fetcher(effectiveParams);
+            const rawResult = await (abortInterruptedFetches ? fetchWithAbortControl(effectiveParams) : fetcher(effectiveParams));
             let transformedData: TData;
             try {
               transformedData = transform ? transform(rawResult) : (rawResult as TData);
@@ -551,6 +589,8 @@ export function createQueryStore<
               }
             }
           } catch (error) {
+            if (error === ABORT_ERROR) return;
+
             const typedError = error instanceof Error ? error : new Error(String(error));
             const entry = get().queryCache[currentQueryKey];
             const currentRetryCount = entry?.errorInfo?.retryCount ?? 0;
@@ -659,6 +699,7 @@ export function createQueryStore<
           clearTimeout(activeRefetchTimeout);
           activeRefetchTimeout = null;
         }
+        if (abortInterruptedFetches) abortActiveFetch();
         activeFetchPromise = null;
         lastFetchKey = null;
         set(state => ({ ...state, ...initialData, queryKey: getQueryKey(getCurrentResolvedParams()) }));
@@ -713,6 +754,7 @@ export function createQueryStore<
               clearTimeout(activeRefetchTimeout);
               activeRefetchTimeout = null;
             }
+            if (abortInterruptedFetches) abortActiveFetch();
           }
           return { ...state, subscriptionCount: newCount };
         });
