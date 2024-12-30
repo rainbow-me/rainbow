@@ -37,7 +37,7 @@ const abcSort = (list: any[], key?: string) => {
 const useSearchCurrencyList = (searchQuery: string) => {
   const searching = useMemo(() => searchQuery !== '', [searchQuery]);
 
-  const { favoritesMetadata: favoriteMap } = useFavorites();
+  const { favorites: favoriteAddresses, favoritesMetadata: favoriteMap } = useFavorites();
   const unfilteredFavorites = useMemo(() => {
     return Object.values(favoriteMap)
       .filter(token => token.networks[ChainId.mainnet])
@@ -104,9 +104,13 @@ const useSearchCurrencyList = (searchQuery: string) => {
         })
         .slice(0, MAX_VERIFIED_RESULTS);
 
-      return [...topResults];
+      const topResultsWithoutFavorites = topResults.filter(asset => {
+        return !favoriteAddresses.map(a => a?.toLowerCase()).includes(asset.address?.toLowerCase());
+      });
+
+      return [...topResultsWithoutFavorites];
     },
-    [searchQuery]
+    [searchQuery, favoriteAddresses]
   );
 
   const { data: searchResultAssets, isFetching: loading } = useTokenSearchAllNetworks(
