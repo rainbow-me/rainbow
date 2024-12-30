@@ -34,6 +34,80 @@ const abcSort = (list: any[], key?: string) => {
   });
 };
 
+type SearchItemWithRelevance = SearchAsset & {
+  relevance: number;
+};
+
+const sortTokensByRelevance = (tokens: SearchAsset[], query: string): SearchItemWithRelevance[] => {
+  const normalizedQuery = query.toLowerCase().trim();
+  const tokenWithRelevance: SearchItemWithRelevance[] = [];
+
+  for (const token of tokens) {
+    const normalizedTokenName = token.name.toLowerCase();
+    const normalizedTokenSymbol = token.symbol.toLowerCase();
+    const tokenNameWords = normalizedTokenName.split(' ');
+    const relevance = getTokenRelevance({
+      token,
+      normalizedTokenName,
+      normalizedQuery,
+      normalizedTokenSymbol,
+      tokenNameWords,
+    });
+
+    if (relevance > 0) {
+      tokenWithRelevance.push({ ...token, relevance });
+    }
+  }
+
+  return tokenWithRelevance.sort((a, b) => b.relevance - a.relevance);
+};
+
+const getStackedRelevanceScore = (token: SearchAsset, topScore: number) => {
+  if (token.isVerified) {
+    return topScore;
+  } else if (token.highLiquidity) {
+    return topScore - 0.1;
+  } else if (token.icon_url) {
+    return topScore - 0.2;
+  } else if (Object.keys(token.networks).length > 1) {
+    return topScore - 0.3;
+  } else {
+    return topScore - 0.4;
+  }
+};
+
+// higher number indicates higher relevance
+const getTokenRelevance = ({
+  token,
+  normalizedTokenName,
+  normalizedQuery,
+  normalizedTokenSymbol,
+  tokenNameWords,
+}: {
+  token: SearchAsset;
+  normalizedTokenName: string;
+  normalizedQuery: string;
+  normalizedTokenSymbol?: string;
+  tokenNameWords: string[];
+}) => {
+  // High relevance: Leading word in token name starts with query or exact match on symbol
+  if (normalizedTokenName.startsWith(normalizedQuery) || (normalizedTokenSymbol && normalizedTokenSymbol === normalizedQuery)) {
+    return getStackedRelevanceScore(token, 5);
+  }
+
+  // Medium relevance: Non-leading word in token name starts with query
+  if (tokenNameWords.some((word, index) => index !== 0 && word.startsWith(normalizedQuery))) {
+    return getStackedRelevanceScore(token, 4);
+  }
+
+  // Low relevance: Token name contains query
+  if (tokenNameWords.some(word => word.includes(normalizedQuery))) {
+    return getStackedRelevanceScore(token, 3);
+  }
+
+  return 0;
+};
+
 const useSearchCurrencyList = (searchQuery: string) => {
   const searching = useMemo(() => searchQuery !== '', [searchQuery]);
 
@@ -83,6 +157,9 @@ const useSearchCurrencyList = (searchQuery: string) => {
   const selectTopSearchResults = useCallback(
     (data: TokenSearchResult) => {
       const results = data.filter(asset => {
+        const isFavorite = favoriteAddresses.map(a => a?.toLowerCase()).includes(asset.address?.toLowerCase());
+        if (isFavorite) return false;
+
         const hasIcon = asset.icon_url;
         const isMatch = hasIcon || searchQuery.length > 2;
 
@@ -93,22 +170,8 @@ const useSearchCurrencyList = (searchQuery: string) => {
 
         return isMatch;
       });
-
-      const topResults = results
-        .sort((a, b) => {
-          if (a.isNativeAsset !== b.isNativeAsset) return a.isNativeAsset ? -1 : 1;
-          if (a.market?.market_cap?.value !== b.market?.market_cap?.value)
-            return (b.market?.market_cap?.value || 0) - (a.market?.market_cap?.value || 0);
-          if (a.highLiquidity !== b.highLiquidity) return a.highLiquidity ? -1 : 1;
-          return Object.keys(b.networks).length - Object.keys(a.networks).length;
-        })
-        .slice(0, MAX_VERIFIED_RESULTS);
-
-      const topResultsWithoutFavorites = topResults.filter(asset => {
-        return !favoriteAddresses.map(a => a?.toLowerCase()).includes(asset.address?.toLowerCase());
-      });
-
-      return [...topResultsWithoutFavorites];
+      const topResults = sortTokensByRelevance(results, searchQuery);
+      return topResults.slice(0, MAX_VERIFIED_RESULTS);
     },
     [searchQuery, favoriteAddresses]
   );
