@@ -482,7 +482,7 @@ export function createQueryStore<
         clearTimeout(activeRefetchTimeout);
         activeRefetchTimeout = null;
       }
-      const currentQueryKey = get().queryKey;
+      const currentQueryKey = getQueryKey(params);
       const lastFetchedAt =
         get().queryCache[currentQueryKey]?.lastFetchedAt || (disableCache && lastFetchKey === currentQueryKey ? get().lastFetchedAt : null);
       const timeUntilRefetch = lastFetchedAt ? effectiveStaleTime - (Date.now() - lastFetchedAt) : effectiveStaleTime;
@@ -500,8 +500,8 @@ export function createQueryStore<
         if (!options?.force && !get().enabled) return;
 
         const effectiveParams = params ?? getCurrentResolvedParams();
-        const { queryKey: currentQueryKey, status } = get();
-        const isLoading = status === QueryStatuses.Loading;
+        const currentQueryKey = getQueryKey(effectiveParams);
+        const isLoading = get().status === QueryStatuses.Loading;
 
         if (activeFetchPromise && lastFetchKey === currentQueryKey && isLoading && !options?.force) {
           return activeFetchPromise;
@@ -733,12 +733,13 @@ export function createQueryStore<
         }
       });
 
-      const { enabled, fetch, isStale, queryKey } = get();
-
+      const { enabled, fetch, isStale } = get();
       const currentParams = getCurrentResolvedParams();
-      set(state => ({ ...state, queryKey: getQueryKey(currentParams) }));
+      const currentQueryKey = getQueryKey(currentParams);
 
-      if (!get().queryCache[queryKey] || isStale()) {
+      set(state => ({ ...state, queryKey: currentQueryKey }));
+
+      if (!get().queryCache[currentQueryKey] || isStale()) {
         fetch(currentParams);
       } else if (enabled) {
         scheduleNextFetch(currentParams, undefined);
