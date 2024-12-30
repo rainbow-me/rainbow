@@ -1,13 +1,19 @@
 /* eslint-disable no-nested-ternary */
 import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
-import { isAddress } from '@ethersproject/address';
+import { getAddress, isAddress } from '@ethersproject/address';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { Contract } from '@ethersproject/contracts';
 import { useQuery } from '@tanstack/react-query';
 import qs from 'qs';
 import { parseTokenSearch } from './utils';
+import { RainbowToken } from '@/entities';
+import { getProvider } from '@/handlers/web3';
+import { erc20ABI } from '@/references';
 
 const ALL_VERIFIED_TOKENS_PARAM = '/?list=verifiedAssets';
 
@@ -48,6 +54,47 @@ type TokenSearchQueryKey = ReturnType<typeof tokenSearchQueryKey>;
 
 // ///////////////////////////////////////////////
 // Query Function
+const getImportedAsset = async (searchQuery: string, chainId: number = ChainId.mainnet): Promise<RainbowToken[] | null> => {
+  if (isAddress(searchQuery)) {
+    const provider = getProvider({ chainId });
+    const tokenContract = new Contract(searchQuery, erc20ABI, provider);
+    try {
+      const [name, symbol, decimals, address] = await Promise.all([
+        tokenContract.name(),
+        tokenContract.symbol(),
+        tokenContract.decimals(),
+        getAddress(searchQuery),
+      ]);
+      const uniqueId = getUniqueId(address, chainId);
+
+      return [
+        {
+          chainId,
+          address,
+          decimals,
+          favorite: false,
+          highLiquidity: false,
+          isRainbowCurated: false,
+          isVerified: false,
+          name,
+          networks: {
+            [chainId]: {
+              address,
+              decimals,
+            },
+          },
+          symbol,
+          network: useBackendNetworksStore.getState().getChainsName()[chainId],
+          uniqueId,
+        } as RainbowToken,
+      ];
+    } catch (e) {
+      logger.warn('[useSearchCurrencyList]: error getting token data', { error: (e as Error).message });
+      return null;
+    }
+  }
+  return null;
+};
 
 async function tokenSearchQueryFunction({
   queryKey: [{ chainId, fromChainId, keys, list, threshold, query }],
