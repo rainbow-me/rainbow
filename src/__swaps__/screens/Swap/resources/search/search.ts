@@ -1,6 +1,5 @@
 /* eslint-disable no-nested-ternary */
 import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
@@ -11,7 +10,6 @@ import { Contract } from '@ethersproject/contracts';
 import { useQuery } from '@tanstack/react-query';
 import qs from 'qs';
 import { parseTokenSearch } from './utils';
-import { RainbowToken } from '@/entities';
 import { getProvider } from '@/handlers/web3';
 import { erc20ABI } from '@/references';
 
@@ -40,8 +38,7 @@ export type TokenSearchArgs = {
 };
 
 export type TokenSearchAllNetworksArgs = {
-  query?: string;
-  shouldPersist?: boolean;
+  query: string;
 };
 
 // ///////////////////////////////////////////////
@@ -55,8 +52,9 @@ const tokenSearchQueryKey = ({ chainId, fromChainId, keys, list, threshold, quer
   );
 };
 
-const tokenSearchAllNetworksQueryKey = ({ query, shouldPersist }: TokenSearchAllNetworksArgs) => {
-  return createQueryKey('TokenSearch', { query }, { persisterVersion: shouldPersist ? 3 : undefined });
+const tokenSearchAllNetworksQueryKey = ({ query }: TokenSearchAllNetworksArgs) => {
+  const shouldPersist = query === '';
+  return createQueryKey('TokenSearchAllNetworks', { query }, { persisterVersion: shouldPersist ? 1 : undefined });
 };
 
 type TokenSearchQueryKey = ReturnType<typeof tokenSearchQueryKey>;
@@ -65,7 +63,7 @@ type TokenSearchAllNetworksQueryKey = ReturnType<typeof tokenSearchAllNetworksQu
 
 // ///////////////////////////////////////////////
 // Query Function
-const getImportedAsset = async (searchQuery: string, chainId: number = ChainId.mainnet): Promise<RainbowToken[] | null> => {
+const getImportedAsset = async (searchQuery: string, chainId: number = ChainId.mainnet): Promise<SearchAsset[]> => {
   if (isAddress(searchQuery)) {
     const provider = getProvider({ chainId });
     const tokenContract = new Contract(searchQuery, erc20ABI, provider);
@@ -83,10 +81,10 @@ const getImportedAsset = async (searchQuery: string, chainId: number = ChainId.m
           chainId,
           address,
           decimals,
-          favorite: false,
           highLiquidity: false,
           isRainbowCurated: false,
           isVerified: false,
+          mainnetAddress: address,
           name,
           networks: {
             [chainId]: {
@@ -95,16 +93,15 @@ const getImportedAsset = async (searchQuery: string, chainId: number = ChainId.m
             },
           },
           symbol,
-          network: useBackendNetworksStore.getState().getChainsName()[chainId],
           uniqueId,
-        } as RainbowToken,
+        } as SearchAsset,
       ];
     } catch (e) {
-      logger.warn('[useSearchCurrencyList]: error getting token data', { error: (e as Error).message });
-      return null;
+      logger.warn('[getImportedAsset]: error getting imported token data', { error: (e as Error).message });
+      return [];
     }
   }
-  return null;
+  return [];
 };
 
 async function tokenSearchQueryFunction({
@@ -179,7 +176,8 @@ async function tokenSearchQueryFunctionAllNetworks({ queryKey: [{ query }] }: Qu
         return parseTokenSearch(tokenSearch.data.data);
       }
 
-      return [];
+      const result = await getImportedAsset(query);
+      return result;
     } else {
       const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
       return parseTokenSearch(tokenSearch.data.data);
