@@ -39,6 +39,11 @@ export type TokenSearchArgs = {
   shouldPersist?: boolean;
 };
 
+export type TokenSearchAllNetworksArgs = {
+  query?: string;
+  shouldPersist?: boolean;
+};
+
 // ///////////////////////////////////////////////
 // Query Key
 
@@ -50,7 +55,13 @@ const tokenSearchQueryKey = ({ chainId, fromChainId, keys, list, threshold, quer
   );
 };
 
+const tokenSearchAllNetworksQueryKey = ({ query, shouldPersist }: TokenSearchAllNetworksArgs) => {
+  return createQueryKey('TokenSearch', { query }, { persisterVersion: shouldPersist ? 3 : undefined });
+};
+
 type TokenSearchQueryKey = ReturnType<typeof tokenSearchQueryKey>;
+
+type TokenSearchAllNetworksQueryKey = ReturnType<typeof tokenSearchAllNetworksQueryKey>;
 
 // ///////////////////////////////////////////////
 // Query Function
@@ -149,6 +160,36 @@ async function tokenSearchQueryFunction({
   }
 }
 
+async function tokenSearchQueryFunctionAllNetworks({ queryKey: [{ query }] }: QueryFunctionArgs<typeof tokenSearchAllNetworksQueryKey>) {
+  const queryParams: {
+    query?: string;
+  } = {
+    query,
+  };
+
+  const isAddressSearch = query && isAddress(query);
+
+  const url = `/?${qs.stringify(queryParams)}`;
+
+  try {
+    if (isAddressSearch) {
+      const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
+
+      if (tokenSearch && tokenSearch.data.data.length > 0) {
+        return parseTokenSearch(tokenSearch.data.data);
+      }
+
+      return [];
+    } else {
+      const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
+      return parseTokenSearch(tokenSearch.data.data);
+    }
+  } catch (e) {
+    logger.error(new RainbowError('[tokenSearchQueryFunction]: Token search failed'), { url });
+    return [];
+  }
+}
+
 export type TokenSearchResult = QueryFunctionResult<typeof tokenSearchQueryFunction>;
 
 // ///////////////////////////////////////////////
@@ -193,10 +234,10 @@ export function useTokenSearch(
 }
 
 export function useTokenSearchAllNetworks(
-  { query }: Omit<TokenSearchArgs, 'list' | 'chainId' | 'fromChainId'>,
-  config: QueryConfigWithSelect<TokenSearchResult, Error, TokenSearchResult, TokenSearchQueryKey> = {}
+  { query }: TokenSearchAllNetworksArgs,
+  config: QueryConfigWithSelect<TokenSearchResult, Error, TokenSearchResult, TokenSearchAllNetworksQueryKey> = {}
 ) {
-  return useQuery(tokenSearchQueryKey({ query }), tokenSearchQueryFunction, {
+  return useQuery(tokenSearchAllNetworksQueryKey({ query }), tokenSearchQueryFunctionAllNetworks, {
     ...config,
     keepPreviousData: true,
   });
