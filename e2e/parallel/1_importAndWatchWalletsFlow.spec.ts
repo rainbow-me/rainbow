@@ -16,10 +16,10 @@ const android = device.getPlatform() === 'android';
 
 describe('Import from private key flow', () => {
   beforeAll(async () => {
-    await beforeAllcleanApp({ hardhat: false });
+    await beforeAllcleanApp({ anvil: false });
   });
   afterAll(async () => {
-    await afterAllcleanApp({ hardhat: false });
+    await afterAllcleanApp({ anvil: false });
   });
   it('with 0x - Should show the welcome screen', async () => {
     await checkIfVisible('welcome-screen');

@@ -1,16 +1,20 @@
+import { selectorFilterByUserChains, selectUserAssetsList } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
+import { userAssetsFetchQuery } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import store from '@/redux/store';
-import { fetchUserAssets } from '@/resources/assets/UserAssetsQuery';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 export const hasNonZeroTotalBalance = async (): Promise<boolean> => {
   const { accountAddress, nativeCurrency } = store.getState().settings;
 
-  const assets = await fetchUserAssets({
+  const userAssetsDictByChain = await userAssetsFetchQuery({
     address: accountAddress,
     currency: nativeCurrency,
-    connectedToHardhat: false,
+    testnetMode: useConnectedToAnvilStore.getState().connectedToAnvil,
   });
 
-  if (!assets || Object.keys(assets).length === 0) return false;
+  const assets = selectorFilterByUserChains({ data: userAssetsDictByChain, selector: selectUserAssetsList });
 
-  return Object.values(assets).some(asset => Number(asset.balance?.amount) > 0);
+  if (!assets?.length) return false;
+
+  return assets.some(asset => Number(asset.balance?.amount) > 0);
 };

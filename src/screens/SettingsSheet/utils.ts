@@ -1,118 +1,121 @@
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
+import { useWallets } from '@/hooks';
+import { isEmpty } from 'lodash';
+import { BackupFile, CloudBackups, parseTimestampFromFilename } from '@/model/backup';
+import * as i18n from '@/languages';
+import { cloudPlatform } from '@/utils/platform';
+import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { RainbowWallet } from '@/model/wallet';
-import { Navigation } from '@/navigation';
-import { BackupUserData, getLocalBackupPassword } from '@/model/backup';
-import Routes from '@/navigation/routesNames';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-
-type WalletsByKey = {
-  [key: string]: RainbowWallet;
-};
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 
 type WalletBackupStatus = {
   allBackedUp: boolean;
   areBackedUp: boolean;
   canBeBackedUp: boolean;
-  backupProvider: string | undefined;
 };
 
-export const capitalizeFirstLetter = (str: string) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+export const hasManuallyBackedUpWallet = (wallets: ReturnType<typeof useWallets>['wallets']) => {
+  if (!wallets) return false;
+  return Object.values(wallets).some(wallet => wallet.backupType === WalletBackupTypes.manual);
 };
 
-export const checkUserDataForBackupProvider = (userData?: BackupUserData): { backupProvider: string | undefined } => {
-  let backupProvider: string | undefined = undefined;
-
-  if (!userData?.wallets) return { backupProvider };
-
-  Object.values(userData.wallets).forEach(wallet => {
-    if (wallet.backedUp && wallet.type !== WalletTypes.readOnly) {
-      if (wallet.backupType === WalletBackupTypes.cloud) {
-        backupProvider = WalletBackupTypes.cloud;
-      } else if (backupProvider !== WalletBackupTypes.cloud && wallet.backupType === WalletBackupTypes.manual) {
-        backupProvider = WalletBackupTypes.manual;
-      }
-    }
-  });
-
-  return { backupProvider };
-};
-
-export const checkWalletsForBackupStatus = (wallets: WalletsByKey | null): WalletBackupStatus => {
-  if (!wallets)
+export const checkLocalWalletsForBackupStatus = (
+  wallets: ReturnType<typeof useWallets>['wallets'],
+  backups: CloudBackups
+): WalletBackupStatus => {
+  if (!wallets || isEmpty(wallets)) {
     return {
       allBackedUp: false,
       areBackedUp: false,
       canBeBackedUp: false,
-      backupProvider: undefined,
     };
+  }
 
-  let backupProvider: string | undefined = undefined;
-  let areBackedUp = true;
-  let canBeBackedUp = false;
-  let allBackedUp = true;
+  // FOR ANDROID, we need to check if the current google account also has the backup file
+  if (IS_ANDROID) {
+    return Object.values(wallets).reduce<WalletBackupStatus>(
+      (acc, wallet) => {
+        const isBackupEligible = wallet.type !== WalletTypes.readOnly && wallet.type !== WalletTypes.bluetooth;
+        const hasBackupFile = backups.files.some(
+          file => normalizeAndroidBackupFilename(file.name) === normalizeAndroidBackupFilename(wallet.backupFile ?? '')
+        );
 
-  Object.keys(wallets).forEach(key => {
-    if (wallets[key].backedUp && wallets[key].type !== WalletTypes.readOnly && wallets[key].type !== WalletTypes.bluetooth) {
-      if (wallets[key].backupType === WalletBackupTypes.cloud) {
-        backupProvider = WalletBackupTypes.cloud;
-      } else if (backupProvider !== WalletBackupTypes.cloud && wallets[key].backupType === WalletBackupTypes.manual) {
-        backupProvider = WalletBackupTypes.manual;
-      }
-    }
-
-    if (!wallets[key].backedUp && wallets[key].type !== WalletTypes.readOnly && wallets[key].type !== WalletTypes.bluetooth) {
-      allBackedUp = false;
-    }
-
-    if (
-      !wallets[key].backedUp &&
-      wallets[key].type !== WalletTypes.readOnly &&
-      wallets[key].type !== WalletTypes.bluetooth &&
-      !wallets[key].imported
-    ) {
-      areBackedUp = false;
-    }
-
-    if (wallets[key].type !== WalletTypes.bluetooth && wallets[key].type !== WalletTypes.readOnly) {
-      canBeBackedUp = true;
-    }
-  });
-  return {
-    allBackedUp,
-    areBackedUp,
-    canBeBackedUp,
-    backupProvider,
-  };
-};
-
-export const getWalletsThatNeedBackedUp = (wallets: { [key: string]: RainbowWallet } | null): RainbowWallet[] => {
-  if (!wallets) return [];
-  const walletsToBackup: RainbowWallet[] = [];
-  Object.keys(wallets).forEach(key => {
-    if (
-      !wallets[key].backedUp &&
-      wallets[key].type !== WalletTypes.readOnly &&
-      wallets[key].type !== WalletTypes.bluetooth &&
-      !wallets[key].imported
-    ) {
-      walletsToBackup.push(wallets[key]);
-    }
-  });
-  return walletsToBackup;
-};
-
-export const fetchBackupPasswordAndNavigate = async () => {
-  const password = await getLocalBackupPassword();
-
-  return new Promise(resolve => {
-    return Navigation.handleAction(Routes.BACKUP_SHEET, {
-      step: WalletBackupStepTypes.backup_cloud,
-      password,
-      onSuccess: async (password: string) => {
-        resolve(password);
+        return {
+          allBackedUp: acc.allBackedUp && hasBackupFile && (wallet.backedUp || !isBackupEligible),
+          areBackedUp: acc.areBackedUp && hasBackupFile && (wallet.backedUp || !isBackupEligible),
+          canBeBackedUp: acc.canBeBackedUp && isBackupEligible,
+        };
       },
-    });
+      { allBackedUp: true, areBackedUp: true, canBeBackedUp: false }
+    );
+  }
+
+  return Object.values(wallets).reduce<WalletBackupStatus>(
+    (acc, wallet) => {
+      const isBackupEligible = wallet.type !== WalletTypes.readOnly && wallet.type !== WalletTypes.bluetooth;
+
+      return {
+        allBackedUp: acc.allBackedUp && (wallet.backedUp || !isBackupEligible),
+        areBackedUp: acc.areBackedUp && (wallet.backedUp || !isBackupEligible || wallet.imported),
+        canBeBackedUp: acc.canBeBackedUp && isBackupEligible,
+      };
+    },
+    { allBackedUp: true, areBackedUp: true, canBeBackedUp: false }
+  );
+};
+
+export const getMostRecentCloudBackup = (backups: BackupFile[]) => {
+  const cloudBackups = backups.sort((a, b) => {
+    return parseTimestampFromFilename(b.name) - parseTimestampFromFilename(a.name);
   });
+
+  return cloudBackups.reduce<BackupFile>((prev, current) => {
+    if (!current) {
+      return prev;
+    }
+
+    if (!prev) {
+      return current;
+    }
+
+    const prevTimestamp = new Date(prev.lastModified).getTime();
+    const currentTimestamp = new Date(current.lastModified).getTime();
+    if (currentTimestamp > prevTimestamp) {
+      return current;
+    }
+
+    return prev;
+  }, cloudBackups[0]);
+};
+
+export const titleForBackupState: Partial<Record<CloudBackupState, string>> = {
+  [CloudBackupState.Initializing]: i18n.t(i18n.l.back_up.cloud.syncing_cloud_store, {
+    cloudPlatformName: cloudPlatform,
+  }),
+  [CloudBackupState.Syncing]: i18n.t(i18n.l.back_up.cloud.syncing_cloud_store, {
+    cloudPlatformName: cloudPlatform,
+  }),
+  [CloudBackupState.Fetching]: i18n.t(i18n.l.back_up.cloud.fetching_backups, {
+    cloudPlatformName: cloudPlatform,
+  }),
+};
+
+export const isWalletBackedUpForCurrentAccount = ({ backupType, backedUp, backupFile }: Partial<RainbowWallet>) => {
+  if (IS_IOS || backupType === WalletBackupTypes.manual) {
+    return backedUp;
+  }
+
+  if (!backupType || !backupFile) {
+    return false;
+  }
+
+  // NOTE: For Android, we also need to check if the current google account has the matching backup file
+  if (!backupFile) {
+    return false;
+  }
+
+  const backupFiles = backupsStore.getState().backups;
+  return backupFiles.files.some(file => normalizeAndroidBackupFilename(file.name) === normalizeAndroidBackupFilename(backupFile));
 };

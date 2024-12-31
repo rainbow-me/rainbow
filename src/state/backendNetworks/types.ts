@@ -1,8 +1,8 @@
 import * as chain from 'viem/chains';
 
-const HARDHAT_CHAIN_ID = 1337;
-const HARDHAT_OP_CHAIN_ID = 1338;
-const HARDHAT_RPC_URL = 'http://127.0.0.1:8545/';
+const ANVIL_CHAIN_ID = 1337;
+const ANVIL_OP_CHAIN_ID = 1338;
+const ANVIL_RPC_URL = 'http://127.0.0.1:8545/';
 
 export enum Network {
   apechain = 'apechain',
@@ -44,8 +44,8 @@ export enum ChainId {
   gnosis = chain.gnosis.id,
   goerli = chain.goerli.id,
   gravity = chain.gravity.id,
-  hardhat = HARDHAT_CHAIN_ID,
-  hardhatOptimism = HARDHAT_OP_CHAIN_ID,
+  anvil = ANVIL_CHAIN_ID,
+  anvilOptimism = ANVIL_OP_CHAIN_ID,
   holesky = chain.holesky.id,
   ink = 57073,
   linea = chain.linea.id,
@@ -84,8 +84,8 @@ export enum ChainName {
   gnosis = 'gnosis',
   goerli = 'goerli',
   gravity = 'gravity',
-  hardhat = 'hardhat',
-  hardhatOptimism = 'hardhat-optimism',
+  anvil = 'anvil',
+  anvilOptimism = 'anvil-optimism',
   holesky = 'holesky',
   ink = 'ink',
   linea = 'linea',
@@ -106,32 +106,32 @@ export enum ChainName {
   zoraSepolia = 'zora-sepolia',
 }
 
-export const chainHardhat: chain.Chain = {
-  id: HARDHAT_CHAIN_ID,
-  name: 'Hardhat',
+export const chainAnvil: chain.Chain = {
+  id: ANVIL_CHAIN_ID,
+  name: 'Anvil',
   nativeCurrency: {
     decimals: 18,
-    name: 'Hardhat',
+    name: 'Anvil',
     symbol: 'ETH',
   },
   rpcUrls: {
-    public: { http: [HARDHAT_RPC_URL] },
-    default: { http: [HARDHAT_RPC_URL] },
+    public: { http: [ANVIL_RPC_URL] },
+    default: { http: [ANVIL_RPC_URL] },
   },
   testnet: true,
 };
 
-export const chainHardhatOptimism: chain.Chain = {
-  id: HARDHAT_OP_CHAIN_ID,
-  name: 'Hardhat OP',
+export const chainAnvilOptimism: chain.Chain = {
+  id: ANVIL_OP_CHAIN_ID,
+  name: 'Anvil OP',
   nativeCurrency: {
     decimals: 18,
-    name: 'Hardhat OP',
+    name: 'Anvil OP',
     symbol: 'ETH',
   },
   rpcUrls: {
-    public: { http: [HARDHAT_RPC_URL] },
-    default: { http: [HARDHAT_RPC_URL] },
+    public: { http: [ANVIL_RPC_URL] },
+    default: { http: [ANVIL_RPC_URL] },
   },
   testnet: true,
 };
@@ -168,6 +168,10 @@ export interface BackendNetwork {
   id: string;
   name: string;
   label: string;
+  colors: {
+    light: string;
+    dark: string;
+  };
   icons: {
     badgeURL: string;
   };

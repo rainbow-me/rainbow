@@ -3,7 +3,6 @@ import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
 import { CrosschainQuote, getQuoteExecutionDetails, getRainbowRouterContractAddress, Quote } from '@rainbow-me/swaps';
 import { Contract } from '@ethersproject/contracts';
 import { MaxUint256 } from '@ethersproject/constants';
-import { IS_TESTING } from 'react-native-dotenv';
 import { Token } from '../entities/tokens';
 import { estimateGasWithPadding, getProvider, toHexNoLeadingZeros } from './web3';
 import { getRemoteConfig } from '@/model/remoteConfig';
@@ -13,6 +12,7 @@ import { erc20ABI, ethUnits } from '@/references';
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
+import { IS_TEST } from '@/env';
 
 export enum Field {
   INPUT = 'INPUT',
@@ -191,7 +191,7 @@ export const estimateCrosschainSwapGasLimit = async ({
   }
   try {
     if (requiresApprove) {
-      if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId) && IS_TESTING !== 'true') {
+      if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId) && !IS_TEST) {
         try {
           const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(chainId, provider, tradeDetails);
           logger.debug('[swap]: Got gasLimitWithFakeApproval!', {

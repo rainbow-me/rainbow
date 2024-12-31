@@ -3,7 +3,6 @@ import lang from 'i18n-js';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, TextInput } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { fetchENSAvatar } from './useENSAvatar';
@@ -29,9 +28,9 @@ import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger, RainbowError } from '@/logger';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
-import { checkWalletsForBackupStatus } from '@/screens/SettingsSheet/utils';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { ChainId } from '@/state/backendNetworks/types';
+import { backupsStore } from '@/state/backups/backups';
+import { IS_TEST } from '@/env';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -51,6 +50,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const wasImporting = usePrevious(isImporting);
   const { updateWalletENSAvatars } = useWalletENSAvatar();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+
+  const { backupProvider } = backupsStore(state => ({
+    backupProvider: state.backupProvider,
+  }));
 
   const inputRef = useRef<TextInput>(null);
 
@@ -291,7 +294,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             image,
             true
           );
-          await dispatch(walletsLoadState(profilesEnabled));
+          await dispatch(walletsLoadState());
           handleSetImporting(false);
         } else {
           const previousWalletCount = keys(wallets).length;
@@ -335,32 +338,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                       handleReviewPromptAction(ReviewPromptAction.WatchWallet);
                     });
                   }, 1_000);
-
-                  setTimeout(() => {
-                    // If it's not read only or hardware, show the backup sheet
-                    if (
-                      !(
-                        isENSAddressFormat(input) ||
-                        isUnstoppableAddressFormat(input) ||
-                        isValidAddress(input) ||
-                        isValidBluetoothDeviceId(input)
-                      )
-                    ) {
-                      const { backupProvider } = checkWalletsForBackupStatus(wallets);
-
-                      let stepType: string = WalletBackupStepTypes.no_provider;
-                      if (backupProvider === walletBackupTypes.cloud) {
-                        stepType = WalletBackupStepTypes.backup_now_to_cloud;
-                      } else if (backupProvider === walletBackupTypes.manual) {
-                        stepType = WalletBackupStepTypes.backup_now_manually;
-                      }
-
-                      IS_TESTING !== 'true' &&
-                        Navigation.handleAction(Routes.BACKUP_SHEET, {
-                          step: stepType,
-                        });
-                    }
-                  }, 1000);
 
                   analytics.track('Imported seed phrase', {
                     isWalletEthZero,
@@ -414,6 +391,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     showImportModal,
     profilesEnabled,
     dangerouslyGetParent,
+    backupProvider,
   ]);
 
   return {

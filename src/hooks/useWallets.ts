@@ -5,14 +5,12 @@ import { RainbowWallet } from '@/model/wallet';
 import { AppState } from '@/redux/store';
 
 const walletSelector = createSelector(
-  ({ wallets: { isWalletLoading, selected = {} as RainbowWallet, walletNames, wallets } }: AppState) => ({
-    isWalletLoading,
-    selectedWallet: selected as any,
+  ({ wallets: { selected = {} as RainbowWallet, walletNames, wallets } }: AppState) => ({
+    selectedWallet: selected,
     walletNames,
     wallets,
   }),
-  ({ isWalletLoading, selectedWallet, walletNames, wallets }) => ({
-    isWalletLoading,
+  ({ selectedWallet, walletNames, wallets }) => ({
     selectedWallet,
     walletNames,
     wallets,
@@ -20,13 +18,12 @@ const walletSelector = createSelector(
 );
 
 export default function useWallets() {
-  const { isWalletLoading, selectedWallet, walletNames, wallets } = useSelector(walletSelector);
+  const { selectedWallet, walletNames, wallets } = useSelector(walletSelector);
 
   return {
     isDamaged: selectedWallet?.damaged,
     isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
     isHardwareWallet: !!selectedWallet.deviceId,
-    isWalletLoading,
     selectedWallet,
     walletNames,
     wallets,

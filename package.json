@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.51-1",
+  "version": "1.9.52-1",
   "private": true,
   "scripts": {
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn graphql-codegen && yarn fetch:networks",
@@ -33,7 +33,7 @@
     "ds": "cd src/design-system/docs && yarn dev",
     "fast": "yarn install && yarn setup && yarn install-pods-fast",
     "gradle": "cd android && ./gradlew",
-    "hardhat": "sh ./scripts/hardhat.sh",
+    "anvil": "sh ./scripts/anvil.sh",
     "install-all": "yarn install && yarn setup && yarn install-pods",
     "install-all-no-flipper": "yarn install && yarn setup && yarn install-pods-no-flipper",
     "install-bundle": "cd ios && bundle install && cd ..",
@@ -329,8 +329,6 @@
     "@babel/preset-env": "7.22.0",
     "@babel/runtime": "7.22.0",
     "@lavamoat/allow-scripts": "3.0.1",
-    "@nomiclabs/hardhat-ethers": "2.2.3",
-    "@nomiclabs/hardhat-waffle": "2.0.6",
     "@react-native/babel-preset": "0.74.83",
     "@react-native/typescript-config": "0.74.83",
     "@rnx-kit/align-deps": "2.2.4",
@@ -365,7 +363,6 @@
     "eslint": "8.22.0",
     "eslint-config-rainbow": "4.3.0",
     "graphql": "15.3.0",
-    "hardhat": "2.18.1",
     "husky": "8.0.1",
     "image-size": "1.0.0",
     "jest": "29.7.0",
@@ -479,16 +476,14 @@
       "detox>bunyan>dtrace-provider": false,
       "detox>ws>bufferutil": false,
       "detox>ws>utf-8-validate": false,
-      "hardhat>@ethereumjs/vm>core-js-pure": false,
       "ethereumjs-util>ethereum-cryptography>secp256k1": false,
-      "hardhat>@nomicfoundation/ethereumjs-blockchain>level>classic-level": false,
-      "hardhat>keccak": false,
       "react-native-storage": false,
       "react-native-storage>opencollective>babel-polyfill>core-js": false,
       "viem>ws>bufferutil": false,
       "viem>ws>utf-8-validate": false,
       "@types/detox>detox": false,
-      "react-native-bootsplash>sharp": false
+      "react-native-bootsplash>sharp": false,
+      "ethereumjs-util>ethereum-cryptography>keccak": false
     }
   },
   "lint-staged": {

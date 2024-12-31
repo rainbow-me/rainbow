@@ -1,5 +1,5 @@
 import { INITIAL_SLIDER_POSITION } from '@/__swaps__/screens/Swap/constants';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { RecentSwap } from '@/__swaps__/types/swap';
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
@@ -42,6 +42,8 @@ export interface SwapsState {
   // degen mode preferences
   preferredNetwork: ChainId | undefined;
   setPreferredNetwork: (preferredNetwork: ChainId | undefined) => void;
+
+  lastNavigatedTrendingToken: UniqueId | undefined;
 }
 
 type StateWithTransforms = Omit<Partial<SwapsState>, 'latestSwapAt' | 'recentSwaps'> & {
@@ -156,6 +158,8 @@ export const swapsStore = createRainbowStore<SwapsState>(
         latestSwapAt: new Map(latestSwapAt),
       });
     },
+
+    lastNavigatedTrendingToken: undefined,
   }),
   {
     storageKey: 'swapsStore',

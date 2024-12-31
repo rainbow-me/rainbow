@@ -51,7 +51,7 @@ export function Inline({
     >
       {wrap || !separator
         ? children
-        : Children.map(children, (child, index) => {
+        : Children.toArray(children).map((child, index) => {
             if (!child) return null;
             return (
               <>

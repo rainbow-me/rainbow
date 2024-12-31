@@ -96,7 +96,8 @@
         "generic": "Error while trying to backup. Error code: %{errorCodes}",
         "no_keys_found": "No keys found. Please try again.",
         "backup_not_found": "Backup not found. Please try again.",
-        "no_account_found": "Unable to retrieve backup files. Make sure you're logged in."
+        "no_account_found": "Unable to retrieve backup files. Make sure you're logged in.",
+        "damaged_wallet": "Unable to backup wallet. Missing keychain data."
       },
       "wrong_pin": "The PIN code you entered was incorrect and we can't make a backup. Please try again with the correct code.",
       "already_backed_up": {
@@ -115,6 +116,8 @@
         "no_backups": "No backups found",
         "failed_to_fetch_backups": "Failed to fetch backups",
         "retry": "Retry",
+        "refresh": "Refresh",
+        "syncing_cloud_store": "Syncing to %{cloudPlatformName}",
         "fetching_backups": "Retrieving backups from %{cloudPlatformName}",
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
         "restore_from_platform": "Restore from %{cloudPlatformName}",
@@ -137,7 +140,7 @@
         "choose_backup_cloud_description": "Securely back up your wallet to %{cloudPlatform} so you can restore it if you lose your device or get a new one.",
         "choose_backup_manual_description": "Back up your wallet manually by saving your secret phrase in a secure location.",
         "enable_cloud_backups_description": "If you prefer to back up your wallets manually, you can do so below.",
-        "latest_backup": "Last Backup: %{date}",
+        "latest_backup": "Latest Backup: %{date}",
         "back_up_all_wallets_to_cloud": "Back Up All Wallets to %{cloudPlatformName}",
         "most_recent_backup": "Most Recent Backup",
         "out_of_date": "Out of Date",
@@ -145,6 +148,12 @@
         "older_backups": "Older Backups",
         "no_older_backups": "No Older Backups",
         "older_backups_title": "%{date} at %{time}",
+        "statuses": {
+          "not_enabled": "Not Enabled",
+          "syncing": "Syncing",
+          "out_of_date": "Out of Date",
+          "up_to_date": "Up to Date"
+        },
         "password": {
           "a_password_youll_remember_part_one": "This password is",
           "not": "not",
@@ -514,8 +523,8 @@
       "clear_image_metadata_cache": "Clear Image Metadata Cache",
       "clear_local_storage": "Clear local storage",
       "clear_mmkv_storage": "Clear MMKV storage",
-      "connect_to_hardhat": "Connect to hardhat",
-      "disconnect_to_hardhat": "Disconnect from hardhat",
+      "connect_to_anvil": "Connect to anvil",
+      "disconnect_to_anvil": "Disconnect from anvil",
       "crash_app_render_error": "Crash app (render error)",
       "enable_testnets": "Enable Testnets",
       "installing_update": "Installing update",
@@ -1219,6 +1228,12 @@
         "check_out_my_wallet": "Check out my collectibles on 🌈 Rainbow at %{showcaseUrl}",
         "check_out_this_wallet": "Check out this wallet's collectibles on 🌈 Rainbow at %{showcaseUrl}"
       }
+    },
+    "loading": {
+      "backing_up": "Backing up...",
+      "creating_wallet": "Creating wallet...",
+      "importing_wallet": "Importing...",
+      "restoring": "Restoring..."
     },
     "message": {
       "click_to_copy_to_clipboard": "Click to copy to clipboard",
@@ -3018,6 +3033,60 @@
         "new_tab": "New Tab"
       }
     },
+    "trending_tokens": {
+      "all": "All",
+      "no_results": {
+        "title": "No results",
+        "body": "Try browsing a larger timeframe or a different network or category."
+      },
+      "and": "and",
+      "and_others": {
+        "one": "and %{count} other",
+        "other": "and %{count} others"
+      },
+      "filters": {
+        "categories": {
+          "TRENDING": "Trending",
+          "NEW": "New",
+          "FARCASTER": "Farcaster"
+        },
+        "sort": {
+          "RECOMMENDED": {
+            "label": "Sort",
+            "menuOption": "Default"
+          },
+          "VOLUME": "Volume",
+          "MARKET_CAP": "Market Cap",
+          "TOP_GAINERS": "Top Gainers",
+          "TOP_LOSERS": "Top Losers"
+        },
+        "time": {
+          "H12": "12 Hours",
+          "H12_ABBREVIATED": "12h",
+          "H24": "24 Hours",
+          "H24_ABBREVIATED": "24h",
+          "D7": "1 Week",
+          "D3": "3 Days"
+        }
+      }
+    },
+    "network_switcher": {
+      "customize_networks_banner": {
+        "title": "Customize Networks",
+        "tap_the": "Tap the",
+        "button_to_set_up": "button below to set up"
+      },
+      "drop_here_to_unpin": "Drop Here to Unpin",
+      "edit": "Edit",
+      "network": "Network",
+      "networks": "Networks",
+      "drag_to_rearrange": "Drag to Rearrange",
+      "show_less": "Show Less",
+      "more": "More",
+      "show_more": "More Networks",
+      "all_networks": "All Networks"
+    },
+    "done": "Done",
     "copy": "Copy",
     "paste": "Paste"
   }
