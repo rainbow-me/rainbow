@@ -10,7 +10,7 @@ import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../co
 import { SheetActionButton } from '../components/sheet';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@/analytics';
+import { analytics, analyticsV2 } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetTypes, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
@@ -46,12 +46,11 @@ import { loadWallet, sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { rainbowTokenList } from '@/references';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { convertAmountAndPriceToNativeDisplay, convertAmountFromNativeValue, formatInputDecimals, lessThan } from '@/helpers/utilities';
-import { deviceUtils, ethereumUtils, getUniqueTokenType, safeAreaInsetValues } from '@/utils';
+import { deviceUtils, ethereumUtils, getUniqueTokenType, isLowerCaseMatch, safeAreaInsetValues } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { NoResults } from '@/components/list';
@@ -70,6 +69,7 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Contact } from '@/redux/contacts';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import store from '@/redux/store';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -96,6 +96,17 @@ const SheetContainer = styled(Column).attrs({
 });
 
 const validateRecipient = (toAddress?: string, tokenAddress?: string) => {
+  const { wallets } = store.getState().wallets;
+  // check for if the recipient is in a damaged wallet state and prevent
+  if (wallets) {
+    const internalWallet = Object.values(wallets).find(wallet =>
+      wallet.addresses.some(address => isLowerCaseMatch(address.address, toAddress))
+    );
+    if (internalWallet?.damaged) {
+      return false;
+    }
+  }
+
   if (!toAddress || toAddress?.toLowerCase() === tokenAddress?.toLowerCase()) {
     return false;
   }
@@ -117,7 +128,8 @@ type OnSubmitProps = {
 
 export default function SendSheet() {
   const { goBack, navigate } = useNavigation();
-  const { data: sortedAssets } = useSortedUserAssets();
+  const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
+  const isLoadingUserAssets = useUserAssetsStore(state => state.isLoadingUserAssets);
   const {
     gasFeeParamsBySpeed,
     gasLimit,
@@ -882,6 +894,16 @@ export default function SendSheet() {
     currentChainId,
     isUniqueAsset,
   ]);
+
+  useEffect(() => {
+    if (isLoadingUserAssets || !sortedAssets) return;
+    const params = { screen: 'send' as const, no_icon: 0, no_price: 0, total_tokens: sortedAssets.length };
+    for (const asset of sortedAssets) {
+      if (!asset.icon_url) params.no_icon += 1;
+      if (!asset.price?.relative_change_24h) params.no_price += 1;
+    }
+    analyticsV2.track(analyticsV2.event.tokenList, params);
+  }, [isLoadingUserAssets, sortedAssets]);
 
   const sendContactListDataKey = useMemo(() => `${ensSuggestions?.[0]?.address || '_'}`, [ensSuggestions]);
 

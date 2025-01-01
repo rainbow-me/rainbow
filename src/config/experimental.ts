@@ -30,6 +30,8 @@ export const FEATURED_RESULTS = 'Featured Results';
 export const CLAIMABLES = 'Claimables';
 export const NFTS_ENABLED = 'Nfts Enabled';
 export const EXPANDED_STATE_V2 = 'Expanded State V2';
+export const TRENDING_TOKENS = 'Trending Tokens';
+
 /**
  * A developer setting that pushes log lines to an array in-memory so that
  * they can be "dumped" or copied out of the app and analyzed.
@@ -67,6 +69,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [CLAIMABLES]: { settings: true, value: false },
   [NFTS_ENABLED]: { settings: true, value: !!IS_TEST },
   [EXPANDED_STATE_V2]: { settings: true, value: false },
+  [TRENDING_TOKENS]: { settings: true, value: false },
 };
 
 export const defaultConfigValues: Record<string, boolean> = Object.fromEntries(

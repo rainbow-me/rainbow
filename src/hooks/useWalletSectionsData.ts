@@ -9,14 +9,13 @@ import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { useLegacyNFTs } from '@/resources/nfts';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import { useClaimables } from '@/resources/addys/claimables/query';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { analyticsV2 } from '@/analytics';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { throttle } from 'lodash';
@@ -55,13 +54,14 @@ export default function useWalletSectionsData({
 }: {
   type?: string;
 } = {}) {
+  const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { selectedWallet, isReadOnlyWallet } = useWallets();
-  const { isLoading: isLoadingUserAssets, data: sortedAssets = [] } = useSortedUserAssets();
+  const isLoadingUserAssets = useUserAssetsStore(state => state.isLoadingUserAssets);
+  const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const isWalletEthZero = useIsWalletEthZero();
 
   const { nftSort, nftSortDirection } = useNftSort();
 
-  const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     data: { nfts: allUniqueTokens },
@@ -120,6 +120,16 @@ export default function useWalletSectionsData({
   const { pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
 
   const { isCoinListEdited } = useCoinListEdited();
+
+  useEffect(() => {
+    if (isLoadingUserAssets || type !== 'wallet') return;
+    const params = { screen: 'wallet' as const, no_icon: 0, no_price: 0, total_tokens: sortedAssets.length };
+    for (const asset of sortedAssets) {
+      if (!asset.icon_url) params.no_icon += 1;
+      if (!asset.price?.relative_change_24h) params.no_price += 1;
+    }
+    analyticsV2.track(analyticsV2.event.tokenList, params);
+  }, [isLoadingUserAssets, sortedAssets, type]);
 
   const walletSections = useMemo(() => {
     const accountInfo = {

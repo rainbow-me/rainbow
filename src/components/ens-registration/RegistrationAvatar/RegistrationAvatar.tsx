@@ -1,6 +1,5 @@
 import ConditionalWrap from 'conditional-wrap';
 import React, { useCallback, useEffect, useState } from 'react';
-import { IS_TESTING } from 'react-native-dotenv';
 import { Image } from 'react-native-image-crop-picker';
 import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
@@ -13,6 +12,7 @@ import { useENSModifiedRegistration, useENSRegistration, useENSRegistrationForm,
 import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 import { ENS_RECORDS } from '@/helpers/ens';
+import { IS_TEST } from '@/env';
 
 export const avatarMetadataAtom = atom<Image | undefined>({
   default: undefined,
@@ -20,7 +20,6 @@ export const avatarMetadataAtom = atom<Image | undefined>({
 });
 
 const size = 70;
-const isTesting = IS_TESTING === 'true';
 
 const RegistrationAvatar = ({
   hasSeenExplainSheet,
@@ -131,11 +130,11 @@ const RegistrationAvatar = ({
         </Skeleton>
       ) : (
         <ConditionalWrap
-          condition={hasSeenExplainSheet && !isTesting && (enableNFTs || !!avatarUrl)}
+          condition={hasSeenExplainSheet && !IS_TEST && (enableNFTs || !!avatarUrl)}
           wrap={children => <ContextMenu>{children}</ContextMenu>}
         >
           <ButtonPressAnimation
-            onPress={!hasSeenExplainSheet ? onShowExplainSheet : isTesting ? handleSelectNFT : enableNFTs ? undefined : handleSelectImage}
+            onPress={!hasSeenExplainSheet ? onShowExplainSheet : IS_TEST ? handleSelectNFT : enableNFTs ? undefined : handleSelectImage}
             testID="use-select-image-avatar"
           >
             <AccentColorProvider color={accentColor + '10'}>

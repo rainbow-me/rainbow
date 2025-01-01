@@ -72,6 +72,7 @@ import {
   checkIdentifierSheetConfig,
   recieveModalSheetConfig,
   expandedAssetSheetV2Config,
+  networkSelectorConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -104,6 +105,9 @@ import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPane
 import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
 import { RootStackParamList } from './types';
+import WalletLoadingListener from '@/components/WalletLoadingListener';
+import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
+import { NetworkSelector } from '@/components/NetworkSwitcher';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -275,6 +279,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} {...mintsSheetConfig} />
       <NativeStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} {...consoleSheetConfig} />
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
+      <NativeStack.Screen component={NetworkSelector} name={Routes.NETWORK_SELECTOR} {...networkSelectorConfig} />
       <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
@@ -289,6 +294,10 @@ const AppContainerWithAnalytics = React.forwardRef<NavigationContainerRef<RootSt
     <PointsProfileProvider>
       <NativeStackNavigator />
     </PointsProfileProvider>
+
+    {/* NOTE: Internally, these use some navigational checks */}
+    <CMPortal />
+    <WalletLoadingListener />
   </NavigationContainer>
 ));
 

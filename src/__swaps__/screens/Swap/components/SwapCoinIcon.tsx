@@ -24,20 +24,10 @@ const fallbackTextStyles = {
   textAlign: 'center',
 };
 
-const fallbackIconStyle = {
-  ...borders.buildCircleAsObject(32),
+const fallbackIconStyle = (size: number) => ({
+  ...borders.buildCircleAsObject(size),
   position: 'absolute',
-};
-
-const largeFallbackIconStyle = {
-  ...borders.buildCircleAsObject(36),
-  position: 'absolute',
-};
-
-const smallFallbackIconStyle = {
-  ...borders.buildCircleAsObject(16),
-  position: 'absolute',
-};
+});
 
 /**
  * If mainnet asset is available, get the token under /ethereum/ (token) url.
@@ -63,22 +53,22 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   iconUrl,
   disableShadow = true,
   forceDarkMode,
-  large,
   mainnetAddress,
   chainId,
-  small,
   symbol,
+  size = 32,
+  chainSize,
 }: {
   address: string;
   color?: string;
   iconUrl?: string;
   disableShadow?: boolean;
   forceDarkMode?: boolean;
-  large?: boolean;
   mainnetAddress?: string;
   chainId: ChainId;
-  small?: boolean;
   symbol: string;
+  size?: number;
+  chainSize?: number;
 }) {
   const theme = useTheme();
 
@@ -92,51 +82,51 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   const eth = isETH(resolvedAddress);
 
   return (
-    <View style={small ? sx.containerSmall : large ? sx.containerLarge : sx.container}>
+    <View style={[styles.container(size), { height: size }]}>
       {eth ? (
         <Animated.View
           key={`${resolvedAddress}-${eth}`}
-          style={[
-            sx.reactCoinIconContainer,
-            small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
-            small || disableShadow ? {} : sx.withShadow,
-            { shadowColor },
-          ]}
+          style={[sx.reactCoinIconContainer, styles.coinIcon(size), !disableShadow && sx.withShadow, { shadowColor }]}
         >
-          <FastImage
-            source={EthIcon as Source}
-            style={small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback}
-          />
+          <FastImage source={EthIcon as Source} style={styles.coinIcon(size)} />
         </Animated.View>
       ) : (
-        <FastFallbackCoinIconImage
-          size={small ? 16 : large ? 36 : 32}
-          icon={iconUrl}
-          shadowColor={shadowColor}
-          symbol={symbol}
-          theme={theme}
-        >
+        <FastFallbackCoinIconImage size={size} icon={iconUrl} shadowColor={shadowColor} symbol={symbol} theme={theme}>
           {() => (
             <CoinIconTextFallback
               color={color}
-              height={small ? 16 : large ? 36 : 32}
-              style={small ? smallFallbackIconStyle : large ? largeFallbackIconStyle : fallbackIconStyle}
+              height={size}
+              style={fallbackIconStyle(size)}
               symbol={symbol}
               textStyles={fallbackTextStyles}
-              width={small ? 16 : large ? 36 : 32}
+              width={size}
             />
           )}
         </FastFallbackCoinIconImage>
       )}
 
-      {chainId && chainId !== ChainId.mainnet && !small && (
+      {chainId && chainId !== ChainId.mainnet && size > 16 && (
         <View style={sx.badge}>
-          <ChainImage chainId={chainId} size={16} />
+          <ChainImage chainId={chainId} size={chainSize ?? 16} />
         </View>
       )}
     </View>
   );
 });
+
+const styles = {
+  container: (size: number) => ({
+    elevation: 6,
+    height: size,
+    overflow: 'visible' as const,
+  }),
+  coinIcon: (size: number) => ({
+    borderRadius: size / 2,
+    height: size,
+    width: size,
+    overflow: 'visible' as const,
+  }),
+};
 
 const sx = StyleSheet.create({
   badge: {
@@ -150,39 +140,6 @@ const sx = StyleSheet.create({
     },
     shadowRadius: 6,
     shadowOpacity: 0.2,
-  },
-  coinIconFallback: {
-    borderRadius: 16,
-    height: 32,
-    overflow: 'visible',
-    width: 32,
-  },
-  coinIconFallbackLarge: {
-    borderRadius: 18,
-    height: 36,
-    overflow: 'visible',
-    width: 36,
-  },
-  coinIconFallbackSmall: {
-    borderRadius: 8,
-    height: 16,
-    overflow: 'visible',
-    width: 16,
-  },
-  container: {
-    elevation: 6,
-    height: 32,
-    overflow: 'visible',
-  },
-  containerLarge: {
-    elevation: 6,
-    height: 36,
-    overflow: 'visible',
-  },
-  containerSmall: {
-    elevation: 6,
-    height: 16,
-    overflow: 'visible',
   },
   reactCoinIconContainer: {
     alignItems: 'center',

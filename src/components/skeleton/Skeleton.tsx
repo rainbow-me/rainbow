@@ -1,7 +1,6 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import { View, ViewProps } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { ThemeContextProps, withThemeContext } from '../../theme/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { ShimmerAnimation } from '../animations';
@@ -9,6 +8,7 @@ import { CoinRowHeight } from '../coin-row';
 import { Row } from '../layout';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { IS_TEST } from '@/env';
 
 export const AssetListItemSkeletonHeight = CoinRowHeight;
 
@@ -75,7 +75,7 @@ function Skeleton({
   skeletonColor?: string;
   width?: number;
 }) {
-  if (animated && IS_TESTING !== 'true') {
+  if (animated && !IS_TEST) {
     return (
       <MaskedView maskElement={<Wrapper style={style}>{children}</Wrapper>} style={{ flex: 1 }}>
         <ShimmerWrapper color={skeletonColor}>

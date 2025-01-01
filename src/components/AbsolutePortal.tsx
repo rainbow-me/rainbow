@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, ReactNode, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { StyleProp, ViewStyle, View } from 'react-native';
 
 const absolutePortal = {
   nodes: [] as ReactNode[],
@@ -24,7 +24,7 @@ const absolutePortal = {
   },
 };
 
-export const AbsolutePortalRoot = () => {
+export const AbsolutePortalRoot = ({ style }: { style?: StyleProp<ViewStyle> }) => {
   const [nodes, setNodes] = useState(absolutePortal.nodes);
 
   useEffect(() => {
@@ -32,17 +32,15 @@ export const AbsolutePortalRoot = () => {
     return () => unsubscribe();
   }, []);
 
-  return (
-    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'box-none' }}>
-      <View style={{ position: 'relative', pointerEvents: 'box-none' }}>{nodes}</View>
-    </View>
-  );
+  return <View style={[style, { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'box-none' }]}>{nodes}</View>;
 };
 
 export const AbsolutePortal = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     absolutePortal.addNode(children);
-    return () => absolutePortal.removeNode(children);
+    return () => {
+      absolutePortal.removeNode(children);
+    };
   }, [children]);
 
   return null;
