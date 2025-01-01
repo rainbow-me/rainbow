@@ -211,7 +211,8 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'claimables' ||
         key === 'nfts_enabled' ||
         key === 'expanded_state_v2' ||
-        key === 'trending_tokens_enabled'
+        key === 'trending_tokens_enabled' ||
+        key === 'expanded_state_v2'
       ) {
         config[key] = entry.asBoolean();
       } else if (key === 'trending_tokens_limit') {

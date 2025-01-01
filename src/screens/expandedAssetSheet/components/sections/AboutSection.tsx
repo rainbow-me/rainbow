@@ -6,7 +6,6 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useAccountSettings, useAdditionalAssetData } from '@/hooks';
 import { Linking } from 'react-native';
 import { formatURLForDisplay } from '@/utils';
-import { Icon } from '@/components/icons';
 import { XIcon } from '../../icons/XIcon';
 
 interface RowItem {
