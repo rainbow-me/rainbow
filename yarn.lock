@@ -6893,13 +6893,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-async-storage-persister@npm:4.2.1":
-  version: 4.2.1
-  resolution: "@tanstack/query-async-storage-persister@npm:4.2.1"
-  checksum: 10c0/a2717e993ded85796635ea28167859a0bdadf3ba39b754393d62144792a2f1bf533c31e893c6bb3010defc1b5e899b79bb9e7e3a75e367c152d606e8ddd26ba4
-  languageName: node
-  linkType: hard
-
 "@tanstack/query-core@npm:^4.0.0-beta.1":
   version: 4.36.1
   resolution: "@tanstack/query-core@npm:4.36.1"
@@ -8750,7 +8743,6 @@ __metadata:
     "@sentry/react-native": "npm:5.35.0"
     "@shopify/flash-list": "npm:1.7.2"
     "@shopify/react-native-skia": "npm:1.5.10"
-    "@tanstack/query-async-storage-persister": "npm:4.2.1"
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
     "@testing-library/react-native": "npm:11.2.0"
