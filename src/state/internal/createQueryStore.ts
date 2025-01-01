@@ -54,6 +54,13 @@ interface FetchOptions {
    */
   force?: boolean;
   /**
+   * If `true`, the fetch will simply return the data without any internal handling or side effects,
+   * running in parallel with any other ongoing fetches. Use together with `force: true` if you want to
+   * guarantee that a fresh fetch is triggered regardless of the current store state.
+   * @default false
+   */
+  skipStoreUpdates?: boolean;
+  /**
    * Overrides the default stale duration for this fetch, in milliseconds.
    * If the fetch is successful, the subsequently scheduled refetch will occur after
    * the specified duration.
@@ -513,7 +520,7 @@ export function createQueryStore<
           return activeFetchPromise;
         }
 
-        if (abortInterruptedFetches) abortActiveFetch();
+        if (abortInterruptedFetches && !options?.skipStoreUpdates) abortActiveFetch();
 
         if (!options?.force) {
           const { errorInfo, lastFetchedAt: cachedLastFetchedAt } = get().queryCache[currentQueryKey] ?? {};
@@ -525,13 +532,17 @@ export function createQueryStore<
           }
         }
 
-        set(state => ({ ...state, error: null, status: QueryStatuses.Loading }));
-        lastFetchKey = currentQueryKey;
+        if (!options?.skipStoreUpdates) {
+          set(state => ({ ...state, error: null, status: QueryStatuses.Loading }));
+          lastFetchKey = currentQueryKey;
+        }
 
         const fetchOperation = async () => {
           try {
             if (enableLogs) console.log('[🔄 Fetching 🔄] for queryKey: ', currentQueryKey, '::: params: ', effectiveParams);
-            const rawResult = await (abortInterruptedFetches ? fetchWithAbortControl(effectiveParams) : fetcher(effectiveParams, null));
+            const rawResult = await (abortInterruptedFetches && !options?.skipStoreUpdates
+              ? fetchWithAbortControl(effectiveParams)
+              : fetcher(effectiveParams, null));
             const lastFetchedAt = Date.now();
             if (enableLogs) console.log('[✅ Fetch Successful ✅] for queryKey: ', currentQueryKey);
 
@@ -543,6 +554,8 @@ export function createQueryStore<
                 cause: transformError,
               });
             }
+
+            if (options?.skipStoreUpdates) return transformedData;
 
             set(state => {
               let newState: S = {
@@ -614,10 +627,18 @@ export function createQueryStore<
               return null;
             }
 
+            if (options?.skipStoreUpdates) {
+              logger.error(new RainbowError(`[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: Failed to fetch data`), {
+                error,
+              });
+              return null;
+            }
+
             const typedError = error instanceof Error ? error : new Error(String(error));
             const entry = disableCache ? undefined : get().queryCache[currentQueryKey];
             const currentRetryCount = entry?.errorInfo?.retryCount ?? 0;
 
+            if (lastFetchKey === currentQueryKey) lastFetchKey = null;
             onError?.(typedError, currentRetryCount);
 
             if (currentRetryCount < maxRetries) {
@@ -670,13 +691,12 @@ export function createQueryStore<
             }
 
             logger.error(new RainbowError(`[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: Failed to fetch data`), {
-              error: typedError,
+              error,
             });
 
             return null;
           } finally {
             activeFetchPromise = null;
-            lastFetchKey = null;
           }
         };
 
