@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { Box, IconContainer, Inline, Stack, Text, TextShadow } from '@/design-system';
+import { Bleed, Box, IconContainer, Inline, Stack, Text, TextShadow } from '@/design-system';
 import { Row } from '../shared/Row';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -7,6 +7,7 @@ import { useAccountSettings, useAdditionalAssetData } from '@/hooks';
 import { Linking } from 'react-native';
 import { formatURLForDisplay } from '@/utils';
 import { Icon } from '@/components/icons';
+import { XIcon } from '../../icons/XIcon';
 
 interface RowItem {
   icon?: string;
@@ -42,9 +43,9 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
             </IconContainer>
           )}
           {iconName && (
-            <IconContainer height={10} width={20}>
-              <Icon width={20} height={20} color={accentColors.opacity100} name={iconName} />
-            </IconContainer>
+            <Bleed left="8px" vertical="24px">
+              <XIcon color={accentColors.opacity100} size={38} />
+            </Bleed>
           )}
           <TextShadow blur={12} shadowOpacity={0.24}>
             <Text weight="semibold" size="17pt" color="accent">
@@ -94,7 +95,7 @@ export const AboutSection = memo(function AboutSection() {
 
     if (metadata?.links?.twitter?.url) {
       items.push({
-        iconName: 'twitter',
+        iconName: 'x',
         title: 'Twitter',
         url: metadata.links.twitter.url,
         value: `@${metadata.links.twitter.url.split('/').pop()}`,
@@ -130,7 +131,7 @@ export const AboutSection = memo(function AboutSection() {
           <Text weight="bold" size="20pt" color="labelSecondary">
             What is {asset.name}?
           </Text>
-          <Text weight="medium" size="17pt" color="labelTertiary">
+          <Text weight="medium" size="17pt / 150%" color="labelTertiary">
             {metadata.description}
           </Text>
         </Box>
