@@ -15,12 +15,10 @@
 
 @class RCTBridge;
 
-@interface AppDelegate : EXAppDelegateWrapper
+@interface AppDelegate : EXAppDelegateWrapper <UNUserNotificationCenterDelegate>
 
 - (void)hideSplashScreenAnimated;
 
-@property (nonatomic, strong) UIWindow *window;
 @property (nonatomic) BOOL isRapRunning;
-@property (nonatomic, strong) RCTBridge *bridge;
 
 @end
