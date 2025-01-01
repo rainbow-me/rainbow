@@ -1,11 +1,10 @@
+import equal from 'react-fast-compare';
 import { StateCreator, StoreApi, UseBoundStore, create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { IS_DEV } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import { RainbowPersistConfig, createRainbowStore, omitStoreMethods } from './createRainbowStore';
 import { $, AttachValue, SignalFunction, Unsubscribe, attachValueSubscriptionMap } from './signal';
-
-const ENABLE_LOGS = false;
 
 /**
  * A set of constants representing the various stages of a query's remote data fetching process.
@@ -110,7 +109,7 @@ export interface QueryStore<
    * @param options - Optional {@link FetchOptions} to customize the fetch behavior.
    * @returns A promise that resolves when the fetch operation completes.
    */
-  fetch: (params?: TParams, options?: FetchOptions) => Promise<void>;
+  fetch: (params?: TParams, options?: FetchOptions) => Promise<TData | null>;
   /**
    * Returns the cached data, if available, for the current query params.
    * @returns The cached data, or `null` if no data is available.
@@ -208,7 +207,7 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
    * A function to transform the raw fetched data (`TQueryFnData`) into another form (`TData`).
    * If not provided, the raw data returned by `fetcher` is used.
    */
-  transform?: (data: TQueryFnData) => TData;
+  transform?: (data: TQueryFnData, params: TParams) => TData;
   /**
    * If `true`, the store will abort any partially completed fetches when:
    * - A new fetch is initiated due to a change in parameters
@@ -223,11 +222,13 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
    */
   cacheTime?: number;
   /**
-   * If `true`, the store's caching mechanisms will be fully disabled, meaning that the store will
-   * always refetch data on every call to `fetch()`, and the fetched data will not be stored unless
-   * a `setData` function is provided.
-   *
-   * Disable caching if you always want fresh data on refetch.
+   * If `true`, the store will log debug messages to the console.
+   * @default false
+   */
+  debugMode?: boolean;
+  /**
+   * Controls whether the store's caching mechanisms are disabled. When disabled, the store will always refetch
+   * data when params change, and fetched data will not be stored unless a `setData` function is provided.
    * @default false
    */
   disableCache?: boolean;
@@ -391,6 +392,7 @@ export function createQueryStore<
     onFetched,
     transform,
     cacheTime = time.days(7),
+    debugMode = false,
     disableCache = false,
     enabled = true,
     maxRetries = 3,
@@ -414,9 +416,11 @@ export function createQueryStore<
   let paramAttachVals: Partial<Record<keyof TParams, AttachValue<unknown>>> = {};
 
   let activeAbortController: AbortController | null = null;
-  let activeFetchPromise: Promise<void> | null = null;
+  let activeFetchPromise: Promise<TData | null> | null = null;
   let activeRefetchTimeout: NodeJS.Timeout | null = null;
   let lastFetchKey: string | null = null;
+
+  const enableLogs = IS_DEV && debugMode;
 
   const initialData = {
     enabled,
@@ -482,9 +486,11 @@ export function createQueryStore<
         clearTimeout(activeRefetchTimeout);
         activeRefetchTimeout = null;
       }
+
       const currentQueryKey = getQueryKey(params);
       const lastFetchedAt =
-        get().queryCache[currentQueryKey]?.lastFetchedAt || (disableCache && lastFetchKey === currentQueryKey ? get().lastFetchedAt : null);
+        (!disableCache && get().queryCache[currentQueryKey]?.lastFetchedAt) ||
+        (disableCache && lastFetchKey === currentQueryKey ? get().lastFetchedAt : null);
       const timeUntilRefetch = lastFetchedAt ? effectiveStaleTime - (Date.now() - lastFetchedAt) : effectiveStaleTime;
 
       activeRefetchTimeout = setTimeout(() => {
@@ -497,7 +503,7 @@ export function createQueryStore<
 
     const baseMethods = {
       async fetch(params: TParams | undefined, options: FetchOptions | undefined) {
-        if (!options?.force && !get().enabled) return;
+        if (!options?.force && !get().enabled) return null;
 
         const effectiveParams = params ?? getCurrentResolvedParams();
         const currentQueryKey = getQueryKey(effectiveParams);
@@ -509,12 +515,13 @@ export function createQueryStore<
 
         if (abortInterruptedFetches) abortActiveFetch();
 
-        if (!options?.force && !disableCache) {
-          const { errorInfo, lastFetchedAt } = get().queryCache[currentQueryKey] ?? {};
+        if (!options?.force) {
+          const { errorInfo, lastFetchedAt: cachedLastFetchedAt } = get().queryCache[currentQueryKey] ?? {};
           const errorRetriesExhausted = errorInfo && errorInfo.retryCount >= maxRetries;
+          const lastFetchedAt = cachedLastFetchedAt || (disableCache && lastFetchKey === currentQueryKey ? get().lastFetchedAt : null);
 
           if ((!errorInfo || errorRetriesExhausted) && lastFetchedAt && Date.now() - lastFetchedAt <= (options?.staleTime ?? staleTime)) {
-            return;
+            return null;
           }
         }
 
@@ -523,10 +530,14 @@ export function createQueryStore<
 
         const fetchOperation = async () => {
           try {
+            if (enableLogs) console.log('[🔄 Fetching 🔄] for queryKey: ', currentQueryKey, '::: params: ', effectiveParams);
             const rawResult = await (abortInterruptedFetches ? fetchWithAbortControl(effectiveParams) : fetcher(effectiveParams));
+            const lastFetchedAt = Date.now();
+            if (enableLogs) console.log('[✅ Fetch Successful ✅] for queryKey: ', currentQueryKey);
+
             let transformedData: TData;
             try {
-              transformedData = transform ? transform(rawResult) : (rawResult as TData);
+              transformedData = transform ? transform(rawResult, effectiveParams) : (rawResult as TData);
             } catch (transformError) {
               throw new RainbowError(`[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: transform failed`, {
                 cause: transformError,
@@ -534,7 +545,6 @@ export function createQueryStore<
             }
 
             set(state => {
-              const lastFetchedAt = Date.now();
               let newState: S = {
                 ...state,
                 error: null,
@@ -543,6 +553,13 @@ export function createQueryStore<
               };
 
               if (!setData && !disableCache) {
+                if (enableLogs)
+                  console.log(
+                    '[💾 Setting Cache 💾] for queryKey: ',
+                    currentQueryKey,
+                    'Has previous data? ',
+                    !!newState.queryCache[currentQueryKey]?.data
+                  );
                 newState.queryCache = {
                   ...newState.queryCache,
                   [currentQueryKey]: {
@@ -552,6 +569,7 @@ export function createQueryStore<
                   },
                 };
               } else if (setData) {
+                if (enableLogs) console.log('[💾 Setting Data 💾] for queryKey: ', currentQueryKey);
                 setData({
                   data: transformedData,
                   params: effectiveParams,
@@ -588,11 +606,16 @@ export function createQueryStore<
                 );
               }
             }
+
+            return transformedData ?? null;
           } catch (error) {
-            if (error === ABORT_ERROR) return;
+            if (error === ABORT_ERROR) {
+              if (enableLogs) console.log('[❌ Fetch Aborted ❌] for queryKey: ', currentQueryKey);
+              return null;
+            }
 
             const typedError = error instanceof Error ? error : new Error(String(error));
-            const entry = get().queryCache[currentQueryKey];
+            const entry = disableCache ? undefined : get().queryCache[currentQueryKey];
             const currentRetryCount = entry?.errorInfo?.retryCount ?? 0;
 
             onError?.(typedError, currentRetryCount);
@@ -600,50 +623,57 @@ export function createQueryStore<
             if (currentRetryCount < maxRetries) {
               if (get().subscriptionCount > 0) {
                 const errorRetryDelay = typeof retryDelay === 'function' ? retryDelay(currentRetryCount, typedError) : retryDelay;
-
-                activeRefetchTimeout = setTimeout(() => {
-                  const { enabled, fetch, subscriptionCount } = get();
-                  if (enabled && subscriptionCount > 0) {
-                    fetch(params, { force: true });
-                  }
-                }, errorRetryDelay);
+                if (errorRetryDelay !== Infinity) {
+                  activeRefetchTimeout = setTimeout(() => {
+                    const { enabled, fetch, subscriptionCount } = get();
+                    if (enabled && subscriptionCount > 0) {
+                      fetch(params, { force: true });
+                    }
+                  }, errorRetryDelay);
+                }
               }
 
               set(state => ({
                 ...state,
                 error: typedError,
-                status: QueryStatuses.Error,
                 queryCache: {
                   ...state.queryCache,
                   [currentQueryKey]: {
                     ...entry,
-                    errorState: {
+                    errorInfo: {
                       error: typedError,
+                      lastFailedAt: Date.now(),
                       retryCount: currentRetryCount + 1,
                     },
                   },
                 },
+                status: QueryStatuses.Error,
               }));
             } else {
+              /* Max retries exhausted */
               set(state => ({
                 ...state,
-                status: QueryStatuses.Error,
+                error: typedError,
                 queryCache: {
                   ...state.queryCache,
                   [currentQueryKey]: {
                     ...entry,
-                    errorState: {
+                    errorInfo: {
                       error: typedError,
-                      retryCount: currentRetryCount,
+                      lastFailedAt: Date.now(),
+                      retryCount: maxRetries,
                     },
                   },
                 },
+                status: QueryStatuses.Error,
               }));
             }
 
             logger.error(new RainbowError(`[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: Failed to fetch data`), {
               error: typedError,
             });
+
+            return null;
           } finally {
             activeFetchPromise = null;
             lastFetchKey = null;
@@ -663,7 +693,8 @@ export function createQueryStore<
       getStatus() {
         const { queryKey, status } = get();
         const lastFetchedAt =
-          get().queryCache[queryKey]?.lastFetchedAt || (disableCache && lastFetchKey === queryKey ? get().lastFetchedAt : null);
+          (!disableCache && get().queryCache[queryKey]?.lastFetchedAt) ||
+          (disableCache && lastFetchKey === queryKey ? get().lastFetchedAt : null);
 
         return {
           isError: status === QueryStatuses.Error,
@@ -677,7 +708,8 @@ export function createQueryStore<
       isDataExpired(cacheTimeOverride?: number) {
         const { queryKey } = get();
         const lastFetchedAt =
-          get().queryCache[queryKey]?.lastFetchedAt || (disableCache && lastFetchKey === queryKey ? get().lastFetchedAt : null);
+          (!disableCache && get().queryCache[queryKey]?.lastFetchedAt) ||
+          (disableCache && lastFetchKey === queryKey ? get().lastFetchedAt : null);
 
         if (!lastFetchedAt) return true;
         const effectiveCacheTime = cacheTimeOverride ?? cacheTime;
@@ -687,7 +719,8 @@ export function createQueryStore<
       isStale(staleTimeOverride?: number) {
         const { queryKey } = get();
         const lastFetchedAt =
-          get().queryCache[queryKey]?.lastFetchedAt || (disableCache && lastFetchKey === queryKey ? get().lastFetchedAt : null);
+          (!disableCache && get().queryCache[queryKey]?.lastFetchedAt) ||
+          (disableCache && lastFetchKey === queryKey ? get().lastFetchedAt : null);
 
         if (!lastFetchedAt) return true;
         const effectiveStaleTime = staleTimeOverride ?? staleTime;
@@ -818,15 +851,15 @@ export function createQueryStore<
     if (!attachVal) continue;
 
     const subscribeFn = attachValueSubscriptionMap.get(attachVal);
-    if (ENABLE_LOGS) console.log('[🌀 ParamSubscription 🌀] Subscribed to param:', k);
+    if (enableLogs) console.log('[🌀 Param Subscription 🌀] Subscribed to param:', k);
 
     if (subscribeFn) {
       let oldVal = attachVal.value;
       const unsub = subscribeFn(() => {
         const newVal = attachVal.value;
-        if (!Object.is(oldVal, newVal)) {
+        if (!equal(oldVal, newVal)) {
           oldVal = newVal;
-          if (ENABLE_LOGS) console.log('[🌀 ParamChange 🌀] Param changed:', k);
+          if (enableLogs) console.log('[🌀 Param Change 🌀] Param changed:', k, '::: Old value:', oldVal, '::: New value:', newVal);
           onParamChange();
         }
       });
