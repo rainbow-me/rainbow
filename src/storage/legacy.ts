@@ -4,6 +4,8 @@ import { deprecatedGetLocal, deprecatedRemoveLocal } from '@/handlers/localstora
 import { Legacy } from '@/storage/schema';
 import { logger, RainbowError } from '@/logger';
 
+export const REACT_QUERY_STORAGE_ID = 'rainbow.react-query';
+
 /**
  * Storage for legacy data that was previously stored in AsyncStorage. Only
  * difference is that `get()` is `async`, because it first checks for data in
@@ -51,4 +53,4 @@ class LegacyStorage<Scopes extends unknown[], Schema> extends Storage<Scopes, Sc
  */
 export const legacy = new LegacyStorage<[], Legacy>({ id: 'global' });
 export const zustandStorage = new LegacyStorage<[], Legacy>({ id: 'zustand' });
-export const queryStorage = new LegacyStorage<[], Legacy>({ id: 'rainbow.react-query' });
+export const queryStorage = new LegacyStorage<[], Legacy>({ id: REACT_QUERY_STORAGE_ID });
