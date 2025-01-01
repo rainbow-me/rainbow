@@ -305,7 +305,7 @@ const DappsDataSync = ({
         });
       }
     },
-    []
+    [dapps]
   );
 
   return null;
