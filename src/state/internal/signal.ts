@@ -1,3 +1,4 @@
+import equal from 'react-fast-compare';
 import { StoreApi } from 'zustand';
 
 const ENABLE_LOGS = false;
@@ -30,7 +31,7 @@ export function $<T, S>(store: StoreApi<T>, selector: (state: T) => S, equalityF
 export function $(
   store: StoreApi<unknown>,
   selector: (state: unknown) => unknown = identity,
-  equalityFn: (a: unknown, b: unknown) => boolean = Object.is
+  equalityFn: (a: unknown, b: unknown) => boolean = equal
 ) {
   return getOrCreateAttachValue(store, selector, equalityFn);
 }
@@ -44,7 +45,7 @@ const updateValue = <T>(obj: T, path: unknown[], value: unknown): T => {
   const [first, ...rest] = path;
   const prevValue = (obj as Record<string, unknown>)[first as string];
   const nextValue = updateValue(prevValue, rest, value);
-  if (Object.is(prevValue, nextValue)) {
+  if (equal(prevValue, nextValue)) {
     return obj;
   }
   const copied = Array.isArray(obj) ? obj.slice() : { ...obj };

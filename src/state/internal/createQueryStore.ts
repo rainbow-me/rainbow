@@ -173,7 +173,7 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
    * A function responsible for fetching data from a remote source.
    * Receives parameters of type `TParams` and returns either a promise or a raw data value of type `TQueryFnData`.
    */
-  fetcher: (params: TParams) => TQueryFnData | Promise<TQueryFnData>;
+  fetcher: (params: TParams, abortController: AbortController | null) => TQueryFnData | Promise<TQueryFnData>;
   /**
    * A callback invoked whenever a fetch operation fails.
    * Receives the error and the current retry count.
@@ -452,7 +452,7 @@ export function createQueryStore<
       return await new Promise((resolve, reject) => {
         abortController.signal.addEventListener('abort', () => reject(ABORT_ERROR), { once: true });
 
-        Promise.resolve(fetcher(params)).then(resolve, reject);
+        Promise.resolve(fetcher(params, abortController)).then(resolve, reject);
       });
     } finally {
       if (activeAbortController === abortController) {
@@ -531,7 +531,7 @@ export function createQueryStore<
         const fetchOperation = async () => {
           try {
             if (enableLogs) console.log('[🔄 Fetching 🔄] for queryKey: ', currentQueryKey, '::: params: ', effectiveParams);
-            const rawResult = await (abortInterruptedFetches ? fetchWithAbortControl(effectiveParams) : fetcher(effectiveParams));
+            const rawResult = await (abortInterruptedFetches ? fetchWithAbortControl(effectiveParams) : fetcher(effectiveParams, null));
             const lastFetchedAt = Date.now();
             if (enableLogs) console.log('[✅ Fetch Successful ✅] for queryKey: ', currentQueryKey);
 
