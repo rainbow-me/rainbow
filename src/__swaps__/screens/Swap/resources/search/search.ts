@@ -9,7 +9,7 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { Contract } from '@ethersproject/contracts';
 import { useQuery } from '@tanstack/react-query';
 import qs from 'qs';
-import { parseTokenSearch } from './utils';
+import { parseTokenSearch, parseTokenSearchAcrossNetworks } from './utils';
 import { getProvider } from '@/handlers/web3';
 import { erc20ABI } from '@/references';
 
@@ -180,7 +180,7 @@ async function tokenSearchQueryFunctionAllNetworks({ queryKey: [{ query }] }: Qu
       return result;
     } else {
       const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
-      return parseTokenSearch(tokenSearch.data.data);
+      return parseTokenSearchAcrossNetworks(tokenSearch.data.data);
     }
   } catch (e) {
     logger.error(new RainbowError('[tokenSearchQueryFunction]: Token search failed'), { url });

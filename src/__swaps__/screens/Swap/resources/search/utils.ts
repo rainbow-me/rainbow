@@ -1,3 +1,4 @@
+import { uniqBy } from 'lodash';
 import { ChainId } from '@/state/backendNetworks/types';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { Address } from 'viem';
@@ -48,4 +49,28 @@ export function parseTokenSearch(assets: SearchAsset[], chainId?: ChainId): Sear
   }
 
   return results;
+}
+
+export function parseTokenSearchAcrossNetworks(assets: SearchAsset[]): SearchAsset[] {
+  const results = assets.map(asset => {
+    const assetNetworks = asset.networks;
+    const networkKeys = Object.keys(assetNetworks);
+    const firstNetworkChainId = Number(networkKeys[0] || asset.chainId);
+
+    const mainnetInfo = assetNetworks[ChainId.mainnet];
+    const chainId = mainnetInfo ? ChainId.mainnet : firstNetworkChainId;
+    const address = mainnetInfo ? mainnetInfo.address : assetNetworks[firstNetworkChainId]?.address || asset.address;
+    const uniqueId = `${address}_${chainId}`;
+
+    return {
+      ...asset,
+      chainId,
+      address,
+      isNativeAsset: isNativeAsset(address, chainId),
+      mainnetAddress: mainnetInfo ? mainnetInfo.address : chainId === ChainId.mainnet ? address : ('' as Address),
+      uniqueId,
+    };
+  });
+  const uniqRes = uniqBy(results, 'address');
+  return uniqRes;
 }
