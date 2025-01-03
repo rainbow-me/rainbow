@@ -15,11 +15,11 @@ import { WALLET_VARS } from '../testVariables';
 
 describe('Check malicious dapp warning', () => {
   beforeAll(async () => {
-    await beforeAllcleanApp({ hardhat: false });
+    await beforeAllcleanApp({ anvil: false });
   });
 
   afterAll(async () => {
-    await afterAllcleanApp({ hardhat: false });
+    await afterAllcleanApp({ anvil: false });
   });
 
   it('Should be able to watch a wallet and load the wallet screen', async () => {

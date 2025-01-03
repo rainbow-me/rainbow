@@ -28,10 +28,10 @@ const delay = (ms: number) =>
   });
 
 const promptForBackupOnceReadyOrNotAvailable = async (): Promise<boolean> => {
-  const { status } = backupsStore.getState();
-  if (LoadingStates.includes(status)) {
+  let { status } = backupsStore.getState();
+  while (LoadingStates.includes(status)) {
     await delay(1000);
-    return promptForBackupOnceReadyOrNotAvailable();
+    status = backupsStore.getState().status;
   }
 
   logger.debug(`[walletReadyEvents]: BackupSheet: showing backup now sheet for selected wallet`);
@@ -47,9 +47,7 @@ export const runWalletBackupStatusChecks = async (): Promise<boolean> => {
   const { selected } = store.getState().wallets;
   if (!selected || IS_TEST) return false;
 
-  const selectedWalletNeedsBackedUp =
-    !selected.backedUp && !selected.damaged && selected.type !== WalletTypes.readOnly && selected.type !== WalletTypes.bluetooth;
-  if (selectedWalletNeedsBackedUp) {
+  if (!selected.backedUp && !selected.damaged && selected.type !== WalletTypes.readOnly && selected.type !== WalletTypes.bluetooth) {
     logger.debug('[walletReadyEvents]: Selected wallet is not backed up, prompting backup sheet');
     return promptForBackupOnceReadyOrNotAvailable();
   }

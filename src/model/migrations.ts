@@ -42,7 +42,7 @@ import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } fro
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { selectorFilterByUserChains, selectUserAssetsList } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
 import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
@@ -728,8 +728,8 @@ export default async function runMigrations() {
 
     for (const wallet of Object.values(wallets)) {
       for (const { address } of (wallet as RainbowWallet).addresses) {
-        const { connectedToHardhat } = useConnectedToHardhatStore.getState();
-        const queryKey = userAssetsQueryKey({ address, currency: nativeCurrency, testnetMode: connectedToHardhat });
+        const { connectedToAnvil } = useConnectedToAnvilStore.getState();
+        const queryKey = userAssetsQueryKey({ address, currency: nativeCurrency, testnetMode: connectedToAnvil });
         const queryData: ParsedAssetsDictByChain | undefined = queryClient.getQueryData(queryKey);
 
         if (!queryData) continue;
