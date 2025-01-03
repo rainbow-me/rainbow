@@ -6,6 +6,7 @@ import Routes from '@/navigation/routesNames';
 import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
+import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
 
 export const unlockableAppIconStorage = new MMKV({
   id: STORAGE_IDS.UNLOCKABLE_APP_ICONS,
@@ -62,38 +63,34 @@ export const unlockableAppIconCheck = async (appIconKey: UnlockableAppIconKey, w
 
     logger.debug(`[unlockableAppIconCheck]: ${appIconKey} check result: ${found}`);
 
-    // We open the sheet with a setTimeout 1 sec later to make sure we can return first
-    // so we can abort early if we're showing a sheet to prevent 2+ sheets showing at the same time
+    if (found) {
+      unlockableAppIconStorage.set(appIconKey, true);
+      logger.debug(`[unlockableAppIconCheck]: Feature check ${appIconKey} set to true. Wont show up anymore!`);
 
-    setTimeout(() => {
-      if (found) {
-        unlockableAppIconStorage.set(appIconKey, true);
-        logger.debug(`[unlockableAppIconCheck]: Feature check ${appIconKey} set to true. Wont show up anymore!`);
+      // Temporarily ignore some icons
+      // We can get rid of this in 2025!
+      const iconsToIgnore = [
+        'optimism',
+        'smol',
+        'zora',
+        'golddoge',
+        'raindoge',
+        'pooly',
+        'finiliar',
+        'zorb',
+        'poolboy',
+        'adworld',
+        'farcaster',
+      ];
 
-        // Temporarily ignore some icons
-        // We can get rid of this in 2025!
-        const iconsToIgnore = [
-          'optimism',
-          'smol',
-          'zora',
-          'golddoge',
-          'raindoge',
-          'pooly',
-          'finiliar',
-          'zorb',
-          'poolboy',
-          'adworld',
-          'farcaster',
-        ];
-
-        if (iconsToIgnore.includes(appIconKey)) {
-          return false;
-        }
-
-        Navigation.handleAction(Routes.APP_ICON_UNLOCK_SHEET, { appIconKey });
-        return true;
+      if (iconsToIgnore.includes(appIconKey)) {
+        return false;
       }
-    }, 1000);
+
+      triggerOnSwipeLayout(() => Navigation.handleAction(Routes.APP_ICON_UNLOCK_SHEET, { appIconKey }));
+
+      return true;
+    }
     return found;
   } catch (e) {
     logger.error(new RainbowError('[unlockableAppIconCheck]: UnlockableAppIconCheck blew up'), { e });
