@@ -47,7 +47,13 @@ export const runWalletBackupStatusChecks = async (): Promise<boolean> => {
   const { selected } = store.getState().wallets;
   if (!selected || IS_TEST) return false;
 
-  if (!selected.backedUp && !selected.damaged && selected.type !== WalletTypes.readOnly && selected.type !== WalletTypes.bluetooth) {
+  if (
+    !selected.backedUp &&
+    !selected.damaged &&
+    !selected.imported &&
+    selected.type !== WalletTypes.readOnly &&
+    selected.type !== WalletTypes.bluetooth
+  ) {
     logger.debug('[walletReadyEvents]: Selected wallet is not backed up, prompting backup sheet');
     return promptForBackupOnceReadyOrNotAvailable();
   }
