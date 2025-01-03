@@ -98,7 +98,7 @@ export const backupsStore = createRainbowStore<BackupsStore>((set, get) => ({
         }
 
         if (IS_ANDROID) {
-          const gdata = await getGoogleAccountUserData();
+          const gdata = await getGoogleAccountUserData(true);
           if (!gdata) {
             logger.debug('[backupsStore]: Google account is not available');
             set({ backupProvider: undefined, status: CloudBackupState.NotAvailable, backups: { files: [] }, mostRecentBackup: undefined });

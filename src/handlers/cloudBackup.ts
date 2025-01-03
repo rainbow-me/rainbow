@@ -39,11 +39,11 @@ export type GoogleDriveUserData = {
   avatarUrl?: string;
 };
 
-export async function getGoogleAccountUserData(): Promise<GoogleDriveUserData | undefined> {
+export async function getGoogleAccountUserData(checkPermissions = false): Promise<GoogleDriveUserData | undefined> {
   if (!IS_ANDROID) {
     return;
   }
-  return RNCloudFs.getCurrentlySignedInUserData({ checkPermissions: true });
+  return RNCloudFs.getCurrentlySignedInUserData({ checkPermissions });
 }
 
 // This is used for dev purposes only!
