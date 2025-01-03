@@ -339,7 +339,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
     });
 
     swapsStore.setState({
-      lastNavigatedTrendingToken: token.address,
+      lastNavigatedTrendingToken: token.uniqueId,
     });
 
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
