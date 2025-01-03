@@ -43,7 +43,7 @@ export async function getGoogleAccountUserData(): Promise<GoogleDriveUserData | 
   if (!IS_ANDROID) {
     return;
   }
-  return RNCloudFs.getCurrentlySignedInUserData();
+  return RNCloudFs.getCurrentlySignedInUserData({ checkPermissions: true });
 }
 
 // This is used for dev purposes only!
