@@ -88,13 +88,13 @@ export const runFeatureUnlockChecks = async (): Promise<boolean> => {
 };
 
 export const runFeaturesLocalCampaignAndBackupChecks = async () => {
-  if (await runWalletBackupStatusChecks()) {
-    return true;
-  }
   if (await runFeatureUnlockChecks()) {
     return true;
   }
   if (await runLocalCampaignChecks()) {
+    return true;
+  }
+  if (await runWalletBackupStatusChecks()) {
     return true;
   }
 
