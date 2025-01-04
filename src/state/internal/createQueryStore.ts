@@ -239,6 +239,13 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
    */
   debugMode?: boolean;
   /**
+   * If `true`, the store will **not** trigger automatic refetches when data becomes stale. This is
+   * useful in cases where you want to refetch data on component mount if stale, but not automatically
+   * if data becomes stale while your component is already mounted.
+   * @default false
+   */
+  disableAutoRefetching?: boolean;
+  /**
    * Controls whether the store's caching mechanisms are disabled. When disabled, the store will always refetch
    * data when params change, and fetched data will not be stored unless a `setData` function is provided.
    * @default false
@@ -405,6 +412,7 @@ export function createQueryStore<
     transform,
     cacheTime = time.days(7),
     debugMode = false,
+    disableAutoRefetching = false,
     disableCache = false,
     enabled = true,
     maxRetries = 3,
@@ -494,8 +502,10 @@ export function createQueryStore<
     };
 
     const scheduleNextFetch = (params: TParams, options: FetchOptions | undefined) => {
+      if (disableAutoRefetching) return;
       const effectiveStaleTime = options?.staleTime ?? staleTime;
       if (effectiveStaleTime <= 0 || effectiveStaleTime === Infinity) return;
+
       if (activeRefetchTimeout) {
         clearTimeout(activeRefetchTimeout);
         activeRefetchTimeout = null;
@@ -824,7 +834,7 @@ export function createQueryStore<
 
         set(state => ({ ...state, queryKey: currentQueryKey }));
 
-        if (subscriptionCount === 1 && enabled) {
+        if ((subscriptionCount === 1 || disableAutoRefetching) && enabled) {
           if (isStale() || !get().queryCache[currentQueryKey]?.lastFetchedAt) {
             fetch(currentParams);
           } else {
