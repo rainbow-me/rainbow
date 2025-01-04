@@ -740,7 +740,9 @@ export function createQueryStore<
       getData(params?: TParams) {
         if (disableCache) return null;
         const currentQueryKey = params ? getQueryKey(params) : get().queryKey;
-        return get().queryCache[currentQueryKey]?.data ?? null;
+        const cacheEntry = get().queryCache[currentQueryKey];
+        const isExpired = !!cacheEntry?.lastFetchedAt && Date.now() - cacheEntry.lastFetchedAt > cacheTime;
+        return isExpired ? null : cacheEntry?.data ?? null;
       },
 
       getStatus() {
@@ -802,10 +804,8 @@ export function createQueryStore<
           if (state.enabled) {
             const currentParams = getCurrentResolvedParams();
             const currentKey = state.queryKey;
-            if (currentKey !== lastFetchKey) {
-              state.fetch(currentParams, { force: true });
-            } else if (!state.queryCache[currentKey] || state.isStale()) {
-              state.fetch();
+            if (currentKey !== lastFetchKey || !state.queryCache[currentKey] || state.isStale()) {
+              state.fetch(currentParams, undefined);
             } else {
               scheduleNextFetch(currentParams, undefined);
             }
