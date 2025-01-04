@@ -720,7 +720,7 @@ export default function ChangeWalletSheet() {
                 <Box />
               )} */}
               <Box />
-              <ButtonPressAnimation onPress={onPressAddAnotherWallet}>
+              <ButtonPressAnimation onPress={onPressAddAnotherWallet} testID="add-another-wallet-button">
                 <Box
                   background="blue"
                   justifyContent="center"
