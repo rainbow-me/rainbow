@@ -815,38 +815,27 @@ export function createQueryStore<
       }
     };
 
-    const subscribeWithSelector = api.subscribe;
-    api.subscribe = (listener: (state: S, prevState: S) => void) => {
-      set(state => ({
-        ...state,
-        subscriptionCount: state.subscriptionCount + 1,
-      }));
-
-      const unsubscribe = subscribeWithSelector((state: S, prevState: S) => {
-        listener(state, prevState);
-        handleSetEnabled(state, prevState);
-      });
-
-      const shouldWaitForParams = params !== undefined && !directValues && !paramAttachVals;
-
-      if (shouldWaitForParams) {
+    const handleSubscribe = () => {
+      if (!directValues && !paramAttachVals && params !== undefined) {
         fetchAfterParamCreation = true;
-      } else {
-        const { enabled, fetch, isStale, subscriptionCount } = get();
-        const currentParams = getCurrentResolvedParams();
-        const currentQueryKey = getQueryKey(currentParams);
+        return;
+      }
+      const { enabled, fetch, isStale, subscriptionCount } = get();
+      const currentParams = getCurrentResolvedParams();
+      const currentQueryKey = getQueryKey(currentParams);
 
-        set(state => ({ ...state, queryKey: currentQueryKey }));
+      set(state => ({ ...state, queryKey: currentQueryKey }));
 
-        if ((subscriptionCount === 1 || disableAutoRefetching) && enabled) {
-          if (isStale() || !get().queryCache[currentQueryKey]?.lastFetchedAt) {
-            fetch(currentParams);
-          } else {
-            scheduleNextFetch(currentParams, undefined);
-          }
+      if ((subscriptionCount === 1 || disableAutoRefetching) && enabled) {
+        if (isStale() || !get().queryCache[currentQueryKey]?.lastFetchedAt) {
+          fetch(currentParams);
+        } else {
+          scheduleNextFetch(currentParams, undefined);
         }
       }
+    };
 
+    const handleUnsubscribe = (unsubscribe: () => void) => {
       return () => {
         unsubscribe();
         set(state => {
@@ -861,6 +850,27 @@ export function createQueryStore<
           return { ...state, subscriptionCount: newCount };
         });
       };
+    };
+
+    const incrementSubscriptionCount = () => {
+      set(state => ({
+        ...state,
+        subscriptionCount: state.subscriptionCount + 1,
+      }));
+    };
+
+    const subscribeWithSelector = api.subscribe;
+    api.subscribe = (listener: (state: S, prevState: S) => void) => {
+      incrementSubscriptionCount();
+
+      const unsubscribe = subscribeWithSelector((state: S, prevState: S) => {
+        listener(state, prevState);
+        handleSetEnabled(state, prevState);
+      });
+
+      handleSubscribe();
+
+      return handleUnsubscribe(unsubscribe);
     };
 
     const userState = customStateCreator?.(set, get, api) ?? ({} as U);
