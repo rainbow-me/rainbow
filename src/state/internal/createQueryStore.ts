@@ -438,7 +438,7 @@ export function createQueryStore<
   let fetchAfterParamCreation = false;
 
   let activeAbortController: AbortController | null = null;
-  let activeFetchPromise: Promise<TData | null> | null = null;
+  let activeFetch: { key: string; promise?: Promise<TData | null> } | null = null;
   let activeRefetchTimeout: NodeJS.Timeout | null = null;
   let lastFetchKey: string | null = null;
 
@@ -533,12 +533,13 @@ export function createQueryStore<
         const effectiveParams = params ?? getCurrentResolvedParams();
         const currentQueryKey = getQueryKey(effectiveParams);
         const isLoading = status === QueryStatuses.Loading;
+        const skipStoreUpdates = options?.skipStoreUpdates;
 
-        if (activeFetchPromise && lastFetchKey === currentQueryKey && isLoading && !options?.force) {
-          return activeFetchPromise;
+        if (activeFetch?.promise && activeFetch.key === currentQueryKey && isLoading && !options?.force) {
+          return activeFetch.promise;
         }
 
-        if (abortInterruptedFetches && !options?.skipStoreUpdates) abortActiveFetch();
+        if (abortInterruptedFetches && !skipStoreUpdates) abortActiveFetch();
 
         if (!options?.force) {
           /* Check for valid cached data */
@@ -562,15 +563,15 @@ export function createQueryStore<
           }
         }
 
-        if (!options?.skipStoreUpdates) {
+        if (!skipStoreUpdates) {
           set(state => ({ ...state, error: null, status: QueryStatuses.Loading }));
-          lastFetchKey = currentQueryKey;
+          activeFetch = { key: currentQueryKey };
         }
 
         const fetchOperation = async () => {
           try {
             if (enableLogs) console.log('[🔄 Fetching 🔄] for queryKey: ', currentQueryKey, ':: params: ', effectiveParams);
-            const rawResult = await (abortInterruptedFetches && !options?.skipStoreUpdates
+            const rawResult = await (abortInterruptedFetches && !skipStoreUpdates
               ? fetchWithAbortControl(effectiveParams)
               : fetcher(effectiveParams, null));
             const lastFetchedAt = Date.now();
@@ -585,7 +586,7 @@ export function createQueryStore<
               });
             }
 
-            if (options?.skipStoreUpdates) {
+            if (skipStoreUpdates) {
               if (enableLogs) console.log('[🥷 Successful Parallel Fetch 🥷] for queryKey: ', currentQueryKey);
               return transformedData;
             }
@@ -639,6 +640,7 @@ export function createQueryStore<
               return disableCache || cacheTime === Infinity ? newState : pruneCache(newState);
             });
 
+            lastFetchKey = currentQueryKey;
             scheduleNextFetch(effectiveParams, options);
 
             if (onFetched) {
@@ -671,7 +673,6 @@ export function createQueryStore<
             const entry = disableCache ? undefined : get().queryCache[currentQueryKey];
             const currentRetryCount = entry?.errorInfo?.retryCount ?? 0;
 
-            if (lastFetchKey === currentQueryKey) lastFetchKey = null;
             onError?.(typedError, currentRetryCount);
 
             if (currentRetryCount < maxRetries) {
@@ -729,12 +730,13 @@ export function createQueryStore<
 
             return null;
           } finally {
-            activeFetchPromise = null;
+            if (!skipStoreUpdates) activeFetch = null;
           }
         };
 
-        activeFetchPromise = fetchOperation();
-        return activeFetchPromise;
+        if (skipStoreUpdates) return fetchOperation();
+
+        return (activeFetch = { key: currentQueryKey, promise: fetchOperation() }).promise;
       },
 
       getData(params?: TParams) {
@@ -785,7 +787,7 @@ export function createQueryStore<
           activeRefetchTimeout = null;
         }
         if (abortInterruptedFetches) abortActiveFetch();
-        activeFetchPromise = null;
+        activeFetch = null;
         lastFetchKey = null;
         set(state => ({ ...state, ...initialData, queryKey: getQueryKey(getCurrentResolvedParams()) }));
       },
