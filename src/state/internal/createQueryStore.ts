@@ -809,16 +809,14 @@ export function createQueryStore<
         if (state.enabled) {
           const currentParams = getCurrentResolvedParams();
           const currentKey = state.queryKey;
-          if (currentKey !== lastFetchKey || !state.queryCache[currentKey] || state.isStale()) {
+          if (currentKey !== lastFetchKey || state.isStale()) {
             state.fetch(currentParams, undefined);
           } else {
             scheduleNextFetch(currentParams, undefined);
           }
-        } else {
-          if (activeRefetchTimeout) {
-            clearTimeout(activeRefetchTimeout);
-            activeRefetchTimeout = null;
-          }
+        } else if (activeRefetchTimeout) {
+          clearTimeout(activeRefetchTimeout);
+          activeRefetchTimeout = null;
         }
       }
     };
