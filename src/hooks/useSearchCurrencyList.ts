@@ -163,7 +163,7 @@ const useSearchCurrencyList = (searchQuery: string) => {
   const selectTopSearchResults = useCallback(
     (data: TokenSearchResult) => {
       const results = data.filter(asset => {
-        const isFavorite = favoriteAddresses.map(a => a?.toLowerCase()).includes(asset.address?.toLowerCase());
+        const isFavorite = favoriteAddresses.map(a => a?.toLowerCase()).includes(asset.uniqueId?.toLowerCase());
         if (isFavorite) return false;
 
         const hasIcon = asset.icon_url;
