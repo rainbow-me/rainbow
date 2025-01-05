@@ -574,6 +574,7 @@ export function createQueryStore<
             const rawResult = await (abortInterruptedFetches && !skipStoreUpdates
               ? fetchWithAbortControl(effectiveParams)
               : fetcher(effectiveParams, null));
+
             const lastFetchedAt = Date.now();
             if (enableLogs) console.log('[✅ Fetch Successful ✅] for queryKey: ', currentQueryKey);
 
@@ -793,32 +794,33 @@ export function createQueryStore<
       },
     };
 
-    const subscribeWithSelector = api.subscribe;
+    let lastHandledEnabled: boolean | null = null;
+    const handleSetEnabled = (state: S, prevState: S) => {
+      if (state.enabled !== prevState.enabled && lastHandledEnabled !== state.enabled) {
+        lastHandledEnabled = state.enabled;
+        if (state.enabled) {
+          const currentParams = getCurrentResolvedParams();
+          const currentKey = state.queryKey;
+          if (currentKey !== lastFetchKey || !state.queryCache[currentKey] || state.isStale()) {
+            state.fetch(currentParams, undefined);
+          } else {
+            scheduleNextFetch(currentParams, undefined);
+          }
+        } else {
+          if (activeRefetchTimeout) {
+            clearTimeout(activeRefetchTimeout);
+            activeRefetchTimeout = null;
+          }
+        }
+      }
+    };
 
+    const subscribeWithSelector = api.subscribe;
     api.subscribe = (listener: (state: S, prevState: S) => void) => {
       set(state => ({
         ...state,
         subscriptionCount: state.subscriptionCount + 1,
       }));
-
-      const handleSetEnabled = (state: S, prevState: S) => {
-        if (state.enabled !== prevState.enabled) {
-          if (state.enabled) {
-            const currentParams = getCurrentResolvedParams();
-            const currentKey = state.queryKey;
-            if (currentKey !== lastFetchKey || !state.queryCache[currentKey] || state.isStale()) {
-              state.fetch(currentParams, undefined);
-            } else {
-              scheduleNextFetch(currentParams, undefined);
-            }
-          } else {
-            if (activeRefetchTimeout) {
-              clearTimeout(activeRefetchTimeout);
-              activeRefetchTimeout = null;
-            }
-          }
-        }
-      };
 
       const unsubscribe = subscribeWithSelector((state: S, prevState: S) => {
         listener(state, prevState);
