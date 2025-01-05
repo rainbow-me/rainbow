@@ -258,6 +258,12 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
    */
   enabled?: boolean;
   /**
+   * If `true`, the store's `getData` method will always return existing data from the cache if it exists,
+   * regardless of whether the cached data is expired, until the data is pruned following a successful fetch.
+   * @default false
+   */
+  keepPreviousData?: boolean;
+  /**
    * The maximum number of times to retry a failed fetch operation.
    * @default 3
    */
@@ -415,6 +421,7 @@ export function createQueryStore<
     disableAutoRefetching = false,
     disableCache = false,
     enabled = true,
+    keepPreviousData = false,
     maxRetries = 3,
     onError,
     params,
@@ -744,6 +751,7 @@ export function createQueryStore<
         if (disableCache) return null;
         const currentQueryKey = params ? getQueryKey(params) : get().queryKey;
         const cacheEntry = get().queryCache[currentQueryKey];
+        if (keepPreviousData) return cacheEntry?.data ?? null;
         const isExpired = !!cacheEntry?.lastFetchedAt && Date.now() - cacheEntry.lastFetchedAt > cacheTime;
         return isExpired ? null : cacheEntry?.data ?? null;
       },
