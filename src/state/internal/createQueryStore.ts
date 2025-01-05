@@ -533,7 +533,7 @@ export function createQueryStore<
         const effectiveParams = params ?? getCurrentResolvedParams();
         const currentQueryKey = getQueryKey(effectiveParams);
         const isLoading = status === QueryStatuses.Loading;
-        const skipStoreUpdates = options?.skipStoreUpdates;
+        const skipStoreUpdates = !!options?.skipStoreUpdates;
 
         if (activeFetch?.promise && activeFetch.key === currentQueryKey && isLoading && !options?.force) {
           return activeFetch.promise;
@@ -662,7 +662,7 @@ export function createQueryStore<
               return null;
             }
 
-            if (options?.skipStoreUpdates) {
+            if (skipStoreUpdates) {
               logger.error(new RainbowError(`[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: Failed to fetch data`), {
                 error,
               });
