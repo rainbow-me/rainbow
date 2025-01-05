@@ -159,6 +159,7 @@ async function tokenSearchQueryFunction({
 
 async function tokenSearchQueryFunctionAllNetworks({ queryKey: [{ query }] }: QueryFunctionArgs<typeof tokenSearchAllNetworksQueryKey>) {
   const queryParams: {
+    list?: string;
     query?: string;
   } = {
     query,
@@ -166,7 +167,12 @@ async function tokenSearchQueryFunctionAllNetworks({ queryKey: [{ query }] }: Qu
 
   const isAddressSearch = query && isAddress(query);
 
-  const url = `/?${qs.stringify(queryParams)}`;
+  const searchDefaultMainnetVerifiedList = query === '';
+  if (searchDefaultMainnetVerifiedList) {
+    queryParams.list = 'verifiedAssets';
+  }
+
+  const url = `${searchDefaultMainnetVerifiedList ? `/${ChainId.mainnet}` : ''}/?${qs.stringify(queryParams)}`;
 
   try {
     if (isAddressSearch) {

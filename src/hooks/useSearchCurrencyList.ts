@@ -38,12 +38,18 @@ type SearchItemWithRelevance = SearchAsset & {
   relevance: number;
 };
 
+const sortForDefaultList = (tokens: SearchAsset[]) => {
+  const curated = tokens.filter(asset => asset.highLiquidity && asset.isRainbowCurated);
+  return curated.sort((a, b) => (b.market?.market_cap?.value || 0) - (a.market?.market_cap?.value || 0));
+};
+
 const sortTokensByRelevance = (tokens: SearchAsset[], query: string): SearchItemWithRelevance[] => {
   const normalizedQuery = query.toLowerCase().trim();
   const tokenWithRelevance: SearchItemWithRelevance[] = [];
 
   for (const token of tokens) {
     const normalizedTokenName = token.name.toLowerCase();
+
     const normalizedTokenSymbol = token.symbol.toLowerCase();
     const tokenNameWords = normalizedTokenName.split(' ');
     const relevance = getTokenRelevance({
@@ -170,7 +176,7 @@ const useSearchCurrencyList = (searchQuery: string) => {
 
         return isMatch;
       });
-      const topResults = sortTokensByRelevance(results, searchQuery);
+      const topResults = searchQuery === '' ? sortForDefaultList(results) : sortTokensByRelevance(results, searchQuery);
       return topResults.slice(0, MAX_VERIFIED_RESULTS);
     },
     [searchQuery, favoriteAddresses]
