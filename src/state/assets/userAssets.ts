@@ -163,6 +163,7 @@ function deserializeUserAssetsState(serializedState: string) {
   }
 
   const { state, version } = parsedState;
+  let userAssetsDataExists = false;
 
   let chainBalances = new Map<ChainId, number>();
   try {
@@ -186,6 +187,7 @@ function deserializeUserAssetsState(serializedState: string) {
   try {
     if (state.userAssets.length) {
       userAssetsData = new Map(state.userAssets);
+      userAssetsDataExists = true;
     }
   } catch (error) {
     logger.error(new RainbowError(`[userAssetsStore]: Failed to convert userAssets from user assets storage`), { error });
@@ -205,6 +207,7 @@ function deserializeUserAssetsState(serializedState: string) {
       ...state,
       chainBalances,
       idsByChain,
+      isLoadingUserAssets: !userAssetsDataExists,
       userAssets: userAssetsData,
       hiddenAssets,
     },
