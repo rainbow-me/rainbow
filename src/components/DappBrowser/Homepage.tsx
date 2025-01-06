@@ -30,7 +30,7 @@ import { getDappHost } from './handleProviderRequest';
 import { uniqBy } from 'lodash';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { EXTRA_WEBVIEW_HEIGHT, WEBVIEW_HEIGHT } from './Dimensions';
-import { useDapps } from '@/resources/metadata/dapps';
+import { useBrowserDappsStore } from '@/resources/metadata/dapps';
 import { analyticsV2 } from '@/analytics';
 import haptics from '@/utils/haptics';
 import * as i18n from '@/languages';
@@ -310,7 +310,6 @@ const Card = memo(function Card({
 }) {
   const { isDarkMode } = useColorMode();
 
-  const { dapps } = useDapps();
   const isFavorite = useFavoriteDappsStore(state => state.isFavorite(site.url || ''));
   const addFavorite = useFavoriteDappsStore(state => state.addFavorite);
   const removeFavorite = useFavoriteDappsStore(state => state.removeFavorite);
@@ -385,14 +384,14 @@ const Card = memo(function Card({
     const iconUrl = site.image;
     const url = dappUrl.startsWith('http') ? dappUrl : `https://${dappUrl}`;
     const host = new URL(url).hostname;
+    const dappOverride = useBrowserDappsStore.getState().findDappByHostname(host);
     // 👇 TODO: Remove this once the Uniswap logo in the dapps metadata is fixed
     const isUniswap = host === 'uniswap.org' || host.endsWith('.uniswap.org');
-    const dappOverride = dapps.find(dapp => dapp.urlDisplay === host);
     if (dappOverride?.iconUrl && !isUniswap) {
       return dappOverride.iconUrl;
     }
     return iconUrl;
-  }, [dapps, site.image, site.url]);
+  }, [site.image, site.url]);
 
   return (
     <Box>
