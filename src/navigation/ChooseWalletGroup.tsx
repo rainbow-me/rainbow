@@ -1,6 +1,6 @@
 import React from 'react';
 import { Separator, Text, useForegroundColor } from '@/design-system';
-import { View, Text as NativeText } from 'react-native';
+import { View, Text as NativeText, ViewStyle } from 'react-native';
 import chroma from 'chroma-js';
 import { useInitializeWallet, useWallets } from '@/hooks';
 import { useDispatch } from 'react-redux';
@@ -38,7 +38,7 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
           const { name, color } = args;
           await createWallet({ color, name });
           await dispatch(walletsLoadState());
-          // @ts-ignore
+          // @ts-expect-error - needs refactor to object params
           await initializeWallet();
           navigate(Routes.WALLET_SCREEN, {}, true);
         } catch (error) {
@@ -54,19 +54,22 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
     <ButtonPressAnimation
       onPress={onNewWalletGroup}
       scaleTo={0.95}
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-        borderRadius: 30,
-        height: 60,
-        width: '100%',
-        backgroundColor: chroma(blue).alpha(0.05).hex(),
-        borderWidth: 1,
-        borderColor: chroma(blue).alpha(0.06).hex(),
-      }}
+      style={[
+        {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 10,
+          paddingHorizontal: 12,
+          paddingVertical: 10,
+          borderRadius: 30,
+          height: 60,
+          width: '100%',
+          backgroundColor: chroma(blue).alpha(0.05).hex(),
+          borderWidth: 1,
+          borderColor: chroma(blue).alpha(0.06).hex(),
+        },
+        style,
+      ]}
     >
       <ImgixImage style={{ height: 36, width: 36, borderRadius: 18 }} source={CreateNewWalletGroupIcon} />
       <View style={{ gap: 10 }}>
@@ -188,8 +191,8 @@ export function ChooseWalletGroup() {
   const groups = Object.values(wallets).filter(wallet => wallet.type === WalletTypes.mnemonic);
 
   return (
-    <View style={{ width: '100%', paddingHorizontal: 24, gap: 20, alignItems: 'center', paddingBottom: 64 }}>
-      <View style={{ paddingTop: 24, paddingBottom: 12, width: '100%' }}>
+    <View style={{ width: '100%', gap: 20, alignItems: 'center', paddingBottom: 64 }}>
+      <View style={{ paddingTop: 24, paddingBottom: 12, width: '100%', paddingHorizontal: 24 }}>
         <ButtonPressAnimation scaleTo={0.9} onPress={goBack} hitSlop={64} style={{ width: 20, height: 20 }}>
           <Text color="blue" size="22pt" weight="bold">
             􀆉
@@ -203,18 +206,21 @@ export function ChooseWalletGroup() {
         {i18n.t(i18n.l.wallet.new.choose_wallet_group.description)}
       </Text>
 
-      <View style={{ width: '100%' }}>
+      <View style={{ width: '100%', paddingHorizontal: 24 }}>
         <Separator color={'separatorTertiary'} />
       </View>
 
-      <NewWalletGroup numWalletGroups={groups.length} />
-      {groups.length > 0 && (
-        <ScrollView style={{ width: '100%' }} contentContainerStyle={{ gap: 16, paddingHorizontal: 12 }}>
+      <ScrollView
+        style={{ width: '100%', marginTop: -20 }}
+        contentContainerStyle={{ gap: 16, paddingTop: 20, paddingHorizontal: 24, paddingBottom: 200 }}
+      >
+        <NewWalletGroup numWalletGroups={groups.length} />
+        <View style={{ paddingHorizontal: 12, gap: 16 }}>
           {groups.map(wallet => (
             <WalletGroup key={wallet.id} wallet={wallet} />
           ))}
-        </ScrollView>
-      )}
+        </View>
+      </ScrollView>
     </View>
   );
 }
