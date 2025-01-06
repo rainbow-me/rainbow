@@ -22,7 +22,7 @@ export function ClaimableMenu({
 
   return (
     <View style={{ pointerEvents: disabled ? 'none' : undefined }}>
-      <DropdownMenu menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} hitSlop={20}>
+      <DropdownMenu menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
         <Box
           paddingHorizontal={{ custom: 7 }}
           height={{ custom: 28 }}
