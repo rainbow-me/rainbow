@@ -23,7 +23,6 @@ export type DndContextValue = {
   draggableOffsets: SharedValue<Offsets>;
   draggableRestingOffsets: SharedValue<Offsets>;
   draggableStates: SharedValue<DraggableStates>;
-  draggablePendingId: SharedValue<UniqueIdentifier | null>;
   draggableActiveId: SharedValue<UniqueIdentifier | null>;
   droppableActiveId: SharedValue<UniqueIdentifier | null>;
   draggableActiveLayout: SharedValue<LayoutRectangle | null>;

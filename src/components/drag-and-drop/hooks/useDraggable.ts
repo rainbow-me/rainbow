@@ -57,7 +57,6 @@ export const useDraggable = ({
     draggableOptions,
     draggableStates,
     draggableActiveId,
-    draggablePendingId,
     panGestureState,
   } = useDndContext();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -169,7 +168,6 @@ export const useDraggable = ({
     state,
     setNodeRef,
     activeId: draggableActiveId,
-    pendingId: draggablePendingId,
     onLayout,
     onLayoutWorklet,
     panGestureState,
