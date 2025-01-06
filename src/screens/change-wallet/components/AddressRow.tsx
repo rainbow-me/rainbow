@@ -111,7 +111,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
     <ConditionalWrap
       condition={!editMode}
       wrap={(children: React.ReactElement) => (
-        <DropdownMenu<AddressMenuAction, AddressMenuActionData>
+        <DropdownMenu<AddressMenuAction>
           triggerAction="longPress"
           menuConfig={menuConfig}
           onPressMenuItem={action => onPressMenuItem(action, { address })}
@@ -198,10 +198,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
             {editMode && (
               <>
                 <AddressRowButton onPress={() => addPinnedAddress(address)} color={colors.appleBlue} icon="􀎧" size="icon 12px" />
-                <DropdownMenu<AddressMenuAction, AddressMenuActionData>
-                  menuConfig={menuConfig}
-                  onPressMenuItem={action => onPressMenuItem(action, { address })}
-                >
+                <DropdownMenu<AddressMenuAction> menuConfig={menuConfig} onPressMenuItem={action => onPressMenuItem(action, { address })}>
                   <AddressRowButton icon="􀍠" size="icon 12px" />
                 </DropdownMenu>
               </>

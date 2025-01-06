@@ -50,12 +50,11 @@ export type MenuConfig<T extends string> = Omit<_MenuConfig, 'menuItems' | 'menu
   menuItems: Array<MenuItem<T>>;
 };
 
-type DropDownMenuProps<T extends string, U extends Record<string, unknown> = never> = {
+type DropdownMenuProps<T extends string> = {
   children: React.ReactElement;
   menuConfig: MenuConfig<T>;
   onPressMenuItem: (actionKey: T) => void;
   triggerAction?: 'press' | 'longPress';
-  data?: U;
   menuItemType?: 'checkbox';
 } & DropdownMenuContentProps;
 
@@ -75,11 +74,10 @@ const buildIconConfig = (icon?: MenuItemIcon) => {
   return null;
 };
 
-export function DropdownMenu<T extends string, U extends Record<string, unknown> = never>({
+export function DropdownMenu<T extends string>({
   children,
   menuConfig,
   onPressMenuItem,
-  data,
   loop = true,
   align = 'end',
   sideOffset = 8,
@@ -88,16 +86,12 @@ export function DropdownMenu<T extends string, U extends Record<string, unknown>
   avoidCollisions = true,
   triggerAction = 'press',
   menuItemType,
-}: DropDownMenuProps<T, U>) {
+}: DropdownMenuProps<T>) {
   const handleSelectItem = useCallback(
     (actionKey: T) => {
-      if (data !== undefined) {
-        (onPressMenuItem as (actionKey: T, data: U) => void)(actionKey, data);
-      } else {
-        (onPressMenuItem as (actionKey: T) => void)(actionKey);
-      }
+      onPressMenuItem(actionKey);
     },
-    [onPressMenuItem, data]
+    [onPressMenuItem]
   );
 
   const MenuItemComponent = menuItemType === 'checkbox' ? DropdownMenuCheckboxItem : DropdownMenuItem;

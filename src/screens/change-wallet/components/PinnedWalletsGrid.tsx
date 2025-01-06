@@ -91,7 +91,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
               <ConditionalWrap
                 condition={!editMode}
                 wrap={(children: React.ReactElement) => (
-                  <DropdownMenu<AddressMenuAction, AddressMenuActionData>
+                  <DropdownMenu<AddressMenuAction>
                     triggerAction="longPress"
                     menuConfig={{
                       menuItems: filteredMenuItems,
