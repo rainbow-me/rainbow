@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import * as i18n from '@/languages';
@@ -24,8 +24,8 @@ import { MenuItem } from '@/components/DropdownMenu';
 import { DraggableScrollView } from '@/components/drag-and-drop/components/DraggableScrollView';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { PanGesture } from 'react-native-gesture-handler';
 
-export const DRAGGABLE_ACTIVATION_DELAY = 150;
 const DRAG_ACTIVATION_DELAY = 150;
 const FADE_TRANSITION_DURATION = 75;
 const LIST_MAX_HEIGHT = MAX_PANEL_HEIGHT - PANEL_HEADER_HEIGHT;
@@ -49,6 +49,8 @@ interface Props {
 export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAccount, editMode }: Props) {
   const pinnedAddresses = usePinnedWalletsStore(state => state.pinnedAddresses);
   const unpinnedAddresses = usePinnedWalletsStore(state => state.unpinnedAddresses);
+
+  const pinnedWalletsGridGestureRef = useRef<PanGesture>();
 
   // it would be more efficient to map the addresses to the wallet items, but the wallet items should be the source of truth
   const pinnedWalletItems = useMemo(() => {
@@ -93,6 +95,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
             onActivationWorklet={onDraggableActivationWorklet}
             activationDelay={DRAG_ACTIVATION_DELAY}
             disabled={!editMode}
+            gestureRef={pinnedWalletsGridGestureRef}
           >
             <PinnedWalletsGrid
               menuItems={menuItems}
@@ -118,21 +121,6 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
     );
   }, [pinnedWalletItems, onPressAccount, editMode, unpinnedWalletItems.length, menuItems, onPressMenuItem, onDraggableActivationWorklet]);
 
-  const renderAddressRow = useCallback(
-    (item: AddressItem) => (
-      <Draggable key={item.id} dragDirection="y" activationDelay={DRAGGABLE_ACTIVATION_DELAY} id={item.id.toString()}>
-        <AddressRow
-          menuItems={menuItems}
-          onPressMenuItem={onPressMenuItem}
-          data={item}
-          editMode={editMode}
-          onPress={() => onPressAccount(item.address)}
-        />
-      </Draggable>
-    ),
-    [menuItems, onPressMenuItem, onPressAccount, editMode]
-  );
-
   // the draggable context should only layout its children when the number of children changes
   const draggableUnpinnedWalletItems = useMemo(() => {
     return unpinnedWalletItems;
@@ -152,7 +140,8 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
             springConfig={SPRING_CONFIGS.walletDraggableConfig}
             onActivationWorklet={onDraggableActivationWorklet}
             activationDelay={DRAG_ACTIVATION_DELAY}
-            disabled={!editMode}
+            disabled={!editMode || draggableUnpinnedWalletItems.length === 0}
+            waitFor={pinnedWalletsGridGestureRef}
           >
             <DraggableScrollView
               onOrderChange={onOrderChange}
@@ -173,7 +162,17 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
               }}
             >
               {renderPinnedWalletsSection()}
-              {draggableUnpinnedWalletItems.map(item => renderAddressRow(item))}
+              {draggableUnpinnedWalletItems.map(item => (
+                <Draggable key={item.id} dragDirection="y" id={item.id.toString()}>
+                  <AddressRow
+                    menuItems={menuItems}
+                    onPressMenuItem={onPressMenuItem}
+                    data={item}
+                    editMode={editMode}
+                    onPress={() => onPressAccount(item.address)}
+                  />
+                </Draggable>
+              ))}
             </DraggableScrollView>
           </DndProvider>
         </Animated.View>

@@ -15,7 +15,6 @@ import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
-import { DRAGGABLE_ACTIVATION_DELAY } from '@/screens/change-wallet/components/WalletList';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 const UNPIN_BADGE_SIZE = 28;
@@ -88,7 +87,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
           const walletName = removeFirstEmojiFromString(account.label) || address(account.address, 4, 4);
           const filteredMenuItems = menuItems.filter(item => (account.isReadOnly ? item.actionKey !== AddressMenuAction.Settings : true));
           return (
-            <Draggable id={account.address} key={account.address} activationDelay={DRAGGABLE_ACTIVATION_DELAY}>
+            <Draggable id={account.address} key={account.address}>
               <ConditionalWrap
                 condition={!editMode}
                 wrap={(children: React.ReactElement) => (
