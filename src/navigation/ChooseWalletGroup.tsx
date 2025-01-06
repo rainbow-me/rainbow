@@ -1,5 +1,5 @@
 import React from 'react';
-import { Separator, Text, useForegroundColor } from '@/design-system';
+import { Box, Separator, Text, useForegroundColor } from '@/design-system';
 import { View, Text as NativeText, ViewStyle } from 'react-native';
 import chroma from 'chroma-js';
 import { useInitializeWallet, useWallets } from '@/hooks';
@@ -188,7 +188,7 @@ export function ChooseWalletGroup() {
   const groups = Object.values(wallets).filter(wallet => wallet.type === WalletTypes.mnemonic);
 
   return (
-    <View style={{ width: '100%', gap: 20, alignItems: 'center', paddingBottom: 64 }}>
+    <Box background="surfaceSecondary" style={{ width: '100%', gap: 20, alignItems: 'center', paddingBottom: 64 }}>
       <View style={{ paddingHorizontal: 24, gap: 20, width: '100%' }}>
         <View style={{ paddingTop: 24, paddingBottom: 12 }}>
           <ButtonPressAnimation scaleTo={0.9} onPress={goBack} hitSlop={64} style={{ width: 20, height: 20 }}>
@@ -220,6 +220,6 @@ export function ChooseWalletGroup() {
           ))}
         </View>
       </ScrollView>
-    </View>
+    </Box>
   );
 }
