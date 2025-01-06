@@ -45,8 +45,7 @@ const Container = styled(Centered).attrs({
               ? deviceHeight - contentHeight
               : 0,
       }),
-  borderTopLeftRadius: 30,
-  borderTopRightRadius: 30,
+  ...(IS_ANDROID ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
   backgroundColor: backgroundColor,
   bottom: 0,
   left: 0,
