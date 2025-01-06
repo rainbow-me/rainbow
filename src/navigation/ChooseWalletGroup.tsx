@@ -54,22 +54,19 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
     <ButtonPressAnimation
       onPress={onNewWalletGroup}
       scaleTo={0.95}
-      style={[
-        {
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 10,
-          paddingHorizontal: 12,
-          paddingVertical: 10,
-          borderRadius: 30,
-          height: 60,
-          width: '100%',
-          backgroundColor: chroma(blue).alpha(0.05).hex(),
-          borderWidth: 1,
-          borderColor: chroma(blue).alpha(0.06).hex(),
-        },
-        style,
-      ]}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        borderRadius: 30,
+        height: 60,
+        width: '100%',
+        backgroundColor: chroma(blue).alpha(0.05).hex(),
+        borderWidth: 1,
+        borderColor: chroma(blue).alpha(0.06).hex(),
+      }}
     >
       <ImgixImage style={{ height: 36, width: 36, borderRadius: 18 }} source={CreateNewWalletGroupIcon} />
       <View style={{ gap: 10 }}>
@@ -192,22 +189,24 @@ export function ChooseWalletGroup() {
 
   return (
     <View style={{ width: '100%', gap: 20, alignItems: 'center', paddingBottom: 64 }}>
-      <View style={{ paddingTop: 24, paddingBottom: 12, width: '100%', paddingHorizontal: 24 }}>
-        <ButtonPressAnimation scaleTo={0.9} onPress={goBack} hitSlop={64} style={{ width: 20, height: 20 }}>
-          <Text color="blue" size="22pt" weight="bold">
-            􀆉
-          </Text>
-        </ButtonPressAnimation>
-      </View>
-      <Text color="label" size="22pt" weight="heavy">
-        {i18n.t(i18n.l.wallet.new.choose_wallet_group.title)}
-      </Text>
-      <Text color="labelQuaternary" size="15pt" weight="semibold" align="center">
-        {i18n.t(i18n.l.wallet.new.choose_wallet_group.description)}
-      </Text>
+      <View style={{ paddingHorizontal: 24, gap: 20, width: '100%' }}>
+        <View style={{ paddingTop: 24, paddingBottom: 12 }}>
+          <ButtonPressAnimation scaleTo={0.9} onPress={goBack} hitSlop={64} style={{ width: 20, height: 20 }}>
+            <Text color="blue" size="22pt" weight="bold">
+              􀆉
+            </Text>
+          </ButtonPressAnimation>
+        </View>
+        <Text color="label" size="22pt" weight="heavy" align="center">
+          {i18n.t(i18n.l.wallet.new.choose_wallet_group.title)}
+        </Text>
+        <Text color="labelQuaternary" size="15pt" weight="semibold" align="center">
+          {i18n.t(i18n.l.wallet.new.choose_wallet_group.description)}
+        </Text>
 
-      <View style={{ width: '100%', paddingHorizontal: 24 }}>
-        <Separator color={'separatorTertiary'} />
+        <View style={{ width: '100%' }}>
+          <Separator color={'separatorTertiary'} />
+        </View>
       </View>
 
       <ScrollView
