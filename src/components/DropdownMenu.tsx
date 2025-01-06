@@ -1,4 +1,4 @@
-import React, { ComponentProps, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import * as DropdownMenuPrimitive from 'zeego/dropdown-menu';
 import styled from 'styled-components';
 import { IconConfig, MenuActionConfig, MenuConfig as _MenuConfig } from 'react-native-ios-context-menu';
@@ -7,27 +7,8 @@ import { ImageSourcePropType, ImageURISource } from 'react-native';
 import type { SFSymbols5_0 } from 'sf-symbols-typescript';
 import type { DropdownMenuContentProps } from '@radix-ui/react-dropdown-menu';
 import { ButtonPressAnimation } from './animations';
-import { HitSlop } from '@/design-system';
-
-type ExtendedDropdownMenuTriggerProps = ComponentProps<typeof DropdownMenuPrimitive.Trigger> & {
-  hitSlop?: number;
-  testID?: string;
-};
 
 export const DropdownMenuRoot = DropdownMenuPrimitive.Root;
-export const DropdownMenuTrigger = DropdownMenuPrimitive.create<ExtendedDropdownMenuTriggerProps>(
-  (props: ExtendedDropdownMenuTriggerProps) => {
-    // TODO: This hitslop isn't working properly...
-    return (
-      <DropdownMenuPrimitive.Trigger {...props} style={[props.style]}>
-        <ButtonPressAnimation testID={props.testID}>
-          <HitSlop space={{ custom: props.hitSlop ?? 0 }}>{props.children}</HitSlop>
-        </ButtonPressAnimation>
-      </DropdownMenuPrimitive.Trigger>
-    );
-  },
-  'Trigger'
-);
 export const DropdownMenuContent = DropdownMenuPrimitive.Content;
 export const DropdownMenuItem = DropdownMenuPrimitive.create(
   styled(DropdownMenuPrimitive.CheckboxItem)({
@@ -72,7 +53,6 @@ type DropDownMenuProps<T extends string> = {
   children: React.ReactElement;
   menuConfig: MenuConfig<T>;
   onPressMenuItem: (actionKey: T) => void;
-  hitSlop?: number;
   testID?: string;
 } & DropdownMenuContentProps;
 
@@ -106,7 +86,6 @@ export function DropdownMenu<T extends string>({
   side = 'right',
   alignOffset = 5,
   avoidCollisions = true,
-  hitSlop = 20,
   testID,
 }: DropDownMenuProps<T>) {
   const handleSelectItem = useCallback(
@@ -118,9 +97,9 @@ export function DropdownMenu<T extends string>({
 
   return (
     <DropdownMenuRoot>
-      <DropdownMenuTrigger asChild testID={testID} hitSlop={hitSlop}>
-        {children}
-      </DropdownMenuTrigger>
+      <DropdownMenuPrimitive.Trigger>
+        <ButtonPressAnimation testID={testID}>{children}</ButtonPressAnimation>
+      </DropdownMenuPrimitive.Trigger>
       <DropdownMenuContent
         loop={loop}
         side={side}

@@ -148,7 +148,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
         )}
 
         <DropdownMenu menuConfig={menuConfig} onPressMenuItem={handleSelectChain} testID={`chain-selection-${output ? 'output' : 'input'}`}>
-          <Inline alignVertical="center" space="6px" wrap={false}>
+          <Box paddingVertical="6px" paddingLeft="16px" flexDirection="row" alignItems="center" justifyContent="center" gap={6}>
             <ChainButtonIcon output={output} />
             <AnimatedText color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
               {chainName}
@@ -156,7 +156,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
             <Text align="center" color={isDarkMode ? 'labelTertiary' : 'labelSecondary'} size="icon 13px" weight="bold">
               􀆏
             </Text>
-          </Inline>
+          </Box>
         </DropdownMenu>
       </Inline>
     </Box>
