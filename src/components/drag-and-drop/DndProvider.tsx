@@ -197,9 +197,7 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
       .enabled(!disabled)
       .onStart(event => {
         const { state, x, y } = event;
-
         debug && console.log('onStart', { state, x, y });
-
         const activeId = findActiveLayoutId({ x, y });
 
         // No item found, ignore gesture.
@@ -210,7 +208,6 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
         const { value: layouts } = draggableLayouts;
         const { value: offsets } = draggableOffsets;
         const { value: restingOffsets } = draggableRestingOffsets;
-        // const { value: options } = draggableOptions;
         const { value: states } = draggableStates;
 
         const activeLayout = layouts[activeId].value;

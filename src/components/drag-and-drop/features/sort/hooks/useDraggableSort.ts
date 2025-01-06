@@ -40,8 +40,6 @@ export const useDraggableSort = ({
     const { value: offsets } = draggableOffsets;
     const { value: sortOrder } = draggableSortOrder;
     const activeIndex = sortOrder.findIndex(id => id === activeId);
-    // const activeCenterPoint = centerPoint(activeLayout);
-    // console.log(`activeLayout: ${JSON.stringify(activeLayout)}`);
     for (let itemIndex = 0; itemIndex < sortOrder.length; itemIndex++) {
       const itemId = sortOrder[itemIndex];
       if (itemId === activeId) {
@@ -58,7 +56,6 @@ export const useDraggableSort = ({
       });
 
       if (shouldSwapWorklet(activeLayout, itemLayout, direction)) {
-        // console.log(`Found placeholder index ${itemIndex} using custom shouldSwapWorklet!`);
         return itemIndex;
       }
     }
