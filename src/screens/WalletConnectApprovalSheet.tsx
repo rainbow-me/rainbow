@@ -2,7 +2,6 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, InteractionManager } from 'react-native';
-import { ContextMenuButton, OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import Divider from '@/components/Divider';
 import Spinner from '@/components/Spinner';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -34,8 +33,8 @@ import { noop } from 'lodash';
 import { RootStackParamList } from '@/navigation/types';
 import { Address } from 'viem';
 import { RainbowWallet } from '@/model/wallet';
-import { IS_IOS } from '@/env';
 import { WalletconnectMeta } from '@/walletConnect/types';
+import { DropdownMenu } from '@/components/DropdownMenu';
 
 type WithThemeProps = {
   theme: ThemeContextProps;
@@ -79,12 +78,7 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
   if (availableNetworkChainIds.length === 0) return null;
 
   return (
-    <ContextMenuButton
-      menuConfig={{ menuItems: networksMenuItems(), menuTitle: '' }}
-      isMenuPrimaryAction
-      onPressMenuItem={noop}
-      useActionSheetFallback={false}
-    >
+    <DropdownMenu menuConfig={{ menuItems: networksMenuItems() }} onPressMenuItem={noop}>
       <Box
         as={ButtonPressAnimation}
         scaleTo={0.96}
@@ -129,7 +123,7 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
           )}
         </Box>
       </Box>
-    </ContextMenuButton>
+    </DropdownMenu>
   );
 };
 
@@ -229,8 +223,7 @@ export function WalletConnectApprovalSheet() {
   }, [approvalChainId, isDarkMode]);
 
   const handleOnPressNetworksMenuItem = useCallback(
-    ({ nativeEvent }: OnPressMenuItemEventObject) =>
-      setApprovalChainId(Number(nativeEvent.actionKey?.replace(NETWORK_MENU_ACTION_KEY_FILTER, ''))),
+    (chainId: string) => setApprovalChainId(Number(chainId?.replace(NETWORK_MENU_ACTION_KEY_FILTER, ''))),
     [setApprovalChainId]
   );
 
@@ -277,10 +270,6 @@ export function WalletConnectApprovalSheet() {
     handleSuccess(false);
   }, [handleSuccess, goBack]);
 
-  const onPressAndroid = useCallback(({ chainId }: { chainId: ChainId }) => {
-    setApprovalChainId(chainId);
-  }, []);
-
   const handlePressChangeWallet = useCallback(() => {
     type === WalletConnectApprovalSheetType.connect &&
       Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
@@ -314,8 +303,7 @@ export function WalletConnectApprovalSheet() {
   }, [failureExplainSheetVariant, goBack, navigate, timedOut]);
 
   const menuItems = useMemo(() => networksMenuItems(), []);
-  const NetworkSwitcherParent =
-    type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? ContextMenuButton : React.Fragment;
+  const NetworkSwitcherParent = type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? DropdownMenu : React.Fragment;
 
   const sheetHeight = type === WalletConnectApprovalSheetType.connect ? 408 : 438;
 
@@ -333,15 +321,11 @@ export function WalletConnectApprovalSheet() {
     } else {
       return (
         <NetworkSwitcherParent
-          isMenuPrimaryAction
-          {...(IS_IOS ? { wrapNativeComponent: false, activeOpacity: 0 } : {})}
-          {...(android ? { onPress: onPressAndroid } : {})}
           menuConfig={{
-            menuItems,
             menuTitle: lang.t('walletconnect.available_networks'),
+            menuItems,
           }}
           onPressMenuItem={handleOnPressNetworksMenuItem}
-          useActionSheetFallback={false}
         >
           <ButtonPressAnimation
             style={{
@@ -353,7 +337,7 @@ export function WalletConnectApprovalSheet() {
             <Centered marginRight={5}>
               <ChainImage
                 chainId={type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.chainId : Number(chainId)}
-                size={44}
+                size={28}
               />
             </Centered>
             <LabelText align="right" numberOfLines={1}>
@@ -376,7 +360,6 @@ export function WalletConnectApprovalSheet() {
     handleOnPressNetworksMenuItem,
     isWalletConnectV2,
     menuItems,
-    onPressAndroid,
     type,
   ]);
 

@@ -132,13 +132,6 @@ export function DropdownMenu<T extends string>({
         sideOffset={sideOffset}
         collisionPadding={12}
       >
-        {!!menuConfig.menuTitle?.trim() && (
-          <DropdownMenuPrimitive.Group>
-            <DropdownMenuItem disabled>
-              <DropdownMenuItemTitle>{menuConfig.menuTitle}</DropdownMenuItemTitle>
-            </DropdownMenuItem>
-          </DropdownMenuPrimitive.Group>
-        )}
         {menuConfig.menuItems?.map(item => {
           const Icon = buildIconConfig(item.icon as MenuItemIcon);
 
@@ -149,6 +142,12 @@ export function DropdownMenu<T extends string>({
             </DropdownMenuItem>
           );
         })}
+
+        {!!menuConfig.menuTitle?.trim() && (
+          <DropdownMenuItem disabled>
+            <DropdownMenuItemTitle>{menuConfig.menuTitle}</DropdownMenuItemTitle>
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenuRoot>
   );

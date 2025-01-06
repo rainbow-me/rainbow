@@ -3,8 +3,7 @@ import { showActionSheetWithOptions } from '@/utils';
 import * as i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { isL2Chain } from '@/handlers/web3';
-import { MenuActionConfig } from 'react-native-ios-context-menu';
+import { MenuItem } from '@/components/DropdownMenu';
 
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;
@@ -15,7 +14,7 @@ const androidNetworkActions = () => {
 
 export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
 
-export const networksMenuItems: () => MenuActionConfig[] = () => {
+export const networksMenuItems: () => MenuItem<string>[] = () => {
   const { testnetsEnabled } = store.getState().settings;
 
   return Object.values(useBackendNetworksStore.getState().getDefaultChains())
@@ -24,8 +23,10 @@ export const networksMenuItems: () => MenuActionConfig[] = () => {
       actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${chain.id}`,
       actionTitle: useBackendNetworksStore.getState().getChainsLabel()[chain.id],
       icon: {
-        iconType: 'ASSET',
-        iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
+        iconType: 'REMOTE',
+        iconValue: {
+          uri: useBackendNetworksStore.getState().getChainsBadge()[chain.id],
+        },
       },
     }));
 };

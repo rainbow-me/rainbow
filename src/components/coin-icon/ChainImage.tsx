@@ -55,11 +55,10 @@ export const ChainImage = forwardRef<React.ElementRef<typeof FastImage>, ChainIm
       [size]
     );
 
-    if (!chainId) return null;
+    if (!chainId || !showBadge) return null;
 
     const badgeUrl = useBackendNetworksStore.getState().getChainsBadge()[chainId];
-
-    if (!badgeUrl || !showBadge) return null;
+    if (!badgeUrl) return null;
 
     return badgeXPosition || badgeYPosition ? (
       <ChainIconPositionWrapper badgeXPosition={badgeXPosition} badgeYPosition={badgeYPosition} iconSize={iconSize} position={position}>

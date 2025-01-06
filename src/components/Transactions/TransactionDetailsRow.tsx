@@ -35,7 +35,7 @@ export const TransactionDetailsRow = ({ chainId, detailType, onPress, value }: T
           {detailType === 'sourceCodeVerification' && (
             <DetailBadge type={value === 'VERIFIED' ? 'verified' : value === 'UNVERIFIED' ? 'unverified' : 'unknown'} value={value} />
           )}
-          {detailType === 'chain' && chainId && <ChainImage size={12} chainId={chainId} />}
+          {detailType === 'chain' && chainId && <ChainImage size={22} chainId={chainId} />}
           {detailType !== 'function' && detailType !== 'sourceCodeVerification' && (
             <Text align="right" color="labelTertiary" numberOfLines={1} size="15pt" weight="semibold">
               {value}
