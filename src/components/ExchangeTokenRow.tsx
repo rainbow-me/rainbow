@@ -43,8 +43,6 @@ export default React.memo(function ExchangeTokenRow({
 
   const isInfoButtonVisible = !item?.isNativeAsset || (!isNativeAsset(address ?? item?.address, chainId) && !showBalance);
 
-  console.log('chainId', chainId);
-
   return (
     <Columns alignVertical="center" space="10px">
       <Column>

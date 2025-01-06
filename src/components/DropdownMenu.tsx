@@ -19,7 +19,7 @@ export const DropdownMenuTrigger = DropdownMenuPrimitive.create<ExtendedDropdown
   (props: ExtendedDropdownMenuTriggerProps) => {
     // TODO: This hitslop isn't working properly...
     return (
-      <DropdownMenuPrimitive.Trigger {...props} style={[props.style, { padding: props.hitSlop ?? 0 }]}>
+      <DropdownMenuPrimitive.Trigger {...props} style={[props.style]}>
         <ButtonPressAnimation testID={props.testID}>
           <HitSlop space={{ custom: props.hitSlop ?? 0 }}>{props.children}</HitSlop>
         </ButtonPressAnimation>
