@@ -145,6 +145,16 @@ export const backupsStore = createRainbowStore<BackupsStore>((set, get) => ({
           error: e,
         });
         set({ status: CloudBackupState.FailedToInitialize });
+
+        // See https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignInStatusCodes#public-static-final-int-sign_in_cancelled
+        const stringifiedError = JSON.stringify(e);
+        if (stringifiedError.includes('12501')) {
+          logger.warn('[backupsStore]: Google sign in / oauth cancelled');
+          return {
+            success: false,
+            retry: false,
+          };
+        }
       }
 
       return {
