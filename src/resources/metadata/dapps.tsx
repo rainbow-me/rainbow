@@ -34,8 +34,8 @@ export const useBrowserDappsStore = createQueryStore<Dapp[], never, DappsState>(
   {
     fetcher: fetchDapps,
     setData: ({ data, set }) => set({ dapps: data }),
-    cacheTime: time.days(2),
-    staleTime: time.minutes(20),
+    cacheTime: time.weeks(1),
+    staleTime: time.minutes(30),
   },
 
   (_, get) => ({
