@@ -43,7 +43,8 @@ export async function getGoogleAccountUserData(checkPermissions = false): Promis
   if (!IS_ANDROID) {
     return;
   }
-  return RNCloudFs.getCurrentlySignedInUserData({ checkPermissions });
+  const options = { checkPermissions };
+  return RNCloudFs.getCurrentlySignedInUserData(options);
 }
 
 // This is used for dev purposes only!
