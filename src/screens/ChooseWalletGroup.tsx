@@ -5,7 +5,7 @@ import chroma from 'chroma-js';
 import { useInitializeWallet, useWallets } from '@/hooks';
 import { useDispatch } from 'react-redux';
 import Routes from '@/navigation/routesNames';
-import { useNavigation } from './Navigation';
+import { useNavigation } from '../navigation/Navigation';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
@@ -188,7 +188,7 @@ export function ChooseWalletGroup() {
   const groups = Object.values(wallets).filter(wallet => wallet.type === WalletTypes.mnemonic);
 
   return (
-    <Box background="surfaceSecondary" style={{ width: '100%', gap: 20, alignItems: 'center', paddingBottom: 64 }}>
+    <Box background="surfaceSecondary" height="full" width="full" style={{ gap: 20, alignItems: 'center' }}>
       <View style={{ paddingHorizontal: 24, gap: 20, width: '100%' }}>
         <View style={{ paddingTop: 24, paddingBottom: 12 }}>
           <ButtonPressAnimation scaleTo={0.9} onPress={goBack} hitSlop={64} style={{ width: 20, height: 20 }}>
@@ -211,7 +211,7 @@ export function ChooseWalletGroup() {
 
       <ScrollView
         style={{ width: '100%', marginTop: -20 }}
-        contentContainerStyle={{ gap: 16, paddingTop: 20, paddingHorizontal: 24, paddingBottom: 200 }}
+        contentContainerStyle={{ gap: 16, paddingTop: 20, paddingHorizontal: 24, paddingBottom: 64 }}
       >
         <NewWalletGroup numWalletGroups={groups.length} />
         <View style={{ paddingHorizontal: 12, gap: 16 }}>

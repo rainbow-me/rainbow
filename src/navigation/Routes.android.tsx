@@ -37,7 +37,6 @@ import {
   stackNavigationConfig,
   learnWebViewScreenConfig,
   backupSheetSizes,
-  panelConfig,
 } from './config';
 import {
   addWalletNavigatorPreset,

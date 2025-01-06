@@ -3,11 +3,11 @@ import React, { useState } from 'react';
 import Routes from '@/navigation/routesNames';
 import { deviceUtils } from '@/utils';
 import { AddWalletSheet, AddWalletSheetParams } from '@/screens/AddWalletSheet';
+import { ChooseWalletGroup } from '@/screens/ChooseWalletGroup';
 import { ImportOrWatchWalletSheet, ImportOrWatchWalletSheetParams } from '@/screens/ImportOrWatchWalletSheet';
 import { BackgroundProvider } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { ChooseWalletGroup } from './ChooseWalletGroup';
 
 const Swipe = createMaterialTopTabNavigator();
 
