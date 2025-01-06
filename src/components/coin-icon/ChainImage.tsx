@@ -20,7 +20,6 @@ import ScrollBadge from '@/assets/badges/scroll.png';
 import ZksyncBadge from '@/assets/badges/zksync.png';
 import ZoraBadge from '@/assets/badges/zora.png';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
-import Animated from 'react-native-reanimated';
 
 export const ChainImage = forwardRef(function ChainImage(
   {

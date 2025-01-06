@@ -5,9 +5,9 @@ import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, with
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '../constants';
+import { useSwapsSearchStore } from '../resources/search/searchV2';
 import { useClipboard } from '@/hooks';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { IS_ANDROID } from '@/env';
@@ -59,7 +59,7 @@ export const SearchInputButton = ({
       // Slice the pasted text to the length of an ETH address
       const v = text.trim().slice(0, 42);
       pastedSearchInputValue.value = v;
-      useSwapsStore.setState({ outputSearchQuery: v });
+      useSwapsSearchStore.setState({ searchQuery: v });
     });
   }, [pastedSearchInputValue]);
 

@@ -1,9 +1,9 @@
-import { ChainId } from '@/state/backendNetworks/types';
-import { SearchAsset } from '@/__swaps__/types/search';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { QueryFunctionArgs, createQueryKey } from '@/react-query';
-import { useQuery } from '@tanstack/react-query';
+import { ChainId } from '@/state/backendNetworks/types';
+import { createQueryStore, time } from '@/state/internal/createQueryStore';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { SearchAsset } from '@/__swaps__/types/search';
 import { parseTokenSearch } from './utils';
 
 const tokenSearchHttp = new RainbowFetchClient({
@@ -15,27 +15,33 @@ const tokenSearchHttp = new RainbowFetchClient({
   timeout: 30000,
 });
 
-export type TokenDiscoveryArgs = {
+export type PopularTokensParams = {
   chainId: ChainId;
 };
 
-const tokenDiscoveryQueryKey = ({ chainId }: TokenDiscoveryArgs) => createQueryKey('TokenDiscovery', { chainId }, { persisterVersion: 1 });
-
-async function tokenSearchQueryFunction({ queryKey: [{ chainId }] }: QueryFunctionArgs<typeof tokenDiscoveryQueryKey>) {
+async function popularTokensQueryFunction({ chainId }: PopularTokensParams) {
   const url = `/${chainId}`;
 
   try {
     const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
     return parseTokenSearch(tokenSearch.data.data, chainId);
   } catch (e) {
-    logger.error(new RainbowError('[tokenSearchQueryFunction]: Token discovery failed'), { url });
+    logger.error(new RainbowError('[popularTokensQueryFunction]: Popular tokens failed'), { url });
     return [];
   }
 }
 
-export function useTokenDiscovery({ chainId }: TokenDiscoveryArgs) {
-  return useQuery(tokenDiscoveryQueryKey({ chainId }), tokenSearchQueryFunction, {
-    staleTime: 15 * 60 * 1000, // 15 min
-    cacheTime: 24 * 60 * 60 * 1000, // 1 day
-  });
-}
+type PopularTokensState = {
+  results: SearchAsset[];
+};
+
+export const usePopularTokensStore = createQueryStore<SearchAsset[], PopularTokensParams, PopularTokensState>(
+  {
+    fetcher: ({ chainId }) => popularTokensQueryFunction({ chainId }),
+    cacheTime: time.days(1),
+    params: { chainId: $ => $(useSwapsStore).selectedOutputChainId },
+    staleTime: time.minutes(15),
+  },
+
+  { storageKey: 'popularInRainbow' }
+);
