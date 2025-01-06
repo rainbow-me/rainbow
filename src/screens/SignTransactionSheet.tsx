@@ -304,7 +304,7 @@ export const SignTransactionSheet = () => {
       logger.error(new RainbowError('[SignTransactionSheet]: error estimating gas'), { error });
     }
     // clean gas prices / fees sent from the dapp
-    const cleanTxPayload = omitFlatten(txPayload, ['gasPrice', 'maxFeePerGas', 'maxPriorityFeePerGas']);
+    const cleanTxPayload = omitFlatten(txPayload, ['gasPrice', 'maxFeePerGas', 'maxPriorityFeePerGas', 'extParams']);
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
 
