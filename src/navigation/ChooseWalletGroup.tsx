@@ -1,15 +1,12 @@
 import React from 'react';
-import { Separator, Text, useBackgroundColor, useForegroundColor } from '@/design-system';
+import { Separator, Text, useForegroundColor } from '@/design-system';
 import { View, Text as NativeText } from 'react-native';
 import chroma from 'chroma-js';
 import { useInitializeWallet, useWallets } from '@/hooks';
-import { PROFILES, useExperimentalFlag } from '@/config';
 import { useDispatch } from 'react-redux';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from './Navigation';
-import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
-import { backupUserDataIntoCloud } from '@/handlers/cloudBackup';
 import { logger, RainbowError } from '@/logger';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
 import { createWallet, RainbowAccount, RainbowWallet } from '@/model/wallet';
@@ -23,13 +20,11 @@ import * as i18n from '@/languages';
 import showWalletErrorAlert from '@/helpers/support';
 import { ScrollView } from 'react-native-gesture-handler';
 import CreateNewWalletGroupIcon from '@/assets/CreateNewWalletGroup.png';
-import { SlackSheet } from '@/components/sheet';
 
 function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
   const blue = useForegroundColor('blue');
 
   const { navigate } = useNavigation();
-  const profilesEnabled = useExperimentalFlag(PROFILES);
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
 
@@ -42,7 +37,7 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
         try {
           const { name, color } = args;
           await createWallet({ color, name });
-          await dispatch(walletsLoadState(profilesEnabled));
+          await dispatch(walletsLoadState());
           // @ts-ignore
           await initializeWallet();
           navigate(Routes.WALLET_SCREEN, {}, true);
@@ -127,24 +122,12 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
         try {
           const { name, color } = args;
           if (wallet.damaged) throw new Error('Wallet is damaged');
-          const newWallets = await dispatch(createAccountForWallet(wallet.id, color, name));
-          // @ts-ignore
+          await dispatch(createAccountForWallet(wallet.id, color, name));
+          // @ts-expect-error - needs refactor to object params
           await initializeWallet();
-          // If this wallet was previously backed up to the cloud
-          // We need to update userData backup so it can be restored too
-          if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
-            try {
-              await backupUserDataIntoCloud({ wallets: newWallets });
-            } catch (error) {
-              logger.error(new RainbowError('[AddWalletSheet]: Updating wallet userdata failed after new account creation'), { error });
-              throw error;
-            }
-          }
           navigate(Routes.WALLET_SCREEN, {}, true);
         } catch (e) {
-          logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), {
-            error: e,
-          });
+          logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), { error: e });
           showWalletErrorAlert();
         }
       },
@@ -196,7 +179,6 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
 export function ChooseWalletGroup() {
   const { goBack } = useNavigation();
   const { wallets } = useWallets();
-  const surfaceSecondary = useBackgroundColor('surfaceSecondary');
 
   if (!wallets) {
     showWalletErrorAlert();
@@ -206,35 +188,33 @@ export function ChooseWalletGroup() {
   const groups = Object.values(wallets).filter(wallet => wallet.type === WalletTypes.mnemonic);
 
   return (
-    <SlackSheet removeTopPadding additionalTopPadding={false} backgroundColor={surfaceSecondary} onDismiss={goBack}>
-      <View style={{ width: '100%', paddingHorizontal: 24, gap: 20, alignItems: 'center', paddingBottom: 64 }}>
-        <View style={{ paddingTop: 24, paddingBottom: 12, width: '100%' }}>
-          <ButtonPressAnimation scaleTo={0.9} onPress={goBack} hitSlop={64} style={{ width: 20, height: 20 }}>
-            <Text color="blue" size="22pt" weight="bold">
-              􀆉
-            </Text>
-          </ButtonPressAnimation>
-        </View>
-        <Text color="label" size="22pt" weight="heavy">
-          {i18n.t(i18n.l.wallet.new.choose_wallet_group.title)}
-        </Text>
-        <Text color="labelQuaternary" size="15pt" weight="semibold" align="center">
-          {i18n.t(i18n.l.wallet.new.choose_wallet_group.description)}
-        </Text>
-
-        <View style={{ width: '100%' }}>
-          <Separator color={'separatorTertiary'} />
-        </View>
-
-        <NewWalletGroup numWalletGroups={groups.length} />
-        {groups.length > 0 && (
-          <ScrollView style={{ width: '100%' }} contentContainerStyle={{ gap: 16, paddingHorizontal: 12 }}>
-            {groups.map(wallet => (
-              <WalletGroup key={wallet.id} wallet={wallet} />
-            ))}
-          </ScrollView>
-        )}
+    <View style={{ width: '100%', paddingHorizontal: 24, gap: 20, alignItems: 'center', paddingBottom: 64 }}>
+      <View style={{ paddingTop: 24, paddingBottom: 12, width: '100%' }}>
+        <ButtonPressAnimation scaleTo={0.9} onPress={goBack} hitSlop={64} style={{ width: 20, height: 20 }}>
+          <Text color="blue" size="22pt" weight="bold">
+            􀆉
+          </Text>
+        </ButtonPressAnimation>
       </View>
-    </SlackSheet>
+      <Text color="label" size="22pt" weight="heavy">
+        {i18n.t(i18n.l.wallet.new.choose_wallet_group.title)}
+      </Text>
+      <Text color="labelQuaternary" size="15pt" weight="semibold" align="center">
+        {i18n.t(i18n.l.wallet.new.choose_wallet_group.description)}
+      </Text>
+
+      <View style={{ width: '100%' }}>
+        <Separator color={'separatorTertiary'} />
+      </View>
+
+      <NewWalletGroup numWalletGroups={groups.length} />
+      {groups.length > 0 && (
+        <ScrollView style={{ width: '100%' }} contentContainerStyle={{ gap: 16, paddingHorizontal: 12 }}>
+          {groups.map(wallet => (
+            <WalletGroup key={wallet.id} wallet={wallet} />
+          ))}
+        </ScrollView>
+      )}
+    </View>
   );
 }

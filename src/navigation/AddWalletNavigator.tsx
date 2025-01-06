@@ -43,6 +43,16 @@ export const AddWalletNavigator = () => {
               }}
             />
             <Swipe.Screen
+              component={ChooseWalletGroup}
+              initialParams={{ isFirstWallet }}
+              name={Routes.CHOOSE_WALLET_GROUP}
+              listeners={{
+                focus: () => {
+                  setScrollEnabled(true);
+                },
+              }}
+            />
+            <Swipe.Screen
               component={ImportOrWatchWalletSheet}
               initialParams={{ type }}
               name={Routes.IMPORT_OR_WATCH_WALLET_SHEET}

@@ -94,7 +94,6 @@ import { RootStackParamList } from './types';
 import WalletLoadingListener from '@/components/WalletLoadingListener';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
 import { NetworkSelector } from '@/components/NetworkSwitcher';
-import { ChooseWalletGroup } from './ChooseWalletGroup';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -163,7 +162,6 @@ function BSNavigator() {
       <BSStack.Screen component={MintSheet} name={Routes.MINT_SHEET} />
       <BSStack.Screen component={QRScannerScreen} name={Routes.QR_SCANNER_SCREEN} />
       <BSStack.Screen component={AddWalletNavigator} name={Routes.ADD_WALLET_NAVIGATOR} options={addWalletNavigatorPreset} />
-      <BSStack.Screen component={ChooseWalletGroup} name={Routes.CHOOSE_WALLET_GROUP} options={{ ...bottomSheetPreset }} />
       <BSStack.Screen
         component={PairHardwareWalletNavigator}
         name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}

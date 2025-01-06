@@ -238,7 +238,6 @@ function NativeStackNavigator() {
         {...hardwareWalletTxNavigatorConfig}
       />
       <NativeStack.Screen component={AddWalletNavigator} name={Routes.ADD_WALLET_NAVIGATOR} {...addWalletNavigatorConfig} />
-      <NativeStack.Screen component={ChooseWalletGroup} name={Routes.CHOOSE_WALLET_GROUP} {...panelConfig} />
       <NativeStack.Screen component={Portal} name={Routes.PORTAL} {...portalSheetConfig} />
       {profilesEnabled && (
         <>
