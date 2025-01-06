@@ -4,8 +4,6 @@ import FloatingEmoji from './FloatingEmoji';
 import GravityEmoji from './GravityEmoji';
 import { useTimeout } from '@/hooks';
 import { position } from '@/styles';
-import { DebugLayout } from '@/design-system';
-import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { AbsolutePortal } from '../AbsolutePortal';
 
 interface Emoji {
