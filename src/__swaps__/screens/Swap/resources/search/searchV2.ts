@@ -55,18 +55,11 @@ export const useSwapsSearchStore = createRainbowStore<SearchQueryState>(() => ({
 export const useTokenSearchStore = createQueryStore<SearchAsset[], TokenSearchParams, TokenSearchState>(
   {
     fetcher: tokenSearchQueryFunction,
-    // onFetched: async ({ fetch, params }) => {
-    //   const bridgeAsset = await fetch(params, { force: true, skipStoreUpdates: true }).then(data =>
-    //     data ? extractBridgeAsset(data, params) : null
-    //   );
-    //   if (bridgeAsset) console.log('🥷 bridgeAsset: ', !!bridgeAsset); // set({ bridgeAsset, results: data });
-    // },
     setData: ({ data, params, set }) => {
       if (params.query?.length) set({ results: data });
       else set({ bridgeAsset: extractBridgeAsset(data, params), results: data });
     },
 
-    // debugMode: true,
     disableCache: true,
     params: {
       list: TokenLists.Verified,
