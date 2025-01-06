@@ -151,6 +151,7 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   nfts_enabled: true,
 
   trending_tokens_limit: 10,
+  trending_tokens_enabled: false,
 };
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
@@ -206,7 +207,8 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'degen_mode' ||
         key === 'featured_results' ||
         key === 'claimables' ||
-        key === 'nfts_enabled'
+        key === 'nfts_enabled' ||
+        key === 'trending_tokens_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else if (key === 'trending_tokens_limit') {

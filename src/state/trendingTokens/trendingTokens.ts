@@ -17,7 +17,7 @@ export const sortFilters = [
   ArcTrendingSort.TopLosers,
 ] as const;
 export type TrendingSort = (typeof sortFilters)[number];
-export const timeFilters = [ArcTimeframe.H24, ArcTimeframe.D7, ArcTimeframe.D3] as const;
+export const timeFilters = [ArcTimeframe.H12, ArcTimeframe.H24, ArcTimeframe.D3, ArcTimeframe.D7] as const;
 export type TrendingTimeframe = (typeof timeFilters)[number];
 
 type TrendingTokensState = {
@@ -36,7 +36,7 @@ export const useTrendingTokensStore = createRainbowStore<TrendingTokensState>(
   set => ({
     category: ArcTrendingCategory.Trending,
     chainId: undefined,
-    timeframe: ArcTimeframe.H24,
+    timeframe: ArcTimeframe.D3,
     sort: ArcTrendingSort.Recommended,
     setCategory: category => set({ category }),
     setChainId: chainId => {

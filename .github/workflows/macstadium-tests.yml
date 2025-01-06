@@ -154,7 +154,7 @@ jobs:
         run: |
           rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
           yarn install-bundle && yarn install-pods
-
+      
       - uses: irgaly/xcode-cache@v1
         with:
           key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
@@ -164,11 +164,12 @@ jobs:
         run: |
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
           yarn detox build --configuration ios.sim.release
-
-      - name: Detox iOS e2e tests parallel
-        run: |
-          ./scripts/run-parallel-e2e.sh 3
-
       - name: Detox iOS e2e tests serial
         run: |
           ./scripts/run-serial-e2e.sh 3
+
+      - name: Detox iOS e2e tests parallel
+        run: |
+          ./scripts/run-parallel-e2e.sh
+
+     

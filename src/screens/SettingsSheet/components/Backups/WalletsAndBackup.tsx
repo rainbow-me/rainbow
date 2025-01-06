@@ -10,7 +10,7 @@ import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { useENSAvatar, useInitializeWallet, useManageCloudBackups, useWallets } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import { abbreviations, deviceUtils } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
@@ -38,6 +38,7 @@ import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { FlatList, ScrollView } from 'react-native';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -198,6 +199,9 @@ export const WalletsAndBackup = () => {
             loadingState: null,
           });
           scrollviewRef.current?.scrollTo({ y: 0, animated: true });
+          Navigation.handleAction(Routes.BACKUP_SHEET, {
+            step: walletBackupStepTypes.backup_prompt,
+          });
         }
       },
     });
@@ -348,7 +352,7 @@ export const WalletsAndBackup = () => {
                         >
                           {!isBackedUp && (
                             <MenuItem.Label
-                              testID={`${id}-not-backed-up`}
+                              testID="not-backed-up"
                               color={'#FF584D'}
                               text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)}
                             />

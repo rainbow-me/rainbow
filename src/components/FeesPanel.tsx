@@ -3,7 +3,6 @@ import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native'
 import { upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard, KeyboardAvoidingView } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { Alert } from '@/components/alerts';
 import { useTheme } from '@/theme/ThemeContext';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -15,7 +14,7 @@ import { gweiToWei, parseGasFeeParam } from '@/parsers';
 import Routes from '@/navigation/routesNames';
 import { gasUtils } from '@/utils';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
 
 const MAX_TEXT_WIDTH = 210;
@@ -370,7 +369,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
     stopBaseFeeTimeout();
     startBaseFeeTimeout(async () => {
       // there's an e2e modifying this panel so I needed values that aren't dependent on the network conditions
-      const maxBaseFeeToValidate = IS_TESTING === 'true' ? 100 : currentBaseFee;
+      const maxBaseFeeToValidate = IS_TEST ? 100 : currentBaseFee;
 
       if (!maxBaseFee || isZero(maxBaseFee) || greaterThan(multiply(0.1, maxBaseFeeToValidate), maxBaseFee)) {
         setMaxBaseFeeError({
@@ -404,10 +403,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
       }
       // there's an e2e modifying this panel so I needed values that aren't dependant on the network conditions
       if (
-        greaterThan(
-          multiply(MINER_TIP_RANGE[0], IS_TESTING === 'true' ? 1 : gasFeeParamsBySpeed?.[NORMAL]?.maxPriorityFeePerGas?.gwei),
-          maxPriorityFee
-        )
+        greaterThan(multiply(MINER_TIP_RANGE[0], IS_TEST ? 1 : gasFeeParamsBySpeed?.[NORMAL]?.maxPriorityFeePerGas?.gwei), maxPriorityFee)
       ) {
         setMaxPriorityFeeWarning({
           message: lang.t('gas.lower_than_suggested'),
@@ -415,10 +411,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
         });
       } else if (
         // there's an e2e modifying this panel so I needed values that aren't dependant on the network conditions
-        greaterThan(
-          maxPriorityFee,
-          multiply(MINER_TIP_RANGE[1], IS_TESTING === 'true' ? 1 : gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei)
-        )
+        greaterThan(maxPriorityFee, multiply(MINER_TIP_RANGE[1], IS_TEST ? 1 : gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei))
       ) {
         setMaxPriorityFeeWarning({
           message: lang.t('gas.higher_than_suggested'),

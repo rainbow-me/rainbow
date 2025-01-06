@@ -1,5 +1,4 @@
 import { Signer } from '@ethersproject/abstract-signer';
-import { IS_TESTING } from 'react-native-dotenv';
 import { ENSActionParameters, ENSRap, ENSRapActionType, RapENSAction, RapENSActionParameters } from '@/raps/common';
 import { analytics } from '@/analytics';
 import { ENSRegistrationRecords, NewTransaction, TransactionGasParamAmounts, TransactionStatus } from '@/entities';
@@ -23,6 +22,7 @@ import {
 } from '../registerENS';
 import { Logger } from '@ethersproject/logger';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { IS_TEST } from '@/env';
 
 export interface ENSRapActionResponse {
   baseNonce?: number | null;
@@ -327,7 +327,7 @@ const ensAction = async (
     // (MULTICALL || SET_TEXT) it's going to fail if we put the account address
     // since the account doesn't have the ENS yet
     const notUseOwnerAddress =
-      IS_TESTING !== 'true' &&
+      !IS_TEST &&
       mode === REGISTRATION_MODES.CREATE &&
       (type === ENSRegistrationTransactionType.MULTICALL || type === ENSRegistrationTransactionType.SET_TEXT);
 

@@ -322,7 +322,7 @@ export function useSearchCurrencyLists() {
   const { data: verifiedAssets, isLoading: isLoadingVerifiedAssets } = useTokenSearch(
     {
       list: 'verifiedAssets',
-      chainId: isAddress(query) ? state.toChainId : undefined,
+      chainId: state.toChainId,
       keys: isAddress(query) ? ['address'] : ['name', 'symbol'],
       threshold: isAddress(query) ? 'CASE_SENSITIVE_EQUAL' : 'CONTAINS',
       query: query.length > 0 ? query : undefined,
@@ -418,7 +418,7 @@ export function useSearchCurrencyLists() {
     {
       enabled: memoizedData.enableUnverifiedSearch,
       select: (data: TokenSearchResult) => {
-        return getExactMatches(data, query).slice(0, MAX_UNVERIFIED_RESULTS);
+        return isAddress(query) ? getExactMatches(data, query).slice(0, MAX_UNVERIFIED_RESULTS) : data.slice(0, MAX_UNVERIFIED_RESULTS);
       },
     }
   );

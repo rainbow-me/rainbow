@@ -12,7 +12,7 @@ import { parseTokenSearch } from './utils';
 const ALL_VERIFIED_TOKENS_PARAM = '/?list=verifiedAssets';
 
 const tokenSearchHttp = new RainbowFetchClient({
-  baseURL: 'https://token-search.rainbow.me/v2',
+  baseURL: 'https://token-search.rainbow.me/v3/tokens',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -30,13 +30,19 @@ export type TokenSearchArgs = {
   list: TokenSearchListId;
   threshold?: TokenSearchThreshold;
   query?: string;
+  shouldPersist?: boolean;
 };
 
 // ///////////////////////////////////////////////
 // Query Key
 
-const tokenSearchQueryKey = ({ chainId, fromChainId, keys, list, threshold, query }: TokenSearchArgs) =>
-  createQueryKey('TokenSearch', { chainId, fromChainId, keys, list, threshold, query }, { persisterVersion: 2 });
+const tokenSearchQueryKey = ({ chainId, fromChainId, keys, list, threshold, query, shouldPersist }: TokenSearchArgs) => {
+  return createQueryKey(
+    'TokenSearch',
+    { chainId, fromChainId, keys, list, threshold, query },
+    { persisterVersion: shouldPersist ? 3 : undefined }
+  );
+};
 
 type TokenSearchQueryKey = ReturnType<typeof tokenSearchQueryKey>;
 
@@ -77,6 +83,7 @@ async function tokenSearchQueryFunction({
         return parseTokenSearch(tokenSearch.data.data, chainId);
       }
 
+      // search for address on other chains
       const allVerifiedTokens = await tokenSearchHttp.get<{ data: SearchAsset[] }>(ALL_VERIFIED_TOKENS_PARAM);
 
       const addressQuery = query.trim().toLowerCase();
@@ -104,8 +111,9 @@ export async function fetchTokenSearch(
   { chainId, fromChainId, keys, list, threshold, query }: TokenSearchArgs,
   config: QueryConfigWithSelect<TokenSearchResult, Error, TokenSearchResult, TokenSearchQueryKey> = {}
 ) {
+  const shouldPersist = query === undefined;
   return await queryClient.fetchQuery(
-    tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query }),
+    tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query, shouldPersist }),
     tokenSearchQueryFunction,
     config
   );
@@ -130,7 +138,8 @@ export function useTokenSearch(
   { chainId, fromChainId, keys, list, threshold, query }: TokenSearchArgs,
   config: QueryConfigWithSelect<TokenSearchResult, Error, TokenSearchResult, TokenSearchQueryKey> = {}
 ) {
-  return useQuery(tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query }), tokenSearchQueryFunction, {
+  const shouldPersist = query === undefined;
+  return useQuery(tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query, shouldPersist }), tokenSearchQueryFunction, {
     ...config,
     keepPreviousData: true,
   });
