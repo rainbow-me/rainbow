@@ -5,11 +5,9 @@ import {
   LongPressGestureHandlerGestureEvent,
   LongPressGestureHandlerProperties,
 } from 'react-native-gesture-handler';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
-  cancelAnimation,
   FadeIn,
-  runOnJS,
+  cancelAnimation,
   runOnUI,
   useAnimatedGestureHandler,
   useAnimatedProps,
@@ -23,6 +21,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { getYForX } from 'react-native-redash';
 import Svg, { NumberProp, Path, PathProps } from 'react-native-svg';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ChartData, PathData } from '../../helpers/ChartContext';
 import { requireOnWorklet, useWorkletValue } from '../../helpers/requireOnWorklet';
@@ -58,11 +57,6 @@ function least(length: number, compare: (value: number) => number) {
       }
     }
   }
-}
-
-function impactHeavy() {
-  'worklet';
-  runOnJS(() => ReactNativeHapticFeedback.trigger('impactHeavy'));
 }
 
 const timingFeedbackDefaultConfig = {
@@ -286,9 +280,7 @@ const ChartPathInner = React.memo(
 
             pathOpacity.value = withTiming(0, timingFeedbackConfig || timingFeedbackDefaultConfig);
 
-            if (hapticsEnabled) {
-              impactHeavy();
-            }
+            if (hapticsEnabled) triggerHaptics('soft');
           }
 
           state.value = event.state;
@@ -303,9 +295,7 @@ const ChartPathInner = React.memo(
           state.value = event.state;
           resetGestureState();
 
-          if (hapticsEnabled) {
-            impactHeavy();
-          }
+          if (hapticsEnabled) triggerHaptics('soft');
         },
         onFail: event => {
           state.value = event.state;
@@ -320,9 +310,7 @@ const ChartPathInner = React.memo(
             isActive.value = true;
             pathOpacity.value = withTiming(0, timingFeedbackConfig || timingFeedbackDefaultConfig);
 
-            if (hapticsEnabled) {
-              impactHeavy();
-            }
+            if (hapticsEnabled) triggerHaptics('soft');
           }
         },
       },

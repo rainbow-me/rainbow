@@ -33,11 +33,11 @@ const traverseData = (prev: { nativePoints: ChartData[]; points: ChartData[] }, 
 };
 
 function useJumpingForm(
-  isLong: any,
-  heightWithChart: any,
-  heightWithoutChart: any,
-  shortHeightWithChart: any,
-  shortHeightWithoutChart: any
+  isLong: boolean,
+  heightWithChart: number,
+  heightWithoutChart: number,
+  shortHeightWithChart: number,
+  shortHeightWithoutChart: number
 ) {
   const { setOptions } = useNavigation();
 
@@ -74,7 +74,15 @@ export default function useChartThrottledPoints({
   uniBalance = true,
   shortHeightWithChart,
   shortHeightWithoutChart,
-}: any) {
+}: {
+  asset: any;
+  heightWithChart: number;
+  heightWithoutChart: number;
+  isPool: boolean;
+  uniBalance: boolean;
+  shortHeightWithChart: number;
+  shortHeightWithoutChart: number;
+}) {
   const { nativeCurrency } = useAccountSettings();
 
   let assetForColor = asset;
@@ -83,8 +91,6 @@ export default function useChartThrottledPoints({
   }
 
   const color = useColorForAsset(assetForColor);
-
-  const [isFetchingInitially, setIsFetchingInitially] = useState(true);
 
   const { params } = useRoute<{
     key: string;
@@ -114,18 +120,23 @@ export default function useChartThrottledPoints({
     points: throttledPoints.points ?? [],
   });
 
-  useEffect(() => {
-    if (!fetchingCharts) {
-      setIsFetchingInitially(false);
-    }
-  }, [fetchingCharts]);
-
   // Only show the chart if we have chart data, or if chart data is still loading
   const showChart = useMemo(
     () =>
       (nativeCurrency !== 'ETH' || (asset?.mainnet_address !== ETH_ADDRESS && asset?.address !== ETH_ADDRESS)) &&
-      (throttledPoints?.points.length > 5 || throttledPoints?.points.length > 5 || (fetchingCharts && !isFetchingInitially)),
-    [asset?.address, asset?.mainnet_address, fetchingCharts, isFetchingInitially, nativeCurrency, throttledPoints?.points.length]
+      (throttledPoints?.points.length > 5 ||
+        !!chart.length ||
+        (fetchingCharts && (!!asset?.native?.change || (asset?.native?.price?.amount && asset?.native?.price?.amount !== '0')))),
+    [
+      asset?.address,
+      asset?.mainnet_address,
+      asset?.native?.change,
+      asset?.native?.price?.amount,
+      chart.length,
+      fetchingCharts,
+      nativeCurrency,
+      throttledPoints?.points.length,
+    ]
   );
 
   useJumpingForm(
