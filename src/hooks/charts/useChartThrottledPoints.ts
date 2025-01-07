@@ -34,10 +34,10 @@ const traverseData = (prev: { nativePoints: ChartData[]; points: ChartData[] }, 
 
 function useJumpingForm(
   isLong: boolean,
-  heightWithChart: number,
-  heightWithoutChart: number,
-  shortHeightWithChart: number,
-  shortHeightWithoutChart: number
+  heightWithChart?: number,
+  heightWithoutChart?: number,
+  shortHeightWithChart?: number,
+  shortHeightWithoutChart?: number
 ) {
   const { setOptions } = useNavigation();
 
@@ -76,12 +76,12 @@ export default function useChartThrottledPoints({
   shortHeightWithoutChart,
 }: {
   asset: any;
-  heightWithChart: number;
-  heightWithoutChart: number;
-  isPool: boolean;
-  uniBalance: boolean;
-  shortHeightWithChart: number;
-  shortHeightWithoutChart: number;
+  heightWithChart?: number;
+  heightWithoutChart?: number;
+  isPool?: boolean;
+  uniBalance?: boolean;
+  shortHeightWithChart?: number;
+  shortHeightWithoutChart?: number;
 }) {
   const { nativeCurrency } = useAccountSettings();
 
@@ -141,10 +141,10 @@ export default function useChartThrottledPoints({
 
   useJumpingForm(
     showChart,
-    heightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference),
-    heightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference),
-    shortHeightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference),
-    shortHeightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference)
+    heightWithChart ? heightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference) : undefined,
+    heightWithoutChart ? heightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference) : undefined,
+    shortHeightWithChart ? shortHeightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference) : undefined,
+    shortHeightWithoutChart ? shortHeightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference) : undefined
   );
 
   const [throttledData, setThrottledData] = useState({
