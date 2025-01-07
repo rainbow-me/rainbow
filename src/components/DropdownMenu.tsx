@@ -9,8 +9,15 @@ import type { DropdownMenuContentProps } from '@radix-ui/react-dropdown-menu';
 import { ButtonPressAnimation } from './animations';
 
 export const DropdownMenuRoot = DropdownMenuPrimitive.Root;
+export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 export const DropdownMenuContent = DropdownMenuPrimitive.Content;
 export const DropdownMenuItem = DropdownMenuPrimitive.create(
+  styled(DropdownMenuPrimitive.Item)({
+    height: 34,
+  }),
+  'Item'
+);
+export const DropdownMenuCheckboxItem = DropdownMenuPrimitive.create(
   styled(DropdownMenuPrimitive.CheckboxItem)({
     height: 34,
   }),
@@ -41,7 +48,8 @@ export type MenuItemIcon = Omit<IconConfig, 'iconValue' | 'iconType'> &
 export type MenuItem<T> = Omit<MenuActionConfig, 'icon'> & {
   actionKey: T;
   actionTitle: string;
-  icon?: MenuItemIcon;
+  destructive?: boolean;
+  icon?: MenuItemIcon | { iconType: string; iconValue: string };
 };
 
 export type MenuConfig<T extends string> = Omit<_MenuConfig, 'menuItems' | 'menuTitle'> & {
@@ -49,10 +57,12 @@ export type MenuConfig<T extends string> = Omit<_MenuConfig, 'menuItems' | 'menu
   menuItems: Array<MenuItem<T>>;
 };
 
-type DropDownMenuProps<T extends string> = {
+type DropdownMenuProps<T extends string> = {
   children: React.ReactElement;
   menuConfig: MenuConfig<T>;
   onPressMenuItem: (actionKey: T) => void;
+  triggerAction?: 'press' | 'longPress';
+  menuItemType?: 'checkbox';
   testID?: string;
 } & DropdownMenuContentProps;
 
@@ -86,8 +96,10 @@ export function DropdownMenu<T extends string>({
   side = 'right',
   alignOffset = 5,
   avoidCollisions = true,
+  triggerAction = 'press',
+  menuItemType,
   testID,
-}: DropDownMenuProps<T>) {
+}: DropdownMenuProps<T>) {
   const handleSelectItem = useCallback(
     (actionKey: T) => {
       onPressMenuItem(actionKey);
@@ -95,11 +107,13 @@ export function DropdownMenu<T extends string>({
     [onPressMenuItem]
   );
 
+  const MenuItemComponent = menuItemType === 'checkbox' ? DropdownMenuCheckboxItem : DropdownMenuItem;
+
   return (
     <DropdownMenuRoot>
-      <DropdownMenuPrimitive.Trigger>
+      <DropdownMenuTrigger action={triggerAction}>
         <ButtonPressAnimation testID={testID}>{children}</ButtonPressAnimation>
-      </DropdownMenuPrimitive.Trigger>
+      </DropdownMenuTrigger>
       <DropdownMenuContent
         loop={loop}
         side={side}
@@ -113,17 +127,24 @@ export function DropdownMenu<T extends string>({
           const Icon = buildIconConfig(item.icon as MenuItemIcon);
 
           return (
-            <DropdownMenuItem value={item.menuState ?? 'off'} key={item.actionKey} onSelect={() => handleSelectItem(item.actionKey)}>
+            <MenuItemComponent
+              value={item.menuState ?? 'off'}
+              destructive={item.destructive}
+              key={item.actionKey}
+              onSelect={() => handleSelectItem(item.actionKey)}
+            >
               <DropdownMenuItemTitle>{item.actionTitle}</DropdownMenuItemTitle>
               {Icon}
-            </DropdownMenuItem>
+            </MenuItemComponent>
           );
         })}
 
         {!!menuConfig.menuTitle?.trim() && (
-          <DropdownMenuItem disabled>
-            <DropdownMenuItemTitle>{menuConfig.menuTitle}</DropdownMenuItemTitle>
-          </DropdownMenuItem>
+          <DropdownMenuPrimitive.Group>
+            <MenuItemComponent disabled>
+              <DropdownMenuItemTitle>{menuConfig.menuTitle}</DropdownMenuItemTitle>
+            </MenuItemComponent>
+          </DropdownMenuPrimitive.Group>
         )}
       </DropdownMenuContent>
     </DropdownMenuRoot>
