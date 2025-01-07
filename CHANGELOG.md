@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.52] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.52)
+
+### Fixed
+
+- Fixed a bug where back up sheet kept showing for imported wallets (#6377)
+- Fixed an issue with isSwappingToTrendingAsset flag not tracking events properly (#6378)
+- Fixed an issue where the icon sheet was not showing up correctly, and we now prioritize back up sheet before the icon sheet (#6379)
+
 ## [1.9.51] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.51)
 
 ### Added
