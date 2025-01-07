@@ -530,6 +530,7 @@ function TimeFilter() {
           actionKey: time,
         })),
       }}
+      menuItemType="checkbox"
       side="bottom"
       onPressMenuItem={timeframe => useTrendingTokensStore.getState().setTimeframe(timeframe)}
     >
@@ -564,6 +565,7 @@ function SortFilter() {
           actionKey: s,
         })),
       }}
+      menuItemType="checkbox"
       side="bottom"
       onPressMenuItem={selection => {
         if (selection === sort) return useTrendingTokensStore.getState().setSort(TrendingSort.Recommended);
