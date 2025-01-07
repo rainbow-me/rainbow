@@ -79,6 +79,8 @@ export const event = {
   wcNewSessionApproved: 'Approved new WalletConnect session',
   wcShowingSigningRequest: 'Showing Walletconnect signing request',
 
+  wcRequestFailed: 'wc.failed_request',
+
   nftOffersOpenedOffersSheet: 'Opened NFT Offers Sheet',
   nftOffersOpenedSingleOfferSheet: 'Opened NFT Single Offer Sheet',
   nftOffersViewedExternalOffer: 'Viewed external NFT Offer',
@@ -375,6 +377,12 @@ export type EventProperties = {
     dappName: string;
     dappUrl: string;
   };
+  [event.wcRequestFailed]: {
+    type: 'session_proposal' | 'session_request' | 'read only wallet' | 'method not supported' | 'invalid namespaces' | 'dapp browser';
+    reason: string;
+    method?: string;
+  };
+
   [event.nftOffersOpenedOffersSheet]: {
     entryPoint: string;
   };
