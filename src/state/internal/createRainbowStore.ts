@@ -145,8 +145,7 @@ function createPersistStorage<S, PersistedState extends Partial<S>>(config: Rain
     },
     setItem: (name, value) => {
       lazyPersist({
-        // partialize: config.partialize ?? omitStoreMethods<S, PersistedState>,
-        partialize: (config.partialize ?? omitStoreMethods<S, PersistedState>) satisfies (state: S) => PersistedState,
+        partialize: config.partialize ?? omitStoreMethods<S, PersistedState>,
         serializer,
         storageKey,
         name,
