@@ -19,6 +19,7 @@ import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
 import { WalletKitTypes } from '@reown/walletkit';
+import { Address } from 'viem';
 
 export function AuthRequest({
   requesterMeta,
@@ -150,7 +151,7 @@ export function AuthRequest({
                 watchOnly: true,
                 currentAccountAddress: address,
                 onChangeWallet(address) {
-                  setAddress(address);
+                  setAddress(address as Address);
                   goBack();
                 },
               });

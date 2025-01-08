@@ -6,13 +6,13 @@ import { useDraggableSort, type UseDraggableSortOptions } from './useDraggableSo
 
 export type UseDraggableStackOptions = Pick<
   UseDraggableSortOptions,
-  'initialOrder' | 'onOrderChange' | 'onOrderUpdate' | 'shouldSwapWorklet'
+  'childrenIds' | 'onOrderChange' | 'onOrderUpdate' | 'shouldSwapWorklet'
 > & {
   gap?: number;
   horizontal?: boolean;
 };
 export const useDraggableStack = ({
-  initialOrder,
+  childrenIds,
   onOrderChange,
   onOrderUpdate,
   gap = 0,
@@ -31,7 +31,7 @@ export const useDraggableStack = ({
 
   const { draggablePlaceholderIndex, draggableSortOrder } = useDraggableSort({
     horizontal,
-    initialOrder,
+    childrenIds,
     onOrderChange,
     onOrderUpdate,
     shouldSwapWorklet: worklet,
