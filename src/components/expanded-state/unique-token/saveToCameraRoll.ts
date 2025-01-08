@@ -8,6 +8,10 @@ import { shouldCreateImgixClient } from '@/handlers/imgix';
 
 async function getPermissionAndroid(): Promise<boolean | undefined> {
   try {
+    if (Number(Platform.Version) >= 33) {
+      return true;
+    }
+
     const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE, {
       buttonNegative: lang.t('button.cancel'),
       buttonPositive: lang.t('button.ok'),
@@ -34,21 +38,6 @@ function alertError(error?: { message?: string }): void {
   );
 }
 
-function getFilename(url: string): { ext?: string; filename: string } {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const processedUrl = url
-    .split('/')
-    .pop()!
-    .replace(/#(.*?)$/, '')
-    .replace(/\?(.*?)$/, '');
-
-  const parts = processedUrl.split('.');
-  const ext = parts[1];
-  const filename = parts[0] || '';
-
-  return { ext, filename };
-}
-
 async function downloadImageAndroid(url: string): Promise<void> {
   const granted = await getPermissionAndroid();
   if (!granted) {
@@ -58,40 +47,15 @@ async function downloadImageAndroid(url: string): Promise<void> {
     return;
   }
 
-  const { filename, ext } = getFilename(url);
-
-  // first fetch to get metadata
-  let result;
-  try {
-    result = await RNFetchBlob.config({ fileCache: true }).fetch('GET', url);
-  } catch (e: any) {
-    alertError(e);
-    return;
-  }
-
-  const mime = result?.respInfo?.headers['content-type'];
-
-  if (!ext) {
-    alertError();
-    return;
-  }
-
-  const { config, fs } = RNFetchBlob;
-  const { PictureDir } = fs.dirs;
-  const path = `${PictureDir}/nft_${filename}${Date.now().toString()}.${ext}`;
+  const { config } = RNFetchBlob;
   const options = {
-    addAndroidDownloads: {
-      description: lang.t('expanded_state.unique.save.nft_image'),
-      mime,
-      notification: true,
-      path,
-      useDownloadManager: true,
-    },
     fileCache: true,
+    appendExt: 'png',
   };
 
   try {
-    await config(options).fetch('GET', url);
+    const finalRes = await config(options).fetch('GET', url);
+    await CameraRoll.saveAsset(finalRes.path(), { type: 'photo' });
   } catch (error: any) {
     alertError(error);
   }
@@ -100,7 +64,7 @@ async function downloadImageAndroid(url: string): Promise<void> {
 async function downloadImageIOS(url: string): Promise<void> {
   try {
     const res = await RNFetchBlob.config({ fileCache: true, appendExt: 'png' }).fetch('GET', url);
-    await CameraRoll.save(res.path(), { type: 'photo' });
+    await CameraRoll.saveAsset(res.path(), { type: 'photo' });
   } catch (e: any) {
     alertError(e);
   }
