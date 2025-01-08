@@ -3,7 +3,6 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import EthIcon from '@/assets/eth-icon.png';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { globalColors } from '@/design-system';
 import { borders, fonts } from '@/styles';
 import { useTheme } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback, isETH } from '@/utils';
@@ -91,7 +90,14 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
           <FastImage source={EthIcon as Source} style={styles.coinIcon(size)} />
         </Animated.View>
       ) : (
-        <FastFallbackCoinIconImage size={size} icon={iconUrl} shadowColor={shadowColor} symbol={symbol} theme={theme}>
+        <FastFallbackCoinIconImage
+          disableShadow={disableShadow}
+          size={size}
+          icon={iconUrl}
+          shadowColor={shadowColor}
+          symbol={symbol}
+          theme={theme}
+        >
           {() => (
             <CoinIconTextFallback
               color={color}
@@ -133,13 +139,6 @@ const sx = StyleSheet.create({
     bottom: -0,
     left: -8,
     position: 'absolute',
-    shadowColor: globalColors.grey100,
-    shadowOffset: {
-      height: 4,
-      width: 0,
-    },
-    shadowRadius: 6,
-    shadowOpacity: 0.2,
   },
   reactCoinIconContainer: {
     alignItems: 'center',

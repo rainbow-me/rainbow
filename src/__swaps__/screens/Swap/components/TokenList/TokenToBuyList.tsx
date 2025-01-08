@@ -1,4 +1,3 @@
-import { FlatList } from 'react-native';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { AssetToBuySectionId, useSearchCurrencyLists } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
@@ -16,12 +15,12 @@ import { Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-syste
 import { palettes } from '@/design-system/color/palettes';
 import * as i18n from '@/languages';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { swapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import React, { memo, useCallback, useMemo } from 'react';
 import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
+import { useSwapsSearchStore } from '../../resources/search/searchV2';
 
 export const BUY_LIST_HEADER_HEIGHT = 20 + 10 + 8; // paddingTop + height + paddingBottom
 
@@ -118,12 +117,12 @@ export const TokenToBuyList = () => {
         asset: parsedAsset,
       });
 
-      const { outputSearchQuery } = swapsStore.getState();
+      const { searchQuery } = useSwapsSearchStore.getState();
 
       // track what search query the user had prior to selecting an asset
-      if (outputSearchQuery.trim().length) {
+      if (searchQuery.trim().length) {
         analyticsV2.track(analyticsV2.event.swapsSearchedForToken, {
-          query: outputSearchQuery,
+          query: searchQuery,
           type: 'output',
         });
       }
@@ -153,7 +152,7 @@ export const TokenToBuyList = () => {
   return (
     <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }} testID={'token-to-buy-list'}>
       <ChainSelection output />
-      <FlatList
+      <Animated.FlatList
         keyboardShouldPersistTaps="always"
         ListEmptyComponent={<ListEmpty output />}
         ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
@@ -167,7 +166,6 @@ export const TokenToBuyList = () => {
           }
           return (
             <CoinRow
-              testID={getFormattedTestId(item.name, item.chainId)}
               address={item.address}
               chainId={item.chainId}
               colors={item.colors}
@@ -179,6 +177,7 @@ export const TokenToBuyList = () => {
               onPress={() => handleSelectToken(item)}
               output
               symbol={item.symbol}
+              testID={getFormattedTestId(item.name, item.chainId)}
               uniqueId={item.uniqueId}
             />
           );

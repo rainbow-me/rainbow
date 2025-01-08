@@ -28,7 +28,6 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
-  Easing,
   FadeIn,
   FadeOutUp,
   LinearTransition,
@@ -39,7 +38,6 @@ import Animated, {
   useDerivedValue,
   useSharedValue,
   withClamp,
-  withSequence,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
@@ -192,7 +190,7 @@ const ALL_BADGE_BORDER_COLORS = {
   },
 };
 
-const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color?: string, disableScale = false) => {
+const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color?: string) => {
   const { isDarkMode } = useColorMode();
   const label = useForegroundColor('labelTertiary');
 
@@ -213,32 +211,18 @@ const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color?: string,
       .hex(),
   };
 
-  const scale = useSharedValue(1);
-  useAnimatedReaction(
-    () => (disableScale ? false : isSelected.value),
-    (current, prev) => {
-      if (current === true && prev === false) {
-        scale.value = withSequence(
-          withTiming(0.93, { duration: 110, easing: Easing.bezier(0.25, 0.46, 0.45, 0.94) }),
-          withTiming(1, TIMING_CONFIGS.fadeConfig)
-        );
-      }
-    }
-  );
-
   const animatedStyle = useAnimatedStyle(() => {
     const colors = isSelected.value ? selectedStyle : defaultStyle;
     return {
       backgroundColor: colors.backgroundColor,
       borderColor: colors.borderColor,
-      transform: [{ scale: scale.value }],
     };
   });
 
   return {
     animatedStyle,
-    selectedStyle,
     defaultStyle,
+    selectedStyle,
   };
 };
 
@@ -253,7 +237,7 @@ function AllNetworksOption({
   const blue = useForegroundColor('blue');
 
   const isSelected = useDerivedValue(() => selected.value === undefined);
-  const { animatedStyle } = useNetworkOptionStyle(isSelected, blue, true);
+  const { animatedStyle } = useNetworkOptionStyle(isSelected, blue);
 
   const overlappingBadge = useAnimatedStyle(() => {
     return {
@@ -333,12 +317,14 @@ function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: Shar
   const { animatedStyle } = useNetworkOptionStyle(isSelected, chainColor);
 
   return (
-    <Animated.View layout={LinearTransition.springify().mass(0.4)} style={[sx.networkOption, animatedStyle]}>
-      <ChainImage chainId={chainId} size={24} />
-      <Text align="center" color="label" size="17pt" weight="bold" style={sx.flex}>
-        {chainName}
-      </Text>
-    </Animated.View>
+    <ButtonPressAnimation minLongPressDuration={10000} scaleTo={0.9}>
+      <Animated.View layout={LinearTransition.springify().mass(0.4)} style={[sx.networkOption, animatedStyle]}>
+        <ChainImage chainId={chainId} size={24} />
+        <Text align="center" color="label" size="17pt" weight="bold" style={sx.flex}>
+          {chainName}
+        </Text>
+      </Animated.View>
+    </ButtonPressAnimation>
   );
 }
 

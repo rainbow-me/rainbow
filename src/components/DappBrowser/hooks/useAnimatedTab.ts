@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { useState } from 'react';
 import {
   convertToRGBA,
   interpolate,
@@ -22,6 +23,7 @@ import {
   MULTI_TAB_SCALE,
   MULTI_TAB_SCALE_DIFF,
   SINGLE_TAB_SCALE,
+  TAB_TRANSFORM_ORIGIN,
   TAB_VIEW_COLUMN_WIDTH,
   TAB_VIEW_ROW_HEIGHT,
   WEBVIEW_HEIGHT,
@@ -31,6 +33,7 @@ import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBO
 import { TabViewGestureStates } from '../types';
 import { getTabInfo } from '../utils/getTabInfo';
 import { getTabStyles, getTabSwitchGestureStyles } from '../utils/styleUtils';
+import { calculateTabViewBorderRadius } from '../utils/layoutUtils';
 
 export function useAnimatedTab({ tabId }: { tabId: string }) {
   const {
@@ -52,41 +55,48 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
   } = useBrowserContext();
   const { closeTabWorklet } = useBrowserWorkletsContext();
 
-  const animatedTabIndex = useSharedValue(useBrowserStore.getState().tabIds.indexOf(tabId));
+  const [initialTabIndex] = useState(useBrowserStore.getState().tabIds.indexOf(tabId));
+  const animatedTabIndex = useSharedValue(initialTabIndex);
 
   const animatedTabXPosition = useDerivedValue(() =>
-    withSpring((animatedTabIndex.value % 2) * (TAB_VIEW_COLUMN_WIDTH + 20) - (TAB_VIEW_COLUMN_WIDTH + 20) / 2, SPRING_CONFIGS.slowSpring)
+    withSpring(
+      ((_WORKLET ? animatedTabIndex.value : initialTabIndex) % 2) * (TAB_VIEW_COLUMN_WIDTH + 20) - (TAB_VIEW_COLUMN_WIDTH + 20) / 2,
+      SPRING_CONFIGS.slowSpring
+    )
   );
 
   const animatedTabYPosition = useDerivedValue(() =>
-    withSpring(Math.floor(animatedTabIndex.value / 2) * TAB_VIEW_ROW_HEIGHT, SPRING_CONFIGS.slowSpring)
+    withSpring(Math.floor((_WORKLET ? animatedTabIndex.value : initialTabIndex) / 2) * TAB_VIEW_ROW_HEIGHT, SPRING_CONFIGS.slowSpring)
   );
 
-  const gestureScale = useDerivedValue(() =>
-    activeTabCloseGestures.value[tabId]?.gestureScale === 0
+  const gestureScale = useDerivedValue(() => {
+    if (!_WORKLET) return 1;
+    return activeTabCloseGestures.value[tabId]?.gestureScale === 0
       ? 0
-      : withTiming(activeTabCloseGestures.value[tabId]?.gestureScale ?? 1, TIMING_CONFIGS.tabPressConfig)
-  );
+      : withTiming(activeTabCloseGestures.value[tabId]?.gestureScale ?? 1, TIMING_CONFIGS.tabPressConfig);
+  });
 
   const gestureX = useDerivedValue(() =>
-    activeTabCloseGestures.value[tabId]?.isActive
-      ? activeTabCloseGestures.value[tabId].gestureX
-      : withTiming(activeTabCloseGestures.value[tabId]?.gestureX ?? 0, TIMING_CONFIGS.tabPressConfig, isFinished => {
-          // Handle tab removal after tab close animation completion
-          if (isFinished && currentlyBeingClosedTabIds.value.includes(tabId) && activeTabCloseGestures.value[tabId]) {
-            // Zero out scale to ensure the tab is hidden while unmounting
-            activeTabCloseGestures.modify(gestures => ({ ...gestures, [tabId]: { ...gestures[tabId], gestureScale: 0 } }));
-            // Finalize tab close
-            closeTabWorklet({ tabId, tabIndex: activeTabCloseGestures.value[tabId].tabIndex });
-            currentlyBeingClosedTabIds.modify(closingTabs => {
-              const index = closingTabs.indexOf(tabId);
-              if (index !== -1) {
-                closingTabs.splice(index, 1);
-              }
-              return closingTabs;
-            });
-          }
-        })
+    !_WORKLET
+      ? 0
+      : activeTabCloseGestures.value[tabId]?.isActive
+        ? activeTabCloseGestures.value[tabId].gestureX
+        : withTiming(activeTabCloseGestures.value[tabId]?.gestureX ?? 0, TIMING_CONFIGS.tabPressConfig, isFinished => {
+            // Handle tab removal after tab close animation completion
+            if (isFinished && currentlyBeingClosedTabIds.value.includes(tabId) && activeTabCloseGestures.value[tabId]) {
+              // Zero out scale to ensure the tab is hidden while unmounting
+              activeTabCloseGestures.modify(gestures => ({ ...gestures, [tabId]: { ...gestures[tabId], gestureScale: 0 } }));
+              // Finalize tab close
+              closeTabWorklet({ tabId, tabIndex: activeTabCloseGestures.value[tabId].tabIndex });
+              currentlyBeingClosedTabIds.modify(closingTabs => {
+                const index = closingTabs.indexOf(tabId);
+                if (index !== -1) {
+                  closingTabs.splice(index, 1);
+                }
+                return closingTabs;
+              });
+            }
+          })
   );
 
   const { isDarkMode } = useColorMode();
@@ -96,7 +106,7 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
   const backgroundColor = useSharedValue<string>(defaultBackgroundColor);
 
   const safeBackgroundColor = useDerivedValue(() => {
-    if (!backgroundColor.value) return defaultBackgroundColor;
+    if (!_WORKLET || !backgroundColor.value) return defaultBackgroundColor;
 
     const isValidColor = isColor(backgroundColor.value);
     if (isValidColor) {
@@ -113,6 +123,8 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
   });
 
   const animatedWebViewBackgroundColorStyle = useAnimatedStyle(() => {
+    if (!_WORKLET) return { backgroundColor: defaultBackgroundColor, paddingBottom: 0 };
+
     const tabUrl = animatedTabUrls.value[tabId] || RAINBOW_HOME;
     const isOnHomepage = tabUrl === RAINBOW_HOME;
 
@@ -138,6 +150,22 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
   });
 
   const animatedWebViewStyle = useAnimatedStyle(() => {
+    if (!_WORKLET) {
+      const isActiveTab = useBrowserStore.getState().isTabActive(tabId);
+      return {
+        borderRadius: isActiveTab ? ZOOMED_TAB_BORDER_RADIUS : calculateTabViewBorderRadius(1),
+        height: isActiveTab ? WEBVIEW_HEIGHT : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
+        opacity: isActiveTab ? 1 : 0,
+        pointerEvents: isActiveTab ? 'auto' : 'none',
+        transform: [
+          { translateX: animatedTabXPosition.value },
+          { translateY: animatedTabYPosition.value },
+          { scale: isActiveTab ? 1 : MULTI_TAB_SCALE },
+        ],
+        transformOrigin: TAB_TRANSFORM_ORIGIN,
+      };
+    }
+
     const { isFullSizeTab, isPendingActiveTab: animatedIsActiveTab } = getTabInfo({
       animatedActiveTabIndex: animatedActiveTabIndex.value,
       currentlyOpenTabIds: currentlyOpenTabIds.value,
@@ -217,6 +245,8 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
   });
 
   const zIndexAnimatedStyle = useAnimatedStyle(() => {
+    if (!_WORKLET) return { zIndex: 1 };
+
     const { isFullSizeTab, isPendingActiveTab } = getTabInfo({
       animatedActiveTabIndex: animatedActiveTabIndex.value,
       currentlyOpenTabIds: currentlyOpenTabIds.value,

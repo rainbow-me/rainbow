@@ -115,6 +115,7 @@ export default function ChartWrapper({
   color,
   fetchingCharts,
   isPool,
+  latestChange,
   updateChartType,
   showChart,
   testID,
@@ -175,7 +176,15 @@ export default function ChartWrapper({
 
   return (
     <Container>
-      <ChartExpandedStateHeader {...props} chartType={chartType} color={color} isPool={isPool} showChart={showChart} testID={testID} />
+      <ChartExpandedStateHeader
+        {...props}
+        chartType={chartType}
+        color={color}
+        isPool={isPool}
+        latestChange={latestChange}
+        showChart={showChart}
+        testID={testID}
+      />
       <ChartContainer showChart={showChart}>
         {showChart && (
           <>

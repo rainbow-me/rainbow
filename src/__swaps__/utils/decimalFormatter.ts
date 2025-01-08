@@ -81,8 +81,8 @@ export function valueBasedDecimalFormatter({
   }
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: minimumDecimalPlaces,
-    maximumFractionDigits: maximumDecimalPlaces || 0,
+    minimumFractionDigits: Math.min(minimumDecimalPlaces, 20),
+    maximumFractionDigits: Math.min(maximumDecimalPlaces || 0, 20),
     useGrouping: !stripSeparators,
   });
 

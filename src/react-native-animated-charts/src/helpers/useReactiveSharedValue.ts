@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
 
-export default function useReactiveSharedValue(prop, name) {
-  const sharedValue = useSharedValue(null, name);
+export default function useReactiveSharedValue<T>(prop: T) {
+  const sharedValue = useSharedValue<T | null>(null);
   if (sharedValue.value === null) {
     sharedValue.value = prop;
   }

@@ -1,26 +1,9 @@
-import React, { useMemo } from 'react';
-import { TextInput } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { RowWithMargins } from '../../../layout';
-import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
-import { useRatio } from './useRatio';
+import React, { memo } from 'react';
+import { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import { AnimatedText } from '@/design-system';
+import { IS_ANDROID } from '@/env';
 import { useChartData } from '@/react-native-animated-charts/src';
-import styled from '@/styled-thing';
-import { fonts, fontWithWidth } from '@/styles';
-
-Animated.addWhitelistedNativeProps({ color: true });
-
-const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
-
-const PercentLabel = styled(AnimatedTextInput)({
-  ...fontWithWidth(fonts.weight.bold),
-  backgroundColor: ({ theme: { colors } }) => colors.transparent,
-  fontSize: fonts.size.big,
-  fontVariant: ['tabular-nums'],
-  letterSpacing: fonts.letterSpacing.roundedTightest,
-  textAlign: 'right',
-  ...(android && { marginVertical: -19 }),
-});
+import { useRatio } from './useRatio';
 
 function formatNumber(num) {
   'worklet';
@@ -36,7 +19,7 @@ function formatNumber(num) {
   return newDigits.reverse().join('') + '.' + first[1];
 }
 
-const format = (originalY, data, latestChange) => {
+const formatWorklet = (originalY, data, latestChange) => {
   'worklet';
   const firstValue = data?.points?.[0]?.y;
   const lastValue = data?.points?.[data.points.length - 1]?.y;
@@ -44,28 +27,22 @@ const format = (originalY, data, latestChange) => {
   return firstValue === Number(firstValue) && firstValue
     ? (() => {
         const value =
-          originalY?.value === lastValue || !originalY?.value ? latestChange : ((originalY.value || lastValue) / firstValue) * 100 - 100;
+          originalY?.value === lastValue || !originalY?.value
+            ? parseFloat(latestChange ?? 0)
+            : ((originalY.value || lastValue) / firstValue) * 100 - 100;
+        const numValue = parseFloat(value);
 
-        return (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') + ' ' + formatNumber(Math.abs(value).toFixed(2)) + '%';
+        return (IS_ANDROID ? '' : numValue > 0 ? '↑' : numValue < 0 ? '↓' : '') + ' ' + formatNumber(Math.abs(numValue).toFixed(2)) + '%';
       })()
     : '';
 };
 
-export default function ChartPercentChangeLabel({ ratio, latestChange }) {
+export default memo(function ChartPercentChangeLabel({ ratio, latestChange }) {
   const { originalY, data, isActive } = useChartData();
   const { colors } = useTheme();
 
-  // we don't need to format on latestChange changes
-  const defaultValue = useMemo(() => format(originalY, data, latestChange), [originalY, data, latestChange]);
-
-  const textProps = useAnimatedStyle(
-    () => ({
-      text: isActive.value ? format(originalY, data, latestChange) : defaultValue,
-    }),
-    [originalY, data, latestChange, isActive]
-  );
-
   const sharedRatio = useRatio();
+  const text = useDerivedValue(() => formatWorklet(originalY, data, latestChange.value));
 
   const textStyle = useAnimatedStyle(() => {
     const realRatio = isActive.value ? sharedRatio.value : ratio;
@@ -75,9 +52,15 @@ export default function ChartPercentChangeLabel({ ratio, latestChange }) {
   }, [ratio]);
 
   return (
-    <RowWithMargins align="center" margin={4}>
-      {android ? <ChartChangeDirectionArrow ratio={ratio} sharedRatio={sharedRatio} /> : null}
-      <PercentLabel alignSelf="flex-end" animatedProps={textProps} defaultValue={defaultValue} editable={false} style={textStyle} />
-    </RowWithMargins>
+    <AnimatedText
+      align="right"
+      numberOfLines={1}
+      size="23px / 27px (Deprecated)"
+      style={[{ width: '100%' }, textStyle]}
+      tabularNumbers
+      weight="bold"
+    >
+      {text}
+    </AnimatedText>
   );
-}
+});

@@ -49,7 +49,6 @@ import { haptics } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError, SwapType } from '@rainbow-me/swaps';
 
 import { IS_IOS } from '@/env';
-import { Address } from 'viem';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';

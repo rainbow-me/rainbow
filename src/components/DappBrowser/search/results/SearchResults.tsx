@@ -15,7 +15,7 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Bleed, Box, Inline, Inset, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
-import { Dapp, DappsContextProvider, useDappsContext } from '@/resources/metadata/dapps';
+import { Dapp, useBrowserDappsStore } from '@/resources/metadata/dapps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from '../../BrowserContext';
@@ -96,36 +96,36 @@ export const SearchResults = React.memo(function SearchResults({ goToUrl }: { go
   const backgroundStyle = isDarkMode ? styles.searchBackgroundDark : styles.searchBackgroundLight;
 
   const animatedSearchContainerStyle = useAnimatedStyle(() => ({
-    opacity: searchViewProgress.value / 100,
-    pointerEvents: isFocused.value ? 'auto' : 'none',
+    opacity: _WORKLET ? searchViewProgress.value / 100 : 0,
+    pointerEvents: _WORKLET && isFocused.value ? 'auto' : 'none',
   }));
 
   const allResultsAnimatedStyle = useAnimatedStyle(() => ({
-    display: searchQuery.value.trim() ? 'flex' : 'none',
+    display: _WORKLET && searchQuery.value.trim() ? 'flex' : 'none',
   }));
 
   const moreResultsAnimatedStyle = useAnimatedStyle(() => ({
-    display: searchResults.value.length ? 'flex' : 'none',
+    display: _WORKLET && searchResults.value.length ? 'flex' : 'none',
   }));
 
   const suggestedGoogleSearchAnimatedStyle = useAnimatedStyle(() => ({
-    display: searchResults.value.length || !searchQuery.value.trim() ? 'none' : 'flex',
+    display: _WORKLET && (searchResults.value.length || !searchQuery.value.trim()) ? 'none' : 'flex',
   }));
 
   const closeButtonAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: searchViewProgress.value / 100,
-    transform: [{ scale: withSpring(isFocused.value ? 1 : 0.5, SPRING_CONFIGS.snappySpringConfig) }],
+    opacity: _WORKLET ? searchViewProgress.value / 100 : 0,
+    transform: [{ scale: withSpring(_WORKLET && isFocused.value ? 1 : 0.5, SPRING_CONFIGS.snappySpringConfig) }],
   }));
 
   const emptyStateAnimatedStyle = useAnimatedStyle(() => {
-    const searchQueryExists = searchQuery.value.trim();
+    const searchQueryExists = _WORKLET && searchQuery.value.trim();
     return {
-      height: DEVICE_HEIGHT - keyboardHeight.value,
-      opacity: searchQueryExists ? 0 : (searchViewProgress.value / 100) * 0.6,
+      height: DEVICE_HEIGHT - (_WORKLET ? keyboardHeight.value : 0),
+      opacity: searchQueryExists || !_WORKLET ? 0 : (searchViewProgress.value / 100) * 0.6,
       pointerEvents: searchQueryExists ? 'none' : 'auto',
       transform: [
-        { scale: withSpring(isFocused.value ? 1 : 0.8, SPRING_CONFIGS.snappySpringConfig) },
-        { translateY: withSpring(isFocused.value ? 0 : 80, SPRING_CONFIGS.snappySpringConfig) },
+        { scale: withSpring(_WORKLET && isFocused.value ? 1 : 0.8, SPRING_CONFIGS.snappySpringConfig) },
+        { translateY: withSpring(_WORKLET && isFocused.value ? 0 : 80, SPRING_CONFIGS.snappySpringConfig) },
       ],
     };
   });
@@ -268,9 +268,7 @@ export const SearchResults = React.memo(function SearchResults({ goToUrl }: { go
         </Animated.View>
       </Animated.View>
 
-      <DappsContextProvider>
-        <DappsDataSync isFocused={isFocused} searchQuery={searchQuery} searchResults={searchResults} />
-      </DappsContextProvider>
+      <DappsDataSync isFocused={isFocused} searchQuery={searchQuery} searchResults={searchResults} />
     </>
   );
 });
@@ -284,7 +282,7 @@ const DappsDataSync = ({
   searchQuery: SharedValue<string>;
   searchResults: SharedValue<Dapp[]>;
 }) => {
-  const { dapps } = useDappsContext();
+  const dapps = useBrowserDappsStore(state => state.dapps);
 
   useAnimatedReaction(
     () => searchQuery.value.trim(),

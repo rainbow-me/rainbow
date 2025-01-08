@@ -1,4 +1,3 @@
-import { FlatList } from 'react-native';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
@@ -85,7 +84,7 @@ const TokenToSellListComponent = () => {
   return (
     <>
       <ChainSelection allText={i18n.t(i18n.l.exchange.all_networks)} output={false} />
-      <FlatList
+      <Animated.FlatList
         ListEmptyComponent={<ListEmpty />}
         ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
         contentContainerStyle={{ paddingBottom: 16 }}

@@ -1,20 +1,8 @@
 import lang from 'i18n-js';
 import React from 'react';
-import { View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { useRatio } from './useRatio';
 import { ChartXLabel, useChartData } from '@/react-native-animated-charts/src';
-import styled from '@/styled-thing';
-import { fonts, fontWithWidth } from '@/styles';
-
-const Label = styled(ChartXLabel)({
-  ...fontWithWidth(fonts.weight.semibold),
-  fontSize: fonts.size.larger,
-  fontVariant: ['tabular-nums'],
-  letterSpacing: fonts.letterSpacing.roundedMedium,
-  textAlign: 'right',
-  ...(android ? { marginVertical: -20 } : {}),
-});
 
 const MONTHS = [
   lang.t('expanded_state.chart.date.months.month_00'),
@@ -94,15 +82,13 @@ export default function ChartDateLabel({ chartTimeDefaultValue, ratio }) {
     };
   }, [ratio]);
 
-  return (
-    <View style={{ overflow: 'hidden' }}>
-      <Label
-        format={value => {
-          'worklet';
-          return formatDatetime(value, chartTimeDefaultValue);
-        }}
-        style={textStyle}
-      />
-    </View>
+  const formatWorklet = useCallback(
+    value => {
+      'worklet';
+      return formatDatetime(value, chartTimeDefaultValue);
+    },
+    [chartTimeDefaultValue]
   );
+
+  return <ChartXLabel align="right" formatWorklet={formatWorklet} size="20pt" style={textStyle} tabularNumbers weight="semibold" />;
 }

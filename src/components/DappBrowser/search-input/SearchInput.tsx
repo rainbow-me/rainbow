@@ -243,6 +243,7 @@ export const SearchInput = memo(function SearchInput({
   const { isFocused } = useSearchContext();
 
   const tabUrl = useDerivedValue(() => {
+    if (!_WORKLET) return useBrowserStore.getState().getActiveTabUrl() || RAINBOW_HOME;
     const pendingTabIndex = currentlyOpenTabIds.value.indexOf(activeTabId.value) + pendingTabSwitchOffset.value;
     const currentTabId = pendingTabSwitchOffset.value ? currentlyOpenTabIds.value[pendingTabIndex] : activeTabId.value;
     const url = animatedTabUrls.value[currentTabId] || RAINBOW_HOME;
@@ -250,38 +251,43 @@ export const SearchInput = memo(function SearchInput({
   });
 
   const formattedUrlValue = useDerivedValue(() => {
-    const url = tabUrl.value;
+    const url = _WORKLET ? tabUrl.value : useBrowserStore.getState().getActiveTabUrl();
     if (!url || url === RAINBOW_HOME) return SEARCH_PLACEHOLDER_TEXT;
 
     return formatUrlForSearchInput(url, true);
   });
 
-  const isLoading = useDerivedValue(() => loadProgress.value !== 1 && loadProgress.value !== 0);
+  const isLoading = useDerivedValue(() => _WORKLET && loadProgress.value !== 1 && loadProgress.value !== 0);
 
   const pointerEventsStyle = useAnimatedStyle(() => ({
-    pointerEvents: tabViewGestureState.value !== TabViewGestureStates.INACTIVE || tabViewProgress.value / 100 < 1 ? 'auto' : 'none',
+    pointerEvents:
+      _WORKLET && (tabViewGestureState.value !== TabViewGestureStates.INACTIVE || tabViewProgress.value / 100 < 1) ? 'auto' : 'none',
   }));
 
-  const refreshButtonStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(isLoading.value ? 0 : 1, TIMING_CONFIGS.slowFadeConfig),
-    pointerEvents: isLoading.value ? 'none' : 'box-none',
-    transform: [{ scale: withTiming(isLoading.value ? 0.6 : 1, TIMING_CONFIGS.slowFadeConfig) }],
-  }));
+  const refreshButtonStyle = useAnimatedStyle(() => {
+    const showRefreshButton = _WORKLET && !isLoading.value;
+    return {
+      opacity: withTiming(showRefreshButton ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
+      pointerEvents: showRefreshButton ? 'box-none' : 'none',
+      transform: [{ scale: withTiming(showRefreshButton ? 1 : 0.6, TIMING_CONFIGS.slowFadeConfig) }],
+    };
+  });
 
-  const stopLoadingButtonStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(isLoading.value ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
-    pointerEvents: isLoading.value ? 'box-none' : 'none',
-    transform: [{ scale: withTiming(isLoading.value ? 1 : 0.6, TIMING_CONFIGS.slowFadeConfig) }],
-  }));
+  const stopLoadingButtonStyle = useAnimatedStyle(() => {
+    const showStopButton = _WORKLET && isLoading.value;
+    return {
+      opacity: withTiming(showStopButton ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
+      pointerEvents: showStopButton ? 'box-none' : 'none',
+      transform: [{ scale: withTiming(showStopButton ? 1 : 0.6, TIMING_CONFIGS.slowFadeConfig) }],
+    };
+  });
 
   const toolbarIconStyle = useAnimatedStyle(() => {
-    const isOnHomepage = tabUrl.value === RAINBOW_HOME;
+    const isOnHomepage = _WORKLET ? tabUrl.value === RAINBOW_HOME : useBrowserStore.getState().isOnHomepage();
+    const shouldHide = isOnHomepage || (_WORKLET && (isFocused.value || formattedUrlValue.value === SEARCH_PLACEHOLDER_TEXT));
     return {
-      opacity:
-        isOnHomepage || isFocused.value || formattedUrlValue.value === SEARCH_PLACEHOLDER_TEXT
-          ? withTiming(0, TIMING_CONFIGS.fadeConfig)
-          : withSpring(1, SPRING_CONFIGS.keyboardConfig),
-      pointerEvents: isOnHomepage || isFocused.value || !formattedUrlValue.value ? 'none' : 'auto',
+      opacity: shouldHide ? withTiming(0, TIMING_CONFIGS.fadeConfig) : withSpring(1, SPRING_CONFIGS.keyboardConfig),
+      pointerEvents: shouldHide ? 'none' : 'auto',
     };
   });
 
@@ -349,21 +355,21 @@ const AddressBar = memo(function AddressBar({
   const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
 
   const animatedButtonWrapperStyle = useAnimatedStyle(() => ({
-    pointerEvents: isFocused.value ? 'none' : 'auto',
+    pointerEvents: _WORKLET && isFocused.value ? 'none' : 'auto',
   }));
 
   const inputStyle = useAnimatedStyle(() => ({
     opacity:
-      isFocused.value && searchViewProgress.value > 10
+      _WORKLET && isFocused.value && searchViewProgress.value > 10
         ? withSpring(1, SPRING_CONFIGS.slowSpring)
         : withTiming(0, TIMING_CONFIGS.fadeConfig),
-    pointerEvents: isFocused.value ? 'auto' : 'none',
+    pointerEvents: _WORKLET && isFocused.value ? 'auto' : 'none',
   }));
 
   const formattedInputStyle = useAnimatedStyle(() => ({
     display: tabUrl.value === RAINBOW_HOME ? 'none' : 'flex',
     opacity:
-      isFocused.value || searchViewProgress.value > 90
+      _WORKLET && (isFocused.value || searchViewProgress.value > 90)
         ? withTiming(0, TIMING_CONFIGS.fadeConfig)
         : withSpring(1, SPRING_CONFIGS.slowSpring),
   }));
@@ -371,16 +377,16 @@ const AddressBar = memo(function AddressBar({
   const searchPlaceholderStyle = useAnimatedStyle(() => ({
     display: tabUrl.value === RAINBOW_HOME ? 'flex' : 'none',
     opacity:
-      isFocused.value || searchViewProgress.value > 90
+      _WORKLET && (isFocused.value || searchViewProgress.value > 90)
         ? withTiming(0, TIMING_CONFIGS.fadeConfig)
         : withSpring(1, SPRING_CONFIGS.slowSpring),
   }));
 
   const searchInputValue = useAnimatedProps(() => {
-    const urlOrSearchQuery = formatUrlForSearchInput(tabUrl.value);
+    const urlOrSearchQuery = formatUrlForSearchInput(_WORKLET ? tabUrl.value : useBrowserStore.getState().getActiveTabUrl());
 
     // Removing the value when the input is focused allows the input to be reset to the correct value on blur
-    const url = isFocused.value ? undefined : urlOrSearchQuery;
+    const url = _WORKLET && isFocused.value ? undefined : urlOrSearchQuery;
 
     return { defaultValue: urlOrSearchQuery, text: url };
   });
