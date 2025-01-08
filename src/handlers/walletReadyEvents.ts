@@ -13,7 +13,8 @@ import { checkKeychainIntegrity } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
 import { IS_TEST } from '@/env';
-import { backupsStore, LoadingStates } from '@/state/backups/backups';
+import { backupsStore, LoadingStates, oneWeekInMs } from '@/state/backups/backups';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
 
 export const runKeychainIntegrityChecks = async () => {
   const keychainIntegrityState = await getKeychainIntegrityState();
@@ -34,10 +35,26 @@ const promptForBackupOnceReadyOrNotAvailable = async (): Promise<boolean> => {
     status = backupsStore.getState().status;
   }
 
-  logger.debug(`[walletReadyEvents]: BackupSheet: showing backup now sheet for selected wallet`);
+  const numberOfTimesPromptedForBackup = backupsStore.getState().timesPromptedForBackup;
+  const lastBackupPromptAt = backupsStore.getState().lastBackupPromptAt;
+  // prompt for backup every week if unprompted, otherwise prompt every 2 weeks
+  if (lastBackupPromptAt && Date.now() - lastBackupPromptAt < oneWeekInMs * (numberOfTimesPromptedForBackup + 1)) {
+    return false;
+  }
+
+  const { backupProvider } = backupsStore.getState();
+
+  const step =
+    backupProvider === walletBackupTypes.cloud
+      ? WalletBackupStepTypes.backup_prompt_cloud
+      : backupProvider === walletBackupTypes.manual
+        ? WalletBackupStepTypes.backup_prompt_manual
+        : WalletBackupStepTypes.backup_prompt;
+
+  logger.debug(`[walletReadyEvents]: BackupSheet: showing ${step} backup sheet`);
   triggerOnSwipeLayout(() =>
     Navigation.handleAction(Routes.BACKUP_SHEET, {
-      step: WalletBackupStepTypes.backup_prompt,
+      step,
     })
   );
   return true;
