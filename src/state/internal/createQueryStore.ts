@@ -73,6 +73,7 @@ interface FetchOptions {
  * in the event the most recent fetch failed.
  */
 interface CacheEntry<TData> {
+  cacheTime: number;
   data: TData | null;
   errorInfo: {
     error: Error;
@@ -232,7 +233,7 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
    * After this time, data is considered expired and will be refetched when requested.
    * @default time.days(7)
    */
-  cacheTime?: number;
+  cacheTime?: number | ((params: TParams) => number);
   /**
    * If `true`, the store will log debug messages to the console.
    * @default false
@@ -260,6 +261,9 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
   /**
    * If `true`, the store's `getData` method will always return existing data from the cache if it exists,
    * regardless of whether the cached data is expired, until the data is pruned following a successful fetch.
+   *
+   * Additionally, when params change while the store is enabled, `getData` will return the previous data until
+   * data for the new params is available.
    * @default false
    */
   keepPreviousData?: boolean;
@@ -355,6 +359,8 @@ export const time = {
   hours: (n: number) => time.minutes(n * 60),
   days: (n: number) => time.hours(n * 24),
   weeks: (n: number) => time.days(n * 7),
+  infinity: Infinity,
+  zero: 0,
 };
 
 const MIN_STALE_TIME = time.seconds(5);
@@ -450,6 +456,7 @@ export function createQueryStore<
   let lastFetchKey: string | null = null;
 
   const enableLogs = IS_DEV && debugMode;
+  const cacheTimeIsFunction = typeof cacheTime === 'function';
 
   const initialData = {
     enabled,
@@ -498,16 +505,6 @@ export function createQueryStore<
   };
 
   const createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]> = (set, get, api) => {
-    const pruneCache = (state: S): S => {
-      const newCache: Record<string, CacheEntry<TData>> = {};
-      Object.entries(state.queryCache).forEach(([key, entry]) => {
-        if (entry && Date.now() - entry.lastFetchedAt <= cacheTime) {
-          newCache[key] = entry;
-        }
-      });
-      return { ...state, queryCache: newCache };
-    };
-
     const scheduleNextFetch = (params: TParams, options: FetchOptions | undefined) => {
       if (disableAutoRefetching) return;
       const effectiveStaleTime = options?.staleTime ?? staleTime;
@@ -553,6 +550,7 @@ export function createQueryStore<
           const {
             lastFetchedAt: storeLastFetchedAt,
             queryCache: { [currentQueryKey]: cacheEntry },
+            queryKey: storeQueryKey,
             subscriptionCount,
           } = get();
 
@@ -566,6 +564,7 @@ export function createQueryStore<
               scheduleNextFetch(effectiveParams, options);
             }
             if (enableLogs) console.log('[💾 Returning Cached Data 💾] for queryKey: ', currentQueryKey);
+            if (keepPreviousData && storeQueryKey !== currentQueryKey) set(state => ({ ...state, queryKey: currentQueryKey }));
             return cacheEntry?.data ?? null;
           }
         }
@@ -604,6 +603,7 @@ export function createQueryStore<
                 ...state,
                 error: null,
                 lastFetchedAt,
+                queryKey: keepPreviousData ? currentQueryKey : state.queryKey,
                 status: QueryStatuses.Success,
               };
 
@@ -618,6 +618,7 @@ export function createQueryStore<
                 newState.queryCache = {
                   ...newState.queryCache,
                   [currentQueryKey]: {
+                    cacheTime: cacheTimeIsFunction ? cacheTime(effectiveParams) : cacheTime,
                     data: transformedData,
                     errorInfo: null,
                     lastFetchedAt,
@@ -637,6 +638,7 @@ export function createQueryStore<
                   newState.queryCache = {
                     ...newState.queryCache,
                     [currentQueryKey]: {
+                      cacheTime: cacheTimeIsFunction ? cacheTime(effectiveParams) : cacheTime,
                       data: null,
                       errorInfo: null,
                       lastFetchedAt,
@@ -645,7 +647,9 @@ export function createQueryStore<
                 }
               }
 
-              return disableCache || cacheTime === Infinity ? newState : pruneCache(newState);
+              return disableCache || cacheTime === Infinity
+                ? newState
+                : pruneCache<S, TData, TParams>(keepPreviousData, currentQueryKey, newState);
             });
 
             lastFetchKey = currentQueryKey;
@@ -710,6 +714,7 @@ export function createQueryStore<
                     },
                   },
                 },
+                queryKey: keepPreviousData ? currentQueryKey : state.queryKey,
                 status: QueryStatuses.Error,
               }));
             } else {
@@ -728,6 +733,7 @@ export function createQueryStore<
                     },
                   },
                 },
+                queryKey: keepPreviousData ? currentQueryKey : state.queryKey,
                 status: QueryStatuses.Error,
               }));
             }
@@ -752,7 +758,7 @@ export function createQueryStore<
         const currentQueryKey = params ? getQueryKey(params) : get().queryKey;
         const cacheEntry = get().queryCache[currentQueryKey];
         if (keepPreviousData) return cacheEntry?.data ?? null;
-        const isExpired = !!cacheEntry?.lastFetchedAt && Date.now() - cacheEntry.lastFetchedAt > cacheTime;
+        const isExpired = !!cacheEntry?.lastFetchedAt && Date.now() - cacheEntry.lastFetchedAt > cacheEntry.cacheTime;
         return isExpired ? null : cacheEntry?.data ?? null;
       },
 
@@ -771,13 +777,17 @@ export function createQueryStore<
       },
 
       isDataExpired(cacheTimeOverride?: number) {
-        const { queryKey } = get();
-        const lastFetchedAt =
-          (disableCache ? lastFetchKey === queryKey && get().lastFetchedAt : get().queryCache[queryKey]?.lastFetchedAt) || null;
+        const currentQueryKey = get().queryKey;
+        const {
+          lastFetchedAt: storeLastFetchedAt,
+          queryCache: { [currentQueryKey]: cacheEntry },
+        } = get();
 
+        const lastFetchedAt = (disableCache ? lastFetchKey === currentQueryKey && storeLastFetchedAt : cacheEntry?.lastFetchedAt) || null;
         if (!lastFetchedAt) return true;
-        const effectiveCacheTime = cacheTimeOverride ?? cacheTime;
-        return Date.now() - lastFetchedAt > effectiveCacheTime;
+
+        const effectiveCacheTime = cacheTimeOverride ?? cacheEntry?.cacheTime;
+        return effectiveCacheTime === undefined || Date.now() - lastFetchedAt > effectiveCacheTime;
       },
 
       isStale(staleTimeOverride?: number) {
@@ -892,7 +902,7 @@ export function createQueryStore<
   const combinedPersistConfig = persistConfig
     ? {
         ...persistConfig,
-        partialize: createBlendedPartialize(persistConfig.partialize),
+        partialize: createBlendedPartialize(keepPreviousData, persistConfig.partialize),
       }
     : undefined;
 
@@ -923,9 +933,12 @@ export function createQueryStore<
   }
 
   const onParamChange = () => {
-    const newQueryKey = getQueryKey(getCurrentResolvedParams());
-    queryCapableStore.setState(state => ({ ...state, queryKey: newQueryKey }));
-    queryCapableStore.fetch();
+    const newParams = getCurrentResolvedParams();
+    if (!keepPreviousData) {
+      const newQueryKey = getQueryKey(newParams);
+      queryCapableStore.setState(state => ({ ...state, queryKey: newQueryKey }));
+    }
+    queryCapableStore.fetch(newParams);
   };
 
   for (const k in paramAttachVals) {
@@ -954,6 +967,25 @@ export function createQueryStore<
   return queryCapableStore;
 }
 
+function pruneCache<S extends StoreState<TData, TParams>, TData, TParams extends Record<string, unknown>>(
+  keepPreviousData: boolean,
+  keyToPreserve: string | null,
+  state: S | Partial<S>
+): S | Partial<S> {
+  if (!state.queryCache) return state;
+  const effectiveKeyToPreserve = keyToPreserve ?? (keepPreviousData ? state.queryKey ?? null : null);
+  const newCache: Record<string, CacheEntry<TData>> = {};
+  const pruneTime = Date.now();
+
+  Object.entries(state.queryCache).forEach(([key, entry]) => {
+    if (entry && (pruneTime - entry.lastFetchedAt <= entry.cacheTime || key === effectiveKeyToPreserve)) {
+      newCache[key] = entry;
+    }
+  });
+
+  return { ...state, queryCache: newCache };
+}
+
 function resolveParams<TParams extends Record<string, unknown>, S extends StoreState<TData, TParams> & U, TData, U = unknown>(
   params: { [K in keyof TParams]: ParamResolvable<TParams[K], TParams, S, TData> },
   store: QueryStore<TData, TParams, S>
@@ -978,6 +1010,7 @@ function resolveParams<TParams extends Record<string, unknown>, S extends StoreS
 }
 
 function createBlendedPartialize<TData, TParams extends Record<string, unknown>, S extends StoreState<TData, TParams> & U, U = unknown>(
+  keepPreviousData: boolean,
   userPartialize: ((state: StoreState<TData, TParams> & U) => Partial<StoreState<TData, TParams> & U>) | undefined
 ) {
   return (state: S) => {
@@ -993,7 +1026,7 @@ function createBlendedPartialize<TData, TParams extends Record<string, unknown>,
 
     return {
       ...(userPartialize ? userPartialize(clonedState) : omitStoreMethods(clonedState)),
-      ...internalStateToPersist,
+      ...pruneCache<S, TData, TParams>(keepPreviousData, null, internalStateToPersist),
     } satisfies Partial<S>;
   };
 }
