@@ -39,7 +39,7 @@ type SearchItemWithRelevance = SearchAsset & {
 };
 
 const sortForDefaultList = (tokens: SearchAsset[]) => {
-  const curated = tokens.filter(asset => asset.highLiquidity && asset.isRainbowCurated);
+  const curated = tokens.filter(asset => asset.highLiquidity && asset.isRainbowCurated && asset.icon_url);
   return curated.sort((a, b) => (b.market?.market_cap?.value || 0) - (a.market?.market_cap?.value || 0));
 };
 
