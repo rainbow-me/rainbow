@@ -205,17 +205,31 @@ export function modWorklet(num1: string | number, num2: string | number): string
 // return significant decimals in fractional portion of number
 export function significantDecimalsWorklet(num: string | number): number {
   'worklet';
-  if (num === 0) {
-    return 0;
-  }
+  if (num === 0) return 0;
 
   // Convert the number to a string to handle large numbers and fractional parts
   const numStr = num.toString();
 
-  // Split the number into integer and fractional parts
-  const [_, fractionalPart] = numStr.split('.');
+  // Handle scientific notation
+  if (/[eE]/.test(numStr)) {
+    const [base, exponent] = numStr.split(/[eE]/);
+    const exp = Number(exponent);
 
-  // Handle fractional parts
+    // Get the decimal places from the base
+    const [, baseFractional] = base.split('.');
+    const baseDecimals = baseFractional ? baseFractional.length : 0;
+
+    // Adjust decimal places based on the exponent
+    if (exp >= 0) {
+      return Math.max(0, baseDecimals - exp);
+    } else {
+      return baseDecimals - exp;
+    }
+  }
+
+  // Handle regular decimal numbers
+  const [, fractionalPart] = numStr.split('.');
+
   if (fractionalPart) {
     // Find the first non-zero digit in the fractional part
     for (let i = 0; i < fractionalPart.length; i++) {
@@ -383,15 +397,18 @@ export function toFixedWorklet(num: string | number, decimalPlaces: number): str
     throw new Error('Argument must be a numeric string or number');
   }
 
+  let safeDecimalPlaces = decimalPlaces;
+  if (safeDecimalPlaces > 20) safeDecimalPlaces = 20;
+
   const [bigIntNum, numDecimalPlaces] = removeDecimalWorklet(numStr);
   const scaledBigIntNum = scaleUpWorklet(bigIntNum, numDecimalPlaces);
 
-  const scaleFactor = BigInt(10) ** BigInt(20 - decimalPlaces);
+  const scaleFactor = BigInt(10) ** BigInt(20 - safeDecimalPlaces);
   const roundedBigInt = ((scaledBigIntNum + scaleFactor / BigInt(2)) / scaleFactor) * scaleFactor;
 
   const resultStr = roundedBigInt.toString().padStart(20 + 1, '0'); // SCALE_FACTOR decimal places + at least 1 integer place
   const integerPart = resultStr.slice(0, -20) || '0';
-  const fractionalPart = resultStr.slice(-20, -20 + decimalPlaces).padEnd(decimalPlaces, '0');
+  const fractionalPart = resultStr.slice(-20, -20 + safeDecimalPlaces).padEnd(safeDecimalPlaces, '0');
 
   return `${integerPart}.${fractionalPart}`;
 }
