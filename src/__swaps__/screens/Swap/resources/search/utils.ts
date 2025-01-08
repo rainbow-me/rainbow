@@ -58,14 +58,17 @@ export function parseTokenSearchAcrossNetworks(assets: SearchAsset[]): SearchAss
     const firstNetworkChainId = Number(networkKeys[0] || asset.chainId);
 
     const mainnetInfo = assetNetworks[ChainId.mainnet];
+    const firstNetworkInfo = assetNetworks[firstNetworkChainId];
     const chainId = mainnetInfo ? ChainId.mainnet : firstNetworkChainId;
-    const address = mainnetInfo ? mainnetInfo.address : assetNetworks[firstNetworkChainId]?.address || asset.address;
+    const address = mainnetInfo ? mainnetInfo.address : firstNetworkInfo?.address || asset.address;
+    const decimals = mainnetInfo ? mainnetInfo.decimals : firstNetworkInfo?.decimals || asset.decimals;
     const uniqueId = `${address}_${chainId}`;
 
     return {
       ...asset,
-      chainId,
       address,
+      chainId,
+      decimals,
       isNativeAsset: isNativeAsset(address, chainId),
       mainnetAddress: mainnetInfo ? mainnetInfo.address : chainId === ChainId.mainnet ? address : ('' as Address),
       uniqueId,
