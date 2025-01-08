@@ -214,6 +214,7 @@ export const backupsStore = createRainbowStore<BackupsStore>(
     version: 0,
     partialize: state => ({
       lastBackupPromptAt: state.lastBackupPromptAt,
+      timesPromptedForBackup: state.timesPromptedForBackup,
     }),
   }
 );

@@ -13,7 +13,7 @@ import { checkKeychainIntegrity } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
 import { IS_TEST } from '@/env';
-import { backupsStore, LoadingStates, oneWeekInMs } from '@/state/backups/backups';
+import { backupsStore, CloudBackupState, LoadingStates, oneWeekInMs } from '@/state/backups/backups';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 
 export const runKeychainIntegrityChecks = async () => {
@@ -33,16 +33,21 @@ const promptForBackupOnceReadyOrNotAvailable = async (): Promise<boolean> => {
   while (LoadingStates.includes(status)) {
     await delay(1000);
     status = backupsStore.getState().status;
+    console.log({
+      status,
+    });
   }
 
-  const numberOfTimesPromptedForBackup = backupsStore.getState().timesPromptedForBackup;
-  const lastBackupPromptAt = backupsStore.getState().lastBackupPromptAt;
-  // prompt for backup every week if unprompted, otherwise prompt every 2 weeks
-  if (lastBackupPromptAt && Date.now() - lastBackupPromptAt < oneWeekInMs * (numberOfTimesPromptedForBackup + 1)) {
+  if (status !== CloudBackupState.Ready) {
     return false;
   }
 
-  const { backupProvider } = backupsStore.getState();
+  const { backupProvider, timesPromptedForBackup, lastBackupPromptAt } = backupsStore.getState();
+
+  // prompt for backup every week if first time prompting, otherwise prompt every 2 weeks
+  if (lastBackupPromptAt && Date.now() - lastBackupPromptAt < oneWeekInMs * (timesPromptedForBackup + 1)) {
+    return false;
+  }
 
   const step =
     backupProvider === walletBackupTypes.cloud
