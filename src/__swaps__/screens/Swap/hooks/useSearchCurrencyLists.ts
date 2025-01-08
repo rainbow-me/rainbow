@@ -239,10 +239,10 @@ const buildListSectionsData = ({
 
 let lastLogTime: number | null = null;
 
-export function useSearchCurrencyLists() {
-  const verifiedAssets = useTokenSearchStore(state => state.results);
+export function useSearchCurrencyListsV2() {
+  const verifiedAssets = useTokenSearchStore(state => state.getData());
   const bridgeAsset = useTokenSearchStore(state => state.bridgeAsset);
-  const unverifiedAssets = useUnverifiedTokenSearchStore(state => state.results);
+  const unverifiedAssets = useUnverifiedTokenSearchStore(state => state.getData());
   const popularAssets = usePopularTokensStore(state => state.getData());
   const { favoritesMetadata: favorites } = useFavorites();
 
@@ -309,12 +309,14 @@ export function useSearchCurrencyLists() {
     const query = useSwapsSearchStore.getState().searchQuery.trim();
     if (!query.length) return { crosschainExactMatches: undefined, verifiedResults: verifiedAssets };
 
-    return verifiedAssets?.reduce(
-      (acc: { crosschainExactMatches: SearchAsset[]; verifiedResults: SearchAsset[] }, asset) => {
-        acc[asset.chainId === toChainId ? 'verifiedResults' : 'crosschainExactMatches'].push(asset);
-        return acc;
-      },
-      { crosschainExactMatches: [], verifiedResults: [] }
+    return (
+      verifiedAssets?.reduce(
+        (acc: { crosschainExactMatches: SearchAsset[]; verifiedResults: SearchAsset[] }, asset) => {
+          acc[asset.chainId === toChainId ? 'verifiedResults' : 'crosschainExactMatches'].push(asset);
+          return acc;
+        },
+        { crosschainExactMatches: [], verifiedResults: [] }
+      ) ?? { crosschainExactMatches: undefined, verifiedResults: undefined }
     );
   }, [toChainId, verifiedAssets]);
 
@@ -328,8 +330,8 @@ export function useSearchCurrencyLists() {
           crosschainExactMatches,
           popularAssets: popularAssetsForChain,
           recentSwaps: recentsForChain,
-          unverifiedAssets,
-          verifiedAssets: verifiedResults,
+          unverifiedAssets: unverifiedAssets ?? undefined,
+          verifiedAssets: verifiedResults ?? undefined,
         },
         favoritesList,
         filteredBridgeAssetAddress: bridgeAsset?.address,

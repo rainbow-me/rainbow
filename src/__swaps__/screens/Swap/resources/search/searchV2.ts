@@ -29,11 +29,6 @@ type TokenSearchParams = {
 
 type TokenSearchState = {
   bridgeAsset: SearchAsset | null;
-  results: SearchAsset[];
-};
-
-type UnverifiedTokenSearchState = {
-  results: SearchAsset[];
 };
 
 type SearchQueryState = {
@@ -54,13 +49,15 @@ export const useSwapsSearchStore = createRainbowStore<SearchQueryState>(() => ({
 
 export const useTokenSearchStore = createQueryStore<SearchAsset[], TokenSearchParams, TokenSearchState>(
   {
-    fetcher: tokenSearchQueryFunction,
-    setData: ({ data, params, set }) => {
-      if (params.query?.length) set({ results: data });
-      else set({ bridgeAsset: extractBridgeAsset(data, params), results: data });
+    fetcher: async (params, abortController) => {
+      const results = await tokenSearchQueryFunction(params, abortController);
+      if (!params.query?.length) setBridgeAsset(extractBridgeAsset(results, params));
+      return results;
     },
 
-    disableCache: true,
+    cacheTime: params => (params.query?.length ? time.minutes(2) : time.seconds(10)),
+    disableAutoRefetching: true,
+    keepPreviousData: true,
     params: {
       list: TokenLists.Verified,
       chainId: $ => $(useSwapsStore).selectedOutputChainId,
@@ -68,20 +65,27 @@ export const useTokenSearchStore = createQueryStore<SearchAsset[], TokenSearchPa
       query: $ => $(useSwapsSearchStore, state => (state.searchQuery.trim().length ? state.searchQuery.trim() : undefined)),
       threshold: $ => $(useSwapsSearchStore, state => getSearchThreshold(state.searchQuery.trim())),
     },
-    staleTime: Infinity,
+    staleTime: time.seconds(30),
   },
 
-  () => ({ bridgeAsset: null, results: [] })
+  () => ({ bridgeAsset: null }),
+
+  { storageKey: 'verifiedTokenSearch' }
 );
 
-export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], TokenSearchParams, UnverifiedTokenSearchState>(
+function setBridgeAsset(bridgeAsset: SearchAsset | null) {
+  useTokenSearchStore.setState({ bridgeAsset });
+}
+
+export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], TokenSearchParams>(
   {
     fetcher: (params, abortController) => (params.query?.length ?? 0 > 2 ? tokenSearchQueryFunction(params, abortController) : NO_RESULTS),
-    setData: ({ data, set }) => set({ results: data }),
     transform: (data, { query }) =>
       query && isAddress(query) ? getExactMatches(data, query, MAX_UNVERIFIED_RESULTS) : data.slice(0, MAX_UNVERIFIED_RESULTS),
 
-    disableCache: true,
+    cacheTime: params => (params.query?.length ? time.minutes(2) : time.seconds(10)),
+    disableAutoRefetching: true,
+    keepPreviousData: true,
     params: {
       list: TokenLists.HighLiquidity,
       chainId: $ => $(useSwapsStore).selectedOutputChainId,
@@ -89,10 +93,10 @@ export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], Tok
       query: $ => $(useSwapsSearchStore, state => state.searchQuery.trim()),
       threshold: $ => $(useSwapsSearchStore, state => getSearchThreshold(state.searchQuery.trim())),
     },
-    staleTime: Infinity,
+    staleTime: time.seconds(30),
   },
 
-  () => ({ results: [] })
+  { storageKey: 'unverifiedTokenSearch' }
 );
 
 function selectTopSearchResults({
