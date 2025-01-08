@@ -45,9 +45,7 @@ const sortForDefaultList = (tokens: SearchAsset[]) => {
 
 const sortTokensByRelevance = (tokens: SearchAsset[], query: string): SearchItemWithRelevance[] => {
   const normalizedQuery = query.toLowerCase().trim();
-  const tokenWithRelevance: SearchItemWithRelevance[] = [];
-
-  for (const token of tokens) {
+  const tokenWithRelevance: SearchItemWithRelevance[] = tokens.map(token => {
     const normalizedTokenName = token.name.toLowerCase();
 
     const normalizedTokenSymbol = token.symbol.toLowerCase();
@@ -59,11 +57,8 @@ const sortTokensByRelevance = (tokens: SearchAsset[], query: string): SearchItem
       normalizedTokenSymbol,
       tokenNameWords,
     });
-
-    if (relevance > 0) {
-      tokenWithRelevance.push({ ...token, relevance });
-    }
-  }
+    return { ...token, relevance };
+  });
 
   return tokenWithRelevance.sort((a, b) => b.relevance - a.relevance);
 };
