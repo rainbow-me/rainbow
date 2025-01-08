@@ -63,20 +63,6 @@ const sortTokensByRelevance = (tokens: SearchAsset[], query: string): SearchItem
   return tokenWithRelevance.sort((a, b) => b.relevance - a.relevance);
 };
 
-const getStackedRelevanceScore = (token: SearchAsset, topScore: number) => {
-  if (token.isVerified) {
-    return topScore;
-  } else if (token.highLiquidity) {
-    return topScore - 0.1;
-  } else if (token.icon_url) {
-    return topScore - 0.2;
-  } else if (Object.keys(token.networks).length > 1) {
-    return topScore - 0.3;
-  } else {
-    return topScore - 0.4;
-  }
-};
-
 // higher number indicates higher relevance
 const getTokenRelevance = ({
   token,
@@ -93,17 +79,17 @@ const getTokenRelevance = ({
 }) => {
   // High relevance: Leading word in token name starts with query or exact match on symbol
   if (normalizedTokenName.startsWith(normalizedQuery) || (normalizedTokenSymbol && normalizedTokenSymbol === normalizedQuery)) {
-    return getStackedRelevanceScore(token, 5);
+    return 5;
   }
 
   // Medium relevance: Non-leading word in token name starts with query
   if (tokenNameWords.some((word, index) => index !== 0 && word.startsWith(normalizedQuery))) {
-    return getStackedRelevanceScore(token, 4);
+    return 4;
   }
 
   // Low relevance: Token name contains query
   if (tokenNameWords.some(word => word.includes(normalizedQuery))) {
-    return getStackedRelevanceScore(token, 3);
+    return 3;
   }
 
   return 0;
