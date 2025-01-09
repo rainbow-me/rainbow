@@ -96,36 +96,36 @@ export const SearchResults = React.memo(function SearchResults({ goToUrl }: { go
   const backgroundStyle = isDarkMode ? styles.searchBackgroundDark : styles.searchBackgroundLight;
 
   const animatedSearchContainerStyle = useAnimatedStyle(() => ({
-    opacity: searchViewProgress.value / 100,
-    pointerEvents: isFocused.value ? 'auto' : 'none',
+    opacity: _WORKLET ? searchViewProgress.value / 100 : 0,
+    pointerEvents: _WORKLET && isFocused.value ? 'auto' : 'none',
   }));
 
   const allResultsAnimatedStyle = useAnimatedStyle(() => ({
-    display: searchQuery.value.trim() ? 'flex' : 'none',
+    display: _WORKLET && searchQuery.value.trim() ? 'flex' : 'none',
   }));
 
   const moreResultsAnimatedStyle = useAnimatedStyle(() => ({
-    display: searchResults.value.length ? 'flex' : 'none',
+    display: _WORKLET && searchResults.value.length ? 'flex' : 'none',
   }));
 
   const suggestedGoogleSearchAnimatedStyle = useAnimatedStyle(() => ({
-    display: searchResults.value.length || !searchQuery.value.trim() ? 'none' : 'flex',
+    display: _WORKLET && (searchResults.value.length || !searchQuery.value.trim()) ? 'none' : 'flex',
   }));
 
   const closeButtonAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: searchViewProgress.value / 100,
-    transform: [{ scale: withSpring(isFocused.value ? 1 : 0.5, SPRING_CONFIGS.snappySpringConfig) }],
+    opacity: _WORKLET ? searchViewProgress.value / 100 : 0,
+    transform: [{ scale: withSpring(_WORKLET && isFocused.value ? 1 : 0.5, SPRING_CONFIGS.snappySpringConfig) }],
   }));
 
   const emptyStateAnimatedStyle = useAnimatedStyle(() => {
-    const searchQueryExists = searchQuery.value.trim();
+    const searchQueryExists = _WORKLET && searchQuery.value.trim();
     return {
-      height: DEVICE_HEIGHT - keyboardHeight.value,
-      opacity: searchQueryExists ? 0 : (searchViewProgress.value / 100) * 0.6,
+      height: DEVICE_HEIGHT - (_WORKLET ? keyboardHeight.value : 0),
+      opacity: searchQueryExists || !_WORKLET ? 0 : (searchViewProgress.value / 100) * 0.6,
       pointerEvents: searchQueryExists ? 'none' : 'auto',
       transform: [
-        { scale: withSpring(isFocused.value ? 1 : 0.8, SPRING_CONFIGS.snappySpringConfig) },
-        { translateY: withSpring(isFocused.value ? 0 : 80, SPRING_CONFIGS.snappySpringConfig) },
+        { scale: withSpring(_WORKLET && isFocused.value ? 1 : 0.8, SPRING_CONFIGS.snappySpringConfig) },
+        { translateY: withSpring(_WORKLET && isFocused.value ? 0 : 80, SPRING_CONFIGS.snappySpringConfig) },
       ],
     };
   });
