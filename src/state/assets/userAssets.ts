@@ -18,7 +18,7 @@ type UserAssetsStoreType = ReturnType<typeof createUserAssetsStore>;
 interface StoreManagerState {
   address: Address | string | null;
   cachedStore: UserAssetsStoreType | null;
-  hiddenAssetBalances: Record<Address, string | undefined>;
+  hiddenAssetBalances: Record<Address | string, string | undefined>;
   setHiddenAssetBalance: (address: Address | string, balance: string) => void;
 }
 
@@ -31,7 +31,7 @@ export const userAssetsStoreManager = createRainbowStore<StoreManagerState>(
     setHiddenAssetBalance: (address, balance) => {
       set(state => {
         const newHiddenAssetBalances = { ...state.hiddenAssetBalances };
-        newHiddenAssetBalances[address as Address] = balance;
+        newHiddenAssetBalances[address] = balance;
         return { hiddenAssetBalances: newHiddenAssetBalances };
       });
     },
@@ -457,28 +457,21 @@ export const createUserAssetsStore = (address: Address | string) =>
 
           searchCache.set('all', filteredAllIdsArray);
 
-          let hiddenAssetsBalance: string = state.hiddenAssetsBalance ?? '0';
-          state.hiddenAssets.forEach(uniqueId => {
-            const asset = userAssetsMap.get(uniqueId);
-            if (asset) {
-              const assetNativeBalance = multiply(asset.price?.value ?? 0, asset.balance?.amount ?? 0);
-              hiddenAssetsBalance = add(hiddenAssetsBalance, assetNativeBalance);
-            }
+          const hiddenAssetsBalance = calculateHiddenAssetsBalance({
+            address,
+            hiddenAssets: state.hiddenAssets,
+            userAssets: userAssetsMap,
           });
-
-          if (hiddenAssetsBalance !== state.hiddenAssetsBalance) {
-            userAssetsStoreManager.getState().setHiddenAssetBalance(address, hiddenAssetsBalance);
-          }
 
           return {
             ...state,
             chainBalances,
             hiddenAssetsBalance,
             idsByChain,
+            isLoadingUserAssets: false,
             legacyUserAssets,
             searchCache,
             userAssets: userAssetsMap,
-            isLoadingUserAssets: false,
           };
         }),
 
@@ -497,14 +490,11 @@ export const createUserAssetsStore = (address: Address | string) =>
             }
           });
 
-          let hiddenAssetsBalance = '0';
-          hiddenAssets.forEach(uniqueId => {
-            const asset = prev.userAssets.get(uniqueId);
-            if (asset) {
-              hiddenAssetsBalance += Number(asset.native.balance.amount) ?? 0;
-            }
+          const hiddenAssetsBalance = calculateHiddenAssetsBalance({
+            address,
+            hiddenAssets,
+            userAssets: prev.userAssets,
           });
-          userAssetsStoreManager.getState().setHiddenAssetBalance(address, hiddenAssetsBalance);
 
           return { hiddenAssets, hiddenAssetsBalance };
         });
@@ -559,6 +549,31 @@ export function useUserAssetsStore<T>(selector: (state: UserAssetsState) => T) {
   const address = useSelector((state: AppState) => state.settings.accountAddress);
   const store = getOrCreateStore(address);
   return useStore(store, selector);
+}
+
+function calculateHiddenAssetsBalance({
+  address,
+  hiddenAssets,
+  userAssets,
+}: {
+  address: Address | string;
+} & Pick<UserAssetsState, 'hiddenAssets' | 'userAssets'>): string {
+  let balance = '0';
+  const {
+    hiddenAssetBalances: { [address]: storedBalance },
+    setHiddenAssetBalance,
+  } = userAssetsStoreManager.getState();
+
+  hiddenAssets.forEach(uniqueId => {
+    const asset = userAssets.get(uniqueId);
+    if (asset) {
+      const assetNativeBalance = multiply(asset.price?.value ?? 0, asset.balance?.amount ?? 0);
+      balance = add(balance, assetNativeBalance);
+    }
+  });
+
+  if (balance !== storedBalance) setHiddenAssetBalance(address, balance);
+  return balance;
 }
 
 function getCurrentSearchCache(): Map<string, UniqueId[]> {
