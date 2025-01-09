@@ -261,7 +261,7 @@
           </intent-filter>
       </activity-alias>
       <activity-alias
-          android:name="me.rainbow.MainActivityRedacted"
+          android:name="me.rainbow.MainActivityredacted"
           android:enabled="false"
           android:icon="@mipmap/redacted"
           android:roundIcon="@mipmap/redacted_round"
