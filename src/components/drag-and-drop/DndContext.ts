@@ -11,7 +11,7 @@ export type DraggableOptions = Record<UniqueIdentifier, DraggableItemOptions>;
 export type DroppableOptions = Record<UniqueIdentifier, ItemOptions>;
 export type Layouts = Record<UniqueIdentifier, SharedValue<LayoutRectangle>>;
 export type Offsets = Record<UniqueIdentifier, SharedPoint>;
-export type DraggableState = 'resting' | 'pending' | 'dragging' | 'dropping' | 'acting';
+export type DraggableState = 'resting' | 'pending' | 'dragging' | 'dropping' | 'acting' | 'sleeping';
 export type DraggableStates = Record<UniqueIdentifier, SharedValue<DraggableState>>;
 
 export type DndContextValue = {
@@ -23,7 +23,6 @@ export type DndContextValue = {
   draggableOffsets: SharedValue<Offsets>;
   draggableRestingOffsets: SharedValue<Offsets>;
   draggableStates: SharedValue<DraggableStates>;
-  draggablePendingId: SharedValue<UniqueIdentifier | null>;
   draggableActiveId: SharedValue<UniqueIdentifier | null>;
   droppableActiveId: SharedValue<UniqueIdentifier | null>;
   draggableActiveLayout: SharedValue<LayoutRectangle | null>;
