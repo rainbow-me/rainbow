@@ -322,10 +322,33 @@ function getPriceChangeColor(priceChange: number) {
   return priceChange > 0 ? 'green' : 'red';
 }
 
+const TOKEN_LIST_INSET = 20 * 2;
+const TOKEN_ICON_WIDTH = 40 + 12;
+const TOKEN_PRICE_CHANGE_WIDTH = 75;
+
+const TOKEN_DETAILS_WIDTH = DEVICE_WIDTH - TOKEN_LIST_INSET - TOKEN_ICON_WIDTH - TOKEN_PRICE_CHANGE_WIDTH;
+
+function getTextWidths(symbol: string, price: string) {
+  const minPriceWidth = price.length * 9 + 8; // 9px per character + some padding
+
+  const remainingWidth = TOKEN_DETAILS_WIDTH - minPriceWidth - 12; // 12 for gaps
+
+  const maxSymbolWidth = Math.min(symbol.length * 8 + 16, remainingWidth * 0.3);
+
+  const nameWidth = remainingWidth - maxSymbolWidth;
+
+  return {
+    nameWidth,
+    symbolWidth: maxSymbolWidth,
+    minPriceWidth,
+  };
+}
+
 function TrendingTokenRow({ token }: { token: TrendingToken }) {
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
   const price = formatCurrency(token.price);
+  const { nameWidth, symbolWidth, minPriceWidth } = getTextWidths(token.symbol, price);
   const marketCap = formatNumber(token.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' });
   const volume = formatNumber(token.volume, { useOrderSuffix: true, decimals: 1, style: '$' });
 
@@ -381,21 +404,45 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
                   alignItems: IS_IOS ? 'baseline' : 'flex-end',
                   flexDirection: 'row',
                   gap: 6,
-                  height: 10,
-                  maxWidth:
-                    DEVICE_WIDTH -
-                    40 - // horizontal list padding
-                    (40 + 12) - // token icon width + 12px gap
-                    70, // approx. % price change width
+                  height: 12,
+                  width: TOKEN_DETAILS_WIDTH,
+                  overflow: 'hidden',
                 }}
               >
-                <Text color="label" numberOfLines={1} size="15pt" style={{ flexShrink: 1, maxWidth: 100 }} weight="bold">
+                <Text
+                  color="label"
+                  numberOfLines={1}
+                  size="15pt"
+                  style={{
+                    maxWidth: nameWidth,
+                  }}
+                  weight="bold"
+                >
                   {token.name}
                 </Text>
-                <Text color="labelTertiary" numberOfLines={1} size="11pt" style={{ bottom: IS_IOS ? 0 : -0.2, flexGrow: 0 }} weight="bold">
+                <Text
+                  color="labelTertiary"
+                  numberOfLines={1}
+                  ellipsizeMode="middle"
+                  size="11pt"
+                  style={{
+                    bottom: IS_IOS ? 0 : -0.2,
+                    maxWidth: symbolWidth,
+                  }}
+                  weight="bold"
+                >
                   {token.symbol}
                 </Text>
-                <Text color="label" numberOfLines={1} size="15pt" weight="bold">
+                <Text
+                  color="label"
+                  numberOfLines={1}
+                  size="15pt"
+                  style={{
+                    minWidth: minPriceWidth,
+                    flex: 1,
+                  }}
+                  weight="bold"
+                >
                   {price}
                 </Text>
               </View>
@@ -423,7 +470,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
               </View>
             </View>
 
-            <View style={{ gap: 12, marginLeft: 'auto' }}>
+            <View style={{ gap: 12, marginLeft: 'auto', maxWidth: 75 }}>
               <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center', justifyContent: 'flex-end' }}>
                 <Text color={getPriceChangeColor(token.priceChange.day)} size="15pt" weight="bold">
                   {formatNumber(token.priceChange.day, { decimals: 2, useOrderSuffix: true })}%
