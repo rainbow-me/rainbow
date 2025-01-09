@@ -24,7 +24,7 @@ export default function useWalletsWithBalancesAndNames() {
             hiddenBalances: hiddenBalances[lowerCaseAddress],
             balancesMinusHiddenBalances: balances[lowerCaseAddress]?.totalBalanceDisplay
               ? convertAmountToNativeDisplay(
-                  subtract(balances[lowerCaseAddress].totalBalanceAmount, hiddenBalances[lowerCaseAddress] ?? '0'),
+                  subtract(balances[lowerCaseAddress].totalBalanceAmount, hiddenBalances[account.address] ?? '0'),
                   nativeCurrency
                 )
               : undefined,
