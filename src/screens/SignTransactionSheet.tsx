@@ -17,7 +17,7 @@ import { PanGestureHandler } from 'react-native-gesture-handler';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
 import { ChainId, Network } from '@/state/backendNetworks/types';
-import { convertHexToString, delay, greaterThan, omitFlatten } from '@/helpers/utilities';
+import { delay } from '@/helpers/utilities';
 
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
@@ -25,7 +25,7 @@ import { useAccountSettings, useGas, useSwitchWallet, useWallets } from '@/hooks
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { IS_IOS } from '@/env';
-import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import { GasSpeedButton } from '@/components/gas';
 import { RainbowError, logger } from '@/logger';
 import {
@@ -36,17 +36,13 @@ import {
   isMessageDisplayType,
   isPersonalSign,
 } from '@/utils/signingMethods';
-import { isNil } from 'lodash';
 
-import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { loadWallet, sendTransaction, signPersonalMessage, signTransaction, signTypedDataMessage } from '@/model/wallet';
 
 import { analyticsV2 as analytics } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
 import { isAddress } from '@ethersproject/address';
-import { hexToNumber, isHex } from 'viem';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { getNextNonce } from '@/state/nonces';
 import { RequestData } from '@/walletConnect/types';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { event } from '@/analytics/event';
@@ -72,6 +68,7 @@ import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { buildTransaction } from '@/helpers/buildTransaction';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -263,63 +260,18 @@ export const SignTransactionSheet = () => {
 
   const handleConfirmTransaction = useCallback(async () => {
     const sendInsteadOfSign = transactionDetails.payload.method === SEND_TRANSACTION;
-    const txPayload = req;
-    let { gas } = txPayload;
-    const gasLimitFromPayload = txPayload?.gasLimit;
 
-    try {
-      logger.debug(
-        '[SignTransactionSheet]: gas suggested by dapp',
-        {
-          gas: convertHexToString(gas),
-          gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
-        },
-        logger.DebugContext.walletconnect
-      );
-
-      // Estimate the tx with gas limit padding before sending
-      const rawGasLimit = await estimateGasWithPadding(txPayload, null, null, provider);
-      if (!rawGasLimit) {
-        logger.error(new RainbowError('[SignTransactionSheet]: error estimating gas'), {
-          rawGasLimit,
-        });
-        return;
-      }
-
-      // If the estimation with padding is higher or gas limit was missing,
-      // let's use the higher value
-      if (
-        (isNil(gas) && isNil(gasLimitFromPayload)) ||
-        (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
-        (!isNil(gasLimitFromPayload) && greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
-      ) {
-        logger.debug(
-          '[SignTransactionSheet]: using padded estimation!',
-          { gas: rawGasLimit.toString() },
-          logger.DebugContext.walletconnect
-        );
-        gas = toHex(rawGasLimit);
-      }
-    } catch (error) {
-      logger.error(new RainbowError('[SignTransactionSheet]: error estimating gas'), { error });
-    }
-    // clean gas prices / fees sent from the dapp
-    const cleanTxPayload = omitFlatten(txPayload, ['gasPrice', 'maxFeePerGas', 'maxPriorityFeePerGas', 'extParams']);
-    const gasParams = parseGasParamsForTransaction(selectedGasFee);
-    const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
-
-    const nonce = await getNextNonce({ address: accountInfo.address, chainId });
-    let txPayloadUpdated = {
-      ...cleanTxPayload,
-      ...gasParams,
-      nonce,
-      ...(calculatedGasLimit && { gasLimit: calculatedGasLimit }),
-    };
-    txPayloadUpdated = omitFlatten(txPayloadUpdated, ['from', 'gas', 'chainId']);
+    const transaction = await buildTransaction({
+      address: accountInfo.address,
+      chainId,
+      params: req,
+      selectedGasFee,
+      provider,
+    });
 
     logger.debug(`[SignTransactionSheet]: ${transactionDetails.payload.method} payload`, {
-      txPayload,
-      txPayloadUpdated,
+      txPayload: req,
+      transaction,
     });
 
     let response = null;
@@ -340,9 +292,6 @@ export const SignTransactionSheet = () => {
         return;
       }
       if (sendInsteadOfSign) {
-        if (isHex(txPayloadUpdated?.type)) {
-          txPayloadUpdated.type = hexToNumber(txPayloadUpdated?.type);
-        }
         response = await performanceTracking.getState().executeFn({
           fn: sendTransaction,
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
@@ -350,7 +299,7 @@ export const SignTransactionSheet = () => {
         })({
           existingWallet,
           provider,
-          transaction: txPayloadUpdated,
+          transaction,
         });
       } else {
         response = await performanceTracking.getState().executeFn({
@@ -360,7 +309,7 @@ export const SignTransactionSheet = () => {
         })({
           existingWallet,
           provider,
-          transaction: txPayloadUpdated,
+          transaction,
         });
       }
     } catch (e) {
@@ -374,7 +323,7 @@ export const SignTransactionSheet = () => {
       let txSavedInCurrentWallet = false;
       const displayDetails = transactionDetails.displayDetails;
 
-      let txDetails: NewTransaction | undefined;
+      let txDetails: NewTransaction;
       if (sendInsteadOfSign && sendResult?.hash) {
         txDetails = {
           status: TransactionStatus.pending,
@@ -386,14 +335,16 @@ export const SignTransactionSheet = () => {
           },
           data: sendResult.data,
           from: displayDetails?.request?.from,
-          gasLimit,
+          gasLimit: transaction.gasLimit || gasLimit,
           hash: sendResult.hash,
           network: chainsName[chainId] as Network,
           nonce: sendResult.nonce,
           to: displayDetails?.request?.to,
           value: sendResult.value.toString(),
           type: 'contract_interaction',
-          ...gasParams,
+          gasPrice: transaction.gasPrice,
+          maxFeePerGas: transaction.maxFeePerGas,
+          maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
         };
 
         if (accountInfo.address?.toLowerCase() === txDetails.from?.toLowerCase()) {
@@ -452,21 +403,21 @@ export const SignTransactionSheet = () => {
       }
     }
   }, [
-    transactionDetails.payload.method,
+    transactionDetails.payload,
     transactionDetails.displayDetails,
     transactionDetails.dappName,
     transactionDetails.dappUrl,
     transactionDetails.imageUrl,
-    req,
-    chainId,
-    selectedGasFee,
-    gasLimit,
     accountInfo.address,
     accountInfo.isHardwareWallet,
+    chainId,
+    selectedGasFee,
     provider,
+    req,
     source,
     closeScreen,
     nativeAsset,
+    gasLimit,
     onSuccessCallback,
     switchToWalletWithAddress,
     formattedDappUrl,
@@ -474,7 +425,7 @@ export const SignTransactionSheet = () => {
   ]);
 
   const handleSignMessage = useCallback(async () => {
-    const message = transactionDetails?.payload?.params.find((p: string) => !isAddress(p));
+    const message = transactionDetails?.payload?.params?.find((p: string) => !isAddress(p));
     let response = null;
 
     const existingWallet = await performanceTracking.getState().executeFn({

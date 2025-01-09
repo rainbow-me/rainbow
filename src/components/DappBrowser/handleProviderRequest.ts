@@ -113,6 +113,7 @@ export function createTransport<TPayload, TResponse>({ messenger, topic }: { mes
  * @returns {boolean}
  */
 const messengerProviderRequestFn = async (messenger: Messenger, request: ProviderRequestPayload) => {
+  console.log(JSON.stringify(request, null, 2));
   const hostSessions = useAppSessionsStore.getState().getActiveSession({ host: getDappHost(request.meta?.sender.url) || '' });
   const appSession =
     hostSessions && hostSessions.sessions?.[hostSessions.activeSessionAddress]
