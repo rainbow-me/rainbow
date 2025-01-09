@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { useCallback, useRef } from 'react';
+import { MutableRefObject, useCallback, useRef } from 'react';
 import { InteractionManager, NativeModules } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { PerformanceContextMap } from '../performance/PerformanceContextMap';
@@ -13,29 +13,24 @@ import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 import { getAppIcon } from '@/handlers/localstorage/globalSettings';
 import { RainbowError, logger } from '@/logger';
 import { AppIconKey } from '@/appIcons/appIcons';
-
 const { RainbowSplashScreen } = NativeModules;
 
 export default function useHideSplashScreen() {
   const alreadyLoggedPerformance = useRef(false);
+  const didSetStatusBar = useRef(false);
 
   return useCallback(async () => {
     if (!!RainbowSplashScreen && RainbowSplashScreen.hideAnimated) {
       RainbowSplashScreen.hideAnimated();
+    } else if (IS_ANDROID) {
+      handleAndroidStatusBar(didSetStatusBar);
+      const RNBootSplash = require('react-native-bootsplash');
+      await RNBootSplash.hide({ fade: true });
     } else {
-      if (IS_ANDROID) {
-        const RNBootSplash = require('react-native-bootsplash');
-        await RNBootSplash.hide({ fade: true });
-      } else {
-        SplashScreen.hide();
-      }
+      SplashScreen.hide();
     }
 
-    if (IS_ANDROID) {
-      StatusBarHelper.setBackgroundColor('transparent', false);
-      StatusBarHelper.setTranslucent(true);
-      StatusBarHelper.setDarkContent();
-    }
+    if (IS_ANDROID && !didSetStatusBar.current) handleAndroidStatusBar(didSetStatusBar);
 
     onHandleStatusBar();
     (IS_IOS && StatusBarHelper.setHidden(false, 'fade')) ||
@@ -67,4 +62,11 @@ export default function useHideSplashScreen() {
       }
     }
   }, []);
+}
+
+function handleAndroidStatusBar(didSetStatusBar: MutableRefObject<boolean>) {
+  didSetStatusBar.current = true;
+  StatusBarHelper.setBackgroundColor('transparent', false);
+  StatusBarHelper.setTranslucent(true);
+  StatusBarHelper.setDarkContent();
 }
