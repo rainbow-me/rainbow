@@ -180,12 +180,7 @@ export function ChooseWalletGroup() {
   const { goBack } = useNavigation();
   const { wallets } = useWallets();
 
-  if (!wallets) {
-    showWalletErrorAlert();
-    return;
-  }
-
-  const groups = Object.values(wallets).filter(wallet => wallet.type === WalletTypes.mnemonic);
+  const groups = Object.values(wallets || {}).filter(wallet => wallet.type === WalletTypes.mnemonic);
 
   return (
     <Box background="surfaceSecondary" height="full" width="full" style={{ gap: 20, alignItems: 'center' }}>
