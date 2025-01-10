@@ -573,11 +573,12 @@ export const SignTransactionSheet = () => {
     }
 
     if (!txSimulationLoading && isBalanceEnough === false) {
-      return i18n.t(i18n.l.walletconnect.simulation.buttons.buy_native_token, { symbol: walletBalance?.symbol });
+      const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
+      return i18n.t(i18n.l.walletconnect.simulation.buttons.buy_native_token, { symbol: nativeAsset.symbol });
     }
 
     return i18n.t(i18n.l.walletconnect.simulation.buttons.confirm);
-  }, [txSimulationLoading, isBalanceEnough, isAuthorizing, walletBalance]);
+  }, [isAuthorizing, txSimulationLoading, isBalanceEnough, chainId]);
 
   const primaryActionButtonColor = useMemo(() => {
     let color = colors.appleBlue;
@@ -681,7 +682,6 @@ export const SignTransactionSheet = () => {
                     simulation={simulationResult?.simulationData}
                     simulationError={simulationResult?.simulationError}
                     simulationScanResult={simulationResult?.simulationScanResult}
-                    walletBalance={walletBalance}
                   />
                   {isMessageRequest ? (
                     <TransactionMessageCard
