@@ -1,11 +1,13 @@
 import React, { memo } from 'react';
-import { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import { DerivedValue, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedText } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useChartData } from '@/react-native-animated-charts/src';
+import { useTheme } from '@/theme';
 import { useRatio } from './useRatio';
+import { DataType } from '@/react-native-animated-charts/src/helpers/ChartContext';
 
-function formatNumber(num) {
+function formatNumber(num: string) {
   'worklet';
   const first = num.split('.');
   const digits = first[0].split('').reverse();
@@ -19,25 +21,29 @@ function formatNumber(num) {
   return newDigits.reverse().join('') + '.' + first[1];
 }
 
-const formatWorklet = (originalY, data, latestChange) => {
+const formatWorklet = (originalY: SharedValue<string>, data: DataType, latestChange: number | undefined) => {
   'worklet';
   const firstValue = data?.points?.[0]?.y;
   const lastValue = data?.points?.[data.points.length - 1]?.y;
 
   return firstValue === Number(firstValue) && firstValue
     ? (() => {
+        const originalYNumber = Number(originalY?.value);
         const value =
-          originalY?.value === lastValue || !originalY?.value
-            ? parseFloat(latestChange ?? 0)
-            : ((originalY.value || lastValue) / firstValue) * 100 - 100;
-        const numValue = parseFloat(value);
+          originalYNumber === lastValue || !originalYNumber ? latestChange ?? 0 : ((originalYNumber || lastValue) / firstValue) * 100 - 100;
 
-        return (IS_ANDROID ? '' : numValue > 0 ? '↑' : numValue < 0 ? '↓' : '') + ' ' + formatNumber(Math.abs(numValue).toFixed(2)) + '%';
+        return (IS_ANDROID ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') + ' ' + formatNumber(Math.abs(value).toFixed(2)) + '%';
       })()
     : '';
 };
 
-export default memo(function ChartPercentChangeLabel({ ratio, latestChange }) {
+export default memo(function ChartPercentChangeLabel({
+  latestChange,
+  ratio,
+}: {
+  latestChange: DerivedValue<number | undefined>;
+  ratio: number | undefined;
+}) {
   const { originalY, data, isActive } = useChartData();
   const { colors } = useTheme();
 
@@ -47,9 +53,9 @@ export default memo(function ChartPercentChangeLabel({ ratio, latestChange }) {
   const textStyle = useAnimatedStyle(() => {
     const realRatio = isActive.value ? sharedRatio.value : ratio;
     return {
-      color: realRatio === 1 ? colors.blueGreyDark : realRatio < 1 ? colors.red : colors.green,
+      color: realRatio !== undefined ? (realRatio === 1 ? colors.blueGreyDark : realRatio < 1 ? colors.red : colors.green) : 'transparent',
     };
-  }, [ratio]);
+  });
 
   return (
     <AnimatedText

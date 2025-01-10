@@ -46,7 +46,9 @@ export interface PathScales {
   scaleY: (value: number) => number;
 }
 
-export interface ChartData {
+type WithPathData = Pick<PathData, 'smallestX' | 'smallestY' | 'greatestX' | 'greatestY'>;
+
+export type ChartData = {
   data: DataType;
   width: number;
   height: number;
@@ -61,6 +63,6 @@ export interface ChartData {
   positionY: SharedValue<number>;
   previousPath: PathData | null;
   currentPath: PathData | null;
-}
+} & WithPathData;
 
 export const ChartContext = React.createContext<ChartData | null>(null);

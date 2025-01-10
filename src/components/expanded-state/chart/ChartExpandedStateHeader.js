@@ -1,19 +1,19 @@
 import lang from 'i18n-js';
 import React, { useMemo } from 'react';
+import { View } from 'react-native';
 import Animated, { FadeIn, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { ColumnWithMargins, Row } from '../../layout';
-import ChartContextButton from './ChartContextButton';
-import { ChartDateLabel, ChartPercentChangeLabel, ChartPriceLabel } from './chart-data-labels';
-import { useChartData } from '@/react-native-animated-charts/src';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Column, Columns, Text } from '@/design-system';
 import ChartTypes from '@/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
+import { useChartData } from '@/react-native-animated-charts/src';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { View } from 'react-native';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { ColumnWithMargins, Row } from '../../layout';
+import ChartContextButton from './ChartContextButton';
+import { ChartDateLabel, ChartPercentChangeLabel, ChartPriceLabel } from './chart-data-labels';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -26,7 +26,6 @@ const Container = styled(ColumnWithMargins).attrs({
 export default function ChartExpandedStateHeader({
   asset,
   color: givenColors,
-  dateRef,
   isPool,
   latestChange,
   latestPrice = noPriceData,
@@ -84,7 +83,7 @@ export default function ChartExpandedStateHeader({
     const firstValue = data?.points?.[0]?.y;
     const lastValue = data?.points?.[data.points.length - 1]?.y;
 
-    return firstValue === Number(firstValue) ? lastValue / firstValue : 1;
+    return firstValue === Number(firstValue) ? lastValue / firstValue : undefined;
   }, [data]);
 
   const showPriceChangeStyle = useAnimatedStyle(() => {
@@ -135,7 +134,7 @@ export default function ChartExpandedStateHeader({
           </Column>
           <Column width="content">
             <Animated.View entering={FadeIn.duration(140)} style={showPriceChangeStyle}>
-              <ChartDateLabel chartTimeDefaultValue={defaultTimeValue} dateRef={dateRef} ratio={ratio} />
+              <ChartDateLabel chartTimeDefaultValue={defaultTimeValue} ratio={ratio} showPriceChangeStyle={showPriceChangeStyle} />
             </Animated.View>
           </Column>
         </Columns>

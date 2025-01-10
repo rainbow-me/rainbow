@@ -42,7 +42,7 @@ function calculateDecimalPlaces({
   };
 }
 
-export function formatNative(value: string, defaultPriceValue: string, nativeSelected: SupportedCurrency[keyof SupportedCurrency]) {
+export function formatNative(value: string, defaultPriceValue: string | null, nativeSelected: SupportedCurrency[keyof SupportedCurrency]) {
   'worklet';
   if (!value) {
     return defaultPriceValue || '';

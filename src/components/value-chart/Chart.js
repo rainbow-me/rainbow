@@ -15,6 +15,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { DOG_ADDRESS } from '@/references';
+import { IS_IOS } from '@/env';
 
 export const { width: WIDTH } = Dimensions.get('window');
 
@@ -43,7 +44,7 @@ const ChartSpinner = styled(ImgixImage).attrs(({ color }) => ({
 
 const Container = styled(Column)({
   paddingBottom: 30,
-  paddingTop: ios ? 0 : 20,
+  paddingTop: IS_IOS ? 0 : 4,
   width: '100%',
 });
 
