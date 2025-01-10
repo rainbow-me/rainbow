@@ -1,7 +1,8 @@
 import { formatUrl } from '@/components/DappBrowser/utils';
 import { metadataClient } from '@/graphql';
 import { RainbowError, logger } from '@/logger';
-import { createQueryStore, time } from '@/state/internal/createQueryStore';
+import { createQueryStore } from '@/state/internal/createQueryStore';
+import { time } from '@/utils/time';
 
 export type Dapp = {
   colors: {
@@ -35,6 +36,7 @@ export const useBrowserDappsStore = createQueryStore<Dapp[], never, DappsState>(
     fetcher: fetchDapps,
     setData: ({ data, set }) => set({ dapps: data }),
     cacheTime: time.weeks(1),
+    keepPreviousData: true,
     staleTime: time.minutes(30),
   },
 
