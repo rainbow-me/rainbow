@@ -4,7 +4,6 @@ import FloatingEmoji from './FloatingEmoji';
 import GravityEmoji from './GravityEmoji';
 import { useTimeout } from '@/hooks';
 import { position } from '@/styles';
-import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 
 interface Emoji {
   emojiToRender: string;
@@ -99,7 +98,6 @@ const FloatingEmojis: React.FC<FloatingEmojisProps> = ({
   return (
     <View style={[{ zIndex: 1 }, style]} {...props}>
       {typeof children === 'function' ? children({ onNewEmoji }) : children}
-      <AbsolutePortalRoot />
       <Animated.View
         pointerEvents="none"
         style={{
