@@ -1,37 +1,27 @@
-import React, { useMemo } from 'react';
-import { TextInput, TextInputProps } from 'react-native';
-import Animated, { useAnimatedProps } from 'react-native-reanimated';
+import React, { memo } from 'react';
+import { useDerivedValue } from 'react-native-reanimated';
+import { AnimatedText, AnimatedTextProps } from '@/design-system';
 import { useChartData } from '../../helpers/useChartData';
 
-const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
-
-interface ChartLabelProps extends TextInputProps {
-  format: (value: string) => string;
+interface ChartLabelProps extends Partial<AnimatedTextProps> {
+  formatWorklet: (value: string) => string;
 }
 
 const ChartLabelFactory = (fieldName: 'originalX' | 'originalY') => {
-  const ChartLabel = React.memo(({ format, ...props }: ChartLabelProps) => {
-    const { isActive, data, ...chartData } = useChartData();
-    const val = chartData[fieldName];
+  return memo(function ChartLabel({ formatWorklet, ...props }: ChartLabelProps) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { isActive: _, data: __, ...chartData } = useChartData();
 
-    // we need to recreate defaultValue on data change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const defaultValue = useMemo(() => format?.(val.value) ?? val.value, [format, val, data]);
+    const sharedValue = chartData[fieldName];
+    const text = useDerivedValue(() => formatWorklet?.(sharedValue.value) ?? sharedValue.value);
 
-    const textProps = useAnimatedProps(
-      () => ({
-        text: isActive.value ? format?.(val.value) ?? val.value : defaultValue,
-        value: isActive.value ? format?.(val.value) ?? val.value : defaultValue,
-      }),
-      [data, defaultValue, isActive]
+    return (
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      <AnimatedText numberOfLines={1} size="20pt" weight="bold" {...props}>
+        {text}
+      </AnimatedText>
     );
-
-    return <AnimatedTextInput {...props} animatedProps={textProps} defaultValue={defaultValue} editable={false} />;
   });
-
-  ChartLabel.displayName = 'ChartLabel';
-
-  return ChartLabel;
 };
 
 export const ChartYLabel = ChartLabelFactory('originalY');

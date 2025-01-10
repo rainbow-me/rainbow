@@ -1,20 +1,9 @@
 import lang from 'i18n-js';
-import React from 'react';
-import { View } from 'react-native';
-import { useAnimatedStyle } from 'react-native-reanimated';
+import React, { useCallback } from 'react';
+import Animated, { AnimatedStyle, FadeIn, useAnimatedStyle } from 'react-native-reanimated';
 import { useRatio } from './useRatio';
 import { ChartXLabel, useChartData } from '@/react-native-animated-charts/src';
-import styled from '@/styled-thing';
-import { fonts, fontWithWidth } from '@/styles';
-
-const Label = styled(ChartXLabel)({
-  ...fontWithWidth(fonts.weight.semibold),
-  fontSize: fonts.size.larger,
-  fontVariant: ['tabular-nums'],
-  letterSpacing: fonts.letterSpacing.roundedMedium,
-  textAlign: 'right',
-  ...(android ? { marginVertical: -20 } : {}),
-});
+import { useTheme } from '@/theme';
 
 const MONTHS = [
   lang.t('expanded_state.chart.date.months.month_00'),
@@ -31,7 +20,7 @@ const MONTHS = [
   lang.t('expanded_state.chart.date.months.month_11'),
 ];
 
-function formatDatetime(value, chartTimeDefaultValue) {
+function formatDatetime(value: string, chartTimeDefaultValue: string) {
   'worklet';
   // we have to do it manually due to limitations of reanimated
   if (value === '') {
@@ -82,27 +71,37 @@ function formatDatetime(value, chartTimeDefaultValue) {
   return res;
 }
 
-export default function ChartDateLabel({ chartTimeDefaultValue, ratio }) {
+export default function ChartDateLabel({
+  chartTimeDefaultValue,
+  ratio,
+  showPriceChangeStyle,
+}: {
+  chartTimeDefaultValue: string;
+  ratio: number | undefined;
+  showPriceChangeStyle: AnimatedStyle;
+}) {
   const { isActive } = useChartData();
-  const sharedRatio = useRatio('ChartDataLabel');
+  const sharedRatio = useRatio();
   const { colors } = useTheme();
 
   const textStyle = useAnimatedStyle(() => {
     const realRatio = isActive.value ? sharedRatio.value : ratio;
     return {
-      color: realRatio === 1 ? colors.blueGreyDark : realRatio < 1 ? colors.red : colors.green,
+      color: realRatio !== undefined ? (realRatio === 1 ? colors.blueGreyDark : realRatio < 1 ? colors.red : colors.green) : 'transparent',
     };
-  }, [ratio]);
+  });
+
+  const formatWorklet = useCallback(
+    (value: string) => {
+      'worklet';
+      return formatDatetime(value, chartTimeDefaultValue);
+    },
+    [chartTimeDefaultValue]
+  );
 
   return (
-    <View style={{ overflow: 'hidden' }}>
-      <Label
-        format={value => {
-          'worklet';
-          return formatDatetime(value, chartTimeDefaultValue);
-        }}
-        style={textStyle}
-      />
-    </View>
+    <Animated.View entering={FadeIn.duration(140)} style={showPriceChangeStyle}>
+      <ChartXLabel align="right" formatWorklet={formatWorklet} size="20pt" style={textStyle} tabularNumbers weight="semibold" />
+    </Animated.View>
   );
 }
