@@ -14,7 +14,7 @@ import { useTheme } from '@/theme';
 import { formatURLForDisplay } from '@/utils';
 import { IS_ANDROID } from '@/env';
 
-export const ExternalLinkWarningSheetHeight = 380 + (android ? 20 : 0);
+export const ExternalLinkWarningSheetHeight = 380 + (IS_ANDROID ? 20 : 0);
 
 const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeight, height }) => ({
   ...position.coverAsObject,
@@ -52,12 +52,7 @@ const ExternalLinkWarningSheet = () => {
               width: '100%',
             }}
           >
-            <Emoji
-              align="center"
-              size="h1"
-              style={{ ...fontWithWidth(fonts.weight.bold) }}
-              // @ts-expect-error JavaScript component
-            >
+            <Emoji align="center" size="h1" style={{ ...fontWithWidth(fonts.weight.bold) }}>
               🧭
             </Emoji>
             <SheetTitle
