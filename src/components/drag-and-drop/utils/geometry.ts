@@ -1,3 +1,5 @@
+import { FlexStyle } from 'react-native';
+
 export type Point<T = number> = {
   x: T;
   y: T;
@@ -14,6 +16,8 @@ export type Rectangle = {
   width: number;
   height: number;
 };
+
+export type Direction = 'horizontal' | 'vertical';
 
 /**
  * @summary Split a `Rectangle` in two
@@ -121,4 +125,37 @@ export const overlapsAxis = (layout: Rectangle, axis: number, horizontal: boolea
 export const getDistance = (x: number, y: number): number => {
   'worklet';
   return Math.sqrt(Math.abs(x) ** 2 + Math.abs(y) ** 2);
+};
+
+export const getFlexLayoutPosition = ({
+  index,
+  width,
+  height,
+  gap,
+  direction,
+  size,
+}: {
+  index: number;
+  width: number;
+  height: number;
+  gap: number;
+  direction: FlexStyle['flexDirection'];
+  size: number;
+}) => {
+  'worklet';
+  const row = Math.floor(index / size);
+  const col = index % size;
+
+  switch (direction) {
+    case 'row':
+      return { x: col * (width + gap), y: row * (height + gap) };
+    case 'row-reverse':
+      return { x: -1 * col * (width + gap), y: row * (height + gap) };
+    case 'column':
+      return { x: row * (height + gap), y: col * (width + gap) };
+    case 'column-reverse':
+      return { x: row * (height + gap), y: -1 * col * (width + gap) };
+    default:
+      return { x: 0, y: 0 };
+  }
 };

@@ -9,6 +9,7 @@ import { ParsedAddressAsset, PendingTransaction, UniqueAsset } from '@/entities'
 import { Claimable } from '@/resources/addys/claimables/types';
 import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/walletConnect/types';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
+import { RainbowWallet } from '@/model/wallet';
 import { RainbowPosition } from '@/resources/defi/types';
 import { Address } from 'viem';
 import { SharedValue } from 'react-native-reanimated';
@@ -32,9 +33,9 @@ export type RootStackParamList = {
     fromProfile?: boolean;
   };
   [Routes.CHANGE_WALLET_SHEET]: {
-    watchOnly: boolean;
-    currentAccountAddress: string;
-    onChangeWallet: (address: Address) => void;
+    watchOnly?: boolean;
+    currentAccountAddress?: string;
+    onChangeWallet?: (address: string | Address, wallet?: RainbowWallet) => void;
   };
   [Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET]: {
     accentColor?: string;

@@ -11,6 +11,12 @@ export const DropdownMenuRoot = DropdownMenuPrimitive.Root;
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 export const DropdownMenuContent = DropdownMenuPrimitive.Content;
 export const DropdownMenuItem = DropdownMenuPrimitive.create(
+  styled(DropdownMenuPrimitive.Item)({
+    height: 34,
+  }),
+  'Item'
+);
+export const DropdownMenuCheckboxItem = DropdownMenuPrimitive.create(
   styled(DropdownMenuPrimitive.CheckboxItem)({
     height: 34,
   }),
@@ -35,6 +41,7 @@ export type MenuItemIcon = Omit<IconConfig, 'iconValue' | 'iconType'> & (MenuIte
 export type MenuItem<T> = Omit<MenuActionConfig, 'icon'> & {
   actionKey: T;
   actionTitle: string;
+  destructive?: boolean;
   icon?: MenuItemIcon | { iconType: string; iconValue: string };
 };
 
@@ -43,10 +50,12 @@ export type MenuConfig<T extends string> = Omit<_MenuConfig, 'menuItems' | 'menu
   menuItems: Array<MenuItem<T>>;
 };
 
-type DropDownMenuProps<T extends string> = {
+type DropdownMenuProps<T extends string> = {
   children: React.ReactElement;
   menuConfig: MenuConfig<T>;
   onPressMenuItem: (actionKey: T) => void;
+  triggerAction?: 'press' | 'longPress';
+  menuItemType?: 'checkbox';
 } & DropdownMenuContentProps;
 
 const buildIconConfig = (icon?: MenuItemIcon) => {
@@ -75,7 +84,9 @@ export function DropdownMenu<T extends string>({
   side = 'right',
   alignOffset = 5,
   avoidCollisions = true,
-}: DropDownMenuProps<T>) {
+  triggerAction = 'press',
+  menuItemType,
+}: DropdownMenuProps<T>) {
   const handleSelectItem = useCallback(
     (actionKey: T) => {
       onPressMenuItem(actionKey);
@@ -83,9 +94,11 @@ export function DropdownMenu<T extends string>({
     [onPressMenuItem]
   );
 
+  const MenuItemComponent = menuItemType === 'checkbox' ? DropdownMenuCheckboxItem : DropdownMenuItem;
+
   return (
     <DropdownMenuRoot>
-      <DropdownMenuTrigger>{children}</DropdownMenuTrigger>
+      <DropdownMenuTrigger action={triggerAction}>{children}</DropdownMenuTrigger>
       <DropdownMenuContent
         loop={loop}
         side={side}
@@ -97,19 +110,24 @@ export function DropdownMenu<T extends string>({
       >
         {!!menuConfig.menuTitle?.trim() && (
           <DropdownMenuPrimitive.Group>
-            <DropdownMenuItem disabled>
+            <MenuItemComponent disabled>
               <DropdownMenuItemTitle>{menuConfig.menuTitle}</DropdownMenuItemTitle>
-            </DropdownMenuItem>
+            </MenuItemComponent>
           </DropdownMenuPrimitive.Group>
         )}
         {menuConfig.menuItems?.map(item => {
           const Icon = buildIconConfig(item.icon as MenuItemIcon);
 
           return (
-            <DropdownMenuItem value={item.menuState ?? 'off'} key={item.actionKey} onSelect={() => handleSelectItem(item.actionKey)}>
+            <MenuItemComponent
+              value={item.menuState ?? 'off'}
+              destructive={item.destructive}
+              key={item.actionKey}
+              onSelect={() => handleSelectItem(item.actionKey)}
+            >
               <DropdownMenuItemTitle>{item.actionTitle}</DropdownMenuItemTitle>
               {Icon}
-            </DropdownMenuItem>
+            </MenuItemComponent>
           );
         })}
       </DropdownMenuContent>
