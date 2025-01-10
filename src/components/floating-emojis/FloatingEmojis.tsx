@@ -4,9 +4,7 @@ import FloatingEmoji from './FloatingEmoji';
 import GravityEmoji from './GravityEmoji';
 import { useTimeout } from '@/hooks';
 import { position } from '@/styles';
-import { DebugLayout } from '@/design-system';
-import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { AbsolutePortal } from '../AbsolutePortal';
+import { AbsolutePortal } from '@/components/AbsolutePortal';
 
 interface Emoji {
   emojiToRender: string;
@@ -118,7 +116,7 @@ const FloatingEmojis: React.FC<FloatingEmojisProps> = ({
                   emoji={emojiToRender}
                   index={index}
                   left={typeof size === 'number' ? x - size / 2 : x - Number(size) / 2}
-                  size={size}
+                  size={`${size}`}
                   top={y}
                 />
               ))
@@ -133,7 +131,7 @@ const FloatingEmojis: React.FC<FloatingEmojisProps> = ({
                   fadeOut={fadeOut}
                   index={index}
                   key={`${x}${y}`}
-                  left={`${x}`}
+                  left={x}
                   marginTop={marginTop}
                   opacityThreshold={opacityThreshold}
                   scaleTo={scaleTo}
