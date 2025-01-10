@@ -20,8 +20,6 @@ export function Portal() {
     return null;
   }
 
-  console.log('blockTouches', blockTouches);
-
   return (
     <Wrapper
       pointerEvents={blockTouches ? 'none' : 'auto'}

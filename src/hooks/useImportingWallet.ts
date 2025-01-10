@@ -16,9 +16,8 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics, analyticsV2 } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
-import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
+import { getProvider, resolveUnstoppableDomain } from '@/handlers/web3';
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import { walletsLoadState } from '@/redux/wallets';
@@ -30,7 +29,6 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { ChainId } from '@/state/backendNetworks/types';
 import { backupsStore } from '@/state/backups/backups';
-import { IS_TEST } from '@/env';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 
@@ -76,7 +74,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const handleSetSeedPhrase = useCallback(
     (text: string) => {
       if (isImporting) return null;
-      return setSeedPhrase(text);
+      return setSeedPhrase(text.trim());
     },
     [isImporting]
   );
@@ -340,6 +338,11 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                   analytics.track('Imported seed phrase', {
                     isWalletEthZero,
                   });
+
+                  walletLoadingStore.setState({
+                    loadingState: null,
+                  });
+                  dangerouslyGetParent?.()?.goBack();
                 });
               } else {
                 if (android) {
@@ -364,10 +367,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               }, 100);
             });
         }
-
-        walletLoadingStore.setState({
-          loadingState: null,
-        });
       };
       asyncFn();
     }
