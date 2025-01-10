@@ -2,6 +2,7 @@ import { isString } from 'lodash';
 import React, { ReactNode } from 'react';
 import Text from './Text';
 import { emojis } from '@/references';
+import { fonts } from '@/styles';
 
 const emojiData = Object.entries(emojis).map(([emojiChar, { name }]) => {
   return [name, emojiChar];
@@ -26,16 +27,15 @@ export interface TextProps {
   isEmoji?: boolean;
   letterSpacing?: string;
   lineHeight?: string;
-  size?: string;
+  size?: keyof typeof fonts.size;
   [key: string]: unknown;
 }
 
-export interface EmojiProps extends Omit<TextProps, 'isEmoji' | 'size' | 'lineHeight' | 'letterSpacing' | 'children'> {
+export interface EmojiProps extends Omit<TextProps, 'isEmoji' | 'lineHeight' | 'letterSpacing' | 'children'> {
   children?: ReactNode;
   letterSpacing?: string;
   lineHeight?: string;
   name?: string;
-  size?: string;
 }
 
 export default function Emoji({
