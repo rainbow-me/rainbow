@@ -15,7 +15,7 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Bleed, Box, Inline, Inset, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
-import { Dapp, DappsContextProvider, useDappsContext } from '@/resources/metadata/dapps';
+import { Dapp, useBrowserDappsStore } from '@/resources/metadata/dapps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from '../../BrowserContext';
@@ -268,9 +268,7 @@ export const SearchResults = React.memo(function SearchResults({ goToUrl }: { go
         </Animated.View>
       </Animated.View>
 
-      <DappsContextProvider>
-        <DappsDataSync isFocused={isFocused} searchQuery={searchQuery} searchResults={searchResults} />
-      </DappsContextProvider>
+      <DappsDataSync isFocused={isFocused} searchQuery={searchQuery} searchResults={searchResults} />
     </>
   );
 });
@@ -284,7 +282,7 @@ const DappsDataSync = ({
   searchQuery: SharedValue<string>;
   searchResults: SharedValue<Dapp[]>;
 }) => {
-  const { dapps } = useDappsContext();
+  const dapps = useBrowserDappsStore(state => state.dapps);
 
   useAnimatedReaction(
     () => searchQuery.value.trim(),
