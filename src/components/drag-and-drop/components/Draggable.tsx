@@ -60,6 +60,7 @@ export const Draggable: FunctionComponent<PropsWithChildren<DraggableProps>> = (
   });
 
   const animatedStyle = useAnimatedStyle(() => {
+    const isSleeping = state.value === 'sleeping';
     const isActive = state.value === 'dragging';
     const isActing = state.value === 'acting';
     // eslint-disable-next-line no-nested-ternary
@@ -71,12 +72,20 @@ export const Draggable: FunctionComponent<PropsWithChildren<DraggableProps>> = (
         {
           translateX:
             // eslint-disable-next-line no-nested-ternary
-            dragDirection !== 'y' ? (isActive ? offset.x.value : withTiming(offset.x.value, TIMING_CONFIGS.slowestFadeConfig)) : 0,
+            dragDirection !== 'y'
+              ? isActive || isSleeping
+                ? offset.x.value
+                : withTiming(offset.x.value, TIMING_CONFIGS.slowestFadeConfig)
+              : 0,
         },
         {
           translateY:
             // eslint-disable-next-line no-nested-ternary
-            dragDirection !== 'x' ? (isActive ? offset.y.value : withTiming(offset.y.value, TIMING_CONFIGS.slowestFadeConfig)) : 0,
+            dragDirection !== 'x'
+              ? isActive || isSleeping
+                ? offset.y.value
+                : withTiming(offset.y.value, TIMING_CONFIGS.slowestFadeConfig)
+              : 0,
         },
         { scale: activeScale === undefined ? 1 : withTiming(isActive ? activeScale : 1, TIMING_CONFIGS.tabPressConfig) },
       ],

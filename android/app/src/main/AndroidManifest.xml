@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.BLUETOOTH"/>
@@ -260,7 +261,7 @@
           </intent-filter>
       </activity-alias>
       <activity-alias
-          android:name="me.rainbow.MainActivityRedacted"
+          android:name="me.rainbow.MainActivityredacted"
           android:enabled="false"
           android:icon="@mipmap/redacted"
           android:roundIcon="@mipmap/redacted_round"

@@ -25,6 +25,7 @@ const springAnimations = createSpringConfigs({
   keyboardConfig: disableForTestingEnvironment({ damping: 500, mass: 3, stiffness: 1000 }),
   sliderConfig: disableForTestingEnvironment({ damping: 40, mass: 1.25, stiffness: 450 }),
   slowSpring: disableForTestingEnvironment({ damping: 500, mass: 3, stiffness: 800 }),
+  walletDraggableConfig: disableForTestingEnvironment({ damping: 36, mass: 0.8, stiffness: 800 }),
   snappierSpringConfig: disableForTestingEnvironment({ damping: 42, mass: 0.8, stiffness: 800 }),
   snappySpringConfig: disableForTestingEnvironment({ damping: 100, mass: 0.8, stiffness: 275 }),
   springConfig: disableForTestingEnvironment({ damping: 100, mass: 1.2, stiffness: 750 }),

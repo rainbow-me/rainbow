@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Routes from '@/navigation/routesNames';
 import { deviceUtils } from '@/utils';
 import { AddWalletSheet, AddWalletSheetParams } from '@/screens/AddWalletSheet';
+import { ChooseWalletGroup } from '@/screens/ChooseWalletGroup';
 import { ImportOrWatchWalletSheet, ImportOrWatchWalletSheetParams } from '@/screens/ImportOrWatchWalletSheet';
 import { BackgroundProvider } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -35,6 +36,16 @@ export const AddWalletNavigator = () => {
               component={AddWalletSheet}
               initialParams={{ isFirstWallet }}
               name={Routes.ADD_WALLET_SHEET}
+              listeners={{
+                focus: () => {
+                  setScrollEnabled(true);
+                },
+              }}
+            />
+            <Swipe.Screen
+              component={ChooseWalletGroup}
+              initialParams={{ isFirstWallet }}
+              name={Routes.CHOOSE_WALLET_GROUP}
               listeners={{
                 focus: () => {
                   setScrollEnabled(true);
