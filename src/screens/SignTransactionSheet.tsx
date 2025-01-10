@@ -147,7 +147,7 @@ export const SignTransactionSheet = () => {
     return {
       amount: 0,
       display: `0 ${nativeAsset?.symbol}`,
-      isLoaded: false,
+      isLoaded: true,
       symbol: nativeAsset?.symbol || 'ETH',
     };
   }, [nativeAsset]);
