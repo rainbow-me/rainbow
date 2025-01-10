@@ -39,15 +39,6 @@ export default function ManualBackupPrompt() {
 
   const onMaybeLater = useCallback(() => goBack(), [goBack]);
 
-  useEffect(() => {
-    return () => {
-      if (backupsStore.getState().timesPromptedForBackup === 0) {
-        backupsStore.getState().setTimesPromptedForBackup(1);
-      }
-      backupsStore.getState().setLastBackupPromptAt(Date.now());
-    };
-  }, []);
-
   return (
     <Inset horizontal={'24px'} vertical={'44px'}>
       <Inset bottom={'44px'} horizontal={'24px'}>
