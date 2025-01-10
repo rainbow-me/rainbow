@@ -1,9 +1,10 @@
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { ChainId } from '@/state/backendNetworks/types';
-import { createQueryStore, time } from '@/state/internal/createQueryStore';
+import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { SearchAsset } from '@/__swaps__/types/search';
+import { time } from '@/utils';
 import { parseTokenSearch } from './utils';
 
 const tokenSearchHttp = new RainbowFetchClient({

@@ -6,7 +6,6 @@ import { analyticsV2 } from '@/analytics';
 import { addHexPrefix } from '@/handlers/web3';
 import { useFavorites } from '@/resources/favorites';
 import { ChainId } from '@/state/backendNetworks/types';
-import { time } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import {
   ADDRESS_SEARCH_KEY,
@@ -19,6 +18,7 @@ import { SearchAsset } from '@/__swaps__/types/search';
 import { RecentSwap } from '@/__swaps__/types/swap';
 import { isLowerCaseMatch, filterList } from '@/utils';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { time } from '@/utils/time';
 import { TokenToBuyListItem } from '../components/TokenList/TokenToBuyList';
 import { usePopularTokensStore } from '../resources/search/discovery';
 
@@ -239,7 +239,7 @@ const buildListSectionsData = ({
 
 let lastLogTime: number | null = null;
 
-export function useSearchCurrencyListsV2() {
+export function useSearchCurrencyLists() {
   const verifiedAssets = useTokenSearchStore(state => state.getData());
   const bridgeAsset = useTokenSearchStore(state => state.bridgeAsset);
   const unverifiedAssets = useUnverifiedTokenSearchStore(state => state.getData());

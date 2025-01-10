@@ -1,12 +1,14 @@
 import { isAddress } from '@ethersproject/address';
 import qs from 'qs';
+import { IS_IOS } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { createQueryStore, time } from '@/state/internal/createQueryStore';
+import { createQueryStore } from '@/state/internal/createQueryStore';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '@/__swaps__/types/search';
+import { time } from '@/utils/time';
 import { parseTokenSearch } from './utils';
 
 const tokenSearchClient = new RainbowFetchClient({
@@ -41,8 +43,8 @@ enum TokenLists {
   Verified = 'verifiedAssets',
 }
 
-const MAX_VERIFIED_RESULTS = 48;
-const MAX_UNVERIFIED_RESULTS = 8;
+const MAX_VERIFIED_RESULTS = IS_IOS ? 36 : 24;
+const MAX_UNVERIFIED_RESULTS = 6;
 const NO_RESULTS: SearchAsset[] = [];
 
 export const useSwapsSearchStore = createRainbowStore<SearchQueryState>(() => ({ searchQuery: '' }));
@@ -55,7 +57,7 @@ export const useTokenSearchStore = createQueryStore<SearchAsset[], TokenSearchPa
       return results;
     },
 
-    cacheTime: params => (params.query?.length ? time.minutes(2) : time.seconds(10)),
+    cacheTime: params => (params.query?.length ? time.minutes(2) : time.seconds(15)),
     disableAutoRefetching: true,
     keepPreviousData: true,
     params: {
@@ -65,12 +67,12 @@ export const useTokenSearchStore = createQueryStore<SearchAsset[], TokenSearchPa
       query: $ => $(useSwapsSearchStore, state => (state.searchQuery.trim().length ? state.searchQuery.trim() : undefined)),
       threshold: $ => $(useSwapsSearchStore, state => getSearchThreshold(state.searchQuery.trim())),
     },
-    staleTime: time.seconds(30),
+    staleTime: time.minutes(2),
   },
 
   () => ({ bridgeAsset: null }),
 
-  { storageKey: 'verifiedTokenSearch' }
+  { persistThrottleMs: time.seconds(8), storageKey: 'verifiedTokenSearch' }
 );
 
 function setBridgeAsset(bridgeAsset: SearchAsset | null) {
@@ -83,7 +85,7 @@ export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], Tok
     transform: (data, { query }) =>
       query && isAddress(query) ? getExactMatches(data, query, MAX_UNVERIFIED_RESULTS) : data.slice(0, MAX_UNVERIFIED_RESULTS),
 
-    cacheTime: params => (params.query?.length ? time.minutes(2) : time.seconds(10)),
+    cacheTime: params => (params.query?.length ?? 0 > 2 ? time.seconds(15) : time.zero),
     disableAutoRefetching: true,
     keepPreviousData: true,
     params: {
@@ -93,10 +95,10 @@ export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], Tok
       query: $ => $(useSwapsSearchStore, state => state.searchQuery.trim()),
       threshold: $ => $(useSwapsSearchStore, state => getSearchThreshold(state.searchQuery.trim())),
     },
-    staleTime: time.seconds(30),
+    staleTime: time.minutes(2),
   },
 
-  { storageKey: 'unverifiedTokenSearch' }
+  { persistThrottleMs: time.seconds(12), storageKey: 'unverifiedTokenSearch' }
 );
 
 function selectTopSearchResults({
