@@ -33,9 +33,6 @@ const promptForBackupOnceReadyOrNotAvailable = async (): Promise<boolean> => {
   while (LoadingStates.includes(status)) {
     await delay(1000);
     status = backupsStore.getState().status;
-    console.log({
-      status,
-    });
   }
 
   if (status !== CloudBackupState.Ready) {
