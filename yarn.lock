@@ -8882,7 +8882,7 @@ __metadata:
     react-native-branch: "npm:5.3.1"
     react-native-change-icon: "npm:4.0.0"
     react-native-circular-progress: "npm:1.3.8"
-    react-native-cloud-fs: "rainbow-me/react-native-cloud-fs#9b204615b76cf3d29bd86a9094dbd95d717b6a7a"
+    react-native-cloud-fs: "rainbow-me/react-native-cloud-fs#d73f055c441566e5a57eebd621da8df3cf2499bb"
     react-native-crypto: "npm:2.2.0"
     react-native-dark-mode: "npm:0.2.2"
     react-native-device-info: "npm:5.3.1"
@@ -22280,10 +22280,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-cloud-fs@rainbow-me/react-native-cloud-fs#9b204615b76cf3d29bd86a9094dbd95d717b6a7a":
+"react-native-cloud-fs@rainbow-me/react-native-cloud-fs#d73f055c441566e5a57eebd621da8df3cf2499bb":
   version: 2.6.2
-  resolution: "react-native-cloud-fs@https://github.com/rainbow-me/react-native-cloud-fs.git#commit=9b204615b76cf3d29bd86a9094dbd95d717b6a7a"
-  checksum: 10c0/db1c719b90475201aa1e1177209723598ac38689a827d387dd281ea5190ad09f3e6c8fee77caff70b46a228b6552459d9a9e73e4159c18a29d19d235e17d7907
+  resolution: "react-native-cloud-fs@https://github.com/rainbow-me/react-native-cloud-fs.git#commit=d73f055c441566e5a57eebd621da8df3cf2499bb"
+  checksum: 10c0/0d78db6a3978bf9a0fe485d2dc0cf80fb1185a63eec1d22d7e3afd6c693417b011779d8318c603a9a81ff6c9c67f194dd469fc16a220ac0cd2b9b1ec374f1e2b
   languageName: node
   linkType: hard
 

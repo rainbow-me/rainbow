@@ -14,10 +14,9 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
-  const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({
-    storePendingTransactions: state.pendingTransactions,
-    setPendingTransactions: state.setPendingTransactions,
-  }));
+  const storePendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions);
+  const setPendingTransactions = usePendingTransactionsStore(state => state.setPendingTransactions);
+
   const { connectedToAnvil } = useConnectedToAnvilStore();
 
   const pendingTransactions = useMemo(() => storePendingTransactions[address] || [], [address, storePendingTransactions]);
