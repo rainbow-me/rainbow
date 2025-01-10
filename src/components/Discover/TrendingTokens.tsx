@@ -406,7 +406,6 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
                   gap: 6,
                   height: 12,
                   width: TOKEN_DETAILS_WIDTH,
-                  overflow: 'hidden',
                 }}
               >
                 <Text
