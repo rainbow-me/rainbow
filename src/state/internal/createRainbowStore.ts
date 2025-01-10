@@ -2,7 +2,7 @@ import { debounce } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { StateCreator, create } from 'zustand';
 import { PersistOptions, PersistStorage, StorageValue, persist, subscribeWithSelector } from 'zustand/middleware';
-import { IS_IOS } from '@/env';
+import { IS_IOS, IS_TEST } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import { time } from '@/utils';
 
@@ -119,7 +119,7 @@ function createPersistStorage<S, PersistedState extends Partial<S>>(config: Rain
   const {
     deserializer = serializedState => defaultDeserializeState<PersistedState>(serializedState, enableMapSetHandling),
     serializer = (state, version) => defaultSerializeState<PersistedState>(state, version, enableMapSetHandling),
-    persistThrottleMs = DEFAULT_PERSIST_THROTTLE_MS,
+    persistThrottleMs = IS_TEST ? 5000 : DEFAULT_PERSIST_THROTTLE_MS,
     storageKey,
     version = 0,
   } = config;
