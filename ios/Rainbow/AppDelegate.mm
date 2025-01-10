@@ -86,6 +86,10 @@ RCT_EXPORT_METHOD(hideAnimated) {
                                              object:nil];
   
   BOOL success = [super application:application didFinishLaunchingWithOptions:launchOptions];
+  BOOL isDetox = [[[NSProcessInfo processInfo] arguments] containsObject:@"-IS_TEST"];
+  
+  if (isDetox) return success;
+
   if (success) {
       UIView *rootView = self.window.rootViewController.view;
       [RNSplashScreen showSplash:@"LaunchScreen" inRootView:rootView];
