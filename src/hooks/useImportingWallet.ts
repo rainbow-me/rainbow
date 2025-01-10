@@ -36,7 +36,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, wallets } = useWallets();
 
-  const { getParent: dangerouslyGetParent, navigate, replace, setParams, reset } = useNavigation();
+  const { getParent: dangerouslyGetParent, navigate, replace, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
