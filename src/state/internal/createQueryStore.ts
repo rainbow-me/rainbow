@@ -3,6 +3,7 @@ import { StateCreator, StoreApi, UseBoundStore, create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { IS_DEV } from '@/env';
 import { RainbowError, logger } from '@/logger';
+import { time } from '@/utils';
 import { RainbowPersistConfig, createRainbowStore, omitStoreMethods } from './createRainbowStore';
 import { $, AttachValue, SignalFunction, Unsubscribe, attachValueSubscriptionMap } from './signal';
 
@@ -352,16 +353,6 @@ const SHOULD_PERSIST_INTERNAL_STATE_MAP: Record<string, boolean> = {
 } satisfies Record<InternalStateKeys, boolean>;
 
 const ABORT_ERROR = new Error('[createQueryStore: AbortError] Fetch interrupted');
-
-export const time = {
-  seconds: (n: number) => n * 1000,
-  minutes: (n: number) => time.seconds(n * 60),
-  hours: (n: number) => time.minutes(n * 60),
-  days: (n: number) => time.hours(n * 24),
-  weeks: (n: number) => time.days(n * 7),
-  infinity: Infinity,
-  zero: 0,
-};
 
 const MIN_STALE_TIME = time.seconds(5);
 

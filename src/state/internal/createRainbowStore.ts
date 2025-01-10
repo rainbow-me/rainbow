@@ -4,6 +4,7 @@ import { StateCreator, create } from 'zustand';
 import { PersistOptions, PersistStorage, StorageValue, persist, subscribeWithSelector } from 'zustand/middleware';
 import { IS_IOS } from '@/env';
 import { RainbowError, logger } from '@/logger';
+import { time } from '@/utils';
 
 const rainbowStorage = new MMKV({ id: 'rainbow-storage' });
 
@@ -106,7 +107,7 @@ interface LazyPersistParams<S, PersistedState extends Partial<S>> {
   value: StorageValue<S> | StorageValue<PersistedState>;
 }
 
-const DEFAULT_PERSIST_THROTTLE_MS = IS_IOS ? 3000 : 5000;
+const DEFAULT_PERSIST_THROTTLE_MS = IS_IOS ? time.seconds(3) : time.seconds(5);
 
 /**
  * Creates a persist storage object for the Rainbow store.
