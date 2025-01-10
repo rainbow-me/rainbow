@@ -107,7 +107,8 @@ export const SignTransactionSheet = () => {
   const addressToUse = specifiedAddress ?? accountAddress;
 
   const provider = getProvider({ chainId });
-  const nativeAsset = ethereumUtils.getNetworkNativeAsset({ chainId });
+  const nativeAsset =
+    ethereumUtils.getNetworkNativeAsset({ chainId }) ?? useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
   const isPersonalSignRequest = isPersonalSign(transactionDetails.payload.method);
@@ -135,13 +136,21 @@ export const SignTransactionSheet = () => {
   }, [isMessageRequest, transactionDetails?.displayDetails?.request, nativeAsset]);
 
   const walletBalance = useMemo(() => {
+    if (typeof nativeAsset === 'object' && 'balance' in nativeAsset) {
+      return {
+        amount: nativeAsset?.balance?.amount || 0,
+        display: nativeAsset?.balance?.display || `0 ${nativeAsset?.symbol}`,
+        isLoaded: nativeAsset?.balance?.display !== undefined,
+        symbol: nativeAsset?.symbol || 'ETH',
+      };
+    }
     return {
-      amount: nativeAsset?.balance?.amount || 0,
-      display: nativeAsset?.balance?.display || `0 ${nativeAsset?.symbol}`,
-      isLoaded: nativeAsset?.balance?.display !== undefined,
+      amount: 0,
+      display: `0 ${nativeAsset?.symbol}`,
+      isLoaded: false,
       symbol: nativeAsset?.symbol || 'ETH',
     };
-  }, [nativeAsset?.balance?.amount, nativeAsset?.balance?.display, nativeAsset?.symbol]);
+  }, [nativeAsset]);
 
   const { gasLimit, isValidGas, startPollingGasFees, stopPollingGasFees, updateTxFee, selectedGasFee, gasFeeParamsBySpeed } = useGas();
 
@@ -573,12 +582,11 @@ export const SignTransactionSheet = () => {
     }
 
     if (!txSimulationLoading && isBalanceEnough === false) {
-      const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
       return i18n.t(i18n.l.walletconnect.simulation.buttons.buy_native_token, { symbol: nativeAsset.symbol });
     }
 
     return i18n.t(i18n.l.walletconnect.simulation.buttons.confirm);
-  }, [isAuthorizing, txSimulationLoading, isBalanceEnough, chainId]);
+  }, [isAuthorizing, txSimulationLoading, isBalanceEnough, nativeAsset.symbol]);
 
   const primaryActionButtonColor = useMemo(() => {
     let color = colors.appleBlue;
@@ -682,6 +690,7 @@ export const SignTransactionSheet = () => {
                     simulation={simulationResult?.simulationData}
                     simulationError={simulationResult?.simulationError}
                     simulationScanResult={simulationResult?.simulationScanResult}
+                    nativeAsset={nativeAsset}
                   />
                   {isMessageRequest ? (
                     <TransactionMessageCard
