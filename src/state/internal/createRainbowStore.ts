@@ -2,9 +2,8 @@ import { debounce } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { StateCreator, create } from 'zustand';
 import { PersistOptions, PersistStorage, StorageValue, persist, subscribeWithSelector } from 'zustand/middleware';
-import { IS_IOS, IS_TEST } from '@/env';
+import { IS_IOS } from '@/env';
 import { RainbowError, logger } from '@/logger';
-import { time } from '@/utils';
 
 const rainbowStorage = new MMKV({ id: 'rainbow-storage' });
 
@@ -107,7 +106,7 @@ interface LazyPersistParams<S, PersistedState extends Partial<S>> {
   value: StorageValue<S> | StorageValue<PersistedState>;
 }
 
-const DEFAULT_PERSIST_THROTTLE_MS = IS_IOS ? time.seconds(3) : time.seconds(5);
+const DEFAULT_PERSIST_THROTTLE_MS = IS_IOS ? 3000 : 5000;
 
 /**
  * Creates a persist storage object for the Rainbow store.
@@ -119,7 +118,7 @@ function createPersistStorage<S, PersistedState extends Partial<S>>(config: Rain
   const {
     deserializer = serializedState => defaultDeserializeState<PersistedState>(serializedState, enableMapSetHandling),
     serializer = (state, version) => defaultSerializeState<PersistedState>(state, version, enableMapSetHandling),
-    persistThrottleMs = IS_TEST ? 5000 : DEFAULT_PERSIST_THROTTLE_MS,
+    persistThrottleMs = DEFAULT_PERSIST_THROTTLE_MS,
     storageKey,
     version = 0,
   } = config;
