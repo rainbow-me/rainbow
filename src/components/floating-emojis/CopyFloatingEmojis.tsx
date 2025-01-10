@@ -4,7 +4,7 @@ import FloatingEmojis from './FloatingEmojis';
 import { useClipboard } from '@/hooks';
 import { magicMemo } from '@/utils';
 
-interface CopyFloatingEmojisProps  {
+interface CopyFloatingEmojisProps {
   /** Child elements or nodes to render inside this component */
   children?: ReactNode;
   /** Whether the floating emojis and copy functionality is disabled */
@@ -20,26 +20,11 @@ interface CopyFloatingEmojisProps  {
   [key: string]: unknown;
 }
 
-const CopyFloatingEmojis: FC<CopyFloatingEmojisProps> = ({
-  children,
-  disabled = false,
-  onPress,
-  textToCopy,
-  ...props
-}) => {
+const CopyFloatingEmojis: FC<CopyFloatingEmojisProps> = ({ children, disabled = false, onPress, textToCopy, ...props }) => {
   const { setClipboard } = useClipboard();
 
   return (
-    <FloatingEmojis
-      emojis={[]}
-      distance={250}
-      duration={500}
-      fadeOut={false}
-      scaleTo={0}
-      size={50}
-      wiggleFactor={0}
-      {...props}
-    >
+    <FloatingEmojis emojis={['thumbs_up']} distance={250} duration={500} fadeOut={false} scaleTo={0} size={50} wiggleFactor={0} {...props}>
       {({ onNewEmoji }) => (
         <ButtonPressAnimation
           hapticType="impactLight"

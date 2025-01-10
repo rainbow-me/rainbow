@@ -1,11 +1,5 @@
 import React, { useLayoutEffect } from 'react';
-import Animated, {
-  Easing,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Emoji } from '../text';
 
 interface FloatingEmojiProps {
@@ -62,28 +56,15 @@ const FloatingEmoji: React.FC<FloatingEmojiProps> = ({
       [1, fadeOut ? 0.89 : 1, fadeOut ? 0 : 1]
     );
 
-    const rotate =
-      interpolate(
-        progress,
-        [0, distance / 4, distance / 3, distance / 2, distance],
-        [0, -2, 0, 2, 0]
-      ) + 'deg';
+    const rotate = interpolate(progress, [0, distance / 4, distance / 3, distance / 2, distance], [0, -2, 0, 2, 0]) + 'deg';
 
-    const scale = interpolate(
-      progress,
-      [0, 15, 30, 50, distance],
-      [0, 1.2, 1.1, 1, scaleTo]
-    );
+    const scale = interpolate(progress, [0, 15, 30, 50, distance], [0, 1.2, 1.1, 1, scaleTo]);
 
     const everyThirdEmojiMultiplier = index % 3 === 0 ? 3 : 2;
     const everySecondEmojiMultiplier = index % 2 === 0 ? -1 : 1;
 
     // Horizontal movement
-    const translateXComponentA =
-      animation.value *
-      Number(size) *
-      everySecondEmojiMultiplier *
-      everyThirdEmojiMultiplier;
+    const translateXComponentA = animation.value * Number(size) * everySecondEmojiMultiplier * everyThirdEmojiMultiplier;
 
     // "Wiggle" calculations
     const wiggleMultiplierA = Math.sin(progress * (distance / 23.3));
@@ -94,21 +75,14 @@ const FloatingEmoji: React.FC<FloatingEmojiProps> = ({
     );
     const translateXComponentB = wiggleMultiplierA * wiggleMultiplierB;
 
-    const translateX = disableHorizontalMovement
-      ? 0
-      : translateXComponentA + translateXComponentB;
+    const translateX = disableHorizontalMovement ? 0 : translateXComponentA + translateXComponentB;
 
     // Vertical movement
     const translateY = disableVerticalMovement ? 0 : -progress;
 
     return {
       opacity,
-      transform: [
-        { rotate },
-        { scale },
-        { translateX },
-        { translateY },
-      ],
+      transform: [{ rotate }, { scale }, { translateX }, { translateY }],
     };
   });
 
@@ -124,7 +98,7 @@ const FloatingEmoji: React.FC<FloatingEmojiProps> = ({
         animatedStyle,
       ]}
     >
-      <Emoji name={emoji} size={size} />
+      <Emoji name={emoji} />
     </Animated.View>
   );
 };
