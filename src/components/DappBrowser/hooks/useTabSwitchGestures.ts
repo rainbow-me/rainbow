@@ -42,6 +42,7 @@ export const useTabSwitchGestures = () => {
     extraWebViewHeight,
     multipleTabsOpen,
     pendingTabSwitchOffset,
+    searchViewProgress,
     shouldToggleAfterTabSwitch,
     tabSwitchGestureX,
     tabViewGestureHoldDuration,
@@ -255,6 +256,7 @@ export const useTabSwitchGestures = () => {
           }
         })
         .onStart(() => {
+          if (searchViewProgress.value) return;
           tabViewGestureState.value = TabViewGestureStates.ACTIVE;
           tabViewGestureHoldDuration.value = 0;
           tabViewGestureHoldDuration.value = withTiming(TAB_VIEW_GESTURE_HOLD_THRESHOLD_MS, {
@@ -263,6 +265,9 @@ export const useTabSwitchGestures = () => {
           });
           shouldToggleAfterTabSwitch.value = false;
           initialTabSwitchGestureX.value = tabSwitchGestureX.value;
+        })
+        .onTouchesDown((_, manager) => {
+          if (searchViewProgress.value) manager.fail();
         }),
     [
       activeTabId,
@@ -273,6 +278,7 @@ export const useTabSwitchGestures = () => {
       initialTabSwitchGestureX,
       multipleTabsOpen,
       pendingTabSwitchOffset,
+      searchViewProgress,
       setActiveTabIndex,
       shouldToggleAfterTabSwitch,
       tabSwitchGestureX,

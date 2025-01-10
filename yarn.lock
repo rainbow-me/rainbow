@@ -6474,9 +6474,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/react-native-skia@npm:1.5.10":
-  version: 1.5.10
-  resolution: "@shopify/react-native-skia@npm:1.5.10"
+"@shopify/react-native-skia@npm:1.8.2":
+  version: 1.8.2
+  resolution: "@shopify/react-native-skia@npm:1.8.2"
   dependencies:
     canvaskit-wasm: "npm:0.39.1"
     react-reconciler: "npm:0.27.0"
@@ -6491,7 +6491,7 @@ __metadata:
       optional: true
   bin:
     setup-skia-web: ./scripts/setup-canvaskit.js
-  checksum: 10c0/c9449dde7c80ed600c26dfc2ba76dd05b4f0b82f019128fab15fdfbf0b05696ad31937adbef3d4ee4c5d04272a325c83c734b154780e3c4e644295819559a039
+  checksum: 10c0/38486b76b8cf9e0c8879fa6ebc393d259494651fff64080a9f33c6887417b4c79ecc28c7fd9845a20006ec17403df33b3ea795354b9d968de56a327e027cbb80
   languageName: node
   linkType: hard
 
@@ -6890,13 +6890,6 @@ __metadata:
     merge-deep: "npm:^3.0.2"
     svgo: "npm:^1.2.2"
   checksum: 10c0/06c67dae49b5b5774412b2738c654e627d540944ff71ec1de90c75a35b50d55e91f59ef1566e48f07144c346c9ed07450083a36f7adbbbf3b90de02d7e77b6c6
-  languageName: node
-  linkType: hard
-
-"@tanstack/query-async-storage-persister@npm:4.2.1":
-  version: 4.2.1
-  resolution: "@tanstack/query-async-storage-persister@npm:4.2.1"
-  checksum: 10c0/a2717e993ded85796635ea28167859a0bdadf3ba39b754393d62144792a2f1bf533c31e893c6bb3010defc1b5e899b79bb9e7e3a75e367c152d606e8ddd26ba4
   languageName: node
   linkType: hard
 
@@ -8749,8 +8742,7 @@ __metadata:
     "@rudderstack/rudder-sdk-react-native": "npm:1.12.1"
     "@sentry/react-native": "npm:5.35.0"
     "@shopify/flash-list": "npm:1.7.2"
-    "@shopify/react-native-skia": "npm:1.5.10"
-    "@tanstack/query-async-storage-persister": "npm:4.2.1"
+    "@shopify/react-native-skia": "npm:1.8.2"
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
     "@testing-library/react-native": "npm:11.2.0"
@@ -8911,7 +8903,7 @@ __metadata:
     react-native-quick-md5: "npm:3.0.6"
     react-native-radial-gradient: "rainbow-me/react-native-radial-gradient#b99ab59d27dba70364ef516bd5193c37657ba95c"
     react-native-randombytes: "npm:3.5.3"
-    react-native-reanimated: "npm:3.16.3"
+    react-native-reanimated: "npm:3.16.6"
     react-native-redash: "npm:16.3.0"
     react-native-restart: "npm:0.0.22"
     react-native-safe-area-context: "npm:4.14.0"
@@ -8972,7 +8964,7 @@ __metadata:
     url-join: "npm:4.0.1"
     url-parse: "npm:1.5.10"
     use-debounce: "npm:10.0.0"
-    use-deep-compare: "npm:1.1.0"
+    use-deep-compare: "npm:1.3.0"
     use-memo-one: "npm:1.1.1"
     util: "npm:0.10.4"
     viem: "npm:2.21.54"
@@ -12607,10 +12599,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dequal@npm:1.0.0":
-  version: 1.0.0
-  resolution: "dequal@npm:1.0.0"
-  checksum: 10c0/7e5a2348028922c8f9b6824a646f91c19e57eb3fce8aa9e5d2b916b57c157e2d9e1dbbc434b701f29e135a63a5c773109b2d9f74ecae865969a45b25f9f9f46f
+"dequal@npm:2.0.3":
+  version: 2.0.3
+  resolution: "dequal@npm:2.0.3"
+  checksum: 10c0/f98860cdf58b64991ae10205137c0e97d384c3a4edc7f807603887b7c4b850af1224a33d88012009f150861cbee4fa2d322c4cc04b9313bee312e47f6ecaa888
   languageName: node
   linkType: hard
 
@@ -22601,9 +22593,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:3.16.3":
-  version: 3.16.3
-  resolution: "react-native-reanimated@npm:3.16.3"
+"react-native-reanimated@npm:3.16.6":
+  version: 3.16.6
+  resolution: "react-native-reanimated@npm:3.16.6"
   dependencies:
     "@babel/plugin-transform-arrow-functions": "npm:^7.0.0-0"
     "@babel/plugin-transform-class-properties": "npm:^7.0.0-0"
@@ -22620,7 +22612,7 @@ __metadata:
     "@babel/core": ^7.0.0-0
     react: "*"
     react-native: "*"
-  checksum: 10c0/ef0ec527f9d19df3560f1060c79c89f4fa1771e2f16d5537921ebd974eff2e5a2b0badc7f2193843a6e070c36c33010fb7f00720383b225cf90cabdb7e55a406
+  checksum: 10c0/42c8fb6cfdc5128afcd20d5e9e0bdd2ab56f0e5c5f1907c9d43322c0fadbf97cdfb27e120b9f649f4a7205d69411ed4a5b63602e864a89d4dcf849f915051f4d
   languageName: node
   linkType: hard
 
@@ -26865,14 +26857,14 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"use-deep-compare@npm:1.1.0":
-  version: 1.1.0
-  resolution: "use-deep-compare@npm:1.1.0"
+"use-deep-compare@npm:1.3.0":
+  version: 1.3.0
+  resolution: "use-deep-compare@npm:1.3.0"
   dependencies:
-    dequal: "npm:1.0.0"
+    dequal: "npm:2.0.3"
   peerDependencies:
     react: ">=16.8.0"
-  checksum: 10c0/64470ed5f0a09437e94b9c34e4c1e4063ea2f91379bcdd5df87976755ae12191d8b7a921f0dce49d89342041a89482a9ec77c2c4e955cf0685b62404733213bd
+  checksum: 10c0/4d78970793622dc4e6d3edcd0097df28a59168cbae07a8340578ac8d1bae790760be658b0e290d230281687b996e9711180b2e6311b131721a5d3b9562e828dd
   languageName: node
   linkType: hard
 

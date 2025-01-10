@@ -41,43 +41,43 @@ export const Search = () => {
   const { tabSwitchGestureHandler } = useTabSwitchGestures();
 
   const barStyle = useAnimatedStyle(() => {
-    const opacity = 1 - tabViewProgress.value / 75;
+    const opacity = 1 - (_WORKLET ? tabViewProgress.value : 0) / 75;
     return { opacity };
   });
 
   const expensiveBarStyles = useAnimatedStyle(() => ({
-    paddingLeft: withSpring(isFocused.value ? 16 : 72, SPRING_CONFIGS.slowSpring),
-    pointerEvents: tabViewVisible?.value ? 'none' : 'auto',
+    paddingLeft: withSpring(_WORKLET && isFocused.value ? 16 : 72, SPRING_CONFIGS.slowSpring),
+    pointerEvents: _WORKLET && tabViewVisible?.value ? 'none' : 'auto',
   }));
 
   const accountIconStyle = useAnimatedStyle(() => ({
-    opacity: withSpring(isFocused.value ? 0 : 1, SPRING_CONFIGS.slowSpring),
-    pointerEvents: isFocused.value ? 'none' : 'auto',
+    opacity: withSpring(_WORKLET && isFocused.value ? 0 : 1, SPRING_CONFIGS.slowSpring),
+    pointerEvents: _WORKLET && isFocused.value ? 'none' : 'auto',
   }));
 
   const bottomBarStyle = useAnimatedStyle(() => {
-    const translateY = isFocused.value ? -(keyboardHeight.value - (IS_IOS ? TAB_BAR_HEIGHT : 46) + extraWebViewHeight.value) : 0;
-
+    const translateY =
+      _WORKLET && isFocused.value ? -(keyboardHeight.value - (IS_IOS ? TAB_BAR_HEIGHT : 46) + extraWebViewHeight.value) : 0;
     return {
       transform: [
         {
           translateY: withSpring(translateY, SPRING_CONFIGS.slowSpring),
         },
         {
-          translateY: extraWebViewHeight.value,
+          translateY: _WORKLET ? extraWebViewHeight.value : 0,
         },
       ],
     };
   });
 
   const backgroundStyle = useAnimatedStyle(() => ({
-    opacity: searchViewProgress.value / 100,
-    pointerEvents: isFocused.value ? 'auto' : 'none',
-    zIndex: searchViewProgress.value ? 1 : -1,
+    opacity: _WORKLET ? searchViewProgress.value / 100 : 0,
+    pointerEvents: _WORKLET && isFocused.value ? 'auto' : 'none',
+    zIndex: _WORKLET && searchViewProgress.value ? 1 : -1,
   }));
 
   const tapToExpandBottomBarStyle = useAnimatedStyle(() => {
-    const enabled = shouldCollapseBottomBar.value && !tabViewVisible.value && !isFocused.value;
+    const enabled = _WORKLET && shouldCollapseBottomBar.value && !tabViewVisible.value && !isFocused.value;
     return {
       pointerEvents: enabled ? 'auto' : 'none',
     };
@@ -144,7 +144,7 @@ export const Search = () => {
         <SearchResults goToUrl={url => handleUrlSubmit({ shouldBlur: true, url })} />
       </Animated.View>
       <GestureDetector gesture={tabSwitchGestureHandler}>
-        <Animated.View style={[bottomBarStyle, styles.bottomBarStyle]}>
+        <Animated.View style={[styles.bottomBarStyle, bottomBarStyle]}>
           <Animated.View style={[styles.barStyle, barStyle, expensiveBarStyles]}>
             <Animated.View style={[styles.cover, tapToExpandBottomBarStyle]}>
               <GestureDetector gesture={tapToExpandGesture}>

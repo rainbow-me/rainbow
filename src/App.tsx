@@ -7,7 +7,7 @@ import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-h
 import { DeeplinkHandler } from '@/components/DeeplinkHandler';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider, shallowEqual } from 'react-redux';
 import { RecoilRoot } from 'recoil';
@@ -40,6 +40,7 @@ import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import { BackendNetworks } from '@/components/BackendNetworks';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
+import { getAndroidBottomInset } from './utils/deviceUtils';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -48,7 +49,12 @@ if (IS_DEV) {
 
 enableScreens();
 
+const ANDROID_BOTTOM_INSET = IS_ANDROID ? getAndroidBottomInset() : 0;
+
 const sx = StyleSheet.create({
+  androidNavigationBarPadding: {
+    paddingBottom: ANDROID_BOTTOM_INSET,
+  },
   container: {
     flex: 1,
     overflow: 'hidden',
@@ -61,14 +67,13 @@ interface AppProps {
 
 function App({ walletReady }: AppProps) {
   const { initialRoute } = useApplicationSetup();
-  const { bottom } = useSafeAreaInsets();
   const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
     Navigation.setTopLevelNavigator(ref);
   }, []);
 
   return (
     <>
-      <View style={[sx.container, { paddingBottom: IS_ANDROID ? bottom : 0 }]}>
+      <View style={[sx.container, IS_ANDROID ? sx.androidNavigationBarPadding : {}]}>
         {initialRoute && (
           <InitialRouteContext.Provider value={initialRoute}>
             <Routes ref={handleNavigatorRef} />
@@ -195,7 +200,7 @@ function Root() {
           }}
         >
           <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
-            <SafeAreaProvider>
+            <SafeAreaProvider initialMetrics={initialWindowMetrics}>
               <MainThemeProvider>
                 <GestureHandlerRootView style={sx.container}>
                   <RainbowContextWrapper>

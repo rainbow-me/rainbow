@@ -1,16 +1,46 @@
-import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
+import { useSelector } from 'react-redux';
 import { Address } from 'viem';
+import { useStore } from 'zustand';
 import { RainbowError, logger } from '@/logger';
 import reduxStore, { AppState } from '@/redux/store';
 import { supportedNativeCurrencies } from '@/references';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { useStore } from 'zustand';
 import { ParsedAddressAsset } from '@/entities';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { ChainId } from '@/state/backendNetworks/types';
+import { add, multiply } from '@/helpers/utilities';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useSelector } from 'react-redux';
+import { ChainId } from '@/state/backendNetworks/types';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/utils/ethereumUtils';
+
+type UserAssetsStoreType = ReturnType<typeof createUserAssetsStore>;
+
+interface StoreManagerState {
+  address: Address | string | null;
+  cachedStore: UserAssetsStoreType | null;
+  hiddenAssetBalances: Record<Address | string, string | undefined>;
+  setHiddenAssetBalance: (address: Address | string, balance: string) => void;
+}
+
+export const userAssetsStoreManager = createRainbowStore<StoreManagerState>(
+  set => ({
+    address: null,
+    cachedStore: null,
+    hiddenAssetBalances: {},
+
+    setHiddenAssetBalance: (address, balance) => {
+      set(state => {
+        const newHiddenAssetBalances = { ...state.hiddenAssetBalances };
+        newHiddenAssetBalances[address] = balance;
+        return { hiddenAssetBalances: newHiddenAssetBalances };
+      });
+    },
+  }),
+  {
+    partialize: state => ({ address: state.address, hiddenAssetBalances: state.hiddenAssetBalances }),
+    storageKey: 'userAssetsStoreManager',
+  }
+);
 
 type UserAssetsStateToPersist = Omit<
   Partial<UserAssetsState>,
@@ -118,6 +148,7 @@ export interface UserAssetsState {
   setUserAssets: (userAssets: ParsedSearchAsset[]) => void;
 
   hiddenAssets: Set<UniqueId>;
+  hiddenAssetsBalance: string | null;
   getHiddenAssetsIds: () => UniqueId[];
   setHiddenAssets: (uniqueIds: UniqueId[]) => void;
 }
@@ -163,7 +194,6 @@ function deserializeUserAssetsState(serializedState: string) {
   }
 
   const { state, version } = parsedState;
-  let userAssetsDataExists = false;
 
   let chainBalances = new Map<ChainId, number>();
   try {
@@ -187,7 +217,6 @@ function deserializeUserAssetsState(serializedState: string) {
   try {
     if (state.userAssets.length) {
       userAssetsData = new Map(state.userAssets);
-      userAssetsDataExists = true;
     }
   } catch (error) {
     logger.error(new RainbowError(`[userAssetsStore]: Failed to convert userAssets from user assets storage`), { error });
@@ -207,7 +236,7 @@ function deserializeUserAssetsState(serializedState: string) {
       ...state,
       chainBalances,
       idsByChain,
-      isLoadingUserAssets: !userAssetsDataExists,
+      isLoadingUserAssets: chainBalances.size === 0,
       userAssets: userAssetsData,
       hiddenAssets,
     },
@@ -221,6 +250,7 @@ export const createUserAssetsStore = (address: Address | string) =>
       chainBalances: new Map(),
       currentAbortController: new AbortController(),
       filter: 'all',
+      hiddenAssetsBalance: null,
       idsByChain: new Map<UserAssetFilter, UniqueId[]>(),
       inputSearchQuery: '',
       searchCache: new Map(),
@@ -375,7 +405,7 @@ export const createUserAssetsStore = (address: Address | string) =>
       },
 
       setUserAssets: (userAssets: ParsedSearchAsset[]) =>
-        set(() => {
+        set(state => {
           const idsByChain = new Map<UserAssetFilter, UniqueId[]>();
           const unsortedChainBalances = new Map<ChainId, number>();
 
@@ -427,13 +457,21 @@ export const createUserAssetsStore = (address: Address | string) =>
 
           searchCache.set('all', filteredAllIdsArray);
 
+          const hiddenAssetsBalance = calculateHiddenAssetsBalance({
+            address,
+            hiddenAssets: state.hiddenAssets,
+            userAssets: userAssetsMap,
+          });
+
           return {
+            ...state,
             chainBalances,
+            hiddenAssetsBalance,
             idsByChain,
+            isLoadingUserAssets: false,
             legacyUserAssets,
             searchCache,
             userAssets: userAssetsMap,
-            isLoadingUserAssets: false,
           };
         }),
 
@@ -451,49 +489,45 @@ export const createUserAssetsStore = (address: Address | string) =>
               hiddenAssets.add(uniqueId);
             }
           });
-          return { hiddenAssets };
+
+          const hiddenAssetsBalance = calculateHiddenAssetsBalance({
+            address,
+            hiddenAssets,
+            userAssets: prev.userAssets,
+          });
+
+          return { hiddenAssets, hiddenAssetsBalance };
         });
       },
     }),
-    {
-      storageKey: `userAssets_${address}`,
-      partialize: state => ({
-        chainBalances: state.chainBalances,
-        filter: state.filter,
-        idsByChain: state.idsByChain,
-        userAssets: state.userAssets,
-        legacyUserAssets: state.legacyUserAssets,
-        hiddenAssets: state.hiddenAssets,
-      }),
-      version: 1,
-      serializer: serializeUserAssetsState,
-      deserializer: deserializeUserAssetsState,
-    }
+
+    address.length
+      ? {
+          deserializer: deserializeUserAssetsState,
+          partialize: state => ({
+            chainBalances: state.chainBalances,
+            filter: state.filter,
+            hiddenAssets: state.hiddenAssets,
+            idsByChain: state.idsByChain,
+            legacyUserAssets: state.legacyUserAssets,
+            userAssets: state.userAssets,
+          }),
+          serializer: serializeUserAssetsState,
+          storageKey: `userAssets_${address}`,
+          version: 1,
+        }
+      : undefined
   );
 
-type UserAssetsStoreType = ReturnType<typeof createUserAssetsStore>;
-
-interface StoreManagerState {
-  stores: Map<Address | string, UserAssetsStoreType>;
-}
-
-const storeManager = createRainbowStore<StoreManagerState>(() => ({
-  stores: new Map(),
-}));
-
 function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
-  const accountAddress = address ?? reduxStore.getState().settings.accountAddress;
-  const { stores } = storeManager.getState();
-  let store = stores.get(accountAddress);
+  const rawAccountAddress = address ?? reduxStore.getState().settings.accountAddress;
+  const accountAddress = rawAccountAddress.length ? rawAccountAddress : userAssetsStoreManager.getState().address ?? '';
+  const { address: cachedAddress, cachedStore } = userAssetsStoreManager.getState();
+  if (cachedStore && cachedAddress === accountAddress) return cachedStore;
 
-  if (!store) {
-    store = createUserAssetsStore(accountAddress);
-    storeManager.setState(state => ({
-      stores: new Map(state.stores).set(accountAddress, store as UserAssetsStoreType),
-    }));
-  }
-
-  return store;
+  const newStore = createUserAssetsStore(accountAddress);
+  userAssetsStoreManager.setState({ address: accountAddress, cachedStore: newStore });
+  return newStore;
 }
 
 export const userAssetsStore = {
@@ -515,6 +549,31 @@ export function useUserAssetsStore<T>(selector: (state: UserAssetsState) => T) {
   const address = useSelector((state: AppState) => state.settings.accountAddress);
   const store = getOrCreateStore(address);
   return useStore(store, selector);
+}
+
+function calculateHiddenAssetsBalance({
+  address,
+  hiddenAssets,
+  userAssets,
+}: {
+  address: Address | string;
+} & Pick<UserAssetsState, 'hiddenAssets' | 'userAssets'>): string {
+  let balance = '0';
+  const {
+    hiddenAssetBalances: { [address]: storedBalance },
+    setHiddenAssetBalance,
+  } = userAssetsStoreManager.getState();
+
+  hiddenAssets.forEach(uniqueId => {
+    const asset = userAssets.get(uniqueId);
+    if (asset) {
+      const assetNativeBalance = multiply(asset.price?.value ?? 0, asset.balance?.amount ?? 0);
+      balance = add(balance, assetNativeBalance);
+    }
+  });
+
+  if (balance !== storedBalance) setHiddenAssetBalance(address, balance);
+  return balance;
 }
 
 function getCurrentSearchCache(): Map<string, UniqueId[]> {

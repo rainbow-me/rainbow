@@ -6,7 +6,7 @@
         <item name="colorAccent">@color/blue60</item>
     </style>
 
-    <style name="BootTheme" parent="Theme.BootSplash">
+    <style name="BootTheme" parent="Theme.BootSplash.EdgeToEdge">
         <item name="bootSplashBackground">@color/blue100</item>
         <item adjustViewBounds="true" name="bootSplashLogo">@mipmap/bootsplash_logo</item>
         <item name="postBootSplashTheme">@style/AppTheme</item>
