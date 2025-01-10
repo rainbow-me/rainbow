@@ -7,7 +7,7 @@ import parse from 'url-parse';
 import { isCloudinaryStorageIconLink, signCloudinaryIconUrl } from '@/handlers/cloudinary';
 import { logger, RainbowError } from '@/logger';
 
-const shouldCreateImgixClient = (): ImgixClient | null => {
+export const shouldCreateImgixClient = (): ImgixClient | null => {
   if (typeof domain === 'string' && !!domain.length && typeof secureURLToken === 'string' && !!secureURLToken.length) {
     return new ImgixClient({
       domain,

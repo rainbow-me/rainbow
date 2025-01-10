@@ -357,7 +357,10 @@ const UniqueTokenExpandedStateHeader = ({
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
-        saveToCameraRoll(getFullResUrl(asset.image_url));
+        if (asset?.image_url) {
+          const fullResUrl = getFullResUrl(asset.image_url);
+          fullResUrl && saveToCameraRoll(fullResUrl);
+        }
       } else if (actionKey === AssetActionsEnum.hide) {
         if (isHiddenAsset) {
           removeHiddenToken(asset);

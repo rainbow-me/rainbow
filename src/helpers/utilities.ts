@@ -115,11 +115,21 @@ export const convertStringToHex = (stringToConvert: string): string => new BigNu
 export const add = (numberOne: BigNumberish, numberTwo: BigNumberish): string => new BigNumber(numberOne).plus(numberTwo).toFixed();
 
 export const addDisplay = (numberOne: string, numberTwo: string): string => {
-  const unit = numberOne.replace(/[\d.-]/g, '');
+  const unit = numberOne.replace(/[\d,.]/g, '');
   const leftAlignedUnit = numberOne.indexOf(unit) === 0;
-  return currency(0, { symbol: unit, pattern: leftAlignedUnit ? '!#' : '#!' })
-    .add(numberOne)
-    .add(numberTwo)
+
+  const cleanNumber = (str: string): string => {
+    const numericPart = str.replace(/[^\d,.]/g, '');
+    return numericPart.replace(/,/g, '');
+  };
+
+  return currency(0, {
+    symbol: unit,
+    pattern: leftAlignedUnit ? '!#' : '#!',
+    errorOnInvalid: true,
+  })
+    .add(cleanNumber(numberOne))
+    .add(cleanNumber(numberTwo))
     .format();
 };
 
