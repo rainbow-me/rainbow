@@ -8868,7 +8868,7 @@ __metadata:
     querystring-es3: "npm:0.2.1"
     react: "npm:18.2.0"
     react-coin-icon: "rainbow-me/react-coin-icon#06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b"
-    react-fast-compare: "npm:2.0.4"
+    react-fast-compare: "npm:3.2.2"
     react-fast-memo: "npm:2.0.1"
     react-flatten-children: "npm:1.1.2"
     react-freeze: "npm:1.0.4"
@@ -22105,10 +22105,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-fast-compare@npm:2.0.4":
-  version: 2.0.4
-  resolution: "react-fast-compare@npm:2.0.4"
-  checksum: 10c0/f0300c677e95198b5f993cbb8a983dab09586157dc678f9e2b5b29ff941b6677a8776fbbdc425ce102fad86937e36bb45cfcfd797f006270b97ccf287ebfb885
+"react-fast-compare@npm:3.2.2":
+  version: 3.2.2
+  resolution: "react-fast-compare@npm:3.2.2"
+  checksum: 10c0/0bbd2f3eb41ab2ff7380daaa55105db698d965c396df73e6874831dbafec8c4b5b08ba36ff09df01526caa3c61595247e3269558c284e37646241cba2b90a367
   languageName: node
   linkType: hard
 
