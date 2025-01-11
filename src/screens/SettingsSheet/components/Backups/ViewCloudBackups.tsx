@@ -6,19 +6,22 @@ import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
 import { BackupFile, parseTimestampFromFilename } from '@/model/backup';
-import { format } from 'date-fns';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { Page } from '@/components/layout';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
-import { useTheme } from '@/theme';
+import { ThemeContextProps, useTheme } from '@/theme';
 import { CloudBackupState, LoadingStates, backupsStore } from '@/state/backups/backups';
-import { titleForBackupState } from '../../utils';
+import { titleForBackupState, dateFormatter } from '@/screens/SettingsSheet/utils';
 import { Box } from '@/design-system';
 
-const LoadingText = styled(RNText).attrs(({ theme: { colors } }: any) => ({
+type LoadingTextProps = {
+  theme: ThemeContextProps;
+};
+
+const LoadingText = styled(RNText).attrs(({ theme: { colors } }: LoadingTextProps) => ({
   color: colors.blueGreyDark,
   lineHeight: ios ? 'none' : 24,
   size: 'large',
@@ -64,7 +67,7 @@ const ViewCloudBackups = () => {
       <Box>
         <Menu
           description={i18n.t(i18n.l.back_up.cloud.latest_backup, {
-            date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
+            date: dateFormatter(mostRecentBackup.lastModified),
           })}
         >
           <MenuItem
@@ -87,9 +90,13 @@ const ViewCloudBackups = () => {
           {backups.files
             .filter(backup => backup.name !== mostRecentBackup?.name)
             .sort((a, b) => {
-              const timestampA = new Date(parseTimestampFromFilename(a.name)).getTime();
-              const timestampB = new Date(parseTimestampFromFilename(b.name)).getTime();
-              return timestampB - timestampA;
+              try {
+                const timestampA = new Date(parseTimestampFromFilename(a.name)).getTime();
+                const timestampB = new Date(parseTimestampFromFilename(b.name)).getTime();
+                return timestampB - timestampA;
+              } catch (error) {
+                return 0;
+              }
             })
             .map(backup => (
               <MenuItem
@@ -101,8 +108,8 @@ const ViewCloudBackups = () => {
                   <MenuItem.Title
                     isLink
                     text={i18n.t(i18n.l.back_up.cloud.older_backups_title, {
-                      date: format(parseTimestampFromFilename(backup.name), 'M/d/yy'),
-                      time: format(parseTimestampFromFilename(backup.name), 'p'),
+                      date: dateFormatter(parseTimestampFromFilename(backup.name), 'M/d/yy'),
+                      time: dateFormatter(parseTimestampFromFilename(backup.name), 'p'),
                     })}
                   />
                 }
