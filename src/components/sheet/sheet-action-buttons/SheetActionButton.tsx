@@ -29,6 +29,7 @@ type Props = PropsWithChildren<{
   onPress?: () => void;
   scaleTo?: number;
   size?: string;
+  isSquare?: boolean;
   testID?: string;
   textColor?: string;
   /**
@@ -42,9 +43,10 @@ type Props = PropsWithChildren<{
 
 const addChartsStyling = (isCharts: boolean) => (isCharts ? { position: 'absolute', width: '100%' } : {});
 
-const Button = styled(Centered)(({ isCharts, size }: { isCharts?: boolean; size?: string }) => ({
+const Button = styled(Centered)(({ isCharts, size, isSquare }: { isCharts?: boolean; size?: string; isSquare?: boolean }) => ({
   ...addChartsStyling(!!isCharts),
   height: size === 'big' ? 52 : 46,
+  width: isSquare ? (size === 'big' ? 52 : 46) : undefined,
 }));
 
 const Content = styled(RowWithMargins).attrs({
@@ -52,11 +54,11 @@ const Content = styled(RowWithMargins).attrs({
   margin: 4,
 })({
   height: ({ size }: Pick<Props, 'size'>) => (size === 'big' ? 52 : 46),
+  width: ({ isSquare, size }: Pick<Props, 'isSquare' | 'size'>) => (isSquare ? (size === 'big' ? 52 : 46) : undefined),
   paddingBottom: ({ label }: Pick<Props, 'label'>) => (label && containsEmoji(label) ? 2.5 : 1),
-  paddingHorizontal: 19,
+  paddingHorizontal: ({ isSquare }: Pick<Props, 'isSquare'>) => (isSquare ? 0 : 19),
   zIndex: 1,
 });
-
 const neverRerender = () => true;
 // eslint-disable-next-line react/display-name
 const WhiteButtonGradient = React.memo(
@@ -90,6 +92,7 @@ const SheetActionButton: React.FC<Props> = ({
   nftShadows,
   scaleTo = 0.9,
   size = null,
+  isSquare = false,
   testID = null,
   textColor: givenTextColor,
   textSize,
@@ -124,9 +127,11 @@ const SheetActionButton: React.FC<Props> = ({
       as={ButtonPressAnimation}
       contentContainerStyle={{
         height: size === 'big' ? 52 : 46,
+        width: isSquare ? (size === 'big' ? 52 : 46) : undefined,
       }}
       elevation={android ? elevation : null}
       isCharts={isCharts}
+      isSquare={isSquare}
       onPress={disabled ? () => undefined : onPress}
       overflowMargin={30}
       radiusAndroid={borderRadius}
@@ -143,6 +148,7 @@ const SheetActionButton: React.FC<Props> = ({
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...position.coverAsObject}
         backgroundColor={color}
+        width={isSquare ? (size === 'big' ? 52 : 46) : undefined}
         borderRadius={borderRadius}
         height={size === 'big' ? 52 : 46}
         shadows={shadowsForButtonColor}
@@ -157,7 +163,7 @@ const SheetActionButton: React.FC<Props> = ({
           />
         )}
       </ShadowStack>
-      <Content label={label} size={size}>
+      <Content label={label} size={size} isSquare={isSquare}>
         {/* @ts-expect-error JavaScript component with an improper type inferred for lineHeight */}
         {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
         {icon && <Icon color="white" height={18} name={icon} size={18} />}
