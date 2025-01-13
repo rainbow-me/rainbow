@@ -6,9 +6,7 @@ import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/Gestur
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
-const ARBITRARILY_LARGE_MAX_HEIGHT = 1000;
-
-const ANIMATION_CONFIG = SPRING_CONFIGS.snappySpringConfig;
+const ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
 
 export const LAYOUT_ANIMATION = LinearTransition.springify()
   .mass(ANIMATION_CONFIG.mass as number)
@@ -55,6 +53,9 @@ const SectionHeader = React.memo(function SectionHeader({ icon, primaryText, sec
           [id]: !current[id],
         }));
       }}
+      // TODO: Hitslop here doesn't work on the bottom for some reason
+      style={{ marginVertical: -24, paddingVertical: 24 }}
+      hapticTrigger="tap-end"
       scaleTo={0.96}
     >
       <Box height={{ custom: 14 }} flexDirection="row" justifyContent="space-between" alignItems="center">
@@ -98,7 +99,7 @@ export function CollapsibleSection({ content, icon, id, primaryText, secondaryTe
 
   const contentStyle = useAnimatedStyle(
     () => ({
-      maxHeight: withSpring(expandedSections.value[id] ? ARBITRARILY_LARGE_MAX_HEIGHT : 0, ANIMATION_CONFIG),
+      display: expandedSections.value[id] ? 'flex' : 'none',
       opacity: withSpring(expandedSections.value[id] ? 1 : 0, ANIMATION_CONFIG),
     }),
     [expandedSections]
