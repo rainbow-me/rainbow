@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { DerivedValue, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import { AnimatedText } from '@/design-system';
+import { AnimatedText, TextShadow } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useChartData } from '@/react-native-animated-charts/src';
 import { useTheme } from '@/theme';
@@ -58,15 +58,10 @@ export default memo(function ChartPercentChangeLabel({
   });
 
   return (
-    <AnimatedText
-      align="right"
-      numberOfLines={1}
-      size="23px / 27px (Deprecated)"
-      style={[{ width: '100%' }, textStyle]}
-      tabularNumbers
-      weight="bold"
-    >
-      {text}
-    </AnimatedText>
+    <TextShadow blur={12} shadowOpacity={0.24}>
+      <AnimatedText align="left" numberOfLines={1} size="20pt" style={[{ width: '100%' }, textStyle]} tabularNumbers weight="bold">
+        {text}
+      </AnimatedText>
+    </TextShadow>
   );
 });

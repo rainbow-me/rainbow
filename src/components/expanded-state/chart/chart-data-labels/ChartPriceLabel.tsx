@@ -92,11 +92,6 @@ export default function ChartPriceLabel({
       {defaultValue}
     </Text>
   ) : (
-    <ChartYLabel
-      formatWorklet={formatWorklet}
-      size="23px / 27px (Deprecated)"
-      style={{ maxWidth: DEVICE_WIDTH * (2 / 3) }}
-      weight="heavy"
-    />
+    <ChartYLabel formatWorklet={formatWorklet} size="34pt" style={{ maxWidth: DEVICE_WIDTH * (2 / 3) }} weight="heavy" />
   );
 }

@@ -5,14 +5,11 @@ import { Chart } from '@/components/value-chart';
 import { useChartThrottledPoints } from '@/hooks/charts';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useAccountSettings } from '@/hooks';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const ChartSection = memo(function ChartSection() {
-  // const { assetWithPrice, throttledData, showChart, chart, chartType, color, fetchingCharts } = useExpandedAssetSheetContext();
   const { asset } = useExpandedAssetSheetContext();
 
-  const { nativeCurrency, chainId: currentChainId } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
 
   const hasBalance = asset?.balance;
 
@@ -31,7 +28,6 @@ export const ChartSection = memo(function ChartSection() {
             chainId: asset.chainId,
             network: asset.network,
             address: asset.address,
-            // mainnetAddress: asset?.networks?.[useBackendNetworksStore.getState().getChainsName()[ChainId.mainnet]]?.address,
             mainnetAddress: asset.mainnet_address,
           }
         : asset;
@@ -40,29 +36,12 @@ export const ChartSection = memo(function ChartSection() {
   const { chart, chartType, color, fetchingCharts, updateChartType, initialChartDataLabels, showChart, throttledData } =
     useChartThrottledPoints({
       asset: assetWithPrice,
-      // heightWithChart: Math.min(
-      //   carouselHeight +
-      //     heightWithChart -
-      //     (!hasBalance && 68) +
-      //     additionalContentHeight +
-      //     (additionalContentHeight === 0 ? 0 : scrollableContentHeight),
-      //   screenHeight
-      // ),
-      // heightWithoutChart: Math.min(
-      //   carouselHeight +
-      //     heightWithoutChart -
-      //     (!hasBalance && 68) +
-      //     additionalContentHeight +
-      //     (additionalContentHeight === 0 ? 0 : scrollableContentHeight),
-      //   screenHeight
-      // ),
-      // shortHeightWithChart: Math.min(carouselHeight + heightWithChart - (!hasBalance && 68), screenHeight),
-      // shortHeightWithoutChart: Math.min(carouselHeight + heightWithoutChart - (!hasBalance && 68), screenHeight),
     });
 
   return (
     <ChartPathProvider data={throttledData}>
       <Chart
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...initialChartDataLabels}
         updateChartType={updateChartType}
         asset={assetWithPrice}

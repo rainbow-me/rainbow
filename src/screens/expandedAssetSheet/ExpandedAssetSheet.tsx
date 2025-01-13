@@ -63,7 +63,7 @@ export function ExpandedAssetSheet() {
             width={{ custom: 36 }}
             borderRadius={3}
             position="absolute"
-            style={{ backgroundColor: 'rgba(245, 248, 255, 0.3)', top: 63, alignSelf: 'center' }}
+            style={{ backgroundColor: 'rgba(245, 248, 255, 0.3)', bottom: 0, alignSelf: 'center' }}
           />
         </Box>
         <EasingGradient
