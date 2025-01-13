@@ -12,6 +12,8 @@ import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/Gestur
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import useAsset from '@/hooks/useAsset';
+import { Address } from 'viem';
 
 // Constants for layout
 const GRID_GAP = 9;
@@ -92,12 +94,22 @@ function Placeholder() {
 
 function BridgeButton({ chainId }: { chainId: ChainId }) {
   const { navigate } = useNavigation();
+  const { asset } = useExpandedAssetSheetContext();
   const { accentColors } = useExpandedAssetSheetContext();
   const chainsLabels = useBackendNetworksStore.getState().getChainsLabel();
 
+  const assetToBridge = useAsset({ address: asset.address as Address, chainId: chainId });
+
   return (
     // TODO: Add nav params after user assets pr is merged in
-    <ButtonPressAnimation onPress={() => navigate(Routes.SWAP)}>
+    <ButtonPressAnimation
+      onPress={() =>
+        navigate(Routes.SWAP, {
+          inputAsset: asset,
+          outputAsset: assetToBridge,
+        })
+      }
+    >
       <Box
         paddingRight="12px"
         paddingLeft="8px"
@@ -163,7 +175,7 @@ export const BridgeSection = memo(function BridgeSection() {
   const { asset } = useExpandedAssetSheetContext();
   const isExpanded = useSharedValue(false);
   const availableChains = useUserAssetsStore(state =>
-    state.getBalanceSortedChainList().filter(chainId => chainId in asset.networks && chainId !== asset.chainId)
+    state.getBalanceSortedChainList().filter(chainId => asset.networks && chainId in asset.networks && chainId !== asset.chainId)
   );
 
   const totalChains = availableChains.length;

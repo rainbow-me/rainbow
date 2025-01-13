@@ -4,19 +4,36 @@ import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetCo
 import { ScrollView } from 'react-native-gesture-handler';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Row } from '../shared/Row';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { useTheme } from '@/theme';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { InteractionManager } from 'react-native';
+import { TokenColors } from '@/graphql/__generated__/metadata';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 
-function BuyButton({ usdAmount }: { usdAmount: number }) {
+const BUY_USD_AMOUNTS = [100, 500, 1000, 5000];
+const GRADIENT_FADE_WIDTH = 24;
+
+function BuyButton({ usdAmount, onPress }: { usdAmount: number; onPress: () => void }) {
   const { accentColors } = useExpandedAssetSheetContext();
 
   return (
-    <ButtonPressAnimation>
+    <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
       <Box
-        borderRadius={20}
-        padding="12px"
-        width={{ custom: 112 }}
-        alignItems="center"
-        justifyContent="center"
-        style={{ backgroundColor: accentColors.opacity12, borderColor: accentColors.opacity6, borderWidth: 1.33 }}
+        style={[
+          {
+            backgroundColor: accentColors.opacity12,
+            borderRadius: 20,
+            padding: 12,
+            width: 112,
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+        ]}
       >
         <TextShadow blur={12} shadowOpacity={0.24}>
           <Text weight="heavy" size="17pt" color="accent">
@@ -29,37 +46,16 @@ function BuyButton({ usdAmount }: { usdAmount: number }) {
 }
 
 export const BuySection = memo(function BuySection() {
-  // const [currency, setCurrency] = useState<Currency>(Currency.USD);
+  const { accentColors, asset } = useExpandedAssetSheetContext();
+  const { navigate } = useNavigation();
+  const theme = useTheme();
 
-  // const menuConfig = useMemo<MenuConfig<MintsFilter>>(() => {
-  //   return {
-  //     menuItems: [
-  //       {
-  //         actionKey: MintsFilter.All,
-  //         actionTitle: getMintsFilterLabel(MintsFilter.All),
-  //         menuState: filter === MintsFilter.All ? 'on' : 'off',
-  //       },
-  //       {
-  //         actionKey: MintsFilter.Free,
-  //         actionTitle: getMintsFilterLabel(MintsFilter.Free),
-  //         menuState: filter === MintsFilter.Free ? 'on' : 'off',
-  //       },
-  //       {
-  //         actionKey: MintsFilter.Paid,
-  //         actionTitle: getMintsFilterLabel(MintsFilter.Paid),
-  //         menuState: filter === MintsFilter.Paid ? 'on' : 'off',
-  //       },
-  //     ],
-  //   };
-  // }, [filter]);
+  const chainId = asset.chainId;
+  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
+  const buyWithAsset = nativeAssetForChain;
+  const assetIsBuyWithAsset = asset.uniqueId === buyWithAsset?.uniqueId;
 
-  // const onPressMenuItem = useCallback(
-  //   (selection: MintsFilter) => {
-  //     haptics.selection();
-  //     setFilter(selection);
-  //   },
-  //   [setFilter]
-  // );
+  if (!buyWithAsset || assetIsBuyWithAsset) return null;
 
   return (
     <Box gap={12}>
@@ -75,9 +71,18 @@ export const BuySection = memo(function BuySection() {
             </IconContainer>
             <TextShadow blur={12} shadowOpacity={0.24}>
               <Text weight="semibold" size="17pt" color="accent">
-                Pay with
+                {'Pay with'}
               </Text>
             </TextShadow>
+            <RainbowCoinIcon
+              size={20}
+              chainId={buyWithAsset.chainId}
+              colors={buyWithAsset.colors as TokenColors}
+              icon={buyWithAsset.icon_url}
+              ignoreBadge
+              symbol={buyWithAsset.symbol}
+              theme={theme}
+            />
           </Inline>
         </Row>
         <Row>
@@ -91,7 +96,12 @@ export const BuySection = memo(function BuySection() {
             </IconContainer>
             <TextShadow blur={12} shadowOpacity={0.24}>
               <Text weight="semibold" size="17pt" color="labelTertiary">
-                Available Balance
+                {'Available Balance'}
+              </Text>
+            </TextShadow>
+            <TextShadow blur={12} shadowOpacity={0.24}>
+              <Text weight="semibold" size="17pt" color="labelTertiary">
+                {nativeAssetForChain?.native.balance.display}
               </Text>
             </TextShadow>
           </Inline>
@@ -99,11 +109,42 @@ export const BuySection = memo(function BuySection() {
       </Stack>
       <Bleed horizontal="24px">
         <ScrollView horizontal contentContainerStyle={{ gap: 9, paddingHorizontal: 24 }} showsHorizontalScrollIndicator={false}>
-          <BuyButton usdAmount={100} />
-          <BuyButton usdAmount={500} />
-          <BuyButton usdAmount={1000} />
-          <BuyButton usdAmount={5000} />
+          {BUY_USD_AMOUNTS.map(usdAmount => (
+            <BuyButton
+              key={usdAmount}
+              onPress={() => {
+                // TODO: how to set the exact input asset amount defined in user preference currency?
+                swapsStore.setState({
+                  inputAsset: buyWithAsset,
+                  // TODO: types are compatible but different
+                  outputAsset: asset as unknown as ParsedSearchAsset,
+                });
+                InteractionManager.runAfterInteractions(() => {
+                  navigate(Routes.SWAP);
+                });
+              }}
+              usdAmount={usdAmount}
+            />
+          ))}
         </ScrollView>
+        <EasingGradient
+          endColor={accentColors.background}
+          startColor={accentColors.background}
+          startPosition={'left'}
+          endPosition={'right'}
+          startOpacity={0}
+          endOpacity={1}
+          style={{ position: 'absolute', right: 0, height: '100%', width: GRADIENT_FADE_WIDTH }}
+        />
+        <EasingGradient
+          endColor={accentColors.background}
+          startColor={accentColors.background}
+          startPosition={'right'}
+          endPosition={'left'}
+          startOpacity={0}
+          endOpacity={1}
+          style={{ position: 'absolute', left: 0, height: '100%', width: GRADIENT_FADE_WIDTH }}
+        />
       </Bleed>
     </Box>
   );

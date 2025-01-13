@@ -696,7 +696,12 @@
         },
         "uniswap_liquidity": "Uniswap liquidity",
         "value": "Value",
-        "volume_24_hours": "24h volume"
+        "volume_24_hours": "24h volume",
+        "menu": {
+          "view_on": "View on %{blockExplorerName}",
+          "share": "Share",
+          "copy_contract_address": "Copy Contract Address"
+        }
       },
       "chart": {
         "all_time": "All Time",
