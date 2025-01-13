@@ -53,6 +53,7 @@ const parsedSearchAssetToParsedAddressAsset = (asset: ParsedSearchAsset): Parsed
   highLiquidity: asset.highLiquidity,
   icon_url: asset.icon_url,
   id: asset.networks?.[ChainId.mainnet]?.address,
+  networks: asset.networks,
   isNativeAsset: asset.isNativeAsset,
   price: {
     changed_at: undefined,
