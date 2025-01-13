@@ -1,18 +1,15 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { Icon } from '../../../icons';
+import Animated, { DerivedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { useChartData } from '@/react-native-animated-charts/src';
-import styled from '@/styled-thing';
+import { Icon } from '../../../icons';
+import { useTheme } from '@/theme';
 
 const AnimatedMaskedView = Animated.createAnimatedComponent(MaskedView);
 
-const ArrowIcon = styled(Icon).attrs({
-  direction: 'right',
-  name: 'fatArrow',
-})({});
+const ArrowIcon = () => <Icon direction="right" name="fatArrow" />;
 
-export default function ChartChangeDirectionArrow({ ratio, sharedRatio }) {
+export default function ChartChangeDirectionArrow({ ratio, sharedRatio }: { ratio: number; sharedRatio: DerivedValue<number> }) {
   const { colors } = useTheme();
   const { isActive } = useChartData();
 

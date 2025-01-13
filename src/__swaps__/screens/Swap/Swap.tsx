@@ -5,6 +5,7 @@ import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { Page } from '@/components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
+import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
@@ -17,22 +18,21 @@ import { SwapBottomPanel } from '@/__swaps__/screens/Swap/components/SwapBottomP
 import { SwapInputAsset } from '@/__swaps__/screens/Swap/components/SwapInputAsset';
 import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
 import { SwapOutputAsset } from '@/__swaps__/screens/Swap/components/SwapOutputAsset';
-import { SwapSheetGestureBlocker } from '@/__swaps__/screens/Swap/components/SwapSheetGestureBlocker';
 import { ChainId } from '@/state/backendNetworks/types';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
+import { useAccountSettings } from '@/hooks';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
-import { useAccountSettings } from '@/hooks';
 import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
 
 /** README
- * This prototype is largely driven by Reanimated and Gesture Handler, which
+ * This screen is largely driven by Reanimated and Gesture Handler, which
  * allows the UI to respond instantly when the user types into one of the four
  * swap inputs or drags the slider (these together make up the inputMethods).
  *
@@ -72,22 +72,21 @@ export function SwapScreen() {
   return (
     <SwapProvider>
       <MountAndUnmountHandlers />
-      <SwapSheetGestureBlocker>
-        <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
-          <SwapBackground />
-          <Box alignItems="center" height="full" paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) + 29 }} width="full">
-            <SwapInputAsset />
-            <FlipButton />
-            <SwapOutputAsset />
-            <SliderAndKeyboardAndBottomControls />
-            <ExchangeRateBubbleAndWarning />
-          </Box>
-          <SwapNavbar />
+      <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
+        <SwapBackground />
+        <Box alignItems="center" height="full" paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) + 29 }} width="full">
+          <SwapInputAsset />
+          <FlipButton />
+          <SwapOutputAsset />
+          <SliderAndKeyboardAndBottomControls />
+          <ExchangeRateBubbleAndWarning />
         </Box>
-      </SwapSheetGestureBlocker>
-      <WalletAddressObserver />
+        <SwapNavbar />
+      </Box>
+      <DecoyScrollView />
       <AbsolutePortalRoot />
       <NavigateToSwapSettingsTrigger />
+      <WalletAddressObserver />
     </SwapProvider>
   );
 }
@@ -163,9 +162,7 @@ const WalletAddressObserver = () => {
     (current, previous) => {
       const didWalletAddressChange = previous && current !== previous;
 
-      if (didWalletAddressChange) {
-        runOnJS(setNewInputAsset)();
-      }
+      if (didWalletAddressChange) runOnJS(setNewInputAsset)();
     },
     []
   );

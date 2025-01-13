@@ -138,7 +138,7 @@ export const useCreateBackup = () => {
     return new Promise(resolve => {
       return Navigation.handleAction(Routes.BACKUP_SHEET, {
         nativeScreen: true,
-        step: walletBackupStepTypes.backup_cloud,
+        step: walletBackupStepTypes.create_cloud_backup,
         onSuccess: async (password: string) => {
           return resolve(password);
         },

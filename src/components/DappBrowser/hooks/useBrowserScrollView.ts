@@ -27,6 +27,7 @@ import {
 } from '../utils/gestureUtils';
 import { calculateScrollPositionToCenterTab } from '../utils/layoutUtils';
 import { TabHitResult, tabHitTest } from '../utils/tabHitTest';
+import { useBrowserStore } from '@/state/browser/browserStore';
 
 const ENABLE_PAN_LOGS = false;
 const ENABLE_SCROLL_VIEW_LOGS = false;
@@ -51,15 +52,16 @@ export function useBrowserScrollView() {
   );
 
   const scrollViewHeight = useDerivedValue(() => {
+    const numberOfTabs = _WORKLET ? currentlyOpenTabIds.value.length : useBrowserStore.getState().tabIds.length;
     const height = Math.max(
-      Math.ceil(currentlyOpenTabIds.value.length / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + 165 + 28 + (IS_ANDROID ? 35 : 0),
+      Math.ceil(numberOfTabs / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + 165 + 28 + (IS_ANDROID ? 35 : 0),
       DEVICE_HEIGHT
     );
     return withSpring(height, SPRING_CONFIGS.slowSpring);
   });
 
   const scrollViewContainerStyle = useAnimatedStyle(() => {
-    const disableScroll = !tabViewVisible.value;
+    const disableScroll = _WORKLET ? !tabViewVisible.value : true;
     return {
       pointerEvents: disableScroll ? 'none' : 'auto',
       zIndex: disableScroll ? -1 : 10000,
@@ -67,8 +69,8 @@ export function useBrowserScrollView() {
   });
 
   const scrollViewStyle = useAnimatedStyle(() => ({ height: scrollViewHeight.value }));
-  const gestureManagerStyle = useAnimatedStyle(() => ({ pointerEvents: tabViewVisible.value ? 'auto' : 'box-none' }));
-  const animatedProps = useAnimatedProps(() => ({ scrollEnabled: tabViewVisible.value }));
+  const gestureManagerStyle = useAnimatedStyle(() => ({ pointerEvents: _WORKLET && tabViewVisible.value ? 'auto' : 'box-none' }));
+  const animatedProps = useAnimatedProps(() => ({ scrollEnabled: _WORKLET && tabViewVisible.value }));
 
   const closeTab = useCallback(
     (tabId: string, tabIndex: number, velocityX: number | undefined) => {

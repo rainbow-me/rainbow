@@ -15,6 +15,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { DOG_ADDRESS } from '@/references';
+import { IS_IOS } from '@/env';
 
 export const { width: WIDTH } = Dimensions.get('window');
 
@@ -43,7 +44,7 @@ const ChartSpinner = styled(ImgixImage).attrs(({ color }) => ({
 
 const Container = styled(Column)({
   paddingBottom: 30,
-  paddingTop: ios ? 0 : 20,
+  paddingTop: IS_IOS ? 0 : 4,
   width: '100%',
 });
 
@@ -115,6 +116,7 @@ export default function ChartWrapper({
   color,
   fetchingCharts,
   isPool,
+  latestChange,
   updateChartType,
   showChart,
   testID,
@@ -175,7 +177,15 @@ export default function ChartWrapper({
 
   return (
     <Container>
-      <ChartExpandedStateHeader {...props} chartType={chartType} color={color} isPool={isPool} showChart={showChart} testID={testID} />
+      <ChartExpandedStateHeader
+        {...props}
+        chartType={chartType}
+        color={color}
+        isPool={isPool}
+        latestChange={latestChange}
+        showChart={showChart}
+        testID={testID}
+      />
       <ChartContainer showChart={showChart}>
         {showChart && (
           <>

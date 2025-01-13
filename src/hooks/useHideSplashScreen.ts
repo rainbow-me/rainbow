@@ -1,43 +1,39 @@
-import { useCallback, useRef } from 'react';
+/* eslint-disable @typescript-eslint/no-var-requires */
+import { MutableRefObject, useCallback, useRef } from 'react';
 import { InteractionManager, NativeModules } from 'react-native';
-import RNBootSplash from 'react-native-bootsplash';
 import SplashScreen from 'react-native-splash-screen';
 import { PerformanceContextMap } from '../performance/PerformanceContextMap';
 import { StartTime } from '../performance/start-time';
 import { PerformanceTracking } from '../performance/tracking';
 import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { StatusBarHelper } from '@/helpers';
 import { analytics } from '@/analytics';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 import { getAppIcon } from '@/handlers/localstorage/globalSettings';
 import { RainbowError, logger } from '@/logger';
 import { AppIconKey } from '@/appIcons/appIcons';
-const Sound = require('react-native-sound');
-
 const { RainbowSplashScreen } = NativeModules;
 
 export default function useHideSplashScreen() {
   const alreadyLoggedPerformance = useRef(false);
+  const didSetStatusBar = useRef(false);
 
   return useCallback(async () => {
     if (!!RainbowSplashScreen && RainbowSplashScreen.hideAnimated) {
       RainbowSplashScreen.hideAnimated();
+    } else if (IS_ANDROID) {
+      handleAndroidStatusBar(didSetStatusBar);
+      const RNBootSplash = require('react-native-bootsplash');
+      await RNBootSplash.hide({ fade: true });
     } else {
-      if (android) {
-        await RNBootSplash.hide({ fade: true });
-      } else {
-        SplashScreen.hide();
-      }
+      SplashScreen.hide();
     }
 
-    if (android) {
-      StatusBarHelper.setBackgroundColor('transparent', false);
-      StatusBarHelper.setTranslucent(true);
-      StatusBarHelper.setDarkContent();
-    }
+    if (IS_ANDROID && !didSetStatusBar.current) handleAndroidStatusBar(didSetStatusBar);
 
     onHandleStatusBar();
-    (ios && StatusBarHelper.setHidden(false, 'fade')) ||
+    (IS_IOS && StatusBarHelper.setHidden(false, 'fade')) ||
       InteractionManager.runAfterInteractions(() => {
         StatusBarHelper.setHidden(false, 'fade');
       });
@@ -53,17 +49,24 @@ export default function useHideSplashScreen() {
       // need to load setting straight from storage, redux isnt ready yet
       const appIcon = (await getAppIcon()) as AppIconKey;
       if (appIcon === 'poolboy') {
-        const sound = new Sound(require('../assets/sounds/RainbowSega.mp3'), (error: any) => {
+        const Sound = require('react-native-sound');
+
+        const sound = new Sound(require('../assets/sounds/RainbowSega.mp3'), (error: unknown) => {
           if (error) {
             logger.error(new RainbowError('[useHideSplashScreen]: Error playing poolboy sound'));
             return;
           }
 
-          sound.play((success: any) => {
-            logger.debug('[useHideSplashScreen]: playing poolboy sound');
-          });
+          sound.play(() => logger.debug('[useHideSplashScreen]: playing poolboy sound'));
         });
       }
     }
   }, []);
+}
+
+function handleAndroidStatusBar(didSetStatusBar: MutableRefObject<boolean>) {
+  didSetStatusBar.current = true;
+  StatusBarHelper.setBackgroundColor('transparent', false);
+  StatusBarHelper.setTranslucent(true);
+  StatusBarHelper.setDarkContent();
 }

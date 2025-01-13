@@ -3,12 +3,14 @@ import { getGlobal, saveGlobal } from './common';
 import { NativeModules } from 'react-native';
 import { colors } from '@/styles';
 import { Themes, ThemesType } from '@/theme';
+import { isUsingButtonNavigation } from '@/utils/deviceUtils';
 
 const { NavigationBar } = NativeModules;
 
 const THEME = 'theme';
 
 export const getColorForThemeAndNavigationStyle = (theme: ThemesType) => {
+  if (!isUsingButtonNavigation()) return 'transparent';
   return theme === Themes.DARK ? '#191A1C' : colors.white;
 };
 

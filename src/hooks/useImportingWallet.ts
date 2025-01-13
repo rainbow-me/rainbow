@@ -31,6 +31,8 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { IS_TEST } from '@/env';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -327,6 +329,21 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
                   if (android) {
                     handleSetImporting(false);
+                  }
+
+                  if (
+                    backupProvider === walletBackupTypes.cloud &&
+                    !(
+                      IS_TEST ||
+                      isENSAddressFormat(input) ||
+                      isUnstoppableAddressFormat(input) ||
+                      isValidAddress(input) ||
+                      isValidBluetoothDeviceId(input)
+                    )
+                  ) {
+                    Navigation.handleAction(Routes.BACKUP_SHEET, {
+                      step: WalletBackupStepTypes.backup_prompt_cloud,
+                    });
                   }
 
                   setTimeout(() => {
