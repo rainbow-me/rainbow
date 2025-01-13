@@ -1,5 +1,9 @@
 import { ParsedAddressAsset } from '@/entities';
+import { useAccountSettings } from '@/hooks';
+import useAccountAsset from '@/hooks/useAccountAsset';
 import { colors } from '@/styles';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import chroma from 'chroma-js';
 import React, { createContext, useContext, useMemo } from 'react';
 import { SharedValue, useSharedValue } from 'react-native-reanimated';
 
@@ -23,6 +27,7 @@ interface AccentColors {
   opacity3: string;
   opacity2: string;
   opacity1: string;
+  background: string;
 }
 
 const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
@@ -39,6 +44,7 @@ type ExpandedAssetSheetContextType = {
   accentColors: AccentColors;
   asset: ParsedAddressAsset;
   expandedSections: SharedValue<Record<SectionId, boolean>>;
+  isOwnedAsset: boolean;
 };
 
 const ExpandedAssetSheetContext = createContext<ExpandedAssetSheetContextType | undefined>(undefined);
@@ -52,13 +58,24 @@ export function useExpandedAssetSheetContext() {
 }
 
 export function ExpandedAssetSheetContextProvider({ asset, children }: { asset: ParsedAddressAsset; children: React.ReactNode }) {
+  const { nativeCurrency } = useAccountSettings();
   const expandedSections = useSharedValue<Record<SectionId, boolean>>(DEFAULT_SECTIONS_STATE);
+  const assetUniqueId = getUniqueId(asset.address, asset.chainId);
+  const accountAsset = useAccountAsset(assetUniqueId, nativeCurrency);
+  const isOwnedAsset = !!accountAsset;
 
   const accentColors: AccentColors = useMemo(() => {
     const opacity100 = asset.colors?.primary as string;
+    const assetColor = asset.colors?.primary ?? colors.appleBlue;
+    const background = chroma(
+      chroma(assetColor)
+        .rgb()
+        .map(channel => Math.round(channel * (1 - 0.8) + 0 * 0.8))
+    ).css();
 
     return {
       opacity100,
+      opacity80: colors.alpha(opacity100, 0.8),
       opacity56: colors.alpha(opacity100, 0.56),
       opacity24: colors.alpha(opacity100, 0.24),
       opacity12: colors.alpha(opacity100, 0.12),
@@ -67,6 +84,7 @@ export function ExpandedAssetSheetContextProvider({ asset, children }: { asset: 
       opacity3: colors.alpha(opacity100, 0.03),
       opacity2: colors.alpha(opacity100, 0.02),
       opacity1: colors.alpha(opacity100, 0.01),
+      background,
     };
   }, [asset.colors?.primary]);
 
@@ -76,6 +94,7 @@ export function ExpandedAssetSheetContextProvider({ asset, children }: { asset: 
         accentColors,
         asset,
         expandedSections,
+        isOwnedAsset,
       }}
     >
       {children}
