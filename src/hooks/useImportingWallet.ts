@@ -31,6 +31,7 @@ import { ReviewPromptAction } from '@/storage/schema';
 import { ChainId } from '@/state/backendNetworks/types';
 import { backupsStore } from '@/state/backups/backups';
 import { IS_TEST } from '@/env';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -315,9 +316,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                 dangerouslyGetParent?.()?.goBack();
                 InteractionManager.runAfterInteractions(async () => {
                   if (previousWalletCount === 0) {
-                    // on Android replacing is not working well, so we navigate and then remove the screen below
-                    const action = navigate;
-                    action(Routes.SWIPE_LAYOUT, {
+                    navigate(Routes.SWIPE_LAYOUT, {
                       params: { initialized: true },
                       screen: Routes.WALLET_SCREEN,
                     });
@@ -331,6 +330,21 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                   }
                   if (android) {
                     handleSetImporting(false);
+                  }
+
+                  if (
+                    backupProvider === walletBackupTypes.cloud &&
+                    !(
+                      IS_TEST ||
+                      isENSAddressFormat(input) ||
+                      isUnstoppableAddressFormat(input) ||
+                      isValidAddress(input) ||
+                      isValidBluetoothDeviceId(input)
+                    )
+                  ) {
+                    Navigation.handleAction(Routes.BACKUP_SHEET, {
+                      step: WalletBackupStepTypes.backup_prompt_cloud,
+                    });
                   }
 
                   setTimeout(() => {

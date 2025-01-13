@@ -99,8 +99,7 @@ export const backupSheetSizes = {
 
 export const getHeightForStep = (step: string) => {
   switch (step) {
-    case WalletBackupStepTypes.backup_cloud:
-    case WalletBackupStepTypes.backup_manual:
+    case WalletBackupStepTypes.create_cloud_backup:
     case WalletBackupStepTypes.restore_from_backup:
       return backupSheetSizes.long;
     case WalletBackupStepTypes.backup_prompt:
