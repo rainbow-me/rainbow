@@ -7,11 +7,13 @@ Use the below template to structure the markdown.
 ## 1. First major change
 
 ### First Heading
+
 - bullet point 1
 - bullet point 2 (if necessary)
 - ...
 
 ### Second Heading
+
 - bullet point 1
 - bullet point 2 (if necessary)
 - ...
@@ -19,6 +21,7 @@ Use the below template to structure the markdown.
 ## 2. Second major change
 
 ### First Heading
+
 - bullet point 1
 - bullet point 2 (if necessary)
 - ...
@@ -26,11 +29,12 @@ Use the below template to structure the markdown.
 ## 3. Third major change
 
 ### First Heading
+
 - bullet point 1
 - bullet point 2 (if necessary)
 - ...
 
-Add more changes, and bullet points as necessary per the changes parsed from the patch file. 
+Add more changes, and bullet points as necessary per the changes parsed from the patch file.
 
 End the markdown file with a small TLDR or gist of the changes. Example below:
 
