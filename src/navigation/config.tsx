@@ -540,6 +540,8 @@ export const expandedAssetSheetConfig: PartialNavigatorConfigOptions = {
     ...buildCoolModalConfig({
       ...params,
       scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.28,
     }),
   }),
 };
@@ -549,6 +551,8 @@ export const expandedAssetSheetConfigWithLimit: PartialNavigatorConfigOptions = 
     ...buildCoolModalConfig({
       ...params,
       scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.28,
     }),
     limitActiveModals: true,
   }),

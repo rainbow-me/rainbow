@@ -53,7 +53,7 @@ const ZORB_NFT_ADDRESS: EthereumAddress = '0x12e4527e2807978a49469f8d757abf5e07b
 const POOLBOY_NFT_ADDRESS: EthereumAddress = '0xf25298fa62a2eb94fc06626966f6f21399b4c508';
 
 // adworld app icon unlocking NFTs
-const ADWORLD_NFT_ADDRESS: EthereumAddress = '0x6171f829e107f70b58d67594c6b62a7d3eb7f23b';
+const ADWORLD_NFT_ADDRESS: EthereumAddress = '0x87073e9a3f85bb59821bb01acf0e8fde92891e4e';
 
 // farcaster app icon unlocking NFTs
 const FARCASTER_NFT_ADDRESS: EthereumAddress = '0x76843c8f8a369d29c719141a065ff561abe2420b';

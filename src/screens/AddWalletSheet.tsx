@@ -3,28 +3,20 @@ import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
 import { Box, globalColors, Inset } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import React, { useRef } from 'react';
+import React from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
 import { InteractionManager } from 'react-native';
-import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
-import { createWallet } from '@/model/wallet';
-import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import WalletsAndBackup from '@/assets/WalletsAndBackup.png';
 import CreateNewWallet from '@/assets/CreateNewWallet.png';
 import PairHairwareWallet from '@/assets/PairHardwareWallet.png';
 import ImportSecretPhraseOrPrivateKey from '@/assets/ImportSecretPhraseOrPrivateKey.png';
 import WatchWalletIcon from '@/assets/watchWallet.png';
-import { useDispatch } from 'react-redux';
-import showWalletErrorAlert from '@/helpers/support';
 import { cloudPlatform } from '@/utils/platform';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { useInitializeWallet, useWallets } from '@/hooks';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
-import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
@@ -44,10 +36,6 @@ export const AddWalletSheet = () => {
   const { goBack, navigate } = useNavigation();
 
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
-  const dispatch = useDispatch();
-  const initializeWallet = useInitializeWallet();
-  const creatingWallet = useRef<boolean>();
-  const { isDamaged, selectedWallet, wallets } = useWallets();
 
   const onPressCreate = async () => {
     try {
@@ -56,97 +44,8 @@ export const AddWalletSheet = () => {
         type: 'new',
       });
       analytics.track('Tapped "Create a new wallet"');
-      if (creatingWallet.current) return;
-      creatingWallet.current = true;
 
-      // Show naming modal
-      InteractionManager.runAfterInteractions(() => {
-        goBack();
-      });
-      InteractionManager.runAfterInteractions(() => {
-        setTimeout(() => {
-          navigate(Routes.MODAL_SCREEN, {
-            actionType: 'Create',
-            asset: [],
-            isNewProfile: true,
-            onCancel: () => {
-              creatingWallet.current = false;
-            },
-            onCloseModal: async (args: any) => {
-              if (args) {
-                walletLoadingStore.setState({
-                  loadingState: WalletLoadingStates.CREATING_WALLET,
-                });
-
-                const name = args?.name ?? '';
-                const color = args?.color ?? null;
-                // Check if the selected wallet is the primary
-                let primaryWalletKey = selectedWallet.primary ? selectedWallet.id : null;
-
-                // If it's not, then find it
-                !primaryWalletKey &&
-                  Object.keys(wallets as any).some(key => {
-                    const wallet = wallets?.[key];
-                    if (wallet?.type === WalletTypes.mnemonic && wallet.primary) {
-                      primaryWalletKey = key;
-                      return true;
-                    }
-                    return false;
-                  });
-
-                // If there's no primary wallet at all,
-                // we fallback to an imported one with a seed phrase
-                !primaryWalletKey &&
-                  Object.keys(wallets as any).some(key => {
-                    const wallet = wallets?.[key];
-                    if (wallet?.type === WalletTypes.mnemonic && wallet.imported) {
-                      primaryWalletKey = key;
-                      return true;
-                    }
-                    return false;
-                  });
-                try {
-                  // If we found it and it's not damaged use it to create the new account
-                  if (primaryWalletKey && !wallets?.[primaryWalletKey].damaged) {
-                    await dispatch(createAccountForWallet(primaryWalletKey, color, name));
-                    // @ts-ignore
-                    await initializeWallet();
-                  } else {
-                    // If doesn't exist, we need to create a new wallet
-                    await createWallet({
-                      color,
-                      name,
-                      clearCallbackOnStartCreation: true,
-                    });
-                    await dispatch(walletsLoadState());
-                    // @ts-expect-error - needs refactor to object params
-                    await initializeWallet();
-                  }
-                } catch (e) {
-                  logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), {
-                    error: e,
-                  });
-                  if (isDamaged) {
-                    setTimeout(() => {
-                      showWalletErrorAlert();
-                    }, 1000);
-                  }
-                } finally {
-                  walletLoadingStore.setState({
-                    loadingState: null,
-                  });
-                }
-              }
-              creatingWallet.current = false;
-            },
-            profile: {
-              color: null,
-              name: ``,
-            },
-            type: 'wallet_profile',
-          });
-        }, 50);
-      });
+      navigate(Routes.CHOOSE_WALLET_GROUP, {});
     } catch (e) {
       logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), {
         error: e,

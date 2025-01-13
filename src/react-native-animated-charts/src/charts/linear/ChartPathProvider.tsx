@@ -19,7 +19,7 @@ interface ChartPathProviderProps {
   children: React.ReactNode;
 }
 
-function getCurveType(curveType: keyof typeof CurveType) {
+function getCurveType(curveType: keyof typeof CurveType | undefined) {
   switch (curveType) {
     case CurveType.basis:
       return shape.curveBasis;
@@ -97,7 +97,7 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
     .line<Point>()
     .x(item => scaleX(item.x))
     .y(item => scaleY(item.y))
-    .curve(getCurveType(data.curve!))(data.points);
+    .curve(getCurveType(data.curve))(data.points);
 
   if (path === null) {
     return {
@@ -161,7 +161,7 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(({ children,
     // because we do have initial data in the paths
     // we wait until we receive new stuff in deps
     if (initialized.current) {
-      setPaths(([_, curr]) => [curr, data.points.length ? createPath({ data, height, width, yRange }) : null]);
+      setPaths(([, curr]) => [curr, data.points.length ? createPath({ data, height, width, yRange }) : null]);
     } else {
       // componentDidMount hack
       initialized.current = true;

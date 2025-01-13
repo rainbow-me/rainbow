@@ -441,24 +441,16 @@ const HomePanel = memo(function HomePanel({
     const valid = await runWalletChecksBeforeSwapOrBridge();
     if (!valid) return;
 
-    swapsStore.setState({
-      inputAsset: userAssetsStore.getState().getHighestValueNativeAsset(),
-    });
-    InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.SWAP);
-    });
+    swapsStore.setState({ inputAsset: userAssetsStore.getState().getHighestValueNativeAsset() });
+    InteractionManager.runAfterInteractions(() => navigate(Routes.SWAP));
   }, [navigate, runWalletChecksBeforeSwapOrBridge]);
 
   const handleOnPressBridge = useCallback(async () => {
     const valid = await runWalletChecksBeforeSwapOrBridge();
     if (!valid) return;
 
-    swapsStore.setState({
-      inputAsset: userAssetsStore.getState().getHighestValueNativeAsset(),
-    });
-    InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.SWAP);
-    });
+    swapsStore.setState({ inputAsset: userAssetsStore.getState().getHighestValueNativeAsset() });
+    InteractionManager.runAfterInteractions(() => navigate(Routes.SWAP));
   }, [navigate, runWalletChecksBeforeSwapOrBridge]);
 
   const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || RAINBOW_HOME) === RAINBOW_HOME);

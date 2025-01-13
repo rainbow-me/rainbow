@@ -6,10 +6,9 @@
 #import "Firebase.h"
 #import "AppDelegate.h"
 
-// expo modules MUST be imported before Rainbow-Swift.h
+// Expo modules must be imported before Rainbow-Swift.h
 #import "ExpoModulesCore-Swift.h"
 #import "Rainbow-Swift.h"
-// end expo modules
 
 #import <RNBranch/RNBranch.h>
 #import <React/RCTBundleURLProvider.h>
@@ -19,7 +18,6 @@
 #import "RNSplashScreen.h"
 #import <AVFoundation/AVFoundation.h>
 #import <mach/mach.h>
-
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
 @end
@@ -39,6 +37,7 @@ RCT_EXPORT_METHOD(hideAnimated) {
 @end
 
 @implementation AppDelegate
+
 - (void)hideSplashScreenAnimated {
   UIView* subview = self.window.rootViewController.view.subviews.lastObject;
   UIView* rainbowIcon = subview.subviews.firstObject;
@@ -59,44 +58,49 @@ RCT_EXPORT_METHOD(hideAnimated) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
- self.moduleName = @"Rainbow";
-  // You can add your custom initial props in the dictionary below.
-  // They will be passed down to the ViewController used by React Native.
+  self.moduleName = @"Rainbow";
+  // Add custom initial props in the dictionary below. These are passed to the React Native ViewController.
   self.initialProps = @{};
-
+  
   NSLog(@"⚙️ Rainbow internals are %@.", RAINBOW_INTERNALS_ENABLED ? @"enabled" : @"disabled");
-
-  // Firebase Init
+  
   [FIRApp configure];
-
-  // Branch Init
   [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES];
-
-  // Define UNUserNotificationCenter
+  
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-  
-    [[NSNotificationCenter defaultCenter] addObserver:self
-  selector:@selector(handleRapInProgress:)
-      name:@"rapInProgress"
-    object:nil];
-
-  [[NSNotificationCenter defaultCenter] addObserver:self
-  selector:@selector(handleRapComplete:)
-      name:@"rapCompleted"
-    object:nil];
+  center.delegate = self;
   
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleRsEscape:)
-                                                 name:@"rsEscape"
-                                               object:nil];
+                                           selector:@selector(handleRapInProgress:)
+                                               name:@"rapInProgress"
+                                             object:nil];
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleRapComplete:)
+                                               name:@"rapCompleted"
+                                             object:nil];
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleRsEscape:)
+                                               name:@"rsEscape"
+                                             object:nil];
+  
+  BOOL success = [super application:application didFinishLaunchingWithOptions:launchOptions];
+  BOOL isDetox = [[[NSProcessInfo processInfo] arguments] containsObject:@"-IS_TEST"];
+  
+  if (isDetox) return success;
 
-   return [super application:application didFinishLaunchingWithOptions:launchOptions];
+  if (success) {
+      UIView *rootView = self.window.rootViewController.view;
+      [RNSplashScreen showSplash:@"LaunchScreen" inRootView:rootView];
+  }
+  return success;
 }
-
 
 - (void)handleRsEscape:(NSNotification *)notification {
   NSDictionary* userInfo = notification.userInfo;
   NSString *msg = [NSString stringWithFormat:@"Escape via %@", userInfo[@"url"]];
+  
   SentryBreadcrumb *breadcrumb = [[SentryBreadcrumb alloc] init];
   [breadcrumb setMessage:msg];
   [SentrySDK addBreadcrumb:breadcrumb];
@@ -125,53 +129,38 @@ RCT_EXPORT_METHOD(hideAnimated) {
   #endif
 }
 
-//Called when a notification is delivered to a foreground app.
--(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification
+       withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
-  if (@available(iOS 14.0, *)) {
-    completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionBadge | UNNotificationPresentationOptionList | UNNotificationPresentationOptionBanner);
-  } else {
-    completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionBadge | UNNotificationPresentationOptionAlert);
+  completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionBadge | UNNotificationPresentationOptionList | UNNotificationPresentationOptionBanner);
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+  if ([RNBranch application:application openURL:url options:options]) {
+    return YES;
   }
+  return [RCTLinkingManager application:application openURL:url options:options];
 }
 
-
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
-sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
-{
-	return [RCTLinkingManager application:application openURL:url
-	sourceApplication:sourceApplication annotation:annotation];
-}
-
-// Only if your app is using [Universal Links]
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
- restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
-{
+ restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
   [RNBranch continueUserActivity:userActivity];
   return YES;
-
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-
-  if(self.isRapRunning){
+  if (self.isRapRunning) {
     SentryMessage *msg = [[SentryMessage alloc] initWithFormatted:@"applicationWillTerminate was called"];
     SentryEvent *sentryEvent = [[SentryEvent alloc] init];
     [sentryEvent setMessage: msg];
     [SentrySDK captureEvent:sentryEvent];
   }
-
 }
 
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-    [RNBranch application:app openURL:url options:options];
-    return YES;
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application{
-  // delete the badge
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+  // Reset the app icon badge
   [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
-  // delete the notifications from WC
+  // Clear WC notifications
   [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
     NSMutableArray *identifiers = [[NSMutableArray alloc] init];
     [notifications enumerateObjectsUsingBlock:^(UNNotification * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -184,7 +173,6 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
     }];
     [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:identifiers];
   }];
-  
 }
 
 @end

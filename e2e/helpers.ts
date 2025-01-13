@@ -392,7 +392,7 @@ export async function checkIfElementHasString(elementID: string | RegExp, text: 
 export async function relaunchApp() {
   try {
     await device.terminateApp('me.rainbow');
-    return await device.launchApp({ newInstance: true });
+    return await device.launchApp({ newInstance: true, launchArgs: { IS_TEST: true } });
   } catch (error) {
     throw new Error(`Error relaunching app: ${error}`);
   }
@@ -493,7 +493,7 @@ export async function sendETHtoTestWallet() {
 export async function openDeeplinkColdStart(url: string) {
   await device.terminateApp();
   await device.launchApp({
-    launchArgs: { detoxEnableSynchronization: 0 },
+    launchArgs: { detoxEnableSynchronization: 0, IS_TEST: true },
     newInstance: true,
     url,
   });
@@ -504,6 +504,7 @@ export async function openDeeplinkFromBackground(url: string) {
   await device.sendToHome();
   await device.enableSynchronization();
   await device.launchApp({
+    launchArgs: { IS_TEST: true },
     newInstance: false,
     url,
   });

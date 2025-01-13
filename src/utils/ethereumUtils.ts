@@ -457,6 +457,8 @@ const calculateL1FeeOptimism = async (
     delete newTx?.from;
     // @ts-expect-error gas is not in type RainbowTransaction
     delete newTx?.gas;
+    // @ts-expect-error extParams is not in type RainbowTransaction
+    delete newTx?.extParams;
 
     // contract call will fail if these are passed
     delete newTx.maxPriorityFeePerGas;

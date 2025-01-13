@@ -1,13 +1,10 @@
-import { IS_IOS } from '@/env';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 import SafeAreaView from 'react-native-safe-area-view';
+import { IS_IOS } from '@/env';
+import { getAndroidBottomInset } from './deviceUtils';
 
 export default {
-  bottom:
-    (IS_IOS
-      ? initialWindowMetrics?.insets.bottom
-      : // @ts-expect-error ts-migrate(2339) FIXME: Property 'getInset' does not exist on type 'Compon... Remove this comment to see the full error message
-        SafeAreaView.getInset('bottom')) ?? 0,
+  bottom: IS_IOS ? initialWindowMetrics?.insets.bottom : getAndroidBottomInset(),
   left:
     (IS_IOS
       ? initialWindowMetrics?.insets.left
