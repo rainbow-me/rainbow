@@ -5,8 +5,9 @@ import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetConte
 import * as i18n from '@/languages';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { BuyActionButton, SendActionButton, SheetActionButton, SwapActionButton } from '@/components/sheet';
-import { DropdownMenu, MenuConfig } from '@/components/DropdownMenu';
+import { DropdownMenu, MenuConfig, MenuItem } from '@/components/DropdownMenu';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { ethereumUtils } from '@/utils';
 
 // 32px for the gradient + 46px for the buttons + 44px for the bottom padding
 export const SHEET_FOOTER_HEIGHT = 32 + 46 + 44;
@@ -28,37 +29,44 @@ export function SheetFooter() {
   const isSwappable = isOwnedAsset;
 
   const menuConfig = useMemo<MenuConfig<ContextMenuAction>>(() => {
+    const menuItems = [] as MenuItem<ContextMenuAction>[];
+
+    if (asset.address && !asset.isNativeAsset) {
+      menuItems.push({
+        actionKey: ContextMenuActions.BlockExplorer,
+        actionTitle: i18n.t('expanded_state.asset.menu.view_on', {
+          blockExplorerName: ethereumUtils.getBlockExplorer({ chainId: asset.chainId }),
+        }),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'network',
+        },
+      });
+    }
+
+    if (asset.address && !asset.isNativeAsset) {
+      menuItems.push({
+        actionKey: ContextMenuActions.Copy,
+        actionTitle: i18n.t('expanded_state.asset.menu.copy_contract_address'),
+        actionSubtitle: asset.address.slice(0, 6) + '...' + asset.address.slice(-4),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'square.on.square',
+        },
+      });
+    }
+
+    menuItems.push({
+      actionKey: ContextMenuActions.Share,
+      actionTitle: i18n.t('expanded_state.asset.menu.share'),
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'square.and.arrow.up',
+      },
+    });
+
     return {
-      menuItems: [
-        {
-          actionKey: ContextMenuActions.Copy,
-          actionTitle: i18n.t('expanded_state.asset.menu.copy_contract_address'),
-          actionSubtitle: asset?.address.slice(0, 6) + '...' + asset?.address.slice(-4),
-          icon: {
-            iconType: 'icon',
-            iconValue: '􀐅',
-          },
-        },
-        {
-          actionKey: ContextMenuActions.Share,
-          actionTitle: i18n.t('expanded_state.asset.menu.share'),
-          icon: {
-            iconType: 'icon',
-            iconValue: '􀈂',
-          },
-        },
-        {
-          actionKey: ContextMenuActions.BlockExplorer,
-          actionTitle: i18n.t('expanded_state.asset.menu.view_on', {
-            // TODO: get real block explorer name
-            blockExplorerName: 'Etherscan',
-          }),
-          icon: {
-            iconType: 'icon',
-            iconValue: '􀤆',
-          },
-        },
-      ],
+      menuItems,
     };
   }, [asset]);
 
@@ -67,11 +75,11 @@ export function SheetFooter() {
       case ContextMenuActions.Copy:
         Clipboard.setString(asset.address);
         break;
-      // TODO:
       case ContextMenuActions.Share:
+        // TODO:
         break;
-      // TODO:
       case ContextMenuActions.BlockExplorer:
+        ethereumUtils.openTokenEtherscanURL({ address: asset.address, chainId: asset.chainId });
         break;
     }
   };
@@ -88,14 +96,8 @@ export function SheetFooter() {
       <Box backgroundColor={accentColors.background} width="full" paddingVertical="2px" paddingHorizontal="24px" paddingBottom="44px">
         <Columns space="16px">
           <Column width="content">
-            <DropdownMenu<ContextMenuAction>
-              alignOffset={20}
-              sideOffset={20}
-              avoidCollisions={false}
-              menuConfig={menuConfig}
-              onPressMenuItem={handlePressMenuItem}
-            >
-              <SheetActionButton color={accentColors.opacity100} isSquare label={'􀍠'} onPress={() => {}} />
+            <DropdownMenu<ContextMenuAction> menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
+              <SheetActionButton color={accentColors.opacity100} isSquare label={'􀍠'} />
             </DropdownMenu>
           </Column>
           {isSwappable && <SwapActionButton asset={asset} color={accentColors.opacity100} inputType={SwapAssetType.inputAsset} />}
