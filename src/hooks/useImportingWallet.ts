@@ -16,7 +16,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics, analyticsV2 } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
-import { getProvider, resolveUnstoppableDomain } from '@/handlers/web3';
+import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
 import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
@@ -33,6 +33,7 @@ import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
