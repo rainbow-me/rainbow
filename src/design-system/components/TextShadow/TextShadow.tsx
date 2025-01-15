@@ -1,5 +1,5 @@
 import React, { ReactElement, useMemo } from 'react';
-import { View } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { IS_IOS } from '@/env';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useColorMode } from '../../color/ColorMode';
@@ -17,6 +17,7 @@ export interface TextShadowProps {
   shadowOpacity?: number;
   x?: number;
   y?: number;
+  containerStyle?: StyleProp<ViewStyle>;
 }
 
 const isAnimatedTextChild = (child: ReactElement<TextProps | AnimatedTextProps>): child is ReactElement<AnimatedTextProps> => {
@@ -33,13 +34,14 @@ export const TextShadow = ({
   shadowOpacity = 0.6,
   x = 0,
   y = 0,
+  containerStyle,
 }: TextShadowProps) => {
   const { isDarkMode } = useColorMode();
 
   const inferredTextColor = useForegroundColor(children.props.color ?? 'label');
   const isAnimatedText = isAnimatedTextChild(children);
 
-  const [containerStyle, internalTextStyle] = useMemo(() => {
+  const [internalContainerStyle, internalTextStyle] = useMemo(() => {
     const extraSpaceForShadow = blur + Math.max(Math.abs(x), Math.abs(y));
     return [
       // Container style
@@ -69,8 +71,14 @@ export const TextShadow = ({
         // eslint-disable-next-line react/jsx-props-no-spreading
         <AnimatedText {...children.props} style={[children.props.style, internalTextStyle]} />
       ) : (
-        <View style={containerStyle}>
-          <Text color={{ custom: 'transparent' }} size={children.props.size} style={internalTextStyle} weight={children.props.weight}>
+        <View style={[internalContainerStyle, containerStyle]}>
+          <Text
+            numberOfLines={children.props.numberOfLines}
+            color={{ custom: 'transparent' }}
+            size={children.props.size}
+            style={internalTextStyle}
+            weight={children.props.weight}
+          >
             {children}
           </Text>
         </View>
