@@ -106,7 +106,7 @@ export const nonceStore = createStore<CurrentNonceState<Nonces>>(
   {
     persist: {
       name: 'nonces',
-      version: 1,
+      version: 2,
       migrate: (persistedState: unknown, version: number) => {
         if (version === 0) {
           const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
