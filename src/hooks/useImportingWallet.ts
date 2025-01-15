@@ -18,7 +18,6 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import { walletsLoadState } from '@/redux/wallets';
@@ -30,8 +29,11 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { ChainId } from '@/state/backendNetworks/types';
 import { backupsStore } from '@/state/backups/backups';
+import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -75,7 +77,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const handleSetSeedPhrase = useCallback(
     (text: string) => {
       if (isImporting) return null;
-      return setSeedPhrase(text);
+      return setSeedPhrase(text.trim());
     },
     [isImporting]
   );
@@ -282,6 +284,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     if (!wasImporting && isImporting) {
       const asyncFn = async () => {
         const input = resolvedAddress ? resolvedAddress : sanitizeSeedPhrase(seedPhrase);
+        walletLoadingStore.setState({
+          loadingState: WalletLoadingStates.IMPORTING_WALLET,
+        });
 
         if (!showImportModal) {
           await walletInit(
@@ -313,21 +318,16 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             .then(success => {
               ios && handleSetImporting(false);
               if (success) {
-                dangerouslyGetParent?.()?.goBack();
                 InteractionManager.runAfterInteractions(async () => {
-                  if (previousWalletCount === 0) {
-                    navigate(Routes.SWIPE_LAYOUT, {
-                      params: { initialized: true },
+                  Navigation.handleAction(
+                    Routes.SWIPE_LAYOUT,
+                    {
                       screen: Routes.WALLET_SCREEN,
-                    });
-                  } else {
-                    dangerouslyGetParent?.()?.goBack();
+                      params: { initialized: true },
+                    },
+                    previousWalletCount === 0
+                  );
 
-                    navigate(Routes.SWIPE_LAYOUT, {
-                      params: { initialized: true },
-                      screen: Routes.WALLET_SCREEN,
-                    });
-                  }
                   if (android) {
                     handleSetImporting(false);
                   }
@@ -356,6 +356,11 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                   analytics.track('Imported seed phrase', {
                     isWalletEthZero,
                   });
+
+                  walletLoadingStore.setState({
+                    loadingState: null,
+                  });
+                  dangerouslyGetParent?.()?.goBack();
                 });
               } else {
                 if (android) {
