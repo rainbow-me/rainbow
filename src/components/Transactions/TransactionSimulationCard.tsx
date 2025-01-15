@@ -29,6 +29,7 @@ import {
 } from '@/components/Transactions/constants';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ParsedAddressAsset } from '@/entities/tokens';
 
 interface TransactionSimulationCardProps {
   chainId: ChainId;
@@ -41,12 +42,7 @@ interface TransactionSimulationCardProps {
   simulation: TransactionSimulationResult | undefined;
   simulationError: TransactionErrorType | undefined;
   simulationScanResult: TransactionScanResultType | undefined;
-  walletBalance: {
-    amount: string | number;
-    display: string;
-    isLoaded: boolean;
-    symbol: string;
-  };
+  nativeAsset: ParsedAddressAsset | ReturnType<ReturnType<typeof useBackendNetworksStore.getState>['getChainsNativeAsset']>[ChainId];
 }
 
 export const TransactionSimulationCard = ({
@@ -60,7 +56,7 @@ export const TransactionSimulationCard = ({
   simulation,
   simulationError,
   simulationScanResult,
-  walletBalance,
+  nativeAsset,
 }: TransactionSimulationCardProps) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
   const contentHeight = useSharedValue(COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2);
@@ -164,7 +160,7 @@ export const TransactionSimulationCard = ({
       return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.simulating);
     }
     if (isBalanceEnough === false) {
-      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.not_enough_native_balance, { symbol: walletBalance?.symbol });
+      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.not_enough_native_balance, { symbol: nativeAsset.symbol });
     }
     if (txSimulationApiError || isPersonalSignRequest) {
       return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.simulation_unavailable);
@@ -183,14 +179,14 @@ export const TransactionSimulationCard = ({
     }
     return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.simulation_result);
   }, [
-    isBalanceEnough,
     isLoading,
+    isBalanceEnough,
+    txSimulationApiError,
+    isPersonalSignRequest,
+    simulationScanResult,
     noChanges,
     simulationError,
-    simulationScanResult,
-    isPersonalSignRequest,
-    txSimulationApiError,
-    walletBalance?.symbol,
+    nativeAsset.symbol,
   ]);
 
   const isExpanded = useMemo(() => {
@@ -270,7 +266,7 @@ export const TransactionSimulationCard = ({
             {isBalanceEnough === false ? (
               <Text color="labelQuaternary" size="13pt" weight="semibold">
                 {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.need_more_native, {
-                  symbol: walletBalance?.symbol,
+                  symbol: nativeAsset.symbol,
                   network: useBackendNetworksStore.getState().getChainsName()[chainId],
                 })}
               </Text>
