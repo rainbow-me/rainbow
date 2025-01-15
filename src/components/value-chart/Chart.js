@@ -6,6 +6,7 @@ import Spinner from '../../assets/chartSpinner.png';
 import { nativeStackConfig } from '../../navigation/nativeStackConfig';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
+import { Text, Box } from '@/design-system';
 import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
 import { ChartDot, ChartPath, useChartData } from '@/react-native-animated-charts/src';
@@ -43,7 +44,7 @@ const ChartSpinner = styled(ImgixImage).attrs(({ color }) => ({
 });
 
 const Container = styled(Column)({
-  paddingBottom: 30,
+  paddingBottom: 32,
   paddingTop: IS_IOS ? 0 : 4,
   width: '100%',
 });
@@ -80,7 +81,6 @@ const Overlay = styled(Animated.View).attrs({
 })({
   ...position.coverAsObject,
   alignItems: 'center',
-  backgroundColor: ({ theme: { colors } }) => colors.alpha(colors.white, 0.9),
   justifyContent: 'center',
 });
 
@@ -213,6 +213,13 @@ export default function ChartWrapper({
               </Animated.View>
             </Overlay>
           </>
+        )}
+        {!showChart && (
+          <Box height={HEIGHT} justifyContent="center" alignItems="center">
+            <Text color="label" size="17pt" weight="heavy">
+              {'No chart data'}
+            </Text>
+          </Box>
         )}
       </ChartContainer>
       {showChart ? (

@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React, { useMemo } from 'react';
-import Animated, { FadeIn, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Stack, Text, TextShadow, Bleed } from '@/design-system';
@@ -91,11 +91,11 @@ export default function ChartExpandedStateHeader({
           </Text>
         </TextShadow>
         <ChartPriceLabel defaultValue={title} isNoPriceData={isNoPriceData} isPool={isPool} priceRef={priceRef} priceValue={price} />
-        <Bleed top={'6px'}>
-          <Animated.View entering={FadeIn.duration(140)} style={showPriceChangeStyle}>
+        <Animated.View style={showPriceChangeStyle}>
+          <Bleed top={'6px'}>
             <ChartPercentChangeLabel latestChange={latestChange} ratio={ratio} />
-          </Animated.View>
-        </Bleed>
+          </Bleed>
+        </Animated.View>
       </Stack>
     </Container>
   );
