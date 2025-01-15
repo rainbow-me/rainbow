@@ -46,7 +46,7 @@ export const fetchTransaction = async ({
     });
 
     const tx = response?.data?.payload?.transaction;
-    if (!tx) {
+    if (!tx || !tx?.status || (tx?.status as string) === '') {
       return null;
     }
     const parsedTx = await parseTransaction(tx, currency, chainId);
