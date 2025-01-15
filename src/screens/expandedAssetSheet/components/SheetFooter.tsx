@@ -8,6 +8,8 @@ import { BuyActionButton, SendActionButton, SheetActionButton, SwapActionButton 
 import { DropdownMenu, MenuConfig, MenuItem } from '@/components/DropdownMenu';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { ethereumUtils } from '@/utils';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 // 32px for the gradient + 46px for the buttons + 44px for the bottom padding
 export const SHEET_FOOTER_HEIGHT = 32 + 46 + 44;
@@ -21,12 +23,16 @@ export enum ContextMenuActions {
 type ContextMenuAction = ContextMenuActions.BlockExplorer | ContextMenuActions.Share | ContextMenuActions.Copy;
 
 export function SheetFooter() {
-  const { accentColors, asset, isOwnedAsset } = useExpandedAssetSheetContext();
+  const { accentColors, basicAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
+
+  const { swagg_enabled, f2c_enabled } = useRemoteConfig();
+  const swapEnabled = swagg_enabled && useBackendNetworksStore.getState().getSwapSupportedChainIds().includes(asset.chainId);
+  const addCashEnabled = f2c_enabled;
 
   // TODO:
-  const isTransferable = isOwnedAsset;
+  const isTransferable = isOwnedAsset && asset;
   const hasEth = true;
-  const isSwappable = isOwnedAsset;
+  const isSwappable = isOwnedAsset && swapEnabled;
 
   const menuConfig = useMemo<MenuConfig<ContextMenuAction>>(() => {
     const menuItems = [] as MenuItem<ContextMenuAction>[];

@@ -13,8 +13,6 @@ import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { NativeCurrencyKey } from '@/entities';
 import { ChainId } from '@/state/backendNetworks/types';
-import { EXPANDED_STATE_V2, useExperimentalFlag } from '@/config';
-import { useRemoteConfig } from '@/model/remoteConfig';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -69,25 +67,15 @@ interface MemoizedBalanceCoinRowProps {
 const MemoizedBalanceCoinRow = React.memo(
   ({ uniqueId, nativeCurrency, theme, navigate, nativeCurrencySymbol, isHidden, maybeCallback }: MemoizedBalanceCoinRowProps) => {
     const item = useAccountAsset(uniqueId, nativeCurrency);
-    const { expanded_state_v2 } = useRemoteConfig();
-    const expandedStateV2Enabled = useExperimentalFlag(EXPANDED_STATE_V2) || expanded_state_v2;
 
     const handlePress = useCallback(() => {
       if (maybeCallback.current) {
         maybeCallback.current();
       } else {
-        if (expandedStateV2Enabled) {
-          navigate(Routes.EXPANDED_ASSET_SHEET_V2, { asset: item });
-        } else {
-          navigate(Routes.EXPANDED_ASSET_SHEET, {
-            asset: item,
-            fromDiscover: true,
-            isFromWalletScreen: true,
-            type: 'token',
-          });
-        }
+        if (!item) return;
+        navigate(Routes.EXPANDED_ASSET_SHEET_V2, { asset: item, address: item.address, chainId: item.chainId });
       }
-    }, [navigate, item, maybeCallback, expandedStateV2Enabled]);
+    }, [navigate, item, maybeCallback]);
 
     const percentChange = item?.native?.change || undefined;
     const percentageChangeDisplay = formatPercentageString(percentChange);

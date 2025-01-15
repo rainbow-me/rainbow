@@ -6,15 +6,43 @@ import Animated from 'react-native-reanimated';
 import { AboutSection, BalanceSection, BuySection, MarketStatsSection, ChartSection } from './sections';
 import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { analyticsV2 } from '@/analytics';
+import { useTimeoutEffect } from '@/hooks/useTimeout';
+
+const ANALYTICS_ROUTE_LOG_DELAY = 5 * 1000;
 
 export function SheetContent() {
-  const { accentColors, asset, isOwnedAsset } = useExpandedAssetSheetContext();
+  const { accentColors, basicAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
 
   const chainId = asset.chainId;
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
   const buySectionPayWithAsset = nativeAssetForChain;
   const assetIsBuySectionPayWithAsset = asset.uniqueId === buySectionPayWithAsset?.uniqueId;
   const isBuySectionVisible = !assetIsBuySectionPayWithAsset;
+
+  useTimeoutEffect(
+    ({ elapsedTime }) => {
+      const { address, chainId, symbol, name, icon_url, price } = asset;
+      analyticsV2.track(analyticsV2.event.tokenDetailsErc20, {
+        eventSentAfterMs: elapsedTime,
+        token: {
+          address,
+          chainId,
+          symbol,
+          name,
+          icon_url,
+          price: price?.value,
+        },
+        available_data: {
+          // TODO:
+          chart: true,
+          description: false,
+          iconUrl: !!icon_url,
+        },
+      });
+    },
+    { timeout: ANALYTICS_ROUTE_LOG_DELAY }
+  );
 
   return (
     <AccentColorProvider color={accentColors.opacity100}>

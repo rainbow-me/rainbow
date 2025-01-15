@@ -1,11 +1,18 @@
 import { ParsedAddressAsset } from '@/entities';
-import { useAccountSettings } from '@/hooks';
+import { useAccountSettings, useAdditionalAssetData } from '@/hooks';
+import { TokenMetadata } from '@/hooks/useAdditionalAssetData';
 import useAccountAsset from '@/hooks/useAccountAsset';
 import { colors } from '@/styles';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import chroma from 'chroma-js';
 import React, { createContext, useContext, useMemo } from 'react';
 import { SharedValue, useSharedValue } from 'react-native-reanimated';
+import { ChainId } from '@/state/backendNetworks/types';
+import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
+import { UniqueId } from '@/__swaps__/types/assets';
+import { isNativeAsset } from '@/handlers/assets';
+import { getNetwork } from '@ethersproject/providers';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 export enum SectionId {
   PROFIT = 'profit',
@@ -40,11 +47,79 @@ const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
   [SectionId.ABOUT]: true,
 };
 
+type BasicAsset = {
+  chainId: ChainId;
+  address: string;
+  colors: TokenColors | undefined;
+  uniqueId: UniqueId;
+  name: string;
+  symbol: string;
+  decimals: number;
+  icon_url: string | undefined;
+  isNativeAsset: boolean;
+  network: string;
+  price: {
+    relative_change_24h: number | undefined;
+    value: number | undefined;
+  };
+};
+
+function isTrendingToken(token: ParsedAddressAsset | TrendingToken): token is TrendingToken {
+  return 'highlightedFriends' in token;
+}
+
+function normalizeTrendingToken(token: TrendingToken): BasicAsset {
+  return {
+    chainId: token.chainId,
+    address: token.address,
+    uniqueId: token.uniqueId,
+    name: token.name,
+    symbol: token.symbol,
+    decimals: token.decimals,
+    icon_url: token.icon_url,
+    isNativeAsset: isNativeAsset(token.address, token.chainId),
+    network: getNetwork(token.chainId).name,
+    colors: token.colors,
+    price: {
+      relative_change_24h: token.priceChange.day,
+      value: token.price,
+    },
+  };
+}
+
+function normalizeParsedAddressAsset(token: ParsedAddressAsset): BasicAsset {
+  return {
+    chainId: token.chainId,
+    address: token.address,
+    uniqueId: token.uniqueId,
+    name: token.name,
+    symbol: token.symbol,
+    decimals: token.decimals,
+    icon_url: token.icon_url,
+    isNativeAsset: isNativeAsset(token.address, token.chainId),
+    network: token.network,
+    colors: token.colors,
+    price: {
+      relative_change_24h: token.price?.relative_change_24h,
+      value: token.price?.value,
+    },
+  };
+}
+
 type ExpandedAssetSheetContextType = {
   accentColors: AccentColors;
-  asset: ParsedAddressAsset;
+  basicAsset: BasicAsset;
+  accountAsset: ParsedAddressAsset | null | undefined;
+  assetMetadata: TokenMetadata | null | undefined;
   expandedSections: SharedValue<Record<SectionId, boolean>>;
   isOwnedAsset: boolean;
+};
+
+type ExpandedAssetSheetContextProviderProps = {
+  asset: ParsedAddressAsset | TrendingToken;
+  address: string;
+  chainId: ChainId;
+  children: React.ReactNode;
 };
 
 const ExpandedAssetSheetContext = createContext<ExpandedAssetSheetContextType | undefined>(undefined);
@@ -57,16 +132,27 @@ export function useExpandedAssetSheetContext() {
   return context;
 }
 
-export function ExpandedAssetSheetContextProvider({ asset, children }: { asset: ParsedAddressAsset; children: React.ReactNode }) {
+export function ExpandedAssetSheetContextProvider({ asset, address, chainId, children }: ExpandedAssetSheetContextProviderProps) {
   const { nativeCurrency } = useAccountSettings();
   const expandedSections = useSharedValue<Record<SectionId, boolean>>(DEFAULT_SECTIONS_STATE);
-  const assetUniqueId = getUniqueId(asset.address, asset.chainId);
+  const assetUniqueId = getUniqueId(address, chainId);
   const accountAsset = useAccountAsset(assetUniqueId, nativeCurrency);
   const isOwnedAsset = !!accountAsset;
 
+  const basicAsset = useMemo(() => {
+    if (isTrendingToken(asset)) return normalizeTrendingToken(asset);
+    return normalizeParsedAddressAsset(asset);
+  }, [asset]);
+
+  const { data: metadata } = useAdditionalAssetData({
+    address,
+    chainId,
+    currency: nativeCurrency,
+  });
+
   const accentColors: AccentColors = useMemo(() => {
-    const opacity100 = asset.colors?.primary as string;
-    const assetColor = asset.colors?.primary ?? colors.appleBlue;
+    const opacity100 = basicAsset.colors?.primary as string;
+    const assetColor = basicAsset.colors?.primary ?? colors.appleBlue;
     const background = chroma(
       chroma(assetColor)
         .rgb()
@@ -84,15 +170,18 @@ export function ExpandedAssetSheetContextProvider({ asset, children }: { asset: 
       opacity3: colors.alpha(opacity100, 0.03),
       opacity2: colors.alpha(opacity100, 0.02),
       opacity1: colors.alpha(opacity100, 0.01),
+      border: colors.alpha(opacity100, 0.06),
       background,
     };
-  }, [asset.colors?.primary]);
+  }, [basicAsset.colors?.primary]);
 
   return (
     <ExpandedAssetSheetContext.Provider
       value={{
         accentColors,
-        asset,
+        basicAsset,
+        accountAsset,
+        assetMetadata: metadata,
         expandedSections,
         isOwnedAsset,
       }}

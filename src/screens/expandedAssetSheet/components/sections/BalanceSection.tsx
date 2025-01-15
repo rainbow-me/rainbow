@@ -5,10 +5,10 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
 
 export const BalanceSection = memo(function BalanceSection() {
-  const { accentColors, asset } = useExpandedAssetSheetContext();
+  const { accentColors, accountAsset: asset } = useExpandedAssetSheetContext();
   const theme = useTheme();
 
-  if (!asset.balance || !asset.native?.balance) return null;
+  if (!asset?.balance || !asset?.native?.balance) return null;
 
   return (
     <Box

@@ -365,9 +365,10 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
       lastNavigatedTrendingToken: token.uniqueId,
     });
 
-    Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
+    Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset: token,
-      type: 'token',
+      address: token.address,
+      chainId: token.chainId,
     });
   }, [token]);
 

@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
 import { ExpandedAssetSheetContextProvider } from './context/ExpandedAssetSheetContext';
-import { ParsedAddressAsset } from '@/entities';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { SheetContent } from './components/SheetContent';
 import { colors } from '@/styles';
@@ -13,19 +12,13 @@ import { Box } from '@/design-system';
 import { SheetFooter } from './components/SheetFooter';
 import chroma from 'chroma-js';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-
-export type ExpandedAssetSheetParams = {
-  asset: ParsedAddressAsset;
-};
-
-type RouteParams = {
-  ExpandedAssetSheetParams: ExpandedAssetSheetParams;
-};
+import { RootStackParamList } from '@/navigation/types';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 export function ExpandedAssetSheet() {
   const {
-    params: { asset },
-  } = useRoute<RouteProp<RouteParams, 'ExpandedAssetSheetParams'>>();
+    params: { asset, address, chainId },
+  } = useRoute<RouteProp<RootStackParamList, 'ExpandedAssetSheetV2'>>();
 
   const yPosition = useSharedValue(0);
 
@@ -41,12 +34,11 @@ export function ExpandedAssetSheet() {
     ).css();
   }, [asset.colors?.primary]);
 
-  if (!asset) return null;
-
   return (
-    <ExpandedAssetSheetContextProvider asset={asset}>
+    <ExpandedAssetSheetContextProvider asset={asset} address={address} chainId={chainId}>
       <SlackSheet
         backgroundColor={backgroundColor}
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...(IS_IOS ? { height: '100%' } : {})}
         scrollEnabled
         removeTopPadding
