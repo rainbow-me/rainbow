@@ -700,7 +700,11 @@
         "menu": {
           "view_on": "View on %{blockExplorerName}",
           "share": "Share",
-          "copy_contract_address": "Copy Contract Address"
+          "copy_contract_address": "Copy Contract Address",
+          "pin": "Pin",
+          "unpin": "Unpin",
+          "hide": "Hide",
+          "unhide": "Unhide"
         }
       },
       "chart": {
