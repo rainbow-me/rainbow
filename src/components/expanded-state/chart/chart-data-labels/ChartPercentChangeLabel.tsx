@@ -34,7 +34,7 @@ const formatWorklet = (originalY: SharedValue<string>, data: DataType, latestCha
 
         return (IS_ANDROID ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') + ' ' + formatNumber(Math.abs(value).toFixed(2)) + '%';
       })()
-    : '';
+    : ' '; // important that string is not empty so that when actual value fills it does not cause a layout shift
 };
 
 export default memo(function ChartPercentChangeLabel({
