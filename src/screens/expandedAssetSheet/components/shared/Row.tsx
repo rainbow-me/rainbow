@@ -16,8 +16,8 @@ export function Row({ children, highlighted }: RowProps) {
 
     return {
       backgroundColor: isHighlighted ? accentColors.opacity3 : undefined,
-      borderColor: isHighlighted ? accentColors.opacity2 : undefined,
-      borderWidth: isHighlighted ? 1.33 : undefined,
+      borderColor: isHighlighted ? accentColors.opacity2 : 'transparent',
+      borderWidth: 1.33,
       borderRadius: 14,
     };
   }, [highlighted]);

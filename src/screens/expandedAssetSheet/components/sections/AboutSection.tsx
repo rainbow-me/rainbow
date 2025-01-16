@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import * as i18n from '@/languages';
 import { Bleed, Box, IconContainer, Inline, Stack, Text, TextShadow } from '@/design-system';
 import { Row } from '../shared/Row';
@@ -7,6 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Linking } from 'react-native';
 import { formatURLForDisplay } from '@/utils';
 import { XIcon } from '../../icons/XIcon';
+import { Icon } from '@/components/icons';
 
 interface RowItem {
   icon?: string;
@@ -35,16 +36,21 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
           {icon && (
             <IconContainer height={10} width={20}>
               <TextShadow blur={12} shadowOpacity={0.24}>
-                <Text weight="medium" align="center" size="15pt" color="accent">
+                <Text weight="medium" align="center" size="icon 15px" color="accent">
                   {icon}
                 </Text>
               </TextShadow>
             </IconContainer>
           )}
-          {iconName && (
-            <Bleed horizontal="8px" vertical="24px">
-              <XIcon color={accentColors.opacity100} size={38} />
-            </Bleed>
+          {iconName === 'x' && (
+            <IconContainer height={10} width={20}>
+              <XIcon color={accentColors.opacity100} />
+            </IconContainer>
+          )}
+          {iconName === 'telegram' && (
+            <IconContainer height={10} width={20}>
+              <Icon width={'23'} height={'15'} name="telegram" color={accentColors.opacity100} />
+            </IconContainer>
           )}
           <TextShadow blur={12} shadowOpacity={0.24}>
             <Text weight="semibold" size="17pt" color="accent">
@@ -135,7 +141,7 @@ function Description({ text }: { text: string }) {
   );
 }
 
-export const AboutSection = memo(function AboutSection() {
+export function AboutSection() {
   const { basicAsset: asset, assetMetadata: metadata } = useExpandedAssetSheetContext();
 
   const rowItems = useMemo(() => {
@@ -159,6 +165,15 @@ export const AboutSection = memo(function AboutSection() {
       });
     }
 
+    if (metadata?.links?.telegram?.url) {
+      items.push({
+        iconName: 'telegram',
+        title: 'Telegram',
+        url: metadata.links.telegram.url,
+        value: formatURLForDisplay(metadata.links.telegram.url),
+      });
+    }
+
     items.push({
       icon: '􀊫',
       title: 'Search on Twitter',
@@ -166,7 +181,7 @@ export const AboutSection = memo(function AboutSection() {
     });
 
     return items;
-  }, [asset.name, metadata?.links?.homepage, metadata?.links?.twitter]);
+  }, [asset.name, metadata?.links]);
 
   return (
     <Box gap={40}>
@@ -193,4 +208,4 @@ export const AboutSection = memo(function AboutSection() {
       )}
     </Box>
   );
-});
+}
