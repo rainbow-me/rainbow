@@ -58,7 +58,7 @@ export function useMeteorology<Selected = MeteorologyResult>(
     enabled,
     refetchInterval: 12_000, // 12 seconds
     staleTime: 12_000, // 12 seconds
-    cacheTime: Infinity,
+    cacheTime: 36_000, // 36 seconds
   });
 }
 

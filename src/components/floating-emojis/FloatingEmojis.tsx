@@ -4,7 +4,6 @@ import FloatingEmoji from './FloatingEmoji';
 import GravityEmoji from './GravityEmoji';
 import { useTimeout } from '@/hooks';
 import { position } from '@/styles';
-import { AbsolutePortal } from '../AbsolutePortal';
 
 interface Emoji {
   emojiToRender: string;
@@ -99,49 +98,47 @@ const FloatingEmojis: React.FC<FloatingEmojisProps> = ({
   return (
     <View style={[{ zIndex: 1 }, style]} {...props}>
       {typeof children === 'function' ? children({ onNewEmoji }) : children}
-      <AbsolutePortal>
-        <Animated.View
-          pointerEvents="none"
-          style={{
-            opacity,
-            ...position.coverAsObject,
-          }}
-        >
-          {gravityEnabled
-            ? floatingEmojis.map(({ emojiToRender, x, y }, index) => (
-                <GravityEmoji
-                  key={`${x}${y}`}
-                  distance={Math.ceil(distance)}
-                  duration={duration}
-                  emoji={emojiToRender}
-                  index={index}
-                  left={typeof size === 'number' ? x - size / 2 : x - Number(size) / 2}
-                  size={size}
-                  top={y}
-                />
-              ))
-            : floatingEmojis.map(({ emojiToRender, x, y }, index) => (
-                <FloatingEmoji
-                  centerVertically={centerVertically}
-                  disableHorizontalMovement={disableHorizontalMovement}
-                  disableVerticalMovement={disableVerticalMovement}
-                  distance={Math.ceil(distance)}
-                  duration={duration}
-                  emoji={emojiToRender}
-                  fadeOut={fadeOut}
-                  index={index}
-                  key={`${x}${y}`}
-                  left={`${x}`}
-                  marginTop={marginTop}
-                  opacityThreshold={opacityThreshold}
-                  scaleTo={scaleTo}
-                  size={`${size}`}
-                  top={y}
-                  wiggleFactor={wiggleFactor}
-                />
-              ))}
-        </Animated.View>
-      </AbsolutePortal>
+      <Animated.View
+        pointerEvents="none"
+        style={{
+          opacity,
+          ...position.coverAsObject,
+        }}
+      >
+        {gravityEnabled
+          ? floatingEmojis.map(({ emojiToRender, x, y }, index) => (
+              <GravityEmoji
+                key={`${x}${y}`}
+                distance={Math.ceil(distance)}
+                duration={duration}
+                emoji={emojiToRender}
+                index={index}
+                left={typeof size === 'number' ? x - size / 2 : x - Number(size) / 2}
+                size={`${size}`}
+                top={y}
+              />
+            ))
+          : floatingEmojis.map(({ emojiToRender, x, y }, index) => (
+              <FloatingEmoji
+                centerVertically={centerVertically}
+                disableHorizontalMovement={disableHorizontalMovement}
+                disableVerticalMovement={disableVerticalMovement}
+                distance={Math.ceil(distance)}
+                duration={duration}
+                emoji={emojiToRender}
+                fadeOut={fadeOut}
+                index={index}
+                key={`${x}${y}`}
+                left={x}
+                marginTop={marginTop}
+                opacityThreshold={opacityThreshold}
+                scaleTo={scaleTo}
+                size={`${size}`}
+                top={y}
+                wiggleFactor={wiggleFactor}
+              />
+            ))}
+      </Animated.View>
     </View>
   );
 };

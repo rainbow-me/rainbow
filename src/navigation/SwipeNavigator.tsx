@@ -45,8 +45,20 @@ import SectionListScrollToTopProvider, { useSectionListScrollToTopContext } from
 import Routes from './routesNames';
 import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
 import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
+import { isUsingButtonNavigation, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
-export const TAB_BAR_HEIGHT = IS_IOS ? 48 + safeAreaInsetValues.bottom : 54;
+export const TAB_BAR_HEIGHT = getTabBarHeight();
+
+function getTabBarHeight() {
+  if (IS_IOS) {
+    return 48 + safeAreaInsetValues.bottom;
+  }
+  if (!isUsingButtonNavigation()) {
+    return 48 + NAVIGATION_BAR_HEIGHT;
+  }
+  // If button navigation is enabled, bottom padding is applied at the root level
+  return 48;
+}
 
 const HORIZONTAL_TAB_BAR_INSET = 6;
 const HORIZONTAL_TAB_BAR_INSET_5_TABS = 10;

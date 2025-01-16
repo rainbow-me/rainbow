@@ -40,10 +40,11 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analyticsV2 } from '@/analytics';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 const defaultCarouselHeight = 60;
-const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
-const heightWithoutChart = baseHeight + (android && 30);
+const baseHeight = 386 + (IS_ANDROID && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
+const heightWithoutChart = baseHeight + (IS_ANDROID && 30);
 const heightWithChart = baseHeight + 292;
 
 const Carousel = styled.ScrollView.attrs({
@@ -187,24 +188,15 @@ export default function ChartExpandedState({ asset }) {
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(data?.description?.replace(/\s+/g, ''));
 
-  const scrollableContentHeight = true;
   const { chart, chartType, color, fetchingCharts, updateChartType, initialChartDataLabels, showChart, throttledData } =
     useChartThrottledPoints({
       asset: assetWithPrice,
       heightWithChart: Math.min(
-        carouselHeight +
-          heightWithChart -
-          (!hasBalance && 68) +
-          additionalContentHeight +
-          (additionalContentHeight === 0 ? 0 : scrollableContentHeight),
+        carouselHeight + heightWithChart - (!hasBalance && 68) + additionalContentHeight + (additionalContentHeight === 0 ? 0 : true),
         screenHeight
       ),
       heightWithoutChart: Math.min(
-        carouselHeight +
-          heightWithoutChart -
-          (!hasBalance && 68) +
-          additionalContentHeight +
-          (additionalContentHeight === 0 ? 0 : scrollableContentHeight),
+        carouselHeight + heightWithoutChart - (!hasBalance && 68) + additionalContentHeight + (additionalContentHeight === 0 ? 0 : true),
         screenHeight
       ),
       shortHeightWithChart: Math.min(carouselHeight + heightWithChart - (!hasBalance && 68), screenHeight),
@@ -219,9 +211,9 @@ export default function ChartExpandedState({ asset }) {
     duration.current = 300;
   }
 
-  let ChartExpandedStateSheetHeight = ios || showChart ? heightWithChart : heightWithoutChart;
+  let ChartExpandedStateSheetHeight = IS_IOS || showChart ? heightWithChart : heightWithoutChart;
 
-  if (android && !hasBalance) {
+  if (IS_ANDROID && !hasBalance) {
     ChartExpandedStateSheetHeight -= 60;
   }
 
@@ -271,10 +263,10 @@ export default function ChartExpandedState({ asset }) {
 
   return (
     <SlackSheet
-      additionalTopPadding={android}
+      additionalTopPadding={IS_ANDROID}
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled
-      {...(ios ? { height: '100%' } : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
+      {...(IS_IOS ? { height: '100%' } : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
     >
       <ChartPathProvider data={throttledData}>
         <Chart

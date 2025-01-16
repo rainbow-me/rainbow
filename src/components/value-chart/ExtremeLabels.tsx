@@ -1,23 +1,39 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { LayoutChangeEvent, StyleProp, View, ViewStyle } from 'react-native';
 import { formatNative } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
 import { useChartData } from '@/react-native-animated-charts/src';
 import { Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { supportedNativeCurrencies } from '@/references';
+import { useTheme } from '@/theme';
+import { TextSize } from '@/design-system/typography/typeHierarchy';
 
-function trim(val) {
+function trim(val: number) {
   return Math.min(Math.max(val, 0.05), 0.95);
 }
 
-const CenteredLabel = ({ position, fontSize = '14px / 19px (Deprecated)', style, width, ...props }) => {
+const CenteredLabel = ({
+  children,
+  color,
+  position,
+  size = '14px / 19px (Deprecated)',
+  style,
+  width,
+}: {
+  children: React.ReactNode;
+  color: string;
+  position: number;
+  size?: TextSize;
+  style: StyleProp<ViewStyle>;
+  width: number;
+}) => {
   const [componentWidth, setWidth] = useState(0);
   const onLayout = useCallback(
     ({
       nativeEvent: {
         layout: { width: newWidth },
       },
-    }) => {
+    }: LayoutChangeEvent) => {
       setWidth(newWidth);
     },
     [setWidth]
@@ -30,29 +46,30 @@ const CenteredLabel = ({ position, fontSize = '14px / 19px (Deprecated)', style,
   return (
     <View
       onLayout={onLayout}
-      style={{
-        ...style,
-        left,
-        opacity: componentWidth ? 1 : 0,
-        position: 'absolute',
-      }}
+      style={[
+        style,
+        {
+          left,
+          opacity: componentWidth ? 1 : 0,
+          position: 'absolute',
+        },
+      ]}
     >
-      <Text color={{ custom: props.color }} size={fontSize} weight="bold">
-        {props.children}
+      <Text color={{ custom: color }} size={size} weight="bold">
+        {children}
       </Text>
     </View>
   );
 };
 
-const Labels = ({ color, width, isCard }) => {
+const Labels = ({ color, width, isCard }: { color: string; width: number; isCard: boolean }) => {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { greatestX, greatestY, smallestX, smallestY } = useChartData();
   const { colors } = useTheme();
 
-  if (!greatestX) {
-    return null;
-  }
+  if (!greatestX || !greatestY || !smallestX || !smallestY) return null;
+
   const positionMin = trim((smallestY.x - smallestX.x) / (greatestX.x - smallestX.x));
   const positionMax = trim((greatestY.x - smallestX.x) / (greatestX.x - smallestX.x));
 
@@ -62,27 +79,22 @@ const Labels = ({ color, width, isCard }) => {
         <CenteredLabel
           color={colors.alpha(color, 0.8)}
           position={positionMin}
-          fontSize={isCard ? '13pt' : undefined}
-          style={{
-            bottom: isCard ? -24 : -40,
-          }}
+          size={isCard ? '13pt' : undefined}
+          style={{ bottom: isCard ? -24 : -40 }}
           width={width}
         >
-          {formatNative(smallestY.y, null, nativeSelected)}
+          {formatNative(smallestY.y.toString(), null, nativeSelected)}
         </CenteredLabel>
       ) : null}
       {positionMax ? (
         <CenteredLabel
           color={colors.alpha(color, 0.8)}
           position={positionMax}
-          fontSize={isCard ? '13pt' : undefined}
-          style={{
-            top: -20,
-            left: isCard ? 0 : 40,
-          }}
+          size={isCard ? '13pt' : undefined}
+          style={{ top: -20, left: isCard ? 0 : 40 }}
           width={width}
         >
-          {formatNative(greatestY.y, null, nativeSelected)}
+          {formatNative(greatestY.y.toString(), null, nativeSelected)}
         </CenteredLabel>
       ) : null}
     </>

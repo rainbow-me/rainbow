@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
@@ -161,8 +162,10 @@ export function useFavorites(): {
     cacheTime: Infinity,
   });
 
-  const favoritesMetadata = query.data ?? {};
-  const favorites = Object.keys(favoritesMetadata);
+  const [favoritesMetadata, favorites] = useMemo(() => {
+    const favoritesMetadata = query.data ?? {};
+    return [favoritesMetadata, Object.keys(favoritesMetadata)];
+  }, [query.data]);
 
   return {
     favorites,

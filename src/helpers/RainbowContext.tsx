@@ -97,7 +97,6 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
       )}
       {showSwitchModeButton && __DEV__ && (
         <DevButton color={colors.dark} onPress={() => setTheme(isDarkMode ? 'light' : 'dark')}>
-          {/* @ts-expect-error ts-migrate(2741) FIXME: Property 'name' is missing in type... Remove this comment to see the full error message */}
           <Emoji>{isDarkMode ? '🌞' : '🌚'}</Emoji>
         </DevButton>
       )}

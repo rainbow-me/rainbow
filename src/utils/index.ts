@@ -36,3 +36,4 @@ export { default as withSpeed } from './withSpeed';
 export { default as FallbackIcon } from './CoinIcons/FallbackIcon';
 export { default as getExchangeIconUrl } from './getExchangeIconUrl';
 export { resolveFirstRejectLast } from './resolveFirstRejectLast';
+export { time } from './time';

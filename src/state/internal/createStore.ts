@@ -8,6 +8,9 @@ export type StoreWithPersist<TState> = Mutate<StoreApi<TState>, [['zustand/persi
   initializer: Initializer<TState>;
 };
 
+/**
+ * @deprecated This is a legacy store creator. Use `createRainbowStore` instead.
+ */
 export function createStore<TState>(
   initializer: Initializer<TState>,
   { persist: persistOptions }: { persist?: PersistOptions<TState> } = {}

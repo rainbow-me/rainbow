@@ -199,13 +199,15 @@ export const WalletsAndBackup = () => {
             loadingState: null,
           });
           scrollviewRef.current?.scrollTo({ y: 0, animated: true });
+          const step =
+            backupProvider === WalletBackupTypes.cloud ? walletBackupStepTypes.backup_prompt_cloud : walletBackupStepTypes.backup_prompt;
           Navigation.handleAction(Routes.BACKUP_SHEET, {
-            step: walletBackupStepTypes.backup_prompt,
+            step,
           });
         }
       },
     });
-  }, [dispatch, initializeWallet, navigate, walletTypeCount.phrase]);
+  }, [dispatch, initializeWallet, navigate, walletTypeCount.phrase, backupProvider]);
 
   const onPressLearnMoreAboutCloudBackups = useCallback(() => {
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
