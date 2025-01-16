@@ -33,7 +33,7 @@ export function SheetFooter() {
         startOpacity={0}
         style={{ height: 32, width: '100%', pointerEvents: 'none' }}
       />
-      <Box backgroundColor={accentColors.background} width="full" paddingHorizontal="24px" paddingBottom="44px">
+      <Box paddingHorizontal={'24px'} backgroundColor={accentColors.background} width="full" paddingBottom="44px">
         <Columns space="16px">
           <Column width="content">
             <AssetContextMenu />

@@ -9,13 +9,13 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { useAccountAsset, useAccountSettings } from '@/hooks';
+import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
 
-const BUY_USD_AMOUNTS = [100, 500, 1000, 5000];
+const BUY_USD_AMOUNTS = [1, 100, 500, 1000, 5000];
 const GRADIENT_FADE_WIDTH = 24;
 
 function BuyButton({ usdAmount, onPress }: { usdAmount: number; onPress: () => void }) {
@@ -46,16 +46,18 @@ function BuyButton({ usdAmount, onPress }: { usdAmount: number; onPress: () => v
 }
 
 export const BuySection = memo(function BuySection() {
-  const { accentColors, asset } = useExpandedAssetSheetContext();
-  const { navigate } = useNavigation();
+  const { nativeCurrency } = useAccountSettings();
+  const { accentColors, basicAsset: asset } = useExpandedAssetSheetContext();
   const theme = useTheme();
 
-  const chainId = asset.chainId;
-  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
-  const buyWithAsset = nativeAssetForChain;
+  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(asset.chainId));
+  // We cannot early return here if no native asset because it would be conditionally rendering a hook
+  const buyWithAsset = useAccountAsset(nativeAssetForChain?.uniqueId ?? '', nativeCurrency);
   const assetIsBuyWithAsset = asset.uniqueId === buyWithAsset?.uniqueId;
 
   if (!buyWithAsset || assetIsBuyWithAsset) return null;
+
+  // console.log('buyWithAsset', JSON.stringify(buyWithAsset, null, 2));
 
   return (
     <Box gap={12}>
@@ -71,7 +73,7 @@ export const BuySection = memo(function BuySection() {
             </IconContainer>
             <TextShadow blur={12} shadowOpacity={0.24}>
               <Text weight="semibold" size="17pt" color="accent">
-                {'Pay with'}
+                {`Pay with ${buyWithAsset.symbol}`}
               </Text>
             </TextShadow>
             <RainbowCoinIcon
@@ -113,14 +115,12 @@ export const BuySection = memo(function BuySection() {
             <BuyButton
               key={usdAmount}
               onPress={() => {
-                // TODO: how to set the exact input asset amount defined in user preference currency?
-                swapsStore.setState({
-                  inputAsset: buyWithAsset,
-                  // TODO: types are compatible but different
-                  outputAsset: asset as unknown as ParsedSearchAsset,
-                });
-                InteractionManager.runAfterInteractions(() => {
-                  navigate(Routes.SWAP);
+                InteractionManager.runAfterInteractions(async () => {
+                  navigateToSwaps({
+                    inputAsset: transformRainbowTokenToParsedSearchAsset(buyWithAsset),
+                    outputAsset: transformRainbowTokenToParsedSearchAsset(asset),
+                    inputAmount: '0.001',
+                  });
                 });
               }}
               usdAmount={usdAmount}

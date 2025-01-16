@@ -8,6 +8,11 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ethereumUtils } from '@/utils';
 import EditAction from '@/helpers/EditAction';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { IS_ANDROID } from '@/env';
+import { Box } from '@/design-system';
+
+// TODO: this is meant to for the context menu to be offset properly, but it does not work for the horizontal offset
+const HIT_SLOP = 16;
 
 const ContextMenuActions = {
   BlockExplorer: 'block_explorer',
@@ -147,8 +152,12 @@ export function AssetContextMenu() {
   };
 
   return (
-    <DropdownMenu<ContextMenuAction> menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
-      <SheetActionButton color={accentColors.opacity100} isSquare label={'􀍠'} />
-    </DropdownMenu>
+    <Box style={{ margin: IS_ANDROID ? 0 : -HIT_SLOP }}>
+      <DropdownMenu<ContextMenuAction> menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
+        <Box style={{ margin: IS_ANDROID ? 0 : HIT_SLOP }}>
+          <SheetActionButton color={accentColors.opacity100} isSquare label={'􀍠'} />
+        </Box>
+      </DropdownMenu>
+    </Box>
   );
 }

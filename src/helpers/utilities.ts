@@ -203,7 +203,10 @@ export const abbreviateBigNumber = (value: BigNumber, buffer: number): string =>
 export const abbreviateNumber = (number: number, decimals = 1): string => {
   let prefix = number;
   let suffix = '';
-  if (number >= 1_000_000_000) {
+  if (number >= 1_000_000_000_000) {
+    prefix = number / 1_000_000_000_000;
+    suffix = 't';
+  } else if (number >= 1_000_000_000) {
     prefix = number / 1_000_000_000;
     suffix = 'b';
   } else if (number >= 1_000_000) {
