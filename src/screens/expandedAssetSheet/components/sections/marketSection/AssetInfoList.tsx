@@ -8,7 +8,7 @@ import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/Gestur
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
-const DEFAULT_VISIBLE_ITEMS = 2;
+const DEFAULT_VISIBLE_ITEM_COUNT = 2;
 
 function AssetInfoItem({ title, value, icon, highlighted }: { title: string; value: string; icon: string; highlighted: boolean }) {
   return (
@@ -94,18 +94,22 @@ export function AssetInfoList() {
     return items;
   }, [metadata]);
 
+  const isExpansionRowHighlighted = useDerivedValue(() => {
+    return isExpanded.value ? assetInfoItems.length % 2 === 0 : DEFAULT_VISIBLE_ITEM_COUNT % 2 === 0;
+  });
+
   return (
     <Stack space="4px">
-      {assetInfoItems.slice(0, DEFAULT_VISIBLE_ITEMS).map((item, index) => (
+      {assetInfoItems.slice(0, DEFAULT_VISIBLE_ITEM_COUNT).map((item, index) => (
         <AssetInfoItem key={item.title} title={item.title} value={item.value} icon={item.icon} highlighted={index % 2 === 0} />
       ))}
       <Animated.View style={expandedItemsContainerStyle}>
-        {assetInfoItems.slice(DEFAULT_VISIBLE_ITEMS).map(item => {
+        {assetInfoItems.slice(DEFAULT_VISIBLE_ITEM_COUNT).map(item => {
           const index = assetInfoItems.indexOf(item);
           return <AssetInfoItem key={item.title} title={item.title} value={item.value} icon={item.icon} highlighted={index % 2 === 0} />;
         })}
       </Animated.View>
-      {assetInfoItems.length > DEFAULT_VISIBLE_ITEMS && (
+      {assetInfoItems.length > DEFAULT_VISIBLE_ITEM_COUNT && (
         <GestureHandlerButton
           scaleTo={0.96}
           hapticTrigger="tap-end"
@@ -114,8 +118,7 @@ export function AssetInfoList() {
             isExpanded.value = !isExpanded.value;
           }}
         >
-          {/* TODO: Allow Row to accept animated value for highlighted prop */}
-          <Row highlighted={true}>
+          <Row highlighted={isExpansionRowHighlighted}>
             <Bleed vertical="4px" horizontal="2px">
               <Box width="full" flexDirection="row" alignItems="center" gap={8}>
                 <Box
