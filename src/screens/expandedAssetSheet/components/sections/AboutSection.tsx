@@ -42,7 +42,7 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
             </IconContainer>
           )}
           {iconName && (
-            <Bleed left="8px" vertical="24px">
+            <Bleed horizontal="8px" vertical="24px">
               <XIcon color={accentColors.opacity100} size={38} />
             </Bleed>
           )}
@@ -71,11 +71,18 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
   );
 }
 
-// truncate after the first paragraph or 4th dot
 function truncate(text: string) {
-  const firstParagraph = text.split('\n')[0];
+  const minTruncatedLength = 100;
+
+  const paragraphs = text.split('\n').filter(paragraph => paragraph.trim().length > 0);
+
+  const firstParagraph = paragraphs[0];
+  const secondParagraph = paragraphs[1];
   const first4Sentences = text.split('.').slice(0, 4).join('.') + '.';
-  const shorterOne = first4Sentences.length < firstParagraph?.length ? first4Sentences : firstParagraph;
+
+  const firstSection = firstParagraph.length > minTruncatedLength ? firstParagraph : [firstParagraph, secondParagraph].join('\n\n');
+  const shorterOne = first4Sentences.length < firstSection.length ? first4Sentences : firstSection;
+
   // If there is not much to expand, return the whole text
   if (text.length < shorterOne.length * 1.5) {
     return text;
@@ -84,24 +91,47 @@ function truncate(text: string) {
   return shorterOne;
 }
 
-// TODO: Determine if this is still needed
 function Description({ text }: { text: string }) {
-  const truncatedText = truncate(text);
-  const needToTruncate = truncatedText.length !== text.length;
-  const [truncated, setTruncated] = useState(true);
+  const { accentColors } = useExpandedAssetSheetContext();
+  const truncatedText = useMemo(() => truncate(text), [text]);
+  const canExpand = text.length > truncatedText.length;
+  const [showFullDescription, setShowFullDescription] = useState(!canExpand);
 
   return (
-    <ButtonPressAnimation disabled={!needToTruncate || !truncated} onPress={() => setTruncated(prev => !prev)} scaleTo={1}>
-      <Text weight="medium" size="17pt / 150%" color="labelTertiary">
-        {/* {delayedTruncated ? truncatedText : text} */}
-        {truncatedText}
+    <Box gap={16}>
+      <Text color="labelTertiary" size="17pt / 150%">
+        {showFullDescription ? text : truncatedText}
       </Text>
-      {truncated && needToTruncate && (
-        <Text weight="medium" size="17pt / 150%" color="labelTertiary">
-          {i18n.t('expanded_state.asset.read_more_button')} 􀯼
-        </Text>
+      {!showFullDescription && (
+        <ButtonPressAnimation scaleTo={0.96} hapticTrigger="tap-end" onPress={() => setShowFullDescription(prev => !prev)}>
+          <Row highlighted={true}>
+            <Bleed vertical="4px" horizontal="2px">
+              <Box width="full" flexDirection="row" alignItems="center" gap={8}>
+                <Box
+                  width={{ custom: 20 }}
+                  height={{ custom: 20 }}
+                  borderRadius={40}
+                  style={{ backgroundColor: accentColors.opacity6 }}
+                  borderWidth={1.33}
+                  borderColor={{ custom: accentColors.opacity2 }}
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Text weight="black" align="center" size="icon 10px" color="labelQuaternary">
+                    {`􀆈`}
+                  </Text>
+                </Box>
+                <TextShadow blur={12} shadowOpacity={0.24}>
+                  <Text weight="semibold" size="17pt" align="center" color="labelTertiary">
+                    {'More'}
+                  </Text>
+                </TextShadow>
+              </Box>
+            </Bleed>
+          </Row>
+        </ButtonPressAnimation>
       )}
-    </ButtonPressAnimation>
+    </Box>
   );
 }
 
@@ -158,10 +188,7 @@ export const AboutSection = memo(function AboutSection() {
           <Text weight="bold" size="20pt" color="labelSecondary">
             What is {asset.name}?
           </Text>
-          <Text weight="medium" size="17pt / 150%" color="labelTertiary">
-            {metadata.description}
-          </Text>
-          {/* <Description text={metadata.description} /> */}
+          <Description text={metadata.description} />
         </Box>
       )}
     </Box>
