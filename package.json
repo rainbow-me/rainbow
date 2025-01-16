@@ -126,7 +126,7 @@
     "@react-navigation/stack": "6.3.29",
     "@reown/walletkit": "1.1.1",
     "@reservoir0x/reservoir-sdk": "2.3.0",
-    "@rudderstack/rudder-sdk-react-native": "1.12.1",
+    "@rudderstack/rudder-sdk-react-native": "2.0.0",
     "@sentry/react-native": "5.35.0",
     "@shopify/flash-list": "1.7.2",
     "@shopify/react-native-skia": "1.8.2",
