@@ -1,55 +1,34 @@
 import React, { useEffect, useMemo } from 'react';
-import { ExpandedAssetSheetContextProvider } from './context/ExpandedAssetSheetContext';
+import { ExpandedAssetSheetContextProvider, useExpandedAssetSheetContext } from './context/ExpandedAssetSheetContext';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { SheetContent } from './components/SheetContent';
-import { colors } from '@/styles';
 import { SlackSheet } from '@/components/sheet';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { StatusBar } from 'react-native';
-import { useSharedValue } from 'react-native-reanimated';
 import { StatusBarHelper } from '@/helpers';
 import { Box } from '@/design-system';
-import { SheetFooter } from './components/SheetFooter';
-import chroma from 'chroma-js';
+import { SHEET_FOOTER_HEIGHT, SheetFooter } from './components/SheetFooter';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { RootStackParamList } from '@/navigation/types';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
-export function ExpandedAssetSheet() {
-  const {
-    params: { asset, address, chainId },
-  } = useRoute<RouteProp<RootStackParamList, 'ExpandedAssetSheetV2'>>();
-
-  const yPosition = useSharedValue(0);
-
-  useEffect(() => StatusBarHelper.setLightContent(), []);
-
-  // TODO: remove this by wrapping children such that they have access to the context
-  const backgroundColor = useMemo(() => {
-    const assetColor = asset.colors?.primary ?? colors.appleBlue;
-    return chroma(
-      chroma(assetColor)
-        .rgb()
-        .map(channel => Math.round(channel * (1 - 0.8) + 0 * 0.8))
-    ).css();
-  }, [asset.colors?.primary]);
+function ExpandedAssetSheetContent() {
+  const { accentColors } = useExpandedAssetSheetContext();
 
   return (
-    <ExpandedAssetSheetContextProvider asset={asset} address={address} chainId={chainId}>
+    <>
       <SlackSheet
-        backgroundColor={backgroundColor}
-        // eslint-disable-next-line react/jsx-props-no-spreading
+        backgroundColor={accentColors.background}
         {...(IS_IOS ? { height: '100%' } : {})}
         scrollEnabled
         removeTopPadding
         hideHandle
         additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
-        yPosition={yPosition}
+        bottomInset={SHEET_FOOTER_HEIGHT}
       >
         <SheetContent />
       </SlackSheet>
       <Box position="absolute" top="0px" left="0px" right="0px" width="full" pointerEvents="none">
-        <Box backgroundColor={backgroundColor} height={75} width="full">
+        <Box backgroundColor={accentColors.background} height={75} width="full">
           <Box
             height={{ custom: 5 }}
             width={{ custom: 36 }}
@@ -59,14 +38,28 @@ export function ExpandedAssetSheet() {
           />
         </Box>
         <EasingGradient
-          endColor={backgroundColor}
-          startColor={backgroundColor}
+          endColor={accentColors.background}
+          startColor={accentColors.background}
           endOpacity={0}
           startOpacity={1}
-          style={{ height: 30, width: '100%', pointerEvents: 'none' }}
+          style={{ height: 32, width: '100%', pointerEvents: 'none' }}
         />
       </Box>
       <SheetFooter />
+    </>
+  );
+}
+
+export function ExpandedAssetSheet() {
+  const {
+    params: { asset, address, chainId },
+  } = useRoute<RouteProp<RootStackParamList, 'ExpandedAssetSheetV2'>>();
+
+  useEffect(() => StatusBarHelper.setLightContent(), []);
+
+  return (
+    <ExpandedAssetSheetContextProvider asset={asset} address={address} chainId={chainId}>
+      <ExpandedAssetSheetContent />
     </ExpandedAssetSheetContextProvider>
   );
 }
