@@ -100,6 +100,13 @@ export function AssetInfoList() {
 
   return (
     <Stack space="4px">
+      {assetInfoItems.length === 0 && (
+        <Box justifyContent="center" alignItems="center" paddingTop="12px">
+          <Text color="label" size="17pt" weight="medium">
+            {`No data available`}
+          </Text>
+        </Box>
+      )}
       {assetInfoItems.slice(0, DEFAULT_VISIBLE_ITEM_COUNT).map((item, index) => (
         <AssetInfoItem key={item.title} title={item.title} value={item.value} icon={item.icon} highlighted={index % 2 === 0} />
       ))}
