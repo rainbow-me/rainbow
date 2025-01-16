@@ -2999,6 +2999,10 @@
           "buy_native_token": "Buy %{symbol}"
         },
         "formatted_dates": {
+          "minute_ago": "minute ago",
+          "minutes_ago": "minutes ago",
+          "hour_ago": "hour ago",
+          "hours_ago": "hours ago",
           "today": "Today",
           "day_ago": "day ago",
           "days_ago": "days ago",
