@@ -44,12 +44,12 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
           )}
           {iconName === 'x' && (
             <IconContainer height={10} width={20}>
-              <XIcon color={accentColors.opacity100} />
+              <XIcon color={accentColors.color} />
             </IconContainer>
           )}
           {iconName === 'telegram' && (
             <IconContainer height={10} width={20}>
-              <Icon width={'23'} height={'15'} name="telegram" color={accentColors.opacity100} />
+              <Icon width={'23'} height={'15'} name="telegram" color={accentColors.color} />
             </IconContainer>
           )}
           <TextShadow blur={12} shadowOpacity={0.24}>

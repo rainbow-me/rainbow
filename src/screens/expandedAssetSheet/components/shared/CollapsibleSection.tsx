@@ -83,7 +83,7 @@ const SectionHeader = React.memo(function SectionHeader({ icon, primaryText, sec
         <AnimatedBox style={rotationStyle}>
           <IconContainer height={14} width={24}>
             <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text weight="heavy" align="center" size="17pt" color="accent">
+              <Text weight="heavy" align="center" size="17pt" color={'accent'}>
                 􀆈
               </Text>
             </TextShadow>

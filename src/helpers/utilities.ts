@@ -218,6 +218,25 @@ export const abbreviateNumber = (number: number, decimals = 1): string => {
   }
   return prefix.toFixed(decimals).replace(/\.0$/, '') + suffix;
 };
+export const abbreviateNumberWorklet = (number: number, decimals = 1): string => {
+  'worklet';
+  let prefix = number;
+  let suffix = '';
+  if (number >= 1_000_000_000_000) {
+    prefix = number / 1_000_000_000_000;
+    suffix = 't';
+  } else if (number >= 1_000_000_000) {
+    prefix = number / 1_000_000_000;
+    suffix = 'b';
+  } else if (number >= 1_000_000) {
+    prefix = number / 1_000_000;
+    suffix = 'm';
+  } else if (number >= 1000) {
+    prefix = number / 1000;
+    suffix = 'k';
+  }
+  return prefix.toFixed(decimals).replace(/\.0$/, '') + suffix;
+};
 
 export const handleSignificantDecimalsWorklet = (value: number | string, decimals: number, buffer = 3): string => {
   'worklet';

@@ -8,7 +8,6 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
-import { useNavigation } from '@/navigation';
 import { InteractionManager } from 'react-native';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
@@ -56,8 +55,6 @@ export const BuySection = memo(function BuySection() {
   const assetIsBuyWithAsset = asset.uniqueId === buyWithAsset?.uniqueId;
 
   if (!buyWithAsset || assetIsBuyWithAsset) return null;
-
-  // console.log('buyWithAsset', JSON.stringify(buyWithAsset, null, 2));
 
   return (
     <Box gap={12}>

@@ -15,8 +15,8 @@ export function Row({ children, highlighted }: RowProps) {
     const isHighlighted = typeof highlighted === 'object' ? highlighted.value : highlighted;
 
     return {
-      backgroundColor: isHighlighted ? accentColors.opacity3 : 'transparent',
-      borderColor: isHighlighted ? accentColors.opacity2 : 'transparent',
+      backgroundColor: isHighlighted ? accentColors.surfaceSecondary : 'transparent',
+      borderColor: isHighlighted ? accentColors.borderSecondary : 'transparent',
       borderWidth: 1.33,
       borderRadius: 14,
     };

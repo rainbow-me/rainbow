@@ -12,6 +12,7 @@ import Animated, {
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { colors } from '@/styles';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { abbreviateNumberWorklet } from '@/helpers/utilities';
 
 const DEFAULT_TIMEFRAME = '24h';
 const TIMEFRAME_SWITCH_CONFIG = TIMING_CONFIGS.buttonPressConfig;
@@ -19,52 +20,52 @@ const TIMEFRAME_SWITCH_CONFIG = TIMING_CONFIGS.buttonPressConfig;
 const MARKET_DATA = {
   timeframes: {
     '5m': {
-      relativeChange: 0.82,
-      transactions: 100,
-      volume: 100,
-      makers: 4762,
-      buys: 100,
-      sells: 100,
-      buyVolume: 100,
-      sellVolume: 100,
-      buyers: 100,
-      sellers: 100,
+      relativeChange: -0.18,
+      transactions: 758,
+      volume: 1000000,
+      makers: 46,
+      buys: 220,
+      sells: 447,
+      buyVolume: 105000,
+      sellVolume: 866000,
+      buyers: 21,
+      sellers: 33,
     },
     '1h': {
       relativeChange: 2.25,
-      transactions: 100,
-      volume: 100,
-      makers: 4762,
-      buys: 20,
-      sells: 100,
-      buyVolume: 100,
-      sellVolume: 100,
-      buyers: 100,
-      sellers: 100,
+      transactions: 6473,
+      volume: 3800000,
+      makers: 175,
+      buys: 2711,
+      sells: 3825,
+      buyVolume: 1200000,
+      sellVolume: 2500000,
+      buyers: 122,
+      sellers: 96,
     },
     '6h': {
       relativeChange: -0.24,
-      transactions: 100,
-      volume: 100,
-      makers: 4762,
-      buys: 500,
-      sells: 100,
-      buyVolume: 100,
-      sellVolume: 100,
-      buyers: 100,
-      sellers: 100,
+      transactions: 41636,
+      volume: 24700000,
+      makers: 876,
+      buys: 21441,
+      sells: 20229,
+      buyVolume: 12300000,
+      sellVolume: 12300000,
+      buyers: 625,
+      sellers: 456,
     },
     '24h': {
       relativeChange: 4.28,
-      transactions: 100,
-      volume: 100,
-      makers: 4762,
-      buys: 100,
-      sells: 10,
-      buyVolume: 100,
-      sellVolume: 100,
-      buyers: 100,
-      sellers: 100,
+      transactions: 176320,
+      volume: 99400000,
+      makers: 2883,
+      buys: 103054,
+      sells: 73280,
+      buyVolume: 48900000,
+      sellVolume: 504000000,
+      buyers: 2076,
+      sellers: 1476,
     },
   },
 };
@@ -108,14 +109,18 @@ const RatioBarItem = memo(function RatioBarItem({
   rightTitle,
   leftValue,
   rightValue,
+  leftLabel,
+  rightLabel,
 }: {
   leftTitle: string;
   rightTitle: string;
   leftValue: SharedValue<string>;
   rightValue: SharedValue<string>;
+  leftLabel: SharedValue<string>;
+  rightLabel: SharedValue<string>;
 }) {
   const ratios = useDerivedValue(() => {
-    const [leftRatio, rightRatio] = calculateRatios(Number(leftValue.value), Number(rightValue.value));
+    const [leftRatio, rightRatio] = calculateRatios(parseFloat(leftValue.value), parseFloat(rightValue.value));
     return {
       left: leftRatio,
       right: rightRatio,
@@ -148,10 +153,10 @@ const RatioBarItem = memo(function RatioBarItem({
           </Inline>
           <Inline alignHorizontal="justify">
             <AnimatedText color="label" size="15pt" weight="heavy">
-              {leftValue}
+              {leftLabel}
             </AnimatedText>
             <AnimatedText color="label" size="15pt" weight="heavy">
-              {rightValue}
+              {rightLabel}
             </AnimatedText>
           </Inline>
         </Stack>
@@ -201,8 +206,8 @@ const TimeframeItem = memo(function TimeframeItem({
             <AnimatedText style={textStyle} size="15pt" weight="heavy">
               {timeframe}
             </AnimatedText>
-            <Text color={relativeChange > 0 ? 'green' : 'labelTertiary'} size="15pt" weight="bold">
-              {relativeChange}
+            <Text color={relativeChange > 0 ? 'green' : 'labelTertiary'} size="11pt" weight="heavy">
+              {relativeChange.toFixed(2)}%
             </Text>
           </Stack>
         </Box>
@@ -226,6 +231,8 @@ export const MarketStatsCard = memo(function MarketStatsCard({ marketData = MARK
   const sells = useSharedValue('0');
   const buyVolume = useSharedValue('0');
   const sellVolume = useSharedValue('0');
+  const buyVolumeFormatted = useSharedValue('0');
+  const sellVolumeFormatted = useSharedValue('0');
   const buyers = useSharedValue('0');
   const sellers = useSharedValue('0');
 
@@ -237,15 +244,37 @@ export const MarketStatsCard = memo(function MarketStatsCard({ marketData = MARK
     timeframe => {
       'worklet';
       const timeframeData = timeframes[timeframe as keyof typeof timeframes];
-      transactions.value = timeframeData.transactions.toString();
-      volume.value = timeframeData.volume.toString();
-      makers.value = timeframeData.makers.toString();
-      buys.value = timeframeData.buys.toString();
-      sells.value = timeframeData.sells.toString();
+      transactions.value = timeframeData.transactions.toLocaleString('en-US', {
+        maximumFractionDigits: 2,
+      });
+
+      // TODO
+      volume.value = '$' + abbreviateNumberWorklet(timeframeData.volume, 1);
+
+      makers.value = timeframeData.makers.toLocaleString('en-US', {
+        maximumFractionDigits: 2,
+      });
+
+      buys.value = timeframeData.buys.toLocaleString('en-US', {
+        maximumFractionDigits: 2,
+      });
+      sells.value = timeframeData.sells.toLocaleString('en-US', {
+        maximumFractionDigits: 2,
+      });
+
+      // TODO
+      // This is the only section that requires a separate value for the non formatted value so that the ratio bar can be calculated
+      buyVolumeFormatted.value = '$' + abbreviateNumberWorklet(timeframeData.buyVolume, 1);
+      sellVolumeFormatted.value = '$' + abbreviateNumberWorklet(timeframeData.sellVolume, 1);
       buyVolume.value = timeframeData.buyVolume.toString();
       sellVolume.value = timeframeData.sellVolume.toString();
-      buyers.value = timeframeData.buyers.toString();
-      sellers.value = timeframeData.sellers.toString();
+
+      buyers.value = timeframeData.buyers.toLocaleString('en-US', {
+        maximumFractionDigits: 2,
+      });
+      sellers.value = timeframeData.sellers.toLocaleString('en-US', {
+        maximumFractionDigits: 2,
+      });
     }
   );
 
@@ -281,8 +310,8 @@ export const MarketStatsCard = memo(function MarketStatsCard({ marketData = MARK
       borderRadius={18}
       style={{
         padding: 3,
-        backgroundColor: accentColors.opacity6,
-        borderColor: accentColors.opacity6,
+        backgroundColor: accentColors.surface,
+        borderColor: accentColors.border,
         borderWidth: 1,
       }}
     >
@@ -332,9 +361,23 @@ export const MarketStatsCard = memo(function MarketStatsCard({ marketData = MARK
           </Stack>
           {/* Right Hand Side */}
           <Box style={{ flex: 1 }} gap={16}>
-            <RatioBarItem leftTitle="Buys" rightTitle="Sells" leftValue={buys} rightValue={sells} />
-            <RatioBarItem leftTitle="Bought" rightTitle="Sold" leftValue={buyVolume} rightValue={sellVolume} />
-            <RatioBarItem leftTitle="Buyers" rightTitle="Sellers" leftValue={buyers} rightValue={sellers} />
+            <RatioBarItem leftTitle="Buys" rightTitle="Sells" leftValue={buys} rightValue={sells} leftLabel={buys} rightLabel={sells} />
+            <RatioBarItem
+              leftTitle="Bought"
+              rightTitle="Sold"
+              leftValue={buyVolume}
+              rightValue={sellVolume}
+              leftLabel={buyVolumeFormatted}
+              rightLabel={sellVolumeFormatted}
+            />
+            <RatioBarItem
+              leftTitle="Buyers"
+              rightTitle="Sellers"
+              leftValue={buyers}
+              rightValue={sellers}
+              leftLabel={buyers}
+              rightLabel={sellers}
+            />
           </Box>
         </Inline>
       </Box>

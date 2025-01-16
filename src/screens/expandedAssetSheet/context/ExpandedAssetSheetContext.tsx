@@ -5,7 +5,7 @@ import useAccountAsset from '@/hooks/useAccountAsset';
 import { colors } from '@/styles';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import chroma from 'chroma-js';
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { SharedValue, useSharedValue } from 'react-native-reanimated';
 import { ChainId } from '@/state/backendNetworks/types';
 import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
@@ -13,6 +13,9 @@ import { UniqueId } from '@/__swaps__/types/assets';
 import { isNativeAsset } from '@/handlers/assets';
 import { getNetwork } from '@ethersproject/providers';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
+import { ETH_COLOR, ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
+import { useColorMode } from '@/design-system';
 
 export enum SectionId {
   PROFIT = 'profit',
@@ -31,10 +34,16 @@ interface AccentColors {
   opacity12: string;
   opacity10: string;
   opacity6: string;
+  opacity4: string;
   opacity3: string;
   opacity2: string;
   opacity1: string;
+  color: string;
   background: string;
+  border: string;
+  borderSecondary: string;
+  surface: string;
+  surfaceSecondary: string;
 }
 
 const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
@@ -137,12 +146,11 @@ export function useExpandedAssetSheetContext() {
 
 export function ExpandedAssetSheetContextProvider({ asset, address, chainId, children }: ExpandedAssetSheetContextProviderProps) {
   const { nativeCurrency } = useAccountSettings();
+  const { isDarkMode } = useColorMode();
   const expandedSections = useSharedValue<Record<SectionId, boolean>>(DEFAULT_SECTIONS_STATE);
   const assetUniqueId = getUniqueId(address, chainId);
   const accountAsset = useAccountAsset(assetUniqueId, nativeCurrency);
   const isOwnedAsset = !!accountAsset;
-
-  console.log('param asset', asset);
 
   const basicAsset = useMemo(() => {
     if (isTrendingToken(asset)) return normalizeTrendingToken(asset);
@@ -155,9 +163,20 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
     currency: nativeCurrency,
   });
 
+  const getAssetColor = useCallback(
+    (asset: BasicAsset) => {
+      const isAssetEth = asset.isNativeAsset && asset.symbol === 'ETH';
+      const color = asset.colors?.primary ?? asset.colors?.fallback ?? ETH_COLOR;
+      return isAssetEth ? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR) : color;
+    },
+    [isDarkMode]
+  );
+
+  const assetColor = getAssetColor(basicAsset);
+
+  // const extractedColors = extractColorValueForColors({ colors: basicAsset.colors });
+
   const accentColors: AccentColors = useMemo(() => {
-    const opacity100 = basicAsset.colors?.primary as string;
-    const assetColor = basicAsset.colors?.primary ?? colors.appleBlue;
     const background = chroma(
       chroma(assetColor)
         .rgb()
@@ -165,20 +184,25 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
     ).css();
 
     return {
-      opacity100,
-      opacity80: colors.alpha(opacity100, 0.8),
-      opacity56: colors.alpha(opacity100, 0.56),
-      opacity24: colors.alpha(opacity100, 0.24),
-      opacity12: colors.alpha(opacity100, 0.12),
-      opacity10: colors.alpha(opacity100, 0.1),
-      opacity6: colors.alpha(opacity100, 0.06),
-      opacity3: colors.alpha(opacity100, 0.03),
-      opacity2: colors.alpha(opacity100, 0.02),
-      opacity1: colors.alpha(opacity100, 0.01),
-      border: colors.alpha(opacity100, 0.06),
-      background,
+      opacity100: assetColor,
+      opacity80: colors.alpha(assetColor, 0.8),
+      opacity56: colors.alpha(assetColor, 0.56),
+      opacity24: colors.alpha(assetColor, 0.24),
+      opacity12: colors.alpha(assetColor, 0.12),
+      opacity10: colors.alpha(assetColor, 0.1),
+      opacity6: colors.alpha(assetColor, 0.06),
+      opacity4: colors.alpha(assetColor, 0.04),
+      opacity3: colors.alpha(assetColor, 0.03),
+      opacity2: colors.alpha(assetColor, 0.02),
+      opacity1: colors.alpha(assetColor, 0.01),
+      color: assetColor,
+      border: colors.alpha(assetColor, 0.03),
+      borderSecondary: colors.alpha(assetColor, 0.02),
+      surface: colors.alpha(assetColor, 0.06),
+      surfaceSecondary: colors.alpha(assetColor, 0.03),
+      background: background,
     };
-  }, [basicAsset.colors?.primary]);
+  }, [assetColor]);
 
   return (
     <ExpandedAssetSheetContext.Provider

@@ -108,7 +108,7 @@ export function AssetInfoList() {
     }
 
     return items;
-  }, [metadata]);
+  }, [metadata, asset]);
 
   const isExpansionRowHighlighted = useDerivedValue(() => {
     return isExpanded.value ? assetInfoItems.length % 2 === 0 : DEFAULT_VISIBLE_ITEM_COUNT % 2 === 0;
@@ -148,18 +148,18 @@ export function AssetInfoList() {
                   width={{ custom: 20 }}
                   height={{ custom: 20 }}
                   borderRadius={40}
-                  style={{ backgroundColor: accentColors.opacity6 }}
+                  style={{ backgroundColor: accentColors.border }}
                   borderWidth={1.33}
-                  borderColor={{ custom: accentColors.opacity2 }}
+                  borderColor={{ custom: accentColors.opacity4 }}
                   alignItems="center"
                   justifyContent="center"
                 >
-                  <AnimatedText weight="black" align="center" size="icon 10px" color="labelQuaternary">
+                  <AnimatedText weight="black" align="center" size="icon 10px" color={{ custom: accentColors.color }}>
                     {expandedTextIcon}
                   </AnimatedText>
                 </Box>
                 <TextShadow blur={12} shadowOpacity={0.24}>
-                  <AnimatedText weight="semibold" size="17pt" align="center" color="labelTertiary">
+                  <AnimatedText weight="semibold" size="17pt" align="center" color={{ custom: accentColors.color }}>
                     {expandedText}
                   </AnimatedText>
                 </TextShadow>
