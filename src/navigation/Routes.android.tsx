@@ -210,11 +210,7 @@ function BSNavigator() {
           const { params: { step } = {} as any } = route.route;
 
           let heightForStep = backupSheetSizes.short;
-          if (
-            step === walletBackupStepTypes.backup_cloud ||
-            step === walletBackupStepTypes.backup_manual ||
-            step === walletBackupStepTypes.restore_from_backup
-          ) {
+          if (step === walletBackupStepTypes.create_cloud_backup || step === walletBackupStepTypes.restore_from_backup) {
             heightForStep = backupSheetSizes.long;
           } else if (step === walletBackupStepTypes.backup_prompt) {
             heightForStep = backupSheetSizes.medium;
