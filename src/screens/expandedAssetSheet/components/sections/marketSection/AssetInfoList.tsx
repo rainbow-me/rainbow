@@ -2,13 +2,14 @@ import React, { useMemo } from 'react';
 import { Bleed, AnimatedText, Box, Stack, Text, TextIcon, TextShadow } from '@/design-system';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { Row } from '../../shared/Row';
-import { abbreviateNumber, greaterThanOrEqualTo } from '@/helpers/utilities';
+import { abbreviateNumber } from '@/helpers/utilities';
 import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { formatDate } from '@/utils/formatDate';
 
-const DEFAULT_VISIBLE_ITEM_COUNT = 2;
+const DEFAULT_VISIBLE_ITEM_COUNT = 3;
 
 function AssetInfoItem({ title, value, icon, highlighted }: { title: string; value: string; icon: string; highlighted: boolean }) {
   return (
@@ -31,7 +32,7 @@ function AssetInfoItem({ title, value, icon, highlighted }: { title: string; val
 }
 
 export function AssetInfoList() {
-  const { accentColors, assetMetadata: metadata } = useExpandedAssetSheetContext();
+  const { accentColors, assetMetadata: metadata, basicAsset: asset } = useExpandedAssetSheetContext();
   const isExpanded = useSharedValue(false);
 
   const expandedText = useDerivedValue(() => {
@@ -58,21 +59,28 @@ export function AssetInfoList() {
     if (metadata.marketCap) {
       items.push({
         title: 'Market Cap',
-        value: bigNumberFormat(metadata.marketCap, 'USD', greaterThanOrEqualTo(metadata.marketCap, 1000000000)),
+        value: bigNumberFormat(metadata.marketCap, 'USD', true),
         icon: '􁎢',
       });
     }
     if (metadata.volume1d) {
       items.push({
         title: '24h Volume',
-        value: bigNumberFormat(metadata.volume1d, 'USD', greaterThanOrEqualTo(metadata.volume1d, 1000000000)),
+        value: bigNumberFormat(metadata.volume1d, 'USD', true),
         icon: '􀣉',
+      });
+    }
+    if (asset.creationDate) {
+      items.push({
+        title: 'Created',
+        value: formatDate(asset.creationDate, 'minutes'),
+        icon: '􁖩',
       });
     }
     if (metadata.fullyDilutedValuation) {
       items.push({
         title: 'Fully Diluted Valuation',
-        value: bigNumberFormat(metadata.fullyDilutedValuation, 'USD', greaterThanOrEqualTo(metadata.fullyDilutedValuation, 10000)),
+        value: bigNumberFormat(metadata.fullyDilutedValuation, 'USD', true),
         icon: '􀠏',
       });
     }

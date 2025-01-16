@@ -62,6 +62,7 @@ type BasicAsset = {
     relative_change_24h: number | undefined;
     value: number | undefined;
   };
+  creationDate: string | null;
 };
 
 function isTrendingToken(token: ParsedAddressAsset | TrendingToken): token is TrendingToken {
@@ -84,6 +85,7 @@ function normalizeTrendingToken(token: TrendingToken): BasicAsset {
       relative_change_24h: token.priceChange.day,
       value: token.price,
     },
+    creationDate: token.creationDate,
   };
 }
 
@@ -103,6 +105,7 @@ function normalizeParsedAddressAsset(token: ParsedAddressAsset): BasicAsset {
       relative_change_24h: token.price?.relative_change_24h,
       value: token.price?.value,
     },
+    creationDate: null,
   };
 }
 
@@ -138,6 +141,8 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
   const assetUniqueId = getUniqueId(address, chainId);
   const accountAsset = useAccountAsset(assetUniqueId, nativeCurrency);
   const isOwnedAsset = !!accountAsset;
+
+  console.log('param asset', asset);
 
   const basicAsset = useMemo(() => {
     if (isTrendingToken(asset)) return normalizeTrendingToken(asset);
