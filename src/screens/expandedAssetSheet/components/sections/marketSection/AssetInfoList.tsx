@@ -46,6 +46,7 @@ export function AssetInfoList() {
     return {
       display: isExpanded.value ? 'flex' : 'none',
       opacity: withSpring(isExpanded.value ? 1 : 0, SPRING_CONFIGS.snappierSpringConfig),
+      gap: 4,
     };
   });
 
@@ -59,6 +60,13 @@ export function AssetInfoList() {
         title: 'Market Cap',
         value: bigNumberFormat(metadata.marketCap, 'USD', greaterThanOrEqualTo(metadata.marketCap, 1000000000)),
         icon: '􁎢',
+      });
+    }
+    if (metadata.volume1d) {
+      items.push({
+        title: '24h Volume',
+        value: bigNumberFormat(metadata.volume1d, 'USD', greaterThanOrEqualTo(metadata.volume1d, 1000000000)),
+        icon: '􀣉',
       });
     }
     if (metadata.fullyDilutedValuation) {
