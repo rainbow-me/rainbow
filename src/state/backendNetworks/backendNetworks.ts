@@ -333,14 +333,27 @@ export const useBackendNetworksStore = createRainbowStore<BackendNetworksState>(
         return 'gnosis';
       case ChainId.goerli:
         return 'ethereum-goerli';
+      // case ChainId.gravity: // FIXME: Unsupported as of now https://docs.simplehash.com/reference/supported-chains-testnets#mainnets
+      //   return 'gravity';
+      // case ChainId.ink: // FIXME: Unsupported as of now https://docs.simplehash.com/reference/supported-chains-testnets#mainnets
+      //   return 'ink';
       case ChainId.mainnet:
         return 'ethereum';
       case ChainId.optimism:
         return 'optimism';
       case ChainId.polygon:
         return 'polygon';
+      // case ChainId.sanko: // FIXME: Unsupported as of now https://docs.simplehash.com/reference/supported-chains-testnets#mainnets
+      //   return 'sanko';
+      case ChainId.scroll:
+        return 'scroll';
+      case ChainId.zksync:
+        return 'zksync-era';
       case ChainId.zora:
         return 'zora';
+      case ChainId.linea:
+        return 'linea';
+
       default:
         return '';
     }
