@@ -334,7 +334,7 @@ function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: Shar
 
   return (
     <Animated.View layout={LinearTransition.springify().mass(0.4)} style={[sx.networkOption, animatedStyle]}>
-      <ChainImage chainId={chainId} size={24} />
+      <ChainImage chainId={chainId} position="relative" size={24} />
       <Text align="center" color="label" size="17pt" weight="bold" style={sx.flex}>
         {chainName}
       </Text>

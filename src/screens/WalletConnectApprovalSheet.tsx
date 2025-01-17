@@ -2,8 +2,6 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, InteractionManager } from 'react-native';
-import { ContextMenuButton, OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import ChainLogo from '@/components/ChainLogo';
 import Divider from '@/components/Divider';
 import Spinner from '@/components/Spinner';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -22,12 +20,11 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { Box, Columns, Column as RDSColumn, Inline, Text, TextProps } from '@/design-system';
-import ChainBadge from '@/components/coin-icon/ChainBadge';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import * as lang from '@/languages';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
-import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -36,8 +33,8 @@ import { noop } from 'lodash';
 import { RootStackParamList } from '@/navigation/types';
 import { Address } from 'viem';
 import { RainbowWallet } from '@/model/wallet';
-import { IS_IOS } from '@/env';
 import { WalletconnectMeta } from '@/walletConnect/types';
+import { DropdownMenu } from '@/components/DropdownMenu';
 
 type WithThemeProps = {
   theme: ThemeContextProps;
@@ -81,12 +78,7 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
   if (availableNetworkChainIds.length === 0) return null;
 
   return (
-    <ContextMenuButton
-      menuConfig={{ menuItems: networksMenuItems(), menuTitle: '' }}
-      isMenuPrimaryAction
-      onPressMenuItem={noop}
-      useActionSheetFallback={false}
-    >
+    <DropdownMenu menuConfig={{ menuItems: networksMenuItems() }} onPressMenuItem={noop}>
       <Box
         as={ButtonPressAnimation}
         scaleTo={0.96}
@@ -113,22 +105,14 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
                       borderColor: colors.white,
                     }}
                   >
-                    {chainId !== ChainId.mainnet ? (
-                      <ChainBadge chainId={chainId} position="relative" size="small" />
-                    ) : (
-                      <EthCoinIcon size={20} />
-                    )}
+                    <ChainImage chainId={chainId} size={20} position="relative" />
                   </Box>
                 );
               })}
             </>
           ) : (
             <Inline alignVertical="center" wrap={false}>
-              {availableNetworkChainIds[0] !== ChainId.mainnet ? (
-                <ChainBadge chainId={availableNetworkChainIds[0]} position="relative" size="small" />
-              ) : (
-                <EthCoinIcon size={20} />
-              )}
+              <ChainImage chainId={availableNetworkChainIds[0]} size={20} position="relative" />
 
               <Box paddingLeft="6px">
                 <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold">
@@ -139,7 +123,7 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
           )}
         </Box>
       </Box>
-    </ContextMenuButton>
+    </DropdownMenu>
   );
 };
 
@@ -239,8 +223,7 @@ export function WalletConnectApprovalSheet() {
   }, [approvalChainId, isDarkMode]);
 
   const handleOnPressNetworksMenuItem = useCallback(
-    ({ nativeEvent }: OnPressMenuItemEventObject) =>
-      setApprovalChainId(Number(nativeEvent.actionKey?.replace(NETWORK_MENU_ACTION_KEY_FILTER, ''))),
+    (chainId: string) => setApprovalChainId(Number(chainId?.replace(NETWORK_MENU_ACTION_KEY_FILTER, ''))),
     [setApprovalChainId]
   );
 
@@ -287,10 +270,6 @@ export function WalletConnectApprovalSheet() {
     handleSuccess(false);
   }, [handleSuccess, goBack]);
 
-  const onPressAndroid = useCallback(({ chainId }: { chainId: ChainId }) => {
-    setApprovalChainId(chainId);
-  }, []);
-
   const handlePressChangeWallet = useCallback(() => {
     type === WalletConnectApprovalSheetType.connect &&
       Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
@@ -324,8 +303,7 @@ export function WalletConnectApprovalSheet() {
   }, [failureExplainSheetVariant, goBack, navigate, timedOut]);
 
   const menuItems = useMemo(() => networksMenuItems(), []);
-  const NetworkSwitcherParent =
-    type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? ContextMenuButton : React.Fragment;
+  const NetworkSwitcherParent = type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? DropdownMenu : React.Fragment;
 
   const sheetHeight = type === WalletConnectApprovalSheetType.connect ? 408 : 438;
 
@@ -343,26 +321,25 @@ export function WalletConnectApprovalSheet() {
     } else {
       return (
         <NetworkSwitcherParent
-          isMenuPrimaryAction
-          {...(IS_IOS ? { wrapNativeComponent: false, activeOpacity: 0 } : {})}
-          {...(android ? { onPress: onPressAndroid } : {})}
           menuConfig={{
-            menuItems,
             menuTitle: lang.t('walletconnect.available_networks'),
+            menuItems,
           }}
           onPressMenuItem={handleOnPressNetworksMenuItem}
-          useActionSheetFallback={false}
         >
           <ButtonPressAnimation
             style={{
               alignItems: 'center',
               flexDirection: 'row',
+              gap: 6,
               height: 38,
             }}
           >
-            <Centered marginRight={5}>
-              <ChainLogo chainId={type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.chainId : Number(chainId)} />
-            </Centered>
+            <ChainImage
+              chainId={type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.chainId : Number(chainId)}
+              position="relative"
+              size={20}
+            />
             <LabelText align="right" numberOfLines={1}>
               {`${
                 type === WalletConnectApprovalSheetType.connect
@@ -383,7 +360,6 @@ export function WalletConnectApprovalSheet() {
     handleOnPressNetworksMenuItem,
     isWalletConnectV2,
     menuItems,
-    onPressAndroid,
     type,
   ]);
 

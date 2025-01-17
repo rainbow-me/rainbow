@@ -3,9 +3,10 @@ import * as DropdownMenuPrimitive from 'zeego/dropdown-menu';
 import styled from 'styled-components';
 import { IconConfig, MenuActionConfig, MenuConfig as _MenuConfig } from 'react-native-ios-context-menu';
 import { ImageSystemSymbolConfiguration } from 'react-native-ios-context-menu/lib/typescript/types/ImageItemConfig';
-import { ImageSourcePropType } from 'react-native';
+import { ImageSourcePropType, ImageURISource } from 'react-native';
 import type { SFSymbols5_0 } from 'sf-symbols-typescript';
 import type { DropdownMenuContentProps } from '@radix-ui/react-dropdown-menu';
+import { ButtonPressAnimation } from './animations';
 
 export const DropdownMenuRoot = DropdownMenuPrimitive.Root;
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
@@ -36,13 +37,19 @@ export type MenuItemAssetImage = {
   iconValue: ImageSourcePropType;
 };
 
-export type MenuItemIcon = Omit<IconConfig, 'iconValue' | 'iconType'> & (MenuItemSystemImage | MenuItemAssetImage);
+export type MenuItemRemoteAssetImage = {
+  iconType: 'REMOTE';
+  iconValue: ImageURISource;
+};
+
+export type MenuItemIcon = Omit<IconConfig, 'iconValue' | 'iconType'> &
+  (MenuItemSystemImage | MenuItemAssetImage | MenuItemRemoteAssetImage);
 
 export type MenuItem<T> = Omit<MenuActionConfig, 'icon'> & {
   actionKey: T;
   actionTitle: string;
   destructive?: boolean;
-  icon?: MenuItemIcon | { iconType: string; iconValue: string };
+  icon?: MenuItemIcon | { iconType: string; iconValue: string | ImageSourcePropType };
 };
 
 export type MenuConfig<T extends string> = Omit<_MenuConfig, 'menuItems' | 'menuTitle'> & {
@@ -56,18 +63,23 @@ type DropdownMenuProps<T extends string> = {
   onPressMenuItem: (actionKey: T) => void;
   triggerAction?: 'press' | 'longPress';
   menuItemType?: 'checkbox';
+  testID?: string;
 } & DropdownMenuContentProps;
 
 const buildIconConfig = (icon?: MenuItemIcon) => {
   if (!icon) return null;
 
-  if (icon.iconType === 'SYSTEM' && typeof icon.iconValue === 'string') {
+  if (icon.iconType === 'SYSTEM') {
     const ios = { name: icon.iconValue };
 
     return <DropdownMenuItemIcon ios={ios} />;
   }
 
-  if (icon.iconType === 'ASSET' && typeof icon.iconValue === 'object') {
+  if (icon.iconType === 'ASSET') {
+    return <DropdownMenuItemImage source={icon.iconValue} />;
+  }
+
+  if (icon.iconType === 'REMOTE') {
     return <DropdownMenuItemImage source={icon.iconValue} />;
   }
 
@@ -86,6 +98,7 @@ export function DropdownMenu<T extends string>({
   avoidCollisions = true,
   triggerAction = 'press',
   menuItemType,
+  testID,
 }: DropdownMenuProps<T>) {
   const handleSelectItem = useCallback(
     (actionKey: T) => {
@@ -98,7 +111,9 @@ export function DropdownMenu<T extends string>({
 
   return (
     <DropdownMenuRoot>
-      <DropdownMenuTrigger action={triggerAction}>{children}</DropdownMenuTrigger>
+      <DropdownMenuTrigger action={triggerAction}>
+        <ButtonPressAnimation testID={testID}>{children}</ButtonPressAnimation>
+      </DropdownMenuTrigger>
       <DropdownMenuContent
         loop={loop}
         side={side}
@@ -108,13 +123,6 @@ export function DropdownMenu<T extends string>({
         sideOffset={sideOffset}
         collisionPadding={12}
       >
-        {!!menuConfig.menuTitle?.trim() && (
-          <DropdownMenuPrimitive.Group>
-            <MenuItemComponent disabled>
-              <DropdownMenuItemTitle>{menuConfig.menuTitle}</DropdownMenuItemTitle>
-            </MenuItemComponent>
-          </DropdownMenuPrimitive.Group>
-        )}
         {menuConfig.menuItems?.map(item => {
           const Icon = buildIconConfig(item.icon as MenuItemIcon);
 
@@ -130,6 +138,14 @@ export function DropdownMenu<T extends string>({
             </MenuItemComponent>
           );
         })}
+
+        {!!menuConfig.menuTitle?.trim() && (
+          <DropdownMenuPrimitive.Group>
+            <MenuItemComponent disabled>
+              <DropdownMenuItemTitle>{menuConfig.menuTitle}</DropdownMenuItemTitle>
+            </MenuItemComponent>
+          </DropdownMenuPrimitive.Group>
+        )}
       </DropdownMenuContent>
     </DropdownMenuRoot>
   );

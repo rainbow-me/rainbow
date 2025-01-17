@@ -96,14 +96,7 @@ export default function SendAssetForm({
           width={deviceWidth - 38}
         >
           {isTinyPhone ? null : <AssetRowGradient />}
-          <AssetRowElement
-            badgeYPosition={5}
-            disablePressAnimation
-            item={selected}
-            selected
-            showNativeValue={showNativeValue}
-            testID="send-asset-form"
-          >
+          <AssetRowElement disablePressAnimation item={selected} selected showNativeValue={showNativeValue} testID="send-asset-form">
             <Text align="center" color={colorForAsset || colors.dark} size="large" weight="heavy">
               􀁴
             </Text>

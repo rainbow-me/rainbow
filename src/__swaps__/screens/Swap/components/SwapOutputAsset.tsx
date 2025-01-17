@@ -108,7 +108,7 @@ function SwapOutputAmount({ handleTapWhileDisabled }: { handleTapWhileDisabled: 
 function SwapOutputIcon() {
   return (
     <Box paddingRight="10px">
-      <AnimatedSwapCoinIcon assetType="output" size={36} />
+      <AnimatedSwapCoinIcon assetType="output" size={36} chainSize={16} />
     </Box>
   );
 }
