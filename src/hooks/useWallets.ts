@@ -3,6 +3,7 @@ import { createSelector } from 'reselect';
 import WalletTypes from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
 import { AppState } from '@/redux/store';
+import { IS_DEV } from '@/env';
 
 const walletSelector = createSelector(
   ({ wallets: { selected = {} as RainbowWallet, walletNames, wallets } }: AppState) => ({
@@ -22,7 +23,7 @@ export default function useWallets() {
 
   return {
     isDamaged: selectedWallet?.damaged,
-    isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
+    isReadOnlyWallet: !IS_DEV && selectedWallet.type === WalletTypes.readOnly,
     isHardwareWallet: !!selectedWallet.deviceId,
     selectedWallet,
     walletNames,

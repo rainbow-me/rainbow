@@ -133,11 +133,7 @@ export function CoinRow({ isFavorite, onPress, output, uniqueId, testID, ...asse
                     chainId={chainId}
                     symbol={symbol || ''}
                     color={colors?.primary}
-                    chainSize={28}
-                    chainBadgePosition={{
-                      x: -12,
-                      y: -6,
-                    }}
+                    chainSize={16}
                   />
                   <Box gap={10} flexShrink={1} justifyContent="center">
                     <Text color="label" size="17pt" weight="semibold" numberOfLines={1} ellipsizeMode="tail">

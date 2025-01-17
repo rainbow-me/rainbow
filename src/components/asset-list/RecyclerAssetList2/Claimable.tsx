@@ -97,13 +97,7 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
         <Box borderRadius={11} borderWidth={1} borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}>
           <FasterImageView source={{ url: isETHRewards ? RAINBOW_ICON_URL : claimable?.iconUrl }} style={{ height: 40, width: 40 }} />
         </Box>
-        <ChainImage
-          chainId={isETHRewards ? ChainId.mainnet : claimable?.chainId}
-          size={28}
-          position="absolute"
-          badgeXPosition={-10}
-          badgeYPosition={-10}
-        />
+        <ChainImage badgeXPosition={-10} chainId={isETHRewards ? ChainId.mainnet : claimable?.chainId} size={20} />
         <Stack space={{ custom: 11 }}>
           <Text
             weight="semibold"

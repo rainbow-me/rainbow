@@ -34,15 +34,7 @@ export function ClaimValueDisplay({
                 : {}
             }
           >
-            <RainbowCoinIcon
-              icon={tokenIconUrl}
-              chainId={chainId}
-              symbol={tokenSymbol}
-              chainBadgePosition={{
-                x: -12,
-                y: -6,
-              }}
-            />
+            <RainbowCoinIcon icon={tokenIconUrl} chainId={chainId} symbol={tokenSymbol} />
           </View>
           {label ? (
             <TextShadow blur={12} color={globalColors.grey100} shadowOpacity={0.1} y={4}>

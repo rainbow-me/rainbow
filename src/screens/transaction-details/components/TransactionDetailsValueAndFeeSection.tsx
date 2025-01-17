@@ -85,9 +85,8 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
                     <ChainImage
                       showBadge={transaction.chainId !== ChainId.mainnet}
                       chainId={transaction.chainId}
-                      size={32}
-                      badgeYPosition={0}
-                      badgeXPosition={-12}
+                      badgeXPosition={-10}
+                      badgeYPosition={10}
                     />
                   </View>
                 ) : (
@@ -96,10 +95,6 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
                     chainId={assetData?.chainId || ChainId.mainnet}
                     symbol={assetData?.symbol || ''}
                     color={assetData?.colors?.primary || assetData?.colors?.fallback || undefined}
-                    chainBadgePosition={{
-                      x: -12,
-                      y: -6,
-                    }}
                   />
                 )
               }

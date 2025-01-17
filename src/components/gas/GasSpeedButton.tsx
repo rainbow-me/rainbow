@@ -477,7 +477,7 @@ const GasSpeedButton = ({
                       type: 'timing',
                     }}
                   >
-                    <ChainImage chainId={chainId} size={28} badgeYPosition={-10} badgeXPosition={-14} />
+                    <ChainImage chainId={chainId} position="relative" size={16} />
                   </MotiView>
                 )}
               </AnimatePresence>

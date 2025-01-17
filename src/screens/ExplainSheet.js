@@ -247,11 +247,10 @@ export const explainers = (params, theme) => {
     gas: {
       logo: (
         <RainbowCoinIcon
-          icon={params?.nativeAsset?.icon_url || params?.nativeAsset?.iconURL}
-          symbol={params?.nativeAsset?.symbol}
           chainId={chainId}
           color={params?.nativeAsset?.colors?.primary || params?.nativeAsset?.colors?.fallback || undefined}
-          chainBadgePosition={{ x: -12, y: -6 }}
+          icon={params?.nativeAsset?.icon_url || params?.nativeAsset?.iconURL}
+          symbol={params?.nativeAsset?.symbol}
         />
       ),
       extraHeight: 2,
@@ -459,11 +458,10 @@ export const explainers = (params, theme) => {
       logo: (
         <RowWithMargins justify="center" margin={35} marginBottom={10}>
           <RainbowCoinIcon
-            icon={params?.inputCurrency?.icon_url}
-            symbol={params?.inputCurrency?.symbol}
             chainId={params?.inputCurrency?.chainId}
             color={params?.inputCurrency?.colors?.primary || params?.inputCurrency?.colors?.fallback || undefined}
-            chainBadgePosition={{ x: -12, y: -6 }}
+            icon={params?.inputCurrency?.icon_url}
+            symbol={params?.inputCurrency?.symbol}
           />
         </RowWithMargins>
       ),
@@ -514,19 +512,17 @@ export const explainers = (params, theme) => {
       logo: (
         <RowWithMargins justify="center" margin={35} marginBottom={10}>
           <RainbowCoinIcon
-            icon={params?.inputCurrency?.icon_url}
-            symbol={params?.inputCurrency?.symbol}
             chainId={params?.inputCurrency?.chainId}
             color={params?.inputCurrency?.colors?.primary || params?.inputCurrency?.colors?.fallback || undefined}
-            chainBadgePosition={{ x: -12, y: -6 }}
+            icon={params?.inputCurrency?.icon_url}
+            symbol={params?.inputCurrency?.symbol}
           />
           <DoubleChevron />
           <RainbowCoinIcon
-            icon={params?.outputCurrency?.icon_url}
-            symbol={params?.outputCurrency?.symbol}
             chainId={params?.outputCurrency?.chainId}
             color={params?.outputCurrency?.colors?.primary || params?.outputCurrency?.colors?.fallback || undefined}
-            chainBadgePosition={{ x: -12, y: -6 }}
+            icon={params?.outputCurrency?.icon_url}
+            symbol={params?.outputCurrency?.symbol}
           />
         </RowWithMargins>
       ),
@@ -538,19 +534,17 @@ export const explainers = (params, theme) => {
       logo: (
         <RowWithMargins justify="center" margin={35} marginBottom={10}>
           <RainbowCoinIcon
-            icon={params?.inputCurrency?.icon_url}
-            symbol={params?.inputCurrency?.symbol}
             chainId={params?.inputCurrency?.chainId}
             color={params?.inputCurrency?.colors?.primary || params?.inputCurrency?.colors?.fallback || undefined}
-            chainBadgePosition={{ x: -12, y: -6 }}
+            icon={params?.inputCurrency?.icon_url}
+            symbol={params?.inputCurrency?.symbol}
           />
           <DoubleChevron />
           <RainbowCoinIcon
-            icon={params?.outputCurrency?.icon_url}
-            symbol={params?.outputCurrency?.symbol}
             chainId={params?.outputCurrency?.chainId}
             color={params?.outputCurrency?.colors?.primary || params?.outputCurrency?.colors?.fallback || undefined}
-            chainBadgePosition={{ x: -12, y: -6 }}
+            icon={params?.outputCurrency?.icon_url}
+            symbol={params?.outputCurrency?.symbol}
           />
         </RowWithMargins>
       ),
@@ -717,9 +711,9 @@ const ExplainSheet = () => {
     if (type === 'network') {
       return networkExplainer({ chainId: params.chainId });
     }
-
     return explainers(params, theme)[type];
   }, [theme, params, type]);
+
   const handleClose = useCallback(() => {
     goBack();
     params?.onClose?.();

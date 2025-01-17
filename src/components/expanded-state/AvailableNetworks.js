@@ -64,7 +64,7 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginHorizontal = 
                   width={{ custom: 22 }}
                   zIndex={availableChainIds?.length - index}
                 >
-                  <ChainImage chainId={chainId} size={20} />
+                  <ChainImage chainId={chainId} position="relative" size={20} />
                 </Box>
               );
             })}

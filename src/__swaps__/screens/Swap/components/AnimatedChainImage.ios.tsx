@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-
-import { ChainId } from '@/state/backendNetworks/types';
 import { DerivedValue, useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
-import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
-import { globalColors } from '@/design-system';
 import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
+import { getChainBadgeStyles } from '@/components/coin-icon/ChainImage';
+import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
+import { globalColors, useColorMode } from '@/design-system';
 import { getChainsBadgeWorklet, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export function AnimatedChainImage({
   chainId,
@@ -34,16 +34,21 @@ export function AnimatedChainImage({
     source: {
       ...DEFAULT_FASTER_IMAGE_CONFIG,
       base64Placeholder: BLANK_BASE64_PIXEL,
-      borderRadius: size / 2,
       url: url.value,
     },
   }));
 
+  const { isDarkMode } = useColorMode();
+  const { containerStyle, iconStyle } = useMemo(
+    () => getChainBadgeStyles({ badgeXPosition: -size / 2, badgeYPosition: 0, isDarkMode, position: 'absolute', size }),
+    [isDarkMode, size]
+  );
+
   return (
-    <View style={[sx.badge, { borderRadius: size / 2, height: size, width: size, bottom: -size / 2 + 2, left: -size / 2 + 2 }]}>
+    <View style={containerStyle}>
       {/* ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error */}
       {/* @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps */}
-      <AnimatedFasterImage style={{ height: size, width: size }} animatedProps={animatedIconSource} />
+      <AnimatedFasterImage style={iconStyle} animatedProps={animatedIconSource} />
     </View>
   );
 }

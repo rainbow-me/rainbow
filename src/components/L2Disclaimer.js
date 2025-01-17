@@ -38,9 +38,10 @@ const L2Disclaimer = ({
       <ButtonPressAnimation marginBottom={marginBottom} onPress={onPress} scaleTo={0.95}>
         <Row borderRadius={16} marginHorizontal={marginHorizontal} style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}>
           <RadialGradient {...radialGradientProps} borderRadius={16} radius={600} />
-          <ChainImage chainId={chainId} size={24} badgeXPosition={5} badgeYPosition={8.5} />
-
-          <Column flex={1} justify="center" marginHorizontal={24}>
+          <Column justify="center">
+            <ChainImage chainId={chainId} position="relative" size={20} />
+          </Column>
+          <Column flex={1} justify="center" marginHorizontal={8}>
             <Text
               color={prominent ? colors.alpha(localColors.blueGreyDark, 0.8) : colors.alpha(localColors.blueGreyDark, 0.6)}
               numberOfLines={2}

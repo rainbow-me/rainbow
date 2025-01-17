@@ -58,14 +58,10 @@ export default React.memo(function ExchangeTokenRow({
             <Column width="content">
               <View style={{ height: 59, paddingTop: 9 }}>
                 <RainbowCoinIcon
-                  icon={item?.icon_url || ''}
                   chainId={chainId}
-                  symbol={item?.symbol || symbol}
                   color={item?.colors?.primary || item?.colors?.fallback || undefined}
-                  chainBadgePosition={{
-                    x: -12,
-                    y: -6,
-                  }}
+                  icon={item?.icon_url || ''}
+                  symbol={item?.symbol || symbol}
                 />
               </View>
             </Column>

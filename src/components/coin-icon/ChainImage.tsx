@@ -1,79 +1,119 @@
-import React, { useMemo, forwardRef } from 'react';
-import FastImage from 'react-native-fast-image';
+import { FasterImageView } from '@candlefinance/faster-image';
+import { useColorMode } from '@/design-system';
+import React, { memo, useMemo } from 'react';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { ChainId } from '@/state/backendNetworks/types';
-import styled from '@/styled-thing';
-import { Centered } from '../layout';
-import { position as positions } from '@/styles';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-
-type ChainIconProps = {
-  containerSize: number;
-  iconSize: number;
-};
-
-const ChainIcon = styled(FastImage)(({ containerSize, iconSize }: ChainIconProps) => ({
-  height: containerSize,
-  top: iconSize / 5,
-  width: containerSize,
-}));
-
-type ChainIconPositionWrapperProps = {
-  iconSize: number;
-  badgeXPosition: number;
-  badgeYPosition: number;
-  position: 'absolute' | 'relative';
-};
-
-const ChainIconPositionWrapper = styled(Centered)(
-  ({ iconSize, badgeXPosition, badgeYPosition, position }: ChainIconPositionWrapperProps) => ({
-    bottom: position === 'relative' ? 0 : badgeYPosition,
-    left: position === 'relative' ? 0 : badgeXPosition,
-    ...positions.sizeAsObject(iconSize),
-    elevation: 10,
-    overflow: 'visible',
-    position: position || 'absolute',
-    zIndex: 10,
-  })
-);
+import { BLANK_BASE64_PIXEL } from '../DappBrowser/constants';
+import { DEFAULT_FASTER_IMAGE_CONFIG } from '../images/ImgixImage';
 
 type ChainImageProps = {
-  chainId: ChainId | null | undefined;
-  size?: number;
-  position?: 'absolute' | 'relative';
-  showBadge?: boolean;
   badgeXPosition?: number;
   badgeYPosition?: number;
+  chainId: ChainId | null | undefined;
+  position?: 'absolute' | 'relative';
+  showBadge?: boolean;
+  size?: number;
+  style?: StyleProp<ViewStyle>;
 };
 
-export const ChainImage = forwardRef<React.ElementRef<typeof FastImage>, ChainImageProps>(
-  ({ chainId, size = 20, showBadge = true, badgeXPosition = 0, badgeYPosition = 0, position = 'absolute' }, ref) => {
-    const { containerSize, iconSize } = useMemo(
-      () => ({
-        containerSize: size,
-        iconSize: size,
-      }),
-      [size]
-    );
+export const ChainImage = memo(function ChainImage({
+  badgeXPosition = 0,
+  badgeYPosition = 0,
+  chainId,
+  position = 'absolute',
+  showBadge = true,
+  size = 20,
+  style,
+}: ChainImageProps) {
+  const { isDarkMode } = useColorMode();
+  const { containerStyle, iconStyle } = useMemo(
+    () => getChainBadgeStyles({ badgeXPosition, badgeYPosition, isDarkMode, position, size }),
+    [badgeXPosition, badgeYPosition, isDarkMode, position, size]
+  );
 
-    if (!chainId || !showBadge) return null;
+  if (!chainId || !showBadge) return null;
 
-    const badgeUrl = useBackendNetworksStore.getState().getChainsBadge()[chainId];
-    if (!badgeUrl) return null;
+  const badgeUrl = useBackendNetworksStore.getState().getChainsBadge()[chainId];
+  if (!badgeUrl) return null;
 
-    return badgeXPosition || badgeYPosition ? (
-      <ChainIconPositionWrapper badgeXPosition={badgeXPosition} badgeYPosition={badgeYPosition} iconSize={iconSize} position={position}>
-        <ChainIcon containerSize={containerSize} iconSize={iconSize} source={{ uri: badgeUrl }} ref={ref} />
-      </ChainIconPositionWrapper>
-    ) : (
-      <FastImage
-        // @ts-expect-error couldn't figure out how to type this ref to make ts happy
-        ref={ref}
-        key={`${chainId}-badge-${size}`}
-        source={{ uri: badgeUrl }}
-        style={{ borderRadius: size / 2, height: size, width: size }}
+  return (
+    <View style={[style, containerStyle]}>
+      <FasterImageView
+        source={{
+          ...DEFAULT_FASTER_IMAGE_CONFIG,
+          base64Placeholder: BLANK_BASE64_PIXEL,
+          url: badgeUrl,
+        }}
+        style={iconStyle}
       />
-    );
-  }
-);
+    </View>
+  );
+});
 
-ChainImage.displayName = 'ChainImage';
+type IconLayout = {
+  iconSize: number;
+  iconXPosition: number;
+  iconYPosition: number;
+};
+
+function getIconLayout(size: number): IconLayout {
+  const iconSize = size * 1.6;
+  const sizeDiff = iconSize - size;
+  return {
+    iconSize,
+    iconXPosition: -(sizeDiff / 2),
+    iconYPosition: -(sizeDiff / 3),
+  };
+}
+
+type ContainerStyles = {
+  borderRadius: number | undefined; // ⚠️ Temporary until we add dark mode badges
+  bottom: number | undefined;
+  height: number;
+  left: number | undefined;
+  overflow: 'hidden' | undefined; // ⚠️ Temporary until we add dark mode badges
+  position: 'absolute' | 'relative';
+  width: number;
+};
+type ImageStyles = {
+  height: number;
+  left: number;
+  position: 'absolute';
+  top: number;
+  width: number;
+};
+
+export function getChainBadgeStyles({
+  badgeXPosition = 0,
+  badgeYPosition = 0,
+  isDarkMode,
+  position,
+  size,
+}: {
+  badgeXPosition: number;
+  badgeYPosition: number;
+  isDarkMode: boolean; // ⚠️ Temporary until we add dark mode badges
+  position: 'absolute' | 'relative';
+  size: number;
+}): { containerStyle: ContainerStyles; iconStyle: ImageStyles } {
+  const { iconSize, iconXPosition, iconYPosition } = getIconLayout(size);
+  return {
+    containerStyle: {
+      borderRadius: isDarkMode ? size / 2 : undefined,
+      bottom: badgeYPosition,
+      height: size,
+      left: badgeXPosition,
+      overflow: isDarkMode ? 'hidden' : undefined,
+      position,
+      width: size,
+    },
+    iconStyle: {
+      height: iconSize,
+      left: iconXPosition,
+      position: 'absolute',
+      top: iconYPosition,
+      width: iconSize,
+    },
+  };
+}

@@ -183,13 +183,13 @@ const AvailableNetworksv2 = ({
                               borderRadius: 30,
                             }}
                           >
-                            <ChainImage chainId={chainId} size={20} />
+                            <ChainImage chainId={chainId} position="relative" size={18} />
                           </Box>
                         );
                       })}
                     </Box>
                     {availableChainIds.length > 6 && (
-                      <Text color="labelSecondary" size="13pt" weight="semibold" numberOfLines={2}>
+                      <Text color="labelQuaternary" size="13pt" weight="bold" numberOfLines={2}>
                         +{availableChainIds.length - 6}
                       </Text>
                     )}
@@ -205,23 +205,17 @@ const AvailableNetworksv2 = ({
                     }}
                     paddingLeft="6px"
                   >
-                    <Text
-                      color="secondary60 (Deprecated)"
-                      size="14px / 19px (Deprecated)"
-                      weight="semibold"
-                      numberOfLines={1}
-                      align="right"
-                    >
+                    <Text color="labelQuaternary" size="13pt" weight="bold" numberOfLines={1} align="right">
                       {availableChainIds?.length > 1
                         ? lang.t('expanded_state.asset.available_networks', {
                             availableNetworks: availableChainIds?.length,
                           })
                         : lang.t('expanded_state.asset.available_networkv2', {
-                            availableNetwork: useBackendNetworksStore.getState().getChainsName()[availableChainIds[0]],
+                            availableNetwork: useBackendNetworksStore.getState().getChainsLabel()[availableChainIds[0]],
                           })}
                     </Text>
 
-                    <Text align="center" color="secondary40 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold">
+                    <Text align="center" color="labelQuaternary" size="13pt" weight="bold">
                       {availableChainIds?.length > 1 ? '􀁱' : '􀯻'}
                     </Text>
                   </Box>

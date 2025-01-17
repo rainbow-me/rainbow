@@ -23,15 +23,15 @@ const fallbackIconStyle = (size: number) => ({
 });
 
 export default React.memo(function RainbowCoinIcon({
-  size = 40,
-  icon,
   chainId,
-  symbol,
-  forceDarkMode,
   color,
+  forceDarkMode,
+  icon,
   showBadge = chainId !== ChainId.mainnet,
-  chainSize = (size * 1.5) / 2,
-  chainBadgePosition = {},
+  size = 40,
+  symbol,
+  chainSize = size / 2,
+  chainBadgePosition = { x: -chainSize / 2, y: 0 },
 }: {
   size?: number;
   icon?: string;

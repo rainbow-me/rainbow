@@ -174,12 +174,11 @@ const ChainButtonIcon = ({ output }: { output: boolean | undefined }) => {
       {output ? (
         <ChainImage
           chainId={selectedOutputChainId ?? animatedSelectedOutputChainId.value ?? ChainId.mainnet}
-          size={24}
-          badgeXPosition={-20}
-          badgeYPosition={-8}
+          position="relative"
+          size={16}
         />
       ) : userAssetsFilter && userAssetsFilter !== 'all' ? (
-        <ChainImage chainId={userAssetsFilter} size={24} badgeXPosition={-20} badgeYPosition={-8} />
+        <ChainImage chainId={userAssetsFilter} size={16} position="relative" />
       ) : (
         <></>
       )}

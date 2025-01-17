@@ -384,16 +384,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
           alignItems: 'center',
         }}
       >
-        <RainbowCoinIcon
-          icon={token.icon_url}
-          color={token.colors.primary}
-          chainId={token.chainId}
-          symbol={token.symbol}
-          chainBadgePosition={{
-            x: -12,
-            y: -6,
-          }}
-        />
+        <RainbowCoinIcon icon={token.icon_url} color={token.colors.primary} chainId={token.chainId} symbol={token.symbol} />
 
         <View style={{ gap: 12, flex: 1 }}>
           <FriendHolders friends={token.highlightedFriends} />

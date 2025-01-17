@@ -110,7 +110,7 @@ function SwapOutputIcon() {
 
   return (
     <Box paddingRight="10px">
-      <AnimatedSwapCoinIcon asset={internalSelectedOutputAsset} size={36} chainSize={28} />
+      <AnimatedSwapCoinIcon asset={internalSelectedOutputAsset} size={36} chainSize={16} />
     </Box>
   );
 }

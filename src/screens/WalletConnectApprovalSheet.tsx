@@ -331,15 +331,15 @@ export function WalletConnectApprovalSheet() {
             style={{
               alignItems: 'center',
               flexDirection: 'row',
+              gap: 6,
               height: 38,
             }}
           >
-            <Centered marginRight={5}>
-              <ChainImage
-                chainId={type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.chainId : Number(chainId)}
-                size={28}
-              />
-            </Centered>
+            <ChainImage
+              chainId={type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.chainId : Number(chainId)}
+              position="relative"
+              size={20}
+            />
             <LabelText align="right" numberOfLines={1}>
               {`${
                 type === WalletConnectApprovalSheetType.connect

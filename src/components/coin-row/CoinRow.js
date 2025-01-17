@@ -28,8 +28,8 @@ const Content = styled(Column).attrs({ justify: 'space-between' })({
 
 export default function CoinRow({
   address,
-  badgeXPosition,
-  badgeYPosition,
+  badgeXPosition = -10,
+  badgeYPosition = 0,
   bottomRowRender,
   children,
   coinIconRender = RainbowCoinIcon,

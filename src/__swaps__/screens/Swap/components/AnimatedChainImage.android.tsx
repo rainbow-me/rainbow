@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import React, { useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-
-import { ChainId } from '@/state/backendNetworks/types';
-import { globalColors } from '@/design-system';
-import { PIXEL_RATIO } from '@/utils/deviceUtils';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { DerivedValue } from 'react-native-reanimated';
+import { getChainBadgeStyles } from '@/components/coin-icon/ChainImage';
+import { globalColors, useColorMode } from '@/design-system';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export function AnimatedChainImage({
   chainId,
@@ -29,9 +28,15 @@ export function AnimatedChainImage({
     return source;
   }, [chainId, showMainnetBadge]);
 
+  const { isDarkMode } = useColorMode();
+  const { containerStyle, iconStyle } = useMemo(
+    () => getChainBadgeStyles({ badgeXPosition: -size / 2, badgeYPosition: 0, isDarkMode, position: 'absolute', size }),
+    [isDarkMode, size]
+  );
+
   return (
-    <View style={[sx.badge, { borderRadius: size / 2, height: size, width: size, bottom: -size / 2 + 2, left: -size / 2 + 2 }]}>
-      <Image resizeMode="cover" source={iconSource} style={{ width: size, height: size, borderRadius: (size / 2) * PIXEL_RATIO }} />
+    <View style={containerStyle}>
+      <Image resizeMode="cover" source={iconSource} style={iconStyle} />
     </View>
   );
 }

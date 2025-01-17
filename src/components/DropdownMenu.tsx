@@ -49,7 +49,7 @@ export type MenuItem<T> = Omit<MenuActionConfig, 'icon'> & {
   actionKey: T;
   actionTitle: string;
   destructive?: boolean;
-  icon?: MenuItemIcon | { iconType: string; iconValue: string };
+  icon?: MenuItemIcon | { iconType: string; iconValue: string | ImageSourcePropType };
 };
 
 export type MenuConfig<T extends string> = Omit<_MenuConfig, 'menuItems' | 'menuTitle'> & {
