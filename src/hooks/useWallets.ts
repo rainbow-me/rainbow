@@ -23,7 +23,7 @@ export default function useWallets() {
 
   return {
     isDamaged: selectedWallet?.damaged,
-    isReadOnlyWallet: !IS_DEV && selectedWallet.type === WalletTypes.readOnly,
+    isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
     isHardwareWallet: !!selectedWallet.deviceId,
     selectedWallet,
     walletNames,
