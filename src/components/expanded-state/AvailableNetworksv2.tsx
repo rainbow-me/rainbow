@@ -25,16 +25,6 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 
 const NOOP = () => null;
 
-const radialGradientProps = {
-  center: [0, 1],
-  colors: colors.gradients.lightGreyWhite,
-  pointerEvents: 'none',
-  style: {
-    ...position.coverAsObject,
-    overflow: 'hidden',
-  },
-};
-
 const AvailableNetworksv2 = ({
   asset,
   networks,
@@ -47,6 +37,17 @@ const AvailableNetworksv2 = ({
   marginHorizontal: number;
 }) => {
   const { colors } = useTheme();
+
+  const radialGradientProps = {
+    center: [0, 1],
+    colors: colors.gradients.lightGreyWhite,
+    pointerEvents: 'none',
+    style: {
+      ...position.coverAsObject,
+      overflow: 'hidden',
+    },
+  };
+
   const { goBack, navigate } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
 
@@ -168,7 +169,7 @@ const AvailableNetworksv2 = ({
           <Inline alignVertical="center" alignHorizontal="justify">
             <Inline alignVertical="center">
               <Columns>
-                <Column style={{ justifyContent: 'center' }} width={availableChainIds.length > 1 ? 'content' : undefined}>
+                <Column style={{ justifyContent: 'center' }} width={availableChainIds.length >= 1 ? 'content' : undefined}>
                   <Box style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
                     <Box style={{ flexDirection: 'row', alignItems: 'center' }}>
                       {availableChainIds.slice(0, 6).map((chainId, index) => {
