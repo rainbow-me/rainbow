@@ -105,14 +105,14 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
                       borderColor: colors.white,
                     }}
                   >
-                    <ChainImage chainId={chainId} size={20} />
+                    <ChainImage chainId={chainId} size={20} position="relative" />
                   </Box>
                 );
               })}
             </>
           ) : (
             <Inline alignVertical="center" wrap={false}>
-              <ChainImage chainId={availableNetworkChainIds[0]} size={20} />
+              <ChainImage chainId={availableNetworkChainIds[0]} size={20} position="relative" />
 
               <Box paddingLeft="6px">
                 <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold">
