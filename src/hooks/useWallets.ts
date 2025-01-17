@@ -3,7 +3,6 @@ import { createSelector } from 'reselect';
 import WalletTypes from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
 import { AppState } from '@/redux/store';
-import { IS_DEV } from '@/env';
 
 const walletSelector = createSelector(
   ({ wallets: { selected = {} as RainbowWallet, walletNames, wallets } }: AppState) => ({
