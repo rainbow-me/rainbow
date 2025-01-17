@@ -43,7 +43,6 @@ import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGas
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 import { getChainsLabelWorklet, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
@@ -432,10 +431,10 @@ export function ReviewPanel() {
 const sx = StyleSheet.create({
   chainBadgeContainer: {
     alignItems: 'center',
-    top: 4,
     height: 8,
     left: 8,
     justifyContent: 'center',
+    top: 4,
     width: 16,
   },
 });
