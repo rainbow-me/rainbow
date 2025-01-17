@@ -9,10 +9,8 @@ import { View } from 'react-native';
 import { useTheme } from '@/theme';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
-import ChainBadge from '@/components/coin-icon/ChainBadge';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
-import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const NUM_NFTS = 3;
@@ -53,11 +51,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
             </Inset>
             <Cover alignVertical="top" alignHorizontal="right">
               <Bleed vertical="3px">
-                {collection.chainId !== ChainId.mainnet ? (
-                  <ChainBadge chainId={collection.chainId} position="relative" size="medium" />
-                ) : (
-                  <EthCoinIcon size={20} />
-                )}
+                <ChainImage chainId={collection.chainId} position="relative" size={20} />
               </Bleed>
             </Cover>
           </Box>

@@ -575,7 +575,6 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                         marginHorizontal={0}
                         onPress={handleL2DisclaimerPress}
                         symbol="NFT"
-                        forceDarkMode
                       />
                     ) : null}
                     <Stack separator={<Separator color="divider20 (Deprecated)" />} space={sectionSpace}>

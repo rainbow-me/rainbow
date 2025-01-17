@@ -740,7 +740,7 @@ export const SignTransactionSheet = () => {
                                 <MotiView animate={{ opacity: 1 }} from={{ opacity: 0 }} transition={{ opacity: motiTimingConfig }}>
                                   <Inline alignVertical="center" space={{ custom: 5 }} wrap={false}>
                                     <Bleed vertical="4px">
-                                      <ChainImage chainId={chainId} size={12} />
+                                      <ChainImage chainId={chainId} size={12} position="relative" />
                                     </Bleed>
                                     <Text color="labelQuaternary" size="13pt" weight="semibold">
                                       {`${walletBalance?.display} ${i18n.t(i18n.l.walletconnect.simulation.profile_section.on_network, {
