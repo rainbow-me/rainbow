@@ -51,7 +51,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
             </Inset>
             <Cover alignVertical="top" alignHorizontal="right">
               <Bleed vertical="3px">
-                <ChainImage chainId={collection.chainId} size={20} />
+                <ChainImage chainId={collection.chainId} position="relative" size={20} />
               </Bleed>
             </Cover>
           </Box>
