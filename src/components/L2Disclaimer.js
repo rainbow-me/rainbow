@@ -52,7 +52,7 @@ const L2Disclaimer = ({
                 ? customText
                 : lang.t(lang.l.expanded_state.asset.l2_disclaimer, {
                     symbol,
-                    network: useBackendNetworksStore.getState().getChainsName()[chainId],
+                    network: useBackendNetworksStore.getState().getChainsLabel()[chainId],
                   })}
             </Text>
           </Column>
