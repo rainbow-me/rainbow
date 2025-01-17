@@ -20,12 +20,11 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import assetTypes from '@/entities/assetTypes';
 import { Network, ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
@@ -156,12 +155,7 @@ export const EthCard = () => {
                   </>
                 ) : (
                   <>
-                    <RainbowCoinIcon
-                      icon={useBackendNetworksStore.getState().getChainsBadge()[ChainId.mainnet]}
-                      chainId={ChainId.mainnet}
-                      size={28}
-                      symbol={useBackendNetworksStore.getState().getChainsNativeAsset()[ChainId.mainnet].symbol}
-                    />
+                    <ChainImage chainId={ChainId.mainnet} position="relative" size={20} />
                     <Text size="17pt" color={{ custom: colorForAsset }} weight="heavy">
                       {ethAsset?.name}
                     </Text>
