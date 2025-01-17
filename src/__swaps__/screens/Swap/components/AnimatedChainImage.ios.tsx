@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { DerivedValue, useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
+import { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
 import { getChainBadgeStyles } from '@/components/coin-icon/ChainImage';
@@ -8,24 +8,27 @@ import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { globalColors, useColorMode } from '@/design-system';
 import { getChainsBadgeWorklet, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useSwapContext } from '../providers/swap-provider';
 
 export function AnimatedChainImage({
-  chainId,
+  assetType,
   showMainnetBadge = false,
   size = 20,
 }: {
-  chainId: DerivedValue<ChainId | undefined>;
+  assetType: 'input' | 'output';
   showMainnetBadge?: boolean;
   size?: number;
 }) {
+  const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
   const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
 
   const url = useDerivedValue(() => {
-    const value = typeof chainId === 'number' ? chainId : chainId?.value;
+    const asset = assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset;
+    const chainId = asset?.value?.chainId;
 
     let url = 'eth';
-    if (value !== undefined && !(!showMainnetBadge && value === ChainId.mainnet)) {
-      url = getChainsBadgeWorklet(backendNetworks)[value];
+    if (chainId !== undefined && !(!showMainnetBadge && chainId === ChainId.mainnet)) {
+      url = getChainsBadgeWorklet(backendNetworks)[chainId];
     }
     return url;
   });

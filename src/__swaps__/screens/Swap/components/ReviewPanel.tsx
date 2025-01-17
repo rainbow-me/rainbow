@@ -29,7 +29,6 @@ import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   runOnJS,
-  SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -244,17 +243,6 @@ export const SlippageRow = () => {
   );
 };
 
-type ChainImageProps = {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
-  showMainnetBadge?: boolean;
-  size?: number;
-};
-
-const ChainImage = ({ asset, size = 24, showMainnetBadge = false }: ChainImageProps) => {
-  const chainId = useDerivedValue(() => asset?.value?.chainId);
-  return <AnimatedChainImage chainId={chainId} size={size} showMainnetBadge={showMainnetBadge} />;
-};
-
 export function ReviewPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
@@ -337,7 +325,7 @@ export function ReviewPanel() {
 
             <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
               <View style={sx.chainBadgeContainer}>
-                <ChainImage showMainnetBadge asset={internalSelectedInputAsset} />
+                <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
               </View>
               <AnimatedText
                 align="right"
@@ -398,7 +386,7 @@ export function ReviewPanel() {
               <Stack space="10px">
                 <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
                   <View style={sx.chainBadgeContainer}>
-                    <ChainImage asset={internalSelectedInputAsset} showMainnetBadge />
+                    <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
                   </View>
                   <UnmountOnAnimatedReaction
                     isMountedWorklet={() => {
@@ -444,6 +432,7 @@ export function ReviewPanel() {
 const sx = StyleSheet.create({
   chainBadgeContainer: {
     alignItems: 'center',
+    top: 4,
     height: 8,
     left: 8,
     justifyContent: 'center',
