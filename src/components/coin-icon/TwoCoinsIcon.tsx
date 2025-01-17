@@ -18,8 +18,8 @@ export function TwoCoinsIcon({
   under: ParsedAddressAsset;
 }) {
   const theme = useTheme();
-  const overSize = size * 0.75;
-  const underSize = size * 0.67725;
+  const overSize = size * 0.85;
+  const underSize = size * 0.75;
 
   return (
     <Box style={{ height: size, width: size }}>
@@ -55,7 +55,7 @@ export function TwoCoinsIcon({
       >
         <RainbowCoinIcon chainId={over.chainId as ChainId} icon={over?.icon_url} showBadge={false} size={overSize} symbol={over.symbol} />
       </Box>
-      <ChainImage badgeXPosition={-8} badgeYPosition={0} chainId={over.chainId} showBadge={badge} size={16} style={{ zIndex: 1000 }} />
+      <ChainImage badgeYPosition={0} badgeXPosition={-9} chainId={over.chainId} showBadge={badge} size={20} style={{ zIndex: 1000 }} />
     </Box>
   );
 }
