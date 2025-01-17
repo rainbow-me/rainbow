@@ -30,8 +30,6 @@ export function ClaimCustomization() {
   const [isInitialState, setIsInitialState] = useState(true);
 
   const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
-  const chainsName = useBackendNetworksStore.getState().getChainsName();
-  const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
 
   const { data: usdcSearchData } = useTokenSearch(
     {
