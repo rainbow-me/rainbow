@@ -93,7 +93,7 @@ function NetworkIcons({ chainIds }: { chainIds?: ChainId[] }) {
               borderRadius: 30,
             }}
           >
-            <ChainImage chainId={chainId} size={20} />
+            <ChainImage chainId={chainId} size={20} position="relative" />
           </Box>
         );
       })}
