@@ -80,7 +80,6 @@ export const EthCard = () => {
       asset: ethAsset,
       address: ETH_ADDRESS,
       chainId: ChainId.mainnet,
-      type: 'token',
     });
     analyticsV2.track(analyticsV2.event.cardPressed, {
       cardName: 'EthCard',

@@ -117,10 +117,10 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
 
           setTimeout(() => {
             const _action = (asset: any) => {
-              Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
+              Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
                 asset,
-                fromDiscover: true,
-                type: 'token',
+                address: address,
+                chainId: asset.chainId,
               });
             };
 
