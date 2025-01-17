@@ -1,7 +1,7 @@
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { Navigation } from '@/navigation';
 import store from '@/redux/store';
-import { SwapsState, useSwapsStore } from '@/state/swaps/swapsStore';
+import { SwapsState, swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { setSelectedGasSpeed } from './hooks/useSelectedGas';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import walletTypes from '@/helpers/walletTypes';
@@ -51,6 +51,9 @@ export function getSwapsNavigationParams() {
   const lastTypedInput = inputMethod === 'slider' ? 'inputAmount' : inputMethod;
   const slippage =
     params.slippage && !isNaN(+params.slippage) ? slippageInBipsToString(+params.slippage) : getDefaultSlippage(chainId, getRemoteConfig());
+
+  // Set the slippage in the swaps store to keep it in sync with the initial value
+  swapsStore.getState().setSlippage(slippage);
 
   return {
     inputMethod,
