@@ -678,7 +678,7 @@
       "asset": {
         "about_asset": "About %{assetName}",
         "balance": "Balance",
-        "get_asset": "Get %{assetSymbol}",
+        "get_asset": "Buy %{assetSymbol}",
         "market_cap": "Market cap",
         "read_more_button": "Read more",
         "available_networks": "Available on %{availableNetworks} networks",
@@ -690,9 +690,11 @@
         "social": {
           "facebook": "Facebook",
           "homepage": "Homepage",
+          "website": "Website",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter"
+          "twitter": "Twitter",
+          "search_on_twitter": "Search on Twitter"
         },
         "uniswap_liquidity": "Uniswap liquidity",
         "value": "Value",
@@ -705,6 +707,26 @@
           "unpin": "Unpin",
           "hide": "Hide",
           "unhide": "Unhide"
+        },
+        "no_data_available": "No data available"
+      },
+      "sections": {
+        "market_stats": {
+          "title": "Market Stats",
+          "circulating_supply": "Circulating Supply",
+          "max_supply": "Max Supply",
+          "fully_diluted_valuation": "Fully Diluted Valuation",
+          "market_cap": "Market Cap",
+          "created": "Created",
+          "volume_24_hours": "24h Volume",
+          "rank": "Rank"
+        },
+        "buy": {
+          "title": "Buy"
+        },
+        "about": {
+          "title": "About",
+          "what_is": "What is %{assetName}?"
         }
       },
       "chart": {

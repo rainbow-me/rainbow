@@ -1,4 +1,5 @@
 import React from 'react';
+import * as i18n from '@/languages';
 import { Bleed, Box, Text, TextShadow } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -19,10 +20,10 @@ export function BalanceSection() {
     >
       <Box flexDirection="row" justifyContent="space-between">
         <Text color="labelTertiary" size="15pt" weight="bold">
-          Balance
+          {i18n.t(i18n.l.expanded_state.asset.balance)}
         </Text>
         <Text color="labelTertiary" size="15pt" weight="bold" align="right">
-          Value
+          {i18n.t(i18n.l.expanded_state.asset.value)}
         </Text>
       </Box>
       <Box alignItems="center" width="full" gap={8} flexDirection="row" justifyContent="space-between">

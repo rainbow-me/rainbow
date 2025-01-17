@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import * as i18n from '@/languages';
 import { Dimensions } from 'react-native';
 import dogSunglasses from '@/assets/partnerships/dogSunglasses.png';
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
@@ -217,7 +218,7 @@ export default function ChartWrapper({
         {!showChart && (
           <Box height={HEIGHT} justifyContent="center" alignItems="center">
             <Text color="label" size="17pt" weight="heavy">
-              {'No chart data'}
+              {i18n.t(i18n.l.expanded_state.chart.no_price_data)}
             </Text>
           </Box>
         )}

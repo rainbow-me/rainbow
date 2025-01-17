@@ -47,8 +47,7 @@ export function SheetFooter() {
               asset={asset}
               color={accentColors.opacity100}
               inputType={SwapAssetType.outputAsset}
-              // TODO: change to new copy
-              label={`􀖅 ${i18n.t('expanded_state.asset.get_asset', {
+              label={`􀖅 ${i18n.t(i18n.l.expanded_state.asset.get_asset, {
                 assetSymbol: asset?.symbol,
               })}`}
               weight="heavy"

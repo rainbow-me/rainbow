@@ -67,7 +67,7 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
           <IconContainer height={9} width={16}>
             <TextShadow blur={12} shadowOpacity={0.24}>
               <Text weight="bold" align="center" size="15pt" color="accent">
-                􀄯
+                {`􀄯`}
               </Text>
             </TextShadow>
           </IconContainer>
@@ -129,7 +129,7 @@ function Description({ text }: { text: string }) {
                 </Box>
                 <TextShadow blur={12} shadowOpacity={0.24}>
                   <Text weight="semibold" size="17pt" align="center" color="labelTertiary">
-                    {'More'}
+                    {i18n.t(i18n.l.button.more)}
                   </Text>
                 </TextShadow>
               </Box>
@@ -150,7 +150,7 @@ export function AboutSection() {
     if (metadata?.links?.homepage?.url) {
       items.push({
         icon: '􀎞',
-        title: 'Website',
+        title: i18n.t(i18n.l.expanded_state.asset.social.website),
         url: metadata.links.homepage.url,
         value: formatURLForDisplay(metadata.links.homepage.url),
       });
@@ -159,7 +159,7 @@ export function AboutSection() {
     if (metadata?.links?.twitter?.url) {
       items.push({
         iconName: 'x',
-        title: 'Twitter',
+        title: i18n.t(i18n.l.expanded_state.asset.social.twitter),
         url: metadata.links.twitter.url,
         value: `@${metadata.links.twitter.url.split('/').pop()}`,
       });
@@ -168,7 +168,7 @@ export function AboutSection() {
     if (metadata?.links?.telegram?.url) {
       items.push({
         iconName: 'telegram',
-        title: 'Telegram',
+        title: i18n.t(i18n.l.expanded_state.asset.social.telegram),
         url: metadata.links.telegram.url,
         value: formatURLForDisplay(metadata.links.telegram.url),
       });
@@ -176,7 +176,7 @@ export function AboutSection() {
 
     items.push({
       icon: '􀊫',
-      title: 'Search on Twitter',
+      title: i18n.t(i18n.l.expanded_state.asset.social.search_on_twitter),
       url: `https://x.com/search?q=${asset.name}`,
     });
 
@@ -201,7 +201,7 @@ export function AboutSection() {
       {metadata?.description && (
         <Box gap={24}>
           <Text weight="bold" size="20pt" color="labelSecondary">
-            What is {asset.name}?
+            {i18n.t(i18n.l.expanded_state.sections.about.what_is, { assetName: asset.name })}
           </Text>
           <Description text={metadata.description} />
         </Box>

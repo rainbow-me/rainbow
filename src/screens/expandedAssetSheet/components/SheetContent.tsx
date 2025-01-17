@@ -1,4 +1,5 @@
 import React from 'react';
+import * as i18n from '@/languages';
 import { SectionId, useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
 import { AccentColorProvider, Bleed, Box, ColorModeProvider, Separator, Stack } from '@/design-system';
 import { CollapsibleSection, LAYOUT_ANIMATION } from './shared/CollapsibleSection';
@@ -70,9 +71,20 @@ export function SheetContent() {
                 <BalanceSection />
               </Animated.View>
             )}
-            <CollapsibleSection content={<MarketStatsSection />} icon="􀑃" id={SectionId.MARKET_STATS} primaryText="Market Stats" />
+            <CollapsibleSection
+              content={<MarketStatsSection />}
+              icon="􀑃"
+              id={SectionId.MARKET_STATS}
+              primaryText={i18n.t(i18n.l.expanded_state.sections.market_stats.title)}
+            />
             {isBuySectionVisible && (
-              <CollapsibleSection content={<BuySection />} icon="􀋥" id={SectionId.BUY} primaryText="Buy" secondaryText={asset.symbol} />
+              <CollapsibleSection
+                content={<BuySection />}
+                icon="􀋥"
+                id={SectionId.BUY}
+                primaryText={i18n.t(i18n.l.expanded_state.sections.buy.title)}
+                secondaryText={asset.symbol}
+              />
             )}
             {/* Backlogged */}
             {/* {isOwnedAsset && (

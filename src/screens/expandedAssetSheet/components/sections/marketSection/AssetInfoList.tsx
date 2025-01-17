@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import * as i18n from '@/languages';
 import { Bleed, AnimatedText, Box, Stack, Text, TextIcon, TextShadow } from '@/design-system';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { Row } from '../../shared/Row';
@@ -8,6 +9,7 @@ import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/Gestur
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { formatDate } from '@/utils/formatDate';
+import { useAccountSettings } from '@/hooks';
 
 const DEFAULT_VISIBLE_ITEM_COUNT = 3;
 
@@ -32,11 +34,15 @@ function AssetInfoItem({ title, value, icon, highlighted }: { title: string; val
 }
 
 export function AssetInfoList() {
+  const { nativeCurrency } = useAccountSettings();
   const { accentColors, assetMetadata: metadata, basicAsset: asset } = useExpandedAssetSheetContext();
   const isExpanded = useSharedValue(false);
 
+  const moreText = i18n.t(i18n.l.button.more);
+  const lessText = i18n.t(i18n.l.button.less);
+
   const expandedText = useDerivedValue(() => {
-    return isExpanded.value ? ('Less' as string) : ('More' as string);
+    return isExpanded.value ? lessText : moreText;
   });
 
   const expandedTextIcon = useDerivedValue(() => {
@@ -58,57 +64,57 @@ export function AssetInfoList() {
 
     if (metadata.marketCap) {
       items.push({
-        title: 'Market Cap',
-        value: bigNumberFormat(metadata.marketCap, 'USD', true),
+        title: i18n.t(i18n.l.expanded_state.sections.market_stats.market_cap),
+        value: bigNumberFormat(metadata.marketCap, nativeCurrency, true),
         icon: '􁎢',
       });
     }
     if (metadata.volume1d) {
       items.push({
-        title: '24h Volume',
-        value: bigNumberFormat(metadata.volume1d, 'USD', true),
+        title: i18n.t(i18n.l.expanded_state.sections.market_stats.volume_24_hours),
+        value: bigNumberFormat(metadata.volume1d, nativeCurrency, true),
         icon: '􀣉',
       });
     }
     if (asset.creationDate) {
       items.push({
-        title: 'Created',
+        title: i18n.t(i18n.l.expanded_state.sections.market_stats.created),
         value: formatDate(asset.creationDate, 'minutes'),
         icon: '􁖩',
       });
     }
     if (metadata.fullyDilutedValuation) {
       items.push({
-        title: 'Fully Diluted Valuation',
-        value: bigNumberFormat(metadata.fullyDilutedValuation, 'USD', true),
+        title: i18n.t(i18n.l.expanded_state.sections.market_stats.fully_diluted_valuation),
+        value: bigNumberFormat(metadata.fullyDilutedValuation, nativeCurrency, true),
         icon: '􀠏',
       });
     }
     // BLOCKED: Do not currently have rank data
     // if (metadata.rank) {
     //   items.push({
-    //     title: 'Rank',
+    //     title: i18n.t(i18n.l.expanded_state.sections.market_stats.rank),
     //     value: `#${metadata.rank}`,
     //     icon: '􀄯',
     //   });
     // }
     if (metadata.circulatingSupply) {
       items.push({
-        title: 'Circulating Supply',
+        title: i18n.t(i18n.l.expanded_state.sections.market_stats.circulating_supply),
         value: abbreviateNumber(metadata.circulatingSupply),
         icon: '􂣽',
       });
     }
     if (metadata.totalSupply) {
       items.push({
-        title: 'Max Supply',
+        title: i18n.t(i18n.l.expanded_state.sections.market_stats.max_supply),
         value: abbreviateNumber(metadata.totalSupply),
         icon: '􀅃',
       });
     }
 
     return items;
-  }, [metadata, asset]);
+  }, [metadata, asset, nativeCurrency]);
 
   const isExpansionRowHighlighted = useDerivedValue(() => {
     return isExpanded.value ? assetInfoItems.length % 2 === 0 : DEFAULT_VISIBLE_ITEM_COUNT % 2 === 0;
@@ -119,7 +125,7 @@ export function AssetInfoList() {
       {assetInfoItems.length === 0 && (
         <Box justifyContent="center" alignItems="center" paddingTop="12px">
           <Text color="label" size="17pt" weight="medium">
-            {`No data available`}
+            {i18n.t(i18n.l.expanded_state.asset.no_data_available)}
           </Text>
         </Box>
       )}
