@@ -1,10 +1,10 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { Bleed, Box, Text, TextShadow } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
 
-export const BalanceSection = memo(function BalanceSection() {
+export function BalanceSection() {
   const { accentColors, accountAsset: asset } = useExpandedAssetSheetContext();
   const theme = useTheme();
 
@@ -50,4 +50,4 @@ export const BalanceSection = memo(function BalanceSection() {
       </Box>
     </Box>
   );
-});
+}

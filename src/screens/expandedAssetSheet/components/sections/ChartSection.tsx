@@ -1,10 +1,10 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ChartPathProvider } from '@/react-native-animated-charts/src/charts/linear/ChartPathProvider';
 import { Chart } from '@/components/value-chart';
 import { useChartThrottledPoints } from '@/hooks/charts';
 
-export const ChartSection = memo(function ChartSection() {
+export function ChartSection() {
   const { basicAsset: asset } = useExpandedAssetSheetContext();
 
   const { chart, chartType, color, fetchingCharts, updateChartType, initialChartDataLabels, showChart, throttledData } =
@@ -31,4 +31,4 @@ export const ChartSection = memo(function ChartSection() {
       />
     </ChartPathProvider>
   );
-});
+}

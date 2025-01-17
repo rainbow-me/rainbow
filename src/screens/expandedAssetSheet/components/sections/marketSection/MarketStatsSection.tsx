@@ -1,9 +1,9 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { Stack } from '@/design-system';
 import { MarketStatsCard } from './MarketStatsCard';
 import { AssetInfoList } from './AssetInfoList';
 
-export const MarketStatsSection = memo(function MarketStatsSection() {
+export function MarketStatsSection() {
   return (
     <Stack space="24px">
       {/* BLOCKED: blocked by backend for data */}
@@ -11,4 +11,4 @@ export const MarketStatsSection = memo(function MarketStatsSection() {
       <AssetInfoList />
     </Stack>
   );
-});
+}
