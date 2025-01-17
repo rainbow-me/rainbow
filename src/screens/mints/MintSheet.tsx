@@ -13,7 +13,7 @@ import ImgixImage from '../../components/images/ImgixImage';
 import { SlackSheet } from '../../components/sheet';
 import { CardSize } from '../../components/unique-token/CardSize';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { Bleed, Box, ColorModeProvider, Column, Columns, DebugLayout, Inline, Inset, Separator, Stack, Text } from '@/design-system';
+import { Bleed, Box, ColorModeProvider, Column, Columns, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import { useAccountProfile, useAccountSettings, useDimensions, useENSAvatar, useGas, usePersistentAspectRatio } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
@@ -701,20 +701,15 @@ const MintSheet = () => {
                   symbol="􀤆"
                   label={i18n.t(i18n.l.minting.network)}
                   value={
-                    <Inline space="4px" alignVertical="center" alignHorizontal="right">
-                      <Columns>
-                        <Column width="content">
-                          <Box marginTop={{ custom: -6 }}>
-                            <ChainImage chainId={chainId} size={32} />
-                          </Box>
-                        </Column>
-                        <Column width="content">
-                          <Text color="labelSecondary" align="right" size="17pt" weight="medium">
-                            {`${useBackendNetworksStore.getState().getDefaultChains()[chainId].name}`}
-                          </Text>
-                        </Column>
-                      </Columns>
-                    </Inline>
+                    <Bleed vertical="4px">
+                      <Inline alignHorizontal="right" alignVertical="center" space="6px">
+                        <ChainImage chainId={chainId} position="relative" size={16} />
+
+                        <Text color="labelSecondary" align="right" size="17pt" weight="medium">
+                          {`${useBackendNetworksStore.getState().getDefaultChains()[chainId].name}`}
+                        </Text>
+                      </Inline>
+                    </Bleed>
                   }
                 />
               </Stack>
