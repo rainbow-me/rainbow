@@ -522,7 +522,7 @@ const GasSpeedButton = ({
           <Centered>
             {isLegacyGasNetwork ? (
               <ChainBadgeContainer>
-                <ChainImage chainId={chainId} />
+                <ChainImage chainId={chainId} position="relative" size={16} />
               </ChainBadgeContainer>
             ) : showGasOptions ? (
               <CustomGasButton
