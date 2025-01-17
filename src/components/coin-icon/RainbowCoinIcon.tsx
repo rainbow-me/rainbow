@@ -1,13 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { ChainId } from '@/state/backendNetworks/types';
 import { borders, fonts } from '@/styles';
 import { useTheme } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback } from '@/utils';
-
 import { FastFallbackCoinIconImage } from '../asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
-import { ChainId } from '@/state/backendNetworks/types';
 import { ChainImage } from './ChainImage';
-import { globalColors } from '@/design-system/color/palettes';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -80,15 +78,5 @@ const sx = StyleSheet.create({
   container: {
     elevation: 6,
     overflow: 'visible',
-  },
-  badge: {
-    position: 'absolute',
-    shadowColor: globalColors.grey100,
-    shadowOffset: {
-      height: 4,
-      width: 0,
-    },
-    shadowRadius: 6,
-    shadowOpacity: 0.2,
   },
 });
