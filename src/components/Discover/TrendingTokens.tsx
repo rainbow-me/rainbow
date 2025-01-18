@@ -519,7 +519,7 @@ function NetworkFilter() {
     return {
       icon: (
         <View style={{ marginRight: 2 }}>
-          <ChainImage chainId={chainId} size={16} />
+          <ChainImage chainId={chainId} size={16} position="relative" />
         </View>
       ),
       label: useBackendNetworksStore.getState().getChainsLabel()[chainId],
