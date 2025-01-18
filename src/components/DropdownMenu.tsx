@@ -7,6 +7,7 @@ import { ImageSourcePropType, ImageURISource } from 'react-native';
 import type { SFSymbols5_0 } from 'sf-symbols-typescript';
 import type { DropdownMenuContentProps } from '@radix-ui/react-dropdown-menu';
 import { ButtonPressAnimation } from './animations';
+import ConditionalWrap from 'conditional-wrap';
 
 export const DropdownMenuRoot = DropdownMenuPrimitive.Root;
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
@@ -112,7 +113,12 @@ export function DropdownMenu<T extends string>({
   return (
     <DropdownMenuRoot>
       <DropdownMenuTrigger action={triggerAction}>
-        <ButtonPressAnimation testID={testID}>{children}</ButtonPressAnimation>
+        <ConditionalWrap
+          condition={triggerAction === 'press'}
+          wrap={children => <ButtonPressAnimation testID={testID}>{children}</ButtonPressAnimation>}
+        >
+          {children}
+        </ConditionalWrap>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         loop={loop}
