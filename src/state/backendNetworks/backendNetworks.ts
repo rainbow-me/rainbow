@@ -16,9 +16,9 @@ const INITIAL_BACKEND_NETWORKS = queryClient.getQueryData<BackendNetworksRespons
 const DEFAULT_PRIVATE_MEMPOOL_TIMEOUT = time.minutes(2);
 
 export interface BackendNetworksState {
+  backendChains: Chain[];
   backendNetworks: BackendNetworksResponse;
 
-  getBackendChains: () => Chain[];
   getSupportedChains: () => Chain[];
   getSortedSupportedChainIds: () => number[];
 
@@ -36,13 +36,9 @@ export interface BackendNetworksState {
 
   getColorsForChainId: (chainId: ChainId, isDarkMode: boolean) => string;
 
-  defaultGasSpeeds: (chainId: ChainId) => GasSpeed[];
-
   getChainsGasSpeeds: () => Record<ChainId, GasSpeed[]>;
-  defaultPollingInterval: (chainId: ChainId) => number;
   getChainsPollingInterval: () => Record<ChainId, number>;
 
-  defaultSimplehashNetwork: (chainId: ChainId) => string;
   getChainsSimplehashNetwork: () => Record<ChainId, string>;
   filterChainIdsByService: (servicePath: (services: BackendNetworkServices) => boolean) => ChainId[];
 
@@ -67,40 +63,37 @@ export interface BackendNetworksState {
 }
 
 let lastNetworks: BackendNetworksResponse | null = null;
-let storeGetter: (() => BackendNetworksResponse) | null = null;
 
-function createSelector<T>(selectorFn: (networks: BackendNetworksResponse) => () => T): () => T {
+function createSelector<T>(selectorFn: (networks: BackendNetworksResponse, transformed: Chain[]) => T): () => T {
   let cachedResult: T | undefined = undefined;
-  let memoizedFn: (() => T) | null = null;
+  let memoizedFn: ((networks: BackendNetworksResponse, transformed: Chain[]) => T) | null = null;
 
   return () => {
-    if (!storeGetter) storeGetter = () => useBackendNetworksStore.getState().backendNetworks;
-    const backendNetworks = storeGetter();
+    const { backendChains, backendNetworks } = useBackendNetworksStore.getState();
 
     if (cachedResult !== undefined && lastNetworks === backendNetworks) {
       return cachedResult;
     }
 
     if (!memoizedFn || lastNetworks !== backendNetworks) {
-      memoizedFn = selectorFn(backendNetworks);
       lastNetworks = backendNetworks;
+      memoizedFn = selectorFn;
     }
 
-    cachedResult = memoizedFn();
+    cachedResult = memoizedFn(backendNetworks, backendChains);
     return cachedResult;
   };
 }
 
 function createParameterizedSelector<T, Args extends unknown[]>(
-  selectorFn: (networks: BackendNetworksResponse) => (...args: Args) => T
+  selectorFn: (networks: BackendNetworksResponse, transformed: Chain[]) => (...args: Args) => T
 ): (...args: Args) => T {
   let cachedResult: T | undefined = undefined;
   let lastArgs: Args | null = null;
   let memoizedFn: ((...args: Args) => T) | null = null;
 
   return (...args: Args) => {
-    if (!storeGetter) storeGetter = () => useBackendNetworksStore.getState().backendNetworks;
-    const backendNetworks = storeGetter();
+    const { backendChains, backendNetworks } = useBackendNetworksStore.getState();
     const argsChanged = !lastArgs || args.length !== lastArgs.length || args.some((arg, i) => arg !== lastArgs?.[i]);
 
     if (cachedResult !== undefined && lastNetworks === backendNetworks && !argsChanged) {
@@ -108,8 +101,8 @@ function createParameterizedSelector<T, Args extends unknown[]>(
     }
 
     if (!memoizedFn || lastNetworks !== backendNetworks) {
-      memoizedFn = selectorFn(backendNetworks);
       lastNetworks = backendNetworks;
+      memoizedFn = selectorFn(backendNetworks, backendChains);
     }
 
     lastArgs = args;
@@ -119,24 +112,20 @@ function createParameterizedSelector<T, Args extends unknown[]>(
 }
 
 export const useBackendNetworksStore = createRainbowStore<BackendNetworksState>((set, get) => ({
+  backendChains: transformBackendNetworksToChains(INITIAL_BACKEND_NETWORKS.networks),
   backendNetworks: INITIAL_BACKEND_NETWORKS,
 
-  getBackendChains: createSelector(networks => () => transformBackendNetworksToChains(networks.networks)),
-
-  getSupportedChains: createSelector(networks => () => {
-    const backendChains = transformBackendNetworksToChains(networks.networks);
-    return IS_TEST ? [...backendChains, chainAnvil, chainAnvilOptimism] : backendChains;
+  getSupportedChains: createSelector((_, transformed) => {
+    return IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
   }),
 
-  getSortedSupportedChainIds: createSelector(networks => () => {
-    const chains = transformBackendNetworksToChains(networks.networks);
-    const allChains = IS_TEST ? [...chains, chainAnvil, chainAnvilOptimism] : chains;
+  getSortedSupportedChainIds: createSelector((_, transformed) => {
+    const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
     return allChains.sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
   }),
 
-  getDefaultChains: createSelector(networks => () => {
-    const chains = transformBackendNetworksToChains(networks.networks);
-    const allChains = IS_TEST ? [...chains, chainAnvil, chainAnvilOptimism] : chains;
+  getDefaultChains: createSelector((_, transformed) => {
+    const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
     return allChains.reduce(
       (acc, chain) => {
         acc[chain.id] = chain;
@@ -146,95 +135,85 @@ export const useBackendNetworksStore = createRainbowStore<BackendNetworksState>(
     );
   }),
 
-  getSupportedChainIds: createSelector(networks => () => {
-    const chains = transformBackendNetworksToChains(networks.networks);
-    const allChains = IS_TEST ? [...chains, chainAnvil, chainAnvilOptimism] : chains;
+  getSupportedChainIds: createSelector((_, transformed) => {
+    const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
     return allChains.map(chain => chain.id);
   }),
 
-  getSupportedMainnetChains: createSelector(networks => () => {
-    const chains = transformBackendNetworksToChains(networks.networks);
-    const allChains = IS_TEST ? [...chains, chainAnvil, chainAnvilOptimism] : chains;
+  getSupportedMainnetChains: createSelector((_, transformed) => {
+    const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
     return allChains.filter(chain => !chain.testnet);
   }),
 
-  getSupportedMainnetChainIds: createSelector(networks => () => {
-    const chains = transformBackendNetworksToChains(networks.networks);
-    const allChains = IS_TEST ? [...chains, chainAnvil, chainAnvilOptimism] : chains;
+  getSupportedMainnetChainIds: createSelector((_, transformed) => {
+    const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
     return allChains.filter(chain => !chain.testnet).map(chain => chain.id);
   }),
 
-  getNeedsL1SecurityFeeChains: createSelector(
-    networks => () =>
-      networks.networks
-        .filter((backendNetwork: BackendNetwork) => backendNetwork.opStack)
-        .map((backendNetwork: BackendNetwork) => parseInt(backendNetwork.id, 10))
+  getNeedsL1SecurityFeeChains: createSelector(networks =>
+    networks.networks
+      .filter((backendNetwork: BackendNetwork) => backendNetwork.opStack)
+      .map((backendNetwork: BackendNetwork) => toChainId(backendNetwork.id))
   ),
 
-  getChainsNativeAsset: createSelector(
-    networks => () =>
-      networks.networks.reduce(
-        (acc, backendNetwork) => {
-          acc[parseInt(backendNetwork.id, 10)] = backendNetwork.nativeAsset;
-          return acc;
-        },
-        {} as Record<ChainId, BackendNetwork['nativeAsset']>
-      )
+  getChainsNativeAsset: createSelector(networks =>
+    networks.networks.reduce(
+      (acc, backendNetwork) => {
+        acc[toChainId(backendNetwork.id)] = backendNetwork.nativeAsset;
+        return acc;
+      },
+      {} as Record<ChainId, BackendNetwork['nativeAsset']>
+    )
   ),
 
-  getChainsLabel: createSelector(
-    networks => () =>
-      networks.networks.reduce(
-        (acc, backendNetwork) => {
-          acc[parseInt(backendNetwork.id, 10)] = backendNetwork.label;
-          return acc;
-        },
-        {} as Record<ChainId, string>
-      )
+  getChainsLabel: createSelector(networks =>
+    networks.networks.reduce(
+      (acc, backendNetwork) => {
+        acc[toChainId(backendNetwork.id)] = backendNetwork.label;
+        return acc;
+      },
+      {} as Record<ChainId, string>
+    )
   ),
 
-  getChainsPrivateMempoolTimeout: createSelector(
-    networks => () =>
-      networks.networks.reduce(
-        (acc, backendNetwork) => {
-          acc[parseInt(backendNetwork.id, 10)] = backendNetwork.privateMempoolTimeout || DEFAULT_PRIVATE_MEMPOOL_TIMEOUT;
-          return acc;
-        },
-        {} as Record<ChainId, number>
-      )
+  getChainsPrivateMempoolTimeout: createSelector(networks =>
+    networks.networks.reduce(
+      (acc, backendNetwork) => {
+        acc[toChainId(backendNetwork.id)] = backendNetwork.privateMempoolTimeout || DEFAULT_PRIVATE_MEMPOOL_TIMEOUT;
+        return acc;
+      },
+      {} as Record<ChainId, number>
+    )
   ),
 
-  getChainsName: createSelector(
-    networks => () =>
-      networks.networks.reduce(
-        (acc, backendNetwork) => {
-          acc[parseInt(backendNetwork.id, 10)] = backendNetwork.name;
-          return acc;
-        },
-        {} as Record<ChainId, string>
-      )
+  getChainsName: createSelector(networks =>
+    networks.networks.reduce(
+      (acc, backendNetwork) => {
+        acc[toChainId(backendNetwork.id)] = backendNetwork.name;
+        return acc;
+      },
+      {} as Record<ChainId, string>
+    )
   ),
 
-  getChainsBadge: createSelector(
-    networks => () =>
-      networks.networks.reduce(
-        (acc, backendNetwork) => {
-          acc[parseInt(backendNetwork.id, 10)] = backendNetwork.icons.badgeURL;
-          return acc;
-        },
-        {} as Record<ChainId, string>
-      )
+  getChainsBadge: createSelector(networks =>
+    networks.networks.reduce(
+      (acc, backendNetwork) => {
+        acc[toChainId(backendNetwork.id)] = backendNetwork.icons.badgeURL;
+        return acc;
+      },
+      {} as Record<ChainId, string>
+    )
   ),
 
-  getChainsIdByName: createSelector(
-    networks => () =>
-      networks.networks.reduce(
-        (acc, backendNetwork) => {
-          acc[backendNetwork.name] = parseInt(backendNetwork.id, 10);
-          return acc;
-        },
-        {} as Record<string, ChainId>
-      )
+  getChainsIdByName: createSelector(networks =>
+    networks.networks.reduce(
+      (acc, backendNetwork) => {
+        acc[backendNetwork.name] = toChainId(backendNetwork.id);
+        return acc;
+      },
+      {} as Record<string, ChainId>
+    )
   ),
 
   getColorsForChainId: createParameterizedSelector(networks => (chainId: ChainId, isDarkMode: boolean) => {
@@ -245,223 +224,96 @@ export const useBackendNetworksStore = createRainbowStore<BackendNetworksState>(
     return isDarkMode ? colors.dark : colors.light;
   }),
 
-  defaultGasSpeeds: createParameterizedSelector(() => (chainId: ChainId) => {
-    switch (chainId) {
-      case ChainId.bsc:
-      case ChainId.goerli:
-      case ChainId.polygon:
-        return [GasSpeed.NORMAL, GasSpeed.FAST, GasSpeed.URGENT];
-      case ChainId.gnosis:
-        return [GasSpeed.NORMAL];
-      default:
-        return [GasSpeed.NORMAL, GasSpeed.FAST, GasSpeed.URGENT, GasSpeed.CUSTOM];
-    }
-  }),
-
-  getChainsGasSpeeds: createSelector(networks => () => {
+  getChainsGasSpeeds: createSelector(networks => {
     return networks.networks.reduce(
-      (acc, backendNetwork) => {
-        const chainId = parseInt(backendNetwork.id, 10);
-        switch (chainId) {
-          case ChainId.bsc:
-          case ChainId.goerli:
-          case ChainId.polygon:
-            acc[chainId] = [GasSpeed.NORMAL, GasSpeed.FAST, GasSpeed.URGENT];
-            break;
-          case ChainId.gnosis:
-            acc[chainId] = [GasSpeed.NORMAL];
-            break;
-          default:
-            acc[chainId] = [GasSpeed.NORMAL, GasSpeed.FAST, GasSpeed.URGENT, GasSpeed.CUSTOM];
-        }
+      (acc, backendNetwork): Record<ChainId, GasSpeed[]> => {
+        const chainId = toChainId(backendNetwork.id);
+        acc[chainId] = getDefaultGasSpeeds(chainId);
         return acc;
       },
       {} as Record<ChainId, GasSpeed[]>
     );
   }),
 
-  defaultPollingInterval: createParameterizedSelector(() => (chainId: ChainId) => {
-    switch (chainId) {
-      case ChainId.polygon:
-        return 2_000;
-      case ChainId.arbitrum:
-      case ChainId.bsc:
-        return 3_000;
-      default:
-        return 5_000;
-    }
-  }),
-
-  getChainsPollingInterval: createSelector(networks => () => {
+  getChainsPollingInterval: createSelector(networks => {
     return networks.networks.reduce(
       (acc, backendNetwork) => {
-        const chainId = parseInt(backendNetwork.id, 10);
-        switch (chainId) {
-          case ChainId.polygon:
-            acc[chainId] = 2_000;
-            break;
-          case ChainId.arbitrum:
-          case ChainId.bsc:
-            acc[chainId] = 3_000;
-            break;
-          default:
-            acc[chainId] = 5_000;
-        }
+        const chainId = toChainId(backendNetwork.id);
+        acc[chainId] = getDefaultPollingInterval(chainId);
         return acc;
       },
       {} as Record<ChainId, number>
     );
   }),
 
-  defaultSimplehashNetwork: createParameterizedSelector(() => (chainId: ChainId) => {
-    switch (chainId) {
-      case ChainId.apechain:
-        return 'apechain';
-      case ChainId.arbitrum:
-        return 'arbitrum';
-      case ChainId.avalanche:
-        return 'avalanche';
-      case ChainId.base:
-        return 'base';
-      case ChainId.blast:
-        return 'blast';
-      case ChainId.bsc:
-        return 'bsc';
-      case ChainId.degen:
-        return 'degen';
-      case ChainId.gnosis:
-        return 'gnosis';
-      case ChainId.goerli:
-        return 'ethereum-goerli';
-      // case ChainId.gravity: // FIXME: Unsupported as of now https://docs.simplehash.com/reference/supported-chains-testnets#mainnets
-      //   return 'gravity';
-      // case ChainId.ink: // FIXME: Unsupported as of now https://docs.simplehash.com/reference/supported-chains-testnets#mainnets
-      //   return 'ink';
-      case ChainId.mainnet:
-        return 'ethereum';
-      case ChainId.optimism:
-        return 'optimism';
-      case ChainId.polygon:
-        return 'polygon';
-      // case ChainId.sanko: // FIXME: Unsupported as of now https://docs.simplehash.com/reference/supported-chains-testnets#mainnets
-      //   return 'sanko';
-      case ChainId.scroll:
-        return 'scroll';
-      case ChainId.zksync:
-        return 'zksync-era';
-      case ChainId.zora:
-        return 'zora';
-      case ChainId.linea:
-        return 'linea';
-
-      default:
-        return '';
-    }
-  }),
-
-  getChainsSimplehashNetwork: createSelector(networks => () => {
-    return networks.networks.reduce(
+  getChainsSimplehashNetwork: createSelector(networks =>
+    networks.networks.reduce(
       (acc, backendNetwork) => {
-        const chainId = parseInt(backendNetwork.id, 10);
-        acc[chainId] = (() => {
-          switch (chainId) {
-            case ChainId.apechain:
-              return 'apechain';
-            case ChainId.arbitrum:
-              return 'arbitrum';
-            case ChainId.avalanche:
-              return 'avalanche';
-            case ChainId.base:
-              return 'base';
-            case ChainId.blast:
-              return 'blast';
-            case ChainId.bsc:
-              return 'bsc';
-            case ChainId.degen:
-              return 'degen';
-            case ChainId.gnosis:
-              return 'gnosis';
-            case ChainId.goerli:
-              return 'ethereum-goerli';
-            case ChainId.mainnet:
-              return 'ethereum';
-            case ChainId.optimism:
-              return 'optimism';
-            case ChainId.polygon:
-              return 'polygon';
-            case ChainId.zora:
-              return 'zora';
-            default:
-              return '';
-          }
-        })();
+        const chainId = toChainId(backendNetwork.id);
+        acc[chainId] = getDefaultSimplehashNetwork(chainId);
         return acc;
       },
       {} as Record<ChainId, string>
-    );
-  }),
+    )
+  ),
 
-  filterChainIdsByService: servicePath => {
-    const backendNetworks = get().backendNetworks;
-    return backendNetworks.networks.filter(network => servicePath(network.enabledServices)).map(network => parseInt(network.id, 10));
-  },
+  filterChainIdsByService: createParameterizedSelector(
+    networks => (servicePath: (services: BackendNetworkServices) => boolean) =>
+      networks.networks.filter(network => servicePath(network.enabledServices)).map(network => toChainId(network.id))
+  ),
 
-  getMeteorologySupportedChainIds: () => {
-    return get().filterChainIdsByService(services => services.meteorology.enabled);
-  },
+  getMeteorologySupportedChainIds: createSelector(networks =>
+    networks.networks.filter(network => network.enabledServices.meteorology.enabled).map(network => toChainId(network.id))
+  ),
 
-  getSwapSupportedChainIds: () => {
-    return get().filterChainIdsByService(services => services.swap.enabled);
-  },
+  getSwapSupportedChainIds: createSelector(networks =>
+    networks.networks.filter(network => network.enabledServices.swap.enabled).map(network => toChainId(network.id))
+  ),
 
-  getSwapExactOutputSupportedChainIds: () => {
-    return get().filterChainIdsByService(services => services.swap.swapExactOutput);
-  },
+  getSwapExactOutputSupportedChainIds: createSelector(networks =>
+    networks.networks.filter(network => network.enabledServices.swap.swapExactOutput).map(network => toChainId(network.id))
+  ),
 
-  getBridgeExactOutputSupportedChainIds: () => {
-    return get().filterChainIdsByService(services => services.swap.bridgeExactOutput);
-  },
+  getBridgeExactOutputSupportedChainIds: createSelector(networks =>
+    networks.networks.filter(network => network.enabledServices.swap.bridgeExactOutput).map(network => toChainId(network.id))
+  ),
 
-  getNotificationsSupportedChainIds: () => {
-    return get().filterChainIdsByService(services => services.notifications.enabled);
-  },
+  getNotificationsSupportedChainIds: createSelector(networks =>
+    networks.networks.filter(network => network.enabledServices.notifications.enabled).map(network => toChainId(network.id))
+  ),
 
-  getApprovalsSupportedChainIds: () => {
-    return get().filterChainIdsByService(services => services.addys.approvals);
-  },
+  getApprovalsSupportedChainIds: createSelector(networks =>
+    networks.networks.filter(network => network.enabledServices.addys.approvals).map(network => toChainId(network.id))
+  ),
 
-  getTransactionsSupportedChainIds: () => {
-    return get().filterChainIdsByService(services => services.addys.transactions);
-  },
+  getTransactionsSupportedChainIds: createSelector(networks =>
+    networks.networks.filter(network => network.enabledServices.addys.transactions).map(network => toChainId(network.id))
+  ),
 
-  getSupportedAssetsChainIds: () => {
-    return get().filterChainIdsByService(services => services.addys.assets);
-  },
+  getSupportedAssetsChainIds: createSelector(networks =>
+    networks.networks.filter(network => network.enabledServices.addys.assets).map(network => toChainId(network.id))
+  ),
 
-  getSupportedPositionsChainIds: () => {
-    return get().filterChainIdsByService(services => services.addys.positions);
-  },
+  getSupportedPositionsChainIds: createSelector(networks =>
+    networks.networks.filter(network => network.enabledServices.addys.positions).map(network => toChainId(network.id))
+  ),
 
-  getTokenSearchSupportedChainIds: () => {
-    return get().filterChainIdsByService(services => services.tokenSearch.enabled);
-  },
+  getTokenSearchSupportedChainIds: createSelector(networks =>
+    networks.networks.filter(network => network.enabledServices.tokenSearch.enabled).map(network => toChainId(network.id))
+  ),
 
-  getNftSupportedChainIds: () => {
-    return get().filterChainIdsByService(services => services.nftProxy.enabled);
-  },
+  getNftSupportedChainIds: createSelector(networks =>
+    networks.networks.filter(network => network.enabledServices.nftProxy.enabled).map(network => toChainId(network.id))
+  ),
 
-  getFlashbotsSupportedChainIds: () => {
-    return [ChainId.mainnet];
-  },
+  getFlashbotsSupportedChainIds: createSelector(() => [ChainId.mainnet]),
 
-  getShouldDefaultToFastGasChainIds: () => {
-    return [ChainId.mainnet, ChainId.polygon, ChainId.goerli];
-  },
+  getShouldDefaultToFastGasChainIds: createSelector(() => [ChainId.mainnet, ChainId.polygon, ChainId.goerli]),
 
   getChainGasUnits: createParameterizedSelector(networks => (chainId?: ChainId) => {
     const chainsGasUnits = networks.networks.reduce(
       (acc, backendNetwork: BackendNetwork) => {
-        acc[parseInt(backendNetwork.id, 10)] = backendNetwork.gasUnits;
+        acc[toChainId(backendNetwork.id)] = backendNetwork.gasUnits;
         return acc;
       },
       {} as Record<number, BackendNetwork['gasUnits']>
@@ -470,7 +322,7 @@ export const useBackendNetworksStore = createRainbowStore<BackendNetworksState>(
     return (chainId ? chainsGasUnits[chainId] : undefined) || chainsGasUnits[ChainId.mainnet];
   }),
 
-  getChainDefaultRpc: chainId => {
+  getChainDefaultRpc: createParameterizedSelector(() => chainId => {
     const defaultChains = get().getDefaultChains();
     switch (chainId) {
       case ChainId.mainnet:
@@ -480,11 +332,102 @@ export const useBackendNetworksStore = createRainbowStore<BackendNetworksState>(
       default:
         return defaultChains[chainId].rpcUrls.default.http[0];
     }
-  },
+  }),
 
   setBackendNetworks: backendNetworks =>
     set(state => {
       if (isEqual(state.backendNetworks, backendNetworks)) return state;
-      return { backendNetworks };
+      return {
+        backendChains: transformBackendNetworksToChains(backendNetworks.networks),
+        backendNetworks,
+      };
     }),
 }));
+
+/** -----------------------------------------------------------------------------------
+ *  Backend networks helper functions.
+ *  Some of these defaults, e.g. gas speeds, should eventually come from the backend.
+ * ------------------------------------------------------------------------------------*/
+
+function toChainId(id: string): ChainId {
+  return parseInt(id, 10);
+}
+
+function getDefaultGasSpeeds(chainId: ChainId): GasSpeed[] {
+  switch (chainId) {
+    case ChainId.bsc:
+    case ChainId.goerli:
+    case ChainId.polygon:
+      return [GasSpeed.NORMAL, GasSpeed.FAST, GasSpeed.URGENT];
+    case ChainId.gnosis:
+      return [GasSpeed.NORMAL];
+    default:
+      return [GasSpeed.NORMAL, GasSpeed.FAST, GasSpeed.URGENT, GasSpeed.CUSTOM];
+  }
+}
+
+function getDefaultPollingInterval(chainId: ChainId): number {
+  switch (chainId) {
+    case ChainId.polygon:
+      return 2_000;
+    case ChainId.arbitrum:
+    case ChainId.bsc:
+      return 3_000;
+    default:
+      return 5_000;
+  }
+}
+
+function getDefaultSimplehashNetwork(chainId: ChainId): string {
+  switch (chainId) {
+    case ChainId.apechain:
+      return 'apechain';
+    case ChainId.arbitrum:
+      return 'arbitrum';
+    case ChainId.avalanche:
+      return 'avalanche';
+    case ChainId.base:
+      return 'base';
+    case ChainId.blast:
+      return 'blast';
+    case ChainId.bsc:
+      return 'bsc';
+    case ChainId.degen:
+      return 'degen';
+    case ChainId.gnosis:
+      return 'gnosis';
+    case ChainId.goerli:
+      return 'ethereum-goerli';
+
+    // FIXME: Unsupported as of now https://docs.simplehash.com/reference/supported-chains-testnets#mainnets
+    // case ChainId.gravity:
+    //   return 'gravity';
+
+    // FIXME: Unsupported as of now https://docs.simplehash.com/reference/supported-chains-testnets#mainnets
+    // case ChainId.ink:
+    //   return 'ink';
+
+    case ChainId.mainnet:
+      return 'ethereum';
+    case ChainId.optimism:
+      return 'optimism';
+    case ChainId.polygon:
+      return 'polygon';
+
+    // FIXME: Unsupported as of now https://docs.simplehash.com/reference/supported-chains-testnets#mainnets
+    // case ChainId.sanko:
+    //   return 'sanko';
+
+    case ChainId.scroll:
+      return 'scroll';
+    case ChainId.zksync:
+      return 'zksync-era';
+    case ChainId.zora:
+      return 'zora';
+    case ChainId.linea:
+      return 'linea';
+
+    default:
+      return '';
+  }
+}
