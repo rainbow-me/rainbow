@@ -12,7 +12,7 @@ module.exports = {
   reporters: ['detox/runners/jest/reporter'],
 
   testTimeout: 300_000,
-  testRegex: '\\.spec\\.[jt]sx?$',
+  testRegex: '^(?!.*parallel/).*.spec.[jt]sx?$',
   verbose: false,
   transform: {
     '\\.[jt]sx?$': 'ts-jest',

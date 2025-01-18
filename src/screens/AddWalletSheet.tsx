@@ -59,10 +59,11 @@ export const AddWalletSheet = () => {
       isFirstWallet,
       type: 'seed',
     });
-    navigate(Routes.ADD_WALLET_NAVIGATOR, {
-      screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
-      params: { type: 'import', isFirstWallet },
-    });
+    navigate(Routes.IMPORT_OR_WATCH_WALLET_SHEET, { params: { type: 'import', isFirstWallet } });
+    // navigate(Routes.ADD_WALLET_NAVIGATOR, {
+    //   screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
+    //   params: { type: 'import', isFirstWallet },
+    // });
   };
 
   const onPressWatch = () => {
