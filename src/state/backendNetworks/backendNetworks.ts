@@ -120,7 +120,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
         };
       });
     },
-    staleTime: time.minutes(15),
+    staleTime: time.minutes(10),
   },
 
   (_, get) => ({
