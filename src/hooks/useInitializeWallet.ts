@@ -16,7 +16,6 @@ import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useOpenSmallBalances from './useOpenSmallBalances';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { PROFILES, useExperimentalFlag } from '@/config';
 import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
 import { RainbowError, logger } from '@/logger';
 import { getOrCreateDeviceId, getWalletContext } from '@/analytics/utils';
@@ -32,7 +31,6 @@ export default function useInitializeWallet() {
   const { network } = useAccountSettings();
   const hideSplashScreen = useHideSplashScreen();
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
-  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const getWalletStatusForPerformanceMetrics = (isNew: boolean, isImporting: boolean): string => {
     if (isNew) {
@@ -180,7 +178,7 @@ export default function useInitializeWallet() {
         return null;
       }
     },
-    [dispatch, hideSplashScreen, loadAccountData, loadGlobalEarlyData, network, profilesEnabled, setIsSmallBalancesOpen]
+    [dispatch, hideSplashScreen, loadAccountData, loadGlobalEarlyData, network, setIsSmallBalancesOpen]
   );
 
   return initializeWallet;

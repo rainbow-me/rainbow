@@ -9,6 +9,7 @@ import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { RainbowWallet } from '@/model/wallet';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
+import { format } from 'date-fns';
 
 type WalletBackupStatus = {
   allBackedUp: boolean;
@@ -118,4 +119,12 @@ export const isWalletBackedUpForCurrentAccount = ({ backupType, backedUp, backup
 
   const backupFiles = backupsStore.getState().backups;
   return backupFiles.files.some(file => normalizeAndroidBackupFilename(file.name) === normalizeAndroidBackupFilename(backupFile));
+};
+
+export const dateFormatter = (date: string | number, formatString = "M/d/yy 'at' h:mm a") => {
+  try {
+    return format(new Date(date), formatString);
+  } catch (error) {
+    return 'Unknown Date';
+  }
 };

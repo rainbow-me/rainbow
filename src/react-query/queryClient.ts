@@ -31,7 +31,7 @@ class MMKVPersister implements Persister {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      cacheTime: time.days(7),
+      cacheTime: time.minutes(5),
       staleTime: time.minutes(2),
     },
   },

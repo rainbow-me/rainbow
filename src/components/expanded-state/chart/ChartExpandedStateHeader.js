@@ -98,12 +98,10 @@ export default function ChartExpandedStateHeader({
     <Container showChart={showChart}>
       <Row align="center" justify="space-between" testID={testID ? `${testID}-expanded-state-header` : 'expanded-state-header'}>
         <RainbowCoinIcon
-          size={40}
-          icon={asset?.icon_url}
           chainId={asset?.chainId}
+          color={asset?.colors?.primary || asset?.colors?.fallback || undefined}
+          icon={asset?.icon_url}
           symbol={asset?.symbol}
-          theme={theme}
-          colors={asset?.colors}
         />
         <ChartContextButton asset={asset} color={color} />
       </Row>

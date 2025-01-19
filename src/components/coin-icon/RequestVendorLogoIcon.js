@@ -2,14 +2,15 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { initials } from '../../utils';
-import ChainBadge from './ChainBadge';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import { CoinIconSize } from './CoinIcon';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
+import { ChainImage } from './ChainImage';
+
+const RequestVendorLogoIconSize = 40;
 
 const RVLIBorderRadius = 16.25;
 const RVLIShadows = colors => ({
@@ -25,14 +26,15 @@ const Content = styled(Centered)(({ size, color }) => ({
 
 export default function RequestVendorLogoIcon({
   backgroundColor,
-  badgeYPosition = 14,
+  badgeXPosition = -10,
+  badgeYPosition = 0,
   borderRadius = RVLIBorderRadius,
   dappName,
   imageUrl,
   noShadow,
   shouldPrioritizeImageLoading,
   showLargeShadow,
-  size = CoinIconSize,
+  size = RequestVendorLogoIconSize,
   chainId,
   ...props
 }) {
@@ -71,7 +73,7 @@ export default function RequestVendorLogoIcon({
           )}
         </Content>
       </ShadowStack>
-      <ChainBadge chainId={chainId} badgeYPosition={badgeYPosition} />
+      <ChainImage badgeXPosition={badgeXPosition} badgeYPosition={badgeYPosition} chainId={chainId} style={{ zIndex: 100 }} />
     </View>
   );
 }

@@ -11,7 +11,6 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { ImgixImage } from '@/components/images';
 import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
 import Menu from '@/screens/SettingsSheet/components/Menu';
-import { format } from 'date-fns';
 import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
 import Routes from '@/navigation/routesNames';
 import { BackupFile, parseTimestampFromFilename } from '@/model/backup';
@@ -23,7 +22,7 @@ import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { useTheme } from '@/theme';
 import { backupsStore, CloudBackupState, LoadingStates } from '@/state/backups/backups';
-import { titleForBackupState } from '@/screens/SettingsSheet/utils';
+import { dateFormatter, titleForBackupState } from '@/screens/SettingsSheet/utils';
 
 const Title = styled(RNText).attrs({
   align: 'left',
@@ -148,7 +147,7 @@ export function ChooseBackupStep() {
                 <Box>
                   <Menu
                     description={lang.t(lang.l.back_up.cloud.latest_backup, {
-                      date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
+                      date: dateFormatter(mostRecentBackup.lastModified),
                     })}
                   >
                     <MenuItem
@@ -169,9 +168,13 @@ export function ChooseBackupStep() {
                     {backups.files
                       .filter(backup => backup.name !== mostRecentBackup?.name)
                       .sort((a, b) => {
-                        const timestampA = new Date(parseTimestampFromFilename(a.name)).getTime();
-                        const timestampB = new Date(parseTimestampFromFilename(b.name)).getTime();
-                        return timestampB - timestampA;
+                        try {
+                          const timestampA = new Date(parseTimestampFromFilename(a.name)).getTime();
+                          const timestampB = new Date(parseTimestampFromFilename(b.name)).getTime();
+                          return timestampB - timestampA;
+                        } catch (error) {
+                          return 0;
+                        }
                       })
                       .map(backup => (
                         <MenuItem
@@ -183,8 +186,8 @@ export function ChooseBackupStep() {
                             <MenuItem.Title
                               isLink
                               text={lang.t(lang.l.back_up.cloud.older_backups_title, {
-                                date: format(parseTimestampFromFilename(backup.name), 'M/d/yy'),
-                                time: format(parseTimestampFromFilename(backup.name), 'p'),
+                                date: dateFormatter(parseTimestampFromFilename(backup.name), 'M/d/yy'),
+                                time: dateFormatter(parseTimestampFromFilename(backup.name), 'p'),
                               })}
                             />
                           }

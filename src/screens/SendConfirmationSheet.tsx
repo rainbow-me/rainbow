@@ -328,6 +328,7 @@ export const SendConfirmationSheet = () => {
   }, [
     accountAddress,
     asset,
+    chainId,
     checkboxes,
     ensProfile?.data?.coinAddresses,
     ensProfile?.data?.contenthash,
@@ -499,22 +500,20 @@ export const SendConfirmationSheet = () => {
                     // @ts-expect-error JavaScript component
                     <RequestVendorLogoIcon
                       backgroundColor={asset.background || theme.colors.lightestGrey}
-                      badgeXPosition={-7}
-                      badgeYPosition={0}
                       borderRadius={10}
-                      imageUrl={imageUrl}
                       chainId={asset?.chainId}
+                      imageUrl={imageUrl}
                       showLargeShadow
                       size={50}
                     />
                   ) : (
                     <RainbowCoinIcon
-                      size={50}
-                      icon={asset?.icon_url}
                       chainId={asset?.chainId}
+                      chainSize={20}
+                      color={asset?.colors?.primary || asset?.colors?.fallback || undefined}
+                      icon={asset?.icon_url}
+                      size={50}
                       symbol={asset?.symbol || ''}
-                      theme={theme}
-                      colors={asset?.colors}
                     />
                   )}
                 </Row>
@@ -592,7 +591,6 @@ export const SendConfirmationSheet = () => {
               <Stack space="19px (Deprecated)">
                 {isL2 && (
                   <Fragment>
-                    {/* @ts-expect-error JavaScript component */}
                     <L2Disclaimer
                       chainId={asset.chainId}
                       colors={theme.colors}

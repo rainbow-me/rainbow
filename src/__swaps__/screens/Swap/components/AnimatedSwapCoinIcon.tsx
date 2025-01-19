@@ -17,10 +17,12 @@ import { useSwapContext } from '../providers/swap-provider';
 export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
   assetType,
   size = 32,
+  chainSize = size / 2,
   showBadge = true,
 }: {
   assetType: 'input' | 'output';
   size?: number;
+  chainSize?: number;
   showBadge?: boolean;
 }) {
   const { isDarkMode, colors } = useTheme();
@@ -108,7 +110,7 @@ export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
         />
       </Animated.View>
 
-      {showBadge && <AnimatedChainImage assetType={assetType} size={16} />}
+      {showBadge && <AnimatedChainImage assetType={assetType} size={chainSize} />}
     </View>
   );
 });
@@ -134,24 +136,6 @@ const containerStyle = (size: number) => ({
 const sx = StyleSheet.create({
   coinIcon: {
     overflow: 'hidden',
-  },
-  container: {
-    elevation: 6,
-    height: 32,
-    overflow: 'visible',
-  },
-  containerLarge: {
-    elevation: 6,
-    height: 36,
-    overflow: 'visible',
-  },
-  containerSmall: {
-    elevation: 6,
-    height: 16,
-    overflow: 'visible',
-  },
-  emptyState: {
-    pointerEvents: 'none',
   },
   reactCoinIconContainer: {
     position: 'relative',
