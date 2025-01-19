@@ -1,7 +1,6 @@
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -79,11 +78,6 @@ const TopRow = ({ item, name, selected }) => {
   );
 };
 
-const buildSendCoinRowIdentifier = props => {
-  const uniqueId = buildAssetUniqueIdentifier(props.item);
-  return [uniqueId, !!props?.showNativeValue];
-};
-
 const SendCoinRow = ({
   children,
   disablePressAnimation,
@@ -124,7 +118,6 @@ const SendCoinRow = ({
         mainnetAddress={item?.mainnet_address}
         icon={item?.icon_url}
         colors={item?.colors}
-        badgeYPosition={0}
         bottomRowRender={BottomRow}
         containerStyles={selected ? containerSelectedStyles : containerStyles}
         coinIconRender={RainbowCoinIcon}
