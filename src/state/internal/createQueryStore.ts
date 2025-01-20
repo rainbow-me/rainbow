@@ -4,8 +4,8 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { IS_DEV } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import { time } from '@/utils';
-import { SubscriptionManager } from './queryStore/classes/SubscriptionManager';
 import { RainbowPersistConfig, createRainbowStore, omitStoreMethods } from './createRainbowStore';
+import { SubscriptionManager } from './queryStore/classes/SubscriptionManager';
 import { $, AttachValue, SignalFunction, Unsubscribe, attachValueSubscriptionMap } from './signal';
 
 /**
