@@ -713,7 +713,7 @@ export function createQueryStore<
 
             return transformedData ?? null;
           } catch (error) {
-            if (error === ABORT_ERROR) {
+            if (error === ABORT_ERROR || (error instanceof Error && error.name === 'AbortError')) {
               if (enableLogs) console.log('[❌ Fetch Aborted ❌] for params:', JSON.stringify(effectiveParams));
               return null;
             }
