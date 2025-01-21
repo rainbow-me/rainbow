@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { AccentColorProvider, Bleed, Box, Cover, IconContainer, Separator, Text, TextShadow } from '@/design-system';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
@@ -94,7 +94,7 @@ function Placeholder() {
 
 function BridgeButton({ chainId }: { chainId: ChainId }) {
   const { navigate } = useNavigation();
-  const { asset } = useExpandedAssetSheetContext();
+  const { basicAsset: asset } = useExpandedAssetSheetContext();
   const { accentColors } = useExpandedAssetSheetContext();
   const chainsLabels = useBackendNetworksStore.getState().getChainsLabel();
 
@@ -171,12 +171,15 @@ function HorizontalDivider() {
   );
 }
 
-export const BridgeSection = memo(function BridgeSection() {
-  const { asset } = useExpandedAssetSheetContext();
+export function BridgeSection() {
+  const { basicAsset: asset } = useExpandedAssetSheetContext();
   const isExpanded = useSharedValue(false);
-  const availableChains = useUserAssetsStore(state =>
-    state.getBalanceSortedChainList().filter(chainId => asset.networks && chainId in asset.networks && chainId !== asset.chainId)
-  );
+
+  const availableChains: ChainId[] = [];
+  // BLOCKED: Currently uncertain about the accuracy of the available networks data
+  // const availableChains = useUserAssetsStore(state =>
+  //   state.getBalanceSortedChainList().filter(chainId => asset.networks && chainId in asset.networks && chainId !== asset.chainId)
+  // );
 
   const totalChains = availableChains.length;
   const numInitiallyVisibleChains = totalChains === EXPANDED_CHAINS_LIMIT ? EXPANDED_CHAINS_LIMIT : EXPANDED_CHAINS_LIMIT - 1;
@@ -270,4 +273,4 @@ export const BridgeSection = memo(function BridgeSection() {
       )}
     </Box>
   );
-});
+}
