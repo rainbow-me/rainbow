@@ -994,11 +994,11 @@ export function createQueryStore<
 }
 
 function getQueryKey<TParams extends Record<string, unknown>>(params: TParams): string {
-  const values = new Array(Object.keys(params).length);
-  let i = 0;
-  // eslint-disable-next-line no-plusplus
-  for (const key in params) values[i++] = params[key];
-  return JSON.stringify(values);
+  return JSON.stringify(
+    Object.keys(params)
+      .sort()
+      .map(key => params[key])
+  );
 }
 
 function getCurrentResolvedParams<TParams extends Record<string, unknown>>(
