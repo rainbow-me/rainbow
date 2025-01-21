@@ -1,10 +1,10 @@
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { FlatList } from 'react-native';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
-import { AssetToBuySectionId, useSearchCurrencyLists } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
+import { useSearchCurrencyLists } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
-import { SearchAsset } from '@/__swaps__/types/search';
+import { AssetToBuySectionId, SearchAsset, TokenToBuyListItem } from '@/__swaps__/types/search';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { getChainColorWorklet } from '@/__swaps__/utils/swaps';
@@ -68,10 +68,6 @@ const SECTION_HEADER_INFO: { [id in AssetToBuySectionId]: SectionHeaderProp } = 
     color: palettes.dark.foregroundColors.blue,
   },
 };
-
-export type HeaderItem = { listItemType: 'header'; id: AssetToBuySectionId; data: SearchAsset[] };
-export type CoinRowItem = SearchAsset & { listItemType: 'coinRow'; sectionId: AssetToBuySectionId };
-export type TokenToBuyListItem = HeaderItem | CoinRowItem;
 
 const getItemLayout = (data: ArrayLike<TokenToBuyListItem> | null | undefined, index: number) => {
   if (!data) return { length: 0, offset: 0, index };

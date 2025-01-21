@@ -1,14 +1,13 @@
 import { isAddress } from '@ethersproject/address';
 import qs from 'qs';
-import { IS_IOS } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '@/__swaps__/types/search';
-import { time } from '@/utils/time';
+import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
+import { time } from '@/utils';
 import { parseTokenSearch } from './utils';
 
 const tokenSearchClient = new RainbowFetchClient({
@@ -20,11 +19,11 @@ const tokenSearchClient = new RainbowFetchClient({
   timeout: time.seconds(15),
 });
 
-type TokenSearchParams = {
+type TokenSearchParams<List extends TokenLists = TokenLists> = {
   chainId: ChainId;
   fromChainId?: ChainId;
   keys: TokenSearchAssetKey[];
-  list: TokenSearchListId;
+  list: List;
   query: string | undefined;
   threshold: TokenSearchThreshold;
 };
@@ -37,27 +36,30 @@ type SearchQueryState = {
   searchQuery: string;
 };
 
+type VerifiedTokenData = {
+  bridgeAsset: SearchAsset | null;
+  crosschainResults: SearchAsset[];
+  results: SearchAsset[];
+};
+
 enum TokenLists {
   HighLiquidity = 'highLiquidityAssets',
   LowLiquidity = 'lowLiquidityAssets',
   Verified = 'verifiedAssets',
 }
 
-const MAX_VERIFIED_RESULTS = IS_IOS ? 36 : 24;
+const MAX_VERIFIED_RESULTS = 24;
 const MAX_UNVERIFIED_RESULTS = 6;
 const NO_RESULTS: SearchAsset[] = [];
+const NO_VERIFIED_RESULTS: VerifiedTokenData = { bridgeAsset: null, crosschainResults: [], results: [] };
 
 export const useSwapsSearchStore = createRainbowStore<SearchQueryState>(() => ({ searchQuery: '' }));
 
-export const useTokenSearchStore = createQueryStore<SearchAsset[], TokenSearchParams, TokenSearchState>(
+export const useTokenSearchStore = createQueryStore<VerifiedTokenData, TokenSearchParams<TokenLists.Verified>, TokenSearchState>(
   {
-    fetcher: async (params, abortController) => {
-      const results = await tokenSearchQueryFunction(params, abortController);
-      if (!params.query?.length) setBridgeAsset(extractBridgeAsset(results, params));
-      return results;
-    },
+    fetcher: (params, abortController) => tokenSearchQueryFunction(params, abortController),
 
-    cacheTime: params => (params.query?.length ? time.minutes(2) : time.seconds(15)),
+    cacheTime: params => (params.query?.length ? time.seconds(15) : time.hours(1)),
     disableAutoRefetching: true,
     keepPreviousData: true,
     params: {
@@ -75,17 +77,14 @@ export const useTokenSearchStore = createQueryStore<SearchAsset[], TokenSearchPa
   { persistThrottleMs: time.seconds(8), storageKey: 'verifiedTokenSearch' }
 );
 
-function setBridgeAsset(bridgeAsset: SearchAsset | null) {
-  useTokenSearchStore.setState({ bridgeAsset });
-}
-
-export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], TokenSearchParams>(
+export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], TokenSearchParams<TokenLists.HighLiquidity>>(
   {
-    fetcher: (params, abortController) => (params.query?.length ?? 0 > 2 ? tokenSearchQueryFunction(params, abortController) : NO_RESULTS),
+    fetcher: (params, abortController) =>
+      (params.query?.length ?? 0) > 2 ? tokenSearchQueryFunction(params, abortController) : NO_RESULTS,
     transform: (data, { query }) =>
       query && isAddress(query) ? getExactMatches(data, query, MAX_UNVERIFIED_RESULTS) : data.slice(0, MAX_UNVERIFIED_RESULTS),
 
-    cacheTime: params => (params.query?.length ?? 0 > 2 ? time.seconds(15) : time.zero),
+    cacheTime: params => ((params.query?.length ?? 0) > 2 ? time.seconds(15) : time.zero),
     disableAutoRefetching: true,
     keepPreviousData: true,
     params: {
@@ -111,25 +110,39 @@ function selectTopSearchResults({
   data: SearchAsset[];
   query: string | undefined;
   toChainId: ChainId;
-}): SearchAsset[] {
+}): VerifiedTokenData {
   const normalizedQuery = query?.trim().toLowerCase();
   const queryHasMultipleChars = !!(normalizedQuery && normalizedQuery.length > 1);
   const currentChainResults: SearchAsset[] = [];
   const crosschainResults: SearchAsset[] = [];
+  let bridgeAsset: SearchAsset | null = null;
+
+  const inputAsset = useSwapsStore.getState().inputAsset;
+  const suggestedBridgeAssetAddress = inputAsset?.networks?.[toChainId]?.address ?? null;
+  const isCrossChainSearch = suggestedBridgeAssetAddress && inputAsset && inputAsset.chainId !== toChainId;
 
   for (const asset of data) {
     if (abortController?.signal.aborted) break;
     const isCurrentNetwork = asset.chainId === toChainId;
+
+    if (
+      suggestedBridgeAssetAddress &&
+      (isCrossChainSearch ? asset.address === suggestedBridgeAssetAddress : asset.mainnetAddress === inputAsset?.mainnetAddress)
+    ) {
+      bridgeAsset = asset;
+      if (isCrossChainSearch) continue;
+    }
+
     const isMatch = isCurrentNetwork && (!!asset.icon_url || queryHasMultipleChars);
 
     if (isMatch) currentChainResults.push(asset);
     else {
-      const isCrosschainMatch = !isCurrentNetwork && queryHasMultipleChars && isExactMatch(asset, normalizedQuery);
+      const isCrosschainMatch = (!isCurrentNetwork && queryHasMultipleChars && isExactMatch(asset, normalizedQuery)) || asset.isNativeAsset;
       if (isCrosschainMatch) crosschainResults.push(asset);
     }
   }
 
-  if (abortController?.signal.aborted) return NO_RESULTS;
+  if (abortController?.signal.aborted) return NO_VERIFIED_RESULTS;
 
   currentChainResults.sort((a, b) => {
     if (a.isNativeAsset !== b.isNativeAsset) return a.isNativeAsset ? -1 : 1;
@@ -137,20 +150,11 @@ function selectTopSearchResults({
     return Object.keys(b.networks).length - Object.keys(a.networks).length;
   });
 
-  return [...currentChainResults.slice(0, MAX_VERIFIED_RESULTS), ...crosschainResults];
-}
-
-function extractBridgeAsset(data: SearchAsset[], params: TokenSearchParams): SearchAsset | null {
-  let suggestedBridgeAsset: SearchAsset | null = null;
-
-  const { inputAsset } = useSwapsStore.getState();
-  const suggestedBridgeAssetAddress =
-    inputAsset && inputAsset.chainId !== params.chainId ? inputAsset.networks?.[params.chainId]?.address ?? null : null;
-
-  if (suggestedBridgeAssetAddress) {
-    suggestedBridgeAsset = data.find(asset => asset.address === suggestedBridgeAssetAddress && asset.chainId === params.chainId) ?? null;
-  }
-  return suggestedBridgeAsset ?? null;
+  return {
+    bridgeAsset,
+    crosschainResults: crosschainResults,
+    results: currentChainResults.slice(0, MAX_VERIFIED_RESULTS),
+  };
 }
 
 function isExactMatch(data: SearchAsset, query: string): boolean {
@@ -185,10 +189,22 @@ function getSearchThreshold(query: string): TokenSearchThreshold {
 
 const ALL_VERIFIED_TOKENS_PARAM = '/?list=verifiedAssets';
 
+/** Unverified token search */
+async function tokenSearchQueryFunction(
+  { chainId, fromChainId, keys, list, query, threshold }: TokenSearchParams<TokenLists.HighLiquidity>,
+  abortController: AbortController | null
+): Promise<SearchAsset[]>;
+
+/** Verified token search */
+async function tokenSearchQueryFunction(
+  { chainId, fromChainId, keys, list, query, threshold }: TokenSearchParams<TokenLists.Verified>,
+  abortController: AbortController | null
+): Promise<VerifiedTokenData>;
+
 async function tokenSearchQueryFunction(
   { chainId, fromChainId, keys, list, query, threshold }: TokenSearchParams,
   abortController: AbortController | null
-): Promise<SearchAsset[]> {
+): Promise<SearchAsset[] | VerifiedTokenData> {
   const queryParams: Omit<TokenSearchParams, 'chainId' | 'keys'> & { keys: string } = {
     fromChainId,
     keys: keys?.join(','),

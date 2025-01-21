@@ -1,8 +1,6 @@
 import { Address } from 'viem';
-
-import { AddressOrEth, AssetType, ParsedAsset, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
-import { AssetToBuySectionId } from '../screens/Swap/hooks/useSearchCurrencyLists';
+import { AddressOrEth, AssetType, ParsedAsset, UniqueId } from '@/__swaps__/types/assets';
 
 export type TokenSearchAssetKey = keyof ParsedAsset;
 
@@ -35,3 +33,14 @@ export type SearchAsset = {
   type?: AssetType;
   uniqueId: UniqueId;
 };
+
+export type AssetToBuySectionId = 'bridge' | 'recent' | 'favorites' | 'verified' | 'unverified' | 'other_networks' | 'popular';
+
+export interface AssetToBuySection {
+  data: SearchAsset[];
+  id: AssetToBuySectionId;
+}
+
+export type HeaderItem = { listItemType: 'header'; id: AssetToBuySectionId; data: SearchAsset[] };
+export type CoinRowItem = SearchAsset & { listItemType: 'coinRow'; sectionId: AssetToBuySectionId };
+export type TokenToBuyListItem = HeaderItem | CoinRowItem;
