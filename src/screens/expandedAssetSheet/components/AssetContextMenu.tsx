@@ -10,6 +10,8 @@ import EditAction from '@/helpers/EditAction';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { IS_ANDROID } from '@/env';
 import { Box } from '@/design-system';
+import { buildTokenDeeplink } from '@/handlers/deeplinks';
+import { Share } from 'react-native';
 
 // TODO: this is meant to for the context menu to be offset properly, but it does not work for the horizontal offset
 const HIT_SLOP = 16;
@@ -131,7 +133,9 @@ export function AssetContextMenu() {
         Clipboard.setString(asset.address);
         break;
       case ContextMenuActions.Share:
-        // TODO:
+        Share.share({
+          url: buildTokenDeeplink(asset.uniqueId),
+        });
         break;
       case ContextMenuActions.BlockExplorer:
         ethereumUtils.openTokenEtherscanURL({ address: asset.address, chainId: asset.chainId });
