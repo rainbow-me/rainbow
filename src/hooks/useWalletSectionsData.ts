@@ -9,7 +9,6 @@ import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
-import { useLegacyNFTs } from '@/resources/nfts';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -23,6 +22,7 @@ import { usePoints } from '@/resources/points';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useUserNftsStore } from '@/state/nfts';
 
 // user properties analytics for claimables that executes at max once every 2 min
 const throttledClaimablesAnalytics = throttle(
@@ -60,17 +60,14 @@ export default function useWalletSectionsData({
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const isWalletEthZero = useIsWalletEthZero();
 
-  const { nftSort, nftSortDirection } = useNftSort();
+  const { nftSort } = useNftSort();
 
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const {
-    data: { nfts: allUniqueTokens },
-    isLoading: isFetchingNfts,
-  } = useLegacyNFTs({
-    address: accountAddress,
-    sortBy: nftSort,
-    sortDirection: nftSortDirection,
-  });
+
+  const userNftsStore = useUserNftsStore();
+  const isFetchingNfts = userNftsStore(state => state.status);
+  const allUniqueTokens = userNftsStore(state => state.getData()?.nfts || []);
+
   const { data: positions } = usePositions({ address: accountAddress, currency: nativeCurrency });
   const { data: claimables } = useClaimables({ address: accountAddress, currency: nativeCurrency });
   const { data: points } = usePoints({
@@ -161,7 +158,7 @@ export default function useWalletSectionsData({
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo);
-    const hasNFTs = allUniqueTokens.length > 0;
+    const hasNFTs = allUniqueTokens && allUniqueTokens.length > 0;
 
     return {
       hasNFTs,

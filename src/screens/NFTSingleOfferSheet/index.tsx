@@ -25,7 +25,6 @@ import { useNavigation } from '@/navigation';
 import { IS_ANDROID } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
-import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings, useGas, useWallets } from '@/hooks';
 import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities';
 import { analyticsV2 } from '@/analytics';
@@ -53,6 +52,7 @@ import { metadataPOSTClient } from '@/graphql';
 import { ethUnits } from '@/references';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useUserNftsStore } from '@/state/nfts';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -89,9 +89,8 @@ export function NFTSingleOfferSheet() {
   const { isReadOnlyWallet } = useWallets();
   const theme = useTheme();
   const { updateTxFee, startPollingGasFees, stopPollingGasFees, isSufficientGas, isValidGas } = useGas();
-  const {
-    data: { nftsMap },
-  } = useLegacyNFTs({ address: accountAddress });
+
+  const nftsMap = useUserNftsStore()(state => state.getData()?.nftsMap);
 
   const { offer } = params as { offer: NftOffer };
   const offerChainId = useBackendNetworksStore.getState().getChainsIdByName()[offer.network as Network];
@@ -106,7 +105,7 @@ export function NFTSingleOfferSheet() {
   const [isAccepting, setIsAccepting] = useState(false);
   const txsRef = useRef<string[]>([]);
 
-  const nft = nftsMap[offer.nft.uniqueId];
+  const nft = nftsMap?.get(offer.nft.uniqueId);
 
   const insufficientEth = isSufficientGas === false && isValidGas;
 
@@ -255,6 +254,8 @@ export function NFTSingleOfferSheet() {
   }, [estimateGas, isExpired, isReadOnlyWallet, offerChainId, startPollingGasFees, stopPollingGasFees]);
 
   const acceptOffer = useCallback(async () => {
+    // TODO handle this gracefully
+    if (!nft) return;
     logger.debug(`[NFTSingleOfferSheet]: Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`);
     const analyticsEventObject = {
       nft: {

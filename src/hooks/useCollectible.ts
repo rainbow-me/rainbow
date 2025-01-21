@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings } from '.';
+import { useNftsStore } from '@/state/nfts';
 
 export default function useCollectible(uniqueId: string, externalAddress?: string) {
   const { accountAddress } = useAccountSettings();
@@ -8,12 +8,8 @@ export default function useCollectible(uniqueId: string, externalAddress?: strin
   const isExternal = Boolean(externalAddress);
   const address = isExternal ? externalAddress ?? '' : accountAddress;
 
-  const { data: asset } = useLegacyNFTs({
-    address,
-    config: {
-      select: data => data.nftsMap[uniqueId],
-    },
-  });
+  const nftsStore = useNftsStore(address, !isExternal);
+  const asset = nftsStore(state => state.getData()?.nftsMap.get(uniqueId));
 
   return useMemo(() => ({ ...asset, isExternal }), [asset, isExternal]);
 }
