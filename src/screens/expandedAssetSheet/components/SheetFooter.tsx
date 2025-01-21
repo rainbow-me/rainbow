@@ -8,6 +8,8 @@ import { BuyActionButton, SendActionButton, SwapActionButton } from '@/component
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { AssetContextMenu } from './AssetContextMenu';
+import { isTestnetChain } from '@/handlers/web3';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 // 32px for the gradient + 46px for the buttons + 44px for the bottom padding
 export const SHEET_FOOTER_HEIGHT = 32 + 46 + 44;
@@ -17,12 +19,15 @@ export function SheetFooter() {
 
   const { swagg_enabled, f2c_enabled } = useRemoteConfig();
   const swapEnabled = swagg_enabled && useBackendNetworksStore.getState().getSwapSupportedChainIds().includes(asset.chainId);
-  const addCashEnabled = f2c_enabled;
+  const isTestnet = isTestnetChain({ chainId: asset.chainId });
 
-  // TODO:
-  const isTransferable = isOwnedAsset && asset;
-  const hasEth = true;
-  const isSwappable = isOwnedAsset && swapEnabled;
+  const chainsWithBalance = useUserAssetsStore(state => state.getChainsWithBalance());
+  const hasSwappableAssets = chainsWithBalance.length > 0;
+
+  const isSwapButtonVisible = swapEnabled && isOwnedAsset && !isTestnet;
+  const isSendButtonVisible = isOwnedAsset && asset.transferable;
+  const isBuyEthButtonVisible = !hasSwappableAssets && f2c_enabled;
+  const isBuyAssetButtonVisible = !isOwnedAsset && swapEnabled && !isBuyEthButtonVisible;
 
   return (
     <Box pointerEvents="box-none" position="absolute" bottom="0px" width="full">
@@ -38,14 +43,13 @@ export function SheetFooter() {
           <Column width="content">
             <AssetContextMenu />
           </Column>
-          {isSwappable && <SwapActionButton asset={asset} color={accentColors.opacity100} inputType={SwapAssetType.inputAsset} />}
-          {isTransferable && <SendActionButton asset={asset} color={accentColors.opacity100} />}
-          {/* TODO: confirm this is correct behavior */}
-          {!hasEth && <BuyActionButton color={accentColors.opacity100} />}
-          {!isOwnedAsset && (
+          {isSwapButtonVisible && <SwapActionButton asset={asset} color={accentColors.color} inputType={SwapAssetType.inputAsset} />}
+          {isSendButtonVisible && <SendActionButton asset={asset} color={accentColors.color} />}
+          {isBuyEthButtonVisible && <BuyActionButton color={accentColors.color} />}
+          {isBuyAssetButtonVisible && (
             <SwapActionButton
               asset={asset}
-              color={accentColors.opacity100}
+              color={accentColors.color}
               inputType={SwapAssetType.outputAsset}
               label={`􀖅 ${i18n.t(i18n.l.expanded_state.asset.get_asset, {
                 assetSymbol: asset?.symbol,
