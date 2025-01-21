@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { ExpandedAssetSheetContextProvider, useExpandedAssetSheetContext } from './context/ExpandedAssetSheetContext';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { SheetContent } from './components/SheetContent';

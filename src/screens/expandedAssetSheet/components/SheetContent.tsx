@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import * as i18n from '@/languages';
 import { SectionId, useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
 import { AccentColorProvider, Bleed, Box, ColorModeProvider, Separator, Stack } from '@/design-system';
@@ -9,17 +9,39 @@ import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { analyticsV2 } from '@/analytics';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
+import { useAccountAsset, useAccountSettings } from '@/hooks';
+import { convertStringToNumber, roundToSignificant1or5 } from '@/helpers/utilities';
 
 const ANALYTICS_ROUTE_LOG_DELAY = 5 * 1000;
 
+const DEFAULT_PERCENTAGES_OF_BALANCE = [0.025, 0.05, 0.1, 0.25, 0.5, 0.75];
+// Ideally this would be different for different currencies, but that would need to be set in the remote config
+const MINIMUM_NATIVE_CURRENCY_AMOUNT = 5;
+
 export function SheetContent() {
+  const { nativeCurrency } = useAccountSettings();
   const { accentColors, basicAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
 
-  const chainId = asset.chainId;
-  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
-  const buySectionPayWithAsset = nativeAssetForChain;
-  const assetIsBuySectionPayWithAsset = asset.uniqueId === buySectionPayWithAsset?.uniqueId;
-  const isBuySectionVisible = !assetIsBuySectionPayWithAsset;
+  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(asset.chainId));
+  const buyWithAsset = useAccountAsset(nativeAssetForChain?.uniqueId ?? '', nativeCurrency);
+  const assetIsBuyWithAsset = asset.uniqueId === buyWithAsset?.uniqueId;
+
+  // These calculations are done here and not in the buy section because this determines if the buy section itself is visible
+  const instantBuyNativeCurrencyAmounts = useMemo(() => {
+    const buyWithAssetNativeBalance = buyWithAsset?.native?.balance?.amount;
+    if (!buyWithAssetNativeBalance) return [];
+
+    const buyWithAssetNativeBalanceNumber = convertStringToNumber(buyWithAssetNativeBalance);
+
+    const amounts = new Set(
+      DEFAULT_PERCENTAGES_OF_BALANCE.map(percentage => roundToSignificant1or5(percentage * buyWithAssetNativeBalanceNumber)).filter(
+        amount => amount >= MINIMUM_NATIVE_CURRENCY_AMOUNT && amount < buyWithAssetNativeBalanceNumber
+      )
+    );
+    return Array.from(amounts);
+  }, [buyWithAsset]);
+
+  const isBuySectionVisible = !assetIsBuyWithAsset && buyWithAsset && instantBuyNativeCurrencyAmounts.length > 0;
 
   useTimeoutEffect(
     ({ elapsedTime }) => {
@@ -79,14 +101,14 @@ export function SheetContent() {
             />
             {isBuySectionVisible && (
               <CollapsibleSection
-                content={<BuySection />}
+                content={<BuySection instantBuyAmounts={instantBuyNativeCurrencyAmounts} buyWithAsset={buyWithAsset} />}
                 icon="􀋥"
                 id={SectionId.BUY}
                 primaryText={i18n.t(i18n.l.expanded_state.sections.buy.title)}
                 secondaryText={asset.symbol}
               />
             )}
-            {/* Backlogged */}
+            {/* BACKLOGGED */}
             {/* {isOwnedAsset && (
               <CollapsibleSection content={<BridgeSection />} icon="􁾫" id={SectionId.BRIDGE} primaryText="Bridge" secondaryText={'to'} />
             )} */}
