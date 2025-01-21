@@ -1,90 +1,119 @@
-import React, { useMemo, forwardRef } from 'react';
+import { FasterImageView } from '@candlefinance/faster-image';
+import { useColorMode } from '@/design-system';
+import React, { memo, useMemo } from 'react';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { BLANK_BASE64_PIXEL } from '../DappBrowser/constants';
+import { DEFAULT_FASTER_IMAGE_CONFIG } from '../images/ImgixImage';
 
-import ApechainBadge from '@/assets/badges/apechain.png';
-import ArbitrumBadge from '@/assets/badges/arbitrum.png';
-import AvalancheBadge from '@/assets/badges/avalanche.png';
-import BaseBadge from '@/assets/badges/base.png';
-import BlastBadge from '@/assets/badges/blast.png';
-import BscBadge from '@/assets/badges/bsc.png';
-import DegenBadge from '@/assets/badges/degen.png';
-import EthereumBadge from '@/assets/badges/ethereum.png';
-import GnosisBadge from '@/assets/badges/gnosis.png';
-import GravityBadge from '@/assets/badges/gravity.png';
-import InkBadge from '@/assets/badges/ink.png';
-import LineaBadge from '@/assets/badges/linea.png';
-import OptimismBadge from '@/assets/badges/optimism.png';
-import PolygonBadge from '@/assets/badges/polygon.png';
-import SankoBadge from '@/assets/badges/sanko.png';
-import ScrollBadge from '@/assets/badges/scroll.png';
-import ZksyncBadge from '@/assets/badges/zksync.png';
-import ZoraBadge from '@/assets/badges/zora.png';
-import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
+type ChainImageProps = {
+  badgeXPosition?: number;
+  badgeYPosition?: number;
+  chainId: ChainId | null | undefined;
+  position?: 'absolute' | 'relative';
+  showBadge?: boolean;
+  size?: number;
+  style?: StyleProp<ViewStyle>;
+};
 
-export const ChainImage = forwardRef(function ChainImage(
-  {
-    chainId,
-    size = 20,
-    style,
-  }: {
-    chainId: ChainId | null | undefined;
-    size?: number;
-    style?: FastImageProps['style'];
-  },
-  ref
-) {
-  const source = useMemo(() => {
-    switch (chainId) {
-      case ChainId.apechain:
-        return ApechainBadge;
-      case ChainId.arbitrum:
-        return ArbitrumBadge;
-      case ChainId.avalanche:
-        return AvalancheBadge;
-      case ChainId.base:
-        return BaseBadge;
-      case ChainId.blast:
-        return BlastBadge;
-      case ChainId.bsc:
-        return BscBadge;
-      case ChainId.degen:
-        return DegenBadge;
-      case ChainId.gnosis:
-        return GnosisBadge;
-      case ChainId.gravity:
-        return GravityBadge;
-      case ChainId.ink:
-        return InkBadge;
-      case ChainId.linea:
-        return LineaBadge;
-      case ChainId.mainnet:
-        return EthereumBadge;
-      case ChainId.optimism:
-        return OptimismBadge;
-      case ChainId.polygon:
-        return PolygonBadge;
-      case ChainId.sanko:
-        return SankoBadge;
-      case ChainId.scroll:
-        return ScrollBadge;
-      case ChainId.zksync:
-        return ZksyncBadge;
-      case ChainId.zora:
-        return ZoraBadge;
-      default:
-        return { uri: '' };
-    }
-  }, [chainId]);
+export const ChainImage = memo(function ChainImage({
+  badgeXPosition = 0,
+  badgeYPosition = 0,
+  chainId,
+  position = 'absolute',
+  showBadge = true,
+  size = 20,
+  style,
+}: ChainImageProps) {
+  const { isDarkMode } = useColorMode();
+  const { containerStyle, iconStyle } = useMemo(
+    () => getChainBadgeStyles({ badgeXPosition, badgeYPosition, isDarkMode, position, size }),
+    [badgeXPosition, badgeYPosition, isDarkMode, position, size]
+  );
 
-  if (!chainId) return null;
+  if (!chainId || !showBadge) return null;
+
+  const badgeUrl = useBackendNetworksStore.getState().getChainsBadge()[chainId];
+  if (!badgeUrl) return null;
 
   return (
-    <FastImage
-      // @ts-expect-error couldn't figure out how to type this ref to make ts happy
-      ref={ref}
-      key={`${chainId}-badge-${size}`}
-      source={source as Source}
-      style={[{ borderRadius: size / 2, height: size, width: size }, style]}
-    />
+    <View style={[style, containerStyle]}>
+      <FasterImageView
+        source={{
+          ...DEFAULT_FASTER_IMAGE_CONFIG,
+          base64Placeholder: BLANK_BASE64_PIXEL,
+          url: badgeUrl,
+        }}
+        style={iconStyle}
+      />
+    </View>
   );
 });
+
+type IconLayout = {
+  iconSize: number;
+  iconXPosition: number;
+  iconYPosition: number;
+};
+
+function getIconLayout(size: number): IconLayout {
+  const iconSize = size * 1.6;
+  const sizeDiff = iconSize - size;
+  return {
+    iconSize,
+    iconXPosition: -(sizeDiff / 2),
+    iconYPosition: -(sizeDiff / 3),
+  };
+}
+
+type ContainerStyles = {
+  borderRadius: number | undefined; // ⚠️ Temporary until we add dark mode badges
+  bottom: number | undefined;
+  height: number;
+  left: number | undefined;
+  overflow: 'hidden' | undefined; // ⚠️ Temporary until we add dark mode badges
+  position: 'absolute' | 'relative';
+  width: number;
+};
+type ImageStyles = {
+  height: number;
+  left: number;
+  position: 'absolute';
+  top: number;
+  width: number;
+};
+
+export function getChainBadgeStyles({
+  badgeXPosition = 0,
+  badgeYPosition = 0,
+  isDarkMode,
+  position,
+  size,
+}: {
+  badgeXPosition: number;
+  badgeYPosition: number;
+  isDarkMode: boolean; // ⚠️ Temporary until we add dark mode badges
+  position: 'absolute' | 'relative';
+  size: number;
+}): { containerStyle: ContainerStyles; iconStyle: ImageStyles } {
+  const { iconSize, iconXPosition, iconYPosition } = getIconLayout(size);
+  return {
+    containerStyle: {
+      borderRadius: isDarkMode ? size / 2 : undefined,
+      bottom: badgeYPosition,
+      height: size,
+      left: badgeXPosition,
+      overflow: isDarkMode ? 'hidden' : undefined,
+      position,
+      width: size,
+    },
+    iconStyle: {
+      height: iconSize,
+      left: iconXPosition,
+      position: 'absolute',
+      top: iconYPosition,
+      width: iconSize,
+    },
+  };
+}

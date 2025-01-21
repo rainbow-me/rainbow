@@ -15,7 +15,7 @@ beforeAll(async () => {
     exec('yarn adb-all shell cmd overlay enable com.android.internal.systemui.navbar.threebutton');
   }
   await device.clearKeychain();
-  await device.launchApp({ newInstance: true, delete: true });
+  await device.launchApp({ newInstance: true, delete: true, launchArgs: { IS_TEST: true } });
   await device.setURLBlacklist([
     '.*api.thegraph.com.*',
     '.*gateway-arbitrum.network.thegraph.com.*',

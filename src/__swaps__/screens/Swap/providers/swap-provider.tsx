@@ -60,6 +60,7 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore, getChainsNativeAssetWorklet } from '@/state/backendNetworks/backendNetworks';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
+import showWalletErrorAlert from '@/helpers/support';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -266,6 +267,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       if (!wallet) {
         isSwapping.value = false;
         haptics.notificationError();
+        showWalletErrorAlert();
         return;
       }
 

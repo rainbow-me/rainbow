@@ -1,47 +1,46 @@
 import { QueryClient } from '@tanstack/react-query';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
-import { PersistQueryClientOptions } from '@tanstack/react-query-persist-client';
-import { MMKV } from 'react-native-mmkv';
-import { queryStorage } from '@/storage/legacy';
+import { PersistedClient, Persister, PersistQueryClientOptions } from '@tanstack/react-query-persist-client';
+import { debounce } from 'lodash';
+import { REACT_QUERY_STORAGE_ID, queryStorage } from '@/storage/legacy';
+import { time } from '@/utils';
 
-const SEVEN_DAYS = 1000 * 60 * 60 * 24 * 7;
+class MMKVPersister implements Persister {
+  private static readonly throttleMs = time.seconds(8);
+
+  private throttledPersist = debounce(
+    (persistedClient: PersistedClient) => {
+      queryStorage.set([REACT_QUERY_STORAGE_ID], persistedClient);
+    },
+    MMKVPersister.throttleMs,
+    { leading: false, trailing: true, maxWait: MMKVPersister.throttleMs }
+  );
+
+  persistClient(persistedClient: PersistedClient): void {
+    this.throttledPersist(persistedClient);
+  }
+
+  async restoreClient(): Promise<PersistedClient | undefined> {
+    return await queryStorage.get([REACT_QUERY_STORAGE_ID]);
+  }
+
+  removeClient(): void {
+    queryStorage.remove([REACT_QUERY_STORAGE_ID]);
+  }
+}
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      cacheTime: SEVEN_DAYS,
+      cacheTime: time.minutes(5),
+      staleTime: time.minutes(2),
     },
   },
 });
 
-export const persistedQueryStorage = {
-  getItem: async (key: string): Promise<string | null> => {
-    return queryStorage.get([key]);
-  },
-  setItem: async (key: string, value: string): Promise<void> => {
-    await queryStorage.set([key], value);
-  },
-  removeItem: async (key: string): Promise<void> => {
-    await queryStorage.remove([key]);
-  },
-};
-
-const asyncStoragePersister = createAsyncStoragePersister({
-  key: 'rainbow.react-query',
-  storage: persistedQueryStorage,
-  throttleTime: 2000,
-});
-
 export const persistOptions: Omit<PersistQueryClientOptions, 'queryClient'> = {
-  persister: asyncStoragePersister,
+  maxAge: time.weeks(4),
+  persister: new MMKVPersister(),
   dehydrateOptions: {
-    shouldDehydrateQuery: query =>
-      Boolean(
-        // We want to persist queries that have a `cacheTime` of above zero.
-        query.cacheTime !== 0 &&
-          // We want to persist queries that have `persisterVersion` in their query key.
-          (query.queryKey[2] as { persisterVersion?: number })?.persisterVersion
-      ),
+    shouldDehydrateQuery: query => Boolean(query.cacheTime !== 0 && (query.queryKey[2] as { persisterVersion?: number })?.persisterVersion),
   },
 };

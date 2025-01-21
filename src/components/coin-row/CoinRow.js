@@ -1,11 +1,11 @@
 import React, { createElement } from 'react';
-import { CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { useAccountSettings } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 
+const CoinIconSize = 40;
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
 export const CoinRowHeight = CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom;
@@ -28,8 +28,8 @@ const Content = styled(Column).attrs({ justify: 'space-between' })({
 
 export default function CoinRow({
   address,
-  badgeXPosition,
-  badgeYPosition,
+  badgeXPosition = -10,
+  badgeYPosition = 0,
   bottomRowRender,
   children,
   coinIconRender = RainbowCoinIcon,
@@ -52,8 +52,10 @@ export default function CoinRow({
     <Container style={containerStyles}>
       {createElement(coinIconRender, {
         address,
-        badgeXPosition,
-        badgeYPosition,
+        chainBadgePosition: {
+          x: badgeXPosition,
+          y: badgeYPosition,
+        },
         isFirstCoinRow,
         isHidden,
         isPinned,

@@ -238,7 +238,6 @@ export function CopyButton() {
 
   return (
     <>
-      {/* @ts-expect-error JavaScript component */}
       <CopyFloatingEmojis textToCopy={accountAddress}>
         <ActionButton onPress={handlePressCopy} icon="􀐅" testID="receive-button">
           {lang.t('wallet.copy')}

@@ -101,6 +101,7 @@ async function addysSummaryQueryFunction({ queryKey: [{ addresses, currency }] }
     JSON.stringify({
       currency,
       addresses,
+      enableThirdParty: true,
     })
   );
   return data as AddysSummary;

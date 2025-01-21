@@ -106,27 +106,7 @@ export const nonceStore = createStore<CurrentNonceState<Nonces>>(
   {
     persist: {
       name: 'nonces',
-      version: 1,
-      migrate: (persistedState: unknown, version: number) => {
-        if (version === 0) {
-          const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
-          const oldState = persistedState as CurrentNonceState<NoncesV0>;
-          const newNonces: CurrentNonceState<Nonces>['nonces'] = {};
-          for (const [address, networkNonces] of Object.entries(oldState.nonces)) {
-            for (const [network, nonceData] of Object.entries(networkNonces)) {
-              if (!newNonces[address]) {
-                newNonces[address] = {} as Record<ChainId, NonceData>;
-              }
-              newNonces[address][chainsIdByName[network as Network]] = nonceData;
-            }
-          }
-          return {
-            ...oldState,
-            nonces: newNonces,
-          };
-        }
-        return persistedState as CurrentNonceState<Nonces>;
-      },
+      version: 2,
     },
   }
 );

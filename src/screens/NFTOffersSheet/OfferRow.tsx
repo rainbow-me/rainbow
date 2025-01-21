@@ -97,7 +97,6 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   const { navigate } = useNavigation();
   const { nativeCurrency } = useAccountSettings();
   const { colorMode } = useColorMode();
-  const theme = useTheme();
   const bgColor = useBackgroundColor('surfaceSecondaryElevated');
   const chainId = useBackendNetworksStore.getState().getChainsIdByName()[offer.network as Network];
   const { data: externalAsset } = useExternalToken({
@@ -218,9 +217,8 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
                 icon={externalAsset?.icon_url}
                 chainId={chainId}
                 symbol={offer.paymentToken.symbol}
-                theme={theme}
-                colors={externalAsset?.colors}
-                ignoreBadge
+                color={externalAsset?.colors?.primary || externalAsset?.colors?.fallback || undefined}
+                showBadge={false}
               />
             </View>
             <Text size="17pt" weight="bold" color="label">

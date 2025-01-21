@@ -15,6 +15,56 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.55] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.55)
+
+### Changed
+
+- Refactored our chain badge system to now come from backend (#6328)
+
+### Fixed
+
+- Fixed a bug with chain icon on trending tokens sort (#6410)
+- Fixed a bug in wallet switcher on Android (#6412)
+
+## [1.9.54] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.54)
+
+### Changed
+
+- Set the default cacheTime to 5 minutes (#6403)
+
+### Fixed
+
+- Nonce logic refactor which fixes base issues with pending transactions (#6402)
+
+## [1.9.53] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.53)
+
+### Added
+
+- Added trending tokens flag to remote config (#6373)
+- We are now tracking failed walletconnect requests (#6304)
+- Wallet switcher v2 (#6318)
+- Wallet Groups (#6314)
+- Added a new zustand store creator to improve performance (#6325)
+
+### Changed
+
+- Made improvements to trending tokens/network switcher (#6372)
+- Cleaned up swaps zustand selectors (#6355)
+- Updated rainbow world app icon contract address (#6381)
+- Improved on charts loading performance (#6387)
+- Made many performance improvements in the app (#6376)
+
+### Fixed
+
+- Fixed broken e2e tests for backups (#6365)
+- Fixed a bug where swap submit button would get stuck on fetching (#6382)
+- Fixed failing transactions on virtuals.io in dapp browser (#6383)
+- Fixed an issue where the Google OAuth prompt would be stuck in a loop on app launch (#6380)
+- Fixed a bug where NFTs were not able to save to device (#6356)
+- Fixed a bug where android wouldn't allow users to install redacted icon (#6389)
+- Fixed a bug where long token names would cause an overlap over price data in trending tokens view (#6391)
+- Fixed a bug where tapping on copy address on wallet screen on Android devices would cause a crash (#6392)
+
 ## [1.9.52] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.52)
 
 ### Fixed
