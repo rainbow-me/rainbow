@@ -11,11 +11,13 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { isNativeAsset } from '@/handlers/assets';
-import { getNetwork } from '@ethersproject/providers';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
 import { ETH_COLOR, ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { useColorMode } from '@/design-system';
+import { FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+// import { useTokenMetadataStore } from '@/resources/tokenMetadata/tokenMetadata';
 
 export enum SectionId {
   PROFIT = 'profit',
@@ -56,9 +58,12 @@ const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
   [SectionId.ABOUT]: true,
 };
 
-type BasicAsset = {
+type ParamToken = ParsedAddressAsset | TrendingToken | FormattedExternalAsset;
+
+export type BasicAsset = {
   chainId: ChainId;
   address: string;
+  network: string;
   colors: TokenColors | undefined;
   uniqueId: UniqueId;
   name: string;
@@ -66,7 +71,7 @@ type BasicAsset = {
   decimals: number;
   icon_url: string | undefined;
   isNativeAsset: boolean;
-  network: string;
+  transferable: boolean;
   price: {
     relative_change_24h: number | undefined;
     value: number | undefined;
@@ -74,22 +79,27 @@ type BasicAsset = {
   creationDate: string | null;
 };
 
-function isTrendingToken(token: ParsedAddressAsset | TrendingToken): token is TrendingToken {
+function isTrendingToken(token: ParamToken): token is TrendingToken {
   return 'highlightedFriends' in token;
 }
 
-function normalizeTrendingToken(token: TrendingToken): BasicAsset {
+function isFormattedExternalAsset(token: ParamToken): token is FormattedExternalAsset {
+  return 'transferable' in token;
+}
+
+function normalizeTrendingToken({ token, chainId, chainName }: { token: TrendingToken; chainId: ChainId; chainName: string }): BasicAsset {
   return {
-    chainId: token.chainId,
+    chainId,
     address: token.address,
-    uniqueId: token.uniqueId,
+    uniqueId: getUniqueId(token.address, chainId),
+    network: chainName,
     name: token.name,
     symbol: token.symbol,
     decimals: token.decimals,
     icon_url: token.icon_url,
     isNativeAsset: isNativeAsset(token.address, token.chainId),
-    network: getNetwork(token.chainId).name,
     colors: token.colors,
+    transferable: token.transferable,
     price: {
       relative_change_24h: token.priceChange.day,
       value: token.price,
@@ -98,21 +108,59 @@ function normalizeTrendingToken(token: TrendingToken): BasicAsset {
   };
 }
 
-function normalizeParsedAddressAsset(token: ParsedAddressAsset): BasicAsset {
+function normalizeParsedAddressAsset({
+  token,
+  chainId,
+  chainName,
+}: {
+  token: ParsedAddressAsset;
+  chainId: ChainId;
+  chainName: string;
+}): BasicAsset {
   return {
-    chainId: token.chainId,
+    chainId: chainId,
     address: token.address,
-    uniqueId: token.uniqueId,
+    uniqueId: getUniqueId(token.address, chainId),
+    network: chainName,
     name: token.name,
     symbol: token.symbol,
     decimals: token.decimals,
     icon_url: token.icon_url,
-    isNativeAsset: isNativeAsset(token.address, token.chainId),
-    network: token.network,
+    isNativeAsset: isNativeAsset(token.address, chainId),
     colors: token.colors,
+    transferable: true,
     price: {
       relative_change_24h: token.price?.relative_change_24h,
       value: token.price?.value,
+    },
+    creationDate: null,
+  };
+}
+
+function normalizeFormattedExternalAsset({
+  token,
+  chainId,
+  chainName,
+}: {
+  token: FormattedExternalAsset;
+  chainId: ChainId;
+  chainName: string;
+}): BasicAsset {
+  return {
+    chainId: chainId,
+    address: token.address,
+    uniqueId: getUniqueId(token.address, chainId),
+    network: chainName,
+    name: token.name,
+    symbol: token.symbol,
+    decimals: token.decimals,
+    icon_url: token.icon_url,
+    isNativeAsset: isNativeAsset(token.address, chainId),
+    colors: token.colors,
+    transferable: token.transferable,
+    price: {
+      relative_change_24h: token.price?.relativeChange24h ?? undefined,
+      value: token.price?.value ?? undefined,
     },
     creationDate: null,
   };
@@ -128,7 +176,7 @@ type ExpandedAssetSheetContextType = {
 };
 
 type ExpandedAssetSheetContextProviderProps = {
-  asset: ParsedAddressAsset | TrendingToken;
+  asset: ParamToken;
   address: string;
   chainId: ChainId;
   children: React.ReactNode;
@@ -153,9 +201,13 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
   const isOwnedAsset = !!accountAsset;
 
   const basicAsset = useMemo(() => {
-    if (isTrendingToken(asset)) return normalizeTrendingToken(asset);
-    return normalizeParsedAddressAsset(asset);
-  }, [asset]);
+    const chainNameById = useBackendNetworksStore.getState().getChainsName();
+    const chainName = chainNameById[chainId];
+
+    if (isTrendingToken(asset)) return normalizeTrendingToken({ token: asset, chainId, chainName });
+    if (isFormattedExternalAsset(asset)) return normalizeFormattedExternalAsset({ token: asset, chainId, chainName });
+    return normalizeParsedAddressAsset({ token: asset, chainId, chainName });
+  }, [asset, chainId]);
 
   const { data: metadata } = useAdditionalAssetData({
     address,
