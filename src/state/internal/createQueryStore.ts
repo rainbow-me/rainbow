@@ -74,16 +74,27 @@ interface FetchOptions {
  * Represents an entry in the query cache, which stores fetched data along with metadata, and error information
  * in the event the most recent fetch failed.
  */
-interface CacheEntry<TData> {
+type CacheEntry<TData> = {
   cacheTime: number;
   data: TData | null;
-  errorInfo: {
-    error: Error;
-    lastFailedAt: number;
-    retryCount: number;
-  } | null;
-  lastFetchedAt: number;
-}
+} & (
+  | {
+      errorInfo: {
+        error: Error;
+        lastFailedAt: number;
+        retryCount: number;
+      };
+      lastFetchedAt: null;
+    }
+  | {
+      errorInfo: {
+        error: Error;
+        lastFailedAt: number;
+        retryCount: number;
+      } | null;
+      lastFetchedAt: number;
+    }
+);
 
 /**
  * A specialized store interface that combines Zustand's store capabilities with remote data fetching support.
@@ -655,7 +666,7 @@ export function createQueryStore<
                     data: transformedData,
                     errorInfo: null,
                     lastFetchedAt,
-                  },
+                  } satisfies CacheEntry<TData>,
                 };
               } else if (setData) {
                 if (enableLogs) console.log('[💾 Setting Data 💾] for params:', JSON.stringify(effectiveParams));
@@ -675,7 +686,7 @@ export function createQueryStore<
                       data: null,
                       errorInfo: null,
                       lastFetchedAt,
-                    },
+                    } satisfies CacheEntry<TData>,
                   };
                 }
               }
@@ -739,13 +750,15 @@ export function createQueryStore<
                 queryCache: {
                   ...state.queryCache,
                   [currentQueryKey]: {
-                    ...entry,
+                    cacheTime: entry?.cacheTime ?? (cacheTimeIsFunction ? cacheTime(effectiveParams) : cacheTime),
+                    data: entry?.data ?? null,
+                    lastFetchedAt: entry?.lastFetchedAt ?? null,
                     errorInfo: {
                       error: typedError,
                       lastFailedAt: Date.now(),
                       retryCount: currentRetryCount + 1,
                     },
-                  },
+                  } satisfies CacheEntry<TData>,
                 },
                 queryKey: keepPreviousData ? currentQueryKey : state.queryKey,
                 status: QueryStatuses.Error,
@@ -758,13 +771,15 @@ export function createQueryStore<
                 queryCache: {
                   ...state.queryCache,
                   [currentQueryKey]: {
-                    ...entry,
+                    cacheTime: entry?.cacheTime ?? (cacheTimeIsFunction ? cacheTime(effectiveParams) : cacheTime),
+                    data: entry?.data ?? null,
+                    lastFetchedAt: entry?.lastFetchedAt ?? null,
                     errorInfo: {
                       error: typedError,
                       lastFailedAt: Date.now(),
                       retryCount: maxRetries,
                     },
-                  },
+                  } satisfies CacheEntry<TData>,
                 },
                 queryKey: keepPreviousData ? currentQueryKey : state.queryKey,
                 status: QueryStatuses.Error,
@@ -1020,19 +1035,22 @@ function pruneCache<S extends StoreState<TData, TParams>, TData, TParams extends
   state: S | Partial<S>
 ): S | Partial<S> {
   if (!state.queryCache) return state;
-  const clonedCache = { ...state.queryCache };
-  const effectiveKeyToPreserve = keyToPreserve ?? (keepPreviousData ? state.queryKey ?? null : null);
   const pruneTime = Date.now();
-  let hasChanges = false;
+  const preserve = keyToPreserve ?? ((keepPreviousData && state.queryKey) || null);
 
-  for (const key in clonedCache) {
-    const entry = clonedCache[key];
-    if (entry && !(pruneTime - entry.lastFetchedAt <= entry.cacheTime || key === effectiveKeyToPreserve)) {
-      delete clonedCache[key];
-      hasChanges = true;
-    }
+  let prunedSomething = false;
+  const newCache: Record<string, CacheEntry<TData>> = Object.create(null);
+
+  for (const key in state.queryCache) {
+    const entry = state.queryCache[key];
+    const isValid = !!entry && (pruneTime - (entry.lastFetchedAt ?? entry.errorInfo.lastFailedAt) <= entry.cacheTime || key === preserve);
+    if (isValid) newCache[key] = entry;
+    else prunedSomething = true;
   }
-  return hasChanges ? { ...state, queryCache: clonedCache } : state;
+
+  if (!prunedSomething) return state;
+
+  return { ...state, queryCache: newCache };
 }
 
 function isResolvableParam<T, TParams extends Record<string, unknown>, S extends StoreState<TData, TParams>, TData>(
