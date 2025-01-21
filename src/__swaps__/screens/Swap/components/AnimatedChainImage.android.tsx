@@ -45,12 +45,5 @@ export function AnimatedChainImage({
 const sx = StyleSheet.create({
   badge: {
     position: 'absolute',
-    shadowColor: globalColors.grey100,
-    shadowOffset: {
-      height: 4,
-      width: 0,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
   },
 });

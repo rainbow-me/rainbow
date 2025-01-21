@@ -5,7 +5,7 @@ import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFas
 import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
 import { getChainBadgeStyles } from '@/components/coin-icon/ChainImage';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
-import { globalColors, useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system';
 import { getChainsBadgeWorklet, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapContext } from '../providers/swap-provider';
@@ -59,12 +59,5 @@ export function AnimatedChainImage({
 const sx = StyleSheet.create({
   badge: {
     position: 'absolute',
-    shadowColor: globalColors.grey100,
-    shadowOffset: {
-      height: 4,
-      width: 0,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
   },
 });

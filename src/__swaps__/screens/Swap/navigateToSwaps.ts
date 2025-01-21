@@ -37,19 +37,21 @@ const getInputMethod = (params: SwapsParams) => {
   if (params.outputAsset) return 'outputAmount';
   return 'inputAmount';
 };
+
 export function getSwapsNavigationParams() {
   const params = (Navigation.getActiveRoute().params || {}) as SwapsParams;
 
   const inputMethod = getInputMethod(params);
   const lastTypedInput = inputMethod === 'slider' ? 'inputAmount' : inputMethod;
 
-  const state = useSwapsStore.getState();
+  const { inputAsset, outputAsset } = useSwapsStore.getState();
+
   return {
     inputMethod,
     lastTypedInput,
     focusedInput: lastTypedInput,
-    inputAsset: params.inputAsset || state.inputAsset,
-    outputAsset: params.outputAsset || state.outputAsset,
+    inputAsset: params.inputAsset || inputAsset,
+    outputAsset: params.outputAsset || outputAsset,
     ...params,
   } as const;
 }
