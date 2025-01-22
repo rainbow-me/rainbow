@@ -7,15 +7,11 @@ import Animated from 'react-native-reanimated';
 import { AboutSection, BalanceSection, BuySection, MarketStatsSection, ChartSection } from './sections';
 import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { analyticsV2 } from '@/analytics';
-import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
 import { convertStringToNumber, roundToSignificant1or5 } from '@/helpers/utilities';
 
 const SEPARATOR_COLOR = 'rgba(245, 248, 255, 0.03)';
 const LIGHT_SEPARATOR_COLOR = 'rgba(9, 17, 31, 0.03)';
-
-const ANALYTICS_ROUTE_LOG_DELAY = 5 * 1000;
 
 const DEFAULT_PERCENTAGES_OF_BALANCE = [0.05, 0.1, 0.25, 0.5, 0.75];
 // Ideally this would be different for different currencies, but that would need to be set in the remote config
@@ -24,7 +20,7 @@ const MINIMUM_NATIVE_CURRENCY_AMOUNT = 10;
 export function SheetContent() {
   const { nativeCurrency } = useAccountSettings();
   const { colorMode, isDarkMode } = useColorMode();
-  const { accentColors, basicAsset: asset, assetMetadata, isOwnedAsset } = useExpandedAssetSheetContext();
+  const { accentColors, basicAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
 
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(asset.chainId));
   const buyWithAsset = useAccountAsset(nativeAssetForChain?.uniqueId ?? '', nativeCurrency);
@@ -46,30 +42,6 @@ export function SheetContent() {
   }, [buyWithAsset]);
 
   const isBuySectionVisible = !assetIsBuyWithAsset && buyWithAsset && instantBuyNativeCurrencyAmounts.length > 0;
-
-  useTimeoutEffect(
-    ({ elapsedTime }) => {
-      const { address, chainId, symbol, name, iconUrl, price } = asset;
-      analyticsV2.track(analyticsV2.event.tokenDetailsErc20, {
-        eventSentAfterMs: elapsedTime,
-        token: {
-          address,
-          chainId,
-          symbol,
-          name,
-          icon_url: iconUrl ?? undefined,
-          price: price?.value ?? undefined,
-        },
-        available_data: {
-          // TODO:
-          chart: true,
-          description: !!assetMetadata?.description,
-          iconUrl: !!iconUrl,
-        },
-      });
-    },
-    { timeout: ANALYTICS_ROUTE_LOG_DELAY }
-  );
 
   return (
     <AccentColorProvider color={accentColors.color}>
