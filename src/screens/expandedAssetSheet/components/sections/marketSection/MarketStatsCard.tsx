@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Box, Inline, Stack, Text, AnimatedText } from '@/design-system';
+import { Box, Inline, Stack, Text, AnimatedText, useColorMode, useForegroundColor } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../../../context/ExpandedAssetSheetContext';
 import Animated, {
   SharedValue,
@@ -180,11 +180,13 @@ const TimeframeItem = memo(function TimeframeItem({
   relativeChange: number;
   selectedTimeframe: SharedValue<string>;
 }) {
+  const selectedColor = useForegroundColor('label');
+  const unselectedColor = useForegroundColor('labelSecondary');
+
   const textStyle = useAnimatedStyle(() => {
     const isSelected = selectedTimeframe.value === timeframe;
     return {
-      // TODO: implement actual colors based on asset sheet background
-      color: isSelected ? colors.whiteLabel : colors.lightGrey,
+      color: isSelected ? selectedColor : unselectedColor,
     };
   });
 

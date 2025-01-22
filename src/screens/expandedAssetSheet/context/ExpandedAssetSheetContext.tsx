@@ -1,19 +1,17 @@
 import { ParsedAddressAsset } from '@/entities';
-import { useAccountSettings, useAdditionalAssetData } from '@/hooks';
+import { useAccountSettings, useAdditionalAssetData, useColorForAsset } from '@/hooks';
 import { TokenMetadata } from '@/hooks/useAdditionalAssetData';
 import useAccountAsset from '@/hooks/useAccountAsset';
 import { colors } from '@/styles';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import chroma from 'chroma-js';
-import React, { createContext, useCallback, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import { SharedValue, useSharedValue } from 'react-native-reanimated';
 import { ChainId } from '@/state/backendNetworks/types';
 import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { isNativeAsset } from '@/handlers/assets';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
-import { ETH_COLOR, ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
 import { useColorMode } from '@/design-system';
 import { FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -209,31 +207,22 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
     return normalizeParsedAddressAsset({ token: asset, chainId, chainName });
   }, [asset, chainId]);
 
+  const assetColor = useColorForAsset(basicAsset);
+
   const { data: metadata } = useAdditionalAssetData({
     address,
     chainId,
     currency: nativeCurrency,
   });
 
-  const getAssetColor = useCallback(
-    (asset: BasicAsset) => {
-      const isAssetEth = asset.isNativeAsset && asset.symbol === 'ETH';
-      const color = asset.colors?.primary ?? asset.colors?.fallback ?? ETH_COLOR;
-      return isAssetEth ? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR) : color;
-    },
-    [isDarkMode]
-  );
-
-  const assetColor = getAssetColor(basicAsset);
-
-  // const extractedColors = extractColorValueForColors({ colors: basicAsset.colors });
-
   const accentColors: AccentColors = useMemo(() => {
-    const background = chroma(
-      chroma(assetColor)
-        .rgb()
-        .map(channel => Math.round(channel * (1 - 0.8) + 0 * 0.8))
-    ).css();
+    const background = isDarkMode
+      ? chroma(
+          chroma(assetColor)
+            .rgb()
+            .map(channel => Math.round(channel * (1 - 0.8) + 0 * 0.8))
+        ).css()
+      : colors.white;
 
     return {
       opacity100: assetColor,

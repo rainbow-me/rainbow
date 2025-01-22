@@ -26,7 +26,7 @@ export function BalanceSection() {
           {i18n.t(i18n.l.expanded_state.asset.value)}
         </Text>
       </Box>
-      <Box alignItems="center" width="full" gap={8} flexDirection="row" justifyContent="space-between">
+      <Box alignItems="center" width="full" gap={8} flexDirection="row" justifyContent="flex-start">
         <Bleed vertical="3px">
           <RainbowCoinIcon
             size={20}
@@ -38,8 +38,8 @@ export function BalanceSection() {
             theme={theme}
           />
         </Bleed>
-        <TextShadow containerStyle={{ flex: 1 }} blur={12} shadowOpacity={0.24}>
-          <Text numberOfLines={1} ellipsizeMode="tail" weight="bold" size="20pt" color="accent">
+        <TextShadow blur={12} shadowOpacity={0.24}>
+          <Text numberOfLines={1} style={{ flex: 1 }} ellipsizeMode="tail" weight="bold" size="20pt" color={'accent'}>
             {asset.balance.display}
           </Text>
         </TextShadow>

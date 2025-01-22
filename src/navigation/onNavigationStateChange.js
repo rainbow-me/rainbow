@@ -53,6 +53,13 @@ export function onHandleStatusBar(currentState, prevState) {
         break;
       }
       break;
+    case Routes.EXPANDED_ASSET_SHEET_V2:
+      if (currentColors.theme === 'dark') {
+        StatusBarHelper.setLightContent();
+      } else {
+        StatusBarHelper.setDarkContent();
+      }
+      break;
     case Routes.PROFILE_SCREEN:
     case Routes.WALLET_SCREEN:
     case Routes.DISCOVER_SCREEN:

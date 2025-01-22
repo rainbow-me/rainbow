@@ -6,18 +6,23 @@ import { SlackSheet } from '@/components/sheet';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { StatusBar } from 'react-native';
 import { StatusBarHelper } from '@/helpers';
-import { Box } from '@/design-system';
+import { Box, useColorMode } from '@/design-system';
 import { SHEET_FOOTER_HEIGHT, SheetFooter } from './components/SheetFooter';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { RootStackParamList } from '@/navigation/types';
 
+const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
+const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
+
 function ExpandedAssetSheetContent() {
+  const { isDarkMode } = useColorMode();
   const { accentColors } = useExpandedAssetSheetContext();
 
   return (
     <>
       <SlackSheet
         backgroundColor={accentColors.background}
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...(IS_IOS ? { height: '100%' } : {})}
         scrollEnabled
         removeTopPadding
@@ -34,7 +39,7 @@ function ExpandedAssetSheetContent() {
             width={{ custom: 36 }}
             borderRadius={3}
             position="absolute"
-            style={{ backgroundColor: 'rgba(245, 248, 255, 0.3)', bottom: 0, alignSelf: 'center' }}
+            style={{ backgroundColor: isDarkMode ? HANDLE_COLOR : LIGHT_HANDLE_COLOR, bottom: 0, alignSelf: 'center' }}
           />
         </Box>
         <EasingGradient
@@ -54,8 +59,6 @@ export function ExpandedAssetSheet() {
   const {
     params: { asset, address, chainId },
   } = useRoute<RouteProp<RootStackParamList, 'ExpandedAssetSheetV2'>>();
-
-  useEffect(() => StatusBarHelper.setLightContent(), []);
 
   return (
     <ExpandedAssetSheetContextProvider asset={asset} address={address} chainId={chainId}>

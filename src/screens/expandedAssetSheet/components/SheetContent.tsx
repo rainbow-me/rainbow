@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import * as i18n from '@/languages';
 import { SectionId, useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
-import { AccentColorProvider, Bleed, Box, ColorModeProvider, Separator, Stack } from '@/design-system';
+import { AccentColorProvider, Bleed, Box, ColorModeProvider, Separator, Stack, useColorMode } from '@/design-system';
 import { CollapsibleSection, LAYOUT_ANIMATION } from './shared/CollapsibleSection';
 import Animated from 'react-native-reanimated';
 import { AboutSection, BalanceSection, BuySection, MarketStatsSection, ChartSection } from './sections';
@@ -12,6 +12,9 @@ import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
 import { convertStringToNumber, roundToSignificant1or5 } from '@/helpers/utilities';
 
+const SEPARATOR_COLOR = 'rgba(245, 248, 255, 0.03)';
+const LIGHT_SEPARATOR_COLOR = 'rgba(9, 17, 31, 0.03)';
+
 const ANALYTICS_ROUTE_LOG_DELAY = 5 * 1000;
 
 const DEFAULT_PERCENTAGES_OF_BALANCE = [0.025, 0.05, 0.1, 0.25, 0.5, 0.75];
@@ -20,6 +23,7 @@ const MINIMUM_NATIVE_CURRENCY_AMOUNT = 5;
 
 export function SheetContent() {
   const { nativeCurrency } = useAccountSettings();
+  const { colorMode, isDarkMode } = useColorMode();
   const { accentColors, basicAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
 
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(asset.chainId));
@@ -68,8 +72,8 @@ export function SheetContent() {
   );
 
   return (
-    <AccentColorProvider color={accentColors.opacity100}>
-      <ColorModeProvider value="dark">
+    <AccentColorProvider color={accentColors.color}>
+      <ColorModeProvider value={colorMode}>
         <Box
           height="full"
           width="full"
@@ -84,7 +88,7 @@ export function SheetContent() {
             space="28px"
             separator={
               <Animated.View layout={LAYOUT_ANIMATION}>
-                <Separator color={{ custom: 'rgba(245, 248, 255, 0.03)' }} thickness={1} />
+                <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} thickness={1} />
               </Animated.View>
             }
           >
