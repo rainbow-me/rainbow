@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Bleed, Box, IconContainer, Inline, Stack, Text, TextShadow } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -11,12 +11,20 @@ import { InteractionManager } from 'react-native';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
-import { convertNumberToString } from '@/helpers/utilities';
+import { convertAmountToNativeDisplay, convertNumberToString } from '@/helpers/utilities';
 import { ParsedAddressAsset } from '@/entities';
+import { useAccountSettings } from '@/hooks';
 
 const GRADIENT_FADE_WIDTH = 24;
 
 function BuyButton({ currencyAmount, onPress }: { currencyAmount: number; onPress: () => void }) {
+  const { nativeCurrency } = useAccountSettings();
+
+  const currencyAmountDisplay = useMemo(
+    () => convertAmountToNativeDisplay(currencyAmount, nativeCurrency, 2, true),
+    [currencyAmount, nativeCurrency]
+  );
+
   const { accentColors } = useExpandedAssetSheetContext();
 
   return (
@@ -37,7 +45,7 @@ function BuyButton({ currencyAmount, onPress }: { currencyAmount: number; onPres
       >
         <TextShadow blur={12} shadowOpacity={0.24}>
           <Text weight="heavy" size="17pt" color="accent">
-            ${currencyAmount}
+            {currencyAmountDisplay}
           </Text>
         </TextShadow>
       </Box>
