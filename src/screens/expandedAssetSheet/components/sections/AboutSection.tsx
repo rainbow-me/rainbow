@@ -49,7 +49,9 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
           )}
           {iconName === 'telegram' && (
             <IconContainer height={10} width={20}>
-              <Icon width={'23'} height={'15'} name="telegram" color={accentColors.color} />
+              <Bleed left="8px">
+                <Icon width={'23'} height={'15'} name="telegram" color={accentColors.color} />
+              </Bleed>
             </IconContainer>
           )}
           <TextShadow blur={12} shadowOpacity={0.24}>
