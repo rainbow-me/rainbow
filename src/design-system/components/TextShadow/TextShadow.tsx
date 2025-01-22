@@ -76,7 +76,7 @@ export const TextShadow = ({
             numberOfLines={children.props.numberOfLines}
             color={{ custom: 'transparent' }}
             size={children.props.size}
-            style={internalTextStyle}
+            style={[children.props.style, internalTextStyle]}
             weight={children.props.weight}
           >
             {children}
