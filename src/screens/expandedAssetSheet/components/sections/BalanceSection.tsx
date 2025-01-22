@@ -3,11 +3,9 @@ import * as i18n from '@/languages';
 import { Bleed, Box, Text, TextShadow } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { useTheme } from '@/theme';
 
 export function BalanceSection() {
   const { accentColors, accountAsset: asset } = useExpandedAssetSheetContext();
-  const theme = useTheme();
 
   if (!asset?.balance || !asset?.native?.balance) return null;
 
@@ -28,15 +26,7 @@ export function BalanceSection() {
       </Box>
       <Box alignItems="center" width="full" gap={8} flexDirection="row" justifyContent="flex-start">
         <Bleed vertical="3px">
-          <RainbowCoinIcon
-            size={20}
-            chainId={asset.chainId}
-            colors={asset.colors}
-            icon={asset.icon_url}
-            ignoreBadge
-            symbol={asset.symbol}
-            theme={theme}
-          />
+          <RainbowCoinIcon size={20} chainId={asset.chainId} color={asset.color} icon={asset.icon_url} symbol={asset.symbol} />
         </Bleed>
         <TextShadow blur={12} shadowOpacity={0.24}>
           <Text numberOfLines={1} style={{ flex: 1 }} ellipsizeMode="tail" weight="bold" size="20pt" color={'accent'}>

@@ -131,7 +131,7 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
       decimals: asset.decimals,
       iconUrl: asset.icon_url,
       isNativeAsset: isNativeAsset(address, chainId),
-      colors: assetColors ?? { primary: colors.appleBlue },
+      colors: assetColors ?? { primary: colors.blueGreyDark },
       transferable: 'transferable' in asset ? asset.transferable : true,
       networks: 'networks' in asset ? asset.networks : {},
       price: {

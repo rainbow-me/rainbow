@@ -6,9 +6,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Row } from '../shared/Row';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { useTheme } from '@/theme';
 import { InteractionManager } from 'react-native';
-import { TokenColors } from '@/graphql/__generated__/metadata';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
 import { convertAmountToNativeDisplay, convertNumberToString } from '@/helpers/utilities';
@@ -61,7 +59,6 @@ export const BuySection = memo(function BuySection({
   buyWithAsset: ParsedAddressAsset;
 }) {
   const { accentColors, basicAsset: asset } = useExpandedAssetSheetContext();
-  const theme = useTheme();
 
   return (
     <Box gap={12}>
@@ -83,11 +80,9 @@ export const BuySection = memo(function BuySection({
             <RainbowCoinIcon
               size={20}
               chainId={buyWithAsset.chainId}
-              colors={buyWithAsset.colors as TokenColors}
+              color={buyWithAsset.color}
               icon={buyWithAsset.icon_url}
-              ignoreBadge
               symbol={buyWithAsset.symbol}
-              theme={theme}
             />
           </Inline>
         </Row>
