@@ -21,7 +21,6 @@ const tokenSearchClient = new RainbowFetchClient({
 
 type TokenSearchParams<List extends TokenLists = TokenLists> = {
   chainId: ChainId;
-  fromChainId?: ChainId;
   keys: TokenSearchAssetKey[];
   list: List;
   query: string | undefined;
@@ -191,22 +190,21 @@ const ALL_VERIFIED_TOKENS_PARAM = '/?list=verifiedAssets';
 
 /** Unverified token search */
 async function tokenSearchQueryFunction(
-  { chainId, fromChainId, keys, list, query, threshold }: TokenSearchParams<TokenLists.HighLiquidity>,
+  { chainId, keys, list, query, threshold }: TokenSearchParams<TokenLists.HighLiquidity>,
   abortController: AbortController | null
 ): Promise<SearchAsset[]>;
 
 /** Verified token search */
 async function tokenSearchQueryFunction(
-  { chainId, fromChainId, keys, list, query, threshold }: TokenSearchParams<TokenLists.Verified>,
+  { chainId, keys, list, query, threshold }: TokenSearchParams<TokenLists.Verified>,
   abortController: AbortController | null
 ): Promise<VerifiedTokenData>;
 
 async function tokenSearchQueryFunction(
-  { chainId, fromChainId, keys, list, query, threshold }: TokenSearchParams,
+  { chainId, keys, list, query, threshold }: TokenSearchParams,
   abortController: AbortController | null
 ): Promise<SearchAsset[] | VerifiedTokenData> {
   const queryParams: Omit<TokenSearchParams, 'chainId' | 'keys'> & { keys: string } = {
-    fromChainId,
     keys: keys?.join(','),
     list,
     query,
