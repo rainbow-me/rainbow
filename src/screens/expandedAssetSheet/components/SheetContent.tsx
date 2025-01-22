@@ -17,14 +17,14 @@ const LIGHT_SEPARATOR_COLOR = 'rgba(9, 17, 31, 0.03)';
 
 const ANALYTICS_ROUTE_LOG_DELAY = 5 * 1000;
 
-const DEFAULT_PERCENTAGES_OF_BALANCE = [0.025, 0.05, 0.1, 0.25, 0.5, 0.75];
+const DEFAULT_PERCENTAGES_OF_BALANCE = [0.05, 0.1, 0.25, 0.5, 0.75];
 // Ideally this would be different for different currencies, but that would need to be set in the remote config
-const MINIMUM_NATIVE_CURRENCY_AMOUNT = 5;
+const MINIMUM_NATIVE_CURRENCY_AMOUNT = 10;
 
 export function SheetContent() {
   const { nativeCurrency } = useAccountSettings();
   const { colorMode, isDarkMode } = useColorMode();
-  const { accentColors, basicAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
+  const { accentColors, basicAsset: asset, assetMetadata, isOwnedAsset } = useExpandedAssetSheetContext();
 
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(asset.chainId));
   const buyWithAsset = useAccountAsset(nativeAssetForChain?.uniqueId ?? '', nativeCurrency);
@@ -49,7 +49,7 @@ export function SheetContent() {
 
   useTimeoutEffect(
     ({ elapsedTime }) => {
-      const { address, chainId, symbol, name, icon_url, price } = asset;
+      const { address, chainId, symbol, name, iconUrl, price } = asset;
       analyticsV2.track(analyticsV2.event.tokenDetailsErc20, {
         eventSentAfterMs: elapsedTime,
         token: {
@@ -57,14 +57,14 @@ export function SheetContent() {
           chainId,
           symbol,
           name,
-          icon_url,
-          price: price?.value,
+          icon_url: iconUrl ?? undefined,
+          price: price?.value ?? undefined,
         },
         available_data: {
           // TODO:
           chart: true,
-          description: false,
-          iconUrl: !!icon_url,
+          description: !!assetMetadata?.description,
+          iconUrl: !!iconUrl,
         },
       });
     },

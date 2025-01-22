@@ -73,7 +73,7 @@ export default function ChartExpandedStateHeader({
       <Stack space={'20px'}>
         <RainbowCoinIcon
           size={44}
-          icon={asset?.icon_url}
+          icon={asset?.iconUrl}
           chainId={asset?.chainId}
           symbol={asset?.symbol}
           theme={theme}

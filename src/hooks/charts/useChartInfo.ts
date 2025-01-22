@@ -69,7 +69,8 @@ export const usePriceChart = ({
     },
     queryKey: createQueryKey('price chart', { address, chainId, chartType }),
     keepPreviousData: true,
-    staleTime: 1 * 60 * 1000, // 1min
+    refetchInterval: 1 * 30 * 1000,
+    staleTime: 0,
   });
   return { updateChartType, ...query };
 };

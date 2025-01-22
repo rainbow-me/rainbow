@@ -7,7 +7,7 @@ import Spinner from '../../assets/chartSpinner.png';
 import { nativeStackConfig } from '../../navigation/nativeStackConfig';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
-import { Text, Box } from '@/design-system';
+import { Text, Box, Bleed } from '@/design-system';
 import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
 import { ChartDot, ChartPath, useChartData } from '@/react-native-animated-charts/src';
@@ -112,7 +112,7 @@ const longPressGestureHandlerProps = {
   minDurationMs: 60,
 };
 
-export default function ChartWrapper({
+export default function Chart({
   chartType,
   color,
   fetchingCharts,
@@ -122,6 +122,7 @@ export default function ChartWrapper({
   showChart,
   testID,
   throttledData,
+  latestPrice,
   ...props
 }) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [chartType]);
@@ -184,6 +185,7 @@ export default function ChartWrapper({
         color={color}
         isPool={isPool}
         latestChange={latestChange}
+        latestPrice={latestPrice}
         showChart={showChart}
         testID={testID}
       />
@@ -216,11 +218,13 @@ export default function ChartWrapper({
           </>
         )}
         {!showChart && (
-          <Box height={HEIGHT} justifyContent="center" alignItems="center">
-            <Text color="label" size="17pt" weight="heavy">
-              {i18n.t(i18n.l.expanded_state.chart.no_price_data)}
-            </Text>
-          </Box>
+          <Bleed bottom="24px">
+            <Box height={HEIGHT + 48} justifyContent="center" alignItems="center">
+              <Text color="label" size="17pt" weight="heavy">
+                {i18n.t(i18n.l.expanded_state.chart.no_price_data)}
+              </Text>
+            </Box>
+          </Bleed>
         )}
       </ChartContainer>
       {showChart ? (

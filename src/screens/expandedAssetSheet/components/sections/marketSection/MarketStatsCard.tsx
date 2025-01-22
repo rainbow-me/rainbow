@@ -225,7 +225,7 @@ export const MarketStatsCard = memo(function MarketStatsCard({ marketData = MARK
   const selectedTimeframe = useSharedValue(DEFAULT_TIMEFRAME);
 
   // Shared values are used for representing currently selected timeframe data to avoid re-rendering the component when the timeframe changes
-  // An shared value object is not used because otherwise the individual keys would be shared values themselves and thus not usable in AnimatedText
+  // A shared value object is not used because then the individual keys would be shared values themselves and thus not usable in AnimatedText
   const transactions = useSharedValue('0');
   const volume = useSharedValue('0');
   const makers = useSharedValue('0');

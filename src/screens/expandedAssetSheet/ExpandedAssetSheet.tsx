@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ExpandedAssetSheetContextProvider, useExpandedAssetSheetContext } from './context/ExpandedAssetSheetContext';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { SheetContent } from './components/SheetContent';
 import { SlackSheet } from '@/components/sheet';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { StatusBar } from 'react-native';
-import { StatusBarHelper } from '@/helpers';
 import { Box, useColorMode } from '@/design-system';
 import { SHEET_FOOTER_HEIGHT, SheetFooter } from './components/SheetFooter';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';

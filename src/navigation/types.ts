@@ -14,7 +14,7 @@ import { RainbowPosition } from '@/resources/defi/types';
 import { Address } from 'viem';
 import { SharedValue } from 'react-native-reanimated';
 import { ChainId } from '@/state/backendNetworks/types';
-import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
+import { ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -109,7 +109,7 @@ export type RootStackParamList = {
   [Routes.EXPANDED_ASSET_SHEET_V2]: {
     address: string;
     chainId: ChainId;
-    asset: ParsedAddressAsset | TrendingToken;
+    asset: ExpandedSheetParamAsset;
   };
   [Routes.POSITION_SHEET]: {
     position: RainbowPosition;

@@ -2,7 +2,6 @@ import { ParsedAddressAsset } from '@/entities';
 import { useAccountSettings, useAdditionalAssetData, useColorForAsset } from '@/hooks';
 import { TokenMetadata } from '@/hooks/useAdditionalAssetData';
 import useAccountAsset from '@/hooks/useAccountAsset';
-import { colors } from '@/styles';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import chroma from 'chroma-js';
 import React, { createContext, useContext, useMemo } from 'react';
@@ -11,10 +10,12 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { isNativeAsset } from '@/handlers/assets';
-import { TokenColors } from '@/graphql/__generated__/metadata';
+import { Token } from '@/graphql/__generated__/metadata';
 import { useColorMode } from '@/design-system';
-import { FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
+import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
+import { useTheme } from '@/theme';
 // import { useTokenMetadataStore } from '@/resources/tokenMetadata/tokenMetadata';
 
 export enum SectionId {
@@ -26,6 +27,16 @@ export enum SectionId {
   HOLDERS = 'holders',
   ABOUT = 'about',
 }
+
+const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
+  [SectionId.PROFIT]: true,
+  [SectionId.MARKET_STATS]: true,
+  [SectionId.BUY]: true,
+  [SectionId.BRIDGE]: true,
+  [SectionId.HISTORY]: true,
+  [SectionId.HOLDERS]: true,
+  [SectionId.ABOUT]: true,
+};
 
 interface AccentColors {
   opacity100: string;
@@ -45,136 +56,33 @@ interface AccentColors {
   surface: string;
   surfaceSecondary: string;
 }
+// We can receive a variety of assets as param depending on where we navigated from
+export type ExpandedSheetParamAsset = ParsedAddressAsset | TrendingToken | FormattedExternalAsset | EnrichedExchangeAsset;
 
-const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
-  [SectionId.PROFIT]: true,
-  [SectionId.MARKET_STATS]: true,
-  [SectionId.BUY]: true,
-  [SectionId.BRIDGE]: true,
-  [SectionId.HISTORY]: true,
-  [SectionId.HOLDERS]: true,
-  [SectionId.ABOUT]: true,
-};
-
-type ParamToken = ParsedAddressAsset | TrendingToken | FormattedExternalAsset;
-
-export type BasicAsset = {
-  chainId: ChainId;
+export type BasicAsset = Pick<
+  Token,
+  'decimals' | 'iconUrl' | 'name' | 'networks' | 'symbol' | 'colors' | 'price' | 'transferable' | 'creationDate'
+> & {
   address: string;
-  network: string;
-  colors: TokenColors | undefined;
+  chainId: ChainId;
   uniqueId: UniqueId;
-  name: string;
-  symbol: string;
-  decimals: number;
-  icon_url: string | undefined;
+  network: string;
   isNativeAsset: boolean;
-  transferable: boolean;
-  price: {
-    relative_change_24h: number | undefined;
-    value: number | undefined;
-  };
-  creationDate: string | null;
 };
 
-function isTrendingToken(token: ParamToken): token is TrendingToken {
-  return 'highlightedFriends' in token;
-}
-
-function isFormattedExternalAsset(token: ParamToken): token is FormattedExternalAsset {
-  return 'transferable' in token;
-}
-
-function normalizeTrendingToken({ token, chainId, chainName }: { token: TrendingToken; chainId: ChainId; chainName: string }): BasicAsset {
-  return {
-    chainId,
-    address: token.address,
-    uniqueId: getUniqueId(token.address, chainId),
-    network: chainName,
-    name: token.name,
-    symbol: token.symbol,
-    decimals: token.decimals,
-    icon_url: token.icon_url,
-    isNativeAsset: isNativeAsset(token.address, token.chainId),
-    colors: token.colors,
-    transferable: token.transferable,
-    price: {
-      relative_change_24h: token.priceChange.day,
-      value: token.price,
-    },
-    creationDate: token.creationDate,
-  };
-}
-
-function normalizeParsedAddressAsset({
-  token,
-  chainId,
-  chainName,
-}: {
-  token: ParsedAddressAsset;
-  chainId: ChainId;
-  chainName: string;
-}): BasicAsset {
-  return {
-    chainId: chainId,
-    address: token.address,
-    uniqueId: getUniqueId(token.address, chainId),
-    network: chainName,
-    name: token.name,
-    symbol: token.symbol,
-    decimals: token.decimals,
-    icon_url: token.icon_url,
-    isNativeAsset: isNativeAsset(token.address, chainId),
-    colors: token.colors,
-    transferable: true,
-    price: {
-      relative_change_24h: token.price?.relative_change_24h,
-      value: token.price?.value,
-    },
-    creationDate: null,
-  };
-}
-
-function normalizeFormattedExternalAsset({
-  token,
-  chainId,
-  chainName,
-}: {
-  token: FormattedExternalAsset;
-  chainId: ChainId;
-  chainName: string;
-}): BasicAsset {
-  return {
-    chainId: chainId,
-    address: token.address,
-    uniqueId: getUniqueId(token.address, chainId),
-    network: chainName,
-    name: token.name,
-    symbol: token.symbol,
-    decimals: token.decimals,
-    icon_url: token.icon_url,
-    isNativeAsset: isNativeAsset(token.address, chainId),
-    colors: token.colors,
-    transferable: token.transferable,
-    price: {
-      relative_change_24h: token.price?.relativeChange24h ?? undefined,
-      value: token.price?.value ?? undefined,
-    },
-    creationDate: null,
-  };
-}
+export type ExpandedSheetAsset = BasicAsset | (BasicAsset & FormattedExternalAsset);
 
 type ExpandedAssetSheetContextType = {
   accentColors: AccentColors;
-  basicAsset: BasicAsset;
-  accountAsset: ParsedAddressAsset | null | undefined;
+  basicAsset: ExpandedSheetAsset;
+  accountAsset: ParsedAddressAsset | undefined;
   assetMetadata: TokenMetadata | null | undefined;
   expandedSections: SharedValue<Record<SectionId, boolean>>;
   isOwnedAsset: boolean;
 };
 
 type ExpandedAssetSheetContextProviderProps = {
-  asset: ParamToken;
+  asset: ExpandedSheetParamAsset;
   address: string;
   chainId: ChainId;
   children: React.ReactNode;
@@ -193,21 +101,80 @@ export function useExpandedAssetSheetContext() {
 export function ExpandedAssetSheetContextProvider({ asset, address, chainId, children }: ExpandedAssetSheetContextProviderProps) {
   const { nativeCurrency } = useAccountSettings();
   const { isDarkMode } = useColorMode();
+  const { colors } = useTheme();
+
   const expandedSections = useSharedValue<Record<SectionId, boolean>>(DEFAULT_SECTIONS_STATE);
   const assetUniqueId = getUniqueId(address, chainId);
   const accountAsset = useAccountAsset(assetUniqueId, nativeCurrency);
   const isOwnedAsset = !!accountAsset;
 
+  // The asset is fetched regardless of the information in param so that we do not have to be concerned with the staleness of the data or missing fields
+  const { data: externalAsset } = useExternalToken({
+    address,
+    chainId,
+    currency: nativeCurrency,
+  });
+
+  // This is constrcuted so that rendering is not delayed by the external asset fetch
   const basicAsset = useMemo(() => {
     const chainNameById = useBackendNetworksStore.getState().getChainsName();
     const chainName = chainNameById[chainId];
+    const assetColors = 'color' in asset && asset.color ? { primary: asset.color } : asset.colors;
 
-    if (isTrendingToken(asset)) return normalizeTrendingToken({ token: asset, chainId, chainName });
-    if (isFormattedExternalAsset(asset)) return normalizeFormattedExternalAsset({ token: asset, chainId, chainName });
-    return normalizeParsedAddressAsset({ token: asset, chainId, chainName });
-  }, [asset, chainId]);
+    const base: BasicAsset = {
+      chainId,
+      address,
+      uniqueId: assetUniqueId,
+      network: chainName,
+      name: asset.name,
+      symbol: asset.symbol,
+      decimals: asset.decimals,
+      iconUrl: asset.icon_url,
+      isNativeAsset: isNativeAsset(address, chainId),
+      colors: assetColors ?? { primary: colors.appleBlue },
+      transferable: 'transferable' in asset ? asset.transferable : true,
+      networks: 'networks' in asset ? asset.networks : {},
+      price: {
+        relativeChange24h: null,
+        value: null,
+      },
+      creationDate: 'creationDate' in asset ? asset.creationDate : null,
+    };
 
-  const assetColor = useColorForAsset(basicAsset);
+    if ('price' in asset && typeof asset.price === 'object') {
+      if ('relativeChange24h' in asset.price) {
+        base.price.relativeChange24h = asset.price.relativeChange24h ?? null;
+      }
+      if ('relative_change_24h' in asset.price) {
+        base.price.relativeChange24h = asset.price.relative_change_24h ?? null;
+      }
+      if ('value' in asset.price) {
+        base.price.value = asset.price.value ?? null;
+      }
+    }
+
+    // TrendingToken format
+    if ('price' in asset && typeof asset.price === 'number') {
+      base.price.value = asset.price;
+    }
+    if ('priceChange' in asset && typeof asset.priceChange === 'object') {
+      base.price.relativeChange24h = asset.priceChange.day ?? null;
+    }
+
+    return base;
+  }, [address, asset, assetUniqueId, chainId, colors]);
+
+  const fullAsset = useMemo(() => {
+    if (externalAsset)
+      return {
+        ...basicAsset,
+        ...externalAsset,
+      } satisfies ExpandedSheetAsset;
+    return basicAsset;
+  }, [externalAsset, basicAsset]);
+
+  // @ts-expect-error: the field with a type difference is not used & irrelevant to the hook (price)
+  const assetColor = useColorForAsset(fullAsset);
 
   const { data: metadata } = useAdditionalAssetData({
     address,
@@ -243,13 +210,13 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
       surfaceSecondary: colors.alpha(assetColor, 0.03),
       background: background,
     };
-  }, [assetColor]);
+  }, [assetColor, colors, isDarkMode]);
 
   return (
     <ExpandedAssetSheetContext.Provider
       value={{
         accentColors,
-        basicAsset,
+        basicAsset: fullAsset,
         accountAsset,
         assetMetadata: metadata,
         expandedSections,
