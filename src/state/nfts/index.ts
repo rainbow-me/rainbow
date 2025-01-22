@@ -6,26 +6,24 @@ import { time } from '@/utils';
 import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 import { useAccountSettings } from '@/hooks';
 
-type UpdateNftSortParams = {
-  sortBy?: NftCollectionSortCriterion;
-  sortDirection?: SortDirection;
-};
+export type NftOrderingAction = `${NftCollectionSortCriterion}|${SortDirection}`;
 
 interface NftSortStore {
   sortBy: NftCollectionSortCriterion;
   sortDirection: SortDirection;
-  updateNftSort: (params: UpdateNftSortParams) => void;
+  updateNftSort: (params: NftOrderingAction) => void;
 }
 
-export const nftSortStore = createRainbowStore<NftSortStore>(
+export const useNftSortStore = createRainbowStore<NftSortStore>(
   (set, get) => ({
     sortBy: NftCollectionSortCriterion.MostRecent,
     sortDirection: SortDirection.Desc,
-    updateNftSort: params => {
+    updateNftSort: orderingAction => {
       const state = get();
+      const [sortBy, sortDirection] = parseNftOrderingAction(orderingAction);
       set({
-        sortBy: params?.sortBy || state.sortBy,
-        sortDirection: params?.sortDirection || state.sortDirection,
+        sortBy: sortBy || state.sortBy,
+        sortDirection: sortDirection || state.sortDirection,
       });
     },
   }),
@@ -34,6 +32,14 @@ export const nftSortStore = createRainbowStore<NftSortStore>(
     version: 0,
   }
 );
+
+const parseNftOrderingAction = (s: string | undefined) => {
+  const [sortBy = NftCollectionSortCriterion.MostRecent, sortDirection = SortDirection.Desc] = (s?.split('|') || []) as [
+    sortBy?: NftCollectionSortCriterion,
+    sortDirection?: SortDirection,
+  ];
+  return [sortBy, sortDirection] as const;
+};
 
 type UserNftsStoreType = ReturnType<typeof createUserNftsStore>;
 type UserNftsParams = { address: string; sortBy: NftCollectionSortCriterion; sortDirection: SortDirection };
@@ -59,8 +65,8 @@ export const createUserNftsStore = (address: string, internal?: boolean) =>
       staleTime: time.minutes(10),
       params: {
         address,
-        sortBy: $ => $(nftSortStore).sortBy,
-        sortDirection: $ => $(nftSortStore).sortDirection,
+        sortBy: $ => $(useNftSortStore).sortBy,
+        sortDirection: $ => $(useNftSortStore).sortDirection,
       },
     },
     () => ({

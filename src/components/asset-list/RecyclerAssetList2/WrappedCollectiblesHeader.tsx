@@ -3,11 +3,11 @@ import { Box, Inline, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
 import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
-import { NftSort, parseNftSort, useNftSort } from '@/hooks/useNFTsSortBy';
 import { colors } from '@/styles';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_IOS } from '@/env';
+import { useNftSortStore } from '@/state/nfts';
 
 const TokenFamilyHeaderHeight = 48;
 
@@ -34,7 +34,10 @@ const getMenuItemIcon = (value: NftCollectionSortCriterion) => {
 };
 
 const CollectiblesHeader = () => {
-  const { nftSort, nftSortDirection, updateNFTSort } = useNftSort();
+  const nftSort = useNftSortStore(state => state.sortBy);
+  const nftSortDirection = useNftSortStore(state => state.sortDirection);
+  const updateNFTSort = useNftSortStore(state => state.updateNftSort);
+
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 

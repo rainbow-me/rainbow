@@ -4,7 +4,6 @@ import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
 import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
-import { useNftSort } from './useNFTsSortBy';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useWallets from './useWallets';
@@ -22,7 +21,7 @@ import { usePoints } from '@/resources/points';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useUserNftsStore } from '@/state/nfts';
+import { useNftSortStore, useUserNftsStore } from '@/state/nfts';
 
 // user properties analytics for claimables that executes at max once every 2 min
 const throttledClaimablesAnalytics = throttle(
@@ -60,7 +59,7 @@ export default function useWalletSectionsData({
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const isWalletEthZero = useIsWalletEthZero();
 
-  const { nftSort } = useNftSort();
+  const nftSort = useNftSortStore(state => state.sortBy);
 
   const { sendableUniqueTokens } = useSendableUniqueTokens();
 
