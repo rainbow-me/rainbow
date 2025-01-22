@@ -26,7 +26,7 @@ import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/us
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
-import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { clamp, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getProvider } from '@/handlers/web3';
@@ -49,13 +49,11 @@ import { haptics } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError, SwapType } from '@rainbow-me/swaps';
 
 import { IS_IOS } from '@/env';
-import { Address } from 'viem';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore, getChainsNativeAssetWorklet } from '@/state/backendNetworks/backendNetworks';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
@@ -191,7 +189,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   );
   const configProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
-  const slippage = useSharedValue(getDefaultSlippageWorklet(initialSelectedInputAsset?.chainId || ChainId.mainnet, getRemoteConfig()));
+  const slippage = useSharedValue(initialValues.slippage);
 
   const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
 

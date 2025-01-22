@@ -6067,13 +6067,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rudderstack/rudder-sdk-react-native@npm:1.12.1":
-  version: 1.12.1
-  resolution: "@rudderstack/rudder-sdk-react-native@npm:1.12.1"
+"@rudderstack/rudder-sdk-react-native@npm:2.0.0":
+  version: 2.0.0
+  resolution: "@rudderstack/rudder-sdk-react-native@npm:2.0.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-native: ">= 0.41.2 < 0.80.0 || ^0.0.0-0"
-  checksum: 10c0/e4dbd336ba9f9075e979fc1dae966724a2cd6ac3324ef0be449723c78f011ca0eac949f2719c14a123343a9fe9557ca55b1162a64a7b9eaabb33539daa02dbc1
+  checksum: 10c0/40c71a1abee481045e37e8be3c92b147e15d3c41c398449c5b7d6a552ebce3a977260ffeb1d2831103442556e8f258332a041f9d19451c1009c367c9024f07ec
   languageName: node
   linkType: hard
 
@@ -8739,7 +8739,7 @@ __metadata:
     "@reown/walletkit": "npm:1.1.1"
     "@reservoir0x/reservoir-sdk": "npm:2.3.0"
     "@rnx-kit/align-deps": "npm:2.2.4"
-    "@rudderstack/rudder-sdk-react-native": "npm:1.12.1"
+    "@rudderstack/rudder-sdk-react-native": "npm:2.0.0"
     "@sentry/react-native": "npm:5.35.0"
     "@shopify/flash-list": "npm:1.7.2"
     "@shopify/react-native-skia": "npm:1.8.2"

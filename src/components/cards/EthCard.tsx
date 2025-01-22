@@ -20,11 +20,11 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import assetTypes from '@/entities/assetTypes';
 import { Network, ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
@@ -156,7 +156,7 @@ export const EthCard = () => {
                   </>
                 ) : (
                   <>
-                    <EthCoinIcon size={20} />
+                    <ChainImage chainId={ChainId.mainnet} position="relative" size={20} />
                     <Text size="17pt" color={{ custom: colorForAsset }} weight="heavy">
                       {ethAsset?.name}
                     </Text>

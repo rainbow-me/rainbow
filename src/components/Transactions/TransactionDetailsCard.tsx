@@ -93,13 +93,11 @@ export const TransactionDetailsCard = ({
         </Box>
         <Animated.View style={listStyle}>
           <Stack space="24px">
-            {
-              <TransactionDetailsRow
-                chainId={chainId}
-                detailType="chain"
-                value={useBackendNetworksStore.getState().getChainsName()[chainId]}
-              />
-            }
+            <TransactionDetailsRow
+              chainId={chainId}
+              detailType="chain"
+              value={useBackendNetworksStore.getState().getChainsLabel()[chainId]}
+            />
             {!!(meta?.to?.address || toAddress || showTransferToRow) && (
               <TransactionDetailsRow
                 detailType={isContract ? 'contract' : 'to'}

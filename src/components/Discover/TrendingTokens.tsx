@@ -2,7 +2,7 @@ import { DropdownMenu } from '@/components/DropdownMenu';
 import { globalColors, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 
-import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { analyticsV2 } from '@/analytics';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -385,15 +385,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
           alignItems: 'center',
         }}
       >
-        <SwapCoinIcon
-          iconUrl={token.icon_url}
-          color={token.colors.primary}
-          chainId={token.chainId}
-          address={token.address}
-          symbol={token.symbol}
-          size={40}
-          chainSize={20}
-        />
+        <RainbowCoinIcon icon={token.icon_url} color={token.colors.primary} chainId={token.chainId} symbol={token.symbol} />
 
         <View style={{ gap: 12, flex: 1 }}>
           <FriendHolders friends={token.highlightedFriends} />
@@ -528,7 +520,7 @@ function NetworkFilter() {
     return {
       icon: (
         <View style={{ marginRight: 2 }}>
-          <ChainImage chainId={chainId} size={16} />
+          <ChainImage chainId={chainId} size={16} position="relative" />
         </View>
       ),
       label: useBackendNetworksStore.getState().getChainsLabel()[chainId],
@@ -576,6 +568,7 @@ function TimeFilter() {
           actionKey: time,
         })),
       }}
+      menuItemType="checkbox"
       side="bottom"
       onPressMenuItem={timeframe => useTrendingTokensStore.getState().setTimeframe(timeframe)}
     >
@@ -610,6 +603,7 @@ function SortFilter() {
           actionKey: s,
         })),
       }}
+      menuItemType="checkbox"
       side="bottom"
       onPressMenuItem={selection => {
         if (selection === sort) return useTrendingTokensStore.getState().setSort(TrendingSort.Recommended);

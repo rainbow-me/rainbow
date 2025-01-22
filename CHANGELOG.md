@@ -15,6 +15,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.55] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.55)
+
+### Changed
+
+- Refactored our chain badge system to now come from backend (#6328)
+
+### Fixed
+
+- Fixed a bug with chain icon on trending tokens sort (#6410)
+- Fixed a bug in wallet switcher on Android (#6412)
+
+## [1.9.54] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.54)
+
+### Changed
+
+- Set the default cacheTime to 5 minutes (#6403)
+
+### Fixed
+
+- Nonce logic refactor which fixes base issues with pending transactions (#6402)
+
 ## [1.9.53] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.53)
 
 ### Added

@@ -75,9 +75,8 @@ export default function ChartExpandedStateHeader({
           size={44}
           icon={asset?.iconUrl}
           chainId={asset?.chainId}
+          color={asset?.colors?.primary || asset?.colors?.fallback || undefined}
           symbol={asset?.symbol}
-          theme={theme}
-          colors={asset?.colors}
         />
         <TextShadow blur={12} shadowOpacity={0.24}>
           <Text
