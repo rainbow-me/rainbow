@@ -57,7 +57,6 @@ export interface RainbowConfig extends Record<string, string | boolean | number>
   featured_results: boolean;
   claimables: boolean;
   nfts_enabled: boolean;
-  expanded_state_v2: boolean;
 
   trending_tokens_limit: number;
 }
@@ -150,7 +149,6 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   featured_results: true,
   claimables: true,
   nfts_enabled: true,
-  expanded_state_v2: false,
 
   trending_tokens_limit: 10,
   trending_tokens_enabled: false,
@@ -210,9 +208,7 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'featured_results' ||
         key === 'claimables' ||
         key === 'nfts_enabled' ||
-        key === 'expanded_state_v2' ||
-        key === 'trending_tokens_enabled' ||
-        key === 'expanded_state_v2'
+        key === 'trending_tokens_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else if (key === 'trending_tokens_limit') {
