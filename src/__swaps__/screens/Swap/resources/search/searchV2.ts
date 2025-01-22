@@ -6,7 +6,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
+import { SearchAsset, TokenSearchAssetKey } from '@/__swaps__/types/search';
 import { time } from '@/utils';
 import { parseTokenSearch } from './utils';
 
@@ -24,7 +24,6 @@ type TokenSearchParams<List extends TokenLists = TokenLists> = {
   keys: TokenSearchAssetKey[];
   list: List;
   query: string | undefined;
-  threshold: TokenSearchThreshold;
 };
 
 type TokenSearchState = {
@@ -66,7 +65,6 @@ export const useTokenSearchStore = createQueryStore<VerifiedTokenData, TokenSear
       chainId: $ => $(useSwapsStore).selectedOutputChainId,
       keys: $ => $(useSwapsSearchStore, state => getSearchKeys(state.searchQuery.trim())),
       query: $ => $(useSwapsSearchStore, state => (state.searchQuery.trim().length ? state.searchQuery.trim() : undefined)),
-      threshold: $ => $(useSwapsSearchStore, state => getSearchThreshold(state.searchQuery.trim())),
     },
     staleTime: time.minutes(2),
   },
@@ -91,7 +89,6 @@ export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], Tok
       chainId: $ => $(useSwapsStore).selectedOutputChainId,
       keys: $ => $(useSwapsSearchStore, state => getSearchKeys(state.searchQuery.trim())),
       query: $ => $(useSwapsSearchStore, state => state.searchQuery.trim()),
-      threshold: $ => $(useSwapsSearchStore, state => getSearchThreshold(state.searchQuery.trim())),
     },
     staleTime: time.minutes(2),
   },
@@ -179,36 +176,28 @@ function getSearchKeys(query: string): TokenSearchAssetKey[] {
   return isAddress(query) ? ADDRESS_SEARCH_KEY : NAME_SYMBOL_SEARCH_KEYS;
 }
 
-const CASE_SENSITIVE_EQUAL_THRESHOLD: TokenSearchThreshold = 'CASE_SENSITIVE_EQUAL';
-const CONTAINS_THRESHOLD: TokenSearchThreshold = 'CONTAINS';
-
-function getSearchThreshold(query: string): TokenSearchThreshold {
-  return isAddress(query) ? CASE_SENSITIVE_EQUAL_THRESHOLD : CONTAINS_THRESHOLD;
-}
-
 const ALL_VERIFIED_TOKENS_PARAM = '/?list=verifiedAssets';
 
 /** Unverified token search */
 async function tokenSearchQueryFunction(
-  { chainId, keys, list, query, threshold }: TokenSearchParams<TokenLists.HighLiquidity>,
+  { chainId, keys, list, query }: TokenSearchParams<TokenLists.HighLiquidity>,
   abortController: AbortController | null
 ): Promise<SearchAsset[]>;
 
 /** Verified token search */
 async function tokenSearchQueryFunction(
-  { chainId, keys, list, query, threshold }: TokenSearchParams<TokenLists.Verified>,
+  { chainId, keys, list, query }: TokenSearchParams<TokenLists.Verified>,
   abortController: AbortController | null
 ): Promise<VerifiedTokenData>;
 
 async function tokenSearchQueryFunction(
-  { chainId, keys, list, query, threshold }: TokenSearchParams,
+  { chainId, keys, list, query }: TokenSearchParams,
   abortController: AbortController | null
 ): Promise<SearchAsset[] | VerifiedTokenData> {
   const queryParams: Omit<TokenSearchParams, 'chainId' | 'keys'> & { keys: string } = {
     keys: keys?.join(','),
     list,
     query,
-    threshold,
   };
 
   const isAddressSearch = query && isAddress(query);
