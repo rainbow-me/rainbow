@@ -28,37 +28,85 @@ const MAX_UNVERIFIED_RESULTS = 8;
 const MAX_VERIFIED_RESULTS = 48;
 const MAX_POPULAR_RESULTS = 3;
 
-const mergeAssetsFavoriteStatus = ({
-  assets,
-  favoritesList,
-}: {
-  assets: SearchAsset[] | undefined;
-  favoritesList: SearchAsset[] | undefined;
-}): SearchAsset[] => assets?.map(asset => ({ ...asset, favorite: favoritesList?.some(fav => fav.address === asset.address) })) || [];
+type FilterPredicate<T> = (item: T) => boolean;
+type FilterConfig<T, K extends keyof T> = {
+  key: K;
+  matchValue?: T[K];
+  customMatch?: (itemValue: T[K], matchValue?: T[K]) => boolean;
+};
 
-const filterAssetsFromBridge = ({
-  assets,
-  filteredBridgeAssetAddress,
-}: {
-  assets: SearchAsset[] | undefined;
-  filteredBridgeAssetAddress: string | undefined;
-}): SearchAsset[] => assets?.filter(curatedAsset => !isLowerCaseMatch(curatedAsset?.address, filteredBridgeAssetAddress)) || [];
+const createPropertyFilter = <T, K extends keyof T>(config: FilterConfig<T, K>): FilterPredicate<T> => {
+  return (item: T) => {
+    if (config.customMatch) {
+      return config.customMatch(item[config.key], config.matchValue);
+    }
+    return config.matchValue === undefined || item[config.key] === config.matchValue;
+  };
+};
 
-const filterAssetsFromRecentSwaps = ({
-  assets,
-  recentSwaps,
-}: {
-  assets: SearchAsset[] | undefined;
-  recentSwaps: RecentSwap[] | undefined;
-}): SearchAsset[] => (assets || []).filter(asset => !recentSwaps?.some(recent => recent.address === asset.address));
+const createArrayMatchFilter = <T, R>(
+  matchArray: R[] | undefined,
+  getMatchValue: (item: T) => unknown,
+  getArrayValue: (arrayItem: R) => unknown
+): FilterPredicate<T> => {
+  return (item: T) => {
+    if (!matchArray?.length) return true;
+    return !matchArray.some(arrayItem => getMatchValue(item) === getArrayValue(arrayItem));
+  };
+};
 
-const filterAssetsFromPopularAssets = ({
-  assets,
-  popularAssets,
-}: {
-  assets: SearchAsset[] | undefined;
-  popularAssets: SearchAsset[] | undefined;
-}): SearchAsset[] => (assets || []).filter(asset => !popularAssets?.some(popular => popular.address === asset.address));
+const composeFilters = <T>(...filters: FilterPredicate<T>[]): FilterPredicate<T> => {
+  return (item: T) => filters.every(filter => filter(item));
+};
+
+const createSearchAssetFilters = (filters: {
+  bridgeAddress?: string;
+  recentSwaps?: RecentSwap[];
+  popularAssets?: SearchAsset[];
+  favoritesList?: SearchAsset[];
+}) => {
+  const filtersList: FilterPredicate<SearchAsset>[] = [];
+
+  if (filters.bridgeAddress) {
+    filtersList.push((item: SearchAsset) => !isLowerCaseMatch(item.address, filters.bridgeAddress));
+  }
+
+  if (filters.recentSwaps) {
+    filtersList.push(
+      createArrayMatchFilter<SearchAsset, RecentSwap>(
+        filters.recentSwaps,
+        asset => asset.address,
+        swap => swap.address
+      )
+    );
+  }
+
+  if (filters.popularAssets) {
+    filtersList.push(
+      createArrayMatchFilter<SearchAsset, SearchAsset>(
+        filters.popularAssets,
+        asset => asset.address,
+        popular => popular.address
+      )
+    );
+  }
+
+  if (filters.favoritesList) {
+    filtersList.push(
+      createPropertyFilter({
+        key: 'address' as keyof SearchAsset,
+        customMatch: (address, _) => !filters.favoritesList?.some(fav => address === fav.address || address === fav.mainnetAddress),
+      })
+    );
+  }
+
+  return composeFilters(...filtersList);
+};
+
+const applyFilter = <T>(items: T[] | undefined, filter: FilterPredicate<T>): T[] => {
+  if (!items) return [];
+  return items.filter(filter);
+};
 
 const filterAssetsFromBridgeAndRecent = ({
   assets,
@@ -68,11 +116,13 @@ const filterAssetsFromBridgeAndRecent = ({
   assets: SearchAsset[] | undefined;
   recentSwaps: RecentSwap[] | undefined;
   filteredBridgeAssetAddress: string | undefined;
-}): SearchAsset[] =>
-  filterAssetsFromRecentSwaps({
-    assets: filterAssetsFromBridge({ assets, filteredBridgeAssetAddress }),
-    recentSwaps: recentSwaps,
+}): SearchAsset[] => {
+  const filter = createSearchAssetFilters({
+    bridgeAddress: filteredBridgeAssetAddress,
+    recentSwaps,
   });
+  return applyFilter(assets, filter);
+};
 
 const filterAssetsFromBridgeAndRecentAndPopular = ({
   assets,
@@ -84,14 +134,14 @@ const filterAssetsFromBridgeAndRecentAndPopular = ({
   recentSwaps: RecentSwap[] | undefined;
   popularAssets: SearchAsset[] | undefined;
   filteredBridgeAssetAddress: string | undefined;
-}): SearchAsset[] =>
-  filterAssetsFromPopularAssets({
-    assets: filterAssetsFromRecentSwaps({
-      assets: filterAssetsFromBridge({ assets, filteredBridgeAssetAddress }),
-      recentSwaps: recentSwaps,
-    }),
+}): SearchAsset[] => {
+  const filter = createSearchAssetFilters({
+    bridgeAddress: filteredBridgeAssetAddress,
+    recentSwaps,
     popularAssets,
   });
+  return applyFilter(assets, filter);
+};
 
 const filterAssetsFromFavoritesAndBridgeAndRecentAndPopular = ({
   assets,
@@ -105,22 +155,63 @@ const filterAssetsFromFavoritesAndBridgeAndRecentAndPopular = ({
   filteredBridgeAssetAddress: string | undefined;
   recentSwaps: RecentSwap[] | undefined;
   popularAssets: SearchAsset[] | undefined;
-}): SearchAsset[] =>
-  filterAssetsFromPopularAssets({
-    assets: filterAssetsFromRecentSwaps({
-      assets: filterAssetsFromBridge({ assets, filteredBridgeAssetAddress }),
-      recentSwaps: recentSwaps,
-    }),
+}): SearchAsset[] => {
+  const filter = createSearchAssetFilters({
+    bridgeAddress: filteredBridgeAssetAddress,
+    recentSwaps,
     popularAssets,
-  })?.filter(
-    curatedAsset => !favoritesList?.some(({ address }) => curatedAsset.address === address || curatedAsset.mainnetAddress === address)
-  ) || [];
+    favoritesList,
+  });
+  return applyFilter(assets, filter).filter(
+    asset => !favoritesList?.some(fav => fav.address === asset.address || fav.mainnetAddress === asset.mainnetAddress)
+  );
+};
 
-const filterBridgeAsset = ({ asset, filter = '' }: { asset: SearchAsset | null | undefined; filter: string }) =>
-  filter.length === 0 ||
-  asset?.address?.toLowerCase()?.startsWith(filter?.toLowerCase()) ||
-  asset?.name?.toLowerCase()?.startsWith(filter?.toLowerCase()) ||
-  asset?.symbol?.toLowerCase()?.startsWith(filter?.toLowerCase());
+const filterBridgeAsset = ({ asset, filter = '' }: { asset: SearchAsset | null | undefined; filter: string }) => {
+  if (!asset) return false;
+
+  const filterPredicates = [
+    (a: SearchAsset) =>
+      filter.length === 0 ||
+      a.address?.toLowerCase()?.startsWith(filter?.toLowerCase()) ||
+      a.name?.toLowerCase()?.startsWith(filter?.toLowerCase()) ||
+      a.symbol?.toLowerCase()?.startsWith(filter?.toLowerCase()),
+  ];
+
+  return composeFilters(...filterPredicates)(asset);
+};
+
+const mergeAssetsFavoriteStatus = ({
+  assets,
+  favoritesList,
+}: {
+  assets: SearchAsset[] | undefined;
+  favoritesList: SearchAsset[] | undefined;
+}): SearchAsset[] => {
+  if (!assets) return [];
+
+  const favoriteFilter = createArrayMatchFilter<SearchAsset, SearchAsset>(
+    favoritesList,
+    asset => asset.address,
+    fav => fav.address
+  );
+
+  return assets.map(asset => ({
+    ...asset,
+    favorite: favoritesList ? !favoriteFilter(asset) : false,
+  }));
+};
+
+const filterAssetsFromBridge = ({
+  assets,
+  filteredBridgeAssetAddress,
+}: {
+  assets: SearchAsset[] | undefined;
+  filteredBridgeAssetAddress: string | undefined;
+}): SearchAsset[] => {
+  const filter = createSearchAssetFilters({ bridgeAddress: filteredBridgeAssetAddress });
+  return applyFilter(assets, filter);
+};
 
 const buildListSectionsData = ({
   combinedData,
