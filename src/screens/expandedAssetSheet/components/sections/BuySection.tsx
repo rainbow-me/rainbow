@@ -75,7 +75,7 @@ export const BuySection = memo(function BuySection({
             </IconContainer>
             <TextShadow containerStyle={{ flex: 1 }} blur={12} shadowOpacity={0.24}>
               <Text weight="semibold" size="17pt" color="accent">
-                {i18n.t(i18n.l.expanded_state.sections.buy.pay_with, { assetSymbol: buyWithAsset.symbol })}
+                {i18n.t(i18n.l.expanded_state.sections.buy.pay_with)}
               </Text>
             </TextShadow>
             <RainbowCoinIcon
@@ -85,6 +85,11 @@ export const BuySection = memo(function BuySection({
               icon={buyWithAsset.icon_url}
               symbol={buyWithAsset.symbol}
             />
+            <TextShadow blur={12} shadowOpacity={0.24}>
+              <Text weight="semibold" size="17pt" color="accent">
+                {buyWithAsset.symbol}
+              </Text>
+            </TextShadow>
           </Box>
         </Row>
         <Row>

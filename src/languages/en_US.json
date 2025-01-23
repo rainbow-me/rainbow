@@ -723,7 +723,7 @@
         },
         "buy": {
           "title": "Buy",
-          "pay_with": "Pay with %{assetSymbol}",
+          "pay_with": "Pay with",
           "available_balance": "Available Balance"
         },
         "about": {

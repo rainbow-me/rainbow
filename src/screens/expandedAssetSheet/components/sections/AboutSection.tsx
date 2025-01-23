@@ -60,9 +60,17 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
             </Text>
           </TextShadow>
         </Inline>
-        <Inline space="8px" alignVertical="center">
+        <Box flexDirection="row" gap={8} alignItems="center" style={{ flex: 1 }} justifyContent="flex-end">
           {value && (
-            <Text weight="semibold" align="right" size="17pt" color={{ custom: accentColors.opacity56 }}>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              weight="semibold"
+              align="right"
+              size="17pt"
+              style={{ flex: 1 }}
+              color={{ custom: accentColors.opacity56 }}
+            >
               {value}
             </Text>
           )}
@@ -73,7 +81,7 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
               </Text>
             </TextShadow>
           </IconContainer>
-        </Inline>
+        </Box>
       </Row>
     </ButtonPressAnimation>
   );
