@@ -1,6 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 
@@ -77,7 +77,7 @@ const PoapSheet = () => {
   const { isReadOnlyWallet } = useWallets();
   const params = useRoute();
 
-  const nfts = useUserNftsStore()(state => state.getData()?.nfts || []);
+  const nfts = useUserNftsStore()(state => state.nfts);
 
   const [claimStatus, setClaimStatus] = useState<PoapClaimStatus>('none');
   const [errorCode, setErrorCode] = useState<PoapMintError | undefined>(undefined);

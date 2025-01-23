@@ -1,10 +1,8 @@
 import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import { Box, Inline, Inset, Stack, Text } from '@/design-system';
-import { ImgixImage } from '@/components/images';
 import ledgerNano from '@/assets/ledger-nano.png';
 import { LEDGER_NANO_HEIGHT, LEDGER_NANO_WIDTH, GRID_DOTS_SIZE } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
-import { Source } from 'react-native-fast-image';
 import Animated, { useAnimatedStyle, useDerivedValue, withDelay, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';

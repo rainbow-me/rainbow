@@ -40,6 +40,8 @@ export const fetchUserNfts = async ({
   sortBy: NftCollectionSortCriterion;
   sortDirection: SortDirection;
 }) => {
+  console.log('FETCHING NFTS FOR ADDRESS: ', address);
+  console.log('WITH SORT PARAMS: ', sortBy, sortDirection);
   const queryResponse = await arcClient.getNFTs({ walletAddress: address, sortBy, sortDirection });
   const nfts = queryResponse?.nftsV2?.map(nft => simpleHashNFTToUniqueAsset(nft, address));
 

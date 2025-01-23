@@ -59,13 +59,13 @@ export default function useWalletSectionsData({
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const isWalletEthZero = useIsWalletEthZero();
 
-  const nftSort = useNftSortStore(state => state.sortBy);
+  const nftSort = useNftSortStore(s => s.sortBy);
 
   const { sendableUniqueTokens } = useSendableUniqueTokens();
 
   const userNftsStore = useUserNftsStore();
   const isFetchingNfts = userNftsStore(state => state.status);
-  const allUniqueTokens = userNftsStore(state => state.getData()?.nfts || []);
+  const allUniqueTokens = userNftsStore(state => (Array.isArray(state.nfts) ? state.nfts : []));
 
   const { data: positions } = usePositions({ address: accountAddress, currency: nativeCurrency });
   const { data: claimables } = useClaimables({ address: accountAddress, currency: nativeCurrency });

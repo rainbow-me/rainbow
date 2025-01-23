@@ -90,8 +90,6 @@ export function NFTSingleOfferSheet() {
   const theme = useTheme();
   const { updateTxFee, startPollingGasFees, stopPollingGasFees, isSufficientGas, isValidGas } = useGas();
 
-  const nftsMap = useUserNftsStore()(state => state.getData()?.nftsMap);
-
   const { offer } = params as { offer: NftOffer };
   const offerChainId = useBackendNetworksStore.getState().getChainsIdByName()[offer.network as Network];
   const { data: externalAsset } = useExternalToken({
@@ -105,7 +103,7 @@ export function NFTSingleOfferSheet() {
   const [isAccepting, setIsAccepting] = useState(false);
   const txsRef = useRef<string[]>([]);
 
-  const nft = nftsMap?.get(offer.nft.uniqueId);
+  const nft = useUserNftsStore()(state => state.getNft(offer.nft.uniqueId));
 
   const insufficientEth = isSufficientGas === false && isValidGas;
 

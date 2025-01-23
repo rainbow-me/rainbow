@@ -7,9 +7,8 @@ import { useNftsStore } from '@/state/nfts';
 
 export default function useExternalWalletSectionsData({ address, type }: { address?: string; type?: AssetListType }) {
   const nftsStore = useNftsStore(address ?? '');
-  const nftsStatus = nftsStore(state => state.status);
-  const uniqueTokens = nftsStore(state => state.getData()?.nfts || []);
-  const isInitialLoading = nftsStatus === 'loading' && uniqueTokens.length === 0;
+  const uniqueTokens = nftsStore(state => state.nfts);
+  const isInitialLoading = nftsStore(state => state.getStatus().isInitialLoading);
   const { data: hiddenTokens } = useFetchHiddenTokens({ address });
   const { data: showcaseTokens } = useFetchShowcaseTokens({ address });
 

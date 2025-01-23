@@ -3,12 +3,12 @@ import ContextMenuButton, { MenuConfig } from '@/components/native-context-menu/
 import { ButtonPressAnimation } from '@/components/animations';
 import { Bleed, Box, Inline, Text, useForegroundColor } from '@/design-system';
 import { haptics } from '@/utils';
-import { NftOrderingAction } from '@/state/nfts';
+import { NftSortAction } from '@/state/nfts';
 
 type ListHeaderMenuProps = {
-  selected: NftOrderingAction;
+  selected: NftSortAction;
   menuItems: MenuConfig['menuItems'];
-  selectItem: (item: NftOrderingAction) => void;
+  selectItem: (item: NftSortAction) => void;
   icon: string;
   text: string;
 };
@@ -23,7 +23,7 @@ export function ListHeaderMenu({ menuItems, selectItem, icon, text }: ListHeader
 
   const onPressMenuItem = ({ nativeEvent: { actionKey: item } }: { nativeEvent: { actionKey: string } }) => {
     haptics.selection();
-    selectItem(item as NftOrderingAction);
+    selectItem(item as NftSortAction);
   };
 
   return (
