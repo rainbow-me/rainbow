@@ -158,7 +158,6 @@ const SheetActionButton: React.FC<Props> = ({
         )}
       </ShadowStack>
       <Content label={label} size={size}>
-        {/* @ts-expect-error JavaScript component with an improper type inferred for lineHeight */}
         {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
         {icon && <Icon color="white" height={18} name={icon} size={18} />}
         {label ? (
