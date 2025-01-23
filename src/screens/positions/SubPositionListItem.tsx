@@ -35,11 +35,10 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
     <Columns space={'10px'}>
       <Column width={'content'}>
         <RainbowCoinIcon
-          icon={externalAsset?.icon_url}
           chainId={chainId}
+          color={externalAsset?.colors?.primary || externalAsset?.colors?.fallback || undefined}
+          icon={externalAsset?.icon_url}
           symbol={asset.symbol}
-          theme={theme}
-          colors={externalAsset?.colors}
         />
       </Column>
       <Box justifyContent="center" style={{ height: 40 }}>

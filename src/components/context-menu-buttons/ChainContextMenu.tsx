@@ -145,7 +145,7 @@ export const ChainContextMenu = ({
               )}
               {selectedChainId && (
                 <Bleed vertical="4px">
-                  <ChainImage chainId={selectedChainId} size={16} />
+                  <ChainImage chainId={selectedChainId} position="relative" size={16} />
                 </Bleed>
               )}
               <Text color={textColor} numberOfLines={1} size={textSize} weight={textWeight}>

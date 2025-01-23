@@ -186,7 +186,7 @@ export const ControlPanel = () => {
       .filter(({ testnet }) => testnetsEnabled || !testnet)
       .map(chain => {
         return {
-          IconComponent: <ChainImage chainId={chain.id} size={36} />,
+          IconComponent: <ChainImage chainId={chain.id} position="relative" size={36} />,
           label: useBackendNetworksStore.getState().getChainsLabel()[chain.id],
           secondaryLabel: i18n.t(
             isConnected && chain.id === currentChainId

@@ -10,15 +10,13 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ContextMenuButton } from '@/components/context-menu';
 import { AnimatedText, Bleed, Box, Inline, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { showActionSheetWithOptions } from '@/utils';
-import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { getChainsLabelWorklet, getChainsNameWorklet, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -29,7 +27,9 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
   const { isDarkMode } = useColorMode();
   const { accentColor: accountColor } = useAccountAccentColor();
   const { selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
-  const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
+
+  const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
+  const networkBadges = useBackendNetworksStore(state => state.getChainsBadge());
 
   // chains sorted by balance on output, chains without balance hidden on input
   const balanceSortedChainList = useUserAssetsStore(state => (output ? state.getBalanceSortedChainList() : state.getChainsWithBalance()));
@@ -47,8 +47,6 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
   }, [accountColor, isDarkMode]);
 
   const chainName = useDerivedValue(() => {
-    const chainLabels = getChainsLabelWorklet(backendNetworks);
-
     return output
       ? chainLabels[selectedOutputChainId.value]
       : inputListFilter.value === 'all'
@@ -57,7 +55,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
   });
 
   const handleSelectChain = useCallback(
-    ({ nativeEvent: { actionKey } }: Omit<OnPressMenuItemEventObject, 'isUsingActionSheetFallback'>) => {
+    (actionKey: string) => {
       analyticsV2.track(analyticsV2.event.swapsChangedChainId, {
         inputAsset: swapsStore.getState().inputAsset,
         type: output ? 'output' : 'input',
@@ -77,14 +75,16 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
   );
 
   const menuConfig = useMemo(() => {
-    const supportedChains = balanceSortedChainList.map(chainId => {
+    let supportedChains: MenuItem<string>[] = [];
+    supportedChains = balanceSortedChainList.map(chainId => {
       return {
         actionKey: `${chainId}`,
-        actionTitle: getChainsLabelWorklet(backendNetworks)[chainId],
+        actionTitle: chainLabels[chainId],
         icon: {
-          iconType: 'ASSET',
-          // NOTE: chainsName[chainId] for mainnet is 'mainnet' and we need it to be 'ethereum'
-          iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${getChainsNameWorklet(backendNetworks)[chainId]}BadgeNoShadow`,
+          iconType: 'REMOTE',
+          iconValue: {
+            uri: networkBadges[chainId],
+          },
         },
       };
     });
@@ -94,8 +94,8 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
         actionKey: 'all',
         actionTitle: i18n.t(i18n.l.exchange.all_networks),
         icon: {
-          iconType: 'icon',
-          iconValue: '􀆪',
+          iconType: 'SYSTEM',
+          iconValue: 'globe',
         },
       });
     }
@@ -103,25 +103,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
     return {
       menuItems: supportedChains,
     };
-  }, [backendNetworks, balanceSortedChainList, output]);
-
-  const onShowActionSheet = useCallback(() => {
-    const chainTitles = menuConfig.menuItems.map(chain => chain.actionTitle);
-
-    showActionSheetWithOptions(
-      {
-        options: chainTitles,
-        showSeparators: true,
-      },
-      (index: number | undefined) => {
-        // NOTE: When they click away from the menu, the index is undefined
-        if (typeof index === 'undefined') return;
-        handleSelectChain({
-          nativeEvent: { actionKey: menuConfig.menuItems[index].actionKey, actionTitle: '' },
-        });
-      }
-    );
-  }, [handleSelectChain, menuConfig.menuItems]);
+  }, [balanceSortedChainList, chainLabels, networkBadges, output]);
 
   return (
     <Box as={Animated.View} paddingBottom={output ? '8px' : { custom: 14 }} paddingHorizontal="20px" paddingTop="20px">
@@ -165,16 +147,8 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
           </Inline>
         )}
 
-        <ContextMenuButton
-          hitSlop={20}
-          menuItems={menuConfig.menuItems}
-          menuTitle=""
-          onPressMenuItem={handleSelectChain}
-          onPressAndroid={onShowActionSheet}
-          testID={`chain-selection-${output ? 'output' : 'input'}`}
-        >
-          <Inline alignVertical="center" space="6px" wrap={false}>
-            {/* TODO: We need to add some ethereum utils to handle worklet functions */}
+        <DropdownMenu menuConfig={menuConfig} onPressMenuItem={handleSelectChain} testID={`chain-selection-${output ? 'output' : 'input'}`}>
+          <Box paddingVertical="6px" paddingLeft="16px" flexDirection="row" alignItems="center" justifyContent="center" gap={6}>
             <ChainButtonIcon output={output} />
             <AnimatedText color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
               {chainName}
@@ -182,8 +156,8 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
             <Text align="center" color={isDarkMode ? 'labelTertiary' : 'labelSecondary'} size="icon 13px" weight="bold">
               􀆏
             </Text>
-          </Inline>
-        </ContextMenuButton>
+          </Box>
+        </DropdownMenu>
       </Inline>
     </Box>
   );
@@ -198,9 +172,13 @@ const ChainButtonIcon = ({ output }: { output: boolean | undefined }) => {
   return (
     <Bleed vertical="6px">
       {output ? (
-        <ChainImage chainId={selectedOutputChainId ?? animatedSelectedOutputChainId.value ?? ChainId.mainnet} size={16} />
+        <ChainImage
+          chainId={selectedOutputChainId ?? animatedSelectedOutputChainId.value ?? ChainId.mainnet}
+          position="relative"
+          size={16}
+        />
       ) : userAssetsFilter && userAssetsFilter !== 'all' ? (
-        <ChainImage chainId={userAssetsFilter} size={16} />
+        <ChainImage chainId={userAssetsFilter} size={16} position="relative" />
       ) : (
         <></>
       )}
