@@ -169,7 +169,7 @@ export default function ChartExpandedState({ asset }) {
             chainId: asset.chainId,
             network: asset.network,
             address: asset.address,
-            mainnetAddress: asset?.networks?.[useBackendNetworksStore.getState().getChainsName()[ChainId.mainnet]]?.address,
+            mainnetAddress: asset?.networks?.[ChainId.mainnet]?.address,
           }
         : asset;
   }, [asset, genericAsset, hasBalance]);

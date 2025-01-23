@@ -1,5 +1,5 @@
 // @refresh
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useRef } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { InteractionManager, NativeModules, StyleProp, TextInput, TextStyle } from 'react-native';
 import {
   AnimatedRef,
@@ -55,7 +55,7 @@ import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisable
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { useBackendNetworksStore, getChainsNativeAssetWorklet } from '@/state/backendNetworks/backendNetworks';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import showWalletErrorAlert from '@/helpers/support';
@@ -152,7 +152,7 @@ const getInitialSliderXPosition = ({
 export const SwapProvider = ({ children }: SwapProviderProps) => {
   const { nativeCurrency } = useAccountSettings();
 
-  const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
+  const [nativeChainAssets] = useState(useBackendNetworksStore.getState().getChainsNativeAsset());
   const initialValues = getSwapsNavigationParams();
 
   const isFetching = useSharedValue(false);
@@ -785,7 +785,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (hasEnoughFundsForGas.value === false) {
-      const nativeCurrency = getChainsNativeAssetWorklet(backendNetworks)[sellAsset?.chainId || ChainId.mainnet];
+      const nativeCurrency = nativeChainAssets[sellAsset?.chainId || ChainId.mainnet];
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
         disabled: true,

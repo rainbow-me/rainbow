@@ -15,7 +15,7 @@ interface FloatingEmojiProps {
   marginTop?: number;
   opacityThreshold?: number;
   scaleTo: number;
-  size: string;
+  size: number;
   top?: number;
   wiggleFactor?: number;
 }
@@ -93,12 +93,12 @@ const FloatingEmoji: React.FC<FloatingEmojiProps> = ({
           left,
           marginTop,
           position: 'absolute',
-          top: centerVertically ? undefined : top ?? Number(size) * -0.5,
+          top: centerVertically ? undefined : top ?? size * -0.5,
         },
         animatedStyle,
       ]}
     >
-      <Emoji name={emoji} />
+      <Emoji name={emoji} size={size} />
     </Animated.View>
   );
 };
