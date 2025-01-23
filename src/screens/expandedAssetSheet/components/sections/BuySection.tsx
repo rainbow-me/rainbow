@@ -1,5 +1,6 @@
 import React, { memo, useMemo } from 'react';
-import { Bleed, Box, IconContainer, Inline, Stack, Text, TextShadow } from '@/design-system';
+import * as i18n from '@/languages';
+import { Bleed, Box, IconContainer, Stack, Text, TextShadow } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ScrollView } from 'react-native-gesture-handler';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -64,7 +65,7 @@ export const BuySection = memo(function BuySection({
     <Box gap={12}>
       <Stack space="4px">
         <Row highlighted>
-          <Inline alignVertical="center" space="12px">
+          <Box alignItems="center" flexDirection="row" gap={12} width={'full'}>
             <IconContainer height={10} width={20}>
               <TextShadow blur={12} shadowOpacity={0.24}>
                 <Text weight="medium" align="center" size="15pt" color="accent">
@@ -72,9 +73,9 @@ export const BuySection = memo(function BuySection({
                 </Text>
               </TextShadow>
             </IconContainer>
-            <TextShadow blur={12} shadowOpacity={0.24}>
+            <TextShadow containerStyle={{ flex: 1 }} blur={12} shadowOpacity={0.24}>
               <Text weight="semibold" size="17pt" color="accent">
-                {`Pay with ${buyWithAsset.symbol}`}
+                {i18n.t(i18n.l.expanded_state.sections.buy.pay_with, { assetSymbol: buyWithAsset.symbol })}
               </Text>
             </TextShadow>
             <RainbowCoinIcon
@@ -84,10 +85,10 @@ export const BuySection = memo(function BuySection({
               icon={buyWithAsset.icon_url}
               symbol={buyWithAsset.symbol}
             />
-          </Inline>
+          </Box>
         </Row>
         <Row>
-          <Inline alignVertical="center" space="12px">
+          <Box alignItems="center" flexDirection="row" gap={12} width={'full'}>
             <IconContainer height={10} width={20}>
               <TextShadow blur={12} shadowOpacity={0.24}>
                 <Text weight="medium" align="center" size="15pt" color="labelTertiary">
@@ -95,9 +96,9 @@ export const BuySection = memo(function BuySection({
                 </Text>
               </TextShadow>
             </IconContainer>
-            <TextShadow blur={12} shadowOpacity={0.24}>
+            <TextShadow containerStyle={{ flex: 1 }} blur={12} shadowOpacity={0.24}>
               <Text weight="semibold" size="17pt" color="labelTertiary">
-                {'Available Balance'}
+                {i18n.t(i18n.l.expanded_state.sections.buy.available_balance)}
               </Text>
             </TextShadow>
             <TextShadow blur={12} shadowOpacity={0.24}>
@@ -105,7 +106,7 @@ export const BuySection = memo(function BuySection({
                 {buyWithAsset.native?.balance?.display}
               </Text>
             </TextShadow>
-          </Inline>
+          </Box>
         </Row>
       </Stack>
       <Bleed horizontal="24px">

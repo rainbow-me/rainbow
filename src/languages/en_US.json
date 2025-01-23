@@ -722,7 +722,9 @@
           "rank": "Rank"
         },
         "buy": {
-          "title": "Buy"
+          "title": "Buy",
+          "pay_with": "Pay with %{assetSymbol}",
+          "available_balance": "Available Balance"
         },
         "about": {
           "title": "About",

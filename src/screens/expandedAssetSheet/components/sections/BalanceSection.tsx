@@ -28,7 +28,7 @@ export function BalanceSection() {
         <Bleed vertical="3px">
           <RainbowCoinIcon size={20} chainId={asset.chainId} color={asset.color} icon={asset.icon_url} symbol={asset.symbol} />
         </Bleed>
-        <TextShadow blur={12} shadowOpacity={0.24}>
+        <TextShadow blur={12} containerStyle={{ flex: 1 }} shadowOpacity={0.24}>
           <Text numberOfLines={1} style={{ flex: 1 }} ellipsizeMode="tail" weight="bold" size="20pt" color={'accent'}>
             {asset.balance.display}
           </Text>
