@@ -36,7 +36,8 @@ const getMenuItemIcon = (value: NftCollectionSortCriterion) => {
 
 const CollectiblesHeader = () => {
   const { accountAddress } = useAccountSettings();
-  const nftSort = useNftSortStore();
+  const { getNftSort, updateNftSort } = useNftSortStore();
+  const nftSort = getNftSort(accountAddress);
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
@@ -94,7 +95,10 @@ const CollectiblesHeader = () => {
                   }),
             };
           })}
-          selectItem={action => nftSort.updateNftSort(accountAddress, action)}
+          selectItem={action => {
+            console.log('UPDATING NFT SORT W/ ACTION: ', action);
+            updateNftSort(accountAddress, action);
+          }}
           icon={getIconForSortType(nftSort.sortBy)}
           text={i18n.t(i18n.l.nfts.sort[nftSort.sortBy])}
         />

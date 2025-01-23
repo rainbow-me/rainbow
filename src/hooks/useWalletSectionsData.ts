@@ -59,7 +59,7 @@ export default function useWalletSectionsData({
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const isWalletEthZero = useIsWalletEthZero();
 
-  const nftSort = useNftSortStore(s => s.sortBy);
+  const nftSort = useNftSortStore(s => s.getNftSort(accountAddress));
 
   const { sendableUniqueTokens } = useSendableUniqueTokens();
 

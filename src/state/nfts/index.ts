@@ -17,8 +17,8 @@ export const userNftsStoreManager = createRainbowStore<StoreManagerState>(() => 
   storageKey: 'userNftsStoreManager',
 });
 
-type UserNftsParams = { address: string; sortBy: NftCollectionSortCriterion; sortDirection: SortDirection };
-type UserNftsResponse = {
+export type UserNftsParams = { address: string; sortBy: NftCollectionSortCriterion; sortDirection: SortDirection };
+export type UserNftsResponse = {
   nfts: UniqueAsset[];
   nftsMap: Map<string, UniqueAsset>;
 };
@@ -27,16 +27,21 @@ type UserNftsState = {
   nftsMap: Map<string, UniqueAsset>;
   getNft: (uniqueId: string) => UniqueAsset | undefined;
 };
+type NftFactoryConfig = {
+  address: string;
+  internal?: boolean;
+};
 
-export const createUserNftsStore = (address: string, internal?: boolean) =>
+export const createUserNftsStore = (config: NftFactoryConfig) =>
   createQueryStore<UserNftsResponse, UserNftsParams, UserNftsState>(
     {
-      cacheTime: internal ? time.weeks(1) : time.hours(1),
+      enabled: config.address !== '',
+      cacheTime: config.internal ? time.weeks(1) : time.hours(1),
       fetcher: fetchUserNfts,
       params: {
-        address,
-        sortBy: $ => $(useNftSortStore, s => s.getNftSort(address).sortBy),
-        sortDirection: $ => $(useNftSortStore, s => s.getNftSort(address).sortDirection),
+        address: config.address,
+        sortBy: $ => $(useNftSortStore, s => s.getNftSort(config.address)).sortBy,
+        sortDirection: $ => $(useNftSortStore, s => s.getNftSort(config.address)).sortDirection,
       },
       setData: ({ data, set }) => {
         set(() => {
@@ -56,7 +61,7 @@ export const createUserNftsStore = (address: string, internal?: boolean) =>
         return data.nftsMap.get(uniqueId);
       },
     }),
-    { storageKey: `userNfts_${address}` }
+    { storageKey: `userNfts_${config.address}` }
   );
 
 function getOrCreateStore(address: string, internal?: boolean): UserNftsStoreType {
@@ -65,7 +70,7 @@ function getOrCreateStore(address: string, internal?: boolean): UserNftsStoreTyp
     return cachedStore;
   }
 
-  const newStore = createUserNftsStore(address, internal);
+  const newStore = createUserNftsStore({ address, internal });
   userNftsStoreManager.setState({ cachedStore: newStore, cachedAddress: address });
   return newStore;
 }
@@ -90,8 +95,6 @@ type NftSort = {
 
 interface NftSortStore {
   nftSort: NftSortByAddress;
-  sortBy: NftCollectionSortCriterion;
-  sortDirection: SortDirection;
   getNftSort: (address?: string) => NftSort;
   updateNftSort: (address: string, params: NftSortAction) => void;
 }
@@ -100,29 +103,16 @@ const DEFAULT_NFT_SORT: NftSort = {
   sortBy: NftCollectionSortCriterion.MostRecent,
   sortDirection: SortDirection.Desc,
 };
-const DEFAULT_ORDERING: NftSortAction = 'MOST_RECENT|DESC';
 
 export const useNftSortStore = createRainbowStore<NftSortStore>(
   (set, get) => ({
     nftSort: {},
-    sortBy: NftCollectionSortCriterion.MostRecent,
-    sortDirection: SortDirection.Desc,
     getNftSort: (address?: string) => {
       if (!address) {
         return DEFAULT_NFT_SORT;
       }
       const state = get();
-      let currentOrder = state.nftSort?.[address];
-      if (!currentOrder) {
-        set({
-          ...state,
-          nftSort: {
-            ...state.nftSort,
-            [address]: DEFAULT_ORDERING,
-          },
-        });
-        currentOrder = DEFAULT_ORDERING;
-      }
+      const currentOrder = state.nftSort?.[address];
       const [sortBy, sortDirection] = parseNftSortAction(currentOrder);
       return {
         sortBy,
@@ -131,16 +121,14 @@ export const useNftSortStore = createRainbowStore<NftSortStore>(
     },
     updateNftSort: (address, sortAction) => {
       const state = get();
-      const [sortBy, sortDirection] = parseNftSortAction(sortAction);
-      set({
+      const newState = {
         ...state,
         nftSort: {
           ...state.nftSort,
           [address]: sortAction,
         },
-        sortBy,
-        sortDirection,
-      });
+      };
+      set(newState);
     },
   }),
   {

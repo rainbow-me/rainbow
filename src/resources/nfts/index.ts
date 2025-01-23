@@ -44,7 +44,7 @@ export const fetchUserNfts = async ({
   console.log('WITH SORT PARAMS: ', sortBy, sortDirection);
   const queryResponse = await arcClient.getNFTs({ walletAddress: address, sortBy, sortDirection });
   const nfts = queryResponse?.nftsV2?.map(nft => simpleHashNFTToUniqueAsset(nft, address));
-
+  console.log('nfts: ', nfts?.[0]);
   const map = new Map<string, UniqueAsset>();
   const nftsMap = nfts?.reduce((acc, nft) => {
     acc.set(nft.uniqueId, nft);
