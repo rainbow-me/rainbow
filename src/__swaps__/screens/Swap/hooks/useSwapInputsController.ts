@@ -728,11 +728,17 @@ export function useSwapInputsController({
           sliderXPosition.value = withSpring(SLIDER_WIDTH / 2, snappySpringConfig);
         }
 
-        const { inputAmount, inputNativeValue } = getInputValuesForSliderPositionWorklet({
+        let { inputAmount, inputNativeValue } = getInputValuesForSliderPositionWorklet({
           selectedInputAsset: internalSelectedInputAsset.value,
           percentageToSwap: shouldResetSwapAmount ? 0.5 : percentageToSwap.value,
           sliderXPosition: shouldResetSwapAmount ? SLIDER_WIDTH / 2 : sliderXPosition.value,
         });
+
+        // If swaps was navigated to with an exact amount, do not nudge that amount
+        if (!shouldResetSwapAmount && initialValues.inputAmount) {
+          inputAmount = initialValues.inputAmount;
+          inputNativeValue = mulWorklet(inputAmount, inputNativePrice.value);
+        }
 
         inputValues.modify(values => {
           return {
