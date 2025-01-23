@@ -16,7 +16,6 @@ import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/ext
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useTheme } from '@/theme';
-// import { useTokenMetadataStore } from '@/resources/tokenMetadata/tokenMetadata';
 
 export enum SectionId {
   PROFIT = 'profit',
@@ -115,7 +114,7 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
     currency: nativeCurrency,
   });
 
-  // This is constrcuted so that rendering is not delayed by the external asset fetch
+  // This is constructed so that rendering is not delayed by the external asset fetch
   const basicAsset = useMemo(() => {
     const chainNameById = useBackendNetworksStore.getState().getChainsName();
     const chainName = chainNameById[chainId];

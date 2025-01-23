@@ -53,7 +53,7 @@ const SectionHeader = React.memo(function SectionHeader({ icon, primaryText, sec
           [id]: !current[id],
         }));
       }}
-      // TODO: Hitslop here doesn't work on the bottom for some reason
+      // Hitslop here doesn't work on the bottom for an unknown reason
       style={{ marginVertical: -24, paddingVertical: 24 }}
       hapticTrigger="tap-end"
       scaleTo={0.96}

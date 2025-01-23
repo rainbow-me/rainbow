@@ -13,7 +13,7 @@ import { Box } from '@/design-system';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import { Share } from 'react-native';
 
-// TODO: this is meant to for the context menu to be offset properly, but it does not work for the horizontal offset
+// This is meant to for the context menu to be offset properly, but it does not work for the horizontal offset
 const HIT_SLOP = 16;
 
 const ContextMenuActions = {
