@@ -40,8 +40,8 @@ export const createUserNftsStore = (config: NftFactoryConfig) =>
       fetcher: fetchUserNfts,
       params: {
         address: config.address,
-        sortBy: $ => $(useNftSortStore, s => s.getNftSort(config.address)).sortBy,
-        sortDirection: $ => $(useNftSortStore, s => s.getNftSort(config.address)).sortDirection,
+        sortBy: $ => $(useNftSortStore, s => s.getNftSort(config.address).sortBy),
+        sortDirection: $ => $(useNftSortStore, s => s.getNftSort(config.address).sortDirection),
       },
       setData: ({ data, set }) => {
         set(() => {

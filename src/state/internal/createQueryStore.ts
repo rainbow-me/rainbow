@@ -478,7 +478,7 @@ export function createQueryStore<
   let lastFetchKey: string | null = null;
 
   const cacheTimeIsFunction = typeof cacheTime === 'function';
-  const enableLogs = IS_DEV && debugMode;
+  const enableLogs = true;
 
   const initialData = {
     enabled: typeof enabled === 'function' ? false : enabled,
