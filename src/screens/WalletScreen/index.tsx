@@ -29,7 +29,6 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
-import { BackendNetworks } from '@/components/BackendNetworks';
 import walletTypes from '@/helpers/walletTypes';
 
 enum WalletLoadingStates {
@@ -188,7 +187,6 @@ function WalletScreen() {
       <UserAssetsSync />
       <RemoteCardsSync />
       <RemotePromoSheetSync />
-      <BackendNetworks />
 
       {/* NOTE: This component listens for Mobile Wallet Protocol requests and handles them */}
       <MobileWalletProtocolListener />

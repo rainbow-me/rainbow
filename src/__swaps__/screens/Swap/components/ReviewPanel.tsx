@@ -41,7 +41,7 @@ import { useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { getChainsLabelWorklet, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
@@ -245,17 +245,15 @@ export const SlippageRow = () => {
 export function ReviewPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
-  const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
   const { configProgress, lastTypedInput, internalSelectedInputAsset, internalSelectedOutputAsset, quote } = useSwapContext();
+  const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
 
   const labelTertiary = useForegroundColor('labelTertiary');
   const separator = useForegroundColor('separator');
 
   const unknown = i18n.t(i18n.l.swap.unknown);
 
-  const chainName = useDerivedValue(
-    () => getChainsLabelWorklet(backendNetworks)[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]
-  );
+  const chainName = useDerivedValue(() => chainLabels[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]);
 
   const minReceivedOrMaxSoldLabel = useDerivedValue(() => {
     const isInputBasedTrade = lastTypedInput.value === 'inputAmount' || lastTypedInput.value === 'inputNativeValue';
