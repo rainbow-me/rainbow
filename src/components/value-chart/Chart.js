@@ -120,7 +120,6 @@ export default function Chart({
   latestChange,
   updateChartType,
   showChart,
-  testID,
   throttledData,
   latestPrice,
   ...props
@@ -187,7 +186,6 @@ export default function Chart({
         latestChange={latestChange}
         latestPrice={latestPrice}
         showChart={showChart}
-        testID={testID}
       />
       <ChartContainer showChart={showChart}>
         {showChart && (

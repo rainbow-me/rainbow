@@ -28,7 +28,6 @@ export default function ChartExpandedStateHeader({
   latestPrice = noPriceData,
   priceRef,
   showChart,
-  testID,
 }) {
   const theme = useTheme();
   const color = givenColors || theme.colors.dark;
@@ -69,7 +68,7 @@ export default function ChartExpandedStateHeader({
   });
 
   return (
-    <Container testID={testID ? `${testID}-expanded-state-header` : 'expanded-state-header'} showChart={showChart}>
+    <Container testID={'expanded-state-header'} showChart={showChart}>
       <Stack space={'20px'}>
         <RainbowCoinIcon
           size={44}

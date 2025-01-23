@@ -72,7 +72,6 @@ export function ChartSection() {
         showChart={showChart}
         throttledData={throttledData}
         isPool={false}
-        testID="chart"
       />
     </ChartPathProvider>
   );
