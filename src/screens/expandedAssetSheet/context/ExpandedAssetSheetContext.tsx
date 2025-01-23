@@ -16,6 +16,7 @@ import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/ext
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useTheme } from '@/theme';
+import { time } from '@/utils';
 
 export enum SectionId {
   PROFIT = 'profit',
@@ -108,11 +109,21 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
   const isOwnedAsset = !!accountAsset;
 
   // The asset is fetched regardless of the information in param so that we do not have to be concerned with the staleness of the data or missing fields
-  const { data: externalAsset } = useExternalToken({
-    address,
-    chainId,
-    currency: nativeCurrency,
-  });
+  const { data: externalAsset } = useExternalToken(
+    {
+      address,
+      chainId,
+      currency: nativeCurrency,
+    },
+    {
+      // We're okay with initially showing stale data
+      keepPreviousData: true,
+      // We always want to know the latest price
+      staleTime: time.zero,
+      // Refetch at the same interval as the chart data
+      refetchInterval: time.seconds(30),
+    }
+  );
 
   // This is constructed so that rendering is not delayed by the external asset fetch
   const basicAsset = useMemo(() => {

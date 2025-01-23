@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createQueryKey } from '@/react-query';
 import { SupportedCurrencyKey } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
+import { time } from '@/utils';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
 type ChartTime = (typeof chartTimes)[number];
@@ -69,8 +70,8 @@ export const usePriceChart = ({
     },
     queryKey: createQueryKey('price chart', { address, chainId, chartType }),
     keepPreviousData: true,
-    refetchInterval: 1 * 30 * 1000,
-    staleTime: 0,
+    refetchInterval: time.seconds(30),
+    staleTime: time.zero,
   });
   return { updateChartType, ...query };
 };

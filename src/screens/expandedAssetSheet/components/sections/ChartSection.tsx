@@ -19,7 +19,7 @@ const calculatePercentChangeWorklet = (start: number, end: number) => {
 
 export function ChartSection() {
   const { basicAsset: asset, assetMetadata } = useExpandedAssetSheetContext();
-  const latestChange = useSharedValue<string | undefined>(undefined);
+  const latestChange = useSharedValue<string | undefined>(toFixedWorklet(asset.price.relativeChange24h ?? 0, 2));
   const { chart, chartType, color, fetchingCharts, updateChartType, showChart, throttledData } = useChartThrottledPoints({
     asset,
   });
