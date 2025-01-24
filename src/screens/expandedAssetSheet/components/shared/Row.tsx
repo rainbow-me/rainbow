@@ -19,12 +19,13 @@ export function Row({ children, highlighted }: RowProps) {
       borderColor: isHighlighted ? accentColors.borderSecondary : 'transparent',
       borderWidth: 1.33,
       borderRadius: 14,
+      height: 36,
     };
   });
 
   return (
     <Animated.View style={containerStyle}>
-      <Box paddingVertical="12px" paddingHorizontal="10px" justifyContent="space-between" flexDirection="row">
+      <Box height="full" alignItems="center" paddingHorizontal="10px" justifyContent="space-between" flexDirection="row">
         {children}
       </Box>
     </Animated.View>
