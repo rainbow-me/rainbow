@@ -15,7 +15,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 export const SHEET_FOOTER_HEIGHT = 32 + 46 + 44;
 
 export function SheetFooter() {
-  const { accentColors, basicAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
+  const { accentColors, basicAsset: asset, accountAsset, isOwnedAsset } = useExpandedAssetSheetContext();
 
   const { swagg_enabled, f2c_enabled } = useRemoteConfig();
   const swapEnabled = swagg_enabled && useBackendNetworksStore.getState().getSwapSupportedChainIds().includes(asset.chainId);
@@ -44,7 +44,7 @@ export function SheetFooter() {
             <AssetContextMenu />
           </Column>
           {isSwapButtonVisible && <SwapActionButton asset={asset} color={accentColors.color} inputType={SwapAssetType.inputAsset} />}
-          {isSendButtonVisible && <SendActionButton asset={asset} color={accentColors.color} />}
+          {isSendButtonVisible && <SendActionButton asset={accountAsset} color={accentColors.color} />}
           {isBuyEthButtonVisible && <BuyActionButton color={accentColors.color} />}
           {isBuyAssetButtonVisible && (
             <SwapActionButton
