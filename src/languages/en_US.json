@@ -724,7 +724,9 @@
         "buy": {
           "title": "Buy",
           "pay_with": "Pay with",
-          "available_balance": "Available Balance"
+          "available_balance": "Available Balance",
+          "open_swaps": "Open Swaps",
+          "low_balance": "Low balance"
         },
         "about": {
           "title": "About",

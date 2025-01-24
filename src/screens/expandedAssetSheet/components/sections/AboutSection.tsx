@@ -165,7 +165,6 @@ export function AboutSection() {
         icon: '􀎞',
         title: i18n.t(i18n.l.expanded_state.asset.social.website),
         url: metadata.links.homepage.url,
-        // value: formatURLForDisplay(metadata.links.homepage.url),
         value: formatUrl(metadata.links.homepage.url, false, true, true),
       });
     }
