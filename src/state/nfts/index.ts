@@ -6,6 +6,9 @@ import { time } from '@/utils';
 import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 import { useAccountSettings } from '@/hooks';
 import reduxStore from '@/redux/store';
+import { MMKV } from 'react-native-mmkv';
+
+const mmkv = new MMKV();
 
 type UserNftsStoreType = ReturnType<typeof createUserNftsStore>;
 
@@ -110,8 +113,8 @@ export const useNftSortStore = createRainbowStore<NftSortStore>(
         return DEFAULT_NFT_SORT;
       }
       const state = get();
-      const currentOrder = state.nftSort?.[address];
-      const [sortBy, sortDirection] = parseNftSortAction(currentOrder);
+      const currentSort = state.nftSort?.[address] || getPersistedSort(address);
+      const [sortBy, sortDirection] = parseNftSortAction(currentSort);
       return {
         sortBy,
         sortDirection,
@@ -135,6 +138,10 @@ export const useNftSortStore = createRainbowStore<NftSortStore>(
   }
 );
 
+const getSortStorageKey = (accountAddress: string) => `nfts-sort-${accountAddress}`;
+const getPersistedSort = (accountAddress: string) => {
+  return mmkv.getString(getSortStorageKey(accountAddress)) as NftSortAction | undefined;
+};
 const parseNftSortAction = (s: string | undefined) => {
   const [sortBy = NftCollectionSortCriterion.MostRecent, sortDirection = SortDirection.Desc] = (s?.split('|') || []) as [
     sortBy?: NftCollectionSortCriterion,
