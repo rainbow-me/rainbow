@@ -46,6 +46,8 @@ import { IS_APK_BUILD } from 'react-native-dotenv';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import isTestFlight from '@/helpers/isTestFlight';
 
+const DEFAULT_SLIPPAGE_BIPS = 500;
+
 // /---- 🎨 Color functions 🎨 ----/ //
 //
 export const opacity = (color: string, opacity: number): string => {
@@ -356,7 +358,7 @@ export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
   const amount = +(
     (config.default_slippage_bips_chainId as unknown as { [key: number]: number })[chainId] ||
     DEFAULT_CONFIG.default_slippage_bips_chainId[chainId] ||
-    200
+    DEFAULT_SLIPPAGE_BIPS
   );
 
   return slippageInBipsToString(amount);
@@ -367,7 +369,7 @@ export const getDefaultSlippageWorklet = (chainId: ChainId, config: RainbowConfi
   const amount = +(
     (config.default_slippage_bips_chainId as unknown as { [key: number]: number })[chainId] ||
     DEFAULT_CONFIG.default_slippage_bips_chainId[chainId] ||
-    200
+    DEFAULT_SLIPPAGE_BIPS
   );
 
   return slippageInBipsToStringWorklet(amount);
