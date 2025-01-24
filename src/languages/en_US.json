@@ -678,7 +678,7 @@
       "asset": {
         "about_asset": "About %{assetName}",
         "balance": "Balance",
-        "get_asset": "Get %{assetSymbol}",
+        "get_asset": "Buy %{assetSymbol}",
         "market_cap": "Market cap",
         "read_more_button": "Read more",
         "available_networks": "Available on %{availableNetworks} networks",
@@ -690,13 +690,46 @@
         "social": {
           "facebook": "Facebook",
           "homepage": "Homepage",
+          "website": "Website",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter"
+          "twitter": "Twitter",
+          "search_on_twitter": "Search on Twitter"
         },
         "uniswap_liquidity": "Uniswap liquidity",
         "value": "Value",
-        "volume_24_hours": "24h volume"
+        "volume_24_hours": "24h volume",
+        "menu": {
+          "view_on": "View on %{blockExplorerName}",
+          "share": "Share",
+          "copy_contract_address": "Copy Contract Address",
+          "pin": "Pin",
+          "unpin": "Unpin",
+          "hide": "Hide",
+          "unhide": "Unhide"
+        },
+        "no_data_available": "No data available"
+      },
+      "sections": {
+        "market_stats": {
+          "title": "Market Stats",
+          "circulating_supply": "Circulating Supply",
+          "max_supply": "Max Supply",
+          "fully_diluted_valuation": "Fully Diluted Valuation",
+          "market_cap": "Market Cap",
+          "created": "Created",
+          "volume_24_hours": "24h Volume",
+          "rank": "Rank"
+        },
+        "buy": {
+          "title": "Buy",
+          "pay_with": "Pay with",
+          "available_balance": "Available Balance"
+        },
+        "about": {
+          "title": "About",
+          "what_is": "What is %{assetName}?"
+        }
       },
       "chart": {
         "all_time": "All Time",
@@ -2990,6 +3023,10 @@
           "buy_native_token": "Buy %{symbol}"
         },
         "formatted_dates": {
+          "minute_ago": "minute ago",
+          "minutes_ago": "minutes ago",
+          "hour_ago": "hour ago",
+          "hours_ago": "hours ago",
           "today": "Today",
           "day_ago": "day ago",
           "days_ago": "days ago",

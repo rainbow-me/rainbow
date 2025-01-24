@@ -704,8 +704,8 @@ export type EventProperties = {
       chainId: ChainId;
       symbol: string;
       name: string;
-      icon_url: string;
-      price: number;
+      icon_url: string | undefined;
+      price: number | undefined;
     };
     eventSentAfterMs: number;
     available_data: {

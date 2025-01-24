@@ -76,9 +76,10 @@ export const EthCard = () => {
   );
 
   const handleAssetPress = useCallback(() => {
-    navigate(Routes.EXPANDED_ASSET_SHEET, {
+    navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset: ethAsset,
-      type: 'token',
+      address: ETH_ADDRESS,
+      chainId: ChainId.mainnet,
     });
     analyticsV2.track(analyticsV2.event.cardPressed, {
       cardName: 'EthCard',
