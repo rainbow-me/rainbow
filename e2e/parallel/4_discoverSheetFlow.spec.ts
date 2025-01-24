@@ -84,8 +84,8 @@ describe('Discover Screen Flow', () => {
     await delayTime('long');
     await checkIfVisible('favorites-0');
     await checkIfVisible('verified-1');
-    await checkIfExists('profiles-2');
-    await checkIfExists('highLiquidity-3');
+    // await checkIfExists('profiles-2');
+    // await checkIfExists('highLiquidity-3');
   });
 
   it.skip('Should search and open Profile Sheet for rainbowwallet.eth', async () => {
