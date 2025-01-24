@@ -8,6 +8,7 @@ import { Linking } from 'react-native';
 import { formatURLForDisplay } from '@/utils';
 import { XIcon } from '../../icons/XIcon';
 import { Icon } from '@/components/icons';
+import { formatUrl } from '@/components/DappBrowser/utils';
 
 interface RowItem {
   icon?: string;
@@ -164,7 +165,8 @@ export function AboutSection() {
         icon: '􀎞',
         title: i18n.t(i18n.l.expanded_state.asset.social.website),
         url: metadata.links.homepage.url,
-        value: formatURLForDisplay(metadata.links.homepage.url),
+        // value: formatURLForDisplay(metadata.links.homepage.url),
+        value: formatUrl(metadata.links.homepage.url, false, true, true),
       });
     }
 
@@ -189,11 +191,11 @@ export function AboutSection() {
     items.push({
       icon: '􀊫',
       title: i18n.t(i18n.l.expanded_state.asset.social.search_on_twitter),
-      url: `https://x.com/search?q=${asset.name}`,
+      url: `https://x.com/search?q=$${asset.symbol}`,
     });
 
     return items;
-  }, [asset.name, metadata?.links]);
+  }, [asset.symbol, metadata?.links]);
 
   return (
     <Box gap={40}>
