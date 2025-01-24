@@ -178,10 +178,9 @@ function ImageValue({ ensName, url, value }: { ensName?: string; url?: string; v
 
   const { data: address } = useENSAddress({ name: ensName || '' });
 
-  const userNftsStore = useUserNftsStore();
-  const uniqueTokensAccount = userNftsStore(state => state.nfts);
+  const uniqueTokensAccount = useUserNftsStore(state => state.getData()?.nfts);
   const externalNftStore = useNftsStore(address ?? '');
-  const uniqueTokensProfile = externalNftStore(state => state.nfts);
+  const uniqueTokensProfile = externalNftStore(state => state.getData()?.nfts);
 
   const isSelf = address === accountAddress;
   const uniqueTokens = isSelf ? uniqueTokensAccount : uniqueTokensProfile;

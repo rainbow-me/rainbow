@@ -77,7 +77,7 @@ const PoapSheet = () => {
   const { isReadOnlyWallet } = useWallets();
   const params = useRoute();
 
-  const nfts = useUserNftsStore()(state => state.nfts);
+  const nfts = useUserNftsStore(state => state.getData()?.nfts);
 
   const [claimStatus, setClaimStatus] = useState<PoapClaimStatus>('none');
   const [errorCode, setErrorCode] = useState<PoapMintError | undefined>(undefined);
@@ -189,7 +189,7 @@ const PoapSheet = () => {
   }, [claimPoapByQrHash, claimPoapBySecret, claimStatus, goBack, navigate, nft, poapMintType]);
 
   useEffect(() => {
-    const nft = nfts.find(item => item.image_original_url === poapEvent.imageUrl);
+    const nft = nfts?.find(item => item.image_original_url === poapEvent.imageUrl);
     if (nft) {
       setClaimStatus('claimed');
       setNft(nft);

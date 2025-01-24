@@ -28,7 +28,7 @@ export default function useENSPendingRegistrations() {
     return { accountRegistrations, pendingRegistrations };
   });
 
-  const uniqueTokens = useUserNftsStore()(state => state.nfts);
+  const uniqueTokens = useUserNftsStore(state => state.getData()?.nfts || []);
   const registrationImages = useMemo(() => {
     const registrationImagesArray = pendingRegistrations?.map(({ name, records }) => {
       const avatarUrl = getENSNFTAvatarUrl(uniqueTokens, records?.avatar);

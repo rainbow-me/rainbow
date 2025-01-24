@@ -1,9 +1,10 @@
 import { groupBy } from 'lodash';
 import { useUserNftsStore } from '@/state/nfts';
+import { UniqueAsset } from '@/entities';
 
 export default function useSendableUniqueTokens() {
-  const uniqueTokens = useUserNftsStore()(state => (!Array.isArray(state.nfts) ? [] : state.nfts)) || [];
-  const sendableUniqueTokens = uniqueTokens?.filter((uniqueToken: any) => uniqueToken.isSendable);
+  const uniqueTokens = useUserNftsStore(state => state.getData()?.nfts || []);
+  const sendableUniqueTokens = uniqueTokens?.filter((uniqueToken: UniqueAsset) => uniqueToken.isSendable);
   const grouped = groupBy(sendableUniqueTokens, token => token.familyName);
   const families = Object.keys(grouped).sort();
   const sendableTokens = [];

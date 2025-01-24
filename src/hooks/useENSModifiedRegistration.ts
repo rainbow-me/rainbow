@@ -56,7 +56,7 @@ export default function useENSModifiedRegistration({
 } = {}) {
   const dispatch = useDispatch();
   const { records, initialRecords, name, mode } = useENSRegistration();
-  const uniqueTokens = useUserNftsStore()(state => state.nfts);
+  const uniqueTokens = useUserNftsStore(state => state.getData()?.nfts || []);
 
   const fetchEnabled = mode === REGISTRATION_MODES.EDIT || mode === REGISTRATION_MODES.RENEW || mode === REGISTRATION_MODES.SET_NAME;
   const { data: avatar, isSuccess: isAvatarSuccess } = useENSAvatar(name, {

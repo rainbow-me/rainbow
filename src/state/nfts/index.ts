@@ -5,6 +5,7 @@ import { fetchUserNfts } from '@/resources/nfts';
 import { time } from '@/utils';
 import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 import { useAccountSettings } from '@/hooks';
+import reduxStore from '@/redux/store';
 
 type UserNftsStoreType = ReturnType<typeof createUserNftsStore>;
 
@@ -43,14 +44,6 @@ export const createUserNftsStore = (config: NftFactoryConfig) =>
         sortBy: $ => $(useNftSortStore, s => s.getNftSort(config.address).sortBy),
         sortDirection: $ => $(useNftSortStore, s => s.getNftSort(config.address).sortDirection),
       },
-      setData: ({ data, set }) => {
-        set(() => {
-          return {
-            nfts: data.nfts,
-            nftsMap: data.nftsMap,
-          };
-        });
-      },
       staleTime: time.minutes(10),
     },
     (_, get) => ({
@@ -66,9 +59,16 @@ export const createUserNftsStore = (config: NftFactoryConfig) =>
 
 function getOrCreateStore(address: string, internal?: boolean): UserNftsStoreType {
   const { cachedAddress, cachedStore } = userNftsStoreManager.getState();
-  if (cachedAddress && cachedAddress === address && cachedStore) {
-    return cachedStore;
-  }
+  const rawAddress = address?.length ? address : reduxStore.getState().settings.accountAddress;
+
+  /**
+   * This fallback can be removed once Redux is no longer the source of truth for the current
+   * accountAddress. It's needed to ensure there's an address available immediately upon app
+   * launch, which currently is not the case — the initial Redux address is an empty string.
+   */
+  const accountAddress = rawAddress?.length ? rawAddress : cachedAddress ?? rawAddress;
+
+  if (cachedStore && cachedAddress === accountAddress) return cachedStore;
 
   const newStore = createUserNftsStore({ address, internal });
   userNftsStoreManager.setState({ cachedStore: newStore, cachedAddress: address });
@@ -79,12 +79,10 @@ export function useNftsStore(address: string, internal?: boolean) {
   return getOrCreateStore(address, internal);
 }
 
-export function useUserNftsStore() {
+export function useUserNftsStore<T>(selector: (state: ReturnType<UserNftsStoreType['getState']>) => T) {
   const { accountAddress } = useAccountSettings();
-  return useNftsStore(accountAddress, true);
+  return useNftsStore(accountAddress, true)(selector);
 }
-
-// SORT
 
 export type NftSortAction = `${NftCollectionSortCriterion}|${SortDirection}`;
 type NftSortByAddress = Record<string, NftSortAction>;

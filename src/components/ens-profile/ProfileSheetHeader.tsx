@@ -50,7 +50,7 @@ export default function ProfileSheetHeader({
   });
   const isImagesFetched = isAvatarFetched && isCoverFetched;
 
-  const uniqueTokens = useUserNftsStore()(state => state?.nfts);
+  const uniqueTokens = useUserNftsStore(state => state.getData()?.nfts);
 
   const avatarUrl = avatar?.imageUrl;
   const { onPress: onPressAvatar } = useOpenENSNFTHandler({
