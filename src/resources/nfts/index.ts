@@ -40,13 +40,13 @@ export const fetchUserNfts = async ({
   sortBy: NftCollectionSortCriterion;
   sortDirection: SortDirection;
 }) => {
-  console.log('FETCHING NFTS FOR ADDRESS: ', address);
-  console.log('WITH SORT PARAMS: ', sortBy, sortDirection);
   const queryResponse = await arcClient.getNFTs({ walletAddress: address, sortBy, sortDirection });
   const nfts = queryResponse?.nftsV2?.map(nft => simpleHashNFTToUniqueAsset(nft, address));
 
   const map = new Map<string, UniqueAsset>();
+  // ⚠️ TODO: Delete this and rework the code that uses it
   const nftsMap = nfts?.reduce((acc, nft) => {
+    // Track down why these both exist - we should not be doing this
     acc.set(nft.uniqueId, nft);
     acc.set(nft.fullUniqueId, nft);
     return acc;

@@ -64,7 +64,7 @@ export default function useWalletSectionsData({
   const { sendableUniqueTokens } = useSendableUniqueTokens();
 
   const isFetchingNfts = useUserNftsStore(state => state.status);
-  const allUniqueTokens = useUserNftsStore(state => (Array.isArray(state.getData()?.nfts) ? state.getData()?.nfts : []));
+  const allUniqueTokens = useUserNftsStore(state => state.getData()?.nfts || []);
 
   const { data: positions } = usePositions({ address: accountAddress, currency: nativeCurrency });
   const { data: claimables } = useClaimables({ address: accountAddress, currency: nativeCurrency });

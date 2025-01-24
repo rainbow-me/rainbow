@@ -252,8 +252,10 @@ export function NFTSingleOfferSheet() {
   }, [estimateGas, isExpired, isReadOnlyWallet, offerChainId, startPollingGasFees, stopPollingGasFees]);
 
   const acceptOffer = useCallback(async () => {
-    // TODO handle this gracefully
-    if (!nft) return;
+    if (!nft) {
+      logger.error(new RainbowError(`[NFTSingleOfferSheet]: Attempted sale of NFT ${offer.nft.contractAddress} without user nft data`));
+      return;
+    }
     logger.debug(`[NFTSingleOfferSheet]: Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`);
     const analyticsEventObject = {
       nft: {

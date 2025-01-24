@@ -96,7 +96,6 @@ const CollectiblesHeader = () => {
             };
           })}
           selectItem={action => {
-            console.log('UPDATING NFT SORT W/ ACTION: ', action);
             updateNftSort(accountAddress, action);
           }}
           icon={getIconForSortType(nftSort.sortBy)}
