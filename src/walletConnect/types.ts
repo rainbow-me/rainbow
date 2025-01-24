@@ -24,7 +24,10 @@ export interface RequestData {
   address: string;
   chainId: ChainId;
   dappUrl: string;
-  payload: any;
+  payload: {
+    method: string;
+    params?: any[];
+  };
   displayDetails: RequestDisplayDetails | null | Record<string, never>;
 }
 
