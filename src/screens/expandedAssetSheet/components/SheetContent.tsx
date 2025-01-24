@@ -9,13 +9,15 @@ import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
 import { convertStringToNumber, roundToSignificant1or5 } from '@/helpers/utilities';
+import { IS_DEV } from '@/env';
+import isTestFlight from '@/helpers/isTestFlight';
 
 const SEPARATOR_COLOR = 'rgba(245, 248, 255, 0.03)';
 const LIGHT_SEPARATOR_COLOR = 'rgba(9, 17, 31, 0.03)';
 
 const DEFAULT_PERCENTAGES_OF_BALANCE = [0.05, 0.1, 0.25, 0.5, 0.75];
 // Ideally this would be different for different currencies, but that would need to be set in the remote config
-const MINIMUM_NATIVE_CURRENCY_AMOUNT = 10;
+let minimumNativeCurrencyAmount = IS_DEV || isTestFlight ? 1 : 10;
 
 export function SheetContent() {
   const { nativeCurrency } = useAccountSettings();
@@ -33,9 +35,14 @@ export function SheetContent() {
 
     const buyWithAssetNativeBalanceNumber = convertStringToNumber(buyWithAssetNativeBalance);
 
+    // Eth is the only native currency where 10 is not a reasonable default minimum amount
+    if (nativeCurrency === 'ETH') {
+      minimumNativeCurrencyAmount = 0.01;
+    }
+
     const amounts = new Set(
       DEFAULT_PERCENTAGES_OF_BALANCE.map(percentage => roundToSignificant1or5(percentage * buyWithAssetNativeBalanceNumber)).filter(
-        amount => amount >= MINIMUM_NATIVE_CURRENCY_AMOUNT && amount < buyWithAssetNativeBalanceNumber
+        amount => amount >= minimumNativeCurrencyAmount && amount < buyWithAssetNativeBalanceNumber
       )
     );
     return Array.from(amounts);
