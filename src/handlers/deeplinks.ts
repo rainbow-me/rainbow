@@ -108,7 +108,6 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
         const uniqueId = (addr as string)?.toLowerCase() ?? '';
 
         if (uniqueId && uniqueId.length > 0) {
-          // const asset = ethereumUtils.getAssetFromAllAssets(uniqueId);
           const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
           const currency = store.getState().settings.nativeCurrency;
           const asset = await fetchExternalToken({ address, chainId, currency });
