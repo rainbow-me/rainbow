@@ -125,7 +125,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, weight =
     <SheetActionButton
       {...props}
       color={color}
-      label={label || `􀖅 ${lang.t('button.swap')}`}
+      label={label || `${lang.t('button.swap')}`}
       onPress={goToSwap}
       testID="swap"
       weight={weight}
