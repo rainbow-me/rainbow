@@ -29,7 +29,6 @@ export type UserNftsResponse = {
 type UserNftsState = {
   nfts: UniqueAsset[];
   nftsMap: Map<string, UniqueAsset>;
-  getNft: (uniqueId: string) => UniqueAsset | undefined;
 };
 type NftFactoryConfig = {
   address: string;
@@ -49,15 +48,16 @@ export const createUserNftsStore = (config: NftFactoryConfig) =>
       },
       staleTime: time.minutes(10),
     },
-    (_, get) => ({
+    () => ({
       nfts: [],
       nftsMap: new Map<string, UniqueAsset>(),
-      getNft: (uniqueId: string) => {
-        const data = get();
-        return data.nftsMap.get(uniqueId);
-      },
     }),
-    { storageKey: `userNfts_${config.address}` }
+    config.address?.length
+      ? {
+          storageKey: `userNfts_${config.address}`,
+          version: 1,
+        }
+      : undefined
   );
 
 function getOrCreateStore(address: string, internal?: boolean): UserNftsStoreType {
@@ -122,14 +122,13 @@ export const useNftSortStore = createRainbowStore<NftSortStore>(
     },
     updateNftSort: (address, sortAction) => {
       const state = get();
-      const newState = {
+      set({
         ...state,
         nftSort: {
           ...state.nftSort,
           [address]: sortAction,
         },
-      };
-      set(newState);
+      });
     },
   }),
   {

@@ -103,7 +103,7 @@ export function NFTSingleOfferSheet() {
   const [isAccepting, setIsAccepting] = useState(false);
   const txsRef = useRef<string[]>([]);
 
-  const nft = useUserNftsStore(state => state.getNft(offer.nft.uniqueId));
+  const nft = useUserNftsStore(state => state.getData()?.nftsMap.get(offer.nft.uniqueId));
 
   const insufficientEth = isSufficientGas === false && isValidGas;
 
