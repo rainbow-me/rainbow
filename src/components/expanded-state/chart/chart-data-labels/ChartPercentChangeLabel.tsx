@@ -59,7 +59,7 @@ export default memo(function ChartPercentChangeLabel({
 
   return (
     <TextShadow blur={12} shadowOpacity={0.24}>
-      <AnimatedText align="left" numberOfLines={1} size="20pt" style={[{ width: '100%' }, textStyle]} tabularNumbers weight="bold">
+      <AnimatedText align="left" numberOfLines={1} size="20pt" style={textStyle} tabularNumbers weight="bold">
         {text}
       </AnimatedText>
     </TextShadow>

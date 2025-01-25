@@ -3,14 +3,15 @@ import React, { useMemo } from 'react';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { Stack, Text, TextShadow, Bleed } from '@/design-system';
+import { Stack, Text, TextShadow, Bleed, Box } from '@/design-system';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
 import { useChartData } from '@/react-native-animated-charts/src';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ColumnWithMargins } from '../../layout';
-import { ChartPercentChangeLabel, ChartPriceLabel } from './chart-data-labels';
+import { ChartPercentChangeLabel, ChartPriceLabel, ChartDateLabel } from './chart-data-labels';
+import ChartTypes from '@/helpers/chartTypes';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -28,6 +29,7 @@ export default function ChartExpandedStateHeader({
   latestPrice = noPriceData,
   priceRef,
   showChart,
+  chartType,
 }) {
   const theme = useTheme();
   const color = givenColors || theme.colors.dark;
@@ -44,6 +46,27 @@ export default function ChartExpandedStateHeader({
   const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
 
   const { data } = useChartData();
+
+  const chartTimeDefaultValue = useMemo(() => {
+    const invertedChartTypes = Object.entries(ChartTypes).reduce((acc, [key, value]) => {
+      acc[value] = key;
+      return acc;
+    }, {});
+    const timespan = invertedChartTypes[chartType];
+
+    const formattedTimespan = timespan.charAt(0).toUpperCase() + timespan.slice(1);
+    if (chartType === ChartTypes.day) {
+      return lang.t('expanded_state.chart.today');
+    } else if (chartType === ChartTypes.max) {
+      return lang.t('expanded_state.chart.all_time');
+    } else {
+      return lang.t('expanded_state.chart.past_timespan', {
+        formattedTimespan,
+      });
+    }
+    // we need to make sure we recreate this value only when chart's data change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   const price = useMemo(
     () => convertAmountToNativeDisplay(latestPrice, nativeCurrency),
@@ -91,7 +114,10 @@ export default function ChartExpandedStateHeader({
         <ChartPriceLabel defaultValue={title} isNoPriceData={isNoPriceData} isPool={isPool} priceRef={priceRef} priceValue={price} />
         <Animated.View style={showPriceChangeStyle}>
           <Bleed top={'6px'}>
-            <ChartPercentChangeLabel latestChange={latestChange} ratio={ratio} />
+            <Box gap={10} flexDirection="row" alignItems="center">
+              <ChartPercentChangeLabel latestChange={latestChange} ratio={ratio} />
+              <ChartDateLabel chartTimeDefaultValue={chartTimeDefaultValue} />
+            </Box>
           </Bleed>
         </Animated.View>
       </Stack>
