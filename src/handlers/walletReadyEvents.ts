@@ -15,6 +15,7 @@ import { logger } from '@/logger';
 import { IS_TEST } from '@/env';
 import { backupsStore, CloudBackupState, LoadingStates, oneWeekInMs } from '@/state/backups/backups';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 export const runKeychainIntegrityChecks = async () => {
   const keychainIntegrityState = await getKeychainIntegrityState();
@@ -112,16 +113,21 @@ export const runFeatureUnlockChecks = async (): Promise<boolean> => {
   return false;
 };
 
+const notificationsCampaignCheckTimeout = 15_000;
+const routesToExitEarlyOn: string[] = [Routes.BACKUP_SHEET, Routes.APP_ICON_UNLOCK_SHEET, Routes.REMOTE_PROMO_SHEET];
+
+const handleLocalCampaignChecks = async () => {
+  setTimeout(() => {
+    const { activeRoute } = useNavigationStore.getState();
+    if (routesToExitEarlyOn.includes(activeRoute)) return;
+    runLocalCampaignChecks();
+  }, notificationsCampaignCheckTimeout);
+};
+
 export const runFeaturesLocalCampaignAndBackupChecks = async () => {
   if (await runFeatureUnlockChecks()) {
     return true;
   }
-  if (await runLocalCampaignChecks()) {
-    return true;
-  }
-  if (await runWalletBackupStatusChecks()) {
-    return true;
-  }
-
-  return false;
+  handleLocalCampaignChecks();
+  return await runWalletBackupStatusChecks();
 };
