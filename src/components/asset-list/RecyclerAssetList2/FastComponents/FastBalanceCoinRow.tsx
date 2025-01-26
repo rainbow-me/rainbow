@@ -72,12 +72,8 @@ const MemoizedBalanceCoinRow = React.memo(
       if (maybeCallback.current) {
         maybeCallback.current();
       } else {
-        navigate(Routes.EXPANDED_ASSET_SHEET, {
-          asset: item,
-          fromDiscover: true,
-          isFromWalletScreen: true,
-          type: 'token',
-        });
+        if (!item) return;
+        navigate(Routes.EXPANDED_ASSET_SHEET_V2, { asset: item, address: item.address, chainId: item.chainId });
       }
     }, [navigate, item, maybeCallback]);
 

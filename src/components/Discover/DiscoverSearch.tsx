@@ -72,7 +72,7 @@ export default function DiscoverSearch() {
   const lastSearchQuery = usePrevious(searchQueryForSearch);
 
   const [ensResults, setEnsResults] = useState<EnsSearchResult[]>([]);
-  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch, ChainId.mainnet);
+  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch);
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const marginBottom = TAB_BAR_HEIGHT + safeAreaInsetValues.bottom + 16;
@@ -83,7 +83,7 @@ export default function DiscoverSearch() {
     // 1. favorites
     // 2. verified
     // 3. profiles
-    // 4. unverified
+    // 4. unverified high liquidity
     // 5. low liquidity
     let list = swapCurrencyList;
     const listKeys = swapCurrencyList.map(item => item.key);
@@ -193,14 +193,15 @@ export default function DiscoverSearch() {
           }
         });
       } else {
-        const asset = ethereumUtils.getAccountAsset(item.uniqueId);
+        const accountAsset = ethereumUtils.getAccountAsset(item.uniqueId);
         if (item.favorite) {
           item.network = Network.mainnet;
         }
-        navigate(Routes.EXPANDED_ASSET_SHEET, {
-          asset: asset || item,
-          fromDiscover: true,
-          type: 'token',
+        const asset = accountAsset || item;
+        navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
+          asset,
+          address: item.address,
+          chainId: item.chainId,
         });
       }
     },

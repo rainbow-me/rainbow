@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { DerivedValue, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import { AnimatedText } from '@/design-system';
+import { AnimatedText, TextShadow } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useChartData } from '@/react-native-animated-charts/src';
 import { useTheme } from '@/theme';
@@ -34,7 +34,7 @@ const formatWorklet = (originalY: SharedValue<string>, data: DataType, latestCha
 
         return (IS_ANDROID ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') + ' ' + formatNumber(Math.abs(value).toFixed(2)) + '%';
       })()
-    : '';
+    : ' '; // important that string is not empty so that when actual value fills it does not cause a layout shift
 };
 
 export default memo(function ChartPercentChangeLabel({
@@ -58,15 +58,10 @@ export default memo(function ChartPercentChangeLabel({
   });
 
   return (
-    <AnimatedText
-      align="right"
-      numberOfLines={1}
-      size="23px / 27px (Deprecated)"
-      style={[{ width: '100%' }, textStyle]}
-      tabularNumbers
-      weight="bold"
-    >
-      {text}
-    </AnimatedText>
+    <TextShadow blur={12} shadowOpacity={0.24}>
+      <AnimatedText align="left" numberOfLines={1} size="20pt" style={[{ width: '100%' }, textStyle]} tabularNumbers weight="bold">
+        {text}
+      </AnimatedText>
+    </TextShadow>
   );
 });

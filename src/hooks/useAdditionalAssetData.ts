@@ -5,7 +5,7 @@ import { Token } from '@/graphql/__generated__/metadata';
 import { ChainId } from '@/state/backendNetworks/types';
 
 // Types
-type TokenMetadata = Pick<
+export type TokenMetadata = Pick<
   Token,
   'description' | 'volume1d' | 'marketCap' | 'totalSupply' | 'circulatingSupply' | 'fullyDilutedValuation' | 'links'
 >;

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import React, { useMemo } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { getChainBadgeStyles } from '@/components/coin-icon/ChainImage';
-import { globalColors, useColorMode } from '@/design-system';
+import { useColorMode } from '@/design-system';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -41,16 +41,3 @@ export function AnimatedChainImage({
     </View>
   );
 }
-
-const sx = StyleSheet.create({
-  badge: {
-    position: 'absolute',
-    shadowColor: globalColors.grey100,
-    shadowOffset: {
-      height: 4,
-      width: 0,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-  },
-});

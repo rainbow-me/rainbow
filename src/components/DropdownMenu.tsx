@@ -25,6 +25,7 @@ export const DropdownMenuCheckboxItem = DropdownMenuPrimitive.create(
   'CheckboxItem'
 );
 export const DropdownMenuItemTitle = DropdownMenuPrimitive.ItemTitle;
+export const DropdownMenuItemSubtitle = DropdownMenuPrimitive.ItemSubtitle;
 export const DropdownMenuItemIcon = DropdownMenuPrimitive.ItemIcon;
 export const DropdownMenuItemImage = DropdownMenuPrimitive.ItemImage;
 
@@ -49,8 +50,9 @@ export type MenuItemIcon = Omit<IconConfig, 'iconValue' | 'iconType'> &
 export type MenuItem<T> = Omit<MenuActionConfig, 'icon'> & {
   actionKey: T;
   actionTitle: string;
+  actionSubtitle?: string;
   destructive?: boolean;
-  icon?: MenuItemIcon | { iconType: string; iconValue: string | ImageSourcePropType };
+  icon?: MenuItemIcon;
 };
 
 export type MenuConfig<T extends string> = Omit<_MenuConfig, 'menuItems' | 'menuTitle'> & {
@@ -140,6 +142,7 @@ export function DropdownMenu<T extends string>({
               onSelect={() => handleSelectItem(item.actionKey)}
             >
               <DropdownMenuItemTitle>{item.actionTitle}</DropdownMenuItemTitle>
+              {item.actionSubtitle && <DropdownMenuItemSubtitle>{item.actionSubtitle}</DropdownMenuItemSubtitle>}
               {Icon}
             </MenuItemComponent>
           );

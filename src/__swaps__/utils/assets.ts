@@ -3,6 +3,7 @@ import {
   AddressOrEth,
   AssetApiResponse,
   AssetMetadata,
+  AssetType,
   ParsedAsset,
   ParsedSearchAsset,
   ParsedUserAsset,
@@ -25,6 +26,8 @@ import {
 } from '@/helpers/utilities';
 import { isLowerCaseMatch } from '@/utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { RainbowToken } from '@/entities';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
   +a1.chainId === +a2.chainId && isLowerCaseMatch(a1.address, a2.address);
@@ -261,3 +264,38 @@ export const parseSearchAsset = ({
   colors: userAsset?.colors || assetWithPrice?.colors || searchAsset?.colors,
   type: userAsset?.type || assetWithPrice?.type || searchAsset?.type,
 });
+
+export function transformRainbowTokenToParsedSearchAsset(asset: RainbowToken): ParsedSearchAsset {
+  const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
+  const chainId = asset.chainId || chainsIdByName[asset.network];
+  const uniqueId = `${asset.address}_${chainId}`;
+  const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
+
+  return parseSearchAsset({
+    assetWithPrice: {
+      ...asset,
+      uniqueId,
+      address: asset.address as AddressOrEth,
+      type: asset.type as AssetType,
+      chainId,
+      chainName: chainsName[chainId],
+      isNativeAsset: false,
+      native: {},
+    },
+    searchAsset: {
+      ...asset,
+      uniqueId,
+      chainId,
+      chainName: chainsName[chainId],
+      address: asset.address as AddressOrEth,
+      highLiquidity: asset.highLiquidity ?? false,
+      isRainbowCurated: asset.isRainbowCurated ?? false,
+      isVerified: asset.isVerified ?? false,
+      mainnetAddress: (asset.mainnet_address ?? '') as AddressOrEth,
+      networks: asset.networks ?? [],
+      type: asset.type as AssetType,
+    },
+    userAsset,
+  });
+}
