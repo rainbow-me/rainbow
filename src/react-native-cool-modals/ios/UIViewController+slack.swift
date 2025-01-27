@@ -207,9 +207,27 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var scrollIndicatorInsets: UIEdgeInsets {
-    let top = shouldRoundTopCorners ? cornerRadius : 0
-    let bottom = ignoreBottomOffset ? 0 : bottomLayoutOffset
-    return UIEdgeInsets(top: CGFloat(top), left: 0, bottom: bottom, right: 0)
+    guard let scrollView = panScrollable else {
+      return UIEdgeInsets(
+        top: shouldRoundTopCorners ? cornerRadius : 0,
+        left: 0,
+        bottom: ignoreBottomOffset ? 0 : bottomLayoutOffset,
+        right: 0
+      )
+    }
+
+    let currentInsets = if #available(iOS 13.0, *) {
+      scrollView.verticalScrollIndicatorInsets
+    } else {
+      scrollView.scrollIndicatorInsets
+    }
+
+    return UIEdgeInsets(
+      top: max(currentInsets.top, shouldRoundTopCorners ? cornerRadius : 0),
+      left: currentInsets.left,
+      bottom: max(currentInsets.bottom, ignoreBottomOffset ? 0 : bottomLayoutOffset),
+      right: currentInsets.right
+    )
   }
 
   func shouldPrioritize(panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {

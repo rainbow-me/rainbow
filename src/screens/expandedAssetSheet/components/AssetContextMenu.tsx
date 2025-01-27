@@ -9,7 +9,7 @@ import { ethereumUtils } from '@/utils';
 import EditAction from '@/helpers/EditAction';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { IS_ANDROID } from '@/env';
-import { Box } from '@/design-system';
+import { Box, TextIcon } from '@/design-system';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import { Share } from 'react-native';
 
@@ -159,7 +159,11 @@ export function AssetContextMenu() {
     <Box style={{ margin: IS_ANDROID ? 0 : -HIT_SLOP }}>
       <DropdownMenu<ContextMenuAction> menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
         <Box style={{ margin: IS_ANDROID ? 0 : HIT_SLOP }}>
-          <SheetActionButton textColor={accentColors.textOnAccent} color={accentColors.opacity100} isSquare label={'􀍠'} />
+          <SheetActionButton color={accentColors.opacity100} newShadows isSquare size={48}>
+            <TextIcon color="label" containerSize={48} size="icon 20px" weight="heavy">
+              􀍠
+            </TextIcon>
+          </SheetActionButton>
         </Box>
       </DropdownMenu>
     </Box>

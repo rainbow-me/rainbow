@@ -1,8 +1,9 @@
 import React, { memo } from 'react';
 import { DerivedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import { AnimatedText, TextShadow } from '@/design-system';
+import { AnimatedText, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useChartData } from '@/react-native-animated-charts/src';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useTheme } from '@/theme';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 
@@ -12,6 +13,8 @@ const DOWN_ARROW = IS_ANDROID ? '' : '↓';
 export default memo(function ChartPercentChangeLabel({ latestChange }: { latestChange: DerivedValue<number | undefined> }) {
   const { originalY, data } = useChartData();
   const { colors } = useTheme();
+  const { isDarkMode } = useColorMode();
+  const labelSecondary = useForegroundColor('labelSecondary');
 
   const percentageChange: DerivedValue<number | null> = useDerivedValue(() => {
     const hasData = data?.points?.length > 0;
@@ -50,15 +53,17 @@ export default memo(function ChartPercentChangeLabel({ latestChange }: { latestC
   const textStyle = useAnimatedStyle(() => {
     const isPositive = percentageChange.value !== null && percentageChange.value > 0;
     const isNegative = percentageChange.value !== null && percentageChange.value < 0;
+    const color = percentageChange.value !== null ? (isPositive ? colors.green : isNegative ? colors.red : labelSecondary) : 'transparent';
 
     return {
-      color: percentageChange.value !== null ? (isPositive ? colors.green : isNegative ? colors.red : colors.blueGreyDark) : 'transparent',
+      color,
+      textShadowColor: isDarkMode ? opacityWorklet(color, 0.24) : 'transparent',
     };
   });
 
   return (
     <TextShadow blur={12} shadowOpacity={0.24}>
-      <AnimatedText align="left" numberOfLines={1} size="20pt" style={textStyle} tabularNumbers weight="bold">
+      <AnimatedText numberOfLines={1} size="20pt" style={textStyle} tabularNumbers weight="heavy">
         {percentageChangeText}
       </AnimatedText>
     </TextShadow>
