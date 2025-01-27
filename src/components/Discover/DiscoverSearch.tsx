@@ -296,7 +296,11 @@ export default function DiscoverSearch() {
   );
 
   return (
-    <View key={currencyListDataKey} style={{ height: deviceUtils.dimensions.height - TOP_OFFSET - marginBottom }}>
+    <View
+      key={currencyListDataKey}
+      style={{ height: deviceUtils.dimensions.height - TOP_OFFSET - marginBottom }}
+      testID="discover-search-list"
+    >
       <SearchContainer>
         <CurrencySelectionList
           footerSpacer
