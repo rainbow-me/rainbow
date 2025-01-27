@@ -87,8 +87,8 @@ final class TokenProvider {
   }
   
   private func getRainbowTokenList() -> RainbowTokenList? {
-    guard let infoDictionary: [String: Any] = Bundle.main.infoDictionary else { return }
-    guard let metadataBaseUrl: String = infoDictionary["METADATA_BASE_URL"] as? String else { return }
+    guard let infoDictionary: [String: Any] = Bundle.main.infoDictionary else { return nil }
+    guard let metadataBaseUrl: String = infoDictionary["METADATA_BASE_URL"] as? String else { return nil }
 
     let url = URL(string: "\(metadataBaseUrl)/token-list/rainbow-token-list.json")!
     
