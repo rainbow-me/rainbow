@@ -81,6 +81,7 @@ type ExpandedAssetSheetContextType = {
   assetMetadata: TokenMetadata | null | undefined;
   expandedSections: SharedValue<Record<SectionId, boolean>>;
   isOwnedAsset: boolean;
+  isLoadingMetadata: boolean;
 };
 
 type ExpandedAssetSheetContextProviderProps = {
@@ -188,7 +189,7 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
   // @ts-expect-error: the field with a type difference is not used & irrelevant to the hook (price)
   const assetColor = useColorForAsset(fullAsset);
 
-  const { data: metadata } = useAdditionalAssetData({
+  const { data: metadata, isLoading: isLoadingMetadata } = useAdditionalAssetData({
     address,
     chainId,
     currency: nativeCurrency,
@@ -240,6 +241,7 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
         assetMetadata: metadata,
         expandedSections,
         isOwnedAsset,
+        isLoadingMetadata,
       }}
     >
       {children}
