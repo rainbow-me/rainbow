@@ -36,10 +36,6 @@ const promptForBackupOnceReadyOrNotAvailable = async (): Promise<boolean> => {
     status = backupsStore.getState().status;
   }
 
-  if (status !== CloudBackupState.Ready) {
-    return false;
-  }
-
   const { backupProvider, timesPromptedForBackup, lastBackupPromptAt } = backupsStore.getState();
 
   // prompt for backup every week if first time prompting, otherwise prompt every 2 weeks
