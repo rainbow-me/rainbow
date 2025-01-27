@@ -9,10 +9,10 @@ import { RainbowError, logger } from '@/logger';
 
 import { parseUserAssets, userAssetsQueryKey } from './userAssets';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { ADDYS_API_KEY } from 'react-native-dotenv';
+import { ADDYS_API_KEY, ADDYS_BASE_URL } from 'react-native-dotenv';
 
 const addysHttp = new RainbowFetchClient({
-  baseURL: 'https://addys.p.rainbow.me/v3',
+  baseURL: ADDYS_BASE_URL,
   headers: {
     Authorization: `Bearer ${ADDYS_API_KEY}`,
   },

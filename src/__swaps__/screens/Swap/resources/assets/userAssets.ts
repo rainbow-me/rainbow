@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ADDYS_API_KEY } from 'react-native-dotenv';
+import { ADDYS_API_KEY, ADDYS_BASE_URL } from 'react-native-dotenv';
 import { Address } from 'viem';
 
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
@@ -22,7 +22,7 @@ import { IS_TEST } from '@/env';
 import store from '@/redux/store';
 
 const addysHttp = new RainbowFetchClient({
-  baseURL: 'https://addys.p.rainbow.me/v3',
+  baseURL: ADDYS_BASE_URL,
   headers: {
     Authorization: `Bearer ${ADDYS_API_KEY}`,
   },
