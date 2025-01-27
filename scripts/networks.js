@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const { BACKEND_NETWORKS_QUERY } = require('../src/resources/metadata/sharedQueries');
-
+const { METADATA_BASE_URL } = require('dotenv');
 const fs = require('fs-extra');
 
 /**
  * Fetches data from the GraphQL API and saves it to a JSON file.
  */
 async function fetchData() {
-  const response = await fetch('https://metadata.p.rainbow.me/v1/graph', {
+  const response = await fetch(`${METADATA_BASE_URL}/v1/graph`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
