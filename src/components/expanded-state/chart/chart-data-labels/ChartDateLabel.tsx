@@ -80,5 +80,5 @@ export default function ChartDateLabel({ chartTimeDefaultValue }: { chartTimeDef
     [chartTimeDefaultValue]
   );
 
-  return <ChartXLabel align="right" formatWorklet={formatWorklet} size="20pt" color="labelQuaternary" tabularNumbers weight="semibold" />;
+  return <ChartXLabel formatWorklet={formatWorklet} size="20pt" color="labelQuaternary" tabularNumbers weight="bold" />;
 }

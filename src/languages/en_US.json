@@ -678,7 +678,7 @@
       "asset": {
         "about_asset": "About %{assetName}",
         "balance": "Balance",
-        "get_asset": "Buy %{assetSymbol}",
+        "get_asset": "Get %{assetSymbol}",
         "market_cap": "Market cap",
         "read_more_button": "Read more",
         "available_networks": "Available on %{availableNetworks} networks",

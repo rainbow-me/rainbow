@@ -18,7 +18,7 @@ const noPriceData = lang.t('expanded_state.chart.no_price_data');
 const Container = styled(ColumnWithMargins).attrs({
   margin: 20,
 })(({ showChart }) => ({
-  ...padding.object(0, 19, showChart ? 36 : 0),
+  ...padding.object(0, 24, showChart ? 36 : 0),
 }));
 
 export default function ChartExpandedStateHeader({
@@ -94,6 +94,7 @@ export default function ChartExpandedStateHeader({
     <Container testID={'expanded-state-header'} showChart={showChart}>
       <Stack space={'20px'}>
         <RainbowCoinIcon
+          chainSize={20}
           size={44}
           icon={asset?.iconUrl}
           chainId={asset?.chainId}
@@ -103,10 +104,10 @@ export default function ChartExpandedStateHeader({
         <TextShadow blur={12} shadowOpacity={0.24}>
           <Text
             color={{ custom: isNoPriceData ? theme.colors.alpha(theme.colors.blueGreyDark, 0.8) : color }}
-            numberOfLines={1}
+            numberOfLines={2}
             size="22pt"
             testID={`chart-header-${titleOrNoPriceData}`}
-            weight={isNoPriceData ? 'semibold' : 'bold'}
+            weight={isNoPriceData ? 'bold' : 'heavy'}
           >
             {titleOrNoPriceData}
           </Text>
@@ -114,7 +115,7 @@ export default function ChartExpandedStateHeader({
         <ChartPriceLabel defaultValue={title} isNoPriceData={isNoPriceData} isPool={isPool} priceRef={priceRef} priceValue={price} />
         <Animated.View style={showPriceChangeStyle}>
           <Bleed top={'6px'}>
-            <Box gap={10} flexDirection="row" alignItems="center">
+            <Box gap={8} flexDirection="row" alignItems="center">
               <ChartPercentChangeLabel latestChange={latestChange} ratio={ratio} />
               <ChartDateLabel chartTimeDefaultValue={chartTimeDefaultValue} />
             </Box>

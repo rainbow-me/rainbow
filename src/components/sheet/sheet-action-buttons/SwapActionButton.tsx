@@ -9,20 +9,23 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { InteractionManager } from 'react-native';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { Inline, Text, TextIcon } from '@/design-system';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
   color: string;
+  height?: number;
+  icon?: string;
   inputType: SwapAssetType;
   label?: string;
   weight?: string;
 };
 
-function SwapActionButton({ asset, color: givenColor, inputType, label, weight = 'heavy', ...props }: SwapActionButtonProps) {
+function SwapActionButton({ asset, color: givenColor, height, icon, inputType, label, weight = 'heavy', ...props }: SwapActionButtonProps) {
   const { colors } = useTheme();
   const navigate = useNavigationForNonReadOnlyWallets();
 
@@ -63,14 +66,14 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, weight =
     });
 
     if (inputType === SwapAssetType.inputAsset) {
-      swapsStore.setState({ inputAsset: userAsset || parsedAsset });
+      swapsStore.setState({ inputAsset: parseAssetAndExtend({ asset: userAsset || parsedAsset }) });
 
       const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork({ chainId });
       if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
         const userOutputAsset = userAssetsStore.getState().getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
 
         if (userOutputAsset) {
-          swapsStore.setState({ outputAsset: userOutputAsset });
+          swapsStore.setState({ outputAsset: parseAssetAndExtend({ asset: userOutputAsset }) });
         } else {
           const outputAsset = {
             ...nativeAssetForChain,
@@ -100,7 +103,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, weight =
             },
           } satisfies ParsedSearchAsset;
 
-          swapsStore.setState({ outputAsset });
+          swapsStore.setState({ outputAsset: parseAssetAndExtend({ asset: outputAsset }) });
         }
       }
     } else {
@@ -108,29 +111,37 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, weight =
         .getState()
         .getUserAssets()
         .find(userAsset => userAsset.chainId === chainId && userAsset.address !== asset.address);
+
       if (largestBalanceSameChainUserAsset) {
-        swapsStore.setState({ inputAsset: largestBalanceSameChainUserAsset });
+        swapsStore.setState({
+          inputAsset: parseAssetAndExtend({ asset: largestBalanceSameChainUserAsset }),
+          outputAsset: parseAssetAndExtend({ asset: parsedAsset }),
+        });
       } else {
-        swapsStore.setState({ inputAsset: null });
+        swapsStore.setState({ inputAsset: null, outputAsset: parseAssetAndExtend({ asset: parsedAsset }) });
       }
-      swapsStore.setState({ outputAsset: parsedAsset });
     }
 
-    InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.SWAP);
-    });
+    navigate(Routes.SWAP);
   }, [asset, inputType, navigate]);
 
   return (
-    <SheetActionButton
-      {...props}
-      color={color}
-      label={label || `${lang.t('button.swap')}`}
-      onPress={goToSwap}
-      testID="swap"
-      weight={weight}
-      truncate
-    />
+    <SheetActionButton {...props} color={color} newShadows onPress={goToSwap} size={height} testID="swap" weight={weight} truncate>
+      {icon ? (
+        <Inline alignHorizontal="center" alignVertical="center" space="10px">
+          <TextIcon color="label" size="icon 18px" weight="heavy">
+            {icon}
+          </TextIcon>
+          <Text align="center" color="label" numberOfLines={1} size="20pt" weight="heavy">
+            {label || `${lang.t('button.swap')}`}
+          </Text>
+        </Inline>
+      ) : (
+        <Text align="center" color="label" numberOfLines={1} size="20pt" weight="heavy">
+          {label || `${lang.t('button.swap')}`}
+        </Text>
+      )}
+    </SheetActionButton>
   );
 }
 

@@ -25,19 +25,24 @@ export function BalanceSection() {
         </Text>
       </Box>
       <Box alignItems="center" width="full" gap={8} flexDirection="row" justifyContent="flex-start">
-        <Bleed vertical="3px">
-          <RainbowCoinIcon size={20} chainId={asset.chainId} color={asset.color} icon={asset.icon_url} symbol={asset.symbol} />
+        <Bleed vertical="4px">
+          <RainbowCoinIcon
+            size={20}
+            chainId={asset.chainId}
+            color={asset.color}
+            icon={asset.icon_url}
+            showBadge={false}
+            symbol={asset.symbol}
+          />
         </Bleed>
         <TextShadow blur={12} containerStyle={{ flex: 1 }} shadowOpacity={0.24}>
           <Text numberOfLines={1} style={{ flex: 1 }} ellipsizeMode="tail" weight="bold" size="20pt" color={'accent'}>
             {asset.balance.display}
           </Text>
         </TextShadow>
-        <TextShadow blur={12} shadowOpacity={0.24}>
-          <Text weight="bold" size="20pt" color="label">
-            {asset.native.balance.display}
-          </Text>
-        </TextShadow>
+        <Text align="right" numberOfLines={1} weight="heavy" size="20pt" color="label">
+          {asset.native.balance.display}
+        </Text>
       </Box>
     </Box>
   );

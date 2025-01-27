@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
 import * as i18n from '@/languages';
-import { Bleed, AnimatedText, Box, Stack, Text, TextIcon, TextShadow } from '@/design-system';
+import { Box, Text, TextIcon, TextShadow } from '@/design-system';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { Row } from '../../shared/Row';
 import { abbreviateNumber } from '@/helpers/utilities';
-import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { formatDate } from '@/utils/formatDate';
@@ -13,10 +12,22 @@ import { useAccountSettings } from '@/hooks';
 
 const DEFAULT_VISIBLE_ITEM_COUNT = 3;
 
-function AssetInfoItem({ title, value, icon, highlighted }: { title: string; value: string; icon: string; highlighted: boolean }) {
+function AssetInfoItem({
+  accentColor,
+  title,
+  value,
+  icon,
+  highlighted,
+}: {
+  accentColor: string;
+  title: string;
+  value: string;
+  icon: string;
+  highlighted: boolean;
+}) {
   return (
     <Row highlighted={highlighted}>
-      <Box width="full" flexDirection="row" alignItems="center" gap={8}>
+      <Box width="full" flexDirection="row" alignItems="center" gap={12}>
         <TextIcon color="labelSecondary" size="15pt" weight="semibold">
           {icon}
         </TextIcon>
@@ -24,7 +35,7 @@ function AssetInfoItem({ title, value, icon, highlighted }: { title: string; val
           {title}
         </Text>
         <TextShadow blur={12} shadowOpacity={0.24}>
-          <Text color="labelTertiary" weight="semibold" size="17pt">
+          <Text align="right" color={{ custom: accentColor }} weight="semibold" size="17pt">
             {value}
           </Text>
         </TextShadow>
@@ -36,18 +47,22 @@ function AssetInfoItem({ title, value, icon, highlighted }: { title: string; val
 export function AssetInfoList() {
   const { nativeCurrency } = useAccountSettings();
   const { accentColors, assetMetadata: metadata, basicAsset: asset } = useExpandedAssetSheetContext();
-  const isExpanded = useSharedValue(false);
+  const isExpanded = useSharedValue(true);
 
-  const moreText = i18n.t(i18n.l.button.more);
-  const lessText = i18n.t(i18n.l.button.less);
+  // TODO: Uncomment when market stats card is added back in
 
-  const expandedText = useDerivedValue(() => {
-    return isExpanded.value ? lessText : moreText;
-  });
+  // const moreText = i18n.t(i18n.l.button.more);
+  // const lessText = i18n.t(i18n.l.button.less);
 
-  const expandedTextIcon = useDerivedValue(() => {
-    return isExpanded.value ? ('􀆇' as string) : ('􀆈' as string);
-  });
+  // const expandedText = useDerivedValue(() => {
+  //   return isExpanded.value ? lessText : moreText;
+  // });
+
+  // const expandedTextIcon = useDerivedValue(() => {
+  //   return isExpanded.value ? ('􀆇' as string) : ('􀆈' as string);
+  // });
+
+  // END
 
   const expandedItemsContainerStyle = useAnimatedStyle(() => {
     return {
@@ -87,7 +102,7 @@ export function AssetInfoList() {
       items.push({
         title: i18n.t(i18n.l.expanded_state.sections.market_stats.fully_diluted_valuation),
         value: bigNumberFormat(metadata.fullyDilutedValuation, nativeCurrency, true),
-        icon: '􀠏',
+        icon: '􀑀',
       });
     }
     // BLOCKED: Do not currently have rank data
@@ -116,12 +131,13 @@ export function AssetInfoList() {
     return items;
   }, [metadata, asset, nativeCurrency]);
 
-  const isExpansionRowHighlighted = useDerivedValue(() => {
-    return isExpanded.value ? assetInfoItems.length % 2 === 0 : DEFAULT_VISIBLE_ITEM_COUNT % 2 === 0;
-  });
+  // TODO: Uncomment when market stats card is added back in
+  // const isExpansionRowHighlighted = useDerivedValue(() => {
+  //   return isExpanded.value ? assetInfoItems.length % 2 === 0 : DEFAULT_VISIBLE_ITEM_COUNT % 2 === 0;
+  // });
 
   return (
-    <Stack space="4px">
+    <Box gap={4} marginBottom={assetInfoItems.length % 2 === 0 ? '-12px' : undefined}>
       {assetInfoItems.length === 0 && (
         <Box justifyContent="center" alignItems="center" paddingTop="12px">
           <Text color="label" size="17pt" weight="medium">
@@ -130,15 +146,32 @@ export function AssetInfoList() {
         </Box>
       )}
       {assetInfoItems.slice(0, DEFAULT_VISIBLE_ITEM_COUNT).map((item, index) => (
-        <AssetInfoItem key={item.title} title={item.title} value={item.value} icon={item.icon} highlighted={index % 2 === 0} />
+        <AssetInfoItem
+          key={item.title}
+          accentColor={accentColors.color}
+          title={item.title}
+          value={item.value}
+          icon={item.icon}
+          highlighted={index % 2 === 0}
+        />
       ))}
       <Animated.View style={expandedItemsContainerStyle}>
         {assetInfoItems.slice(DEFAULT_VISIBLE_ITEM_COUNT).map(item => {
           const index = assetInfoItems.indexOf(item);
-          return <AssetInfoItem key={item.title} title={item.title} value={item.value} icon={item.icon} highlighted={index % 2 === 0} />;
+          return (
+            <AssetInfoItem
+              key={item.title}
+              accentColor={accentColors.color}
+              title={item.title}
+              value={item.value}
+              icon={item.icon}
+              highlighted={index % 2 === 0}
+            />
+          );
         })}
       </Animated.View>
-      {assetInfoItems.length > DEFAULT_VISIBLE_ITEM_COUNT && (
+      {/* TODO: Uncomment when market stats card is added back in */}
+      {/* {assetInfoItems.length > DEFAULT_VISIBLE_ITEM_COUNT && (
         <GestureHandlerButton
           scaleTo={0.96}
           hapticTrigger="tap-end"
@@ -149,7 +182,7 @@ export function AssetInfoList() {
         >
           <Row highlighted={isExpansionRowHighlighted}>
             <Bleed vertical="4px" horizontal="2px">
-              <Box width="full" flexDirection="row" alignItems="center" gap={8}>
+              <Box width="full" flexDirection="row" alignItems="center" gap={12}>
                 <Box
                   width={{ custom: 20 }}
                   height={{ custom: 20 }}
@@ -173,7 +206,7 @@ export function AssetInfoList() {
             </Bleed>
           </Row>
         </GestureHandlerButton>
-      )}
-    </Stack>
+      )} */}
+    </Box>
   );
 }

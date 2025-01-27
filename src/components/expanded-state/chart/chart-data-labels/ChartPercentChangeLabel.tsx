@@ -1,11 +1,11 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { DerivedValue, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import { AnimatedText, TextShadow } from '@/design-system';
+import { AnimatedText, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useChartData } from '@/react-native-animated-charts/src';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useTheme } from '@/theme';
 import { useRatio } from './useRatio';
-import { DataType } from '@/react-native-animated-charts/src/helpers/ChartContext';
 
 function formatNumber(num: string) {
   'worklet';
@@ -21,11 +21,18 @@ function formatNumber(num: string) {
   return newDigits.reverse().join('') + '.' + first[1];
 }
 
-const formatWorklet = (originalY: SharedValue<string>, data: DataType, latestChange: number | undefined) => {
+const formatWorklet = ({
+  firstValue,
+  lastValue,
+  latestChange,
+  originalY,
+}: {
+  firstValue: number;
+  lastValue: number;
+  latestChange: number | undefined;
+  originalY: SharedValue<string>;
+}) => {
   'worklet';
-  const firstValue = data?.points?.[0]?.y;
-  const lastValue = data?.points?.[data.points.length - 1]?.y;
-
   return firstValue === Number(firstValue) && firstValue
     ? (() => {
         const originalYNumber = Number(originalY?.value);
@@ -44,22 +51,33 @@ export default memo(function ChartPercentChangeLabel({
   latestChange: DerivedValue<number | undefined>;
   ratio: number | undefined;
 }) {
+  const { isDarkMode } = useColorMode();
   const { originalY, data, isActive } = useChartData();
   const { colors } = useTheme();
 
+  const labelSecondary = useForegroundColor('labelSecondary');
+
+  const { firstValue, lastValue } = useMemo(() => {
+    const firstValue = data?.points?.[0]?.y;
+    const lastValue = data?.points?.[data.points.length - 1]?.y;
+    return { firstValue, lastValue };
+  }, [data?.points]);
+
   const sharedRatio = useRatio();
-  const text = useDerivedValue(() => formatWorklet(originalY, data, latestChange.value));
+  const text = useDerivedValue(() => formatWorklet({ firstValue, lastValue, latestChange: latestChange.value, originalY }));
 
   const textStyle = useAnimatedStyle(() => {
     const realRatio = isActive.value ? sharedRatio.value : ratio;
+    const color = realRatio !== undefined ? (realRatio === 1 ? labelSecondary : realRatio < 1 ? colors.red : colors.green) : 'transparent';
     return {
-      color: realRatio !== undefined ? (realRatio === 1 ? colors.blueGreyDark : realRatio < 1 ? colors.red : colors.green) : 'transparent',
+      color: realRatio !== undefined ? (realRatio === 1 ? labelSecondary : realRatio < 1 ? colors.red : colors.green) : 'transparent',
+      textShadowColor: isDarkMode ? opacityWorklet(color, 0.24) : 'transparent',
     };
   });
 
   return (
     <TextShadow blur={12} shadowOpacity={0.24}>
-      <AnimatedText align="left" numberOfLines={1} size="20pt" style={textStyle} tabularNumbers weight="bold">
+      <AnimatedText numberOfLines={1} size="20pt" style={textStyle} tabularNumbers weight="heavy">
         {text}
       </AnimatedText>
     </TextShadow>

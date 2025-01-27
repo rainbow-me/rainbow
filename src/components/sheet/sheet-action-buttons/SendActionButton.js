@@ -2,10 +2,11 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
 import Routes from '@/navigation/routesNames';
+import { Text } from '@/design-system';
 import { IS_IOS } from '@/env';
 import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
 
-function SendActionButton({ asset, color: givenColor, ...props }) {
+function SendActionButton({ asset, color: givenColor, height, ...props }) {
   const { colors } = useTheme();
   const color = givenColor || colors.paleBlue;
   const navigate = useNavigationForNonReadOnlyWallets();
@@ -19,7 +20,11 @@ function SendActionButton({ asset, color: givenColor, ...props }) {
   );
 
   return (
-    <SheetActionButton {...props} color={color} label={`${lang.t('button.send')}`} onPress={handlePress} testID="send" weight="heavy" />
+    <SheetActionButton {...props} color={color} newShadows onPress={handlePress} size={height} testID="send">
+      <Text align="center" color="label" size="20pt" weight="heavy">
+        {lang.t('button.send')}
+      </Text>
+    </SheetActionButton>
   );
 }
 

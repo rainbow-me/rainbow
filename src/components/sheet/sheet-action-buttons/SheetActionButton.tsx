@@ -28,7 +28,7 @@ type Props = PropsWithChildren<{
   nftShadows?: boolean;
   onPress?: () => void;
   scaleTo?: number;
-  size?: string;
+  size?: 'big' | number | null;
   isSquare?: boolean;
   testID?: string;
   textColor?: string;
@@ -43,18 +43,19 @@ type Props = PropsWithChildren<{
 
 const addChartsStyling = (isCharts: boolean) => (isCharts ? { position: 'absolute', width: '100%' } : {});
 
-const Button = styled(Centered)(({ isCharts, size, isSquare }: { isCharts?: boolean; size?: string; isSquare?: boolean }) => ({
+const Button = styled(Centered)(({ isCharts, size, isSquare }: { isCharts?: boolean; size?: string | number; isSquare?: boolean }) => ({
   ...addChartsStyling(!!isCharts),
-  height: size === 'big' ? 52 : 46,
-  width: isSquare ? (size === 'big' ? 52 : 46) : undefined,
+  height: typeof size === 'number' ? size : size === 'big' ? 52 : 46,
+  width: isSquare ? (typeof size === 'number' ? size : size === 'big' ? 52 : 46) : undefined,
 }));
 
 const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 4,
 })({
-  height: ({ size }: Pick<Props, 'size'>) => (size === 'big' ? 52 : 46),
-  width: ({ isSquare, size }: Pick<Props, 'isSquare' | 'size'>) => (isSquare ? (size === 'big' ? 52 : 46) : undefined),
+  height: ({ size }: Pick<Props, 'size'>) => (typeof size === 'number' ? size : size === 'big' ? 52 : 46),
+  width: ({ isSquare, size }: Pick<Props, 'isSquare' | 'size'>) =>
+    isSquare ? (typeof size === 'number' ? size : size === 'big' ? 52 : 46) : undefined,
   paddingBottom: ({ label }: Pick<Props, 'label'>) => (label && containsEmoji(label) ? 2.5 : 1),
   paddingHorizontal: ({ isSquare }: Pick<Props, 'isSquare'>) => (isSquare ? 0 : 19),
   zIndex: 1,
@@ -126,8 +127,8 @@ const SheetActionButton: React.FC<Props> = ({
     <Button
       as={ButtonPressAnimation}
       contentContainerStyle={{
-        height: size === 'big' ? 52 : 46,
-        width: isSquare ? (size === 'big' ? 52 : 46) : undefined,
+        height: typeof size === 'number' ? size : size === 'big' ? 52 : 46,
+        width: isSquare ? (typeof size === 'number' ? size : size === 'big' ? 52 : 46) : undefined,
       }}
       elevation={android ? elevation : null}
       isCharts={isCharts}
@@ -148,9 +149,9 @@ const SheetActionButton: React.FC<Props> = ({
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...position.coverAsObject}
         backgroundColor={color}
-        width={isSquare ? (size === 'big' ? 52 : 46) : undefined}
+        width={isSquare ? (typeof size === 'number' ? size : size === 'big' ? 52 : 46) : undefined}
         borderRadius={borderRadius}
-        height={size === 'big' ? 52 : 46}
+        height={typeof size === 'number' ? size : size === 'big' ? 52 : 46}
         shadows={shadowsForButtonColor}
       >
         {isWhite && <WhiteButtonGradient colors={colors} />}
@@ -170,7 +171,7 @@ const SheetActionButton: React.FC<Props> = ({
           <Text
             align="center"
             color={textColor}
-            lineHeight={size === 'big' ? 52 : 46}
+            lineHeight={typeof size === 'number' ? size : size === 'big' ? 52 : 46}
             numberOfLines={truncate ? 1 : undefined}
             size={textSize ?? (size === 'big' ? 'larger' : 'large')}
             style={{ width: '100%' }}

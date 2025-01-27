@@ -16,6 +16,8 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { IS_DEV } from '@/env';
 import isTestFlight from '@/helpers/isTestFlight';
 import { isL2Chain } from '@/handlers/web3';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 const GRADIENT_FADE_WIDTH = 24;
 const DEFAULT_PERCENTAGES_OF_BALANCE = [0.05, 0.1, 0.25, 0.5, 0.75];
@@ -23,7 +25,16 @@ const DEFAULT_PERCENTAGES_OF_BALANCE = [0.05, 0.1, 0.25, 0.5, 0.75];
 const DEFAULT_MAINNET_MINIMUM_NATIVE_CURRENCY_AMOUNT = IS_DEV || isTestFlight ? 1 : 10;
 const DEFAULT_L2_MINIMUM_NATIVE_CURRENCY_AMOUNT = 1;
 
-function BuyButton({ currencyAmount, onPress }: { currencyAmount: number; onPress: () => void }) {
+const BUTTON_INSET_HORIZONTAL = 24;
+const BUTTON_GAP = 10;
+const MAX_VISIBLE_BUTTONS = 3;
+
+function getButtonWidth(numberOfButtons: number) {
+  const numberOfVisibleButtons = Math.min(numberOfButtons, MAX_VISIBLE_BUTTONS);
+  return (DEVICE_WIDTH - BUTTON_INSET_HORIZONTAL * 2 - BUTTON_GAP * (numberOfVisibleButtons - 1)) / numberOfVisibleButtons;
+}
+
+function BuyButton({ currencyAmount, numberOfButtons, onPress }: { currencyAmount: number; numberOfButtons: number; onPress: () => void }) {
   const { nativeCurrency } = useAccountSettings();
 
   const currencyAmountDisplay = useMemo(
@@ -34,16 +45,17 @@ function BuyButton({ currencyAmount, onPress }: { currencyAmount: number; onPres
   const { accentColors } = useExpandedAssetSheetContext();
 
   return (
-    <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
+    <ButtonPressAnimation scaleTo={0.9} onPress={onPress}>
       <Box
         style={[
           {
             backgroundColor: accentColors.opacity12,
             borderColor: accentColors.opacity6,
-            borderWidth: 1.33,
+            borderWidth: THICK_BORDER_WIDTH,
             borderRadius: 20,
-            padding: 12,
-            width: 112,
+            height: 36,
+            paddingHorizontal: 12,
+            width: getButtonWidth(numberOfButtons),
             alignItems: 'center',
             justifyContent: 'center',
           },
@@ -111,52 +123,54 @@ export const BuySection = memo(function BuySection() {
                   {i18n.t(i18n.l.expanded_state.sections.buy.pay_with)}
                 </Text>
               </TextShadow>
-              <RainbowCoinIcon
-                size={20}
-                chainId={buyWithAsset.chainId}
-                color={buyWithAsset.color}
-                icon={buyWithAsset.icon_url}
-                symbol={buyWithAsset.symbol}
-              />
-              <TextShadow blur={12} shadowOpacity={0.24}>
-                <Text weight="semibold" size="17pt" color="accent">
-                  {buyWithAsset.symbol}
-                </Text>
-              </TextShadow>
+              <Box alignItems="center" flexDirection="row" gap={8}>
+                <RainbowCoinIcon
+                  size={16}
+                  chainId={buyWithAsset.chainId}
+                  color={buyWithAsset.color}
+                  icon={buyWithAsset.icon_url}
+                  symbol={buyWithAsset.symbol}
+                />
+                <TextShadow blur={12} shadowOpacity={0.24}>
+                  <Text align="right" weight="semibold" size="17pt" color="accent">
+                    {buyWithAsset.symbol}
+                  </Text>
+                </TextShadow>
+              </Box>
             </Box>
           </Row>
         </Box>
         <Row>
           <Box alignItems="center" flexDirection="row" gap={12} width={'full'}>
             <IconContainer height={10} width={20}>
-              <TextShadow blur={12} shadowOpacity={0.24}>
-                <Text weight="medium" align="center" size="15pt" color="labelTertiary">
-                  {hasBuyOptions ? '􀣽' : '􀇿'}
-                </Text>
-              </TextShadow>
+              <Text weight="medium" align="center" size="15pt" color="labelTertiary">
+                {hasBuyOptions ? '􀣽' : '􀇿'}
+              </Text>
             </IconContainer>
-            <TextShadow containerStyle={{ flex: 1 }} blur={12} shadowOpacity={0.24}>
-              <Text weight="semibold" size="17pt" color="labelTertiary">
-                {hasBuyOptions
-                  ? i18n.t(i18n.l.expanded_state.sections.buy.available_balance)
-                  : i18n.t(i18n.l.expanded_state.sections.buy.low_balance)}
-              </Text>
-            </TextShadow>
-            <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text weight="semibold" size="17pt" color="labelTertiary">
-                {buyWithAsset.native?.balance?.display}
-              </Text>
-            </TextShadow>
+            <Text weight="semibold" size="17pt" color="labelTertiary" style={{ flex: 1 }}>
+              {hasBuyOptions
+                ? i18n.t(i18n.l.expanded_state.sections.buy.available_balance)
+                : i18n.t(i18n.l.expanded_state.sections.buy.low_balance)}
+            </Text>
+            <Text align="right" weight="semibold" size="17pt" color="labelTertiary">
+              {buyWithAsset.native?.balance?.display}
+            </Text>
           </Box>
         </Row>
       </Stack>
       {hasBuyOptions && (
         <Bleed horizontal="24px">
-          <ScrollView horizontal contentContainerStyle={{ gap: 9, paddingHorizontal: 24 }} showsHorizontalScrollIndicator={false}>
+          <ScrollView
+            horizontal
+            contentContainerStyle={{ gap: 9, paddingHorizontal: 24 }}
+            scrollEnabled={instantBuyNativeCurrencyAmounts.length >= MAX_VISIBLE_BUTTONS}
+            showsHorizontalScrollIndicator={false}
+          >
             {instantBuyNativeCurrencyAmounts.map(currencyAmount => (
               <BuyButton
                 key={currencyAmount}
                 currencyAmount={currencyAmount}
+                numberOfButtons={instantBuyNativeCurrencyAmounts.length}
                 onPress={() => {
                   InteractionManager.runAfterInteractions(async () => {
                     const priceOfBuyWithAsset = buyWithAsset.price?.value;
@@ -210,7 +224,7 @@ export const BuySection = memo(function BuySection() {
             alignItems="center"
             borderColor={{ custom: accentColors.opacity6 }}
             backgroundColor={accentColors.opacity12}
-            borderWidth={1.33}
+            borderWidth={THICK_BORDER_WIDTH}
             borderRadius={20}
             width={'full'}
           >
