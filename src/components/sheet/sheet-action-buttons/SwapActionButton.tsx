@@ -127,7 +127,17 @@ function SwapActionButton({ asset, color: givenColor, height, icon, inputType, l
   }, [asset, inputType, navigate]);
 
   return (
-    <SheetActionButton {...props} color={color} newShadows onPress={goToSwap} size={height} testID="swap" weight={weight} truncate>
+    <SheetActionButton
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...props}
+      color={color}
+      newShadows
+      onPress={goToSwap}
+      size={height}
+      testID="swap"
+      weight={weight}
+      truncate
+    >
       {icon ? (
         <Inline alignHorizontal="center" alignVertical="center" space="10px">
           <TextIcon color="label" size="icon 18px" weight="heavy">

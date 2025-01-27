@@ -11,7 +11,7 @@ import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { StyleProp, ViewStyle } from 'react-native';
 
-type Props = PropsWithChildren<{
+export type SheetActionButtonProps = PropsWithChildren<{
   borderRadius?: number;
   color?: string;
   disabled?: boolean;
@@ -53,11 +53,11 @@ const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 4,
 })({
-  height: ({ size }: Pick<Props, 'size'>) => (typeof size === 'number' ? size : size === 'big' ? 52 : 46),
-  width: ({ isSquare, size }: Pick<Props, 'isSquare' | 'size'>) =>
+  height: ({ size }: Pick<SheetActionButtonProps, 'size'>) => (typeof size === 'number' ? size : size === 'big' ? 52 : 46),
+  width: ({ isSquare, size }: Pick<SheetActionButtonProps, 'isSquare' | 'size'>) =>
     isSquare ? (typeof size === 'number' ? size : size === 'big' ? 52 : 46) : undefined,
-  paddingBottom: ({ label }: Pick<Props, 'label'>) => (label && containsEmoji(label) ? 2.5 : 1),
-  paddingHorizontal: ({ isSquare }: Pick<Props, 'isSquare'>) => (isSquare ? 0 : 19),
+  paddingBottom: ({ label }: Pick<SheetActionButtonProps, 'label'>) => (label && containsEmoji(label) ? 2.5 : 1),
+  paddingHorizontal: ({ isSquare }: Pick<SheetActionButtonProps, 'isSquare'>) => (isSquare ? 0 : 19),
   zIndex: 1,
 });
 const neverRerender = () => true;
@@ -75,7 +75,7 @@ const WhiteButtonGradient = React.memo(
   neverRerender
 );
 
-const SheetActionButton: React.FC<Props> = ({
+const SheetActionButton: React.FC<SheetActionButtonProps> = ({
   borderRadius = 52,
   children,
   color: givenColor,

@@ -12,6 +12,7 @@ import { AssetContextMenu } from './AssetContextMenu';
 import { isTestnetChain } from '@/handlers/web3';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ColorMode, globalColors } from '@/design-system/color/palettes';
+import { ParsedAddressAsset } from '@/entities';
 
 // 32px for the gradient + 46px for the buttons + 44px for the bottom padding
 export const SHEET_FOOTER_HEIGHT = 32 + 46 + 44;
@@ -52,8 +53,8 @@ export function SheetFooter() {
             {isSwapButtonVisible && (
               <SwapActionButton asset={asset} color={accentColors.color} height={48} inputType={SwapAssetType.inputAsset} />
             )}
-            {isSendButtonVisible && <SendActionButton asset={accountAsset} color={accentColors.color} height={48} />}
-            {isBuyEthButtonVisible && <BuyActionButton color={accentColors.color} height={48} />}
+            {isSendButtonVisible && <SendActionButton asset={accountAsset as ParsedAddressAsset} color={accentColors.color} size={48} />}
+            {isBuyEthButtonVisible && <BuyActionButton color={accentColors.color} size={48} />}
             {isBuyAssetButtonVisible && (
               <SwapActionButton
                 asset={asset}
