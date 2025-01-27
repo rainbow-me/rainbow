@@ -18,6 +18,7 @@ type SwapActionButtonProps = {
   asset: RainbowToken;
   color: string;
   inputType: SwapAssetType;
+  textColor?: string;
   label?: string;
   weight?: string;
 };

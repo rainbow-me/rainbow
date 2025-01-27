@@ -159,7 +159,7 @@ export function AssetContextMenu() {
     <Box style={{ margin: IS_ANDROID ? 0 : -HIT_SLOP }}>
       <DropdownMenu<ContextMenuAction> menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
         <Box style={{ margin: IS_ANDROID ? 0 : HIT_SLOP }}>
-          <SheetActionButton color={accentColors.opacity100} isSquare label={'􀍠'} />
+          <SheetActionButton textColor={accentColors.textOnAccent} color={accentColors.opacity100} isSquare label={'􀍠'} />
         </Box>
       </DropdownMenu>
     </Box>

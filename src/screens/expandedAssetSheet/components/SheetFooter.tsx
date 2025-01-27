@@ -43,11 +43,21 @@ export function SheetFooter() {
           <Column width="content">
             <AssetContextMenu />
           </Column>
-          {isSwapButtonVisible && <SwapActionButton asset={asset} color={accentColors.color} inputType={SwapAssetType.inputAsset} />}
-          {isSendButtonVisible && <SendActionButton asset={accountAsset} color={accentColors.color} />}
-          {isBuyEthButtonVisible && <BuyActionButton color={accentColors.color} />}
+          {isSwapButtonVisible && (
+            <SwapActionButton
+              textColor={accentColors.textOnAccent}
+              asset={asset}
+              color={accentColors.color}
+              inputType={SwapAssetType.inputAsset}
+            />
+          )}
+          {isSendButtonVisible && (
+            <SendActionButton textColor={accentColors.textOnAccent} asset={accountAsset} color={accentColors.color} />
+          )}
+          {isBuyEthButtonVisible && <BuyActionButton textColor={accentColors.textOnAccent} color={accentColors.color} />}
           {isBuyAssetButtonVisible && (
             <SwapActionButton
+              textColor={accentColors.textOnAccent}
               asset={asset}
               color={accentColors.color}
               inputType={SwapAssetType.outputAsset}
