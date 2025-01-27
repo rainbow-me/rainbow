@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ChartPathProvider } from '@/react-native-animated-charts/src/charts/linear/ChartPathProvider';
 import { Chart } from '@/components/value-chart';
 import { useChartThrottledPoints } from '@/hooks/charts';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
-import { useSharedValue } from 'react-native-reanimated';
+import { useDerivedValue } from 'react-native-reanimated';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analyticsV2 } from '@/analytics';
 
@@ -19,19 +19,20 @@ const calculatePercentChangeWorklet = (start: number, end: number) => {
 
 export function ChartSection() {
   const { basicAsset: asset, assetMetadata } = useExpandedAssetSheetContext();
-  const latestChange = useSharedValue<string | undefined>(toFixedWorklet(asset.price.relativeChange24h ?? 0, 2));
-  const { chart, chartType, color, fetchingCharts, updateChartType, showChart, throttledData } = useChartThrottledPoints({
+  const { chartType, color, fetchingCharts, updateChartType, showChart, throttledData } = useChartThrottledPoints({
     asset,
   });
   const points = throttledData.points;
 
-  useEffect(() => {
+  const latestChange = useDerivedValue(() => {
+    let change: string | undefined;
     if (!points || points.length === 0) {
-      latestChange.value = toFixedWorklet(asset.price.relativeChange24h ?? 0, 2);
+      change = toFixedWorklet(asset.price.relativeChange24h ?? 0, 2);
     } else {
-      latestChange.value = calculatePercentChangeWorklet(points[0]?.y ?? 0, points[points.length - 1]?.y ?? 0);
+      change = calculatePercentChangeWorklet(points[0]?.y ?? 0, points[points.length - 1]?.y ?? 0);
     }
-  }, [points, latestChange, asset, chartType]);
+    return change;
+  }, [points, asset, chartType]);
 
   // This is here instead of the root screen because we need to know if the chart is available
   useTimeoutEffect(
@@ -64,11 +65,9 @@ export function ChartSection() {
         latestPrice={asset.price.value}
         updateChartType={updateChartType}
         asset={asset}
-        chart={chart}
         chartType={chartType}
         color={color}
         fetchingCharts={fetchingCharts}
-        nativePoints={chart}
         showChart={showChart}
         throttledData={throttledData}
         isPool={false}

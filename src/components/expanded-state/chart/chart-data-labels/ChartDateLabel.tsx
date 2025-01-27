@@ -1,9 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import Animated, { AnimatedStyle, FadeIn, useAnimatedStyle } from 'react-native-reanimated';
-import { useRatio } from './useRatio';
-import { ChartXLabel, useChartData } from '@/react-native-animated-charts/src';
-import { useTheme } from '@/theme';
+import { ChartXLabel } from '@/react-native-animated-charts/src';
 
 const MONTHS = [
   lang.t('expanded_state.chart.date.months.month_00'),

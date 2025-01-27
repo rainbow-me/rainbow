@@ -122,7 +122,8 @@ export default function Chart({
   showChart,
   throttledData,
   latestPrice,
-  ...props
+  asset,
+  // ...props
 }) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [chartType]);
 
@@ -174,12 +175,12 @@ export default function Chart({
       transform: [{ rotate: `${spinnerRotation.value}deg` }, { scale: spinnerScale.value }],
     };
   });
-  const isDOG = props.asset.address === DOG_ADDRESS;
+  const isDOG = asset.address === DOG_ADDRESS;
 
   return (
     <Container>
       <ChartExpandedStateHeader
-        {...props}
+        asset={asset}
         chartType={chartType}
         color={color}
         isPool={isPool}

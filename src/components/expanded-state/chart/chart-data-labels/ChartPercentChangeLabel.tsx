@@ -1,66 +1,65 @@
 import React, { memo } from 'react';
-import { DerivedValue, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import { DerivedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedText, TextShadow } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useChartData } from '@/react-native-animated-charts/src';
 import { useTheme } from '@/theme';
-import { useRatio } from './useRatio';
-import { DataType } from '@/react-native-animated-charts/src/helpers/ChartContext';
+import { toFixedWorklet } from '@/safe-math/SafeMath';
 
-function formatNumber(num: string) {
-  'worklet';
-  const first = num.split('.');
-  const digits = first[0].split('').reverse();
-  const newDigits = [];
-  for (let i = 0; i < digits.length; i++) {
-    newDigits.push(digits[i]);
-    if ((i + 1) % 3 === 0 && i !== digits.length - 1) {
-      newDigits.push(',');
-    }
-  }
-  return newDigits.reverse().join('') + '.' + first[1];
-}
+const UP_ARROW = IS_ANDROID ? '' : '↑';
+const DOWN_ARROW = IS_ANDROID ? '' : '↓';
 
-const formatWorklet = (originalY: SharedValue<string>, data: DataType, latestChange: number | undefined) => {
-  'worklet';
-  const firstValue = data?.points?.[0]?.y;
-  const lastValue = data?.points?.[data.points.length - 1]?.y;
-
-  return firstValue === Number(firstValue) && firstValue
-    ? (() => {
-        const originalYNumber = Number(originalY?.value);
-        const value =
-          originalYNumber === lastValue || !originalYNumber ? latestChange ?? 0 : ((originalYNumber || lastValue) / firstValue) * 100 - 100;
-
-        return (IS_ANDROID ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') + ' ' + formatNumber(Math.abs(value).toFixed(2)) + '%';
-      })()
-    : ' '; // important that string is not empty so that when actual value fills it does not cause a layout shift
-};
-
-export default memo(function ChartPercentChangeLabel({
-  latestChange,
-  ratio,
-}: {
-  latestChange: DerivedValue<number | undefined>;
-  ratio: number | undefined;
-}) {
-  const { originalY, data, isActive } = useChartData();
+export default memo(function ChartPercentChangeLabel({ latestChange }: { latestChange: DerivedValue<number | undefined> }) {
+  const { originalY, data } = useChartData();
   const { colors } = useTheme();
 
-  const sharedRatio = useRatio();
-  const text = useDerivedValue(() => formatWorklet(originalY, data, latestChange.value));
+  const percentageChange: DerivedValue<number | null> = useDerivedValue(() => {
+    const hasData = data?.points?.length > 0;
+    if (!hasData && latestChange.value === undefined) {
+      // important that string is not empty so that when actual value fills it does not cause a vertical layout shift
+      return null;
+    }
+
+    const firstPoint = data?.points?.[0]?.y;
+    const lastPoint = data?.points?.[data.points.length - 1]?.y;
+    // This is the current value of the scrubber
+    const originalYNumber = Number(originalY?.value);
+    const firstValue = firstPoint;
+    const lastValue = isNaN(originalYNumber) ? lastPoint : originalYNumber;
+
+    if (firstValue && lastValue) {
+      return ((lastValue - firstValue) / firstValue) * 100;
+    } else if (latestChange.value) {
+      return latestChange.value;
+    }
+
+    return null;
+  }, [data, latestChange, originalY]);
+
+  const percentageChangeText = useDerivedValue(() => {
+    if (percentageChange.value === null) {
+      // important that string is not empty so that when actual value fills it does not cause a vertical layout shift
+      return ' ';
+    }
+    const directionString = percentageChange.value > 0 ? UP_ARROW : percentageChange.value < 0 ? DOWN_ARROW : '';
+    const formattedPercentageChange = toFixedWorklet(Math.abs(percentageChange.value), 2);
+
+    return `${directionString}${formattedPercentageChange}%`;
+  });
 
   const textStyle = useAnimatedStyle(() => {
-    const realRatio = isActive.value ? sharedRatio.value : ratio;
+    const isPositive = percentageChange.value !== null && percentageChange.value > 0;
+    const isNegative = percentageChange.value !== null && percentageChange.value < 0;
+
     return {
-      color: realRatio !== undefined ? (realRatio === 1 ? colors.blueGreyDark : realRatio < 1 ? colors.red : colors.green) : 'transparent',
+      color: percentageChange.value !== null ? (isPositive ? colors.green : isNegative ? colors.red : colors.blueGreyDark) : 'transparent',
     };
   });
 
   return (
     <TextShadow blur={12} shadowOpacity={0.24}>
       <AnimatedText align="left" numberOfLines={1} size="20pt" style={textStyle} tabularNumbers weight="bold">
-        {text}
+        {percentageChangeText}
       </AnimatedText>
     </TextShadow>
   );
