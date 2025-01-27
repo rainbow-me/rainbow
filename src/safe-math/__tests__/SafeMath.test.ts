@@ -181,6 +181,16 @@ describe('SafeMath', () => {
   test('toFixedWorklet', () => {
     expect(toFixedWorklet(VALUE_A, 2)).toBe(RESULTS.toFixed);
     expect(toFixedWorklet(Number(VALUE_A), 2)).toBe(RESULTS.toFixed);
+
+    // Test negative numbers
+    const values = [
+      { num: '-0.121235', expected: '-0.12', decimalPlaces: 2 },
+      { num: '-1.345678', expected: '-1.346', decimalPlaces: 3 },
+    ];
+    values.forEach(({ num, expected, decimalPlaces }) => {
+      expect(toFixedWorklet(num, decimalPlaces)).toBe(expected);
+      expect(toFixedWorklet(Number(num), decimalPlaces)).toBe(expected);
+    });
   });
 
   test('ceilWorklet', () => {
