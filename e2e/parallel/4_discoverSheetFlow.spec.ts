@@ -85,8 +85,8 @@ describe('Discover Screen Flow', () => {
     await delayTime('long');
     await checkIfVisible('favorites-0');
     await checkIfVisible('verified-1');
-    await swipeUntilVisible('profiles-2', 'discover-search-list', 'up');
-    await swipeUntilVisible('highLiquidity-3', 'discover-search-list', 'up');
+    await swipeUntilVisible('profiles-2', 'discover-search-list', 'up', 100, 10);
+    await swipeUntilVisible('highLiquidity-3', 'discover-search-list', 'up', 100, 5);
   });
 
   it.skip('Should search and open Profile Sheet for rainbowwallet.eth', async () => {
