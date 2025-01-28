@@ -100,20 +100,8 @@ export default function DiscoverSearch() {
       list = [...ensResults, ...swapCurrencyList];
     }
 
-    // ONLY FOR e2e!!! Fake tokens with same symbols break detox e2e tests
+    // ONLY FOR e2e!!! Include index along with section key to confirm order while testing for visibility
     if (IS_TEST) {
-      let symbols: string[] = [];
-      list = list?.map(section => {
-        // Remove dupes
-        section.data = uniqBy(section?.data, 'symbol');
-        // Remove dupes across sections
-        section.data = section?.data?.filter(token => !symbols.includes(token?.symbol));
-        const sectionSymbols = section?.data?.map(token => token?.symbol);
-        symbols = symbols.concat(sectionSymbols);
-
-        return section;
-      });
-
       list = list.map((section, index) => ({
         ...section,
         key: `${section.key}-${index}`,
