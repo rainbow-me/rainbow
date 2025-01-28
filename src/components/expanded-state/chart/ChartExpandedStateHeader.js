@@ -47,6 +47,11 @@ export default function ChartExpandedStateHeader({
 
   const { data } = useChartData();
 
+  const chartDataExists = useMemo(() => {
+    const firstValue = data?.points?.[0]?.y;
+    return firstValue === Number(firstValue) && !!firstValue;
+  }, [data]);
+
   const chartTimeDefaultValue = useMemo(() => {
     const invertedChartTypes = Object.entries(ChartTypes).reduce((acc, [key, value]) => {
       acc[value] = key;
@@ -75,10 +80,9 @@ export default function ChartExpandedStateHeader({
     [data, latestPrice, nativeCurrency]
   );
 
-  const priceChangeStyle = useAnimatedStyle(() => {
-    const showPriceChange = !isNoPriceData && showChart && !isNaN(latestChange.value);
+  const showPriceChangeStyle = useAnimatedStyle(() => {
+    const showPriceChange = !isNoPriceData && chartDataExists && showChart && !isNaN(latestChange.value);
     return {
-      display: showPriceChange ? 'flex' : 'none',
       opacity: withTiming(showPriceChange ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
     };
   });
@@ -106,7 +110,7 @@ export default function ChartExpandedStateHeader({
           </Text>
         </TextShadow>
         <ChartPriceLabel defaultValue={title} isNoPriceData={isNoPriceData} isPool={isPool} priceRef={priceRef} priceValue={price} />
-        <Animated.View style={priceChangeStyle}>
+        <Animated.View style={showPriceChangeStyle}>
           <Bleed top={'6px'}>
             <Box gap={8} flexDirection="row" alignItems="center">
               <ChartPercentChangeLabel latestChange={latestChange} />

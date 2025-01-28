@@ -753,7 +753,7 @@
         },
         "no_price_data": "No price data",
         "past_timespan": "Past %{formattedTimespan}",
-        "today": "Today",
+        "today": "Past Day",
         "token_pool": "%{tokenName} Pool"
       },
       "contact_profile": {
