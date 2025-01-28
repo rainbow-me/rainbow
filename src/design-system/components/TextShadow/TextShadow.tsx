@@ -1,6 +1,6 @@
 import React, { ReactElement, useMemo } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
-import { IS_IOS } from '@/env';
+import { IS_IOS, IS_TEST } from '@/env';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useColorMode } from '../../color/ColorMode';
 import { useForegroundColor } from '../../color/useForegroundColor';
@@ -66,7 +66,7 @@ export const TextShadow = ({
     ];
   }, [blur, color, disabled, enableInLightMode, inferredTextColor, isAnimatedText, isDarkMode, shadowOpacity, x, y]);
 
-  return IS_IOS || enableOnAndroid ? (
+  return !IS_TEST && (IS_IOS || enableOnAndroid) ? (
     <>
       {isAnimatedText ? (
         // eslint-disable-next-line react/jsx-props-no-spreading
