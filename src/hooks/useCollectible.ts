@@ -1,15 +1,18 @@
 import { useMemo } from 'react';
 import { useAccountSettings } from '.';
-import { useNftsStore } from '@/state/nfts';
+import { useNftCollection } from '@/state/nfts';
+import { parseUniqueAssetUniqueId } from '@/resources/nfts/simplehash/utils';
 
-export default function useCollectible(uniqueId: string, externalAddress?: string) {
+type UseCollectibleParams = {
+  uniqueId: string;
+  externalAddress?: string;
+};
+
+export default function useCollectible({ uniqueId, externalAddress }: UseCollectibleParams) {
   const { accountAddress } = useAccountSettings();
-
   const isExternal = Boolean(externalAddress);
   const address = isExternal ? externalAddress ?? '' : accountAddress;
-
-  const nftsStore = useNftsStore(address, !isExternal);
-  const asset = nftsStore(state => state.getData()?.nftsMap.get(uniqueId));
-
-  return useMemo(() => ({ ...asset, isExternal }), [asset, isExternal]);
+  const { collectionId } = parseUniqueAssetUniqueId(uniqueId);
+  const nft = useNftCollection(address, collectionId, state => state.getData()?.nfts.get(uniqueId));
+  return useMemo(() => ({ ...nft, isExternal }), [nft, isExternal]);
 }

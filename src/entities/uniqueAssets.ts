@@ -9,6 +9,16 @@ interface UniqueAssetLastSale {
   };
 }
 
+export type UniqueAssetFamily = {
+  collectionId: string;
+  familyImage: string;
+  familyName: string;
+  distinctNftsOwned: number;
+  totalCopiesOwned: number;
+  lastAcquiredDate?: string | null;
+  nftIds: string[];
+};
+
 export interface UniqueAsset {
   animation_url?: string | null;
   chainId: ChainId;
@@ -37,6 +47,7 @@ export interface UniqueAsset {
     slug: string;
     twitter_username?: string | null;
     wiki_link?: string | null;
+    collectionId: string;
   };
   currentPrice: number | null;
   familyImage: string | null | undefined;

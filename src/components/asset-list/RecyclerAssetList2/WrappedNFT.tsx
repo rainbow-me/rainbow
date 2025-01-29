@@ -21,7 +21,7 @@ export default React.memo(function WrappedNFT({
 }) {
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
-  const assetCollectible = useCollectible(uniqueId, externalAddress);
+  const assetCollectible = useCollectible({ uniqueId, externalAddress });
 
   const asset = useMemo(
     () => ({

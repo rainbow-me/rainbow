@@ -3,11 +3,11 @@ import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
 import { add, greaterThan } from './utilities';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { supportedNativeCurrencies } from '@/references';
-import { getUniqueTokenFormat, getUniqueTokenType } from '@/utils';
 import * as i18n from '@/languages';
 import { UniqueAsset } from '@/entities';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { UniqueId } from '@/__swaps__/types/assets';
+import { UniqueAssetFamily } from '@/entities/uniqueAssets';
 
 const COINS_TO_SHOW = 5;
 
@@ -251,27 +251,24 @@ export const buildBriefUniqueTokenList = (
   listType: AssetListType = 'wallet',
   isReadOnlyWallet = false,
   nftSort = NftCollectionSortCriterion.MostRecent,
-  isFetchingNfts = false
+  isFetchingNfts = false,
+  nftCollections: (UniqueAssetFamily & { nfts: UniqueAsset[] })[] = []
 ) => {
-  const hiddenUniqueTokensIds = uniqueTokens
+  const hiddenUniqueTokensIds = []
     .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
     .map(({ uniqueId }: any) => uniqueId);
-  const nonHiddenUniqueTokens = uniqueTokens.filter(({ fullUniqueId }: any) => !hiddenTokens.includes(fullUniqueId));
+  const nonHiddenUniqueTokens = [].filter(({ fullUniqueId }: any) => !hiddenTokens.includes(fullUniqueId));
   const uniqueTokensInShowcaseIds = nonHiddenUniqueTokens
     .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
-
-  const filteredUniqueTokens = nonHiddenUniqueTokens.filter((token: UniqueAsset) => {
-    if (listType === 'select-nft') {
-      const format = getUniqueTokenFormat(token);
-      const type = getUniqueTokenType(token);
-      return format === 'image' && type === 'NFT';
-    }
-    return true;
-  });
-
-  // group the assets by collection name
-  const assetsByName = groupBy<UniqueAsset>(filteredUniqueTokens, token => token.familyName);
+  // const filteredUniqueTokens = nonHiddenUniqueTokens.filter((token: UniqueAsset) => {
+  //   if (listType === 'select-nft') {
+  //     const format = getUniqueTokenFormat(token);
+  //     const type = getUniqueTokenType(token);
+  //     return format === 'image' && type === 'NFT';
+  //   }
+  //   return true;
+  // });
 
   const result = [
     {
@@ -324,7 +321,7 @@ export const buildBriefUniqueTokenList = (
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
 
-  if (!Object.keys(assetsByName).length) {
+  if (nftCollections.length === 0) {
     if (!isFetchingNfts) {
       // empty NFT section
       result.push({ type: 'NFTS_EMPTY', uid: `nft-empty` });
@@ -333,25 +330,24 @@ export const buildBriefUniqueTokenList = (
       result.push({ type: 'NFTS_LOADING', uid: `nft-loading-${nftSort}` });
     }
   } else {
-    for (const family of Object.keys(assetsByName)) {
+    nftCollections?.forEach?.(collection => {
       result.push({
         // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
-        image: assetsByName[family][0].familyImage,
-        name: family,
-        total: assetsByName[family].length,
+        image: collection.familyImage,
+        name: collection.familyName,
+        total: collection.distinctNftsOwned,
         type: 'FAMILY_HEADER',
-        uid: family,
+        uid: collection.familyName,
       });
-      const tokens = assetsByName[family].map(({ uniqueId }) => uniqueId);
-      for (let index = 0; index < tokens.length; index++) {
-        const uniqueId = tokens[index];
+      const uniqueIds = collection.nftIds;
+      for (let index = 0; index < uniqueIds.length; index++) {
+        const uniqueId = uniqueIds[index];
 
         // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
-        result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
+        result.push({ index, type: 'NFT', uid: uniqueId, uniqueId, collectionId: collection.collectionId });
       }
-
-      result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
-    }
+      result.push({ type: 'NFT_SPACE_AFTER', uid: `${collection.familyName}-space-after` });
+    });
   }
 
   if (hiddenUniqueTokensIds.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {

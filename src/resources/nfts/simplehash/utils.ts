@@ -1,11 +1,12 @@
 import { AssetType } from '@/entities';
-import { UniqueAsset } from '@/entities/uniqueAssets';
+import { UniqueAsset, UniqueAssetFamily } from '@/entities/uniqueAssets';
 import {
   ValidatedSimpleHashNFT,
   SimpleHashFloorPrice,
   SimpleHashMarketplaceId,
   SimpleHashTrait,
   SimpleHashMarketplace,
+  SimpleHashCollectionDetailsFragment,
 } from '@/resources/nfts/simplehash/types';
 import { ENS_NFT_CONTRACT_ADDRESS, ETH_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
@@ -24,6 +25,7 @@ import { Network } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const ENS_COLLECTION_NAME = 'ENS';
+const SIMPLEHASH_ENS_COLLECTION_NAME = 'ENS: Ethereum Name Service';
 const SVG_MIME_TYPE = 'image/svg+xml';
 const pixelRatio = PixelRatio.get();
 const deviceWidth = deviceUtils.dimensions.width;
@@ -80,6 +82,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
       name: isENS ? 'ENS' : collection.name,
       slug: marketplace?.marketplace_collection_id ?? '',
       twitter_username: collection.twitter_username,
+      collectionId: collection.collection_id ?? '',
     },
     chainId: chainsIdByName[nft.chain],
     description: nft.description,
@@ -95,7 +98,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
             4
           )
         : undefined,
-    fullUniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,
+    fullUniqueId: `${nft.chain}_${nft.collection.collection_id}_${nft.token_id}`,
     id: nft.token_id,
     image_original_url: nft.extra_metadata?.image_original_url,
     image_preview_url: lowResUrl,
@@ -119,7 +122,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
     // @ts-ignore TODO
     traits: nft.extra_metadata?.attributes ?? [],
     type: AssetType.nft,
-    uniqueId: isENS ? nft.name ?? `${nft.contract_address}_${nft.token_id}` : `${nft.contract_address}_${nft.token_id}`,
+    uniqueId: isENS ? nft.name : `${nft.chain}_${nft.collection.collection_id}_${nft.token_id}`,
     urlSuffixForAsset: `${nft.contract_address}/${nft.token_id}`,
     video_url: nft.video_url ?? null,
     video_properties: {
@@ -140,6 +143,32 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
     },
     model_url: nft.model_url ?? null,
     model_properties: { size: nft.model_properties?.size ?? null, mime_type: nft.model_properties?.mime_type ?? null },
+  };
+}
+
+export function simpleHashNftIdToUniqueId(nftId: string, collectionId: string): string {
+  const [simplehashNetwork, _, tokenId] = nftId.split('.');
+  const network = simplehashNetwork === 'ethereum' ? 'mainnet' : simplehashNetwork;
+  // simplehash nft ids use contract address, but our UI groups nfts by collection id across networks
+  // this change allows us to access cached nfts or make collection requests with just a uniqueId
+  return `${network}_${collectionId}_${tokenId}`;
+}
+
+export function parseUniqueAssetUniqueId(uniqueId = ''): { collectionId: string; tokenId: string } {
+  const [_, collectionId, tokenId] = uniqueId.split('_');
+  return { collectionId, tokenId };
+}
+
+export function simpleHashCollectionToUniqueAssetFamily(collection: SimpleHashCollectionDetailsFragment): UniqueAssetFamily {
+  const isENS = collection.collection_details.name === SIMPLEHASH_ENS_COLLECTION_NAME;
+  return {
+    collectionId: collection.collection_id,
+    distinctNftsOwned: collection.distinct_nfts_owned ?? 0,
+    familyImage: collection.collection_details.image_url ?? '',
+    familyName: isENS ? ENS_COLLECTION_NAME : collection.collection_details.name ?? '',
+    lastAcquiredDate: collection.last_acquired_date ?? null,
+    nftIds: collection.nft_ids.map(nftId => simpleHashNftIdToUniqueId(nftId, collection.collection_id)),
+    totalCopiesOwned: collection.total_copies_owned ?? 0,
   };
 }
 

@@ -27,7 +27,7 @@ const CollectibleTokenFamily = ({ childrenAmount, external, familyImage, familyN
   );
 
   const renderChild = useCallback(
-    (i: number) => <UniqueTokenRow external={external} item={item[i]} key={`${familyName}_${i}`} uniqueId={item[i].uniqueId} />,
+    (i: number) => <UniqueTokenRow external={external} item={item[i]} key={`${familyName}_${i}`} />,
     [external, familyName, item]
   );
 

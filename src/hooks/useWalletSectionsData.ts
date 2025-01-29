@@ -21,7 +21,7 @@ import { usePoints } from '@/resources/points';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useNftSortStore, useUserNftsStore } from '@/state/nfts';
+import { useNftSortStore, useUserNftCollections } from '@/state/nfts';
 
 // user properties analytics for claimables that executes at max once every 2 min
 const throttledClaimablesAnalytics = throttle(
@@ -63,14 +63,13 @@ export default function useWalletSectionsData({
 
   const { sendableUniqueTokens } = useSendableUniqueTokens();
 
-  const isFetchingNfts = useUserNftsStore(state => state.status);
-  const allUniqueTokens = useUserNftsStore(state => state.getData()?.nfts || []);
-
   const { data: positions } = usePositions({ address: accountAddress, currency: nativeCurrency });
   const { data: claimables } = useClaimables({ address: accountAddress, currency: nativeCurrency });
   const { data: points } = usePoints({
     walletAddress: accountAddress,
   });
+  const nftCollections = useUserNftCollections(state => state.getCollections());
+  const nftCollectionsStatus = useUserNftCollections(state => state.getStatus());
 
   const claimableETHRewardsRawAmount = points?.points?.user?.rewards?.claimable;
 
@@ -145,8 +144,8 @@ export default function useWalletSectionsData({
       isReadOnlyWallet,
       listType: type,
       showcaseTokens,
-      uniqueTokens: allUniqueTokens,
-      isFetchingNfts,
+      nftCollections,
+      isFetchingNfts: nftCollectionsStatus.isFetching,
       nftSort,
       remoteConfig,
       experimentalConfig,
@@ -156,7 +155,7 @@ export default function useWalletSectionsData({
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo);
-    const hasNFTs = allUniqueTokens && allUniqueTokens.length > 0;
+    const hasNFTs = nftCollections && nftCollections.length > 0;
 
     return {
       hasNFTs,
@@ -167,6 +166,7 @@ export default function useWalletSectionsData({
       briefSectionsData,
     };
   }, [
+    nftCollections,
     hiddenAssets,
     isCoinListEdited,
     isLoadingUserAssets,
@@ -183,14 +183,13 @@ export default function useWalletSectionsData({
     isReadOnlyWallet,
     type,
     showcaseTokens,
-    allUniqueTokens,
-    isFetchingNfts,
     nftSort,
     remoteConfig,
     experimentalConfig,
     positions,
     claimables,
     claimableETHRewardsNativeAmount,
+    nftCollectionsStatus.isFetching,
   ]);
   return walletSections;
 }

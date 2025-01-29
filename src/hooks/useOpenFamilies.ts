@@ -1,30 +1,18 @@
-import { useCallback, useMemo } from 'react';
-import { useMMKVObject } from 'react-native-mmkv';
-import useAccountSettings from './useAccountSettings';
+import { useAccountSettings } from '@/hooks';
+import { useOpenFamiliesStore } from '@/state/nfts';
+import { useCallback } from 'react';
 
 export default function useOpenFamilies() {
   const { accountAddress } = useAccountSettings();
-  const [openFamilies, setOpenFamilies] = useMMKVObject<Record<string, boolean>>('open-families-' + accountAddress);
-
+  const openFamilies = useOpenFamiliesStore(s => s.getOpenFamilies(accountAddress));
   const updateOpenFamilies = useCallback(
-    (value: Record<string, boolean>) =>
-      setOpenFamilies(prevValue => ({
-        ...(prevValue as Record<string, boolean>),
-        ...value,
-      })),
-    [setOpenFamilies]
+    (updates: Record<string, boolean>) => {
+      useOpenFamiliesStore.getState().updateOpenFamilies(accountAddress, updates);
+    },
+    [accountAddress]
   );
-
-  const openFamiliesWithDefault = useMemo(
-    () => ({
-      Showcase: true,
-      ...(openFamilies as Record<string, boolean>),
-    }),
-    [openFamilies]
-  ) as Record<string, boolean>;
-
   return {
-    openFamilies: openFamiliesWithDefault,
+    openFamilies,
     updateOpenFamilies,
   };
 }

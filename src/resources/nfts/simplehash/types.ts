@@ -82,6 +82,18 @@ type SimpleHashCollection = {
   top_contracts: string[];
 };
 
+export type SimpleHashCollectionDetailsFragment = {
+  collection_id: string;
+  distinct_nfts_owned?: number | null;
+  total_copies_owned?: number | null;
+  last_acquired_date?: string | null;
+  nft_ids: string[];
+  collection_details: {
+    name?: string | null;
+    image_url?: string | null;
+  };
+};
+
 /**
  * @see https://docs.simplehash.com/reference/nft-model
  */

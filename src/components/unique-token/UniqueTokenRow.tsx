@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useNavigation } from '../../navigation/Navigation';
 import { magicMemo } from '../../utils';
@@ -19,15 +18,32 @@ const Container = styled(Row).attrs({ align: 'center' })({
 const UniqueTokenCardItem = styled(UniqueTokenCard).attrs({
   ...position.sizeAsObject(CardSize),
 })({
-  marginLeft: ({ index }) => (index >= 1 ? UniqueTokenCardMargin : 0),
+  marginLeft: ({ index }: { index: number }) => (index >= 1 ? UniqueTokenCardMargin : 0),
 });
 
-const UniqueTokenRow = magicMemo(({ item, external = false }) => {
+interface UniqueToken {
+  uniqueId: string;
+  [key: string]: any;
+}
+
+interface UniqueTokenRowProps {
+  item: UniqueToken[];
+  external?: boolean;
+}
+
+interface UniqueTokenRowComponent extends React.FC<UniqueTokenRowProps> {
+  height: number;
+  cardSize: number;
+  cardMargin: number;
+  rowPadding: number;
+}
+
+const UniqueTokenRow = magicMemo(({ item, external = false }: UniqueTokenRowProps) => {
   const { isReadOnlyWallet } = useWallets();
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(
-    asset =>
+    (asset: UniqueToken) =>
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset,
         backgroundOpacity: 1,
@@ -49,11 +65,7 @@ const UniqueTokenRow = magicMemo(({ item, external = false }) => {
       ))}
     </Container>
   );
-}, 'uniqueId');
-
-UniqueTokenRow.propTypes = {
-  item: PropTypes.array,
-};
+}, 'uniqueId') as unknown as UniqueTokenRowComponent;
 
 UniqueTokenRow.height = CardSize + UniqueTokenCardMargin;
 UniqueTokenRow.cardSize = CardSize;

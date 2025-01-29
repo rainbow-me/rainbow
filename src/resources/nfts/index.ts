@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { createQueryKey, queryClient } from '@/react-query';
 import { fetchSimpleHashNFTListing } from '@/resources/nfts/simplehash';
-import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
+import { simpleHashCollectionToUniqueAssetFamily, simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { UniqueAsset } from '@/entities';
 import { arcClient } from '@/graphql';
 import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 import { ChainId } from '@/state/backendNetworks/types';
+import { UniqueAssetFamily } from '@/entities/uniqueAssets';
 
 export const nftsQueryKey = ({
   address,
@@ -55,6 +56,47 @@ export const fetchUserNfts = async ({
   return {
     nfts: nfts || [],
     nftsMap: nftsMap ?? map,
+  };
+};
+
+export const fetchUserNftCollections = async ({
+  address,
+  sortBy,
+  sortDirection,
+}: {
+  address: string;
+  sortBy: NftCollectionSortCriterion;
+  sortDirection: SortDirection;
+}) => {
+  const response = await arcClient.getNFTCollections({
+    walletAddress: address,
+    sortBy,
+    sortDirection,
+  });
+
+  const collections = new Map<string, UniqueAssetFamily>();
+  response?.nftCollections?.forEach(collection => {
+    collections.set(collection.collection_id, simpleHashCollectionToUniqueAssetFamily(collection));
+  });
+  return {
+    collections,
+  };
+};
+
+export const fetchUserNftsByCollection = async ({ address, collectionId }: { address: string; collectionId: string }) => {
+  const response = await arcClient.getNFTsByCollection({
+    walletAddress: address,
+    sortBy: NftCollectionSortCriterion.MostRecent,
+    sortDirection: SortDirection.Asc,
+    collectionId,
+  });
+  const nfts = new Map<string, UniqueAsset>();
+  response?.nftsByCollection?.forEach(nft => {
+    const uniqueAsset = simpleHashNFTToUniqueAsset(nft, address);
+    nfts.set(uniqueAsset.uniqueId, uniqueAsset);
+  });
+  return {
+    nfts,
   };
 };
 

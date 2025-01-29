@@ -229,7 +229,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
-  const collectible = useCollectible(passedAsset?.uniqueId);
+  const collectible = useCollectible({ uniqueId: passedAsset?.uniqueId });
   const asset = external ? passedAsset : (collectible as UniqueAsset);
   const {
     data: { nftOffers },
