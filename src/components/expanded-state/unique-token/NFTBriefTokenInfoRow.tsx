@@ -102,11 +102,11 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
         }
         weight={lastSalePrice === NONE && !currentPrice ? 'bold' : 'heavy'}
       >
-        {showCurrentPriceInNative || nativeCurrency === 'ETH' || !currentPrice
+        {showCurrentPriceInNative || nativeCurrency === nativeAsset?.symbol || !currentPrice
           ? currentPrice || lastSalePrice
           : convertAmountToNativeDisplay(
               // @ts-expect-error currentPrice is a number?
-              parseFloat(currentPrice) * priceOfEth,
+              parseFloat(currentPrice) * Number(nativeAsset?.price?.value || 0),
               nativeCurrency
             )}
       </TokenInfoItem>
