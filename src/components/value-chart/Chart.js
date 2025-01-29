@@ -123,7 +123,6 @@ export default function Chart({
   throttledData,
   latestPrice,
   asset,
-  // ...props
 }) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [chartType]);
 
