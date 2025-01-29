@@ -53,10 +53,10 @@ const SectionHeader = React.memo(function SectionHeader({ icon, primaryText, sec
           [id]: !current[id],
         }));
       }}
-      // Hitslop here doesn't work on the bottom for an unknown reason
-      style={{ marginVertical: -24, paddingVertical: 24 }}
       hapticTrigger="tap-end"
-      scaleTo={0.96}
+      hapticType="soft"
+      scaleTo={0.95}
+      style={{ justifyContent: 'center', zIndex: 10, marginVertical: -24, paddingVertical: 24 }}
     >
       <Box height={{ custom: 14 }} flexDirection="row" justifyContent="space-between" alignItems="center">
         <Box flexDirection="row" gap={10} alignItems="center">

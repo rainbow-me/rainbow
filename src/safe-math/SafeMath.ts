@@ -387,13 +387,24 @@ export function toFixedWorklet(num: string | number, decimalPlaces: number): str
   const scaledBigIntNum = scaleUpWorklet(bigIntNum, numDecimalPlaces);
 
   const scaleFactor = BigInt(10) ** BigInt(20 - decimalPlaces);
-  const roundedBigInt = ((scaledBigIntNum + scaleFactor / BigInt(2)) / scaleFactor) * scaleFactor;
+  const half = scaleFactor / BigInt(2);
 
-  const resultStr = roundedBigInt.toString().padStart(20 + 1, '0'); // SCALE_FACTOR decimal places + at least 1 integer place
-  const integerPart = resultStr.slice(0, -20) || '0';
-  const fractionalPart = resultStr.slice(-20, -20 + decimalPlaces).padEnd(decimalPlaces, '0');
+  // Handle sign separately so we correctly round negative numbers
+  const sign = scaledBigIntNum < 0n ? -1n : 1n;
+  let absScaled = scaledBigIntNum * sign;
+  absScaled = absScaled + half;
+  absScaled = absScaled / scaleFactor;
+  absScaled = absScaled * scaleFactor;
+  const finalBigInt = absScaled * sign;
 
-  return `${integerPart}.${fractionalPart}`;
+  // Convert to string and pad without the sign
+  const isNegative = finalBigInt < 0n;
+  const finalAbsStr = (isNegative ? -finalBigInt : finalBigInt).toString().padStart(20 + 1, '0');
+
+  const integerPart = finalAbsStr.slice(0, -20) || '0';
+  const fractionalPart = finalAbsStr.slice(-20, -20 + decimalPlaces).padEnd(decimalPlaces, '0');
+
+  return (isNegative ? '-' : '') + `${integerPart}.${fractionalPart}`;
 }
 
 // Ceil function

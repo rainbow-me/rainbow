@@ -2,7 +2,7 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import React, { forwardRef, Fragment, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
-import { ColorValue, FlexStyle, Pressable, StyleSheet, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
+import { ColorValue, FlexStyle, Insets, Pressable, StyleSheet, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
 import Animated, { SharedValue, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
@@ -106,6 +106,7 @@ interface SlackSheetProps extends ViewStyle {
   onContentSizeChange?: () => void;
   renderHeader?: (yPosition: Animated.SharedValue<number>) => React.ReactNode;
   scrollEnabled?: boolean;
+  scrollIndicatorInsets?: Insets;
   showsHorizontalScrollIndicator?: boolean;
   showsVerticalScrollIndicator?: boolean;
   showBlur?: boolean;
@@ -132,6 +133,7 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
     onContentSizeChange,
     renderHeader,
     scrollEnabled = true,
+    scrollIndicatorInsets: scrollIndicatorInsetsProp,
     showsHorizontalScrollIndicator = true,
     showsVerticalScrollIndicator = true,
     showBlur,
@@ -163,11 +165,12 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
   useImperativeHandle(ref, () => sheet.current);
 
   const scrollIndicatorInsets = useMemo(
-    () => ({
-      bottom: bottomInset,
-      top: borderRadius + SheetHandleFixedToTopHeight,
-    }),
-    [borderRadius, bottomInset]
+    () =>
+      scrollIndicatorInsetsProp || {
+        bottom: bottomInset,
+        top: borderRadius + SheetHandleFixedToTopHeight,
+      },
+    [borderRadius, bottomInset, scrollIndicatorInsetsProp]
   );
 
   // In discover sheet we need to set it additionally
