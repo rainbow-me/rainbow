@@ -587,6 +587,16 @@ export const portalSheetConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
+export const tokenLauncherConfig: PartialNavigatorConfigOptions = {
+  options: ({ route: { params = {} } }) => ({
+    gestureEnabled: false,
+    backgroundColor: colors.themedColors?.shadowBlack,
+    backgroundOpacity: 0.7,
+    topOffset: 0,
+    customStack: true,
+  }),
+};
+
 export const stackNavigationConfig = {
   headerMode: 'none',
   keyboardHandlingEnabled: ios,

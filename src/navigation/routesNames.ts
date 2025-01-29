@@ -105,6 +105,7 @@ const Routes = {
   DAPP_BROWSER_CONTROL_PANEL: 'DappBrowserControlPanel',
   NETWORK_SELECTOR: 'NetworkSelector',
   CLAIM_REWARDS_PANEL: 'ClaimRewardsPanel',
+  TOKEN_LAUNCHER_SCREEN: 'TokenLauncherScreen',
 } as const;
 
 export const NATIVE_ROUTES = [
