@@ -30,6 +30,7 @@ import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
 import { TrendingTokens } from '@/components/Discover/TrendingTokens';
+import { TokenLauncherCard } from '../cards/TokenLauncherCard';
 
 export const HORIZONTAL_PADDING = 20;
 
@@ -67,7 +68,7 @@ export default function DiscoverHome() {
       {!testNetwork ? (
         <Box gap={20}>
           <Inline wrap={false} space="20px">
-            <GasCard />
+            <TokenLauncherCard />
             {isProfilesEnabled && <ENSSearchCard />}
           </Inline>
           <Separator color="separatorTertiary" thickness={1} />
