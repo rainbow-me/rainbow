@@ -7,13 +7,12 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { convertAmountToNativeDisplay, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { ethereumUtils } from '@/utils';
 import { useNFTListing } from '@/resources/nfts';
 import { UniqueAsset } from '@/entities';
 import { fetchReservoirNFTFloorPrice } from '@/resources/nfts/utils';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
-import { ChainId } from '@/state/backendNetworks/types';
+import { useNativeAsset } from '@/utils/ethereumUtils';
 
 const NONE = 'None';
 
@@ -29,6 +28,8 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
   const { navigate } = useNavigation();
 
   const { nativeCurrency } = useAccountSettings();
+
+  const nativeAsset = useNativeAsset({ chainId: asset.chainId });
 
   const [floorPrice, setFloorPrice] = useState<string | null>(null);
 
@@ -46,11 +47,11 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
       }
     };
     if (asset?.floorPriceEth) {
-      setFloorPrice(formatPrice(asset?.floorPriceEth, 'ETH'));
+      setFloorPrice(formatPrice(asset?.floorPriceEth, nativeAsset?.symbol));
     } else {
       fetchFloorPrice();
     }
-  }, [asset]);
+  }, [asset, nativeAsset]);
 
   const { data: listing } = useNFTListing({
     contractAddress: asset?.asset_contract?.address ?? '',
@@ -62,20 +63,20 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
 
   const currentPrice = asset?.currentPrice ?? listingValue;
 
-  const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
+  const [showCurrentPriceInNative, setShowCurrentPriceInNative] = useState(true);
   const toggleCurrentPriceDisplayCurrency = useCallback(
-    () => setShowCurrentPriceInEth(!showCurrentPriceInEth),
-    [showCurrentPriceInEth, setShowCurrentPriceInEth]
+    () => setShowCurrentPriceInNative(!showCurrentPriceInNative),
+    [showCurrentPriceInNative, setShowCurrentPriceInNative]
   );
 
-  const [showFloorInEth, setShowFloorInEth] = useState(true);
+  const [showFloorInNative, setShowFloorInNative] = useState(true);
   const toggleFloorDisplayCurrency = useCallback(() => {
     if (!hasDispatchedAction) {
       handleReviewPromptAction(ReviewPromptAction.NftFloorPriceVisit);
       setHasDispatchedAction(true);
     }
-    setShowFloorInEth(!showFloorInEth);
-  }, [showFloorInEth, setShowFloorInEth, hasDispatchedAction, setHasDispatchedAction]);
+    setShowFloorInNative(!showFloorInNative);
+  }, [showFloorInNative, setShowFloorInNative, hasDispatchedAction, setHasDispatchedAction]);
 
   const handlePressCollectionFloor = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
@@ -84,7 +85,6 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
   }, [navigate]);
 
   const lastSalePrice = formatPrice(asset?.lastPrice, asset?.lastSalePaymentToken);
-  const priceOfEth = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
 
   return (
     <Columns space="19px (Deprecated)">
@@ -102,7 +102,7 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
         }
         weight={lastSalePrice === NONE && !currentPrice ? 'bold' : 'heavy'}
       >
-        {showCurrentPriceInEth || nativeCurrency === 'ETH' || !currentPrice
+        {showCurrentPriceInNative || nativeCurrency === 'ETH' || !currentPrice
           ? currentPrice || lastSalePrice
           : convertAmountToNativeDisplay(
               // @ts-expect-error currentPrice is a number?
@@ -124,10 +124,10 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
         title="Floor price"
         weight={floorPrice === NONE ? 'bold' : 'heavy'}
       >
-        {showFloorInEth || nativeCurrency === 'ETH' || floorPrice === NONE || floorPrice === null
+        {showFloorInNative || nativeCurrency === nativeAsset?.symbol || floorPrice === NONE || floorPrice === null
           ? floorPrice
           : convertAmountToNativeDisplay(
-              parseFloat(floorPrice?.[0] === '<' ? floorPrice.substring(2) : floorPrice) * priceOfEth,
+              parseFloat(floorPrice?.[0] === '<' ? floorPrice.substring(2) : floorPrice) * Number(nativeAsset?.price?.value || 0),
               nativeCurrency
             )}
       </TokenInfoItem>
