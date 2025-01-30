@@ -269,41 +269,49 @@ describe('SafeMath', () => {
     const roundedNegative = new BigNumber('-2500.5').toFixed(0, BigNumber.ROUND_HALF_UP);
     expect(roundWorklet('-2500.5')).toBe(roundedNegative);
   });
-});
 
-test('toScaledIntegerWorklet', () => {
-  expect(toScaledIntegerWorklet(VALUE_E, 18)).toBe(RESULTS.toScaledInteger);
+  test('toScaledIntegerWorklet', () => {
+    expect(toScaledIntegerWorklet(VALUE_E, 18)).toBe(RESULTS.toScaledInteger);
 
-  const scaledL8 = new BigNumber(VALUE_L).shiftedBy(8).toFixed(0);
-  expect(toScaledIntegerWorklet(VALUE_L, 8)).toBe(scaledL8);
+    const scaledL8 = new BigNumber(VALUE_L).shiftedBy(8).toFixed(0);
+    expect(toScaledIntegerWorklet(VALUE_L, 8)).toBe(scaledL8);
 
-  const scaledN2 = new BigNumber(VALUE_N).shiftedBy(2).toFixed(0);
-  expect(toScaledIntegerWorklet(VALUE_N, 2)).toBe(scaledN2);
-});
-
-test('orderOfMagnitude', () => {
-  [
-    VALUE_H,
-    VALUE_L,
-    VALUE_M,
-    VALUE_N,
-    VALUE_O,
-    VALUE_P,
-    '12500',
-    '5000',
-    '500',
-    '50',
-    '97.29560620602980607032',
-    '0.6',
-    '0.04219495',
-    '0.00133253382018097672',
-    '0.00064470276596066749',
-  ].forEach(value => {
-    const bigNumberResult = new BigNumber(value).e;
-    expect(orderOfMagnitudeWorklet(value)).toBe(bigNumberResult);
+    const scaledN2 = new BigNumber(VALUE_N).shiftedBy(2).toFixed(0);
+    expect(toScaledIntegerWorklet(VALUE_N, 2)).toBe(scaledN2);
   });
 
-  expect(orderOfMagnitudeWorklet(VALUE_H)).toBe(Number(RESULTS.orderOfMagnitude));
+  test('orderOfMagnitude', () => {
+    [
+      VALUE_H,
+      VALUE_L,
+      VALUE_M,
+      VALUE_N,
+      VALUE_O,
+      VALUE_P,
+      '12500',
+      '5000',
+      '500',
+      '50',
+      '97.29560620602980607032',
+      '0.6',
+      '0.04219495',
+      '0.00133253382018097672',
+      '0.00064470276596066749',
+    ].forEach(value => {
+      const bigNumberResult = new BigNumber(value).e;
+      expect(orderOfMagnitudeWorklet(value)).toBe(bigNumberResult);
+    });
+
+    expect(orderOfMagnitudeWorklet(VALUE_H)).toBe(Number(RESULTS.orderOfMagnitude));
+  });
+
+  test('exponents', () => {
+    expect(new BigNumber(VALUE_L).plus(VALUE_M).toFixed()).toBe(sumWorklet(VALUE_L, VALUE_M));
+    expect(new BigNumber(VALUE_N).minus(ONE_HUNDRED).toFixed()).toBe(subWorklet(VALUE_N, ONE_HUNDRED));
+    expect(new BigNumber(VALUE_L).times(VALUE_M).toFixed()).toBe(mulWorklet(VALUE_L, VALUE_M));
+    expect(new BigNumber(VALUE_M).div(VALUE_L).toFixed()).toBe(divWorklet(VALUE_M, VALUE_L));
+    expect(new BigNumber(VALUE_M).mod(VALUE_L).toFixed()).toBe(modWorklet(VALUE_M, VALUE_L));
+  });
 });
 
 describe('BigNumber', () => {
@@ -360,13 +368,5 @@ describe('BigNumber', () => {
 
   test('toScaledInteger', () => {
     expect(new BigNumber(VALUE_E).shiftedBy(18).toFixed(0)).toBe(RESULTS.toScaledInteger);
-  });
-
-  test('exponents', () => {
-    expect(new BigNumber(VALUE_L).plus(VALUE_M).toFixed()).toBe(sumWorklet(VALUE_L, VALUE_M));
-    expect(new BigNumber(VALUE_N).minus(ONE_HUNDRED).toFixed()).toBe(subWorklet(VALUE_N, ONE_HUNDRED));
-    expect(new BigNumber(VALUE_L).times(VALUE_M).toFixed()).toBe(mulWorklet(VALUE_L, VALUE_M));
-    expect(new BigNumber(VALUE_M).div(VALUE_L).toFixed()).toBe(divWorklet(VALUE_M, VALUE_L));
-    expect(new BigNumber(VALUE_M).mod(VALUE_L).toFixed()).toBe(modWorklet(VALUE_M, VALUE_L));
   });
 });
