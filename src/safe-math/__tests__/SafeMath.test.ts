@@ -50,6 +50,7 @@ const NEGATIVE_VALUE = '-2412.12';
 const ZERO = '0';
 const ONE = '1';
 const TEN = '10';
+const ONE_HUNDRED = '100';
 const MINUS_3 = '-3';
 const NON_NUMERIC_STRING = 'abc';
 
@@ -73,8 +74,8 @@ describe('SafeMath', () => {
     const sumLM = new BigNumber(VALUE_L).plus(VALUE_M).toFixed();
     expect(sumWorklet(VALUE_L, VALUE_M)).toBe(sumLM);
 
-    const sumN_100 = new BigNumber(VALUE_N).plus(100).toFixed();
-    expect(sumWorklet(VALUE_N, '100')).toBe(sumN_100);
+    const sumN_100 = new BigNumber(VALUE_N).plus(ONE_HUNDRED).toFixed();
+    expect(sumWorklet(VALUE_N, ONE_HUNDRED)).toBe(sumN_100);
   });
 
   test('subWorklet', () => {
@@ -123,6 +124,7 @@ describe('SafeMath', () => {
     expect(divWorklet(Number(VALUE_A), VALUE_B)).toBe(RESULTS.div);
     expect(divWorklet(VALUE_A, Number(VALUE_B))).toBe(RESULTS.div);
     expect(divWorklet(VALUE_I, VALUE_K)).toBe(RESULTS.divWithExp);
+    expect(new BigNumber(VALUE_I).div(VALUE_K).toFixed()).toBe(RESULTS.divWithExp);
 
     const divML = new BigNumber(VALUE_M).div(VALUE_L).toFixed();
     expect(divWorklet(VALUE_M, VALUE_L)).toBe(divML);
@@ -362,7 +364,7 @@ describe('BigNumber', () => {
 
   test('exponents', () => {
     expect(new BigNumber(VALUE_L).plus(VALUE_M).toFixed()).toBe(sumWorklet(VALUE_L, VALUE_M));
-    expect(new BigNumber(VALUE_N).minus('100').toFixed()).toBe(subWorklet(VALUE_N, '100'));
+    expect(new BigNumber(VALUE_N).minus(ONE_HUNDRED).toFixed()).toBe(subWorklet(VALUE_N, ONE_HUNDRED));
     expect(new BigNumber(VALUE_L).times(VALUE_M).toFixed()).toBe(mulWorklet(VALUE_L, VALUE_M));
     expect(new BigNumber(VALUE_M).div(VALUE_L).toFixed()).toBe(divWorklet(VALUE_M, VALUE_L));
     expect(new BigNumber(VALUE_M).mod(VALUE_L).toFixed()).toBe(modWorklet(VALUE_M, VALUE_L));
