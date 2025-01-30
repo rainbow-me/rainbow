@@ -18,18 +18,32 @@ export function InfoInputStep() {
         justifyContent: 'center',
       }}
       keyboardDismissMode="interactive"
-      bottomOffset={TOKEN_PREVIEW_BAR_HEIGHT + 12}
+      bottomOffset={TOKEN_PREVIEW_BAR_HEIGHT + 36}
       // disableScrollOnKeyboardHide={true}
       // extraKeyboardSpace={-(TOKEN_PREVIEW_BAR_HEIGHT + safeAreaInsetValues.bottom)}
     >
       <Box width="full" gap={8} alignItems="center" paddingHorizontal="20px">
-        <SingleFieldInput title="Ticker" placeholder="$NAME" />
+        <SingleFieldInput
+          validationWorklet={text => {
+            'worklet';
+            if (text.trim().length > 4) {
+              return 'Too long, friend';
+            }
+            return '';
+          }}
+          onInputChange={text => {
+            console.log('text', text);
+          }}
+          style={{ textTransform: 'uppercase' }}
+          autoCapitalize="characters"
+          title="Ticker"
+          placeholder="$NAME"
+        />
         <SingleFieldInput title="Name" placeholder="Enter coin name" />
-        <SingleFieldInput title="Total Supply" placeholder="0" />
-        <Box borderRadius={16} backgroundColor="red" width="full" height={100} />
-        <Box borderRadius={16} backgroundColor="blue" width="full" height={100} />
-        <Box borderRadius={16} backgroundColor="green" width="full" height={250} />
+        <SingleFieldInput inputMode="numeric" title="Total Supply" defaultValue={'1,000,000'} placeholder="1,000,000" />
+        <Box borderRadius={16} backgroundColor="blue" width="full" height={150} />
         <SingleFieldInput title="Test" placeholder="Testing" />
+        <Box borderRadius={16} backgroundColor="purple" width="full" height={250} />
       </Box>
     </KeyboardAwareScrollView>
   );
