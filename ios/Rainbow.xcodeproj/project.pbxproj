@@ -1109,7 +1109,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli')\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n";
+			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\n# Setup for Sentry\nexport SENTRY_PROPERTIES=sentry.properties\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli')\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Run Sentry CLI to handle sourcemaps\nif [ ! \"$CONFIGURATION\" == \"Debug\" ]; then\n  export SENTRY_CLI=\"$PROJECT_ROOT/node_modules/@sentry/cli/bin/sentry-cli\"\n  $SENTRY_CLI react-native xcode \\\n  `\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\nelse\n  `\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\nfi";
 			showEnvVarsInLog = 0;
 		};
 		0D76B7992410B84417343930 /* [CP] Copy Pods Resources */ = {
@@ -1484,15 +1484,16 @@
 				C16DCFB1272BB8FC00FF5C78 /* PriceData.swift in Sources */,
 				C127238B274EBBB6006AC743 /* CurrencyDetails.swift in Sources */,
 				C11640E9274DC10C00C9120A /* UIColor.swift in Sources */,
-				C18C8E032798B02700D38B34 /* CurrencyProvider.swift in Sources */,
-				C179298627499A5B00044684 /* Constants.swift in Sources */,
-				C1EB01302731B68400830E70 /* TokenDetails.swift in Sources */,
-				C16DCF74272BA77A00FF5C78 /* TokenProvider.swift in Sources */,
-				C16DCFB6272BC8F100FF5C78 /* TokenData.swift in Sources */,
-				C1C61A6E272C9C8D00E5C0B3 /* UIImage.swift in Sources */,
-				C16DCFAC272BB8ED00FF5C78 /* PriceDataProvider.swift in Sources */,
-				C1038325273C2D0C00B18210 /* PriceWidgetView.swift in Sources */,
-				C16DCF63272BA6EF00FF5C78 /* PriceWidget.swift in Sources */,
+				C1C61A6F272C9C8D00E5C0B3 /* UIImage.swift in Sources */,
+				C16DCFB2272BB8FC00FF5C78 /* PriceData.swift in Sources */,
+				C16DCFB7272BC8F100FF5C78 /* TokenData.swift in Sources */,
+				C16DCFAD272BB8ED00FF5C78 /* PriceDataProvider.swift in Sources */,
+				C18FCD37273C62C50079CE28 /* PriceWidgetView.swift in Sources */,
+				C16DCF84272BAB9500FF5C78 /* IntentHandler.swift in Sources */,
+				C1EB01312731B68400830E70 /* TokenDetails.swift in Sources */,
+				C1038337273C5C4200B18210 /* PriceWidget.swift in Sources */,
+				C16DCFA8272BABCB00FF5C78 /* TokenProvider.swift in Sources */,
+				C16DCFA6272BABC700FF5C78 /* CoinGeckoToken.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
