@@ -243,6 +243,16 @@ describe('SafeMath', () => {
     const bigP = new BigNumber(VALUE_P);
     const fixedP6 = bigP.toFixed(6);
     expect(toFixedWorklet(VALUE_P, 6)).toBe(fixedP6);
+
+    // Test negative numbers
+    const values = [
+      { num: '-0.121235', expected: '-0.12', decimalPlaces: 2 },
+      { num: '-1.345678', expected: '-1.346', decimalPlaces: 3 },
+    ];
+    values.forEach(({ num, expected, decimalPlaces }) => {
+      expect(toFixedWorklet(num, decimalPlaces)).toBe(expected);
+      expect(toFixedWorklet(Number(num), decimalPlaces)).toBe(expected);
+    });
   });
 
   test('ceilWorklet', () => {
@@ -266,7 +276,8 @@ describe('SafeMath', () => {
     expect(roundWorklet(Number(VALUE_D))).toBe(RESULTS.ceil);
     expect(roundWorklet(VALUE_L)).toBe('0');
     expect(roundWorklet('-2500.4')).toBe('-2500');
-    const roundedNegative = new BigNumber('-2500.5').toFixed(0, BigNumber.ROUND_HALF_UP);
+
+    const roundedNegative = new BigNumber('-2500.5').toFixed(0);
     expect(roundWorklet('-2500.5')).toBe(roundedNegative);
   });
 

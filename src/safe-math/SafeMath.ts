@@ -201,64 +201,47 @@ export function modWorklet(num1: string | number, num2: string | number): string
   return formatResultWorklet(result);
 }
 
-// Returns significant decimals in the fractional portion of a number
+// Returns the position of the first significant (non-zero) decimal digit
 export function significantDecimalsWorklet(num: string | number): number {
   'worklet';
   const [rawBigInt, decimalPlaces] = removeDecimalWorklet(typeof num === 'number' ? num.toString() : num);
 
   if (rawBigInt === 0n || decimalPlaces <= 0) return 0;
 
-  // Work with absolute value for simplicity
-  const bigIntNum = rawBigInt < 0n ? -rawBigInt : rawBigInt;
-
-  const digitsStr = bigIntNum.toString(); // e.g. '238'
-  // If we have decimalPlaces=10, that means the real fractional portion has length=10,
-  // of which the last digitsStr.length characters are digits, and the rest are leading zeros.
+  const bigIntNum = rawBigInt < 0n ? -rawBigInt : rawBigInt; // abs value
+  const digitsStr = bigIntNum.toString();
 
   if (digitsStr.length < decimalPlaces) {
-    // That means we have leading zeros in the fractional portion
-    // e.g. bigIntNum="238", decimalPlaces=10 => fractional part is "0000000238"
-    // leadingZeros = 10 - 3 = 7
     const leadingZerosCount = decimalPlaces - digitsStr.length;
-
-    // The first 7 digits of fractional are '0'. Then we have '2','3','8'.
-    // We find the first non-zero among the last part:
     for (let i = 0; i < digitsStr.length; i++) {
       if (digitsStr[i] !== '0') {
-        // fractional index = leadingZerosCount + i
-        // +1 because the original code returns the 1-based offset
+        // First non-zero digit
         return leadingZerosCount + i + 1;
       }
     }
-    // If no non-zero, it's effectively 0, but we handle that above
     return 0;
   } else {
-    // digitsStr.length >= decimalPlaces: the fractional portion is the last
-    // `decimalPlaces` digits of digitsStr
-    // example: bigIntNum = 12345, decimalPlaces=2 => fractional part is "45"
     const fractionalPart = digitsStr.slice(digitsStr.length - decimalPlaces);
-
     for (let i = 0; i < fractionalPart.length; i++) {
       if (fractionalPart[i] !== '0') {
-        return i + 1; // 1-based index
+        // First non-zero digit
+        return i + 1;
       }
     }
-
     return 0; // No non-zero found => fractional is all zeros
   }
 }
 
 export function orderOfMagnitudeWorklet(num: string | number): number {
   'worklet';
-  // If the numeric value itself is 0, the log10 is -∞
+  // If the value is 0, the log10 is -∞
   if (num === 0 || num === '0') return -Infinity;
 
   const [rawBigInt, rawDecimalPlaces] = removeDecimalWorklet(typeof num === 'number' ? num.toString() : num);
 
   if (rawBigInt === 0n) return -Infinity;
 
-  // Simplify to absolute value, since the sign doesn't affect the log10 magnitude
-  const bigIntNum = rawBigInt < 0n ? -rawBigInt : rawBigInt;
+  const bigIntNum = rawBigInt < 0n ? -rawBigInt : rawBigInt; // abs value
   const digitsCount = bigIntNum.toString().length; // number of digits in the absolute value
   const decimalPlaces = rawDecimalPlaces; // positive => more fractional digits, negative => large integer
 
@@ -404,6 +387,7 @@ export function toFixedWorklet(num: string | number, decimalPlaces: number): str
   if (safeDecimalPlaces < 0) safeDecimalPlaces = 0;
 
   const numStr = toStringWorklet(num);
+
   if (!isNumberStringWorklet(numStr)) {
     throw new Error('Argument must be a numeric string or number');
   }
@@ -411,24 +395,18 @@ export function toFixedWorklet(num: string | number, decimalPlaces: number): str
   const [bigIntNum, numDecimalPlaces] = removeDecimalWorklet(numStr);
   const scaledBigIntNum = scaleUpWorklet(bigIntNum, numDecimalPlaces);
 
-  const scaleFactor = BigInt(10) ** BigInt(20 - safeDecimalPlaces);
+  const scaleFactor = BigInt(10) ** BigInt(20 - decimalPlaces);
   const half = scaleFactor / BigInt(2);
 
+  // Handle sign separately so we correctly round negative numbers
   const sign = scaledBigIntNum < 0n ? -1n : 1n;
-  let absScaled = sign < 0 ? -scaledBigIntNum : scaledBigIntNum;
-
-  // If the number is positive, add half of scaleFactor; if negative, subtract half
-  // This ensures we always round away from zero (e.g., 1.5 → 2, -1.5 → -2)
-  if (sign > 0) {
-    absScaled += half;
-  } else {
-    absScaled -= half;
-  }
-
+  let absScaled = scaledBigIntNum * sign;
+  absScaled = absScaled + half;
   absScaled = absScaled / scaleFactor;
-  absScaled *= scaleFactor;
+  absScaled = absScaled * scaleFactor;
   const finalBigInt = absScaled * sign;
 
+  // Convert to string and pad without the sign
   const isNegative = finalBigInt < 0n;
   const finalAbsStr = (isNegative ? -finalBigInt : finalBigInt).toString().padStart(20 + 1, '0');
 
