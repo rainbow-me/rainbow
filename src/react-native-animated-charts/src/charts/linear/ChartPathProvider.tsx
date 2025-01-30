@@ -78,10 +78,7 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
   const points: (Point & { originalX: number; originalY: number })[] = [];
 
   const sortedPoints = [...data.points].sort((a, b) => a.x - b.x);
-  const { greatestY, smallestY } = findYExtremes(sortedPoints) as {
-    greatestY: Point;
-    smallestY: Point;
-  };
+  const { greatestY, smallestY }: { greatestY: Point; smallestY: Point } = findYExtremes(sortedPoints);
   const smallestX = sortedPoints[0];
   const greatestX = sortedPoints[sortedPoints.length - 1];
 
