@@ -20,6 +20,8 @@ import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 // This action is used to bridge the claimed funds to another chain
 export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {
@@ -43,7 +45,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     sellTokenAddress: AddressZero,
     buyTokenAddress: AddressZero,
     sellAmount: sellAmount,
-    slippage: 5,
+    slippage: +getDefaultSlippageWorklet(chainId, getRemoteConfig()),
     currency,
   });
 
@@ -102,7 +104,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
       sellTokenAddress: AddressZero,
       buyTokenAddress: AddressZero,
       sellAmount: maxBridgeableAmount,
-      slippage: 2,
+      slippage: +getDefaultSlippageWorklet(chainId, getRemoteConfig()),
       currency,
     });
 
