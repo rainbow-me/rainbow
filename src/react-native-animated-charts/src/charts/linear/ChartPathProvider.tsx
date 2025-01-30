@@ -77,14 +77,15 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
 
   const points: (Point & { originalX: number; originalY: number })[] = [];
 
-  const { greatestY, smallestY } = findYExtremes(data.points) as {
+  const sortedPoints = [...data.points].sort((a, b) => a.x - b.x);
+  const { greatestY, smallestY } = findYExtremes(sortedPoints) as {
     greatestY: Point;
     smallestY: Point;
   };
-  const smallestX = data.points[0];
-  const greatestX = data.points[data.points.length - 1];
+  const smallestX = sortedPoints[0];
+  const greatestX = sortedPoints[sortedPoints.length - 1];
 
-  for (const point of data.points) {
+  for (const point of sortedPoints) {
     points.push({
       originalX: point.x,
       originalY: point.y,
@@ -97,7 +98,7 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
     .line<Point>()
     .x(item => scaleX(item.x))
     .y(item => scaleY(item.y))
-    .curve(getCurveType(data.curve))(data.points);
+    .curve(getCurveType(data.curve))(sortedPoints);
 
   if (path === null) {
     return {
@@ -111,7 +112,7 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
   const parsed = parseSvg(path);
 
   return {
-    data: data.nativePoints || data.points,
+    data: data.nativePoints || sortedPoints,
     greatestX,
     greatestY,
     parsed,
