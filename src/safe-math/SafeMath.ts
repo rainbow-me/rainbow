@@ -1,31 +1,36 @@
 // Utility function to remove the decimal point and keep track of the number of decimal places
-const removeDecimalWorklet = (num: string): [bigint, number] => {
+function removeDecimalWorklet(num: string): [bigint, number] {
   'worklet';
   let decimalPlaces = 0;
   let bigIntNum: bigint;
 
+  // Check if there's an exponent
   if (/[eE]/.test(num)) {
     const [base, exponent] = num.split(/[eE]/);
     const exp = Number(exponent);
+
     const parts = base.split('.');
     const baseDecimalPlaces = parts.length === 2 ? parts[1].length : 0;
-    const bigIntBase = BigInt(parts.join(''));
+    const bigIntBase = BigInt(parts.join('')); // "1.23" => BigInt("123")
 
     if (exp >= 0) {
-      decimalPlaces = baseDecimalPlaces - exp;
+      // Shift integer for e+ exponent, keep baseDecimalPlaces as is
+      decimalPlaces = baseDecimalPlaces;
       bigIntNum = bigIntBase * BigInt(10) ** BigInt(exp);
     } else {
-      decimalPlaces = baseDecimalPlaces - exp;
+      // e- => increase decimalPlaces by abs(exp)
+      decimalPlaces = baseDecimalPlaces - exp; // subtracting negative => plus
       bigIntNum = bigIntBase;
     }
   } else {
+    // No exponent => fallback
     const parts = num.split('.');
     decimalPlaces = parts.length === 2 ? parts[1].length : 0;
     bigIntNum = BigInt(parts.join(''));
   }
 
   return [bigIntNum, decimalPlaces];
-};
+}
 
 export const isNumberStringWorklet = (value: string): boolean => {
   'worklet';
@@ -61,20 +66,14 @@ const formatResultWorklet = (result: bigint): string => {
 };
 
 // Helper function to handle string and number input types
-const toStringWorklet = (value: string | number): string => {
+export const toStringWorklet = (value: string | number): string => {
   'worklet';
-  const ret = typeof value === 'number' ? value.toString() : value;
+  const string = typeof value === 'number' ? value.toString() : value;
 
-  if (ret.includes('e') && !ret.includes('e-')) {
-    const [base, exponent] = ret.split('e');
-    const exp = Number(exponent);
-    return base.replace('.', '') + '0'.repeat(exp);
-  }
+  // Slice trailing decimal point if not followed by a number
+  if (/^\d+\.$/.test(string)) return string.slice(0, -1);
 
-  if (/^\d+\.$/.test(ret)) {
-    return ret.slice(0, -1);
-  }
-  return ret;
+  return string;
 };
 
 // Converts a numeric string to a scaled integer string, preserving the specified decimal places
@@ -202,61 +201,69 @@ export function modWorklet(num1: string | number, num2: string | number): string
   return formatResultWorklet(result);
 }
 
-// return significant decimals in fractional portion of number
+// Returns significant decimals in the fractional portion of a number
 export function significantDecimalsWorklet(num: string | number): number {
   'worklet';
-  if (num === 0) {
-    return 0;
-  }
+  const [rawBigInt, decimalPlaces] = removeDecimalWorklet(typeof num === 'number' ? num.toString() : num);
 
-  // Convert the number to a string to handle large numbers and fractional parts
-  const numStr = num.toString();
+  if (rawBigInt === 0n || decimalPlaces <= 0) return 0;
 
-  // Split the number into integer and fractional parts
-  const [_, fractionalPart] = numStr.split('.');
+  // Work with absolute value for simplicity
+  const bigIntNum = rawBigInt < 0n ? -rawBigInt : rawBigInt;
 
-  // Handle fractional parts
-  if (fractionalPart) {
-    // Find the first non-zero digit in the fractional part
-    for (let i = 0; i < fractionalPart.length; i++) {
-      if (fractionalPart[i] !== '0') {
-        return i + 1;
+  const digitsStr = bigIntNum.toString(); // e.g. '238'
+  // If we have decimalPlaces=10, that means the real fractional portion has length=10,
+  // of which the last digitsStr.length characters are digits, and the rest are leading zeros.
+
+  if (digitsStr.length < decimalPlaces) {
+    // That means we have leading zeros in the fractional portion
+    // e.g. bigIntNum="238", decimalPlaces=10 => fractional part is "0000000238"
+    // leadingZeros = 10 - 3 = 7
+    const leadingZerosCount = decimalPlaces - digitsStr.length;
+
+    // The first 7 digits of fractional are '0'. Then we have '2','3','8'.
+    // We find the first non-zero among the last part:
+    for (let i = 0; i < digitsStr.length; i++) {
+      if (digitsStr[i] !== '0') {
+        // fractional index = leadingZerosCount + i
+        // +1 because the original code returns the 1-based offset
+        return leadingZerosCount + i + 1;
       }
     }
-  }
+    // If no non-zero, it's effectively 0, but we handle that above
+    return 0;
+  } else {
+    // digitsStr.length >= decimalPlaces: the fractional portion is the last
+    // `decimalPlaces` digits of digitsStr
+    // example: bigIntNum = 12345, decimalPlaces=2 => fractional part is "45"
+    const fractionalPart = digitsStr.slice(digitsStr.length - decimalPlaces);
 
-  return 0;
+    for (let i = 0; i < fractionalPart.length; i++) {
+      if (fractionalPart[i] !== '0') {
+        return i + 1; // 1-based index
+      }
+    }
+
+    return 0; // No non-zero found => fractional is all zeros
+  }
 }
 
 export function orderOfMagnitudeWorklet(num: string | number): number {
   'worklet';
-  if (num === 0) {
-    return -Infinity; // log10(0) is -Infinity
-  }
+  // If the numeric value itself is 0, the log10 is -∞
+  if (num === 0 || num === '0') return -Infinity;
 
-  // Convert the number to a string to handle large numbers and fractional parts
-  const numStr = num.toString();
+  const [rawBigInt, rawDecimalPlaces] = removeDecimalWorklet(typeof num === 'number' ? num.toString() : num);
 
-  // Split the number into integer and fractional parts
-  const [integerPart, fractionalPart] = numStr.split('.');
+  if (rawBigInt === 0n) return -Infinity;
 
-  // Handle integer parts
-  if (BigInt(integerPart) !== 0n) {
-    return integerPart.length - 1;
-  }
+  // Simplify to absolute value, since the sign doesn't affect the log10 magnitude
+  const bigIntNum = rawBigInt < 0n ? -rawBigInt : rawBigInt;
+  const digitsCount = bigIntNum.toString().length; // number of digits in the absolute value
+  const decimalPlaces = rawDecimalPlaces; // positive => more fractional digits, negative => large integer
 
-  // Handle fractional parts
-  if (fractionalPart) {
-    // Find the first non-zero digit in the fractional part
-    for (let i = 0; i < fractionalPart.length; i++) {
-      if (fractionalPart[i] !== '0') {
-        return -(i + 1);
-      }
-    }
-  }
-
-  // If the fractional part is all zeros, return a very negative number
-  return -Infinity;
+  // floor(log10(value)) = (digitsCount - 1) - decimalPlaces
+  return digitsCount - 1 - decimalPlaces;
 }
 
 // Equality function
@@ -358,18 +365,32 @@ export function powWorklet(base: string | number, exponent: string | number): st
     return baseStr;
   }
 
-  if (lessThanWorklet(exponentStr, 0)) {
-    return divWorklet(1, powWorklet(base, Math.abs(Number(exponent))));
+  // If exponent is negative => 1 / base^|exponent|
+  if (lessThanWorklet(exponentStr, '0')) {
+    return divWorklet('1', powWorklet(base, Math.abs(Number(exponentStr))));
   }
 
+  // Now handle exponent≥1
   const [bigIntBase, decimalPlaces] = removeDecimalWorklet(baseStr);
-  let result;
+  const exp = Number(exponentStr); // Assume integer exponent
+
+  let result: bigint;
   if (decimalPlaces > 0) {
-    const scaledBigIntBase = scaleUpWorklet(bigIntBase, decimalPlaces);
-    result = scaledBigIntBase ** BigInt(exponentStr) / BigInt(10) ** BigInt(20);
+    const scaledBase = scaleUpWorklet(bigIntBase, decimalPlaces);
+    const raw = scaledBase ** BigInt(exp);
+
+    // We have exp*20 decimals in raw => we only want 20 decimals in final
+    if (exp === 1) {
+      result = raw;
+    } else {
+      const divisor = BigInt(10) ** BigInt(20 * (exp - 1));
+      result = raw / divisor;
+    }
+
     return formatResultWorklet(result);
   } else {
-    result = bigIntBase ** BigInt(exponentStr);
+    // Integer base => bigInt^exponent
+    result = bigIntBase ** BigInt(exp);
     return result.toString();
   }
 }
@@ -377,8 +398,12 @@ export function powWorklet(base: string | number, exponent: string | number): st
 // toFixed function
 export function toFixedWorklet(num: string | number, decimalPlaces: number): string {
   'worklet';
-  const numStr = toStringWorklet(num);
+  // Clamp to internal precision
+  let safeDecimalPlaces = decimalPlaces;
+  if (safeDecimalPlaces > 20) safeDecimalPlaces = 20;
+  if (safeDecimalPlaces < 0) safeDecimalPlaces = 0;
 
+  const numStr = toStringWorklet(num);
   if (!isNumberStringWorklet(numStr)) {
     throw new Error('Argument must be a numeric string or number');
   }
@@ -386,25 +411,31 @@ export function toFixedWorklet(num: string | number, decimalPlaces: number): str
   const [bigIntNum, numDecimalPlaces] = removeDecimalWorklet(numStr);
   const scaledBigIntNum = scaleUpWorklet(bigIntNum, numDecimalPlaces);
 
-  const scaleFactor = BigInt(10) ** BigInt(20 - decimalPlaces);
+  const scaleFactor = BigInt(10) ** BigInt(20 - safeDecimalPlaces);
   const half = scaleFactor / BigInt(2);
 
-  // Handle sign separately so we correctly round negative numbers
   const sign = scaledBigIntNum < 0n ? -1n : 1n;
-  let absScaled = scaledBigIntNum * sign;
-  absScaled = absScaled + half;
+  let absScaled = sign < 0 ? -scaledBigIntNum : scaledBigIntNum;
+
+  // If the number is positive, add half of scaleFactor; if negative, subtract half
+  // This ensures we always round away from zero (e.g., 1.5 → 2, -1.5 → -2)
+  if (sign > 0) {
+    absScaled += half;
+  } else {
+    absScaled -= half;
+  }
+
   absScaled = absScaled / scaleFactor;
-  absScaled = absScaled * scaleFactor;
+  absScaled *= scaleFactor;
   const finalBigInt = absScaled * sign;
 
-  // Convert to string and pad without the sign
   const isNegative = finalBigInt < 0n;
   const finalAbsStr = (isNegative ? -finalBigInt : finalBigInt).toString().padStart(20 + 1, '0');
 
   const integerPart = finalAbsStr.slice(0, -20) || '0';
-  const fractionalPart = finalAbsStr.slice(-20, -20 + decimalPlaces).padEnd(decimalPlaces, '0');
+  const fractionalPart = finalAbsStr.slice(-20, -20 + safeDecimalPlaces).padEnd(safeDecimalPlaces, '0');
 
-  return (isNegative ? '-' : '') + `${integerPart}.${fractionalPart}`;
+  return (isNegative ? '-' : '') + integerPart + (safeDecimalPlaces ? '.' + fractionalPart : '');
 }
 
 // Ceil function
@@ -452,11 +483,17 @@ export function roundWorklet(num: string | number): string {
   }
 
   const [bigIntNum, decimalPlaces] = removeDecimalWorklet(numStr);
-  const scaledBigIntNum = scaleUpWorklet(bigIntNum, decimalPlaces);
+  let scaled = scaleUpWorklet(bigIntNum, decimalPlaces);
 
   const scaleFactor = BigInt(10) ** BigInt(20);
-  const roundBigInt = ((scaledBigIntNum + scaleFactor / BigInt(2)) / scaleFactor) * scaleFactor;
 
+  if (scaled >= 0n) {
+    scaled += scaleFactor / 2n;
+  } else {
+    scaled -= scaleFactor / 2n; // negative => subtract half
+  }
+
+  const roundBigInt = (scaled / scaleFactor) * scaleFactor;
   return formatResultWorklet(roundBigInt);
 }
 
