@@ -235,7 +235,7 @@
     "react-native-gesture-handler": "2.21.2",
     "react-native-get-random-values": "1.5.0",
     "react-native-haptic-feedback": "2.2.0",
-    "react-native-image-crop-picker": "0.41.2",
+    "react-native-image-crop-picker": "0.42.0",
     "react-native-indicators": "0.17.0",
     "react-native-ios-context-menu": "1.15.3",
     "react-native-keyboard-area": "1.0.6",
