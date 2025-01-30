@@ -1,69 +1,74 @@
-import React, { useCallback } from 'react'; // Add useRef import
-import { Box, Text, TextShadow, useTextStyle } from '@/design-system';
+import React, { useCallback } from 'react';
+import { AnimatedText, Text, TextShadow, useTextStyle } from '@/design-system';
 import { Input } from '@/components/inputs';
 import Animated, {
-  AnimatedRef,
-  dispatchCommand,
+  withTiming,
   runOnUI,
-  useAnimatedProps,
   useAnimatedRef,
   useAnimatedStyle,
   useSharedValue,
+  interpolateColor,
+  runOnJS,
 } from 'react-native-reanimated';
+import { NativeSyntheticEvent, TextInput, TextInputChangeEventData, TextInputProps } from 'react-native';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { colors } from '@/styles';
-import { NativeSyntheticEvent, TextInput, TextInputChangeEventData } from 'react-native';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 const BORDER_WIDTH = 2.5;
 const UNFOCUSED_BORDER_COLOR = 'rgba(255, 255, 255, 0.03)';
+const FOCUSED_BORDER_COLOR = 'rgba(255, 255, 255, 0.25)';
+const TITLE_GAP = 10;
 
-type SingleFieldInputProps = {
-  placeholder: string;
+interface SingleFieldInputProps extends TextInputProps {
   title: string;
-};
+  subtitle?: string;
+  onInputChange?: (text: string) => void;
+  validationWorklet?: (text: string) => string;
+}
 
-export function SingleFieldInput({ title, placeholder }: SingleFieldInputProps) {
+export function SingleFieldInput({ title, subtitle, style, validationWorklet, onInputChange, ...textInputProps }: SingleFieldInputProps) {
   const inputRef = useAnimatedRef<TextInput>();
   const isFocused = useSharedValue(false);
+  const focusProgress = useSharedValue(0);
   const inputValue = useSharedValue('');
+  const errorLabel = useSharedValue('');
 
-  const handleFocusWorklet = () => {
+  const handleFocusWorklet = useCallback(() => {
     'worklet';
     isFocused.value = true;
-  };
+    focusProgress.value = withTiming(1, TIMING_CONFIGS.fadeConfig);
+  }, [focusProgress, isFocused]);
 
-  const handleBlurWorklet = () => {
+  const handleBlurWorklet = useCallback(() => {
     'worklet';
     isFocused.value = false;
-  };
+    focusProgress.value = withTiming(0, TIMING_CONFIGS.fadeConfig);
+  }, [focusProgress, isFocused]);
 
-  const handleContainerPress = () => {
-    'worklet';
-    // isFocused.value = true;
-    // What is the difference between this and dispatchCommand?
-    inputRef.current?.focus();
-    // dispatchCommand(inputRef, 'focus');
-  };
-
-  const containerStyle = useAnimatedStyle(() => ({
-    borderColor: isFocused.value ? colors.blueGreyDark : UNFOCUSED_BORDER_COLOR,
-  }));
-
-  // const inputContainerStyle = useAnimatedStyle(() => ({
-  //   pointerEvents: _WORKLET && isFocused.value ? 'none' : 'auto',
-  // }));
-
-  const onInputChange = useCallback(
+  const _onChange = useCallback(
     (event: NativeSyntheticEvent<TextInputChangeEventData>) => {
-      inputValue.value = event.nativeEvent.text;
+      'worklet';
+      const text = event.nativeEvent.text;
+      inputValue.value = text;
+      if (validationWorklet) {
+        errorLabel.value = validationWorklet(text);
+      }
+      if (onInputChange) {
+        runOnJS(onInputChange)(text);
+      }
     },
-    [inputValue]
+    [inputValue, validationWorklet, onInputChange, errorLabel]
   );
 
-  // const searchInputValue = useAnimatedProps(() => {
-  //   return { defaultValue: placeholder, text: placeholder };
-  // });
+  const containerStyle = useAnimatedStyle(() => ({
+    borderColor:
+      errorLabel.value === '' ? interpolateColor(focusProgress.value, [0, 1], [UNFOCUSED_BORDER_COLOR, FOCUSED_BORDER_COLOR]) : colors.red,
+  }));
+
+  const titleContainerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: withTiming(errorLabel.value === '' ? 0 : -TITLE_GAP, TIMING_CONFIGS.fadeConfig) }],
+  }));
 
   const inputTextStyle = useTextStyle({
     align: 'left',
@@ -73,7 +78,6 @@ export function SingleFieldInput({ title, placeholder }: SingleFieldInputProps) 
   });
 
   return (
-    // <GestureHandlerButton disabled={true} onPressWorklet={handleContainerPress} scaleTo={0.965} style={inputContainerStyle}>
     <Animated.View
       style={[
         containerStyle,
@@ -85,28 +89,49 @@ export function SingleFieldInput({ title, placeholder }: SingleFieldInputProps) 
           borderWidth: BORDER_WIDTH,
           borderRadius: 28,
           paddingHorizontal: 20,
-          paddingVertical: 8 + 16,
         },
       ]}
     >
-      <TextShadow blur={12} shadowOpacity={0.12}>
-        <Text color="label" size="17pt" weight="heavy">
-          {title}
-        </Text>
-      </TextShadow>
+      <Animated.View style={{ position: 'relative' }}>
+        <Animated.View style={titleContainerStyle}>
+          <TextShadow blur={12} shadowOpacity={0.12}>
+            <Text color="label" size="17pt" weight="heavy">
+              {title}
+            </Text>
+          </TextShadow>
+        </Animated.View>
+        <Animated.View style={{ position: 'absolute', top: TITLE_GAP }}>
+          <AnimatedText
+            numberOfLines={1}
+            style={{
+              // arbitrary
+              width: 400,
+            }}
+            color="red"
+            size="13pt"
+            weight="heavy"
+          >
+            {errorLabel}
+          </AnimatedText>
+        </Animated.View>
+        {subtitle && (
+          <Text color="labelSecondary" size="13pt" weight="heavy">
+            {subtitle}
+          </Text>
+        )}
+      </Animated.View>
       <AnimatedInput
-        // animatedProps={searchInputValue}
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...textInputProps}
         ref={inputRef}
-        style={[inputTextStyle, { flex: 1, textAlign: 'right' }]}
+        style={[inputTextStyle, { flex: 1, textAlign: 'right', paddingVertical: 24 }, style]}
         onFocus={() => runOnUI(handleFocusWorklet)()}
         onBlur={() => runOnUI(handleBlurWorklet)()}
-        onChange={onInputChange}
-        placeholder={placeholder}
+        onChange={_onChange}
         spellCheck={false}
         textAlign="right"
         textAlignVertical="center"
       />
     </Animated.View>
-    // </GestureHandlerButton>
   );
 }
