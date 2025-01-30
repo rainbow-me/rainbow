@@ -533,7 +533,7 @@ export function createQueryStore<
           if (storeQueryKey !== currentQueryKey) set(state => ({ ...state, queryKey: currentQueryKey }));
 
           if (isStale()) {
-            fetch(currentParams, { force: true });
+            fetch(currentParams);
           } else {
             scheduleNextFetch(currentParams, undefined);
           }
@@ -1048,8 +1048,14 @@ function pruneCache<S extends StoreState<TData, TParams>, TData, TParams extends
   for (const key in state.queryCache) {
     const entry = state.queryCache[key];
     const isValid = !!entry && (pruneTime - (entry.lastFetchedAt ?? entry.errorInfo.lastFailedAt) <= entry.cacheTime || key === preserve);
-    if (isValid) newCache[key] = entry;
-    else prunedSomething = true;
+    if (!isValid) {
+      prunedSomething = true;
+    } else if (!keyToPreserve && entry.errorInfo && entry.errorInfo.retryCount > 0) {
+      newCache[key] = { ...entry, errorInfo: { ...entry.errorInfo, retryCount: 0 } } satisfies CacheEntry<TData>;
+      prunedSomething = true;
+    } else {
+      newCache[key] = entry;
+    }
   }
 
   if (!prunedSomething) return state;
