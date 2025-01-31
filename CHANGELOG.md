@@ -15,6 +15,36 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.56] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.56)
+
+### Added
+
+- Added better error handling on swaps flow with damaged wallets (#6398)
+- Expanded state v2, phase 1 (#6332)
+
+### Changed
+
+- Implemented new logic for backup prompt (#6388)
+- Bumped rudderstack (#6407)
+- Enabled third party positions to be calculated in address summary (#6404)
+- Query store optimizations (#6413)
+- Updated discover search to v3 endpoint (#6394)
+- Optimized backendNetworks store (#6409)
+- We now prevent e2e flow to run while PRs are in draft mode (#6406)
+- We’ve bumped slippage from 2 to 5 except on the following networks; mainnet, polygon and BSC (#6419)
+- Made significant improvements in the transaction handling architecture (#6390)
+- Bumped react native image crop picker (#6430)
+
+### Fixed
+
+- Fixed a crash that was caused by improper error handling of cloud backup system
+- Fixed an issue where on some Android devices the wallet UX navigation wasn’t scrollable (#6393)
+- Fixed an issue where the wrong native asset was being displayed on SignTransactionSheet (#6395)
+- Fixed inconsistencies between swaps store slippage and shared value (#6399)
+- Fixed emoji size type which was causing a crash on Android (#6421)
+- Fixed an issue with back up prompt not being shown on new wallet creation (#6423, #6426)
+- Fixed a bug where the buy button on a native asset was disabled (#6429)
+
 ## [1.9.55] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.55)
 
 ### Changed
