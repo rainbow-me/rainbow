@@ -7,7 +7,7 @@ import ViewShot from 'react-native-view-shot';
 import WebView, { WebViewProps } from 'react-native-webview';
 import { globalColors, useColorMode } from '@/design-system';
 import { IS_DEV, IS_IOS } from '@/env';
-import { BrowserStore, useBrowserStore } from '@/state/browser/browserStore';
+import { BrowserState, useBrowserStore } from '@/state/browser/browserStore';
 import { BrowserHistoryStore } from '@/state/browserHistory';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { AnimatedFasterImage } from '../AnimatedComponents/AnimatedFasterImage';
@@ -74,8 +74,8 @@ const HomepageOrWebView = ({
 }: {
   addRecent: BrowserHistoryStore['addRecent'];
   backgroundColor: SharedValue<string>;
-  setLogo: BrowserStore['setLogo'];
-  setTitle: BrowserStore['setTitle'];
+  setLogo: BrowserState['setLogo'];
+  setTitle: BrowserState['setTitle'];
   tabId: string;
   viewShotRef: MutableRefObject<ViewShot | null>;
 }) => {
@@ -149,8 +149,8 @@ const FreezableWebViewComponent = ({
 }: {
   addRecent: BrowserHistoryStore['addRecent'];
   backgroundColor: SharedValue<string>;
-  setLogo: BrowserStore['setLogo'];
-  setTitle: BrowserStore['setTitle'];
+  setLogo: BrowserState['setLogo'];
+  setTitle: BrowserState['setTitle'];
   tabId: string;
   viewShotRef: MutableRefObject<ViewShot | null>;
 }) => {
