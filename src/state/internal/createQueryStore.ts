@@ -639,13 +639,36 @@ export function createQueryStore<
         }
 
         if (!skipStoreUpdates) {
+          if (activeRefetchTimeout) {
+            clearTimeout(activeRefetchTimeout);
+            activeRefetchTimeout = null;
+          }
           if (error || !isLoading) set(state => ({ ...state, error: null, status: QueryStatuses.Loading }));
           activeFetch = { key: currentQueryKey };
         }
 
         const fetchOperation = async () => {
           try {
-            if (enableLogs) console.log('[🔄 Fetching 🔄] for params:', JSON.stringify(effectiveParams));
+            if (enableLogs) {
+              if (!isInternalFetch && params && !hasAllRequiredParams(params, paramKeys)) {
+                console.log(
+                  '[🔄 Fetching with Partial Params 🔄]\n',
+                  '- Provided params:',
+                  `${JSON.stringify(params)}\n`,
+                  '- Filled in params:',
+                  `${JSON.stringify(
+                    Object.fromEntries(
+                      Object.keys(effectiveParams)
+                        .filter(key => !(key in params))
+                        .map(key => [key, effectiveParams[key]])
+                    )
+                  )}`
+                );
+              } else {
+                console.log('[🔄 Fetching 🔄] for params:', JSON.stringify(effectiveParams));
+              }
+            }
+
             const rawResult = await (abortInterruptedFetches && !skipStoreUpdates
               ? fetchWithAbortControl(effectiveParams)
               : fetcher(effectiveParams, null, null));
@@ -831,7 +854,7 @@ export function createQueryStore<
         const currentQueryKey = params ? getQueryKey(params) : get().queryKey;
         const cacheEntry = get().queryCache[currentQueryKey];
         if (keepPreviousData) return cacheEntry?.data ?? null;
-        const isExpired = !!cacheEntry?.lastFetchedAt && Date.now() - cacheEntry.lastFetchedAt > cacheEntry.cacheTime;
+        const isExpired = !!cacheEntry?.lastFetchedAt && Date.now() - cacheEntry.lastFetchedAt >= cacheEntry.cacheTime;
         return isExpired ? null : cacheEntry?.data ?? null;
       },
 
@@ -860,7 +883,7 @@ export function createQueryStore<
         if (!lastFetchedAt) return true;
 
         const effectiveCacheTime = cacheTimeOverride ?? cacheEntry?.cacheTime;
-        return effectiveCacheTime === undefined || Date.now() - lastFetchedAt > effectiveCacheTime;
+        return effectiveCacheTime === undefined || Date.now() - lastFetchedAt >= effectiveCacheTime;
       },
 
       isStale(staleTimeOverride?: number) {
@@ -870,7 +893,7 @@ export function createQueryStore<
 
         if (!lastFetchedAt) return true;
         const effectiveStaleTime = staleTimeOverride ?? staleTime;
-        return Date.now() - lastFetchedAt > effectiveStaleTime;
+        return Date.now() - lastFetchedAt >= effectiveStaleTime;
       },
 
       reset() {
@@ -1063,7 +1086,7 @@ function pruneCache<S extends StoreState<TData, TParams>, TData, TParams extends
 
   for (const key in state.queryCache) {
     const entry = state.queryCache[key];
-    const isValid = !!entry && (pruneTime - (entry.lastFetchedAt ?? entry.errorInfo.lastFailedAt) <= entry.cacheTime || key === preserve);
+    const isValid = !!entry && (pruneTime - (entry.lastFetchedAt ?? entry.errorInfo.lastFailedAt) < entry.cacheTime || key === preserve);
     if (!isValid) {
       prunedSomething = true;
     } else if (!keyToPreserve && entry.errorInfo && entry.errorInfo.retryCount > 0) {
