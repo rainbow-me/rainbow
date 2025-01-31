@@ -64,11 +64,17 @@ interface FetchOptions {
    */
   skipStoreUpdates?: boolean;
   /**
-   * Overrides the default stale duration for this fetch, in milliseconds.
-   * If the fetch is successful, the subsequently scheduled refetch will occur after
-   * the specified duration.
+   * Overrides the default stale time for this fetch, which is used to determine whether the requested data
+   * should be refetched, or returned from the cache if available.
    */
   staleTime?: number;
+  /**
+   * Dictates whether, if params are passed to `fetch`, the store's `queryKey` should be updated based on
+   * those params following the success or failure of the fetch operation.
+   *
+   * Defaults to `true` unless `skipStoreUpdates: true` is set, in which case the default becomes `false`.
+   */
+  updateQueryKey?: boolean;
 }
 
 /**
@@ -526,19 +532,19 @@ export function createQueryStore<
         if (!enabled) return;
 
         if (isFirstSubscription) {
-          const { fetch, isStale, queryKey: storeQueryKey } = get();
+          const { isStale, queryKey: storeQueryKey } = get();
           const currentParams = getCurrentResolvedParams(attachVals, directValues);
           const currentQueryKey = getQueryKey(currentParams);
 
           if (storeQueryKey !== currentQueryKey) set(state => ({ ...state, queryKey: currentQueryKey }));
 
           if (isStale()) {
-            fetch(currentParams);
+            baseMethods.fetch(currentParams, undefined, true);
           } else {
             scheduleNextFetch(currentParams, undefined);
           }
         } else if (disableAutoRefetching && !shouldThrottle) {
-          get().fetch();
+          baseMethods.fetch(undefined, undefined, true);
         }
       },
 
@@ -552,9 +558,8 @@ export function createQueryStore<
     });
 
     const scheduleNextFetch = (params: TParams, options: FetchOptions | undefined) => {
-      if (disableAutoRefetching) return;
-      const effectiveStaleTime = options?.staleTime ?? staleTime;
-      if (effectiveStaleTime <= 0 || effectiveStaleTime === Infinity) return;
+      if (disableAutoRefetching || options?.skipStoreUpdates) return;
+      if (staleTime <= 0 || staleTime === Infinity) return;
 
       if (activeRefetchTimeout) {
         clearTimeout(activeRefetchTimeout);
@@ -564,12 +569,12 @@ export function createQueryStore<
       const currentQueryKey = getQueryKey(params);
       const lastFetchedAt =
         (disableCache ? lastFetchKey === currentQueryKey && get().lastFetchedAt : get().queryCache[currentQueryKey]?.lastFetchedAt) || null;
-      const timeUntilRefetch = lastFetchedAt ? effectiveStaleTime - (Date.now() - lastFetchedAt) : effectiveStaleTime;
+      const timeUntilRefetch = lastFetchedAt ? staleTime - (Date.now() - lastFetchedAt) : staleTime;
 
       activeRefetchTimeout = setTimeout(() => {
         const { enabled, subscriptionCount } = subscriptionManager.get();
         if (enabled && subscriptionCount > 0) {
-          get().fetch(params, { force: true });
+          baseMethods.fetch(params, { force: true }, true);
         }
       }, timeUntilRefetch);
     };
@@ -578,7 +583,7 @@ export function createQueryStore<
       ...customStateCreator(set, get, api),
       ...initialData,
 
-      async fetch(params: TParams | Partial<TParams> | undefined, options: FetchOptions | undefined) {
+      async fetch(params: TParams | Partial<TParams> | undefined, options: FetchOptions | undefined, isInternalFetch = false) {
         if (!options?.force && !subscriptionManager.get().enabled) return null;
 
         const { error, status } = get();
@@ -592,6 +597,15 @@ export function createQueryStore<
         const currentQueryKey = getQueryKey(effectiveParams);
         const isLoading = status === QueryStatuses.Loading;
         const skipStoreUpdates = !!options?.skipStoreUpdates;
+        const shouldUpdateQueryKey =
+          typeof options?.updateQueryKey === 'boolean'
+            ? options.updateQueryKey
+            : isInternalFetch
+              ? keepPreviousData
+              : // Manual fetch call default
+                skipStoreUpdates
+                ? false
+                : !!params;
 
         if (activeFetch?.promise && activeFetch.key === currentQueryKey && isLoading && !options?.force) {
           return activeFetch.promise;
@@ -617,7 +631,9 @@ export function createQueryStore<
               scheduleNextFetch(effectiveParams, options);
             }
             if (enableLogs) console.log('[💾 Returning Cached Data 💾] for params:', JSON.stringify(effectiveParams));
-            if (keepPreviousData && storeQueryKey !== currentQueryKey) set(state => ({ ...state, queryKey: currentQueryKey }));
+            if (shouldUpdateQueryKey && storeQueryKey !== currentQueryKey) {
+              set(state => ({ ...state, queryKey: currentQueryKey }));
+            }
             return cacheEntry?.data ?? null;
           }
         }
@@ -656,7 +672,7 @@ export function createQueryStore<
                 ...state,
                 error: null,
                 lastFetchedAt,
-                queryKey: keepPreviousData ? currentQueryKey : state.queryKey,
+                queryKey: shouldUpdateQueryKey ? currentQueryKey : state.queryKey,
                 status: QueryStatuses.Success,
               };
 
@@ -747,7 +763,7 @@ export function createQueryStore<
                   activeRefetchTimeout = setTimeout(() => {
                     const { enabled, subscriptionCount } = subscriptionManager.get();
                     if (enabled && subscriptionCount > 0) {
-                      get().fetch(params, { force: true });
+                      baseMethods.fetch(params, { force: true }, true);
                     }
                   }, errorRetryDelay);
                 }
@@ -769,7 +785,7 @@ export function createQueryStore<
                     },
                   } satisfies CacheEntry<TData>,
                 },
-                queryKey: keepPreviousData ? currentQueryKey : state.queryKey,
+                queryKey: shouldUpdateQueryKey ? currentQueryKey : state.queryKey,
                 status: QueryStatuses.Error,
               }));
             } else {
@@ -790,7 +806,7 @@ export function createQueryStore<
                     },
                   } satisfies CacheEntry<TData>,
                 },
-                queryKey: keepPreviousData ? currentQueryKey : state.queryKey,
+                queryKey: shouldUpdateQueryKey ? currentQueryKey : state.queryKey,
                 status: QueryStatuses.Error,
               }));
             }
@@ -880,7 +896,7 @@ export function createQueryStore<
           const currentParams = getCurrentResolvedParams(attachVals, directValues);
           const currentKey = state.queryKey;
           if (currentKey !== lastFetchKey || state.isStale()) {
-            state.fetch(currentParams);
+            baseMethods.fetch(currentParams, undefined, true);
           } else {
             scheduleNextFetch(currentParams, undefined);
           }
@@ -942,7 +958,7 @@ export function createQueryStore<
       const newQueryKey = getQueryKey(newParams);
       queryStore.setState(state => ({ ...state, queryKey: newQueryKey }));
     }
-    queryStore.getState().fetch(newParams);
+    queryStore.getState().fetch(newParams, { updateQueryKey: keepPreviousData });
   };
 
   if (attachVals?.enabled) {
