@@ -198,15 +198,15 @@ type StoreState<TData, TParams extends Record<string, unknown>> = Pick<
 export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknown>, TData, S extends StoreState<TData, TParams>> = {
   /**
    * **A function responsible for fetching data from a remote source.**
-   * Receives parameters of type TParams and optional abort/cancel controls.
+   * Receives parameters of type TParams and optionally an abort controller.
    * Returns either a promise or a raw data value of type TQueryFnData.
    *
    * ---
-   * `abortController` and `cancel` are by default available, unless either:
+   * `abortController` is by default available, unless either:
    * - `abortInterruptedFetches` is set to `false` in the store's config
    * - The fetch was manually triggered with `skipStoreUpdates: true`
    */
-  fetcher: (params: TParams, abortController: AbortController | null, cancel: (() => void) | null) => TQueryFnData | Promise<TQueryFnData>;
+  fetcher: (params: TParams, abortController: AbortController | null) => TQueryFnData | Promise<TQueryFnData>;
   /**
    * **A callback invoked whenever a fetch operation fails.**
    * Receives the error and the current retry count.
@@ -496,10 +496,7 @@ export function createQueryStore<
     status: QueryStatuses.Idle,
   };
 
-  const subscriptionManager = new SubscriptionManager({
-    disableAutoRefetching,
-    initialEnabled: initialData.enabled,
-  });
+  const subscriptionManager = new SubscriptionManager({ disableAutoRefetching });
 
   const abortActiveFetch = () => {
     if (activeAbortController) {
@@ -516,7 +513,7 @@ export function createQueryStore<
       return await new Promise((resolve, reject) => {
         abortController.signal.addEventListener('abort', () => reject(ABORT_ERROR), { once: true });
 
-        Promise.resolve(fetcher(params, abortController, abortController.abort)).then(resolve, reject);
+        Promise.resolve(fetcher(params, abortController)).then(resolve, reject);
       });
     } finally {
       if (activeAbortController === abortController) {
@@ -671,7 +668,7 @@ export function createQueryStore<
 
             const rawResult = await (abortInterruptedFetches && !skipStoreUpdates
               ? fetchWithAbortControl(effectiveParams)
-              : fetcher(effectiveParams, null, null));
+              : fetcher(effectiveParams, null));
 
             const lastFetchedAt = Date.now();
             if (enableLogs) console.log('[✅ Fetch Successful ✅] for params:', JSON.stringify(effectiveParams));
@@ -961,7 +958,7 @@ export function createQueryStore<
     ? createRainbowStore<S>(createState, combinedPersistConfig)
     : createWithEqualityFn<S>()(subscribeWithSelector(createState), Object.is);
 
-  const { error, queryKey } = queryStore.getState();
+  const { enabled: initialStoreEnabled, error, queryKey } = queryStore.getState();
   if (queryKey && !error) lastFetchKey = queryKey;
 
   if (params) {
@@ -990,10 +987,9 @@ export function createQueryStore<
 
     if (subscribeFn) {
       let oldVal = attachVal.value;
-      if (oldVal) {
-        queryStore.setState(state => ({ ...state, enabled: true }));
-        subscriptionManager.setEnabled(true);
-      }
+      if (initialStoreEnabled !== oldVal) queryStore.setState(state => ({ ...state, enabled: oldVal }));
+      if (oldVal) subscriptionManager.setEnabled(oldVal);
+
       if (enableLogs) console.log('[🌀 Enabled Subscription 🌀] Initial value:', oldVal);
 
       const unsub = subscribeFn(() => {
@@ -1006,6 +1002,8 @@ export function createQueryStore<
       });
       paramUnsubscribes.push(unsub);
     }
+  } else if (initialStoreEnabled) {
+    subscriptionManager.setEnabled(initialStoreEnabled);
   }
 
   for (const k in attachVals?.params) {
@@ -1066,7 +1064,7 @@ function hasAllRequiredParams<TParams extends Record<string, unknown>>(
   requiredKeys: (keyof TParams)[]
 ): params is TParams {
   if (!params) return false;
-  for (const key in requiredKeys) {
+  for (const key of requiredKeys) {
     if (!(key in params)) return false;
   }
   return true;
