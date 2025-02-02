@@ -32,11 +32,7 @@ async function popularTokensQueryFunction({ chainId }: PopularTokensParams) {
   }
 }
 
-type PopularTokensState = {
-  results: SearchAsset[];
-};
-
-export const usePopularTokensStore = createQueryStore<SearchAsset[], PopularTokensParams, PopularTokensState>(
+export const usePopularTokensStore = createQueryStore<SearchAsset[], PopularTokensParams>(
   {
     fetcher: ({ chainId }) => popularTokensQueryFunction({ chainId }),
     cacheTime: time.days(1),
