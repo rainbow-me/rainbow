@@ -3,6 +3,27 @@ import { SearchAsset } from '@/__swaps__/types/search';
 import { Address } from 'viem';
 import { isNativeAsset } from '@/handlers/assets';
 
+export function parseTokenSearchResults(assets: SearchAsset[]): SearchAsset[] {
+  const results: SearchAsset[] = [];
+
+  for (const asset of assets) {
+    const assetNetworks = asset.networks;
+    const mainnetInfo = assetNetworks[ChainId.mainnet];
+    const address = asset.address;
+    const chainId = asset.chainId;
+    const uniqueId = `${address}_${chainId}`;
+
+    results.push({
+      ...asset,
+      isNativeAsset: isNativeAsset(address, chainId),
+      mainnetAddress: mainnetInfo ? mainnetInfo.address : chainId === ChainId.mainnet ? address : ('' as Address),
+      uniqueId,
+    });
+  }
+
+  return results;
+}
+
 export function parseTokenSearch(assets: SearchAsset[], chainId?: ChainId): SearchAsset[] {
   const results: SearchAsset[] = [];
 
