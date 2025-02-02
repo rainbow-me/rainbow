@@ -1,4 +1,3 @@
-import { isAddress } from '@ethersproject/address';
 import qs from 'qs';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
@@ -164,8 +163,6 @@ async function tokenSearchQueryFunction(
     query,
   };
 
-  const isAddressSearch = query && isAddress(query);
-
   const searchDefaultVerifiedList = query === '';
   if (searchDefaultVerifiedList) {
     queryParams.list = 'verifiedAssets';
@@ -174,18 +171,8 @@ async function tokenSearchQueryFunction(
   const url = `${searchDefaultVerifiedList ? `/${chainId}` : ''}/?${qs.stringify(queryParams)}`;
 
   try {
-    if (isAddressSearch) {
-      const tokenSearch = await tokenSearchClient.get<{ data: SearchAsset[] }>(url);
-
-      if (tokenSearch && tokenSearch.data.data.length > 0) {
-        return selectTopSearchResults({ abortController, data: parseTokenSearchResults(tokenSearch.data.data), query, toChainId: chainId });
-      } else {
-        return NO_RESULTS;
-      }
-    } else {
-      const tokenSearch = await tokenSearchClient.get<{ data: SearchAsset[] }>(url);
-      return selectTopSearchResults({ abortController, data: parseTokenSearchResults(tokenSearch.data.data), query, toChainId: chainId });
-    }
+    const tokenSearch = await tokenSearchClient.get<{ data: SearchAsset[] }>(url);
+    return selectTopSearchResults({ abortController, data: parseTokenSearchResults(tokenSearch.data.data), query, toChainId: chainId });
   } catch (e) {
     logger.error(new RainbowError('[tokenSearchQueryFunction]: Token search failed'), { url });
     return NO_RESULTS;
