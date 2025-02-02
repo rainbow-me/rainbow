@@ -155,7 +155,7 @@ function getExactMatches(data: SearchAsset[], query: string, slice?: number): Se
 export const ADDRESS_SEARCH_KEY: TokenSearchAssetKey[] = ['address'];
 export const NAME_SYMBOL_SEARCH_KEYS: TokenSearchAssetKey[] = ['name', 'symbol'];
 
-async function tokenSearchQueryFunction(
+export async function tokenSearchQueryFunction(
   { chainId, query }: TokenSearchParams,
   abortController: AbortController | null
 ): Promise<VerifiedTokenData> {

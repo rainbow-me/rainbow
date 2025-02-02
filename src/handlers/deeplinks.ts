@@ -25,7 +25,7 @@ import { GasSpeed } from '@/__swaps__/types/gas';
 
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { queryTokenSearch } from '@/__swaps__/screens/Swap/resources/search/search';
+import { tokenSearchQueryFunction } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { isAddress } from 'viem';
 import { navigateToSwaps, SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
@@ -354,13 +354,15 @@ const querySwapAsset = async (uniqueId: string | undefined): Promise<ParsedSearc
 
   const userAsset = userAssetsStore.getState().getUserAsset(uniqueId) || undefined;
 
-  const searchAsset = await queryTokenSearch({
-    chainId,
-    query: address.toLowerCase(),
-    keys: ['address'],
-    threshold: 'CASE_SENSITIVE_EQUAL',
-    list: 'verifiedAssets',
-  }).then(res => res[0]);
+  const searchResults = await tokenSearchQueryFunction({ chainId, query: address.toLowerCase() }, null);
+
+  const possibleResults = [
+    searchResults.bridgeAsset,
+    ...searchResults.crosschainResults,
+    ...searchResults.verifiedAssets,
+    ...searchResults.unverifiedAssets,
+  ];
+  const searchAsset = possibleResults.filter(x => !!x)?.[0];
 
   if (!searchAsset) return userAsset;
 
