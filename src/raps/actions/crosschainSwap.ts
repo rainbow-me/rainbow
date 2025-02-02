@@ -1,5 +1,5 @@
 import { Signer } from '@ethersproject/abstract-signer';
-import { CrosschainQuote, fillCrosschainQuote } from '@rainbow-me/swaps';
+import { CrosschainQuote, fillCrosschainQuote, SwapType } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { add } from '@/helpers/utilities';
@@ -155,7 +155,7 @@ export const executeCrosschainSwap = async ({
   wallet: Signer;
   referrer?: ReferrerType;
 }) => {
-  if (!wallet || !quote) return null;
+  if (!wallet || !quote || quote.swapType !== SwapType.crossChain) return null;
 
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,

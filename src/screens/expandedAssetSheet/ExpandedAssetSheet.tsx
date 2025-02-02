@@ -9,6 +9,7 @@ import { Box, useColorMode } from '@/design-system';
 import { SHEET_FOOTER_HEIGHT, SheetFooter } from './components/SheetFooter';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { RootStackParamList } from '@/navigation/types';
+import { safeAreaInsetValues } from '@/utils';
 
 const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
 const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
@@ -28,6 +29,10 @@ function ExpandedAssetSheetContent() {
         hideHandle
         additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
         bottomInset={SHEET_FOOTER_HEIGHT}
+        scrollIndicatorInsets={{
+          bottom: safeAreaInsetValues.bottom + 32 + 46,
+          top: safeAreaInsetValues.top + 32,
+        }}
       >
         <SheetContent />
       </SlackSheet>

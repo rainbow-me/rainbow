@@ -1,7 +1,8 @@
 import { debounce } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
-import { StateCreator, create } from 'zustand';
+import { StateCreator } from 'zustand';
 import { PersistOptions, PersistStorage, StorageValue, persist, subscribeWithSelector } from 'zustand/middleware';
+import { createWithEqualityFn } from 'zustand/traditional';
 import { IS_IOS } from '@/env';
 import { RainbowError, logger } from '@/logger';
 
@@ -60,15 +61,15 @@ export interface RainbowPersistConfig<S, PersistedState = Partial<S>> {
  * @param persistConfig - The configuration options for the persistable Rainbow store.
  * @returns A Zustand store with the specified state and optional persistence.
  */
-export function createRainbowStore<S = unknown, PersistedState extends Partial<S> = Partial<S>>(
+export function createRainbowStore<S, PersistedState extends Partial<S> = Partial<S>>(
   createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]>,
   persistConfig?: RainbowPersistConfig<S, PersistedState>
 ) {
-  if (!persistConfig) return create<S>()(subscribeWithSelector(createState));
+  if (!persistConfig) return createWithEqualityFn<S>()(subscribeWithSelector(createState), Object.is);
 
   const { persistStorage, version } = createPersistStorage<S, PersistedState>(persistConfig);
 
-  return create<S>()(
+  return createWithEqualityFn<S>()(
     subscribeWithSelector(
       persist(createState, {
         migrate: persistConfig.migrate,
@@ -77,7 +78,8 @@ export function createRainbowStore<S = unknown, PersistedState extends Partial<S
         storage: persistStorage,
         version,
       })
-    )
+    ),
+    Object.is
   );
 }
 
@@ -134,7 +136,7 @@ function createPersistStorage<S, PersistedState extends Partial<S>>(config: Rain
       }
     },
     persistThrottleMs,
-    { leading: false, trailing: true, maxWait: persistThrottleMs }
+    { leading: false, maxWait: persistThrottleMs, trailing: true }
   );
 
   const persistStorage: PersistStorage<PersistedState> = {
@@ -195,31 +197,32 @@ function defaultDeserializeState<PersistedState>(serializedState: string, should
   }
 }
 
-interface MapSerialization {
+interface SerializedMap {
   __type: 'Map';
   entries: [unknown, unknown][];
 }
 
-function isSerializedMap(value: unknown): value is MapSerialization {
+function isSerializedMap(value: unknown): value is SerializedMap {
   return typeof value === 'object' && value !== null && (value as Record<string, unknown>).__type === 'Map';
 }
 
-interface SetSerialization {
+interface SerializedSet {
   __type: 'Set';
   values: unknown[];
 }
 
-function isSerializedSet(value: unknown): value is SetSerialization {
+function isSerializedSet(value: unknown): value is SerializedSet {
   return typeof value === 'object' && value !== null && (value as Record<string, unknown>).__type === 'Set';
 }
 
 /**
  * Replacer function to handle serialization of Maps and Sets.
  */
-function replacer(key: string, value: unknown): unknown {
+function replacer(_: string, value: unknown): unknown {
   if (value instanceof Map) {
     return { __type: 'Map', entries: Array.from(value.entries()) };
-  } else if (value instanceof Set) {
+  }
+  if (value instanceof Set) {
     return { __type: 'Set', values: Array.from(value) };
   }
   return value;
@@ -228,11 +231,8 @@ function replacer(key: string, value: unknown): unknown {
 /**
  * Reviver function to handle deserialization of Maps and Sets.
  */
-function reviver(key: string, value: unknown): unknown {
-  if (isSerializedMap(value)) {
-    return new Map(value.entries);
-  } else if (isSerializedSet(value)) {
-    return new Set(value.values);
-  }
+function reviver(_: string, value: unknown): unknown {
+  if (isSerializedMap(value)) return new Map(value.entries);
+  if (isSerializedSet(value)) return new Set(value.values);
   return value;
 }

@@ -1,6 +1,6 @@
 import React, { ReactElement, useMemo } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
-import { IS_IOS } from '@/env';
+import { IS_IOS, IS_TEST } from '@/env';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useColorMode } from '../../color/ColorMode';
 import { useForegroundColor } from '../../color/useForegroundColor';
@@ -11,13 +11,13 @@ export interface TextShadowProps {
   blur?: number;
   children: ReactElement<TextProps | AnimatedTextProps>;
   color?: string;
+  containerStyle?: StyleProp<ViewStyle>;
   disabled?: boolean;
   enableInLightMode?: boolean;
   enableOnAndroid?: boolean;
   shadowOpacity?: number;
   x?: number;
   y?: number;
-  containerStyle?: StyleProp<ViewStyle>;
 }
 
 const isAnimatedTextChild = (child: ReactElement<TextProps | AnimatedTextProps>): child is ReactElement<AnimatedTextProps> => {
@@ -28,13 +28,13 @@ export const TextShadow = ({
   blur = 16,
   children,
   color,
+  containerStyle,
   disabled,
   enableInLightMode,
   enableOnAndroid,
   shadowOpacity = 0.6,
   x = 0,
   y = 0,
-  containerStyle,
 }: TextShadowProps) => {
   const { isDarkMode } = useColorMode();
 
@@ -58,14 +58,15 @@ export const TextShadow = ({
             }
           : {}),
         padding: extraSpaceForShadow,
-        textShadowColor: opacity(color || inferredTextColor, shadowOpacity),
+        textShadowColor:
+          (isDarkMode || enableInLightMode) && !disabled ? opacity(color || inferredTextColor, shadowOpacity) : 'transparent',
         textShadowOffset: { width: x, height: y },
         textShadowRadius: blur,
       },
     ];
-  }, [blur, color, inferredTextColor, isAnimatedText, shadowOpacity, x, y]);
+  }, [blur, color, disabled, enableInLightMode, inferredTextColor, isAnimatedText, isDarkMode, shadowOpacity, x, y]);
 
-  return !disabled && (IS_IOS || enableOnAndroid) && (isDarkMode || enableInLightMode) ? (
+  return !IS_TEST && (IS_IOS || enableOnAndroid) ? (
     <>
       {isAnimatedText ? (
         // eslint-disable-next-line react/jsx-props-no-spreading
@@ -73,8 +74,8 @@ export const TextShadow = ({
       ) : (
         <View style={[internalContainerStyle, containerStyle]}>
           <Text
-            numberOfLines={children.props.numberOfLines}
             color={{ custom: 'transparent' }}
+            numberOfLines={children.props.numberOfLines}
             size={children.props.size}
             style={[children.props.style, internalTextStyle]}
             weight={children.props.weight}

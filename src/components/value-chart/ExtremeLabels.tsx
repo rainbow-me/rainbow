@@ -83,7 +83,11 @@ const Labels = ({ color, width, isCard }: { color: string; width: number; isCard
           style={{ bottom: isCard ? -24 : -40 }}
           width={width}
         >
-          {formatNative(smallestY.y.toString(), null, nativeSelected)}
+          {formatNative({
+            defaultPriceValue: null,
+            nativeSelected,
+            value: smallestY.y.toString(),
+          })}
         </CenteredLabel>
       ) : null}
       {positionMax ? (
@@ -94,7 +98,11 @@ const Labels = ({ color, width, isCard }: { color: string; width: number; isCard
           style={{ top: -20, left: isCard ? 0 : 40 }}
           width={width}
         >
-          {formatNative(greatestY.y.toString(), null, nativeSelected)}
+          {formatNative({
+            defaultPriceValue: null,
+            nativeSelected,
+            value: greatestY.y.toString(),
+          })}
         </CenteredLabel>
       ) : null}
     </>

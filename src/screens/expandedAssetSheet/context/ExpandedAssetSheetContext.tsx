@@ -17,6 +17,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useTheme } from '@/theme';
 import { time } from '@/utils';
+import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
 
 export enum SectionId {
   PROFIT = 'profit',
@@ -50,6 +51,7 @@ interface AccentColors {
   opacity2: string;
   opacity1: string;
   color: string;
+  textOnAccent: string;
   background: string;
   border: string;
   borderSecondary: string;
@@ -79,6 +81,7 @@ type ExpandedAssetSheetContextType = {
   assetMetadata: TokenMetadata | null | undefined;
   expandedSections: SharedValue<Record<SectionId, boolean>>;
   isOwnedAsset: boolean;
+  isLoadingMetadata: boolean;
 };
 
 type ExpandedAssetSheetContextProviderProps = {
@@ -186,7 +189,7 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
   // @ts-expect-error: the field with a type difference is not used & irrelevant to the hook (price)
   const assetColor = useColorForAsset(fullAsset);
 
-  const { data: metadata } = useAdditionalAssetData({
+  const { data: metadata, isLoading: isLoadingMetadata } = useAdditionalAssetData({
     address,
     chainId,
     currency: nativeCurrency,
@@ -201,6 +204,12 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
         ).css()
       : colors.white;
 
+    const { textColor } = extractColorValueForColors({
+      colors: {
+        primary: assetColor,
+      },
+    });
+
     return {
       opacity100: assetColor,
       opacity80: colors.alpha(assetColor, 0.8),
@@ -214,6 +223,7 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
       opacity2: colors.alpha(assetColor, 0.02),
       opacity1: colors.alpha(assetColor, 0.01),
       color: assetColor,
+      textOnAccent: textColor[isDarkMode ? 'dark' : 'light'],
       border: colors.alpha(assetColor, 0.03),
       borderSecondary: colors.alpha(assetColor, 0.02),
       surface: colors.alpha(assetColor, 0.06),
@@ -231,6 +241,7 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
         assetMetadata: metadata,
         expandedSections,
         isOwnedAsset,
+        isLoadingMetadata,
       }}
     >
       {children}

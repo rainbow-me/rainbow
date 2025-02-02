@@ -678,7 +678,7 @@
       "asset": {
         "about_asset": "About %{assetName}",
         "balance": "Balance",
-        "get_asset": "Buy %{assetSymbol}",
+        "get_asset": "Get %{assetSymbol}",
         "market_cap": "Market cap",
         "read_more_button": "Read more",
         "available_networks": "Available on %{availableNetworks} networks",
@@ -724,7 +724,9 @@
         "buy": {
           "title": "Buy",
           "pay_with": "Pay with",
-          "available_balance": "Available Balance"
+          "available_balance": "Available Balance",
+          "open_swaps": "Open Swaps",
+          "low_balance": "Low balance"
         },
         "about": {
           "title": "About",
@@ -751,7 +753,7 @@
         },
         "no_price_data": "No price data",
         "past_timespan": "Past %{formattedTimespan}",
-        "today": "Today",
+        "today": "Past Day",
         "token_pool": "%{tokenName} Pool"
       },
       "contact_profile": {
