@@ -1,6 +1,10 @@
 import qs from 'qs';
+import { getProvider } from '@/handlers/web3';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
+import { getAddress, isAddress } from '@ethersproject/address';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { Contract } from '@ethersproject/contracts';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
@@ -155,13 +159,57 @@ function getExactMatches(data: SearchAsset[], query: string, slice?: number): Se
 export const ADDRESS_SEARCH_KEY: TokenSearchAssetKey[] = ['address'];
 export const NAME_SYMBOL_SEARCH_KEYS: TokenSearchAssetKey[] = ['name', 'symbol'];
 
-async function tokenSearchQueryFunction(
+const getImportedAsset = async (searchQuery: string, chainId: number = ChainId.mainnet): Promise<SearchAsset[]> => {
+  if (isAddress(searchQuery)) {
+    const provider = getProvider({ chainId });
+    const tokenContract = new Contract(searchQuery, erc20ABI, provider);
+    try {
+      const [name, symbol, decimals, address] = await Promise.all([
+        tokenContract.name(),
+        tokenContract.symbol(),
+        tokenContract.decimals(),
+        getAddress(searchQuery),
+      ]);
+      const uniqueId = getUniqueId(address, chainId);
+
+      return [
+        {
+          chainId,
+          address,
+          decimals,
+          highLiquidity: false,
+          isRainbowCurated: false,
+          isVerified: false,
+          mainnetAddress: address,
+          name,
+          networks: {
+            [chainId]: {
+              address,
+              decimals,
+            },
+          },
+          symbol,
+          uniqueId,
+        } as SearchAsset,
+      ];
+    } catch (e) {
+      logger.warn('[getImportedAsset]: error getting imported token data', { error: (e as Error).message });
+      return [];
+    }
+  }
+  return [];
+};
+
+
+export async function tokenSearchQueryFunction(
   { chainId, query }: TokenSearchParams,
   abortController: AbortController | null
 ): Promise<VerifiedTokenData> {
   const queryParams: Omit<TokenSearchParams, 'chainId'> = {
     query,
   };
+
+  const isAddressSearch = query && isAddress(query);
 
   const searchDefaultVerifiedList = query === '';
   if (searchDefaultVerifiedList) {
@@ -172,6 +220,17 @@ async function tokenSearchQueryFunction(
 
   try {
     const tokenSearch = await tokenSearchClient.get<{ data: SearchAsset[] }>(url);
+
+    if (isAddressSearch && (tokenSearch?.data?.data?.length || 0) === 0) {
+      const result = await getImportedAsset(query);
+      return {
+        bridgeAsset: null,
+        crosschainResults: [],
+        verifiedAssets: [],
+        unverifiedAssets: result,
+      };
+    }
+
     return selectTopSearchResults({ abortController, data: parseTokenSearchResults(tokenSearch.data.data), query, toChainId: chainId });
   } catch (e) {
     logger.error(new RainbowError('[tokenSearchQueryFunction]: Token search failed'), { url });

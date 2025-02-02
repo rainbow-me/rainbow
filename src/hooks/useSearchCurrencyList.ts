@@ -10,7 +10,9 @@ import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { TokenSearchResult, useTokenSearchAllNetworks } from '@/__swaps__/screens/Swap/resources/search/search';
+// TODO JIN - change this out
+import { useSwapsSearchStore, useTokenSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { useTokenSearchAllNetworks } from '@/__swaps__/screens/Swap/resources/search/search';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { isAddress } from '@ethersproject/address';
 
@@ -141,6 +143,7 @@ const useSearchCurrencyList = (searchQuery: string) => {
 
   const { colors } = useTheme();
 
+  // TODO JIN - need to consolidate this
   const selectTopSearchResults = useCallback(
     (data: TokenSearchResult) => {
       const results = data.filter(asset => {
@@ -163,15 +166,8 @@ const useSearchCurrencyList = (searchQuery: string) => {
     [searchQuery, favoriteAddresses]
   );
 
-  const { data: searchResultAssets, isFetching: loading } = useTokenSearchAllNetworks(
-    {
-      query: searchQuery,
-    },
-    {
-      select: selectTopSearchResults,
-      staleTime: 10 * 60 * 1_000, // 10 min
-    }
-  );
+  // TODO JIN searchQuery, loading, selectTopSearchResults
+  const searchResultAssets = useTokenSearchStore(state => state.getData());
 
   const currencyList = useMemo(() => {
     const list = [];
