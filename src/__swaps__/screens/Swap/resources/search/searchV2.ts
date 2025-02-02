@@ -8,7 +8,7 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { SearchAsset, TokenSearchAssetKey } from '@/__swaps__/types/search';
 import { time } from '@/utils';
-import { parseTokenSearch } from './utils';
+import { parseTokenSearchResults } from './utils';
 
 const tokenSearchClient = new RainbowFetchClient({
   baseURL: 'https://token-search.rainbow.me/v3/tokens',
@@ -84,7 +84,8 @@ function selectTopSearchResults({
 }): VerifiedTokenData {
   const normalizedQuery = query?.trim().toLowerCase();
   const queryHasMultipleChars = !!(normalizedQuery && normalizedQuery.length > 1);
-  const currentChainResults: SearchAsset[] = [];
+  const currentChainVerifiedResults: SearchAsset[] = [];
+  const currentChainUnverifiedResults: SearchAsset[] = [];
   const crosschainResults: SearchAsset[] = [];
   let bridgeAsset: SearchAsset | null = null;
 
@@ -106,8 +107,13 @@ function selectTopSearchResults({
 
     const isMatch = isCurrentNetwork && (!!asset.icon_url || queryHasMultipleChars);
 
-    if (isMatch) currentChainResults.push(asset);
-    else {
+    if (isMatch) {
+      if (asset.isVerified) {
+        currentChainVerifiedResults.push(asset);
+      } else {
+        currentChainUnverifiedResults.push(asset);
+      }
+    } else {
       const isCrosschainMatch = (!isCurrentNetwork && queryHasMultipleChars && isExactMatch(asset, normalizedQuery)) || asset.isNativeAsset;
       if (isCrosschainMatch) crosschainResults.push(asset);
     }
@@ -115,7 +121,7 @@ function selectTopSearchResults({
 
   if (abortController?.signal.aborted) return NO_RESULTS;
 
-  currentChainResults.sort((a, b) => {
+  currentChainVerifiedResults.sort((a, b) => {
     if (a.isNativeAsset !== b.isNativeAsset) return a.isNativeAsset ? -1 : 1;
     if (a.highLiquidity !== b.highLiquidity) return a.highLiquidity ? -1 : 1;
     return Object.keys(b.networks).length - Object.keys(a.networks).length;
@@ -124,8 +130,8 @@ function selectTopSearchResults({
   return {
     bridgeAsset,
     crosschainResults: crosschainResults,
-    verifiedAssets: currentChainResults.slice(0, MAX_VERIFIED_RESULTS),
-    unverifiedAssets: [],
+    verifiedAssets: currentChainVerifiedResults.slice(0, MAX_VERIFIED_RESULTS),
+    unverifiedAssets: currentChainUnverifiedResults.slice(0, MAX_UNVERIFIED_RESULTS),
   };
 }
 
@@ -170,18 +176,13 @@ async function tokenSearchQueryFunction(
       const tokenSearch = await tokenSearchClient.get<{ data: SearchAsset[] }>(url);
 
       if (tokenSearch && tokenSearch.data.data.length > 0) {
-        return {
-          bridgeAsset: null,
-          crosschainResults: [],
-          verifiedAssets: parseTokenSearch(tokenSearch.data.data, chainId),
-          unverifiedAssets: [],
-        };
+        return selectTopSearchResults({ abortController, data: parseTokenSearchResults(tokenSearch.data.data), query, toChainId: chainId });
       } else {
         return NO_RESULTS;
       }
     } else {
       const tokenSearch = await tokenSearchClient.get<{ data: SearchAsset[] }>(url);
-      return selectTopSearchResults({ abortController, data: parseTokenSearch(tokenSearch.data.data, chainId), query, toChainId: chainId });
+      return selectTopSearchResults({ abortController, data: parseTokenSearchResults(tokenSearch.data.data), query, toChainId: chainId });
     }
   } catch (e) {
     logger.error(new RainbowError('[tokenSearchQueryFunction]: Token search failed'), { url });
