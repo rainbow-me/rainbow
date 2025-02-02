@@ -3,22 +3,21 @@ import { Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { ChartYLabel } from '@/react-native-animated-charts/src';
 import { SupportedCurrency, supportedNativeCurrencies } from '@/references';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { orderOfMagnitudeWorklet, significantDecimalsWorklet } from '@/safe-math/SafeMath';
+import { orderOfMagnitudeWorklet, significantDecimalsWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 
 function calculateDecimalPlaces({
   amount,
-  minimumDecimals = 0,
   maximumDecimals = 6,
+  minimumDecimals = 0,
   precisionAdjustment,
 }: {
   amount: number | string;
-  minimumDecimals?: number;
   maximumDecimals?: number;
+  minimumDecimals?: number;
   precisionAdjustment?: number;
 }): {
-  minimumDecimalPlaces: number;
   maximumDecimalPlaces: number;
+  minimumDecimalPlaces: number;
 } {
   'worklet';
   const orderOfMagnitude = orderOfMagnitudeWorklet(amount);
@@ -42,7 +41,17 @@ function calculateDecimalPlaces({
   };
 }
 
-export function formatNative(value: string, defaultPriceValue: string | null, nativeSelected: SupportedCurrency[keyof SupportedCurrency]) {
+export function formatNative({
+  defaultPriceValue,
+  nativeSelected,
+  trimTrailingZeros = false,
+  value,
+}: {
+  defaultPriceValue: string | null;
+  nativeSelected: SupportedCurrency[keyof SupportedCurrency];
+  trimTrailingZeros?: boolean;
+  value: string;
+}) {
   'worklet';
   if (!value) {
     return defaultPriceValue || '';
@@ -58,9 +67,12 @@ export function formatNative(value: string, defaultPriceValue: string | null, na
     precisionAdjustment: 1,
   });
 
-  let res = `${Number(value).toFixed(numDecimals).toLocaleString()}`;
+  let res = toFixedWorklet(value, numDecimals);
+  if (trimTrailingZeros) res = res.replace(/\.?0+$/, '');
+
   res = nativeSelected?.alignment === 'left' ? `${nativeSelected?.symbol}${res}` : `${res} ${nativeSelected?.symbol}`;
   const vals = res.split('.');
+
   if (vals.length === 2) {
     return vals[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + vals[1];
   }
@@ -82,7 +94,11 @@ export default function ChartPriceLabel({
   const formatWorklet = useCallback(
     (value: string) => {
       'worklet';
-      return formatNative(value, priceValue, nativeSelected);
+      return formatNative({
+        defaultPriceValue: priceValue,
+        nativeSelected,
+        value,
+      });
     },
     [nativeSelected, priceValue]
   );
@@ -92,11 +108,6 @@ export default function ChartPriceLabel({
       {defaultValue}
     </Text>
   ) : (
-    <ChartYLabel
-      formatWorklet={formatWorklet}
-      size="23px / 27px (Deprecated)"
-      style={{ maxWidth: DEVICE_WIDTH * (2 / 3) }}
-      weight="heavy"
-    />
+    <ChartYLabel formatWorklet={formatWorklet} size="34pt" weight="heavy" />
   );
 }

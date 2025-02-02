@@ -113,8 +113,8 @@ const FloatingEmojis: React.FC<FloatingEmojisProps> = ({
                 duration={duration}
                 emoji={emojiToRender}
                 index={index}
-                left={typeof size === 'number' ? x - size / 2 : x - Number(size) / 2}
-                size={`${size}`}
+                left={x - size / 2}
+                size={size}
                 top={y}
               />
             ))
@@ -133,7 +133,7 @@ const FloatingEmojis: React.FC<FloatingEmojisProps> = ({
                 marginTop={marginTop}
                 opacityThreshold={opacityThreshold}
                 scaleTo={scaleTo}
-                size={`${size}`}
+                size={size}
                 top={y}
                 wiggleFactor={wiggleFactor}
               />

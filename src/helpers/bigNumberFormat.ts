@@ -3,6 +3,7 @@ import { convertAmountToNativeDisplay, divide, greaterThan } from '@/helpers/uti
 import { NativeCurrencyKey } from '@/entities';
 
 export const bigNumberFormat = memoFn((value: string | number, nativeCurrency: NativeCurrencyKey, skipDecimals: boolean) => {
+  'worklet';
   let ret;
   if (greaterThan(value, 1000000000)) {
     ret = `${convertAmountToNativeDisplay(divide(value, 1000000000), nativeCurrency)}b`;

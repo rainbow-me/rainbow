@@ -1,6 +1,5 @@
 import { Chain } from 'viem';
 import { mainnet } from 'viem/chains';
-
 import { IS_DEV, RPC_PROXY_API_KEY } from '@/env';
 import { BackendNetwork } from './types';
 

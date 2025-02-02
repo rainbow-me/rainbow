@@ -203,7 +203,29 @@ export const abbreviateBigNumber = (value: BigNumber, buffer: number): string =>
 export const abbreviateNumber = (number: number, decimals = 1): string => {
   let prefix = number;
   let suffix = '';
-  if (number >= 1_000_000_000) {
+  if (number >= 1_000_000_000_000) {
+    prefix = number / 1_000_000_000_000;
+    suffix = 't';
+  } else if (number >= 1_000_000_000) {
+    prefix = number / 1_000_000_000;
+    suffix = 'b';
+  } else if (number >= 1_000_000) {
+    prefix = number / 1_000_000;
+    suffix = 'm';
+  } else if (number >= 1000) {
+    prefix = number / 1000;
+    suffix = 'k';
+  }
+  return prefix.toFixed(decimals).replace(/\.0$/, '') + suffix;
+};
+export const abbreviateNumberWorklet = (number: number, decimals = 1): string => {
+  'worklet';
+  let prefix = number;
+  let suffix = '';
+  if (number >= 1_000_000_000_000) {
+    prefix = number / 1_000_000_000_000;
+    suffix = 't';
+  } else if (number >= 1_000_000_000) {
     prefix = number / 1_000_000_000;
     suffix = 'b';
   } else if (number >= 1_000_000) {
@@ -480,6 +502,28 @@ export const flattenDeep = (arr: unknown[]): unknown[] =>
   arr.flatMap(subArray => (Array.isArray(subArray) ? flattenDeep(subArray) : subArray));
 
 export const times = (n: number, fn: (i: number) => unknown) => Array.from({ length: n }, (_, i) => fn(i));
+
+/**
+ * @desc Round a number's significant digits to the nearest significant 1 or 5, e.g 1000 -> 1000, 1300 -> 1500, 1800 -> 2000
+ */
+export function roundToSignificant1or5(number: number): number {
+  if (number === 0) return 0;
+
+  // Find the magnitude (power of 10) of the number
+  const magnitude = Math.floor(Math.log10(number));
+  const scale = Math.pow(10, magnitude);
+
+  // Get the first digit
+  const firstDigit = number / scale;
+
+  // Round to nearest 1 or 5
+  let roundedFirstDigit: number;
+  if (firstDigit < 3) roundedFirstDigit = 1;
+  else if (firstDigit < 7.5) roundedFirstDigit = 5;
+  else roundedFirstDigit = 10;
+
+  return roundedFirstDigit * scale;
+}
 
 /**
  * @desc Creates an object composed of the omitted object properties by some predicate function.

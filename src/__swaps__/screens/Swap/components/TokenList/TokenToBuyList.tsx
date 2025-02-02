@@ -16,12 +16,13 @@ import { Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-syste
 import { palettes } from '@/design-system/color/palettes';
 import * as i18n from '@/languages';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
-import { ChainSelection } from './ChainSelection';
 import { useSwapsSearchStore } from '../../resources/search/searchV2';
+import { ChainSelection } from './ChainSelection';
 
 export const BUY_LIST_HEADER_HEIGHT = 20 + 10 + 8; // paddingTop + height + paddingBottom
 
@@ -92,6 +93,13 @@ const getItemLayout = (data: ArrayLike<TokenToBuyListItem> | null | undefined, i
 export const TokenToBuyList = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, outputProgress, setAsset } = useSwapContext();
   const { results: sections, isLoading } = useSearchCurrencyLists();
+
+  const [supportedChainsBooleanMap] = useState(
+    useBackendNetworksStore
+      .getState()
+      .getSupportedChainIds()
+      .reduce((acc, chainId) => ({ ...acc, [chainId]: true }), {} as Record<ChainId, boolean>)
+  );
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
@@ -169,6 +177,7 @@ export const TokenToBuyList = () => {
               icon_url={item.icon_url}
               // @ts-expect-error item.favorite does not exist - it does for favorites, need to fix the type
               isFavorite={item.favorite}
+              isSupportedChain={supportedChainsBooleanMap[item.chainId] ?? false}
               mainnetAddress={item.mainnetAddress}
               name={item.name}
               onPress={() => handleSelectToken(item)}

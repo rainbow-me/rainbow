@@ -31,6 +31,7 @@ import { isAddress } from 'viem';
 import { navigateToSwaps, SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
+import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
   url: string;
@@ -102,11 +103,14 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
        */
       case 'token': {
         logger.debug(`[handleDeeplink]: token`);
+        // The addr param is really the uniqueId, but not changing the name to avoid breaking existing deeplinks
         const { addr } = query;
-        const address = (addr as string)?.toLowerCase() ?? '';
+        const uniqueId = (addr as string)?.toLowerCase() ?? '';
 
-        if (address && address.length > 0) {
-          const asset = ethereumUtils.getAssetFromAllAssets(address);
+        if (uniqueId && uniqueId.length > 0) {
+          const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
+          const currency = store.getState().settings.nativeCurrency;
+          const asset = await fetchExternalToken({ address, chainId, currency });
 
           // First go back to home to dismiss any open shit
           // and prevent a weird crash
@@ -116,16 +120,16 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
           }
 
           setTimeout(() => {
-            const _action = (asset: any) => {
-              Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
-                asset,
-                fromDiscover: true,
-                type: 'token',
-              });
-            };
-
             if (asset) {
-              _action(asset);
+              Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
+                asset: {
+                  ...asset,
+                  uniqueId,
+                  chainId,
+                },
+                address: address,
+                chainId: chainId,
+              });
             }
           }, 50);
         }
@@ -421,4 +425,8 @@ async function handleSwapsDeeplink(url: string) {
   params.outputAsset = await outputAsset;
 
   navigateToSwaps(params);
+}
+
+export function buildTokenDeeplink(uniqueId: string) {
+  return `https://rainbow.me/token?addr=${uniqueId}`;
 }

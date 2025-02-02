@@ -33,6 +33,8 @@ export type TrendingToken = {
     primary: string;
   };
   icon_url: string;
+  transferable: boolean;
+  creationDate: string | null;
 };
 
 // ///////////////////////////////////////////////
@@ -99,6 +101,8 @@ async function fetchTrendingTokens({
       colors: {
         primary: colors.primary,
       },
+      transferable: token.transferable,
+      creationDate: token.creationDate ?? null,
     });
   }
 

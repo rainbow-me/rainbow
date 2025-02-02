@@ -1,5 +1,5 @@
 // @refresh
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useRef } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { InteractionManager, NativeModules, StyleProp, TextInput, TextStyle } from 'react-native';
 import {
   AnimatedRef,
@@ -26,7 +26,7 @@ import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/us
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
-import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { clamp, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getProvider } from '@/handlers/web3';
@@ -49,15 +49,13 @@ import { haptics } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError, SwapType } from '@rainbow-me/swaps';
 
 import { IS_IOS } from '@/env';
-import { Address } from 'viem';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { useBackendNetworksStore, getChainsNativeAssetWorklet } from '@/state/backendNetworks/backendNetworks';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import showWalletErrorAlert from '@/helpers/support';
@@ -154,7 +152,7 @@ const getInitialSliderXPosition = ({
 export const SwapProvider = ({ children }: SwapProviderProps) => {
   const { nativeCurrency } = useAccountSettings();
 
-  const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
+  const [nativeChainAssets] = useState(useBackendNetworksStore.getState().getChainsNativeAsset());
   const initialValues = getSwapsNavigationParams();
 
   const isFetching = useSharedValue(false);
@@ -191,7 +189,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   );
   const configProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
-  const slippage = useSharedValue(getDefaultSlippageWorklet(initialSelectedInputAsset?.chainId || ChainId.mainnet, getRemoteConfig()));
+  const slippage = useSharedValue(initialValues.slippage);
 
   const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
 
@@ -360,7 +358,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           const activeRoute = Navigation.getActiveRoute();
           if (
             index === 0 ||
-            routes[index - 1].name === Routes.EXPANDED_ASSET_SHEET ||
+            routes[index - 1].name === Routes.EXPANDED_ASSET_SHEET_V2 ||
             activeRoute.name === Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET
           ) {
             Navigation.handleAction(Routes.WALLET_SCREEN, {});
@@ -787,7 +785,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (hasEnoughFundsForGas.value === false) {
-      const nativeCurrency = getChainsNativeAssetWorklet(backendNetworks)[sellAsset?.chainId || ChainId.mainnet];
+      const nativeCurrency = nativeChainAssets[sellAsset?.chainId || ChainId.mainnet];
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
         disabled: true,

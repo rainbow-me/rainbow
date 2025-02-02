@@ -710,6 +710,9 @@ export function useSwapInputsController({
       const areBothAssetsSet = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
       const didFlipAssets =
         didInputAssetChange && didOutputAssetChange && areBothAssetsSet && previous && current.assetToSellId === previous.assetToBuyId;
+      const isFirstReaction = !previous;
+      const isFirstReactionWithInitialInputAmount = isFirstReaction && initialValues.inputAmount;
+      const shouldResetSwapAmount = didInputAssetChange && !isFirstReactionWithInitialInputAmount;
 
       if (!didFlipAssets) {
         // If either asset was changed but the assets were not flipped
@@ -721,14 +724,14 @@ export function useSwapInputsController({
           return;
         }
 
-        if (didInputAssetChange) {
+        if (shouldResetSwapAmount) {
           sliderXPosition.value = withSpring(SLIDER_WIDTH / 2, snappySpringConfig);
         }
 
         const { inputAmount, inputNativeValue } = getInputValuesForSliderPositionWorklet({
           selectedInputAsset: internalSelectedInputAsset.value,
-          percentageToSwap: didInputAssetChange ? 0.5 : percentageToSwap.value,
-          sliderXPosition: didInputAssetChange ? SLIDER_WIDTH / 2 : sliderXPosition.value,
+          percentageToSwap: shouldResetSwapAmount ? 0.5 : percentageToSwap.value,
+          sliderXPosition: shouldResetSwapAmount ? SLIDER_WIDTH / 2 : sliderXPosition.value,
         });
 
         inputValues.modify(values => {

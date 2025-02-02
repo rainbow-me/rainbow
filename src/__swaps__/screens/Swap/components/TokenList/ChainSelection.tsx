@@ -15,7 +15,7 @@ import { useAccountAccentColor } from '@/hooks';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { getChainsBadgeWorklet, getChainsLabelWorklet, useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 
 type ChainSelectionProps = {
@@ -27,7 +27,9 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
   const { isDarkMode } = useColorMode();
   const { accentColor: accountColor } = useAccountAccentColor();
   const { selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
-  const backendNetworks = useBackendNetworksStore(state => state.backendNetworksSharedValue);
+
+  const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
+  const networkBadges = useBackendNetworksStore(state => state.getChainsBadge());
 
   // chains sorted by balance on output, chains without balance hidden on input
   const balanceSortedChainList = useUserAssetsStore(state => (output ? state.getBalanceSortedChainList() : state.getChainsWithBalance()));
@@ -45,8 +47,6 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
   }, [accountColor, isDarkMode]);
 
   const chainName = useDerivedValue(() => {
-    const chainLabels = getChainsLabelWorklet(backendNetworks);
-
     return output
       ? chainLabels[selectedOutputChainId.value]
       : inputListFilter.value === 'all'
@@ -79,11 +79,11 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
     supportedChains = balanceSortedChainList.map(chainId => {
       return {
         actionKey: `${chainId}`,
-        actionTitle: getChainsLabelWorklet(backendNetworks)[chainId],
+        actionTitle: chainLabels[chainId],
         icon: {
           iconType: 'REMOTE',
           iconValue: {
-            uri: getChainsBadgeWorklet(backendNetworks)[chainId],
+            uri: networkBadges[chainId],
           },
         },
       };
@@ -103,7 +103,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
     return {
       menuItems: supportedChains,
     };
-  }, [backendNetworks, balanceSortedChainList, output]);
+  }, [balanceSortedChainList, chainLabels, networkBadges, output]);
 
   return (
     <Box as={Animated.View} paddingBottom={output ? '8px' : { custom: 14 }} paddingHorizontal="20px" paddingTop="20px">

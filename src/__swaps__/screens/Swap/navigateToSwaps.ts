@@ -7,6 +7,9 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import walletTypes from '@/helpers/walletTypes';
 import { watchingAlert } from '@/utils';
 import Routes from '@/navigation/routesNames';
+import { getDefaultSlippage, slippageInBipsToString } from '@/__swaps__/utils/swaps';
+import { ChainId } from '@/state/backendNetworks/types';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 export type SwapsParams = Partial<
   Pick<SwapsState, 'inputAsset' | 'outputAsset' | 'percentageToSell' | 'slippage'> & {
@@ -39,19 +42,27 @@ const getInputMethod = (params: SwapsParams) => {
 };
 
 export function getSwapsNavigationParams() {
+  const { inputAsset: fallbackInputAsset, outputAsset: fallbackOutputAsset, setSlippage } = useSwapsStore.getState();
   const params = (Navigation.getActiveRoute().params || {}) as SwapsParams;
 
   const inputMethod = getInputMethod(params);
+  const inputAsset = params.inputAsset || fallbackInputAsset;
+  const outputAsset = params.outputAsset || fallbackOutputAsset;
+  const chainId = inputAsset?.chainId || ChainId.mainnet;
   const lastTypedInput = inputMethod === 'slider' ? 'inputAmount' : inputMethod;
+  const slippage =
+    params.slippage && !isNaN(+params.slippage) ? slippageInBipsToString(+params.slippage) : getDefaultSlippage(chainId, getRemoteConfig());
 
-  const { inputAsset, outputAsset } = useSwapsStore.getState();
+  // Set the slippage in the swaps store to keep it in sync with the initial value
+  setSlippage(slippage);
 
   return {
     inputMethod,
     lastTypedInput,
     focusedInput: lastTypedInput,
-    inputAsset: params.inputAsset || inputAsset,
-    outputAsset: params.outputAsset || outputAsset,
+    inputAsset,
+    outputAsset,
+    slippage,
     ...params,
   } as const;
 }

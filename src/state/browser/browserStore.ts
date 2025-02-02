@@ -1,22 +1,23 @@
 import { debounce } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
-import { create } from 'zustand';
 import { PersistStorage, StorageValue, persist, subscribeWithSelector } from 'zustand/middleware';
+import { createWithEqualityFn } from 'zustand/traditional';
 import { RAINBOW_HOME } from '@/components/DappBrowser/constants';
 import { TabData, TabId } from '@/components/DappBrowser/types';
 import { generateUniqueIdWorklet, normalizeUrlWorklet } from '@/components/DappBrowser/utils';
 import { RainbowError, logger } from '@/logger';
+import { time } from '@/utils';
 
 const BROWSER_STORAGE_ID = 'browserStore';
 const BROWSER_STORAGE_VERSION = 0;
-const PERSIST_RATE_LIMIT_MS = 3000;
+const PERSIST_RATE_LIMIT_MS = time.seconds(3);
 
 const browserStorage = new MMKV({ id: BROWSER_STORAGE_ID });
 
 const lazyPersist = debounce(
-  (key: string, value: StorageValue<BrowserState>) => {
+  (key: string, value: StorageValue<PersistedState>) => {
     try {
-      const serializedValue = serializeBrowserState(value.state, value.version ?? BROWSER_STORAGE_VERSION);
+      const serializedValue = serializePersistedState(partialize(value.state), value.version ?? BROWSER_STORAGE_VERSION);
       browserStorage.set(key, serializedValue);
     } catch (error) {
       logger.error(new RainbowError(`[browserStore]: Failed to serialize persisted browser data`), { error });
@@ -26,7 +27,16 @@ const lazyPersist = debounce(
   { leading: false, trailing: true, maxWait: PERSIST_RATE_LIMIT_MS }
 );
 
-function serializeBrowserState(state: BrowserState, version: number): string {
+function partialize(state: BrowserState | PersistedState): PersistedState {
+  return {
+    activeTabIndex: state.activeTabIndex,
+    persistedTabUrls: state.persistedTabUrls,
+    tabIds: state.tabIds,
+    tabsData: state.tabsData,
+  };
+}
+
+function serializePersistedState(state: PersistedState, version: number): string {
   try {
     return JSON.stringify({
       state: {
@@ -41,8 +51,8 @@ function serializeBrowserState(state: BrowserState, version: number): string {
   }
 }
 
-function deserializeBrowserState(serializedState: string): { state: BrowserState; version: number } {
-  let parsedState: { state: BrowserState; version: number };
+function deserializePersistedState(serializedState: string): { state: PersistedState; version: number } {
+  let parsedState: { state: PersistedState; version: number };
   try {
     parsedState = JSON.parse(serializedState);
   } catch (error) {
@@ -104,11 +114,11 @@ function deserializeBrowserState(serializedState: string): { state: BrowserState
   };
 }
 
-const persistedBrowserStorage: PersistStorage<BrowserState> = {
+const persistedBrowserStorage: PersistStorage<PersistedState> = {
   getItem: key => {
     const serializedValue = browserStorage.getString(key);
     if (!serializedValue) return null;
-    return deserializeBrowserState(serializedValue);
+    return deserializePersistedState(serializedValue);
   },
   setItem: (key, value) => lazyPersist(key, value),
   removeItem: key => browserStorage.delete(key),
@@ -119,7 +129,7 @@ const INITIAL_TAB_IDS = [generateUniqueIdWorklet()];
 const INITIAL_TABS_DATA = new Map([[INITIAL_TAB_IDS[0], { canGoBack: false, canGoForward: false, url: RAINBOW_HOME }]]);
 const INITIAL_PERSISTED_TAB_URLS: Record<TabId, string> = { [INITIAL_TAB_IDS[0]]: RAINBOW_HOME };
 
-export interface BrowserStore {
+export interface BrowserState {
   activeTabIndex: number;
   persistedTabUrls: Record<TabId, string>;
   tabIds: TabId[];
@@ -142,9 +152,9 @@ export interface BrowserStore {
   silentlySetPersistedTabUrls: (persistedTabUrls: Record<TabId, string>) => void;
 }
 
-type BrowserState = Pick<BrowserStore, 'activeTabIndex' | 'persistedTabUrls' | 'tabIds' | 'tabsData'>;
+type PersistedState = Pick<BrowserState, 'activeTabIndex' | 'persistedTabUrls' | 'tabIds' | 'tabsData'>;
 
-export const useBrowserStore = create<BrowserStore>()(
+export const useBrowserStore = createWithEqualityFn<BrowserState>()(
   subscribeWithSelector(
     persist(
       (set, get) => ({
@@ -252,11 +262,15 @@ export const useBrowserStore = create<BrowserStore>()(
 
         setTabIds: newTabIds =>
           set(state => {
-            const existingTabIds = state.tabIds.filter(id => newTabIds.includes(id));
-            const addedTabIds = newTabIds.filter(id => !state.tabIds.includes(id));
+            const newTabs = new Set(newTabIds);
+            const oldTabs = new Set(state.tabIds);
+
+            if (newTabs.size === oldTabs.size && [...newTabs].every(id => oldTabs.has(id))) return state;
+
             const newTabsData = new Map(state.tabsData);
-            addedTabIds.forEach(id => newTabsData.set(id, { url: state.persistedTabUrls[id] || RAINBOW_HOME }));
-            return { tabIds: [...existingTabIds, ...addedTabIds], tabsData: newTabsData };
+            newTabIds.forEach(id => !oldTabs.has(id) && newTabsData.set(id, { url: state.persistedTabUrls[id] || RAINBOW_HOME }));
+            state.tabIds.forEach(id => !newTabs.has(id) && newTabsData.delete(id));
+            return { tabIds: newTabIds, tabsData: newTabsData };
           }),
 
         setTitle: (title, tabId) =>
@@ -275,17 +289,12 @@ export const useBrowserStore = create<BrowserStore>()(
       }),
       {
         name: BROWSER_STORAGE_ID,
-        partialize: state => ({
-          activeTabIndex: state.activeTabIndex,
-          persistedTabUrls: state.persistedTabUrls,
-          tabIds: state.tabIds,
-          tabsData: state.tabsData,
-        }),
         storage: persistedBrowserStorage,
         version: BROWSER_STORAGE_VERSION,
       }
     )
-  )
+  ),
+  Object.is
 );
 
 function scheduleTabUrlUpdate(url: string, tabId: TabId) {

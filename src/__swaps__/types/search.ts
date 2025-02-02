@@ -8,6 +8,14 @@ export type TokenSearchThreshold = 'CONTAINS' | 'CASE_SENSITIVE_EQUAL';
 
 export type TokenSearchListId = 'highLiquidityAssets' | 'lowLiquidityAssets' | 'verifiedAssets';
 
+interface Market {
+  market_cap: {
+    value: number;
+  };
+  volume_24h: number;
+  circulating_supply: number;
+}
+
 export type SearchAsset = {
   address: AddressOrEth;
   chainId: ChainId;
@@ -20,6 +28,7 @@ export type SearchAsset = {
   isNativeAsset?: boolean;
   isVerified: boolean;
   mainnetAddress: AddressOrEth;
+  market?: Market;
   name: string;
   networks: {
     [chainId in ChainId]?: {
