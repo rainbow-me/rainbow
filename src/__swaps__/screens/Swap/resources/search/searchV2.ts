@@ -48,6 +48,8 @@ enum TokenLists {
 
 const MAX_VERIFIED_RESULTS = 24;
 const MAX_UNVERIFIED_RESULTS = 6;
+const MAX_CROSSCHAIN_RESULTS = 3;
+
 const NO_RESULTS: VerifiedTokenData = { bridgeAsset: null, crosschainResults: [], verifiedAssets: [], unverifiedAssets: [] };
 
 export const useSwapsSearchStore = createRainbowStore<SearchQueryState>(() => ({ searchQuery: '' }));
@@ -129,7 +131,7 @@ function selectTopSearchResults({
 
   return {
     bridgeAsset,
-    crosschainResults: crosschainResults,
+    crosschainResults: crosschainResults.slice(0, MAX_CROSSCHAIN_RESULTS),
     verifiedAssets: currentChainVerifiedResults.slice(0, MAX_VERIFIED_RESULTS),
     unverifiedAssets: currentChainUnverifiedResults.slice(0, MAX_UNVERIFIED_RESULTS),
   };
