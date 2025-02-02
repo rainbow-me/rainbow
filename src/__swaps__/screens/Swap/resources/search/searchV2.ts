@@ -19,9 +19,9 @@ const tokenSearchClient = new RainbowFetchClient({
   timeout: time.seconds(15),
 });
 
-type TokenSearchParams<List extends TokenLists = TokenLists> = {
+type TokenSearchParams = {
+  list?: string;
   chainId: ChainId;
-  list: List;
   query: string | undefined;
 };
 
@@ -36,7 +36,8 @@ type SearchQueryState = {
 type VerifiedTokenData = {
   bridgeAsset: SearchAsset | null;
   crosschainResults: SearchAsset[];
-  results: SearchAsset[];
+  verifiedAssets: SearchAsset[];
+  unverifiedAssets: SearchAsset[];
 };
 
 enum TokenLists {
@@ -47,12 +48,11 @@ enum TokenLists {
 
 const MAX_VERIFIED_RESULTS = 24;
 const MAX_UNVERIFIED_RESULTS = 6;
-const NO_RESULTS: SearchAsset[] = [];
-const NO_VERIFIED_RESULTS: VerifiedTokenData = { bridgeAsset: null, crosschainResults: [], results: [] };
+const NO_RESULTS: VerifiedTokenData = { bridgeAsset: null, crosschainResults: [], verifiedAssets: [], unverifiedAssets: [] };
 
 export const useSwapsSearchStore = createRainbowStore<SearchQueryState>(() => ({ searchQuery: '' }));
 
-export const useTokenSearchStore = createQueryStore<VerifiedTokenData, TokenSearchParams<TokenLists.Verified>, TokenSearchState>(
+export const useTokenSearchStore = createQueryStore<VerifiedTokenData, TokenSearchParams, TokenSearchState>(
   {
     fetcher: (params, abortController) => tokenSearchQueryFunction(params, abortController),
 
@@ -60,7 +60,6 @@ export const useTokenSearchStore = createQueryStore<VerifiedTokenData, TokenSear
     disableAutoRefetching: true,
     keepPreviousData: true,
     params: {
-      list: TokenLists.Verified,
       chainId: $ => $(useSwapsStore).selectedOutputChainId,
       query: $ => $(useSwapsSearchStore, state => (state.searchQuery.trim().length ? state.searchQuery.trim() : undefined)),
     },
@@ -70,27 +69,6 @@ export const useTokenSearchStore = createQueryStore<VerifiedTokenData, TokenSear
   () => ({ bridgeAsset: null }),
 
   { persistThrottleMs: time.seconds(8), storageKey: 'verifiedTokenSearch' }
-);
-
-export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], TokenSearchParams<TokenLists.HighLiquidity>>(
-  {
-    fetcher: (params, abortController) =>
-      (params.query?.length ?? 0) > 2 ? tokenSearchQueryFunction(params, abortController) : NO_RESULTS,
-    transform: (data, { query }) =>
-      query && isAddress(query) ? getExactMatches(data, query, MAX_UNVERIFIED_RESULTS) : data.slice(0, MAX_UNVERIFIED_RESULTS),
-
-    cacheTime: params => ((params.query?.length ?? 0) > 2 ? time.seconds(15) : time.zero),
-    disableAutoRefetching: true,
-    keepPreviousData: true,
-    params: {
-      list: TokenLists.HighLiquidity,
-      chainId: $ => $(useSwapsStore).selectedOutputChainId,
-      query: $ => $(useSwapsSearchStore, state => state.searchQuery.trim()),
-    },
-    staleTime: time.minutes(2),
-  },
-
-  { persistThrottleMs: time.seconds(12), storageKey: 'unverifiedTokenSearch' }
 );
 
 function selectTopSearchResults({
@@ -135,7 +113,7 @@ function selectTopSearchResults({
     }
   }
 
-  if (abortController?.signal.aborted) return NO_VERIFIED_RESULTS;
+  if (abortController?.signal.aborted) return NO_RESULTS;
 
   currentChainResults.sort((a, b) => {
     if (a.isNativeAsset !== b.isNativeAsset) return a.isNativeAsset ? -1 : 1;
@@ -146,7 +124,8 @@ function selectTopSearchResults({
   return {
     bridgeAsset,
     crosschainResults: crosschainResults,
-    results: currentChainResults.slice(0, MAX_VERIFIED_RESULTS),
+    verifiedAssets: currentChainResults.slice(0, MAX_VERIFIED_RESULTS),
+    unverifiedAssets: [],
   };
 }
 
@@ -169,59 +148,43 @@ function getExactMatches(data: SearchAsset[], query: string, slice?: number): Se
 export const ADDRESS_SEARCH_KEY: TokenSearchAssetKey[] = ['address'];
 export const NAME_SYMBOL_SEARCH_KEYS: TokenSearchAssetKey[] = ['name', 'symbol'];
 
-const ALL_VERIFIED_TOKENS_PARAM = '/?list=verifiedAssets';
-
-/** Unverified token search */
 async function tokenSearchQueryFunction(
-  { chainId, list, query }: TokenSearchParams<TokenLists.HighLiquidity>,
+  { chainId, query }: TokenSearchParams,
   abortController: AbortController | null
-): Promise<SearchAsset[]>;
-
-/** Verified token search */
-async function tokenSearchQueryFunction(
-  { chainId, list, query }: TokenSearchParams<TokenLists.Verified>,
-  abortController: AbortController | null
-): Promise<VerifiedTokenData>;
-
-async function tokenSearchQueryFunction(
-  { chainId, list, query }: TokenSearchParams,
-  abortController: AbortController | null
-): Promise<SearchAsset[] | VerifiedTokenData> {
+): Promise<VerifiedTokenData> {
   const queryParams: Omit<TokenSearchParams, 'chainId'> = {
-    list,
     query,
   };
 
   const isAddressSearch = query && isAddress(query);
 
-  const url = `${chainId ? `/${chainId}` : ''}/?${qs.stringify(queryParams)}`;
-  const isSearchingVerifiedAssets = queryParams.list === 'verifiedAssets';
+  const searchDefaultVerifiedList = query === '';
+  if (searchDefaultVerifiedList) {
+    queryParams.list = 'verifiedAssets';
+  }
+
+  const url = `${searchDefaultVerifiedList ? `/${chainId}` : ''}/?${qs.stringify(queryParams)}`;
 
   try {
-    if (isAddressSearch && isSearchingVerifiedAssets) {
+    if (isAddressSearch) {
       const tokenSearch = await tokenSearchClient.get<{ data: SearchAsset[] }>(url);
 
       if (tokenSearch && tokenSearch.data.data.length > 0) {
-        return parseTokenSearch(tokenSearch.data.data, chainId);
+        return {
+          bridgeAsset: null,
+          crosschainResults: [],
+          verifiedAssets: parseTokenSearch(tokenSearch.data.data, chainId),
+          unverifiedAssets: [],
+        };
+      } else {
+        return NO_RESULTS;
       }
-
-      // Search for token contract address on other chains
-      const allVerifiedTokens = await tokenSearchClient.get<{ data: SearchAsset[] }>(ALL_VERIFIED_TOKENS_PARAM);
-
-      const addressQuery = query.trim().toLowerCase();
-      const addressMatchesOnOtherChains = allVerifiedTokens.data.data.filter(a =>
-        Object.values(a.networks).some(n => n?.address === addressQuery)
-      );
-
-      return parseTokenSearch(addressMatchesOnOtherChains);
     } else {
       const tokenSearch = await tokenSearchClient.get<{ data: SearchAsset[] }>(url);
-      return list === TokenLists.Verified
-        ? selectTopSearchResults({ abortController, data: parseTokenSearch(tokenSearch.data.data, chainId), query, toChainId: chainId })
-        : parseTokenSearch(tokenSearch.data.data, chainId);
+      return selectTopSearchResults({ abortController, data: parseTokenSearch(tokenSearch.data.data, chainId), query, toChainId: chainId });
     }
   } catch (e) {
     logger.error(new RainbowError('[tokenSearchQueryFunction]: Token search failed'), { url });
-    return [];
+    return NO_RESULTS;
   }
 }
