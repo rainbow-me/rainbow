@@ -115,8 +115,11 @@ export type RootStackParamList = {
     position: RainbowPosition;
   };
   [Routes.NETWORK_SELECTOR]: {
-    onClose?: VoidFunction;
-    selected: SharedValue<ChainId | undefined>;
+    selected: SharedValue<ChainId | undefined> | ChainId | undefined;
     setSelected: (chainId: ChainId | undefined) => void;
+    onClose?: VoidFunction;
+    canEdit?: boolean;
+    canSelectAllNetworks?: boolean;
+    allowedNetworks?: ChainId[];
   };
 };
