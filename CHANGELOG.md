@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.57] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.57)
+
+### Fixed
+
+- Improved swaps flow to ensure we're routing them through the appropriate flow (#6436)
+
 ## [1.9.56] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.56)
 
 ### Added
