@@ -10,6 +10,8 @@ export default async function getDominantColorFromImage(imageUrl: string, colorT
     colors = await Palette.getNamedSwatches(imageUrl);
   }
 
+  console.log('palette colors', colors);
+
   // react-native-palette keys for Android are not the same as iOS so we fix here
   if (android) {
     // @ts-expect-error ts-migrate(2740) FIXME: Type '{}' is missing the following properties from... Remove this comment to see the full error message

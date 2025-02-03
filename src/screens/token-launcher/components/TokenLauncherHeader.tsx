@@ -21,7 +21,21 @@ export function TokenLauncherHeader() {
       paddingTop="20px"
       paddingBottom="12px"
       height={TOKEN_LAUNCHER_HEADER_HEIGHT}
+      background={'surfacePrimary'}
     >
+      {/* TODO: convert to new blur view when available */}
+      <BlurView
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
+        blurType="chromeMaterialDark"
+        blurAmount={12}
+        reducedTransparencyFallbackColor="rgba(255, 255, 255, 0.06)"
+      />
       <Box flexDirection="row" alignItems="center" justifyContent="space-between" padding="4px">
         <ButtonPressAnimation onPress={() => navigation.goBack()}>
           <Box

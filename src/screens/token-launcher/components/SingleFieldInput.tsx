@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { AnimatedText, Text, TextShadow, useTextStyle } from '@/design-system';
+import { AnimatedText, Box, Text, TextShadow, useTextStyle } from '@/design-system';
 import { Input } from '@/components/inputs';
 import Animated, {
   withTiming,
@@ -13,9 +13,10 @@ import Animated, {
 import { NativeSyntheticEvent, TextInput, TextInputChangeEventData, TextInputProps } from 'react-native';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { colors } from '@/styles';
+import { FieldContainer } from './FieldContainer';
+import { FieldLabel } from './FieldLabel';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
-const BORDER_WIDTH = 2.5;
 const UNFOCUSED_BORDER_COLOR = 'rgba(255, 255, 255, 0.03)';
 const FOCUSED_BORDER_COLOR = 'rgba(255, 255, 255, 0.25)';
 const TITLE_GAP = 10;
@@ -78,60 +79,45 @@ export function SingleFieldInput({ title, subtitle, style, validationWorklet, on
   });
 
   return (
-    <Animated.View
-      style={[
-        containerStyle,
-        {
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          width: '100%',
-          borderWidth: BORDER_WIDTH,
-          borderRadius: 28,
-          paddingHorizontal: 20,
-        },
-      ]}
-    >
-      <Animated.View style={{ position: 'relative' }}>
-        <Animated.View style={titleContainerStyle}>
-          <TextShadow blur={12} shadowOpacity={0.12}>
-            <Text color="label" size="17pt" weight="heavy">
-              {title}
+    <FieldContainer style={containerStyle}>
+      <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+        <Animated.View style={{ position: 'relative', gap: 10 }}>
+          <Animated.View style={titleContainerStyle}>
+            <FieldLabel>{title}</FieldLabel>
+          </Animated.View>
+          <Animated.View style={{ position: 'absolute', top: TITLE_GAP }}>
+            <AnimatedText
+              numberOfLines={1}
+              style={{
+                // arbitrary
+                width: 400,
+              }}
+              color="red"
+              size="13pt"
+              weight="heavy"
+            >
+              {errorLabel}
+            </AnimatedText>
+          </Animated.View>
+          {subtitle && (
+            <Text color="labelSecondary" size="13pt" weight="heavy">
+              {subtitle}
             </Text>
-          </TextShadow>
+          )}
         </Animated.View>
-        <Animated.View style={{ position: 'absolute', top: TITLE_GAP }}>
-          <AnimatedText
-            numberOfLines={1}
-            style={{
-              // arbitrary
-              width: 400,
-            }}
-            color="red"
-            size="13pt"
-            weight="heavy"
-          >
-            {errorLabel}
-          </AnimatedText>
-        </Animated.View>
-        {subtitle && (
-          <Text color="labelSecondary" size="13pt" weight="heavy">
-            {subtitle}
-          </Text>
-        )}
-      </Animated.View>
-      <AnimatedInput
-        // eslint-disable-next-line react/jsx-props-no-spreading
-        {...textInputProps}
-        ref={inputRef}
-        style={[inputTextStyle, { flex: 1, textAlign: 'right', paddingVertical: 24 }, style]}
-        onFocus={() => runOnUI(handleFocusWorklet)()}
-        onBlur={() => runOnUI(handleBlurWorklet)()}
-        onChange={_onChange}
-        spellCheck={false}
-        textAlign="right"
-        textAlignVertical="center"
-      />
-    </Animated.View>
+        <AnimatedInput
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...textInputProps}
+          ref={inputRef}
+          style={[inputTextStyle, { flex: 1, textAlign: 'right', paddingVertical: 16 }, style]}
+          onFocus={() => runOnUI(handleFocusWorklet)()}
+          onBlur={() => runOnUI(handleBlurWorklet)()}
+          onChange={_onChange}
+          spellCheck={false}
+          textAlign="right"
+          textAlignVertical="center"
+        />
+      </Box>
+    </FieldContainer>
   );
 }
