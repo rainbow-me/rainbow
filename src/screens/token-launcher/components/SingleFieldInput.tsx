@@ -10,7 +10,7 @@ import Animated, {
   interpolateColor,
   runOnJS,
 } from 'react-native-reanimated';
-import { NativeSyntheticEvent, TextInput, TextInputChangeEventData, TextInputProps } from 'react-native';
+import { NativeSyntheticEvent, StyleProp, TextInput, TextInputChangeEventData, TextInputProps, TextStyle, ViewStyle } from 'react-native';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { colors } from '@/styles';
 import { FieldContainer } from './FieldContainer';
@@ -22,13 +22,23 @@ const FOCUSED_BORDER_COLOR = 'rgba(255, 255, 255, 0.25)';
 const TITLE_GAP = 10;
 
 interface SingleFieldInputProps extends TextInputProps {
-  title: string;
+  title?: string;
   subtitle?: string;
   onInputChange?: (text: string) => void;
   validationWorklet?: (text: string) => string;
+  inputStyle?: StyleProp<TextStyle>;
+  style?: StyleProp<ViewStyle>;
 }
 
-export function SingleFieldInput({ title, subtitle, style, validationWorklet, onInputChange, ...textInputProps }: SingleFieldInputProps) {
+export function SingleFieldInput({
+  title,
+  subtitle,
+  inputStyle,
+  style,
+  validationWorklet,
+  onInputChange,
+  ...textInputProps
+}: SingleFieldInputProps) {
   const inputRef = useAnimatedRef<TextInput>();
   const isFocused = useSharedValue(false);
   const focusProgress = useSharedValue(0);
@@ -72,50 +82,51 @@ export function SingleFieldInput({ title, subtitle, style, validationWorklet, on
   }));
 
   const inputTextStyle = useTextStyle({
-    align: 'left',
     color: 'label',
     size: '17pt',
     weight: 'heavy',
   });
 
   return (
-    <FieldContainer style={containerStyle}>
+    <FieldContainer style={[containerStyle, style]}>
       <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-        <Animated.View style={{ position: 'relative', gap: 10 }}>
-          <Animated.View style={titleContainerStyle}>
-            <FieldLabel>{title}</FieldLabel>
+        {title && (
+          <Animated.View style={{ position: 'relative', gap: 10 }}>
+            <Animated.View style={titleContainerStyle}>
+              <FieldLabel>{title}</FieldLabel>
+            </Animated.View>
+            <Animated.View style={{ position: 'absolute', top: TITLE_GAP }}>
+              <AnimatedText
+                numberOfLines={1}
+                style={{
+                  // arbitrary
+                  width: 400,
+                }}
+                color="red"
+                size="13pt"
+                weight="heavy"
+              >
+                {errorLabel}
+              </AnimatedText>
+            </Animated.View>
+            {subtitle && (
+              <Text color="labelSecondary" size="13pt" weight="heavy">
+                {subtitle}
+              </Text>
+            )}
           </Animated.View>
-          <Animated.View style={{ position: 'absolute', top: TITLE_GAP }}>
-            <AnimatedText
-              numberOfLines={1}
-              style={{
-                // arbitrary
-                width: 400,
-              }}
-              color="red"
-              size="13pt"
-              weight="heavy"
-            >
-              {errorLabel}
-            </AnimatedText>
-          </Animated.View>
-          {subtitle && (
-            <Text color="labelSecondary" size="13pt" weight="heavy">
-              {subtitle}
-            </Text>
-          )}
-        </Animated.View>
+        )}
         <AnimatedInput
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...textInputProps}
           ref={inputRef}
-          style={[inputTextStyle, { flex: 1, textAlign: 'right', paddingVertical: 16 }, style]}
+          style={[inputTextStyle, { flex: 1, textAlign: 'right', paddingVertical: 16 }, inputStyle]}
           onFocus={() => runOnUI(handleFocusWorklet)()}
           onBlur={() => runOnUI(handleBlurWorklet)()}
           onChange={_onChange}
           spellCheck={false}
           textAlign="right"
           textAlignVertical="center"
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...textInputProps}
         />
       </Box>
     </FieldContainer>
