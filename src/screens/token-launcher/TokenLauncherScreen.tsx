@@ -8,6 +8,7 @@ import { TokenLauncherHeader } from './components/TokenLauncherHeader';
 import { InfoInputStep } from './components/InfoInputStep';
 import { OverviewStep } from './components/OverviewStep';
 import { KeyboardAvoidingView, KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
+import { BlurredImageBackground } from './components/BlurBackground';
 
 export function TokenLauncherScreen() {
   const isInfoInputStep = true;
@@ -27,6 +28,7 @@ export function TokenLauncherScreen() {
       >
         <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={TOKEN_PREVIEW_BAR_HEIGHT} style={{ flex: 1 }}>
           <Box borderWidth={THICK_BORDER_WIDTH} background="surfacePrimary" borderRadius={42} style={{ maxHeight: contentContainerHeight }}>
+            <BlurredImageBackground />
             {isInfoInputStep && <InfoInputStep />}
             {isOverviewStep && <OverviewStep />}
             <TokenLauncherHeader />
