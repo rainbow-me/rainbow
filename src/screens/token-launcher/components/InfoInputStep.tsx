@@ -11,6 +11,7 @@ import { CollapsableField } from './CollapsableField';
 import Animated, { Layout } from 'react-native-reanimated';
 import { NetworkField } from './NetworkField';
 import { LinksSection } from './LinksSection';
+import { DescriptionField } from './DescriptionField';
 
 function TotalSupplyInput() {
   const setTotalSupply = useTokenLauncherStore(state => state.setTotalSupply);
@@ -26,14 +27,6 @@ function TotalSupplyInput() {
       subtitle={formattedTotalSupply}
       placeholder="1,000,000"
     />
-  );
-}
-
-function DescriptionSection() {
-  return (
-    <CollapsableField title="Description">
-      <SingleFieldInput title="" placeholder="Enter coin description" />
-    </CollapsableField>
   );
 }
 
@@ -77,7 +70,7 @@ export function InfoInputStep() {
               onInputChange={text => {
                 setSymbol(text);
               }}
-              style={{ textTransform: 'uppercase' }}
+              inputStyle={{ textTransform: 'uppercase' }}
               autoCapitalize="characters"
               title="Ticker"
               placeholder="$NAME"
@@ -95,7 +88,7 @@ export function InfoInputStep() {
             Optional
           </Text>
           <Box gap={8} width={'full'}>
-            <DescriptionSection />
+            <DescriptionField />
             <LinksSection />
           </Box>
         </Box>
