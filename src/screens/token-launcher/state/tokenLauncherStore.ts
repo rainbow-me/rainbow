@@ -12,10 +12,11 @@ interface TokenLauncherStore {
   symbol: string;
   chainId: number;
   totalSupply: number;
+  description: string;
   links: Record<string, string>;
   // derived state
   formattedTotalSupply: () => string;
-  // actions
+  // setters
   setImageUri: (uri: string) => void;
   setImageUrl: (url: string) => void;
   setName: (name: string) => void;
@@ -23,6 +24,9 @@ interface TokenLauncherStore {
   setChainId: (chainId: number) => void;
   setTotalSupply: (totalSupply: number) => void;
   setLink: (link: string, url: string) => void;
+  setDescription: (description: string) => void;
+  // actions
+  validateForm: () => void;
 }
 
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
@@ -31,6 +35,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   imagePrimaryColor: DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR,
   name: '',
   symbol: '',
+  description: '',
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
   links: {},
@@ -48,7 +53,11 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   },
   setName: (name: string) => set({ name }),
   setSymbol: (symbol: string) => set({ symbol }),
+  setDescription: (description: string) => set({ description }),
   setChainId: (chainId: number) => set({ chainId }),
   setTotalSupply: (totalSupply: number) => set({ totalSupply }),
   setLink: (link: string, url: string) => set({ links: { ...get().links, [link]: url } }),
+  validateForm: () => {
+    // TODO: validate all field values before submission to sdk for creation
+  },
 }));
