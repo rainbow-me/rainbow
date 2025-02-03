@@ -96,7 +96,7 @@ function EditButton({ editing }: { editing: SharedValue<boolean> }) {
   );
 }
 
-function Header({ editing }: { editing: SharedValue<boolean> }) {
+function Header({ canEdit, editing }: { canEdit: boolean; editing: SharedValue<boolean> }) {
   const separatorTertiary = useForegroundColor('separatorTertiary');
   const fill = useForegroundColor('fill');
 
@@ -113,7 +113,7 @@ function Header({ editing }: { editing: SharedValue<boolean> }) {
           {title}
         </AnimatedText>
 
-        <EditButton editing={editing} />
+        {canEdit && <EditButton editing={editing} />}
       </View>
     </View>
   );
@@ -556,14 +556,22 @@ function NetworksGrid({
   editing,
   selected,
   setSelected,
+  allowedNetworks,
 }: {
   editing: SharedValue<boolean>;
   selected: SharedValue<ChainId | undefined>;
   setSelected: (chainId: ChainId | undefined) => void;
+  allowedNetworks?: ChainId[];
 }) {
-  const initialPinned = networkSwitcherStore.getState().pinnedNetworks;
+  let initialPinned = networkSwitcherStore.getState().pinnedNetworks;
   const sortedSupportedChainIds = useBackendNetworksStore.getState().getSortedSupportedChainIds();
-  const initialUnpinned = sortedSupportedChainIds.filter(chainId => !initialPinned.includes(chainId));
+  let initialUnpinned = sortedSupportedChainIds.filter(chainId => !initialPinned.includes(chainId));
+
+  if (allowedNetworks) {
+    initialPinned = initialPinned.filter(chainId => allowedNetworks.includes(chainId));
+    initialUnpinned = initialUnpinned.filter(chainId => allowedNetworks.includes(chainId));
+  }
+
   const networks = useSharedValue({ [Section.pinned]: initialPinned, [Section.unpinned]: initialUnpinned });
 
   useEffect(() => {
@@ -683,7 +691,8 @@ function NetworksGrid({
       if (!chainId) return;
 
       triggerHaptics('selection');
-      setSelected(chainId);
+      selected.value = chainId;
+      runOnJS(setSelected)(chainId);
     });
 
   const gridGesture = Gesture.Exclusive(dragNetwork, tapNetwork);
@@ -731,7 +740,16 @@ function NetworksGrid({
   );
 }
 
-function Sheet({ children, editing, onClose }: PropsWithChildren<{ editing: SharedValue<boolean>; onClose: VoidFunction }>) {
+function Sheet({
+  children,
+  editing,
+  onClose,
+  canEdit,
+}: PropsWithChildren<{
+  editing: SharedValue<boolean>;
+  onClose: VoidFunction;
+  canEdit: boolean;
+}>) {
   const { isDarkMode } = useColorMode();
   const surfacePrimary = useBackgroundColor('surfacePrimary');
   const backgroundColor = isDarkMode ? '#191A1C' : surfacePrimary;
@@ -753,7 +771,8 @@ function Sheet({ children, editing, onClose }: PropsWithChildren<{ editing: Shar
           },
         ]}
       >
-        <Header editing={editing} />
+        {/* {canEdit && <Header editing={editing} />} */}
+        <Header canEdit={canEdit} editing={editing} />
         {children}
       </Box>
       <TapToDismiss />
@@ -763,16 +782,17 @@ function Sheet({ children, editing, onClose }: PropsWithChildren<{ editing: Shar
 
 export function NetworkSelector() {
   const {
-    params: { onClose = noop, selected, setSelected },
+    params: { onClose = noop, selected, canEdit = true, canSelectAllNetworks = true, setSelected, allowedNetworks },
   } = useRoute<RouteProp<RootStackParamList, 'NetworkSelector'>>();
 
   const editing = useSharedValue(false);
+  const selectedNetwork = useSharedValue(typeof selected === 'number' ? selected : selected?.value);
 
   return (
-    <Sheet editing={editing} onClose={onClose}>
-      <CustomizeNetworksBanner editing={editing} />
-      <AllNetworksSection editing={editing} selected={selected} setSelected={setSelected} />
-      <NetworksGrid editing={editing} selected={selected} setSelected={setSelected} />
+    <Sheet editing={editing} onClose={onClose} canEdit={canEdit}>
+      {canEdit && <CustomizeNetworksBanner editing={editing} />}
+      {canSelectAllNetworks && <AllNetworksSection editing={editing} selected={selectedNetwork} setSelected={setSelected} />}
+      <NetworksGrid editing={editing} selected={selectedNetwork} setSelected={setSelected} allowedNetworks={allowedNetworks} />
     </Sheet>
   );
 }
