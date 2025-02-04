@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { AnimatedText, Box, Text, TextShadow, useTextStyle } from '@/design-system';
+import { AnimatedText, Box, Text, useTextStyle } from '@/design-system';
 import { Input } from '@/components/inputs';
 import Animated, {
   withTiming,
@@ -10,19 +10,19 @@ import Animated, {
   interpolateColor,
   runOnJS,
 } from 'react-native-reanimated';
-import { NativeSyntheticEvent, StyleProp, TextInput, TextInputChangeEventData, TextInputProps, TextStyle, ViewStyle } from 'react-native';
+import { TextInput, TextInputProps, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { colors } from '@/styles';
 import { FieldContainer } from './FieldContainer';
 import { FieldLabel } from './FieldLabel';
+import { UNFOCUSED_FIELD_BORDER_COLOR, FOCUSED_FIELD_BORDER_COLOR } from '../constants';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
-const UNFOCUSED_BORDER_COLOR = 'rgba(255, 255, 255, 0.03)';
-const FOCUSED_BORDER_COLOR = 'rgba(255, 255, 255, 0.25)';
 const TITLE_GAP = 10;
 
 interface SingleFieldInputProps extends TextInputProps {
   title?: string;
+  icon?: React.ReactNode;
   subtitle?: string;
   onInputChange?: (text: string) => void;
   validationWorklet?: (text: string) => string;
@@ -32,6 +32,7 @@ interface SingleFieldInputProps extends TextInputProps {
 
 export function SingleFieldInput({
   title,
+  icon,
   subtitle,
   inputStyle,
   style,
@@ -57,10 +58,9 @@ export function SingleFieldInput({
     focusProgress.value = withTiming(0, TIMING_CONFIGS.fadeConfig);
   }, [focusProgress, isFocused]);
 
-  const _onChange = useCallback(
-    (event: NativeSyntheticEvent<TextInputChangeEventData>) => {
+  const _onChangeText = useCallback(
+    (text: string) => {
       'worklet';
-      const text = event.nativeEvent.text;
       inputValue.value = text;
       if (validationWorklet) {
         errorLabel.value = validationWorklet(text);
@@ -74,7 +74,9 @@ export function SingleFieldInput({
 
   const containerStyle = useAnimatedStyle(() => ({
     borderColor:
-      errorLabel.value === '' ? interpolateColor(focusProgress.value, [0, 1], [UNFOCUSED_BORDER_COLOR, FOCUSED_BORDER_COLOR]) : colors.red,
+      errorLabel.value === ''
+        ? interpolateColor(focusProgress.value, [0, 1], [UNFOCUSED_FIELD_BORDER_COLOR, FOCUSED_FIELD_BORDER_COLOR])
+        : colors.red,
   }));
 
   const titleContainerStyle = useAnimatedStyle(() => ({
@@ -88,18 +90,16 @@ export function SingleFieldInput({
   });
 
   return (
+    // @ts-expect-error TODO: fix this
     <FieldContainer style={[containerStyle, style]}>
       <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-        {title && (
+        {(title || icon) && (
           <Animated.View style={{ position: 'relative', gap: 10 }}>
-            <Animated.View style={titleContainerStyle}>
-              <FieldLabel>{title}</FieldLabel>
-            </Animated.View>
+            <Animated.View style={titleContainerStyle}>{title ? <FieldLabel>{title}</FieldLabel> : <Box>{icon}</Box>}</Animated.View>
             <Animated.View style={{ position: 'absolute', top: TITLE_GAP }}>
               <AnimatedText
                 numberOfLines={1}
                 style={{
-                  // arbitrary
                   width: 400,
                 }}
                 color="red"
@@ -121,11 +121,10 @@ export function SingleFieldInput({
           style={[inputTextStyle, { flex: 1, textAlign: 'right', paddingVertical: 16 }, inputStyle]}
           onFocus={() => runOnUI(handleFocusWorklet)()}
           onBlur={() => runOnUI(handleBlurWorklet)()}
-          onChange={_onChange}
+          onChangeText={_onChangeText}
           spellCheck={false}
           textAlign="right"
           textAlignVertical="center"
-          // eslint-disable-next-line react/jsx-props-no-spreading
           {...textInputProps}
         />
       </Box>
