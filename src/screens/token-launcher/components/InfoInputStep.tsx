@@ -7,7 +7,6 @@ import { TOKEN_LAUNCHER_HEADER_HEIGHT } from './TokenLauncherHeader';
 import { SingleFieldInput } from './SingleFieldInput';
 import { TokenLogo } from './TokenLogo';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { CollapsableField } from './CollapsableField';
 import Animated, { Layout } from 'react-native-reanimated';
 import { NetworkField } from './NetworkField';
 import { LinksSection } from './LinksSection';
