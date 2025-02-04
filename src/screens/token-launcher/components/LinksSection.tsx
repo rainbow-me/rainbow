@@ -60,6 +60,11 @@ function LinkField({ link, index }: { link: Link; index: number }) {
   const deleteLink = useTokenLauncherStore(state => state.deleteLink);
   const { Icon, placeholder, iconBackgroundColor } = LINK_SETTINGS[link.type as keyof typeof LINK_SETTINGS];
 
+  const onInputChange = (input: string) => {
+    // TODO: parse input for url and type
+    editLink({ index, input, url: input });
+  };
+
   return (
     <Box flexDirection="row" alignItems="center" gap={16}>
       <SingleFieldInput
@@ -77,7 +82,7 @@ function LinkField({ link, index }: { link: Link; index: number }) {
         }
         textAlign="left"
         inputStyle={{ textAlign: 'left', paddingLeft: 8 }}
-        onInputChange={url => editLink(index, url)}
+        onInputChange={onInputChange}
         placeholder={placeholder}
       />
       <ButtonPressAnimation onPress={() => deleteLink(index)}>
