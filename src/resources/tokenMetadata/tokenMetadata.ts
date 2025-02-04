@@ -24,7 +24,6 @@ export const useTokenMetadataStore = createQueryStore<TokenMetadata | null, Toke
     cacheTime: time.weeks(1),
     enabled: false, // TODO: Remove once this store is ready to be used
     keepPreviousData: true,
-    //
     params: {
       address: '',
       chainId: ChainId.mainnet,
@@ -34,7 +33,7 @@ export const useTokenMetadataStore = createQueryStore<TokenMetadata | null, Toke
   },
   () => ({
     metadata: null,
-  }),
+  })
   // { storageKey: 'tokenMetadata' } // TODO: Uncomment once this store is ready to be used
 );
 
