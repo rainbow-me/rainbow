@@ -67,6 +67,7 @@ import SnapchatIcon from './svg/SnapchatIcon';
 import SpinnerIcon from './svg/SpinnerIcon';
 import StarIcon from './svg/StarIcon';
 import SwapIcon from './svg/SwapIcon';
+import { XIcon } from './svg/XIcon';
 import { TabActivity } from './svg/TabActivity';
 import { TabActivityInner } from './svg/TabActivityInner';
 import { TabActivityInnerFill } from './svg/TabActivityInnerFill';
@@ -188,6 +189,7 @@ const IconTypes = {
   walletSwitcherCaret: WalletSwitcherCaret,
   warning: WarningIcon,
   warningCircled: WarningCircledIcon,
+  x: XIcon,
 };
 
 const Icon = ({ name, testID, ...props }, ref) => {

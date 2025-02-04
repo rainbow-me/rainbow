@@ -3,6 +3,8 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import getDominantColorFromImage from '@/utils/getDominantColorFromImage';
 import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY } from '../constants';
 
+type LinkType = 'website' | 'x' | 'telegram' | 'farcaster' | 'discord' | 'other';
+export type Link = { input: string; type: LinkType };
 interface TokenLauncherStore {
   // base state
   imageUri: string;
@@ -13,7 +15,10 @@ interface TokenLauncherStore {
   chainId: number;
   totalSupply: number;
   description: string;
-  links: Record<string, string>;
+  links: Link[];
+  creatorBuyInEth: number;
+  airdropGroups: string[];
+  airdropAddresses: string[];
   // derived state
   formattedTotalSupply: () => string;
   // setters
@@ -23,7 +28,9 @@ interface TokenLauncherStore {
   setSymbol: (symbol: string) => void;
   setChainId: (chainId: number) => void;
   setTotalSupply: (totalSupply: number) => void;
-  setLink: (link: string, url: string) => void;
+  addLink: (type: LinkType) => void;
+  editLink: (index: number, input: string) => void;
+  deleteLink: (index: number) => void;
   setDescription: (description: string) => void;
   // actions
   validateForm: () => void;
@@ -36,16 +43,26 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   name: '',
   symbol: '',
   description: '',
+  airdropGroups: [],
+  airdropAddresses: [],
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
-  links: {},
+  links: [
+    { input: '', type: 'website' },
+    { input: '', type: 'x' },
+    { input: '', type: 'telegram' },
+    { input: '', type: 'farcaster' },
+    // { input: '', type: 'discord' },
+    // { input: '', type: 'other' },
+  ],
+  creatorBuyInEth: 0,
   formattedTotalSupply: () => abbreviateNumber(get().totalSupply),
   setImageUri: (uri: string) => {
     set({ imageUri: uri });
   },
   setImageUrl: async (url: string) => {
     try {
-      // TODO: ideally this would be done in the setImageUri function, but the native library doesn't support it
+      // TODO: ideally this would be done in the setImageUri function, but the native library is throwing an error
       set({ imageUrl: url, imagePrimaryColor: await getDominantColorFromImage(url, '#333333') });
     } catch (e) {
       console.log('error extracting color', e);
@@ -56,7 +73,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   setDescription: (description: string) => set({ description }),
   setChainId: (chainId: number) => set({ chainId }),
   setTotalSupply: (totalSupply: number) => set({ totalSupply }),
-  setLink: (link: string, url: string) => set({ links: { ...get().links, [link]: url } }),
+  addLink: (type: LinkType) => set({ links: [...get().links, { input: '', type }] }),
+  editLink: (index: number, input: string) => set({ links: get().links.map((link, i) => (i === index ? { ...link, input } : link)) }),
+  deleteLink: (index: number) => set({ links: get().links.filter((_, i) => i !== index) }),
   validateForm: () => {
     // TODO: validate all field values before submission to sdk for creation
   },
