@@ -609,9 +609,7 @@ export function createQueryStore<
             : isInternalFetch
               ? keepPreviousData
               : // Manual fetch call default
-                skipStoreUpdates
-                ? false
-                : !!params;
+                !skipStoreUpdates;
 
         if (activeFetch?.promise && activeFetch.key === currentQueryKey && isLoading && !options?.force) {
           return activeFetch.promise;
