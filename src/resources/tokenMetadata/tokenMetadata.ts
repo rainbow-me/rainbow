@@ -22,7 +22,13 @@ export const useTokenMetadataStore = createQueryStore<TokenMetadata | null, Toke
   {
     fetcher: (params: TokenMetadataParams) => fetchTokenMetadata(params),
     cacheTime: time.weeks(1),
+    enabled: false,
     keepPreviousData: true,
+    params: {
+      address: '',
+      chainId: ChainId.mainnet,
+      currency: 'USD',
+    },
     staleTime: time.minutes(30),
   },
   () => ({
