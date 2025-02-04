@@ -10,6 +10,7 @@ import { FIELD_BORDER_WIDTH } from '../constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 export function NetworkField() {
   const { colors } = useTheme();
@@ -26,10 +27,17 @@ export function NetworkField() {
     navigation.getParent()?.goBack();
   };
 
+  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
+
   return (
     <FieldContainer>
       <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-        <FieldLabel>Network</FieldLabel>
+        <Box gap={10}>
+          <FieldLabel>Network</FieldLabel>
+          <Text color="labelSecondary" size="13pt" weight="medium">
+            {`Balance: ${nativeAssetForChain?.balance.display}`}
+          </Text>
+        </Box>
         <ButtonPressAnimation
           onPress={() => {
             navigation.navigate(Routes.NETWORK_SELECTOR, {
