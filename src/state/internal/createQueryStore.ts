@@ -69,10 +69,12 @@ interface FetchOptions {
    */
   staleTime?: number;
   /**
-   * Dictates whether, if params are passed to `fetch`, the store's `queryKey` should be updated based on
-   * those params following the success or failure of the fetch operation.
+   * Dictates whether the store's `queryKey` should be updated based on the params used in the fetch operation.
+   * Useful if for instance you want to cache the manually fetched data, but skip updating the store's current
+   * `queryKey` (which determines where `getData()` points to).
    *
-   * Defaults to `true` unless `skipStoreUpdates: true` is set, in which case the default becomes `false`.
+   * ---
+   * Defaults to `true` unless `skipStoreUpdates: true` is specified, in which case the default is `false`.
    */
   updateQueryKey?: boolean;
 }
