@@ -7,7 +7,7 @@ import { ETH_SYMBOL, USDC_ADDRESS } from '@/references';
 import { ClaimableMenu } from '../../shared/components/ClaimableMenu';
 import { TokenToReceive } from '../types';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
-import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
+import { tokenSearchQueryFunction } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { SearchAsset } from '@/__swaps__/types/search';
 import * as i18n from '@/languages';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
@@ -28,24 +28,28 @@ export function ClaimCustomization() {
   } = useTransactionClaimableContext();
 
   const [isInitialState, setIsInitialState] = useState(true);
+  const [usdc, setUsdc] = useState(null);
 
   const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
 
-  const { data: usdcSearchData } = useTokenSearch(
-    {
-      keys: ['address'],
-      list: 'verifiedAssets',
-      threshold: 'CASE_SENSITIVE_EQUAL',
-      query: USDC_ADDRESS,
-    },
-    {
-      select: data => {
-        return data.filter((asset: SearchAsset) => asset.address === USDC_ADDRESS && asset.symbol === 'USDC');
-      },
-    }
-  );
+  useEffect(() => {
+    const fetchUsdcAsset = async () => {
+      const searchResults = await tokenSearchQueryFunction({ query: USDC_ADDRESS }, null);
 
-  const usdc = usdcSearchData?.[0];
+      const possibleResults = [
+        searchResults.bridgeAsset,
+        ...searchResults.crosschainResults,
+        ...searchResults.verifiedAssets,
+        ...searchResults.unverifiedAssets,
+      ];
+      const usdcPoss = possibleResults.filter(asset => asset?.address === USDC_ADDRESS && asset?.symbol === 'USDC');
+      const usdc = possibleResults.filter(asset => asset?.address === USDC_ADDRESS && asset?.symbol === 'USDC')?.[0];
+      if (usdc) {
+        setUsdc(usdc);
+      }
+    };
+    fetchUsdcAsset();
+  }, []);
 
   // populate `networks` attribute for native tokens
   const nativeTokens: TokenMap = useMemo(
