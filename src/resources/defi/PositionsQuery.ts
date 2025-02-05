@@ -4,7 +4,7 @@ import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunct
 
 import { NativeCurrencyKey } from '@/entities';
 import { rainbowFetch } from '@/rainbow-fetch';
-import { ADDYS_API_KEY } from 'react-native-dotenv';
+import { ADDYS_BASE_URL, ADDYS_API_KEY } from 'react-native-dotenv';
 import { AddysPositionsResponse, PositionsArgs } from './types';
 import { parsePositions } from './utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -13,7 +13,7 @@ import { IS_TEST } from '@/env';
 
 export const buildPositionsUrl = (address: string) => {
   const networkString = useBackendNetworksStore.getState().getSupportedChainIds().join(',');
-  return `https://addys.p.rainbow.me/v3/${networkString}/${address}/positions`;
+  return `${ADDYS_BASE_URL}/${networkString}/${address}/positions`;
 };
 
 const getPositions = async (address: string, currency: NativeCurrencyKey): Promise<AddysPositionsResponse> => {

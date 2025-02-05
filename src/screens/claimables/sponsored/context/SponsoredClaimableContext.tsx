@@ -5,11 +5,12 @@ import { useAccountSettings } from '@/hooks';
 import { getProvider } from '@/handlers/web3';
 import { haptics } from '@/utils';
 import { queryClient } from '@/react-query';
-import { ADDYS_BASE_URL, addysHttp, claimablesQueryKey } from '@/resources/addys/claimables/query';
+import { addysHttp, claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
 import { ClaimStatus } from '../../shared/types';
 import { analyticsV2 } from '@/analytics';
+import { ADDYS_BASE_URL } from 'react-native-dotenv';
 
 enum ErrorMessages {
   CLAIM_API_CALL_FAILED = 'Failed to execute sponsored claim api call',
