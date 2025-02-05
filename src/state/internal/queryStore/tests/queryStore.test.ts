@@ -241,18 +241,25 @@ describe('createQueryStore', () => {
   });
 
   // ──────────────────────────────────────────────
-  // Reset Functionality
+  // Reset Functionality and Param-Less Query Keys
   // ──────────────────────────────────────────────
-  describe('Reset Functionality', () => {
+  describe('Reset Functionality and Param-Less Query Keys', () => {
     it('should reset store state to initial values', async () => {
       const fetcher = jest.fn(async (params?: { id?: number }) => {
-        return `data-${params?.id ?? 7}`;
+        return `data-${params?.id ?? 0}`;
       });
       const store = createQueryStore<TestData, { id?: number }>({
         fetcher,
         params: {},
       });
 
+      // Manually fetch with no params.
+      await store.getState().fetch();
+      expect(store.getState().getData()).toBe('data-0');
+      expect(store.getState().status).toBe(QueryStatuses.Success);
+      expect(store.getState().queryKey).toBe('[]');
+
+      // Now fetch with a param.
       await store.getState().fetch({ id: 7 });
       expect(store.getState().getData({ id: 7 })).toBe('data-7');
       expect(store.getState().status).toBe(QueryStatuses.Success);
@@ -262,6 +269,7 @@ describe('createQueryStore', () => {
       store.getState().reset();
       expect(store.getState().getData({ id: 7 })).toBeNull();
       expect(store.getState().status).toBe(QueryStatuses.Idle);
+
       // The queryKey should be reset based on the config ('[]' if no params).
       expect(store.getState().queryKey).toBe('[]');
     });
