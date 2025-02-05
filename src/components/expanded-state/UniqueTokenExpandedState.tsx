@@ -3,7 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import c from 'chroma-js';
 import lang from 'i18n-js';
 import React, { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Linking, Share, View } from 'react-native';
+import { InteractionManager, Share, View } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import URL from 'url-parse';
 import useWallets from '../../hooks/useWallets';
@@ -69,6 +69,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analyticsV2 } from '@/analytics';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -363,8 +364,10 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     }
   }, [colors.whiteLabel, imageColor]);
 
-  const handlePressMarketplaceName = useCallback(() => Linking.openURL(asset.permalink), [asset.permalink]);
-  const handlePressParty = useCallback(() => Linking.openURL(asset.external_link!), [asset.external_link]);
+  // openInBrowser - good
+  const openInBrowser = useOpenInBrowser();
+  const handlePressMarketplaceName = useCallback(() => openInBrowser(asset.permalink), [asset.permalink, openInBrowser]);
+  const handlePressParty = useCallback(() => openInBrowser(asset.external_link!), [asset.external_link, openInBrowser]);
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {

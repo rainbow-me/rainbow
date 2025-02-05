@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
-import { Alert, Linking } from 'react-native';
+import { Alert } from 'react-native';
 import { Box, Column, Columns, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -9,13 +9,13 @@ import { useDimensions, useImportingWallet } from '@/hooks';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { useRecoilValue } from 'recoil';
 import { RainbowError, logger } from '@/logger';
-import { DebugContext } from '@/logger/debugContext';
 import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;
@@ -89,6 +89,8 @@ export function PairHardwareWalletSigningSheet() {
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
+  // openInBrowser - need to connect to hw to test this
+  const openInBrowser = useOpenInBrowser();
   const { busy, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({ showImportModal: true });
 
   const items: ItemDetails[] = [
@@ -177,7 +179,7 @@ export function PairHardwareWalletSigningSheet() {
                 {i18n.t(TRANSLATIONS.blind_signing_description)}
               </Text>
               <ButtonPressAnimation
-                onPress={() => Linking.openURL('https://www.ledger.com/academy/enable-blind-signing-why-when-and-how-to-stay-safe')}
+                onPress={() => openInBrowser('https://www.ledger.com/academy/enable-blind-signing-why-when-and-how-to-stay-safe')}
                 scaleTo={0.9}
               >
                 <Text align="center" color="blue" weight="semibold" size="15pt / 135%">

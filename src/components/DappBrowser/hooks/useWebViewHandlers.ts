@@ -16,6 +16,7 @@ import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { handleProviderRequestApp } from '../handleProviderRequest';
 import { TabId } from '../types';
 import { generateUniqueIdWorklet, isValidAppStoreUrl } from '../utils';
+// import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 interface UseWebViewHandlersParams {
   addRecent: BrowserHistoryStore['addRecent'];
@@ -178,8 +179,11 @@ export function useWebViewHandlers({
     (syntheticEvent: { nativeEvent: { targetUrl: string } }) => {
       const { nativeEvent } = syntheticEvent;
       const { targetUrl } = nativeEvent;
+      // openInBrowser - rule of hooks issue
+      // const openInBrowser = useOpenInBrowser();
 
       if (isValidAppStoreUrl(targetUrl)) {
+        // openInBrowser(targetUrl);
         Linking.openURL(targetUrl);
         return;
       }

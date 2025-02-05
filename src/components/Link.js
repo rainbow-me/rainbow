@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { Linking } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { formatURLForDisplay, magicMemo } from '../utils';
 import { ButtonPressAnimation } from './animations';
@@ -7,6 +6,7 @@ import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';
 import styled from '@/styled-thing';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 const Container = styled(RowWithMargins).attrs({
   align: 'center',
@@ -26,14 +26,16 @@ const Link = ({
   weight = 'semibold',
   ...props
 }) => {
-  const handlePress = useCallback(() => Linking.openURL(url), [url]);
+  // openInBrowser - good
+  const openInBrowser = useOpenInBrowser();
+  const handlePress = useCallback(() => openInBrowser(url), [openInBrowser, url]);
   const { colors } = useTheme();
 
   return (
     <ButtonPressAnimation compensateForTransformOrigin onPress={handlePress} scaleTo={scaleTo} transformOrigin={transformOrigin}>
       <Container {...props}>
         {!emoji && <Icon color={color || colors.appleBlue} name={emojiName} />}
-        <Text color={color || colors.appleBlue} size="lmedium" weight={weight}>
+        <Text color={color || colors.appleBlue} size="medium" weight={weight}>
           {emoji}
           {display || formatURLForDisplay(url)}
         </Text>

@@ -30,6 +30,7 @@ import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
 import { TrendingTokens } from '@/components/Discover/TrendingTokens';
+import { Text } from '../text';
 
 export const HORIZONTAL_PADDING = 20;
 
@@ -78,6 +79,11 @@ export default function DiscoverHome() {
             </>
           )}
           <RemoteCardCarousel />
+          <Box>
+            <Text letterSpacing="one" size="lmedium" weight="heavy">
+              Hello
+            </Text>
+          </Box>
           {mintsEnabled && (
             <Stack space="20px">
               <FeaturedMintCard />

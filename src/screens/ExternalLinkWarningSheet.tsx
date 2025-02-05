@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
@@ -13,6 +12,7 @@ import { fonts, fontWithWidth, position } from '@/styles';
 import { useTheme } from '@/theme';
 import { formatURLForDisplay } from '@/utils';
 import { IS_ANDROID } from '@/env';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 export const ExternalLinkWarningSheetHeight = 380 + (IS_ANDROID ? 20 : 0);
 
@@ -24,6 +24,9 @@ const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeigh
 const ExternalLinkWarningSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeAreaInsets();
+  // openInBrowser - good
+  const openInBrowser = useOpenInBrowser();
+
   // @ts-expect-error
   const { params: { url, onClose } = {} } = useRoute();
   const { colors } = useTheme();
@@ -37,7 +40,7 @@ const ExternalLinkWarningSheet = () => {
   const handleLink = useCallback(() => {
     goBack();
     onClose?.();
-    Linking.openURL(url);
+    openInBrowser(url);
   }, [onClose, goBack, url]);
 
   return (

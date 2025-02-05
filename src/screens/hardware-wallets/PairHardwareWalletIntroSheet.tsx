@@ -1,6 +1,5 @@
 import * as i18n from '@/languages';
 import React from 'react';
-import { Linking } from 'react-native';
 import { Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { useNavigation } from '@/navigation';
@@ -8,9 +7,12 @@ import Routes from '@/navigation/routesNames';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 export const PairHardwareWalletIntroSheet = () => {
   const { navigate } = useNavigation();
+  // openInBrowser - good
+  const openInBrowser = useOpenInBrowser();
 
   return (
     <Layout>
@@ -23,7 +25,7 @@ export const PairHardwareWalletIntroSheet = () => {
             <Text align="center" color="labelTertiary" weight="semibold" size="15pt / 135%">
               {i18n.t(TRANSLATIONS.connect_your_ledger)}
             </Text>
-            <ButtonPressAnimation onPress={() => Linking.openURL('https://www.ledger.com')} scaleTo={0.9}>
+            <ButtonPressAnimation onPress={() => openInBrowser('https://www.ledger.com')} scaleTo={0.9}>
               <Text align="center" color="blue" weight="semibold" size="15pt / 135%">
                 {i18n.t(TRANSLATIONS.learn_more_about_ledger)}
               </Text>

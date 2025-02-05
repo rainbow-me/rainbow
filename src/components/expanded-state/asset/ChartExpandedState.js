@@ -232,7 +232,7 @@ export default function ChartExpandedState({ asset }) {
 
   const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
 
-  const AvailableNetworks = !crosschainEnabled ? AvailableNetworksv1 : AvailableNetworksv2;
+  const AvailableNetworks = AvailableNetworksv1;
 
   const assetChainId = assetWithPrice.chainId;
 

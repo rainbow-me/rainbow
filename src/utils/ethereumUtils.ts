@@ -41,6 +41,10 @@ import { ChainId, Network } from '@/state/backendNetworks/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStore } from '@/state/assets/userAssets';
+// import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+
+// openInBrowser - rules of hooks issue
+// const openInBrowser = useOpenInBrowser();
 
 /**
  * @deprecated - use `getUniqueId` instead for chainIds
@@ -359,17 +363,20 @@ function getBlockExplorer({ chainId }: { chainId: ChainId }) {
 
 function openAddressInBlockExplorer({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
   const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
+  // openInBrowser(`${explorer}/address/${address}`);
   Linking.openURL(`${explorer}/address/${address}`);
 }
 
 function openTokenEtherscanURL({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
   if (!isString(address)) return;
   const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
+  // openInBrowser(`${explorer}/token/${address}`);
   Linking.openURL(`${explorer}/token/${address}`);
 }
 
 function openNftInBlockExplorer({ contractAddress, tokenId, chainId }: { contractAddress: string; tokenId: string; chainId: ChainId }) {
   const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
+  // openInBrowser(`${explorer}/token/${contractAddress}?a=${tokenId}`);
   Linking.openURL(`${explorer}/token/${contractAddress}?a=${tokenId}`);
 }
 
@@ -377,6 +384,7 @@ function openTransactionInBlockExplorer({ hash, chainId }: { hash: string; chain
   const normalizedHash = hash.replace(/-.*/g, '');
   if (!isString(hash)) return;
   const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
+  // openInBrowser(`${explorer}/tx/${normalizedHash}`);
   Linking.openURL(`${explorer}/tx/${normalizedHash}`);
 }
 

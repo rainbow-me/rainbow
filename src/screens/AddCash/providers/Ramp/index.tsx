@@ -1,5 +1,4 @@
 import React from 'react';
-import { Linking } from 'react-native';
 import { nanoid } from 'nanoid/non-secure';
 
 import { logger, RainbowError } from '@/logger';
@@ -11,8 +10,11 @@ import { analyticsV2 } from '@/analytics';
 import { rampGetWidgetURL } from '@/resources/f2c';
 import { WrappedAlert } from '@/helpers/alert';
 import * as lang from '@/languages';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 export function Ramp({ accountAddress, config }: { accountAddress: string; config: ProviderConfig }) {
+  // openInBrowser - good
+  const openInBrowser = useOpenInBrowser();
   return (
     <ButtonPressAnimation
       onPress={async () => {
@@ -39,7 +41,7 @@ export function Ramp({ accountAddress, config }: { accountAddress: string; confi
             provider: FiatProviderName.Ramp,
           });
 
-          Linking.openURL(url);
+          openInBrowser(url);
         } catch (e) {
           logger.error(new RainbowError('[AddCash]: failed to open provider'), {
             provider: FiatProviderName.Ramp,

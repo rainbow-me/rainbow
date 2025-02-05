@@ -1,7 +1,7 @@
 import { BlurView } from '@react-native-community/blur';
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Linking, View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 
 import useWallets from '../../hooks/useWallets';
@@ -33,6 +33,7 @@ import * as i18n from '@/languages';
 import { PoapMintError } from '@/utils/poaps';
 import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -75,6 +76,9 @@ const PoapSheet = () => {
   const { navigate, goBack } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
   const { isReadOnlyWallet } = useWallets();
+  // openInBrowser - need to test this
+  const openInBrowser = useOpenInBrowser();
+
   const params = useRoute();
   const {
     data: { nfts },
@@ -189,7 +193,7 @@ const PoapSheet = () => {
         await claimPoapByQrHash();
       }
     }
-  }, [claimPoapByQrHash, claimPoapBySecret, claimStatus, goBack, navigate, nft, poapMintType]);
+  }, [claimPoapByQrHash, claimPoapBySecret, claimStatus, navigate, nft, poapMintType]);
 
   useEffect(() => {
     const nft = nfts.find(item => item.image_original_url === poapEvent.imageUrl);
@@ -298,7 +302,7 @@ const PoapSheet = () => {
                     analyticsV2.track(event.poapsViewedOnPoap, {
                       eventId: poapEvent.id,
                     });
-                    Linking.openURL(poapGalleryUrl);
+                    openInBrowser(poapGalleryUrl);
                   }}
                 >
                   <Text size="15pt" color="labelSecondary" weight="bold">
