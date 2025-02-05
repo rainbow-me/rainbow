@@ -7,7 +7,6 @@ import { IS_IOS } from '@/env';
 import { Box, Text, Inline, Bleed, useBackgroundColor } from '@/design-system';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 
-import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';
 import { Coinbase as CoinbaseLogo } from '@/components/icons/svg/Coinbase';
 import { Moonpay as MoonpayLogo } from '@/components/icons/svg/Moonpay';
 
@@ -23,7 +22,6 @@ type PaymentMethodConfig = {
 };
 
 const providerLogos = {
-  [FiatProviderName.Ramp]: RampLogo,
   [FiatProviderName.Coinbase]: CoinbaseLogo,
   [FiatProviderName.Moonpay]: MoonpayLogo,
 };
