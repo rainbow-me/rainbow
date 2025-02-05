@@ -259,7 +259,6 @@ export function NFTSingleOfferSheet() {
 
   const acceptOffer = useCallback(async () => {
     logger.debug(`[NFTSingleOfferSheet]: Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`);
-
     const analyticsEventObject = {
       nft: {
         contractAddress: offer.nft.contractAddress,
