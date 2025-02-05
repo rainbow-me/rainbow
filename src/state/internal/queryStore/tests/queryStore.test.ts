@@ -336,6 +336,8 @@ describe('createQueryStore', () => {
       const state = store.getState();
       const cacheEntry = state.queryCache[state.queryKey];
       expect(cacheEntry?.data).toBeNull();
+      // The lastFetchedAt timestamp however should be defined.
+      expect(cacheEntry?.lastFetchedAt).toBeTruthy();
     });
   });
 
