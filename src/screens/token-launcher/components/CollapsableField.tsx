@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { Box, Text } from '@/design-system';
+import { Box, Text, useForegroundColor } from '@/design-system';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Layout } from 'react-native-reanimated';
 import { FIELD_BACKGROUND_COLOR, FIELD_BORDER_COLOR, FIELD_BORDER_WIDTH } from '../constants';
 import { ButtonPressAnimation } from '@/components/animations';
 
 export const CollapsableField = ({ title, children }: { title: string; children: React.ReactNode }) => {
+  const borderColor = useForegroundColor('buttonStroke');
+
   const [collapsed, setCollapsed] = useState(true);
 
   const toggleCollapsed = () => {
@@ -15,8 +17,8 @@ export const CollapsableField = ({ title, children }: { title: string; children:
   };
 
   return (
-    <Animated.View style={styles.container}>
-      <View style={styles.header}>
+    <Animated.View style={[styles.container, { borderColor }]}>
+      <View style={[styles.header, { paddingBottom: collapsed ? 0 : 10 }]}>
         <Text color="label" size="17pt" weight="heavy">
           {title}
         </Text>
@@ -35,7 +37,8 @@ export const CollapsableField = ({ title, children }: { title: string; children:
           </Box>
         </ButtonPressAnimation>
       </View>
-      {!collapsed && children}
+
+      {!collapsed && <>{children}</>}
     </Animated.View>
   );
 };
@@ -45,11 +48,9 @@ const styles = StyleSheet.create({
     width: '100%',
     borderWidth: FIELD_BORDER_WIDTH,
     backgroundColor: FIELD_BACKGROUND_COLOR,
-    borderColor: FIELD_BORDER_COLOR,
     paddingVertical: 16,
     paddingHorizontal: 20,
     borderRadius: 28,
-    gap: 10,
   },
   header: {
     flexDirection: 'row',

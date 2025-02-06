@@ -1,15 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, forwardRef } from 'react';
 import { AnimatedText, Box, Text, useTextStyle } from '@/design-system';
 import { Input } from '@/components/inputs';
-import Animated, {
-  withTiming,
-  runOnUI,
-  useAnimatedRef,
-  useAnimatedStyle,
-  useSharedValue,
-  interpolateColor,
-  runOnJS,
-} from 'react-native-reanimated';
+import Animated, { withTiming, runOnUI, useAnimatedRef, useAnimatedStyle, useSharedValue, runOnJS } from 'react-native-reanimated';
 import { TextInput, TextInputProps, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { colors } from '@/styles';
@@ -28,107 +20,123 @@ interface SingleFieldInputProps extends TextInputProps {
   validationWorklet?: (text: string) => string;
   inputStyle?: StyleProp<TextStyle>;
   style?: StyleProp<ViewStyle>;
+  labelPosition?: 'left' | 'right';
 }
 
-export function SingleFieldInput({
-  title,
-  icon,
-  subtitle,
-  inputStyle,
-  style,
-  validationWorklet,
-  onInputChange,
-  ...textInputProps
-}: SingleFieldInputProps) {
-  const inputRef = useAnimatedRef<TextInput>();
-  const isFocused = useSharedValue(false);
-  const focusProgress = useSharedValue(0);
-  const inputValue = useSharedValue('');
-  const errorLabel = useSharedValue('');
+export const SingleFieldInput = forwardRef<TextInput, SingleFieldInputProps>(
+  ({ title, icon, subtitle, inputStyle, style, validationWorklet, onInputChange, labelPosition = 'left', ...textInputProps }, ref) => {
+    const internalRef = useAnimatedRef<TextInput>();
+    const inputRef = ref ?? internalRef;
 
-  const handleFocusWorklet = useCallback(() => {
-    'worklet';
-    isFocused.value = true;
-    focusProgress.value = withTiming(1, TIMING_CONFIGS.fadeConfig);
-  }, [focusProgress, isFocused]);
+    const isFocused = useSharedValue(false);
+    const focusProgress = useSharedValue(0);
+    const inputValue = useSharedValue('');
+    const errorLabel = useSharedValue('');
 
-  const handleBlurWorklet = useCallback(() => {
-    'worklet';
-    isFocused.value = false;
-    focusProgress.value = withTiming(0, TIMING_CONFIGS.fadeConfig);
-  }, [focusProgress, isFocused]);
-
-  const _onChangeText = useCallback(
-    (text: string) => {
+    const handleFocusWorklet = useCallback(() => {
       'worklet';
-      inputValue.value = text;
-      if (validationWorklet) {
-        errorLabel.value = validationWorklet(text);
-      }
-      if (onInputChange) {
-        runOnJS(onInputChange)(text);
-      }
-    },
-    [inputValue, validationWorklet, onInputChange, errorLabel]
-  );
+      isFocused.value = true;
+      focusProgress.value = withTiming(1, TIMING_CONFIGS.fadeConfig);
+    }, [focusProgress, isFocused]);
 
-  const containerStyle = useAnimatedStyle(() => ({
-    // borderColor:
-    //   errorLabel.value === ''
-    //     ? interpolateColor(focusProgress.value, [0, 1], [UNFOCUSED_FIELD_BORDER_COLOR, FOCUSED_FIELD_BORDER_COLOR])
-    //     : colors.red,
-    borderColor: errorLabel.value === '' ? (isFocused.value ? FOCUSED_FIELD_BORDER_COLOR : UNFOCUSED_FIELD_BORDER_COLOR) : colors.red,
-  }));
+    const handleBlurWorklet = useCallback(() => {
+      'worklet';
+      isFocused.value = false;
+      focusProgress.value = withTiming(0, TIMING_CONFIGS.fadeConfig);
+    }, [focusProgress, isFocused]);
 
-  const titleContainerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: withTiming(errorLabel.value === '' ? 0 : -TITLE_GAP, TIMING_CONFIGS.fadeConfig) }],
-  }));
+    const _onChangeText = useCallback(
+      (text: string) => {
+        'worklet';
+        inputValue.value = text;
+        if (validationWorklet) {
+          errorLabel.value = validationWorklet(text);
+        }
+        if (onInputChange) {
+          runOnJS(onInputChange)(text);
+        }
+      },
+      [inputValue, validationWorklet, onInputChange, errorLabel]
+    );
 
-  const inputTextStyle = useTextStyle({
-    color: 'label',
-    size: '17pt',
-    weight: 'heavy',
-  });
+    const containerStyle = useAnimatedStyle(() => ({
+      borderColor: errorLabel.value === '' ? (isFocused.value ? FOCUSED_FIELD_BORDER_COLOR : UNFOCUSED_FIELD_BORDER_COLOR) : colors.red,
+    }));
 
-  return (
-    // @ts-expect-error TODO: fix this
-    <FieldContainer style={[containerStyle, style]}>
-      <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-        {(title || icon) && (
-          <Animated.View style={{ position: 'relative', gap: 10 }}>
-            <Animated.View style={titleContainerStyle}>{title ? <FieldLabel>{title}</FieldLabel> : <Box>{icon}</Box>}</Animated.View>
-            <Animated.View style={{ position: 'absolute', top: TITLE_GAP }}>
-              <AnimatedText
-                numberOfLines={1}
-                style={{
-                  width: 400,
-                }}
-                color="red"
-                size="13pt"
-                weight="heavy"
-              >
-                {errorLabel}
-              </AnimatedText>
-            </Animated.View>
-            {subtitle && (
-              <Text color="labelSecondary" size="13pt" weight="heavy">
-                {subtitle}
-              </Text>
-            )}
-          </Animated.View>
+    const titleContainerStyle = useAnimatedStyle(() => ({
+      transform: [{ translateY: withTiming(errorLabel.value === '' ? 0 : -TITLE_GAP, TIMING_CONFIGS.fadeConfig) }],
+    }));
+
+    const inputTextStyle = useTextStyle({
+      color: 'label',
+      size: '17pt',
+      weight: 'heavy',
+    });
+
+    const LabelContent = () => (
+      <Animated.View style={{ position: 'relative', gap: 10 }}>
+        <Animated.View style={titleContainerStyle}>{title ? <FieldLabel>{title}</FieldLabel> : <Box>{icon}</Box>}</Animated.View>
+        <Animated.View style={{ position: 'absolute', top: TITLE_GAP }}>
+          <AnimatedText
+            numberOfLines={1}
+            style={{
+              width: 400,
+            }}
+            color="red"
+            size="13pt"
+            weight="heavy"
+          >
+            {errorLabel}
+          </AnimatedText>
+        </Animated.View>
+        {subtitle && (
+          <Text color="labelSecondary" size="13pt" weight="heavy">
+            {subtitle}
+          </Text>
         )}
-        <AnimatedInput
-          ref={inputRef}
-          style={[inputTextStyle, { flex: 1, textAlign: 'right', paddingVertical: 16 }, inputStyle]}
-          onFocus={() => runOnUI(handleFocusWorklet)()}
-          onBlur={() => runOnUI(handleBlurWorklet)()}
-          onChangeText={_onChangeText}
-          spellCheck={false}
-          textAlign="right"
-          textAlignVertical="center"
-          {...textInputProps}
-        />
-      </Box>
-    </FieldContainer>
-  );
-}
+      </Animated.View>
+    );
+
+    const InputContent = () => (
+      <AnimatedInput
+        ref={inputRef}
+        style={[
+          inputTextStyle,
+          {
+            flex: 1,
+            textAlign: labelPosition === 'left' ? 'right' : 'left',
+            paddingVertical: 16,
+          },
+          inputStyle,
+        ]}
+        onFocus={() => runOnUI(handleFocusWorklet)()}
+        onBlur={() => runOnUI(handleBlurWorklet)()}
+        onChangeText={_onChangeText}
+        spellCheck={false}
+        textAlignVertical="center"
+        {...textInputProps}
+      />
+    );
+
+    return (
+      // @ts-expect-error TODO: fix this
+      <FieldContainer style={[containerStyle, style]}>
+        <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+          {labelPosition === 'left' ? (
+            <>
+              {(title || icon) && <LabelContent />}
+              <InputContent />
+            </>
+          ) : (
+            <>
+              <InputContent />
+              {(title || icon) && <LabelContent />}
+            </>
+          )}
+        </Box>
+      </FieldContainer>
+    );
+  }
+);
+
+SingleFieldInput.displayName = 'SingleFieldInput';

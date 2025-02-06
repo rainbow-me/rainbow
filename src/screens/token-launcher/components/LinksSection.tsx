@@ -63,8 +63,6 @@ const LINK_SETTINGS = {
 // hack around not having a grid component
 const LINK_ROWS = chunk(Object.keys(LINK_SETTINGS), 2);
 
-console.log(LINK_ROWS);
-
 export const LAYOUT_ANIMATION = LinearTransition.springify()
   .mass(ANIMATION_CONFIG.mass as number)
   .damping(ANIMATION_CONFIG.damping as number)
