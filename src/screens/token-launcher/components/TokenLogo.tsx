@@ -2,11 +2,11 @@ import React from 'react';
 import { Box, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useTheme } from '@/theme';
-import FastImage from 'react-native-fast-image';
 import { View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useUploadToCloudinary } from '../hooks/useUploadToCloudinary';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { Canvas, useImage, Image, Shadow } from '@shopify/react-native-skia';
 
 const SIZE = 112;
 const newBlue = '#268FFF';
@@ -17,6 +17,11 @@ export function TokenLogo() {
   const imageUri = useTokenLauncherStore(state => state.imageUri);
   const setImageUri = useTokenLauncherStore(state => state.setImageUri);
   const setImageUrl = useTokenLauncherStore(state => state.setImageUrl);
+
+  const imagePrimaryColor = useTokenLauncherStore(state => state.imagePrimaryColor);
+  const imageShadowColor = colors.alpha(imagePrimaryColor, 0.3);
+
+  const image = useImage(imageUri);
 
   // TODO: show loading UI if takes longer than 2 seconds
   const { upload, isUploading, error } = useUploadToCloudinary();
@@ -44,7 +49,17 @@ export function TokenLogo() {
       }}
     >
       <Box width={SIZE} height={SIZE} borderRadius={SIZE / 2} justifyContent="center" alignItems="center">
-        {imageUri && <FastImage source={{ uri: imageUri }} style={{ width: SIZE, height: SIZE }} />}
+        {imageUri && (
+          <Canvas style={{ width: SIZE, height: SIZE }}>
+            <Image x={0} y={0} width={SIZE} height={SIZE} image={image} fit="cover">
+              <Shadow dx={0} dy={0.7} blur={3.52} color={'rgba(255, 255, 255, 1)'} inner />
+              <Shadow dx={0} dy={-1.41} blur={2.81} color={'rgba(0, 0, 0, 0.4)'} inner />
+              <Shadow dx={0} dy={4} blur={12} color={imageShadowColor} />
+              <Shadow dx={0} dy={30} blur={34} color={'rgba(37, 41, 46, 0.2)'} />
+            </Image>
+          </Canvas>
+        )}
+
         {!imageUri && (
           <View
             style={{
