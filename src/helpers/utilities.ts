@@ -200,40 +200,42 @@ export const abbreviateBigNumber = (value: BigNumber, buffer: number): string =>
  * Abbreviates number like 1,200,000 to "1.2m", 1,000 to "1k", etc.
  * Rounds to 1 decimal place, stripping trailing zeros.
  */
-export const abbreviateNumber = (number: number, decimals = 1): string => {
+export const abbreviateNumber = (number: number, decimals = 1, style: 'short' | 'long' = 'short'): string => {
   let prefix = number;
   let suffix = '';
+
   if (number >= 1_000_000_000_000) {
     prefix = number / 1_000_000_000_000;
-    suffix = 't';
+    suffix = style === 'short' ? 't' : ' trillion';
   } else if (number >= 1_000_000_000) {
     prefix = number / 1_000_000_000;
-    suffix = 'b';
+    suffix = style === 'short' ? 'b' : ' billion';
   } else if (number >= 1_000_000) {
     prefix = number / 1_000_000;
-    suffix = 'm';
+    suffix = style === 'short' ? 'm' : ' million';
   } else if (number >= 1000) {
     prefix = number / 1000;
-    suffix = 'k';
+    suffix = style === 'short' ? 'k' : ' thousand';
   }
+
   return prefix.toFixed(decimals).replace(/\.0$/, '') + suffix;
 };
-export const abbreviateNumberWorklet = (number: number, decimals = 1): string => {
+export const abbreviateNumberWorklet = (number: number, decimals = 1, style: 'short' | 'long' = 'short'): string => {
   'worklet';
   let prefix = number;
   let suffix = '';
   if (number >= 1_000_000_000_000) {
     prefix = number / 1_000_000_000_000;
-    suffix = 't';
+    suffix = style === 'short' ? 't' : ' trillion';
   } else if (number >= 1_000_000_000) {
     prefix = number / 1_000_000_000;
-    suffix = 'b';
+    suffix = style === 'short' ? 'b' : ' billion';
   } else if (number >= 1_000_000) {
     prefix = number / 1_000_000;
-    suffix = 'm';
+    suffix = style === 'short' ? 'm' : ' million';
   } else if (number >= 1000) {
     prefix = number / 1000;
-    suffix = 'k';
+    suffix = style === 'short' ? 'k' : ' thousand';
   }
   return prefix.toFixed(decimals).replace(/\.0$/, '') + suffix;
 };
