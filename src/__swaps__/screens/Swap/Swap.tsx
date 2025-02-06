@@ -30,6 +30,7 @@ import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
 import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
+import { useSwapsSearchStore } from './resources/search/searchV2';
 
 /** README
  * This screen is largely driven by Reanimated and Gesture Handler, which
@@ -100,7 +101,11 @@ const MountAndUnmountHandlers = () => {
 
 const useMountSignal = () => {
   useEffect(() => {
-    useSwapsStore.setState({ isSwapsOpen: true });
+    useSwapsStore.setState(state => ({
+      ...state,
+      isSwapsOpen: true,
+      selectedOutputChainId: state?.inputAsset?.chainId ?? state?.preferredNetwork ?? state?.selectedOutputChainId ?? ChainId.mainnet,
+    }));
   }, []);
 };
 
@@ -121,11 +126,11 @@ const useCleanupOnUnmount = () => {
         inputAsset: parsedAsset,
         isSwapsOpen: false,
         outputAsset: null,
-        outputSearchQuery: '',
         quote: null,
         selectedOutputChainId: parsedAsset?.chainId ?? preferredNetwork ?? ChainId.mainnet,
       });
 
+      useSwapsSearchStore.setState({ searchQuery: '' });
       userAssetsStore.setState({ filter: 'all', inputSearchQuery: '' });
 
       clearCustomGasSettings();

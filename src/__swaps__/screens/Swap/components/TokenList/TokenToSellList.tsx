@@ -1,5 +1,5 @@
-import { FlatList } from 'react-native';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
+import { FlatList } from 'react-native';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';

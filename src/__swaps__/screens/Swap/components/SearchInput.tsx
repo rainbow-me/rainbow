@@ -5,7 +5,6 @@ import { Input } from '@/components/inputs';
 import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
 import React from 'react';
 import Animated, {
   runOnJS,
@@ -16,6 +15,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
+import { useSwapsSearchStore } from '../resources/search/searchV2';
 import { SearchInputButton } from './SearchInputButton';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
@@ -40,11 +40,13 @@ export const SearchInput = ({
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
   const onInputSearchQueryChange = useUserAssetsStore(state => state.setSearchQuery);
+  const onOutputSearchQueryChange = (text: string) => useSwapsSearchStore.setState({ searchQuery: text });
 
-  const onOutputSearchQueryChange = useDebouncedCallback((text: string) => useSwapsStore.setState({ outputSearchQuery: text }), 100, {
-    leading: false,
-    trailing: true,
-  });
+  // ⚠️ TODO: Should probably restore this — disabling to test raw query performance
+  // const onOutputSearchQueryChange = useDebouncedCallback((text: string) => useSwapsSearchStore.setState({ searchQuery: text }), 100, {
+  //   leading: false,
+  //   trailing: true,
+  // });
 
   const isSearchFocused = useDerivedValue(
     () =>
@@ -105,8 +107,8 @@ export const SearchInput = ({
                   onBlur={() => {
                     if (isSearchFocused.value) {
                       if (output) {
-                        if (useSwapsStore.getState().outputSearchQuery !== '') {
-                          useSwapsStore.setState({ outputSearchQuery: '' });
+                        if (useSwapsSearchStore.getState().searchQuery !== '') {
+                          useSwapsSearchStore.setState({ searchQuery: '' });
                         }
                       } else {
                         if (userAssetsStore.getState().inputSearchQuery !== '') {
