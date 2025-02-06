@@ -1,9 +1,11 @@
 import { abbreviateNumber } from '@/helpers/utilities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import getDominantColorFromImage from '@/utils/getDominantColorFromImage';
-import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY } from '../constants';
+import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, STEP_TRANSITION_DURATION } from '../constants';
+import { makeMutable, SharedValue, withTiming } from 'react-native-reanimated';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
-type LinkType = 'website' | 'x' | 'telegram' | 'farcaster' | 'discord' | 'other';
+export type LinkType = 'website' | 'x' | 'telegram' | 'farcaster' | 'discord' | 'other';
 export type Link = { input: string; type: LinkType; url: string };
 interface TokenLauncherStore {
   // base state
@@ -19,8 +21,13 @@ interface TokenLauncherStore {
   creatorBuyInEth: number;
   airdropGroups: string[];
   airdropAddresses: string[];
+  step: 'info' | 'overview' | 'success';
+  stepIndex: SharedValue<number>;
   // derived state
   formattedTotalSupply: () => string;
+  tokenPrice: () => string;
+  tokenMarketCap: () => string;
+  hasCompletedRequiredFields: () => boolean;
   // setters
   setImageUri: (uri: string) => void;
   setImageUrl: (url: string) => void;
@@ -32,6 +39,7 @@ interface TokenLauncherStore {
   editLink: ({ index, input, url }: { index: number; input: string; url: string }) => void;
   deleteLink: (index: number) => void;
   setDescription: (description: string) => void;
+  setStep: (step: 'info' | 'overview' | 'success') => void;
   // actions
   validateForm: () => void;
 }
@@ -56,7 +64,23 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     // { input: '', type: 'other', url: '' },
   ],
   creatorBuyInEth: 0,
-  formattedTotalSupply: () => abbreviateNumber(get().totalSupply),
+  step: 'info' as const,
+  stepIndex: makeMutable(0),
+  // derived state
+  formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 0, 'long'),
+  tokenPrice: () => {
+    // TODO: interface with sdk to get token price
+    return '$0.035';
+  },
+  tokenMarketCap: () => {
+    // TODO: interface with sdk to get token market cap
+    return '$35k';
+  },
+  hasCompletedRequiredFields: () => {
+    const { name, symbol, imageUri } = get();
+    return name !== '' && symbol !== '' && imageUri !== '';
+  },
+  // setters
   setImageUri: (uri: string) => {
     set({ imageUri: uri });
   },
@@ -77,6 +101,13 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   editLink: ({ index, input, url }: { index: number; input: string; url: string }) =>
     set({ links: get().links.map((link, i) => (i === index ? { ...link, input, url } : link)) }),
   deleteLink: (index: number) => set({ links: get().links.filter((_, i) => i !== index) }),
+  setStep: (step: 'info' | 'overview' | 'success') => {
+    const newIndex = step === 'info' ? 0 : 1;
+    // get().stepIndex.value = newIndex;
+    get().stepIndex.value = withTiming(newIndex, TIMING_CONFIGS.slowFadeConfig);
+    set({ step });
+  },
+  // actions
   validateForm: () => {
     // TODO: validate all field values before submission to sdk for creation
   },

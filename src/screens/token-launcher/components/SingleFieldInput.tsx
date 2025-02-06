@@ -73,10 +73,11 @@ export function SingleFieldInput({
   );
 
   const containerStyle = useAnimatedStyle(() => ({
-    borderColor:
-      errorLabel.value === ''
-        ? interpolateColor(focusProgress.value, [0, 1], [UNFOCUSED_FIELD_BORDER_COLOR, FOCUSED_FIELD_BORDER_COLOR])
-        : colors.red,
+    // borderColor:
+    //   errorLabel.value === ''
+    //     ? interpolateColor(focusProgress.value, [0, 1], [UNFOCUSED_FIELD_BORDER_COLOR, FOCUSED_FIELD_BORDER_COLOR])
+    //     : colors.red,
+    borderColor: errorLabel.value === '' ? (isFocused.value ? FOCUSED_FIELD_BORDER_COLOR : UNFOCUSED_FIELD_BORDER_COLOR) : colors.red,
   }));
 
   const titleContainerStyle = useAnimatedStyle(() => ({
