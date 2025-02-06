@@ -33,6 +33,7 @@ import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { Box } from '@/design-system';
 import { capitalize } from 'lodash';
 import { backupsStore } from '@/state/backups/backups';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
@@ -60,6 +61,8 @@ const SettingsSection = ({
   const { language, nativeCurrency } = useAccountSettings();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
+  // openInBrowser - need to test this
+  const openInBrowser = useOpenInBrowser();
 
   const { backupProvider, backups } = backupsStore(state => ({
     backupProvider: state.backupProvider,
@@ -83,13 +86,14 @@ const SettingsSection = ({
     });
   }, []);
 
+  // refactor this to use openInBrowser ??
   const onPressTwitter = useCallback(async () => {
     Linking.canOpenURL(SettingsExternalURLs.twitterDeepLink).then(supported =>
-      supported ? Linking.openURL(SettingsExternalURLs.twitterDeepLink) : Linking.openURL(SettingsExternalURLs.twitterWebUrl)
+      supported ? openInBrowser(SettingsExternalURLs.twitterDeepLink) : openInBrowser(SettingsExternalURLs.twitterWebUrl)
     );
-  }, []);
+  }, [openInBrowser]);
 
-  const onPressLearn = useCallback(() => Linking.openURL(SettingsExternalURLs.rainbowLearn), []);
+  const onPressLearn = useCallback(() => openInBrowser(SettingsExternalURLs.rainbowLearn), []);
 
   const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets, backups), [wallets, backups]);
 

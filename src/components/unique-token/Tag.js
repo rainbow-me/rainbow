@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Linking } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, Column } from '../layout';
 import { Text as TextElement } from '../text';
@@ -11,6 +10,7 @@ import { Inline } from '@/design-system';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { magicMemo, showActionSheetWithOptions } from '@/utils';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 const HairlineSpace = '\u200a';
 
@@ -106,17 +106,19 @@ const Tag = ({
   const isURL = typeof originalValue === 'string' && originalValue.toLowerCase().startsWith('https://');
 
   const viewTraitOnNftMarketplaceAction = getViewTraitOnNftMarketplaceAction(marketplaceName);
+  // openInBrowser - good
+  const openInBrowser = useOpenInBrowser();
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === PropertyActionsEnum.viewTraitOnNftMarketplace) {
         const nftTraitUrl = getNftTraitUrl(marketplaceId, slug, title, originalValue);
-        Linking.openURL(nftTraitUrl);
+        openInBrowser(nftTraitUrl);
       } else if (actionKey === PropertyActionsEnum.openURL) {
-        Linking.openURL(originalValue);
+        openInBrowser(originalValue);
       }
     },
-    [slug, originalValue, marketplaceId, title]
+    [marketplaceId, slug, title, originalValue, openInBrowser]
   );
 
   const onPressAndroid = useCallback(() => {
@@ -139,13 +141,22 @@ const Tag = ({
       idx => {
         if (androidContractActions[idx] === viewTraitOnNftMarketplaceAction.actionTitle) {
           const nftTraitUrl = getNftTraitUrl(marketplaceId, slug, title, originalValue);
-          Linking.openURL(nftTraitUrl);
+          openInBrowser(nftTraitUrl);
         } else if (androidContractActions[idx] === openTraitURLInBrowserAction.actionTitle) {
-          Linking.openURL(originalValue);
+          openInBrowser(originalValue);
         }
       }
     );
-  }, [hideNftMarketplaceAction, isURL, slug, title, originalValue, marketplaceId, viewTraitOnNftMarketplaceAction.actionTitle]);
+  }, [
+    hideNftMarketplaceAction,
+    isURL,
+    viewTraitOnNftMarketplaceAction.actionTitle,
+    marketplaceId,
+    slug,
+    title,
+    originalValue,
+    openInBrowser,
+  ]);
 
   const menuConfig = useMemo(() => {
     const menuItems = [];
