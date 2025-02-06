@@ -4,6 +4,11 @@ import getDominantColorFromImage from '@/utils/getDominantColorFromImage';
 import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, STEP_TRANSITION_DURATION } from '../constants';
 import { makeMutable, SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import chroma from 'chroma-js';
+import { memoFn } from '@/utils/memoFn';
+
+// TODO: same as colors.alpha, move to a helper file
+const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
 
 export type LinkType = 'website' | 'x' | 'telegram' | 'farcaster' | 'discord' | 'other';
 export type Link = { input: string; type: LinkType; url: string };
@@ -12,6 +17,11 @@ interface TokenLauncherStore {
   imageUri: string;
   imageUrl: string;
   imagePrimaryColor: string;
+  accentColors: {
+    primary: string;
+    background: string;
+    border: string;
+  };
   name: string;
   symbol: string;
   chainId: number;
@@ -48,6 +58,11 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   imageUri: '',
   imageUrl: '',
   imagePrimaryColor: DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR,
+  accentColors: {
+    primary: DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR,
+    background: 'rgba(255, 255, 255, 0.02)',
+    border: 'rgba(255, 255, 255, 0.03)',
+  },
   name: '',
   symbol: '',
   description: '',
@@ -87,7 +102,16 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   setImageUrl: async (url: string) => {
     try {
       // TODO: ideally this would be done in the setImageUri function, but the native library is throwing an error
-      set({ imageUrl: url, imagePrimaryColor: await getDominantColorFromImage(url, '#333333') });
+      const imagePrimaryColor = await getDominantColorFromImage(url, '#333333');
+      set({
+        imageUrl: url,
+        imagePrimaryColor,
+        accentColors: {
+          primary: imagePrimaryColor,
+          background: getAlphaColor(imagePrimaryColor, 0.06),
+          border: getAlphaColor(imagePrimaryColor, 0.03),
+        },
+      });
     } catch (e) {
       console.log('error extracting color', e);
     }

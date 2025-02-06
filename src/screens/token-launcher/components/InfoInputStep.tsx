@@ -10,6 +10,7 @@ import { NetworkField } from './NetworkField';
 import { LinksSection } from './LinksSection';
 import { DescriptionField } from './DescriptionField';
 import { DEFAULT_TOTAL_SUPPLY, MAX_NAME_LENGTH, MAX_SYMBOL_LENGTH } from '../constants';
+import { TokenAllocationSection } from './TokenAllocationSection';
 
 function TotalSupplyInput() {
   const setTotalSupply = useTokenLauncherStore(state => state.setTotalSupply);
@@ -100,12 +101,7 @@ export function InfoInputStep() {
           </Box>
         </Box>
         <Box height={1} width="full" backgroundColor="rgba(245, 248, 255, 0.06)" />
-        <Box gap={16} width="full" paddingVertical="20px">
-          <Text color="labelSecondary" size="13pt" weight="heavy">
-            Token Allocation
-          </Text>
-          <Box gap={8} width={'full'}></Box>
-        </Box>
+        <TokenAllocationSection />
       </Box>
     </KeyboardAwareScrollView>
   );
