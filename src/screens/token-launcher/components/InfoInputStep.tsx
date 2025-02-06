@@ -2,15 +2,14 @@ import React from 'react';
 import { Bleed, Box, Text } from '@/design-system';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { TOKEN_PREVIEW_BAR_HEIGHT } from './TokenPreviewBar';
-import { safeAreaInsetValues } from '@/utils';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT } from './TokenLauncherHeader';
 import { SingleFieldInput } from './SingleFieldInput';
 import { TokenLogo } from './TokenLogo';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import Animated, { Layout } from 'react-native-reanimated';
 import { NetworkField } from './NetworkField';
 import { LinksSection } from './LinksSection';
 import { DescriptionField } from './DescriptionField';
+import { DEFAULT_TOTAL_SUPPLY, MAX_NAME_LENGTH, MAX_SYMBOL_LENGTH } from '../constants';
 
 function TotalSupplyInput() {
   const setTotalSupply = useTokenLauncherStore(state => state.setTotalSupply);
@@ -19,12 +18,12 @@ function TotalSupplyInput() {
   return (
     <SingleFieldInput
       onInputChange={text => {
-        setTotalSupply(parseInt(text));
+        setTotalSupply(parseInt(text.trim()));
       }}
       inputMode="numeric"
       title="Total Supply"
       subtitle={formattedTotalSupply}
-      placeholder="1,000,000"
+      defaultValue={DEFAULT_TOTAL_SUPPLY.toString()}
     />
   );
 }
@@ -48,7 +47,6 @@ export function InfoInputStep() {
       // disableScrollOnKeyboardHide={true}
       // extraKeyboardSpace={-(TOKEN_PREVIEW_BAR_HEIGHT + safeAreaInsetValues.bottom)}
     >
-      {/* <Animated.View style={{ width: '100%', flex: 1 }} layout={Layout.springify()}> */}
       <Box width="full" gap={8} alignItems="center" paddingHorizontal="20px">
         <Box paddingBottom={'16px'}>
           <TokenLogo />
@@ -61,8 +59,8 @@ export function InfoInputStep() {
             <SingleFieldInput
               validationWorklet={text => {
                 'worklet';
-                if (text.trim().length > 4) {
-                  return 'Too long, friend';
+                if (text.trim().length > MAX_SYMBOL_LENGTH) {
+                  return `Too long, friend.`;
                 }
                 return '';
               }}
@@ -74,7 +72,17 @@ export function InfoInputStep() {
               title="Ticker"
               placeholder="$NAME"
             />
-            <SingleFieldInput title="Name" placeholder="Enter coin name" />
+            <SingleFieldInput
+              validationWorklet={text => {
+                'worklet';
+                if (text.trim().length > MAX_NAME_LENGTH) {
+                  return `Too long, friend.`;
+                }
+                return '';
+              }}
+              title="Name"
+              placeholder="Enter coin name"
+            />
             <TotalSupplyInput />
             <NetworkField />
           </Box>
@@ -99,7 +107,6 @@ export function InfoInputStep() {
           <Box gap={8} width={'full'}></Box>
         </Box>
       </Box>
-      {/* </Animated.View> */}
     </KeyboardAwareScrollView>
   );
 }

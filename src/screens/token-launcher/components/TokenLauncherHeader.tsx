@@ -4,6 +4,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { BlurView } from '@react-native-community/blur';
 import { useNavigation } from '@/navigation';
+import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 
 const EXIT_BUTTON_SIZE = 36;
 // padding top + exit button + inner padding + padding bottom + blur padding
@@ -11,6 +12,8 @@ export const TOKEN_LAUNCHER_HEADER_HEIGHT = 20 + 36 + 8 + 12 + 12;
 
 export function TokenLauncherHeader() {
   const navigation = useNavigation();
+  const step = useTokenLauncherStore(state => state.step);
+  const setStep = useTokenLauncherStore(state => state.setStep);
 
   return (
     <Box
@@ -21,10 +24,9 @@ export function TokenLauncherHeader() {
       paddingTop="20px"
       paddingBottom="12px"
       height={TOKEN_LAUNCHER_HEADER_HEIGHT}
-      background={'surfacePrimary'}
     >
       {/* TODO: convert to new blur view when available */}
-      <BlurView
+      {/* <BlurView
         style={{
           position: 'absolute',
           top: 0,
@@ -35,28 +37,40 @@ export function TokenLauncherHeader() {
         blurType="chromeMaterialDark"
         blurAmount={12}
         reducedTransparencyFallbackColor="rgba(255, 255, 255, 0.06)"
-      />
+      /> */}
       <Box flexDirection="row" alignItems="center" justifyContent="space-between" padding="4px">
-        <ButtonPressAnimation onPress={() => navigation.goBack()}>
-          <Box
-            as={BlurView}
-            borderWidth={THICK_BORDER_WIDTH}
-            alignItems="center"
-            justifyContent="center"
-            width={EXIT_BUTTON_SIZE}
-            height={EXIT_BUTTON_SIZE}
-            backgroundColor="fillSecondary"
-            borderRadius={EXIT_BUTTON_SIZE / 2}
-            blurAmount={12}
-            blurType="chromeMaterial"
+        {step === 'info' && (
+          <ButtonPressAnimation onPress={() => navigation.goBack()}>
+            <Box
+              as={BlurView}
+              borderWidth={THICK_BORDER_WIDTH}
+              alignItems="center"
+              justifyContent="center"
+              width={EXIT_BUTTON_SIZE}
+              height={EXIT_BUTTON_SIZE}
+              backgroundColor="fillSecondary"
+              borderRadius={EXIT_BUTTON_SIZE / 2}
+              blurAmount={12}
+              blurType="chromeMaterial"
+            >
+              <Text size="icon 16px" weight="heavy" color="labelSecondary">
+                􀆄
+              </Text>
+            </Box>
+          </ButtonPressAnimation>
+        )}
+        {step === 'overview' && (
+          <ButtonPressAnimation
+            style={{ width: EXIT_BUTTON_SIZE, height: EXIT_BUTTON_SIZE, justifyContent: 'center', alignItems: 'center' }}
+            onPress={() => setStep('info')}
           >
-            <Text size="icon 16px" weight="heavy" color="labelSecondary">
-              􀆄
+            <Text size="20pt" weight="heavy" color="label">
+              􀆉
             </Text>
-          </Box>
-        </ButtonPressAnimation>
+          </ButtonPressAnimation>
+        )}
         <Text size="20pt" weight="heavy" color="label">
-          New Coin
+          {step === 'info' ? 'New Coin' : 'Overview'}
         </Text>
         <Box width={EXIT_BUTTON_SIZE} />
       </Box>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { CollapsableField } from './CollapsableField';
 import { SingleFieldInput } from './SingleFieldInput';
-import { FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
+import { FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR, MAX_DESCRIPTION_LENGTH } from '../constants';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 
 export function DescriptionField() {
@@ -15,6 +15,13 @@ export function DescriptionField() {
           backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
           paddingVertical: 0,
           paddingHorizontal: 16,
+        }}
+        validationWorklet={text => {
+          'worklet';
+          if (text.trim().length > MAX_DESCRIPTION_LENGTH) {
+            return `Too long, friend.`;
+          }
+          return '';
         }}
         onInputChange={text => setDescription(text)}
         textAlign="left"
