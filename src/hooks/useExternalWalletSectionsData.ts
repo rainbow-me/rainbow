@@ -3,15 +3,12 @@ import { AssetListType } from '../components/asset-list/RecyclerAssetList2';
 import useFetchHiddenTokens from './useFetchHiddenTokens';
 import useFetchShowcaseTokens from './useFetchShowcaseTokens';
 import { buildBriefUniqueTokenList } from '@/helpers/assets';
-import { useLegacyNFTs } from '@/resources/nfts';
+import { useNftsStore } from '@/state/nfts';
 
 export default function useExternalWalletSectionsData({ address, type }: { address?: string; type?: AssetListType }) {
-  const {
-    data: { nfts: uniqueTokens },
-    isInitialLoading,
-  } = useLegacyNFTs({
-    address: address ?? '',
-  });
+  const nftsStore = useNftsStore(address ?? '');
+  const uniqueTokens = nftsStore(state => state.nfts);
+  const isInitialLoading = nftsStore(state => state.getStatus().isInitialLoading);
   const { data: hiddenTokens } = useFetchHiddenTokens({ address });
   const { data: showcaseTokens } = useFetchShowcaseTokens({ address });
 
