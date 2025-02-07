@@ -17,7 +17,12 @@ interface SingleFieldInputProps extends TextInputProps {
   icon?: React.ReactNode;
   subtitle?: string;
   onInputChange?: (text: string) => void;
-  validationWorklet?: (text: string) => string;
+  validationWorklet?: (text: string) =>
+    | {
+        error: boolean;
+        message?: string;
+      }
+    | undefined;
   inputStyle?: StyleProp<TextStyle>;
   style?: StyleProp<ViewStyle>;
   labelPosition?: 'left' | 'right';
@@ -32,6 +37,7 @@ export const SingleFieldInput = forwardRef<TextInput, SingleFieldInputProps>(
     const focusProgress = useSharedValue(0);
     const inputValue = useSharedValue('');
     const errorLabel = useSharedValue('');
+    const hasError = useSharedValue(false);
 
     const handleFocusWorklet = useCallback(() => {
       'worklet';
@@ -50,17 +56,24 @@ export const SingleFieldInput = forwardRef<TextInput, SingleFieldInputProps>(
         'worklet';
         inputValue.value = text;
         if (validationWorklet) {
-          errorLabel.value = validationWorklet(text);
+          const result = validationWorklet(text);
+          if (result) {
+            errorLabel.value = result.message ?? '';
+            hasError.value = result.error;
+          } else {
+            errorLabel.value = '';
+            hasError.value = false;
+          }
         }
         if (onInputChange) {
           runOnJS(onInputChange)(text);
         }
       },
-      [inputValue, validationWorklet, onInputChange, errorLabel]
+      [inputValue, validationWorklet, onInputChange, errorLabel, hasError]
     );
 
     const containerStyle = useAnimatedStyle(() => ({
-      borderColor: errorLabel.value === '' ? (isFocused.value ? FOCUSED_FIELD_BORDER_COLOR : UNFOCUSED_FIELD_BORDER_COLOR) : colors.red,
+      borderColor: hasError.value ? colors.red : isFocused.value ? FOCUSED_FIELD_BORDER_COLOR : UNFOCUSED_FIELD_BORDER_COLOR,
     }));
 
     const titleContainerStyle = useAnimatedStyle(() => ({

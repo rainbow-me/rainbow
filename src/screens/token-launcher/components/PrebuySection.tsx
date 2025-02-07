@@ -3,11 +3,12 @@ import { AnimatedText, Box, Separator, Text, TextShadow, useForegroundColor } fr
 import { CollapsableField } from './CollapsableField';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import Animated, { runOnJS, SharedValue, useAnimatedRef, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { SharedValue, useAnimatedRef, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
 import { Grid } from './Grid';
 import { SingleFieldInput } from './SingleFieldInput';
 import { TextInput } from 'react-native';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 function PrebuyAmountButton({
   label,
@@ -69,9 +70,8 @@ function PrebuyAmountButton({
 }
 
 export function PrebuySection() {
-  const inputRef = useAnimatedRef<TextInput>();
-
-  const borderColor = useForegroundColor('buttonStroke');
+  // TODO: pull from sdk
+  const MAX_PREBUY_ETH_AMOUNT = 5;
 
   // Last is max
   const prebuyEthOptions = [
@@ -89,9 +89,29 @@ export function PrebuySection() {
     },
     {
       label: 'Max',
-      amount: 5,
+      amount: MAX_PREBUY_ETH_AMOUNT,
     },
   ];
+
+  const inputRef = useAnimatedRef<TextInput>();
+  const borderColor = useForegroundColor('buttonStroke');
+  const errorColor = useForegroundColor('red');
+  const subtitleColor = useForegroundColor('labelQuaternary');
+
+  const chainId = useTokenLauncherStore(state => state.chainId);
+  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
+
+  const customInputError = useSharedValue('');
+
+  const customInputSubtitle = useDerivedValue(() => {
+    return customInputError.value === '' ? `Balance: ${nativeAssetForChain?.balance.display ?? '0'}` : customInputError.value;
+  });
+
+  const customInputSubtitleStyle = useAnimatedStyle(() => {
+    return {
+      color: customInputError.value === '' ? subtitleColor : errorColor,
+    };
+  });
 
   const selectedPrebuyEthAmount = useSharedValue(0);
 
@@ -121,25 +141,50 @@ export function PrebuySection() {
           ))}
         </Grid>
         <Separator color={{ custom: borderColor }} />
-        <SingleFieldInput
-          ref={inputRef}
-          title="ETH"
-          labelPosition="right"
-          placeholder="Custom amount"
-          inputMode="decimal"
-          onInputChange={() => {
-            'worklet';
-            if (selectedPrebuyEthAmount.value !== 0) {
-              selectedPrebuyEthAmount.value = 0;
-            }
-          }}
-          style={{
-            backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
-            paddingVertical: 0,
-            paddingHorizontal: 16,
-            borderRadius: FIELD_INNER_BORDER_RADIUS,
-          }}
-        />
+        <Box gap={8}>
+          <SingleFieldInput
+            ref={inputRef}
+            title="ETH"
+            labelPosition="right"
+            placeholder="Custom amount"
+            inputMode="decimal"
+            onInputChange={() => {
+              'worklet';
+              if (selectedPrebuyEthAmount.value !== 0) {
+                selectedPrebuyEthAmount.value = 0;
+              }
+            }}
+            validationWorklet={text => {
+              'worklet';
+              // Kind of janky that we're changing "state" in this callback
+              const amount = parseFloat(text);
+              const balance = parseFloat(nativeAssetForChain?.balance.amount ?? '0');
+
+              if (amount > balance) {
+                customInputError.value = `Amount is greater than balance`;
+                return { error: true };
+              }
+
+              if (amount > MAX_PREBUY_ETH_AMOUNT) {
+                customInputError.value = `Exceeds max pre-buy amount of ${MAX_PREBUY_ETH_AMOUNT} ETH`;
+                return { error: true };
+              }
+
+              if (customInputError.value !== '') {
+                customInputError.value = '';
+              }
+            }}
+            style={{
+              backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
+              paddingVertical: 0,
+              paddingHorizontal: 16,
+              borderRadius: FIELD_INNER_BORDER_RADIUS,
+            }}
+          />
+          <AnimatedText style={[{ paddingHorizontal: 20 }, customInputSubtitleStyle]} color="labelQuaternary" size="12pt" weight="bold">
+            {customInputSubtitle}
+          </AnimatedText>
+        </Box>
       </Box>
     </CollapsableField>
   );

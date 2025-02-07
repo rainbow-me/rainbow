@@ -61,9 +61,8 @@ export function InfoInputStep() {
               validationWorklet={text => {
                 'worklet';
                 if (text.trim().length > MAX_SYMBOL_LENGTH) {
-                  return `Too long, friend.`;
+                  return { error: true, message: `Too long, friend.` };
                 }
-                return '';
               }}
               onInputChange={text => {
                 setSymbol(text);
@@ -77,9 +76,8 @@ export function InfoInputStep() {
               validationWorklet={text => {
                 'worklet';
                 if (text.trim().length > MAX_NAME_LENGTH) {
-                  return `Too long, friend.`;
+                  return { error: true, message: `Too long, friend.` };
                 }
-                return '';
               }}
               title="Name"
               placeholder="Enter coin name"
