@@ -1,26 +1,8 @@
 import React from 'react';
 import { Box, Text } from '@/design-system';
 import { PrebuySection } from './PrebuySection';
-
-function AllocationBreakdownPreview() {
-  return (
-    <Box>
-      <Text color="labelSecondary" size="17pt" weight="heavy">
-        Allocation Breakdown
-      </Text>
-    </Box>
-  );
-}
-
-function AirdropSection() {
-  return (
-    <Box>
-      <Text color="labelSecondary" size="17pt" weight="heavy">
-        Airdrop
-      </Text>
-    </Box>
-  );
-}
+import { AllocationBreakdown } from './AllocationBreakdown';
+import { AirdropSection } from './AirdropSection';
 
 export function TokenAllocationSection() {
   return (
@@ -29,9 +11,9 @@ export function TokenAllocationSection() {
         Token Allocation
       </Text>
       <Box gap={8} width={'full'}>
-        {/* <AllocationBreakdownPreview /> */}
+        <AllocationBreakdown />
         <PrebuySection />
-        {/* <AirdropSection /> */}
+        <AirdropSection />
       </Box>
     </Box>
   );
