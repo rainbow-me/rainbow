@@ -38,7 +38,7 @@ export const CollapsableField = ({ title, children }: { title: string; children:
         </ButtonPressAnimation>
       </View>
 
-      {!collapsed && <>{children}</>}
+      {!collapsed && children}
     </Animated.View>
   );
 };
