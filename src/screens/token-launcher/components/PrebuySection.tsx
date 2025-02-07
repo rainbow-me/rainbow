@@ -3,7 +3,7 @@ import { AnimatedText, Box, Separator, Text, TextShadow, useForegroundColor } fr
 import { CollapsableField } from './CollapsableField';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { SharedValue, useAnimatedRef, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { runOnJS, SharedValue, useAnimatedRef, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
 import { Grid } from './Grid';
 import { SingleFieldInput } from './SingleFieldInput';
@@ -99,6 +99,7 @@ export function PrebuySection() {
   const subtitleColor = useForegroundColor('labelQuaternary');
 
   const chainId = useTokenLauncherStore(state => state.chainId);
+  const setCreatorBuyInEth = useTokenLauncherStore(state => state.setCreatorBuyInEth);
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
 
   const customInputError = useSharedValue('');
@@ -148,11 +149,12 @@ export function PrebuySection() {
             labelPosition="right"
             placeholder="Custom amount"
             inputMode="decimal"
-            onInputChange={() => {
+            onInputChange={text => {
               'worklet';
               if (selectedPrebuyEthAmount.value !== 0) {
                 selectedPrebuyEthAmount.value = 0;
               }
+              runOnJS(setCreatorBuyInEth)(parseFloat(text));
             }}
             validationWorklet={text => {
               'worklet';

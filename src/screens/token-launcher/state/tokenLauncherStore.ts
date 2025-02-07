@@ -19,6 +19,7 @@ interface TokenLauncherStore {
   imagePrimaryColor: string;
   accentColors: {
     primary: string;
+    surface: string;
     background: string;
     border: string;
   };
@@ -38,6 +39,10 @@ interface TokenLauncherStore {
   tokenPrice: () => string;
   tokenMarketCap: () => string;
   hasCompletedRequiredFields: () => boolean;
+  allocationPercentages: () => {
+    creator: number;
+    airdrop: number;
+  };
   // setters
   setImageUri: (uri: string) => void;
   setImageUrl: (url: string) => void;
@@ -48,6 +53,7 @@ interface TokenLauncherStore {
   addLink: (type: LinkType) => void;
   editLink: ({ index, input, url }: { index: number; input: string; url: string }) => void;
   deleteLink: (index: number) => void;
+  setCreatorBuyInEth: (amount: number) => void;
   setDescription: (description: string) => void;
   setStep: (step: 'info' | 'overview' | 'success') => void;
   // actions
@@ -60,8 +66,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   imagePrimaryColor: DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR,
   accentColors: {
     primary: DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR,
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: 'rgba(255, 255, 255, 0.03)',
+    surface: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.04),
+    background: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.06),
+    border: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.03),
   },
   name: '',
   symbol: '',
@@ -71,10 +78,10 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
   links: [
-    { input: '', type: 'website', url: '' },
-    { input: '', type: 'x', url: '' },
-    { input: '', type: 'telegram', url: '' },
-    { input: '', type: 'farcaster', url: '' },
+    // { input: '', type: 'website', url: '' },
+    // { input: '', type: 'x', url: '' },
+    // { input: '', type: 'telegram', url: '' },
+    // { input: '', type: 'farcaster', url: '' },
     // { input: '', type: 'discord', url: '' },
     // { input: '', type: 'other', url: '' },
   ],
@@ -95,6 +102,10 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const { name, symbol, imageUri } = get();
     return name !== '' && symbol !== '' && imageUri !== '';
   },
+  allocationPercentages: () => {
+    // TODO: interface with sdk to get allocation breakdown
+    return { creator: 1, airdrop: 0 };
+  },
   // setters
   setImageUri: (uri: string) => {
     set({ imageUri: uri });
@@ -108,6 +119,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         imagePrimaryColor,
         accentColors: {
           primary: imagePrimaryColor,
+          surface: getAlphaColor(imagePrimaryColor, 0.04),
           background: getAlphaColor(imagePrimaryColor, 0.06),
           border: getAlphaColor(imagePrimaryColor, 0.03),
         },
@@ -125,6 +137,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   editLink: ({ index, input, url }: { index: number; input: string; url: string }) =>
     set({ links: get().links.map((link, i) => (i === index ? { ...link, input, url } : link)) }),
   deleteLink: (index: number) => set({ links: get().links.filter((_, i) => i !== index) }),
+  setCreatorBuyInEth: (amount: number) => set({ creatorBuyInEth: amount }),
   setStep: (step: 'info' | 'overview' | 'success') => {
     const newIndex = step === 'info' ? 0 : 1;
     // get().stepIndex.value = newIndex;
