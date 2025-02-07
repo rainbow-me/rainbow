@@ -16,13 +16,14 @@ export function DescriptionField() {
           paddingVertical: 0,
           paddingHorizontal: 16,
         }}
-        validationWorklet={text => {
-          'worklet';
-          if (text.trim().length > MAX_DESCRIPTION_LENGTH) {
-            return `Too long, friend.`;
-          }
-          return '';
-        }}
+        // TODO: Allegedly no longer needed
+        // validationWorklet={text => {
+        //   'worklet';
+        //   if (text.trim().length > MAX_DESCRIPTION_LENGTH) {
+        //     return `Too long, friend.`;
+        //   }
+        //   return '';
+        // }}
         onInputChange={text => setDescription(text)}
         textAlign="left"
         inputStyle={{ textAlign: 'left' }}

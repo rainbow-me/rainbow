@@ -35,7 +35,7 @@ export function NetworkField() {
         <Box gap={10}>
           <FieldLabel>Network</FieldLabel>
           <Text color="labelSecondary" size="13pt" weight="medium">
-            {`Balance: ${nativeAssetForChain?.balance.display}`}
+            {`Balance: ${nativeAssetForChain?.balance.display ?? '0'}`}
           </Text>
         </Box>
         <ButtonPressAnimation
