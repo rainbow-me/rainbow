@@ -9,7 +9,7 @@ import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { useSwapsSearchStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { isAddress } from '@ethersproject/address';
 
@@ -21,7 +21,8 @@ const abcSort = (list: any[], key?: string) => {
   });
 };
 
-const useSearchCurrencyList = (searchQuery: string) => {
+const useSearchCurrencyList = () => {
+  const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery.trim().toLowerCase());
   const searching = useMemo(() => searchQuery !== '', [searchQuery]);
 
   const { favorites: favoriteAddresses, favoritesMetadata: favoriteMap } = useFavorites();
@@ -67,13 +68,17 @@ const useSearchCurrencyList = (searchQuery: string) => {
 
   const { colors } = useTheme();
 
-  // TODO JIN searchQuery, loading
-  const searchResultAssets = useDiscoverSearchStore(state => state.getData());
+  const { searchResultAssets, loading } = useDiscoverSearchStore(state => {
+    return {
+      loading: state.getStatus().isFetching,
+      searchResultAssets: state.getData(),
+    };
+  });
 
-  // TODO JIN - need to filter out favorites from these results and then slice
   const currencyList = useMemo(() => {
     const list = [];
     const verifiedAssets = searchResultAssets?.verifiedAssets || [];
+
     const highLiquidityAssets = searchResultAssets?.highLiquidityAssets || [];
     const lowLiquidityAssets = searchResultAssets?.lowLiquidityAssets || [];
 
