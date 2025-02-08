@@ -47,6 +47,11 @@ type SearchQueryState = {
   searchQuery: string;
 };
 
+type DiscoverSearchQueryState = {
+  isSearching: boolean;
+  searchQuery: string;
+};
+
 type VerifiedTokenData = {
   bridgeAsset: SearchAsset | null;
   crosschainResults: SearchAsset[];
@@ -72,6 +77,8 @@ const MAX_CROSSCHAIN_RESULTS = 3;
 
 const NO_RESULTS: VerifiedTokenData = { bridgeAsset: null, crosschainResults: [], verifiedAssets: [], unverifiedAssets: [] };
 const NO_DISCOVER_RESULTS: DiscoverSearchResults = { verifiedAssets: [], highLiquidityAssets: [], lowLiquidityAssets: [] };
+
+export const useDiscoverSearchQueryStore = createRainbowStore<DiscoverSearchQueryState>(() => ({ isSearching: false, searchQuery: '' }));
 
 export const useSwapsSearchStore = createRainbowStore<SearchQueryState>(() => ({ searchQuery: '' }));
 
@@ -101,13 +108,10 @@ export const useDiscoverSearchStore = createQueryStore<DiscoverSearchResults, Di
     disableAutoRefetching: true,
     keepPreviousData: true,
     params: {
-      query: $ => $(useSwapsSearchStore, state => (state.searchQuery.trim().length ? state.searchQuery.trim() : '')),
+      query: $ => $(useDiscoverSearchQueryStore, state => (state.searchQuery.trim().length ? state.searchQuery.trim() : '')),
     },
     staleTime: time.minutes(2),
   },
-
-  () => ({ bridgeAsset: null }),
-
   { persistThrottleMs: time.seconds(8), storageKey: 'discoverTokenSearch' }
 );
 
