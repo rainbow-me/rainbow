@@ -13,7 +13,7 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { SearchAsset, TokenSearchAssetKey } from '@/__swaps__/types/search';
 import { time } from '@/utils';
-import { parseTokenSearchResults } from './utils';
+import { parseTokenSearchResults, parseTokenSearchAcrossNetworks } from './utils';
 
 type SearchItemWithRelevance = SearchAsset & {
   relevance: number;
@@ -364,8 +364,11 @@ export async function discoverSearchQueryFunction(
         lowLiquidityAssets: result,
       };
     }
-
-    return selectTopDiscoverSearchResults({ abortController, data: parseTokenSearchResults(tokenSearch.data.data), searchQuery: query });
+    return selectTopDiscoverSearchResults({
+      abortController,
+      data: parseTokenSearchAcrossNetworks(tokenSearch.data.data),
+      searchQuery: query,
+    });
   } catch (e) {
     logger.error(new RainbowError('[discoverSearchQueryFunction]: Discover search failed'), { url });
     return NO_DISCOVER_RESULTS;
