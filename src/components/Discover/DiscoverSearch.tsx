@@ -54,8 +54,7 @@ export default function DiscoverSearch() {
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
 
-  const { isSearching, isFetchingEns, setIsLoading, setIsFetchingEns, cancelSearch, searchInputRef, sectionListRef } =
-    useDiscoverScreenContext();
+  const { isSearching, isFetchingEns, setIsFetchingEns, cancelSearch, searchInputRef, sectionListRef } = useDiscoverScreenContext();
   const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery.trim().toLowerCase());
   const isLoading = useDiscoverSearchStore(state => state.getStatus().isFetching);
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
@@ -218,27 +217,10 @@ export default function DiscoverSearch() {
   useEffect(() => {
     if (searchQueryForSearch && !isLoading) {
       if (lastSearchQuery !== searchQueryForSearch) {
-        setIsLoading(true);
         fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns, profilesEnabled);
       }
     }
-  }, [
-    addEnsResults,
-    isSearching,
-    lastSearchQuery,
-    searchQuery,
-    setIsFetchingEns,
-    profilesEnabled,
-    isLoading,
-    setIsLoading,
-    searchQueryForSearch,
-  ]);
-
-  useEffect(() => {
-    if (!swapCurrencyListLoading && !isFetchingEns) {
-      setIsLoading(false);
-    }
-  }, [isFetchingEns, setIsLoading, swapCurrencyListLoading]);
+  }, [addEnsResults, isSearching, lastSearchQuery, searchQuery, setIsFetchingEns, profilesEnabled, isLoading, searchQueryForSearch]);
 
   useEffect(() => {
     if (!sectionListRef.current?.props.data?.length) {

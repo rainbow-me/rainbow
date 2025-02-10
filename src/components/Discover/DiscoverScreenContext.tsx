@@ -11,8 +11,6 @@ type DiscoverScreenContextType = {
   searchInputRef: RefObject<TextInput>;
   isSearching: boolean;
   setIsSearching: Dispatch<SetStateAction<boolean>>;
-  isLoading: boolean;
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
   isFetchingEns: boolean;
   setIsFetchingEns: Dispatch<SetStateAction<boolean>>;
   cancelSearch: () => void;
@@ -36,7 +34,6 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
   const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery.trim().toLowerCase());
   const [isSearching, setIsSearching] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(false);
   const [isFetchingEns, setIsFetchingEns] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
 
@@ -75,7 +72,6 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
   const cancelSearch = useCallback(() => {
     searchInputRef.current?.blur();
     sendQueryAnalytics(searchQuery.trim());
-    setIsLoading(false);
     useDiscoverSearchQueryStore.setState({ searchQuery: '' });
     setIsSearching(false);
   }, [searchQuery]);
@@ -90,8 +86,6 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
         searchInputRef,
         isSearching,
         setIsSearching,
-        isLoading,
-        setIsLoading,
         isFetchingEns,
         setIsFetchingEns,
         cancelSearch,
