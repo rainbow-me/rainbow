@@ -9,8 +9,6 @@ type DiscoverScreenContextType = {
   scrollViewRef: RefObject<Animated.ScrollView>;
   sectionListRef: RefObject<SectionList>;
   searchInputRef: RefObject<TextInput>;
-  isFetchingEns: boolean;
-  setIsFetchingEns: Dispatch<SetStateAction<boolean>>;
   cancelSearch: () => void;
   scrollToTop: () => number | null;
   onTapSearch: () => void;
@@ -36,7 +34,6 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
     };
   });
 
-  const [isFetchingEns, setIsFetchingEns] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
 
   const scrollViewRef = useRef<Animated.ScrollView>(null);
@@ -85,8 +82,6 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
         scrollViewRef,
         sectionListRef,
         searchInputRef,
-        isFetchingEns,
-        setIsFetchingEns,
         cancelSearch,
         scrollToTop,
         onTapSearch,
