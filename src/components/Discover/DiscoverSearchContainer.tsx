@@ -37,7 +37,7 @@ const placeholderText = deviceUtils.isNarrowPhone
 export let discoverOpenSearchFnRef: () => void = () => null;
 
 function DiscoverSearchContainer({ children }: { children: React.ReactNode }) {
-  const { setSearchQuery, isLoading, isSearching, onTapSearch, cancelSearch } = useDiscoverScreenContext();
+  const { isLoading, isSearching, onTapSearch, cancelSearch } = useDiscoverScreenContext();
   const delayedShowSearch = useDelayedValueWithLayoutAnimation(isSearching);
 
   useEffect(() => {
@@ -52,7 +52,6 @@ function DiscoverSearchContainer({ children }: { children: React.ReactNode }) {
             clearTextOnFocus={false}
             isDiscover
             isLoading={isLoading}
-            onChangeText={setSearchQuery}
             onFocus={onTapSearch}
             placeholderText={isSearching ? placeholderText : `􀊫 ${placeholderText}`}
             testID="discover-search"

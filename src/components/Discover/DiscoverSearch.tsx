@@ -54,26 +54,16 @@ export default function DiscoverSearch() {
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
 
-  const {
-    isSearching,
-    isLoading,
-    isFetchingEns,
-    setIsLoading,
-    setIsFetchingEns,
-    cancelSearch,
-    setSearchQuery,
-    searchInputRef,
-    sectionListRef,
-  } = useDiscoverScreenContext();
+  const { isSearching, isLoading, isFetchingEns, setIsLoading, setIsFetchingEns, cancelSearch, searchInputRef, sectionListRef } =
+    useDiscoverScreenContext();
   const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery.trim().toLowerCase());
-
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 800);
 
   const lastSearchQuery = usePrevious(searchQueryForSearch);
 
   const [ensResults, setEnsResults] = useState<EnsSearchResult[]>([]);
-  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch);
+  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList();
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const marginBottom = TAB_BAR_HEIGHT + safeAreaInsetValues.bottom + 16;
@@ -157,11 +147,11 @@ export default function DiscoverSearch() {
         }
         const contractAddress = query.split('/')[1];
         navigateToMintCollection(contractAddress, undefined, chainId);
-        setSearchQuery('');
+        useDiscoverSearchQueryStore.setState({ searchQuery: '' });
       }
     };
     checkAndHandleMint(searchQuery);
-  }, [accountAddress, navigate, searchQuery, setSearchQuery]);
+  }, [accountAddress, navigate, searchQuery]);
 
   const handlePress = useCallback(
     (item: EnrichedExchangeAsset) => {

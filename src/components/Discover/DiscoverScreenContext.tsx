@@ -2,6 +2,7 @@ import { analytics } from '@/analytics';
 import React, { createContext, Dispatch, SetStateAction, RefObject, useState, useRef, useCallback } from 'react';
 import { SectionList, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { useTrackDiscoverScreenTime } from './useTrackDiscoverScreenTime';
 
 type DiscoverScreenContextType = {
@@ -14,8 +15,6 @@ type DiscoverScreenContextType = {
   setIsLoading: Dispatch<SetStateAction<boolean>>;
   isFetchingEns: boolean;
   setIsFetchingEns: Dispatch<SetStateAction<boolean>>;
-  searchQuery: string;
-  setSearchQuery: Dispatch<SetStateAction<string>>;
   cancelSearch: () => void;
   scrollToTop: () => number | null;
   onTapSearch: () => void;
@@ -34,11 +33,11 @@ const sendQueryAnalytics = (query: string) => {
 };
 
 const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => {
+  const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery.trim().toLowerCase());
   const [isSearching, setIsSearching] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingEns, setIsFetchingEns] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<TextInput>(null);
 
   const scrollViewRef = useRef<Animated.ScrollView>(null);
@@ -77,7 +76,7 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
     searchInputRef.current?.blur();
     sendQueryAnalytics(searchQuery.trim());
     setIsLoading(false);
-    setSearchQuery('');
+    useDiscoverSearchQueryStore.setState({ searchQuery: '' });
     setIsSearching(false);
   }, [searchQuery]);
 
@@ -95,8 +94,6 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
         setIsLoading,
         isFetchingEns,
         setIsFetchingEns,
-        searchQuery,
-        setSearchQuery,
         cancelSearch,
         scrollToTop,
         onTapSearch,

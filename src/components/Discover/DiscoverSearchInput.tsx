@@ -111,7 +111,6 @@ const timingConfig = {
 type DiscoverSearchInputProps = {
   isDiscover: boolean;
   isLoading?: boolean;
-  onChangeText: (text: string) => void;
   onFocus: ({ target }: { target: any }) => void;
   onBlur?: () => void;
   testID: string;
@@ -123,7 +122,6 @@ type DiscoverSearchInputProps = {
 const DiscoverSearchInput = ({
   isDiscover,
   isLoading = false,
-  onChangeText,
   onFocus,
   onBlur,
   testID,
@@ -132,6 +130,10 @@ const DiscoverSearchInput = ({
   currentChainId,
 }: DiscoverSearchInputProps) => {
   const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery.trim().toLowerCase());
+  const onChangeText = useCallback((updatedQuery: string) => {
+    useDiscoverSearchQueryStore.setState({ searchQuery: updatedQuery });
+  }, []);
+
   const { searchInputRef, isSearching } = useDiscoverScreenContext();
   const handleClearInput = useCallback(() => {
     if (isDiscover && searchQuery.length > 1) {
