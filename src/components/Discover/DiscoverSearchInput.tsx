@@ -16,6 +16,7 @@ import { ThemeContextProps } from '@/theme';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 
 const SearchHeight = 40;
 const SearchWidth = deviceUtils.dimensions.width - 30;
@@ -113,7 +114,6 @@ type DiscoverSearchInputProps = {
   onChangeText: (text: string) => void;
   onFocus: ({ target }: { target: any }) => void;
   onBlur?: () => void;
-  searchQuery: string;
   testID: string;
   placeholderText?: string;
   clearTextOnFocus: boolean;
@@ -126,12 +126,12 @@ const DiscoverSearchInput = ({
   onChangeText,
   onFocus,
   onBlur,
-  searchQuery,
   testID,
   placeholderText = lang.t('button.exchange_search_placeholder'),
   clearTextOnFocus = true,
   currentChainId,
 }: DiscoverSearchInputProps) => {
+  const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery.trim().toLowerCase());
   const { searchInputRef, isSearching } = useDiscoverScreenContext();
   const handleClearInput = useCallback(() => {
     if (isDiscover && searchQuery.length > 1) {
