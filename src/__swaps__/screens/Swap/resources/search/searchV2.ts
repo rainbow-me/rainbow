@@ -367,7 +367,7 @@ export async function discoverSearchQueryFunction(
 
     return selectTopDiscoverSearchResults({ abortController, data: parseTokenSearchResults(tokenSearch.data.data), searchQuery: query });
   } catch (e) {
-    logger.error(new RainbowError('[tokenSearchQueryFunction]: Token search failed'), { url });
+    logger.error(new RainbowError('[discoverSearchQueryFunction]: Discover search failed'), { url });
     return NO_DISCOVER_RESULTS;
   }
 }
