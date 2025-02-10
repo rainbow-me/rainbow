@@ -54,9 +54,14 @@ export default function DiscoverSearch() {
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
 
-  const { isSearching, isFetchingEns, setIsFetchingEns, cancelSearch, searchInputRef, sectionListRef } = useDiscoverScreenContext();
-  const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery.trim().toLowerCase());
+  const { isFetchingEns, setIsFetchingEns, cancelSearch, searchInputRef, sectionListRef } = useDiscoverScreenContext();
   const isLoading = useDiscoverSearchStore(state => state.getStatus().isFetching);
+  const { isSearching, searchQuery } = useDiscoverSearchQueryStore(state => {
+    return {
+      searchQuery: state.searchQuery.trim().toLowerCase(),
+      isSearching: state.isSearching,
+    };
+  });
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 800);
 

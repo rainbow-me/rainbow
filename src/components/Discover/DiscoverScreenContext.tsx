@@ -9,8 +9,6 @@ type DiscoverScreenContextType = {
   scrollViewRef: RefObject<Animated.ScrollView>;
   sectionListRef: RefObject<SectionList>;
   searchInputRef: RefObject<TextInput>;
-  isSearching: boolean;
-  setIsSearching: Dispatch<SetStateAction<boolean>>;
   isFetchingEns: boolean;
   setIsFetchingEns: Dispatch<SetStateAction<boolean>>;
   cancelSearch: () => void;
@@ -31,8 +29,12 @@ const sendQueryAnalytics = (query: string) => {
 };
 
 const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => {
-  const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery.trim().toLowerCase());
-  const [isSearching, setIsSearching] = useState(false);
+  const { isSearching, searchQuery } = useDiscoverSearchQueryStore(state => {
+    return {
+      searchQuery: state.searchQuery.trim().toLowerCase(),
+      isSearching: state.isSearching,
+    };
+  });
 
   const [isFetchingEns, setIsFetchingEns] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
@@ -62,7 +64,7 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
       scrollToTop();
       searchInputRef.current?.focus();
     } else {
-      setIsSearching(true);
+      useDiscoverSearchQueryStore.setState({ isSearching: true });
       analytics.track('Tapped Search', {
         category: 'discover',
       });
@@ -72,8 +74,7 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
   const cancelSearch = useCallback(() => {
     searchInputRef.current?.blur();
     sendQueryAnalytics(searchQuery.trim());
-    useDiscoverSearchQueryStore.setState({ searchQuery: '' });
-    setIsSearching(false);
+    useDiscoverSearchQueryStore.setState({ searchQuery: '', isSearching: false });
   }, [searchQuery]);
 
   useTrackDiscoverScreenTime();
@@ -84,8 +85,6 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
         scrollViewRef,
         sectionListRef,
         searchInputRef,
-        isSearching,
-        setIsSearching,
         isFetchingEns,
         setIsFetchingEns,
         cancelSearch,

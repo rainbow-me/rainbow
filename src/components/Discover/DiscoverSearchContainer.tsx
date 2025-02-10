@@ -9,6 +9,7 @@ import { deviceUtils } from '@/utils';
 import { useDelayedValueWithLayoutAnimation } from '@/hooks';
 import styled from '@/styled-thing';
 import { ThemeContextProps } from '@/theme';
+import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 
 const CancelButton = styled(ButtonPressAnimation)({
   marginTop: 9,
@@ -37,7 +38,8 @@ const placeholderText = deviceUtils.isNarrowPhone
 export let discoverOpenSearchFnRef: () => void = () => null;
 
 function DiscoverSearchContainer({ children }: { children: React.ReactNode }) {
-  const { isSearching, onTapSearch, cancelSearch } = useDiscoverScreenContext();
+  const { onTapSearch, cancelSearch } = useDiscoverScreenContext();
+  const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
   const delayedShowSearch = useDelayedValueWithLayoutAnimation(isSearching);
 
   useEffect(() => {

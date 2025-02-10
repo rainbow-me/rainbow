@@ -126,13 +126,18 @@ const DiscoverSearchInput = ({
   clearTextOnFocus = true,
   currentChainId,
 }: DiscoverSearchInputProps) => {
-  const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery.trim().toLowerCase());
+  const { isSearching, searchQuery } = useDiscoverSearchQueryStore(state => {
+    return {
+      searchQuery: state.searchQuery.trim().toLowerCase(),
+      isSearching: state.isSearching,
+    };
+  });
   const isLoading = useDiscoverSearchStore(state => state.getStatus().isFetching);
   const onChangeText = useCallback((updatedQuery: string) => {
     useDiscoverSearchQueryStore.setState({ searchQuery: updatedQuery });
   }, []);
 
-  const { searchInputRef, isSearching } = useDiscoverScreenContext();
+  const { searchInputRef } = useDiscoverScreenContext();
   const handleClearInput = useCallback(() => {
     if (isDiscover && searchQuery.length > 1) {
       analytics.track('Search Query', {
