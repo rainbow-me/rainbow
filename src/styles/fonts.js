@@ -1,8 +1,10 @@
+import { IS_IOS } from '@/env';
+
 const font = {};
 
 font.family = {
-  SFProRounded: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded',
-  SFMono: ios ? 'SF Mono' : 'SF-Mono-Bold',
+  SFProRounded: IS_IOS ? 'SF Pro Rounded' : 'SF-Pro-Rounded',
+  SFMono: IS_IOS ? 'SF Mono' : 'SF-Mono-Bold',
 };
 
 font.letterSpacing = {
