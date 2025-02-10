@@ -1,5 +1,5 @@
 import { analytics } from '@/analytics';
-import React, { createContext, Dispatch, SetStateAction, RefObject, useState, useRef, useCallback } from 'react';
+import React, { createContext, RefObject, useRef, useCallback } from 'react';
 import { SectionList, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
@@ -16,23 +16,8 @@ type DiscoverScreenContextType = {
 
 const DiscoverScreenContext = createContext<DiscoverScreenContextType | null>(null);
 
-const sendQueryAnalytics = (query: string) => {
-  if (query.length > 1) {
-    analytics.track('Search Query', {
-      category: 'discover',
-      length: query.length,
-      query: query,
-    });
-  }
-};
-
 const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => {
-  const { isSearching, searchQuery } = useDiscoverSearchQueryStore(state => {
-    return {
-      searchQuery: state.searchQuery.trim().toLowerCase(),
-      isSearching: state.isSearching,
-    };
-  });
+  const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
 
   const searchInputRef = useRef<TextInput>(null);
 
@@ -70,9 +55,8 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
 
   const cancelSearch = useCallback(() => {
     searchInputRef.current?.blur();
-    sendQueryAnalytics(searchQuery.trim());
     useDiscoverSearchQueryStore.setState({ searchQuery: '', isSearching: false });
-  }, [searchQuery]);
+  }, []);
 
   useTrackDiscoverScreenTime();
 
