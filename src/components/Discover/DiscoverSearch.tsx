@@ -26,7 +26,7 @@ import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
-import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -54,9 +54,10 @@ export default function DiscoverSearch() {
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
 
-  const { isSearching, isLoading, isFetchingEns, setIsLoading, setIsFetchingEns, cancelSearch, searchInputRef, sectionListRef } =
+  const { isSearching, isFetchingEns, setIsLoading, setIsFetchingEns, cancelSearch, searchInputRef, sectionListRef } =
     useDiscoverScreenContext();
   const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery.trim().toLowerCase());
+  const isLoading = useDiscoverSearchStore(state => state.getStatus().isFetching);
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 800);
 
