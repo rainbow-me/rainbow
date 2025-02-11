@@ -15,6 +15,7 @@ export const DEFAULT_CHAIN_ID = base.id;
 export const DEFAULT_TOTAL_SUPPLY = 1e9;
 export const DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR = BLUE;
 export const STEP_TRANSITION_DURATION = 200;
+export const INPUT_HEIGHT = 66;
 
 export const MAX_SYMBOL_LENGTH = 10;
 export const MAX_DESCRIPTION_LENGTH = 240;
