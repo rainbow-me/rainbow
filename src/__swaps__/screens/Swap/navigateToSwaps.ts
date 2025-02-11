@@ -1,7 +1,7 @@
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { Navigation } from '@/navigation';
 import store from '@/redux/store';
-import { SwapsState, swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
+import { SwapsState, useSwapsStore } from '@/state/swaps/swapsStore';
 import { setSelectedGasSpeed } from './hooks/useSelectedGas';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import walletTypes from '@/helpers/walletTypes';
@@ -40,20 +40,21 @@ const getInputMethod = (params: SwapsParams) => {
   if (params.outputAsset) return 'outputAmount';
   return 'inputAmount';
 };
+
 export function getSwapsNavigationParams() {
-  const state = useSwapsStore.getState();
+  const { inputAsset: fallbackInputAsset, outputAsset: fallbackOutputAsset, setSlippage } = useSwapsStore.getState();
   const params = (Navigation.getActiveRoute().params || {}) as SwapsParams;
 
   const inputMethod = getInputMethod(params);
-  const inputAsset = params.inputAsset || state.inputAsset;
-  const outputAsset = params.outputAsset || state.outputAsset;
+  const inputAsset = params.inputAsset || fallbackInputAsset;
+  const outputAsset = params.outputAsset || fallbackOutputAsset;
   const chainId = inputAsset?.chainId || ChainId.mainnet;
   const lastTypedInput = inputMethod === 'slider' ? 'inputAmount' : inputMethod;
   const slippage =
     params.slippage && !isNaN(+params.slippage) ? slippageInBipsToString(+params.slippage) : getDefaultSlippage(chainId, getRemoteConfig());
 
   // Set the slippage in the swaps store to keep it in sync with the initial value
-  swapsStore.getState().setSlippage(slippage);
+  setSlippage(slippage);
 
   return {
     inputMethod,
