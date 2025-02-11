@@ -13,6 +13,7 @@ import warpcastIconCircle from '@/assets/warpcast.png';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { checkIsValidAddressOrDomainFormat } from '@/helpers/validators';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
+import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 
 const AIRDROP_GROUPS = [
   {
@@ -144,16 +145,29 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
   const addOrEditAirdropAddress = useTokenLauncherStore(state => state.addOrEditAirdropAddress);
 
   const [isValidAddress, setIsValidAddress] = useState(false);
+  const [addressImage, setAddressImage] = useState<string | null>(null);
 
   // Maintain local state of the address for use in the label icon
   const [address, setAddress] = useState('');
 
   const handleInputChange = useCallback(
-    (text: string, id: string) => {
+    async (text: string) => {
       addOrEditAirdropAddress({ id, address: text });
-      setAddress(text);
+      const isValid = checkIsValidAddressOrDomainFormat(text);
+      if (isValid !== isValidAddress) {
+        setIsValidAddress(isValid);
+        if (isValid) {
+          setAddress(text);
+          const avatar = await fetchENSAvatar(text);
+          if (avatar?.imageUrl) {
+            setAddressImage(avatar.imageUrl);
+          } else {
+            setAddressImage(null);
+          }
+        }
+      }
     },
-    [addOrEditAirdropAddress]
+    [addOrEditAirdropAddress, isValidAddress, id]
   );
 
   const labelIcon = useMemo(() => {
@@ -175,9 +189,9 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
         </Box>
       );
     } else {
-      return <AddressAvatar address={address} size={20} color={accentColors.primary} label={''} />;
+      return <AddressAvatar address={address} url={addressImage} size={20} color={accentColors.primary} label={''} />;
     }
-  }, [isValidAddress, accentColors, address]);
+  }, [isValidAddress, accentColors, address, addressImage]);
 
   return (
     <SingleFieldInput
@@ -193,13 +207,7 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
         paddingHorizontal: 16,
         borderRadius: FIELD_INNER_BORDER_RADIUS,
       }}
-      onInputChange={text => {
-        handleInputChange(text, id);
-        const isValid = checkIsValidAddressOrDomainFormat(text);
-        if (isValid !== isValidAddress) {
-          setIsValidAddress(isValid);
-        }
-      }}
+      onInputChange={handleInputChange}
     />
   );
 });
