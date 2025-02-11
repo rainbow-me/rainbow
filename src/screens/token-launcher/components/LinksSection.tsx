@@ -1,19 +1,20 @@
 import React from 'react';
 import { CollapsableField } from './CollapsableField';
-import { Bleed, Box, Column, Columns, IconContainer, Separator, Text, TextIcon, TextShadow } from '@/design-system';
+import { Bleed, Box, IconContainer, Separator, Text, TextIcon, TextShadow } from '@/design-system';
 import { useTokenLauncherStore, Link, LinkType } from '../state/tokenLauncherStore';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 import { SingleFieldInput } from './SingleFieldInput';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Icon } from '@/components/icons';
-import { FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
-import { chunk } from 'lodash';
+import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
 import { useTheme } from '@/theme';
+import FastImage from 'react-native-fast-image';
+import { Grid } from './Grid';
 
 const ANIMATION_CONFIG = SPRING_CONFIGS.slowSpring;
 
-// TODO: add discord (maybe), other
+// TODO: add discord (maybe)
 const LINK_SETTINGS = {
   x: {
     Icon: () => <Icon name="x" color={'white'} size={26} />,
@@ -21,6 +22,7 @@ const LINK_SETTINGS = {
     primaryColor: '#000000',
     placeholder: 'Username',
     displayName: 'X/Twitter',
+    type: 'x',
   },
   telegram: {
     Icon: () => (
@@ -34,22 +36,19 @@ const LINK_SETTINGS = {
     primaryColor: '#24A1DE',
     placeholder: 'Channel',
     displayName: 'Telegram',
+    type: 'telegram',
   },
-  // TODO: get warpcast W svg
   farcaster: {
-    Icon: () => (
-      <TextIcon color="label" size="13pt" weight="heavy">
-        W
-      </TextIcon>
-    ),
+    Icon: () => <FastImage source={require('@/assets/warpcast.png')} style={{ width: 20, height: 20 }} />,
     iconBackgroundColor: '#855DCD',
     primaryColor: '#855DCD',
     placeholder: 'Username',
     displayName: 'Farcaster',
+    type: 'farcaster',
   },
   website: {
     Icon: () => (
-      <TextIcon color="label" size="13pt" weight="heavy">
+      <TextIcon containerSize={20} color="label" size="icon 11px" weight="heavy">
         􀆪
       </TextIcon>
     ),
@@ -57,11 +56,21 @@ const LINK_SETTINGS = {
     primaryColor: '#000000',
     placeholder: 'https://token.com',
     displayName: 'Website',
+    type: 'website',
+  },
+  other: {
+    Icon: () => (
+      <TextIcon containerSize={20} color="label" size="icon 11px" weight="heavy">
+        {'􀉣'}
+      </TextIcon>
+    ),
+    iconBackgroundColor: '#000000',
+    primaryColor: '#000000',
+    placeholder: 'https://other.com',
+    displayName: 'Other',
+    type: 'other',
   },
 };
-
-// hack around not having a grid component
-const LINK_ROWS = chunk(Object.keys(LINK_SETTINGS), 2);
 
 export const LAYOUT_ANIMATION = LinearTransition.springify()
   .mass(ANIMATION_CONFIG.mass as number)
@@ -98,7 +107,11 @@ function LinkField({ link, index }: { link: Link; index: number }) {
         onInputChange={onInputChange}
         placeholder={placeholder}
       />
-      <ButtonPressAnimation onPress={() => deleteLink(index)}>
+      <ButtonPressAnimation
+        style={{ opacity: link.type === 'website' ? 0 : 1 }}
+        disabled={link.type === 'website'}
+        onPress={() => deleteLink(index)}
+      >
         <TextShadow blur={12} shadowOpacity={0.24}>
           <Text color="labelSecondary" size="17pt" weight="heavy">
             {'􀈒'}
@@ -114,67 +127,60 @@ export function LinksSection() {
   const links = useTokenLauncherStore(state => state.links);
   const addLink = useTokenLauncherStore(state => state.addLink);
 
+  const addMoreLinks = Object.keys(LINK_SETTINGS).filter(linkType => linkType !== 'website');
+
   return (
     <CollapsableField title="Links">
       <Animated.View layout={LAYOUT_ANIMATION}>
         <Box gap={8}>
+          <LinkField link={{ type: 'website', url: '', input: '' }} index={links.length} />
           {links.map((link, index) => (
             <LinkField key={`${link.type}-${index}`} link={link} index={index} />
           ))}
         </Box>
-        {links.length > 0 && (
-          <Box paddingVertical="16px">
-            <Separator color="separatorSecondary" />
-            <Text style={{ paddingTop: 16 }} color="labelSecondary" size="17pt" weight="heavy">
-              Add more
-            </Text>
-          </Box>
-        )}
-        <Box gap={8}>
-          {LINK_ROWS.map((linkTypes, index) => {
+        <Box paddingVertical="16px">
+          <Separator color="separatorSecondary" />
+          <Text style={{ paddingTop: 16 }} color="labelSecondary" size="17pt" weight="heavy">
+            {'Add More'}
+          </Text>
+        </Box>
+        <Grid columns={2} spacing={8}>
+          {addMoreLinks.map((linkType, index) => {
+            const { Icon, displayName, iconBackgroundColor, primaryColor } = LINK_SETTINGS[linkType as keyof typeof LINK_SETTINGS];
+            const backgroundColor = colors.alpha(primaryColor, 0.05);
             return (
-              <Columns key={index} space="8px">
-                {linkTypes.map(linkType => {
-                  const { Icon, displayName, iconBackgroundColor, primaryColor } = LINK_SETTINGS[linkType as keyof typeof LINK_SETTINGS];
-                  const backgroundColor = colors.alpha(primaryColor, 0.05);
-                  return (
-                    <Column key={`${linkType}-${index}`}>
-                      <ButtonPressAnimation onPress={() => addLink(linkType as LinkType)}>
-                        <Box
-                          paddingLeft="10px"
-                          paddingRight="16px"
-                          paddingVertical="10px"
-                          borderWidth={2.5}
-                          borderRadius={28}
-                          borderColor="fillTertiary"
-                          backgroundColor={backgroundColor}
-                        >
-                          <Box flexDirection="row" alignItems="center" gap={8}>
-                            <Box
-                              width={20}
-                              height={20}
-                              borderRadius={10}
-                              backgroundColor={iconBackgroundColor}
-                              justifyContent="center"
-                              alignItems="center"
-                            >
-                              <Icon />
-                            </Box>
-                            <TextShadow containerStyle={{ flex: 1 }} blur={12} shadowOpacity={0.24}>
-                              <Text align="center" color="labelSecondary" size="17pt" weight="heavy">
-                                {displayName}
-                              </Text>
-                            </TextShadow>
-                          </Box>
-                        </Box>
-                      </ButtonPressAnimation>
-                    </Column>
-                  );
-                })}
-              </Columns>
+              <ButtonPressAnimation key={`${linkType}-${index}`} onPress={() => addLink(linkType as LinkType)}>
+                <Box
+                  paddingLeft="10px"
+                  paddingRight="16px"
+                  paddingVertical="10px"
+                  borderWidth={FIELD_BORDER_WIDTH}
+                  borderRadius={FIELD_BORDER_RADIUS}
+                  borderColor="fillTertiary"
+                  backgroundColor={backgroundColor}
+                >
+                  <Box flexDirection="row" alignItems="center" gap={8}>
+                    <Box
+                      width={20}
+                      height={20}
+                      borderRadius={10}
+                      backgroundColor={iconBackgroundColor}
+                      justifyContent="center"
+                      alignItems="center"
+                    >
+                      <Icon />
+                    </Box>
+                    <TextShadow containerStyle={{ flex: 1 }} blur={12} shadowOpacity={0.24}>
+                      <Text align="center" color="labelSecondary" size="17pt" weight="heavy">
+                        {displayName}
+                      </Text>
+                    </TextShadow>
+                  </Box>
+                </Box>
+              </ButtonPressAnimation>
             );
           })}
-        </Box>
+        </Grid>
       </Animated.View>
     </CollapsableField>
   );
