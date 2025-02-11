@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Box, Text, useForegroundColor } from '@/design-system';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, Layout } from 'react-native-reanimated';
-import { FIELD_BACKGROUND_COLOR, FIELD_BORDER_COLOR, FIELD_BORDER_WIDTH } from '../constants';
+import Animated from 'react-native-reanimated';
+import { FIELD_BACKGROUND_COLOR, FIELD_BORDER_WIDTH } from '../constants';
 import { ButtonPressAnimation } from '@/components/animations';
 
 export const CollapsableField = ({ title, children }: { title: string; children: React.ReactNode }) => {
@@ -37,8 +37,7 @@ export const CollapsableField = ({ title, children }: { title: string; children:
           </Box>
         </ButtonPressAnimation>
       </View>
-
-      {!collapsed && children}
+      <Box style={{ display: collapsed ? 'none' : 'flex' }}>{children}</Box>
     </Animated.View>
   );
 };
