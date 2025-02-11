@@ -62,7 +62,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
       -1
   );
 
-  const { connectedToAnvil } = useConnectedToAnvilStore();
+  const connectedToAnvil = useConnectedToAnvilStore(state => state.connectedToAnvil);
 
   const [readyToRegister, setReadyToRegister] = useState<boolean>(secondsSinceCommitConfirmed > ENS_SECONDS_WAIT);
 

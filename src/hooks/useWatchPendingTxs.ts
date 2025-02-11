@@ -1,6 +1,5 @@
 import { useMemo, useCallback } from 'react';
 import useAccountSettings from './useAccountSettings';
-import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
@@ -10,33 +9,21 @@ import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { Address } from 'viem';
 import { staleBalancesStore } from '@/state/staleBalances';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const storePendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions);
   const setPendingTransactions = usePendingTransactionsStore(state => state.setPendingTransactions);
 
-  const { connectedToAnvil } = useConnectedToAnvilStore();
-
   const pendingTransactions = useMemo(() => storePendingTransactions[address] || [], [address, storePendingTransactions]);
 
   const { nativeCurrency } = useAccountSettings();
 
-  const refreshAssets = useCallback(
-    (_: RainbowTransaction) => {
-      // NOTE: We have two user assets stores right now, so let's invalidate both queries and trigger a refetch
-      queryClient.invalidateQueries(
-        userAssetsQueryKey({
-          address,
-          currency: nativeCurrency,
-          testnetMode: connectedToAnvil,
-        })
-      );
-      invalidateAddressNftsQueries(address);
-    },
-    [address, connectedToAnvil, nativeCurrency]
-  );
+  const refreshAssets = useCallback(() => {
+    userAssetsStore.getState().fetch(undefined, { force: true });
+    invalidateAddressNftsQueries(address);
+  }, [address]);
 
   const processSupportedNetworkTransaction = useCallback(
     async (tx: RainbowTransaction) => {
@@ -71,7 +58,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       }
 
       if (updatedTransaction?.status !== TransactionStatus.pending) {
-        refreshAssets(tx);
+        refreshAssets();
       }
       return updatedTransaction;
     },
@@ -113,9 +100,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         }
       });
 
-      queryClient.refetchQueries({
-        queryKey: userAssetsQueryKey({ address, currency: nativeCurrency, testnetMode: connectedToAnvil }),
-      });
+      userAssetsStore.getState().fetch(undefined, { force: true });
 
       const supportedMainnetChainIds = useBackendNetworksStore.getState().getSupportedMainnetChainIds();
 
@@ -142,7 +127,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       address,
       pendingTransactions: newPendingTransactions,
     });
-  }, [address, connectedToAnvil, nativeCurrency, pendingTransactions, processPendingTransaction, setPendingTransactions]);
+  }, [address, nativeCurrency, pendingTransactions, processPendingTransaction, setPendingTransactions]);
 
   return { watchPendingTransactions };
 };

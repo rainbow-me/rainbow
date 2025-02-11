@@ -56,7 +56,7 @@ export default function useWalletSectionsData({
 } = {}) {
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { selectedWallet, isReadOnlyWallet } = useWallets();
-  const isLoadingUserAssets = useUserAssetsStore(state => state.isLoadingUserAssets);
+  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const isWalletEthZero = useIsWalletEthZero();
 

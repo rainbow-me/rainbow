@@ -47,6 +47,7 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { selectorFilterByUserChains, selectUserAssetsList } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
 import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
+import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
 
 export default async function runMigrations() {
   // get current version
@@ -739,7 +740,12 @@ export default async function runMigrations() {
           data: queryData,
           selector: selectUserAssetsList,
         });
-        userAssetsStore.getState(address).setUserAssets(userAssets as ParsedSearchAsset[]);
+        userAssetsStore.getState(address).setUserAssets({
+          address,
+          chainIdsWithErrors: null,
+          state: undefined,
+          userAssets: userAssets as ParsedSearchAsset[],
+        });
       }
     }
   };
@@ -765,6 +771,16 @@ export default async function runMigrations() {
   };
 
   migrations.push(v24);
+
+  /**
+   *************** Migration v25 ******************
+   * Delete all queries except favorites
+   */
+  const v25 = async () => {
+    await clearReactQueryCache();
+  };
+
+  migrations.push(v25);
 
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
