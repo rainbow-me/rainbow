@@ -45,7 +45,7 @@ export function InfoInputStep() {
       keyboardDismissMode="interactive"
       bottomOffset={TOKEN_PREVIEW_BAR_HEIGHT + 36}
       extraKeyboardSpace={TOKEN_PREVIEW_BAR_HEIGHT}
-      // disableScrollOnKeyboardHide={true}
+
       // extraKeyboardSpace={-(TOKEN_PREVIEW_BAR_HEIGHT + safeAreaInsetValues.bottom)}
     >
       <Box width="full" gap={8} alignItems="center" paddingHorizontal="20px">

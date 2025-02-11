@@ -10,7 +10,7 @@ export function TokenAllocationSection() {
       <Text color="labelSecondary" size="13pt" weight="heavy">
         Token Allocation
       </Text>
-      <Box gap={8} width={'full'}>
+      <Box gap={12} width={'full'}>
         <AllocationBreakdown />
         <PrebuySection />
         <AirdropSection />

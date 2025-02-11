@@ -127,8 +127,7 @@ export function PrebuySection() {
               amount={option.amount}
               selectedAmount={selectedPrebuyEthAmount}
               onPressJS={() => {
-                // Clear the custom input value
-                inputRef.current?.clear();
+                inputRef.current?.setNativeProps({ text: option.amount.toString() });
               }}
               onPressWorklet={() => {
                 'worklet';
