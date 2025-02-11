@@ -22,6 +22,11 @@ interface TokenLauncherStore {
     surface: string;
     background: string;
     border: string;
+    opacity2: string;
+    opacity3: string;
+    opacity4: string;
+    opacity6: string;
+    opacity12: string;
   };
   name: string;
   symbol: string;
@@ -30,8 +35,11 @@ interface TokenLauncherStore {
   description: string;
   links: Link[];
   creatorBuyInEth: number;
-  airdropGroups: string[];
-  airdropAddresses: string[];
+  airdropRecipients: {
+    type: 'group' | 'address';
+    id: string;
+    value: string;
+  }[];
   step: 'info' | 'overview' | 'success';
   stepIndex: SharedValue<number>;
   // derived state
@@ -56,6 +64,9 @@ interface TokenLauncherStore {
   setCreatorBuyInEth: (amount: number) => void;
   setDescription: (description: string) => void;
   setStep: (step: 'info' | 'overview' | 'success') => void;
+  addAirdropGroup: (group: string) => void;
+  addOrEditAirdropAddress: ({ id, address }: { id: string; address: string }) => void;
+  deleteAirdropRecipient: (id: string) => void;
   // actions
   validateForm: () => void;
 }
@@ -69,12 +80,16 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     surface: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.04),
     background: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.06),
     border: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.03),
+    opacity2: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.02),
+    opacity3: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.03),
+    opacity4: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.04),
+    opacity6: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.06),
+    opacity12: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.12),
   },
   name: '',
   symbol: '',
   description: '',
-  airdropGroups: [],
-  airdropAddresses: [],
+  airdropRecipients: [],
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
   links: [
@@ -122,6 +137,11 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
           surface: getAlphaColor(imagePrimaryColor, 0.04),
           background: getAlphaColor(imagePrimaryColor, 0.06),
           border: getAlphaColor(imagePrimaryColor, 0.03),
+          opacity2: getAlphaColor(imagePrimaryColor, 0.02),
+          opacity3: getAlphaColor(imagePrimaryColor, 0.03),
+          opacity4: getAlphaColor(imagePrimaryColor, 0.04),
+          opacity6: getAlphaColor(imagePrimaryColor, 0.06),
+          opacity12: getAlphaColor(imagePrimaryColor, 0.12),
         },
       });
     } catch (e) {
@@ -133,16 +153,39 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   setDescription: (description: string) => set({ description }),
   setChainId: (chainId: number) => set({ chainId }),
   setTotalSupply: (totalSupply: number) => set({ totalSupply }),
-  addLink: (type: LinkType) => set({ links: [...get().links, { input: '', type, url: '' }] }),
-  editLink: ({ index, input, url }: { index: number; input: string; url: string }) =>
-    set({ links: get().links.map((link, i) => (i === index ? { ...link, input, url } : link)) }),
-  deleteLink: (index: number) => set({ links: get().links.filter((_, i) => i !== index) }),
-  setCreatorBuyInEth: (amount: number) => set({ creatorBuyInEth: amount }),
+  addLink: (type: LinkType) => {
+    set({ links: [...get().links, { input: '', type, url: '' }] });
+  },
+  editLink: ({ index, input, url }: { index: number; input: string; url: string }) => {
+    set({ links: get().links.map((link, i) => (i === index ? { ...link, input, url } : link)) });
+  },
+  deleteLink: (index: number) => {
+    set({ links: get().links.filter((_, i) => i !== index) });
+  },
+  setCreatorBuyInEth: (amount: number) => {
+    set({ creatorBuyInEth: amount });
+  },
   setStep: (step: 'info' | 'overview' | 'success') => {
     const newIndex = step === 'info' ? 0 : 1;
     // get().stepIndex.value = newIndex;
     get().stepIndex.value = withTiming(newIndex, TIMING_CONFIGS.slowFadeConfig);
     set({ step });
+  },
+  addAirdropGroup: (group: string) => {
+    set({ airdropRecipients: [...get().airdropRecipients, { type: 'group', id: Math.random().toString(), value: group }] });
+  },
+  addOrEditAirdropAddress: ({ id, address }: { id: string; address: string }) => {
+    const { airdropRecipients } = get();
+    const isExistingRecipient = airdropRecipients.some(recipient => recipient.id === id);
+
+    if (isExistingRecipient) {
+      set({ airdropRecipients: airdropRecipients.map(a => (a.id === id ? { ...a, value: address } : a)) });
+    } else {
+      set({ airdropRecipients: [...airdropRecipients, { type: 'address', id, value: address }] });
+    }
+  },
+  deleteAirdropRecipient: (id: string) => {
+    set({ airdropRecipients: get().airdropRecipients.filter(a => a.id !== id) });
   },
   // actions
   validateForm: () => {
