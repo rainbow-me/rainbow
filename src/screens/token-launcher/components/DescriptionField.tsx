@@ -10,7 +10,9 @@ export function DescriptionField() {
   return (
     <CollapsableField title="Description">
       <SingleFieldInput
+        multiline
         style={{
+          minHeight: 75,
           borderRadius: FIELD_INNER_BORDER_RADIUS,
           backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
           paddingVertical: 0,
@@ -25,10 +27,10 @@ export function DescriptionField() {
         //   return '';
         // }}
         onInputChange={text => setDescription(text)}
+        numberOfLines={3}
         textAlign="left"
         inputStyle={{ textAlign: 'left' }}
-        multiline
-        spellCheck={true}
+        autoCorrect={true}
         placeholder="Describe your coin"
       />
     </CollapsableField>
