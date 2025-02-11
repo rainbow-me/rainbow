@@ -1,10 +1,10 @@
 import lang from 'i18n-js';
 import { rankings } from 'match-sorter';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTheme } from '../theme/ThemeContext';
 import { addHexPrefix } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
-import { isLowerCaseMatch, filterList } from '@/utils';
+import { filterList } from '@/utils';
 import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -13,7 +13,9 @@ import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { isAddress } from '@ethersproject/address';
 
-const MAX_VERIFIED_RESULTS = 48;
+const MAX_VERIFIED_RESULTS = 24;
+const MAX_HIGH_LIQUIDITY_RESULTS = 6;
+const MAX_LOW_LIQUIDITY_RESULTS = 6;
 
 const abcSort = (list: any[], key?: string) => {
   return list.sort((a, b) => {
@@ -77,10 +79,15 @@ const useSearchCurrencyList = () => {
 
   const currencyList = useMemo(() => {
     const list = [];
-    const verifiedAssets = searchResultAssets?.verifiedAssets || [];
-
-    const highLiquidityAssets = searchResultAssets?.highLiquidityAssets || [];
-    const lowLiquidityAssets = searchResultAssets?.lowLiquidityAssets || [];
+    const verifiedAssets = (searchResultAssets?.verifiedAssets || [])
+      .filter(asset => !favoriteAssets.some(fav => fav.uniqueId === asset.uniqueId))
+      .slice(0, MAX_VERIFIED_RESULTS);
+    const highLiquidityAssets = (searchResultAssets?.highLiquidityAssets || [])
+      .filter(asset => !favoriteAssets.some(fav => fav.uniqueId === asset.uniqueId))
+      .slice(0, MAX_HIGH_LIQUIDITY_RESULTS);
+    const lowLiquidityAssets = (searchResultAssets?.lowLiquidityAssets || [])
+      .filter(asset => !favoriteAssets.some(fav => fav.uniqueId === asset.uniqueId))
+      .slice(0, MAX_LOW_LIQUIDITY_RESULTS);
 
     if (searching) {
       if (favoriteAssets?.length) {
