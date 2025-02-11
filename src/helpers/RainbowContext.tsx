@@ -3,7 +3,7 @@ import { MMKV } from 'react-native-mmkv';
 import { useSharedValue } from 'react-native-reanimated';
 import DevButton from '../components/dev-buttons/DevButton';
 import Emoji from '../components/text/Emoji';
-import { showReloadButton, showSwitchModeButton, showConnectToHardhatButton } from '../config/debug';
+import { showConnectToAnvilButton, showReloadButton, showSwitchModeButton } from '../config/debug';
 import { defaultConfig } from '@/config/experimental';
 
 import { useTheme } from '../theme/ThemeContext';
@@ -86,7 +86,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
       {children}
       {/* @ts-expect-error ts-migrate(2741) FIXME: Property 'color' is missing in type... Remove this comment to see the full error message */}
       {showReloadButton && __DEV__ && <DevButton initialDisplacement={200} />}
-      {((showConnectToHardhatButton && __DEV__) || IS_TEST) && (
+      {((showConnectToAnvilButton && __DEV__) || IS_TEST) && (
         <DevButton color={colors.purple} onPress={connectToAnvil} initialDisplacement={150} testID={'dev-button-anvil'} size={20}>
           {/* @ts-ignore */}
           <Emoji>👷</Emoji>

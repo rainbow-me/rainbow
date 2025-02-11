@@ -18,7 +18,7 @@ import { ParsedAddressAsset } from '@/entities';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { deepEqualWorklet } from '@/worklets/comparisons';
 import { debounce } from 'lodash';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { runOnJS, runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { create } from 'zustand';
 import { GasSettings } from '../hooks/useCustomGas';
@@ -29,6 +29,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { getSwapsNavigationParams } from '../navigateToSwaps';
 
 const BUFFER_RATIO = 0.5;
 
@@ -136,20 +137,23 @@ const getHasEnoughFundsForGasWorklet = ({
 
 export function SyncGasStateToSharedValues() {
   const { hasEnoughFundsForGas, internalSelectedInputAsset } = useSwapContext();
-  const preferredNetwork = useSwapsStore(s => s.preferredNetwork);
 
-  const initialChainId = useMemo(
-    () => internalSelectedInputAsset.value?.chainId || preferredNetwork || ChainId.mainnet,
-    [internalSelectedInputAsset, preferredNetwork]
-  );
-  const { assetToSell, chainId = initialChainId, quote } = useSyncedSwapQuoteStore();
+  const [initialInfo] = useState(() => {
+    const params = getSwapsNavigationParams();
+    return {
+      assetToSell: params.inputAsset,
+      chainId: params.inputAsset?.chainId || useSwapsStore.getState().preferredNetwork || ChainId.mainnet,
+    };
+  });
 
+  const { assetToSell = initialInfo.assetToSell, chainId = initialInfo.chainId, quote } = useSyncedSwapQuoteStore();
   const gasSettings = useSelectedGas(chainId);
 
-  const { address: nativeCurrencyAddress } = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
+  const nativeAssets = useBackendNetworksStore(state => state.getChainsNativeAsset());
+  const nativeCurrencyUniqueId = useMemo(() => getUniqueId(nativeAssets[chainId]?.address, chainId), [chainId, nativeAssets]);
 
-  const isLoadingNativeNetworkAsset = useUserAssetsStore(state => state.isLoadingUserAssets);
-  const userNativeNetworkAsset = useUserAssetsStore(state => state.getLegacyUserAsset(getUniqueId(nativeCurrencyAddress, chainId)));
+  const isLoadingNativeNetworkAsset = useUserAssetsStore(state => state.getStatus().isInitialLoading);
+  const userNativeNetworkAsset = useUserAssetsStore(state => state.getLegacyUserAsset(nativeCurrencyUniqueId));
 
   const { data: estimatedGasLimit } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
 
