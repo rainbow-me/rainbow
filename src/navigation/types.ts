@@ -119,4 +119,10 @@ export type RootStackParamList = {
     selected: SharedValue<ChainId | undefined>;
     setSelected: (chainId: ChainId | undefined) => void;
   };
+  [Routes.LOG_SHEET]: {
+    data: {
+      title: string;
+      message: string;
+    }[];
+  };
 };
