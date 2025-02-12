@@ -26,7 +26,7 @@ const useFavoritesStore = createRainbowStore<FavoritesState>(
   () => ({
     favorites: initializeFavorites(),
   }),
-  { storageKey: 'favoritedTokensTest44' }
+  { storageKey: 'favoritedTokens' }
 );
 
 function initializeFavorites() {
