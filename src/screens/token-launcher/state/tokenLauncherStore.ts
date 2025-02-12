@@ -1,6 +1,6 @@
 import { abbreviateNumber } from '@/helpers/utilities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, STEP_TRANSITION_DURATION } from '../constants';
+import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, STEP_TRANSITION_DURATION } from '../constants';
 import { makeMutable, SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import chroma from 'chroma-js';

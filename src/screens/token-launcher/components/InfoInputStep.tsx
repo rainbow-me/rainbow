@@ -91,7 +91,7 @@ export function InfoInputStep() {
         {/* </Bleed> */}
         <Box gap={16} width="full" paddingVertical="20px">
           <Text color="labelSecondary" size="13pt" weight="heavy">
-            Optional
+            {'About'}
           </Text>
           <Box gap={8} width={'full'}>
             <DescriptionField />
