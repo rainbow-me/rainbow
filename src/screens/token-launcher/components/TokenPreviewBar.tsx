@@ -47,7 +47,7 @@ export function TokenPreviewBar() {
     };
   });
 
-  const symbolLabel = symbol === '' ? '$NAME' : symbol;
+  const symbolLabel = symbol === '' ? 'NAME' : symbol;
   const goToOverviewStep = useCallback(() => {
     Keyboard.dismiss();
     setStep('overview');
@@ -86,7 +86,7 @@ export function TokenPreviewBar() {
             <Box gap={10}>
               <Inline alignVertical="center" space="8px">
                 <Text color="label" size="15pt" weight="bold">
-                  {symbolLabel}
+                  {`$${symbolLabel}`}
                 </Text>
                 <Box height={4} width={4} background="fillTertiary" borderRadius={2} />
                 <Text color="label" size="15pt" weight="bold">

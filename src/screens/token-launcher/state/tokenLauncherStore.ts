@@ -1,10 +1,12 @@
-import { abbreviateNumber } from '@/helpers/utilities';
+import { abbreviateNumber, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, STEP_TRANSITION_DURATION } from '../constants';
+import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, STEP_TRANSITION_DURATION, TARGET_MARKET_CAP_IN_USD } from '../constants';
 import { makeMutable, SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import chroma from 'chroma-js';
 import { memoFn } from '@/utils/memoFn';
+import { calculateTokenomics } from '../helpers/calculateTokenomics';
+import store from '@/redux/store';
 
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
@@ -29,15 +31,19 @@ interface TokenLauncherStore {
   }[];
   step: 'info' | 'overview' | 'success';
   stepIndex: SharedValue<number>;
+  ethPriceUsd: number;
+  ethPriceNative: number;
   // derived state
   formattedTotalSupply: () => string;
   tokenPrice: () => string;
   tokenMarketCap: () => string;
   hasCompletedRequiredFields: () => boolean;
-  allocationPercentages: () => {
+  allocationBips: () => {
     creator: number;
     airdrop: number;
+    lp: number;
   };
+  tokenomics: () => any;
   // setters
   setImageUri: (uri: string) => void;
   setImageUrl: (url: string) => void;
@@ -54,6 +60,8 @@ interface TokenLauncherStore {
   addAirdropGroup: (group: string) => void;
   addOrEditAirdropAddress: ({ id, address }: { id: string; address: string }) => void;
   deleteAirdropRecipient: (id: string) => void;
+  setEthPriceUsd: (ethPriceUsd: number) => void;
+  setEthPriceNative: (ethPriceNative: number) => void;
   // actions
   validateForm: () => void;
 }
@@ -68,33 +76,62 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
   links: [
+    // TESTING
     // { input: '', type: 'website', url: '' },
-    // { input: '', type: 'x', url: '' },
-    // { input: '', type: 'telegram', url: '' },
-    // { input: '', type: 'farcaster', url: '' },
-    // { input: '', type: 'discord', url: '' },
-    // { input: '', type: 'other', url: '' },
   ],
   creatorBuyInEth: 0,
+  ethPriceUsd: 0,
+  ethPriceNative: 0,
   step: 'info' as const,
   stepIndex: makeMutable(0),
   // derived state
   formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 0, 'long'),
   tokenPrice: () => {
-    // TODO: interface with sdk to get token price
-    return '$0.035';
+    const { nativeCurrency } = store.getState().settings;
+    const tokenomics = get().tokenomics();
+
+    const targetPriceEth = tokenomics?.price.targetEth;
+    const ethPriceNative = get().ethPriceNative;
+
+    const targetPriceNative = targetPriceEth && ethPriceNative ? tokenomics?.price.targetEth * ethPriceNative : 0;
+
+    return convertAmountToNativeDisplay(targetPriceNative, nativeCurrency);
   },
   tokenMarketCap: () => {
-    // TODO: interface with sdk to get token market cap
-    return '$35k';
+    const { nativeCurrency } = store.getState().settings;
+    const tokenomics = get().tokenomics();
+
+    const targetMarketCapEth = tokenomics?.marketCap.targetEth;
+    const ethPriceNative = get().ethPriceNative;
+
+    const targetMarketCapNative = targetMarketCapEth && ethPriceNative ? targetMarketCapEth * ethPriceNative : 0;
+
+    return convertAmountToNativeDisplay(targetMarketCapNative, nativeCurrency, 2, true, true);
   },
   hasCompletedRequiredFields: () => {
     const { name, symbol, imageUri } = get();
     return name !== '' && symbol !== '' && imageUri !== '';
   },
-  allocationPercentages: () => {
-    // TODO: interface with sdk to get allocation breakdown
-    return { creator: 1, airdrop: 0 };
+  allocationBips: () => {
+    const tokenomics = get().tokenomics();
+    return {
+      creator: tokenomics?.allocation.creator ?? 0,
+      airdrop: tokenomics?.allocation.airdrop ?? 0,
+      lp: tokenomics?.allocation.lp ?? 0,
+    };
+  },
+  tokenomics: () => {
+    const ethPriceUsd = get().ethPriceUsd;
+    if (!ethPriceUsd) return;
+
+    const result = calculateTokenomics({
+      targetMarketCapUsd: TARGET_MARKET_CAP_IN_USD,
+      totalSupply: get().totalSupply,
+      ethPriceUsd,
+      // TODO: needs to be based on the number of VALID recipients
+      hasAirdrop: get().airdropRecipients.length > 0,
+    });
+    return result;
   },
   // setters
   setImageUri: (uri: string) => {
@@ -143,6 +180,12 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   },
   deleteAirdropRecipient: (id: string) => {
     set({ airdropRecipients: get().airdropRecipients.filter(a => a.id !== id) });
+  },
+  setEthPriceUsd: (ethPriceUsd: number) => {
+    set({ ethPriceUsd });
+  },
+  setEthPriceNative: (ethPriceNative: number) => {
+    set({ ethPriceNative });
   },
   // actions
   validateForm: () => {

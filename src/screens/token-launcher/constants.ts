@@ -11,8 +11,6 @@ export const FIELD_BORDER_WIDTH = 2.5;
 export const FIELD_BORDER_RADIUS = 28;
 export const FIELD_INNER_BORDER_RADIUS = 16;
 export const CLOUDINARY_TOKEN_LAUNCHER_PRESET = 'token_launcher';
-export const DEFAULT_CHAIN_ID = base.id;
-export const DEFAULT_TOTAL_SUPPLY = 1e9;
 export const DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR = BLUE;
 export const STEP_TRANSITION_DURATION = 200;
 export const INPUT_HEIGHT = 66;
@@ -20,3 +18,11 @@ export const INPUT_HEIGHT = 66;
 export const MAX_SYMBOL_LENGTH = 10;
 export const MAX_DESCRIPTION_LENGTH = 240;
 export const MAX_NAME_LENGTH = 20;
+
+export const DEFAULT_CHAIN_ID = base.id;
+export const DEFAULT_TOTAL_SUPPLY = 1_000_000;
+export const TARGET_MARKET_CAP_IN_USD = 35_000;
+// TODO: these should probably come from the sdk & read from contract becasue the contract can change these values
+export const CREATOR_BPS = 69;
+export const CREATOR_BPS_WITH_AIRDROP = 46;
+export const AIRDROP_BPS = 23;
