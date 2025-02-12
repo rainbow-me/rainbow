@@ -42,7 +42,7 @@ export default function useHideSplashScreen() {
       const initialRoute = PerformanceContextMap.get('initialRoute');
       const additionalParams = initialRoute !== undefined ? { initialRoute } : undefined;
       PerformanceTracking.finishMeasuring(PerformanceMetrics.timeToInteractive, additionalParams);
-      PerformanceTracking.logDirectly(PerformanceMetrics.completeStartupTime, Date.now() - StartTime.START_TIME, additionalParams);
+      PerformanceTracking.logDirectly(PerformanceMetrics.completeStartupTime, performance.now() - StartTime.START_TIME, additionalParams);
       analytics.track('Application became interactive');
       alreadyLoggedPerformance.current = true;
 

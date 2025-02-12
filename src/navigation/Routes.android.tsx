@@ -93,6 +93,7 @@ import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
 import { RootStackParamList } from './types';
 import WalletLoadingListener from '@/components/WalletLoadingListener';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
+import { LogSheet } from '@/components/debugging/LogSheet';
 import { NetworkSelector } from '@/components/NetworkSwitcher';
 
 const Stack = createStackNavigator();
@@ -248,6 +249,7 @@ function BSNavigator() {
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
       <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
       <BSStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} />
+      <BSStack.Screen component={LogSheet} name={Routes.LOG_SHEET} />
     </BSStack.Navigator>
   );
 }

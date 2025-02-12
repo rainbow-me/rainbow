@@ -20,6 +20,8 @@ import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 // This action is used to bridge the claimed funds to another chain
 export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {
@@ -43,13 +45,13 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     sellTokenAddress: AddressZero,
     buyTokenAddress: AddressZero,
     sellAmount: sellAmount,
-    slippage: 2,
+    slippage: +getDefaultSlippageWorklet(chainId, getRemoteConfig()),
     currency,
   });
 
   // if we don't get a quote or there's an error we can't continue
   if (!claimBridgeQuote || (claimBridgeQuote as QuoteError)?.error) {
-    throw new Error('[CLAIM-BRIDGE]: error getting getClaimBridgeQuote');
+    throw new Error(`[CLAIM-BRIDGE]: error getting getClaimBridgeQuote: ${claimBridgeQuote}`);
   }
 
   let bridgeQuote = claimBridgeQuote as CrosschainQuote;
@@ -60,11 +62,10 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   const provider = getProvider({ chainId: ChainId.optimism });
 
   const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
-    // @ts-expect-error - TODO: fix improper arguments here
     {
       data: bridgeQuote.data,
       from: bridgeQuote.from,
-      to: bridgeQuote.to ?? null,
+      to: bridgeQuote.to,
       value: bridgeQuote.value,
     },
     provider
@@ -103,12 +104,12 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
       sellTokenAddress: AddressZero,
       buyTokenAddress: AddressZero,
       sellAmount: maxBridgeableAmount,
-      slippage: 2,
+      slippage: +getDefaultSlippageWorklet(chainId, getRemoteConfig()),
       currency,
     });
 
     if (!newQuote || (newQuote as QuoteError)?.error) {
-      throw new Error('[CLAIM-BRIDGE]: error getClaimBridgeQuote (new)');
+      throw new Error(`[CLAIM-BRIDGE]: error getClaimBridgeQuote (new): ${newQuote}`);
     }
 
     bridgeQuote = newQuote as CrosschainQuote;
@@ -151,7 +152,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   try {
     swap = await executeCrosschainSwap(swapParams);
   } catch (e) {
-    throw new Error('[CLAIM-BRIDGE]: crosschainSwap error');
+    throw new Error(`[CLAIM-BRIDGE]: crosschainSwap error: ${e}`);
   }
 
   if (!swap) {

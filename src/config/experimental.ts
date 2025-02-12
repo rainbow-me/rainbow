@@ -30,7 +30,7 @@ export const FEATURED_RESULTS = 'Featured Results';
 export const CLAIMABLES = 'Claimables';
 export const NFTS_ENABLED = 'Nfts Enabled';
 export const TRENDING_TOKENS = 'Trending Tokens';
-
+export const PERFORMANCE_TOAST = 'Performance Toast';
 /**
  * A developer setting that pushes log lines to an array in-memory so that
  * they can be "dumped" or copied out of the app and analyzed.
@@ -68,6 +68,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [CLAIMABLES]: { settings: true, value: false },
   [NFTS_ENABLED]: { settings: true, value: !!IS_TEST },
   [TRENDING_TOKENS]: { settings: true, value: false },
+  [PERFORMANCE_TOAST]: { settings: true, value: false },
 };
 
 export const defaultConfigValues: Record<string, boolean> = Object.fromEntries(

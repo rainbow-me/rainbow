@@ -122,4 +122,10 @@ export type RootStackParamList = {
     canSelectAllNetworks?: boolean;
     allowedNetworks?: ChainId[];
   };
+  [Routes.LOG_SHEET]: {
+    data: {
+      title: string;
+      message: string;
+    }[];
+  };
 };

@@ -1752,12 +1752,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNImageCropPicker (0.41.2):
+  - RNImageCropPicker (0.42.0):
     - React-Core
     - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.41.2)
+    - RNImageCropPicker/QBImagePickerController (= 0.42.0)
     - TOCropViewController (~> 2.7.4)
-  - RNImageCropPicker/QBImagePickerController (0.41.2):
+  - RNImageCropPicker/QBImagePickerController (0.42.0):
     - React-Core
     - React-RCTImage
     - TOCropViewController (~> 2.7.4)
@@ -2586,25 +2586,25 @@ SPEC CHECKSUMS:
   React-RuntimeApple: ce41ba7df744c7a6c2cc490a9b2e15fc58019508
   React-RuntimeCore: 350218ac9ee1412ddc9806f248141c8fb9bccd8b
   React-runtimeexecutor: 69cab8ddf409de6d6a855a71c8af9e7290c4e55b
-  React-RuntimeHermes: 9d0812e3370111dd175aa1fa8bd4da93a9efc4fd
-  React-runtimescheduler: 0c80752bceb80924cb8a4babc2a8e3ed70d41e87
-  React-utils: a06061b3887c702235d2dac92dacbd93e1ea079e
-  ReactCommon: f00e436b3925a7ae44dfa294b43ef360fbd8ccc4
-  ReactNativeDarkMode: 0178ffca3b10f6a7c9f49d6f9810232b328fa949
-  rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
-  RNBootSplash: e025d4ee98d942ee6c8b495a6fe66339a6b5f6dd
-  RNCAsyncStorage: 826b603ae9c0f88b5ac4e956801f755109fa4d5c
-  RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
-  RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
-  RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
-  RNFastImage: 4ce7636223e71615774b99004103e946a73e7c32
-  RNFBApp: 1ae7462cddf74a49df206d3418bc0170f8fa53e5
-  RNFBMessaging: 85f661b9f16e2b081e6809ef63d3daa4458b9042
-  RNFBRemoteConfig: a8325e2d3772127358dd2e7d5e39c9ad3e3379ac
-  RNFlashList: d5ded0d87e54ed3f92466a6b65253f5b78007116
-  RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
-  RNGestureHandler: 6fee3422fd8c81c5ee756fa72e3d1780e9943d9d
-  RNImageCropPicker: 771e2ca319d2cf92e04ebf334ece892ee9a6728f
+  React-RuntimeHermes: df3172370e3fbb593189afe23baa9c583cc6c853
+  React-runtimescheduler: 444c28666d8e9d275c600fe3a3cc7f014fa86406
+  React-utils: 595335727912553f56aad7f580254ce4ca95a09c
+  ReactCommon: 57d127dbf2ca045a07604e13f51c8e97ba176e56
+  ReactNativeDarkMode: 24151d23f70a51eea4b8db0166e79d28b6f2ae57
+  rn-fetch-blob: 25612b6d6f6e980c6f17ed98ba2f58f5696a51ca
+  RNBootSplash: 2fc215ec70ab24408745e9452fa3e6595fb9ce76
+  RNCAsyncStorage: aa75595c1aefa18f868452091fa0c411a516ce11
+  RNCClipboard: 4abb037e8fe3b98a952564c9e0474f91c492df6d
+  RNCMaskedView: de80352547bd4f0d607bf6bab363d826822bd126
+  RNDeviceInfo: c78d3d9ae81aed962fa0cc7c455e970f35a44a47
+  RNFastImage: b4741be7fc96457586f610a1a454817518376819
+  RNFBApp: a04e05e3ad4c3e6a2a84cf714f6845ec2cf5d73d
+  RNFBMessaging: 6d244fcbdf8489869facfefb4ddf17386e234f68
+  RNFBRemoteConfig: d93e54405d06127f58a51c6f96780840f7f47cff
+  RNFlashList: 916adaa9dc946dbafed435175982e31e767b07b0
+  RNFS: 3557d4b8e51925b011e787094600d6e05dca414e
+  RNGestureHandler: 8d857f8c5e6697585f6a246d1acbf0533c438ab1
+  RNImageCropPicker: b0afedeefd8655254a15c34103718455fde6ce59
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: 14793d75953d99c6d950090b8e9698b234c5d08c
   RNKeychain: 4f63aada75ebafd26f4bc2c670199461eab85d94
