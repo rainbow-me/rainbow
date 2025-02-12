@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
-import { Box } from '@/design-system';
+import { Box, useBackgroundColor, useColorMode } from '@/design-system';
 import { TOKEN_PREVIEW_BAR_HEIGHT, TokenPreviewBar } from './components/TokenPreviewBar';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
-
 import { TokenLauncherHeader } from './components/TokenLauncherHeader';
 import { InfoInputStep } from './components/InfoInputStep';
 import { OverviewStep } from './components/OverviewStep';
@@ -14,10 +13,13 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { TokenLauncherContextProvider } from './context/TokenLauncherContext';
 
 export function TokenLauncherScreen() {
+  const { isDarkMode } = useColorMode();
+  const fillQuaternary = useBackgroundColor('fillQuaternary');
+  const backgroundColor = isDarkMode ? '#000' : fillQuaternary;
+
   const stepIndex = useTokenLauncherStore(state => state.stepIndex);
 
   const screenWidth = deviceUtils.dimensions.width;
-
   const contentContainerHeight =
     deviceUtils.dimensions.height - safeAreaInsetValues.top - safeAreaInsetValues.bottom - TOKEN_PREVIEW_BAR_HEIGHT;
 
@@ -38,7 +40,7 @@ export function TokenLauncherScreen() {
       <KeyboardProvider>
         <Box
           width="full"
-          backgroundColor="black"
+          backgroundColor={backgroundColor}
           style={{ flex: 1, paddingBottom: safeAreaInsetValues.bottom, paddingTop: safeAreaInsetValues.top }}
         >
           <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={TOKEN_PREVIEW_BAR_HEIGHT} style={{ flex: 1 }}>

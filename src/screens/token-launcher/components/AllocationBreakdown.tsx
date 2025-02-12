@@ -8,7 +8,7 @@ import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 export function AllocationBreakdown() {
   const { accentColors } = useTokenLauncherContext();
 
-  const allocationPercentages = useTokenLauncherStore(state => state.allocationPercentages());
+  const allocationBips = useTokenLauncherStore(state => state.allocationBips());
   const tokenPrice = useTokenLauncherStore(state => state.tokenPrice());
 
   return (
@@ -29,7 +29,7 @@ export function AllocationBreakdown() {
         <Box gap={12} flexGrow={1} justifyContent="center" alignItems="center">
           <TextShadow color={accentColors.opacity100} blur={12} shadowOpacity={0.24}>
             <Text color={{ custom: accentColors.opacity100 }} size="20pt" weight="heavy">
-              {`${convertAmountToPercentageDisplay(allocationPercentages.creator, 0, 1, true)}`}
+              {`${convertAmountToPercentageDisplay(allocationBips.creator / 100, 2, 2, false)}`}
             </Text>
           </TextShadow>
           <Text color={{ custom: accentColors.opacity100 }} size="13pt" weight="bold">
@@ -38,7 +38,7 @@ export function AllocationBreakdown() {
         </Box>
         <Box gap={12} flexGrow={1} justifyContent="center" alignItems="center">
           <Text color="label" size="20pt" weight="heavy">
-            {`${convertAmountToPercentageDisplay(allocationPercentages.airdrop, 0, 1, true)}`}
+            {`${convertAmountToPercentageDisplay(allocationBips.airdrop / 100, 2, 2, false)}`}
           </Text>
           <Text color="labelTertiary" size="13pt" weight="bold">
             {'Airdropping'}
