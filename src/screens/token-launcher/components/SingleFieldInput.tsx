@@ -58,7 +58,6 @@ const FieldInput = React.memo(
           },
           inputStyle,
         ]}
-        spellCheck={false}
         textAlignVertical="center"
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...textInputProps}

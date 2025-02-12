@@ -11,11 +11,11 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 
 export function NetworkField() {
-  const { colors } = useTheme();
+  const { accentColors } = useTokenLauncherContext();
 
-  const imagePrimaryColor = useTokenLauncherStore(state => state.imagePrimaryColor);
   const chainId = useTokenLauncherStore(state => state.chainId);
   const setChainId = useTokenLauncherStore(state => state.setChainId);
   const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[chainId];
@@ -49,8 +49,8 @@ export function NetworkField() {
       >
         <Bleed right={{ custom: 7 }}>
           <Box
-            backgroundColor={colors.alpha(imagePrimaryColor, 0.1)}
-            borderColor={{ custom: colors.alpha(imagePrimaryColor, 0.06) }}
+            backgroundColor={accentColors.opacity10}
+            borderColor={{ custom: accentColors.opacity6 }}
             flexDirection="row"
             alignItems="center"
             borderWidth={FIELD_BORDER_WIDTH}

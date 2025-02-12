@@ -7,19 +7,19 @@ import * as ImagePicker from 'expo-image-picker';
 import { useUploadToCloudinary } from '../hooks/useUploadToCloudinary';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { Canvas, useImage, Image, Shadow, RoundedRect } from '@shopify/react-native-skia';
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 
 const SIZE = 112;
-const newBlue = '#268FFF';
 
 export function TokenLogo() {
   const { colors } = useTheme();
+  const { accentColors } = useTokenLauncherContext();
 
   const imageUri = useTokenLauncherStore(state => state.imageUri);
   const setImageUri = useTokenLauncherStore(state => state.setImageUri);
   const setImageUrl = useTokenLauncherStore(state => state.setImageUrl);
 
-  const imagePrimaryColor = useTokenLauncherStore(state => state.imagePrimaryColor);
-  const imageShadowColor = colors.alpha(imagePrimaryColor, 0.3);
+  const imageShadowColor = accentColors.opacity30;
 
   const image = useImage(imageUri);
 
@@ -72,16 +72,16 @@ export function TokenLogo() {
             style={{
               width: '100%',
               height: '100%',
-              backgroundColor: colors.alpha(newBlue, 0.1),
+              backgroundColor: accentColors.opacity10,
               justifyContent: 'center',
               alignItems: 'center',
               borderRadius: SIZE / 2,
               borderWidth: 3,
-              borderColor: colors.alpha(newBlue, 0.3),
+              borderColor: accentColors.opacity30,
               borderStyle: 'dashed',
             }}
           >
-            <Text size="34pt" color={{ custom: newBlue }} weight="bold">
+            <Text size="34pt" color={{ custom: accentColors.opacity100 }} weight="bold">
               {'􀅼'}
             </Text>
           </View>
