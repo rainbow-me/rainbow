@@ -11,6 +11,7 @@ import { useTokenLauncherStore } from './state/tokenLauncherStore';
 import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { SkiaBackground } from './components/SkiaBackground';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { TokenLauncherContextProvider } from './context/TokenLauncherContext';
 
 export function TokenLauncherScreen() {
   const stepIndex = useTokenLauncherStore(state => state.stepIndex);
@@ -33,36 +34,38 @@ export function TokenLauncherScreen() {
   }));
 
   return (
-    <KeyboardProvider>
-      <Box
-        width="full"
-        backgroundColor="black"
-        style={{ flex: 1, paddingBottom: safeAreaInsetValues.bottom, paddingTop: safeAreaInsetValues.top }}
-      >
-        <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={TOKEN_PREVIEW_BAR_HEIGHT} style={{ flex: 1 }}>
-          <Box
-            borderWidth={THICK_BORDER_WIDTH}
-            borderColor={{ custom: 'rgba(245, 248, 255, 0.06)' }}
-            background="surfacePrimary"
-            borderRadius={42}
-            style={{ maxHeight: contentContainerHeight }}
-          >
-            <Box style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
-              <SkiaBackground width={screenWidth} height={contentContainerHeight} />
+    <TokenLauncherContextProvider>
+      <KeyboardProvider>
+        <Box
+          width="full"
+          backgroundColor="black"
+          style={{ flex: 1, paddingBottom: safeAreaInsetValues.bottom, paddingTop: safeAreaInsetValues.top }}
+        >
+          <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={TOKEN_PREVIEW_BAR_HEIGHT} style={{ flex: 1 }}>
+            <Box
+              borderWidth={THICK_BORDER_WIDTH}
+              borderColor={{ custom: 'rgba(245, 248, 255, 0.06)' }}
+              background="surfacePrimary"
+              borderRadius={42}
+              style={{ maxHeight: contentContainerHeight }}
+            >
+              <Box style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+                <SkiaBackground width={screenWidth} height={contentContainerHeight} />
+              </Box>
+              <Animated.View style={[infoStepAnimatedStyle, { width: screenWidth }]}>
+                <InfoInputStep />
+              </Animated.View>
+              <Animated.View style={[overviewStepAnimatedStyle, { width: screenWidth }]}>
+                <OverviewStep />
+              </Animated.View>
+              <TokenLauncherHeader />
             </Box>
-            <Animated.View style={[infoStepAnimatedStyle, { width: screenWidth }]}>
-              <InfoInputStep />
-            </Animated.View>
-            <Animated.View style={[overviewStepAnimatedStyle, { width: screenWidth }]}>
-              <OverviewStep />
-            </Animated.View>
-            <TokenLauncherHeader />
-          </Box>
-        </KeyboardAvoidingView>
-        <KeyboardStickyView offset={stickyFooterKeyboardOffset}>
-          <TokenPreviewBar />
-        </KeyboardStickyView>
-      </Box>
-    </KeyboardProvider>
+          </KeyboardAvoidingView>
+          <KeyboardStickyView offset={stickyFooterKeyboardOffset}>
+            <TokenPreviewBar />
+          </KeyboardStickyView>
+        </Box>
+      </KeyboardProvider>
+    </TokenLauncherContextProvider>
   );
 }

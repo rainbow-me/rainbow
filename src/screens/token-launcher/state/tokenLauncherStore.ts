@@ -1,6 +1,5 @@
 import { abbreviateNumber } from '@/helpers/utilities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import getDominantColorFromImage from '@/utils/getDominantColorFromImage';
 import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, STEP_TRANSITION_DURATION } from '../constants';
 import { makeMutable, SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -8,7 +7,7 @@ import chroma from 'chroma-js';
 import { memoFn } from '@/utils/memoFn';
 
 // TODO: same as colors.alpha, move to a helper file
-const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
+export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
 
 export type LinkType = 'website' | 'x' | 'telegram' | 'farcaster' | 'discord' | 'other';
 export type Link = { input: string; type: LinkType; url: string };
@@ -16,18 +15,6 @@ interface TokenLauncherStore {
   // base state
   imageUri: string;
   imageUrl: string;
-  imagePrimaryColor: string;
-  accentColors: {
-    primary: string;
-    surface: string;
-    background: string;
-    border: string;
-    opacity2: string;
-    opacity3: string;
-    opacity4: string;
-    opacity6: string;
-    opacity12: string;
-  };
   name: string;
   symbol: string;
   chainId: number;
@@ -74,18 +61,6 @@ interface TokenLauncherStore {
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
   imageUri: '',
   imageUrl: '',
-  imagePrimaryColor: DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR,
-  accentColors: {
-    primary: DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR,
-    surface: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.04),
-    background: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.06),
-    border: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.03),
-    opacity2: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.02),
-    opacity3: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.03),
-    opacity4: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.04),
-    opacity6: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.06),
-    opacity12: getAlphaColor(DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR, 0.12),
-  },
   name: '',
   symbol: '',
   description: '',
@@ -126,27 +101,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     set({ imageUri: uri });
   },
   setImageUrl: async (url: string) => {
-    try {
-      // TODO: ideally this would be done in the setImageUri function, but the native library is throwing an error
-      const imagePrimaryColor = await getDominantColorFromImage(url, '#333333');
-      set({
-        imageUrl: url,
-        imagePrimaryColor,
-        accentColors: {
-          primary: imagePrimaryColor,
-          surface: getAlphaColor(imagePrimaryColor, 0.04),
-          background: getAlphaColor(imagePrimaryColor, 0.06),
-          border: getAlphaColor(imagePrimaryColor, 0.03),
-          opacity2: getAlphaColor(imagePrimaryColor, 0.02),
-          opacity3: getAlphaColor(imagePrimaryColor, 0.03),
-          opacity4: getAlphaColor(imagePrimaryColor, 0.04),
-          opacity6: getAlphaColor(imagePrimaryColor, 0.06),
-          opacity12: getAlphaColor(imagePrimaryColor, 0.12),
-        },
-      });
-    } catch (e) {
-      console.log('error extracting color', e);
-    }
+    set({
+      imageUrl: url,
+    });
   },
   setName: (name: string) => set({ name }),
   setSymbol: (symbol: string) => set({ symbol }),
