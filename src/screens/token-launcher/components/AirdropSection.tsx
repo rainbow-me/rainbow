@@ -14,6 +14,7 @@ import { abbreviateNumber } from '@/helpers/utilities';
 import { checkIsValidAddressOrDomainFormat } from '@/helpers/validators';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 
 const AIRDROP_GROUPS = [
   {
@@ -40,8 +41,6 @@ const AIRDROP_GROUPS = [
 ];
 
 // function SuggestedUsers() {
-//   const accentColors = useTokenLauncherStore(state => state.accentColors);
-
 //   return (
 //     <Box>
 //       <Text color="labelTertiary" size="13pt" weight="heavy">
@@ -52,8 +51,9 @@ const AIRDROP_GROUPS = [
 // }
 
 function AirdropGroups() {
+  const { accentColors } = useTokenLauncherContext();
+
   const addAirdropGroup = useTokenLauncherStore(state => state.addAirdropGroup);
-  const accentColors = useTokenLauncherStore(state => state.accentColors);
   const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
 
   const airdropGroups = useMemo(() => {
@@ -116,7 +116,7 @@ function AirdropGroups() {
                     height={24}
                     borderRadius={12}
                     borderColor={{ custom: accentColors.opacity6 }}
-                    backgroundColor={accentColors.primary}
+                    backgroundColor={accentColors.opacity100}
                     justifyContent="center"
                     alignItems="center"
                   >
@@ -125,8 +125,8 @@ function AirdropGroups() {
                     </TextIcon>
                   </Box>
                   <FastImage source={groupIcon} style={{ width: 42, height: 42, borderRadius: 21 }} />
-                  <TextShadow blur={12} shadowOpacity={0.24} color={accentColors.primary}>
-                    <Text numberOfLines={2} align="center" color={{ custom: accentColors.primary }} size="15pt" weight="heavy">
+                  <TextShadow blur={12} shadowOpacity={0.24} color={accentColors.opacity100}>
+                    <Text numberOfLines={2} align="center" color={{ custom: accentColors.opacity100 }} size="15pt" weight="heavy">
                       {item.label}
                     </Text>
                   </TextShadow>
@@ -141,7 +141,7 @@ function AirdropGroups() {
 }
 
 const AddressInput = memo(function AddressInput({ id }: { id: string }) {
-  const accentColors = useTokenLauncherStore(state => state.accentColors);
+  const { accentColors } = useTokenLauncherContext();
   const addOrEditAirdropAddress = useTokenLauncherStore(state => state.addOrEditAirdropAddress);
 
   const [isValidAddress, setIsValidAddress] = useState(false);
@@ -189,7 +189,7 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
         </Box>
       );
     } else {
-      return <AddressAvatar address={address} url={addressImage} size={20} color={accentColors.primary} label={''} />;
+      return <AddressAvatar address={address} url={addressImage} size={20} color={accentColors.opacity100} label={''} />;
     }
   }, [isValidAddress, accentColors, address, addressImage]);
 
@@ -292,7 +292,7 @@ function AirdropRecipients() {
 }
 
 export function AirdropSection() {
-  const accentColors = useTokenLauncherStore(state => state.accentColors);
+  const { accentColors } = useTokenLauncherContext();
 
   return (
     <CollapsableField title="Airdrop">

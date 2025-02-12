@@ -9,6 +9,7 @@ import { Grid } from './Grid';
 import { SingleFieldInput } from './SingleFieldInput';
 import { TextInput } from 'react-native';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 
 function PrebuyAmountButton({
   label,
@@ -23,7 +24,7 @@ function PrebuyAmountButton({
   onPressWorklet: () => void;
   onPressJS: () => void;
 }) {
-  const accentColors = useTokenLauncherStore(state => state.accentColors);
+  const { accentColors } = useTokenLauncherContext();
 
   const isSelected = useDerivedValue(() => {
     return selectedAmount.value === amount;
@@ -31,13 +32,13 @@ function PrebuyAmountButton({
 
   const containerStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: isSelected.value ? accentColors.primary : accentColors.background,
+      backgroundColor: isSelected.value ? accentColors.opacity100 : accentColors.opacity6,
     };
   });
 
   const textStyle = useAnimatedStyle(() => {
     return {
-      color: isSelected.value ? 'rgba(0, 0, 0, 0.5)' : accentColors.primary,
+      color: isSelected.value ? 'rgba(0, 0, 0, 0.5)' : accentColors.opacity100,
     };
   });
 
@@ -50,7 +51,7 @@ function PrebuyAmountButton({
           paddingVertical: 14 - FIELD_BORDER_WIDTH,
           borderRadius: FIELD_BORDER_RADIUS,
           borderWidth: FIELD_BORDER_WIDTH,
-          borderColor: accentColors.border,
+          borderColor: accentColors.opacity3,
           justifyContent: 'center',
           alignItems: 'center',
         },
