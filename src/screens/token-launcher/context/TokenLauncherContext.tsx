@@ -1,10 +1,15 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useMemo } from 'react';
 import { getAlphaColor, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { useColorMode } from '@/design-system';
 import { useTheme } from '@/theme';
 import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR } from '../constants';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { ChainId } from '@/state/backendNetworks/types';
+import { ETH_ADDRESS } from '@/references';
+import { time } from '@/utils';
+import { useAccountSettings } from '@/hooks';
 
 type TokenLauncherContextType = {
   accentColors: {
@@ -32,6 +37,10 @@ export function useTokenLauncherContext() {
 export function TokenLauncherContextProvider({ children }: { children: React.ReactNode }) {
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
+  const { nativeCurrency } = useAccountSettings();
+
+  const setEthPriceUsd = useTokenLauncherStore(state => state.setEthPriceUsd);
+  const setEthPriceNative = useTokenLauncherStore(state => state.setEthPriceNative);
 
   const imageUrl = useTokenLauncherStore(state => state.imageUrl);
   const imageDerivedColor = usePersistentDominantColorFromImage(imageUrl);
@@ -62,6 +71,50 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
       opacity2: getAlphaColor(primaryColor, 0.02),
     };
   }, [colors, imageDerivedColor, isDarkMode]);
+
+  // TODO: does it matter if we only use mainnet here? Do we want to poll the price and if so, how often?
+  // does this return in usd or users native currency?
+  const { data: ethAssetUsd } = useExternalToken(
+    {
+      address: ETH_ADDRESS,
+      chainId: ChainId.mainnet,
+      // We explicitly need it in USD because the target market cap is in USD
+      currency: 'USD',
+    },
+    {
+      // We're okay with initially showing stale data
+      keepPreviousData: true,
+      // We always want to know the latest price
+      staleTime: time.minutes(1),
+    }
+  );
+
+  // TODO: is there a better way to do this?
+  const { data: ethAssetNative } = useExternalToken(
+    {
+      address: ETH_ADDRESS,
+      chainId: ChainId.mainnet,
+      currency: nativeCurrency,
+    },
+    {
+      // We're okay with initially showing stale data
+      keepPreviousData: true,
+      // We always want to know the latest price
+      staleTime: time.minutes(1),
+    }
+  );
+
+  const ethPriceUsd = ethAssetUsd?.price.value;
+  const ethPriceNative = ethAssetNative?.price.value;
+
+  useEffect(() => {
+    if (ethPriceUsd) {
+      setEthPriceUsd(ethPriceUsd);
+    }
+    if (ethPriceNative) {
+      setEthPriceNative(ethPriceNative);
+    }
+  }, [ethPriceNative, ethPriceUsd, setEthPriceNative, setEthPriceUsd]);
 
   return <TokenLauncherContext.Provider value={{ accentColors }}>{children}</TokenLauncherContext.Provider>;
 }
