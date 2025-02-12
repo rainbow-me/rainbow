@@ -14,10 +14,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import { STEP_TRANSITION_DURATION } from '../constants';
 import { Keyboard } from 'react-native';
+import { HoldToAuthorizeButton } from '@/components/buttons';
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 
 export const TOKEN_PREVIEW_BAR_HEIGHT = 56 + 16 + 8;
 
 export function TokenPreviewBar() {
+  const { accentColors } = useTokenLauncherContext();
+
   const symbol = useTokenLauncherStore(state => state.symbol);
   const imageUri = useTokenLauncherStore(state => state.imageUri);
   const chainId = useTokenLauncherStore(state => state.chainId);
@@ -101,6 +105,19 @@ export function TokenPreviewBar() {
           </Inline>
         </Animated.View>
       )}
+      {/* {step === 'overview' && (
+        <HoldToAuthorizeButton
+          disabled={false}
+          backgroundColor={accentColors.opacity100}
+          hideInnerBorder
+          label={'Hold to Create'}
+          onLongPress={() => {
+            console.log('onLongPress');
+          }}
+          parentHorizontalPadding={16}
+          showBiometryIcon={true}
+        />
+      )} */}
       <Animated.View
         style={[buttonAnimatedStyle, { position: 'absolute', right: 16 }]}
         onLayout={e => {
