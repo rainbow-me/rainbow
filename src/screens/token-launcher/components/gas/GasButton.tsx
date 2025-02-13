@@ -1,24 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box } from '@/design-system';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
-import { useTokenLauncherStore } from '../../state/tokenLauncherStore';
 import { GasMenu } from './GasMenu';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { SelectedGasSpeed } from './SelectedGasSpeed';
 import { EstimatedGasFee } from './EstimatedGasFee';
+import { ChainId } from '@/state/backendNetworks/types';
+
+type GasButtonProps = {
+  gasSpeed: GasSpeed;
+  chainId: ChainId;
+  gasLimit: string;
+  onSelectGasSpeed: (gasSpeed: GasSpeed) => void;
+};
 
 // TODO: add callback to store selected gas speed
-export function GasButton() {
-  const chainId = useTokenLauncherStore(s => s.chainId);
-  const [selectedGasSpeed, setSelectedGasSpeed] = useState<GasSpeed>(GasSpeed.FAST);
-  const gasSettings = useGasSettings(chainId, selectedGasSpeed);
-  // TODO: gas limit should be fixed depending on if launchToken or launchTokenAndBuy. Should likely come from sdk
-  const gasLimit = '1000000';
+export function GasButton({ gasSpeed, chainId, onSelectGasSpeed, gasLimit }: GasButtonProps) {
+  const gasSettings = useGasSettings(chainId, gasSpeed);
 
   return (
-    <GasMenu chainId={chainId} onSelectGasSpeed={setSelectedGasSpeed}>
+    <GasMenu chainId={chainId} onSelectGasSpeed={onSelectGasSpeed}>
       <Box gap={12}>
-        <SelectedGasSpeed selectedGasSpeed={selectedGasSpeed} />
+        <SelectedGasSpeed selectedGasSpeed={gasSpeed} />
         <EstimatedGasFee chainId={chainId} gasSettings={gasSettings} gasLimit={gasLimit} />
       </Box>
     </GasMenu>

@@ -17,6 +17,7 @@ import { Keyboard } from 'react-native';
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { GasButton } from './gas/GasButton';
+import { GasSpeed } from '@/__swaps__/types/gas';
 
 export const FOOTER_HEIGHT = 56 + 16 + 8;
 
@@ -33,6 +34,7 @@ export function TokenLauncherFooter() {
   const stepIndex = useTokenLauncherStore(state => state.stepIndex);
   const hasCompletedRequiredFields = useTokenLauncherStore(state => state.hasCompletedRequiredFields());
   const createToken = useTokenLauncherStore(state => state.createToken);
+  const setGasSpeed = useTokenLauncherStore(state => state.setGasSpeed);
 
   const containerWidth = useSharedValue(0);
   const buttonWidth = useSharedValue(0);
@@ -109,7 +111,13 @@ export function TokenLauncherFooter() {
       )}
       {step === 'overview' && (
         <Box flexDirection="row" alignItems="center" gap={12}>
-          <GasButton />
+          <GasButton
+            gasSpeed={GasSpeed.FAST}
+            chainId={chainId}
+            // TODO: gas limit should be fixed depending on if launchToken or launchTokenAndBuy. Should likely come from sdk
+            gasLimit={'1000000'}
+            onSelectGasSpeed={setGasSpeed}
+          />
           {/* TODO */}
           {/* @ts-ignore */}
           <HoldToAuthorizeButton
