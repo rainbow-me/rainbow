@@ -8,7 +8,7 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 const OfflineToast = () => {
   const isConnected = useInternetStatus();
   const { chainId } = useAccountSettings();
-  const { connectedToAnvil } = useConnectedToAnvilStore();
+  const connectedToAnvil = useConnectedToAnvilStore(state => state.connectedToAnvil);
   const isMainnet = chainId === ChainId.mainnet && !connectedToAnvil;
   return <Toast icon="offline" isVisible={!isConnected && isMainnet} text={lang.t('button.offline')} />;
 };

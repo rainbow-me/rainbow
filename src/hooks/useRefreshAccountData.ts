@@ -1,26 +1,25 @@
 import delay from 'delay';
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
-import useAccountSettings from './useAccountSettings';
+import { Address } from 'viem';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { logger, RainbowError } from '@/logger';
-import { queryClient } from '@/react-query';
-import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
-import { invalidateAddressNftsQueries } from '@/resources/nfts';
-import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
-import { Address } from 'viem';
-import { addysSummaryQueryKey } from '@/resources/summary/summary';
-import useWallets from './useWallets';
+import { createQueryKey, queryClient } from '@/react-query';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
+import { addysSummaryQueryKey } from '@/resources/summary/summary';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { time } from '@/utils';
+import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
+import useAccountSettings from './useAccountSettings';
+import useWallets from './useWallets';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { connectedToAnvil } = useConnectedToAnvilStore();
 
   const { wallets } = useWallets();
 
@@ -30,11 +29,15 @@ export default function useRefreshAccountData() {
   );
 
   const fetchAccountData = useCallback(async () => {
-    invalidateAddressNftsQueries(accountAddress);
-    queryClient.invalidateQueries(positionsQueryKey({ address: accountAddress as Address, currency: nativeCurrency }));
-    queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
-    queryClient.invalidateQueries(addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }));
-    queryClient.invalidateQueries(userAssetsQueryKey({ address: accountAddress, currency: nativeCurrency, testnetMode: connectedToAnvil }));
+    userAssetsStore.getState().fetch(undefined, { staleTime: time.seconds(5) });
+    useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) });
+
+    queryClient.invalidateQueries([
+      addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }),
+      createQueryKey('nfts', { address: accountAddress }),
+      positionsQueryKey({ address: accountAddress as Address, currency: nativeCurrency }),
+      claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }),
+    ]);
 
     try {
       const getWalletNames = dispatch(fetchWalletNames());
@@ -48,7 +51,7 @@ export default function useRefreshAccountData() {
       logger.error(new RainbowError(`[useRefreshAccountData]: Error refreshing data: ${error}`));
       throw error;
     }
-  }, [accountAddress, allAddresses, connectedToAnvil, dispatch, nativeCurrency, profilesEnabled]);
+  }, [accountAddress, allAddresses, dispatch, nativeCurrency, profilesEnabled]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;

@@ -3,9 +3,8 @@ import { MMKV } from 'react-native-mmkv';
 import { useSharedValue } from 'react-native-reanimated';
 import DevButton from '../components/dev-buttons/DevButton';
 import Emoji from '../components/text/Emoji';
-import { showReloadButton, showSwitchModeButton, showConnectToAnvilButton } from '../config/debug';
+import { showConnectToAnvilButton, showReloadButton, showSwitchModeButton } from '../config/debug';
 import { defaultConfig } from '@/config/experimental';
-import { useDispatch } from 'react-redux';
 
 import { useTheme } from '../theme/ThemeContext';
 import { STORAGE_IDS } from '@/model/mmkv';
@@ -37,7 +36,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
   useSharedValue(0);
-  const { setConnectedToAnvil } = useConnectedToAnvilStore();
+  const setConnectedToAnvil = useConnectedToAnvilStore(state => state.setConnectedToAnvil);
   const [config, setConfig] = useState<Record<string, boolean>>(
     Object.entries(defaultConfig).reduce((acc, [key, { value }]) => ({ ...acc, [key]: value }), {})
   );
@@ -69,8 +68,6 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
 
   const { isDarkMode, setTheme, colors } = useTheme();
 
-  const dispatch = useDispatch();
-
   const connectToAnvil = useCallback(async () => {
     try {
       setConnectedToAnvil(true);
@@ -82,7 +79,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
       });
     }
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
-  }, [dispatch, setConnectedToAnvil]);
+  }, [setConnectedToAnvil]);
 
   return (
     <RainbowContext.Provider value={initialValue}>

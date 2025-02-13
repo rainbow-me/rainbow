@@ -35,7 +35,6 @@ import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import { IS_ANDROID, IS_DEV } from '@/env';
-import { prefetchDefaultFavorites } from '@/resources/favorites';
 import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
@@ -190,13 +189,7 @@ function Root() {
     // @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>'
     <ReduxProvider store={store}>
       <RecoilRoot>
-        <PersistQueryClientProvider
-          client={queryClient}
-          persistOptions={persistOptions}
-          onSuccess={() => {
-            prefetchDefaultFavorites();
-          }}
-        >
+        <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
           <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
             <SafeAreaProvider initialMetrics={initialWindowMetrics}>
               <MainThemeProvider>
