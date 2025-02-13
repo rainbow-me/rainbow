@@ -1,26 +1,34 @@
 import { AIRDROP_BPS, CREATOR_BPS, CREATOR_BPS_WITH_AIRDROP } from '../constants';
 
 const TICK_SPACING = 200;
+// 1% fee
+const POOL_FEE = 10000;
+// 1_000_000 for 0.01% precision
+const FEE_DENOMINATOR = 1000000;
 
 export function calculateTokenomics({
   targetMarketCapUsd,
   totalSupply,
   ethPriceUsd,
   hasAirdrop = false,
+  // Creator's optional extra buy-in
+  amountInEth = 0,
 }: {
   targetMarketCapUsd: number;
   totalSupply: number;
   ethPriceUsd: number;
   hasAirdrop: boolean;
+  amountInEth?: number;
 }) {
   // Calculate supply allocations (same logic as in contract)
   const creatorBaseBps = hasAirdrop ? CREATOR_BPS_WITH_AIRDROP : CREATOR_BPS;
-  const airdropBps = hasAirdrop ? AIRDROP_BPS : 0;
-  const lpBps = 10000 - creatorBaseBps - airdropBps;
+  const airdropAllocationBps = hasAirdrop ? AIRDROP_BPS : 0;
+  let lpAllocationBps = 10000 - creatorBaseBps - airdropAllocationBps;
+  let creatorAllocationBps = creatorBaseBps;
 
-  const creatorAmount = (totalSupply * creatorBaseBps) / 10000;
-  const airdropAmount = (totalSupply * airdropBps) / 10000;
-  const lpSupply = totalSupply - creatorAmount - airdropAmount;
+  let creatorAmount = (totalSupply * creatorBaseBps) / 10000;
+  const airdropAmount = (totalSupply * airdropAllocationBps) / 10000;
+  let lpSupply = totalSupply - creatorAmount - airdropAmount;
 
   // Calculate required price per token to achieve market cap
   const targetMarketCapEth = targetMarketCapUsd / ethPriceUsd;
@@ -36,6 +44,40 @@ export function calculateTokenomics({
   const actualPriceUsd = actualPriceEth * ethPriceUsd;
   const actualMarketCap = actualPriceUsd * totalSupply;
 
+  // Calculate swap outcome if amountInEth is provided
+  let swap = undefined;
+  if (amountInEth > 0) {
+    const feeAmount = (amountInEth * POOL_FEE) / FEE_DENOMINATOR;
+    const amountInAfterFee = amountInEth - feeAmount;
+    const tokensOut = amountInAfterFee / actualPriceEth;
+
+    // Calculate price impact
+    const initialLiquidityValue = lpSupply * actualPriceEth;
+    const priceImpact = (amountInEth / initialLiquidityValue) * 100;
+
+    // Post-swap market cap
+    const remainingLpTokens = lpSupply - tokensOut;
+    const postSwapMarketCapUsd = remainingLpTokens * actualPriceEth * ethPriceUsd;
+
+    creatorAmount += tokensOut;
+    creatorAllocationBps = (creatorAmount / totalSupply) * 10000;
+    lpAllocationBps = 10000 - creatorAllocationBps - airdropAllocationBps;
+    lpSupply = totalSupply - creatorAmount - airdropAmount;
+
+    swap = {
+      input: {
+        amountInEth,
+        feeAmount,
+        amountInAfterFee,
+      },
+      output: {
+        tokensOut,
+        priceImpact,
+      },
+      marketCapAfterUsd: postSwapMarketCapUsd,
+    };
+  }
+
   return {
     supply: {
       total: totalSupply,
@@ -44,9 +86,9 @@ export function calculateTokenomics({
       airdrop: airdropAmount,
     },
     allocation: {
-      creator: creatorBaseBps,
-      airdrop: airdropBps,
-      lp: lpBps,
+      creator: creatorAllocationBps,
+      airdrop: airdropAllocationBps,
+      lp: lpAllocationBps,
     },
     price: {
       targetUsd: targetPriceUsd,
@@ -60,5 +102,6 @@ export function calculateTokenomics({
       actualUsd: actualMarketCap,
       targetEth: targetMarketCapEth,
     },
+    swap,
   };
 }

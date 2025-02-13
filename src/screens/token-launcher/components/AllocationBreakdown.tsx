@@ -28,7 +28,7 @@ export function AllocationBreakdown() {
       >
         <Box gap={12} flexGrow={1} justifyContent="center" alignItems="center">
           <TextShadow color={accentColors.opacity100} blur={12} shadowOpacity={0.24}>
-            <Text color={{ custom: accentColors.opacity100 }} size="20pt" weight="heavy">
+            <Text tabularNumbers color={{ custom: accentColors.opacity100 }} size="20pt" weight="heavy">
               {`${convertAmountToPercentageDisplay(allocationBips.creator / 100, 2, 2, false)}`}
             </Text>
           </TextShadow>
@@ -37,7 +37,7 @@ export function AllocationBreakdown() {
           </Text>
         </Box>
         <Box gap={12} flexGrow={1} justifyContent="center" alignItems="center">
-          <Text color="label" size="20pt" weight="heavy">
+          <Text tabularNumbers color="label" size="20pt" weight="heavy">
             {`${convertAmountToPercentageDisplay(allocationBips.airdrop / 100, 2, 2, false)}`}
           </Text>
           <Text color="labelTertiary" size="13pt" weight="bold">
