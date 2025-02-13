@@ -778,7 +778,7 @@ export default async function runMigrations() {
    * Delete all queries except favorites
    */
   const v25 = async () => {
-    await clearReactQueryCache();
+    await clearReactQueryCache({ analyzeAfterClearing: false });
   };
 
   migrations.push(v25);
