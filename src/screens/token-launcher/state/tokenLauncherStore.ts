@@ -7,6 +7,7 @@ import chroma from 'chroma-js';
 import { memoFn } from '@/utils/memoFn';
 import { calculateTokenomics } from '../helpers/calculateTokenomics';
 import store from '@/redux/store';
+import { GasSpeed } from '@/__swaps__/types/gas';
 
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
@@ -33,6 +34,7 @@ interface TokenLauncherStore {
   stepIndex: SharedValue<number>;
   ethPriceUsd: number;
   ethPriceNative: number;
+  gasSpeed: GasSpeed;
   // derived state
   formattedTotalSupply: () => string;
   tokenPrice: () => string;
@@ -62,6 +64,7 @@ interface TokenLauncherStore {
   deleteAirdropRecipient: (id: string) => void;
   setEthPriceUsd: (ethPriceUsd: number) => void;
   setEthPriceNative: (ethPriceNative: number) => void;
+  setGasSpeed: (gasSpeed: GasSpeed) => void;
   // actions
   validateForm: () => void;
   createToken: () => void;
@@ -85,6 +88,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   ethPriceNative: 0,
   step: 'info' as const,
   stepIndex: makeMutable(0),
+  gasSpeed: GasSpeed.FAST,
   // derived state
   formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 0, 'long'),
   tokenPrice: () => {
@@ -188,11 +192,14 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   setEthPriceNative: (ethPriceNative: number) => {
     set({ ethPriceNative });
   },
+  setGasSpeed: (gasSpeed: GasSpeed) => {
+    set({ gasSpeed });
+  },
   // actions
   validateForm: () => {
     // TODO: validate all field values before submission to sdk for creation
   },
-  createToken: () => {
+  createToken: async () => {
     // TODO: aggregate all data from store and call to sdk to create token
   },
 }));
