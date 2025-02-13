@@ -14,6 +14,7 @@ import { RainbowPosition } from '@/resources/defi/types';
 import { Address } from 'viem';
 import { SharedValue } from 'react-native-reanimated';
 import { ChainId } from '@/state/backendNetworks/types';
+import { ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -105,6 +106,11 @@ export type RootStackParamList = {
     type: 'token' | 'unique_token';
     asset: ParsedAddressAsset | UniqueAsset;
   };
+  [Routes.EXPANDED_ASSET_SHEET_V2]: {
+    address: string;
+    chainId: ChainId;
+    asset: ExpandedSheetParamAsset;
+  };
   [Routes.POSITION_SHEET]: {
     position: RainbowPosition;
   };
@@ -112,5 +118,11 @@ export type RootStackParamList = {
     onClose?: VoidFunction;
     selected: SharedValue<ChainId | undefined>;
     setSelected: (chainId: ChainId | undefined) => void;
+  };
+  [Routes.LOG_SHEET]: {
+    data: {
+      title: string;
+      message: string;
+    }[];
   };
 };

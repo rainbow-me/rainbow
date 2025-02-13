@@ -1,15 +1,31 @@
 import * as i18n from '@/languages';
 
-export const formatDate = (dateString: string) => {
+export const formatDate = (dateString: string, precision: 'hours' | 'minutes' | 'days' = 'days') => {
   const date = new Date(dateString);
   const now = new Date();
   const diffTime = Math.abs(now.getTime() - date.getTime());
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   const diffWeeks = Math.floor(diffDays / 7);
   const diffMonths = Math.floor(diffDays / 30.44);
+  const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+  const diffMinutes = Math.floor(diffTime / (1000 * 60));
+  const useHours = precision === 'hours' || precision === 'minutes';
+  const useMinutes = precision === 'minutes';
 
-  if (diffDays === 0) {
-    return i18n.t(i18n.l.walletconnect.simulation.formatted_dates.today);
+  if (diffDays <= 1) {
+    if (useHours) {
+      if (diffHours === 0) {
+        if (useMinutes) {
+          return `${diffMinutes} ${i18n.t(i18n.l.walletconnect.simulation.formatted_dates.minutes_ago)}`;
+        } else {
+          return `${diffHours} ${i18n.t(i18n.l.walletconnect.simulation.formatted_dates.hours_ago)}`;
+        }
+      } else {
+        return `${diffHours} ${i18n.t(i18n.l.walletconnect.simulation.formatted_dates.hours_ago)}`;
+      }
+    } else {
+      return i18n.t(i18n.l.walletconnect.simulation.formatted_dates.today);
+    }
   } else if (diffDays === 1) {
     return `${diffDays} ${i18n.t(i18n.l.walletconnect.simulation.formatted_dates.day_ago)}`;
   } else if (diffDays < 7) {

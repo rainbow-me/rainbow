@@ -5,7 +5,6 @@ import { useAccountSettings, useChartDataLabels, useColorForAsset } from '@/hook
 import { useRoute } from '@react-navigation/native';
 
 import { useNavigation } from '@/navigation';
-import { ETH_ADDRESS } from '@/references';
 
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
 import { DEFAULT_CHART_TYPE } from '@/redux/charts';
@@ -121,23 +120,10 @@ export default function useChartThrottledPoints({
   });
 
   // Only show the chart if we have chart data, or if chart data is still loading
-  const showChart = useMemo(
-    () =>
-      (nativeCurrency !== 'ETH' || (asset?.mainnet_address !== ETH_ADDRESS && asset?.address !== ETH_ADDRESS)) &&
-      (throttledPoints?.points.length > 5 ||
-        !!chart.length ||
-        (fetchingCharts && (!!asset?.native?.change || (asset?.native?.price?.amount && asset?.native?.price?.amount !== '0')))),
-    [
-      asset?.address,
-      asset?.mainnet_address,
-      asset?.native?.change,
-      asset?.native?.price?.amount,
-      chart.length,
-      fetchingCharts,
-      nativeCurrency,
-      throttledPoints?.points.length,
-    ]
-  );
+  const showChart = useMemo(() => {
+    const hasMinimumChartPoints = throttledPoints?.points.length > 5;
+    return hasMinimumChartPoints || !!chart.length || fetchingCharts;
+  }, [chart.length, fetchingCharts, throttledPoints?.points.length]);
 
   useJumpingForm(
     showChart,

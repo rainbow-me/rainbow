@@ -14,7 +14,7 @@ import { PerformanceMetrics } from './src/performance/tracking/types/Performance
 initSentry();
 
 analytics.track('Started executing JavaScript bundle');
-PerformanceTracking.logDirectly(PerformanceMetrics.loadJSBundle, Date.now() - StartTime.START_TIME);
+PerformanceTracking.logDirectly(PerformanceMetrics.loadJSBundle, performance.now() - StartTime.START_TIME);
 PerformanceTracking.startMeasuring(PerformanceMetrics.loadRootAppComponent);
 PerformanceTracking.startMeasuring(PerformanceMetrics.timeToInteractive);
 

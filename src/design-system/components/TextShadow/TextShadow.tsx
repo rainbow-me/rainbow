@@ -1,6 +1,6 @@
 import React, { ReactElement, useMemo } from 'react';
-import { View } from 'react-native';
-import { IS_IOS } from '@/env';
+import { StyleProp, View, ViewStyle } from 'react-native';
+import { IS_IOS, IS_TEST } from '@/env';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useColorMode } from '../../color/ColorMode';
 import { useForegroundColor } from '../../color/useForegroundColor';
@@ -11,6 +11,7 @@ export interface TextShadowProps {
   blur?: number;
   children: ReactElement<TextProps | AnimatedTextProps>;
   color?: string;
+  containerStyle?: StyleProp<ViewStyle>;
   disabled?: boolean;
   enableInLightMode?: boolean;
   enableOnAndroid?: boolean;
@@ -27,6 +28,7 @@ export const TextShadow = ({
   blur = 16,
   children,
   color,
+  containerStyle,
   disabled,
   enableInLightMode,
   enableOnAndroid,
@@ -39,7 +41,7 @@ export const TextShadow = ({
   const inferredTextColor = useForegroundColor(children.props.color ?? 'label');
   const isAnimatedText = isAnimatedTextChild(children);
 
-  const [containerStyle, internalTextStyle] = useMemo(() => {
+  const [internalContainerStyle, internalTextStyle] = useMemo(() => {
     const extraSpaceForShadow = blur + Math.max(Math.abs(x), Math.abs(y));
     return [
       // Container style
@@ -56,21 +58,28 @@ export const TextShadow = ({
             }
           : {}),
         padding: extraSpaceForShadow,
-        textShadowColor: opacity(color || inferredTextColor, shadowOpacity),
+        textShadowColor:
+          (isDarkMode || enableInLightMode) && !disabled ? opacity(color || inferredTextColor, shadowOpacity) : 'transparent',
         textShadowOffset: { width: x, height: y },
         textShadowRadius: blur,
       },
     ];
-  }, [blur, color, inferredTextColor, isAnimatedText, shadowOpacity, x, y]);
+  }, [blur, color, disabled, enableInLightMode, inferredTextColor, isAnimatedText, isDarkMode, shadowOpacity, x, y]);
 
-  return !disabled && (IS_IOS || enableOnAndroid) && (isDarkMode || enableInLightMode) ? (
+  return !IS_TEST && (IS_IOS || enableOnAndroid) ? (
     <>
       {isAnimatedText ? (
         // eslint-disable-next-line react/jsx-props-no-spreading
         <AnimatedText {...children.props} style={[children.props.style, internalTextStyle]} />
       ) : (
-        <View style={containerStyle}>
-          <Text color={{ custom: 'transparent' }} size={children.props.size} style={internalTextStyle} weight={children.props.weight}>
+        <View style={[internalContainerStyle, containerStyle]}>
+          <Text
+            color={{ custom: 'transparent' }}
+            numberOfLines={children.props.numberOfLines}
+            size={children.props.size}
+            style={[children.props.style, internalTextStyle]}
+            weight={children.props.weight}
+          >
             {children}
           </Text>
         </View>

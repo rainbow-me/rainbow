@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import * as i18n from '@/languages';
 import { Dimensions } from 'react-native';
 import dogSunglasses from '@/assets/partnerships/dogSunglasses.png';
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
@@ -6,6 +7,7 @@ import Spinner from '../../assets/chartSpinner.png';
 import { nativeStackConfig } from '../../navigation/nativeStackConfig';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
+import { Text, Box, Bleed } from '@/design-system';
 import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
 import { ChartDot, ChartPath, useChartData } from '@/react-native-animated-charts/src';
@@ -43,7 +45,7 @@ const ChartSpinner = styled(ImgixImage).attrs(({ color }) => ({
 });
 
 const Container = styled(Column)({
-  paddingBottom: 30,
+  paddingBottom: 32,
   paddingTop: IS_IOS ? 0 : 4,
   width: '100%',
 });
@@ -80,7 +82,6 @@ const Overlay = styled(Animated.View).attrs({
 })({
   ...position.coverAsObject,
   alignItems: 'center',
-  backgroundColor: ({ theme: { colors } }) => colors.alpha(colors.white, 0.9),
   justifyContent: 'center',
 });
 
@@ -111,7 +112,7 @@ const longPressGestureHandlerProps = {
   minDurationMs: 60,
 };
 
-export default function ChartWrapper({
+export default function Chart({
   chartType,
   color,
   fetchingCharts,
@@ -119,9 +120,9 @@ export default function ChartWrapper({
   latestChange,
   updateChartType,
   showChart,
-  testID,
   throttledData,
-  ...props
+  latestPrice,
+  asset,
 }) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [chartType]);
 
@@ -173,18 +174,18 @@ export default function ChartWrapper({
       transform: [{ rotate: `${spinnerRotation.value}deg` }, { scale: spinnerScale.value }],
     };
   });
-  const isDOG = props.asset.address === DOG_ADDRESS;
+  const isDOG = asset.address === DOG_ADDRESS;
 
   return (
     <Container>
       <ChartExpandedStateHeader
-        {...props}
+        asset={asset}
         chartType={chartType}
         color={color}
         isPool={isPool}
         latestChange={latestChange}
+        latestPrice={latestPrice}
         showChart={showChart}
-        testID={testID}
       />
       <ChartContainer showChart={showChart}>
         {showChart && (
@@ -213,6 +214,15 @@ export default function ChartWrapper({
               </Animated.View>
             </Overlay>
           </>
+        )}
+        {!showChart && (
+          <Bleed bottom="24px">
+            <Box height={HEIGHT + 48} justifyContent="center" alignItems="center">
+              <Text color="label" size="17pt" weight="heavy">
+                {i18n.t(i18n.l.expanded_state.chart.no_price_data)}
+              </Text>
+            </Box>
+          </Bleed>
         )}
       </ChartContainer>
       {showChart ? (

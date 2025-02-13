@@ -1,5 +1,9 @@
 name: iOS e2e tests
-on: [pull_request, workflow_dispatch]
+on:
+  pull_request:
+    # prevent running on draft PRs
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
 
 jobs:
   # Job to install dependencies

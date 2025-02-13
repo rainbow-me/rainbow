@@ -290,9 +290,10 @@ export const executeSwap = async ({
   } else if (quote.swapType === SwapType.unwrap) {
     return unwrapNativeAsset(quote.sellAmount, wallet, getWrappedAssetAddress(quote), transactionParams);
     // Swap
-  } else {
+  } else if (quote.swapType === SwapType.normal) {
     return fillQuote(quote, transactionParams, wallet, permit, chainId as number, REFERRER);
   }
+  return null;
 };
 
 export const swap = async ({

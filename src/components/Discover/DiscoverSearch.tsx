@@ -85,7 +85,7 @@ export default function DiscoverSearch() {
     // 3. profiles
     // 4. unverified high liquidity
     // 5. low liquidity
-    let list = swapCurrencyList;
+    let list = [...swapCurrencyList];
     const listKeys = swapCurrencyList.map(item => item.key);
 
     const profilesSecond = (listKeys[0] === 'favorites' && listKeys[1] !== 'verified') || listKeys[0] === 'verified';
@@ -100,20 +100,8 @@ export default function DiscoverSearch() {
       list = [...ensResults, ...swapCurrencyList];
     }
 
-    // ONLY FOR e2e!!! Fake tokens with same symbols break detox e2e tests
+    // ONLY FOR e2e!!! Include index along with section key to confirm order while testing for visibility
     if (IS_TEST) {
-      let symbols: string[] = [];
-      list = list?.map(section => {
-        // Remove dupes
-        section.data = uniqBy(section?.data, 'symbol');
-        // Remove dupes across sections
-        section.data = section?.data?.filter(token => !symbols.includes(token?.symbol));
-        const sectionSymbols = section?.data?.map(token => token?.symbol);
-        symbols = symbols.concat(sectionSymbols);
-
-        return section;
-      });
-
       list = list.map((section, index) => ({
         ...section,
         key: `${section.key}-${index}`,
@@ -193,14 +181,15 @@ export default function DiscoverSearch() {
           }
         });
       } else {
-        const asset = ethereumUtils.getAccountAsset(item.uniqueId);
+        const accountAsset = ethereumUtils.getAccountAsset(item.uniqueId);
         if (item.favorite) {
           item.network = Network.mainnet;
         }
-        navigate(Routes.EXPANDED_ASSET_SHEET, {
-          asset: asset || item,
-          fromDiscover: true,
-          type: 'token',
+        const asset = accountAsset || item;
+        navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
+          asset,
+          address: item.address,
+          chainId: item.chainId,
         });
       }
     },
@@ -295,7 +284,11 @@ export default function DiscoverSearch() {
   );
 
   return (
-    <View key={currencyListDataKey} style={{ height: deviceUtils.dimensions.height - TOP_OFFSET - marginBottom }}>
+    <View
+      key={currencyListDataKey}
+      style={{ height: deviceUtils.dimensions.height - TOP_OFFSET - marginBottom }}
+      testID="discover-search-list"
+    >
       <SearchContainer>
         <CurrencySelectionList
           footerSpacer

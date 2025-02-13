@@ -10,6 +10,7 @@ import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import ENSAdditionalRecordsSheet from '../screens/ENSAdditionalRecordsSheet';
 import ENSConfirmRegisterSheet from '../screens/ENSConfirmRegisterSheet';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
+import { ExpandedAssetSheet as ExpandedAssetSheetV2 } from '@/screens/expandedAssetSheet/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ExternalLinkWarningSheet from '../screens/ExternalLinkWarningSheet';
 import ModalScreen from '../screens/ModalScreen';
@@ -92,6 +93,7 @@ import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
 import { RootStackParamList } from './types';
 import WalletLoadingListener from '@/components/WalletLoadingListener';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
+import { LogSheet } from '@/components/debugging/LogSheet';
 import { NetworkSelector } from '@/components/NetworkSwitcher';
 
 const Stack = createStackNavigator();
@@ -246,6 +248,8 @@ function BSNavigator() {
       <BSStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} />
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
       <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
+      <BSStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} />
+      <BSStack.Screen component={LogSheet} name={Routes.LOG_SHEET} />
     </BSStack.Navigator>
   );
 }

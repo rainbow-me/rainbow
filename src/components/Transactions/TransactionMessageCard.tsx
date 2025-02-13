@@ -10,7 +10,6 @@ import { useClipboard } from '@/hooks';
 import { logger } from '@/logger';
 import { isSignTypedData } from '@/utils/signingMethods';
 
-import { RPCMethod } from '@/walletConnect/types';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import {
   estimateMessageHeight,
@@ -25,7 +24,7 @@ import { AnimatedCheckmark, IconContainer } from '@/components/Transactions/Tran
 type TransactionMessageCardProps = {
   expandedCardBottomInset: number;
   message: string;
-  method: RPCMethod;
+  method: string;
 };
 
 export const TransactionMessageCard = ({ expandedCardBottomInset, message, method }: TransactionMessageCardProps) => {
