@@ -16,26 +16,9 @@ import { ImgixImage } from '@/components/images';
 import RestoreYourWallet from '@/assets/RestoreYourWallet.png';
 import { Source } from 'react-native-fast-image';
 import { useNavigation } from '@/navigation';
-import { Linking } from 'react-native';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 const imageSize = 40;
-
-const ErrorAlert = () =>
-  Alert({
-    buttons: [
-      {
-        // TODO: Link to support URL
-        onPress: () => Linking.openURL('https://rainbow.me/support'),
-        text: lang.t(lang.l.check_identifier.error_alert.contact_support),
-      },
-      {
-        style: 'cancel',
-        text: lang.t(lang.l.check_identifier.error_alert.cancel),
-      },
-    ],
-    message: lang.t(lang.l.check_identifier.error_alert.message),
-    title: lang.t(lang.l.check_identifier.error_alert.title),
-  });
 
 export default function CheckIdentifierScreen() {
   const { goBack } = useNavigation();
@@ -46,6 +29,24 @@ export default function CheckIdentifierScreen() {
   const sheetHeight = getHeightForStep(walletBackupStepTypes.check_identifier);
 
   const [isChecking, setIsChecking] = useState(false);
+  // openInBrowser - unsure how to test this
+  const openInBrowser = useOpenInBrowser();
+
+  const ErrorAlert = () =>
+    Alert({
+      buttons: [
+        {
+          onPress: () => openInBrowser('https://rainbow.me/support'),
+          text: lang.t(lang.l.check_identifier.error_alert.contact_support),
+        },
+        {
+          style: 'cancel',
+          text: lang.t(lang.l.check_identifier.error_alert.cancel),
+        },
+      ],
+      message: lang.t(lang.l.check_identifier.error_alert.message),
+      title: lang.t(lang.l.check_identifier.error_alert.title),
+    });
 
   useAndroidBackHandler(() => {
     return true;

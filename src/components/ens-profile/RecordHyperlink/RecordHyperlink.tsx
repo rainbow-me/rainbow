@@ -1,14 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import { Linking } from 'react-native';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Text } from '@/design-system';
 import Routes from '@/navigation/routesNames';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 const ENS_REGEX = /[^\s]+.eth/g;
 
 export default function RecordHyperlink({ value }: { value: string }) {
   const { goBack, navigate } = useNavigation();
+  // openInBrowser - good
+  const openInBrowser = useOpenInBrowser();
 
   const navigateToProfile = useCallback(() => {
     if (value.match(ENS_REGEX)) {
@@ -18,9 +20,9 @@ export default function RecordHyperlink({ value }: { value: string }) {
         fromRoute: 'RecordHyperlink',
       });
     } else {
-      Linking.openURL((value.match('https') ? '' : 'https://') + value);
+      openInBrowser((value.match('https') ? '' : 'https://') + value);
     }
-  }, [navigate, value, goBack]);
+  }, [value, goBack, navigate, openInBrowser]);
 
   return (
     <ButtonPressAnimation onPress={navigateToProfile}>

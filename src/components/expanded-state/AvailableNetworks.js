@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
 import React from 'react';
-import { Linking } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import { Box } from '@/design-system';
 import { useNavigation } from '@/navigation';
@@ -13,10 +12,14 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import Divider from '@/components/Divider';
 import { Text } from '../text';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginHorizontal = 19, prominent }) => {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
+  // openInBrowser - idk where this is used
+  const openInBrowser = useOpenInBrowser();
+
   const radialGradientProps = {
     center: [0, 1],
     colors: colors.gradients.lightGreyWhite,
@@ -30,8 +33,8 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginHorizontal = 
   const availableChainIds = Object.keys(networks).map(network => Number(network));
 
   const linkToHop = useCallback(() => {
-    Linking.openURL('https://app.hop.exchange/#/send');
-  }, []);
+    openInBrowser('https://app.hop.exchange/#/send');
+  }, [openInBrowser]);
 
   const handleAvailableNetworksPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {

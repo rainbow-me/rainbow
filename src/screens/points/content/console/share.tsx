@@ -11,14 +11,16 @@ import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 import { NeonButton } from '../../components/NeonButton';
 import { LineBreak } from '../../components/LineBreak';
 import { Bleed, Box, Inline, Stack } from '@/design-system';
-import { Linking } from 'react-native';
 import { metadataPOSTClient } from '@/graphql';
 import { analyticsV2 } from '@/analytics';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 export const Share = () => {
   const { intent, setAnimationKey, setStep } = usePointsProfileContext();
   const { accountENS, accountAddress } = useAccountProfile();
   const { width: deviceWidth } = useDimensions();
+  // openInBrowser - need to test this
+  const openInBrowser = useOpenInBrowser();
 
   const [showShareButtons, setShowShareButtons] = useState(false);
 
@@ -81,7 +83,7 @@ export const Share = () => {
                 analyticsV2.track(analyticsV2.event.pointsOnboardingScreenPressedShareToXButton);
                 const beginNextPhase = setTimeout(async () => {
                   if (intent) {
-                    Linking.openURL(intent);
+                    openInBrowser(intent);
                     await metadataPOSTClient.redeemCodeForPoints({
                       address: accountAddress,
                       redemptionCode: 'TWITTERSHARED',
