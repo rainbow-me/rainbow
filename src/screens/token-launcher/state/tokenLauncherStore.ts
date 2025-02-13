@@ -135,6 +135,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       ethPriceUsd,
       // TODO: needs to be based on the number of VALID recipients
       hasAirdrop: get().airdropRecipients.length > 0,
+      amountInEth: get().creatorBuyInEth,
     });
   },
   // setters
