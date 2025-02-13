@@ -9,7 +9,7 @@ import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { NetworkField } from './NetworkField';
 import { LinksSection } from './LinksSection';
 import { DescriptionField } from './DescriptionField';
-import { DEFAULT_TOTAL_SUPPLY, MAX_NAME_LENGTH, MAX_SYMBOL_LENGTH } from '../constants';
+import { DEFAULT_TOTAL_SUPPLY, MAX_NAME_LENGTH, MAX_SYMBOL_LENGTH, MAX_TOTAL_SUPPLY } from '../constants';
 import { TokenAllocationSection } from './TokenAllocationSection';
 import { useAnimatedRef } from 'react-native-reanimated';
 import { TextInput } from 'react-native';
@@ -22,6 +22,12 @@ function TotalSupplyInput() {
     <SingleFieldInput
       onInputChange={text => {
         setTotalSupply(parseInt(text.trim()));
+      }}
+      validationWorklet={text => {
+        'worklet';
+        if (parseInt(text.trim()) > MAX_TOTAL_SUPPLY) {
+          return { error: true, message: `Too big.` };
+        }
       }}
       inputMode="numeric"
       title="Total Supply"
