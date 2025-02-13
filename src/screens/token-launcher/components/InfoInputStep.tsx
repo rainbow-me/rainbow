@@ -1,7 +1,7 @@
 import React from 'react';
 import { Bleed, Box, Text } from '@/design-system';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { TOKEN_PREVIEW_BAR_HEIGHT } from './TokenPreviewBar';
+import { FOOTER_HEIGHT } from './TokenLauncherFooter';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT } from './TokenLauncherHeader';
 import { SingleFieldInput } from './SingleFieldInput';
 import { TokenLogo } from './TokenLogo';
@@ -98,8 +98,8 @@ export function InfoInputStep() {
         justifyContent: 'center',
       }}
       keyboardDismissMode="interactive"
-      bottomOffset={TOKEN_PREVIEW_BAR_HEIGHT + 36}
-      extraKeyboardSpace={TOKEN_PREVIEW_BAR_HEIGHT}
+      bottomOffset={FOOTER_HEIGHT + 36}
+      extraKeyboardSpace={FOOTER_HEIGHT}
       // extraKeyboardSpace={-(TOKEN_PREVIEW_BAR_HEIGHT + safeAreaInsetValues.bottom)}
     >
       <Box width="full" gap={8} alignItems="center" paddingHorizontal="20px">

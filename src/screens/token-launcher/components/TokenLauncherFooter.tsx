@@ -18,9 +18,9 @@ import { HoldToAuthorizeButton } from '@/components/buttons';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { GasButton } from './gas/GasButton';
 
-export const TOKEN_PREVIEW_BAR_HEIGHT = 56 + 16 + 8;
+export const FOOTER_HEIGHT = 56 + 16 + 8;
 
-export function TokenPreviewBar() {
+export function TokenLauncherFooter() {
   const { accentColors } = useTokenLauncherContext();
 
   const symbol = useTokenLauncherStore(state => state.symbol);
@@ -61,7 +61,7 @@ export function TokenPreviewBar() {
       flexDirection="row"
       justifyContent="space-between"
       alignItems="center"
-      height={TOKEN_PREVIEW_BAR_HEIGHT}
+      height={FOOTER_HEIGHT}
       onLayout={e => {
         containerWidth.value = e.nativeEvent.layout.width;
       }}
