@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { AnimatedText, Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { CollapsableField } from './CollapsableField';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
@@ -10,6 +10,7 @@ import { SingleFieldInput } from './SingleFieldInput';
 import { TextInput } from 'react-native';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { roundToSignificant1or5 } from '@/helpers/utilities';
 
 function PrebuyAmountButton({
   label,
@@ -71,28 +72,37 @@ function PrebuyAmountButton({
 }
 
 export function PrebuySection() {
-  // TODO: pull from sdk
-  const MAX_PREBUY_ETH_AMOUNT = 5;
+  const tokenomics = useTokenLauncherStore(state => state.tokenomics());
+  const marketCapEth = tokenomics?.marketCap.targetEth ?? 10;
 
-  // Last is max
-  const prebuyEthOptions = [
-    {
-      label: '0.1 ETH',
-      amount: 0.1,
-    },
-    {
-      label: '0.5 ETH',
-      amount: 0.5,
-    },
-    {
-      label: '1 ETH',
-      amount: 1,
-    },
-    {
-      label: 'Max',
-      amount: MAX_PREBUY_ETH_AMOUNT,
-    },
-  ];
+  const prebuyEthOptions = useMemo(() => {
+    const totalSupplyPercentages = [0.005, 0.01, 0.05, 0.1];
+
+    const amounts = totalSupplyPercentages.map(percentage => {
+      return roundToSignificant1or5(marketCapEth * percentage);
+    });
+
+    const uniqueAmounts = Array.from(new Set(amounts));
+
+    // If we lost any options due to deduplication, add more with higher percentages
+    let nextPercentage = totalSupplyPercentages[totalSupplyPercentages.length - 1] + 0.025;
+
+    while (uniqueAmounts.length < 4) {
+      const rawAmount = marketCapEth * nextPercentage;
+      const amount = roundToSignificant1or5(rawAmount);
+      if (!uniqueAmounts.some(option => option === amount)) {
+        uniqueAmounts.push(amount);
+      }
+      nextPercentage += 0.025;
+    }
+
+    return uniqueAmounts.slice(0, 4).map(amount => ({
+      label: `${amount} ETH`,
+      amount,
+    }));
+  }, [marketCapEth]);
+
+  const maxPrebuyAmountEth = prebuyEthOptions[prebuyEthOptions.length - 1].amount;
 
   const inputRef = useAnimatedRef<TextInput>();
   const borderColor = useForegroundColor('buttonStroke');
@@ -128,7 +138,14 @@ export function PrebuySection() {
               amount={option.amount}
               selectedAmount={selectedPrebuyEthAmount}
               onPressJS={() => {
-                inputRef.current?.setNativeProps({ text: option.amount.toString() });
+                const isSelected = selectedPrebuyEthAmount.value === option.amount;
+                if (isSelected) {
+                  setCreatorBuyInEth(option.amount);
+                  inputRef.current?.setNativeProps({ text: option.amount.toString() });
+                } else {
+                  setCreatorBuyInEth(0);
+                  inputRef.current?.setNativeProps({ text: '' });
+                }
               }}
               onPressWorklet={() => {
                 'worklet';
@@ -167,8 +184,8 @@ export function PrebuySection() {
                 return { error: true };
               }
 
-              if (amount > MAX_PREBUY_ETH_AMOUNT) {
-                customInputError.value = `Exceeds max pre-buy amount of ${MAX_PREBUY_ETH_AMOUNT} ETH`;
+              if (amount > maxPrebuyAmountEth) {
+                customInputError.value = `Exceeds max pre-buy amount of ${maxPrebuyAmountEth} ETH`;
                 return { error: true };
               }
 

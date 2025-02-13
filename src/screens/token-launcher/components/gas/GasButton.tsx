@@ -14,7 +14,6 @@ type GasButtonProps = {
   onSelectGasSpeed: (gasSpeed: GasSpeed) => void;
 };
 
-// TODO: add callback to store selected gas speed
 export function GasButton({ gasSpeed, chainId, onSelectGasSpeed, gasLimit }: GasButtonProps) {
   const gasSettings = useGasSettings(chainId, gasSpeed);
 
