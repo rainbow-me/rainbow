@@ -64,6 +64,7 @@ interface TokenLauncherStore {
   setEthPriceNative: (ethPriceNative: number) => void;
   // actions
   validateForm: () => void;
+  createToken: () => void;
 }
 
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
@@ -190,5 +191,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   // actions
   validateForm: () => {
     // TODO: validate all field values before submission to sdk for creation
+  },
+  createToken: () => {
+    // TODO: aggregate all data from store and call to sdk to create token
   },
 }));

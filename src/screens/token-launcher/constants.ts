@@ -22,6 +22,9 @@ export const MAX_NAME_LENGTH = 20;
 export const DEFAULT_CHAIN_ID = base.id;
 export const DEFAULT_TOTAL_SUPPLY = 1_000_000;
 export const TARGET_MARKET_CAP_IN_USD = 35_000;
+// 2^256 - 1
+export const MAX_TOTAL_SUPPLY = BigInt('115792089237316195423570985008687907853269984665640564039457584007913129639935');
+
 // TODO: these should probably come from the sdk & read from contract becasue the contract can change these values
 export const CREATOR_BPS = 69;
 export const CREATOR_BPS_WITH_AIRDROP = 46;
