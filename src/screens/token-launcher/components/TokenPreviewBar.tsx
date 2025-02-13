@@ -16,6 +16,7 @@ import { STEP_TRANSITION_DURATION } from '../constants';
 import { Keyboard } from 'react-native';
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { GasButton } from './gas/GasButton';
 
 export const TOKEN_PREVIEW_BAR_HEIGHT = 56 + 16 + 8;
 
@@ -31,6 +32,7 @@ export function TokenPreviewBar() {
   const step = useTokenLauncherStore(state => state.step);
   const stepIndex = useTokenLauncherStore(state => state.stepIndex);
   const hasCompletedRequiredFields = useTokenLauncherStore(state => state.hasCompletedRequiredFields());
+  const createToken = useTokenLauncherStore(state => state.createToken);
 
   const containerWidth = useSharedValue(0);
   const buttonWidth = useSharedValue(0);
@@ -105,21 +107,26 @@ export function TokenPreviewBar() {
           </Inline>
         </Animated.View>
       )}
-      {/* {step === 'overview' && (
-        <HoldToAuthorizeButton
-          disabled={false}
-          backgroundColor={accentColors.opacity100}
-          hideInnerBorder
-          label={'Hold to Create'}
-          onLongPress={() => {
-            console.log('onLongPress');
-          }}
-          parentHorizontalPadding={16}
-          showBiometryIcon={true}
-        />
-      )} */}
+      {step === 'overview' && (
+        <Box flexDirection="row" alignItems="center" gap={12}>
+          <GasButton />
+          {/* TODO */}
+          {/* @ts-ignore */}
+          <HoldToAuthorizeButton
+            disabled={false}
+            backgroundColor={accentColors.opacity100}
+            hideInnerBorder
+            label={'Hold to Create'}
+            onLongPress={() => {
+              createToken();
+            }}
+            parentHorizontalPadding={16}
+            showBiometryIcon={true}
+          />
+        </Box>
+      )}
       <Animated.View
-        style={[buttonAnimatedStyle, { position: 'absolute', right: 16 }]}
+        style={[buttonAnimatedStyle, { position: 'absolute', right: 16, display: step === 'overview' ? 'none' : 'flex' }]}
         onLayout={e => {
           // We only want the original button width
           if (buttonWidth.value === 0) {
