@@ -20,7 +20,9 @@ export function useNftSort() {
   const [sortBy, sortDirection] = parseNftSort(nftSortData);
 
   return {
-    updateNFTSort: (nftSort: NftSort) => setNftSortData(nftSort),
+    updateNFTSort: (nftSort: NftSort) => {
+      setNftSortData(nftSort);
+    },
     nftSort: sortBy,
     nftSortDirection: sortDirection,
   };
