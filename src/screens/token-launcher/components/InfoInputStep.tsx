@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Bleed, Box, Text } from '@/design-system';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FOOTER_HEIGHT } from './TokenLauncherFooter';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT } from './TokenLauncherHeader';
-import { SingleFieldInput } from './SingleFieldInput';
+import { SingleFieldInput, SingleFieldInputRef } from './SingleFieldInput';
 import { TokenLogo } from './TokenLogo';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { NetworkField } from './NetworkField';
@@ -39,7 +39,7 @@ function TotalSupplyInput() {
 
 function SymbolInput() {
   const setSymbol = useTokenLauncherStore(state => state.setSymbol);
-  const inputRef = useAnimatedRef<TextInput>();
+  const inputRef = useRef<SingleFieldInputRef>(null);
 
   return (
     <SingleFieldInput

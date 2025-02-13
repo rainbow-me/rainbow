@@ -1,4 +1,4 @@
-import React, { useCallback, forwardRef } from 'react';
+import React, { useCallback, forwardRef, useImperativeHandle } from 'react';
 import { AnimatedText, Box, Text, useTextStyle } from '@/design-system';
 import { Input } from '@/components/inputs';
 import Animated, { withTiming, runOnUI, useAnimatedRef, useAnimatedStyle, useSharedValue, runOnJS } from 'react-native-reanimated';
@@ -68,7 +68,17 @@ const FieldInput = React.memo(
 
 FieldInput.displayName = 'FieldInput';
 
-export const SingleFieldInput = forwardRef<TextInput, SingleFieldInputProps>(
+export type SingleFieldInputRef = {
+  focus: () => void;
+  blur: () => void;
+  clear: () => void;
+  setNativeProps: (props: object) => void;
+  setNativeTextWithInputValidation: (text: string) => void;
+};
+
+// Animated refs cannot be used with useImperativeHandle:
+// https://github.com/software-mansion/react-native-reanimated/issues/3226
+export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInputProps>(
   (
     {
       title,
@@ -86,13 +96,45 @@ export const SingleFieldInput = forwardRef<TextInput, SingleFieldInputProps>(
     ref
   ) => {
     const internalRef = useAnimatedRef<TextInput>();
-    const inputRef = ref ?? internalRef;
+    // const inputRef = ref ?? internalRef;
 
     const isFocused = useSharedValue(false);
     const focusProgress = useSharedValue(0);
     const inputValue = useSharedValue('');
     const errorLabel = useSharedValue('');
     const hasError = useSharedValue(false);
+
+    // We expose a custom ref to the parent component because we want to run the validation logic when the native text is set
+    useImperativeHandle(ref, () => ({
+      focus: () => {
+        internalRef.current?.focus();
+      },
+      blur: () => {
+        internalRef.current?.blur();
+      },
+      clear: () => {
+        internalRef.current?.clear();
+      },
+      setNativeProps: (props: object) => {
+        internalRef.current?.setNativeProps(props);
+      },
+      setNativeTextWithInputValidation: (text: string) => {
+        internalRef.current?.setNativeProps({ text });
+        inputValue.value = text;
+        // We cannot run this worklet with runOnUI here (see below)
+        // https://github.com/software-mansion/react-native-reanimated/discussions/5199
+        if (validationWorklet) {
+          const result = validationWorklet(text);
+          if (result) {
+            errorLabel.value = result.message ?? '';
+            hasError.value = result.error;
+          } else {
+            errorLabel.value = '';
+            hasError.value = false;
+          }
+        }
+      },
+    }));
 
     const handleFocusWorklet = useCallback(() => {
       'worklet';
@@ -139,11 +181,11 @@ export const SingleFieldInput = forwardRef<TextInput, SingleFieldInputProps>(
       const content = await Clipboard.getString();
       if (content) {
         _onChangeText(content);
-        if (inputRef && 'current' in inputRef && inputRef.current) {
-          inputRef.current.setNativeProps({ text: content });
+        if (internalRef && 'current' in internalRef && internalRef.current) {
+          internalRef.current.setNativeProps({ text: content });
         }
       }
-    }, [_onChangeText, inputRef]);
+    }, [_onChangeText, internalRef]);
 
     const containerStyle = useAnimatedStyle(() => ({
       borderColor: hasError.value ? colors.red : isFocused.value ? FOCUSED_FIELD_BORDER_COLOR : UNFOCUSED_FIELD_BORDER_COLOR,
@@ -201,7 +243,7 @@ export const SingleFieldInput = forwardRef<TextInput, SingleFieldInputProps>(
           {labelPosition === 'right' && showPaste && <PasteButton />}
           {labelPosition === 'left' && (title || icon) && <LabelContent />}
           <FieldInput
-            ref={inputRef}
+            ref={internalRef}
             labelPosition={labelPosition}
             inputStyle={inputStyle}
             onFocus={_onFocus}
