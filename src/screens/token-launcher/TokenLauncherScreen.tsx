@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Box, useBackgroundColor, useColorMode } from '@/design-system';
-import { TOKEN_PREVIEW_BAR_HEIGHT, TokenPreviewBar } from './components/TokenPreviewBar';
+import { FOOTER_HEIGHT, TokenLauncherFooter } from './components/TokenLauncherFooter';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { TokenLauncherHeader } from './components/TokenLauncherHeader';
 import { InfoInputStep } from './components/InfoInputStep';
@@ -20,8 +20,7 @@ export function TokenLauncherScreen() {
   const stepIndex = useTokenLauncherStore(state => state.stepIndex);
 
   const screenWidth = deviceUtils.dimensions.width;
-  const contentContainerHeight =
-    deviceUtils.dimensions.height - safeAreaInsetValues.top - safeAreaInsetValues.bottom - TOKEN_PREVIEW_BAR_HEIGHT;
+  const contentContainerHeight = deviceUtils.dimensions.height - safeAreaInsetValues.top - safeAreaInsetValues.bottom - FOOTER_HEIGHT;
 
   const stickyFooterKeyboardOffset = useMemo(() => ({ closed: 0, opened: safeAreaInsetValues.bottom }), []);
 
@@ -43,7 +42,7 @@ export function TokenLauncherScreen() {
           backgroundColor={backgroundColor}
           style={{ flex: 1, paddingBottom: safeAreaInsetValues.bottom, paddingTop: safeAreaInsetValues.top }}
         >
-          <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={TOKEN_PREVIEW_BAR_HEIGHT} style={{ flex: 1 }}>
+          <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={FOOTER_HEIGHT} style={{ flex: 1 }}>
             <Box
               borderWidth={THICK_BORDER_WIDTH}
               borderColor={{ custom: 'rgba(245, 248, 255, 0.06)' }}
@@ -64,7 +63,7 @@ export function TokenLauncherScreen() {
             </Box>
           </KeyboardAvoidingView>
           <KeyboardStickyView offset={stickyFooterKeyboardOffset}>
-            <TokenPreviewBar />
+            <TokenLauncherFooter />
           </KeyboardStickyView>
         </Box>
       </KeyboardProvider>
