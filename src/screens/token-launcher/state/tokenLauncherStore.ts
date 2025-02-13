@@ -45,7 +45,7 @@ interface TokenLauncherStore {
     airdrop: number;
     lp: number;
   };
-  tokenomics: () => any;
+  tokenomics: () => ReturnType<typeof calculateTokenomics> | undefined;
   // setters
   setImageUri: (uri: string) => void;
   setImageUrl: (url: string) => void;
@@ -129,14 +129,13 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const ethPriceUsd = get().ethPriceUsd;
     if (!ethPriceUsd) return;
 
-    const result = calculateTokenomics({
+    return calculateTokenomics({
       targetMarketCapUsd: TARGET_MARKET_CAP_IN_USD,
       totalSupply: get().totalSupply,
       ethPriceUsd,
       // TODO: needs to be based on the number of VALID recipients
       hasAirdrop: get().airdropRecipients.length > 0,
     });
-    return result;
   },
   // setters
   setImageUri: (uri: string) => {
