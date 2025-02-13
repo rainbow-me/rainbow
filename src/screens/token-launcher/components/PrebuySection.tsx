@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { AnimatedText, Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { CollapsableField } from './CollapsableField';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
@@ -6,7 +6,7 @@ import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { runOnJS, SharedValue, useAnimatedRef, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
 import { Grid } from './Grid';
-import { SingleFieldInput } from './SingleFieldInput';
+import { SingleFieldInput, SingleFieldInputRef } from './SingleFieldInput';
 import { TextInput } from 'react-native';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
@@ -75,6 +75,17 @@ export function PrebuySection() {
   const tokenomics = useTokenLauncherStore(state => state.tokenomics());
   const marketCapEth = tokenomics?.marketCap.targetEth ?? 10;
 
+  const inputRef = useRef<SingleFieldInputRef>(null);
+  const borderColor = useForegroundColor('buttonStroke');
+  const errorColor = useForegroundColor('red');
+  const subtitleColor = useForegroundColor('labelQuaternary');
+
+  const chainId = useTokenLauncherStore(state => state.chainId);
+  const setCreatorBuyInEth = useTokenLauncherStore(state => state.setCreatorBuyInEth);
+  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
+
+  const customInputError = useSharedValue('');
+
   const prebuyEthOptions = useMemo(() => {
     const totalSupplyPercentages = [0.005, 0.01, 0.05, 0.1];
 
@@ -104,17 +115,6 @@ export function PrebuySection() {
 
   const maxPrebuyAmountEth = prebuyEthOptions[prebuyEthOptions.length - 1].amount;
 
-  const inputRef = useAnimatedRef<TextInput>();
-  const borderColor = useForegroundColor('buttonStroke');
-  const errorColor = useForegroundColor('red');
-  const subtitleColor = useForegroundColor('labelQuaternary');
-
-  const chainId = useTokenLauncherStore(state => state.chainId);
-  const setCreatorBuyInEth = useTokenLauncherStore(state => state.setCreatorBuyInEth);
-  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
-
-  const customInputError = useSharedValue('');
-
   const customInputSubtitle = useDerivedValue(() => {
     return customInputError.value === '' ? `Balance: ${nativeAssetForChain?.balance.display ?? '0'}` : customInputError.value;
   });
@@ -141,10 +141,10 @@ export function PrebuySection() {
                 const isSelected = selectedPrebuyEthAmount.value === option.amount;
                 if (isSelected) {
                   setCreatorBuyInEth(option.amount);
-                  inputRef.current?.setNativeProps({ text: option.amount.toString() });
+                  inputRef.current?.setNativeTextWithInputValidation(option.amount.toString());
                 } else {
                   setCreatorBuyInEth(0);
-                  inputRef.current?.setNativeProps({ text: '' });
+                  inputRef.current?.setNativeTextWithInputValidation('');
                 }
               }}
               onPressWorklet={() => {
