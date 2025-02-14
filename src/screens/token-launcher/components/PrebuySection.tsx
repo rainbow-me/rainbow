@@ -3,11 +3,10 @@ import { AnimatedText, Box, Separator, Text, TextShadow, useForegroundColor } fr
 import { CollapsableField } from './CollapsableField';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { runOnJS, SharedValue, useAnimatedRef, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { runOnJS, SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
 import { Grid } from './Grid';
 import { SingleFieldInput, SingleFieldInputRef } from './SingleFieldInput';
-import { TextInput } from 'react-native';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { roundToSignificant1or5 } from '@/helpers/utilities';
