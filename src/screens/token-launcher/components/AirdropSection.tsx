@@ -2,7 +2,13 @@ import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Bleed, Box, Separator, Text, TextIcon, TextShadow } from '@/design-system';
 import { CollapsableField } from './CollapsableField';
 import { SingleFieldInput } from './SingleFieldInput';
-import { INNER_FIELD_BACKGROUND_COLOR, FIELD_INNER_BORDER_RADIUS, FIELD_BORDER_WIDTH, FIELD_BORDER_RADIUS } from '../constants';
+import {
+  INNER_FIELD_BACKGROUND_COLOR,
+  FIELD_INNER_BORDER_RADIUS,
+  FIELD_BORDER_WIDTH,
+  FIELD_BORDER_RADIUS,
+  COLLAPSABLE_FIELD_ANIMATION,
+} from '../constants';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import FastImage from 'react-native-fast-image';
 import Animated, { LinearTransition } from 'react-native-reanimated';
@@ -56,11 +62,13 @@ function AirdropGroups() {
   const addAirdropGroup = useTokenLauncherStore(state => state.addAirdropGroup);
   const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
 
-  const airdropGroups = useMemo(() => {
-    return AIRDROP_GROUPS.filter(
-      group => !airdropRecipients.some(recipient => recipient.type === 'group' && recipient.value === group.groupId)
-    );
-  }, [airdropRecipients]);
+  // const airdropGroups = useMemo(() => {
+  //   return AIRDROP_GROUPS.filter(
+  //     group => !airdropRecipients.some(recipient => recipient.type === 'group' && recipient.value === group.groupId)
+  //   );
+  // }, [airdropRecipients]);
+
+  const airdropGroups = AIRDROP_GROUPS;
 
   return (
     <Box gap={12}>
@@ -76,7 +84,6 @@ function AirdropGroups() {
           }}
           horizontal
           showsHorizontalScrollIndicator={false}
-          itemLayoutAnimation={LinearTransition}
           data={airdropGroups}
           keyExtractor={item => item.groupId}
           renderItem={({ item }) => {
@@ -270,21 +277,23 @@ function AirdropRecipients() {
     <Box gap={8}>
       {recipientsWithPlaceholder.map((recipient, index) => {
         return (
-          <Box flexDirection="row" alignItems="center" gap={16} key={recipient.id}>
-            {recipient.type === 'address' && <AddressInput id={recipient.id} />}
-            {recipient.type === 'group' && <AirdropGroupField groupId={recipient.value} />}
-            <ButtonPressAnimation
-              disabled={index === recipientsWithPlaceholder.length - 1}
-              style={{ opacity: index === recipientsWithPlaceholder.length - 1 ? 0 : 1 }}
-              onPress={() => deleteAirdropRecipient(recipient.id)}
-            >
-              <TextShadow blur={12} shadowOpacity={0.24}>
-                <Text color="labelSecondary" size="17pt" weight="heavy">
-                  {'􀈒'}
-                </Text>
-              </TextShadow>
-            </ButtonPressAnimation>
-          </Box>
+          <Animated.View key={recipient.id} layout={COLLAPSABLE_FIELD_ANIMATION} style={{ width: '100%' }}>
+            <Box flexDirection="row" alignItems="center" gap={16} key={recipient.id}>
+              {recipient.type === 'address' && <AddressInput id={recipient.id} />}
+              {recipient.type === 'group' && <AirdropGroupField groupId={recipient.value} />}
+              <ButtonPressAnimation
+                disabled={index === recipientsWithPlaceholder.length - 1}
+                style={{ opacity: index === recipientsWithPlaceholder.length - 1 ? 0 : 1 }}
+                onPress={() => deleteAirdropRecipient(recipient.id)}
+              >
+                <TextShadow blur={12} shadowOpacity={0.24}>
+                  <Text color="labelSecondary" size="17pt" weight="heavy">
+                    {'􀈒'}
+                  </Text>
+                </TextShadow>
+              </ButtonPressAnimation>
+            </Box>
+          </Animated.View>
         );
       })}
     </Box>
@@ -298,8 +307,10 @@ export function AirdropSection() {
     <CollapsableField title="Airdrop">
       <Box gap={16}>
         <AirdropRecipients />
-        <Separator color={{ custom: accentColors.opacity3 }} />
-        <AirdropGroups />
+        <Animated.View style={{ gap: 16 }} layout={COLLAPSABLE_FIELD_ANIMATION}>
+          <Separator color={{ custom: accentColors.opacity3 }} />
+          <AirdropGroups />
+        </Animated.View>
         {/* <SuggestedUsers /> */}
       </Box>
     </CollapsableField>

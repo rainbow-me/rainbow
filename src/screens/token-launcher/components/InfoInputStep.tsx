@@ -9,9 +9,9 @@ import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { NetworkField } from './NetworkField';
 import { LinksSection } from './LinksSection';
 import { DescriptionField } from './DescriptionField';
-import { DEFAULT_TOTAL_SUPPLY, MAX_NAME_LENGTH, MAX_SYMBOL_LENGTH, MAX_TOTAL_SUPPLY } from '../constants';
+import { COLLAPSABLE_FIELD_ANIMATION, DEFAULT_TOTAL_SUPPLY, MAX_NAME_LENGTH, MAX_SYMBOL_LENGTH, MAX_TOTAL_SUPPLY } from '../constants';
 import { TokenAllocationSection } from './TokenAllocationSection';
-import { useAnimatedRef } from 'react-native-reanimated';
+import Animated, { FadeIn, useAnimatedRef } from 'react-native-reanimated';
 import { TextInput } from 'react-native';
 
 function TotalSupplyInput() {
@@ -86,6 +86,46 @@ function NameInput() {
   );
 }
 
+function RequiredInfoSection() {
+  return (
+    <Box paddingTop={'20px'} gap={16} width="full">
+      <Text color="labelSecondary" size="13pt" weight="heavy">
+        {'Required Info'}
+      </Text>
+      <Box gap={8}>
+        <SymbolInput />
+        <NameInput />
+        <TotalSupplyInput />
+        <NetworkField />
+      </Box>
+    </Box>
+  );
+}
+
+function AboutSection() {
+  return (
+    <Box gap={16}>
+      <Text color="labelSecondary" size="13pt" weight="heavy">
+        {'About'}
+      </Text>
+      <Box gap={8} width={'full'}>
+        <DescriptionField />
+        <LinksSection />
+      </Box>
+    </Box>
+  );
+}
+
+function Separator() {
+  return (
+    <Bleed horizontal={'20px'}>
+      <Box paddingVertical={'20px'} justifyContent="center" alignItems="center">
+        <Box height={1} width="full" backgroundColor="rgba(245, 248, 255, 0.06)" />
+      </Box>
+    </Bleed>
+  );
+}
+
 export function InfoInputStep() {
   return (
     <KeyboardAwareScrollView
@@ -102,35 +142,19 @@ export function InfoInputStep() {
       extraKeyboardSpace={FOOTER_HEIGHT}
       // extraKeyboardSpace={-(TOKEN_PREVIEW_BAR_HEIGHT + safeAreaInsetValues.bottom)}
     >
-      <Box width="full" gap={8} alignItems="center" paddingHorizontal="20px">
+      <Box width="full" alignItems="center" paddingBottom={'20px'} paddingHorizontal="20px">
         <Box paddingBottom={'16px'}>
           <TokenLogo />
         </Box>
-        <Box gap={16} width="full" paddingVertical="20px">
-          <Text color="labelSecondary" size="13pt" weight="heavy">
-            {'Required Info'}
-          </Text>
-          <Box gap={8}>
-            <SymbolInput />
-            <NameInput />
-            <TotalSupplyInput />
-            <NetworkField />
-          </Box>
-        </Box>
-        {/* <Bleed horizontal={'20px'}> */}
-        <Box height={1} width="full" backgroundColor="rgba(245, 248, 255, 0.06)" />
-        {/* </Bleed> */}
-        <Box gap={16} width="full" paddingVertical="20px">
-          <Text color="labelSecondary" size="13pt" weight="heavy">
-            {'About'}
-          </Text>
-          <Box gap={8} width={'full'}>
-            <DescriptionField />
-            <LinksSection />
-          </Box>
-        </Box>
-        <Box height={1} width="full" backgroundColor="rgba(245, 248, 255, 0.06)" />
-        <TokenAllocationSection />
+        <RequiredInfoSection />
+        <Animated.View style={{ width: '100%' }} layout={COLLAPSABLE_FIELD_ANIMATION}>
+          <Separator />
+          <AboutSection />
+        </Animated.View>
+        <Animated.View style={{ width: '100%' }} layout={COLLAPSABLE_FIELD_ANIMATION}>
+          <Separator />
+          <TokenAllocationSection />
+        </Animated.View>
       </Box>
     </KeyboardAwareScrollView>
   );

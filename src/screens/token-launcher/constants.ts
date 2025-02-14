@@ -1,3 +1,5 @@
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { LinearTransition } from 'react-native-reanimated';
 import { base } from 'viem/chains';
 
 export const BLUE = '#268FFF';
@@ -20,7 +22,7 @@ export const MAX_DESCRIPTION_LENGTH = 240;
 export const MAX_NAME_LENGTH = 20;
 
 export const DEFAULT_CHAIN_ID = base.id;
-export const DEFAULT_TOTAL_SUPPLY = 1_000_000;
+export const DEFAULT_TOTAL_SUPPLY = 1_000_000_000;
 export const TARGET_MARKET_CAP_IN_USD = 35_000;
 // 2^256 - 1
 export const MAX_TOTAL_SUPPLY = BigInt('115792089237316195423570985008687907853269984665640564039457584007913129639935');
@@ -29,3 +31,10 @@ export const MAX_TOTAL_SUPPLY = BigInt('1157920892373161954235709850086879078532
 export const CREATOR_BPS = 69;
 export const CREATOR_BPS_WITH_AIRDROP = 46;
 export const AIRDROP_BPS = 23;
+
+const ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
+
+export const COLLAPSABLE_FIELD_ANIMATION = LinearTransition.springify()
+  .mass(ANIMATION_CONFIG.mass as number)
+  .damping(ANIMATION_CONFIG.damping as number)
+  .stiffness(ANIMATION_CONFIG.stiffness as number);
