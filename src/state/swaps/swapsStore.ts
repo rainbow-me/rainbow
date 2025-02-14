@@ -20,7 +20,6 @@ export interface SwapsState {
   quote: Quote | CrosschainQuote | QuoteError | null;
 
   selectedOutputChainId: ChainId;
-  outputSearchQuery: string;
 
   percentageToSell: number; // Value between 0 and 1, e.g., 0.5, 0.1, 0.25
   setPercentageToSell: (percentageToSell: number) => void; // Accepts values from 0 to 1
@@ -36,7 +35,7 @@ export interface SwapsState {
   // recent swaps
   latestSwapAt: Map<ChainId, number>;
   recentSwaps: Map<ChainId, RecentSwap[]>;
-  getRecentSwapsByChain: (chainId: ChainId) => RecentSwap[];
+  getRecentSwapsByChain: (chainId?: ChainId) => RecentSwap[];
   addRecentSwap: (asset: ExtendedAnimatedAssetWithColors) => void;
 
   // degen mode preferences
@@ -119,7 +118,6 @@ export const swapsStore = createRainbowStore<SwapsState>(
     quote: null,
 
     selectedOutputChainId: ChainId.mainnet,
-    outputSearchQuery: '',
 
     percentageToSell: INITIAL_SLIDER_POSITION,
     setPercentageToSell: (percentageToSell: number) => set({ percentageToSell }),
@@ -135,11 +133,8 @@ export const swapsStore = createRainbowStore<SwapsState>(
 
     latestSwapAt: new Map(),
     recentSwaps: new Map(),
-    getRecentSwapsByChain: (chainId: ChainId) => {
-      const { recentSwaps } = get();
+    getRecentSwapsByChain: (chainId?: ChainId) => get().recentSwaps.get(chainId ?? get().selectedOutputChainId) || [],
 
-      return recentSwaps.get(chainId) || [];
-    },
     addRecentSwap(asset) {
       const { recentSwaps, latestSwapAt } = get();
       const now = Date.now();
@@ -166,11 +161,11 @@ export const swapsStore = createRainbowStore<SwapsState>(
     version: 2,
     deserializer: deserialize,
     serializer: serialize,
-    // NOTE: Only persist the following
     partialize(state) {
       return {
         degenMode: state.degenMode,
         preferredNetwork: state.preferredNetwork,
+        selectedOutputChainId: state.selectedOutputChainId,
         source: state.source,
         latestSwapAt: state.latestSwapAt,
         recentSwaps: state.recentSwaps,

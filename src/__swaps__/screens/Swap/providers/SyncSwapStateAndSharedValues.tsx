@@ -55,25 +55,28 @@ export const SyncQuoteSharedValuesToState = () => {
 
   // Updates the state as a single block in response to quote changes to ensure the gas fee is cleanly updated once
   useAnimatedReaction(
-    () => quote.value,
-    (current, previous) => {
-      if (!assetToSell.value || !assetToBuy.value || !current || 'error' in current) return;
+    () => ({ quote: quote.value }),
+    (current, prev) => {
+      if (!assetToSell.value || (prev !== null && current.quote && 'error' in current.quote)) return;
 
-      const isSwappingMoreThanAvailableBalance = greaterThanWorklet(
-        current.sellAmount.toString(),
-        toScaledIntegerWorklet(assetToSell.value.balance.amount, assetToSell.value.decimals)
-      );
+      const isSwappingMoreThanAvailableBalance =
+        !!current.quote &&
+        !('error' in current.quote) &&
+        greaterThanWorklet(
+          current.quote.sellAmount.toString(),
+          toScaledIntegerWorklet(assetToSell.value.balance.amount, assetToSell.value.decimals)
+        );
 
       // Skip gas fee recalculation if the user is trying to swap more than their available balance, as it isn't
       // needed and was previously resulting in errors in useEstimatedGasFee.
       if (isSwappingMoreThanAvailableBalance) return;
 
-      if (!deepEqualWorklet(current, previous)) {
+      if (!deepEqualWorklet(current, prev)) {
         runOnJS(setInternalSyncedSwapStore)({
-          assetToBuy: assetToBuy.value,
+          assetToBuy: assetToBuy.value ?? undefined,
           assetToSell: assetToSell.value,
           chainId: assetToSell.value?.chainId,
-          quote: current,
+          quote: current.quote,
         });
       }
     },
@@ -160,7 +163,14 @@ export function SyncGasStateToSharedValues() {
   const gasFeeRange = useSharedValue<[string, string] | null>(null);
 
   useAnimatedReaction(
-    () => ({ inputAsset: internalSelectedInputAsset.value, bufferRange: gasFeeRange.value }),
+    () => ({
+      bufferRange: gasFeeRange.value,
+      inputAsset: {
+        chainId: internalSelectedInputAsset.value?.chainId,
+        isNativeAsset: internalSelectedInputAsset.value?.isNativeAsset,
+        uniqueId: internalSelectedInputAsset.value?.uniqueId,
+      },
+    }),
     (current, previous) => {
       const { inputAsset: currInputAsset, bufferRange: currBufferRange } = current;
       const { inputAsset: prevInputAsset, bufferRange: prevBufferRange } = previous || {};
@@ -189,11 +199,12 @@ export function SyncGasStateToSharedValues() {
   );
 
   useEffect(() => {
-    const safeQuoteValue = quote && !('error' in quote) && quote.value ? new BigNumber(quote.value.toString()).toFixed() : '0';
+    const isValidQuote = quote && !('error' in quote);
+    const safeQuoteValue = isValidQuote && quote.value ? new BigNumber(quote.value.toString()).toFixed() : '0';
 
     runOnUI(() => {
       hasEnoughFundsForGas.value = undefined;
-      if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote || isLoadingNativeNetworkAsset) return;
+      if (!gasSettings || !isValidQuote || !estimatedGasLimit || isLoadingNativeNetworkAsset) return;
 
       // NOTE: if we don't have a gas price or max base fee or max priority fee, we can't calculate the gas fee
       if (
