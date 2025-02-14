@@ -9,7 +9,7 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { Contract } from '@ethersproject/contracts';
 import { useQuery } from '@tanstack/react-query';
 import qs from 'qs';
-import { parseTokenSearch, parseTokenSearchAcrossNetworks } from './utils';
+import { parseTokenSearchResults, parseTokenSearchAcrossNetworks } from './utils';
 import { getProvider } from '@/handlers/web3';
 import { erc20ABI } from '@/references';
 
@@ -135,7 +135,7 @@ async function tokenSearchQueryFunction({
       const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
 
       if (tokenSearch && tokenSearch.data.data.length > 0) {
-        return parseTokenSearch(tokenSearch.data.data, chainId);
+        return parseTokenSearchResults(tokenSearch.data.data, chainId);
       }
 
       // search for address on other chains
@@ -146,10 +146,10 @@ async function tokenSearchQueryFunction({
         Object.values(a.networks).some(n => n?.address === addressQuery)
       );
 
-      return parseTokenSearch(addressMatchesOnOtherChains);
+      return parseTokenSearchResults(addressMatchesOnOtherChains);
     } else {
       const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
-      return parseTokenSearch(tokenSearch.data.data, chainId);
+      return parseTokenSearchResults(tokenSearch.data.data, chainId);
     }
   } catch (e) {
     logger.error(new RainbowError('[tokenSearchQueryFunction]: Token search failed'), { url });
@@ -179,7 +179,7 @@ async function tokenSearchQueryFunctionAllNetworks({ queryKey: [{ query }] }: Qu
       const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
 
       if (tokenSearch && tokenSearch.data.data.length > 0) {
-        return parseTokenSearch(tokenSearch.data.data);
+        return parseTokenSearchResults(tokenSearch.data.data);
       }
 
       const result = await getImportedAsset(query);
