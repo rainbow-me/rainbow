@@ -126,7 +126,7 @@ const TokenToSellListComponent = () => {
         contentContainerStyle={styles.contentContainer}
         data={userAssetIds}
         getItemLayout={getItemLayout}
-        initialNumToRender={8}
+        initialNumToRender={10}
         keyExtractor={uniqueId => uniqueId}
         keyboardShouldPersistTaps="always"
         maxToRenderPerBatch={8}
