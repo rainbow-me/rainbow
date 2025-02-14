@@ -44,7 +44,7 @@ export type TokenSearchAllNetworksArgs = {
 // ///////////////////////////////////////////////
 // Query Key
 
-const tokenSearchQueryKey = ({ chainId, fromChainId, keys, list, threshold, query, shouldPersist }: TokenSearchArgs) => {
+const tokenSearchQueryKey = ({ chainId, fromChainId, keys, list, threshold, query, shouldPersist = false }: TokenSearchArgs) => {
   return createQueryKey(
     'TokenSearch',
     { chainId, fromChainId, keys, list, threshold, query },
@@ -53,8 +53,7 @@ const tokenSearchQueryKey = ({ chainId, fromChainId, keys, list, threshold, quer
 };
 
 const tokenSearchAllNetworksQueryKey = ({ query }: TokenSearchAllNetworksArgs) => {
-  const shouldPersist = query === '';
-  return createQueryKey('TokenSearchAllNetworks', { query }, { persisterVersion: shouldPersist ? 1 : undefined });
+  return createQueryKey('TokenSearchAllNetworks', { query }, { persisterVersion: undefined });
 };
 
 type TokenSearchQueryKey = ReturnType<typeof tokenSearchQueryKey>;
@@ -203,9 +202,8 @@ export async function fetchTokenSearch(
   { chainId, fromChainId, keys, list, threshold, query }: TokenSearchArgs,
   config: QueryConfigWithSelect<TokenSearchResult, Error, TokenSearchResult, TokenSearchQueryKey> = {}
 ) {
-  const shouldPersist = query === undefined;
   return await queryClient.fetchQuery(
-    tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query, shouldPersist }),
+    tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query }),
     tokenSearchQueryFunction,
     config
   );
@@ -230,8 +228,7 @@ export function useTokenSearch(
   { chainId, fromChainId, keys, list, threshold, query }: TokenSearchArgs,
   config: QueryConfigWithSelect<TokenSearchResult, Error, TokenSearchResult, TokenSearchQueryKey> = {}
 ) {
-  const shouldPersist = query === undefined;
-  return useQuery(tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query, shouldPersist }), tokenSearchQueryFunction, {
+  return useQuery(tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query }), tokenSearchQueryFunction, {
     ...config,
     keepPreviousData: true,
   });
