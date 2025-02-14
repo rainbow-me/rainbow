@@ -1,16 +1,48 @@
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { AnimatedText, Box, Text, useForegroundColor } from '@/design-system';
-import Animated, { FadeIn, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import Animated, { FadeIn, SharedValue, useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { FIELD_BACKGROUND_COLOR, FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, COLLAPSABLE_FIELD_ANIMATION } from '../constants';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
-export const CollapsableField = ({ title, children }: { title: string; children: React.ReactNode }) => {
+function AnimatedPlusMinusIcon({ collapsed }: { collapsed: SharedValue<boolean> }) {
+  const minusIcon = '􀅽';
+  const rotation = useSharedValue(0);
+
+  useAnimatedReaction(
+    () => collapsed.value,
+    value => {
+      rotation.value = withTiming(value ? 270 : 360, TIMING_CONFIGS.buttonPressConfig);
+    }
+  );
+
+  const rotateStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ rotateZ: `${rotation.value}deg` }],
+    };
+  });
+
+  return (
+    <Box backgroundColor="rgba(255,255,255,0.06)" borderRadius={16} width={32} height={32} justifyContent="center" alignItems="center">
+      <AnimatedText style={[rotateStyle, { position: 'absolute' }]} color="label" size="17pt" weight="heavy">
+        {minusIcon}
+      </AnimatedText>
+      <AnimatedText color="label" size="17pt" weight="heavy">
+        {minusIcon}
+      </AnimatedText>
+    </Box>
+  );
+}
+
+type CollapsableFieldProps = {
+  title: string;
+  children: React.ReactNode;
+};
+
+export function CollapsableField({ title, children }: CollapsableFieldProps) {
   const borderColor = useForegroundColor('buttonStroke');
   const collapsed = useSharedValue(true);
-  const collapsedIcon = useDerivedValue(() => {
-    return collapsed.value ? ('􀅼' as string) : ('􀅽' as string);
-  });
 
   const toggleCollapsed = useCallback(() => {
     'worklet';
@@ -39,18 +71,7 @@ export const CollapsableField = ({ title, children }: { title: string; children:
           </Text>
         </GestureHandlerButton>
         <GestureHandlerButton hapticTrigger="tap-end" hapticType="soft" onPressWorklet={toggleCollapsed}>
-          <Box
-            backgroundColor="rgba(255,255,255,0.06)"
-            borderRadius={16}
-            width={32}
-            height={32}
-            justifyContent="center"
-            alignItems="center"
-          >
-            <AnimatedText color="label" size="17pt" weight="heavy">
-              {collapsedIcon}
-            </AnimatedText>
-          </Box>
+          <AnimatedPlusMinusIcon collapsed={collapsed} />
         </GestureHandlerButton>
       </Animated.View>
       <Animated.View entering={FadeIn} style={contentStyle}>
@@ -58,7 +79,7 @@ export const CollapsableField = ({ title, children }: { title: string; children:
       </Animated.View>
     </Animated.View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
