@@ -26,17 +26,13 @@ export type UserNftsResponse = {
   nfts: UniqueAsset[];
   nftsMap: Map<string, UniqueAsset>;
 };
-type UserNftsState = {
-  nfts: UniqueAsset[];
-  nftsMap: Map<string, UniqueAsset>;
-};
 type NftFactoryConfig = {
   address: string;
   internal?: boolean;
 };
 
 export const createUserNftsStore = (config: NftFactoryConfig) =>
-  createQueryStore<UserNftsResponse, UserNftsParams, UserNftsState>(
+  createQueryStore<UserNftsResponse, UserNftsParams>(
     {
       enabled: config.address !== '',
       cacheTime: config.internal ? time.weeks(1) : time.hours(1),
@@ -48,10 +44,7 @@ export const createUserNftsStore = (config: NftFactoryConfig) =>
       },
       staleTime: time.minutes(10),
     },
-    () => ({
-      nfts: [],
-      nftsMap: new Map<string, UniqueAsset>(),
-    }),
+    () => null,
     config.address?.length
       ? {
           storageKey: `userNfts_${config.address}`,
