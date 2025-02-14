@@ -2,12 +2,18 @@ import React from 'react';
 import { CollapsableField } from './CollapsableField';
 import { Bleed, Box, IconContainer, Separator, Text, TextIcon, TextShadow } from '@/design-system';
 import { useTokenLauncherStore, Link, LinkType } from '../state/tokenLauncherStore';
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import Animated, { EntryExitTransition, FadeOut, LinearTransition } from 'react-native-reanimated';
 import { SingleFieldInput } from './SingleFieldInput';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Icon } from '@/components/icons';
-import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
+import {
+  COLLAPSABLE_FIELD_ANIMATION,
+  FIELD_BORDER_RADIUS,
+  FIELD_BORDER_WIDTH,
+  FIELD_INNER_BORDER_RADIUS,
+  INNER_FIELD_BACKGROUND_COLOR,
+} from '../constants';
 import { useTheme } from '@/theme';
 import FastImage from 'react-native-fast-image';
 import { Grid } from './Grid';
@@ -131,13 +137,15 @@ export function LinksSection() {
 
   return (
     <CollapsableField title="Links">
-      <Animated.View layout={LAYOUT_ANIMATION}>
-        <Box gap={8}>
-          <LinkField link={{ type: 'website', url: '', input: '' }} index={links.length} />
-          {links.map((link, index) => (
-            <LinkField key={`${link.type}-${index}`} link={link} index={index} />
-          ))}
-        </Box>
+      <Box gap={8}>
+        <LinkField link={{ type: 'website', url: '', input: '' }} index={links.length} />
+        {links.map((link, index) => (
+          <Animated.View key={`${link.type}`} layout={COLLAPSABLE_FIELD_ANIMATION}>
+            <LinkField link={link} index={index} />
+          </Animated.View>
+        ))}
+      </Box>
+      <Animated.View layout={COLLAPSABLE_FIELD_ANIMATION} style={{ width: '100%' }}>
         <Box paddingVertical="16px">
           <Separator color="separatorSecondary" />
           <Text style={{ paddingTop: 16 }} color="labelSecondary" size="17pt" weight="heavy">

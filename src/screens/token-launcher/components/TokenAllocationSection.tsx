@@ -6,9 +6,9 @@ import { AirdropSection } from './AirdropSection';
 
 export function TokenAllocationSection() {
   return (
-    <Box gap={16} width="full" paddingVertical="20px">
+    <Box gap={16} width="full">
       <Text color="labelSecondary" size="13pt" weight="heavy">
-        Token Allocation
+        {'Token Allocation'}
       </Text>
       <Box gap={12} width={'full'}>
         <AllocationBreakdown />
