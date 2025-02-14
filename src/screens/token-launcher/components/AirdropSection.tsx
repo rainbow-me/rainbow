@@ -60,14 +60,15 @@ function AirdropGroups() {
   const { accentColors } = useTokenLauncherContext();
 
   const addAirdropGroup = useTokenLauncherStore(state => state.addAirdropGroup);
-  const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
 
+  // const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
   // const airdropGroups = useMemo(() => {
   //   return AIRDROP_GROUPS.filter(
   //     group => !airdropRecipients.some(recipient => recipient.type === 'group' && recipient.value === group.groupId)
   //   );
   // }, [airdropRecipients]);
 
+  // TODO: change to check marks instead of animating away
   const airdropGroups = AIRDROP_GROUPS;
 
   return (
