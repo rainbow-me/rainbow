@@ -77,7 +77,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const handleSetSeedPhrase = useCallback(
     (text: string) => {
       if (isImporting) return null;
-      return setSeedPhrase(text.trim());
+      return setSeedPhrase(text);
     },
     [isImporting]
   );
