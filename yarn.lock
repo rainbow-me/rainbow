@@ -5176,9 +5176,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/provider@npm:0.1.1":
+"@rainbow-me/provider@git+ssh://git@github.com/donpdang/provider.git#fix/provider-network-init":
   version: 0.1.1
-  resolution: "@rainbow-me/provider@npm:0.1.1"
+  resolution: "@rainbow-me/provider@git+ssh://git@github.com/donpdang/provider.git#commit=60e8af0a94b80f3bd6b8bf77348082c9ac28a844"
   dependencies:
     "@ethersproject/abstract-provider": "npm:5.7.0"
     "@ethersproject/bignumber": "npm:5.7.0"
@@ -5186,7 +5186,7 @@ __metadata:
     "@metamask/eth-sig-util": "npm:7.0.1"
     eventemitter3: "npm:5.0.1"
     viem: "npm:1.21.4"
-  checksum: 10c0/dcc62cbaf3e6a999e89d794bfbc95c62b2e3debb3c9370aef0d59a52dda623b64bc15a1f6eafc7eb8e15a6a37797e13f2b49c539efeb582b3d2a3dd12e2f8c60
+  checksum: 10c0/e5b8ba80817115aa625622d6fcc27f98e2a2c1b3c576f6c63e0892b23f4c27703f53e1fb0e5a95c6e2860bd7bfae5f492aadb7c2872ee3d7eef38cb0f3e07024
   languageName: node
   linkType: hard
 
@@ -8728,7 +8728,7 @@ __metadata:
     "@ledgerhq/react-native-hw-transport-ble": "npm:6.33.4"
     "@metamask/eth-sig-util": "npm:7.0.2"
     "@notifee/react-native": "npm:7.8.2"
-    "@rainbow-me/provider": "npm:0.1.1"
+    "@rainbow-me/provider": "git+ssh://git@github.com/donpdang/provider.git#fix/provider-network-init"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
     "@rainbow-me/swaps": "npm:0.30.1"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
