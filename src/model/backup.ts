@@ -35,6 +35,7 @@ import { getRemoteConfig } from './remoteConfig';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { AppDispatch } from '@/redux/store';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+// import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
@@ -100,6 +101,7 @@ type MaybePromise<T> = T | Promise<T>;
 
 export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }: { fn: () => MaybePromise<T>; logout?: boolean }) => {
   backupsStore.getState().setStatus(CloudBackupState.InProgress);
+  // openInBrowser - rule of hooks issue (Alert usage)
 
   if (IS_ANDROID) {
     try {
