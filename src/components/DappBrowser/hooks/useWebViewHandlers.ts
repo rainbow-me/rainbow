@@ -179,11 +179,9 @@ export function useWebViewHandlers({
     (syntheticEvent: { nativeEvent: { targetUrl: string } }) => {
       const { nativeEvent } = syntheticEvent;
       const { targetUrl } = nativeEvent;
-      // openInBrowser - rule of hooks issue
-      // const openInBrowser = useOpenInBrowser();
 
       if (isValidAppStoreUrl(targetUrl)) {
-        // openInBrowser(targetUrl);
+        // Want to use Linking here - opens in appstore
         Linking.openURL(targetUrl);
         return;
       }

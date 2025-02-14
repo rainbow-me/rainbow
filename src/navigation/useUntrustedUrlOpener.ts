@@ -25,7 +25,6 @@ const trustedDomains = [
 
 export default function useUntrustedUrlOpener(): (url: string) => void {
   const { navigate } = useNavigation();
-  // openInBrowser - good
   const openInBrowser = useOpenInBrowser();
   return useCallback(
     (url: string) => {

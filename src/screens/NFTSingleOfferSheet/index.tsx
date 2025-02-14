@@ -93,7 +93,6 @@ export function NFTSingleOfferSheet() {
   const {
     data: { nftsMap },
   } = useLegacyNFTs({ address: accountAddress });
-  // openInBrowser - need to test this
   const openInBrowser = useOpenInBrowser();
 
   const { offer } = params as { offer: NftOffer };

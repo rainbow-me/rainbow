@@ -163,7 +163,6 @@ export default function useENSRecordDisplayProperties({
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { startRegistration } = useENSRegistration();
-  // openInBrowser - good
   const openInBrowser = useOpenInBrowser();
 
   const handlePressMenuItem = useCallback(

@@ -30,7 +30,7 @@ const SupportErrorAlert = () =>
 
 const handleMailError = debounce(error => (error ? SupportErrorAlert() : null), 250);
 
-// openInBrowser - rule of hooks issue
+// openInBrowser - rule of hooks issue (Alert usage)
 // const openInBrowser = useOpenInBrowser();
 
 // const openLearnMorePage = () => openInBrowser('https://support.rainbow.me/en/articles/7975958-an-error-occurred');

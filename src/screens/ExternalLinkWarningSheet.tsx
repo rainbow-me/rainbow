@@ -24,7 +24,6 @@ const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeigh
 const ExternalLinkWarningSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeAreaInsets();
-  // openInBrowser - good
   const openInBrowser = useOpenInBrowser();
 
   // @ts-expect-error

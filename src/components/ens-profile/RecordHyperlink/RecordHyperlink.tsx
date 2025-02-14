@@ -9,7 +9,6 @@ const ENS_REGEX = /[^\s]+.eth/g;
 
 export default function RecordHyperlink({ value }: { value: string }) {
   const { goBack, navigate } = useNavigation();
-  // openInBrowser - good
   const openInBrowser = useOpenInBrowser();
 
   const navigateToProfile = useCallback(() => {

@@ -43,7 +43,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { userAssetsStore } from '@/state/assets/userAssets';
 // import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
-// openInBrowser - rules of hooks issue
+// openInBrowser - rule of hooks issue - need to refactor here
 // const openInBrowser = useOpenInBrowser();
 
 /**

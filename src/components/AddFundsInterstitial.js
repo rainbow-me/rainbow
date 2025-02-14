@@ -171,7 +171,6 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 };
 
 const AddFundsInterstitial = ({ network }) => {
-  // openInBrowser - idk where this is used
   const openInBrowser = useOpenInBrowser();
 
   const onAddFromFaucet = accountAddress => openInBrowser(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);

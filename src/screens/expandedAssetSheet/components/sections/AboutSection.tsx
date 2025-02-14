@@ -29,7 +29,6 @@ interface RowButtonProps {
 
 function RowButton({ highlighted, icon, iconName, title, url, value }: RowButtonProps) {
   const { accentColors } = useExpandedAssetSheetContext();
-  // openInBrowser - good
   const openInBrowser = useOpenInBrowser();
 
   return (

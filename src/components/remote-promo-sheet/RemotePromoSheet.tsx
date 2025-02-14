@@ -68,7 +68,6 @@ export function RemotePromoSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, 'RemotePromoSheet'>>();
   const { campaignId, campaignKey } = params;
   const { language } = useAccountSettings();
-  // openInBrowser - idk where this is used
   const openInBrowser = useOpenInBrowser();
 
   useEffect(() => {

@@ -66,7 +66,6 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
   const { navigate } = useNavigation();
   const { language } = useAccountSettings();
   const { width } = useDimensions();
-  // openInBrowser - good
   const openInBrowser = useOpenInBrowser();
 
   const card = remoteCardsStore(state => state.getCard(id));

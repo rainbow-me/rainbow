@@ -89,7 +89,6 @@ export function PairHardwareWalletSigningSheet() {
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
-  // openInBrowser - need to connect to hw to test this
   const openInBrowser = useOpenInBrowser();
   const { busy, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({ showImportModal: true });
 

@@ -54,7 +54,6 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const { openPicker } = useImagePicker();
   const { startRegistration } = useENSRegistration();
   const { setNextEmoji } = useUpdateEmoji();
-  // openInBrowser - don't think `onAvatarWebProfile` is used ?
   const openInBrowser = useOpenInBrowser();
 
   const onAvatarRemovePhoto = useCallback(async () => {

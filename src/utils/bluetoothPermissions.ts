@@ -10,19 +10,16 @@ import {
   AndroidPermission,
   requestMultiple as requestMultiplePermissions,
 } from 'react-native-permissions';
-// import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 /**
  * Shows an alert if device's bluetooth is powered off
  */
 export const showBluetoothPoweredOffAlert = async () => {
-  // openInBrowser - rules of hooks issue
-  // const openInBrowser = useOpenInBrowser();
-  await Alert.alert(i18n.t(i18n.l.bluetooth.powered_off_alert.title), i18n.t(i18n.l.bluetooth.powered_off_alert.message), [
+  // Need to use Linking here - Phone permissions asked for in an alert
+  Alert.alert(i18n.t(i18n.l.bluetooth.powered_off_alert.title), i18n.t(i18n.l.bluetooth.powered_off_alert.message), [
     {
       onPress: () => {
         IS_IOS ? Linking.openURL('App-Prefs:Bluetooth') : Linking.sendIntent('android.settings.BLUETOOTH_SETTINGS');
-        // IS_IOS ? openInBrowser('App-Prefs:Bluetooth') : Linking.sendIntent('android.settings.BLUETOOTH_SETTINGS');
       },
       text: i18n.t(i18n.l.bluetooth.powered_off_alert.open_settings),
     },

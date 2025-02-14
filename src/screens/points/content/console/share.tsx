@@ -19,7 +19,6 @@ export const Share = () => {
   const { intent, setAnimationKey, setStep } = usePointsProfileContext();
   const { accountENS, accountAddress } = useAccountProfile();
   const { width: deviceWidth } = useDimensions();
-  // openInBrowser - need to test this
   const openInBrowser = useOpenInBrowser();
 
   const [showShareButtons, setShowShareButtons] = useState(false);

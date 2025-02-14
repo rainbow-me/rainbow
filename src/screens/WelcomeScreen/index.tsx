@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import Reanimated, {
   Easing,
   interpolateColor,
@@ -72,8 +72,6 @@ export default function WelcomeScreen() {
   const { colors, isDarkMode } = useTheme();
   const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
   const hideSplashScreen = useHideSplashScreen();
-  // openInBrowser - need to test this
-  const openInBrowser = useOpenInBrowser();
 
   const contentAnimation = useSharedValue(1);
   const colorAnimation = useSharedValue(0);
@@ -189,7 +187,8 @@ export default function WelcomeScreen() {
   }, [dangerouslyGetState, navigate, replace]);
 
   const handlePressTerms = useCallback(() => {
-    openInBrowser('https://rainbow.me/terms-of-use');
+    // Want to use Linking here - browser isn't mounted yet
+    Linking.openURL('https://rainbow.me/terms-of-use');
   }, []);
 
   const showRestoreSheet = useCallback(() => {

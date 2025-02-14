@@ -17,7 +17,6 @@ import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginHorizontal = 19, prominent }) => {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
-  // openInBrowser - idk where this is used
   const openInBrowser = useOpenInBrowser();
 
   const radialGradientProps = {

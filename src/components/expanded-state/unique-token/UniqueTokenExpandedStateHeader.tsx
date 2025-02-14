@@ -262,7 +262,6 @@ const UniqueTokenExpandedStateHeader = ({
   const isENS = asset.asset_contract?.address?.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
-  // openInBrowser - good
   const openInBrowser = useOpenInBrowser();
 
   const assetMenuConfig = useMemo(() => {

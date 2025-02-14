@@ -47,7 +47,6 @@ export const PositionSheet: React.FC = () => {
   } = useRoute<RouteProp<RootStackParamList, 'PositionSheet'>>();
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
-  // openInBrowser - need to test this
   const openInBrowser = useOpenInBrowser();
 
   const positionColor =
@@ -62,7 +61,7 @@ export const PositionSheet: React.FC = () => {
       url: position.dapp.url,
     });
     openInBrowser(position.dapp.url);
-  }, [position.dapp.url, position.type]);
+  }, [openInBrowser, position.dapp.url, position.type]);
 
   return (
     <BackgroundProvider color="surfaceSecondary">

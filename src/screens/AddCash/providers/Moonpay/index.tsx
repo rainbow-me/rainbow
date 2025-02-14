@@ -13,7 +13,6 @@ import * as lang from '@/languages';
 import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 export function Moonpay({ accountAddress, config }: { accountAddress: string; config: ProviderConfig }) {
-  // openInBrowser - good
   const openInBrowser = useOpenInBrowser();
   return (
     <ButtonPressAnimation

@@ -101,8 +101,7 @@ type MaybePromise<T> = T | Promise<T>;
 
 export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }: { fn: () => MaybePromise<T>; logout?: boolean }) => {
   backupsStore.getState().setStatus(CloudBackupState.InProgress);
-  // openInBrowser - rule of hooks issue
-  // const openInBrowser = useOpenInBrowser();
+  // openInBrowser - rule of hooks issue (Alert usage)
 
   if (IS_ANDROID) {
     try {
@@ -143,7 +142,6 @@ export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }:
         [
           {
             onPress: () => {
-              // openInBrowser('https://support.apple.com/en-us/HT204025');
               Linking.openURL('https://support.apple.com/en-us/HT204025');
             },
             text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),

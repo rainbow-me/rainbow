@@ -61,7 +61,6 @@ const SettingsSection = ({
   const { language, nativeCurrency } = useAccountSettings();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
-  // openInBrowser - need to test this
   const openInBrowser = useOpenInBrowser();
 
   const { backupProvider, backups } = backupsStore(state => ({
@@ -86,10 +85,10 @@ const SettingsSection = ({
     });
   }, []);
 
-  // refactor this to use openInBrowser ??
+  // if deeplink, open externally. if not, open in app browser
   const onPressTwitter = useCallback(async () => {
     Linking.canOpenURL(SettingsExternalURLs.twitterDeepLink).then(supported =>
-      supported ? openInBrowser(SettingsExternalURLs.twitterDeepLink) : openInBrowser(SettingsExternalURLs.twitterWebUrl)
+      supported ? Linking.openURL(SettingsExternalURLs.twitterDeepLink) : openInBrowser(SettingsExternalURLs.twitterWebUrl)
     );
   }, [openInBrowser]);
 

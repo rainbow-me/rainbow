@@ -106,7 +106,6 @@ const Tag = ({
   const isURL = typeof originalValue === 'string' && originalValue.toLowerCase().startsWith('https://');
 
   const viewTraitOnNftMarketplaceAction = getViewTraitOnNftMarketplaceAction(marketplaceName);
-  // openInBrowser - good
   const openInBrowser = useOpenInBrowser();
 
   const handlePressMenuItem = useCallback(

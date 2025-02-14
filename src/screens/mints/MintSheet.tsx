@@ -141,7 +141,6 @@ const MintSheet = () => {
   const [mintStatus, setMintStatus] = useState<'none' | 'minting' | 'minted' | 'error'>('none');
   const txRef = useRef<string>();
   const [isGasReady, setIsGasReady] = useState<boolean>(false);
-  // openInBrowser - need to test this
   const openInBrowser = useOpenInBrowser();
 
   const { data: ensAvatar } = useENSAvatar(ensName, {

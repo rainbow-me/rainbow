@@ -29,7 +29,6 @@ export default function CheckIdentifierScreen() {
   const sheetHeight = getHeightForStep(walletBackupStepTypes.check_identifier);
 
   const [isChecking, setIsChecking] = useState(false);
-  // openInBrowser - unsure how to test this
   const openInBrowser = useOpenInBrowser();
 
   const ErrorAlert = () =>

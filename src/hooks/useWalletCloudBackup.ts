@@ -39,7 +39,6 @@ export function getUserError(e: Error) {
 export default function useWalletCloudBackup() {
   const dispatch = useDispatch();
   const { wallets } = useWallets();
-  // openInBrowser - idk if we use this
   const openInBrowser = useOpenInBrowser();
 
   const walletCloudBackup = useCallback(

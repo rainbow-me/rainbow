@@ -27,7 +27,6 @@ type Props = {
 
 export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ transaction, presentToast }) => {
   const { colors } = useTheme();
-  // openInBrowser - need to test this
   const openInBrowser = useOpenInBrowser();
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
   const { network, status, chainId } = transaction;

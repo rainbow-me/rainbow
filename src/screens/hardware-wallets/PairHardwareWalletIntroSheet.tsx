@@ -11,7 +11,6 @@ import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 export const PairHardwareWalletIntroSheet = () => {
   const { navigate } = useNavigation();
-  // openInBrowser - good
   const openInBrowser = useOpenInBrowser();
 
   return (
