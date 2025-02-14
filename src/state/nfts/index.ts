@@ -55,7 +55,7 @@ export const createUserNftsStore = (config: NftFactoryConfig) =>
     config.address?.length
       ? {
           storageKey: `userNfts_${config.address}`,
-          version: 1,
+          version: 0,
         }
       : undefined
   );

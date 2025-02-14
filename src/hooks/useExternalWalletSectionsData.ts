@@ -4,11 +4,14 @@ import useFetchHiddenTokens from './useFetchHiddenTokens';
 import useFetchShowcaseTokens from './useFetchShowcaseTokens';
 import { buildBriefUniqueTokenList } from '@/helpers/assets';
 import { useNftsStore } from '@/state/nfts';
+import { useAccountSettings } from '@/hooks';
 
 export default function useExternalWalletSectionsData({ address, type }: { address?: string; type?: AssetListType }) {
-  const nftsStore = useNftsStore(address ?? '');
-  const uniqueTokens = nftsStore(state => state.nfts);
-  const isInitialLoading = nftsStore(state => state.getStatus().isInitialLoading);
+  const { accountAddress } = useAccountSettings();
+  const isActuallyInternal = address === accountAddress;
+  const nftsStore = useNftsStore(address ?? '', isActuallyInternal);
+  const uniqueTokens = nftsStore(state => state.getData()?.nfts);
+  const isInitialLoading = !uniqueTokens;
   const { data: hiddenTokens } = useFetchHiddenTokens({ address });
   const { data: showcaseTokens } = useFetchShowcaseTokens({ address });
 
