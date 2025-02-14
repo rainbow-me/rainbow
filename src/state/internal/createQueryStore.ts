@@ -69,10 +69,12 @@ interface FetchOptions {
    */
   staleTime?: number;
   /**
-   * Dictates whether, if params are passed to `fetch`, the store's `queryKey` should be updated based on
-   * those params following the success or failure of the fetch operation.
+   * Dictates whether the store's `queryKey` should be updated based on the params used in the fetch operation.
+   * Useful if for instance you want to cache the manually fetched data, but skip updating the store's current
+   * `queryKey` (which determines where `getData()` points to).
    *
-   * Defaults to `true` unless `skipStoreUpdates: true` is set, in which case the default becomes `false`.
+   * ---
+   * Defaults to `true` unless `skipStoreUpdates: true` is specified, in which case the default is `false`.
    */
   updateQueryKey?: boolean;
 }
@@ -402,21 +404,27 @@ const MIN_STALE_TIME = time.seconds(5);
 
 export function createQueryStore<
   TQueryFnData,
-  TParams extends Record<string, unknown> = Record<string, unknown>,
+  TParams extends Record<string, unknown> = Record<string, never>,
   U = unknown,
   TData = TQueryFnData,
 >(
-  config: QueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & PrivateStoreState & U> & {
-    params?: { [K in keyof TParams]: ParamResolvable<TParams[K], TParams, StoreState<TData, TParams> & PrivateStoreState & U, TData> };
-  },
+  config: QueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & PrivateStoreState & U> &
+    ([TParams] extends [Record<string, never>]
+      ? { params?: undefined }
+      : {
+          params: { [K in keyof TParams]: ParamResolvable<TParams[K], TParams, StoreState<TData, TParams> & PrivateStoreState & U, TData> };
+        }),
   customStateCreator: CustomStateCreator<StoreState<TData, TParams> & U, U>,
   persistConfig?: RainbowPersistConfig<StoreState<TData, TParams> & PrivateStoreState & U>
 ): UseBoundStoreWithEqualityFn<StoreApi<StoreState<TData, TParams> & U>>;
 
-export function createQueryStore<TQueryFnData, TParams extends Record<string, unknown> = Record<string, unknown>, TData = TQueryFnData>(
-  config: QueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & PrivateStoreState> & {
-    params?: { [K in keyof TParams]: ParamResolvable<TParams[K], TParams, StoreState<TData, TParams> & PrivateStoreState, TData> };
-  },
+export function createQueryStore<TQueryFnData, TParams extends Record<string, unknown> = Record<string, never>, TData = TQueryFnData>(
+  config: QueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & PrivateStoreState> &
+    ([TParams] extends [Record<string, never>]
+      ? { params?: undefined }
+      : {
+          params: { [K in keyof TParams]: ParamResolvable<TParams[K], TParams, StoreState<TData, TParams> & PrivateStoreState, TData> };
+        }),
   persistConfig?: RainbowPersistConfig<StoreState<TData, TParams> & PrivateStoreState>
 ): UseBoundStoreWithEqualityFn<StoreApi<StoreState<TData, TParams>>>;
 
@@ -429,13 +437,16 @@ export function createQueryStore<TQueryFnData, TParams extends Record<string, un
  */
 export function createQueryStore<
   TQueryFnData,
-  TParams extends Record<string, unknown> = Record<string, unknown>,
+  TParams extends Record<string, unknown> = Record<string, never>,
   U = unknown,
   TData = TQueryFnData,
 >(
-  config: QueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & PrivateStoreState & U> & {
-    params?: { [K in keyof TParams]: ParamResolvable<TParams[K], TParams, StoreState<TData, TParams> & PrivateStoreState & U, TData> };
-  },
+  config: QueryStoreConfig<TQueryFnData, TParams, TData, StoreState<TData, TParams> & PrivateStoreState & U> &
+    ([TParams] extends [Record<string, never>]
+      ? { params?: undefined }
+      : {
+          params: { [K in keyof TParams]: ParamResolvable<TParams[K], TParams, StoreState<TData, TParams> & PrivateStoreState & U, TData> };
+        }),
   arg1?: CustomStateCreator<StoreState<TData, TParams> & U, U> | RainbowPersistConfig<StoreState<TData, TParams> & PrivateStoreState & U>,
   arg2?: RainbowPersistConfig<StoreState<TData, TParams> & PrivateStoreState & U>
 ): UseBoundStoreWithEqualityFn<StoreApi<StoreState<TData, TParams> & U>> {
@@ -600,9 +611,7 @@ export function createQueryStore<
             : isInternalFetch
               ? keepPreviousData
               : // Manual fetch call default
-                skipStoreUpdates
-                ? false
-                : !!params;
+                !skipStoreUpdates;
 
         if (activeFetch?.promise && activeFetch.key === currentQueryKey && isLoading && !options?.force) {
           return activeFetch.promise;
@@ -1032,18 +1041,18 @@ export function createQueryStore<
   return queryStore;
 }
 
-function defaultRetryDelay(retryCount: number) {
-  const baseDelay = time.seconds(5);
-  const multiplier = Math.pow(2, retryCount);
-  return Math.min(baseDelay * multiplier, time.minutes(5));
-}
-
-function getQueryKey<TParams extends Record<string, unknown>>(params: TParams): string {
+export function getQueryKey<TParams extends Record<string, unknown>>(params: TParams): string {
   return JSON.stringify(
     Object.keys(params)
       .sort()
       .map(key => params[key])
   );
+}
+
+function defaultRetryDelay(retryCount: number) {
+  const baseDelay = time.seconds(5);
+  const multiplier = Math.pow(2, retryCount);
+  return Math.min(baseDelay * multiplier, time.minutes(5));
 }
 
 function getCurrentResolvedParams<TParams extends Record<string, unknown>>(

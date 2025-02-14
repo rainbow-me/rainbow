@@ -15,6 +15,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.58] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.58)
+
+### Changed
+
+- Expanded state phase 1 cleanup (#6422)
+- Made improvements to store creator and createQueryStore (#6435, #6439)
+- Bumped wallet connect dependency to latest version (#6434)
+
+### Fixed
+
+- Fixed an issue where the NFT expanded state floor price was displayed incorrectly (#6428)
+- Fixed some issues related to discover search (#6427)
+- Fixed issues around SafeMath (#6431)
+- Fixed some issues around Rainbow Rewards bridge failures (#6433)
+
+## [1.9.57] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.57)
+
+### Fixed
+
+- Improved swaps flow to ensure we're routing them through the appropriate flow (#6436)
+
 ## [1.9.56] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.56)
 
 ### Added
