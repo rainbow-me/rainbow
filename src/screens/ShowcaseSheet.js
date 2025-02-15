@@ -72,10 +72,7 @@ export default function ShowcaseScreen() {
 
   const userNftsStore = useUserNftsStore();
   const uniqueTokens = userNftsStore(state => state.getData?.()?.nfts || []);
-  const isInitialLoading = userNftsStore(state => {
-    const { getData, status } = state;
-    return !getData() && status === 'loading';
-  });
+  const isInitialLoading = userNftsStore(state => state.getStatus().isInitialLoading);
 
   const { layout } = useContext(ModalContext) || {};
 

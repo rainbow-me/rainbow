@@ -7,6 +7,7 @@ import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated
 import { useAccountSettings } from '@/hooks';
 import reduxStore from '@/redux/store';
 import { MMKV } from 'react-native-mmkv';
+import { useEffect, useState } from 'react';
 
 const mmkv = new MMKV();
 
@@ -78,6 +79,28 @@ export function useNftsStore(address: string, internal?: boolean) {
 export function useUserNftsStore<T>(selector: (state: ReturnType<UserNftsStoreType['getState']>) => T) {
   const { accountAddress } = useAccountSettings();
   return useNftsStore(accountAddress, true)(selector);
+}
+
+export function useUniqueTokensProfile(address: string) {
+  const [data, setData] = useState<UniqueAsset[]>([]);
+  const [loading, setLoading] = useState(!!address);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (!address) return;
+
+    setLoading(true);
+    getOrCreateStore(address, true)
+      .getState()
+      .fetch({ address }, { force: true, skipStoreUpdates: true })
+      .then(d => {
+        setData(d?.nfts || []);
+      })
+      .catch(setError)
+      .finally(() => setLoading(false));
+  }, [address]);
+
+  return { data, loading, error };
 }
 
 export type NftSortAction = `${NftCollectionSortCriterion}|${SortDirection}`;
