@@ -8,7 +8,7 @@ export default function useCollectible(uniqueId: string, externalAddress?: strin
   const isExternal = Boolean(externalAddress);
   const address = isExternal ? externalAddress ?? '' : accountAddress;
 
-  const nftsStore = useNftsStore(address, !isExternal);
+  const nftsStore = useNftsStore(address);
   const asset = nftsStore(state => state.getData()?.nftsMap.get(uniqueId));
 
   return useMemo(() => ({ ...asset, isExternal }), [asset, isExternal]);

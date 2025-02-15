@@ -182,7 +182,7 @@ function ImageValue({ ensName, url, value }: { ensName?: string; url?: string; v
   const { data: uniqueTokensProfile } = useUniqueTokensProfile(address ?? '');
 
   const isSelf = address === accountAddress;
-  const uniqueTokens = isSelf ? uniqueTokensAccount : uniqueTokensProfile?.nfts;
+  const uniqueTokens = isSelf ? uniqueTokensAccount : uniqueTokensProfile;
 
   const { onPress } = useOpenENSNFTHandler({ uniqueTokens, value });
   const enableZoomOnPress = !onPress;

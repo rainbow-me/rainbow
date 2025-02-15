@@ -29,14 +29,13 @@ export type UserNftsResponse = {
 };
 type NftFactoryConfig = {
   address: string;
-  internal?: boolean;
 };
 
 export const createUserNftsStore = (config: NftFactoryConfig) =>
   createQueryStore<UserNftsResponse, UserNftsParams>(
     {
       enabled: config.address !== '',
-      cacheTime: config.internal ? time.weeks(1) : time.hours(1),
+      cacheTime: time.weeks(1),
       fetcher: fetchUserNfts,
       params: {
         address: config.address,
@@ -54,7 +53,7 @@ export const createUserNftsStore = (config: NftFactoryConfig) =>
       : undefined
   );
 
-function getOrCreateStore(address: string, internal?: boolean): UserNftsStoreType {
+function getOrCreateStore(address: string): UserNftsStoreType {
   const { cachedAddress, cachedStore } = userNftsStoreManager.getState();
   const rawAddress = address?.length ? address : reduxStore.getState().settings.accountAddress;
 
@@ -67,18 +66,18 @@ function getOrCreateStore(address: string, internal?: boolean): UserNftsStoreTyp
 
   if (cachedStore && cachedAddress === accountAddress) return cachedStore;
 
-  const newStore = createUserNftsStore({ address, internal });
+  const newStore = createUserNftsStore({ address });
   userNftsStoreManager.setState({ cachedStore: newStore, cachedAddress: address });
   return newStore;
 }
 
-export function useNftsStore(address: string, internal?: boolean) {
-  return getOrCreateStore(address, internal);
+export function useNftsStore(address: string) {
+  return getOrCreateStore(address);
 }
 
 export function useUserNftsStore<T>(selector: (state: ReturnType<UserNftsStoreType['getState']>) => T) {
   const { accountAddress } = useAccountSettings();
-  return useNftsStore(accountAddress, true)(selector);
+  return useNftsStore(accountAddress)(selector);
 }
 
 export function useUniqueTokensProfile(address: string) {
@@ -90,7 +89,7 @@ export function useUniqueTokensProfile(address: string) {
     if (!address) return;
 
     setLoading(true);
-    getOrCreateStore(address, true)
+    getOrCreateStore(address)
       .getState()
       .fetch({ address }, { force: true, skipStoreUpdates: true })
       .then(d => {
