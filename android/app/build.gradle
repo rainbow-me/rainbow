@@ -122,6 +122,10 @@ android {
         }
     }
 
+    androidResources {
+        noCompress += ["bundle"]
+    }
+
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
