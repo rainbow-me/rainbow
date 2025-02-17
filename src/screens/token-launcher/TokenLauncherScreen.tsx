@@ -56,7 +56,7 @@ export function TokenLauncherScreen() {
               <Animated.View style={[infoStepAnimatedStyle, { width: screenWidth }]}>
                 <InfoInputStep />
               </Animated.View>
-              <Animated.View style={[overviewStepAnimatedStyle, { width: screenWidth }]}>
+              <Animated.View style={[overviewStepAnimatedStyle, { width: screenWidth, height: '100%' }]}>
                 <OverviewStep />
               </Animated.View>
               <TokenLauncherHeader />
