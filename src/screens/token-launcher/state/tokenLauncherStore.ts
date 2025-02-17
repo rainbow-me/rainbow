@@ -8,6 +8,7 @@ import { memoFn } from '@/utils/memoFn';
 import { calculateTokenomics } from '../helpers/calculateTokenomics';
 import store from '@/redux/store';
 import { GasSpeed } from '@/__swaps__/types/gas';
+import { formatCurrency } from '@/helpers/strings';
 
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
@@ -28,10 +29,13 @@ interface TokenLauncherStore {
   airdropRecipients: {
     type: 'group' | 'address';
     id: string;
+    label: string;
     value: string;
+    count: number;
   }[];
   step: 'info' | 'overview' | 'success';
   stepIndex: SharedValue<number>;
+  stepSharedValue: SharedValue<string>;
   ethPriceUsd: number;
   ethPriceNative: number;
   gasSpeed: GasSpeed;
@@ -59,7 +63,7 @@ interface TokenLauncherStore {
   setCreatorBuyInEth: (amount: number) => void;
   setDescription: (description: string) => void;
   setStep: (step: 'info' | 'overview' | 'success') => void;
-  addAirdropGroup: (group: string) => void;
+  addAirdropGroup: ({ groupId, label, count }: { groupId: string; label: string; count: number }) => void;
   addOrEditAirdropAddress: ({ id, address }: { id: string; address: string }) => void;
   deleteAirdropRecipient: (id: string) => void;
   setEthPriceUsd: (ethPriceUsd: number) => void;
@@ -88,6 +92,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   ethPriceNative: 0,
   step: 'info' as const,
   stepIndex: makeMutable(0),
+  stepSharedValue: makeMutable('info'),
   gasSpeed: GasSpeed.FAST,
   // derived state
   formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 0, 'long'),
@@ -100,7 +105,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
     const targetPriceNative = targetPriceEth && ethPriceNative ? tokenomics?.price.targetEth * ethPriceNative : 0;
 
-    return convertAmountToNativeDisplay(targetPriceNative, nativeCurrency);
+    return formatCurrency(targetPriceNative, {
+      currency: nativeCurrency,
+    });
   },
   tokenMarketCap: () => {
     const { nativeCurrency } = store.getState().settings;
@@ -167,11 +174,15 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   setStep: (step: 'info' | 'overview' | 'success') => {
     const newIndex = step === 'info' ? 0 : 1;
     // get().stepIndex.value = newIndex;
+    // TODO:
     get().stepIndex.value = withTiming(newIndex, TIMING_CONFIGS.slowFadeConfig);
+    get().stepSharedValue.value = step;
     set({ step });
   },
-  addAirdropGroup: (group: string) => {
-    set({ airdropRecipients: [...get().airdropRecipients, { type: 'group', id: Math.random().toString(), value: group }] });
+  addAirdropGroup: ({ groupId, label, count }: { groupId: string; label: string; count: number }) => {
+    set({
+      airdropRecipients: [...get().airdropRecipients, { type: 'group', id: Math.random().toString(), value: groupId, label, count }],
+    });
   },
   addOrEditAirdropAddress: ({ id, address }: { id: string; address: string }) => {
     const { airdropRecipients } = get();
@@ -180,7 +191,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     if (isExistingRecipient) {
       set({ airdropRecipients: airdropRecipients.map(a => (a.id === id ? { ...a, value: address } : a)) });
     } else {
-      set({ airdropRecipients: [...airdropRecipients, { type: 'address', id, value: address }] });
+      // TODO: abbreviate if not ens
+      const label = address;
+      set({ airdropRecipients: [...airdropRecipients, { type: 'address', id, value: address, label, count: 1 }] });
     }
   },
   deleteAirdropRecipient: (id: string) => {

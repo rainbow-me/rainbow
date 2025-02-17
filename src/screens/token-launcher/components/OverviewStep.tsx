@@ -1,6 +1,236 @@
 import React from 'react';
-import { Box, Text } from '@/design-system';
+import { Box, Text, TextShadow } from '@/design-system';
+import { TokenLogo } from './TokenLogo';
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH } from '../constants';
+import { abbreviateNumber, convertAmountToPercentageDisplay } from '@/helpers/utilities';
+import { ScrollView } from 'react-native';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
+import { useAccountProfile } from '@/hooks';
+import { LINK_SETTINGS } from './LinksSection';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { TOKEN_LAUNCHER_HEADER_HEIGHT } from './TokenLauncherHeader';
 
+const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
+
+function TokenAllocationCard() {
+  const { accentColors } = useTokenLauncherContext();
+  const { accountColor, accountImage, accountAddress } = useAccountProfile();
+
+  const allocationBips = useTokenLauncherStore(state => state.allocationBips());
+  const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
+  const bipsPerAirdropRecipient = allocationBips.airdrop / airdropRecipients.length;
+
+  return (
+    <Box gap={20} backgroundColor={CARD_BACKGROUND_COLOR} padding={'20px'} borderRadius={FIELD_BORDER_RADIUS} width={'full'}>
+      <Text size="17pt" weight="heavy" color={'label'}>
+        {'Token allocation'}
+      </Text>
+      <Box gap={4}>
+        <Box
+          flexDirection="row"
+          alignItems="center"
+          height={44}
+          paddingHorizontal={'16px'}
+          borderRadius={16}
+          borderWidth={FIELD_BORDER_WIDTH}
+          borderColor={{ custom: accentColors.opacity4 }}
+        >
+          <Box flexGrow={1} flexDirection="row" alignItems="center" gap={10}>
+            <AddressAvatar url={accountImage} address={accountAddress} label={accountAddress} color={accountColor} size={20} />
+            <Text size="17pt" weight="medium" color={'labelSecondary'}>
+              {'Your share'}
+            </Text>
+          </Box>
+          <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
+            {`${convertAmountToPercentageDisplay(allocationBips.creator / 100, 2, 2, false)}`}
+          </Text>
+        </Box>
+        {airdropRecipients.map(recipient => {
+          return (
+            <Box
+              key={recipient.id}
+              height={44}
+              flexDirection="row"
+              justifyContent="space-between"
+              alignItems="center"
+              paddingHorizontal={'16px'}
+              backgroundColor={accentColors.opacity3}
+              borderRadius={16}
+              borderWidth={FIELD_BORDER_WIDTH}
+              borderColor={{ custom: accentColors.opacity2 }}
+            >
+              <Box flexDirection="row" alignItems="center" gap={8}>
+                <Text size="17pt" weight="medium" color={'labelSecondary'}>
+                  {recipient.label}
+                </Text>
+                {recipient.type === 'group' && (
+                  <Box borderRadius={7} borderWidth={1.667} padding={'4px'} justifyContent="center" alignItems="center">
+                    <Text size="11pt" weight="heavy" color={'labelSecondary'}>
+                      {abbreviateNumber(recipient.count, 1)}
+                    </Text>
+                  </Box>
+                )}
+              </Box>
+              <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
+                {`${convertAmountToPercentageDisplay(bipsPerAirdropRecipient / 100, 2, 2, false)}`}
+              </Text>
+            </Box>
+          );
+        })}
+      </Box>
+    </Box>
+  );
+}
+
+function AboutCard() {
+  const { accentColors } = useTokenLauncherContext();
+
+  const description = useTokenLauncherStore(state => state.description);
+  const links = useTokenLauncherStore(state => state.links);
+
+  return (
+    <Box gap={20} backgroundColor={CARD_BACKGROUND_COLOR} padding={'20px'} borderRadius={FIELD_BORDER_RADIUS} width={'full'}>
+      <Text size="17pt" weight="heavy" color={'label'}>
+        {'About'}
+      </Text>
+      {description !== '' && (
+        <Text size="17pt" weight="medium" color={'labelSecondary'}>
+          {description}
+        </Text>
+      )}
+      {links.length > 0 && (
+        <Box gap={4}>
+          {links.map(link => {
+            const { Icon, displayName } = LINK_SETTINGS[link.type as keyof typeof LINK_SETTINGS];
+            return (
+              <Box
+                key={link.input}
+                height={36}
+                backgroundColor={accentColors.opacity3}
+                borderRadius={14}
+                borderWidth={THICK_BORDER_WIDTH}
+                paddingHorizontal={'12px'}
+                borderColor={{ custom: accentColors.opacity2 }}
+                flexDirection="row"
+                alignItems="center"
+                gap={12}
+              >
+                <Icon />
+                <Text style={{ flex: 1 }} size="17pt" weight="medium" color={'labelSecondary'}>
+                  {displayName}
+                </Text>
+                <Text size="17pt" weight="medium" color={{ custom: accentColors.opacity100 }}>
+                  {link.input}
+                </Text>
+              </Box>
+            );
+          })}
+        </Box>
+      )}
+    </Box>
+  );
+}
 export function OverviewStep() {
-  return <Box style={{ paddingTop: 100, flex: 1, alignSelf: 'stretch' }}></Box>;
+  const { accentColors } = useTokenLauncherContext();
+  const tokenSymbol = useTokenLauncherStore(state => state.symbol);
+  const tokenName = useTokenLauncherStore(state => state.name);
+  const tokenPrice = useTokenLauncherStore(state => state.tokenPrice());
+  const tokenMarketCap = useTokenLauncherStore(state => state.tokenMarketCap());
+  const tokenSupply = useTokenLauncherStore(state => state.totalSupply);
+  const tokenChainId = useTokenLauncherStore(state => state.chainId);
+
+  const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[tokenChainId];
+
+  return (
+    <ScrollView
+      contentOffset={{ x: 0, y: -TOKEN_LAUNCHER_HEADER_HEIGHT }}
+      contentInset={{ top: TOKEN_LAUNCHER_HEADER_HEIGHT }}
+      contentContainerStyle={{
+        paddingBottom: 24,
+      }}
+    >
+      <Box width="full" paddingHorizontal={'20px'} alignItems="center">
+        <TokenLogo />
+        <Box alignItems="center" paddingTop={'20px'} gap={14}>
+          <TextShadow blur={12} shadowOpacity={0.24}>
+            <Text size="44pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
+              {`$${tokenSymbol}`}
+            </Text>
+          </TextShadow>
+          <Text size="20pt" weight="bold" color={'labelSecondary'}>
+            {tokenName}
+          </Text>
+        </Box>
+        <Box gap={12} flexDirection="row" justifyContent="space-between" paddingVertical={'20px'}>
+          <Box gap={12} flexGrow={1} padding={'20px'} backgroundColor={accentColors.opacity12} borderRadius={FIELD_BORDER_RADIUS}>
+            <TextShadow blur={12} shadowOpacity={0.24}>
+              <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
+                {tokenPrice}
+              </Text>
+            </TextShadow>
+            <Text size="15pt" weight="bold" color={'labelSecondary'}>
+              {'Initial price'}
+            </Text>
+          </Box>
+          <Box gap={12} flexGrow={1} padding={'20px'} backgroundColor={accentColors.opacity12} borderRadius={FIELD_BORDER_RADIUS}>
+            <TextShadow blur={12} shadowOpacity={0.24}>
+              <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
+                {tokenMarketCap}
+              </Text>
+            </TextShadow>
+            <Text size="15pt" weight="bold" color={'labelSecondary'}>
+              {'Market cap'}
+            </Text>
+          </Box>
+        </Box>
+        <Box width={'full'} gap={8}>
+          <Box
+            width={'full'}
+            height={60}
+            backgroundColor={CARD_BACKGROUND_COLOR}
+            flexDirection="row"
+            justifyContent="space-between"
+            alignItems="center"
+            paddingVertical={'16px'}
+            paddingHorizontal={'20px'}
+            borderRadius={FIELD_BORDER_RADIUS}
+          >
+            <Text size="17pt" weight="heavy" color={'label'}>
+              {'Total Supply'}
+            </Text>
+            <Text size="17pt" weight="bold" style={{ textTransform: 'capitalize' }} color={{ custom: accentColors.opacity100 }}>
+              {abbreviateNumber(tokenSupply, 0, 'long')}
+            </Text>
+          </Box>
+          <Box
+            width={'full'}
+            height={60}
+            backgroundColor={CARD_BACKGROUND_COLOR}
+            flexDirection="row"
+            justifyContent="space-between"
+            alignItems="center"
+            paddingVertical={'16px'}
+            paddingHorizontal={'20px'}
+            borderRadius={FIELD_BORDER_RADIUS}
+          >
+            <Text size="17pt" weight="heavy" color={'label'}>
+              {'Network'}
+            </Text>
+            <Box flexDirection="row" alignItems="center" gap={8}>
+              <ChainImage position="relative" chainId={tokenChainId} size={16} />
+              <Text color={{ custom: accentColors.opacity100 }} size="17pt" weight="heavy" style={{ textTransform: 'capitalize' }}>
+                {networkLabel}
+              </Text>
+            </Box>
+          </Box>
+          <AboutCard />
+          <TokenAllocationCard />
+        </Box>
+      </Box>
+    </ScrollView>
+  );
 }

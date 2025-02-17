@@ -21,7 +21,7 @@ import { Grid } from './Grid';
 const ANIMATION_CONFIG = SPRING_CONFIGS.slowSpring;
 
 // TODO: add discord (maybe)
-const LINK_SETTINGS = {
+export const LINK_SETTINGS = {
   x: {
     Icon: () => <Icon name="x" color={'white'} size={26} />,
     iconBackgroundColor: '#000000',

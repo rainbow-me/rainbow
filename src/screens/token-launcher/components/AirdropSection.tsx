@@ -97,7 +97,7 @@ function AirdropGroups() {
             }
 
             return (
-              <ButtonPressAnimation onPress={() => addAirdropGroup(item.groupId)}>
+              <ButtonPressAnimation onPress={() => addAirdropGroup({ groupId: item.groupId, label: item.label, count: item.count })}>
                 <Box
                   width={154.5}
                   borderWidth={FIELD_BORDER_WIDTH}
