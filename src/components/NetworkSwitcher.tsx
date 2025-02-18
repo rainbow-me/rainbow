@@ -22,11 +22,12 @@ import * as i18n from '@/languages';
 import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
 import chroma from 'chroma-js';
-import { PropsWithChildren, useEffect } from 'react';
-import React, { Pressable, StyleSheet, View } from 'react-native';
+import { PropsWithChildren, useCallback, useEffect } from 'react';
+import React, { LayoutChangeEvent, Pressable, StyleSheet, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import Animated, {
   Easing,
   FadeIn,
@@ -64,6 +65,7 @@ import { AnimatedTextIcon } from './AnimatedComponents/AnimatedTextIcon';
 
 const t = i18n.l.network_switcher;
 const MAX_HEIGHT = deviceUtils.dimensions.height * 0.85 - safeAreaInsetValues.top;
+const FOOTER_HEIGHT = 91;
 
 const translations = {
   edit: i18n.t(t.edit),
@@ -353,6 +355,8 @@ const ITEM_HEIGHT = 48;
 const SEPARATOR_HEIGHT = 68;
 const SEPARATOR_HEIGHT_NETWORK_CHIP = 18;
 
+const SHEET_WIDTH = deviceUtils.dimensions.width - 16;
+
 const ALL_NETWORKS_BADGE_SIZE = 16;
 const THICKER_BORDER_WIDTH = 5 / 3;
 
@@ -557,16 +561,20 @@ function EmptyUnpinnedPlaceholder({
 
 function NetworksGrid({
   editing,
+  expanded,
   selected,
   setSelected,
   allowedNetworks,
   scrollY,
+  scrollViewHeight,
 }: {
   editing: SharedValue<boolean>;
+  expanded: SharedValue<boolean>;
   selected: SharedValue<ChainId | undefined>;
   setSelected: (chainId: ChainId | undefined) => void;
   allowedNetworks?: ChainId[];
   scrollY: SharedValue<number>;
+  scrollViewHeight: SharedValue<number>;
 }) {
   let initialPinned = networkSwitcherStore.getState().pinnedNetworks;
   const sortedSupportedChainIds = useBackendNetworksStore.getState().getSortedSupportedChainIds();
@@ -597,7 +605,6 @@ function NetworksGrid({
     };
   }, [networks]);
 
-  const expanded = useSharedValue(false);
   const dragging = useSharedValue<DraggingState | null>(null);
   const isUnpinnedHidden = useDerivedValue(() => !expanded.value && !editing.value);
 
@@ -613,6 +620,10 @@ function NetworksGrid({
       [Section.unpinned]: { y: pinnedHeight + (showExpandButtonAsNetworkChip.value ? SEPARATOR_HEIGHT_NETWORK_CHIP : SEPARATOR_HEIGHT) },
     };
   });
+
+  const onLayout = useCallback((event: LayoutChangeEvent) => {
+    scrollViewHeight.value = event.nativeEvent.layout.height;
+  }, []);
 
   const containerHeight = useDerivedValue(() => {
     const length = networks.value[Section.unpinned].length;
@@ -716,6 +727,7 @@ function NetworksGrid({
       bounces={true}
       style={{ overflow: 'hidden' }}
       contentContainerStyle={{ overflow: 'hidden' }}
+      onLayout={onLayout}
     >
       <GestureDetector gesture={gridGesture}>
         <Animated.View style={[containerStyle, { marginTop: 14, overflow: 'hidden' }]}>
@@ -763,22 +775,49 @@ function NetworksGrid({
 function Sheet({
   children,
   editing,
+  expanded,
   onClose,
   canEdit,
+  scrollY,
+  scrollViewHeight,
 }: PropsWithChildren<{
   editing: SharedValue<boolean>;
+  expanded: SharedValue<boolean>;
   onClose: VoidFunction;
   canEdit: boolean;
+  scrollY: SharedValue<number>;
+  scrollViewHeight: SharedValue<number>;
 }>) {
   const { isDarkMode } = useColorMode();
   const surfacePrimary = useBackgroundColor('surfacePrimary');
   const backgroundColor = isDarkMode ? '#191A1C' : surfacePrimary;
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
+  const containerHeight = useSharedValue(0);
+
+  const onLayout = useCallback((event: LayoutChangeEvent) => {
+    containerHeight.value = event.nativeEvent.layout.height;
+  }, []);
+
   // make sure the onClose function is called when the sheet unmounts
   useEffect(() => {
     return () => onClose?.();
   }, [onClose]);
+
+  const gradientStyle = useAnimatedStyle(() => {
+    const isAtBottom = scrollY.value + scrollViewHeight.value >= containerHeight.value;
+    const distanceFromBottom = containerHeight.value - (scrollY.value + scrollViewHeight.value);
+    const fadeStartDistance = FOOTER_HEIGHT; // Start fading when FOOTER_HEIGHT px from bottom
+
+    let fadeOpacity = 1;
+    if (distanceFromBottom < fadeStartDistance) {
+      fadeOpacity = Math.max(0, distanceFromBottom / fadeStartDistance);
+    }
+
+    return {
+      opacity: withTiming(expanded.value ? (isAtBottom ? 0 : fadeOpacity) : 0, TIMING_CONFIGS.buttonPressConfig),
+    };
+  });
 
   return (
     <>
@@ -790,9 +829,21 @@ function Sheet({
             borderColor: isDarkMode ? separatorSecondary : globalColors.white100,
           },
         ]}
+        onLayout={onLayout}
       >
         <Header canEdit={canEdit} editing={editing} />
         {children}
+        <Animated.View
+          style={[gradientStyle, { height: FOOTER_HEIGHT, position: 'absolute', bottom: 0, width: SHEET_WIDTH, pointerEvents: 'none' }]}
+        >
+          <EasingGradient
+            endColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
+            endOpacity={1}
+            startColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
+            startOpacity={0}
+            style={{ height: '100%', position: 'absolute', width: '100%' }}
+          />
+        </Animated.View>
       </Box>
       <TapToDismiss />
     </>
@@ -805,19 +856,23 @@ export function NetworkSelector() {
   } = useRoute<RouteProp<RootStackParamList, 'NetworkSelector'>>();
 
   const editing = useSharedValue(false);
+  const expanded = useSharedValue(false);
   const scrollY = useSharedValue(0);
+  const scrollViewHeight = useSharedValue(0);
   const selectedNetwork = useSharedValue(typeof selected === 'number' ? selected : selected?.value);
 
   return (
-    <Sheet editing={editing} onClose={onClose} canEdit={canEdit}>
+    <Sheet expanded={expanded} editing={editing} onClose={onClose} canEdit={canEdit} scrollY={scrollY} scrollViewHeight={scrollViewHeight}>
       {canEdit && <CustomizeNetworksBanner editing={editing} />}
       {canSelectAllNetworks && <AllNetworksSection editing={editing} selected={selectedNetwork} setSelected={setSelected} />}
       <NetworksGrid
         editing={editing}
+        expanded={expanded}
         selected={selectedNetwork}
         setSelected={setSelected}
         allowedNetworks={allowedNetworks}
         scrollY={scrollY}
+        scrollViewHeight={scrollViewHeight}
       />
     </Sheet>
   );
@@ -960,7 +1015,7 @@ const sx = StyleSheet.create({
     pointerEvents: 'box-none',
     position: 'absolute',
     right: 8,
-    width: deviceUtils.dimensions.width - 16,
+    width: SHEET_WIDTH,
     maxHeight: MAX_HEIGHT,
     zIndex: 30000,
   },
