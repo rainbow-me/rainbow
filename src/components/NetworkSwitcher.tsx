@@ -66,6 +66,7 @@ import { useNavigation } from '@/navigation';
 
 const t = i18n.l.network_switcher;
 const MAX_HEIGHT = deviceUtils.dimensions.height * 0.85 - safeAreaInsetValues.top;
+const HEADER_HEIGHT = 66;
 const FOOTER_HEIGHT = 91;
 
 const translations = {
@@ -101,12 +102,12 @@ function EditButton({ editing }: { editing: SharedValue<boolean> }) {
   );
 }
 
-function Header({ canEdit, editing }: { canEdit: boolean; editing: SharedValue<boolean> }) {
+function Header({ title, canEdit, editing }: { title: string; canEdit: boolean; editing: SharedValue<boolean> }) {
   const separatorTertiary = useForegroundColor('separatorTertiary');
   const fill = useForegroundColor('fill');
 
-  const title = useDerivedValue(() => {
-    return editing.value ? translations.edit : translations.network;
+  const titleValue = useDerivedValue(() => {
+    return editing.value ? translations.edit : title;
   });
 
   return (
@@ -115,7 +116,7 @@ function Header({ canEdit, editing }: { canEdit: boolean; editing: SharedValue<b
 
       <View style={sx.headerContent}>
         <AnimatedText align="center" color="label" size="20pt" style={{ width: '100%' }} weight="heavy">
-          {title}
+          {titleValue}
         </AnimatedText>
 
         {canEdit && <EditButton editing={editing} />}
@@ -248,10 +249,12 @@ const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color?: string,
 };
 
 function AllNetworksOption({
+  canSelect,
   selected,
   setSelected,
   goBackOnSelect,
 }: {
+  canSelect: boolean;
   selected: SharedValue<ChainId | undefined>;
   setSelected: (chainId: ChainId | undefined) => void;
   goBackOnSelect?: boolean;
@@ -279,10 +282,11 @@ function AllNetworksOption({
     if (goBackOnSelect) {
       runOnJS(goBack)();
     }
-  }, []);
+  }, [goBack]);
 
   return (
     <GestureHandlerButton
+      disabled={!canSelect}
       hapticTrigger="tap-end"
       onPressWorklet={onSelectAllNetworks}
       scaleTo={0.94}
@@ -310,11 +314,13 @@ function AllNetworksOption({
 }
 
 function AllNetworksSection({
+  canSelect,
   editing,
   selected,
   setSelected,
   goBackOnSelect,
 }: {
+  canSelect: boolean;
   editing: SharedValue<boolean>;
   selected: SharedValue<ChainId | undefined>;
   setSelected: (chainId: ChainId | undefined) => void;
@@ -334,7 +340,7 @@ function AllNetworksSection({
 
   return (
     <Animated.View style={[sx.allNetworksContainer, animatedStyle]}>
-      <AllNetworksOption selected={selected} setSelected={setSelected} goBackOnSelect={goBackOnSelect} />
+      <AllNetworksOption canSelect={canSelect} selected={selected} setSelected={setSelected} goBackOnSelect={goBackOnSelect} />
       <Inset horizontal="10px">
         <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
       </Inset>
@@ -503,7 +509,7 @@ function SectionSeparator({
       return {
         backgroundColor: isDarkMode ? globalColors.white10 : globalColors.grey20,
         borderColor: '#F5F8FF05',
-        height: ITEM_HEIGHT,
+        height: visible.value ? ITEM_HEIGHT : 0,
         opacity: visible.value ? 1 : 0,
         transform: [{ translateX: position.x }, { translateY: position.y }],
         width: ITEM_WIDTH,
@@ -513,7 +519,7 @@ function SectionSeparator({
     return {
       backgroundColor: 'transparent',
       borderColor: 'transparent',
-      height: SEPARATOR_HEIGHT,
+      height: visible.value ? SEPARATOR_HEIGHT : 0,
       opacity: visible.value ? 1 : 0,
       transform: [
         { translateY: sectionsOffsets.value[Section.separator].y },
@@ -571,27 +577,10 @@ function EmptyUnpinnedPlaceholder({
   );
 }
 
-function NetworksGrid({
-  editing,
-  expanded,
-  selected,
-  setSelected,
-  allowedNetworks,
-  scrollY,
-  scrollViewHeight,
-  goBackOnSelect,
-}: {
-  editing: SharedValue<boolean>;
-  expanded: SharedValue<boolean>;
-  selected: SharedValue<ChainId | undefined>;
-  setSelected: (chainId: ChainId | undefined) => void;
-  allowedNetworks?: ChainId[];
-  scrollY: SharedValue<number>;
-  scrollViewHeight: SharedValue<number>;
-  goBackOnSelect?: boolean;
-}) {
-  const { goBack } = useNavigation();
-
+function getInitialNetworksState(
+  fillPinnedSection: boolean,
+  allowedNetworks?: ChainId[]
+): Record<Section.pinned | Section.unpinned, ChainId[]> {
   let initialPinned = networkSwitcherStore.getState().pinnedNetworks;
   const sortedSupportedChainIds = useBackendNetworksStore.getState().getSortedSupportedChainIds();
   let initialUnpinned = sortedSupportedChainIds.filter(chainId => !initialPinned.includes(chainId));
@@ -601,18 +590,70 @@ function NetworksGrid({
     initialUnpinned = initialUnpinned.filter(chainId => allowedNetworks.includes(chainId));
   }
 
+  if (fillPinnedSection) {
+    const maxPinnedNetworks = Math.floor((MAX_HEIGHT - HEADER_HEIGHT - FOOTER_HEIGHT) / (ITEM_HEIGHT + ITEM_GAP)) * 2;
+
+    if (initialPinned.length > maxPinnedNetworks) {
+      // Move excess networks to unpinned
+      const networksToUnpin = initialPinned.slice(maxPinnedNetworks);
+      initialUnpinned = [...networksToUnpin, ...initialUnpinned];
+      initialPinned = initialPinned.slice(0, maxPinnedNetworks);
+    } else {
+      // Fill remaining space in pinned section
+      const networksToAdd = Math.min(maxPinnedNetworks - initialPinned.length, initialUnpinned.length);
+      const networksBeingMoved = initialUnpinned.slice(0, networksToAdd);
+      initialUnpinned = initialUnpinned.slice(networksToAdd);
+      initialPinned = [...initialPinned, ...networksBeingMoved];
+    }
+  }
+
+  return {
+    [Section.pinned]: initialPinned,
+    [Section.unpinned]: initialUnpinned,
+  };
+}
+
+function NetworksGrid({
+  canSelect,
+  editing,
+  expanded,
+  selected,
+  setSelected,
+  allowedNetworks,
+  scrollY,
+  scrollViewHeight,
+  goBackOnSelect,
+  fillPinnedSection,
+}: {
+  canSelect: boolean;
+  editing: SharedValue<boolean>;
+  expanded: SharedValue<boolean>;
+  selected: SharedValue<ChainId | undefined>;
+  setSelected: (chainId: ChainId | undefined) => void;
+  allowedNetworks?: ChainId[];
+  scrollY: SharedValue<number>;
+  scrollViewHeight: SharedValue<number>;
+  goBackOnSelect?: boolean;
+  fillPinnedSection?: boolean;
+}) {
+  const { goBack } = useNavigation();
+  const sortedSupportedChainIds = useBackendNetworksStore.getState().getSortedSupportedChainIds();
+
+  const networks = useSharedValue(getInitialNetworksState(fillPinnedSection ?? false, allowedNetworks));
+
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
       scrollY.value = event.contentOffset.y;
     },
   });
 
-  const networks = useSharedValue({ [Section.pinned]: initialPinned, [Section.unpinned]: initialUnpinned });
-
   useEffect(() => {
     // persists pinned networks when closing the sheet
     // should be the only time this component is unmounted
     return () => {
+      // don't persist the pinned networks for sheets where we modify the pinned networks (e.g. - WalletConnectApprovalSheet)
+      if (fillPinnedSection) return;
+
       if (networks.value[Section.pinned].length > 0) {
         networkSwitcherStore.setState({ pinnedNetworks: networks.value[Section.pinned] });
       } else {
@@ -646,30 +687,35 @@ function NetworksGrid({
     const paddingBottom = 18;
     const unpinnedHeight = isUnpinnedHidden.value
       ? length === 0
-        ? -SEPARATOR_HEIGHT + paddingBottom
+        ? fillPinnedSection
+          ? paddingBottom
+          : -SEPARATOR_HEIGHT + paddingBottom
         : 0
       : length === 0
         ? ITEM_HEIGHT + paddingBottom
         : Math.ceil((length + (editing.value ? 1 : 0)) / 2) * (ITEM_HEIGHT + ITEM_GAP) - ITEM_GAP + paddingBottom;
-    const height = sectionsOffsets.value[Section.unpinned].y + unpinnedHeight;
-    return height;
+
+    return sectionsOffsets.value[Section.unpinned].y + unpinnedHeight;
   });
 
   const containerStyle = useAnimatedStyle(() => ({
     height: withSpring(containerHeight.value, SPRING_CONFIGS.springConfig),
   }));
 
-  const onSelectNetwork = useCallback((chainId: ChainId) => {
-    'worklet';
+  const onSelectNetwork = useCallback(
+    (chainId: ChainId) => {
+      'worklet';
 
-    triggerHaptics('selection');
-    selected.value = chainId;
-    runOnJS(setSelected)(chainId);
+      triggerHaptics('selection');
+      selected.value = chainId;
+      runOnJS(setSelected)(chainId);
 
-    if (goBackOnSelect) {
-      runOnJS(goBack)();
-    }
-  }, []);
+      if (goBackOnSelect) {
+        runOnJS(goBack)();
+      }
+    },
+    [goBack]
+  );
 
   const dragNetwork = Gesture.Pan()
     .activateAfterLongPress(180)
@@ -732,6 +778,7 @@ function NetworksGrid({
     });
 
   const tapNetwork = Gesture.Tap()
+    .enabled(canSelect)
     .onTouchesDown((e, s) => {
       if (editing.value) return s.fail();
     })
@@ -757,7 +804,7 @@ function NetworksGrid({
     >
       <GestureDetector gesture={gridGesture}>
         <Animated.View style={[containerStyle, { marginTop: 14, overflow: 'hidden' }]}>
-          {initialPinned.map(chainId => (
+          {networks.value[Section.pinned].map(chainId => (
             <Draggable
               key={chainId}
               networks={networks}
@@ -780,7 +827,7 @@ function NetworksGrid({
 
           <EmptyUnpinnedPlaceholder sectionsOffsets={sectionsOffsets} networks={networks} isUnpinnedHidden={isUnpinnedHidden} />
 
-          {initialUnpinned.map(chainId => (
+          {networks.value[Section.unpinned].map(chainId => (
             <Draggable
               key={chainId}
               networks={networks}
@@ -799,6 +846,7 @@ function NetworksGrid({
 }
 
 function Sheet({
+  title,
   children,
   editing,
   expanded,
@@ -807,6 +855,7 @@ function Sheet({
   scrollY,
   scrollViewHeight,
 }: PropsWithChildren<{
+  title: string;
   editing: SharedValue<boolean>;
   expanded: SharedValue<boolean>;
   onClose: VoidFunction;
@@ -859,7 +908,7 @@ function Sheet({
         ]}
         onLayout={onLayout}
       >
-        <Header canEdit={canEdit} editing={editing} />
+        <Header title={title} canEdit={canEdit} editing={editing} />
         {children}
         <Animated.View
           style={[gradientStyle, { height: FOOTER_HEIGHT, position: 'absolute', bottom: 0, width: SHEET_WIDTH, pointerEvents: 'none' }]}
@@ -880,7 +929,18 @@ function Sheet({
 
 export function NetworkSelector() {
   const {
-    params: { onClose = noop, selected, canEdit = true, canSelectAllNetworks = true, setSelected, allowedNetworks, goBackOnSelect = false },
+    params: {
+      onClose = noop,
+      selected,
+      canSelect = true,
+      canEdit = true,
+      canSelectAllNetworks = true,
+      setSelected,
+      allowedNetworks,
+      goBackOnSelect = false,
+      title = translations.network,
+      fillPinnedSection = false,
+    },
   } = useRoute<RouteProp<RootStackParamList, 'NetworkSelector'>>();
 
   const editing = useSharedValue(false);
@@ -890,12 +950,27 @@ export function NetworkSelector() {
   const selectedNetwork = useSharedValue(typeof selected === 'number' ? selected : selected?.value);
 
   return (
-    <Sheet expanded={expanded} editing={editing} onClose={onClose} canEdit={canEdit} scrollY={scrollY} scrollViewHeight={scrollViewHeight}>
+    <Sheet
+      title={title}
+      expanded={expanded}
+      editing={editing}
+      onClose={onClose}
+      canEdit={canEdit}
+      scrollY={scrollY}
+      scrollViewHeight={scrollViewHeight}
+    >
       {canEdit && <CustomizeNetworksBanner editing={editing} />}
       {canSelectAllNetworks && (
-        <AllNetworksSection editing={editing} selected={selectedNetwork} setSelected={setSelected} goBackOnSelect={goBackOnSelect} />
+        <AllNetworksSection
+          canSelect={canSelect}
+          editing={editing}
+          selected={selectedNetwork}
+          setSelected={setSelected}
+          goBackOnSelect={goBackOnSelect}
+        />
       )}
       <NetworksGrid
+        canSelect={canSelect}
         editing={editing}
         expanded={expanded}
         selected={selectedNetwork}
@@ -904,6 +979,7 @@ export function NetworkSelector() {
         scrollY={scrollY}
         scrollViewHeight={scrollViewHeight}
         goBackOnSelect={goBackOnSelect}
+        fillPinnedSection={fillPinnedSection}
       />
     </Sheet>
   );
@@ -986,7 +1062,7 @@ const sx = StyleSheet.create({
   headerContainer: {
     alignItems: 'center',
     borderBottomWidth: 1,
-    height: 66,
+    height: HEADER_HEIGHT,
     paddingTop: 20,
     width: '100%',
   },
