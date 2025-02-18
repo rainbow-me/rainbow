@@ -17,7 +17,7 @@ const Label = styled(Text).attrs(({ color, size = fonts.size.larger, theme: { co
   weight,
 }))({});
 
-function useBiometryIconString({ showIcon, isHardwareWallet }) {
+export function useBiometryIconString({ showIcon, isHardwareWallet }) {
   const biometryType = useBiometryType();
 
   const isFace = biometryType === Face || biometryType === FaceID;
