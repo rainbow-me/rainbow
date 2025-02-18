@@ -1,8 +1,16 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback } from 'react';
+import { StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
-import styled from '@/styled-thing';
-import { position } from '@/styles';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  withSequence,
+  cancelAnimation,
+  useSharedValue,
+  useAnimatedReaction,
+} from 'react-native-reanimated';
 import { IS_TEST } from '@/env';
 
 const timingConfig = {
@@ -11,10 +19,6 @@ const timingConfig = {
 };
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
-const ColorGradient = styled(AnimatedLinearGradient).attrs({
-  end: { x: 0, y: 0.5 },
-  start: { x: 1, y: 0.5 },
-})(position.coverAsObject);
 
 export default function ShimmerAnimation({
   animationDuration = timingConfig.duration,
@@ -23,45 +27,94 @@ export default function ShimmerAnimation({
   gradientColor = '',
   width = 0,
 }) {
+  const containerWidth = useSharedValue(width);
+  const translateX = useSharedValue(0);
   const opacity = useSharedValue(1);
-  const positionX = useSharedValue(-width * 1.5);
-  const { colors } = useTheme();
+  const isEnabled = useSharedValue(enabled);
 
+  const { colors } = useTheme();
   const gradientColors = useMemo(
     () => [colors.alpha(color, 0), gradientColor || colors.alpha(colors.whiteLabel, 0.2), colors.alpha(color, 0)],
     [gradientColor, color, colors]
   );
 
+  // Keep internal shared value track of changes to the props
   useEffect(() => {
-    if (enabled) {
-      opacity.value = withTiming(1, {
-        duration: animationDuration,
-        easing: timingConfig.easing,
-      });
-      positionX.value = withRepeat(
-        withTiming(width * 1.5, {
+    isEnabled.value = enabled;
+    containerWidth.value = width;
+  }, [enabled, isEnabled, width, containerWidth]);
+
+  const startAnimation = useCallback(() => {
+    'worklet';
+    if (containerWidth.value === 0) return;
+
+    translateX.value = withRepeat(
+      withSequence(
+        withTiming(-containerWidth.value * 1.5, { duration: 0 }),
+        withTiming(containerWidth.value * 1.5, {
           duration: animationDuration,
           easing: timingConfig.easing,
-        }),
-        -1
-      );
-    } else {
-      opacity.value = withTiming(0, {
-        duration: animationDuration,
-        easing: timingConfig.easing,
-      });
-      positionX.value = -width * 1.5;
-    }
-  }, [animationDuration, enabled, opacity, positionX, width]);
+        })
+      ),
+      -1
+    );
+    opacity.value = withTiming(1, {
+      duration: animationDuration / 2,
+      easing: timingConfig.easing,
+    });
+  }, [containerWidth, animationDuration, translateX, opacity]);
+
+  const stopAnimation = useCallback(() => {
+    'worklet';
+    cancelAnimation(translateX);
+    opacity.value = withTiming(0, {
+      duration: animationDuration / 2,
+      easing: timingConfig.easing,
+    });
+  }, [animationDuration, translateX, opacity]);
+
+  // React to changes in width or enabled state
+  useAnimatedReaction(
+    () => ({
+      width: containerWidth.value,
+      enabled: isEnabled.value,
+    }),
+    (current, previous) => {
+      if (!current.width || current.width === previous?.width) return;
+
+      if (current.enabled) {
+        startAnimation();
+      } else {
+        stopAnimation();
+      }
+    },
+    [startAnimation, stopAnimation]
+  );
+
+  const handleLayout = useCallback(
+    ({ nativeEvent: { layout } }) => {
+      // Allow for explicit width to override the default width
+      if (width > 0) return;
+
+      containerWidth.value = layout.width;
+    },
+    [containerWidth, width]
+  );
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
-    transform: [{ translateX: positionX.value }],
+    transform: [{ translateX: translateX.value }],
   }));
 
-  if (IS_TEST) {
-    return null;
-  }
+  if (IS_TEST) return null;
 
-  return <ColorGradient colors={gradientColors} style={animatedStyle} />;
+  return (
+    <AnimatedLinearGradient
+      colors={gradientColors}
+      end={{ x: 0, y: 0.5 }}
+      start={{ x: 1, y: 0.5 }}
+      style={[animatedStyle, StyleSheet.absoluteFill]}
+      onLayout={handleLayout}
+    />
+  );
 }
