@@ -37,6 +37,7 @@ export type GestureHandlerButtonProps = {
   simultaneousWithExternalGesture?: MutableRefObject<GestureType>;
   style?: StyleProp<ViewStyle> | AnimatedStyle;
   tapRef?: MutableRefObject<TapGesture>;
+  testID?: string;
 };
 
 /**
@@ -78,6 +79,7 @@ export function GestureHandlerButton({
   simultaneousWithExternalGesture,
   style,
   tapRef,
+  testID,
 }: GestureHandlerButtonProps) {
   const isPressed = useSharedValue(false);
 
@@ -162,7 +164,7 @@ export function GestureHandlerButton({
 
   return (
     <GestureDetector gesture={gesture}>
-      <Animated.View accessible accessibilityRole="button" pointerEvents={pointerEvents} style={[style, pressStyle]}>
+      <Animated.View accessible accessibilityRole="button" pointerEvents={pointerEvents} style={[style, pressStyle]} testID={testID}>
         {children}
       </Animated.View>
     </GestureDetector>
