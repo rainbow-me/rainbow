@@ -46,6 +46,7 @@ const AIRDROP_GROUPS = [
   },
 ];
 
+// TODO:
 // function SuggestedUsers() {
 //   return (
 //     <Box>
@@ -152,26 +153,27 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
   const { accentColors } = useTokenLauncherContext();
   const addOrEditAirdropAddress = useTokenLauncherStore(state => state.addOrEditAirdropAddress);
 
+  // Maintain local state to avoid needing to subscribe to the whole list of recipients
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [addressImage, setAddressImage] = useState<string | null>(null);
-
-  // Maintain local state of the address for use in the label icon
   const [address, setAddress] = useState('');
 
   const handleInputChange = useCallback(
     async (text: string) => {
-      addOrEditAirdropAddress({ id, address: text });
       const isValid = checkIsValidAddressOrDomainFormat(text);
+
+      addOrEditAirdropAddress({ id, address: text, isValid });
       if (isValid !== isValidAddress) {
         setIsValidAddress(isValid);
+
         if (isValid) {
           setAddress(text);
+
           const avatar = await fetchENSAvatar(text);
-          if (avatar?.imageUrl) {
-            setAddressImage(avatar.imageUrl);
-          } else {
-            setAddressImage(null);
-          }
+          const imageUrl = avatar?.imageUrl ?? null;
+
+          setAddressImage(imageUrl);
+          addOrEditAirdropAddress({ id, address: text, isValid, imageUrl });
         }
       }
     },

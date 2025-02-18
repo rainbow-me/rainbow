@@ -13,6 +13,7 @@ import { useAccountProfile } from '@/hooks';
 import { LINK_SETTINGS } from './LinksSection';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT } from './TokenLauncherHeader';
+import FastImage from 'react-native-fast-image';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
 
@@ -64,6 +65,17 @@ function TokenAllocationCard() {
               borderColor={{ custom: accentColors.opacity2 }}
             >
               <Box flexDirection="row" alignItems="center" gap={8}>
+                {recipient.type === 'address' && (
+                  <AddressAvatar address={recipient.value} url={recipient.imageUrl} size={20} color={accentColors.opacity100} label={''} />
+                )}
+                {recipient.type === 'group' && (
+                  <FastImage
+                    // TODO: this field will come from the backend when integrated
+                    source={{ uri: recipient.imageUrl ?? '' }}
+                    style={{ width: 20, height: 20, borderRadius: 10 }}
+                    resizeMode="cover"
+                  />
+                )}
                 <Text size="17pt" weight="medium" color={'labelSecondary'}>
                   {recipient.label}
                 </Text>
