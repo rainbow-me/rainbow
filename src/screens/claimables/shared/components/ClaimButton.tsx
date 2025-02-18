@@ -46,7 +46,7 @@ export function ClaimButton({
           alignItems="center"
           justifyContent="center"
         >
-          <ShimmerAnimation color="#FFFFFF" enabled={shimmer} width={BUTTON_WIDTH} />
+          <ShimmerAnimation color="#FFFFFF" enabled={shimmer} />
           <Inline alignVertical="center" space="6px">
             {biometricIcon && (
               <TextShadow shadowOpacity={disabled ? 0 : 0.3}>

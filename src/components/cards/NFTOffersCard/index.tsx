@@ -185,12 +185,7 @@ export const NFTOffersCard = () => {
                       navigate(Routes.NFT_OFFERS_SHEET);
                     }}
                   >
-                    {/* unfortunately shimmer width must be hardcoded */}
-                    <ShimmerAnimation
-                      color={buttonColor}
-                      // 86 = 20px horizontal padding + 10px spacing + 36px refresh button width
-                      width={deviceWidth - 86}
-                    />
+                    <ShimmerAnimation color={buttonColor} />
                     <Text color="label" align="center" size="15pt" weight="bold">
                       {i18n.t(i18n.l.nft_offers.card.button)}
                     </Text>
