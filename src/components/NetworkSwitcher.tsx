@@ -835,8 +835,10 @@ function Sheet({
     const distanceFromBottom = containerHeight.value - (scrollY.value + scrollViewHeight.value);
     const fadeStartDistance = FOOTER_HEIGHT; // Start fading when FOOTER_HEIGHT px from bottom
 
-    let fadeOpacity = 1;
-    if (distanceFromBottom < fadeStartDistance) {
+    const isLessThanMaxHeight = containerHeight.value < MAX_HEIGHT;
+
+    let fadeOpacity = isLessThanMaxHeight ? 0 : 1;
+    if (distanceFromBottom < fadeStartDistance && !isLessThanMaxHeight) {
       fadeOpacity = Math.max(0, distanceFromBottom / fadeStartDistance);
     }
 
