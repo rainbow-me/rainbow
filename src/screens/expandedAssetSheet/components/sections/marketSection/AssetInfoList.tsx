@@ -29,7 +29,7 @@ const SkeletonRow = ({ width, height }: { width: number; height: number }) => {
       borderRadius={18}
       style={{ overflow: 'hidden' }}
     >
-      <ShimmerAnimation color={shimmerColor} width={width} gradientColor={shimmerColor} />
+      <ShimmerAnimation color={shimmerColor} gradientColor={shimmerColor} />
     </Box>
   );
 };
