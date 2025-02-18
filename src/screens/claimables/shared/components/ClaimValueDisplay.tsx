@@ -49,7 +49,7 @@ export function ClaimValueDisplay({
               borderRadius={20}
               style={{ backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.04)' : 'rgba(9, 17, 31, 0.02)' }}
             >
-              <ShimmerAnimation color="#FFFFFF" enabled width={248} />
+              <ShimmerAnimation color="#FFFFFF" />
             </Box>
           )}
         </Box>
@@ -60,7 +60,7 @@ export function ClaimValueDisplay({
           borderRadius={20}
           style={{ backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.04)' : 'rgba(9, 17, 31, 0.02)' }}
         >
-          <ShimmerAnimation color="#FFFFFF" enabled width={248} />
+          <ShimmerAnimation color="#FFFFFF" />
         </Box>
       )}
     </Bleed>
