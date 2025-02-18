@@ -121,6 +121,7 @@ export type RootStackParamList = {
     canEdit?: boolean;
     canSelectAllNetworks?: boolean;
     allowedNetworks?: ChainId[];
+    goBackOnSelect?: boolean;
   };
   [Routes.LOG_SHEET]: {
     data: {

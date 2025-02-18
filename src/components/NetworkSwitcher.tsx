@@ -62,6 +62,7 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { AnimatedTextIcon } from './AnimatedComponents/AnimatedTextIcon';
+import { useNavigation } from '@/navigation';
 
 const t = i18n.l.network_switcher;
 const MAX_HEIGHT = deviceUtils.dimensions.height * 0.85 - safeAreaInsetValues.top;
@@ -249,12 +250,15 @@ const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color?: string,
 function AllNetworksOption({
   selected,
   setSelected,
+  goBackOnSelect,
 }: {
   selected: SharedValue<ChainId | undefined>;
   setSelected: (chainId: ChainId | undefined) => void;
+  goBackOnSelect?: boolean;
 }) {
   const { isDarkMode } = useColorMode();
   const blue = useForegroundColor('blue');
+  const { goBack } = useNavigation();
 
   const isSelected = useDerivedValue(() => selected.value === undefined);
   const { animatedStyle } = useNetworkOptionStyle(isSelected, blue, true);
@@ -267,14 +271,20 @@ function AllNetworksOption({
     };
   });
 
+  const onSelectAllNetworks = useCallback(() => {
+    'worklet';
+    selected.value = undefined;
+    runOnJS(setSelected)(undefined);
+
+    if (goBackOnSelect) {
+      runOnJS(goBack)();
+    }
+  }, []);
+
   return (
     <GestureHandlerButton
       hapticTrigger="tap-end"
-      onPressWorklet={() => {
-        'worklet';
-        selected.value = undefined;
-        runOnJS(setSelected)(undefined);
-      }}
+      onPressWorklet={onSelectAllNetworks}
       scaleTo={0.94}
       style={[sx.allNetworksButton, animatedStyle]}
     >
@@ -303,10 +313,12 @@ function AllNetworksSection({
   editing,
   selected,
   setSelected,
+  goBackOnSelect,
 }: {
   editing: SharedValue<boolean>;
   selected: SharedValue<ChainId | undefined>;
   setSelected: (chainId: ChainId | undefined) => void;
+  goBackOnSelect?: boolean;
 }) {
   const animatedStyle = useAnimatedStyle(() => ({
     height: withClamp(
@@ -322,7 +334,7 @@ function AllNetworksSection({
 
   return (
     <Animated.View style={[sx.allNetworksContainer, animatedStyle]}>
-      <AllNetworksOption selected={selected} setSelected={setSelected} />
+      <AllNetworksOption selected={selected} setSelected={setSelected} goBackOnSelect={goBackOnSelect} />
       <Inset horizontal="10px">
         <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
       </Inset>
@@ -567,6 +579,7 @@ function NetworksGrid({
   allowedNetworks,
   scrollY,
   scrollViewHeight,
+  goBackOnSelect,
 }: {
   editing: SharedValue<boolean>;
   expanded: SharedValue<boolean>;
@@ -575,7 +588,10 @@ function NetworksGrid({
   allowedNetworks?: ChainId[];
   scrollY: SharedValue<number>;
   scrollViewHeight: SharedValue<number>;
+  goBackOnSelect?: boolean;
 }) {
+  const { goBack } = useNavigation();
+
   let initialPinned = networkSwitcherStore.getState().pinnedNetworks;
   const sortedSupportedChainIds = useBackendNetworksStore.getState().getSortedSupportedChainIds();
   let initialUnpinned = sortedSupportedChainIds.filter(chainId => !initialPinned.includes(chainId));
@@ -642,6 +658,18 @@ function NetworksGrid({
   const containerStyle = useAnimatedStyle(() => ({
     height: withSpring(containerHeight.value, SPRING_CONFIGS.springConfig),
   }));
+
+  const onSelectNetwork = useCallback((chainId: ChainId) => {
+    'worklet';
+
+    triggerHaptics('selection');
+    selected.value = chainId;
+    runOnJS(setSelected)(chainId);
+
+    if (goBackOnSelect) {
+      runOnJS(goBack)();
+    }
+  }, []);
 
   const dragNetwork = Gesture.Pan()
     .activateAfterLongPress(180)
@@ -713,9 +741,7 @@ function NetworksGrid({
       const chainId = networks.value[section][index];
       if (!chainId) return;
 
-      triggerHaptics('selection');
-      selected.value = chainId;
-      runOnJS(setSelected)(chainId);
+      onSelectNetwork(chainId);
     });
 
   const gridGesture = Gesture.Exclusive(dragNetwork, tapNetwork);
@@ -852,7 +878,7 @@ function Sheet({
 
 export function NetworkSelector() {
   const {
-    params: { onClose = noop, selected, canEdit = true, canSelectAllNetworks = true, setSelected, allowedNetworks },
+    params: { onClose = noop, selected, canEdit = true, canSelectAllNetworks = true, setSelected, allowedNetworks, goBackOnSelect = false },
   } = useRoute<RouteProp<RootStackParamList, 'NetworkSelector'>>();
 
   const editing = useSharedValue(false);
@@ -864,7 +890,9 @@ export function NetworkSelector() {
   return (
     <Sheet expanded={expanded} editing={editing} onClose={onClose} canEdit={canEdit} scrollY={scrollY} scrollViewHeight={scrollViewHeight}>
       {canEdit && <CustomizeNetworksBanner editing={editing} />}
-      {canSelectAllNetworks && <AllNetworksSection editing={editing} selected={selectedNetwork} setSelected={setSelected} />}
+      {canSelectAllNetworks && (
+        <AllNetworksSection editing={editing} selected={selectedNetwork} setSelected={setSelected} goBackOnSelect={goBackOnSelect} />
+      )}
       <NetworksGrid
         editing={editing}
         expanded={expanded}
@@ -873,6 +901,7 @@ export function NetworkSelector() {
         allowedNetworks={allowedNetworks}
         scrollY={scrollY}
         scrollViewHeight={scrollViewHeight}
+        goBackOnSelect={goBackOnSelect}
       />
     </Sheet>
   );
