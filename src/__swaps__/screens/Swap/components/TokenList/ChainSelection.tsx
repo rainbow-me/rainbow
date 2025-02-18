@@ -82,6 +82,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
       setSelected: handleSelectChain,
       canSelectAllNetworks: !output,
       goBackOnSelect: true,
+      canEdit: false,
       allowedNetworks: balanceSortedChainList,
     });
   }, [balanceSortedChainList, handleSelectChain, output, selectedOutputChainId]);
