@@ -579,7 +579,7 @@ export type EventProperties = {
   [event.swapsChangedChainId]: {
     inputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
     type: 'input' | 'output';
-    chainId: ChainId;
+    chainId: ChainId | undefined;
   };
 
   [event.swapsFlippedAssets]: {
