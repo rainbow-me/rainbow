@@ -6,6 +6,8 @@ import { FIELD_BACKGROUND_COLOR, FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, COLLAP
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
+const HIT_SLOP = 24;
+
 function AnimatedPlusMinusIcon({ collapsed }: { collapsed: SharedValue<boolean> }) {
   const minusIcon = '􀅽';
   const rotation = useSharedValue(0);
@@ -65,12 +67,28 @@ export function CollapsableField({ title, children }: CollapsableFieldProps) {
   return (
     <Animated.View layout={COLLAPSABLE_FIELD_ANIMATION} style={[styles.container, { borderColor }]}>
       <Animated.View style={[styles.header, headerStyle]}>
-        <GestureHandlerButton hapticTrigger="tap-end" hapticType="soft" onPressWorklet={toggleCollapsed}>
+        <GestureHandlerButton
+          hapticTrigger="tap-end"
+          hapticType="soft"
+          onPressWorklet={toggleCollapsed}
+          style={{
+            margin: -HIT_SLOP,
+            padding: HIT_SLOP,
+          }}
+        >
           <Text color="label" size="17pt" weight="heavy">
             {title}
           </Text>
         </GestureHandlerButton>
-        <GestureHandlerButton hapticTrigger="tap-end" hapticType="soft" onPressWorklet={toggleCollapsed}>
+        <GestureHandlerButton
+          hapticTrigger="tap-end"
+          hapticType="soft"
+          onPressWorklet={toggleCollapsed}
+          style={{
+            margin: -HIT_SLOP,
+            padding: HIT_SLOP,
+          }}
+        >
           <AnimatedPlusMinusIcon collapsed={collapsed} />
         </GestureHandlerButton>
       </Animated.View>

@@ -15,6 +15,17 @@ export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma
 
 export type LinkType = 'website' | 'x' | 'telegram' | 'farcaster' | 'discord' | 'other';
 export type Link = { input: string; type: LinkType; url: string };
+
+export type AirdropRecipient = {
+  type: 'group' | 'address';
+  id: string;
+  label: string;
+  value: string;
+  count: number;
+  isValid: boolean;
+  imageUrl: string | null;
+};
+
 interface TokenLauncherStore {
   // base state
   imageUri: string;
@@ -26,13 +37,7 @@ interface TokenLauncherStore {
   description: string;
   links: Link[];
   creatorBuyInEth: number;
-  airdropRecipients: {
-    type: 'group' | 'address';
-    id: string;
-    label: string;
-    value: string;
-    count: number;
-  }[];
+  airdropRecipients: AirdropRecipient[];
   step: 'info' | 'overview' | 'success';
   stepIndex: SharedValue<number>;
   stepSharedValue: SharedValue<string>;
@@ -64,7 +69,17 @@ interface TokenLauncherStore {
   setDescription: (description: string) => void;
   setStep: (step: 'info' | 'overview' | 'success') => void;
   addAirdropGroup: ({ groupId, label, count }: { groupId: string; label: string; count: number }) => void;
-  addOrEditAirdropAddress: ({ id, address }: { id: string; address: string }) => void;
+  addOrEditAirdropAddress: ({
+    id,
+    address,
+    isValid,
+    imageUrl,
+  }: {
+    id: string;
+    address: string;
+    isValid: boolean;
+    imageUrl?: string | null;
+  }) => void;
   deleteAirdropRecipient: (id: string) => void;
   setEthPriceUsd: (ethPriceUsd: number) => void;
   setEthPriceNative: (ethPriceNative: number) => void;
@@ -180,20 +195,50 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     set({ step });
   },
   addAirdropGroup: ({ groupId, label, count }: { groupId: string; label: string; count: number }) => {
-    set({
-      airdropRecipients: [...get().airdropRecipients, { type: 'group', id: Math.random().toString(), value: groupId, label, count }],
-    });
+    // TODO: the imageUrl will come from the backend when integrated
+    const recipient = {
+      type: 'group' as const,
+      id: Math.random().toString(),
+      value: groupId,
+      label,
+      count,
+      isValid: true,
+      imageUrl: null,
+    };
+    set({ airdropRecipients: [...get().airdropRecipients, recipient] });
   },
-  addOrEditAirdropAddress: ({ id, address }: { id: string; address: string }) => {
+  // Add & edit are combined here to avoid the AddressInput component needing to subscribe to the list
+  addOrEditAirdropAddress: ({
+    id,
+    address,
+    isValid,
+    imageUrl,
+  }: {
+    id: string;
+    address: string;
+    isValid: boolean;
+    imageUrl?: string | null;
+  }) => {
     const { airdropRecipients } = get();
     const isExistingRecipient = airdropRecipients.some(recipient => recipient.id === id);
 
     if (isExistingRecipient) {
-      set({ airdropRecipients: airdropRecipients.map(a => (a.id === id ? { ...a, value: address } : a)) });
+      set({
+        airdropRecipients: airdropRecipients.map(a =>
+          a.id === id ? { ...a, value: address, label: address, isValid, imageUrl: imageUrl ?? null } : a
+        ),
+      });
     } else {
-      // TODO: abbreviate if not ens
-      const label = address;
-      set({ airdropRecipients: [...airdropRecipients, { type: 'address', id, value: address, label, count: 1 }] });
+      const recipient = {
+        type: 'address' as const,
+        id,
+        value: address,
+        label: address,
+        count: 1,
+        isValid,
+        imageUrl: imageUrl ?? null,
+      };
+      set({ airdropRecipients: [...airdropRecipients, recipient] });
     }
   },
   deleteAirdropRecipient: (id: string) => {
