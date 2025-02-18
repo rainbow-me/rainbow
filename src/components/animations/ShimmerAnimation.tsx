@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
@@ -12,6 +12,7 @@ import Animated, {
   useAnimatedReaction,
 } from 'react-native-reanimated';
 import { IS_TEST } from '@/env';
+import { useTheme } from '@/theme';
 
 const timingConfig = {
   duration: 2500,
@@ -20,13 +21,21 @@ const timingConfig = {
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
+type ShimmerAnimationProps = {
+  color: string;
+  animationDuration?: number;
+  enabled?: boolean;
+  gradientColor?: string;
+  width?: number;
+};
+
 export default function ShimmerAnimation({
-  animationDuration = timingConfig.duration,
   color,
+  animationDuration = timingConfig.duration,
   enabled = true,
   gradientColor = '',
   width = 0,
-}) {
+}: ShimmerAnimationProps) {
   const containerWidth = useSharedValue(width);
   const translateX = useSharedValue(0);
   const opacity = useSharedValue(1);
@@ -92,7 +101,7 @@ export default function ShimmerAnimation({
   );
 
   const handleLayout = useCallback(
-    ({ nativeEvent: { layout } }) => {
+    ({ nativeEvent: { layout } }: { nativeEvent: { layout: { width: number } } }) => {
       // Allow for explicit width to override the default width
       if (width > 0) return;
 
