@@ -118,10 +118,13 @@ export type RootStackParamList = {
     selected: SharedValue<ChainId | undefined> | ChainId | undefined;
     setSelected: (chainId: ChainId | undefined) => void;
     onClose?: VoidFunction;
+    fillPinnedSection?: boolean;
+    canSelect?: boolean;
     canEdit?: boolean;
     canSelectAllNetworks?: boolean;
     allowedNetworks?: ChainId[];
     goBackOnSelect?: boolean;
+    title?: string;
   };
   [Routes.LOG_SHEET]: {
     data: {
