@@ -42,8 +42,8 @@ function useBiometryIconString({ showIcon, isHardwareWallet }) {
 }
 
 export default function BiometricButtonContent({ label, showIcon = true, testID, ...props }) {
-  const biometryIcon = useBiometryIconString(!IS_ANDROID && showIcon);
   const { isHardwareWallet } = useWallets();
+  const biometryIcon = useBiometryIconString({ showIcon: !IS_ANDROID && showIcon, isHardwareWallet });
   const { colors } = useTheme();
   return (
     <>
