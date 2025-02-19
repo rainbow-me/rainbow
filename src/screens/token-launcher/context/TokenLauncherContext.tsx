@@ -15,6 +15,7 @@ type TokenLauncherContextType = {
   accentColors: {
     opacity100: string;
     opacity30: string;
+    opacity20: string;
     opacity12: string;
     opacity10: string;
     opacity6: string;
@@ -63,6 +64,7 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
     return {
       opacity100: primaryColor,
       opacity30: getAlphaColor(primaryColor, 0.3),
+      opacity20: getAlphaColor(primaryColor, 0.2),
       opacity12: getAlphaColor(primaryColor, 0.12),
       opacity10: getAlphaColor(primaryColor, 0.1),
       opacity6: getAlphaColor(primaryColor, 0.06),
