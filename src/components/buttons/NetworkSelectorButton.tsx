@@ -22,12 +22,16 @@ interface DefaultButtonOptions {
 type NetworkSelectorProps = Omit<RouteProp<RootStackParamList, 'NetworkSelector'>['params'], 'selected' | 'setSelected'>;
 
 type NetworkSelectorButtonProps = {
+  bleed?: boolean;
+  disabled?: boolean;
   defaultButtonOptions?: DefaultButtonOptions;
   onSelectChain: (chainId: ChainId | undefined) => void;
   selectedChainId: ChainId | undefined;
 } & NetworkSelectorProps;
 
 export const NetworkSelectorButton = ({
+  bleed = true,
+  disabled,
   defaultButtonOptions = {},
   onSelectChain,
   selectedChainId,
@@ -70,8 +74,8 @@ export const NetworkSelectorButton = ({
   }, [actionButton.label, selectedChainId]);
 
   return (
-    <Bleed horizontal="12px">
-      <ButtonPressAnimation onPress={navigateToNetworkSelector} padding="12px" testID="network-selector-button">
+    <Bleed horizontal={bleed ? '12px' : undefined}>
+      <ButtonPressAnimation disabled={disabled} onPress={navigateToNetworkSelector} padding="12px" testID="network-selector-button">
         <Inline alignVertical="center" space="6px" wrap={false}>
           {actionButton.icon && !selectedChainId && (
             <Text align="center" color={actionButton.color || iconColor} size={iconSize} weight={actionButton.weight || iconWeight}>
