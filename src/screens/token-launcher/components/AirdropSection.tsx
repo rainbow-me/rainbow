@@ -61,15 +61,9 @@ function AirdropGroups() {
   const { accentColors } = useTokenLauncherContext();
 
   const addAirdropGroup = useTokenLauncherStore(state => state.addAirdropGroup);
+  const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
 
-  // const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
-  // const airdropGroups = useMemo(() => {
-  //   return AIRDROP_GROUPS.filter(
-  //     group => !airdropRecipients.some(recipient => recipient.type === 'group' && recipient.value === group.groupId)
-  //   );
-  // }, [airdropRecipients]);
-
-  // TODO: change to check marks instead of animating away
+  // TODO: will come from backend / sdk
   const airdropGroups = AIRDROP_GROUPS;
 
   return (
@@ -97,8 +91,13 @@ function AirdropGroups() {
               groupIcon = warpcastIconCircle;
             }
 
+            const isSelected = airdropRecipients.some(recipient => recipient.type === 'group' && recipient.value === item.groupId);
+
             return (
-              <ButtonPressAnimation onPress={() => addAirdropGroup({ groupId: item.groupId, label: item.label, count: item.count })}>
+              <ButtonPressAnimation
+                disabled={isSelected}
+                onPress={() => addAirdropGroup({ groupId: item.groupId, label: item.label, count: item.count })}
+              >
                 <Box
                   width={154.5}
                   borderWidth={FIELD_BORDER_WIDTH}
@@ -113,6 +112,7 @@ function AirdropGroups() {
                   key={item.label}
                   style={{
                     overflow: 'visible',
+                    opacity: isSelected ? 0.5 : 1,
                   }}
                 >
                   <Box
@@ -130,7 +130,7 @@ function AirdropGroups() {
                     alignItems="center"
                   >
                     <TextIcon containerSize={24} color={{ custom: 'rgba(0,0,0,0.5)' }} size="icon 14px" weight="heavy">
-                      {'􀅼'}
+                      {isSelected ? '􀆅' : '􀅼'}
                     </TextIcon>
                   </Box>
                   <FastImage source={groupIcon} style={{ width: 42, height: 42, borderRadius: 21 }} />
