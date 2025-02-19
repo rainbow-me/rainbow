@@ -1,4 +1,4 @@
-import { Box, Text } from '@/design-system';
+import { Box, Text, useColorMode } from '@/design-system';
 import { haptics } from '@/utils';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -18,6 +18,8 @@ import { ChainId } from '@/state/backendNetworks/types';
 type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 
 export function ClaimCustomization() {
+  const { isDarkMode } = useColorMode();
+
   const balanceSortedChainList = useUserAssetsStore(state => state.getBalanceSortedChainList());
   const {
     claimStatus,
@@ -29,8 +31,6 @@ export function ClaimCustomization() {
   } = useTransactionClaimableContext();
 
   const [isInitialState, setIsInitialState] = useState(true);
-
-  const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
 
   const { data: usdcSearchData } = useTokenSearch(
     {
@@ -249,23 +249,37 @@ export function ClaimCustomization() {
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">
         {i18n.t(i18n.l.claimables.panel.on)}
       </Text>
-      <NetworkSelectorButton
-        bleed={false}
-        disabled={isDisabled}
-        onSelectChain={handleNetworkSelection}
-        selectedChainId={outputChainId}
-        goBackOnSelect
-        canEdit={false}
-        allowedNetworks={balanceSortedChainList.filter(
-          chainId => isInitialState || (chainId !== outputChainId && (!outputToken || chainId in outputToken.networks))
-        )}
-        actionButton={{
-          icon: '􀅉',
-          label: i18n.t(i18n.l.claimables.panel.reset),
-          color: 'labelTertiary',
-          onPress: resetState,
-        }}
-      />
+
+      <Box
+        paddingHorizontal={{ custom: 7 }}
+        height={{ custom: 28 }}
+        flexDirection="row"
+        borderColor={{ custom: isDarkMode ? 'rgba(245, 248, 255, 0.04)' : 'rgba(9, 17, 31, 0.02)' }}
+        borderWidth={1.33}
+        borderRadius={12}
+        gap={4}
+        style={{ backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.04)' : 'rgba(9, 17, 31, 0.02)' }}
+        alignItems="center"
+        justifyContent="center"
+      >
+        <NetworkSelectorButton
+          bleed={false}
+          disabled={isDisabled}
+          onSelectChain={handleNetworkSelection}
+          selectedChainId={outputChainId}
+          goBackOnSelect
+          canEdit={false}
+          allowedNetworks={balanceSortedChainList.filter(
+            chainId => isInitialState || (chainId !== outputChainId && (!outputToken || chainId in outputToken.networks))
+          )}
+          actionButton={{
+            icon: '􀅉',
+            label: i18n.t(i18n.l.claimables.panel.reset),
+            color: 'labelTertiary',
+            onPress: resetState,
+          }}
+        />
+      </Box>
     </Box>
   );
 }
