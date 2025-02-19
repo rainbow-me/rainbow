@@ -1,7 +1,7 @@
 import React from 'react';
 import Animated, { useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { ChainContextMenu } from '@/components/context-menu-buttons/ChainContextMenu';
+import { NetworkSelectorButton } from '@/components/buttons/NetworkSelectorButton';
 import { Bleed, Border, Box, Column, Columns, Separator, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -11,17 +11,28 @@ import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { GestureHandlerButton } from './GestureHandlerButton';
 import { SlippageRow } from './ReviewPanel';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const PreferredNetworkMenu = () => {
   const preferredNetwork = useSwapsStore(state => state.preferredNetwork);
 
+  const chainsToDisplay = useUserAssetsStore(state => state.getBalanceSortedChainList());
+
   return (
-    <ChainContextMenu
-      allNetworksIcon={{ color: 'labelSecondary', icon: '􀒙', name: 'bolt.horizontal.circle', weight: 'bold' }}
-      allNetworksText={i18n.t(i18n.l.expanded_state.swap_details_v2.automatic)}
+    <NetworkSelectorButton
+      goBackOnSelect
       defaultButtonOptions={{ iconColor: 'labelTertiary' }}
       onSelectChain={chain => useSwapsStore.setState({ preferredNetwork: chain })}
       selectedChainId={preferredNetwork}
+      actionButton={{
+        color: 'labelSecondary',
+        icon: '􀒙',
+        weight: 'bold',
+        label: i18n.t(i18n.l.expanded_state.swap_details_v2.automatic),
+        onPress: () => useSwapsStore.setState({ preferredNetwork: undefined }),
+      }}
+      allowedNetworks={chainsToDisplay}
+      canEdit={false}
     />
   );
 };
