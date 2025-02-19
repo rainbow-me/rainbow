@@ -597,6 +597,7 @@ function NetworksGrid({
   scrollY,
   scrollViewHeight,
   goBackOnSelect,
+  canEdit,
 }: NetworksGridProps) {
   const { goBack } = useNavigation();
 
@@ -621,6 +622,8 @@ function NetworksGrid({
     // persists pinned networks when closing the sheet
     // should be the only time this component is unmounted
     return () => {
+      if (!canEdit) return;
+
       if (networks.value[Section.pinned].length > 0) {
         networkSwitcherStore.setState({ pinnedNetworks: networks.value[Section.pinned] });
       } else {
@@ -919,6 +922,7 @@ export function NetworkSelector() {
         scrollY={scrollY}
         scrollViewHeight={scrollViewHeight}
         goBackOnSelect={goBackOnSelect}
+        canEdit={canEdit}
       />
     </Sheet>
   );
