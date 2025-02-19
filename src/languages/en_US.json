@@ -3140,7 +3140,7 @@
         }
       }
     },
-    "network_switcher": {
+    "network_selector": {
       "customize_networks_banner": {
         "title": "Customize Networks",
         "tap_the": "Tap the",
