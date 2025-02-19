@@ -74,7 +74,7 @@ function ContinueButton() {
 
   // TODO: remove testing
   return (
-    <ButtonPressAnimation disabled={!hasCompletedRequiredFields || true} onPress={goToOverviewStep}>
+    <ButtonPressAnimation disabled={!hasCompletedRequiredFields && false} onPress={goToOverviewStep}>
       <Box
         background={hasCompletedRequiredFields ? 'blue' : 'fillTertiary'}
         justifyContent="center"

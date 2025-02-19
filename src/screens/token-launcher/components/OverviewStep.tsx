@@ -1,21 +1,24 @@
 import React from 'react';
+import { ScrollView, StyleSheet } from 'react-native';
 import { Box, Text, TextShadow } from '@/design-system';
 import { TokenLogo } from './TokenLogo';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH } from '../constants';
-import { abbreviateNumber, convertAmountToPercentageDisplay } from '@/helpers/utilities';
-import { ScrollView } from 'react-native';
+import { abbreviateNumber, convertAmountToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
-import { useAccountProfile } from '@/hooks';
+import { useAccountProfile, useAccountSettings } from '@/hooks';
 import { LINK_SETTINGS } from './LinksSection';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT } from './TokenLauncherHeader';
 import FastImage from 'react-native-fast-image';
+import { BlurView } from '@react-native-community/blur';
+import LinearGradient from 'react-native-linear-gradient';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
+const TOTAL_COST_PILL_HEIGHT = 52;
 
 function TokenAllocationCard() {
   const { accentColors } = useTokenLauncherContext();
@@ -146,6 +149,53 @@ function AboutCard() {
     </Box>
   );
 }
+
+function TotalCostPill() {
+  const { accentColors } = useTokenLauncherContext();
+  const { nativeCurrency } = useAccountSettings();
+
+  const creatorBuyInEth = useTokenLauncherStore(state => state.creatorBuyInEth);
+  const ethPriceNative = useTokenLauncherStore(state => state.ethPriceNative);
+
+  const totalCost = creatorBuyInEth * ethPriceNative;
+  const formattedTotalCost = convertAmountToNativeDisplay(totalCost, nativeCurrency, 2, false, totalCost >= 10000);
+
+  return (
+    <Box
+      as={BlurView}
+      height={TOTAL_COST_PILL_HEIGHT}
+      flexDirection="row"
+      alignItems="center"
+      justifyContent="space-between"
+      width={'full'}
+      padding={'20px'}
+      borderRadius={26}
+      borderWidth={FIELD_BORDER_WIDTH}
+      borderColor={{ custom: accentColors.opacity10 }}
+      blurAmount={24}
+      blurType="ultraThinMaterial"
+      // TODO: to give this a dark shadow you need a dark background color which messes with the blurview
+      // shadow={'30px'}
+    >
+      <LinearGradient colors={[accentColors.opacity12, 'rgba(255, 255, 255, 0.08)']} style={StyleSheet.absoluteFill} />
+      <Text size="17pt" weight="heavy" color={'label'}>
+        {'Total cost'}
+      </Text>
+      <Box flexDirection="row" alignItems="center" gap={4}>
+        <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
+          {`${creatorBuyInEth} ETH`}
+        </Text>
+        <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity30 }}>
+          {'≈'}
+        </Text>
+        <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
+          {formattedTotalCost}
+        </Text>
+      </Box>
+    </Box>
+  );
+}
+
 export function OverviewStep() {
   const { accentColors } = useTokenLauncherContext();
   const tokenSymbol = useTokenLauncherStore(state => state.symbol);
@@ -158,91 +208,96 @@ export function OverviewStep() {
   const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[tokenChainId];
 
   return (
-    <ScrollView
-      contentOffset={{ x: 0, y: -TOKEN_LAUNCHER_HEADER_HEIGHT }}
-      contentInset={{ top: TOKEN_LAUNCHER_HEADER_HEIGHT }}
-      contentContainerStyle={{
-        paddingBottom: 24,
-      }}
-    >
-      <Box width="full" paddingHorizontal={'20px'} alignItems="center">
-        <TokenLogo />
-        <Box alignItems="center" paddingTop={'20px'} gap={14}>
-          <TextShadow blur={12} shadowOpacity={0.24}>
-            <Text size="44pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-              {`$${tokenSymbol}`}
-            </Text>
-          </TextShadow>
-          <Text size="20pt" weight="bold" color={'labelSecondary'}>
-            {tokenName}
-          </Text>
-        </Box>
-        <Box gap={12} flexDirection="row" justifyContent="space-between" paddingVertical={'20px'}>
-          <Box gap={12} flexGrow={1} padding={'20px'} backgroundColor={accentColors.opacity12} borderRadius={FIELD_BORDER_RADIUS}>
+    <Box style={{ flex: 1 }}>
+      <ScrollView
+        contentOffset={{ x: 0, y: -TOKEN_LAUNCHER_HEADER_HEIGHT }}
+        contentInset={{ top: TOKEN_LAUNCHER_HEADER_HEIGHT }}
+        contentContainerStyle={{
+          paddingBottom: 24 + TOTAL_COST_PILL_HEIGHT,
+        }}
+      >
+        <Box width="full" paddingHorizontal={'20px'} alignItems="center">
+          <TokenLogo />
+          <Box alignItems="center" paddingTop={'20px'} gap={14}>
             <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-                {tokenPrice}
+              <Text size="44pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
+                {`$${tokenSymbol}`}
               </Text>
             </TextShadow>
-            <Text size="15pt" weight="bold" color={'labelSecondary'}>
-              {'Initial price'}
+            <Text size="20pt" weight="bold" color={'labelSecondary'}>
+              {tokenName}
             </Text>
           </Box>
-          <Box gap={12} flexGrow={1} padding={'20px'} backgroundColor={accentColors.opacity12} borderRadius={FIELD_BORDER_RADIUS}>
-            <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-                {tokenMarketCap}
+          <Box gap={12} flexDirection="row" justifyContent="space-between" paddingVertical={'20px'}>
+            <Box gap={12} flexGrow={1} padding={'20px'} backgroundColor={accentColors.opacity12} borderRadius={FIELD_BORDER_RADIUS}>
+              <TextShadow blur={12} shadowOpacity={0.24}>
+                <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
+                  {tokenPrice}
+                </Text>
+              </TextShadow>
+              <Text size="15pt" weight="bold" color={'labelSecondary'}>
+                {'Initial price'}
               </Text>
-            </TextShadow>
-            <Text size="15pt" weight="bold" color={'labelSecondary'}>
-              {'Market cap'}
-            </Text>
-          </Box>
-        </Box>
-        <Box width={'full'} gap={8}>
-          <Box
-            width={'full'}
-            height={60}
-            backgroundColor={CARD_BACKGROUND_COLOR}
-            flexDirection="row"
-            justifyContent="space-between"
-            alignItems="center"
-            paddingVertical={'16px'}
-            paddingHorizontal={'20px'}
-            borderRadius={FIELD_BORDER_RADIUS}
-          >
-            <Text size="17pt" weight="heavy" color={'label'}>
-              {'Total Supply'}
-            </Text>
-            <Text size="17pt" weight="bold" style={{ textTransform: 'capitalize' }} color={{ custom: accentColors.opacity100 }}>
-              {abbreviateNumber(tokenSupply, 0, 'long')}
-            </Text>
-          </Box>
-          <Box
-            width={'full'}
-            height={60}
-            backgroundColor={CARD_BACKGROUND_COLOR}
-            flexDirection="row"
-            justifyContent="space-between"
-            alignItems="center"
-            paddingVertical={'16px'}
-            paddingHorizontal={'20px'}
-            borderRadius={FIELD_BORDER_RADIUS}
-          >
-            <Text size="17pt" weight="heavy" color={'label'}>
-              {'Network'}
-            </Text>
-            <Box flexDirection="row" alignItems="center" gap={8}>
-              <ChainImage position="relative" chainId={tokenChainId} size={16} />
-              <Text color={{ custom: accentColors.opacity100 }} size="17pt" weight="heavy" style={{ textTransform: 'capitalize' }}>
-                {networkLabel}
+            </Box>
+            <Box gap={12} flexGrow={1} padding={'20px'} backgroundColor={accentColors.opacity12} borderRadius={FIELD_BORDER_RADIUS}>
+              <TextShadow blur={12} shadowOpacity={0.24}>
+                <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
+                  {tokenMarketCap}
+                </Text>
+              </TextShadow>
+              <Text size="15pt" weight="bold" color={'labelSecondary'}>
+                {'Market cap'}
               </Text>
             </Box>
           </Box>
-          <AboutCard />
-          <TokenAllocationCard />
+          <Box width={'full'} gap={8}>
+            <Box
+              width={'full'}
+              height={60}
+              backgroundColor={CARD_BACKGROUND_COLOR}
+              flexDirection="row"
+              justifyContent="space-between"
+              alignItems="center"
+              paddingVertical={'16px'}
+              paddingHorizontal={'20px'}
+              borderRadius={FIELD_BORDER_RADIUS}
+            >
+              <Text size="17pt" weight="heavy" color={'label'}>
+                {'Total Supply'}
+              </Text>
+              <Text size="17pt" weight="bold" style={{ textTransform: 'capitalize' }} color={{ custom: accentColors.opacity100 }}>
+                {abbreviateNumber(tokenSupply, 0, 'long')}
+              </Text>
+            </Box>
+            <Box
+              width={'full'}
+              height={60}
+              backgroundColor={CARD_BACKGROUND_COLOR}
+              flexDirection="row"
+              justifyContent="space-between"
+              alignItems="center"
+              paddingVertical={'16px'}
+              paddingHorizontal={'20px'}
+              borderRadius={FIELD_BORDER_RADIUS}
+            >
+              <Text size="17pt" weight="heavy" color={'label'}>
+                {'Network'}
+              </Text>
+              <Box flexDirection="row" alignItems="center" gap={8}>
+                <ChainImage position="relative" chainId={tokenChainId} size={16} />
+                <Text color={{ custom: accentColors.opacity100 }} size="17pt" weight="heavy" style={{ textTransform: 'capitalize' }}>
+                  {networkLabel}
+                </Text>
+              </Box>
+            </Box>
+            <AboutCard />
+            <TokenAllocationCard />
+          </Box>
         </Box>
+      </ScrollView>
+      <Box position="absolute" width={'full'} paddingHorizontal={'16px'} style={{ bottom: 16 }}>
+        <TotalCostPill />
       </Box>
-    </ScrollView>
+    </Box>
   );
 }
