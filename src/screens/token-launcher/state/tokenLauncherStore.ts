@@ -9,6 +9,7 @@ import { calculateTokenomics } from '../helpers/calculateTokenomics';
 import store from '@/redux/store';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { formatCurrency } from '@/helpers/strings';
+import { validateNameWorklet, validateSymbolWorklet, validateTotalSupplyWorklet } from '../helpers/inputValidators';
 
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
@@ -136,8 +137,13 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     return convertAmountToNativeDisplay(targetMarketCapNative, nativeCurrency, 2, true, true);
   },
   hasCompletedRequiredFields: () => {
-    const { name, symbol, imageUri } = get();
-    return name !== '' && symbol !== '' && imageUri !== '';
+    const { name, symbol, imageUri, totalSupply } = get();
+
+    const nameValidation = validateNameWorklet(name);
+    const symbolValidation = validateSymbolWorklet(symbol);
+    const supplyValidation = validateTotalSupplyWorklet(totalSupply);
+
+    return !nameValidation?.error && !symbolValidation?.error && !supplyValidation?.error && imageUri !== '';
   },
   allocationBips: () => {
     const tokenomics = get().tokenomics();

@@ -9,10 +9,10 @@ import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { NetworkField } from './NetworkField';
 import { LinksSection } from './LinksSection';
 import { DescriptionField } from './DescriptionField';
-import { COLLAPSABLE_FIELD_ANIMATION, DEFAULT_TOTAL_SUPPLY, MAX_NAME_LENGTH, MAX_SYMBOL_LENGTH, MAX_TOTAL_SUPPLY } from '../constants';
+import { COLLAPSABLE_FIELD_ANIMATION, DEFAULT_TOTAL_SUPPLY } from '../constants';
 import { TokenAllocationSection } from './TokenAllocationSection';
-import Animated, { FadeIn, useAnimatedRef } from 'react-native-reanimated';
-import { TextInput } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { validateNameWorklet, validateSymbolWorklet, validateTotalSupplyWorklet } from '../helpers/inputValidators';
 
 function TotalSupplyInput() {
   const setTotalSupply = useTokenLauncherStore(state => state.setTotalSupply);
@@ -25,9 +25,7 @@ function TotalSupplyInput() {
       }}
       validationWorklet={text => {
         'worklet';
-        if (parseInt(text.trim()) > MAX_TOTAL_SUPPLY) {
-          return { error: true, message: `Too big.` };
-        }
+        return validateTotalSupplyWorklet(parseInt(text.trim()));
       }}
       inputMode="numeric"
       title="Total Supply"
@@ -44,13 +42,9 @@ function SymbolInput() {
   return (
     <SingleFieldInput
       ref={inputRef}
-      validationWorklet={text => {
-        'worklet';
-        if (text.trim().length > MAX_SYMBOL_LENGTH) {
-          return { error: true, message: `Too long, friend.` };
-        }
-      }}
+      validationWorklet={validateSymbolWorklet}
       onInputChange={text => {
+        // Symbols cannot contain spaces
         const noSpaces = text.replace(/\s/g, '');
         inputRef.current?.setNativeProps({ text: noSpaces });
         setSymbol(noSpaces);
@@ -69,12 +63,7 @@ function NameInput() {
 
   return (
     <SingleFieldInput
-      validationWorklet={text => {
-        'worklet';
-        if (text.trim().length > MAX_NAME_LENGTH) {
-          return { error: true, message: `Too long, friend.` };
-        }
-      }}
+      validationWorklet={validateNameWorklet}
       onInputChange={text => {
         setName(text);
       }}
