@@ -10,9 +10,10 @@ import { useTransactionClaimableContext } from '../context/TransactionClaimableC
 import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
 import { SearchAsset } from '@/__swaps__/types/search';
 import * as i18n from '@/languages';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { IS_ANDROID } from '@/env';
 import { MenuItem } from '@/components/DropdownMenu';
+import { NetworkSelectorButton } from '@/components/buttons/NetworkSelectorButton';
+import { ChainId } from '@/state/backendNetworks/types';
 
 type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 
@@ -190,42 +191,6 @@ export function ClaimCustomization() {
     };
   }, [tokens, outputToken?.symbol, isInitialState, outputChainId]);
 
-  const networkMenuConfig = useMemo(() => {
-    const chainsBadge = useBackendNetworksStore.getState().getChainsBadge();
-
-    let supportedChains: MenuItem<string>[] = [];
-
-    supportedChains = balanceSortedChainList
-      .filter(chainId => isInitialState || (chainId !== outputChainId && (!outputToken || chainId in outputToken.networks)))
-      .map(chainId => ({
-        actionKey: `${chainId}`,
-        actionTitle: chainsLabel[chainId],
-        icon: {
-          iconType: 'REMOTE',
-          iconValue: {
-            uri: chainsBadge[chainId],
-          },
-        },
-      }));
-
-    if (!IS_ANDROID) {
-      supportedChains.reverse();
-    }
-
-    supportedChains = [
-      {
-        actionKey: 'reset',
-        actionTitle: 'Reset',
-        icon: { iconType: 'SYSTEM', iconValue: 'arrow.counterclockwise' },
-      },
-      ...supportedChains,
-    ];
-
-    return {
-      menuItems: supportedChains,
-    };
-  }, [balanceSortedChainList, chainsLabel, isInitialState, outputChainId, outputToken]);
-
   const handleTokenSelection = useCallback(
     (actionKey: string) => {
       haptics.selection();
@@ -249,23 +214,19 @@ export function ClaimCustomization() {
   );
 
   const handleNetworkSelection = useCallback(
-    (actionKey: string) => {
-      haptics.selection();
-      if (actionKey === 'reset') {
-        resetState();
-      } else {
-        const newChainId = +actionKey;
-        setOutputConfig(prev => {
-          const newToken = prev.token && newChainId in prev.token.networks ? prev.token : undefined;
-          return {
-            token: newToken,
-            chainId: newChainId,
-          };
-        });
-        setGasState({ gasLimit: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
-        setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
-        setIsInitialState(false);
-      }
+    (chainId: ChainId | undefined) => {
+      if (chainId === undefined) return; // this will never happen, but it's here to satisfy the type checker
+
+      setOutputConfig(prev => {
+        const newToken = prev.token && chainId in prev.token.networks ? prev.token : undefined;
+        return {
+          token: newToken,
+          chainId,
+        };
+      });
+      setGasState({ gasLimit: undefined, isSufficientGas: false, gasFeeDisplay: undefined, status: 'none' });
+      setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
+      setIsInitialState(false);
     },
     [resetState, setOutputConfig, setQuoteState, setGasState]
   );
@@ -288,13 +249,22 @@ export function ClaimCustomization() {
       <Text align="center" weight="bold" color="labelTertiary" size="17pt">
         {i18n.t(i18n.l.claimables.panel.on)}
       </Text>
-      <ClaimableMenu
+      <NetworkSelectorButton
+        bleed={false}
         disabled={isDisabled}
-        menuConfig={networkMenuConfig}
-        onPressMenuItem={handleNetworkSelection}
-        text={outputChainId ? chainsLabel[outputChainId] : i18n.t(i18n.l.claimables.panel.a_network)}
-        muted={isInitialState}
-        icon={<ChainImage chainId={outputChainId} size={16} position="relative" />}
+        onSelectChain={handleNetworkSelection}
+        selectedChainId={outputChainId}
+        goBackOnSelect
+        canEdit={false}
+        allowedNetworks={balanceSortedChainList.filter(
+          chainId => isInitialState || (chainId !== outputChainId && (!outputToken || chainId in outputToken.networks))
+        )}
+        actionButton={{
+          icon: '􀅉',
+          label: i18n.t(i18n.l.claimables.panel.reset),
+          color: 'labelTertiary',
+          onPress: resetState,
+        }}
       />
     </Box>
   );
