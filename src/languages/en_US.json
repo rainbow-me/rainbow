@@ -483,7 +483,8 @@
         "a_network": "a network",
         "swap_failed": "Swap Failed",
         "receive": "Receive",
-        "on": "on"
+        "on": "on",
+        "reset": "Reset"
       }
     },
     "cloud": {
