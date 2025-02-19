@@ -637,6 +637,7 @@ type NetworksGridProps = NetworkSwitcherProps & {
 
 function NetworksGrid({
   canSelect,
+  canEdit,
   editing,
   expanded,
   selected,
@@ -662,8 +663,7 @@ function NetworksGrid({
     // persists pinned networks when closing the sheet
     // should be the only time this component is unmounted
     return () => {
-      // don't persist the pinned networks for sheets where we modify the pinned networks (e.g. - WalletConnectApprovalSheet)
-      if (fillPinnedSection) return;
+      if (!canEdit) return;
 
       if (networks.value[Section.pinned].length > 0) {
         networkSwitcherStore.setState({ pinnedNetworks: networks.value[Section.pinned] });
@@ -983,6 +983,7 @@ export function NetworkSelector() {
         scrollViewHeight={scrollViewHeight}
         goBackOnSelect={goBackOnSelect}
         fillPinnedSection={fillPinnedSection}
+        canEdit={canEdit}
       />
     </Sheet>
   );
