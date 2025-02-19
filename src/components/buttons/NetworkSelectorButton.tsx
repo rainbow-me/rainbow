@@ -21,13 +21,13 @@ interface DefaultButtonOptions {
 
 type NetworkSelectorProps = Omit<RouteProp<RootStackParamList, 'NetworkSelector'>['params'], 'selected' | 'setSelected'>;
 
-type ChainContextMenuProps = {
+type NetworkSelectorButtonProps = {
   defaultButtonOptions?: DefaultButtonOptions;
   onSelectChain: (chainId: ChainId | undefined) => void;
   selectedChainId: ChainId | undefined;
 } & NetworkSelectorProps;
 
-export const NetworkSwitcherButton = ({
+export const NetworkSelectorButton = ({
   defaultButtonOptions = {},
   onSelectChain,
   selectedChainId,
@@ -37,7 +37,7 @@ export const NetworkSwitcherButton = ({
     weight: 'bold',
   },
   ...networkSelectorProps
-}: ChainContextMenuProps) => {
+}: NetworkSelectorButtonProps) => {
   const { navigate } = useNavigation();
   const {
     iconColor = 'labelSecondary',
@@ -71,7 +71,7 @@ export const NetworkSwitcherButton = ({
 
   return (
     <Bleed horizontal="12px">
-      <ButtonPressAnimation onPress={navigateToNetworkSelector} padding="12px" testID="chain-context-menu">
+      <ButtonPressAnimation onPress={navigateToNetworkSelector} padding="12px" testID="network-selector-button">
         <Inline alignVertical="center" space="6px" wrap={false}>
           {actionButton.icon && !selectedChainId && (
             <Text align="center" color={actionButton.color || iconColor} size={iconSize} weight={actionButton.weight || iconWeight}>
