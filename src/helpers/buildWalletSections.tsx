@@ -138,7 +138,7 @@ const withClaimablesSection = (
     uniqueId: 'rainbow-eth-rewards',
   };
 
-  let result: ClaimableExtraData[] = [];
+  const result: ClaimableExtraData[] = [];
   let totalNativeValue = '0';
 
   const sortedClaimables = [

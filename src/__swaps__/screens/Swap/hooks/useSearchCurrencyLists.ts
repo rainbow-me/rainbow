@@ -12,6 +12,7 @@ import {
   NAME_SYMBOL_SEARCH_KEYS,
   useSwapsSearchStore,
   useTokenSearchStore,
+  useUnverifiedTokenSearchStore,
 } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { AssetToBuySectionId, SearchAsset, TokenToBuyListItem } from '@/__swaps__/types/search';
 import { RecentSwap } from '@/__swaps__/types/swap';
@@ -24,7 +25,8 @@ const MAX_POPULAR_RESULTS = 3;
 
 export function useSearchCurrencyLists() {
   const lastTrackedTimeRef = useRef<number | null>(null);
-  const searchResults = useTokenSearchStore(state => state.getData());
+  const verifiedAssets = useTokenSearchStore(state => state.getData());
+  const unverifiedAssets = useUnverifiedTokenSearchStore(state => state.getData());
   const popularAssets = usePopularTokensStore(state => state.getData());
   const { favoritesMetadata: favorites } = useFavorites();
 
@@ -56,28 +58,28 @@ export function useSearchCurrencyLists() {
   }, [favorites, toChainId]);
 
   const filteredBridgeAsset = useDeepCompareMemo(() => {
-    if (!searchResults?.bridgeAsset) return null;
+    if (!verifiedAssets?.bridgeAsset) return null;
 
     const inputAssetBridgedToSelectedChainAddress = useSwapsStore.getState().inputAsset?.networks?.[toChainId]?.address;
 
     const shouldShowBridgeResult =
       isCrosschainSearch &&
       inputAssetBridgedToSelectedChainAddress &&
-      inputAssetBridgedToSelectedChainAddress === searchResults?.bridgeAsset?.networks?.[toChainId]?.address &&
-      filterBridgeAsset({ asset: searchResults?.bridgeAsset, filter: query });
+      inputAssetBridgedToSelectedChainAddress === verifiedAssets?.bridgeAsset?.networks?.[toChainId]?.address &&
+      filterBridgeAsset({ asset: verifiedAssets?.bridgeAsset, filter: query });
 
-    return shouldShowBridgeResult && searchResults.bridgeAsset
+    return shouldShowBridgeResult && verifiedAssets.bridgeAsset
       ? {
-          ...searchResults.bridgeAsset,
+          ...verifiedAssets.bridgeAsset,
           chainId: toChainId,
           favorite: unfilteredFavorites.some(
             fav =>
               fav.networks?.[toChainId]?.address ===
-              (searchResults?.bridgeAsset?.networks?.[toChainId]?.address || inputAssetBridgedToSelectedChainAddress)
+              (verifiedAssets?.bridgeAsset?.networks?.[toChainId]?.address || inputAssetBridgedToSelectedChainAddress)
           ),
         }
       : null;
-  }, [isCrosschainSearch, query, toChainId, unfilteredFavorites, searchResults?.bridgeAsset]);
+  }, [isCrosschainSearch, query, toChainId, unfilteredFavorites, verifiedAssets?.bridgeAsset]);
 
   const favoritesList = useDeepCompareMemo(() => {
     if (query === '') return unfilteredFavorites;
@@ -108,11 +110,11 @@ export function useSearchCurrencyLists() {
       results: buildListSectionsData({
         combinedData: {
           bridgeAsset: filteredBridgeAsset,
-          crosschainExactMatches: searchResults?.crosschainResults,
+          crosschainExactMatches: verifiedAssets?.crosschainResults,
           popularAssets: popularAssetsForChain,
           recentSwaps: recentsForChain,
-          unverifiedAssets: searchResults?.unverifiedAssets,
-          verifiedAssets: searchResults?.verifiedAssets,
+          unverifiedAssets: unverifiedAssets,
+          verifiedAssets: verifiedAssets?.results,
         },
         favoritesList,
         filteredBridgeAssetAddress: filteredBridgeAsset?.address,
@@ -123,9 +125,9 @@ export function useSearchCurrencyLists() {
     filteredBridgeAsset,
     popularAssetsForChain,
     recentsForChain,
-    searchResults?.crosschainResults,
-    searchResults?.verifiedAssets,
-    searchResults?.unverifiedAssets,
+    unverifiedAssets,
+    verifiedAssets?.crosschainResults,
+    verifiedAssets?.results,
   ]);
 
   useEffect(() => {
@@ -253,7 +255,7 @@ const buildListSectionsData = ({
   combinedData: {
     bridgeAsset: SearchAsset | null;
     verifiedAssets: SearchAsset[] | undefined;
-    unverifiedAssets: SearchAsset[] | undefined;
+    unverifiedAssets: SearchAsset[] | null;
     crosschainExactMatches: SearchAsset[] | undefined;
     recentSwaps: RecentSwap[] | undefined;
     popularAssets: SearchAsset[] | undefined;

@@ -55,25 +55,28 @@ export const SyncQuoteSharedValuesToState = () => {
 
   // Updates the state as a single block in response to quote changes to ensure the gas fee is cleanly updated once
   useAnimatedReaction(
-    () => quote.value,
-    (current, previous) => {
-      if (!assetToSell.value || !assetToBuy.value || !current || 'error' in current) return;
+    () => ({ quote: quote.value }),
+    (current, prev) => {
+      if (!assetToSell.value || (prev !== null && current.quote && 'error' in current.quote)) return;
 
-      const isSwappingMoreThanAvailableBalance = greaterThanWorklet(
-        current.sellAmount.toString(),
-        toScaledIntegerWorklet(assetToSell.value.balance.amount, assetToSell.value.decimals)
-      );
+      const isSwappingMoreThanAvailableBalance =
+        !!current.quote &&
+        !('error' in current.quote) &&
+        greaterThanWorklet(
+          current.quote.sellAmount.toString(),
+          toScaledIntegerWorklet(assetToSell.value.balance.amount, assetToSell.value.decimals)
+        );
 
       // Skip gas fee recalculation if the user is trying to swap more than their available balance, as it isn't
       // needed and was previously resulting in errors in useEstimatedGasFee.
       if (isSwappingMoreThanAvailableBalance) return;
 
-      if (!deepEqualWorklet(current, previous)) {
+      if (!deepEqualWorklet(current, prev)) {
         runOnJS(setInternalSyncedSwapStore)({
-          assetToBuy: assetToBuy.value,
+          assetToBuy: assetToBuy.value ?? undefined,
           assetToSell: assetToSell.value,
           chainId: assetToSell.value?.chainId,
-          quote: current,
+          quote: current.quote,
         });
       }
     },
@@ -152,7 +155,7 @@ export function SyncGasStateToSharedValues() {
   const nativeAssets = useBackendNetworksStore(state => state.getChainsNativeAsset());
   const nativeCurrencyUniqueId = useMemo(() => getUniqueId(nativeAssets[chainId]?.address, chainId), [chainId, nativeAssets]);
 
-  const isLoadingNativeNetworkAsset = useUserAssetsStore(state => state.isLoadingUserAssets);
+  const isLoadingNativeNetworkAsset = useUserAssetsStore(state => state.getStatus().isInitialLoading);
   const userNativeNetworkAsset = useUserAssetsStore(state => state.getLegacyUserAsset(nativeCurrencyUniqueId));
 
   const { data: estimatedGasLimit } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
@@ -160,7 +163,14 @@ export function SyncGasStateToSharedValues() {
   const gasFeeRange = useSharedValue<[string, string] | null>(null);
 
   useAnimatedReaction(
-    () => ({ bufferRange: gasFeeRange.value, inputAsset: internalSelectedInputAsset.value }),
+    () => ({
+      bufferRange: gasFeeRange.value,
+      inputAsset: {
+        chainId: internalSelectedInputAsset.value?.chainId,
+        isNativeAsset: internalSelectedInputAsset.value?.isNativeAsset,
+        uniqueId: internalSelectedInputAsset.value?.uniqueId,
+      },
+    }),
     (current, previous) => {
       const { inputAsset: currInputAsset, bufferRange: currBufferRange } = current;
       const { inputAsset: prevInputAsset, bufferRange: prevBufferRange } = previous || {};

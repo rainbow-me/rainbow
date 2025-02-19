@@ -23,7 +23,6 @@ import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { IS_ANDROID } from '@/env';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
-import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
@@ -184,7 +183,6 @@ function WalletScreen() {
       </ToastPositionContainer>
 
       {/* NOTE: The components below render null and are solely for keeping react-query and Zustand in sync */}
-      <UserAssetsSync />
       <RemoteCardsSync />
       <RemotePromoSheetSync />
 

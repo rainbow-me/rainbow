@@ -23,7 +23,11 @@ export const FastFallbackCoinIconImage = React.memo(function FastFallbackCoinIco
 
   return (
     <View
-      style={[sx.coinIconContainer, !disableShadow && sx.withShadow, { shadowColor, height: size, width: size, borderRadius: size / 2 }]}
+      style={[
+        sx.coinIconContainer,
+        !disableShadow && sx.withShadow,
+        { borderRadius: size / 2, height: size, shadowColor: disableShadow ? undefined : shadowColor, width: size },
+      ]}
     >
       {icon === undefined || icon === '' || didErrorForUrl === icon ? (
         <View style={sx.fallbackWrapper}>{children()}</View>

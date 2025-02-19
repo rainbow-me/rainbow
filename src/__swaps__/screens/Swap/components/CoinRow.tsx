@@ -44,7 +44,8 @@ interface InputCoinRowProps {
   nativePriceChange?: string;
   onPress: (asset: ParsedSearchAsset | null) => void;
   output?: false | undefined;
-  uniqueId: UniqueId;
+  uniqueId?: never;
+  uniqueIdOrAsset: UniqueId | ParsedSearchAsset;
   testID?: string;
 }
 
@@ -58,12 +59,17 @@ interface OutputCoinRowProps extends PartialAsset {
   isTrending?: boolean;
   isSupportedChain: boolean;
   testID?: string;
+  uniqueIdOrAsset?: never;
 }
 
 type CoinRowProps = InputCoinRowProps | OutputCoinRowProps;
 
-export function CoinRow({ isFavorite, isSupportedChain, onPress, output, uniqueId, testID, ...assetProps }: CoinRowProps) {
-  const inputAsset = useUserAssetsStore(state => (output ? undefined : state.getUserAsset(uniqueId)));
+export function CoinRow({ isFavorite, isSupportedChain, onPress, output, uniqueIdOrAsset, testID, ...assetProps }: CoinRowProps) {
+  const inputAsset = output
+    ? undefined
+    : typeof uniqueIdOrAsset === 'string'
+      ? useUserAssetsStore.getState().getUserAsset(uniqueIdOrAsset)
+      : uniqueIdOrAsset;
   const outputAsset = output ? (assetProps as PartialAsset) : undefined;
 
   const asset = output ? outputAsset : inputAsset;

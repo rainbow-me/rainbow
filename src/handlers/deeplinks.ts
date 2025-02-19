@@ -25,13 +25,14 @@ import { GasSpeed } from '@/__swaps__/types/gas';
 
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { tokenSearchQueryFunction } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { isAddress } from 'viem';
 import { navigateToSwaps, SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
 import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { ChainId } from '@/state/backendNetworks/types';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
   url: string;
@@ -358,15 +359,12 @@ const querySwapAsset = async (uniqueId: string | undefined): Promise<ParsedSearc
 
   const userAsset = userAssetsStore.getState().getUserAsset(uniqueId) || undefined;
 
-  const searchResults = await tokenSearchQueryFunction({ chainId, query: address.toLowerCase() }, null);
+  const searchResults = await searchVerifiedTokens(
+    { query: address.toLowerCase(), chainId: ChainId.mainnet, list: TokenLists.Verified },
+    null
+  );
 
-  const possibleResults = [
-    searchResults.bridgeAsset,
-    ...searchResults.crosschainResults,
-    ...searchResults.verifiedAssets,
-    ...searchResults.unverifiedAssets,
-  ];
-  const searchAsset = possibleResults.filter(x => !!x)?.[0];
+  const searchAsset = searchResults.results.filter(x => !!x)?.[0];
 
   if (!searchAsset) return userAsset;
 

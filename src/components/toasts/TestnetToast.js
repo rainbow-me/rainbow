@@ -8,7 +8,7 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const TestnetToast = ({ chainId }) => {
-  const { connectedToAnvil } = useConnectedToAnvilStore();
+  const connectedToAnvil = useConnectedToAnvilStore(state => state.connectedToAnvil);
   const isConnected = useInternetStatus();
   const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
   const name = useBackendNetworksStore.getState().getChainsName()[chainId];

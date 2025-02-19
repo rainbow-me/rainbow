@@ -1,18 +1,19 @@
 import { Box, Text } from '@/design-system';
 import { haptics } from '@/utils';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ETH_SYMBOL, USDC_ADDRESS } from '@/references';
 import { ClaimableMenu } from '../../shared/components/ClaimableMenu';
 import { TokenToReceive } from '../types';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
-import { tokenSearchQueryFunction } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { SearchAsset } from '@/__swaps__/types/search';
 import * as i18n from '@/languages';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { IS_ANDROID } from '@/env';
 import { MenuItem } from '@/components/DropdownMenu';
+import { ChainId } from '@/state/backendNetworks/types';
 
 type TokenMap = Record<TokenToReceive['symbol'], TokenToReceive>;
 
@@ -28,22 +29,17 @@ export function ClaimCustomization() {
   } = useTransactionClaimableContext();
 
   const [isInitialState, setIsInitialState] = useState(true);
-  const [usdc, setUsdc] = useState(null);
+  const [usdc, setUsdc] = useState<SearchAsset | null>(null);
 
   const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
 
   useEffect(() => {
     const fetchUsdcAsset = async () => {
-      const searchResults = await tokenSearchQueryFunction({ query: USDC_ADDRESS }, null);
+      const searchResults = await searchVerifiedTokens({ query: USDC_ADDRESS, chainId: ChainId.mainnet, list: TokenLists.Verified }, null);
 
-      const possibleResults = [
-        searchResults.bridgeAsset,
-        ...searchResults.crosschainResults,
-        ...searchResults.verifiedAssets,
-        ...searchResults.unverifiedAssets,
-      ];
+      const possibleResults = searchResults.results;
       const usdcPoss = possibleResults.filter(asset => asset?.address === USDC_ADDRESS && asset?.symbol === 'USDC');
-      const usdc = possibleResults.filter(asset => asset?.address === USDC_ADDRESS && asset?.symbol === 'USDC')?.[0];
+      const usdc = usdcPoss?.[0];
       if (usdc) {
         setUsdc(usdc);
       }

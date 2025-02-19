@@ -1,30 +1,40 @@
+import React, { memo, useCallback, useMemo, useState } from 'react';
+import { Insets, StyleSheet } from 'react-native';
+import Animated, { runOnUI, useAnimatedRef, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
+import { analyticsV2 } from '@/analytics';
+import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { Box, Inline, Text, TextIcon, useColorMode } from '@/design-system';
+import { palettes } from '@/design-system/color/palettes';
+import * as i18n from '@/languages';
+import { equalWorklet } from '@/safe-math/SafeMath';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
-import { FlatList } from 'react-native';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { useSearchCurrencyLists } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ChainId } from '@/state/backendNetworks/types';
 import { AssetToBuySectionId, SearchAsset, TokenToBuyListItem } from '@/__swaps__/types/search';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { getChainColorWorklet } from '@/__swaps__/utils/swaps';
-import { getUniqueId } from '@/utils/ethereumUtils';
-import { analyticsV2 } from '@/analytics';
-import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-system';
-import { palettes } from '@/design-system/color/palettes';
-import * as i18n from '@/languages';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import React, { memo, useCallback, useMemo, useState } from 'react';
-import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { useSwapsSearchStore } from '../../resources/search/searchV2';
 import { ChainSelection } from './ChainSelection';
 
-export const BUY_LIST_HEADER_HEIGHT = 20 + 10 + 8; // paddingTop + height + paddingBottom
+export const BUY_LIST_HEADER_HEIGHT = 20 + 10 + 10; // paddingTop + height + paddingBottom
+
+const SCROLL_INDICATOR_INSETS = {
+  focused: {
+    bottom: 28 + (EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT),
+  },
+  unfocused: {
+    bottom: 28,
+  },
+};
 
 interface SectionHeaderProp {
   color: string | undefined;
@@ -90,6 +100,18 @@ const getItemLayout = (data: ArrayLike<TokenToBuyListItem> | null | undefined, i
   return { length, offset, index };
 };
 
+const keyExtractor = (item: TokenToBuyListItem) => {
+  return `${item.listItemType}-${item.listItemType === 'coinRow' ? item.uniqueId : item.id}`;
+};
+
+const getFormattedTestId = (name: string, chainId: ChainId) => {
+  return `token-to-buy-${name}-${chainId}`.toLowerCase().replace(/\s+/g, '-');
+};
+
+const MemoizedCoinRow = memo(CoinRow, (prevProps, nextProps) => {
+  return prevProps.uniqueId === nextProps.uniqueId && prevProps.isFavorite === nextProps.isFavorite;
+});
+
 export const TokenToBuyList = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, outputProgress, setAsset } = useSwapContext();
   const { results: sections, isLoading } = useSearchCurrencyLists();
@@ -104,7 +126,11 @@ export const TokenToBuyList = () => {
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
       runOnUI(() => {
-        if (internalSelectedInputAsset.value && getUniqueId(token.address, token.chainId) !== internalSelectedOutputAsset.value?.uniqueId) {
+        if (
+          internalSelectedInputAsset.value &&
+          !equalWorklet(internalSelectedInputAsset.value.maxSwappableAmount, '0') &&
+          getUniqueId(token.address, token.chainId) !== internalSelectedOutputAsset.value?.uniqueId
+        ) {
           isQuoteStale.value = 1;
           isFetching.value = true;
         }
@@ -141,100 +167,104 @@ export const TokenToBuyList = () => {
     return { height: bottomPadding };
   });
 
-  const animatedListProps = useAnimatedProps(() => {
+  const scrollIndicatorInsets = useDerivedValue<Insets | undefined>(() => {
     const isFocused = outputProgress.value === 2;
-    return {
-      scrollIndicatorInsets: { bottom: 28 + (isFocused ? EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT : 0) },
-    };
+    return SCROLL_INDICATOR_INSETS[isFocused ? 'focused' : 'unfocused'];
   });
+
+  const renderItem = useCallback(
+    ({ item }: { item: TokenToBuyListItem }) => {
+      if (item.listItemType === 'header') {
+        return <TokenToBuySectionHeader sectionId={item.id} />;
+      }
+      return (
+        <MemoizedCoinRow
+          address={item.address}
+          chainId={item.chainId}
+          colors={item.colors}
+          icon_url={item.icon_url}
+          // @ts-expect-error item.favorite does not exist - it does for favorites, need to fix the type
+          isFavorite={item.favorite}
+          isSupportedChain={supportedChainsBooleanMap[item.chainId] ?? false}
+          mainnetAddress={item.mainnetAddress}
+          name={item.name}
+          onPress={() => handleSelectToken(item)}
+          output
+          symbol={item.symbol}
+          testID={getFormattedTestId(item.name, item.chainId)}
+          uniqueId={item.uniqueId}
+        />
+      );
+    },
+    [handleSelectToken, supportedChainsBooleanMap]
+  );
+
+  const listFooter = useMemo(() => {
+    return <Animated.View style={[animatedListPadding, styles.listFooter]} />;
+  }, [animatedListPadding]);
+
+  const animatedRef = useAnimatedRef<Animated.FlatList<TokenToBuyListItem>>();
 
   if (isLoading) return null;
 
-  const getFormattedTestId = (name: string, chainId: ChainId) => {
-    return `token-to-buy-${name}-${chainId}`.toLowerCase().replace(/\s+/g, '-');
-  };
-
   return (
-    <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }} testID={'token-to-buy-list'}>
-      <ChainSelection output />
-      <FlatList
-        keyboardShouldPersistTaps="always"
+    <Box style={styles.list} testID={'token-to-buy-list'}>
+      <ChainSelection animatedRef={animatedRef} output />
+      <Animated.FlatList
         ListEmptyComponent={<ListEmpty output />}
-        ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
-        contentContainerStyle={{ paddingBottom: 16 }}
+        ListFooterComponent={listFooter}
+        contentContainerStyle={styles.contentContainer}
         data={sections}
         getItemLayout={getItemLayout}
-        keyExtractor={item => `${item.listItemType}-${item.listItemType === 'coinRow' ? item.uniqueId : item.id}`}
-        renderItem={({ item }) => {
-          if (item.listItemType === 'header') {
-            return <TokenToBuySectionHeader section={{ data: item.data, id: item.id }} />;
-          }
-          return (
-            <CoinRow
-              address={item.address}
-              chainId={item.chainId}
-              colors={item.colors}
-              icon_url={item.icon_url}
-              // @ts-expect-error item.favorite does not exist - it does for favorites, need to fix the type
-              isFavorite={item.favorite}
-              isSupportedChain={supportedChainsBooleanMap[item.chainId] ?? false}
-              mainnetAddress={item.mainnetAddress}
-              name={item.name}
-              onPress={() => handleSelectToken(item)}
-              output
-              symbol={item.symbol}
-              testID={getFormattedTestId(item.name, item.chainId)}
-              uniqueId={item.uniqueId}
-            />
-          );
-        }}
-        renderScrollComponent={props => {
-          return (
-            <Animated.ScrollView
-              // eslint-disable-next-line react/jsx-props-no-spreading
-              {...props}
-              animatedProps={animatedListProps}
-            />
-          );
-        }}
-        style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
+        initialNumToRender={12}
+        keyExtractor={keyExtractor}
+        keyboardShouldPersistTaps="always"
+        maxToRenderPerBatch={8}
+        ref={animatedRef}
+        renderItem={renderItem}
+        scrollIndicatorInsets={scrollIndicatorInsets}
+        style={styles.list}
+        windowSize={3}
       />
     </Box>
   );
 };
 
 interface TokenToBuySectionHeaderProps {
-  section: { id: AssetToBuySectionId; data: SearchAsset[] };
+  sectionId: AssetToBuySectionId;
 }
 
-const TokenToBuySectionHeader = memo(function TokenToBuySectionHeader({ section }: TokenToBuySectionHeaderProps) {
-  const { symbol, title } = SECTION_HEADER_INFO[section.id];
+const TokenToBuySectionHeader = memo(function TokenToBuySectionHeader({ sectionId }: TokenToBuySectionHeaderProps) {
+  const { symbol, title } = SECTION_HEADER_INFO[sectionId];
 
   const iconColor = useMemo(() => {
-    const color = SECTION_HEADER_INFO[section.id].color;
+    const color = SECTION_HEADER_INFO[sectionId].color;
     if (color !== undefined) {
       return { custom: color };
     }
-  }, [section.id]);
+  }, [sectionId]);
 
   return (
-    <Box testID={`${section.id}-token-to-buy-section-header`}>
-      <Stack space="8px">
-        <Box paddingBottom="10px" paddingHorizontal="20px" paddingTop="20px">
-          <Inline space="6px" alignVertical="center">
-            {section.id === 'bridge' ? (
-              <BridgeHeaderIcon />
-            ) : (
-              <TextIcon color={iconColor || 'labelSecondary'} size="13pt" weight="heavy" width={16}>
-                {symbol}
-              </TextIcon>
-            )}
-            <Text size="15pt" weight="heavy" color="label">
-              {title}
-            </Text>
-          </Inline>
-        </Box>
-      </Stack>
+    <Box
+      height={BUY_LIST_HEADER_HEIGHT}
+      justifyContent="center"
+      paddingBottom="10px"
+      paddingHorizontal="20px"
+      paddingTop="20px"
+      testID={`${sectionId}-token-to-buy-section-header`}
+    >
+      <Inline space="6px" alignVertical="center">
+        {sectionId === 'bridge' ? (
+          <BridgeHeaderIcon />
+        ) : (
+          <TextIcon color={iconColor || 'labelSecondary'} height={8} size="13pt" weight="heavy" width={16}>
+            {symbol}
+          </TextIcon>
+        )}
+        <Text size="15pt" weight="heavy" color="label">
+          {title}
+        </Text>
+      </Inline>
     </Box>
   );
 });
@@ -250,8 +280,21 @@ const BridgeHeaderIcon = memo(function BridgeHeaderIcon() {
   });
 
   return (
-    <AnimatedTextIcon size="13pt" textStyle={iconColor} weight="heavy" width={16}>
+    <AnimatedTextIcon height={8} size="13pt" textStyle={iconColor} weight="heavy" width={16}>
       {SECTION_HEADER_INFO.bridge.symbol}
     </AnimatedTextIcon>
   );
+});
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    paddingBottom: 16,
+  },
+  list: {
+    height: EXPANDED_INPUT_HEIGHT - 77,
+    width: DEVICE_WIDTH - 24,
+  },
+  listFooter: {
+    width: '100%',
+  },
 });
