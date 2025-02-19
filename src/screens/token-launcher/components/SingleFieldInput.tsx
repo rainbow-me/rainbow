@@ -208,6 +208,7 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
           <AnimatedText
             numberOfLines={1}
             style={{
+              // Arbitrary width to prevent text from clipping
               width: 400,
             }}
             color="red"

@@ -72,8 +72,9 @@ function ContinueButton() {
     setStep('overview');
   }, [setStep]);
 
+  // TODO: remove testing
   return (
-    <ButtonPressAnimation disabled={false} onPress={goToOverviewStep}>
+    <ButtonPressAnimation disabled={!hasCompletedRequiredFields || true} onPress={goToOverviewStep}>
       <Box
         background={hasCompletedRequiredFields ? 'blue' : 'fillTertiary'}
         justifyContent="center"
@@ -82,7 +83,7 @@ function ContinueButton() {
         borderRadius={28}
         height={48}
       >
-        <Text color="label" size="20pt" weight="heavy">
+        <Text color={hasCompletedRequiredFields ? 'label' : 'labelTertiary'} size="20pt" weight="heavy">
           {'Continue'}
         </Text>
       </Box>
