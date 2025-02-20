@@ -22,11 +22,12 @@ import * as i18n from '@/languages';
 import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
 import chroma from 'chroma-js';
-import { PropsWithChildren, useEffect } from 'react';
-import React, { Pressable, StyleSheet, View } from 'react-native';
+import { PropsWithChildren, useCallback, useEffect } from 'react';
+import React, { LayoutChangeEvent, Pressable, StyleSheet, View } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import Animated, {
   Easing,
   FadeIn,
@@ -35,6 +36,7 @@ import Animated, {
   runOnJS,
   SharedValue,
   useAnimatedReaction,
+  useAnimatedScrollHandler,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -60,8 +62,11 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { AnimatedTextIcon } from './AnimatedComponents/AnimatedTextIcon';
+import { useNavigation } from '@/navigation';
 
 const t = i18n.l.network_switcher;
+const MAX_HEIGHT = deviceUtils.dimensions.height * 0.85 - safeAreaInsetValues.top;
+const FOOTER_HEIGHT = 91;
 
 const translations = {
   edit: i18n.t(t.edit),
@@ -96,7 +101,7 @@ function EditButton({ editing }: { editing: SharedValue<boolean> }) {
   );
 }
 
-function Header({ editing }: { editing: SharedValue<boolean> }) {
+function Header({ canEdit, editing }: { canEdit: boolean; editing: SharedValue<boolean> }) {
   const separatorTertiary = useForegroundColor('separatorTertiary');
   const fill = useForegroundColor('fill');
 
@@ -113,7 +118,7 @@ function Header({ editing }: { editing: SharedValue<boolean> }) {
           {title}
         </AnimatedText>
 
-        <EditButton editing={editing} />
+        {canEdit && <EditButton editing={editing} />}
       </View>
     </View>
   );
@@ -245,12 +250,15 @@ const useNetworkOptionStyle = (isSelected: SharedValue<boolean>, color?: string,
 function AllNetworksOption({
   selected,
   setSelected,
+  goBackOnSelect,
 }: {
   selected: SharedValue<ChainId | undefined>;
   setSelected: (chainId: ChainId | undefined) => void;
+  goBackOnSelect?: boolean;
 }) {
   const { isDarkMode } = useColorMode();
   const blue = useForegroundColor('blue');
+  const { goBack } = useNavigation();
 
   const isSelected = useDerivedValue(() => selected.value === undefined);
   const { animatedStyle } = useNetworkOptionStyle(isSelected, blue, true);
@@ -263,13 +271,20 @@ function AllNetworksOption({
     };
   });
 
+  const onSelectAllNetworks = useCallback(() => {
+    'worklet';
+    selected.value = undefined;
+    runOnJS(setSelected)(undefined);
+
+    if (goBackOnSelect) {
+      runOnJS(goBack)();
+    }
+  }, []);
+
   return (
     <GestureHandlerButton
       hapticTrigger="tap-end"
-      onPressWorklet={() => {
-        'worklet';
-        setSelected(undefined);
-      }}
+      onPressWorklet={onSelectAllNetworks}
       scaleTo={0.94}
       style={[sx.allNetworksButton, animatedStyle]}
     >
@@ -298,10 +313,12 @@ function AllNetworksSection({
   editing,
   selected,
   setSelected,
+  goBackOnSelect,
 }: {
   editing: SharedValue<boolean>;
   selected: SharedValue<ChainId | undefined>;
   setSelected: (chainId: ChainId | undefined) => void;
+  goBackOnSelect?: boolean;
 }) {
   const animatedStyle = useAnimatedStyle(() => ({
     height: withClamp(
@@ -317,7 +334,7 @@ function AllNetworksSection({
 
   return (
     <Animated.View style={[sx.allNetworksContainer, animatedStyle]}>
-      <AllNetworksOption selected={selected} setSelected={setSelected} />
+      <AllNetworksOption selected={selected} setSelected={setSelected} goBackOnSelect={goBackOnSelect} />
       <Inset horizontal="10px">
         <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
       </Inset>
@@ -349,6 +366,8 @@ const ITEM_WIDTH = (DEVICE_WIDTH - SHEET_INNER_PADDING * 2 - SHEET_OUTER_INSET *
 const ITEM_HEIGHT = 48;
 const SEPARATOR_HEIGHT = 68;
 const SEPARATOR_HEIGHT_NETWORK_CHIP = 18;
+
+const SHEET_WIDTH = deviceUtils.dimensions.width - 16;
 
 const ALL_NETWORKS_BADGE_SIZE = 16;
 const THICKER_BORDER_WIDTH = 5 / 3;
@@ -554,16 +573,40 @@ function EmptyUnpinnedPlaceholder({
 
 function NetworksGrid({
   editing,
+  expanded,
   selected,
   setSelected,
+  allowedNetworks,
+  scrollY,
+  scrollViewHeight,
+  goBackOnSelect,
 }: {
   editing: SharedValue<boolean>;
+  expanded: SharedValue<boolean>;
   selected: SharedValue<ChainId | undefined>;
   setSelected: (chainId: ChainId | undefined) => void;
+  allowedNetworks?: ChainId[];
+  scrollY: SharedValue<number>;
+  scrollViewHeight: SharedValue<number>;
+  goBackOnSelect?: boolean;
 }) {
-  const initialPinned = networkSwitcherStore.getState().pinnedNetworks;
+  const { goBack } = useNavigation();
+
+  let initialPinned = networkSwitcherStore.getState().pinnedNetworks;
   const sortedSupportedChainIds = useBackendNetworksStore.getState().getSortedSupportedChainIds();
-  const initialUnpinned = sortedSupportedChainIds.filter(chainId => !initialPinned.includes(chainId));
+  let initialUnpinned = sortedSupportedChainIds.filter(chainId => !initialPinned.includes(chainId));
+
+  if (allowedNetworks) {
+    initialPinned = initialPinned.filter(chainId => allowedNetworks.includes(chainId));
+    initialUnpinned = initialUnpinned.filter(chainId => allowedNetworks.includes(chainId));
+  }
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: event => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
+
   const networks = useSharedValue({ [Section.pinned]: initialPinned, [Section.unpinned]: initialUnpinned });
 
   useEffect(() => {
@@ -578,7 +621,6 @@ function NetworksGrid({
     };
   }, [networks]);
 
-  const expanded = useSharedValue(false);
   const dragging = useSharedValue<DraggingState | null>(null);
   const isUnpinnedHidden = useDerivedValue(() => !expanded.value && !editing.value);
 
@@ -594,6 +636,10 @@ function NetworksGrid({
       [Section.unpinned]: { y: pinnedHeight + (showExpandButtonAsNetworkChip.value ? SEPARATOR_HEIGHT_NETWORK_CHIP : SEPARATOR_HEIGHT) },
     };
   });
+
+  const onLayout = useCallback((event: LayoutChangeEvent) => {
+    scrollViewHeight.value = event.nativeEvent.layout.height;
+  }, []);
 
   const containerHeight = useDerivedValue(() => {
     const length = networks.value[Section.unpinned].length;
@@ -613,7 +659,20 @@ function NetworksGrid({
     height: withSpring(containerHeight.value, SPRING_CONFIGS.springConfig),
   }));
 
+  const onSelectNetwork = useCallback((chainId: ChainId) => {
+    'worklet';
+
+    triggerHaptics('selection');
+    selected.value = chainId;
+    runOnJS(setSelected)(chainId);
+
+    if (goBackOnSelect) {
+      runOnJS(goBack)();
+    }
+  }, []);
+
   const dragNetwork = Gesture.Pan()
+    .activateAfterLongPress(180)
     .maxPointers(1)
     .onTouchesDown((e, s) => {
       if (!editing.value) {
@@ -682,65 +741,111 @@ function NetworksGrid({
       const chainId = networks.value[section][index];
       if (!chainId) return;
 
-      triggerHaptics('selection');
-      setSelected(chainId);
+      onSelectNetwork(chainId);
     });
 
   const gridGesture = Gesture.Exclusive(dragNetwork, tapNetwork);
 
   return (
-    <GestureDetector gesture={gridGesture}>
-      <Animated.View style={[containerStyle, { marginTop: 14 }]}>
-        {initialPinned.map(chainId => (
-          <Draggable
-            key={chainId}
+    <Animated.ScrollView
+      onScroll={scrollHandler}
+      showsVerticalScrollIndicator={false}
+      bounces={true}
+      style={{ overflow: 'hidden' }}
+      contentContainerStyle={{ overflow: 'hidden' }}
+      onLayout={onLayout}
+    >
+      <GestureDetector gesture={gridGesture}>
+        <Animated.View style={[containerStyle, { marginTop: 14, overflow: 'hidden' }]}>
+          {initialPinned.map(chainId => (
+            <Draggable
+              key={chainId}
+              networks={networks}
+              dragging={dragging}
+              chainId={chainId}
+              sectionsOffsets={sectionsOffsets}
+              isUnpinnedHidden={isUnpinnedHidden}
+            >
+              <NetworkOption key={chainId} chainId={chainId} selected={selected} />
+            </Draggable>
+          ))}
+
+          <SectionSeparator
+            editing={editing}
+            expanded={expanded}
             networks={networks}
-            dragging={dragging}
-            chainId={chainId}
             sectionsOffsets={sectionsOffsets}
-            isUnpinnedHidden={isUnpinnedHidden}
-          >
-            <NetworkOption key={chainId} chainId={chainId} selected={selected} />
-          </Draggable>
-        ))}
+            showExpandButtonAsNetworkChip={showExpandButtonAsNetworkChip}
+          />
 
-        <SectionSeparator
-          editing={editing}
-          expanded={expanded}
-          networks={networks}
-          sectionsOffsets={sectionsOffsets}
-          showExpandButtonAsNetworkChip={showExpandButtonAsNetworkChip}
-        />
+          <EmptyUnpinnedPlaceholder sectionsOffsets={sectionsOffsets} networks={networks} isUnpinnedHidden={isUnpinnedHidden} />
 
-        <EmptyUnpinnedPlaceholder sectionsOffsets={sectionsOffsets} networks={networks} isUnpinnedHidden={isUnpinnedHidden} />
-
-        {initialUnpinned.map(chainId => (
-          <Draggable
-            key={chainId}
-            networks={networks}
-            dragging={dragging}
-            chainId={chainId}
-            sectionsOffsets={sectionsOffsets}
-            isUnpinnedHidden={isUnpinnedHidden}
-          >
-            <NetworkOption key={chainId} chainId={chainId} selected={selected} />
-          </Draggable>
-        ))}
-      </Animated.View>
-    </GestureDetector>
+          {initialUnpinned.map(chainId => (
+            <Draggable
+              key={chainId}
+              networks={networks}
+              dragging={dragging}
+              chainId={chainId}
+              sectionsOffsets={sectionsOffsets}
+              isUnpinnedHidden={isUnpinnedHidden}
+            >
+              <NetworkOption key={chainId} chainId={chainId} selected={selected} />
+            </Draggable>
+          ))}
+        </Animated.View>
+      </GestureDetector>
+    </Animated.ScrollView>
   );
 }
 
-function Sheet({ children, editing, onClose }: PropsWithChildren<{ editing: SharedValue<boolean>; onClose: VoidFunction }>) {
+function Sheet({
+  children,
+  editing,
+  expanded,
+  onClose,
+  canEdit,
+  scrollY,
+  scrollViewHeight,
+}: PropsWithChildren<{
+  editing: SharedValue<boolean>;
+  expanded: SharedValue<boolean>;
+  onClose: VoidFunction;
+  canEdit: boolean;
+  scrollY: SharedValue<number>;
+  scrollViewHeight: SharedValue<number>;
+}>) {
   const { isDarkMode } = useColorMode();
   const surfacePrimary = useBackgroundColor('surfacePrimary');
   const backgroundColor = isDarkMode ? '#191A1C' : surfacePrimary;
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
+  const containerHeight = useSharedValue(0);
+
+  const onLayout = useCallback((event: LayoutChangeEvent) => {
+    containerHeight.value = event.nativeEvent.layout.height;
+  }, []);
+
   // make sure the onClose function is called when the sheet unmounts
   useEffect(() => {
     return () => onClose?.();
   }, [onClose]);
+
+  const gradientStyle = useAnimatedStyle(() => {
+    const isAtBottom = scrollY.value + scrollViewHeight.value >= containerHeight.value;
+    const distanceFromBottom = containerHeight.value - (scrollY.value + scrollViewHeight.value);
+    const fadeStartDistance = FOOTER_HEIGHT; // Start fading when FOOTER_HEIGHT px from bottom
+
+    const isLessThanMaxHeight = containerHeight.value < MAX_HEIGHT;
+
+    let fadeOpacity = isLessThanMaxHeight ? 0 : 1;
+    if (distanceFromBottom < fadeStartDistance && !isLessThanMaxHeight) {
+      fadeOpacity = Math.max(0, distanceFromBottom / fadeStartDistance);
+    }
+
+    return {
+      opacity: withTiming(expanded.value ? (isAtBottom ? 0 : fadeOpacity) : 0, TIMING_CONFIGS.buttonPressConfig),
+    };
+  });
 
   return (
     <>
@@ -752,9 +857,21 @@ function Sheet({ children, editing, onClose }: PropsWithChildren<{ editing: Shar
             borderColor: isDarkMode ? separatorSecondary : globalColors.white100,
           },
         ]}
+        onLayout={onLayout}
       >
-        <Header editing={editing} />
+        <Header canEdit={canEdit} editing={editing} />
         {children}
+        <Animated.View
+          style={[gradientStyle, { height: FOOTER_HEIGHT, position: 'absolute', bottom: 0, width: SHEET_WIDTH, pointerEvents: 'none' }]}
+        >
+          <EasingGradient
+            endColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
+            endOpacity={1}
+            startColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
+            startOpacity={0}
+            style={{ height: '100%', position: 'absolute', width: '100%' }}
+          />
+        </Animated.View>
       </Box>
       <TapToDismiss />
     </>
@@ -763,16 +880,31 @@ function Sheet({ children, editing, onClose }: PropsWithChildren<{ editing: Shar
 
 export function NetworkSelector() {
   const {
-    params: { onClose = noop, selected, setSelected },
+    params: { onClose = noop, selected, canEdit = true, canSelectAllNetworks = true, setSelected, allowedNetworks, goBackOnSelect = false },
   } = useRoute<RouteProp<RootStackParamList, 'NetworkSelector'>>();
 
   const editing = useSharedValue(false);
+  const expanded = useSharedValue(false);
+  const scrollY = useSharedValue(0);
+  const scrollViewHeight = useSharedValue(0);
+  const selectedNetwork = useSharedValue(typeof selected === 'number' ? selected : selected?.value);
 
   return (
-    <Sheet editing={editing} onClose={onClose}>
-      <CustomizeNetworksBanner editing={editing} />
-      <AllNetworksSection editing={editing} selected={selected} setSelected={setSelected} />
-      <NetworksGrid editing={editing} selected={selected} setSelected={setSelected} />
+    <Sheet expanded={expanded} editing={editing} onClose={onClose} canEdit={canEdit} scrollY={scrollY} scrollViewHeight={scrollViewHeight}>
+      {canEdit && <CustomizeNetworksBanner editing={editing} />}
+      {canSelectAllNetworks && (
+        <AllNetworksSection editing={editing} selected={selectedNetwork} setSelected={setSelected} goBackOnSelect={goBackOnSelect} />
+      )}
+      <NetworksGrid
+        editing={editing}
+        expanded={expanded}
+        selected={selectedNetwork}
+        setSelected={setSelected}
+        allowedNetworks={allowedNetworks}
+        scrollY={scrollY}
+        scrollViewHeight={scrollViewHeight}
+        goBackOnSelect={goBackOnSelect}
+      />
     </Sheet>
   );
 }
@@ -914,7 +1046,8 @@ const sx = StyleSheet.create({
     pointerEvents: 'box-none',
     position: 'absolute',
     right: 8,
-    width: deviceUtils.dimensions.width - 16,
+    width: SHEET_WIDTH,
+    maxHeight: MAX_HEIGHT,
     zIndex: 30000,
   },
   sheetHandle: {

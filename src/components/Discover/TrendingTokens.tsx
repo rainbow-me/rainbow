@@ -530,9 +530,8 @@ function NetworkFilter() {
 
   const setSelected = useCallback(
     (chainId: ChainId | undefined) => {
-      'worklet';
       selected.value = chainId;
-      runOnJS(setChainId)(chainId);
+      setChainId(chainId);
     },
     [selected, setChainId]
   );
