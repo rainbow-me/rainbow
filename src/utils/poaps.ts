@@ -19,7 +19,7 @@ export const getPoapAndOpenSheetWithSecretWord = async (secretWord: string, goBa
         event: event.getPoapEventBySecretWord,
       });
     }
-  } catch (e) {
+  } catch {
     logger.warn('[poaps]: Error getting POAP with secret word');
   }
 };

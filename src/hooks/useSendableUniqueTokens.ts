@@ -1,14 +1,10 @@
 import { groupBy } from 'lodash';
-import { useAccountSettings } from '.';
-import { useLegacyNFTs } from '@/resources/nfts';
+import { useUserNftsStore } from '@/state/nfts';
+import { UniqueAsset } from '@/entities';
 
 export default function useSendableUniqueTokens() {
-  const { accountAddress } = useAccountSettings();
-  const {
-    data: { nfts: uniqueTokens },
-  } = useLegacyNFTs({ address: accountAddress });
-
-  const sendableUniqueTokens = uniqueTokens?.filter((uniqueToken: any) => uniqueToken.isSendable);
+  const uniqueTokens = useUserNftsStore(state => state.getData()?.nfts || []);
+  const sendableUniqueTokens = uniqueTokens?.filter((uniqueToken: UniqueAsset) => uniqueToken.isSendable);
   const grouped = groupBy(sendableUniqueTokens, token => token.familyName);
   const families = Object.keys(grouped).sort();
   const sendableTokens = [];

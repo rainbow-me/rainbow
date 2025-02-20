@@ -3,11 +3,12 @@ import { Box, Inline, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
 import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
-import { NftSort, parseNftSort, useNftSort } from '@/hooks/useNFTsSortBy';
 import { colors } from '@/styles';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_IOS } from '@/env';
+import { useNftSortStore } from '@/state/nfts';
+import { useAccountSettings } from '@/hooks';
 
 const TokenFamilyHeaderHeight = 48;
 
@@ -34,7 +35,9 @@ const getMenuItemIcon = (value: NftCollectionSortCriterion) => {
 };
 
 const CollectiblesHeader = () => {
-  const { nftSort, nftSortDirection, updateNFTSort } = useNftSort();
+  const { accountAddress } = useAccountSettings();
+  const { getNftSort, updateNftSort } = useNftSortStore();
+  const nftSort = getNftSort(accountAddress);
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
@@ -46,7 +49,7 @@ const CollectiblesHeader = () => {
       paddingBottom="2px"
       paddingHorizontal={'19px (Deprecated)'}
       justifyContent="flex-end"
-      key={`collectibles_${nftSort}`}
+      key={`collectibles_${nftSort.sortBy}`}
       testID={`collectibles-list-header`}
     >
       <Inline alignHorizontal="justify" alignVertical="center">
@@ -55,11 +58,11 @@ const CollectiblesHeader = () => {
         </Text>
 
         <ListHeaderMenu
-          selected={`${nftSort}|${nftSortDirection}`}
+          selected={`${nftSort.sortBy}|${nftSort.sortDirection}`}
           menuItems={Object.values(NftCollectionSortCriterion).map(sortCriterion => {
             return {
               icon: { iconType: 'SYSTEM', iconValue: getMenuItemIcon(sortCriterion) },
-              ...(nftSort === sortCriterion && IS_IOS // submenus look weird in android, so it toggles when clicking the same item
+              ...(nftSort.sortBy === sortCriterion && IS_IOS // submenus look weird in android, so it toggles when clicking the same item
                 ? {
                     menuTitle: i18n.t(i18n.l.nfts.sort[sortCriterion]),
                     menuPreferredElementSize: 'small',
@@ -71,7 +74,7 @@ const CollectiblesHeader = () => {
                         icon: {
                           iconType: 'SYSTEM',
                           iconValue: 'arrow.up.circle',
-                          iconTint: nftSortDirection === SortDirection.Asc ? colors.grey : undefined,
+                          iconTint: nftSort.sortDirection === SortDirection.Asc ? colors.grey : undefined,
                         },
                       },
                       {
@@ -80,21 +83,23 @@ const CollectiblesHeader = () => {
                         icon: {
                           iconType: 'SYSTEM',
                           iconValue: 'arrow.down.circle',
-                          iconTint: nftSortDirection === SortDirection.Desc ? colors.grey : undefined,
+                          iconTint: nftSort.sortDirection === SortDirection.Desc ? colors.grey : undefined,
                         },
                       },
                     ],
                   }
                 : {
-                    actionKey: `${sortCriterion}|${nftSortDirection === SortDirection.Asc ? SortDirection.Desc : SortDirection.Asc}`,
+                    actionKey: `${sortCriterion}|${nftSort.sortDirection === SortDirection.Asc ? SortDirection.Desc : SortDirection.Asc}`,
                     actionTitle: i18n.t(i18n.l.nfts.sort[sortCriterion]),
                     menuState: 'off',
                   }),
             };
           })}
-          selectItem={updateNFTSort}
-          icon={getIconForSortType(nftSort)}
-          text={i18n.t(i18n.l.nfts.sort[nftSort])}
+          selectItem={action => {
+            updateNftSort(accountAddress, action);
+          }}
+          icon={getIconForSortType(nftSort.sortBy)}
+          text={i18n.t(i18n.l.nfts.sort[nftSort.sortBy])}
         />
       </Inline>
     </Box>
