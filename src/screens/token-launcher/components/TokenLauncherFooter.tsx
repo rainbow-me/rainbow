@@ -65,7 +65,7 @@ function HoldToCreateButton() {
 
 function ContinueButton() {
   const setStep = useTokenLauncherStore(state => state.setStep);
-  const hasCompletedRequiredFields = useTokenLauncherStore(state => state.hasCompletedRequiredFields());
+  const canContinueToReview = useTokenLauncherStore(state => state.canContinueToReview());
 
   const goToOverviewStep = useCallback(() => {
     Keyboard.dismiss();
@@ -74,16 +74,16 @@ function ContinueButton() {
 
   // TODO: remove testing
   return (
-    <ButtonPressAnimation disabled={!hasCompletedRequiredFields && false} onPress={goToOverviewStep}>
+    <ButtonPressAnimation disabled={!canContinueToReview && false} onPress={goToOverviewStep}>
       <Box
-        background={hasCompletedRequiredFields ? 'blue' : 'fillTertiary'}
+        background={canContinueToReview ? 'blue' : 'fillTertiary'}
         justifyContent="center"
         alignItems="center"
         paddingHorizontal="24px"
         borderRadius={28}
         height={48}
       >
-        <Text color={hasCompletedRequiredFields ? 'label' : 'labelTertiary'} size="20pt" weight="heavy">
+        <Text color={canContinueToReview ? 'label' : 'labelTertiary'} size="20pt" weight="heavy">
           {'Continue'}
         </Text>
       </Box>
