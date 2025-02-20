@@ -21,6 +21,7 @@ import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 
 type TokenLauncherContextType = {
   hasSufficientEthForTransactionGas: boolean;
+  ethRequiredForTransactionGas: string;
   accentColors: {
     opacity100: string;
     opacity30: string;
@@ -166,6 +167,8 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   }, [ethPriceNative, ethPriceUsd, setEthPriceNative, setEthPriceUsd]);
 
   return (
-    <TokenLauncherContext.Provider value={{ accentColors, hasSufficientEthForTransactionGas }}>{children}</TokenLauncherContext.Provider>
+    <TokenLauncherContext.Provider value={{ accentColors, ethRequiredForTransactionGas, hasSufficientEthForTransactionGas }}>
+      {children}
+    </TokenLauncherContext.Provider>
   );
 }

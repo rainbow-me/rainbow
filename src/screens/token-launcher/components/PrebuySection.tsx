@@ -15,7 +15,8 @@ import { Grid } from './Grid';
 import { SingleFieldInput, SingleFieldInputRef } from './SingleFieldInput';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
-import { roundToSignificant1or5 } from '@/helpers/utilities';
+import { convertAmountToBalanceDisplay, lessThan, roundToSignificant1or5, subtract } from '@/helpers/utilities';
+import { lessThanWorklet } from '@/safe-math/SafeMath';
 
 function PrebuyAmountButton({
   label,
@@ -77,12 +78,29 @@ function PrebuyAmountButton({
 }
 
 export function PrebuySection() {
+  const { ethRequiredForTransactionGas } = useTokenLauncherContext();
   const tokenomics = useTokenLauncherStore(state => state.tokenomics());
   const marketCapEth = tokenomics?.marketCap.targetEth ?? 10;
   const setHasValidPrebuyAmount = useTokenLauncherStore(state => state.setHasValidPrebuyAmount);
   const chainId = useTokenLauncherStore(state => state.chainId);
   const setCreatorBuyInEth = useTokenLauncherStore(state => state.setCreatorBuyInEth);
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
+
+  const nativeAssetForChainAvailableBalance = useMemo(() => {
+    const balance = nativeAssetForChain?.balance.amount;
+    if (!balance) {
+      return 0;
+    }
+    const balanceMinusGas = subtract(balance, ethRequiredForTransactionGas);
+    return lessThan(balanceMinusGas, 0) ? 0 : balanceMinusGas;
+  }, [nativeAssetForChain, ethRequiredForTransactionGas]);
+
+  const nativeAssetForChainAvailableBalanceDisplay = useMemo(() => {
+    if (!nativeAssetForChain) {
+      return '0';
+    }
+    return convertAmountToBalanceDisplay(nativeAssetForChainAvailableBalance, nativeAssetForChain);
+  }, [nativeAssetForChainAvailableBalance, nativeAssetForChain]);
 
   const inputRef = useRef<SingleFieldInputRef>(null);
   const borderColor = useForegroundColor('buttonStroke');
@@ -130,7 +148,7 @@ export function PrebuySection() {
   const maxPrebuyAmountEth = prebuyEthOptions[prebuyEthOptions.length - 1].amount;
 
   const customInputSubtitle = useDerivedValue(() => {
-    return error.value === '' ? `Balance: ${nativeAssetForChain?.balance.display ?? '0'}` : error.value;
+    return error.value === '' ? `Balance After Gas Fee: ${nativeAssetForChainAvailableBalanceDisplay}` : error.value;
   });
 
   const customInputSubtitleStyle = useAnimatedStyle(() => {
@@ -189,16 +207,16 @@ export function PrebuySection() {
             }}
             validationWorklet={text => {
               'worklet';
-              // Kind of janky that we're changing "state" in this callback
-              const amount = parseFloat(text);
-              const balance = parseFloat(nativeAssetForChain?.balance.amount ?? '0');
+              // Kind of jank that we're changing "state" in this callback by setting error.value
+              // TODO: is it safe to use parseFloat here?
+              const amount = parseFloat(text) || 0;
 
-              if (amount > balance) {
+              if (lessThanWorklet(nativeAssetForChainAvailableBalance, amount)) {
                 error.value = `Amount is greater than balance`;
                 return { error: true };
               }
 
-              if (amount > maxPrebuyAmountEth) {
+              if (lessThanWorklet(maxPrebuyAmountEth, amount)) {
                 error.value = `Exceeds max pre-buy amount of ${maxPrebuyAmountEth} ETH`;
                 return { error: true };
               }
