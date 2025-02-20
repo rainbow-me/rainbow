@@ -16,6 +16,7 @@ import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
+import { StyleSheet } from 'react-native';
 
 const ContactAddress = styled(TruncatedAddress).attrs(({ theme: { colors }, lite }) => ({
   align: 'left',
@@ -44,7 +45,7 @@ const ContactName = styled(TruncatedText).attrs(({ lite }) => ({
   size: 'lmedium',
   weight: lite ? 'regular' : 'medium',
 }))({
-  height: 22,
+  height: ios ? 22 : 26,
   width: ({ deviceWidth }) => deviceWidth - 90,
 });
 
@@ -52,6 +53,12 @@ const css = {
   default: margin.object(6, 19, 13),
   symmetrical: margin.object(9.5, 19),
 };
+
+const sx = StyleSheet.create({
+  bottomRowText: {
+    marginTop: ios ? 0 : -4.5,
+  },
+});
 
 const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, ref) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -132,7 +139,12 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
                   {isValidDomainFormat(address) ? address : abbreviations.address(address, 4, 6)}
                 </ContactName>
               )}
-              <BottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)} letterSpacing="roundedMedium" weight="medium">
+              <BottomRowText
+                style={sx.bottomRowText}
+                color={colors.alpha(colors.blueGreyDark, 0.5)}
+                letterSpacing="roundedMedium"
+                weight="medium"
+              >
                 {balanceText}
               </BottomRowText>
             </Fragment>
