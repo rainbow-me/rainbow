@@ -15,6 +15,7 @@ type GasButtonProps = {
 };
 
 export function GasButton({ gasSpeed, chainId, onSelectGasSpeed, gasLimit }: GasButtonProps) {
+  // Custom is not supported here, but omitting it from the type causes problems
   const gasSettings = useGasSettings(chainId, gasSpeed);
 
   return (

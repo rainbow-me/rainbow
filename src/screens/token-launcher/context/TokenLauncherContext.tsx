@@ -10,8 +10,17 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { ETH_ADDRESS } from '@/references';
 import { time } from '@/utils';
 import { useAccountSettings } from '@/hooks';
+import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
+import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { formatUnits } from 'viem';
+import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
+import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 
 type TokenLauncherContextType = {
+  hasSufficientEthForTransactionGas: boolean;
   accentColors: {
     opacity100: string;
     opacity30: string;
@@ -35,10 +44,27 @@ export function useTokenLauncherContext() {
   return context;
 }
 
+// TODO:
+export function estimateLaunchTransactionGasLimit({
+  chainId,
+  gasSettings,
+  isPrebuying,
+}: {
+  chainId: ChainId;
+  gasSettings: GasSettings | undefined;
+  isPrebuying: boolean;
+}) {
+  return '8000000';
+}
+
 export function TokenLauncherContextProvider({ children }: { children: React.ReactNode }) {
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
   const { nativeCurrency } = useAccountSettings();
+  const chainId = useTokenLauncherStore(state => state.chainId);
+  const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
+
+  const gasSettings = useGasSettings(chainId, gasSpeed);
 
   const setEthPriceUsd = useTokenLauncherStore(state => state.setEthPriceUsd);
   const setEthPriceNative = useTokenLauncherStore(state => state.setEthPriceNative);
@@ -74,8 +100,31 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
     };
   }, [colors, imageDerivedColor, isDarkMode]);
 
+  const ethRequiredForTransactionGas = useMemo(() => {
+    if (!gasSettings) return '0';
+
+    const gasLimit = estimateLaunchTransactionGasLimit({
+      chainId,
+      gasSettings,
+      isPrebuying: false,
+    });
+    const gasFeeWei = calculateGasFeeWorklet(gasSettings, gasLimit);
+    const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
+
+    return formatUnits(safeBigInt(gasFeeWei), nativeAsset.decimals);
+  }, [chainId, gasSettings]);
+
+  const hasSufficientEthForTransactionGas = useMemo(() => {
+    const userNativeAsset = userAssetsStore.getState().getNativeAssetForChain(chainId);
+    const userBalance = userNativeAsset?.balance?.amount || '0';
+
+    return lessThanOrEqualToWorklet(ethRequiredForTransactionGas, userBalance);
+  }, [chainId, ethRequiredForTransactionGas]);
+
+  // TODO: We need eth price in both USD and the user's native currency. We need USD because the target price is USD.
+  // We need the native currency for display. Is there a better way to do this then calling two separate fetches?
+
   // TODO: does it matter if we only use mainnet here? Do we want to poll the price and if so, how often?
-  // does this return in usd or users native currency?
   const { data: ethAssetUsd } = useExternalToken(
     {
       address: ETH_ADDRESS,
@@ -90,8 +139,6 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
       staleTime: time.minutes(1),
     }
   );
-
-  // TODO: is there a better way to do this?
   const { data: ethAssetNative } = useExternalToken(
     {
       address: ETH_ADDRESS,
@@ -118,5 +165,7 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
     }
   }, [ethPriceNative, ethPriceUsd, setEthPriceNative, setEthPriceUsd]);
 
-  return <TokenLauncherContext.Provider value={{ accentColors }}>{children}</TokenLauncherContext.Provider>;
+  return (
+    <TokenLauncherContext.Provider value={{ accentColors, hasSufficientEthForTransactionGas }}>{children}</TokenLauncherContext.Provider>
+  );
 }

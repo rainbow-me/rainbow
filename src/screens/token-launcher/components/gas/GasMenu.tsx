@@ -47,7 +47,7 @@ export function GasMenu({
 }) {
   const { data: metereologySuggestions, isLoading } = useMeteorologySuggestions({ chainId });
 
-  const menuOptions = useMemo(() => [...keys(metereologySuggestions)] as GasSpeed[], [metereologySuggestions]);
+  const menuOptions = useMemo(() => [...keys(metereologySuggestions)], [metereologySuggestions]);
 
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
@@ -64,7 +64,7 @@ export function GasMenu({
   const handlePressActionSheet = useCallback(
     (buttonIndex: number) => {
       if (buttonIndex < 0) return;
-      handlePressSpeedOption(menuOptions[buttonIndex]);
+      handlePressSpeedOption(menuOptions[buttonIndex] as GasSpeed);
     },
     [handlePressSpeedOption, menuOptions]
   );
@@ -72,7 +72,6 @@ export function GasMenu({
   const menuConfig = useMemo(() => {
     const menuItems = menuOptions.map(gasOption => {
       const currentBaseFee = getCachedCurrentBaseFee(chainId);
-      // TODO:
       const gasSettings = metereologySuggestions?.[gasOption];
       const subtitle = getEstimatedFeeRangeInGwei(gasSettings, currentBaseFee);
 
