@@ -1,4 +1,5 @@
 import rudderClient from '@rudderstack/rudder-sdk-react-native';
+import * as DeviceInfo from 'react-native-device-info';
 import { REACT_NATIVE_RUDDERSTACK_WRITE_KEY, RUDDERSTACK_DATA_PLANE_URL } from 'react-native-dotenv';
 
 import { EventProperties, event } from '@/analytics/event';
@@ -6,7 +7,7 @@ import { UserProperties } from '@/analytics/userProperties';
 import { logger, RainbowError } from '@/logger';
 import { device } from '@/storage';
 import { WalletContext } from './utils';
-import { IS_TEST } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 
 export class Analytics {
   client: typeof rudderClient;
@@ -15,6 +16,9 @@ export class Analytics {
   walletType?: WalletContext['walletType'];
   event = event;
   disabled: boolean;
+  deviceBrand?: string;
+  deviceModel?: string;
+  deviceManufacturer?: string;
 
   constructor() {
     this.client = rudderClient;
@@ -23,6 +27,12 @@ export class Analytics {
       logger.debug('[Analytics]: disabled for testing');
     } else {
       logger.debug('[Analytics]: client initialized');
+    }
+
+    if (IS_ANDROID) {
+      this.deviceBrand = DeviceInfo.getBrand();
+      this.deviceModel = DeviceInfo.getModel();
+      this.deviceManufacturer = DeviceInfo.getManufacturerSync();
     }
   }
 
@@ -66,10 +76,19 @@ export class Analytics {
   }
 
   private getDefaultMetadata() {
-    return {
+    const base: Record<string, string | undefined> = {
       walletAddressHash: this.walletAddressHash,
       walletType: this.walletType,
     };
+
+    // see https://linear.app/rainbow/issue/APP-2243/majority-of-android-devices-show-as-none-in-analytics-events
+    if (IS_ANDROID) {
+      base.device_brand = this.deviceBrand;
+      base.device_model = this.deviceModel;
+      base.device_manufacturer = this.deviceManufacturer;
+    }
+
+    return base;
   }
 
   async initializeRudderstack() {
