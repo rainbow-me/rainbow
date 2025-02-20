@@ -15,6 +15,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.59] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.59)
+
+### Added
+
+- Added Query Store tests (#6445)
+- Added performance tooling (#6449)
+
+### Changed
+
+- Migrated userAssets to createQueryStore (#6450)
+- Updated swaps sdk to 0320 (#6451)
+
+### Fixed
+
+- Fixed an issue when entering a seed phrase manually with spaces (#6452)
+
 ## [1.9.58] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.58)
 
 ### Changed
