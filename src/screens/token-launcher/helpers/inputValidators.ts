@@ -27,4 +27,7 @@ export function validateTotalSupplyWorklet(supply: number): ValidationResult {
   if (supply > MAX_TOTAL_SUPPLY) {
     return { error: true, message: 'Too big.' };
   }
+  if (supply <= 0) {
+    return { error: true, message: 'Must be greater than 0' };
+  }
 }

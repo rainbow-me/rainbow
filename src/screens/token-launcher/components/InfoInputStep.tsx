@@ -21,11 +21,11 @@ function TotalSupplyInput() {
   return (
     <SingleFieldInput
       onInputChange={text => {
-        setTotalSupply(parseInt(text.trim()));
+        setTotalSupply(parseInt(text.trim()) || 0);
       }}
       validationWorklet={text => {
         'worklet';
-        return validateTotalSupplyWorklet(parseInt(text.trim()));
+        return validateTotalSupplyWorklet(parseInt(text.trim()) || 0);
       }}
       inputMode="numeric"
       title="Total Supply"

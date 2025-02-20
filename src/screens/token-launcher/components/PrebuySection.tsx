@@ -3,8 +3,14 @@ import { AnimatedText, Box, Separator, Text, TextShadow, useForegroundColor } fr
 import { CollapsableField } from './CollapsableField';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { runOnJS, SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
+import { runOnJS, SharedValue, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import {
+  FIELD_BORDER_RADIUS,
+  FIELD_BORDER_WIDTH,
+  FIELD_INNER_BORDER_RADIUS,
+  INNER_FIELD_BACKGROUND_COLOR,
+  TOTAL_SUPPLY_PREBUY_PERCENTAGES,
+} from '../constants';
 import { Grid } from './Grid';
 import { SingleFieldInput, SingleFieldInputRef } from './SingleFieldInput';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -73,20 +79,29 @@ function PrebuyAmountButton({
 export function PrebuySection() {
   const tokenomics = useTokenLauncherStore(state => state.tokenomics());
   const marketCapEth = tokenomics?.marketCap.targetEth ?? 10;
+  const setHasValidPrebuyAmount = useTokenLauncherStore(state => state.setHasValidPrebuyAmount);
+  const chainId = useTokenLauncherStore(state => state.chainId);
+  const setCreatorBuyInEth = useTokenLauncherStore(state => state.setCreatorBuyInEth);
+  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
 
   const inputRef = useRef<SingleFieldInputRef>(null);
   const borderColor = useForegroundColor('buttonStroke');
   const errorColor = useForegroundColor('red');
   const subtitleColor = useForegroundColor('labelQuaternary');
 
-  const chainId = useTokenLauncherStore(state => state.chainId);
-  const setCreatorBuyInEth = useTokenLauncherStore(state => state.setCreatorBuyInEth);
-  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
+  const error = useSharedValue('');
 
-  const customInputError = useSharedValue('');
+  useAnimatedReaction(
+    () => {
+      return error.value;
+    },
+    error => {
+      runOnJS(setHasValidPrebuyAmount)(error === '');
+    }
+  );
 
   const prebuyEthOptions = useMemo(() => {
-    const totalSupplyPercentages = [0.005, 0.01, 0.05, 0.1];
+    const totalSupplyPercentages = TOTAL_SUPPLY_PREBUY_PERCENTAGES;
 
     const amounts = totalSupplyPercentages.map(percentage => {
       return roundToSignificant1or5(marketCapEth * percentage);
@@ -115,12 +130,12 @@ export function PrebuySection() {
   const maxPrebuyAmountEth = prebuyEthOptions[prebuyEthOptions.length - 1].amount;
 
   const customInputSubtitle = useDerivedValue(() => {
-    return customInputError.value === '' ? `Balance: ${nativeAssetForChain?.balance.display ?? '0'}` : customInputError.value;
+    return error.value === '' ? `Balance: ${nativeAssetForChain?.balance.display ?? '0'}` : error.value;
   });
 
   const customInputSubtitleStyle = useAnimatedStyle(() => {
     return {
-      color: customInputError.value === '' ? subtitleColor : errorColor,
+      color: error.value === '' ? subtitleColor : errorColor,
     };
   });
 
@@ -179,17 +194,17 @@ export function PrebuySection() {
               const balance = parseFloat(nativeAssetForChain?.balance.amount ?? '0');
 
               if (amount > balance) {
-                customInputError.value = `Amount is greater than balance`;
+                error.value = `Amount is greater than balance`;
                 return { error: true };
               }
 
               if (amount > maxPrebuyAmountEth) {
-                customInputError.value = `Exceeds max pre-buy amount of ${maxPrebuyAmountEth} ETH`;
+                error.value = `Exceeds max pre-buy amount of ${maxPrebuyAmountEth} ETH`;
                 return { error: true };
               }
 
-              if (customInputError.value !== '') {
-                customInputError.value = '';
+              if (error.value !== '') {
+                error.value = '';
               }
             }}
             style={{

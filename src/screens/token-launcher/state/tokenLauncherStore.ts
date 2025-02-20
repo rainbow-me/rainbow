@@ -45,11 +45,14 @@ interface TokenLauncherStore {
   ethPriceUsd: number;
   ethPriceNative: number;
   gasSpeed: GasSpeed;
+  hasSufficientEthForGas: boolean;
+  hasValidPrebuyAmount: boolean;
   // derived state
   formattedTotalSupply: () => string;
   tokenPrice: () => string;
   tokenMarketCap: () => string;
   hasCompletedRequiredFields: () => boolean;
+  canContinueToReview: () => boolean;
   allocationBips: () => {
     creator: number;
     airdrop: number;
@@ -85,6 +88,8 @@ interface TokenLauncherStore {
   setEthPriceUsd: (ethPriceUsd: number) => void;
   setEthPriceNative: (ethPriceNative: number) => void;
   setGasSpeed: (gasSpeed: GasSpeed) => void;
+  setHasValidPrebuyAmount: (hasValidPrebuyAmount: boolean) => void;
+  setHasSufficientEthForGas: (hasSufficientEthForGas: boolean) => void;
   // actions
   validateForm: () => void;
   createToken: () => void;
@@ -110,6 +115,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   stepIndex: makeMutable(0),
   stepSharedValue: makeMutable('info'),
   gasSpeed: GasSpeed.FAST,
+  hasSufficientEthForGas: false,
+  hasValidPrebuyAmount: true,
   // derived state
   formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 0, 'long'),
   tokenPrice: () => {
@@ -137,13 +144,20 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     return convertAmountToNativeDisplay(targetMarketCapNative, nativeCurrency, 2, true, true);
   },
   hasCompletedRequiredFields: () => {
-    const { name, symbol, imageUri, totalSupply } = get();
+    const { name, symbol, imageUrl, totalSupply } = get();
 
     const nameValidation = validateNameWorklet(name);
     const symbolValidation = validateSymbolWorklet(symbol);
     const supplyValidation = validateTotalSupplyWorklet(totalSupply);
 
-    return !nameValidation?.error && !symbolValidation?.error && !supplyValidation?.error && imageUri !== '';
+    return !nameValidation?.error && !symbolValidation?.error && !supplyValidation?.error && imageUrl !== '';
+  },
+  canContinueToReview: () => {
+    const { airdropRecipients, hasCompletedRequiredFields, hasSufficientEthForGas, hasValidPrebuyAmount } = get();
+
+    const allAirdropRecipientsValid = airdropRecipients.every(recipient => recipient.isValid);
+
+    return hasCompletedRequiredFields() && allAirdropRecipientsValid && hasValidPrebuyAmount;
   },
   allocationBips: () => {
     const tokenomics = get().tokenomics();
@@ -258,6 +272,12 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   },
   setGasSpeed: (gasSpeed: GasSpeed) => {
     set({ gasSpeed });
+  },
+  setHasValidPrebuyAmount: (hasValidPrebuyAmount: boolean) => {
+    set({ hasValidPrebuyAmount });
+  },
+  setHasSufficientEthForGas: (hasSufficientEthForGas: boolean) => {
+    set({ hasSufficientEthForGas });
   },
   // actions
   validateForm: () => {
