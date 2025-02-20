@@ -13,21 +13,19 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 
 export function NetworkField() {
-  const { accentColors, hasSufficientEthForTransactionGas } = useTokenLauncherContext();
+  const { accentColors } = useTokenLauncherContext();
   const red = useForegroundColor('red');
-
   const chainId = useTokenLauncherStore(state => state.chainId);
   const setChainId = useTokenLauncherStore(state => state.setChainId);
+  const hasSufficientEthForTransactionGas = useTokenLauncherStore(state => state.hasSufficientEthForGas);
   const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[chainId];
-
   const navigation = useNavigation();
+  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
 
   const onChainSelected = (chainId: number) => {
     setChainId(chainId);
     navigation.getParent()?.goBack();
   };
-
-  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
 
   return (
     <>
@@ -43,7 +41,7 @@ export function NetworkField() {
         <Box gap={10}>
           <FieldLabel>Network</FieldLabel>
           <Text color="labelSecondary" size="13pt" weight="medium">
-            {`Balance: ${nativeAssetForChain?.balance.display ?? '0'}`}
+            {`Balance: ${nativeAssetForChain?.balance.display ?? '0.00'}`}
           </Text>
         </Box>
         <ButtonPressAnimation
