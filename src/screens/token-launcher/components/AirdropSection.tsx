@@ -154,7 +154,7 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
   const addOrEditAirdropAddress = useTokenLauncherStore(state => state.addOrEditAirdropAddress);
 
   // Maintain local state to avoid needing to subscribe to the whole list of recipients
-  const [isValidAddress, setIsValidAddress] = useState(false);
+  const [isValidAddress, setIsValidAddress] = useState(true);
   const [addressImage, setAddressImage] = useState<string | null>(null);
   const [address, setAddress] = useState('');
 
@@ -163,12 +163,12 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
       const isValid = checkIsValidAddressOrDomainFormat(text);
 
       addOrEditAirdropAddress({ id, address: text, isValid });
+      setAddress(text);
+
       if (isValid !== isValidAddress) {
         setIsValidAddress(isValid);
 
         if (isValid) {
-          setAddress(text);
-
           const avatar = await fetchENSAvatar(text);
           const imageUrl = avatar?.imageUrl ?? null;
 
@@ -181,6 +181,13 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
   );
 
   const labelIcon = useMemo(() => {
+    if (address !== '' && !isValidAddress) {
+      return (
+        <TextIcon containerSize={20} color={'red'} size="icon 17px" weight="heavy">
+          {'􀁟'}
+        </TextIcon>
+      );
+    }
     if (!isValidAddress) {
       return (
         <Box
@@ -198,9 +205,8 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
           </TextIcon>
         </Box>
       );
-    } else {
-      return <AddressAvatar address={address} url={addressImage} size={20} color={accentColors.opacity100} label={''} />;
     }
+    return <AddressAvatar address={address} url={addressImage} size={20} color={accentColors.opacity100} label={''} />;
   }, [isValidAddress, accentColors, address, addressImage]);
 
   return (
@@ -210,6 +216,12 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
       placeholder="Address or ENS"
       textAlign="left"
       inputStyle={{ textAlign: 'left', paddingLeft: 8 }}
+      validationWorklet={(text: string) => {
+        const isValid = checkIsValidAddressOrDomainFormat(text);
+        if (!isValid && text !== '') {
+          return { error: true };
+        }
+      }}
       style={{
         flex: 1,
         backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
