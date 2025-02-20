@@ -196,7 +196,7 @@ function TotalCostPill() {
   );
 }
 
-export function OverviewStep() {
+export function ReviewStep() {
   const { accentColors } = useTokenLauncherContext();
   const tokenSymbol = useTokenLauncherStore(state => state.symbol);
   const tokenName = useTokenLauncherStore(state => state.name);

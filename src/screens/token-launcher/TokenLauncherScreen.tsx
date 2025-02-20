@@ -4,7 +4,7 @@ import { FOOTER_HEIGHT, TokenLauncherFooter } from './components/TokenLauncherFo
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { TokenLauncherHeader } from './components/TokenLauncherHeader';
 import { InfoInputStep } from './components/InfoInputStep';
-import { OverviewStep } from './components/OverviewStep';
+import { ReviewStep } from './components/ReviewStep';
 import { KeyboardAvoidingView, KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useTokenLauncherStore } from './state/tokenLauncherStore';
 import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
@@ -57,7 +57,7 @@ export function TokenLauncherScreen() {
                 <InfoInputStep />
               </Animated.View>
               <Animated.View style={[overviewStepAnimatedStyle, { width: screenWidth, height: '100%' }]}>
-                <OverviewStep />
+                <ReviewStep />
               </Animated.View>
               <TokenLauncherHeader />
             </Box>
