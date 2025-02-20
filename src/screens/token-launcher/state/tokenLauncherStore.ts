@@ -157,7 +157,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
     const allAirdropRecipientsValid = airdropRecipients.every(recipient => recipient.isValid);
 
-    return hasCompletedRequiredFields() && allAirdropRecipientsValid && hasValidPrebuyAmount;
+    return hasCompletedRequiredFields() && allAirdropRecipientsValid && hasSufficientEthForGas && hasValidPrebuyAmount;
   },
   allocationBips: () => {
     const tokenomics = get().tokenomics();
