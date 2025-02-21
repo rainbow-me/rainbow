@@ -1,9 +1,10 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, {
-  forwardRef,
   ForwardRefRenderFunction,
   MutableRefObject,
   ReactElement,
+  forwardRef,
+  memo,
   useCallback,
   useImperativeHandle,
   useMemo,
@@ -11,6 +12,7 @@ import React, {
 } from 'react';
 import { InteractionManager, Keyboard, SectionList, SectionListData } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 import { ButtonPressAnimation } from '@/components/animations';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import FastCurrencySelectionRow from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
@@ -18,13 +20,14 @@ import { ContactRow } from '@/components/contacts';
 import { GradientText } from '@/components/text';
 import { CopyToast, ToastPositionContainer } from '@/components/toasts';
 import contextMenuProps from '@/components/exchangeAssetRowContextMenuProps';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { TokenSectionTypes } from '@/helpers';
 import { useAndroidScrollViewGestureHandler, usePrevious } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { abbreviations, deviceUtils, haptics, magicMemo } from '@/utils';
+import { abbreviations, deviceUtils, magicMemo } from '@/utils';
 import { Box, Text } from '@/design-system';
 import { colors, Colors } from '@/styles';
 import ExchangeTokenRow from '@/components/ExchangeTokenRow';
@@ -119,6 +122,35 @@ interface ExchangeAssetListProps {
   isExchangeList?: boolean;
 }
 
+const ExchangeAssetSectionListHeader = memo(function ExchangeAssetSectionListHeader({
+  openVerifiedExplainer,
+  section,
+}: {
+  openVerifiedExplainer: () => void;
+  section: SectionListData<EnrichedExchangeAsset>;
+}) {
+  const TitleComponent = section.useGradientText
+    ? HeaderTitleGradient
+    : ({ children, color, testID }: { children: ReactElement; color: string; testID: string }) => (
+        <Text size="14px / 19px (Deprecated)" weight="heavy" color={{ custom: color || colors.blueGreyDark50 }} testID={testID}>
+          {children}
+        </Text>
+      );
+  const isVerified = section.title === TokenSectionTypes.verifiedTokenSection;
+  return section?.title ? (
+    <ButtonPressAnimation disabled={!isVerified} onPress={openVerifiedExplainer} scaleTo={0.96}>
+      <Box paddingTop={section.useGradientText ? '10px' : { custom: 14 }} paddingBottom="4px" paddingLeft="20px">
+        <HeaderBackground />
+        <Box>
+          <TitleComponent color={section.color} testID={section.key}>
+            {`${section.title}${isVerified ? '  􀅵' : ' '}`}
+          </TitleComponent>
+        </Box>
+      </Box>
+    </ButtonPressAnimation>
+  ) : null;
+});
+
 const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetListProps> = (
   { footerSpacer, keyboardDismissMode = 'none', itemProps, items, onLayout, query, testID, isExchangeList },
   ref
@@ -169,29 +201,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
     navigate(Routes.EXPLAIN_SHEET, { type: 'verified' });
   }, [navigate]);
 
-  const ExchangeAssetSectionListHeader = ({ section }: { section: SectionListData<EnrichedExchangeAsset> }) => {
-    const TitleComponent = section.useGradientText
-      ? HeaderTitleGradient
-      : ({ children, color, testID }: { children: ReactElement; color: string; testID: string }) => (
-          <Text size="14px / 19px (Deprecated)" weight="heavy" color={{ custom: color || colors.blueGreyDark50 }} testID={testID}>
-            {children}
-          </Text>
-        );
-    const isVerified = section.title === TokenSectionTypes.verifiedTokenSection;
-    return section?.title ? (
-      <ButtonPressAnimation disabled={!isVerified} onPress={openVerifiedExplainer} scaleTo={0.96}>
-        <Box paddingTop={section.useGradientText ? '10px' : { custom: 14 }} paddingBottom="4px" paddingLeft="20px">
-          <HeaderBackground />
-          <Box>
-            <TitleComponent color={section.color} testID={section.key}>
-              {`${section.title}${isVerified ? '  􀅵' : ' '}`}
-            </TitleComponent>
-          </Box>
-        </Box>
-      </ButtonPressAnimation>
-    ) : null;
-  };
-
   const FooterSpacer = useCallback(() => (footerSpacer ? <Box width="full" height={{ custom: 35 }} /> : null), [footerSpacer]);
 
   const isFocused = useIsFocused();
@@ -237,10 +246,10 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
               const newValue = !prev?.[address];
               toggleFavorite(address);
               if (newValue) {
-                ios && onNewEmoji();
-                haptics.notificationSuccess();
+                IS_IOS && onNewEmoji();
+                triggerHaptics('notificationSuccess');
               } else {
-                haptics.selection();
+                triggerHaptics('selection');
               }
 
               return {
@@ -267,6 +276,13 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
     [enrichedItems, localFavorite]
   );
 
+  const renderSectionHeader = useCallback(
+    ({ section }: { section: SectionListData<EnrichedExchangeAsset> }) => (
+      <ExchangeAssetSectionListHeader openVerifiedExplainer={openVerifiedExplainer} section={section} />
+    ),
+    [openVerifiedExplainer]
+  );
+
   return (
     <>
       <Box width="full" height="full">
@@ -278,10 +294,10 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
           keyboardShouldPersistTaps="always"
           keyboardDismissMode={keyboardDismissMode}
           onLayout={onLayout}
-          onScroll={android ? onScroll : undefined}
+          onScroll={IS_ANDROID ? onScroll : undefined}
           ref={sectionListRef}
           renderItem={isExchangeList ? renderExchangeItem : renderItem}
-          renderSectionHeader={ExchangeAssetSectionListHeader}
+          renderSectionHeader={renderSectionHeader}
           scrollsToTop={isFocused}
           sections={itemsWithFavorite}
           keyExtractor={keyExtractor}

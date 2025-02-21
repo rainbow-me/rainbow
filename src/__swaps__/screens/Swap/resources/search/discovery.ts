@@ -1,10 +1,11 @@
-import { ChainId } from '@/state/backendNetworks/types';
-import { SearchAsset } from '@/__swaps__/types/search';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { QueryFunctionArgs, createQueryKey } from '@/react-query';
-import { useQuery } from '@tanstack/react-query';
-import { parseTokenSearch } from './utils';
+import { ChainId } from '@/state/backendNetworks/types';
+import { createQueryStore } from '@/state/internal/createQueryStore';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { SearchAsset } from '@/__swaps__/types/search';
+import { time } from '@/utils';
+import { parseTokenSearchResults } from './utils';
 
 const tokenSearchHttp = new RainbowFetchClient({
   baseURL: 'https://token-search.rainbow.me/v3/trending/swaps',
@@ -12,30 +13,33 @@ const tokenSearchHttp = new RainbowFetchClient({
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
-  timeout: 30000,
+  timeout: time.seconds(30),
 });
 
-export type TokenDiscoveryArgs = {
+export type PopularTokensParams = {
   chainId: ChainId;
 };
 
-const tokenDiscoveryQueryKey = ({ chainId }: TokenDiscoveryArgs) => createQueryKey('TokenDiscovery', { chainId }, { persisterVersion: 1 });
-
-async function tokenSearchQueryFunction({ queryKey: [{ chainId }] }: QueryFunctionArgs<typeof tokenDiscoveryQueryKey>) {
+async function popularTokensQueryFunction({ chainId }: PopularTokensParams, abortController: AbortController | null) {
   const url = `/${chainId}`;
 
   try {
-    const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
-    return parseTokenSearch(tokenSearch.data.data, chainId);
+    const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url, { abortController });
+    return parseTokenSearchResults(tokenSearch.data.data, chainId);
   } catch (e) {
-    logger.error(new RainbowError('[tokenSearchQueryFunction]: Token discovery failed'), { url });
+    logger.error(new RainbowError('[popularTokensQueryFunction]: Popular tokens failed'), { url });
     return [];
   }
 }
 
-export function useTokenDiscovery({ chainId }: TokenDiscoveryArgs) {
-  return useQuery(tokenDiscoveryQueryKey({ chainId }), tokenSearchQueryFunction, {
-    staleTime: 15 * 60 * 1000, // 15 min
-    cacheTime: 24 * 60 * 60 * 1000, // 1 day
-  });
-}
+export const usePopularTokensStore = createQueryStore<SearchAsset[], PopularTokensParams>(
+  {
+    fetcher: popularTokensQueryFunction,
+    cacheTime: time.days(1),
+    keepPreviousData: true,
+    params: { chainId: $ => $(useSwapsStore).selectedOutputChainId },
+    staleTime: time.minutes(15),
+  },
+
+  { storageKey: 'popularInRainbow' }
+);

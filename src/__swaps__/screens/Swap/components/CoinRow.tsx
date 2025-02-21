@@ -2,7 +2,7 @@ import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { AddressOrEth, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
-import { SearchAsset } from '@/__swaps__/types/search';
+import { CoinRowItem } from '@/__swaps__/types/search';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenuButton } from '@/components/context-menu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
@@ -38,19 +38,25 @@ function determineFavoriteAddressAndChain(address: AddressOrEth, mainnetAddress:
 }
 
 interface InputCoinRowProps {
-  isFavorite?: boolean;
+  hideFavoriteButton?: never;
+  isFavorite?: never;
   isTrending?: boolean;
   isSupportedChain?: never;
   nativePriceChange?: string;
   onPress: (asset: ParsedSearchAsset | null) => void;
   output?: false | undefined;
-  uniqueId: UniqueId;
+  uniqueId?: never;
+  uniqueIdOrAsset: UniqueId | ParsedSearchAsset;
   testID?: string;
 }
 
-type PartialAsset = Pick<SearchAsset, 'address' | 'chainId' | 'colors' | 'icon_url' | 'mainnetAddress' | 'name' | 'symbol' | 'uniqueId'>;
+type PartialAsset = Pick<
+  CoinRowItem,
+  'address' | 'chainId' | 'colors' | 'icon_url' | 'isVerified' | 'mainnetAddress' | 'name' | 'symbol' | 'uniqueId'
+>;
 
 interface OutputCoinRowProps extends PartialAsset {
+  hideFavoriteButton?: boolean;
   isFavorite: boolean;
   onPress: () => void;
   output: true;
@@ -58,16 +64,30 @@ interface OutputCoinRowProps extends PartialAsset {
   isTrending?: boolean;
   isSupportedChain: boolean;
   testID?: string;
+  uniqueIdOrAsset?: never;
 }
 
 type CoinRowProps = InputCoinRowProps | OutputCoinRowProps;
 
-export function CoinRow({ isFavorite, isSupportedChain, onPress, output, uniqueId, testID, ...assetProps }: CoinRowProps) {
-  const inputAsset = useUserAssetsStore(state => (output ? undefined : state.getUserAsset(uniqueId)));
+export function CoinRow({
+  hideFavoriteButton,
+  isFavorite,
+  isSupportedChain,
+  onPress,
+  output,
+  uniqueIdOrAsset,
+  testID,
+  ...assetProps
+}: CoinRowProps) {
+  const inputAsset = output
+    ? undefined
+    : typeof uniqueIdOrAsset === 'string'
+      ? useUserAssetsStore.getState().getUserAsset(uniqueIdOrAsset)
+      : uniqueIdOrAsset;
   const outputAsset = output ? (assetProps as PartialAsset) : undefined;
 
   const asset = output ? outputAsset : inputAsset;
-  const { address, chainId, colors, icon_url, mainnetAddress, name, symbol } = asset || {};
+  const { address, chainId, colors, icon_url, isVerified, mainnetAddress, name, symbol } = asset || {};
 
   /**
 * ⚠️ TODO: Re-enable when trending tokens are added
@@ -166,8 +186,8 @@ export function CoinRow({ isFavorite, isSupportedChain, onPress, output, uniqueI
           <Column width="content">
             <Box paddingLeft="12px" paddingRight="20px">
               <Inline space="10px">
-                <InfoButton address={address} chainId={chainId} isSupportedChain={isSupportedChain} />
-                <CoinRowButton color={favoritesIconColor} onPress={handleToggleFavorite} icon="􀋃" weight="black" />
+                <InfoButton address={address} chainId={chainId} isSupportedChain={isSupportedChain} isVerified={isVerified} />
+                {!hideFavoriteButton && <CoinRowButton color={favoritesIconColor} onPress={handleToggleFavorite} icon="􀋃" weight="black" />}
               </Inline>
             </Box>
           </Column>
@@ -177,7 +197,17 @@ export function CoinRow({ isFavorite, isSupportedChain, onPress, output, uniqueI
   );
 }
 
-const InfoButton = ({ address, chainId, isSupportedChain }: { address: string; chainId: ChainId; isSupportedChain: boolean }) => {
+const InfoButton = ({
+  address,
+  chainId,
+  isSupportedChain,
+  isVerified,
+}: {
+  address: string;
+  chainId: ChainId;
+  isSupportedChain: boolean;
+  isVerified: boolean | undefined;
+}) => {
   const handleCopy = useCallback(() => {
     haptics.selection();
     setClipboard(address);
@@ -228,7 +258,7 @@ const InfoButton = ({ address, chainId, isSupportedChain }: { address: string; c
     };
 
     return { options, menuConfig };
-  }, [isSupportedChain, handleCopy, chainId, address]);
+  }, [address, chainId, handleCopy, isSupportedChain, isVerified]);
 
   const handlePressMenuItem = async ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => {
     if (actionKey === 'copyAddress') {

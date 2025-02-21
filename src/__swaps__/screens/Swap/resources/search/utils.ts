@@ -1,10 +1,10 @@
 import { uniqBy } from 'lodash';
-import { ChainId } from '@/state/backendNetworks/types';
-import { SearchAsset } from '@/__swaps__/types/search';
 import { Address } from 'viem';
 import { isNativeAsset } from '@/handlers/assets';
+import { ChainId } from '@/state/backendNetworks/types';
+import { SearchAsset } from '@/__swaps__/types/search';
 
-export function parseTokenSearch(assets: SearchAsset[], chainId?: ChainId): SearchAsset[] {
+export function parseTokenSearchResults(assets: SearchAsset[], chainId?: ChainId): SearchAsset[] {
   const results: SearchAsset[] = [];
 
   if (chainId !== undefined) {
@@ -27,24 +27,17 @@ export function parseTokenSearch(assets: SearchAsset[], chainId?: ChainId): Sear
     }
   } else {
     for (const asset of assets) {
-      const assetNetworks = asset.networks;
-      const mainnetInfo = assetNetworks[ChainId.mainnet];
-      for (const chainIdString in assetNetworks) {
-        const networkChainId = parseInt(chainIdString);
-        const networkInfo = assetNetworks[networkChainId];
-        const address = networkInfo ? networkInfo.address : asset.address;
-        const uniqueId = `${address}_${networkChainId}`;
+      const mainnetInfo = asset.networks[ChainId.mainnet];
+      const address = asset.address;
+      const chainId = asset.chainId;
+      const uniqueId = `${address}_${chainId}`;
 
-        results.push({
-          ...asset,
-          address,
-          chainId: networkChainId,
-          decimals: networkInfo ? networkInfo.decimals : asset.decimals,
-          isNativeAsset: isNativeAsset(address, networkChainId),
-          mainnetAddress: mainnetInfo ? mainnetInfo.address : networkChainId === ChainId.mainnet ? address : ('' as Address),
-          uniqueId,
-        });
-      }
+      results.push({
+        ...asset,
+        isNativeAsset: isNativeAsset(address, chainId),
+        mainnetAddress: mainnetInfo ? mainnetInfo.address : chainId === ChainId.mainnet ? address : ('' as Address),
+        uniqueId,
+      });
     }
   }
 

@@ -9,7 +9,7 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { Contract } from '@ethersproject/contracts';
 import { useQuery } from '@tanstack/react-query';
 import qs from 'qs';
-import { parseTokenSearch, parseTokenSearchAcrossNetworks } from './utils';
+import { parseTokenSearchResults, parseTokenSearchAcrossNetworks } from './utils';
 import { getProvider } from '@/handlers/web3';
 import { erc20ABI } from '@/references';
 
@@ -44,7 +44,7 @@ export type TokenSearchAllNetworksArgs = {
 // ///////////////////////////////////////////////
 // Query Key
 
-const tokenSearchQueryKey = ({ chainId, fromChainId, keys, list, threshold, query, shouldPersist }: TokenSearchArgs) => {
+const tokenSearchQueryKey = ({ chainId, fromChainId, keys, list, threshold, query, shouldPersist = false }: TokenSearchArgs) => {
   return createQueryKey(
     'TokenSearch',
     { chainId, fromChainId, keys, list, threshold, query },
@@ -53,8 +53,7 @@ const tokenSearchQueryKey = ({ chainId, fromChainId, keys, list, threshold, quer
 };
 
 const tokenSearchAllNetworksQueryKey = ({ query }: TokenSearchAllNetworksArgs) => {
-  const shouldPersist = query === '';
-  return createQueryKey('TokenSearchAllNetworks', { query }, { persisterVersion: shouldPersist ? 1 : undefined });
+  return createQueryKey('TokenSearchAllNetworks', { query }, { persisterVersion: undefined });
 };
 
 type TokenSearchQueryKey = ReturnType<typeof tokenSearchQueryKey>;
@@ -135,7 +134,7 @@ async function tokenSearchQueryFunction({
       const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
 
       if (tokenSearch && tokenSearch.data.data.length > 0) {
-        return parseTokenSearch(tokenSearch.data.data, chainId);
+        return parseTokenSearchResults(tokenSearch.data.data, chainId);
       }
 
       // search for address on other chains
@@ -146,10 +145,10 @@ async function tokenSearchQueryFunction({
         Object.values(a.networks).some(n => n?.address === addressQuery)
       );
 
-      return parseTokenSearch(addressMatchesOnOtherChains);
+      return parseTokenSearchResults(addressMatchesOnOtherChains);
     } else {
       const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
-      return parseTokenSearch(tokenSearch.data.data, chainId);
+      return parseTokenSearchResults(tokenSearch.data.data, chainId);
     }
   } catch (e) {
     logger.error(new RainbowError('[tokenSearchQueryFunction]: Token search failed'), { url });
@@ -179,7 +178,7 @@ async function tokenSearchQueryFunctionAllNetworks({ queryKey: [{ query }] }: Qu
       const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
 
       if (tokenSearch && tokenSearch.data.data.length > 0) {
-        return parseTokenSearch(tokenSearch.data.data);
+        return parseTokenSearchResults(tokenSearch.data.data);
       }
 
       const result = await getImportedAsset(query);
@@ -203,9 +202,8 @@ export async function fetchTokenSearch(
   { chainId, fromChainId, keys, list, threshold, query }: TokenSearchArgs,
   config: QueryConfigWithSelect<TokenSearchResult, Error, TokenSearchResult, TokenSearchQueryKey> = {}
 ) {
-  const shouldPersist = query === undefined;
   return await queryClient.fetchQuery(
-    tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query, shouldPersist }),
+    tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query }),
     tokenSearchQueryFunction,
     config
   );
@@ -230,8 +228,7 @@ export function useTokenSearch(
   { chainId, fromChainId, keys, list, threshold, query }: TokenSearchArgs,
   config: QueryConfigWithSelect<TokenSearchResult, Error, TokenSearchResult, TokenSearchQueryKey> = {}
 ) {
-  const shouldPersist = query === undefined;
-  return useQuery(tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query, shouldPersist }), tokenSearchQueryFunction, {
+  return useQuery(tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query }), tokenSearchQueryFunction, {
     ...config,
     keepPreviousData: true,
   });
