@@ -8817,6 +8817,7 @@ __metadata:
     delay: "npm:4.4.0"
     depcheck: "npm:1.4.7"
     deprecated-react-native-prop-types: "npm:2.2.0"
+    dequal: "npm:2.0.3"
     detox: "npm:20.26.2"
     dns.js: "npm:1.0.1"
     domain-browser: "npm:1.2.0"
@@ -8848,6 +8849,7 @@ __metadata:
     inherits: "npm:2.0.4"
     is-valid-domain: "npm:0.1.2"
     jest: "npm:29.7.0"
+    jotai: "npm:2.12.1"
     lint-staged: "npm:10.4.0"
     lodash: "npm:4.17.21"
     make-color-more-chill: "npm:0.2.2"
@@ -17745,6 +17747,21 @@ __metadata:
   version: 1.1.0
   resolution: "join-component@npm:1.1.0"
   checksum: 10c0/7319cb1ca6ffc514d82ac1b965c4e6cd6bf852adec1e7833bd8613e17f4965e78e2653c8de75a1fe51d9a2cae36af3298008df4079cfd903ef3ecbd231fe11c1
+  languageName: node
+  linkType: hard
+
+"jotai@npm:2.12.1":
+  version: 2.12.1
+  resolution: "jotai@npm:2.12.1"
+  peerDependencies:
+    "@types/react": ">=17.0.0"
+    react: ">=17.0.0"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    react:
+      optional: true
+  checksum: 10c0/8ef622b7d626919d87595d7382467cb81698a14925befdd27abc3b03d441077eca35328d51d10dc6fe3e91ee4d4e9ba7456bacbdf36940161bd2afeba861ac83
   languageName: node
   linkType: hard
 

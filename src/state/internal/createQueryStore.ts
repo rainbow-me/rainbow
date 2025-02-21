@@ -1,13 +1,14 @@
-import equal from 'react-fast-compare';
+import { dequal } from 'dequal';
 import { StateCreator, StoreApi } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { UseBoundStoreWithEqualityFn, createWithEqualityFn } from 'zustand/traditional';
 import { IS_DEV } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import { time } from '@/utils';
-import { RainbowPersistConfig, createRainbowStore, omitStoreMethods } from './createRainbowStore';
+import { RainbowPersistConfig, createRainbowStore } from './createRainbowStore';
 import { SubscriptionManager } from './queryStore/classes/SubscriptionManager';
 import { $, AttachValue, SignalFunction, Unsubscribe, attachValueSubscriptionMap } from './signal';
+import { omitStoreMethods } from './utils/persistUtils';
 
 /**
  * A set of constants representing the various stages of a query's remote data fetching process.
@@ -44,28 +45,35 @@ export type QueryStatusInfo = {
 /**
  * Defines additional options for a data fetch operation.
  */
-interface FetchOptions {
+export interface FetchOptions {
   /**
-   * Overrides the default cache duration for this fetch, in milliseconds.
-   * If data in the cache is older than this duration, it will be considered expired and
-   * will be pruned following a successful fetch.
+   * Overrides the store's default cacheTime for this fetch, which dictates when the data fetched in this operation
+   * will become eligible for pruning.
+   *
+   * Has no effect if `skipStoreUpdates` is set to `true`.
    */
   cacheTime?: number;
   /**
-   * Forces a fetch request even if the current data is fresh and not stale.
-   * If `true`, the fetch operation bypasses existing cached data.
+   * Forces a fetch request even if there is fresh data available in the cache.
+   *
+   * Note: If a pending fetch matches the forced fetch's params, the pending promise *will* be returned.
+   * @default false
    */
   force?: boolean;
   /**
    * If `true`, the fetch will simply return the data without any internal handling or side effects,
    * running in parallel with any other ongoing fetches. Use together with `force: true` if you want to
    * guarantee that a fresh fetch is triggered regardless of the current store state.
+   *
+   * ---
+   * If set to `'withCache'`, the fetch will similarly run in parallel without affecting the store, but the
+   * fetched data will be stored in the cache, as long as the store's config doesn't contain `disableCache: true`.
    * @default false
    */
-  skipStoreUpdates?: boolean;
+  skipStoreUpdates?: boolean | 'withCache';
   /**
-   * Overrides the default stale time for this fetch, which is used to determine whether the requested data
-   * should be refetched, or returned from the cache if available.
+   * Overrides the store's default staleTime for this fetch, which dictates how fresh data must be to be returned
+   * from the cache.
    */
   staleTime?: number;
   /**
@@ -83,7 +91,7 @@ interface FetchOptions {
  * Represents an entry in the query cache, which stores fetched data along with metadata, and error information
  * in the event the most recent fetch failed.
  */
-type CacheEntry<TData> = {
+export type CacheEntry<TData> = {
   cacheTime: number;
   data: TData | null;
 } & (
@@ -480,7 +488,7 @@ export function createQueryStore<
     console.warn(
       `[createQueryStore${persistConfig?.storageKey ? `: ${persistConfig.storageKey}` : ''}] ❌ Stale times under ${
         MIN_STALE_TIME / 1000
-      } seconds are not recommended.`
+      } seconds are not recommended. Provided staleTime: ${staleTime / 1000} seconds`
     );
   }
 
@@ -592,7 +600,7 @@ export function createQueryStore<
       ...initialData,
 
       async fetch(params: TParams | Partial<TParams> | undefined, options: FetchOptions | undefined, isInternalFetch = false) {
-        if (!options?.force && !subscriptionManager.get().enabled) return null;
+        if (!options?.force && !options?.skipStoreUpdates && !subscriptionManager.get().enabled) return null;
 
         const { error, status } = get();
 
@@ -613,11 +621,14 @@ export function createQueryStore<
               : // Manual fetch call default
                 !skipStoreUpdates;
 
-        if (activeFetch?.promise && activeFetch.key === currentQueryKey && isLoading && !options?.force) {
+        if (activeFetch?.promise && activeFetch.key === currentQueryKey && isLoading) {
+          if (enableLogs) console.log('[🔄 Using Active Fetch 🔄] for params:', JSON.stringify(effectiveParams));
           return activeFetch.promise;
         }
 
-        if (abortInterruptedFetches && !skipStoreUpdates) abortActiveFetch();
+        if (abortInterruptedFetches && !skipStoreUpdates && options?.updateQueryKey !== false) {
+          abortActiveFetch();
+        }
 
         if (!options?.force) {
           /* Check for valid cached data */
@@ -632,8 +643,14 @@ export function createQueryStore<
           const lastFetchedAt = (disableCache ? lastFetchKey === currentQueryKey && storeLastFetchedAt : cachedLastFetchedAt) || null;
           const isStale = !lastFetchedAt || Date.now() - lastFetchedAt >= (options?.staleTime ?? staleTime);
 
-          if (!isStale && (!errorInfo || errorRetriesExhausted)) {
-            if (!activeRefetchTimeout && subscriptionManager.get().subscriptionCount > 0 && staleTime !== 0 && staleTime !== Infinity) {
+          if (!isStale && (!errorInfo || errorRetriesExhausted || skipStoreUpdates)) {
+            if (
+              !skipStoreUpdates &&
+              !activeRefetchTimeout &&
+              subscriptionManager.get().subscriptionCount > 0 &&
+              staleTime !== 0 &&
+              staleTime !== Infinity
+            ) {
               scheduleNextFetch(effectiveParams, options);
             }
             if (enableLogs) console.log('[💾 Returning Cached Data 💾] for params:', JSON.stringify(effectiveParams));
@@ -652,6 +669,8 @@ export function createQueryStore<
           if (error || !isLoading) set(state => ({ ...state, error: null, status: QueryStatuses.Loading }));
           activeFetch = { key: currentQueryKey };
         }
+
+        const effectiveCacheTime = options?.cacheTime ?? (cacheTimeIsFunction ? cacheTime(effectiveParams) : cacheTime);
 
         const fetchOperation = async () => {
           try {
@@ -693,6 +712,20 @@ export function createQueryStore<
 
             if (skipStoreUpdates) {
               if (enableLogs) console.log('[🥷 Successful Parallel Fetch 🥷] for params:', JSON.stringify(effectiveParams));
+              if (options.skipStoreUpdates === 'withCache' && !disableCache) {
+                set(state => ({
+                  ...state,
+                  queryCache: {
+                    ...state.queryCache,
+                    [currentQueryKey]: {
+                      cacheTime: effectiveCacheTime,
+                      data: transformedData,
+                      errorInfo: null,
+                      lastFetchedAt,
+                    } satisfies CacheEntry<TData>,
+                  },
+                }));
+              }
               return transformedData;
             }
 
@@ -716,7 +749,7 @@ export function createQueryStore<
                 newState.queryCache = {
                   ...newState.queryCache,
                   [currentQueryKey]: {
-                    cacheTime: cacheTimeIsFunction ? cacheTime(effectiveParams) : cacheTime,
+                    cacheTime: effectiveCacheTime,
                     data: transformedData,
                     errorInfo: null,
                     lastFetchedAt,
@@ -736,7 +769,7 @@ export function createQueryStore<
                   newState.queryCache = {
                     ...newState.queryCache,
                     [currentQueryKey]: {
-                      cacheTime: cacheTimeIsFunction ? cacheTime(effectiveParams) : cacheTime,
+                      cacheTime: effectiveCacheTime,
                       data: null,
                       errorInfo: null,
                       lastFetchedAt,
@@ -804,7 +837,7 @@ export function createQueryStore<
                 queryCache: {
                   ...state.queryCache,
                   [currentQueryKey]: {
-                    cacheTime: entry?.cacheTime ?? (cacheTimeIsFunction ? cacheTime(effectiveParams) : cacheTime),
+                    cacheTime: entry?.cacheTime ?? effectiveCacheTime,
                     data: entry?.data ?? null,
                     lastFetchedAt: entry?.lastFetchedAt ?? null,
                     errorInfo: {
@@ -825,7 +858,7 @@ export function createQueryStore<
                 queryCache: {
                   ...state.queryCache,
                   [currentQueryKey]: {
-                    cacheTime: entry?.cacheTime ?? (cacheTimeIsFunction ? cacheTime(effectiveParams) : cacheTime),
+                    cacheTime: entry?.cacheTime ?? effectiveCacheTime,
                     data: entry?.data ?? null,
                     lastFetchedAt: entry?.lastFetchedAt ?? null,
                     errorInfo: {
@@ -956,7 +989,7 @@ export function createQueryStore<
     return baseMethods;
   };
 
-  const combinedPersistConfig = persistConfig
+  const combinedPersistConfig = persistConfig?.storageKey
     ? {
         ...persistConfig,
         partialize: createBlendedPartialize(keepPreviousData, persistConfig.partialize),
@@ -1026,7 +1059,7 @@ export function createQueryStore<
       let oldVal = attachVal.value;
       const unsub = subscribeFn(() => {
         const newVal = attachVal.value;
-        if (!equal(oldVal, newVal)) {
+        if (!dequal(oldVal, newVal)) {
           if (enableLogs) console.log('[🌀 Param Change 🌀] -', k, '- [Old]:', `${oldVal?.toString()},`, '[New]:', newVal?.toString());
           oldVal = newVal;
           onParamChange();

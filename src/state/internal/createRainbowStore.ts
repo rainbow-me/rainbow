@@ -6,6 +6,7 @@ import { createWithEqualityFn } from 'zustand/traditional';
 import { IS_IOS, IS_TEST } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import { time } from '@/utils';
+import { defaultDeserializeState, defaultSerializeState, omitStoreMethods } from './utils/persistUtils';
 
 const rainbowStorage = new MMKV({ id: 'rainbow-storage' });
 
@@ -35,15 +36,15 @@ export interface RainbowPersistConfig<S, PersistedState = Partial<S>> {
    */
   partialize?: (state: S) => PersistedState;
   /**
-   * A function to serialize the state and version into a string for storage.
-   * If not provided, the default serializer is used.
-   */
-  serializer?: (state: StorageValue<PersistedState>['state'], version: StorageValue<PersistedState>['version']) => string;
-  /**
    * The throttle rate for the persist operation in milliseconds.
    * @default iOS: time.seconds(3) | Android: time.seconds(5)
    */
   persistThrottleMs?: number;
+  /**
+   * A function to serialize the state and version into a string for storage.
+   * If not provided, the default serializer is used.
+   */
+  serializer?: (state: StorageValue<PersistedState>['state'], version: StorageValue<PersistedState>['version']) => string;
   /**
    * The unique key for the persisted store.
    */
@@ -82,23 +83,6 @@ export function createRainbowStore<S, PersistedState extends Partial<S> = Partia
     ),
     Object.is
   );
-}
-
-/**
- * Default partialize function if none is provided. It omits top-level store
- * methods and keeps all other state.
- */
-export function omitStoreMethods<S, PersistedState extends Partial<S>>(state: S): PersistedState {
-  if (state !== null && typeof state === 'object') {
-    const result: Record<string, unknown> = {};
-    Object.entries(state).forEach(([key, val]) => {
-      if (typeof val !== 'function') {
-        result[key] = val;
-      }
-    });
-    return result as PersistedState;
-  }
-  return state as unknown as PersistedState;
 }
 
 interface LazyPersistParams<S, PersistedState extends Partial<S>> {
@@ -163,77 +147,4 @@ function createPersistStorage<S, PersistedState extends Partial<S>>(config: Rain
   };
 
   return { persistStorage, version };
-}
-
-/**
- * Serializes the state and version into a JSON string.
- * @param state - The state to be serialized.
- * @param version - The version of the state.
- * @returns The serialized state as a JSON string.
- */
-function defaultSerializeState<PersistedState>(
-  state: StorageValue<PersistedState>['state'],
-  version: StorageValue<PersistedState>['version'],
-  shouldUseReplacer: boolean
-): string {
-  try {
-    return JSON.stringify({ state, version }, shouldUseReplacer ? replacer : undefined);
-  } catch (error) {
-    logger.error(new RainbowError(`[createRainbowStore]: Failed to serialize Rainbow store data`), { error });
-    throw error;
-  }
-}
-
-/**
- * Deserializes the state and version from a JSON string.
- * @param serializedState - The serialized state as a JSON string.
- * @returns An object containing the deserialized state and version.
- */
-function defaultDeserializeState<PersistedState>(serializedState: string, shouldUseReviver: boolean): StorageValue<PersistedState> {
-  try {
-    return JSON.parse(serializedState, shouldUseReviver ? reviver : undefined);
-  } catch (error) {
-    logger.error(new RainbowError(`[createRainbowStore]: Failed to deserialize persisted Rainbow store data`), { error });
-    throw error;
-  }
-}
-
-interface SerializedMap {
-  __type: 'Map';
-  entries: [unknown, unknown][];
-}
-
-function isSerializedMap(value: unknown): value is SerializedMap {
-  return typeof value === 'object' && value !== null && (value as Record<string, unknown>).__type === 'Map';
-}
-
-interface SerializedSet {
-  __type: 'Set';
-  values: unknown[];
-}
-
-function isSerializedSet(value: unknown): value is SerializedSet {
-  return typeof value === 'object' && value !== null && (value as Record<string, unknown>).__type === 'Set';
-}
-
-/**
- * Replacer function to handle serialization of Maps and Sets.
- */
-function replacer(_: string, value: unknown): unknown {
-  if (value instanceof Map) {
-    return { __type: 'Map', entries: Array.from(value.entries()) };
-  }
-  if (value instanceof Set) {
-    return { __type: 'Set', values: Array.from(value) };
-  }
-  return value;
-}
-
-/**
- * Reviver function to handle deserialization of Maps and Sets.
- */
-function reviver(_: string, value: unknown): unknown {
-  if (isSerializedMap(value)) return new Map(value.entries);
-  if (isSerializedSet(value)) return new Set(value.values);
-  return value;
 }
