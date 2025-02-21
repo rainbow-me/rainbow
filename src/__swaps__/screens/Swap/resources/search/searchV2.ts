@@ -16,7 +16,12 @@ const MAX_VERIFIED_RESULTS = 24;
 const MAX_UNVERIFIED_RESULTS = 6;
 
 const NO_RESULTS: SearchAsset[] = [];
-const NO_VERIFIED_RESULTS: VerifiedResults = { bridgeAsset: null, crosschainResults: [], results: [] };
+const NO_VERIFIED_RESULTS: VerifiedResults = { crosschainResults: [], results: [] };
+
+enum SearchMode {
+  CurrentNetwork = 'currentNetwork',
+  Crosschain = 'crosschain',
+}
 
 enum TokenLists {
   HighLiquidity = 'highLiquidityAssets',
@@ -33,12 +38,7 @@ type TokenSearchParams<List extends TokenLists = TokenLists> = {
   threshold: TokenSearchThreshold;
 };
 
-type TokenSearchState = {
-  bridgeAsset: SearchAsset | null;
-};
-
-type VerifiedResults = {
-  bridgeAsset: SearchAsset | null;
+export type VerifiedResults = {
   crosschainResults: SearchAsset[];
   results: SearchAsset[];
 };
@@ -47,7 +47,7 @@ type VerifiedResults = {
 
 export const useSwapsSearchStore = createRainbowStore<{ searchQuery: string }>(() => ({ searchQuery: '' }));
 
-export const useTokenSearchStore = createQueryStore<VerifiedResults, TokenSearchParams<TokenLists.Verified>, TokenSearchState>(
+export const useTokenSearchStore = createQueryStore<VerifiedResults, TokenSearchParams<TokenLists.Verified>>(
   {
     cacheTime: params => (params.query?.length ? time.seconds(15) : time.hours(1)),
     fetcher: searchVerifiedTokens,
@@ -63,8 +63,6 @@ export const useTokenSearchStore = createQueryStore<VerifiedResults, TokenSearch
     },
     staleTime: time.minutes(2),
   },
-
-  () => ({ bridgeAsset: null }),
 
   { persistThrottleMs: time.seconds(8), storageKey: 'verifiedTokenSearch' }
 );
@@ -152,84 +150,76 @@ function buildTokenSearchUrlParams<T extends TokenLists>({
 // ============ Search Result Utils ============================================ //
 
 /**
+ * Sorts an array of SearchAsset based on mode and, if provided, normalizedQuery.
+ */
+function sortSearchResults(assets: SearchAsset[], mode: SearchMode, normalizedQuery?: string): void {
+  assets.sort((a, b) => {
+    if (a.isNativeAsset !== b.isNativeAsset) return a.isNativeAsset ? -1 : 1;
+    if (a.highLiquidity !== b.highLiquidity) return a.highLiquidity ? -1 : 1;
+
+    if (mode === 'currentNetwork' && normalizedQuery) {
+      const aNameMatch =
+        !!normalizedQuery &&
+        ((a.name && a.name.toLowerCase().includes(normalizedQuery)) || (a.symbol && a.symbol.toLowerCase().includes(normalizedQuery)));
+      const bNameMatch =
+        !!normalizedQuery &&
+        ((b.name && b.name.toLowerCase().includes(normalizedQuery)) || (b.symbol && b.symbol.toLowerCase().includes(normalizedQuery)));
+      if (aNameMatch !== bNameMatch) return aNameMatch ? -1 : 1;
+    }
+
+    return Object.keys(b.networks).length - Object.keys(a.networks).length;
+  });
+}
+
+/**
  * Selects top search results based on the provided parameters.
  */
 function selectTopSearchResults({
   abortController,
   data,
-  isCrosschainSearch: isCrosschainSearchParam,
+  mode,
   query,
   toChainId,
 }: {
   abortController: AbortController | null;
   data: SearchAsset[];
-  isCrosschainSearch?: boolean;
+  mode: SearchMode;
   query: string | undefined;
   toChainId: ChainId;
 }): VerifiedResults {
   const normalizedQuery = query?.trim().toLowerCase();
   const queryHasMultipleChars = !!(normalizedQuery && normalizedQuery.length > 1);
-  const currentChainResults: SearchAsset[] = [];
-  const crosschainResults: SearchAsset[] = [];
-  let bridgeAsset: SearchAsset | null = null;
 
-  const inputAsset = useSwapsStore.getState().inputAsset;
-  const suggestedBridgeAssetAddress = inputAsset?.networks?.[toChainId]?.address ?? null;
-  const isCrosschainSearch = isCrosschainSearchParam ?? (suggestedBridgeAssetAddress && inputAsset && inputAsset.chainId !== toChainId);
+  const matches: SearchAsset[] = [];
+  let results: VerifiedResults;
 
-  for (const asset of data) {
-    if (abortController?.signal.aborted) break;
-    const isCurrentNetwork = asset.chainId === toChainId;
-
-    if (
-      !isCrosschainSearchParam &&
-      suggestedBridgeAssetAddress &&
-      (isCrosschainSearch ? asset.address === suggestedBridgeAssetAddress : asset.mainnetAddress === inputAsset?.mainnetAddress)
-    ) {
-      bridgeAsset = asset;
-      if (isCrosschainSearch) continue;
+  switch (mode) {
+    case SearchMode.CurrentNetwork: {
+      for (const asset of data) {
+        if (abortController?.signal.aborted) break;
+        if (asset.chainId === toChainId && (!!asset.icon_url || queryHasMultipleChars)) {
+          matches.push(asset);
+        }
+      }
+      sortSearchResults(matches, mode, normalizedQuery);
+      results = { crosschainResults: [], results: matches.slice(0, MAX_VERIFIED_RESULTS) };
+      break;
     }
-
-    const isMatch = !isCrosschainSearchParam && isCurrentNetwork && (!!asset.icon_url || queryHasMultipleChars);
-
-    if (isMatch) {
-      currentChainResults.push(asset);
-    } else {
-      const isCrosschainMatch =
-        (!isCurrentNetwork && queryHasMultipleChars && isExactMatch(asset, normalizedQuery)) ||
-        (!isCrosschainSearchParam && asset.isNativeAsset);
-      if (isCrosschainMatch) crosschainResults.push(asset);
+    case SearchMode.Crosschain: {
+      for (const asset of data) {
+        if (abortController?.signal.aborted) break;
+        if (asset.chainId !== toChainId && queryHasMultipleChars && isExactMatch(asset, normalizedQuery)) {
+          matches.push(asset);
+        }
+      }
+      sortSearchResults(matches, mode, normalizedQuery);
+      results = { crosschainResults: matches.slice(0, MAX_VERIFIED_RESULTS), results: [] };
+      break;
     }
   }
 
   if (abortController?.signal.aborted) return NO_VERIFIED_RESULTS;
-
-  currentChainResults.sort((a, b) => {
-    if (a.isNativeAsset !== b.isNativeAsset) return a.isNativeAsset ? -1 : 1;
-    if (a.highLiquidity !== b.highLiquidity) return a.highLiquidity ? -1 : 1;
-
-    const aNameMatch =
-      !!normalizedQuery && (a.name?.toLowerCase().includes(normalizedQuery) || a.symbol?.toLowerCase().includes(normalizedQuery));
-    const bNameMatch =
-      !!normalizedQuery && (b.name?.toLowerCase().includes(normalizedQuery) || b.symbol?.toLowerCase().includes(normalizedQuery));
-    if (aNameMatch !== bNameMatch) return aNameMatch ? -1 : 1;
-
-    return Object.keys(b.networks).length - Object.keys(a.networks).length;
-  });
-
-  if (isCrosschainSearchParam) {
-    crosschainResults.sort((a, b) => {
-      if (a.isNativeAsset !== b.isNativeAsset) return a.isNativeAsset ? -1 : 1;
-      if (a.highLiquidity !== b.highLiquidity) return a.highLiquidity ? -1 : 1;
-      return Object.keys(b.networks).length - Object.keys(a.networks).length;
-    });
-  }
-
-  return {
-    bridgeAsset,
-    crosschainResults,
-    results: currentChainResults.slice(0, MAX_VERIFIED_RESULTS),
-  };
+  return results;
 }
 
 /**
@@ -303,14 +293,12 @@ async function searchVerifiedTokens(
       );
 
       return {
-        bridgeAsset: null,
         crosschainResults: parseTokenSearchResults(addressMatchesOnOtherChains),
         results: [],
       };
     }
 
     return {
-      bridgeAsset: null,
       crosschainResults: [],
       results: parseTokenSearchResults(results, chainId),
     };
@@ -323,7 +311,7 @@ async function searchVerifiedTokens(
     return selectTopSearchResults({
       abortController,
       data: parseTokenSearchResults(crosschainData),
-      isCrosschainSearch: true,
+      mode: SearchMode.Crosschain,
       query,
       toChainId: chainId,
     });
@@ -332,6 +320,7 @@ async function searchVerifiedTokens(
   return selectTopSearchResults({
     abortController,
     data: parseTokenSearchResults(results, chainId),
+    mode: SearchMode.CurrentNetwork,
     query,
     toChainId: chainId,
   });

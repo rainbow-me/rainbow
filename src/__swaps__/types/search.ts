@@ -43,6 +43,8 @@ export type SearchAsset = {
   uniqueId: UniqueId;
 };
 
+export type FavoritedAsset = SearchAsset & { favorite: boolean };
+
 export type AssetToBuySectionId = 'bridge' | 'recent' | 'favorites' | 'verified' | 'unverified' | 'other_networks' | 'popular';
 
 export interface AssetToBuySection {
@@ -51,5 +53,5 @@ export interface AssetToBuySection {
 }
 
 export type HeaderItem = { listItemType: 'header'; id: AssetToBuySectionId; data: SearchAsset[] };
-export type CoinRowItem = SearchAsset & { listItemType: 'coinRow'; sectionId: AssetToBuySectionId };
+export type CoinRowItem = SearchAsset & { favorite?: boolean; listItemType: 'coinRow'; sectionId: AssetToBuySectionId };
 export type TokenToBuyListItem = HeaderItem | CoinRowItem;

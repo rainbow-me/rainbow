@@ -182,10 +182,11 @@ export const TokenToBuyList = () => {
           address={item.address}
           chainId={item.chainId}
           colors={item.colors}
+          hideFavoriteButton={item.sectionId === 'other_networks'}
           icon_url={item.icon_url}
-          // @ts-expect-error item.favorite does not exist - it does for favorites, need to fix the type
-          isFavorite={item.favorite}
+          isFavorite={item.favorite ?? false}
           isSupportedChain={supportedChainsBooleanMap[item.chainId] ?? false}
+          isVerified={item.isNativeAsset || item.isVerified}
           mainnetAddress={item.mainnetAddress}
           name={item.name}
           onPress={() => handleSelectToken(item)}

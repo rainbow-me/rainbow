@@ -1,8 +1,11 @@
 import { isAddress } from '@ethersproject/address';
+import { dequal } from 'dequal';
 import { rankings } from 'match-sorter';
 import { useEffect, useMemo, useRef } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
+import { Address } from 'viem';
 import { analyticsV2 } from '@/analytics';
+import { isNativeAsset } from '@/handlers/assets';
 import { addHexPrefix } from '@/handlers/web3';
 import { useFavorites } from '@/resources/favorites';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -14,7 +17,8 @@ import {
   useTokenSearchStore,
   useUnverifiedTokenSearchStore,
 } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import { AssetToBuySectionId, SearchAsset, TokenToBuyListItem } from '@/__swaps__/types/search';
+import { AddressOrEth, AssetType, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { AssetToBuySectionId, FavoritedAsset, SearchAsset, TokenToBuyListItem } from '@/__swaps__/types/search';
 import { RecentSwap } from '@/__swaps__/types/swap';
 import { isLowerCaseMatch, filterList, time } from '@/utils';
 import { getUniqueId } from '@/utils/ethereumUtils';
@@ -30,8 +34,9 @@ export function useSearchCurrencyLists() {
   const popularAssets = usePopularTokensStore(state => state.getData());
   const { favoritesMetadata: favorites } = useFavorites();
 
-  const isCrosschainSearch = useSwapsStore(state =>
-    state.inputAsset ? state.inputAsset.chainId !== (state.selectedOutputChainId ?? ChainId.mainnet) : false
+  const bridgedInputAsset = useSwapsStore(
+    state => getBridgedAsset(state.inputAsset, state.selectedOutputChainId ?? ChainId.mainnet),
+    dequal
   );
   const query = useSwapsSearchStore(state => state.searchQuery.trim().toLowerCase());
   const toChainId = useSwapsStore(state => state.selectedOutputChainId ?? ChainId.mainnet);
@@ -44,42 +49,40 @@ export function useSearchCurrencyLists() {
     return [isContract, isContract ? ADDRESS_SEARCH_KEY : NAME_SYMBOL_SEARCH_KEYS];
   }, [query]);
 
-  const unfilteredFavorites = useMemo(() => {
+  const unfilteredFavorites: FavoritedAsset[] = useMemo(() => {
     return Object.values(favorites)
-      .filter(token => token.networks[toChainId])
-      .map(favToken => ({
-        ...favToken,
-        address: favToken.networks?.[toChainId]?.address || favToken.address,
-        chainId: toChainId,
-        favorite: true,
-        mainnetAddress: favToken.networks?.[ChainId.mainnet]?.address || favToken.mainnet_address,
-        uniqueId: getUniqueId(favToken.networks[toChainId]?.address || favToken.address, toChainId),
-      })) as SearchAsset[];
+      .filter(token => token.networks[toChainId]?.address)
+      .map<FavoritedAsset>(favToken => {
+        const networks: SearchAsset['networks'] = favToken.networks;
+        const network = networks[toChainId];
+        const address = (network?.address || favToken.address) as AddressOrEth;
+        return {
+          ...favToken,
+          address,
+          chainId: toChainId,
+          favorite: true,
+          highLiquidity: favToken?.highLiquidity ?? false,
+          isNativeAsset: isNativeAsset(address, toChainId),
+          isRainbowCurated: favToken.isRainbowCurated ?? false,
+          isVerified: favToken.isVerified ?? false,
+          mainnetAddress: (networks?.[ChainId.mainnet]?.address || favToken.mainnet_address || '') as AddressOrEth,
+          networks,
+          type: favToken.type ? (favToken.type as AssetType) : undefined,
+          uniqueId: getUniqueId(address, toChainId),
+        };
+      });
   }, [favorites, toChainId]);
 
-  const filteredBridgeAsset = useDeepCompareMemo(() => {
-    if (!verifiedAssets?.bridgeAsset) return null;
+  const filteredBridgeAsset = useMemo(() => {
+    if (!bridgedInputAsset) return null;
 
-    const inputAssetBridgedToSelectedChainAddress = useSwapsStore.getState().inputAsset?.networks?.[toChainId]?.address;
-
-    const shouldShowBridgeResult =
-      isCrosschainSearch &&
-      inputAssetBridgedToSelectedChainAddress &&
-      inputAssetBridgedToSelectedChainAddress === verifiedAssets?.bridgeAsset?.networks?.[toChainId]?.address &&
-      filterBridgeAsset({ asset: verifiedAssets?.bridgeAsset, filter: query });
-
-    return shouldShowBridgeResult && verifiedAssets.bridgeAsset
+    return filterBridgeAsset({ asset: bridgedInputAsset, filter: query })
       ? {
-          ...verifiedAssets.bridgeAsset,
-          chainId: toChainId,
-          favorite: unfilteredFavorites.some(
-            fav =>
-              fav.networks?.[toChainId]?.address ===
-              (verifiedAssets?.bridgeAsset?.networks?.[toChainId]?.address || inputAssetBridgedToSelectedChainAddress)
-          ),
+          ...bridgedInputAsset,
+          favorite: unfilteredFavorites.some(fav => fav.networks?.[toChainId]?.address === bridgedInputAsset.address),
         }
       : null;
-  }, [isCrosschainSearch, query, toChainId, unfilteredFavorites, verifiedAssets?.bridgeAsset]);
+  }, [bridgedInputAsset, query, toChainId, unfilteredFavorites]);
 
   const favoritesList = useDeepCompareMemo(() => {
     if (query === '') return unfilteredFavorites;
@@ -153,13 +156,33 @@ export function useSearchCurrencyLists() {
   return data;
 }
 
+function getBridgedAsset(inputAsset: ExtendedAnimatedAssetWithColors | ParsedSearchAsset | null, toChainId: ChainId): SearchAsset | null {
+  const isCrosschainSearch = inputAsset ? inputAsset.chainId !== toChainId : false;
+  if (!inputAsset || !isCrosschainSearch || !inputAsset.bridging?.networks?.[toChainId]?.bridgeable) return null;
+
+  const network = inputAsset?.networks?.[toChainId];
+  if (!network?.address) return null;
+
+  return {
+    ...inputAsset,
+    address: network.address,
+    chainId: toChainId,
+    decimals: network.decimals,
+    isNativeAsset: isNativeAsset(network.address, toChainId),
+    isVerified: !!inputAsset.bridging?.isBridgeable, // isVerified is always undefined for user assets, so we use isBridgeable as a proxy
+    mainnetAddress: inputAsset.networks[ChainId.mainnet]?.address ?? (toChainId === ChainId.mainnet ? network.address : ('' as Address)),
+    uniqueId: getUniqueId(network.address, toChainId),
+  };
+}
+
 const mergeAssetsFavoriteStatus = ({
   assets,
   favoritesList,
 }: {
   assets: SearchAsset[] | undefined;
-  favoritesList: SearchAsset[] | undefined;
-}): SearchAsset[] => assets?.map(asset => ({ ...asset, favorite: favoritesList?.some(fav => fav.address === asset.address) })) || [];
+  favoritesList: FavoritedAsset[] | undefined;
+}): FavoritedAsset[] =>
+  assets?.map(asset => ({ ...asset, favorite: favoritesList?.some(fav => fav.address === asset.address) ?? false })) || [];
 
 const filterAssetsFromBridge = ({
   assets,
@@ -260,7 +283,7 @@ const buildListSectionsData = ({
     recentSwaps: RecentSwap[] | undefined;
     popularAssets: SearchAsset[] | undefined;
   };
-  favoritesList: SearchAsset[] | undefined;
+  favoritesList: FavoritedAsset[] | undefined;
   filteredBridgeAssetAddress: string | undefined;
 }): TokenToBuyListItem[] => {
   const formattedData: TokenToBuyListItem[] = [];
