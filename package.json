@@ -109,6 +109,7 @@
     "@rainbow-me/provider": "0.1.1",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/swaps": "0.32.0",
+    "@rainbow-me/token-launcher": "file:src/vendor/rainbow-me-token-launcher-0.1.0.tgz",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-camera-roll/camera-roll": "7.7.0",
     "@react-native-clipboard/clipboard": "1.13.2",

@@ -5223,6 +5223,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rainbow-me/token-launcher@file:src/vendor/rainbow-me-token-launcher-0.1.0.tgz::locator=Rainbow%40workspace%3A.":
+  version: 0.1.0
+  resolution: "@rainbow-me/token-launcher@file:src/vendor/rainbow-me-token-launcher-0.1.0.tgz#src/vendor/rainbow-me-token-launcher-0.1.0.tgz::hash=bbbbcc&locator=Rainbow%40workspace%3A."
+  dependencies:
+    "@ethereumjs/util": "npm:9.0.0"
+    "@ethersproject/abi": "npm:5.7.0"
+    "@ethersproject/abstract-signer": "npm:5.7.0"
+    "@ethersproject/bignumber": "npm:5.7.0"
+    "@ethersproject/bytes": "npm:5.7.0"
+    "@ethersproject/contracts": "npm:5.7.0"
+    "@ethersproject/keccak256": "npm:5.7.0"
+    "@ethersproject/providers": "npm:5.7.0"
+    "@ethersproject/random": "npm:5.7.0"
+    "@ethersproject/solidity": "npm:5.7.0"
+    "@ethersproject/strings": "npm:5.7.0"
+    "@ethersproject/transactions": "npm:5.7.0"
+    "@ethersproject/units": "npm:5.7.0"
+    "@ethersproject/wallet": "npm:5.7.0"
+    "@metamask/eth-sig-util": "npm:7.0.0"
+  checksum: 10c0/af5f63295cd56b753427bf218c0b25b334464b87068b20505b0db1507f258916f38aa29fabd71ddd46c817dd66bf87f247146b78e3c8db231ba7394b7c4e4f4f
+  languageName: node
+  linkType: hard
+
 "@react-native-async-storage/async-storage@npm:1.23.1":
   version: 1.23.1
   resolution: "@react-native-async-storage/async-storage@npm:1.23.1"
@@ -8731,6 +8754,7 @@ __metadata:
     "@rainbow-me/provider": "npm:0.1.1"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
     "@rainbow-me/swaps": "npm:0.32.0"
+    "@rainbow-me/token-launcher": "file:src/vendor/rainbow-me-token-launcher-0.1.0.tgz"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-native-camera-roll/camera-roll": "npm:7.7.0"
     "@react-native-clipboard/clipboard": "npm:1.13.2"
