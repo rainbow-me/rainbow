@@ -26,6 +26,7 @@ import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
+import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -53,26 +54,22 @@ export default function DiscoverSearch() {
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
 
-  const {
-    isSearching,
-    isLoading,
-    isFetchingEns,
-    setIsLoading,
-    setIsFetchingEns,
-    cancelSearch,
-    setSearchQuery,
-    searchQuery,
-    searchInputRef,
-    sectionListRef,
-  } = useDiscoverScreenContext();
-
+  const [isFetchingEns, setIsFetchingEns] = useState(false);
+  const { cancelSearch, searchInputRef, sectionListRef } = useDiscoverScreenContext();
+  const isLoading = useDiscoverSearchStore(state => state.getStatus().isFetching);
+  const { isSearching, searchQuery } = useDiscoverSearchQueryStore(state => {
+    return {
+      searchQuery: state.searchQuery.trim().toLowerCase(),
+      isSearching: state.isSearching,
+    };
+  });
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 800);
 
   const lastSearchQuery = usePrevious(searchQueryForSearch);
 
   const [ensResults, setEnsResults] = useState<EnsSearchResult[]>([]);
-  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch);
+  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList();
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const marginBottom = TAB_BAR_HEIGHT + safeAreaInsetValues.bottom + 16;
@@ -156,11 +153,11 @@ export default function DiscoverSearch() {
         }
         const contractAddress = query.split('/')[1];
         navigateToMintCollection(contractAddress, undefined, chainId);
-        setSearchQuery('');
+        useDiscoverSearchQueryStore.setState({ searchQuery: '' });
       }
     };
     checkAndHandleMint(searchQuery);
-  }, [accountAddress, navigate, searchQuery, setSearchQuery]);
+  }, [accountAddress, navigate, searchQuery]);
 
   const handlePress = useCallback(
     (item: EnrichedExchangeAsset) => {
@@ -226,27 +223,10 @@ export default function DiscoverSearch() {
   useEffect(() => {
     if (searchQueryForSearch && !isLoading) {
       if (lastSearchQuery !== searchQueryForSearch) {
-        setIsLoading(true);
         fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns, profilesEnabled);
       }
     }
-  }, [
-    addEnsResults,
-    isSearching,
-    lastSearchQuery,
-    searchQuery,
-    setIsFetchingEns,
-    profilesEnabled,
-    isLoading,
-    setIsLoading,
-    searchQueryForSearch,
-  ]);
-
-  useEffect(() => {
-    if (!swapCurrencyListLoading && !isFetchingEns) {
-      setIsLoading(false);
-    }
-  }, [isFetchingEns, setIsLoading, swapCurrencyListLoading]);
+  }, [addEnsResults, isSearching, lastSearchQuery, searchQuery, setIsFetchingEns, profilesEnabled, isLoading, searchQueryForSearch]);
 
   useEffect(() => {
     if (!sectionListRef.current?.props.data?.length) {

@@ -15,6 +15,7 @@ import { safeAreaInsetValues } from '@/utils';
 import * as i18n from '@/languages';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import DiscoverScreenProvider, { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 
 export let discoverScrollToTopFnRef: () => number | null = () => null;
 
@@ -23,7 +24,8 @@ const Content = () => {
   const isFocused = useIsFocused();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
 
-  const { isSearching, scrollToTop, scrollViewRef } = useDiscoverScreenContext();
+  const { scrollToTop, scrollViewRef } = useDiscoverScreenContext();
+  const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
   const scrollY = useSharedValue(0);
 
   const onChangeWallet = React.useCallback(() => {

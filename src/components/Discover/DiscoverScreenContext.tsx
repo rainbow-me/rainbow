@@ -1,21 +1,14 @@
 import { analytics } from '@/analytics';
-import React, { createContext, Dispatch, SetStateAction, RefObject, useState, useRef, useCallback } from 'react';
+import React, { createContext, RefObject, useRef, useCallback } from 'react';
 import { SectionList, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { useTrackDiscoverScreenTime } from './useTrackDiscoverScreenTime';
 
 type DiscoverScreenContextType = {
   scrollViewRef: RefObject<Animated.ScrollView>;
   sectionListRef: RefObject<SectionList>;
   searchInputRef: RefObject<TextInput>;
-  isSearching: boolean;
-  setIsSearching: Dispatch<SetStateAction<boolean>>;
-  isLoading: boolean;
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
-  isFetchingEns: boolean;
-  setIsFetchingEns: Dispatch<SetStateAction<boolean>>;
-  searchQuery: string;
-  setSearchQuery: Dispatch<SetStateAction<string>>;
   cancelSearch: () => void;
   scrollToTop: () => number | null;
   onTapSearch: () => void;
@@ -23,22 +16,9 @@ type DiscoverScreenContextType = {
 
 const DiscoverScreenContext = createContext<DiscoverScreenContextType | null>(null);
 
-const sendQueryAnalytics = (query: string) => {
-  if (query.length > 1) {
-    analytics.track('Search Query', {
-      category: 'discover',
-      length: query.length,
-      query: query,
-    });
-  }
-};
-
 const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isSearching, setIsSearching] = useState(false);
+  const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFetchingEns, setIsFetchingEns] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<TextInput>(null);
 
   const scrollViewRef = useRef<Animated.ScrollView>(null);
@@ -66,7 +46,7 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
       scrollToTop();
       searchInputRef.current?.focus();
     } else {
-      setIsSearching(true);
+      useDiscoverSearchQueryStore.setState({ isSearching: true });
       analytics.track('Tapped Search', {
         category: 'discover',
       });
@@ -75,11 +55,8 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
 
   const cancelSearch = useCallback(() => {
     searchInputRef.current?.blur();
-    sendQueryAnalytics(searchQuery.trim());
-    setIsLoading(false);
-    setSearchQuery('');
-    setIsSearching(false);
-  }, [searchQuery]);
+    useDiscoverSearchQueryStore.setState({ searchQuery: '', isSearching: false });
+  }, []);
 
   useTrackDiscoverScreenTime();
 
@@ -89,14 +66,6 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
         scrollViewRef,
         sectionListRef,
         searchInputRef,
-        isSearching,
-        setIsSearching,
-        isLoading,
-        setIsLoading,
-        isFetchingEns,
-        setIsFetchingEns,
-        searchQuery,
-        setSearchQuery,
         cancelSearch,
         scrollToTop,
         onTapSearch,
