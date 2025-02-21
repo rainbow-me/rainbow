@@ -1,5 +1,6 @@
 import React, { ReactNode, useCallback } from 'react';
-import { Linking, Text as NativeText, TextStyle } from 'react-native';
+import { Text as NativeText, TextStyle } from 'react-native';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 const style: TextStyle = {
   textDecorationLine: 'underline',
@@ -15,10 +16,16 @@ export interface TextLinkProps {
  * @description Renders a plain, static text link, designed to be used within a
  * block of text.
  */
-export function TextLink({ children, url, handleLinkPress = Linking.openURL }: TextLinkProps) {
+export function TextLink({ children, url, handleLinkPress }: TextLinkProps) {
+  const openInBrowser = useOpenInBrowser();
+
   const onPressHandler = useCallback(() => {
-    handleLinkPress(url);
-  }, [handleLinkPress, url]);
+    if (handleLinkPress) {
+      handleLinkPress(url);
+    } else {
+      openInBrowser(url);
+    }
+  }, [handleLinkPress, openInBrowser, url]);
 
   return (
     <NativeText onPress={onPressHandler} style={style}>

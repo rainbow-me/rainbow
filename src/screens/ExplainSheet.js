@@ -21,6 +21,7 @@ import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+// import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -169,6 +170,8 @@ export const explainers = (params, theme) => {
   const toChainId = params?.toChainId;
 
   const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
+  // openInBrowser - rule of hooks issue
+  // const openInBrowser = useOpenInBrowser();
 
   return {
     op_rewards_airdrop_timing: {
@@ -434,6 +437,14 @@ export const explainers = (params, theme) => {
           <Text
             color={colors?.appleBlue}
             onPress={() =>
+              // openInBrowser(
+              //   buildRainbowLearnUrl({
+              //     url: 'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing',
+              //     query: {
+              //       campaign: 'explain',
+              //     },
+              //   })
+              // )
               Linking.openURL(
                 buildRainbowLearnUrl({
                   url: 'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing',
@@ -474,6 +485,14 @@ export const explainers = (params, theme) => {
           <Text
             color={colors?.appleBlue}
             onPress={() =>
+              // openInBrowser(
+              //   buildRainbowLearnUrl({
+              //     url: 'https://support.rainbow.me/en/articles/8324868-fee-on-transfer-tokens',
+              //     query: {
+              //       campaign: 'explain',
+              //     },
+              //   })
+              // )
               Linking.openURL(
                 buildRainbowLearnUrl({
                   url: 'https://support.rainbow.me/en/articles/8324868-fee-on-transfer-tokens',
@@ -608,6 +627,14 @@ export const explainers = (params, theme) => {
           <Text
             color={colors?.appleBlue}
             onPress={() =>
+              // openInBrowser(
+              //   buildRainbowLearnUrl({
+              //     url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
+              //     query: {
+              //       campaign: 'explain',
+              //     },
+              //   })
+              // )
               Linking.openURL(
                 buildRainbowLearnUrl({
                   url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
@@ -642,6 +669,14 @@ export const explainers = (params, theme) => {
           <Text
             color={colors?.appleBlue}
             onPress={() =>
+              // openInBrowser(
+              //   buildRainbowLearnUrl({
+              //     url: 'https://learn.rainbow.me/swap-with-confidence-with-rainbow',
+              //     query: {
+              //       campaign: 'explain',
+              //     },
+              //   })
+              // )
               Linking.openURL(
                 buildRainbowLearnUrl({
                   url: 'https://learn.rainbow.me/swap-with-confidence-with-rainbow',
@@ -671,6 +706,7 @@ export const explainers = (params, theme) => {
           {lang.t('explain.slippage.still_curious.fragment1')}
           <Text
             color={colors?.appleBlue}
+            // onPress={() => openInBrowser('https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges')}
             onPress={() => Linking.openURL('https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges')}
             size="large"
             suppressHighlighting
@@ -720,6 +756,7 @@ const ExplainSheet = () => {
   }, [goBack, params]);
 
   const handleReadMore = useCallback(() => {
+    // explainSheetConfig?.readMoreLink && openInBrowser(explainSheetConfig.readMoreLink);
     explainSheetConfig?.readMoreLink && Linking.openURL(explainSheetConfig.readMoreLink);
   }, [explainSheetConfig?.readMoreLink]);
 

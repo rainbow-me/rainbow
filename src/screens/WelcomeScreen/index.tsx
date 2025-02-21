@@ -30,6 +30,7 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import { logger } from '@/logger';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 const Container = styled(View)({
   ...position.coverAsObject,
@@ -186,6 +187,7 @@ export default function WelcomeScreen() {
   }, [dangerouslyGetState, navigate, replace]);
 
   const handlePressTerms = useCallback(() => {
+    // Want to use Linking here - browser isn't mounted yet
     Linking.openURL('https://rainbow.me/terms-of-use');
   }, []);
 
