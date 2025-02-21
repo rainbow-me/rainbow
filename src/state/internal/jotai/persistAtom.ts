@@ -61,7 +61,6 @@ export type AtomStorageConfig<S, PersistedState = Partial<S>> = {
  * @template PersistedState - The persisted (partial) state type (defaults to Partial<S>).
  *
  * ---
- *
  * @param initialValue The atom’s initial full state.
  * @param options Persistence options including:
  *   - `storageKey` (required): A unique key for the persisted atom.
