@@ -1,6 +1,6 @@
 import { abbreviateNumber, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, STEP_TRANSITION_DURATION, TARGET_MARKET_CAP_IN_USD } from '../constants';
+import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, TARGET_MARKET_CAP_IN_USD } from '../constants';
 import { makeMutable, SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import chroma from 'chroma-js';
@@ -10,6 +10,9 @@ import store from '@/redux/store';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { formatCurrency } from '@/helpers/strings';
 import { validateLinkWorklet, validateNameWorklet, validateSymbolWorklet, validateTotalSupplyWorklet } from '../helpers/inputValidators';
+import { launchRainbowSuperTokenAndBuy } from '@rainbow-me/token-launcher';
+import { Wallet } from '@ethersproject/wallet';
+import { parseUnits } from '@ethersproject/units';
 
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
@@ -100,7 +103,7 @@ interface TokenLauncherStore {
   // actions
   reset: () => void;
   validateForm: () => void;
-  createToken: () => void;
+  createToken: ({ wallet }: { wallet: Wallet }) => Promise<void>;
 }
 
 // TODO: for testing. Remove before merging
@@ -113,8 +116,8 @@ const testTokenInfo = {
 };
 
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
-  imageUri: '',
-  imageUrl: '',
+  imageUri: 'https://picsum.photos/200/300',
+  imageUrl: 'https://picsum.photos/200/300',
   name: '',
   symbol: '',
   description: '',
@@ -343,7 +346,22 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   validateForm: () => {
     // TODO: validate all field values before submission to sdk for creation
   },
-  createToken: async () => {
-    // TODO: aggregate all data from store and call to sdk to create token
+  createToken: async ({ wallet }: { wallet: Wallet }) => {
+    await launchRainbowSuperTokenAndBuy({
+      name: get().name,
+      symbol: get().symbol,
+      description: get().description,
+      logoUrl: get().imageUrl,
+      supply: parseUnits(get().totalSupply.toString(), 18).toString(),
+      links: get().links.map(link => link.url),
+      amountIn: parseUnits(get().creatorBuyInEth.toString(), 'ether').toString(),
+      initialTick: 200,
+      wallet,
+      transactionOptions: {
+        gasLimit: '8000000',
+        maxFeePerGas: '100000000000',
+        maxPriorityFeePerGas: '2000000000',
+      },
+    });
   },
 }));
