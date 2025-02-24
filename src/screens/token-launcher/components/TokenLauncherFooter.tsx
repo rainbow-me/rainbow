@@ -11,6 +11,7 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
+  withTiming,
 } from 'react-native-reanimated';
 import { STEP_TRANSITION_DURATION } from '../constants';
 import { Keyboard } from 'react-native';
@@ -20,12 +21,14 @@ import { useBiometryType, useWallets } from '@/hooks';
 import { BiometryTypes } from '@/helpers';
 import { HoldToActivateButton } from './HoldToActivateButton';
 import { IS_ANDROID } from '@/env';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 export const FOOTER_HEIGHT = 56 + 16 + 8;
 
 function HoldToCreateButton() {
   const { accentColors } = useTokenLauncherContext();
   const createToken = useTokenLauncherStore(state => state.createToken);
+  const setStep = useTokenLauncherStore(state => state.setStep);
   const { isHardwareWallet } = useWallets();
   const biometryType = useBiometryType();
 
@@ -35,7 +38,8 @@ function HoldToCreateButton() {
   const showBiometryIcon = !IS_ANDROID && isLongPressAvailableForBiometryType && !isHardwareWallet;
 
   const handleLongPress = useCallback(() => {
-    // TESTING
+    // TODO: TESTING
+    setStep('creating');
     setIsProcessing(true);
 
     if (isHardwareWallet) {
@@ -44,9 +48,13 @@ function HoldToCreateButton() {
       createToken();
     }
     setTimeout(() => {
+      setStep('success');
       setIsProcessing(false);
-    }, 5000);
-  }, [isHardwareWallet, createToken]);
+      setTimeout(() => {
+        setStep('review');
+      }, 4000);
+    }, 4000);
+  }, [isHardwareWallet, createToken, setStep]);
 
   return (
     <HoldToActivateButton
@@ -67,14 +75,14 @@ function ContinueButton() {
   const setStep = useTokenLauncherStore(state => state.setStep);
   const canContinueToReview = useTokenLauncherStore(state => state.canContinueToReview());
 
-  const goToOverviewStep = useCallback(() => {
+  const goToReviewStep = useCallback(() => {
     Keyboard.dismiss();
-    setStep('overview');
+    setStep('review');
   }, [setStep]);
 
   // TODO: remove testing
   return (
-    <ButtonPressAnimation disabled={!canContinueToReview && false} onPress={goToOverviewStep}>
+    <ButtonPressAnimation disabled={!canContinueToReview && false} onPress={goToReviewStep}>
       <Box
         background={canContinueToReview ? 'blue' : 'fillTertiary'}
         justifyContent="center"
@@ -85,6 +93,26 @@ function ContinueButton() {
       >
         <Text color={canContinueToReview ? 'label' : 'labelTertiary'} size="20pt" weight="heavy">
           {'Continue'}
+        </Text>
+      </Box>
+    </ButtonPressAnimation>
+  );
+}
+
+function ShareButton() {
+  const { accentColors } = useTokenLauncherContext();
+  return (
+    <ButtonPressAnimation onPress={() => {}}>
+      <Box
+        backgroundColor={accentColors.opacity100}
+        justifyContent="center"
+        alignItems="center"
+        paddingHorizontal="24px"
+        borderRadius={28}
+        height={48}
+      >
+        <Text color="label" size="20pt" weight="heavy">
+          {'􀈂 Share Link'}
         </Text>
       </Box>
     </ButtonPressAnimation>
@@ -176,61 +204,92 @@ export function TokenLauncherFooter() {
   });
 
   const createButtonAnimatedStyle = useAnimatedStyle(() => {
+    const fullWidth = containerWidth.value - 32;
+    const isVisible = stepSharedValue.value === 'review' || stepSharedValue.value === 'creating';
     return {
-      display: stepSharedValue.value === 'overview' ? 'flex' : 'none',
-      width: interpolate(stepIndex.value, [0, 1], [continueButtonWidth.value, createButtonWidth.value], Extrapolation.CLAMP),
+      display: isVisible ? 'flex' : 'none',
+      width: interpolate(stepIndex.value, [0, 1, 2], [continueButtonWidth.value, createButtonWidth.value, fullWidth], Extrapolation.CLAMP),
       opacity: interpolate(stepIndex.value, [0, 1], [0, 1], Extrapolation.CLAMP),
     };
   });
 
+  const shareButtonAnimatedStyle = useAnimatedStyle(() => {
+    const fullWidth = containerWidth.value - 32;
+    const isVisible = stepSharedValue.value === 'success';
+
+    return {
+      opacity: 1,
+      width: fullWidth,
+      display: isVisible ? 'flex' : 'none',
+    };
+  });
+
+  const skipButtonAnimatedStyle = useAnimatedStyle(() => {
+    const isVisible = stepSharedValue.value === 'success';
+    return {
+      display: isVisible ? 'flex' : 'none',
+      height: withTiming(isVisible ? 42 : 0, TIMING_CONFIGS.buttonPressConfig),
+    };
+  });
+
   return (
-    <Box
-      paddingHorizontal="16px"
-      flexDirection="row"
-      justifyContent="space-between"
-      alignItems="center"
-      height={FOOTER_HEIGHT}
-      onLayout={e => {
-        containerWidth.value = e.nativeEvent.layout.width;
-      }}
-    >
-      {step === 'info' && <TokenPreview />}
-      {step === 'overview' && (
-        <Animated.View
-          entering={FadeIn.duration(STEP_TRANSITION_DURATION)}
-          onLayout={e => {
-            gasButtonWidth.value = e.nativeEvent.layout.width;
-          }}
-          style={{ flexDirection: 'row' }}
-        >
-          <GasButton
-            gasSpeed={gasSpeed}
-            chainId={chainId}
-            // TODO: gas limit should be fixed depending on if launchToken or launchTokenAndBuy. Should likely come from sdk
-            gasLimit={'1000000'}
-            onSelectGasSpeed={setGasSpeed}
-          />
-          <Box width={1} height={32} paddingHorizontal="12px">
-            <Separator thickness={1} direction="vertical" color="separator" />
-          </Box>
-        </Animated.View>
-      )}
-
-      <Animated.View style={[createButtonAnimatedStyle, { position: 'absolute', right: 16 }]}>
-        <HoldToCreateButton />
-      </Animated.View>
-
-      <Animated.View
-        style={[continueButtonAnimatedStyle, { position: 'absolute', right: 16 }]}
+    <Animated.View>
+      <Box
+        paddingHorizontal="16px"
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="center"
+        height={FOOTER_HEIGHT}
         onLayout={e => {
-          // We only want the original button width
-          if (continueButtonWidth.value === 0) {
-            continueButtonWidth.value = e.nativeEvent.layout.width;
-          }
+          containerWidth.value = e.nativeEvent.layout.width;
         }}
       >
-        <ContinueButton />
+        {step === 'info' && <TokenPreview />}
+        {step === 'review' && (
+          <Animated.View
+            entering={FadeIn.duration(STEP_TRANSITION_DURATION)}
+            onLayout={e => {
+              gasButtonWidth.value = e.nativeEvent.layout.width;
+            }}
+            style={{ flexDirection: 'row' }}
+          >
+            <GasButton
+              gasSpeed={gasSpeed}
+              chainId={chainId}
+              // TODO: gas limit should be fixed depending on if launchToken or launchTokenAndBuy. Should likely come from sdk
+              gasLimit={'1000000'}
+              onSelectGasSpeed={setGasSpeed}
+            />
+            <Box width={1} height={32} paddingHorizontal="12px">
+              <Separator thickness={1} direction="vertical" color="separator" />
+            </Box>
+          </Animated.View>
+        )}
+        <Animated.View
+          style={[continueButtonAnimatedStyle, { position: 'absolute', right: 16 }]}
+          onLayout={e => {
+            // We only want the original button width
+            if (continueButtonWidth.value === 0) {
+              continueButtonWidth.value = e.nativeEvent.layout.width;
+            }
+          }}
+        >
+          <ContinueButton />
+        </Animated.View>
+
+        <Animated.View style={[createButtonAnimatedStyle, { position: 'absolute', right: 16 }]}>
+          <HoldToCreateButton />
+        </Animated.View>
+
+        <Animated.View style={[shareButtonAnimatedStyle, { position: 'absolute', right: 16 }]}>
+          <ShareButton />
+        </Animated.View>
+      </Box>
+      <Animated.View style={[skipButtonAnimatedStyle, { alignItems: 'center', paddingTop: 20 }]}>
+        <Text color="labelSecondary" size="20pt" weight="heavy">
+          {'Skip'}
+        </Text>
       </Animated.View>
-    </Box>
+    </Animated.View>
   );
 }
