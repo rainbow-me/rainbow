@@ -78,7 +78,7 @@ const enum Section {
 }
 
 const t = i18n.l.network_selector;
-const MAX_HEIGHT = deviceUtils.dimensions.height * 0.85 - safeAreaInsetValues.top;
+const MAX_HEIGHT = deviceUtils.dimensions.height * 0.875 - safeAreaInsetValues.top;
 const HEADER_HEIGHT = 66;
 const FOOTER_HEIGHT = 91;
 const BANNER_HEIGHT = 75;
@@ -87,6 +87,7 @@ const SHEET_INNER_PADDING = 18;
 const ITEM_GAP = 12;
 const ITEM_WIDTH = (DEVICE_WIDTH - SHEET_INNER_PADDING * 2 - SHEET_OUTER_INSET * 2 - ITEM_GAP) / 2;
 const ITEM_HEIGHT = 48;
+const MASTHEAD_BUTTON_HEIGHT = ITEM_HEIGHT + 14 * 2;
 const SEPARATOR_HEIGHT = 68;
 const SEPARATOR_HEIGHT_NETWORK_CHIP = 18;
 const SHEET_WIDTH = deviceUtils.dimensions.width - 16;
@@ -356,9 +357,9 @@ function AllNetworksSection({
 }: Pick<NetworkSwitcherProps, 'canSelect' | 'editing' | 'selected' | 'setSelected' | 'goBackOnSelect' | 'actionButton'>) {
   const animatedStyle = useAnimatedStyle(() => ({
     height: withClamp(
-      { min: 0, max: ITEM_HEIGHT + 14 * 2 },
+      { min: 0, max: MASTHEAD_BUTTON_HEIGHT },
       withSpring(
-        editing.value ? 0 : ITEM_HEIGHT + 14 * 2, // 14 is the gap to the separator
+        editing.value ? 0 : MASTHEAD_BUTTON_HEIGHT, // 14 is the gap to the separator
         SPRING_CONFIGS.springConfig
       )
     ),
@@ -592,10 +593,15 @@ function EmptyUnpinnedPlaceholder({
   );
 }
 
-function getInitialNetworksState(
-  fillPinnedSection: boolean,
-  allowedNetworks?: ChainId[]
-): Record<Section.pinned | Section.unpinned, ChainId[]> {
+function getInitialNetworksState({
+  fillPinnedSection,
+  allowedNetworks,
+  hasMastheadButton,
+}: {
+  fillPinnedSection: boolean | undefined;
+  allowedNetworks?: ChainId[];
+  hasMastheadButton: boolean | undefined;
+}): Record<Section.pinned | Section.unpinned, ChainId[]> {
   let initialPinned = networkSwitcherStore.getState().pinnedNetworks;
   const sortedSupportedChainIds = useBackendNetworksStore.getState().getSortedSupportedChainIds();
   let initialUnpinned = sortedSupportedChainIds.filter(chainId => !initialPinned.includes(chainId));
@@ -606,7 +612,10 @@ function getInitialNetworksState(
   }
 
   if (fillPinnedSection) {
-    const maxPinnedNetworks = Math.floor((MAX_HEIGHT - HEADER_HEIGHT - FOOTER_HEIGHT) / (ITEM_HEIGHT + ITEM_GAP)) * 2;
+    const maxPinnedNetworks =
+      Math.floor(
+        (MAX_HEIGHT - HEADER_HEIGHT - (hasMastheadButton ? MASTHEAD_BUTTON_HEIGHT : 0) - SEPARATOR_HEIGHT) / (ITEM_HEIGHT + ITEM_GAP)
+      ) * 2;
 
     if (initialPinned.length > maxPinnedNetworks) {
       // Move excess networks to unpinned
@@ -647,11 +656,19 @@ function NetworksGrid({
   scrollViewHeight,
   goBackOnSelect,
   fillPinnedSection,
+  canSelectAllNetworks,
+  actionButton,
 }: NetworksGridProps) {
   const { goBack } = useNavigation();
   const sortedSupportedChainIds = useBackendNetworksStore.getState().getSortedSupportedChainIds();
 
-  const networks = useSharedValue(getInitialNetworksState(fillPinnedSection ?? false, allowedNetworks));
+  const networks = useSharedValue(
+    getInitialNetworksState({
+      fillPinnedSection,
+      allowedNetworks,
+      hasMastheadButton: !!actionButton || canSelectAllNetworks,
+    })
+  );
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
@@ -695,11 +712,21 @@ function NetworksGrid({
 
   const containerHeight = useDerivedValue(() => {
     const length = networks.value[Section.unpinned].length;
+
+    const amountOfPinned = networks.value[Section.pinned].length;
+    const maxPinnedNetworks =
+      Math.floor(
+        (MAX_HEIGHT - HEADER_HEIGHT - (!!actionButton || canSelectAllNetworks ? MASTHEAD_BUTTON_HEIGHT : 0) - SEPARATOR_HEIGHT) /
+          (ITEM_HEIGHT + ITEM_GAP)
+      ) * 2;
+
     const paddingBottom = 18;
     const unpinnedHeight = isUnpinnedHidden.value
       ? length === 0
         ? fillPinnedSection
-          ? paddingBottom
+          ? amountOfPinned === maxPinnedNetworks
+            ? paddingBottom + 10
+            : paddingBottom
           : -SEPARATOR_HEIGHT + paddingBottom
         : 0
       : length === 0
@@ -982,6 +1009,8 @@ export function NetworkSelector() {
         scrollY={scrollY}
         scrollViewHeight={scrollViewHeight}
         goBackOnSelect={goBackOnSelect}
+        canSelectAllNetworks={canSelectAllNetworks}
+        actionButton={actionButton}
         fillPinnedSection={fillPinnedSection}
         canEdit={canEdit}
       />

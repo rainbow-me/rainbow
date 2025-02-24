@@ -31,7 +31,9 @@ const PreferredNetworkMenu = () => {
         label: i18n.t(i18n.l.expanded_state.swap_details_v2.automatic),
         onPress: () => useSwapsStore.setState({ preferredNetwork: undefined }),
       }}
+      title={i18n.t(i18n.l.expanded_state.swap_details_v2.preferred_network)}
       allowedNetworks={chainsToDisplay}
+      fillPinnedSection
       canEdit={false}
     />
   );
