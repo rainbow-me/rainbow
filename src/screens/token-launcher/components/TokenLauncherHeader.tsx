@@ -15,11 +15,18 @@ export const TOKEN_LAUNCHER_HEADER_HEIGHT = 20 + 36 + 8 + 12 + 12;
 
 export function TokenLauncherHeader() {
   const navigation = useNavigation();
-  // const { accountAddress } = useAccountSettings();
   const { accountColor, accountImage, accountAddress } = useAccountProfile();
 
   const step = useTokenLauncherStore(state => state.step);
   const setStep = useTokenLauncherStore(state => state.setStep);
+  let title = '';
+  if (step === 'info') {
+    title = 'New Coin';
+  } else if (step === 'review') {
+    title = 'Review';
+  } else if (step === 'creating') {
+    title = 'Creating';
+  }
 
   return (
     <Box
@@ -30,6 +37,7 @@ export function TokenLauncherHeader() {
       paddingTop="20px"
       paddingBottom="12px"
       height={TOKEN_LAUNCHER_HEADER_HEIGHT}
+      zIndex={2}
     >
       {/* TODO: convert to new blur view when available */}
       {/* <BlurView
@@ -56,7 +64,7 @@ export function TokenLauncherHeader() {
             />
           </ButtonPressAnimation>
         )}
-        {step === 'overview' && (
+        {step === 'review' && (
           <ButtonPressAnimation
             style={{ width: EXIT_BUTTON_SIZE, height: EXIT_BUTTON_SIZE, justifyContent: 'center', alignItems: 'center' }}
             onPress={() => setStep('info')}
@@ -66,8 +74,9 @@ export function TokenLauncherHeader() {
             </Text>
           </ButtonPressAnimation>
         )}
+        {step === 'creating' && <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />}
         <Text size="20pt" weight="heavy" color="label">
-          {step === 'info' ? 'New Coin' : 'Overview'}
+          {title}
         </Text>
         {step === 'info' && (
           <ButtonPressAnimation onPress={() => navigation.goBack()}>
@@ -89,7 +98,7 @@ export function TokenLauncherHeader() {
             </Box>
           </ButtonPressAnimation>
         )}
-        {step === 'overview' && <Box width={EXIT_BUTTON_SIZE} />}
+        {(step === 'review' || step === 'creating') && <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />}
       </Box>
     </Box>
   );

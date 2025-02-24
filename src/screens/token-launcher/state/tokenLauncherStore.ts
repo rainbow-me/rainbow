@@ -17,6 +17,8 @@ export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma
 export type LinkType = 'website' | 'x' | 'telegram' | 'farcaster' | 'discord' | 'other';
 export type Link = { input: string; type: LinkType; url: string };
 
+type Step = 'info' | 'review' | 'creating' | 'success';
+
 export type AirdropRecipient = {
   type: 'group' | 'address';
   id: string;
@@ -39,7 +41,7 @@ interface TokenLauncherStore {
   links: Link[];
   creatorBuyInEth: number;
   airdropRecipients: AirdropRecipient[];
-  step: 'info' | 'overview' | 'success';
+  step: Step;
   stepIndex: SharedValue<number>;
   stepSharedValue: SharedValue<string>;
   ethPriceUsd: number;
@@ -71,7 +73,7 @@ interface TokenLauncherStore {
   deleteLink: (index: number) => void;
   setCreatorBuyInEth: (amount: number) => void;
   setDescription: (description: string) => void;
-  setStep: (step: 'info' | 'overview' | 'success') => void;
+  setStep: (step: Step) => void;
   addAirdropGroup: ({ groupId, label, count }: { groupId: string; label: string; count: number }) => void;
   addOrEditAirdropAddress: ({
     id,
@@ -95,17 +97,32 @@ interface TokenLauncherStore {
   createToken: () => void;
 }
 
+// TODO: for testing. Remove before merging
+// const testTokenInfo = {
+//   imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+//   imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+//   name: 'Test Token',
+//   symbol: 'TEST',
+//   description: 'This is a test token',
+// };
+
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
   imageUri: '',
   imageUrl: '',
   name: '',
   symbol: '',
   description: '',
+  // TODO: for testing. Remove before merging
+  // imageUrl: testTokenInfo.imageUrl,
+  // imageUri: testTokenInfo.imageUri,
+  // name: testTokenInfo.name,
+  // symbol: testTokenInfo.symbol,
+  // description: testTokenInfo.description,
   airdropRecipients: [],
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
   links: [
-    // TESTING
+    // TODO: for testing. Remove before merging
     // { input: '', type: 'website', url: '' },
   ],
   creatorBuyInEth: 0,
@@ -206,9 +223,13 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   setCreatorBuyInEth: (amount: number) => {
     set({ creatorBuyInEth: amount });
   },
-  setStep: (step: 'info' | 'overview' | 'success') => {
-    const newIndex = step === 'info' ? 0 : 1;
-    // get().stepIndex.value = newIndex;
+  setStep: (step: Step) => {
+    let newIndex = 0;
+    if (step === 'info') newIndex = 0;
+    else if (step === 'review') newIndex = 1;
+    else if (step === 'creating') newIndex = 2;
+    else if (step === 'success') newIndex = 3;
+
     // TODO:
     get().stepIndex.value = withTiming(newIndex, TIMING_CONFIGS.slowFadeConfig);
     get().stepSharedValue.value = step;

@@ -18,9 +18,11 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { formatUnits } from 'viem';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
+import { SkImage, useImage } from '@shopify/react-native-skia';
 
 type TokenLauncherContextType = {
   ethRequiredForTransactionGas: string;
+  tokenSkiaImage: SkImage | null;
   accentColors: {
     opacity100: string;
     opacity30: string;
@@ -71,6 +73,9 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   const setEthPriceNative = useTokenLauncherStore(state => state.setEthPriceNative);
 
   const imageUrl = useTokenLauncherStore(state => state.imageUrl);
+  const imageUri = useTokenLauncherStore(state => state.imageUrl);
+  const tokenSkiaImage = useImage(imageUri);
+
   const imageDerivedColor = usePersistentDominantColorFromImage(imageUrl);
 
   const accentColors = useMemo(() => {
@@ -85,8 +90,6 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
     } catch (e) {
       // do nothing
     }
-
-    // console.log('primaryColor', primaryColor, imageDerivedColor);
 
     return {
       opacity100: primaryColor,
@@ -114,13 +117,6 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
 
     return formatUnits(safeBigInt(gasFeeWei), nativeAsset.decimals);
   }, [chainId, gasSettings]);
-
-  // const hasSufficientEthForTransactionGas = useMemo(() => {
-  //   const userNativeAsset = userAssetsStore.getState().getNativeAssetForChain(chainId);
-  //   const userBalance = userNativeAsset?.balance?.amount || '0';
-
-  //   return lessThanOrEqualToWorklet(ethRequiredForTransactionGas, userBalance);
-  // }, [chainId, ethRequiredForTransactionGas]);
 
   useEffect(() => {
     const userNativeAsset = userAssetsStore.getState().getNativeAssetForChain(chainId);
@@ -174,5 +170,9 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
     }
   }, [ethPriceNative, ethPriceUsd, setEthPriceNative, setEthPriceUsd]);
 
-  return <TokenLauncherContext.Provider value={{ accentColors, ethRequiredForTransactionGas }}>{children}</TokenLauncherContext.Provider>;
+  return (
+    <TokenLauncherContext.Provider value={{ accentColors, ethRequiredForTransactionGas, tokenSkiaImage }}>
+      {children}
+    </TokenLauncherContext.Provider>
+  );
 }

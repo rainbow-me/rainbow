@@ -208,7 +208,7 @@ export function ReviewStep() {
   const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[tokenChainId];
 
   return (
-    <Box style={{ flex: 1 }}>
+    <>
       <ScrollView
         contentOffset={{ x: 0, y: -TOKEN_LAUNCHER_HEADER_HEIGHT }}
         contentInset={{ top: TOKEN_LAUNCHER_HEADER_HEIGHT }}
@@ -217,7 +217,9 @@ export function ReviewStep() {
         }}
       >
         <Box width="full" paddingHorizontal={'20px'} alignItems="center">
+          {/* <Animated.View sharedTransitionTag="tokenImage"> */}
           <TokenLogo />
+          {/* </Animated.View> */}
           <Box alignItems="center" paddingTop={'20px'} gap={14}>
             <TextShadow blur={12} shadowOpacity={0.24}>
               <Text size="44pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
@@ -298,6 +300,6 @@ export function ReviewStep() {
       <Box position="absolute" width={'full'} paddingHorizontal={'16px'} style={{ bottom: 16 }}>
         <TotalCostPill />
       </Box>
-    </Box>
+    </>
   );
 }
