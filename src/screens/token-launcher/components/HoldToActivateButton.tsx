@@ -147,17 +147,6 @@ export function HoldToActivateButton({
           shadow={disabled ? ('12px' as const) : ('18px' as const)}
         >
           {!IS_ANDROID && !disabled && <HoldToAuthorizeButtonIcon sharedValue={longPressProgress} />}
-          {isProcessing && (
-            <Box
-              position="absolute"
-              style={{
-                // Same left value as the icon
-                left: 15,
-              }}
-            >
-              <AnimatedSpinner color={colors.whiteLabel} isLoading={isProcessing} scaleInFrom={1} size={30} />
-            </Box>
-          )}
           <LabelWithBiometryIcon
             label={isProcessing ? processingLabel : label}
             showIcon={showBiometryIcon && !isProcessing}
