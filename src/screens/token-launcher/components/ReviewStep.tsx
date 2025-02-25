@@ -26,7 +26,10 @@ function TokenAllocationCard() {
 
   const allocationBips = useTokenLauncherStore(state => state.allocationBips());
   const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
-  const bipsPerAirdropRecipient = allocationBips.airdrop / airdropRecipients.length;
+  const totalAirdropAddresses = airdropRecipients.reduce((acc, recipient) => {
+    return acc + recipient.count;
+  }, 0);
+  const bipsPerAirdropAddress = allocationBips.airdrop / totalAirdropAddresses;
 
   return (
     <Box gap={20} backgroundColor={CARD_BACKGROUND_COLOR} padding={'20px'} borderRadius={FIELD_BORDER_RADIUS} width={'full'}>
@@ -91,7 +94,7 @@ function TokenAllocationCard() {
                 )}
               </Box>
               <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
-                {`${convertAmountToPercentageDisplay(bipsPerAirdropRecipient / 100, 2, 2, false)}`}
+                {`${convertAmountToPercentageDisplay((bipsPerAirdropAddress * recipient.count) / 100, 2, 2, false)}`}
               </Text>
             </Box>
           );
