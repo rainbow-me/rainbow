@@ -62,7 +62,9 @@ function StarTokenImage({ size, image }: { size: number; image: SkImage }) {
     <Group>
       <Group>
         {/* Main background fill */}
-        <Path path={starBackgroundPath} color="white" style="fill" />
+        <Path path={starBackgroundPath} color="white">
+          <Shadow dx={0} dy={80} blur={80} color="rgba(232, 177, 112, 1)" />
+        </Path>
         <Path path={starBackgroundPath} color="white" opacity={0.7}>
           {/* TODO: adjust start and end to match scale */}
           <LinearGradient start={vec(71, 148.309)} end={vec(299, 148.309)} colors={['#0E76FD', '#61B5FF']} />
@@ -78,20 +80,16 @@ function StarTokenImage({ size, image }: { size: number; image: SkImage }) {
           color="#F5F8FF"
           opacity={0.2}
           style="stroke"
-        >
-          {/* <Shadow dx={0} dy={1.43} blur={7} color="white" inner /> */}
-          <Shadow dx={0} dy={0} blur={5} color="rgba(0, 0, 0, 0.4)" inner />
+        />
+        {/* Inner shadows - approximating the effect3_innerShadow */}
+        <Path path={starBackgroundPath}>
+          <Shadow dx={0} dy={1.43396} blur={7.16982 / 2} color="rgba(255, 255, 255, 1)" inner shadowOnly />
         </Path>
-        {/* Would more closely match figma, wip */}
-        {/* <Path
-          transform={[{ translateX: strokeScaledSize }, { translateY: strokeScaledSize }]}
-          path={innerStrokePath}
-          strokeWidth={strokeScaledSize}
-          style="stroke"
-        >
-          <Shadow dx={0} dy={1.43} blur={7} color="white" shadowOnly />
-          <Shadow dx={0} dy={0} blur={5} color="rgba(0, 0, 0, 0.4)" shadowOnly />
-        </Path> */}
+
+        {/* Inner shadows - approximating the effect4_innerShadow */}
+        <Path path={starBackgroundPath} blendMode="darken">
+          <Shadow dx={0} dy={-2.86792} blur={5.73584 / 2} color="rgba(0, 0, 0, 0.4)" inner shadowOnly />
+        </Path>
       </Group>
       <Group transform={[{ translateX: (size - imageScaledSize) / 2 }, { translateY: (size - imageScaledSize) / 2 }]}>
         <Path path={starPath}>
