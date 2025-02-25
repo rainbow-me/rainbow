@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import * as i18n from '@/languages';
 import { Box, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -8,6 +9,7 @@ import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { useAccountProfile } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
+import { showActionSheetWithOptions } from '@/utils';
 
 const EXIT_BUTTON_SIZE = 36;
 // padding top + exit button + inner padding + padding bottom + blur padding
@@ -16,7 +18,7 @@ export const TOKEN_LAUNCHER_HEADER_HEIGHT = 20 + 36 + 8 + 12 + 12;
 export function TokenLauncherHeader() {
   const navigation = useNavigation();
   const { accountColor, accountImage, accountAddress } = useAccountProfile();
-
+  const reset = useTokenLauncherStore(state => state.reset);
   const step = useTokenLauncherStore(state => state.step);
   const setStep = useTokenLauncherStore(state => state.setStep);
   let title = '';
@@ -27,6 +29,22 @@ export function TokenLauncherHeader() {
   } else if (step === 'creating') {
     title = 'Creating';
   }
+
+  const handlePressExit = useCallback(() => {
+    showActionSheetWithOptions(
+      {
+        cancelButtonIndex: 1,
+        destructiveButtonIndex: 0,
+        options: ['Discard & Exit', i18n.t(i18n.l.button.cancel)],
+      },
+      (buttonIndex: number) => {
+        if (buttonIndex === 0) {
+          reset();
+          navigation.goBack();
+        }
+      }
+    );
+  }, [navigation, reset]);
 
   return (
     <Box
@@ -79,7 +97,7 @@ export function TokenLauncherHeader() {
           {title}
         </Text>
         {step === 'info' && (
-          <ButtonPressAnimation onPress={() => navigation.goBack()}>
+          <ButtonPressAnimation onPress={handlePressExit}>
             <Box
               as={BlurView}
               borderWidth={THICK_BORDER_WIDTH}

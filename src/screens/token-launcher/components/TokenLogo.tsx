@@ -13,6 +13,7 @@ const SIZE = 112;
 export function TokenLogo() {
   const { accentColors, tokenSkiaImage } = useTokenLauncherContext();
 
+  const imageUri = useTokenLauncherStore(state => state.imageUri);
   const setImageUri = useTokenLauncherStore(state => state.setImageUri);
   const setImageUrl = useTokenLauncherStore(state => state.setImageUrl);
 
@@ -43,7 +44,7 @@ export function TokenLogo() {
         }}
       >
         <Box width={SIZE} height={SIZE} borderRadius={SIZE / 2} justifyContent="center" alignItems="center">
-          {tokenSkiaImage && (
+          {tokenSkiaImage && imageUri && (
             <Canvas style={{ width: SIZE, height: SIZE }}>
               <Image x={0} y={0} width={SIZE} height={SIZE} image={tokenSkiaImage} fit="cover"></Image>
               <RoundedRect x={0} y={0} width={SIZE} height={SIZE} r={SIZE / 2}>
@@ -51,7 +52,7 @@ export function TokenLogo() {
               </RoundedRect>
             </Canvas>
           )}
-          {!tokenSkiaImage && (
+          {!imageUri && (
             <View
               style={{
                 width: '100%',
