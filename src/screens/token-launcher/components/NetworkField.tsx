@@ -21,6 +21,8 @@ export function NetworkField() {
   const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[chainId];
   const navigation = useNavigation();
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
+  // TODO: data only exists in staging currently, uncomment when live
+  // const allowedNetworks = useBackendNetworksStore.getState().getTokenLauncherSupportedChainIds();
 
   const onChainSelected = (chainId: number) => {
     setChainId(chainId);
@@ -53,6 +55,7 @@ export function NetworkField() {
                 setSelected: onChainSelected,
                 canEdit: false,
                 canSelectAllNetworks: false,
+                // allowedNetworks,
               });
             }}
           >
