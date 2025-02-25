@@ -40,9 +40,10 @@ export function calculateTokenomics({
   const roundedTick = Math.floor(exactTick / TICK_SPACING) * TICK_SPACING;
 
   // Calculate actual starting values with rounded tick
-  const actualPriceEth = Math.pow(1.0001, roundedTick);
-  const actualPriceUsd = actualPriceEth * ethPriceUsd;
-  const actualMarketCap = actualPriceUsd * totalSupply;
+  let actualPriceEth = Math.pow(1.0001, roundedTick);
+  let actualPriceUsd = actualPriceEth * ethPriceUsd;
+  let actualMarketCapUsd = actualPriceUsd * totalSupply;
+  let actualMarketCapEth = actualMarketCapUsd / ethPriceUsd;
 
   // Calculate swap outcome if amountInEth is provided
   let swap = undefined;
@@ -58,6 +59,14 @@ export function calculateTokenomics({
     // Post-swap market cap
     const remainingLpTokens = lpSupply - tokensOut;
     const postSwapMarketCapUsd = remainingLpTokens * actualPriceEth * ethPriceUsd;
+    const postSwapMarketCapEth = postSwapMarketCapUsd / ethPriceUsd;
+    const postSwapPriceUsd = postSwapMarketCapUsd / totalSupply;
+    const postSwapPriceEth = postSwapPriceUsd / ethPriceUsd;
+
+    actualMarketCapUsd = postSwapMarketCapUsd;
+    actualMarketCapEth = postSwapMarketCapEth;
+    actualPriceUsd = postSwapPriceUsd;
+    actualPriceEth = postSwapPriceEth;
 
     creatorAmount += tokensOut;
     creatorAllocationBips = (creatorAmount / totalSupply) * 10000;
@@ -75,6 +84,7 @@ export function calculateTokenomics({
         priceImpact,
       },
       marketCapAfterUsd: postSwapMarketCapUsd,
+      marketCapAfterEth: postSwapMarketCapEth,
     };
   }
 
@@ -99,8 +109,9 @@ export function calculateTokenomics({
     tick: roundedTick,
     marketCap: {
       targetUsd: targetMarketCapUsd,
-      actualUsd: actualMarketCap,
+      actualUsd: actualMarketCapUsd,
       targetEth: targetMarketCapEth,
+      actualEth: actualMarketCapEth,
     },
     swap,
   };
