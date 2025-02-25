@@ -36,6 +36,7 @@ export function NetworkField() {
           justifyContent: 'space-between',
           alignItems: 'center',
           borderColor: hasSufficientEthForTransactionGas ? FIELD_BORDER_COLOR : red,
+          gap: 8,
         }}
       >
         <Box gap={10}>
@@ -44,17 +45,17 @@ export function NetworkField() {
             {`Balance: ${nativeAssetForChain?.balance.display ?? '0.00'}`}
           </Text>
         </Box>
-        <ButtonPressAnimation
-          onPress={() => {
-            navigation.navigate(Routes.NETWORK_SELECTOR, {
-              selected: chainId,
-              setSelected: onChainSelected,
-              canEdit: false,
-              canSelectAllNetworks: false,
-            });
-          }}
-        >
-          <Bleed right={{ custom: 7 }}>
+        <Bleed right={{ custom: 7 }}>
+          <ButtonPressAnimation
+            onPress={() => {
+              navigation.navigate(Routes.NETWORK_SELECTOR, {
+                selected: chainId,
+                setSelected: onChainSelected,
+                canEdit: false,
+                canSelectAllNetworks: false,
+              });
+            }}
+          >
             <Box
               backgroundColor={accentColors.opacity10}
               borderColor={{ custom: accentColors.opacity6 }}
@@ -68,15 +69,22 @@ export function NetworkField() {
               gap={8}
             >
               <ChainImage position="relative" chainId={chainId} size={24} />
-              <Text color="label" size="17pt" weight="heavy" style={{ textTransform: 'capitalize' }}>
+              <Text
+                color="label"
+                size="17pt"
+                weight="heavy"
+                ellipsizeMode="tail"
+                numberOfLines={1}
+                style={{ maxWidth: 100, textTransform: 'capitalize' }}
+              >
                 {networkLabel}
               </Text>
               <TextIcon color="label" size="17pt" weight="heavy">
                 {'􀆈'}
               </TextIcon>
             </Box>
-          </Bleed>
-        </ButtonPressAnimation>
+          </ButtonPressAnimation>
+        </Bleed>
       </FieldContainer>
       {!hasSufficientEthForTransactionGas && (
         <Box paddingHorizontal={'20px'}>
