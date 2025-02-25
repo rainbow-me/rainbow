@@ -3,6 +3,7 @@ import { NativeCurrencyKey } from '@/entities';
 import { metadataClient } from '@/graphql';
 import { Token } from '@/graphql/__generated__/metadata';
 import { ChainId } from '@/state/backendNetworks/types';
+import { time } from '@/utils';
 
 // Types
 export type TokenMetadata = Pick<
@@ -46,6 +47,8 @@ export default function useAdditionalAssetData({ address, chainId, currency }: A
     () => getAdditionalAssetData({ address, chainId, currency }),
     {
       enabled: !!address && !!chainId && !!currency, // Ensure all parameters are provided
+      keepPreviousData: true,
+      staleTime: time.minutes(1),
     }
   );
 }

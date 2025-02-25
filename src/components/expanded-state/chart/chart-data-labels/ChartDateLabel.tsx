@@ -1,9 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import Animated, { AnimatedStyle, FadeIn, useAnimatedStyle } from 'react-native-reanimated';
-import { useRatio } from './useRatio';
-import { ChartXLabel, useChartData } from '@/react-native-animated-charts/src';
-import { useTheme } from '@/theme';
+import { ChartXLabel } from '@/react-native-animated-charts/src';
 
 const MONTHS = [
   lang.t('expanded_state.chart.date.months.month_00'),
@@ -71,26 +68,7 @@ function formatDatetime(value: string, chartTimeDefaultValue: string) {
   return res;
 }
 
-export default function ChartDateLabel({
-  chartTimeDefaultValue,
-  ratio,
-  showPriceChangeStyle,
-}: {
-  chartTimeDefaultValue: string;
-  ratio: number | undefined;
-  showPriceChangeStyle: AnimatedStyle;
-}) {
-  const { isActive } = useChartData();
-  const sharedRatio = useRatio();
-  const { colors } = useTheme();
-
-  const textStyle = useAnimatedStyle(() => {
-    const realRatio = isActive.value ? sharedRatio.value : ratio;
-    return {
-      color: realRatio !== undefined ? (realRatio === 1 ? colors.blueGreyDark : realRatio < 1 ? colors.red : colors.green) : 'transparent',
-    };
-  });
-
+export default function ChartDateLabel({ chartTimeDefaultValue }: { chartTimeDefaultValue: string }) {
   const formatWorklet = useCallback(
     (value: string) => {
       'worklet';
@@ -99,9 +77,5 @@ export default function ChartDateLabel({
     [chartTimeDefaultValue]
   );
 
-  return (
-    <Animated.View entering={FadeIn.duration(140)} style={showPriceChangeStyle}>
-      <ChartXLabel align="right" formatWorklet={formatWorklet} size="20pt" style={textStyle} tabularNumbers weight="semibold" />
-    </Animated.View>
-  );
+  return <ChartXLabel formatWorklet={formatWorklet} size="20pt" color="labelQuaternary" tabularNumbers weight="bold" />;
 }

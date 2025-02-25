@@ -8,6 +8,7 @@ import { Linking } from 'react-native';
 import { formatURLForDisplay } from '@/utils';
 import { XIcon } from '../../icons/XIcon';
 import { Icon } from '@/components/icons';
+import { formatUrl } from '@/components/DappBrowser/utils';
 
 interface RowItem {
   icon?: string;
@@ -32,55 +33,57 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
   return (
     <ButtonPressAnimation onPress={() => Linking.openURL(url)} scaleTo={0.96}>
       <Row highlighted={highlighted}>
-        <Inline space="12px" alignVertical="center">
-          {icon && (
-            <IconContainer height={10} width={20}>
+        <Box width="full" flexDirection="row" alignItems="center">
+          <Inline space="12px" alignVertical="center">
+            {icon && (
+              <IconContainer height={10} width={20}>
+                <TextShadow blur={12} shadowOpacity={0.24}>
+                  <Text weight="medium" align="center" size="icon 15px" color="accent">
+                    {icon}
+                  </Text>
+                </TextShadow>
+              </IconContainer>
+            )}
+            {iconName === 'x' && (
+              <IconContainer height={10} width={20}>
+                <XIcon color={accentColors.color} />
+              </IconContainer>
+            )}
+            {iconName === 'telegram' && (
+              <IconContainer height={10} width={20}>
+                <Bleed left="8px">
+                  <Icon width={'23'} height={'15'} name="telegram" color={accentColors.color} />
+                </Bleed>
+              </IconContainer>
+            )}
+            <TextShadow blur={12} shadowOpacity={0.24}>
+              <Text weight="semibold" size="17pt" color="accent">
+                {title}
+              </Text>
+            </TextShadow>
+          </Inline>
+          <Box flexDirection="row" gap={8} alignItems="center" style={{ flex: 1 }} justifyContent="flex-end">
+            {value && (
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                weight="semibold"
+                align="right"
+                size="17pt"
+                style={{ flex: 1 }}
+                color={{ custom: accentColors.opacity56 }}
+              >
+                {value}
+              </Text>
+            )}
+            <IconContainer height={9} width={16}>
               <TextShadow blur={12} shadowOpacity={0.24}>
-                <Text weight="medium" align="center" size="icon 15px" color="accent">
-                  {icon}
+                <Text weight="bold" align="center" size="15pt" color="accent">
+                  {`􀄯`}
                 </Text>
               </TextShadow>
             </IconContainer>
-          )}
-          {iconName === 'x' && (
-            <IconContainer height={10} width={20}>
-              <XIcon color={accentColors.color} />
-            </IconContainer>
-          )}
-          {iconName === 'telegram' && (
-            <IconContainer height={10} width={20}>
-              <Bleed left="8px">
-                <Icon width={'23'} height={'15'} name="telegram" color={accentColors.color} />
-              </Bleed>
-            </IconContainer>
-          )}
-          <TextShadow blur={12} shadowOpacity={0.24}>
-            <Text weight="semibold" size="17pt" color="accent">
-              {title}
-            </Text>
-          </TextShadow>
-        </Inline>
-        <Box flexDirection="row" gap={8} alignItems="center" style={{ flex: 1 }} justifyContent="flex-end">
-          {value && (
-            <Text
-              numberOfLines={1}
-              ellipsizeMode="tail"
-              weight="semibold"
-              align="right"
-              size="17pt"
-              style={{ flex: 1 }}
-              color={{ custom: accentColors.opacity56 }}
-            >
-              {value}
-            </Text>
-          )}
-          <IconContainer height={9} width={16}>
-            <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text weight="bold" align="center" size="15pt" color="accent">
-                {`􀄯`}
-              </Text>
-            </TextShadow>
-          </IconContainer>
+          </Box>
         </Box>
       </Row>
     </ButtonPressAnimation>
@@ -162,7 +165,7 @@ export function AboutSection() {
         icon: '􀎞',
         title: i18n.t(i18n.l.expanded_state.asset.social.website),
         url: metadata.links.homepage.url,
-        value: formatURLForDisplay(metadata.links.homepage.url),
+        value: formatUrl(metadata.links.homepage.url, false, true, true),
       });
     }
 
@@ -187,11 +190,11 @@ export function AboutSection() {
     items.push({
       icon: '􀊫',
       title: i18n.t(i18n.l.expanded_state.asset.social.search_on_twitter),
-      url: `https://x.com/search?q=${asset.name}`,
+      url: `https://x.com/search?q=$${asset.symbol}`,
     });
 
     return items;
-  }, [asset.name, metadata?.links]);
+  }, [asset.symbol, metadata?.links]);
 
   return (
     <Box gap={40}>

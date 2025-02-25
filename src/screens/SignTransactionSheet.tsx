@@ -524,7 +524,12 @@ export const SignTransactionSheet = () => {
       return !isAuthorizing; // Only check authorization state for message requests
     }
 
-    return !isAuthorizing && isBalanceEnough && !!chainId && !!selectedGasFee?.gasFee?.estimatedFee;
+    // We navigate to add cash sheet to top up balance so default this to true
+    if (!isBalanceEnough) {
+      return true;
+    }
+
+    return !isAuthorizing && !!chainId && !!selectedGasFee?.gasFee?.estimatedFee;
   }, [isAuthorizing, isMessageRequest, isBalanceEnough, chainId, selectedGasFee?.gasFee?.estimatedFee]);
 
   const primaryActionButtonLabel = useMemo(() => {
