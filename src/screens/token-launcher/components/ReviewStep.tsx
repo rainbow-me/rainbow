@@ -107,6 +107,8 @@ function AboutCard() {
   const description = useTokenLauncherStore(state => state.description);
   const links = useTokenLauncherStore(state => state.links);
 
+  if (description === '' && links.length === 0) return null;
+
   return (
     <Box gap={20} backgroundColor={CARD_BACKGROUND_COLOR} padding={'20px'} borderRadius={FIELD_BORDER_RADIUS} width={'full'}>
       <Text size="17pt" weight="heavy" color={'label'}>
