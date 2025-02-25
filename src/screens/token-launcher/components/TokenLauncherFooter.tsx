@@ -285,8 +285,8 @@ export function TokenLauncherFooter() {
           <ShareButton />
         </Animated.View>
       </Box>
-      <Animated.View style={[skipButtonAnimatedStyle, { alignItems: 'center', paddingTop: 20 }]}>
-        <Text color="labelSecondary" size="20pt" weight="heavy">
+      <Animated.View style={[skipButtonAnimatedStyle, { paddingTop: 16 }]}>
+        <Text align="center" color="labelTertiary" size="20pt" weight="heavy">
           {'Skip'}
         </Text>
       </Animated.View>
