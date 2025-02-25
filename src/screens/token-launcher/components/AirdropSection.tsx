@@ -8,10 +8,11 @@ import {
   FIELD_BORDER_WIDTH,
   FIELD_BORDER_RADIUS,
   COLLAPSABLE_FIELD_ANIMATION,
+  SMALL_INPUT_HEIGHT,
 } from '../constants';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import FastImage from 'react-native-fast-image';
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { FieldContainer } from './FieldContainer';
 import rainbowIconCircle from '@/assets/rainbow-icon-circle.png';
@@ -225,9 +226,9 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
       style={{
         flex: 1,
         backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
-        paddingVertical: 0,
         paddingHorizontal: 16,
         borderRadius: FIELD_INNER_BORDER_RADIUS,
+        height: SMALL_INPUT_HEIGHT,
       }}
       onInputChange={handleInputChange}
     />

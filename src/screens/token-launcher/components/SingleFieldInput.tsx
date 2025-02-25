@@ -8,7 +8,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { colors } from '@/styles';
 import { FieldContainer } from './FieldContainer';
 import { FieldLabel } from './FieldLabel';
-import { UNFOCUSED_FIELD_BORDER_COLOR, FOCUSED_FIELD_BORDER_COLOR } from '../constants';
+import { UNFOCUSED_FIELD_BORDER_COLOR, FOCUSED_FIELD_BORDER_COLOR, INPUT_HEIGHT } from '../constants';
 import { ButtonPressAnimation } from '@/components/animations';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
@@ -53,12 +53,15 @@ const FieldInput = React.memo(
           inputTextStyle,
           {
             flex: 1,
+            height: '100%',
             textAlign: labelPosition === 'left' ? 'right' : 'left',
-            paddingVertical: 16,
+            // These three custom values applied by the useTextStyle hook need to be overriden or the text will be misaligned / cut off
+            marginBottom: 0,
+            marginTop: 0,
+            lineHeight: undefined,
           },
           inputStyle,
         ]}
-        textAlignVertical="center"
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...textInputProps}
       />
@@ -99,7 +102,6 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
     // const inputRef = ref ?? internalRef;
 
     const isFocused = useSharedValue(false);
-    const focusProgress = useSharedValue(0);
     const inputValue = useSharedValue('');
     const errorLabel = useSharedValue('');
     const hasError = useSharedValue(false);
@@ -139,14 +141,12 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
     const handleFocusWorklet = useCallback(() => {
       'worklet';
       isFocused.value = true;
-      focusProgress.value = withTiming(1, TIMING_CONFIGS.fadeConfig);
-    }, [focusProgress, isFocused]);
+    }, [isFocused]);
 
     const handleBlurWorklet = useCallback(() => {
       'worklet';
       isFocused.value = false;
-      focusProgress.value = withTiming(0, TIMING_CONFIGS.fadeConfig);
-    }, [focusProgress, isFocused]);
+    }, [isFocused]);
 
     const _onChangeText = useCallback(
       (text: string) => {
@@ -196,7 +196,6 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
     }));
 
     const pasteButtonStyle = useAnimatedStyle(() => ({
-      // opacity: withTiming(inputValue.value === '' ? 1 : 0, TIMING_CONFIGS.fadeConfig),
       display: inputValue.value === '' ? 'flex' : 'none',
     }));
 
@@ -239,8 +238,8 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
 
     return (
       // @ts-expect-error TODO: fix this
-      <FieldContainer style={[containerStyle, style]}>
-        <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+      <FieldContainer style={[containerStyle, { height: INPUT_HEIGHT }, style]}>
+        <Box height={'full'} flexDirection="row" alignItems="center" justifyContent="space-between">
           {labelPosition === 'right' && showPaste && <PasteButton />}
           {labelPosition === 'left' && (title || icon) && <LabelContent />}
           <FieldInput

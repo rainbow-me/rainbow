@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, ColorModeProvider, useBackgroundColor, useColorMode } from '@/design-system';
+import { Box, ColorModeProvider } from '@/design-system';
 import { FOOTER_HEIGHT, TokenLauncherFooter } from './components/TokenLauncherFooter';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { TokenLauncherHeader } from './components/TokenLauncherHeader';
@@ -7,7 +7,7 @@ import { InfoInputStep } from './components/InfoInputStep';
 import { ReviewStep } from './components/ReviewStep';
 import { KeyboardAvoidingView, KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useTokenLauncherStore } from './state/tokenLauncherStore';
-import Animated, { Extrapolation, FadeIn, interpolate, LinearTransition, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { Extrapolation, FadeIn, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { SkiaBackground } from './components/SkiaBackground';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { TokenLauncherContextProvider } from './context/TokenLauncherContext';

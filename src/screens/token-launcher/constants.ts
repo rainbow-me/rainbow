@@ -16,6 +16,7 @@ export const CLOUDINARY_TOKEN_LAUNCHER_PRESET = 'token_launcher';
 export const DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR = BLUE;
 export const STEP_TRANSITION_DURATION = 200;
 export const INPUT_HEIGHT = 66;
+export const SMALL_INPUT_HEIGHT = 50;
 
 export const MAX_SYMBOL_LENGTH = 10;
 export const MAX_DESCRIPTION_LENGTH = 240;
