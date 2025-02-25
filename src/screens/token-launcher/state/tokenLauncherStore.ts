@@ -93,6 +93,7 @@ interface TokenLauncherStore {
   setHasValidPrebuyAmount: (hasValidPrebuyAmount: boolean) => void;
   setHasSufficientEthForGas: (hasSufficientEthForGas: boolean) => void;
   // actions
+  reset: () => void;
   validateForm: () => void;
   createToken: () => void;
 }
@@ -137,7 +138,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   // stepIndex: makeMutable(3),
   // stepSharedValue: makeMutable('success'),
   gasSpeed: GasSpeed.FAST,
-  hasSufficientEthForGas: false,
+  hasSufficientEthForGas: true,
   hasValidPrebuyAmount: true,
   // derived state
   formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 0, 'long'),
@@ -307,6 +308,28 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     set({ hasSufficientEthForGas });
   },
   // actions
+  reset: () => {
+    set({
+      imageUri: '',
+      imageUrl: '',
+      name: '',
+      symbol: '',
+      description: '',
+      links: [],
+      creatorBuyInEth: 0,
+      ethPriceUsd: 0,
+      ethPriceNative: 0,
+      gasSpeed: GasSpeed.FAST,
+      hasSufficientEthForGas: true,
+      hasValidPrebuyAmount: true,
+      airdropRecipients: [],
+      step: 'info' as const,
+      stepIndex: makeMutable(0),
+      stepSharedValue: makeMutable('info'),
+      chainId: DEFAULT_CHAIN_ID,
+      totalSupply: DEFAULT_TOTAL_SUPPLY,
+    });
+  },
   validateForm: () => {
     // TODO: validate all field values before submission to sdk for creation
   },
