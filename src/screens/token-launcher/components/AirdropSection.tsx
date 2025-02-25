@@ -22,6 +22,7 @@ import { checkIsValidAddressOrDomainFormat } from '@/helpers/validators';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { Skeleton } from '@/screens/points/components/Skeleton';
 
 const AIRDROP_GROUPS = [
   {
@@ -158,6 +159,7 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
   const [isValidAddress, setIsValidAddress] = useState(true);
   const [addressImage, setAddressImage] = useState<string | null>(null);
   const [address, setAddress] = useState('');
+  const [isFetchingEnsAvatar, setIsFetchingEnsAvatar] = useState(false);
 
   const handleInputChange = useCallback(
     async (text: string) => {
@@ -170,10 +172,12 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
         setIsValidAddress(isValid);
 
         if (isValid) {
+          setIsFetchingEnsAvatar(true);
           const avatar = await fetchENSAvatar(text);
           const imageUrl = avatar?.imageUrl ?? null;
 
           setAddressImage(imageUrl);
+          setIsFetchingEnsAvatar(false);
           addOrEditAirdropAddress({ id, address: text, isValid, imageUrl });
         }
       }
@@ -189,7 +193,7 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
         </TextIcon>
       );
     }
-    if (!isValidAddress) {
+    if (address === '' || !isValidAddress) {
       return (
         <Box
           width={20}
@@ -207,8 +211,11 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
         </Box>
       );
     }
+    if (isFetchingEnsAvatar) {
+      return <Skeleton width={20} height={20} />;
+    }
     return <AddressAvatar address={address} url={addressImage} size={20} color={accentColors.opacity100} label={''} />;
-  }, [isValidAddress, accentColors, address, addressImage]);
+  }, [isValidAddress, accentColors, address, addressImage, isFetchingEnsAvatar]);
 
   return (
     <SingleFieldInput
@@ -231,6 +238,7 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
         height: SMALL_INPUT_HEIGHT,
       }}
       onInputChange={handleInputChange}
+      spellCheck={false}
     />
   );
 });
