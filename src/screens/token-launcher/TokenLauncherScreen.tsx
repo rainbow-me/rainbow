@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, useBackgroundColor, useColorMode } from '@/design-system';
+import { Box, ColorModeProvider, useBackgroundColor, useColorMode } from '@/design-system';
 import { FOOTER_HEIGHT, TokenLauncherFooter } from './components/TokenLauncherFooter';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { TokenLauncherHeader } from './components/TokenLauncherHeader';
@@ -33,9 +33,7 @@ function reviewStepExitingAnimation() {
 }
 
 export function TokenLauncherScreen() {
-  const { isDarkMode } = useColorMode();
-  const fillQuaternary = useBackgroundColor('fillQuaternary');
-  const backgroundColor = isDarkMode ? '#000' : fillQuaternary;
+  const backgroundColor = '#000';
 
   const stepIndex = useTokenLauncherStore(state => state.stepIndex);
   const step = useTokenLauncherStore(state => state.step);
@@ -54,15 +52,15 @@ export function TokenLauncherScreen() {
   }));
 
   return (
-    <TokenLauncherContextProvider>
-      <KeyboardProvider>
-        <Box
-          width="full"
-          backgroundColor={backgroundColor}
-          style={{ flex: 1, paddingBottom: safeAreaInsetValues.bottom, paddingTop: safeAreaInsetValues.top }}
-        >
-          <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={FOOTER_HEIGHT} style={{ flex: 1 }}>
-            <Animated.View style={{ flex: 1 }} layout={LinearTransition.springify()}>
+    <ColorModeProvider value="dark">
+      <TokenLauncherContextProvider>
+        <KeyboardProvider>
+          <Box
+            width="full"
+            backgroundColor={backgroundColor}
+            style={{ flex: 1, paddingBottom: safeAreaInsetValues.bottom, paddingTop: safeAreaInsetValues.top }}
+          >
+            <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={FOOTER_HEIGHT} style={{ flex: 1 }}>
               <Box
                 borderWidth={THICK_BORDER_WIDTH}
                 borderColor={{ custom: 'rgba(245, 248, 255, 0.06)' }}
@@ -112,13 +110,13 @@ export function TokenLauncherScreen() {
                 )}
                 <TokenLauncherHeader />
               </Box>
-            </Animated.View>
-          </KeyboardAvoidingView>
-          <KeyboardStickyView offset={stickyFooterKeyboardOffset}>
-            <TokenLauncherFooter />
-          </KeyboardStickyView>
-        </Box>
-      </KeyboardProvider>
-    </TokenLauncherContextProvider>
+            </KeyboardAvoidingView>
+            <KeyboardStickyView offset={stickyFooterKeyboardOffset}>
+              <TokenLauncherFooter />
+            </KeyboardStickyView>
+          </Box>
+        </KeyboardProvider>
+      </TokenLauncherContextProvider>
+    </ColorModeProvider>
   );
 }
