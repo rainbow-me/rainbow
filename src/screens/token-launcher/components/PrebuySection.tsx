@@ -9,6 +9,7 @@ import {
   FIELD_BORDER_WIDTH,
   FIELD_INNER_BORDER_RADIUS,
   INNER_FIELD_BACKGROUND_COLOR,
+  SMALL_INPUT_HEIGHT,
   TOTAL_SUPPLY_PREBUY_PERCENTAGES,
 } from '../constants';
 import { Grid } from './Grid';
@@ -227,9 +228,9 @@ export function PrebuySection() {
             }}
             style={{
               backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
-              paddingVertical: 0,
               paddingHorizontal: 16,
               borderRadius: FIELD_INNER_BORDER_RADIUS,
+              height: SMALL_INPUT_HEIGHT,
             }}
           />
           <AnimatedText style={[{ paddingHorizontal: 20 }, customInputSubtitleStyle]} color="labelQuaternary" size="12pt" weight="bold">

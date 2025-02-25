@@ -12,6 +12,7 @@ import {
   FIELD_BORDER_WIDTH,
   FIELD_INNER_BORDER_RADIUS,
   INNER_FIELD_BACKGROUND_COLOR,
+  SMALL_INPUT_HEIGHT,
 } from '../constants';
 import { useTheme } from '@/theme';
 import FastImage from 'react-native-fast-image';
@@ -99,9 +100,9 @@ function LinkField({ link, index }: { link: Link; index: number }) {
           style={{
             flex: 1,
             backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
-            paddingVertical: 0,
             paddingHorizontal: 16,
             borderRadius: FIELD_INNER_BORDER_RADIUS,
+            height: SMALL_INPUT_HEIGHT,
           }}
           icon={
             <Box width={20} height={20} borderRadius={10} backgroundColor={iconBackgroundColor} justifyContent="center" alignItems="center">
