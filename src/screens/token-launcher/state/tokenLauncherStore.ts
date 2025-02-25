@@ -98,13 +98,13 @@ interface TokenLauncherStore {
 }
 
 // TODO: for testing. Remove before merging
-// const testTokenInfo = {
-//   imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
-//   imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
-//   name: 'Test Token',
-//   symbol: 'TEST',
-//   description: 'This is a test token',
-// };
+const testTokenInfo = {
+  imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+  imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+  name: 'Test Token',
+  symbol: 'TEST',
+  description: 'This is a test token',
+};
 
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
   imageUri: '',
@@ -125,12 +125,17 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     // TODO: for testing. Remove before merging
     // { input: '', type: 'website', url: '' },
   ],
+  // TODO: align this name with other names for this
   creatorBuyInEth: 0,
   ethPriceUsd: 0,
   ethPriceNative: 0,
   step: 'info' as const,
   stepIndex: makeMutable(0),
   stepSharedValue: makeMutable('info'),
+  // TODO: for testing. Remove before merging
+  // step: 'success' as const,
+  // stepIndex: makeMutable(3),
+  // stepSharedValue: makeMutable('success'),
   gasSpeed: GasSpeed.FAST,
   hasSufficientEthForGas: false,
   hasValidPrebuyAmount: true,
