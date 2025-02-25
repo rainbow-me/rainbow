@@ -204,7 +204,8 @@ export function ReviewStep() {
   const tokenMarketCap = useTokenLauncherStore(state => state.tokenMarketCap());
   const tokenSupply = useTokenLauncherStore(state => state.totalSupply);
   const tokenChainId = useTokenLauncherStore(state => state.chainId);
-
+  const prebuyAmount = useTokenLauncherStore(state => state.creatorBuyInEth);
+  const hasPrebuy = prebuyAmount > 0;
   const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[tokenChainId];
 
   return (
@@ -213,7 +214,7 @@ export function ReviewStep() {
         contentOffset={{ x: 0, y: -TOKEN_LAUNCHER_HEADER_HEIGHT }}
         contentInset={{ top: TOKEN_LAUNCHER_HEADER_HEIGHT }}
         contentContainerStyle={{
-          paddingBottom: 24 + TOTAL_COST_PILL_HEIGHT,
+          paddingBottom: 24 + (hasPrebuy ? TOTAL_COST_PILL_HEIGHT : 0),
         }}
       >
         <Box width="full" paddingHorizontal={'20px'} alignItems="center">
@@ -297,9 +298,11 @@ export function ReviewStep() {
           </Box>
         </Box>
       </ScrollView>
-      <Box position="absolute" width={'full'} paddingHorizontal={'16px'} style={{ bottom: 16 }}>
-        <TotalCostPill />
-      </Box>
+      {hasPrebuy && (
+        <Box position="absolute" width={'full'} paddingHorizontal={'16px'} style={{ bottom: 16 }}>
+          <TotalCostPill />
+        </Box>
+      )}
     </>
   );
 }
