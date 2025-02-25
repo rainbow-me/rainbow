@@ -15,7 +15,6 @@ export function DescriptionField() {
           minHeight: 75,
           borderRadius: FIELD_INNER_BORDER_RADIUS,
           backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
-          paddingVertical: 0,
           paddingHorizontal: 16,
         }}
         // TODO: Allegedly no longer needed
