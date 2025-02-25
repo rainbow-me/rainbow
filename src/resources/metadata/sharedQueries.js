@@ -87,6 +87,12 @@ const BACKEND_NETWORKS_QUERY = `
         nftProxy {
           enabled
         }
+        launcher {
+          v1 {
+            enabled
+            contractAddress
+          }
+        }
       }
     }
   }
