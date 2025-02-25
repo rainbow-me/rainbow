@@ -9,7 +9,7 @@ import { calculateTokenomics } from '../helpers/calculateTokenomics';
 import store from '@/redux/store';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { formatCurrency } from '@/helpers/strings';
-import { validateNameWorklet, validateSymbolWorklet, validateTotalSupplyWorklet } from '../helpers/inputValidators';
+import { validateLinkWorklet, validateNameWorklet, validateSymbolWorklet, validateTotalSupplyWorklet } from '../helpers/inputValidators';
 
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
@@ -140,12 +140,12 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const { nativeCurrency } = store.getState().settings;
     const tokenomics = get().tokenomics();
 
-    const targetPriceEth = tokenomics?.price.targetEth;
+    const actualPriceEth = tokenomics?.price.actualEth;
     const ethPriceNative = get().ethPriceNative;
 
-    const targetPriceNative = targetPriceEth && ethPriceNative ? tokenomics?.price.targetEth * ethPriceNative : 0;
+    const actualPriceNative = actualPriceEth && ethPriceNative ? actualPriceEth * ethPriceNative : 0;
 
-    return formatCurrency(targetPriceNative, {
+    return formatCurrency(actualPriceNative, {
       currency: nativeCurrency,
     });
   },
@@ -153,12 +153,12 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const { nativeCurrency } = store.getState().settings;
     const tokenomics = get().tokenomics();
 
-    const targetMarketCapEth = tokenomics?.marketCap.targetEth;
+    const actualMarketCapEth = tokenomics?.marketCap.actualEth;
     const ethPriceNative = get().ethPriceNative;
 
-    const targetMarketCapNative = targetMarketCapEth && ethPriceNative ? targetMarketCapEth * ethPriceNative : 0;
+    const actualMarketCapNative = actualMarketCapEth && ethPriceNative ? actualMarketCapEth * ethPriceNative : 0;
 
-    return convertAmountToNativeDisplay(targetMarketCapNative, nativeCurrency, 2, true, true);
+    return convertAmountToNativeDisplay(actualMarketCapNative, nativeCurrency, 2, true, true);
   },
   hasCompletedRequiredFields: () => {
     const { name, symbol, imageUrl, totalSupply } = get();
@@ -170,11 +170,12 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     return !nameValidation?.error && !symbolValidation?.error && !supplyValidation?.error && imageUrl !== '';
   },
   canContinueToReview: () => {
-    const { airdropRecipients, hasCompletedRequiredFields, hasSufficientEthForGas, hasValidPrebuyAmount } = get();
+    const { airdropRecipients, links, hasCompletedRequiredFields, hasSufficientEthForGas, hasValidPrebuyAmount } = get();
 
     const allAirdropRecipientsValid = airdropRecipients.every(recipient => recipient.isValid);
+    const allLinksValid = links.every(link => !validateLinkWorklet({ link: link.input, type: link.type }));
 
-    return hasCompletedRequiredFields() && allAirdropRecipientsValid && hasSufficientEthForGas && hasValidPrebuyAmount;
+    return hasCompletedRequiredFields() && allAirdropRecipientsValid && allLinksValid && hasSufficientEthForGas && hasValidPrebuyAmount;
   },
   allocationBips: () => {
     const tokenomics = get().tokenomics();
