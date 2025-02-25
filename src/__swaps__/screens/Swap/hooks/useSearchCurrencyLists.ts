@@ -1,5 +1,4 @@
 import { isAddress } from '@ethersproject/address';
-import { dequal } from 'dequal';
 import { rankings } from 'match-sorter';
 import { useEffect, useMemo, useRef } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
@@ -36,7 +35,7 @@ export function useSearchCurrencyLists() {
 
   const bridgedInputAsset = useSwapsStore(
     state => getBridgedAsset(state.inputAsset, state.selectedOutputChainId ?? ChainId.mainnet),
-    dequal
+    isUniqueIdEqual
   );
   const query = useSwapsSearchStore(state => state.searchQuery.trim().toLowerCase());
   const toChainId = useSwapsStore(state => state.selectedOutputChainId ?? ChainId.mainnet);
@@ -380,3 +379,7 @@ const buildListSectionsData = ({
 
   return formattedData;
 };
+
+function isUniqueIdEqual(asset: SearchAsset | null, prevAsset: SearchAsset | null) {
+  return asset?.uniqueId === prevAsset?.uniqueId;
+}
