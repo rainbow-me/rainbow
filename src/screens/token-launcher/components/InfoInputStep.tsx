@@ -44,10 +44,7 @@ function SymbolInput() {
       ref={inputRef}
       validationWorklet={validateSymbolWorklet}
       onInputChange={text => {
-        // Symbols cannot contain spaces
-        const noSpaces = text.replace(/\s/g, '');
-        inputRef.current?.setNativeProps({ text: noSpaces });
-        setSymbol(noSpaces);
+        setSymbol(text);
       }}
       spellCheck={false}
       inputStyle={{ textTransform: 'uppercase' }}
