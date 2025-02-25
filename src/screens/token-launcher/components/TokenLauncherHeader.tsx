@@ -18,7 +18,7 @@ export const TOKEN_LAUNCHER_HEADER_HEIGHT = 20 + 36 + 8 + 12 + 12;
 export function TokenLauncherHeader() {
   const navigation = useNavigation();
   const { accountColor, accountImage, accountAddress } = useAccountProfile();
-  const reset = useTokenLauncherStore(state => state.reset);
+  const resetStore = useTokenLauncherStore(state => state.reset);
   const step = useTokenLauncherStore(state => state.step);
   const setStep = useTokenLauncherStore(state => state.setStep);
   let title = '';
@@ -39,12 +39,12 @@ export function TokenLauncherHeader() {
       },
       (buttonIndex: number) => {
         if (buttonIndex === 0) {
-          reset();
+          resetStore();
           navigation.goBack();
         }
       }
     );
-  }, [navigation, reset]);
+  }, [navigation, resetStore]);
 
   return (
     <Box
@@ -108,7 +108,6 @@ export function TokenLauncherHeader() {
               backgroundColor="fillSecondary"
               borderRadius={EXIT_BUTTON_SIZE / 2}
               blurAmount={12}
-              blurType="chromeMaterial"
             >
               <Text size="icon 16px" weight="heavy" color="labelSecondary">
                 􀆄
