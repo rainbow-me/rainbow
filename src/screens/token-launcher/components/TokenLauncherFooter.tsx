@@ -22,6 +22,7 @@ import { BiometryTypes } from '@/helpers';
 import { HoldToActivateButton } from './HoldToActivateButton';
 import { IS_ANDROID } from '@/env';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { useNavigation } from '@/navigation';
 
 export const FOOTER_HEIGHT = 56 + 16 + 8;
 
@@ -125,7 +126,6 @@ function TokenPreview() {
   const chainId = useTokenLauncherStore(state => state.chainId);
   const tokenPrice = useTokenLauncherStore(state => state.tokenPrice());
   const tokenMarketCap = useTokenLauncherStore(state => state.tokenMarketCap());
-
   const symbolLabel = symbol === '' ? 'NAME' : symbol;
 
   return (
@@ -172,6 +172,8 @@ function TokenPreview() {
 }
 
 export function TokenLauncherFooter() {
+  const navigation = useNavigation();
+  const resetStore = useTokenLauncherStore(state => state.reset);
   const chainId = useTokenLauncherStore(state => state.chainId);
   const step = useTokenLauncherStore(state => state.step);
   const stepSharedValue = useTokenLauncherStore(state => state.stepSharedValue);
@@ -286,9 +288,16 @@ export function TokenLauncherFooter() {
         </Animated.View>
       </Box>
       <Animated.View style={[skipButtonAnimatedStyle, { paddingTop: 16 }]}>
-        <Text align="center" color="labelTertiary" size="20pt" weight="heavy">
-          {'Skip'}
-        </Text>
+        <ButtonPressAnimation
+          onPress={() => {
+            resetStore();
+            navigation.goBack();
+          }}
+        >
+          <Text align="center" color="labelTertiary" size="20pt" weight="heavy">
+            {'Skip'}
+          </Text>
+        </ButtonPressAnimation>
       </Animated.View>
     </Animated.View>
   );
