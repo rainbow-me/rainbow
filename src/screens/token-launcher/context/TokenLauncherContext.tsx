@@ -18,11 +18,12 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { formatUnits } from 'viem';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
-import { SkImage, useImage } from '@shopify/react-native-skia';
+import { SkImage, useAnimatedImageValue, useImage } from '@shopify/react-native-skia';
+import { SharedValue } from 'react-native-reanimated';
 
 type TokenLauncherContextType = {
   ethRequiredForTransactionGas: string;
-  tokenSkiaImage: SkImage | null;
+  tokenSkiaImage: SharedValue<SkImage | null>;
   accentColors: {
     opacity100: string;
     opacity30: string;
@@ -74,7 +75,8 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
 
   const imageUrl = useTokenLauncherStore(state => state.imageUrl);
   const imageUri = useTokenLauncherStore(state => state.imageUrl);
-  const tokenSkiaImage = useImage(imageUri);
+  // This hook works for both normal images and gifs
+  const tokenSkiaImage = useAnimatedImageValue(imageUri);
 
   const imageDerivedColor = usePersistentDominantColorFromImage(imageUrl);
 
