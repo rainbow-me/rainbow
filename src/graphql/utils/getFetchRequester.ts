@@ -58,9 +58,7 @@ const additionalConfig: Record<string, AdditionalConfigItem> = {
     headers: {
       Authorization: `Bearer ${METADATA_GRAPHQL_API_KEY}`,
     },
-    schema: {
-      url: `${METADATA_BASE_URL}/v1/graph`,
-    },
+    url: `${METADATA_BASE_URL}/v1/graph`,
   },
 };
 
