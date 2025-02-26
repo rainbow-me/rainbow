@@ -5225,7 +5225,7 @@ __metadata:
 
 "@rainbow-me/token-launcher@file:src/vendor/rainbow-me-token-launcher-0.1.0.tgz::locator=Rainbow%40workspace%3A.":
   version: 0.1.0
-  resolution: "@rainbow-me/token-launcher@file:src/vendor/rainbow-me-token-launcher-0.1.0.tgz#src/vendor/rainbow-me-token-launcher-0.1.0.tgz::hash=1028e3&locator=Rainbow%40workspace%3A."
+  resolution: "@rainbow-me/token-launcher@file:src/vendor/rainbow-me-token-launcher-0.1.0.tgz#src/vendor/rainbow-me-token-launcher-0.1.0.tgz::hash=9fc9a4&locator=Rainbow%40workspace%3A."
   dependencies:
     "@ethereumjs/util": "npm:9.0.0"
     "@ethersproject/abi": "npm:5.7.0"
@@ -5245,7 +5245,7 @@ __metadata:
     "@uniswap/sdk-core": "npm:^3.0.0"
     jsbi: "npm:^4.3.0"
     tiny-invariant: "npm:^1.3.3"
-  checksum: 10c0/4f93e1f49f4e3f346fd1eef12e0abe32cb9cebe7f874f4d9c57b3aa1b5fe608c6029de8ca6ba213c28d04b9496bfe6a163b97cce53465bc6f37322562d0d6e3d
+  checksum: 10c0/655c0cd8c7165a3d217b7bfcb51c0a1e77107597537c0acc5cb163829467cdb16c8497bc948dd1511bc76f466c303fc5329c619a6590ee06ec20a4224a87d8a0
   languageName: node
   linkType: hard
 

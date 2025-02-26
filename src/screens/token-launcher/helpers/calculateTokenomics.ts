@@ -1,6 +1,7 @@
+import { getInitialTick } from '@rainbow-me/token-launcher';
 import { AIRDROP_BPS, CREATOR_BPS, CREATOR_BPS_WITH_AIRDROP } from '../constants';
+import { parseUnits } from 'viem';
 
-const TICK_SPACING = 200;
 // 1% fee
 const POOL_FEE = 10000;
 // 1_000_000 for 0.01% precision
@@ -35,12 +36,10 @@ export function calculateTokenomics({
   const targetPriceUsd = targetMarketCapUsd / totalSupply;
   const targetPriceEth = targetPriceUsd / ethPriceUsd;
 
-  // Calculate tick
-  const exactTick = Math.log(targetPriceEth) / Math.log(1.0001);
-  const roundedTick = Math.floor(exactTick / TICK_SPACING) * TICK_SPACING;
+  const tick = getInitialTick(parseUnits(targetPriceEth?.toFixed(18) ?? '0', 18));
 
   // Calculate actual starting values with rounded tick
-  let actualPriceEth = Math.pow(1.0001, roundedTick);
+  let actualPriceEth = Math.pow(1.0001, tick);
   let actualPriceUsd = actualPriceEth * ethPriceUsd;
   let actualMarketCapUsd = actualPriceUsd * totalSupply;
   let actualMarketCapEth = actualMarketCapUsd / ethPriceUsd;
@@ -106,7 +105,7 @@ export function calculateTokenomics({
       actualEth: actualPriceEth,
       targetEth: targetPriceEth,
     },
-    tick: roundedTick,
+    tick,
     marketCap: {
       targetUsd: targetMarketCapUsd,
       actualUsd: actualMarketCapUsd,
