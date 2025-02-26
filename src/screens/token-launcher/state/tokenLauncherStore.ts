@@ -27,6 +27,7 @@ export type AirdropRecipient = {
   count: number;
   isValid: boolean;
   imageUrl: string | null;
+  isSuggested?: boolean;
 };
 
 interface TokenLauncherStore {
@@ -74,17 +75,21 @@ interface TokenLauncherStore {
   setCreatorBuyInEth: (amount: number) => void;
   setDescription: (description: string) => void;
   setStep: (step: Step) => void;
-  addAirdropGroup: ({ groupId, label, count }: { groupId: string; label: string; count: number }) => void;
+  addAirdropGroup: ({ groupId, label, count, imageUrl }: { groupId: string; label: string; count: number; imageUrl: string }) => void;
   addOrEditAirdropAddress: ({
     id,
     address,
     isValid,
     imageUrl,
+    isSuggested,
+    label,
   }: {
     id: string;
     address: string;
     isValid: boolean;
     imageUrl?: string | null;
+    isSuggested?: boolean;
+    label?: string;
   }) => void;
   deleteAirdropRecipient: (id: string) => void;
   setEthPriceUsd: (ethPriceUsd: number) => void;
@@ -242,7 +247,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     get().stepSharedValue.value = step;
     set({ step });
   },
-  addAirdropGroup: ({ groupId, label, count }: { groupId: string; label: string; count: number }) => {
+  addAirdropGroup: ({ groupId, label, count, imageUrl }: { groupId: string; label: string; count: number; imageUrl: string }) => {
     // TODO: the imageUrl will come from the backend when integrated
     const recipient = {
       type: 'group' as const,
@@ -251,7 +256,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       label,
       count,
       isValid: true,
-      imageUrl: null,
+      imageUrl,
     };
     set({ airdropRecipients: [...get().airdropRecipients, recipient] });
   },
@@ -261,11 +266,15 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     address,
     isValid,
     imageUrl,
+    isSuggested,
+    label,
   }: {
     id: string;
     address: string;
     isValid: boolean;
     imageUrl?: string | null;
+    isSuggested?: boolean;
+    label?: string;
   }) => {
     const { airdropRecipients } = get();
     const isExistingRecipient = airdropRecipients.some(recipient => recipient.id === id);
@@ -281,10 +290,11 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         type: 'address' as const,
         id,
         value: address,
-        label: address,
+        label: label ?? address,
         count: 1,
         isValid,
         imageUrl: imageUrl ?? null,
+        isSuggested,
       };
       set({ airdropRecipients: [...airdropRecipients, recipient] });
     }

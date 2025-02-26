@@ -23,7 +23,7 @@ import { SharedValue } from 'react-native-reanimated';
 
 type TokenLauncherContextType = {
   ethRequiredForTransactionGas: string;
-  tokenSkiaImage: SharedValue<SkImage | null>;
+  tokenSkiaImage: SkImage | SharedValue<SkImage | null>;
   accentColors: {
     opacity100: string;
     opacity30: string;
@@ -76,7 +76,9 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   const imageUrl = useTokenLauncherStore(state => state.imageUrl);
   const imageUri = useTokenLauncherStore(state => state.imageUrl);
   // This hook works for both normal images and gifs
-  const tokenSkiaImage = useAnimatedImageValue(imageUri);
+  // TODO: this is causing problems for the success image step
+  // const tokenSkiaImage = useAnimatedImageValue(imageUri);
+  const tokenSkiaImage = useImage(imageUri);
 
   const imageDerivedColor = usePersistentDominantColorFromImage(imageUrl);
 
