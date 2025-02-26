@@ -200,7 +200,12 @@ export const abbreviateBigNumber = (value: BigNumber, buffer: number): string =>
  * Abbreviates number like 1,200,000 to "1.2m", 1,000 to "1k", etc.
  * Rounds to 1 decimal place, stripping trailing zeros.
  */
-export const abbreviateNumber = (number: number, decimals = 1, style: 'short' | 'long' = 'short'): string => {
+export const abbreviateNumber = (
+  number: number,
+  decimals = 1,
+  style: 'short' | 'long' = 'short',
+  onlyShowDecimalsIfNeeded = false
+): string => {
   let prefix = number;
   let suffix = '';
 
@@ -218,9 +223,18 @@ export const abbreviateNumber = (number: number, decimals = 1, style: 'short' | 
     suffix = style === 'short' ? 'k' : ' thousand';
   }
 
+  if (onlyShowDecimalsIfNeeded && Number.isInteger(prefix)) {
+    return Math.floor(prefix) + suffix;
+  }
+
   return prefix.toFixed(decimals).replace(/\.0$/, '') + suffix;
 };
-export const abbreviateNumberWorklet = (number: number, decimals = 1, style: 'short' | 'long' = 'short'): string => {
+export const abbreviateNumberWorklet = (
+  number: number,
+  decimals = 1,
+  style: 'short' | 'long' = 'short',
+  onlyShowDecimalsIfNeeded = false
+): string => {
   'worklet';
   let prefix = number;
   let suffix = '';
@@ -237,6 +251,11 @@ export const abbreviateNumberWorklet = (number: number, decimals = 1, style: 'sh
     prefix = number / 1000;
     suffix = style === 'short' ? 'k' : ' thousand';
   }
+
+  if (onlyShowDecimalsIfNeeded && Number.isInteger(prefix)) {
+    return Math.floor(prefix) + suffix;
+  }
+
   return prefix.toFixed(decimals).replace(/\.0$/, '') + suffix;
 };
 
