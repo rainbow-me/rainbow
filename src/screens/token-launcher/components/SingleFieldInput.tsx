@@ -1,7 +1,15 @@
-import React, { useCallback, forwardRef, useImperativeHandle } from 'react';
+import React, { useCallback, forwardRef, useImperativeHandle, useState } from 'react';
 import { AnimatedText, Box, Text, useTextStyle } from '@/design-system';
 import { Input } from '@/components/inputs';
-import Animated, { withTiming, runOnUI, useAnimatedRef, useAnimatedStyle, useSharedValue, runOnJS } from 'react-native-reanimated';
+import Animated, {
+  withTiming,
+  runOnUI,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useSharedValue,
+  runOnJS,
+  useAnimatedReaction,
+} from 'react-native-reanimated';
 import { TextInput, TextInputProps, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -99,12 +107,12 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
     ref
   ) => {
     const internalRef = useAnimatedRef<TextInput>();
-    // const inputRef = ref ?? internalRef;
 
     const isFocused = useSharedValue(false);
     const inputValue = useSharedValue('');
     const errorLabel = useSharedValue('');
     const hasError = useSharedValue(false);
+    const [isSubtitleVisible, setIsSubtitleVisible] = useState(true);
 
     // We expose a custom ref to the parent component because we want to run the validation logic when the native text is set
     useImperativeHandle(ref, () => ({
@@ -199,7 +207,19 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
       display: inputValue.value === '' ? 'flex' : 'none',
     }));
 
-    // TODO: memoize this
+    // Hide subtitle if there is an error
+    useAnimatedReaction(
+      () => errorLabel.value,
+      (value, prevValue) => {
+        if (subtitle && value !== '') {
+          runOnJS(setIsSubtitleVisible)(false);
+        } else if (subtitle && prevValue !== '' && value === '') {
+          runOnJS(setIsSubtitleVisible)(true);
+        }
+      },
+      [errorLabel, subtitle]
+    );
+
     const LabelContent = () => (
       <Animated.View style={{ position: 'relative', gap: 10 }}>
         <Animated.View style={titleContainerStyle}>{title ? <FieldLabel>{title}</FieldLabel> : <Box>{icon}</Box>}</Animated.View>
@@ -217,7 +237,7 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
             {errorLabel}
           </AnimatedText>
         </Animated.View>
-        {subtitle && (
+        {subtitle && isSubtitleVisible && (
           <Text color="labelSecondary" size="13pt" weight="bold">
             {subtitle}
           </Text>
