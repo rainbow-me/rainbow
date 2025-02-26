@@ -21,6 +21,9 @@ export function calculateTokenomics({
   hasAirdrop: boolean;
   amountInEth?: number;
 }) {
+  if (totalSupply === 0) {
+    return undefined;
+  }
   // Calculate supply allocations (same logic as in contract)
   const creatorBaseBips = hasAirdrop ? CREATOR_BPS_WITH_AIRDROP : CREATOR_BPS;
   const airdropAllocationBips = hasAirdrop ? AIRDROP_BPS : 0;
@@ -46,6 +49,8 @@ export function calculateTokenomics({
 
   // Calculate swap outcome if amountInEth is provided
   let swap = undefined;
+
+  // TODO: all these calculations are wrong
   if (amountInEth > 0) {
     const feeAmount = (amountInEth * POOL_FEE) / FEE_DENOMINATOR;
     const amountInAfterFee = amountInEth - feeAmount;
