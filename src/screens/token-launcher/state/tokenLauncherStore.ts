@@ -10,9 +10,10 @@ import store from '@/redux/store';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { formatCurrency } from '@/helpers/strings';
 import { validateLinkWorklet, validateNameWorklet, validateSymbolWorklet, validateTotalSupplyWorklet } from '../helpers/inputValidators';
-import { launchRainbowSuperTokenAndBuy } from '@rainbow-me/token-launcher';
+import { launchRainbowSuperTokenAndBuy, getInitialTick } from '@rainbow-me/token-launcher';
 import { Wallet } from '@ethersproject/wallet';
 import { parseUnits } from '@ethersproject/units';
+import { TransactionOptions } from '@rainbow-me/swaps';
 
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
@@ -103,7 +104,7 @@ interface TokenLauncherStore {
   // actions
   reset: () => void;
   validateForm: () => void;
-  createToken: ({ wallet }: { wallet: Wallet }) => Promise<void>;
+  createToken: ({ wallet, transactionOptions }: { wallet: Wallet; transactionOptions: TransactionOptions }) => Promise<void>;
 }
 
 // TODO: for testing. Remove before merging
@@ -346,22 +347,41 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   validateForm: () => {
     // TODO: validate all field values before submission to sdk for creation
   },
-  createToken: async ({ wallet }: { wallet: Wallet }) => {
-    await launchRainbowSuperTokenAndBuy({
-      name: get().name,
-      symbol: get().symbol,
-      description: get().description,
-      logoUrl: get().imageUrl,
-      supply: parseUnits(get().totalSupply.toString(), 18).toString(),
-      links: get().links.map(link => link.url),
-      amountIn: parseUnits(get().creatorBuyInEth.toString(), 'ether').toString(),
-      initialTick: 200,
-      wallet,
-      transactionOptions: {
-        gasLimit: '8000000',
-        maxFeePerGas: '100000000000',
-        maxPriorityFeePerGas: '2000000000',
-      },
-    });
+  createToken: async ({ wallet, transactionOptions }: { wallet: Wallet; transactionOptions: TransactionOptions }) => {
+    const cohortIds = get()
+      .airdropRecipients.filter(r => r.type === 'group')
+      .map(recipient => recipient.value);
+    const recipientAddresses = get()
+      .airdropRecipients.filter(r => r.type === 'address')
+      .map(recipient => recipient.value);
+    const targetEth = get().tokenomics()?.price.targetEth;
+    console.log('WHHHHAT', targetEth?.toFixed(18));
+    try {
+      const initialTick = await getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
+      await launchRainbowSuperTokenAndBuy({
+        name: get().name,
+        symbol: get().symbol,
+        description: get().description,
+        logoUrl: get().imageUrl,
+        supply: parseUnits(get().totalSupply.toString(), 18).toString(),
+        links: {
+          homepage: 'https://www.google.com',
+        },
+        amountIn: parseUnits(get().creatorBuyInEth.toString(), 'ether').toString(),
+        initialTick,
+        wallet,
+        transactionOptions: {
+          gasLimit: transactionOptions.gasLimit,
+          maxFeePerGas: transactionOptions.maxFeePerGas,
+          maxPriorityFeePerGas: transactionOptions.maxPriorityFeePerGas,
+        },
+        airdropMetadata: {
+          cohortIds,
+          addresses: recipientAddresses,
+        },
+      });
+    } catch (e) {
+      console.error('error creating token', e);
+    }
   },
 }));
