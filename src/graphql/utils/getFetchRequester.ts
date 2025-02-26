@@ -2,17 +2,27 @@ import { rainbowFetch, RainbowFetchRequestOpts } from '@/rainbow-fetch';
 import { DocumentNode } from 'graphql';
 import { resolveRequestDocument } from 'graphql-request';
 import { buildGetQueryParams } from '@/graphql/utils/buildGetQueryParams';
-import { ARC_GRAPHQL_API_KEY, METADATA_GRAPHQL_API_KEY } from 'react-native-dotenv';
+import { ARC_GRAPHQL_API_KEY, METADATA_GRAPHQL_API_KEY, METADATA_BASE_URL } from 'react-native-dotenv';
 
 const allowedOperations = ['mutation', 'query'];
 
 type Options = Pick<RainbowFetchRequestOpts, 'timeout' | 'headers'>;
 
+type ConfigName = keyof typeof additionalConfig;
+
 type Config = {
-  __name: string;
+  __name: ConfigName;
   schema: {
     url: string;
     method?: string;
+  };
+};
+
+type AdditionalConfigItem = {
+  headers: Record<string, string>;
+  url?: string;
+  schema?: {
+    url: string;
   };
 };
 
@@ -27,9 +37,7 @@ type Config = {
  * codegen CLI AND our application. So it needs to be runnable in both
  * environments.
  */
-const additionalConfig: {
-  [__name: string]: RainbowFetchRequestOpts;
-} = {
+const additionalConfig: Record<string, AdditionalConfigItem> = {
   arc: {
     headers: {
       'x-api-key': ARC_GRAPHQL_API_KEY,
@@ -44,10 +52,14 @@ const additionalConfig: {
     headers: {
       Authorization: `Bearer ${METADATA_GRAPHQL_API_KEY}`,
     },
+    url: `${METADATA_BASE_URL}/v1/graph`,
   },
   metadataPOST: {
     headers: {
       Authorization: `Bearer ${METADATA_GRAPHQL_API_KEY}`,
+    },
+    schema: {
+      url: `${METADATA_BASE_URL}/v1/graph`,
     },
   },
 };
@@ -69,7 +81,7 @@ export function getFetchRequester(config: Config) {
     }
 
     const { query, operationName } = resolveRequestDocument(node);
-    let requestUrl: string = url;
+    let requestUrl: string = additionalConfig[config.__name]?.schema?.url || url;
     const requestOptions: RainbowFetchRequestOpts = {
       ...options,
       headers: {
