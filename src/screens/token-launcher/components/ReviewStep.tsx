@@ -82,7 +82,7 @@ function TokenAllocationCard() {
                     resizeMode="cover"
                   />
                 )}
-                <Text size="17pt" weight="medium" color={'labelSecondary'}>
+                <Text size="17pt" weight="medium" color={'labelSecondary'} numberOfLines={1} style={{ maxWidth: '70%' }}>
                   {recipient.label}
                 </Text>
                 {recipient.type === 'group' && (
@@ -94,7 +94,9 @@ function TokenAllocationCard() {
                 )}
               </Box>
               <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
-                {`${convertAmountToPercentageDisplay((bipsPerAirdropAddress * recipient.count) / 100, 2, 2, false)}`}
+                {/* TODO: better format extremely small numbers */}
+                {/* {formatFraction((bipsPerAirdropAddress * recipient.count).toString())} */}
+                {`${convertAmountToPercentageDisplay((bipsPerAirdropAddress * recipient.count) / 100, 0, 1, false)}`}
               </Text>
             </Box>
           );
