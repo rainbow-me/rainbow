@@ -593,6 +593,7 @@ export const tokenLauncherConfig: PartialNavigatorConfigOptions = {
     backgroundColor: colors.themedColors?.shadowBlack,
     backgroundOpacity: 0.7,
     topOffset: 0,
+    dismissable: false,
     customStack: true,
   }),
 };
