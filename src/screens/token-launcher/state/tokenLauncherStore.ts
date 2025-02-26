@@ -355,7 +355,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       .airdropRecipients.filter(r => r.type === 'address')
       .map(recipient => recipient.value);
     const targetEth = get().tokenomics()?.price.targetEth;
-    console.log('WHHHHAT', targetEth?.toFixed(18));
     try {
       const initialTick = await getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
       await launchRainbowSuperTokenAndBuy({
