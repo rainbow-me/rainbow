@@ -281,18 +281,24 @@ export async function swipeUntilVisible(
   elementId: string | RegExp,
   scrollViewId: string,
   direction: Direction,
-  percentageVisible?: number
+  percentageVisible?: number,
+  maxAttempts?: number
 ) {
   let stop = false;
+  let attempt = 0;
 
   while (!stop) {
     try {
+      attempt++;
       await waitFor(element(by.id(elementId)))
         .toBeVisible(percentageVisible)
         .withTimeout(500);
 
       stop = true;
     } catch (e) {
+      if (maxAttempts && attempt >= maxAttempts) {
+        throw e;
+      }
       await swipe(scrollViewId, direction, 'slow', 0.2);
     }
   }

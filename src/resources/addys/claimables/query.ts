@@ -48,14 +48,14 @@ async function claimablesQueryFunction({ queryKey: [{ address, currency }] }: Qu
     });
 
     if (data.metadata.status !== 'ok') {
-      logger.error(new RainbowError('[userAssetsQueryFunction]: Failed to fetch user assets (API error)'), {
+      logger.error(new RainbowError('[claimablesQueryFunction]: Failed to fetch claimables (API error)'), {
         message: data.metadata.errors,
       });
     }
 
     return parseClaimables(data.payload.claimables, currency);
   } catch (e) {
-    logger.error(new RainbowError('[userAssetsQueryFunction]: Failed to fetch user assets (client error)'), {
+    logger.error(new RainbowError('[claimablesQueryFunction]: Failed to fetch claimables (client error)'), {
       message: (e as Error)?.message,
     });
   }

@@ -1,9 +1,10 @@
 import { SENTRY_ENVIRONMENT } from 'react-native-dotenv';
+import { analytics } from '@/analytics';
+import { IS_TEST } from '@/env';
+import { collectResultForPerformanceToast } from './PerformanceToast';
 import { PerformanceMetricData } from './types/PerformanceMetricData';
 import { PerformanceMetricsType } from './types/PerformanceMetrics';
 import { PerformanceTagsType } from './types/PerformanceTags';
-import { analytics } from '@/analytics';
-import { IS_TEST } from '@/env';
 /*
 This will be a version for all performance tracking events.
 If we make breaking changes we will be able to take it into consideration when doing analytics
@@ -13,7 +14,7 @@ const shouldLogToConsole = __DEV__ || SENTRY_ENVIRONMENT === 'LocalRelease';
 const shouldReportMeasurement = !IS_TEST && !__DEV__ && SENTRY_ENVIRONMENT !== 'LocalRelease';
 const logTag = '[PERFORMANCE]: ';
 
-function logDurationIfAppropriate(metric: PerformanceMetricsType, durationInMs: number, ...additionalArgs: any[]) {
+function logDurationIfAppropriate(metric: PerformanceMetricsType, durationInMs: number, ...additionalArgs: unknown[]) {
   if (shouldLogToConsole) {
     global.console.log(`${logTag}${metric}, duration: ${durationInMs.toFixed(2)}ms`, ...additionalArgs);
   }
@@ -21,7 +22,7 @@ function logDurationIfAppropriate(metric: PerformanceMetricsType, durationInMs: 
 
 export const currentlyTrackedMetrics = new Map<PerformanceMetricsType, PerformanceMetricData>();
 
-interface AdditionalParams extends Record<string, any> {
+interface AdditionalParams extends Record<string, unknown> {
   tag?: PerformanceTagsType;
 }
 
@@ -35,6 +36,7 @@ interface AdditionalParams extends Record<string, any> {
  */
 function logDirectly(metric: PerformanceMetricsType, durationInMs: number, additionalParams?: AdditionalParams) {
   logDurationIfAppropriate(metric, durationInMs);
+  collectResultForPerformanceToast(metric, durationInMs);
   if (shouldReportMeasurement) {
     analytics.track(metric, {
       durationInMs,
@@ -76,9 +78,15 @@ function finishMeasuring(metric: PerformanceMetricsType, additionalParams?: Addi
   if (savedEntry === undefined || savedEntry.startTimestamp === undefined) {
     return false;
   }
-
   const finishTime = performance.now();
+
   const durationInMs = finishTime - savedEntry.startTimestamp;
+  currentlyTrackedMetrics.set(metric, {
+    ...savedEntry,
+    finishTimestamp: finishTime,
+  });
+
+  collectResultForPerformanceToast(metric, durationInMs);
 
   if (shouldReportMeasurement) {
     analytics.track(metric, {
@@ -88,6 +96,7 @@ function finishMeasuring(metric: PerformanceMetricsType, additionalParams?: Addi
       ...additionalParams,
     });
   }
+
   logDurationIfAppropriate(metric, durationInMs);
   currentlyTrackedMetrics.delete(metric);
   return true;
@@ -108,12 +117,12 @@ function clearMeasure(metric: PerformanceMetricsType) {
  * @param metric What you're measuring, the name of the metric
  * @param additionalParams Any additional context you want to add to your log
  */
-export function withPerformanceTracking<Fn extends (...args: any[]) => any>(
+export function withPerformanceTracking<Fn extends (...args: Parameters<Fn>) => ReturnType<Fn>>(
   fn: Fn,
   metric: PerformanceMetricsType,
   additionalParams?: AdditionalParams
 ): (...args: Parameters<Fn>) => ReturnType<Fn> {
-  return function wrapper(this: any, ...args: Parameters<Fn>): ReturnType<Fn> {
+  return function wrapper(this: unknown, ...args: Parameters<Fn>): ReturnType<Fn> {
     const startTime = performance.now();
 
     const res = fn.apply(this, args);

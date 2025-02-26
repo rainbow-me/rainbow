@@ -1726,12 +1726,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNImageCropPicker (0.41.2):
+  - RNImageCropPicker (0.42.0):
     - React-Core
     - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.41.2)
+    - RNImageCropPicker/QBImagePickerController (= 0.42.0)
     - TOCropViewController (~> 2.7.4)
-  - RNImageCropPicker/QBImagePickerController (0.41.2):
+  - RNImageCropPicker/QBImagePickerController (0.42.0):
     - React-Core
     - React-RCTImage
     - TOCropViewController (~> 2.7.4)
@@ -2566,7 +2566,7 @@ SPEC CHECKSUMS:
   RNFlashList: 916adaa9dc946dbafed435175982e31e767b07b0
   RNFS: 3557d4b8e51925b011e787094600d6e05dca414e
   RNGestureHandler: 8d857f8c5e6697585f6a246d1acbf0533c438ab1
-  RNImageCropPicker: d14a08134d1b5bc2d5f29a12ce3ac1d402dd2389
+  RNImageCropPicker: b0afedeefd8655254a15c34103718455fde6ce59
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: 836d59da651a7c8771ed811485d65ecb64e9b3fe
   RNKeychain: 3194f1c9d8599f39e570b4b5ecbcdd8cd610e771

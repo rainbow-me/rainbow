@@ -15,6 +15,73 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.59] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.59)
+
+### Added
+
+- Added Query Store tests (#6445)
+- Added performance tooling (#6449)
+
+### Changed
+
+- Migrated userAssets to createQueryStore (#6450)
+- Updated swaps sdk to 0320 (#6451)
+
+### Fixed
+
+- Fixed an issue when entering a seed phrase manually with spaces (#6452)
+
+## [1.9.58] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.58)
+
+### Changed
+
+- Expanded state phase 1 cleanup (#6422)
+- Made improvements to store creator and createQueryStore (#6435, #6439)
+- Bumped wallet connect dependency to latest version (#6434)
+
+### Fixed
+
+- Fixed an issue where the NFT expanded state floor price was displayed incorrectly (#6428)
+- Fixed some issues related to discover search (#6427)
+- Fixed issues around SafeMath (#6431)
+- Fixed some issues around Rainbow Rewards bridge failures (#6433)
+
+## [1.9.57] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.57)
+
+### Fixed
+
+- Improved swaps flow to ensure we're routing them through the appropriate flow (#6436)
+
+## [1.9.56] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.56)
+
+### Added
+
+- Added better error handling on swaps flow with damaged wallets (#6398)
+- Expanded state v2, phase 1 (#6332)
+
+### Changed
+
+- Implemented new logic for backup prompt (#6388)
+- Bumped rudderstack (#6407)
+- Enabled third party positions to be calculated in address summary (#6404)
+- Query store optimizations (#6413)
+- Updated discover search to v3 endpoint (#6394)
+- Optimized backendNetworks store (#6409)
+- We now prevent e2e flow to run while PRs are in draft mode (#6406)
+- We’ve bumped slippage from 2 to 5 except on the following networks; mainnet, polygon and BSC (#6419)
+- Made significant improvements in the transaction handling architecture (#6390)
+- Bumped react native image crop picker (#6430)
+
+### Fixed
+
+- Fixed a crash that was caused by improper error handling of cloud backup system
+- Fixed an issue where on some Android devices the wallet UX navigation wasn’t scrollable (#6393)
+- Fixed an issue where the wrong native asset was being displayed on SignTransactionSheet (#6395)
+- Fixed inconsistencies between swaps store slippage and shared value (#6399)
+- Fixed emoji size type which was causing a crash on Android (#6421)
+- Fixed an issue with back up prompt not being shown on new wallet creation (#6423, #6426)
+- Fixed a bug where the buy button on a native asset was disabled (#6429)
+
 ## [1.9.55] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.55)
 
 ### Changed

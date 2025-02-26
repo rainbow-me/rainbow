@@ -13,11 +13,14 @@ export default function useAsset({ address, chainId }: { address: Address; chain
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const uniqueId = getUniqueId(address, chainId);
   const accountAsset = useAccountAsset(uniqueId);
-  const { data: externalAsset } = useExternalToken({
-    address,
-    chainId,
-    currency: nativeCurrency,
-  });
+  const { data: externalAsset } = useExternalToken(
+    {
+      address,
+      chainId,
+      currency: nativeCurrency,
+    },
+    { enabled: !accountAsset }
+  );
 
   return useMemo(() => {
     if (accountAsset) {

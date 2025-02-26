@@ -5,7 +5,7 @@ fragment asset on Asset {
   name
 }
 
-fragment amount on AssetAmount {
+fragment assetAmount on AssetAmount {
   raw
   decimal
   usd
@@ -32,10 +32,10 @@ query getNFTOffers($walletAddress: String!, $sortBy: SortCriterion!) {
       imageUrl
     }
     grossAmount {
-      ...amount
+      ...assetAmount
     }
     netAmount {
-      ...amount
+      ...assetAmount
     }
     paymentToken {
       ...asset
@@ -44,7 +44,7 @@ query getNFTOffers($walletAddress: String!, $sortBy: SortCriterion!) {
     feesPercentage
     floorPrice {
       amount {
-        ...amount
+        ...assetAmount
       }
       paymentToken {
         ...asset

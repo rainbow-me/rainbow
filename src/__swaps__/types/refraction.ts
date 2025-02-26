@@ -13,6 +13,13 @@ export interface MessageMeta {
   chain_id?: ChainName; // L2
   chain_ids?: ChainId[]; // v3 consolidated
   chain_ids_with_errors?: ChainId[]; // v3 consolidated
+  errors?: {
+    address?: string;
+    errors?: {
+      chain_id?: number;
+      error?: string;
+    }[];
+  }[];
   asset_codes?: string;
   next_page_cursor?: string;
 }

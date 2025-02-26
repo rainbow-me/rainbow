@@ -1,6 +1,7 @@
 export const RAINBOW_FETCH_ERROR = 'rainbowFetchError';
 
 export interface RainbowFetchRequestOpts extends RequestInit {
+  abortController?: AbortController | null;
   params?: ConstructorParameters<typeof URLSearchParams>[0]; // type of first argument of URLSearchParams constructor.
   timeout?: number;
 }
@@ -12,6 +13,7 @@ export async function rainbowFetch<T = any>(
   url: RequestInfo,
   opts: RainbowFetchRequestOpts
 ): Promise<{ data: T; headers: Headers; status: number }> {
+  // eslint-disable-next-line no-param-reassign
   opts = {
     headers: {},
     method: 'get',
@@ -21,41 +23,42 @@ export async function rainbowFetch<T = any>(
 
   if (!url) throw new Error('rainbowFetch: Missing url argument');
 
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), opts.timeout);
+  const { abortController: userAbortController, body, headers, params, ...otherOpts } = opts;
 
-  const { body, params, headers, ...otherOpts } = opts;
-
+  const abortController = userAbortController ?? new AbortController();
+  const timeoutId = setTimeout(() => abortController.abort(), opts.timeout);
   const requestBody = body && typeof body === 'object' ? JSON.stringify(opts.body) : opts.body;
 
-  const response = await fetch(`${url}${createParams(params)}`, {
-    ...otherOpts,
-    body: requestBody,
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      ...headers,
-    },
-    signal: controller.signal,
-  });
-
-  clearTimeout(id);
-
-  const responseBody = await getBody(response);
-
-  if (response.ok) {
-    const { headers, status } = response;
-    return { data: responseBody, headers, status };
-  } else {
-    const errorResponseBody = typeof responseBody === 'string' ? { error: responseBody } : responseBody;
-
-    const error = generateError({
-      requestBody: body,
-      response,
-      responseBody: errorResponseBody,
+  try {
+    const response = await fetch(`${url}${createParams(params)}`, {
+      ...otherOpts,
+      body: requestBody,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+      signal: abortController.signal,
     });
 
-    throw error;
+    const responseBody = await getBody(response);
+
+    if (response.ok) {
+      const { headers, status } = response;
+      return { data: responseBody, headers, status };
+    } else {
+      const errorResponseBody = typeof responseBody === 'string' ? { error: responseBody } : responseBody;
+
+      const error = generateError({
+        requestBody: body,
+        response,
+        responseBody: errorResponseBody,
+      });
+
+      throw error;
+    }
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
   }
 }
 
