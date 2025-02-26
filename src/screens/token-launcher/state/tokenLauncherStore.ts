@@ -10,7 +10,7 @@ import store from '@/redux/store';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { formatCurrency } from '@/helpers/strings';
 import { validateLinkWorklet, validateNameWorklet, validateSymbolWorklet, validateTotalSupplyWorklet } from '../helpers/inputValidators';
-import { launchRainbowSuperTokenAndBuy, getInitialTick } from '@rainbow-me/token-launcher';
+import { launchRainbowSuperTokenAndBuy, getInitialTick, launchRainbowSuperToken } from '@rainbow-me/token-launcher';
 import { Wallet } from '@ethersproject/wallet';
 import { parseUnits } from '@ethersproject/units';
 import { TransactionOptions } from '@rainbow-me/swaps';
@@ -357,15 +357,20 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const targetEth = get().tokenomics()?.price.targetEth;
     try {
       const initialTick = await getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
-      await launchRainbowSuperTokenAndBuy({
+      const shouldBuy = get().creatorBuyInEth > 0;
+      const params = {
         name: get().name,
         symbol: get().symbol,
         description: get().description,
         logoUrl: get().imageUrl,
         supply: parseUnits(get().totalSupply.toString(), 18).toString(),
-        links: {
-          homepage: 'https://www.google.com',
-        },
+        links: get().links.reduce(
+          (acc, link) => {
+            acc[link.type] = link.url;
+            return acc;
+          },
+          {} as Record<LinkType, string>
+        ),
         amountIn: parseUnits(get().creatorBuyInEth.toString(), 'ether').toString(),
         initialTick,
         wallet,
@@ -378,7 +383,15 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
           cohortIds,
           addresses: recipientAddresses,
         },
-      });
+      };
+      if (shouldBuy) {
+        await launchRainbowSuperTokenAndBuy({
+          ...params,
+          amountIn: parseUnits(get().creatorBuyInEth.toString(), 18).toString(),
+        });
+      } else {
+        await launchRainbowSuperToken(params);
+      }
     } catch (e) {
       console.error('error creating token', e);
     }
