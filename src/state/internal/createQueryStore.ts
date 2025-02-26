@@ -1007,6 +1007,7 @@ export function createQueryStore<
           if (enableLogs) console.log('[🌀 Enabled Change 🌀] - [Old]:', `${oldVal},`, '[New]:', newVal);
           oldVal = newVal;
           queryStore.setState(state => ({ ...state, enabled: newVal }));
+          if (newVal) subscriptionManager.setEnabled(newVal);
         }
       });
       paramUnsubscribes.push(unsub);
