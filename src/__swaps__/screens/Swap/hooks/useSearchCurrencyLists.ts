@@ -265,7 +265,7 @@ const filterAssetsFromFavoritesAndBridgeAndRecentAndPopular = ({
 
 const filterBridgeAsset = ({ asset, filter = '' }: { asset: SearchAsset | null | undefined; filter: string }) =>
   filter.length === 0 ||
-  asset?.address?.toLowerCase()?.startsWith(filter?.toLowerCase()) ||
+  (isAddress(filter) && asset?.address?.toLowerCase()?.startsWith(filter?.toLowerCase())) ||
   asset?.name?.toLowerCase()?.startsWith(filter?.toLowerCase()) ||
   asset?.symbol?.toLowerCase()?.startsWith(filter?.toLowerCase());
 

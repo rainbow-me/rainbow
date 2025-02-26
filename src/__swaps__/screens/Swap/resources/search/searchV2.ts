@@ -226,20 +226,19 @@ function selectTopSearchResults({
  * Determines if an asset is an exact match for the query.
  */
 function isExactMatch(asset: SearchAsset, query: string): boolean {
-  return query === asset.address?.toLowerCase() || asset.symbol?.toLowerCase() === query || asset.name?.toLowerCase() === query;
+  const normalizedQuery = query.trim().toLowerCase();
+  return (
+    (isAddress(query) && normalizedQuery === asset.address?.toLowerCase()) ||
+    asset.symbol?.toLowerCase().startsWith(normalizedQuery) ||
+    asset.name?.toLowerCase().startsWith(normalizedQuery)
+  );
 }
 
 /**
  * Retrieves exact matches from asset data.
  */
 function getExactMatches(data: SearchAsset[], query: string, slice?: number): SearchAsset[] {
-  const normalizedQuery = query.trim().toLowerCase();
-  const results = data.filter(
-    asset =>
-      normalizedQuery === asset.address?.toLowerCase() ||
-      asset.symbol?.toLowerCase() === normalizedQuery ||
-      asset.name?.toLowerCase() === normalizedQuery
-  );
+  const results = data.filter(asset => isExactMatch(asset, query));
   return slice !== undefined ? results.slice(0, slice) : results;
 }
 
@@ -289,7 +288,8 @@ async function searchVerifiedTokens(
       const addressMatchesOnOtherChains = crosschainData.filter(
         a =>
           a.chainId !== chainId &&
-          (a.address?.toLowerCase() === addressQuery || Object.values(a.networks).some(n => n?.address?.toLowerCase() === addressQuery))
+          ((addressQuery && isAddress(addressQuery) && a.address?.toLowerCase() === addressQuery) ||
+            Object.values(a.networks).some(n => n?.address?.toLowerCase() === addressQuery))
       );
 
       return {
@@ -305,7 +305,7 @@ async function searchVerifiedTokens(
   }
 
   // Standard, non-address search — if no results, check other chains for exact matches
-  if (!results.length && query && query.length > 2 && !abortController?.signal.aborted) {
+  if (!results.length && query && query.length >= 2 && !abortController?.signal.aborted) {
     const crosschainUrl = `/?${qs.stringify(queryParams)}`;
     const crosschainData = await performTokenSearch(crosschainUrl, abortController, 'searchVerifiedTokens');
     return selectTopSearchResults({
