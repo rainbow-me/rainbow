@@ -27,16 +27,22 @@ import { useNavigation } from '@/navigation';
 import { loadWallet } from '@/model/wallet';
 import { Wallet } from '@ethersproject/wallet';
 import { getProvider } from '@/handlers/web3';
+import { useTokenLaunchGasOptions } from '../hooks/useTokenLaunchGasOptions';
 export const FOOTER_HEIGHT = 56 + 16 + 8;
 
 function HoldToCreateButton() {
   const { accentColors } = useTokenLauncherContext();
   const createToken = useTokenLauncherStore(state => state.createToken);
   const setStep = useTokenLauncherStore(state => state.setStep);
+  const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
   const chainId = useTokenLauncherStore(state => state.chainId);
   const { isHardwareWallet } = useWallets();
   const biometryType = useBiometryType();
   const { accountAddress } = useAccountSettings();
+  const { transactionOptions } = useTokenLaunchGasOptions({
+    chainId,
+    gasSpeed,
+  });
 
   const [isProcessing, setIsProcessing] = useState(false);
   const isLongPressAvailableForBiometryType =
@@ -57,12 +63,12 @@ function HoldToCreateButton() {
       // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
     } else {
       if (wallet) {
-        await createToken({ wallet: wallet as Wallet });
+        await createToken({ wallet: wallet as Wallet, transactionOptions });
       }
     }
     setStep('success');
     setIsProcessing(false);
-  }, [isHardwareWallet, createToken, accountAddress, chainId, setStep]);
+  }, [isHardwareWallet, createToken, accountAddress, chainId, transactionOptions]);
 
   return (
     <HoldToActivateButton
@@ -188,6 +194,10 @@ export function TokenLauncherFooter() {
 
   const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
   const setGasSpeed = useTokenLauncherStore(state => state.setGasSpeed);
+  const { transactionOptions } = useTokenLaunchGasOptions({
+    chainId,
+    gasSpeed,
+  });
 
   const containerWidth = useSharedValue(0);
   const continueButtonWidth = useSharedValue(0);
@@ -262,13 +272,7 @@ export function TokenLauncherFooter() {
             }}
             style={{ flexDirection: 'row' }}
           >
-            <GasButton
-              gasSpeed={gasSpeed}
-              chainId={chainId}
-              // TODO: gas limit should be fixed depending on if launchToken or launchTokenAndBuy. Should likely come from sdk
-              gasLimit={'1000000'}
-              onSelectGasSpeed={setGasSpeed}
-            />
+            <GasButton gasSpeed={gasSpeed} chainId={chainId} gasLimit={transactionOptions.gasLimit} onSelectGasSpeed={setGasSpeed} />
             <Box width={1} height={32} paddingHorizontal="12px">
               <Separator thickness={1} direction="vertical" color="separator" />
             </Box>
