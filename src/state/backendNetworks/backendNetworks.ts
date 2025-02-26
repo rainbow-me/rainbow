@@ -60,12 +60,11 @@ export interface BackendNetworksState {
   getChainDefaultRpc: (chainId: ChainId) => string;
 }
 
-let lastNetworks: BackendNetworksResponse | null = null;
-
 function createSelector<T>(selectorFn: (networks: BackendNetworksResponse, transformed: Chain[]) => T): () => T {
   const uninitialized = Symbol();
   let cachedResult: T | typeof uninitialized = uninitialized;
   let memoizedFn: ((networks: BackendNetworksResponse, transformed: Chain[]) => T) | null = null;
+  let lastNetworks: BackendNetworksResponse | null = null;
 
   return () => {
     const { backendChains, backendNetworks } = useBackendNetworksStore.getState();
@@ -89,6 +88,7 @@ function createParameterizedSelector<T, Args extends unknown[]>(
   let cachedResult: T | typeof uninitialized = uninitialized;
   let lastArgs: Args | null = null;
   let memoizedFn: ((...args: Args) => T) | null = null;
+  let lastNetworks: BackendNetworksResponse | null = null;
 
   return (...args: Args) => {
     const { backendChains, backendNetworks } = useBackendNetworksStore.getState();

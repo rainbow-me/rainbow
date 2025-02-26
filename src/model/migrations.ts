@@ -6,7 +6,7 @@ import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
 import FastImage from 'react-native-fast-image';
 import { deprecatedRemoveLocal, getGlobal } from '../handlers/localstorage/common';
-import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
+import { IMAGE_METADATA, getNativeCurrency } from '../handlers/localstorage/globalSettings';
 import { getMigrationVersion, setMigrationVersion } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
@@ -35,6 +35,7 @@ import { ethereumUtils, profileUtils } from '@/utils';
 import { review } from '@/storage';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
+import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
@@ -42,6 +43,7 @@ import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
 import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { selectorFilterByUserChains, selectUserAssetsList } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
@@ -739,7 +741,12 @@ export default async function runMigrations() {
           data: queryData,
           selector: selectUserAssetsList,
         });
-        userAssetsStore.getState(address).setUserAssets(userAssets as ParsedSearchAsset[]);
+        userAssetsStore.getState(address).setUserAssets({
+          address,
+          chainIdsWithErrors: null,
+          state: undefined,
+          userAssets: userAssets as ParsedSearchAsset[],
+        });
       }
     }
   };
@@ -765,6 +772,27 @@ export default async function runMigrations() {
   };
 
   migrations.push(v24);
+
+  /**
+   *************** Migration v25 ******************
+   * Delete all queries except favorites
+   */
+  const v25 = async () => {
+    await clearReactQueryCache({ analyzeAfterClearing: false });
+  };
+
+  migrations.push(v25);
+
+  /**
+   *************** Migration v26 ******************
+   * Migrate native currency setting to userAssetsStoreManager
+   */
+  const v26 = async () => {
+    const currency = await getNativeCurrency();
+    userAssetsStoreManager.setState({ currency });
+  };
+
+  migrations.push(v26);
 
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);

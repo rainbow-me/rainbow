@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { consolidatedTransactionsQueryFunction, consolidatedTransactionsQueryKey } from './consolidatedTransactions';
 import { useAccountSettings } from '@/hooks';
 import { rainbowFetch } from '@/rainbow-fetch';
-import { ADDYS_API_KEY } from 'react-native-dotenv';
+import { ADDYS_BASE_URL, ADDYS_API_KEY } from 'react-native-dotenv';
 import { parseTransaction } from '@/parsers/transactions';
 import { RainbowError, logger } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -33,7 +33,7 @@ export const fetchTransaction = async ({
   queryKey: [{ address, currency, chainId, hash }],
 }: QueryFunctionArgs<typeof transactionQueryKey>): Promise<RainbowTransaction | null> => {
   try {
-    const url = `https://addys.p.rainbow.me/v3/${chainId}/${address}/transactions/${hash}`;
+    const url = `${ADDYS_BASE_URL}/${chainId}/${address}/transactions/${hash}`;
     const response = await rainbowFetch<{ payload: { transaction: TransactionApiResponse } }>(url, {
       method: 'get',
       params: {

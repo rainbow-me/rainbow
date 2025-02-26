@@ -1,6 +1,6 @@
 import { abbreviateNumber, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, STEP_TRANSITION_DURATION, TARGET_MARKET_CAP_IN_USD } from '../constants';
+import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, TARGET_MARKET_CAP_IN_USD } from '../constants';
 import { makeMutable, SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import chroma from 'chroma-js';
@@ -10,6 +10,10 @@ import store from '@/redux/store';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { formatCurrency } from '@/helpers/strings';
 import { validateLinkWorklet, validateNameWorklet, validateSymbolWorklet, validateTotalSupplyWorklet } from '../helpers/inputValidators';
+import { launchRainbowSuperTokenAndBuy, getInitialTick, launchRainbowSuperToken } from '@rainbow-me/token-launcher';
+import { Wallet } from '@ethersproject/wallet';
+import { parseUnits } from '@ethersproject/units';
+import { TransactionOptions } from '@rainbow-me/swaps';
 
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
@@ -100,7 +104,7 @@ interface TokenLauncherStore {
   // actions
   reset: () => void;
   validateForm: () => void;
-  createToken: () => void;
+  createToken: ({ wallet, transactionOptions }: { wallet: Wallet; transactionOptions: TransactionOptions }) => Promise<void>;
 }
 
 // TODO: for testing. Remove before merging
@@ -113,8 +117,8 @@ const testTokenInfo = {
 };
 
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
-  imageUri: '',
-  imageUrl: '',
+  imageUri: 'https://picsum.photos/200/300',
+  imageUrl: 'https://picsum.photos/200/300',
   name: '',
   symbol: '',
   description: '',
@@ -343,7 +347,53 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   validateForm: () => {
     // TODO: validate all field values before submission to sdk for creation
   },
-  createToken: async () => {
-    // TODO: aggregate all data from store and call to sdk to create token
+  createToken: async ({ wallet, transactionOptions }: { wallet: Wallet; transactionOptions: TransactionOptions }) => {
+    const cohortIds = get()
+      .airdropRecipients.filter(r => r.type === 'group')
+      .map(recipient => recipient.value);
+    const recipientAddresses = get()
+      .airdropRecipients.filter(r => r.type === 'address')
+      .map(recipient => recipient.value);
+    const targetEth = get().tokenomics()?.price.targetEth;
+    try {
+      const initialTick = await getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
+      const shouldBuy = get().creatorBuyInEth > 0;
+      const params = {
+        name: get().name,
+        symbol: get().symbol,
+        description: get().description,
+        logoUrl: get().imageUrl,
+        supply: parseUnits(get().totalSupply.toString(), 18).toString(),
+        links: get().links.reduce(
+          (acc, link) => {
+            acc[link.type] = link.url;
+            return acc;
+          },
+          {} as Record<LinkType, string>
+        ),
+        amountIn: parseUnits(get().creatorBuyInEth.toString(), 'ether').toString(),
+        initialTick,
+        wallet,
+        transactionOptions: {
+          gasLimit: transactionOptions.gasLimit,
+          maxFeePerGas: transactionOptions.maxFeePerGas,
+          maxPriorityFeePerGas: transactionOptions.maxPriorityFeePerGas,
+        },
+        airdropMetadata: {
+          cohortIds,
+          addresses: recipientAddresses,
+        },
+      };
+      if (shouldBuy) {
+        await launchRainbowSuperTokenAndBuy({
+          ...params,
+          amountIn: parseUnits(get().creatorBuyInEth.toString(), 18).toString(),
+        });
+      } else {
+        await launchRainbowSuperToken(params);
+      }
+    } catch (e) {
+      console.error('error creating token', e);
+    }
   },
 }));
