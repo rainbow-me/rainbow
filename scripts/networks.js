@@ -8,7 +8,7 @@ const fs = require('fs-extra');
  * Fetches data from the GraphQL API and saves it to a JSON file.
  */
 async function fetchData() {
-  const url = `${process.env.METADATA_BASE_URL}/v1/graph`;
+  const url = `${process.env.METADATA_BASE_URL_STAGING}/v1/graph`;
   console.log(url);
   const response = await fetch(url, {
     method: 'POST',

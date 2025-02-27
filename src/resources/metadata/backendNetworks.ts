@@ -13,6 +13,7 @@ export interface BackendNetworksResponse {
 // Query Function
 
 export async function fetchBackendNetworks(): Promise<BackendNetworksResponse> {
+  console.log('URL: ', `${METADATA_BASE_URL}/v1/graph`);
   const response = await fetch(`${METADATA_BASE_URL}/v1/graph`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
