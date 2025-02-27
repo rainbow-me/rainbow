@@ -72,7 +72,7 @@ export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], Tok
     cacheTime: params => ((params.query?.length ?? 0) > 2 ? time.seconds(15) : time.minutes(2)),
     fetcher: (params, abortController) => ((params.query?.length ?? 0) > 2 ? searchUnverifiedTokens(params, abortController) : NO_RESULTS),
     transform: (data, { query }) =>
-      query && isAddress(query) ? getExactMatches(data, query, MAX_UNVERIFIED_RESULTS) : data.slice(0, MAX_UNVERIFIED_RESULTS),
+      query && isAddress(query) ? getExactMatches(data, query, true, MAX_UNVERIFIED_RESULTS) : data.slice(0, MAX_UNVERIFIED_RESULTS),
 
     disableAutoRefetching: true,
     keepPreviousData: true,
@@ -177,12 +177,14 @@ function sortSearchResults(assets: SearchAsset[], mode: SearchMode, normalizedQu
 function selectTopSearchResults({
   abortController,
   data,
+  isAddressSearch,
   mode,
   query,
   toChainId,
 }: {
   abortController: AbortController | null;
   data: SearchAsset[];
+  isAddressSearch: boolean;
   mode: SearchMode;
   query: string | undefined;
   toChainId: ChainId;
@@ -208,7 +210,7 @@ function selectTopSearchResults({
     case SearchMode.Crosschain: {
       for (const asset of data) {
         if (abortController?.signal.aborted) break;
-        if (asset.chainId !== toChainId && queryHasMultipleChars && isExactMatch(asset, normalizedQuery)) {
+        if (asset.chainId !== toChainId && queryHasMultipleChars && isExactMatch(asset, normalizedQuery, isAddressSearch)) {
           matches.push(asset);
         }
       }
@@ -225,21 +227,20 @@ function selectTopSearchResults({
 /**
  * Determines if an asset is an exact match for the query.
  */
-function isExactMatch(asset: SearchAsset, query: string): boolean {
-  return query === asset.address?.toLowerCase() || asset.symbol?.toLowerCase() === query || asset.name?.toLowerCase() === query;
+function isExactMatch(asset: SearchAsset, query: string, isAddress: boolean): boolean {
+  const normalizedQuery = query.trim().toLowerCase();
+  return (
+    asset.symbol?.toLowerCase().startsWith(normalizedQuery) ||
+    asset.name?.toLowerCase().startsWith(normalizedQuery) ||
+    (isAddress && asset.address?.toLowerCase() === normalizedQuery)
+  );
 }
 
 /**
  * Retrieves exact matches from asset data.
  */
-function getExactMatches(data: SearchAsset[], query: string, slice?: number): SearchAsset[] {
-  const normalizedQuery = query.trim().toLowerCase();
-  const results = data.filter(
-    asset =>
-      normalizedQuery === asset.address?.toLowerCase() ||
-      asset.symbol?.toLowerCase() === normalizedQuery ||
-      asset.name?.toLowerCase() === normalizedQuery
-  );
+function getExactMatches(data: SearchAsset[], query: string, isAddress: boolean, slice?: number): SearchAsset[] {
+  const results = data.filter(asset => isExactMatch(asset, query, isAddress));
   return slice !== undefined ? results.slice(0, slice) : results;
 }
 
@@ -311,6 +312,7 @@ async function searchVerifiedTokens(
     return selectTopSearchResults({
       abortController,
       data: parseTokenSearchResults(crosschainData),
+      isAddressSearch,
       mode: SearchMode.Crosschain,
       query,
       toChainId: chainId,
@@ -320,6 +322,7 @@ async function searchVerifiedTokens(
   return selectTopSearchResults({
     abortController,
     data: parseTokenSearchResults(results, chainId),
+    isAddressSearch,
     mode: SearchMode.CurrentNetwork,
     query,
     toChainId: chainId,

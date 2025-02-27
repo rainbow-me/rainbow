@@ -75,13 +75,13 @@ export function useSearchCurrencyLists() {
   const filteredBridgeAsset = useMemo(() => {
     if (!bridgedInputAsset) return null;
 
-    return filterBridgeAsset({ asset: bridgedInputAsset, filter: query })
+    return filterBridgeAsset({ asset: bridgedInputAsset, filter: query, isAddress: isContractSearch })
       ? {
           ...bridgedInputAsset,
           favorite: unfilteredFavorites.some(fav => fav.networks?.[toChainId]?.address === bridgedInputAsset.address),
         }
       : null;
-  }, [bridgedInputAsset, query, toChainId, unfilteredFavorites]);
+  }, [bridgedInputAsset, isContractSearch, query, toChainId, unfilteredFavorites]);
 
   const favoritesList = useDeepCompareMemo(() => {
     if (query === '') return unfilteredFavorites;
@@ -263,11 +263,23 @@ const filterAssetsFromFavoritesAndBridgeAndRecentAndPopular = ({
     curatedAsset => !favoritesList?.some(({ address }) => curatedAsset.address === address || curatedAsset.mainnetAddress === address)
   ) || [];
 
-const filterBridgeAsset = ({ asset, filter = '' }: { asset: SearchAsset | null | undefined; filter: string }) =>
-  filter.length === 0 ||
-  asset?.address?.toLowerCase()?.startsWith(filter?.toLowerCase()) ||
-  asset?.name?.toLowerCase()?.startsWith(filter?.toLowerCase()) ||
-  asset?.symbol?.toLowerCase()?.startsWith(filter?.toLowerCase());
+const filterBridgeAsset = ({
+  asset,
+  filter = '',
+  isAddress,
+}: {
+  asset: SearchAsset | null | undefined;
+  filter: string;
+  isAddress: boolean;
+}) => {
+  const normalizedFilter = filter.toLowerCase();
+  return (
+    filter.length === 0 ||
+    asset?.symbol?.toLowerCase().startsWith(normalizedFilter) ||
+    asset?.name?.toLowerCase().startsWith(normalizedFilter) ||
+    (isAddress && normalizedFilter === asset?.address?.toLowerCase())
+  );
+};
 
 const buildListSectionsData = ({
   combinedData,
