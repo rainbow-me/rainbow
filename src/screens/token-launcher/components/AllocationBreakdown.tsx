@@ -10,6 +10,7 @@ export function AllocationBreakdown() {
 
   const allocationBips = useTokenLauncherStore(state => state.allocationBips());
   const tokenPrice = useTokenLauncherStore(state => state.tokenPrice());
+  const isAirdropping = allocationBips.airdrop > 0;
 
   return (
     <Box backgroundColor={accentColors.opacity4} borderRadius={FIELD_BORDER_RADIUS} padding={'20px'} gap={16}>
@@ -23,25 +24,25 @@ export function AllocationBreakdown() {
       </Box>
       <Separator color={{ custom: accentColors.opacity3 }} />
       <Inline
-        separator={<Box height={16} width={2} backgroundColor={accentColors.opacity3} style={{ alignSelf: 'center' }} />}
+        separator={<Box height={16} width={2} backgroundColor={'rgba(245, 248, 255, 0.06)'} style={{ alignSelf: 'center' }} />}
         wrap={false}
       >
-        <Box gap={12} flexGrow={1} justifyContent="center" alignItems="center">
+        <Box gap={12} width={'1/2'} justifyContent="center" alignItems="center">
           <TextShadow color={accentColors.opacity100} blur={12} shadowOpacity={0.24}>
             <Text tabularNumbers color={{ custom: accentColors.opacity100 }} size="20pt" weight="heavy">
               {`${convertAmountToPercentageDisplay(allocationBips.creator / 100, 2, 2, false)}`}
             </Text>
           </TextShadow>
           <Text color={{ custom: accentColors.opacity100 }} size="13pt" weight="bold">
-            {'My Share'}
+            {'MY SHARE'}
           </Text>
         </Box>
-        <Box gap={12} flexGrow={1} justifyContent="center" alignItems="center">
-          <Text tabularNumbers color="label" size="20pt" weight="heavy">
-            {`${convertAmountToPercentageDisplay(allocationBips.airdrop / 100, 2, 2, false)}`}
+        <Box gap={12} width={'1/2'} justifyContent="center" alignItems="center">
+          <Text tabularNumbers color={isAirdropping ? 'label' : 'labelQuaternary'} size="20pt" weight="heavy">
+            {`${convertAmountToPercentageDisplay(allocationBips.airdrop / 100, 2, 2, !isAirdropping)}`}
           </Text>
-          <Text color="labelTertiary" size="13pt" weight="bold">
-            {'Airdropping'}
+          <Text color={isAirdropping ? 'label' : 'labelQuaternary'} size="13pt" weight="bold">
+            {'AIRDROPPING'}
           </Text>
         </Box>
       </Inline>
