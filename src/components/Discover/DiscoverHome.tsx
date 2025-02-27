@@ -46,7 +46,8 @@ export default function DiscoverHome() {
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
-  const testNetwork = isTestnetChain({ chainId });
+  // const testNetwork = isTestnetChain({ chainId });
+  const isTokenLauncherTestflight = true;
   const { navigate } = useNavigation();
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
@@ -65,7 +66,7 @@ export default function DiscoverHome() {
 
   return (
     <Inset top="20px" bottom={{ custom: 200 }} horizontal={{ custom: HORIZONTAL_PADDING }}>
-      {!testNetwork ? (
+      {isTokenLauncherTestflight ? (
         <Box gap={20}>
           <Inline wrap={false} space="20px">
             <TokenLauncherCard />
