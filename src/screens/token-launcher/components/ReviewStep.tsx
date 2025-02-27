@@ -16,6 +16,8 @@ import { TOKEN_LAUNCHER_HEADER_HEIGHT } from './TokenLauncherHeader';
 import FastImage from 'react-native-fast-image';
 import { BlurView } from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
+import { isAddress } from '@ethersproject/address';
+import { address as abbreviateAddress } from '@/utils/abbreviations';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
 const TOTAL_COST_PILL_HEIGHT = 52;
@@ -57,10 +59,13 @@ function TokenAllocationCard() {
           </Text>
         </Box>
         {airdropRecipients.map(recipient => {
+          const label = isAddress(recipient.value) ? abbreviateAddress(recipient.value, 4, 4) : recipient.label;
+
           return (
             <Box
               key={recipient.id}
               height={44}
+              gap={32}
               flexDirection="row"
               justifyContent="space-between"
               alignItems="center"
@@ -70,32 +75,38 @@ function TokenAllocationCard() {
               borderWidth={FIELD_BORDER_WIDTH}
               borderColor={{ custom: accentColors.opacity2 }}
             >
-              <Box flexDirection="row" alignItems="center" gap={8}>
+              <Box flexDirection="row" alignItems="center" gap={8} style={{ flex: 1 }}>
                 {recipient.type === 'address' && (
                   <AddressAvatar address={recipient.value} url={recipient.imageUrl} size={20} color={accentColors.opacity100} label={''} />
                 )}
                 {recipient.type === 'group' && (
                   <FastImage
-                    // TODO: this field will come from the backend when integrated
                     source={{ uri: recipient.imageUrl ?? '' }}
                     style={{ width: 20, height: 20, borderRadius: 10 }}
                     resizeMode="cover"
                   />
                 )}
-                <Text size="17pt" weight="medium" color={'labelSecondary'} numberOfLines={1} style={{ maxWidth: '70%' }}>
-                  {recipient.label}
-                </Text>
-                {recipient.type === 'group' && (
-                  <Box borderRadius={7} borderWidth={1.667} padding={'4px'} justifyContent="center" alignItems="center">
-                    <Text size="11pt" weight="heavy" color={'labelSecondary'}>
-                      {abbreviateNumber(recipient.count, 1)}
-                    </Text>
-                  </Box>
-                )}
+                <Box flexDirection="row" alignItems="center" gap={8} style={{ flex: 1 }}>
+                  <Text size="17pt" weight="medium" color={'labelSecondary'} numberOfLines={1}>
+                    {label}
+                  </Text>
+                  {recipient.type === 'group' && (
+                    <Box
+                      height={18}
+                      borderRadius={7}
+                      borderWidth={1.667}
+                      paddingHorizontal={'4px'}
+                      justifyContent="center"
+                      alignItems="center"
+                    >
+                      <Text size="11pt" weight="heavy" color={'labelSecondary'}>
+                        {abbreviateNumber(recipient.count, 1)}
+                      </Text>
+                    </Box>
+                  )}
+                </Box>
               </Box>
               <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
-                {/* TODO: better format extremely small numbers */}
-                {/* {formatFraction((bipsPerAirdropAddress * recipient.count).toString())} */}
                 {`${convertAmountToPercentageDisplay((bipsPerAirdropAddress * recipient.count) / 100, 0, 1, false)}`}
               </Text>
             </Box>
