@@ -125,8 +125,8 @@ const testTokenInfo = {
 };
 
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
-  imageUri: 'https://picsum.photos/200/300',
-  imageUrl: 'https://picsum.photos/200/300',
+  imageUri: '',
+  imageUrl: '',
   name: '',
   symbol: '',
   description: '',
