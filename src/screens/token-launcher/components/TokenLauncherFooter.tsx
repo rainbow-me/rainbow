@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { Box, Inline, Separator, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
@@ -36,6 +36,7 @@ function HoldToCreateButton() {
   const setStep = useTokenLauncherStore(state => state.setStep);
   const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
   const chainId = useTokenLauncherStore(state => state.chainId);
+  const step = useTokenLauncherStore(state => state.step);
   const { isHardwareWallet } = useWallets();
   const biometryType = useBiometryType();
   const { accountAddress } = useAccountSettings();
@@ -44,7 +45,7 @@ function HoldToCreateButton() {
     gasSpeed,
   });
 
-  const [isProcessing, setIsProcessing] = useState(false);
+  const isProcessing = step === 'creating';
   const isLongPressAvailableForBiometryType =
     biometryType === BiometryTypes.FaceID || biometryType === BiometryTypes.Face || biometryType === BiometryTypes.none;
   const showBiometryIcon = !IS_ANDROID && isLongPressAvailableForBiometryType && !isHardwareWallet;
@@ -52,7 +53,6 @@ function HoldToCreateButton() {
   const handleLongPress = useCallback(async () => {
     // TESTING
     setStep('creating');
-    setIsProcessing(true);
     const provider = getProvider({ chainId });
     const wallet = await loadWallet({
       address: accountAddress,
@@ -67,8 +67,7 @@ function HoldToCreateButton() {
       }
     }
     setStep('success');
-    setIsProcessing(false);
-  }, [isHardwareWallet, createToken, accountAddress, chainId, transactionOptions]);
+  }, [setStep, chainId, accountAddress, isHardwareWallet, createToken, transactionOptions]);
 
   return (
     <HoldToActivateButton

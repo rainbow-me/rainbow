@@ -117,17 +117,17 @@ const testTokenInfo = {
 };
 
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
-  imageUri: 'https://picsum.photos/200/300',
-  imageUrl: 'https://picsum.photos/200/300',
-  name: '',
-  symbol: '',
-  description: '',
+  // imageUri: '',
+  // imageUrl: '',
+  // name: '',
+  // symbol: '',
+  // description: '',
   // TODO: for testing. Remove before merging
-  // imageUrl: testTokenInfo.imageUrl,
-  // imageUri: testTokenInfo.imageUri,
-  // name: testTokenInfo.name,
-  // symbol: testTokenInfo.symbol,
-  // description: testTokenInfo.description,
+  imageUrl: testTokenInfo.imageUrl,
+  imageUri: testTokenInfo.imageUri,
+  name: testTokenInfo.name,
+  symbol: testTokenInfo.symbol,
+  description: testTokenInfo.description,
   airdropRecipients: [],
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
@@ -150,7 +150,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   hasSufficientEthForGas: true,
   hasValidPrebuyAmount: true,
   // derived state
-  formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 0, 'long'),
+  formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 2, 'long', true),
   tokenPrice: () => {
     const { nativeCurrency } = store.getState().settings;
     const tokenomics = get().tokenomics();
