@@ -230,8 +230,8 @@ function selectTopSearchResults({
 function isExactMatch(asset: SearchAsset, query: string, isAddress: boolean): boolean {
   const normalizedQuery = query.trim().toLowerCase();
   return (
-    asset.symbol?.toLowerCase().startsWith(normalizedQuery) ||
-    asset.name?.toLowerCase().startsWith(normalizedQuery) ||
+    asset.symbol?.toLowerCase() === normalizedQuery ||
+    asset.name?.toLowerCase() === normalizedQuery ||
     (isAddress && asset.address?.toLowerCase() === normalizedQuery)
   );
 }
