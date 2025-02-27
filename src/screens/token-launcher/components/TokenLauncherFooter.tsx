@@ -28,6 +28,8 @@ import { loadWallet } from '@/model/wallet';
 import { Wallet } from '@ethersproject/wallet';
 import { getProvider } from '@/handlers/web3';
 import { useTokenLaunchGasOptions } from '../hooks/useTokenLaunchGasOptions';
+import { useTokenLauncher } from '@/hooks/useTokenLauncher';
+import { staleBalancesStore } from '@/state/staleBalances';
 export const FOOTER_HEIGHT = 56 + 16 + 8;
 
 function HoldToCreateButton() {
@@ -43,6 +45,7 @@ function HoldToCreateButton() {
     chainId,
     gasSpeed,
   });
+  const { addStaleBalance } = staleBalancesStore.getState();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const isLongPressAvailableForBiometryType =
@@ -63,12 +66,25 @@ function HoldToCreateButton() {
       // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
     } else {
       if (wallet) {
-        await createToken({ wallet: wallet as Wallet, transactionOptions });
+        const createTokenResponse = await createToken({ wallet: wallet as Wallet, transactionOptions });
+        if (createTokenResponse) {
+          console.log('createTokenResponse', createTokenResponse);
+          addStaleBalance({
+            address: accountAddress,
+            chainId,
+            info: {
+              address: createTokenResponse.tokenAddress,
+              transactionHash: createTokenResponse.transaction.hash,
+            },
+          });
+          setStep('success');
+        } else {
+          setStep('review');
+        }
       }
     }
-    setStep('success');
     setIsProcessing(false);
-  }, [isHardwareWallet, createToken, accountAddress, chainId, transactionOptions]);
+  }, [isHardwareWallet, createToken, accountAddress, chainId, transactionOptions, setStep, addStaleBalance]);
 
   return (
     <HoldToActivateButton
@@ -250,6 +266,8 @@ export function TokenLauncherFooter() {
       height: withTiming(isVisible ? 42 : 0, TIMING_CONFIGS.buttonPressConfig),
     };
   });
+
+  useTokenLauncher();
 
   return (
     <Animated.View>

@@ -75,4 +75,8 @@ declare module 'react-native-dotenv' {
   export const MWP_ENCRYPTION_KEY: string;
   export const METADATA_BASE_URL: string;
   export const ADDYS_BASE_URL: string;
+  export const TOKEN_LAUNCHER_URL: string;
+  export const TOKEN_LAUNCHER_URL_STAGING: string;
+  export const TOKEN_LAUNCHER_API_KEY: string;
+  export const TOKEN_LAUNCHER_API_KEY_STAGING: string;
 }

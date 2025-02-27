@@ -54,6 +54,7 @@ export interface BackendNetworksState {
   getNftSupportedChainIds: () => ChainId[];
   getFlashbotsSupportedChainIds: () => ChainId[];
   getTokenLauncherSupportedChainIds: () => ChainId[];
+  getTokenLauncherSupportedChainInfo: () => { chainId: ChainId; contractAddress: string }[];
   getShouldDefaultToFastGasChainIds: () => ChainId[];
 
   getChainGasUnits: (chainId?: ChainId) => BackendNetwork['gasUnits'];
@@ -321,6 +322,17 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
 
     getTokenLauncherSupportedChainIds: createSelector(networks =>
       networks.networks.filter(network => network.enabledServices.launcher?.v1?.enabled).map(network => toChainId(network.id))
+    ),
+
+    getTokenLauncherSupportedChainInfo: createSelector(networks =>
+      networks.networks
+        .filter(network => network.enabledServices.launcher?.v1?.enabled)
+        .map(network => {
+          return {
+            chainId: toChainId(network.id),
+            contractAddress: network.enabledServices.launcher?.v1?.contractAddress || '',
+          };
+        })
     ),
 
     getFlashbotsSupportedChainIds: createSelector(() => [ChainId.mainnet]),
