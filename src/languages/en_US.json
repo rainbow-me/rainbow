@@ -515,6 +515,7 @@
     },
     "developer_settings": {
       "alert": "Alert",
+      "create_query_store_playground": "Create Query Store Playground",
       "analyze_react_query": "Analyze React Query",
       "applied": "APPLIED",
       "backups_deleted_successfully": "Backups Deleted Successfully",

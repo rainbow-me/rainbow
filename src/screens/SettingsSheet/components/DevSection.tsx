@@ -38,6 +38,8 @@ import { addDefaultNotificationGroupSettings } from '@/notifications/settings/in
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import FastImage from 'react-native-fast-image';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
+import { playgroundStore } from '@/screens/QueryStorePlayground/QueryStorePlayground';
+import { InteractionManager } from 'react-native';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -206,6 +208,13 @@ const DevSection = () => {
     }
   };
 
+  const navigateToQueryStorePlayground = () => {
+    playgroundStore.getState().setUniqueId(`0x91fF851C394026b59fB6Bfe2eb8a98311AbD23ae_ethereum`);
+    InteractionManager.runAfterInteractions(() => {
+      navigate(Routes.QUERY_STORE_PLAYGROUND);
+    });
+  };
+
   const onPressNavigationEntryPoint = () =>
     navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
       screen: Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET,
@@ -263,6 +272,12 @@ const DevSection = () => {
               onPress={() => Restart.Restart()}
               size={52}
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.restart_app')} />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🛝" isEmoji />}
+              onPress={() => navigateToQueryStorePlayground()}
+              size={52}
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.create_query_store_playground')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🔦" isEmoji />}

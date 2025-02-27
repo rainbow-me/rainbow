@@ -266,6 +266,8 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
    * @default false
    */
   debugMode?: boolean;
+
+  enableNewChanges?: boolean;
   /**
    * If `true`, the store will **not** trigger automatic refetches when data becomes stale. This is
    * useful in cases where you want to refetch data on component mount if stale, but not automatically
@@ -466,6 +468,7 @@ export function createQueryStore<
     disableAutoRefetching = false,
     disableCache = false,
     enabled = true,
+    enableNewChanges = false,
     keepPreviousData = false,
     maxRetries = 5,
     onError,
@@ -1007,7 +1010,7 @@ export function createQueryStore<
           if (enableLogs) console.log('[🌀 Enabled Change 🌀] - [Old]:', `${oldVal},`, '[New]:', newVal);
           oldVal = newVal;
           queryStore.setState(state => ({ ...state, enabled: newVal }));
-          if (newVal) subscriptionManager.setEnabled(newVal);
+          if (newVal && enableNewChanges) subscriptionManager.setEnabled(newVal);
         }
       });
       paramUnsubscribes.push(unsub);

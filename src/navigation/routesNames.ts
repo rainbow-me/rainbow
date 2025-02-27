@@ -1,4 +1,4 @@
-import { IS_IOS } from '@/env';
+import { IS_IOS, IS_TEST } from '@/env';
 
 const Routes = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
@@ -105,6 +105,8 @@ const Routes = {
   DAPP_BROWSER_CONTROL_PANEL: 'DappBrowserControlPanel',
   NETWORK_SELECTOR: 'NetworkSelector',
   CLAIM_REWARDS_PANEL: 'ClaimRewardsPanel',
+
+  QUERY_STORE_PLAYGROUND: 'QueryStorePlayground',
 } as const;
 
 export const NATIVE_ROUTES = [
@@ -120,6 +122,11 @@ export const NATIVE_ROUTES = [
 const RoutesWithPlatformDifferences = {
   ...Routes,
   SEND_FLOW: Routes.SEND_SHEET_NAVIGATOR,
+  ...(IS_TEST
+    ? {
+        QUERY_STORE_PLAYGROUND: Routes.QUERY_STORE_PLAYGROUND,
+      }
+    : {}),
 };
 
 export default RoutesWithPlatformDifferences;

@@ -125,4 +125,7 @@ export type RootStackParamList = {
       message: string;
     }[];
   };
+  [Routes.QUERY_STORE_PLAYGROUND]: {
+    uniqueId: string;
+  };
 };
