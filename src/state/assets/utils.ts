@@ -271,9 +271,10 @@ export function setUserAssets({
 
   if (isArray) {
     for (const asset of userAssets) {
-      if (!chainIdsWithErrors?.includes(asset.chainId)) {
-        allAssets.push(asset);
-      }
+      // if (!chainIdsWithErrors?.includes(asset.chainId)) {
+      // THIS IS A HACK TO GET A TF WORKING WHILE BACKEND IS ADDRESSING AN ISSUE
+      allAssets.push(asset);
+      // }
     }
   } else {
     for (const [chainId, assetsDict] of Object.entries(userAssets)) {
