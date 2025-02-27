@@ -13,15 +13,17 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 
 export function NetworkField() {
-  const { accentColors } = useTokenLauncherContext();
+  const navigation = useNavigation();
   const red = useForegroundColor('red');
+  const { accentColors } = useTokenLauncherContext();
+
   const chainId = useTokenLauncherStore(state => state.chainId);
   const setChainId = useTokenLauncherStore(state => state.setChainId);
   const hasSufficientEthForTransactionGas = useTokenLauncherStore(state => state.hasSufficientEthForGas);
-  const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[chainId];
-  const navigation = useNavigation();
+
+  const networkLabel = useBackendNetworksStore(state => state.getChainsLabel()[chainId]);
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
-  const allowedNetworks = useBackendNetworksStore.getState().getTokenLauncherSupportedChainIds();
+  const allowedNetworks = useBackendNetworksStore(state => state.getTokenLauncherSupportedChainIds());
 
   const onChainSelected = (chainId: number) => {
     setChainId(chainId);
