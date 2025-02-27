@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Box, ColorModeProvider } from '@/design-system';
 import { FOOTER_HEIGHT, TokenLauncherFooter } from './components/TokenLauncherFooter';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { safeAreaInsetValues } from '@/utils';
 import { TokenLauncherHeader } from './components/TokenLauncherHeader';
 import { InfoInputStep } from './components/InfoInputStep';
 import { ReviewStep } from './components/ReviewStep';
@@ -10,10 +10,11 @@ import { useTokenLauncherStore } from './state/tokenLauncherStore';
 import Animated, { Extrapolation, FadeIn, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { SkiaBackground } from './components/SkiaBackground';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { TokenLauncherContextProvider } from './context/TokenLauncherContext';
+import { TokenLauncherContextProvider, useTokenLauncherContext } from './context/TokenLauncherContext';
 import { CreatingStep } from './components/CreatingStep';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, useWindowDimensions } from 'react-native';
 import { SuccessStep } from './components/SuccessStep';
+import { JumboBlurredImageBackground } from './components/JumboBlurredImageBackground';
 
 function reviewStepExitingAnimation() {
   'worklet';
@@ -32,14 +33,13 @@ function reviewStepExitingAnimation() {
   };
 }
 
-export function TokenLauncherScreen() {
-  const backgroundColor = '#000';
-
+function TokenLauncherScreenContent() {
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const { tokenSkiaImage } = useTokenLauncherContext();
   const stepIndex = useTokenLauncherStore(state => state.stepIndex);
   const step = useTokenLauncherStore(state => state.step);
 
-  const screenWidth = deviceUtils.dimensions.width;
-  const contentContainerHeight = deviceUtils.dimensions.height - safeAreaInsetValues.top - safeAreaInsetValues.bottom - FOOTER_HEIGHT;
+  const contentContainerHeight = screenHeight - safeAreaInsetValues.top - safeAreaInsetValues.bottom - FOOTER_HEIGHT;
 
   const stickyFooterKeyboardOffset = useMemo(() => ({ closed: 0, opened: safeAreaInsetValues.bottom }), []);
 
@@ -52,69 +52,80 @@ export function TokenLauncherScreen() {
   }));
 
   return (
+    <>
+      <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2 }]}>
+        <JumboBlurredImageBackground width={941} height={941} />
+      </Box>
+      <Box
+        width="full"
+        backgroundColor={tokenSkiaImage ? 'transparent' : '#000'}
+        style={{ flex: 1, paddingBottom: safeAreaInsetValues.bottom, paddingTop: safeAreaInsetValues.top }}
+      >
+        <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={FOOTER_HEIGHT} style={{ flex: 1 }}>
+          <Box
+            borderWidth={THICK_BORDER_WIDTH}
+            borderColor={{ custom: 'rgba(245, 248, 255, 0.06)' }}
+            background="surfacePrimary"
+            borderRadius={42}
+            style={{ maxHeight: contentContainerHeight }}
+          >
+            <Box style={StyleSheet.absoluteFill}>
+              <SkiaBackground width={screenWidth} height={contentContainerHeight} />
+            </Box>
+            <Animated.View style={[infoStepAnimatedStyle, { width: screenWidth }]}>
+              <InfoInputStep />
+            </Animated.View>
+            {(step === 'review' || step === 'info') && (
+              <Animated.View
+                exiting={reviewStepExitingAnimation}
+                style={[
+                  reviewStepAnimatedStyle,
+                  {
+                    // required to prevent the keyboard avoidance from breaking
+                    position: 'absolute',
+                    width: screenWidth,
+                    height: '100%',
+                    // required for exiting animation to work
+                    zIndex: 1,
+                  },
+                ]}
+              >
+                <ReviewStep />
+              </Animated.View>
+            )}
+            {step === 'creating' && (
+              <Animated.View
+                entering={FadeIn.duration(250)}
+                style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}
+              >
+                <CreatingStep />
+              </Animated.View>
+            )}
+            {step === 'success' && (
+              <Animated.View
+                entering={FadeIn.duration(250)}
+                style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}
+              >
+                <SuccessStep />
+              </Animated.View>
+            )}
+            <TokenLauncherHeader />
+          </Box>
+        </KeyboardAvoidingView>
+        <KeyboardStickyView offset={stickyFooterKeyboardOffset}>
+          <TokenLauncherFooter />
+        </KeyboardStickyView>
+      </Box>
+    </>
+  );
+}
+
+export function TokenLauncherScreen() {
+  return (
     <ColorModeProvider value="dark">
       <TokenLauncherContextProvider>
         <KeyboardProvider>
-          <Box
-            width="full"
-            backgroundColor={backgroundColor}
-            style={{ flex: 1, paddingBottom: safeAreaInsetValues.bottom, paddingTop: safeAreaInsetValues.top }}
-          >
-            <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={FOOTER_HEIGHT} style={{ flex: 1 }}>
-              <Box
-                borderWidth={THICK_BORDER_WIDTH}
-                borderColor={{ custom: 'rgba(245, 248, 255, 0.06)' }}
-                background="surfacePrimary"
-                borderRadius={42}
-                style={{ maxHeight: contentContainerHeight }}
-              >
-                <Box style={StyleSheet.absoluteFill}>
-                  <SkiaBackground width={screenWidth} height={contentContainerHeight} />
-                </Box>
-                <Animated.View style={[infoStepAnimatedStyle, { width: screenWidth }]}>
-                  <InfoInputStep />
-                </Animated.View>
-                {(step === 'review' || step === 'info') && (
-                  <Animated.View
-                    exiting={reviewStepExitingAnimation}
-                    style={[
-                      reviewStepAnimatedStyle,
-                      {
-                        // required to prevent the keyboard avoidance from breaking
-                        position: 'absolute',
-                        width: screenWidth,
-                        height: '100%',
-                        // required for exiting animation to work
-                        zIndex: 1,
-                      },
-                    ]}
-                  >
-                    <ReviewStep />
-                  </Animated.View>
-                )}
-                {step === 'creating' && (
-                  <Animated.View
-                    entering={FadeIn.duration(250)}
-                    style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}
-                  >
-                    <CreatingStep />
-                  </Animated.View>
-                )}
-                {step === 'success' && (
-                  <Animated.View
-                    entering={FadeIn.duration(250)}
-                    style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}
-                  >
-                    <SuccessStep />
-                  </Animated.View>
-                )}
-                <TokenLauncherHeader />
-              </Box>
-            </KeyboardAvoidingView>
-            <KeyboardStickyView offset={stickyFooterKeyboardOffset}>
-              <TokenLauncherFooter />
-            </KeyboardStickyView>
-          </Box>
+          <TokenLauncherScreenContent />
         </KeyboardProvider>
       </TokenLauncherContextProvider>
     </ColorModeProvider>
