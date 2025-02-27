@@ -94,7 +94,9 @@ export const ImportOrWatchWalletSheet = () => {
               <ButtonPressAnimation
                 disabled={buttonDisabled}
                 onPress={
-                  seedPhrase ? handlePressImportButton : () => Clipboard.getString().then((text: string) => handleSetSeedPhrase(text))
+                  seedPhrase
+                    ? handlePressImportButton
+                    : () => Clipboard.getString().then((text: string) => handleSetSeedPhrase(text.trim()))
                 }
                 overflowMargin={50}
                 testID="import-sheet-button"

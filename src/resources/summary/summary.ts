@@ -2,11 +2,11 @@ import { NativeCurrencyKey } from '@/entities';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { ADDYS_API_KEY } from 'react-native-dotenv';
+import { ADDYS_API_KEY, ADDYS_BASE_URL } from 'react-native-dotenv';
 import { Address } from 'viem';
 
 const addysHttp = new RainbowFetchClient({
-  baseURL: 'https://addys.p.rainbow.me/v3',
+  baseURL: ADDYS_BASE_URL,
   headers: {
     Authorization: `Bearer ${ADDYS_API_KEY}`,
   },
