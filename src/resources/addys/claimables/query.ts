@@ -1,8 +1,6 @@
 import { NativeCurrencyKey } from '@/entities';
-import { RainbowFetchClient } from '@/rainbow-fetch';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { ADDYS_API_KEY, ADDYS_BASE_URL } from 'react-native-dotenv';
 import { ConsolidatedClaimablesResponse } from './types';
 import { logger, RainbowError } from '@/logger';
 import { parseClaimables } from './utils';
@@ -10,13 +8,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { CLAIMABLES, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-
-export const addysHttp = new RainbowFetchClient({
-  baseURL: ADDYS_BASE_URL,
-  headers: {
-    Authorization: `Bearer ${ADDYS_API_KEY}`,
-  },
-});
+import { getAddysHttpClient } from '../client';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -40,7 +32,7 @@ type ClaimablesQueryKey = ReturnType<typeof claimablesQueryKey>;
 async function claimablesQueryFunction({ queryKey: [{ address, currency }] }: QueryFunctionArgs<typeof claimablesQueryKey>) {
   try {
     const url = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/claimables`;
-    const { data } = await addysHttp.get<ConsolidatedClaimablesResponse>(url, {
+    const { data } = await getAddysHttpClient().get<ConsolidatedClaimablesResponse>(url, {
       params: {
         currency: currency.toLowerCase(),
       },
