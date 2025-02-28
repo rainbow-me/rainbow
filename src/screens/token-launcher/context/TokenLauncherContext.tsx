@@ -18,12 +18,17 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { formatUnits } from 'viem';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
-import { SkImage, useAnimatedImageValue, useImage } from '@shopify/react-native-skia';
-import { SharedValue } from 'react-native-reanimated';
+import {
+  SkImage,
+  // useAnimatedImageValue,
+  useImage,
+} from '@shopify/react-native-skia';
+import { getHighContrastTextColorWorklet } from '@/worklets/colors';
+// import { SharedValue } from 'react-native-reanimated';
 
 type TokenLauncherContextType = {
   ethRequiredForTransactionGas: string;
-  tokenSkiaImage: SkImage | SharedValue<SkImage | null>;
+  tokenSkiaImage: SkImage | null;
   accentColors: {
     opacity100: string;
     opacity30: string;
@@ -34,6 +39,7 @@ type TokenLauncherContextType = {
     opacity4: string;
     opacity3: string;
     opacity2: string;
+    highContrastTextColor: string;
   };
 };
 
@@ -95,6 +101,8 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
       // do nothing
     }
 
+    const highContrastTextColor = getHighContrastTextColorWorklet(primaryColor, undefined, false);
+
     return {
       opacity100: primaryColor,
       opacity30: getAlphaColor(primaryColor, 0.3),
@@ -105,6 +113,7 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
       opacity4: getAlphaColor(primaryColor, 0.04),
       opacity3: getAlphaColor(primaryColor, 0.03),
       opacity2: getAlphaColor(primaryColor, 0.02),
+      highContrastTextColor,
     };
   }, [colors, imageDerivedColor, isDarkMode]);
 

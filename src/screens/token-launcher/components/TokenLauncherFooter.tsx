@@ -71,6 +71,7 @@ function HoldToCreateButton() {
 
   return (
     <HoldToActivateButton
+      testID="hold-to-create-button"
       backgroundColor={accentColors.opacity100}
       disabledBackgroundColor={accentColors.opacity12}
       isProcessing={isProcessing}
@@ -79,7 +80,9 @@ function HoldToCreateButton() {
       label={'Hold to Create'}
       onLongPress={handleLongPress}
       height={48}
-      testID="hold-to-create-button"
+      textStyle={{
+        color: accentColors.highContrastTextColor,
+      }}
     />
   );
 }

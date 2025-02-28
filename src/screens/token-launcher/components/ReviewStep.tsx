@@ -121,7 +121,8 @@ function AboutCard() {
   const { accentColors } = useTokenLauncherContext();
 
   const description = useTokenLauncherStore(state => state.description);
-  const links = useTokenLauncherStore(state => state.links);
+  // Emtpy links do not prevent you from continuing, but they are not valid so they are not shown
+  const links = useTokenLauncherStore(state => state.links.filter(link => link.input !== ''));
 
   if (description === '' && links.length === 0) return null;
 
@@ -152,7 +153,9 @@ function AboutCard() {
                 alignItems="center"
                 gap={12}
               >
-                <Icon />
+                <Box width={20} height={20} justifyContent="center" alignItems="center">
+                  <Icon />
+                </Box>
                 <Text style={{ flex: 1 }} size="17pt" weight="medium" color={'labelSecondary'}>
                   {displayName}
                 </Text>
@@ -236,9 +239,7 @@ export function ReviewStep() {
         }}
       >
         <Box width="full" paddingHorizontal={'20px'} alignItems="center">
-          {/* <Animated.View sharedTransitionTag="tokenImage"> */}
           <TokenLogo />
-          {/* </Animated.View> */}
           <Box alignItems="center" paddingTop={'20px'} gap={14}>
             <TextShadow blur={12} shadowOpacity={0.24}>
               <Text size="44pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
@@ -287,7 +288,7 @@ export function ReviewStep() {
                 {'Total Supply'}
               </Text>
               <Text size="17pt" weight="bold" style={{ textTransform: 'capitalize' }} color={{ custom: accentColors.opacity100 }}>
-                {abbreviateNumber(tokenSupply, 0, 'long')}
+                {abbreviateNumber(tokenSupply, 2, 'long', true)}
               </Text>
             </Box>
             <Box
@@ -311,8 +312,8 @@ export function ReviewStep() {
                 </Text>
               </Box>
             </Box>
-            <AboutCard />
             <TokenAllocationCard />
+            <AboutCard />
           </Box>
         </Box>
       </ScrollView>
