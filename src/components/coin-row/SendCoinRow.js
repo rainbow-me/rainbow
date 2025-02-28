@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../theme/ThemeContext';
 import { deviceUtils } from '../../utils';
@@ -49,6 +49,7 @@ const BottomRow = ({ balance, native, nativeCurrencySymbol, selected, showNative
       numberOfLines={1}
       size="smedium"
       weight={selected ? 'bold' : 'regular'}
+      style={sx.bottomRow}
     >
       {showNativeValue
         ? `${fiatValue} available`
@@ -133,13 +134,22 @@ const SendCoinRow = ({
           children
         ) : (
           <NativeAmountBubble>
-            <NativeAmountBubbleText>{fiatValueFormatted}</NativeAmountBubbleText>
+            <NativeAmountBubbleText style={sx.nativeAmountBubbleText}>{fiatValueFormatted}</NativeAmountBubbleText>
           </NativeAmountBubble>
         )}
       </CoinRow>
     </Wrapper>
   );
 };
+
+const sx = StyleSheet.create({
+  nativeAmountBubbleText: {
+    marginTop: android ? -2.5 : 0,
+  },
+  bottomRow: {
+    marginTop: android ? -6 : 0,
+  },
+});
 
 SendCoinRow.displayName = 'SendCoinRow';
 SendCoinRow.selectedHeight = selectedHeight;
