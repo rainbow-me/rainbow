@@ -28,6 +28,8 @@ import { loadWallet } from '@/model/wallet';
 import { Wallet } from '@ethersproject/wallet';
 import { getProvider } from '@/handlers/web3';
 import { useTokenLaunchGasOptions } from '../hooks/useTokenLaunchGasOptions';
+import { colors } from '@/styles';
+
 export const FOOTER_HEIGHT = 56 + 16 + 8;
 
 function HoldToCreateButton() {
@@ -96,18 +98,19 @@ function ContinueButton() {
     setStep('review');
   }, [setStep]);
 
-  // TODO: remove testing
+  // TODO: remove the "&& false", it's for testing
   return (
     <ButtonPressAnimation disabled={!canContinueToReview && false} onPress={goToReviewStep}>
       <Box
-        background={canContinueToReview ? 'blue' : 'fillTertiary'}
+        backgroundColor={colors.white}
         justifyContent="center"
         alignItems="center"
         paddingHorizontal="24px"
         borderRadius={28}
         height={48}
+        style={{ opacity: canContinueToReview ? 1 : 0.2 }}
       >
-        <Text color={canContinueToReview ? 'label' : 'labelTertiary'} size="20pt" weight="heavy">
+        <Text color={{ custom: colors.black }} size="20pt" weight="heavy" style={{ opacity: canContinueToReview ? 1 : 0.5 }}>
           {'Continue'}
         </Text>
       </Box>
@@ -127,7 +130,7 @@ function ShareButton() {
         borderRadius={28}
         height={48}
       >
-        <Text color="label" size="20pt" weight="heavy">
+        <Text color={{ custom: accentColors.highContrastTextColor }} size="20pt" weight="heavy">
           {'􀈂 Share Link'}
         </Text>
       </Box>
