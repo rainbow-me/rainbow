@@ -14,7 +14,6 @@ import { Wallet } from '@ethersproject/wallet';
 import { parseUnits } from '@ethersproject/units';
 import { TransactionOptions } from '@rainbow-me/swaps';
 import { TokenLauncher } from '@/hooks/useTokenLauncher';
-import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { LaunchTokenResponse } from '@rainbow-me/token-launcher';
 
 // TODO: same as colors.alpha, move to a helper file
