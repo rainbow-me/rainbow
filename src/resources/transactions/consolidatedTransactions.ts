@@ -2,13 +2,11 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { InfiniteQueryConfig, QueryConfig, QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
 import { NativeCurrencyKey, RainbowTransaction, TransactionApiResponse, TransactionsReceivedMessage } from '@/entities';
 import { RainbowError, logger } from '@/logger';
-import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { parseTransaction } from '@/parsers/transactions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getAddysHttpClient } from '@/resources/addys/client';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
-const CONSOLIDATED_TRANSACTIONS_TIMEOUT = 20000;
 
 // ///////////////////////////////////////////////
 // Query Types
