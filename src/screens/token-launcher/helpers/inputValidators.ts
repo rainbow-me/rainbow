@@ -73,13 +73,13 @@ const PLATFORM_CONFIGS: Record<LinkType, PlatformConfig> = {
 export function validateLinkWorklet({ link, type }: { link: string; type: LinkType }): ValidationResult {
   'worklet';
 
-  // Common validations for all link types
   if (link.includes(' ')) {
     return { error: true };
   }
 
+  // Empty links are just ignored, but not an error
   if (link.length === 0) {
-    return { error: true };
+    return;
   }
 
   const config = PLATFORM_CONFIGS[type];

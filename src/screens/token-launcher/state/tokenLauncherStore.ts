@@ -131,10 +131,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   airdropRecipients: [],
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
-  links: [
-    // TODO: for testing. Remove before merging
-    // { input: '', type: 'website', url: '' },
-  ],
+  links: [{ input: '', type: 'website', url: '' }],
   // TODO: align this name with other names for this
   creatorBuyInEth: 0,
   ethPriceUsd: 0,
@@ -201,16 +198,15 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     };
   },
   tokenomics: () => {
-    const ethPriceUsd = get().ethPriceUsd;
+    const { ethPriceUsd, airdropRecipients, totalSupply, creatorBuyInEth } = get();
     if (!ethPriceUsd) return;
 
     return calculateTokenomics({
       targetMarketCapUsd: TARGET_MARKET_CAP_IN_USD,
-      totalSupply: get().totalSupply,
+      totalSupply,
       ethPriceUsd,
-      // TODO: needs to be based on the number of VALID recipients
-      hasAirdrop: get().airdropRecipients.length > 0,
-      amountInEth: get().creatorBuyInEth,
+      hasAirdrop: airdropRecipients.filter(recipient => recipient.isValid).length > 0,
+      amountInEth: creatorBuyInEth,
     });
   },
   // setters

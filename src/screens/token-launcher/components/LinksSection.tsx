@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { CollapsableField } from './CollapsableField';
 import { Bleed, Box, IconContainer, Separator, Text, TextIcon, TextShadow } from '@/design-system';
 import { useTokenLauncherStore, Link, LinkType } from '../state/tokenLauncherStore';
@@ -18,6 +19,7 @@ import { useTheme } from '@/theme';
 import FastImage from 'react-native-fast-image';
 import { Grid } from './Grid';
 import { validateLinkWorklet } from '../helpers/inputValidators';
+import { colors } from '@/styles';
 
 // TODO: add discord (maybe)
 export const LINK_SETTINGS = {
@@ -53,19 +55,26 @@ export const LINK_SETTINGS = {
   },
   website: {
     Icon: () => (
-      <TextIcon containerSize={20} color="label" size="icon 11px" weight="heavy">
-        􀆪
+      <TextIcon
+        // This specific globe icon has a problem being centered. Even this is not absolutely centered, but it's closer
+        textStyle={{ marginLeft: StyleSheet.hairlineWidth * 2 }}
+        containerSize={20}
+        color="label"
+        size="icon 13px"
+        weight="heavy"
+      >
+        {'􀆪'}
       </TextIcon>
     ),
-    iconBackgroundColor: '#000000',
-    primaryColor: '#000000',
+    iconBackgroundColor: colors.appleBlue,
+    primaryColor: '#fff',
     placeholder: 'https://token.com',
     displayName: 'Website',
     type: 'website',
   },
   other: {
     Icon: () => (
-      <TextIcon containerSize={20} color="label" size="icon 11px" weight="heavy">
+      <TextIcon containerSize={20} color="label" size="icon 10px" weight="heavy">
         {'􀉣'}
       </TextIcon>
     ),
@@ -85,7 +94,6 @@ function LinkField({ link, index }: { link: Link; index: number }) {
   const [isValid, setIsValid] = useState(true);
 
   const onInputChange = (input: string) => {
-    // TODO: parse input for url and type
     editLink({ index, input, url: input });
     const isValidInput = !validateLinkWorklet({ link: input, type: link.type });
     if (isValidInput !== isValid) {
@@ -116,6 +124,8 @@ function LinkField({ link, index }: { link: Link; index: number }) {
           inputStyle={{ textAlign: 'left', paddingLeft: 8 }}
           onInputChange={onInputChange}
           placeholder={placeholder}
+          autoCorrect={false}
+          spellCheck={false}
         />
         <ButtonPressAnimation
           style={{ opacity: link.type === 'website' ? 0 : 1 }}
@@ -150,7 +160,6 @@ export function LinksSection() {
   return (
     <CollapsableField title="Links">
       <Box gap={8}>
-        <LinkField link={{ type: 'website', url: '', input: '' }} index={links.length} />
         {links.map((link, index) => (
           <Animated.View key={`${link.type}`} layout={COLLAPSABLE_FIELD_ANIMATION}>
             <LinkField link={link} index={index} />
