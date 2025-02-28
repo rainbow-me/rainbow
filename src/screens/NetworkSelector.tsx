@@ -32,6 +32,7 @@ import Animated, {
   Easing,
   FadeIn,
   FadeOutUp,
+  interpolate,
   LinearTransition,
   runOnJS,
   SharedValue,
@@ -642,6 +643,7 @@ type NetworksGridProps = NetworkSwitcherProps & {
   expanded: SharedValue<boolean>;
   scrollY: SharedValue<number>;
   scrollViewHeight: SharedValue<number>;
+  scrollViewContentHeight: SharedValue<number>;
 };
 
 function NetworksGrid({
@@ -654,6 +656,7 @@ function NetworksGrid({
   allowedNetworks,
   scrollY,
   scrollViewHeight,
+  scrollViewContentHeight,
   goBackOnSelect,
   fillPinnedSection,
   canSelectAllNetworks,
@@ -706,8 +709,17 @@ function NetworksGrid({
     };
   });
 
-  const onLayout = useCallback((event: LayoutChangeEvent) => {
-    scrollViewHeight.value = event.nativeEvent.layout.height;
+  const onLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      scrollViewHeight.value = event.nativeEvent.layout.height;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const onContentSizeChange = useCallback((width: number, height: number) => {
+    scrollViewContentHeight.value = height;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const containerHeight = useDerivedValue(() => {
@@ -839,6 +851,7 @@ function NetworksGrid({
       style={{ overflow: 'hidden' }}
       contentContainerStyle={{ overflow: 'hidden' }}
       onLayout={onLayout}
+      onContentSizeChange={onContentSizeChange}
     >
       <GestureDetector gesture={gridGesture}>
         <Animated.View style={[containerStyle, { marginTop: 14, overflow: 'hidden' }]}>
@@ -888,19 +901,14 @@ type SheetProps = PropsWithChildren<Pick<NetworkSwitcherProps, 'onClose' | 'canE
   expanded: SharedValue<boolean>;
   scrollY: SharedValue<number>;
   scrollViewHeight: SharedValue<number>;
+  scrollViewContentHeight: SharedValue<number>;
 };
 
-function Sheet({ children, title, editing, expanded, onClose, canEdit, scrollY, scrollViewHeight }: SheetProps) {
+function Sheet({ children, title, editing, expanded, onClose, canEdit, scrollY, scrollViewHeight, scrollViewContentHeight }: SheetProps) {
   const { isDarkMode } = useColorMode();
   const surfacePrimary = useBackgroundColor('surfacePrimary');
   const backgroundColor = isDarkMode ? '#191A1C' : surfacePrimary;
   const separatorSecondary = useForegroundColor('separatorSecondary');
-
-  const containerHeight = useSharedValue(0);
-
-  const onLayout = useCallback((event: LayoutChangeEvent) => {
-    containerHeight.value = event.nativeEvent.layout.height;
-  }, []);
 
   // make sure the onClose function is called when the sheet unmounts
   useEffect(() => {
@@ -908,19 +916,9 @@ function Sheet({ children, title, editing, expanded, onClose, canEdit, scrollY, 
   }, [onClose]);
 
   const gradientStyle = useAnimatedStyle(() => {
-    const isAtBottom = scrollY.value + scrollViewHeight.value >= containerHeight.value;
-    const distanceFromBottom = containerHeight.value - (scrollY.value + scrollViewHeight.value);
-    const fadeStartDistance = FOOTER_HEIGHT; // Start fading when FOOTER_HEIGHT px from bottom
-
-    const isLessThanMaxHeight = containerHeight.value < MAX_HEIGHT;
-
-    let fadeOpacity = isLessThanMaxHeight ? 0 : 1;
-    if (distanceFromBottom < fadeStartDistance && !isLessThanMaxHeight) {
-      fadeOpacity = Math.max(0, distanceFromBottom / fadeStartDistance);
-    }
-
+    const distanceFromBottomOfScrollView = scrollViewContentHeight.value - (scrollY.value + scrollViewHeight.value);
     return {
-      opacity: withTiming(expanded.value ? (isAtBottom ? 0 : fadeOpacity) : 0, TIMING_CONFIGS.buttonPressConfig),
+      opacity: interpolate(distanceFromBottomOfScrollView, [0, 20], [0, 1]),
     };
   });
 
@@ -934,7 +932,6 @@ function Sheet({ children, title, editing, expanded, onClose, canEdit, scrollY, 
             borderColor: isDarkMode ? separatorSecondary : globalColors.white100,
           },
         ]}
-        onLayout={onLayout}
       >
         <Header title={title} canEdit={canEdit} editing={editing} />
         {children}
@@ -976,6 +973,7 @@ export function NetworkSelector() {
   const expanded = useSharedValue(false);
   const scrollY = useSharedValue(0);
   const scrollViewHeight = useSharedValue(0);
+  const scrollViewContentHeight = useSharedValue(0);
   const selectedNetwork = useSharedValue(typeof selected === 'number' ? selected : selected?.value);
 
   return (
@@ -987,6 +985,7 @@ export function NetworkSelector() {
       canEdit={canEdit}
       scrollY={scrollY}
       scrollViewHeight={scrollViewHeight}
+      scrollViewContentHeight={scrollViewContentHeight}
     >
       {canEdit && <CustomizeNetworksBanner editing={editing} />}
       {(canSelectAllNetworks || actionButton) && (
@@ -1008,6 +1007,7 @@ export function NetworkSelector() {
         allowedNetworks={allowedNetworks}
         scrollY={scrollY}
         scrollViewHeight={scrollViewHeight}
+        scrollViewContentHeight={scrollViewContentHeight}
         goBackOnSelect={goBackOnSelect}
         canSelectAllNetworks={canSelectAllNetworks}
         actionButton={actionButton}
