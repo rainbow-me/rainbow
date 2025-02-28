@@ -39,7 +39,8 @@ function TokenLauncherScreenContent() {
   const stepIndex = useTokenLauncherStore(state => state.stepIndex);
   const step = useTokenLauncherStore(state => state.step);
 
-  const contentContainerHeight = screenHeight - safeAreaInsetValues.top - safeAreaInsetValues.bottom - FOOTER_HEIGHT;
+  const footerHeight = FOOTER_HEIGHT + (step === 'success' ? 42 : 0);
+  const contentContainerHeight = screenHeight - safeAreaInsetValues.top - safeAreaInsetValues.bottom - footerHeight;
 
   const stickyFooterKeyboardOffset = useMemo(() => ({ closed: 0, opened: safeAreaInsetValues.bottom }), []);
 

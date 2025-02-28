@@ -17,7 +17,9 @@ export function NetworkField() {
   const red = useForegroundColor('red');
   const chainId = useTokenLauncherStore(state => state.chainId);
   const setChainId = useTokenLauncherStore(state => state.setChainId);
-  const hasSufficientEthForTransactionGas = useTokenLauncherStore(state => state.hasSufficientEthForGas);
+  const hasSufficientChainNativeAssetForTransactionGas = useTokenLauncherStore(
+    state => state.hasSufficientChainNativeAssetForTransactionGas
+  );
   const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[chainId];
   const navigation = useNavigation();
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
@@ -37,7 +39,7 @@ export function NetworkField() {
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          borderColor: hasSufficientEthForTransactionGas ? FIELD_BORDER_COLOR : red,
+          borderColor: hasSufficientChainNativeAssetForTransactionGas ? FIELD_BORDER_COLOR : red,
           gap: 8,
         }}
       >
@@ -89,7 +91,7 @@ export function NetworkField() {
           </ButtonPressAnimation>
         </Bleed>
       </FieldContainer>
-      {!hasSufficientEthForTransactionGas && (
+      {!hasSufficientChainNativeAssetForTransactionGas && (
         <Box paddingHorizontal={'20px'}>
           <Text color="red" size="13pt" weight="bold">
             {'Not enough funds to launch a token'}

@@ -1,12 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 
-import { Canvas, Paint, Shadow, useImage, Image, Fill, Blur, rect, rrect, Box, Group } from '@shopify/react-native-skia';
+import { Canvas, Shadow, useImage, Image, Fill, Blur, rect, rrect, Box, Group } from '@shopify/react-native-skia';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Extrapolation, interpolate, useDerivedValue } from 'react-native-reanimated';
 
-export function SkiaBackground({ width, height }: { width: number; height: number }) {
+export const SkiaBackground = memo(function SkiaBackground({ width, height }: { width: number; height: number }) {
   const { accentColors } = useTokenLauncherContext();
   const shadowColor = accentColors.opacity20;
 
@@ -23,8 +23,8 @@ export function SkiaBackground({ width, height }: { width: number; height: numbe
     return interpolate(stepIndex.value, [2, 3], [1, 0], Extrapolation.CLAMP);
   });
 
-  const innerShadowsOpacity = useDerivedValue(() => {
-    return interpolate(stepIndex.value, [0, 1], [0, 1], Extrapolation.CLAMP);
+  const reviewAndCreatingStepEffectsOpacity = useDerivedValue(() => {
+    return interpolate(stepIndex.value, [0, 1, 2, 3], [0, 1, 1, 0], Extrapolation.CLAMP);
   });
 
   const innerShadowOneBlur = useDerivedValue(() => {
@@ -35,6 +35,10 @@ export function SkiaBackground({ width, height }: { width: number; height: numbe
     return interpolate(stepIndex.value, [0, 1], [0, 2], Extrapolation.CLAMP);
   });
 
+  const successStepEffectsOpacity = useDerivedValue(() => {
+    return interpolate(stepIndex.value, [2, 3], [0, 1], Extrapolation.CLAMP);
+  });
+
   if (!imageUri) return null;
 
   return (
@@ -42,16 +46,24 @@ export function SkiaBackground({ width, height }: { width: number; height: numbe
       <Image x={0} y={0} width={width} height={height} image={image} fit="cover">
         <Blur blur={100} />
       </Image>
+
       <Fill opacity={dimOverlayOpacity} color="rgba(26, 26, 26, 0.75)" />
-      <Box box={roundedRect} color="transparent">
-        <Paint color={'rgba(245, 248, 255, 0.06)'} style="stroke" strokeWidth={THICK_BORDER_WIDTH} />
-      </Box>
-      <Group opacity={innerShadowsOpacity}>
+
+      <Box box={roundedRect} strokeWidth={THICK_BORDER_WIDTH * 2} style="stroke" color={'rgba(245, 248, 255, 0.06)'} />
+
+      <Group opacity={reviewAndCreatingStepEffectsOpacity}>
         <Box box={roundedRect}>
           <Shadow dx={0} dy={0} blur={innerShadowOneBlur} color={shadowColor} inner shadowOnly />
         </Box>
         <Box box={roundedRect}>
           <Shadow dx={0} dy={0} blur={innerShadowTwoBlur} color={shadowColor} inner shadowOnly />
+        </Box>
+      </Group>
+
+      <Group opacity={successStepEffectsOpacity}>
+        <Box box={roundedRect} strokeWidth={8} style="stroke" color={'rgba(255, 255, 255, 0.1)'} />
+        <Box box={roundedRect} blendMode={'plus'}>
+          <Shadow dx={0} dy={0} blur={8} color={'rgba(255, 255, 255, 0.4)'} inner shadowOnly />
         </Box>
       </Group>
 
@@ -66,4 +78,4 @@ export function SkiaBackground({ width, height }: { width: number; height: numbe
       </Group> */}
     </Canvas>
   );
-}
+});

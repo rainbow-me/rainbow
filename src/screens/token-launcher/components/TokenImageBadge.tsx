@@ -44,12 +44,12 @@ export function TokenImageBadge({ size, image }: { size: number; image: SkImage 
       <Group>
         {/* Main background fill */}
         <Path path={outterPath} color="white">
-          <Shadow dx={0} dy={80} blur={80} color="rgba(232, 177, 112, 1)" />
+          <Shadow dx={0} dy={80} blur={40} color="rgba(232, 177, 112, 1)" />
         </Path>
 
         {/* Glow effect */}
         <Path path={outterPath}>
-          <Shadow dx={0} dy={0} blur={44} color="rgba(245, 248, 255, 0.2)" />
+          <Shadow dx={0} dy={0} blur={22} color="rgba(245, 248, 255, 0.2)" />
         </Path>
 
         {/* Base white fill */}
@@ -78,10 +78,10 @@ export function TokenImageBadge({ size, image }: { size: number; image: SkImage 
       {/* Token image */}
       <Group>
         <Path path={innerPath}>
-          <Shadow dx={0} dy={48.33} blur={54.78} color={'rgba(37, 41, 46, 0.2)'} shadowOnly />
+          <Shadow dx={0} dy={48.33 / 2} blur={54.78 / 2} color={'rgba(37, 41, 46, 0.2)'} shadowOnly />
         </Path>
         <Path path={innerPath}>
-          <Shadow dx={0} dy={0} blur={6} color={'rgba(255, 255, 255, 0.6)'} shadowOnly />
+          <Shadow dx={0} dy={0} blur={6 / 2} color={'rgba(255, 255, 255, 0.6)'} shadowOnly />
         </Path>
         <Image
           clip={innerPath}
@@ -92,7 +92,7 @@ export function TokenImageBadge({ size, image }: { size: number; image: SkImage 
           height={imageScaledSize}
         />
         <Path path={innerPath}>
-          <Shadow dx={0} dy={0} blur={4} color={'rgba(255, 255, 255, 1)'} inner shadowOnly />
+          <Shadow dx={0} dy={0} blur={4 / 2} color={'rgba(255, 255, 255, 1)'} inner shadowOnly />
         </Path>
       </Group>
     </Group>
