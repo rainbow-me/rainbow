@@ -3,7 +3,7 @@ import * as i18n from '@/languages';
 import c from 'chroma-js';
 import React, { memo, useCallback, useMemo } from 'react';
 import { Text as RNText, StyleSheet } from 'react-native';
-import Animated, { useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import Animated, { AnimatedRef, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -17,13 +17,15 @@ import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
+import { TokenToBuyListItem } from '@/__swaps__/types/search';
 
 type ChainSelectionProps = {
   allText?: string;
+  animatedRef: AnimatedRef<Animated.FlatList<string>> | AnimatedRef<Animated.FlatList<TokenToBuyListItem>>;
   output: boolean;
 };
 
-export const ChainSelection = memo(function ChainSelection({ allText, output }: ChainSelectionProps) {
+export const ChainSelection = memo(function ChainSelection({ allText, animatedRef, output }: ChainSelectionProps) {
   const { isDarkMode } = useColorMode();
   const { accentColor: accountColor } = useAccountAccentColor();
   const { selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
@@ -56,11 +58,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
 
   const handleSelectChain = useCallback(
     (actionKey: string) => {
-      analyticsV2.track(analyticsV2.event.swapsChangedChainId, {
-        inputAsset: swapsStore.getState().inputAsset,
-        type: output ? 'output' : 'input',
-        chainId: Number(actionKey) as ChainId,
-      });
+      animatedRef.current?.scrollToOffset({ animated: true, offset: 0 });
 
       if (output) {
         setSelectedOutputChainId(Number(actionKey) as ChainId);
@@ -70,8 +68,14 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
           filter: actionKey === 'all' ? 'all' : (Number(actionKey) as ChainId),
         });
       }
+
+      analyticsV2.track(analyticsV2.event.swapsChangedChainId, {
+        inputAsset: swapsStore.getState().inputAsset,
+        type: output ? 'output' : 'input',
+        chainId: Number(actionKey) as ChainId,
+      });
     },
-    [inputListFilter, output, setSelectedOutputChainId]
+    [animatedRef, inputListFilter, output, setSelectedOutputChainId]
   );
 
   const menuConfig = useMemo(() => {

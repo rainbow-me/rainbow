@@ -1,12 +1,5 @@
-import { INPUT_PADDING, LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { Input } from '@/components/inputs';
-import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
-import * as i18n from '@/languages';
-import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
+import { StyleSheet } from 'react-native';
 import Animated, {
   runOnJS,
   runOnUI,
@@ -15,13 +8,22 @@ import Animated, {
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
-import { useDebouncedCallback } from 'use-debounce';
+import { Input } from '@/components/inputs';
+import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
+import * as i18n from '@/languages';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { INPUT_PADDING, LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { useSwapsSearchStore } from '../resources/search/searchV2';
 import { SearchInputButton } from './SearchInputButton';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
 const FIND_A_TOKEN_TO_BUY_LABEL = i18n.t(i18n.l.swap.find_a_token_to_buy);
 const SEARCH_YOUR_TOKENS_LABEL = i18n.t(i18n.l.swap.search_your_tokens);
+
+const onOutputSearchQueryChange = (text: string) => useSwapsSearchStore.setState({ searchQuery: text });
 
 export const SearchInput = ({
   handleExitSearchWorklet,
@@ -41,11 +43,6 @@ export const SearchInput = ({
 
   const onInputSearchQueryChange = useUserAssetsStore(state => state.setSearchQuery);
 
-  const onOutputSearchQueryChange = useDebouncedCallback((text: string) => useSwapsStore.setState({ outputSearchQuery: text }), 100, {
-    leading: false,
-    trailing: true,
-  });
-
   const isSearchFocused = useDerivedValue(
     () =>
       (!output && inputProgress.value === NavigationSteps.SEARCH_FOCUSED) ||
@@ -61,6 +58,30 @@ export const SearchInput = ({
       defaultValue: '',
     };
   });
+
+  const { inputStyles, placeholderTextColor } = useMemo(
+    () => ({
+      inputStyles: [styles.animatedInput, { color: label }],
+      placeholderTextColor: isDarkMode ? opacity(labelQuaternary, 0.3) : labelQuaternary,
+    }),
+    [isDarkMode, label, labelQuaternary]
+  );
+
+  const onBlur = useCallback(() => {
+    if (isSearchFocused.value) {
+      if (output) {
+        if (useSwapsSearchStore.getState().searchQuery !== '') {
+          useSwapsSearchStore.setState({ searchQuery: '' });
+        }
+      } else {
+        if (useUserAssetsStore.getState().inputSearchQuery !== '') {
+          useUserAssetsStore.getState().setSearchQuery('');
+        }
+      }
+    }
+  }, [isSearchFocused, output]);
+
+  const onFocus = useCallback(() => runOnUI(handleFocusSearchWorklet)(), [handleFocusSearchWorklet]);
 
   useAnimatedReaction(
     () => isSearchFocused.value,
@@ -102,32 +123,14 @@ export const SearchInput = ({
                 <AnimatedInput
                   animatedProps={searchInputValue}
                   onChangeText={output ? onOutputSearchQueryChange : onInputSearchQueryChange}
-                  onBlur={() => {
-                    if (isSearchFocused.value) {
-                      if (output) {
-                        if (useSwapsStore.getState().outputSearchQuery !== '') {
-                          useSwapsStore.setState({ outputSearchQuery: '' });
-                        }
-                      } else {
-                        if (userAssetsStore.getState().inputSearchQuery !== '') {
-                          userAssetsStore.getState().setSearchQuery('');
-                        }
-                      }
-                    }
-                  }}
-                  onFocus={() => runOnUI(handleFocusSearchWorklet)()}
+                  onBlur={onBlur}
+                  onFocus={onFocus}
                   placeholder={output ? FIND_A_TOKEN_TO_BUY_LABEL : SEARCH_YOUR_TOKENS_LABEL}
-                  placeholderTextColor={isDarkMode ? opacity(labelQuaternary, 0.3) : labelQuaternary}
+                  placeholderTextColor={placeholderTextColor}
                   selectTextOnFocus
                   ref={output ? outputSearchRef : inputSearchRef}
                   spellCheck={false}
-                  style={{
-                    color: label,
-                    fontSize: 17,
-                    fontWeight: 'bold',
-                    height: 44,
-                    zIndex: 10,
-                  }}
+                  style={inputStyles}
                 />
               </Columns>
             </Box>
@@ -145,3 +148,12 @@ export const SearchInput = ({
     </Box>
   );
 };
+
+const styles = StyleSheet.create({
+  animatedInput: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    height: 44,
+    zIndex: 10,
+  },
+});
