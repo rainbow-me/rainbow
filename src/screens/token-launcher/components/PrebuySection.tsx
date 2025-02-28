@@ -79,7 +79,7 @@ function PrebuyAmountButton({
 }
 
 export function PrebuySection() {
-  const { ethRequiredForTransactionGas } = useTokenLauncherContext();
+  const { chainNativeAssetRequiredForTransactionGas } = useTokenLauncherContext();
   const tokenomics = useTokenLauncherStore(state => state.tokenomics());
   const marketCapEth = tokenomics?.marketCap.targetEth ?? 10;
   const setHasValidPrebuyAmount = useTokenLauncherStore(state => state.setHasValidPrebuyAmount);
@@ -87,21 +87,21 @@ export function PrebuySection() {
   const setCreatorBuyInEth = useTokenLauncherStore(state => state.setCreatorBuyInEth);
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
 
-  const nativeAssetForChainAvailableBalance = useMemo(() => {
+  const chainNativeAssetAvailableBalance = useMemo(() => {
     const balance = nativeAssetForChain?.balance.amount;
     if (!balance) {
       return 0;
     }
-    const balanceMinusGas = subtract(balance, ethRequiredForTransactionGas);
+    const balanceMinusGas = subtract(balance, chainNativeAssetRequiredForTransactionGas);
     return lessThan(balanceMinusGas, 0) ? 0 : balanceMinusGas;
-  }, [nativeAssetForChain, ethRequiredForTransactionGas]);
+  }, [nativeAssetForChain, chainNativeAssetRequiredForTransactionGas]);
 
   const nativeAssetForChainAvailableBalanceDisplay = useMemo(() => {
     if (!nativeAssetForChain) {
       return '0';
     }
-    return convertAmountToBalanceDisplay(nativeAssetForChainAvailableBalance, nativeAssetForChain);
-  }, [nativeAssetForChainAvailableBalance, nativeAssetForChain]);
+    return convertAmountToBalanceDisplay(chainNativeAssetAvailableBalance, nativeAssetForChain);
+  }, [chainNativeAssetAvailableBalance, nativeAssetForChain]);
 
   const inputRef = useRef<SingleFieldInputRef>(null);
   const borderColor = useForegroundColor('buttonStroke');
@@ -212,7 +212,7 @@ export function PrebuySection() {
               // TODO: is it safe to use parseFloat here?
               const amount = parseFloat(text) || 0;
 
-              if (lessThanWorklet(nativeAssetForChainAvailableBalance, amount)) {
+              if (lessThanWorklet(chainNativeAssetAvailableBalance, amount)) {
                 error.value = `Amount is greater than balance`;
                 return { error: true };
               }

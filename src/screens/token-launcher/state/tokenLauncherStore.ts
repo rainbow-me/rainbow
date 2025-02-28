@@ -52,7 +52,7 @@ interface TokenLauncherStore {
   ethPriceUsd: number;
   ethPriceNative: number;
   gasSpeed: GasSpeed;
-  hasSufficientEthForGas: boolean;
+  hasSufficientChainNativeAssetForTransactionGas: boolean;
   hasValidPrebuyAmount: boolean;
   // derived state
   formattedTotalSupply: () => string;
@@ -100,7 +100,7 @@ interface TokenLauncherStore {
   setEthPriceNative: (ethPriceNative: number) => void;
   setGasSpeed: (gasSpeed: GasSpeed) => void;
   setHasValidPrebuyAmount: (hasValidPrebuyAmount: boolean) => void;
-  setHasSufficientEthForGas: (hasSufficientEthForGas: boolean) => void;
+  setHasSufficientChainNativeAssetForTransactionGas: (hasSufficientChainNativeAssetForTransactionGas: boolean) => void;
   // actions
   reset: () => void;
   validateForm: () => void;
@@ -144,7 +144,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   // stepIndex: makeMutable(3),
   // stepSharedValue: makeMutable('success'),
   gasSpeed: GasSpeed.FAST,
-  hasSufficientEthForGas: true,
+  hasSufficientChainNativeAssetForTransactionGas: true,
   hasValidPrebuyAmount: true,
   // derived state
   formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 2, 'long', true),
@@ -182,12 +182,19 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     return !nameValidation?.error && !symbolValidation?.error && !supplyValidation?.error && imageUrl !== '';
   },
   canContinueToReview: () => {
-    const { airdropRecipients, links, hasCompletedRequiredFields, hasSufficientEthForGas, hasValidPrebuyAmount } = get();
+    const { airdropRecipients, links, hasCompletedRequiredFields, hasSufficientChainNativeAssetForTransactionGas, hasValidPrebuyAmount } =
+      get();
 
     const allAirdropRecipientsValid = airdropRecipients.every(recipient => recipient.isValid);
     const allLinksValid = links.every(link => !validateLinkWorklet({ link: link.input, type: link.type }));
 
-    return hasCompletedRequiredFields() && allAirdropRecipientsValid && allLinksValid && hasSufficientEthForGas && hasValidPrebuyAmount;
+    return (
+      hasCompletedRequiredFields() &&
+      allAirdropRecipientsValid &&
+      allLinksValid &&
+      hasSufficientChainNativeAssetForTransactionGas &&
+      hasValidPrebuyAmount
+    );
   },
   allocationBips: () => {
     const tokenomics = get().tokenomics();
@@ -314,8 +321,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   setHasValidPrebuyAmount: (hasValidPrebuyAmount: boolean) => {
     set({ hasValidPrebuyAmount });
   },
-  setHasSufficientEthForGas: (hasSufficientEthForGas: boolean) => {
-    set({ hasSufficientEthForGas });
+  setHasSufficientChainNativeAssetForTransactionGas: (hasSufficientChainNativeAssetForTransactionGas: boolean) => {
+    set({ hasSufficientChainNativeAssetForTransactionGas });
   },
   // actions
   reset: () => {
@@ -330,7 +337,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       ethPriceUsd: 0,
       ethPriceNative: 0,
       gasSpeed: GasSpeed.FAST,
-      hasSufficientEthForGas: true,
+      hasSufficientChainNativeAssetForTransactionGas: true,
       hasValidPrebuyAmount: true,
       airdropRecipients: [],
       step: 'info' as const,

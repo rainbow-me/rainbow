@@ -27,7 +27,7 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 // import { SharedValue } from 'react-native-reanimated';
 
 type TokenLauncherContextType = {
-  ethRequiredForTransactionGas: string;
+  chainNativeAssetRequiredForTransactionGas: string;
   tokenSkiaImage: SkImage | null;
   accentColors: {
     opacity100: string;
@@ -72,7 +72,9 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   const { nativeCurrency } = useAccountSettings();
   const chainId = useTokenLauncherStore(state => state.chainId);
   const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
-  const setHasSufficientEthForTransactionGas = useTokenLauncherStore(state => state.setHasSufficientEthForGas);
+  const setHasSufficientChainNativeAssetForTransactionGas = useTokenLauncherStore(
+    state => state.setHasSufficientChainNativeAssetForTransactionGas
+  );
 
   const gasSettings = useGasSettings(chainId, gasSpeed);
 
@@ -117,7 +119,7 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
     };
   }, [colors, imageDerivedColor, isDarkMode]);
 
-  const ethRequiredForTransactionGas = useMemo(() => {
+  const chainNativeAssetRequiredForTransactionGas = useMemo(() => {
     if (!gasSettings) return '0';
 
     const gasLimit = estimateLaunchTransactionGasLimit({
@@ -135,9 +137,9 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
     const userNativeAsset = userAssetsStore.getState().getNativeAssetForChain(chainId);
     const userBalance = userNativeAsset?.balance?.amount || '0';
 
-    const hasSufficientEthForTransactionGas = lessThanOrEqualToWorklet(ethRequiredForTransactionGas, userBalance);
-    setHasSufficientEthForTransactionGas(hasSufficientEthForTransactionGas);
-  }, [chainId, ethRequiredForTransactionGas, setHasSufficientEthForTransactionGas]);
+    const hasSufficientChainNativeAssetForTransactionGas = lessThanOrEqualToWorklet(chainNativeAssetRequiredForTransactionGas, userBalance);
+    setHasSufficientChainNativeAssetForTransactionGas(hasSufficientChainNativeAssetForTransactionGas);
+  }, [chainId, chainNativeAssetRequiredForTransactionGas, setHasSufficientChainNativeAssetForTransactionGas]);
 
   // TODO: We need eth price in both USD and the user's native currency. We need USD because the target price is USD.
   // We need the native currency for display. Is there a better way to do this then calling two separate fetches?
@@ -184,7 +186,7 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   }, [ethPriceNative, ethPriceUsd, setEthPriceNative, setEthPriceUsd]);
 
   return (
-    <TokenLauncherContext.Provider value={{ accentColors, ethRequiredForTransactionGas, tokenSkiaImage }}>
+    <TokenLauncherContext.Provider value={{ accentColors, chainNativeAssetRequiredForTransactionGas, tokenSkiaImage }}>
       {children}
     </TokenLauncherContext.Provider>
   );
