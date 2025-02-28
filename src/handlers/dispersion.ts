@@ -2,9 +2,10 @@ import { RainbowFetchClient } from '../rainbow-fetch';
 import { EthereumAddress, IndexToken, RainbowToken } from '@/entities';
 import UniswapAssetsCache from '@/utils/uniswapAssetsCache';
 import { logger, RainbowError } from '@/logger';
+import { METADATA_BASE_URL } from 'react-native-dotenv';
 
 const dispersionApi = new RainbowFetchClient({
-  baseURL: 'https://metadata.p.rainbow.me',
+  baseURL: METADATA_BASE_URL,
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
