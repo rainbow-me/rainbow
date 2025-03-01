@@ -483,7 +483,8 @@
         "a_network": "a network",
         "swap_failed": "Swap Failed",
         "receive": "Receive",
-        "on": "on"
+        "on": "on",
+        "reset": "Reset"
       }
     },
     "cloud": {
@@ -3140,7 +3141,7 @@
         }
       }
     },
-    "network_switcher": {
+    "network_selector": {
       "customize_networks_banner": {
         "title": "Customize Networks",
         "tap_the": "Tap the",
