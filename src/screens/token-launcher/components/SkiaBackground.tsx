@@ -5,8 +5,10 @@ import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Extrapolation, interpolate, useDerivedValue } from 'react-native-reanimated';
+import { useForegroundColor } from '@/design-system';
 
 export const SkiaBackground = memo(function SkiaBackground({ width, height }: { width: number; height: number }) {
+  const separatorSecondaryColor = useForegroundColor('separatorSecondary');
   const { accentColors } = useTokenLauncherContext();
   const shadowColor = accentColors.opacity20;
 
@@ -49,7 +51,7 @@ export const SkiaBackground = memo(function SkiaBackground({ width, height }: { 
 
       <Fill opacity={dimOverlayOpacity} color="rgba(26, 26, 26, 0.75)" />
 
-      <Box box={roundedRect} strokeWidth={THICK_BORDER_WIDTH * 2} style="stroke" color={'rgba(245, 248, 255, 0.06)'} />
+      <Box box={roundedRect} strokeWidth={THICK_BORDER_WIDTH * 2} style="stroke" color={separatorSecondaryColor} />
 
       <Group opacity={reviewAndCreatingStepEffectsOpacity}>
         <Box box={roundedRect}>

@@ -65,7 +65,7 @@ function TokenLauncherScreenContent() {
         <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={FOOTER_HEIGHT} style={{ flex: 1 }}>
           <Box
             borderWidth={THICK_BORDER_WIDTH}
-            borderColor={{ custom: 'rgba(245, 248, 255, 0.06)' }}
+            borderColor={'separatorSecondary'}
             background="surfacePrimary"
             borderRadius={42}
             style={{ maxHeight: contentContainerHeight }}

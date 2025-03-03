@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Bleed, Box, Text, useForegroundColor } from '@/design-system';
+import { Bleed, Box, Text, useForegroundColor, Separator } from '@/design-system';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FOOTER_HEIGHT } from './TokenLauncherFooter';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT } from './TokenLauncherHeader';
@@ -76,7 +76,7 @@ function NameInput() {
 function RequiredInfoSection() {
   const labelQuaternary = useForegroundColor('labelQuaternary');
   return (
-    <Box paddingTop={'20px'} gap={16} width="full">
+    <Box paddingVertical={'20px'} gap={16} width="full">
       <Box flexDirection="row" alignItems="center" gap={10}>
         <Icon name="asterisk" color={labelQuaternary} size={10} />
         <Text color="labelQuaternary" size="13pt" weight="heavy">
@@ -95,7 +95,7 @@ function RequiredInfoSection() {
 
 function AboutSection() {
   return (
-    <Box gap={16}>
+    <Box gap={16} paddingVertical={'20px'}>
       <Box paddingHorizontal={'20px'}>
         <Text color="labelQuaternary" size="13pt" weight="heavy">
           {'ABOUT'}
@@ -109,12 +109,10 @@ function AboutSection() {
   );
 }
 
-function Separator() {
+function SectionSeparator() {
   return (
     <Bleed horizontal={'20px'}>
-      <Box paddingVertical={'20px'} justifyContent="center" alignItems="center">
-        <Box height={1} width="full" backgroundColor="rgba(245, 248, 255, 0.06)" />
-      </Box>
+      <Separator direction="horizontal" thickness={1} color={'separatorSecondary'} />
     </Bleed>
   );
 }
@@ -141,11 +139,11 @@ export function InfoInputStep() {
         </Box>
         <RequiredInfoSection />
         <Animated.View style={{ width: '100%' }} layout={COLLAPSABLE_FIELD_ANIMATION}>
-          <Separator />
+          <SectionSeparator />
           <AboutSection />
         </Animated.View>
         <Animated.View style={{ width: '100%' }} layout={COLLAPSABLE_FIELD_ANIMATION}>
-          <Separator />
+          <SectionSeparator />
           <TokenAllocationSection />
         </Animated.View>
       </Box>

@@ -22,9 +22,13 @@ export function AllocationBreakdown() {
           {'START PRICE'}
         </Text>
       </Box>
-      <Separator color={{ custom: accentColors.opacity3 }} />
+      <Separator color={'separatorSecondary'} />
       <Inline
-        separator={<Box height={16} width={2} backgroundColor={'rgba(245, 248, 255, 0.06)'} style={{ alignSelf: 'center' }} />}
+        separator={
+          <Box height={16} style={{ alignSelf: 'center' }}>
+            <Separator direction="vertical" color={'separatorSecondary'} />
+          </Box>
+        }
         wrap={false}
       >
         <Box gap={12} width={'1/2'} justifyContent="center" alignItems="center">
