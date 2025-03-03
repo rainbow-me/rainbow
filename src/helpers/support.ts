@@ -4,8 +4,8 @@ import { debounce } from 'lodash';
 import Mailer from 'react-native-mail';
 import { Alert } from '../components/alerts';
 import * as i18n from '@/languages';
-import { Linking } from 'react-native';
-// import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/Routes';
 const SupportEmailAddress = 'support@rainbow.me';
 
 // this whole file
@@ -30,11 +30,8 @@ const SupportErrorAlert = () =>
 
 const handleMailError = debounce(error => (error ? SupportErrorAlert() : null), 250);
 
-// openInBrowser - rule of hooks issue (Alert usage)
-// const openInBrowser = useOpenInBrowser();
-
-// const openLearnMorePage = () => openInBrowser('https://support.rainbow.me/en/articles/7975958-an-error-occurred');
-const openLearnMorePage = () => Linking.openURL('https://support.rainbow.me/en/articles/7975958-an-error-occurred');
+const openLearnMorePage = () =>
+  Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url: 'https://support.rainbow.me/en/articles/7975958-an-error-occurred' });
 
 const messageSupport = () => Mailer.mail(supportEmailOptions, handleMailError);
 

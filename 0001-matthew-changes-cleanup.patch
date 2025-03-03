@@ -1,0 +1,361 @@
+From 9a0996c0b14f5d58f499886315b377684e79f5f2 Mon Sep 17 00:00:00 2001
+From: BrodyHughes <41711440+BrodyHughes@users.noreply.github.com>
+Date: Mon, 3 Mar 2025 13:50:46 -0600
+Subject: [PATCH] matthew changes + cleanup
+
+---
+ .../DappBrowser/hooks/useWebViewHandlers.ts   |  2 +-
+ src/helpers/support.ts                        | 11 +--
+ src/hooks/useOpenInBrowser.ts                 |  6 +-
+ src/model/backup.ts                           |  6 +-
+ src/screens/ExplainSheet.js                   | 80 ++++++-------------
+ src/screens/WelcomeScreen/index.tsx           |  2 +-
+ src/utils/bluetoothPermissions.ts             |  2 +-
+ src/utils/ethereumUtils.ts                    | 18 ++---
+ 8 files changed, 40 insertions(+), 87 deletions(-)
+
+diff --git a/src/components/DappBrowser/hooks/useWebViewHandlers.ts b/src/components/DappBrowser/hooks/useWebViewHandlers.ts
+index 4e1c1eaf3..2d85cd71a 100644
+--- a/src/components/DappBrowser/hooks/useWebViewHandlers.ts
++++ b/src/components/DappBrowser/hooks/useWebViewHandlers.ts
+@@ -181,7 +181,7 @@ export function useWebViewHandlers({
+       const { targetUrl } = nativeEvent;
+ 
+       if (isValidAppStoreUrl(targetUrl)) {
+-        // Want to use Linking here - opens in appstore
++        // External link
+         Linking.openURL(targetUrl);
+         return;
+       }
+diff --git a/src/helpers/support.ts b/src/helpers/support.ts
+index e4da3201f..8d40b0d60 100644
+--- a/src/helpers/support.ts
++++ b/src/helpers/support.ts
+@@ -4,8 +4,8 @@ import { debounce } from 'lodash';
+ import Mailer from 'react-native-mail';
+ import { Alert } from '../components/alerts';
+ import * as i18n from '@/languages';
+-import { Linking } from 'react-native';
+-// import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
++import { Navigation } from '@/navigation';
++import Routes from '@/navigation/Routes';
+ const SupportEmailAddress = 'support@rainbow.me';
+ 
+ // this whole file
+@@ -30,11 +30,8 @@ const SupportErrorAlert = () =>
+ 
+ const handleMailError = debounce(error => (error ? SupportErrorAlert() : null), 250);
+ 
+-// openInBrowser - rule of hooks issue (Alert usage)
+-// const openInBrowser = useOpenInBrowser();
+-
+-// const openLearnMorePage = () => openInBrowser('https://support.rainbow.me/en/articles/7975958-an-error-occurred');
+-const openLearnMorePage = () => Linking.openURL('https://support.rainbow.me/en/articles/7975958-an-error-occurred');
++const openLearnMorePage = () =>
++  Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url: 'https://support.rainbow.me/en/articles/7975958-an-error-occurred' });
+ 
+ const messageSupport = () => Mailer.mail(supportEmailOptions, handleMailError);
+ 
+diff --git a/src/hooks/useOpenInBrowser.ts b/src/hooks/useOpenInBrowser.ts
+index 5bb6f204c..41b867da7 100644
+--- a/src/hooks/useOpenInBrowser.ts
++++ b/src/hooks/useOpenInBrowser.ts
+@@ -1,10 +1,8 @@
+-import { useNavigation } from '@/navigation';
++import { Navigation } from '@/navigation';
+ import Routes from '@/navigation/routesNames';
+ 
+ export function useOpenInBrowser() {
+-  const { navigate } = useNavigation();
+-
+   return (url: string) => {
+-    navigate(Routes.DAPP_BROWSER_SCREEN, { url });
++    Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url });
+   };
+ }
+diff --git a/src/model/backup.ts b/src/model/backup.ts
+index c5d05cdc5..12bd30f83 100644
+--- a/src/model/backup.ts
++++ b/src/model/backup.ts
+@@ -1,5 +1,5 @@
+ import AsyncStorage from '@react-native-async-storage/async-storage';
+-import { NativeModules, Linking } from 'react-native';
++import { NativeModules } from 'react-native';
+ import { captureException } from '@sentry/react-native';
+ import { endsWith } from 'lodash';
+ import {
+@@ -35,7 +35,6 @@ import { getRemoteConfig } from './remoteConfig';
+ import { WrappedAlert as Alert } from '@/helpers/alert';
+ import { AppDispatch } from '@/redux/store';
+ import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+-// import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+ 
+ const { DeviceUUID } = NativeModules;
+ const encryptor = new AesEncryptor();
+@@ -101,7 +100,6 @@ type MaybePromise<T> = T | Promise<T>;
+ 
+ export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }: { fn: () => MaybePromise<T>; logout?: boolean }) => {
+   backupsStore.getState().setStatus(CloudBackupState.InProgress);
+-  // openInBrowser - rule of hooks issue (Alert usage)
+ 
+   if (IS_ANDROID) {
+     try {
+@@ -142,7 +140,7 @@ export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }:
+         [
+           {
+             onPress: () => {
+-              Linking.openURL('https://support.apple.com/en-us/HT204025');
++              Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url: 'https://support.apple.com/en-us/HT204025' });
+             },
+             text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
+           },
+diff --git a/src/screens/ExplainSheet.js b/src/screens/ExplainSheet.js
+index b25c3b20d..104963f21 100644
+--- a/src/screens/ExplainSheet.js
++++ b/src/screens/ExplainSheet.js
+@@ -2,7 +2,6 @@
+ import { useRoute } from '@react-navigation/native';
+ import * as lang from '@/languages';
+ import React, { useCallback, useMemo } from 'react';
+-import { Linking } from 'react-native';
+ import { useSafeAreaInsets } from 'react-native-safe-area-context';
+ import { ChainImage } from '@/components/coin-icon/ChainImage';
+ import { Centered, Column, ColumnWithMargins, Row, RowWithMargins } from '../components/layout';
+@@ -21,7 +20,8 @@ import { useTheme } from '@/theme';
+ import { IS_ANDROID } from '@/env';
+ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+-// import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
++import { Navigation } from '@/navigation';
++import Routes from '@/navigation/routesNames';
+ 
+ const { GAS_TRENDS } = gasUtils;
+ export const ExplainSheetHeight = android ? 454 : 434;
+@@ -170,8 +170,6 @@ export const explainers = (params, theme) => {
+   const toChainId = params?.toChainId;
+ 
+   const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
+-  // openInBrowser - rule of hooks issue
+-  // const openInBrowser = useOpenInBrowser();
+ 
+   return {
+     op_rewards_airdrop_timing: {
+@@ -437,22 +435,14 @@ export const explainers = (params, theme) => {
+           <Text
+             color={colors?.appleBlue}
+             onPress={() =>
+-              // openInBrowser(
+-              //   buildRainbowLearnUrl({
+-              //     url: 'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing',
+-              //     query: {
+-              //       campaign: 'explain',
+-              //     },
+-              //   })
+-              // )
+-              Linking.openURL(
+-                buildRainbowLearnUrl({
++              Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, {
++                url: buildRainbowLearnUrl({
+                   url: 'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing',
+                   query: {
+                     campaign: 'explain',
+                   },
+-                })
+-              )
++                }),
++              })
+             }
+             size="large"
+             suppressHighlighting
+@@ -485,22 +475,14 @@ export const explainers = (params, theme) => {
+           <Text
+             color={colors?.appleBlue}
+             onPress={() =>
+-              // openInBrowser(
+-              //   buildRainbowLearnUrl({
+-              //     url: 'https://support.rainbow.me/en/articles/8324868-fee-on-transfer-tokens',
+-              //     query: {
+-              //       campaign: 'explain',
+-              //     },
+-              //   })
+-              // )
+-              Linking.openURL(
+-                buildRainbowLearnUrl({
++              Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, {
++                url: buildRainbowLearnUrl({
+                   url: 'https://support.rainbow.me/en/articles/8324868-fee-on-transfer-tokens',
+                   query: {
+                     campaign: 'explain',
+                   },
+-                })
+-              )
++                }),
++              })
+             }
+             size="large"
+             suppressHighlighting
+@@ -627,22 +609,14 @@ export const explainers = (params, theme) => {
+           <Text
+             color={colors?.appleBlue}
+             onPress={() =>
+-              // openInBrowser(
+-              //   buildRainbowLearnUrl({
+-              //     url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
+-              //     query: {
+-              //       campaign: 'explain',
+-              //     },
+-              //   })
+-              // )
+-              Linking.openURL(
+-                buildRainbowLearnUrl({
++              Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, {
++                url: buildRainbowLearnUrl({
+                   url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
+                   query: {
+                     campaign: 'explain',
+                   },
+-                })
+-              )
++                }),
++              })
+             }
+             size="large"
+             suppressHighlighting
+@@ -669,22 +643,14 @@ export const explainers = (params, theme) => {
+           <Text
+             color={colors?.appleBlue}
+             onPress={() =>
+-              // openInBrowser(
+-              //   buildRainbowLearnUrl({
+-              //     url: 'https://learn.rainbow.me/swap-with-confidence-with-rainbow',
+-              //     query: {
+-              //       campaign: 'explain',
+-              //     },
+-              //   })
+-              // )
+-              Linking.openURL(
+-                buildRainbowLearnUrl({
++              Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, {
++                url: buildRainbowLearnUrl({
+                   url: 'https://learn.rainbow.me/swap-with-confidence-with-rainbow',
+                   query: {
+                     campaign: 'explain',
+                   },
+-                })
+-              )
++                }),
++              })
+             }
+             size="large"
+             suppressHighlighting
+@@ -706,8 +672,11 @@ export const explainers = (params, theme) => {
+           {lang.t('explain.slippage.still_curious.fragment1')}
+           <Text
+             color={colors?.appleBlue}
+-            // onPress={() => openInBrowser('https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges')}
+-            onPress={() => Linking.openURL('https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges')}
++            onPress={() =>
++              Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, {
++                url: 'https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges',
++              })
++            }
+             size="large"
+             suppressHighlighting
+             weight="semibold"
+@@ -756,8 +725,7 @@ const ExplainSheet = () => {
+   }, [goBack, params]);
+ 
+   const handleReadMore = useCallback(() => {
+-    // explainSheetConfig?.readMoreLink && openInBrowser(explainSheetConfig.readMoreLink);
+-    explainSheetConfig?.readMoreLink && Linking.openURL(explainSheetConfig.readMoreLink);
++    explainSheetConfig?.readMoreLink && Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url: explainSheetConfig.readMoreLink });
+   }, [explainSheetConfig?.readMoreLink]);
+ 
+   const EmojiText = type === 'verified' ? Gradient : Emoji;
+diff --git a/src/screens/WelcomeScreen/index.tsx b/src/screens/WelcomeScreen/index.tsx
+index bdce5a0d8..7edbea3b3 100644
+--- a/src/screens/WelcomeScreen/index.tsx
++++ b/src/screens/WelcomeScreen/index.tsx
+@@ -187,7 +187,7 @@ export default function WelcomeScreen() {
+   }, [dangerouslyGetState, navigate, replace]);
+ 
+   const handlePressTerms = useCallback(() => {
+-    // Want to use Linking here - browser isn't mounted yet
++    // External link
+     Linking.openURL('https://rainbow.me/terms-of-use');
+   }, []);
+ 
+diff --git a/src/utils/bluetoothPermissions.ts b/src/utils/bluetoothPermissions.ts
+index 23b821b7d..04de6a81c 100644
+--- a/src/utils/bluetoothPermissions.ts
++++ b/src/utils/bluetoothPermissions.ts
+@@ -15,7 +15,7 @@ import {
+  * Shows an alert if device's bluetooth is powered off
+  */
+ export const showBluetoothPoweredOffAlert = async () => {
+-  // Need to use Linking here - Phone permissions asked for in an alert
++  // External link
+   Alert.alert(i18n.t(i18n.l.bluetooth.powered_off_alert.title), i18n.t(i18n.l.bluetooth.powered_off_alert.message), [
+     {
+       onPress: () => {
+diff --git a/src/utils/ethereumUtils.ts b/src/utils/ethereumUtils.ts
+index b8f4d23a8..7cb6721de 100644
+--- a/src/utils/ethereumUtils.ts
++++ b/src/utils/ethereumUtils.ts
+@@ -9,7 +9,7 @@ import { addHexPrefix, isValidAddress, toChecksumAddress } from 'ethereumjs-util
+ import { Contract } from '@ethersproject/contracts';
+ import lang from 'i18n-js';
+ import { cloneDeep, isEmpty, isString, replace } from 'lodash';
+-import { InteractionManager, Linking } from 'react-native';
++import { InteractionManager } from 'react-native';
+ import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
+ import { WrappedAlert as Alert } from '@/helpers/alert';
+ import {
+@@ -41,10 +41,6 @@ import { ChainId, Network } from '@/state/backendNetworks/types';
+ import { AddressOrEth } from '@/__swaps__/types/assets';
+ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+ import { userAssetsStore } from '@/state/assets/userAssets';
+-// import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+-
+-// openInBrowser - rule of hooks issue - need to refactor here
+-// const openInBrowser = useOpenInBrowser();
+ 
+ /**
+  * @deprecated - use `getUniqueId` instead for chainIds
+@@ -363,29 +359,25 @@ function getBlockExplorer({ chainId }: { chainId: ChainId }) {
+ 
+ function openAddressInBlockExplorer({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
+   const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
+-  // openInBrowser(`${explorer}/address/${address}`);
+-  Linking.openURL(`${explorer}/address/${address}`);
++  Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url: `${explorer}/address/${address}` });
+ }
+ 
+ function openTokenEtherscanURL({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
+   if (!isString(address)) return;
+   const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
+-  // openInBrowser(`${explorer}/token/${address}`);
+-  Linking.openURL(`${explorer}/token/${address}`);
++  Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url: `${explorer}/token/${address}` });
+ }
+ 
+ function openNftInBlockExplorer({ contractAddress, tokenId, chainId }: { contractAddress: string; tokenId: string; chainId: ChainId }) {
+   const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
+-  // openInBrowser(`${explorer}/token/${contractAddress}?a=${tokenId}`);
+-  Linking.openURL(`${explorer}/token/${contractAddress}?a=${tokenId}`);
++  Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url: `${explorer}/token/${contractAddress}?a=${tokenId}` });
+ }
+ 
+ function openTransactionInBlockExplorer({ hash, chainId }: { hash: string; chainId: ChainId }) {
+   const normalizedHash = hash.replace(/-.*/g, '');
+   if (!isString(hash)) return;
+   const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
+-  // openInBrowser(`${explorer}/tx/${normalizedHash}`);
+-  Linking.openURL(`${explorer}/tx/${normalizedHash}`);
++  Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url: `${explorer}/tx/${normalizedHash}` });
+ }
+ 
+ async function parseEthereumUrl(data: string) {
+-- 
+2.39.5 (Apple Git-154)
+

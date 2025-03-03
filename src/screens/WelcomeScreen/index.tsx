@@ -187,7 +187,7 @@ export default function WelcomeScreen() {
   }, [dangerouslyGetState, navigate, replace]);
 
   const handlePressTerms = useCallback(() => {
-    // Want to use Linking here - browser isn't mounted yet
+    // External link
     Linking.openURL('https://rainbow.me/terms-of-use');
   }, []);
 

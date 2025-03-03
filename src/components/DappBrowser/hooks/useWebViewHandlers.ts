@@ -181,7 +181,7 @@ export function useWebViewHandlers({
       const { targetUrl } = nativeEvent;
 
       if (isValidAppStoreUrl(targetUrl)) {
-        // Want to use Linking here - opens in appstore
+        // External link
         Linking.openURL(targetUrl);
         return;
       }
