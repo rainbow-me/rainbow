@@ -38,6 +38,7 @@ import { addDefaultNotificationGroupSettings } from '@/notifications/settings/in
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import FastImage from 'react-native-fast-image';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
+import { analyzeEnvVariables } from '@/utils/analyzeEnvVariables';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -263,6 +264,12 @@ const DevSection = () => {
               onPress={() => Restart.Restart()}
               size={52}
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.restart_app')} />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🔍" isEmoji />}
+              onPress={analyzeEnvVariables}
+              size={52}
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.analyze_env_variables')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🔦" isEmoji />}

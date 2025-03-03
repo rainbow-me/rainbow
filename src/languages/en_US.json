@@ -516,6 +516,7 @@
     "developer_settings": {
       "alert": "Alert",
       "analyze_react_query": "Analyze React Query",
+      "analyze_env_variables": "Analyze ENV Variables",
       "applied": "APPLIED",
       "backups_deleted_successfully": "Backups Deleted Successfully",
       "clear_async_storage": "Clear AsyncStorage",
