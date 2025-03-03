@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Box, Text, TextIcon } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useUploadToCloudinary } from '../hooks/useUploadToCloudinary';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { Canvas, Image, Shadow, RoundedRect } from '@shopify/react-native-skia';
+import { Canvas, Image, Shadow, RoundedRect, rrect, rect, Box as SkBox, Group } from '@shopify/react-native-skia';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { Extrapolation, interpolate, useDerivedValue } from 'react-native-reanimated';
 
 const SIZE = 112;
 
@@ -16,40 +17,62 @@ export function TokenLogo() {
   const imageUri = useTokenLauncherStore(state => state.imageUri);
   const setImageUri = useTokenLauncherStore(state => state.setImageUri);
   const setImageUrl = useTokenLauncherStore(state => state.setImageUrl);
+  const stepIndex = useTokenLauncherStore(state => state.stepIndex);
 
   // TODO: show loading UI if takes longer than 2 seconds
   const { upload, isUploading, error } = useUploadToCloudinary();
 
+  const dropShadowsOpacity = useDerivedValue(() => {
+    return interpolate(stepIndex.value, [0, 1], [0, 1], Extrapolation.CLAMP);
+  });
+
+  const onPress = useCallback(async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (result.assets && result.assets.length > 0) {
+      const uri = result.assets[0].uri;
+      setImageUri(uri);
+      const url = await upload(uri);
+      if (url) {
+        setImageUrl(url);
+      } else {
+        // TODO: log & show error
+      }
+    }
+  }, [setImageUri, setImageUrl, upload]);
+
+  const roundedRect = useMemo(() => {
+    return rrect(rect(0, 0, SIZE, SIZE), SIZE / 2, SIZE / 2);
+  }, []);
+
+  // Skia canvas does not support shadow overflow, so we need to add a buffer of the largest shadow offset
+  const shadowOverflowBuffer = 30;
+
   return (
     <Box justifyContent="center" alignItems="center">
-      <ButtonPressAnimation
-        onPress={async () => {
-          const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
-          });
-
-          if (result.assets && result.assets.length > 0) {
-            const uri = result.assets[0].uri;
-            setImageUri(uri);
-            const url = await upload(uri);
-            if (url) {
-              setImageUrl(url);
-            } else {
-              // TODO: log & show error
-            }
-          }
-        }}
-      >
-        <Box width={SIZE} height={SIZE} borderRadius={SIZE / 2} justifyContent="center" alignItems="center">
+      <ButtonPressAnimation onPress={onPress}>
+        <Box width={SIZE} height={SIZE} justifyContent="center" alignItems="center">
           {tokenAnimatedSkiaImage && imageUri && (
-            <Canvas style={{ width: SIZE, height: SIZE }}>
-              <Image x={0} y={0} width={SIZE} height={SIZE} image={tokenAnimatedSkiaImage} fit="cover"></Image>
-              <RoundedRect x={0} y={0} width={SIZE} height={SIZE} r={SIZE / 2}>
-                <Shadow dx={0} dy={-1.41} blur={2.81} color={'rgba(0, 0, 0, 0.4)'} inner shadowOnly />
-              </RoundedRect>
+            <Canvas style={{ width: SIZE + shadowOverflowBuffer, height: SIZE + shadowOverflowBuffer }}>
+              <Group transform={[{ translateX: shadowOverflowBuffer / 2 }, { translateY: shadowOverflowBuffer / 2 }]}>
+                <SkBox opacity={dropShadowsOpacity} box={roundedRect}>
+                  <Shadow dx={0} dy={4} blur={6} color={accentColors.opacity30} />
+                  <Shadow dx={0} dy={30} blur={17} color={'rgba(37, 41, 46, 0.2)'} />
+                  <Shadow dx={0} dy={0} blur={10} color={accentColors.opacity12} />
+                </SkBox>
+                <Image clip={roundedRect} x={0} y={0} width={SIZE} height={SIZE} image={tokenAnimatedSkiaImage} fit="cover" />
+                <SkBox box={roundedRect}>
+                  <Shadow dx={0} dy={0.7} blur={3.52 / 2} color={'rgba(255, 255, 255, 1)'} inner shadowOnly />
+                </SkBox>
+                <SkBox box={roundedRect} blendMode={'darken'}>
+                  <Shadow dx={0} dy={-1.41} blur={2.81 / 2} color={'rgba(0, 0, 0, 0.4)'} inner shadowOnly />
+                </SkBox>
+              </Group>
             </Canvas>
           )}
           {!imageUri && (
