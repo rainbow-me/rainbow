@@ -13,6 +13,7 @@ export const FIELD_BORDER_WIDTH = 2.5;
 export const FIELD_BORDER_RADIUS = 28;
 export const FIELD_INNER_BORDER_RADIUS = 16;
 export const CLOUDINARY_TOKEN_LAUNCHER_PRESET = 'token_launcher';
+export const CLOUDINARY_TOKEN_LAUNCHER_PRESET_GIFS = 'token_launcher_gifs';
 export const DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR = BLUE;
 export const STEP_TRANSITION_DURATION = 200;
 export const INPUT_HEIGHT = 66;

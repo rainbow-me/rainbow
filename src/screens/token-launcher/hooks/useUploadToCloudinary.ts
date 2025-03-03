@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { uploadImageToCloudinary } from '../helpers/uploadToCloudinary';
-import { CLOUDINARY_TOKEN_LAUNCHER_PRESET } from '../constants';
 import { logger, RainbowError } from '@/logger';
 
 export function useUploadToCloudinary() {
@@ -10,8 +9,7 @@ export function useUploadToCloudinary() {
   const upload = async (uri: string) => {
     setIsUploading(true);
     try {
-      const url = await uploadImageToCloudinary(uri, CLOUDINARY_TOKEN_LAUNCHER_PRESET);
-      return url;
+      return await uploadImageToCloudinary(uri);
     } catch (e) {
       const error = e as Error;
       logger.error(new RainbowError('[useUploadToCloudinary]: uploadImageToCloudinary failed'), {
