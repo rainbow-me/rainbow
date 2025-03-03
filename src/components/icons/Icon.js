@@ -6,6 +6,7 @@ import ApplePayIcon from './svg/ApplePayIcon';
 import ArrowBackIcon from './svg/ArrowBack';
 import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
+import { Asterisk } from './svg/Asterisk';
 import AvatarIcon from './svg/AvatarIcon';
 import BTCIcon from './svg/BTCIcon';
 import BackspaceIcon from './svg/BackspaceIcon';
@@ -99,6 +100,7 @@ const IconTypes = {
   arrow: ArrowIcon,
   arrowBack: ArrowBackIcon,
   arrowCircled: ArrowCircledIcon,
+  asterisk: Asterisk,
   avatar: AvatarIcon,
   backspace: BackspaceIcon,
   bridge: BridgeIcon,
@@ -194,6 +196,7 @@ const IconTypes = {
 
 const Icon = ({ name, testID, ...props }, ref) => {
   const IconElement = IconTypes[name] || Flex;
+  // TODO: This should either be removed or add the useTheme hook import it currently does nothing
   const { colors } = useTheme();
   return <IconElement {...props} colors={colors} name={name} ref={ref} testID={testID} />;
 };

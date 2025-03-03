@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Bleed, Box, Text } from '@/design-system';
+import { Bleed, Box, Text, useForegroundColor } from '@/design-system';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FOOTER_HEIGHT } from './TokenLauncherFooter';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT } from './TokenLauncherHeader';
@@ -13,6 +13,7 @@ import { COLLAPSABLE_FIELD_ANIMATION, DEFAULT_TOTAL_SUPPLY } from '../constants'
 import { TokenAllocationSection } from './TokenAllocationSection';
 import Animated from 'react-native-reanimated';
 import { validateNameWorklet, validateSymbolWorklet, validateTotalSupplyWorklet } from '../helpers/inputValidators';
+import { Icon } from '@/components/icons';
 
 function TotalSupplyInput() {
   const setTotalSupply = useTokenLauncherStore(state => state.setTotalSupply);
@@ -73,11 +74,15 @@ function NameInput() {
 }
 
 function RequiredInfoSection() {
+  const labelQuaternary = useForegroundColor('labelQuaternary');
   return (
     <Box paddingTop={'20px'} gap={16} width="full">
-      <Text color="labelSecondary" size="13pt" weight="heavy">
-        {'Required Info'}
-      </Text>
+      <Box flexDirection="row" alignItems="center" gap={10}>
+        <Icon name="asterisk" color={labelQuaternary} size={10} />
+        <Text color="labelQuaternary" size="13pt" weight="heavy">
+          {'REQUIRED INFO'}
+        </Text>
+      </Box>
       <Box gap={8}>
         <SymbolInput />
         <NameInput />
@@ -91,9 +96,11 @@ function RequiredInfoSection() {
 function AboutSection() {
   return (
     <Box gap={16}>
-      <Text color="labelSecondary" size="13pt" weight="heavy">
-        {'About'}
-      </Text>
+      <Box paddingHorizontal={'20px'}>
+        <Text color="labelQuaternary" size="13pt" weight="heavy">
+          {'ABOUT'}
+        </Text>
+      </Box>
       <Box gap={8} width={'full'}>
         <DescriptionField />
         <LinksSection />
