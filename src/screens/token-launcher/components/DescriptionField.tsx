@@ -12,6 +12,8 @@ export function DescriptionField() {
       <SingleFieldInput
         multiline
         style={{
+          // required to override default height and allow the multiline input to grow
+          height: undefined,
           minHeight: 75,
           borderRadius: FIELD_INNER_BORDER_RADIUS,
           backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
