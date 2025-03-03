@@ -135,7 +135,7 @@
         "enable_cloud_backups": "Enable Cloud Backups",
         "mayber_later": "Maybe Later",
         "recommended_for_beginners": "Recommended for beginners.",
-        "choose_backup": "Choose the backup you’d like to restore",
+        "choose_backup": "Choose the backup you'd like to restore",
         "backup_to_cloud_now": "Back Up to %{cloudPlatformName} Now",
         "choose_backup_cloud_description": "Securely back up your wallet to %{cloudPlatform} so you can restore it if you lose your device or get a new one.",
         "choose_backup_manual_description": "Back up your wallet manually by saving your secret phrase in a secure location.",
@@ -229,7 +229,7 @@
       },
       "secret": {
         "anyone_who_has_these": "Anyone who has these words can access your entire wallet!",
-        "biometrically_secured": "Your account has been secured with biometric data, like fingerprint or face identification. To see your recovery phrase, turn on biometrics in your phone’s settings.",
+        "biometrically_secured": "Your account has been secured with biometric data, like fingerprint or face identification. To see your recovery phrase, turn on biometrics in your phone's settings.",
         "no_seed_phrase": "We couldn't retrieve your seed phrase. Please ensure you've properly authenticated using biometric data, such as your fingerprint or face identification, or entered your PIN code correctly.",
         "copy_to_clipboard": "Copy to Clipboard",
         "for_your_eyes_only": "For your eyes only",
@@ -387,7 +387,7 @@
           },
           "backups": {
             "title": "The Importance of Backups",
-            "description": "Keeping your wallet safe, secure, and backed up is essential to wallet ownership. Here we’ll chat about why it’s important to backup your wallet and the different methods that you can backup with."
+            "description": "Keeping your wallet safe, secure, and backed up is essential to wallet ownership. Here we'll chat about why it's important to backup your wallet and the different methods that you can backup with."
           },
           "crypto_and_wallets": {
             "title": "Crypto and Wallets",
@@ -509,13 +509,14 @@
       "watching": "Watching"
     },
     "deeplinks": {
-      "couldnt_recognize_url": "Uh oh! We couldn’t recognize this URL!",
+      "couldnt_recognize_url": "Uh oh! We couldn't recognize this URL!",
       "tried_to_use_android": "Tried to use Android bundle",
       "tried_to_use_ios": "Tried to use iOS bundle"
     },
     "developer_settings": {
       "alert": "Alert",
       "analyze_react_query": "Analyze React Query",
+      "analyze_env_variables": "Analyze ENV Variables",
       "applied": "APPLIED",
       "backups_deleted_successfully": "Backups Deleted Successfully",
       "clear_async_storage": "Clear AsyncStorage",
@@ -787,7 +788,7 @@
         "off": "Off",
         "price_impact": "Price impact",
         "price_row_per_token": "per",
-        "slippage_message": "This is a small market, so you’re getting a bad price. Try a smaller trade!",
+        "slippage_message": "This is a small market, so you're getting a bad price. Try a smaller trade!",
         "swapping_via": "Swapping via",
         "unicorn_one": "that unicorn one",
         "uniswap_v2": "Uniswap v2",
@@ -921,11 +922,11 @@
     },
     "explain": {
       "output_disabled": {
-        "text": "For %{fromNetwork}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
+        "text": "For %{fromNetwork}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you'd like to swap instead.",
         "title": "Enter %{inputToken} Instead",
         "title_crosschain": "Enter %{fromNetwork} %{inputToken} Instead",
-        "text_crosschain": "Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
-        "text_bridge": "Rainbow can't prepare a bridge based on the amount of %{outputToken} you'd like to receive at the %{toNetwork} destination. \n\n Try entering the amount of %{fromNetwork} %{inputToken} you’d like to bridge instead.",
+        "text_crosschain": "Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you'd like to swap instead.",
+        "text_bridge": "Rainbow can't prepare a bridge based on the amount of %{outputToken} you'd like to receive at the %{toNetwork} destination. \n\n Try entering the amount of %{fromNetwork} %{inputToken} you'd like to bridge instead.",
         "title_empty": "Choose a Token"
       },
       "available_networks": {
@@ -950,13 +951,13 @@
       "base_fee": {
         "text_falling": "\n\nFees are dropping right now!",
         "text_prefix": "The base fee is set by the Ethereum network and changes depending on how busy the network is.",
-        "text_rising": "\n\nFees are rising right now! It’s best to use a higher max base fee to avoid a stuck transaction.",
+        "text_rising": "\n\nFees are rising right now! It's best to use a higher max base fee to avoid a stuck transaction.",
         "text_stable": "\n\nNetwork traffic is stable right now. Have fun!",
-        "text_surging": "\n\nFees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop.",
+        "text_surging": "\n\nFees are unusually high right now! Unless your transaction is urgent, it's best to wait for fees to drop.",
         "title": "Current base fee"
       },
       "failed_walletconnect": {
-        "text": "Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again later or contact the site’s team for more details.",
+        "text": "Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again later or contact the site's team for more details.",
         "title": "Connection failed"
       },
       "failed_wc_invalid_methods": {
@@ -980,7 +981,7 @@
         "title": "%{networkName} network fee"
       },
       "max_base_fee": {
-        "text": "This is the maximum base fee you’re willing to pay for this transaction.\n\nSetting a higher max base fee prevents your transaction from getting stuck if fees rise.",
+        "text": "This is the maximum base fee you're willing to pay for this transaction.\n\nSetting a higher max base fee prevents your transaction from getting stuck if fees rise.",
         "title": "Max base fee"
       },
       "miner_tip": {
@@ -1044,7 +1045,7 @@
         "title": "What's Sanko?"
       },
       "zksync": {
-        "text": "ZKsync is a Layer 2 protocol designed to scale Ethereum using advanced zero-knowledge cryptographic proofs.\n\nIt enhances Ethereum’s throughput while maintaining decentralization and security, enabling faster and cheaper transactions.",
+        "text": "ZKsync is a Layer 2 protocol designed to scale Ethereum using advanced zero-knowledge cryptographic proofs.\n\nIt enhances Ethereum's throughput while maintaining decentralization and security, enabling faster and cheaper transactions.",
         "title": "What's Zksync?"
       },
       "zora": {
@@ -1087,13 +1088,13 @@
         "title": "Fee on Transfer Token"
       },
       "no_route_found": {
-        "fragment1": "We couldn’t find a route for this swap. ",
+        "fragment1": "We couldn't find a route for this swap. ",
         "fragment2": "A route may not exist for this swap, or the amount may be too small.",
         "title": "No routes found"
       },
       "no_quote": {
         "title": "No quote available",
-        "text": "We couldn’t find quotes for this swap. This could be because there isn’t enough liquidity to swap or problems with how the token is implemented."
+        "text": "We couldn't find quotes for this swap. This could be because there isn't enough liquidity to swap or problems with how the token is implemented."
       },
       "cross_chain_swap": {
         "title": "Expect Bridge Delays",
@@ -1103,7 +1104,7 @@
         "text": "Go to the Hop Bridge 􀮶"
       },
       "rainbow_fee": {
-        "text": "Rainbow takes a %{feePercentage} fee from swaps. It’s part of what enables us to give you the best Ethereum experience possible."
+        "text": "Rainbow takes a %{feePercentage} fee from swaps. It's part of what enables us to give you the best Ethereum experience possible."
       },
       "swap_routing": {
         "text": "By default, Rainbow chooses the cheapest route possible for your swap. If you prefer to specifically use either 0x or 1inch, you can do that too.",
@@ -1125,17 +1126,17 @@
       },
       "swap_refuel": {
         "title": "No %{networkName} %{gasToken} detected",
-        "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH from your wallet.",
+        "text": "You won't be able to use %{networkName} without %{networkName} %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH from your wallet.",
         "button": "Add $3 of %{networkName} %{gasToken}"
       },
       "swap_refuel_deduct": {
         "title": "No %{networkName} %{gasToken} detected",
-        "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH subtracted from this swap.",
+        "text": "You won't be able to use %{networkName} without %{networkName} %{gasToken}. We can seamlessly bundle it with this bridge using about $3 of ETH subtracted from this swap.",
         "button": "Adjust and add $3 of %{gasToken}"
       },
       "swap_refuel_notice": {
         "title": "No %{networkName} %{gasToken} detected",
-        "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. If you go through with this transaction, you won’t be able to swap, bridge or transfer your %{networkName} tokens without adding %{networkName} %{gasToken} to your wallet.",
+        "text": "You won't be able to use %{networkName} without %{networkName} %{gasToken}. If you go through with this transaction, you won't be able to swap, bridge or transfer your %{networkName} tokens without adding %{networkName} %{gasToken} to your wallet.",
         "button": "Proceed anyway"
       }
     },
@@ -1182,7 +1183,7 @@
       "tip_too_low_error": "Low · likely to fail",
       "alert_message_higher_miner_tip_needed": "Setting a higher miner tip is recommended to avoid issues.",
       "alert_message_higher_max_base_fee_needed": "Setting a higher max base fee is recommended to avoid issues.",
-      "alert_message_lower": "Double check that you entered the correct amount—you’re likely paying more than you need to!",
+      "alert_message_lower": "Double check that you entered the correct amount—you're likely paying more than you need to!",
       "alert_title_higher_max_base_fee_needed": "Low max base fee–transaction may get stuck!",
       "alert_title_higher_miner_tip_needed": "Low miner tip–transaction may get stuck!",
       "alert_title_lower_max_base_fee_needed": "High max base fee!",
@@ -1574,7 +1575,7 @@
         "current_value": "Current Value",
         "rainbow_users_have_earned": "Rainbow users have earned",
         "earn_eth_rewards": "Earn ETH Rewards",
-        "rewards_explainer": "Every week, the top weekly points earners will receive a portion of Rainbow’s onchain revenue. Collect points by swapping or transacting in Rainbow, using dapps, or referring friends.",
+        "rewards_explainer": "Every week, the top weekly points earners will receive a portion of Rainbow's onchain revenue. Collect points by swapping or transacting in Rainbow, using dapps, or referring friends.",
         "my_points": "My Points",
         "refer_friends": "Refer Friends",
         "try_again": "Try Again",
@@ -1680,9 +1681,9 @@
         "speed_up": "Speed Up",
         "suggestion": "Buy more years now to save on fees",
         "transaction_pending": "Transaction pending",
-        "transaction_pending_description": "You’ll be taken to the next step automatically when this transaction confirms on the blockchain",
+        "transaction_pending_description": "You'll be taken to the next step automatically when this transaction confirms on the blockchain",
         "wait_one_minute": "Wait for one minute",
-        "wait_one_minute_description": "This waiting period ensures that another person can’t register this name before you do"
+        "wait_one_minute_description": "This waiting period ensures that another person can't register this name before you do"
       },
       "create": {
         "add_cover": "Add Cover",
@@ -1839,7 +1840,7 @@
         "secondary_button": "Not Now",
         "info_row_1": {
           "title": "For all your wallet activity",
-          "description": "Get notified about activity in your wallets or wallets you’re watching."
+          "description": "Get notified about activity in your wallets or wallets you're watching."
         },
         "info_row_2": {
           "title": "Lightning fast",
@@ -1906,7 +1907,7 @@
       "bridged": "Bridged",
       "position": "Position",
       "leaderboard": "Leaderboard",
-      "leaderboard_data_refresh_notice": "Updates periodically throughout the day. Check back soon if your recent activity isn’t reflected.",
+      "leaderboard_data_refresh_notice": "Updates periodically throughout the day. Check back soon if your recent activity isn't reflected.",
       "program_paused": "\uDBC0\uDE97 Paused",
       "program_paused_description": "The contest is currently paused and will resume again soon. Check back later for updates.",
       "program_finished": "\uDBC1\uDF2A Ended",
@@ -1932,7 +1933,7 @@
       "op": {
         "airdrop_timing": {
           "title": "Airdrops Every Month",
-          "text": "Swap on Optimism or bridge to Optimism to earn OP rewards. At the end of each month, the rewards you’ve earned will be airdropped to your wallet."
+          "text": "Swap on Optimism or bridge to Optimism to earn OP rewards. At the end of each month, the rewards you've earned will be airdropped to your wallet."
         },
         "amount_distributed": {
           "title": "67,850 OP Every Week",
@@ -1940,15 +1941,15 @@
         },
         "bridge": {
           "title": "Earn %{percent}% on Bridging",
-          "text": "While rewards are live, bridging verified tokens to Optimism will earn you approximately %{percent}% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent bridging reflected here."
+          "text": "While rewards are live, bridging verified tokens to Optimism will earn you approximately %{percent}% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don't see your recent bridging reflected here."
         },
         "swap": {
           "title": "Earn %{percent}% on Swaps",
-          "text": "While rewards are live, swapping verified tokens on Optimism will earn you approximately %{percent}% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don’t see your recent swaps reflected here."
+          "text": "While rewards are live, swapping verified tokens on Optimism will earn you approximately %{percent}% back in OP.\n\nStats update periodically throughout the day. Check back soon if you don't see your recent swaps reflected here."
         },
         "position": {
           "title": "Leaderboard Position",
-          "text": "The more OP you earn by swapping and bridging, the higher you’ll climb on the leaderboard. If you’re in the top 100 at the end of the contest, you’ll get bonus rewards of up to 8,000 OP."
+          "text": "The more OP you earn by swapping and bridging, the higher you'll climb on the leaderboard. If you're in the top 100 at the end of the contest, you'll get bonus rewards of up to 8,000 OP."
         }
       }
     },
@@ -2175,7 +2176,7 @@
           "title": "Invalid Gas Price"
         },
         "too_high": {
-          "message": "Double check that you entered the correct amount—you’re likely paying more than you need to!",
+          "message": "Double check that you entered the correct amount—you're likely paying more than you need to!",
           "title": "High gas price!"
         },
         "too_low": {
@@ -2533,8 +2534,8 @@
         "purchasing_dai_requires_eth_title": "You don't have any ETH!",
         "running_checks": "Running checks...",
         "success_message": "It's here 🥳",
-        "watching_mode_confirm_message": "The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to %{truncatedAddress}?",
-        "watching_mode_confirm_title": "You’re in Watching Mode"
+        "watching_mode_confirm_message": "The wallet you have open is read-only, so you can't control what's inside. Are you sure you want to add cash to %{truncatedAddress}?",
+        "watching_mode_confirm_title": "You're in Watching Mode"
       },
       "add_cash_v2": {
         "sheet_title": "Choose a payment option to buy crypto",
@@ -2710,7 +2711,7 @@
       "new": {
         "choose_wallet_group": {
           "title": "Choose Wallet Group",
-          "description": "Choose the wallet group you’d like to create a new wallet within, or create a new one."
+          "description": "Choose the wallet group you'd like to create a new wallet within, or create a new one."
         },
         "new_wallet_group": {
           "title": "New Wallet Group",
@@ -2780,7 +2781,7 @@
         "get_new_wallet": "Get a new wallet",
         "import_wallet": "Import Wallet",
         "name_wallet": "Name your wallet",
-        "terms": "By proceeding, you agree to Rainbow’s ",
+        "terms": "By proceeding, you agree to Rainbow's ",
         "terms_link": "Terms of Use"
       },
       "pin_authentication": {
@@ -2838,14 +2839,14 @@
           "speed_up_title": "Speed up transaction",
           "cancel_tx_title": "Cancel transaction",
           "speed_up_text": "This will attempt to cancel your pending transaction. It requires broadcasting another transaction!",
-          "cancel_tx_text": "This will speed up your pending transaction by replacing it. There’s still a chance your original transaction will confirm first!"
+          "cancel_tx_text": "This will speed up your pending transaction by replacing it. There's still a chance your original transaction will confirm first!"
         },
         "checkboxes": {
           "clear_profile_information": "Clear profile information",
-          "point_name_to_recipient": "Point this name to the recipient’s wallet address",
+          "point_name_to_recipient": "Point this name to the recipient's wallet address",
           "transfer_control": "Transfer control to the recipient",
-          "has_a_wallet_that_supports": "The address I’m sending to supports %{networkName}",
-          "im_not_sending_to_an_exchange": "I’m not sending to an exchange"
+          "has_a_wallet_that_supports": "The address I'm sending to supports %{networkName}",
+          "im_not_sending_to_an_exchange": "I'm not sending to an exchange"
         },
         "errors": {
           "unpredictable_gas": "Oh no! We were unable to estimate the gas limit. Please try again.",
@@ -2932,7 +2933,7 @@
         "signin_prompt": "Do you want to sign into %{name} with your wallet?",
         "signin_with": "Sign in with",
         "signin_button": "Continue",
-        "signin_notice": "By continuing, you’ll sign a free message proving you own this wallet",
+        "signin_notice": "By continuing, you'll sign a free message proving you own this wallet",
         "error_alert_title": "Authentication failed",
         "error_alert_description": "Something went wrong. Please try again, or reach out to our support team."
       },
@@ -2981,10 +2982,10 @@
           },
           "messages": {
             "no_changes": "No Changes Detected",
-            "need_more_native": "You’ll need more %{symbol} on %{network} to pay for this transaction. Get some %{symbol} below to continue with this request.",
+            "need_more_native": "You'll need more %{symbol} on %{network} to pay for this transaction. Get some %{symbol} below to continue with this request.",
             "unavailable_personal_sign": "Simulation for personal signs is not yet supported",
             "unavailable_zora_network": "Simulation on Zora is not yet supported",
-            "failed_to_simulate": "The simulation failed, which suggests your transaction is likely to fail. This may be an issue with the app you’re using.",
+            "failed_to_simulate": "The simulation failed, which suggests your transaction is likely to fail. This may be an issue with the app you're using.",
             "tx_api_error": "We are unable to determine whether or not your transaction will succeed or fail. Proceed with caution.",
             "warning": "No known malicious behavior was detected, but this transaction has characteristics that may pose a risk to your wallet.",
             "malicious": "Signing this transaction could result in losing access to everything in your wallet."

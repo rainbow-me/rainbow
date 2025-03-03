@@ -5,7 +5,7 @@ import { METADATA_BASE_URL } from 'react-native-dotenv';
 
 let rainbowMeteorologyApi: RainbowFetchClient | undefined;
 
-const getRainbowMeteorologyApi = () => {
+export const getRainbowMeteorologyApi = () => {
   const clientUrl = rainbowMeteorologyApi?.baseURL;
   const baseUrl = METADATA_BASE_URL;
   if (!rainbowMeteorologyApi || clientUrl !== baseUrl) {
