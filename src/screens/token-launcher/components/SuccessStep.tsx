@@ -93,7 +93,7 @@ function RotatingSunrays({ width, height, focalRadius }: { width: number; height
 }
 
 function SuccessHero({ width, height }: { width: number; height: number }) {
-  const { tokenSkiaImage } = useTokenLauncherContext();
+  const { tokenSkiaImage, accentColors } = useTokenLauncherContext();
 
   const tokenImageBadgeSize = 208;
   const centerX = width / 2;
@@ -118,7 +118,7 @@ function SuccessHero({ width, height }: { width: number; height: number }) {
           <RotatingSunrays width={sunraysSize} height={sunraysSize} focalRadius={radius} />
         </Group>
         <Group transform={[{ translateX: centerX - tokenImageBadgeSize / 2 }, { translateY: centerY - tokenImageBadgeSize / 2 }]}>
-          <TokenImageBadge size={tokenImageBadgeSize} image={tokenSkiaImage} />
+          <TokenImageBadge size={tokenImageBadgeSize} image={tokenSkiaImage} accentColor={accentColors.opacity100} />
         </Group>
       </Canvas>
     </Box>
@@ -140,7 +140,7 @@ export function SuccessStep() {
       </Box>
       <Box style={{ position: 'absolute', bottom: 40 }} paddingHorizontal={'44px'} gap={20} alignItems="center">
         <TextShadow blur={10} color="rgba(255, 255, 255, 0.12)">
-          <Text size="44pt" weight="bold" color={'label'}>
+          <Text align="center" size="44pt" weight="bold" color={'label'}>
             {`$${symbol} is live!`}
           </Text>
         </TextShadow>
