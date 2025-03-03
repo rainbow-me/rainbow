@@ -72,7 +72,7 @@ export function TokenLauncherHeader() {
       /> */}
       <Box flexDirection="row" alignItems="center" justifyContent="space-between" padding="4px">
         {step === 'info' && (
-          <ButtonPressAnimation onPress={() => navigation.navigate(Routes.CHANGE_WALLET_SHEET)}>
+          <ButtonPressAnimation onPress={() => navigation.navigate(Routes.CHANGE_WALLET_SHEET, { hideReadOnlyWallets: true })}>
             <AddressAvatar
               url={accountImage}
               address={accountAddress}

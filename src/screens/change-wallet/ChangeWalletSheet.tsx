@@ -78,7 +78,7 @@ export interface AddressItem {
 export default function ChangeWalletSheet() {
   const { params = {} } = useRoute<RouteProp<RootStackParamList, 'ChangeWalletSheet'>>();
 
-  const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
+  const { onChangeWallet, watchOnly = false, currentAccountAddress, hideReadOnlyWallets = false } = params;
   const { selectedWallet, wallets } = useWallets();
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
@@ -129,6 +129,7 @@ export default function ChangeWalletSheet() {
 
     Object.values(walletsWithBalancesAndNames).forEach(wallet => {
       const visibleAccounts = (wallet.addresses || []).filter(account => account.visible);
+
       visibleAccounts.forEach(account => {
         const balanceText = account.balancesMinusHiddenBalances
           ? account.balancesMinusHiddenBalances
@@ -152,7 +153,7 @@ export default function ChangeWalletSheet() {
           sortedWallets.push(item);
         } else if (wallet.type === WalletTypes.bluetooth) {
           bluetoothWallets.push(item);
-        } else if (wallet.type === WalletTypes.readOnly) {
+        } else if (wallet.type === WalletTypes.readOnly && !hideReadOnlyWallets) {
           readOnlyWallets.push(item);
         }
       });
@@ -160,7 +161,7 @@ export default function ChangeWalletSheet() {
 
     // sorts by order wallets were added
     return [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets].sort((a, b) => a.walletId.localeCompare(b.walletId));
-  }, [walletsWithBalancesAndNames, currentAddress]);
+  }, [walletsWithBalancesAndNames, currentAddress, hideReadOnlyWallets]);
 
   // If user has never seen pinned addresses feature, auto-pin the users most used owned addresses
   useEffect(() => {

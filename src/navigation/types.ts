@@ -37,6 +37,7 @@ export type RootStackParamList = {
     watchOnly?: boolean;
     currentAccountAddress?: string;
     onChangeWallet?: (address: string | Address, wallet?: RainbowWallet) => void;
+    hideReadOnlyWallets?: boolean;
   };
   [Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET]: {
     accentColor?: string;
