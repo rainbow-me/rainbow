@@ -66,6 +66,7 @@ export interface HoldToActivateButtonProps {
   testID: string;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  progressColor?: string;
   height?: number;
 }
 
@@ -85,6 +86,7 @@ export function HoldToActivateButton({
   onLongPress,
   height = BUTTON_HEIGHT,
   textStyle,
+  progressColor,
   ...props
 }: Props) {
   const longPressProgress = useSharedValue(0);
@@ -146,7 +148,7 @@ export function HoldToActivateButton({
           borderRadius={height}
           shadow={disabled ? ('12px' as const) : ('18px' as const)}
         >
-          {!IS_ANDROID && !disabled && <HoldToAuthorizeButtonIcon sharedValue={longPressProgress} />}
+          {!IS_ANDROID && !disabled && <HoldToAuthorizeButtonIcon sharedValue={longPressProgress} progressColor={progressColor} />}
           <LabelWithBiometryIcon
             label={isProcessing ? processingLabel : label}
             showIcon={showBiometryIcon && !isProcessing}

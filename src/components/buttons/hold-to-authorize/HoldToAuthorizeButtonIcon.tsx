@@ -20,9 +20,10 @@ const Container = styled(Centered)({
 
 interface Props {
   sharedValue: SharedValue<number>;
+  progressColor?: string;
 }
 
-export default function HoldToAuthorizeButtonIcon({ sharedValue }: Props) {
+export default function HoldToAuthorizeButtonIcon({ sharedValue, progressColor }: Props) {
   const circleFillProgressOverride = useSharedValue<number | null>(null);
 
   const circleFillProgress = useDerivedValue(() => {
@@ -49,7 +50,7 @@ export default function HoldToAuthorizeButtonIcon({ sharedValue }: Props) {
   return (
     <Container>
       <Animated.View {...position.centeredAsObject} style={[position.coverAsObject, animatedStyle]}>
-        <Icon name="progress" progress={circleFillProgress} />
+        <Icon name="progress" progress={circleFillProgress} progressColor={progressColor} />
       </Animated.View>
     </Container>
   );

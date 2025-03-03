@@ -64,11 +64,14 @@ function HoldToCreateButton() {
     if (isHardwareWallet) {
       // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
     } else {
-      if (wallet) {
-        await createToken({ wallet: wallet as Wallet, transactionOptions });
-      }
+      // if (wallet) {
+      //   await createToken({ wallet: wallet as Wallet, transactionOptions });
+      // }
+      // TESTING
+      setTimeout(() => {
+        setStep('success');
+      }, 5000);
     }
-    setStep('success');
   }, [setStep, chainId, accountAddress, isHardwareWallet, createToken, transactionOptions]);
 
   return (
@@ -85,6 +88,7 @@ function HoldToCreateButton() {
       textStyle={{
         color: accentColors.highContrastTextColor,
       }}
+      progressColor={accentColors.highContrastTextColor}
     />
   );
 }
