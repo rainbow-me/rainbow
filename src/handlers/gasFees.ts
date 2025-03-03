@@ -1,13 +1,12 @@
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { ChainId } from '@/state/backendNetworks/types';
-import { METADATA_BASE_URL } from 'react-native-dotenv';
 
 let rainbowMeteorologyApi: RainbowFetchClient | undefined;
 
 export const getRainbowMeteorologyApi = () => {
   const clientUrl = rainbowMeteorologyApi?.baseURL;
-  const baseUrl = METADATA_BASE_URL;
+  const baseUrl = 'https://metadata.p.rainbow.me';
   if (!rainbowMeteorologyApi || clientUrl !== baseUrl) {
     rainbowMeteorologyApi = new RainbowFetchClient({
       baseURL: baseUrl,
