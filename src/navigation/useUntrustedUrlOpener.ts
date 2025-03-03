@@ -27,11 +27,11 @@ export default function useUntrustedUrlOpener(): (url: string) => void {
   const { navigate } = useNavigation();
   const openInBrowser = useOpenInBrowser();
   return useCallback(
-    (url: string) => {
+    async (url: string) => {
       const { hostname } = new URL(url);
 
       if (trustedDomains.some(trustedDomain => hostname === trustedDomain || hostname.endsWith(`.${trustedDomain}`))) {
-        openInBrowser(url);
+        await openInBrowser(url);
       } else {
         navigate(Routes.EXTERNAL_LINK_WARNING_SHEET, { url });
       }

@@ -326,16 +326,20 @@ const UniqueTokenExpandedStateHeader = ({
 
   const handlePressFamilyMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey } }) => {
+    async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === FamilyActionsEnum.viewCollection && asset.marketplaceCollectionUrl) {
-        openInBrowser(asset.marketplaceCollectionUrl);
+        await openInBrowser(asset.marketplaceCollectionUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
-        // @ts-expect-error external_link and external_url could be null or undefined?
-        openInBrowser(asset.external_link || asset.collection.external_url);
+        const websiteUrl = asset.external_link || asset.collection.external_url;
+        if (websiteUrl) {
+          await openInBrowser(websiteUrl);
+        }
       } else if (actionKey === FamilyActionsEnum.twitter) {
-        openInBrowser('https://twitter.com/' + asset.collection.twitter_username);
+        const twitterUrl = 'https://twitter.com/' + asset.collection.twitter_username;
+        await openInBrowser(twitterUrl);
       } else if (actionKey === FamilyActionsEnum.discord && asset.collection.discord_url) {
-        openInBrowser(asset.collection.discord_url);
+        const discordUrl = asset.collection.discord_url;
+        await openInBrowser(discordUrl);
       }
     },
     [
@@ -350,7 +354,7 @@ const UniqueTokenExpandedStateHeader = ({
 
   const handlePressAssetMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey } }) => {
+    async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
         ethereumUtils.openNftInBlockExplorer({
           // @ts-expect-error address could be undefined?
@@ -359,11 +363,11 @@ const UniqueTokenExpandedStateHeader = ({
           chainId: asset.chainId,
         });
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
-        openInBrowser(rainbowWebUrl);
+        await openInBrowser(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.opensea) {
-        openInBrowser(`https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`);
+        await openInBrowser(`https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`);
       } else if (actionKey === AssetActionsEnum.looksrare) {
-        openInBrowser(`https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`);
+        await openInBrowser(`https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`);
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
@@ -428,18 +432,18 @@ const UniqueTokenExpandedStateHeader = ({
         showSeparators: true,
         title: '',
       },
-      (idx: number) => {
+      async (idx: number) => {
         if (idx === collectionIndex && asset.marketplaceCollectionUrl) {
-          openInBrowser(asset.marketplaceCollectionUrl);
+          await openInBrowser(asset.marketplaceCollectionUrl);
         } else if (idx === websiteIndex) {
-          openInBrowser(
+          await openInBrowser(
             // @ts-expect-error external_link and external_url could be null or undefined?
             asset.external_link || asset.collection.external_url
           );
         } else if (idx === twitterIndex) {
-          openInBrowser('https://twitter.com/' + asset.collection.twitter_username);
+          await openInBrowser('https://twitter.com/' + asset.collection.twitter_username);
         } else if (idx === discordIndex && asset.collection.discord_url) {
-          openInBrowser(asset.collection.discord_url);
+          await openInBrowser(asset.collection.discord_url);
         }
       }
     );
@@ -449,6 +453,7 @@ const UniqueTokenExpandedStateHeader = ({
     asset.collection.twitter_username,
     asset.external_link,
     asset.marketplaceCollectionUrl,
+    openInBrowser,
   ]);
 
   const overflowMenuHitSlop: Space = '15px (Deprecated)';

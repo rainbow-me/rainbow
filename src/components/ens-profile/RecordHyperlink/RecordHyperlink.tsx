@@ -11,7 +11,7 @@ export default function RecordHyperlink({ value }: { value: string }) {
   const { goBack, navigate } = useNavigation();
   const openInBrowser = useOpenInBrowser();
 
-  const navigateToProfile = useCallback(() => {
+  const navigateToProfile = useCallback(async () => {
     if (value.match(ENS_REGEX)) {
       goBack();
       navigate(Routes.PROFILE_SHEET, {
@@ -19,7 +19,7 @@ export default function RecordHyperlink({ value }: { value: string }) {
         fromRoute: 'RecordHyperlink',
       });
     } else {
-      openInBrowser((value.match('https') ? '' : 'https://') + value);
+      await openInBrowser((value.match('https') ? '' : 'https://') + value);
     }
   }, [value, goBack, navigate, openInBrowser]);
 

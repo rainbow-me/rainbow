@@ -16,7 +16,7 @@ import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { handleProviderRequestApp } from '../handleProviderRequest';
 import { TabId } from '../types';
 import { generateUniqueIdWorklet, isValidAppStoreUrl } from '../utils';
-// import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 interface UseWebViewHandlersParams {
   addRecent: BrowserHistoryStore['addRecent'];
@@ -44,6 +44,7 @@ export function useWebViewHandlers({
   const { activeTabRef, loadProgress, resetScrollHandlers } = useBrowserContext();
   const { updateTabUrlWorklet } = useBrowserWorkletsContext();
   const { setParams } = useNavigation();
+  const openInBrowser = useOpenInBrowser();
 
   const currentMessengerRef = useRef<MessengerWithUrl | null>(null);
   const logoRef = useRef<string | null>(null);
@@ -176,19 +177,18 @@ export function useWebViewHandlers({
   );
 
   const handleOnOpenWindow = useCallback(
-    (syntheticEvent: { nativeEvent: { targetUrl: string } }) => {
+    async (syntheticEvent: { nativeEvent: { targetUrl: string } }) => {
       const { nativeEvent } = syntheticEvent;
       const { targetUrl } = nativeEvent;
 
       if (isValidAppStoreUrl(targetUrl)) {
-        // External link
-        Linking.openURL(targetUrl);
+        await openInBrowser(targetUrl);
         return;
       }
 
       setParams({ url: targetUrl });
     },
-    [setParams]
+    [openInBrowser, setParams]
   );
 
   const handleOnContentProcessDidTerminate = useCallback(() => {

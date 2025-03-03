@@ -297,11 +297,11 @@ const PoapSheet = () => {
                   </SheetActionButton>
                 </SheetActionButtonRow>
                 <ButtonPressAnimation
-                  onPress={() => {
+                  onPress={async () => {
                     analyticsV2.track(event.poapsViewedOnPoap, {
                       eventId: poapEvent.id,
                     });
-                    openInBrowser(poapGalleryUrl);
+                    await openInBrowser(poapGalleryUrl);
                   }}
                 >
                   <Text size="15pt" color="labelSecondary" weight="bold">

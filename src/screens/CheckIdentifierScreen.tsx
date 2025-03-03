@@ -35,7 +35,7 @@ export default function CheckIdentifierScreen() {
     Alert({
       buttons: [
         {
-          onPress: () => openInBrowser('https://rainbow.me/support'),
+          onPress: async () => await openInBrowser('https://rainbow.me/support'),
           text: lang.t(lang.l.check_identifier.error_alert.contact_support),
         },
         {

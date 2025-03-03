@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Reanimated, {
   Easing,
   interpolateColor,
@@ -72,6 +72,7 @@ export default function WelcomeScreen() {
   const { colors, isDarkMode } = useTheme();
   const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
   const hideSplashScreen = useHideSplashScreen();
+  const openInBrowser = useOpenInBrowser();
 
   const contentAnimation = useSharedValue(1);
   const colorAnimation = useSharedValue(0);
@@ -186,10 +187,9 @@ export default function WelcomeScreen() {
     });
   }, [dangerouslyGetState, navigate, replace]);
 
-  const handlePressTerms = useCallback(() => {
-    // External link
-    Linking.openURL('https://rainbow.me/terms-of-use');
-  }, []);
+  const handlePressTerms = useCallback(async () => {
+    await openInBrowser('https://rainbow.me/terms-of-use', false);
+  }, [openInBrowser]);
 
   const showRestoreSheet = useCallback(() => {
     analytics.track('Tapped "I already have one"');

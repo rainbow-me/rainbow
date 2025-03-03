@@ -81,8 +81,8 @@ export default function useWalletCloudBackup() {
             i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.description),
             [
               {
-                onPress: () => {
-                  openInBrowser('https://support.apple.com/en-us/HT204025');
+                onPress: async () => {
+                  await openInBrowser('https://support.apple.com/en-us/HT204025');
                   analytics.track('View how to Enable iCloud', {
                     category: 'backup',
                   });

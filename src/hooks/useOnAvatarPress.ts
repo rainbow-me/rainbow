@@ -111,10 +111,10 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     navigate(Routes.REGISTER_ENS_NAVIGATOR);
   }, [navigate]);
 
-  const onAvatarWebProfile = useCallback(() => {
+  const onAvatarWebProfile = useCallback(async () => {
     const rainbowURL = buildRainbowUrl(null, accountENS, accountAddress);
     if (rainbowURL) {
-      openInBrowser(rainbowURL);
+      await openInBrowser(rainbowURL);
     }
   }, [accountAddress, accountENS, openInBrowser]);
 

@@ -39,7 +39,7 @@ export function Coinbase({ accountAddress, config }: { accountAddress: string; c
             provider: FiatProviderName.Coinbase,
           });
 
-          openInBrowser(url);
+          await openInBrowser(url);
         } catch (e) {
           logger.error(new RainbowError('[AddCash]: failed to open provider'), {
             provider: FiatProviderName.Coinbase,

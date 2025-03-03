@@ -167,9 +167,9 @@ export default function useENSRecordDisplayProperties({
 
   const handlePressMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey } }) => {
+    async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'open-url' && url) {
-        openInBrowser(url);
+        await openInBrowser(url);
       }
       if (actionKey === 'copy') {
         setClipboard(recordValue);

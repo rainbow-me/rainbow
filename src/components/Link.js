@@ -27,14 +27,14 @@ const Link = ({
   ...props
 }) => {
   const openInBrowser = useOpenInBrowser();
-  const handlePress = useCallback(() => openInBrowser(url), [openInBrowser, url]);
+  const handlePress = useCallback(async () => await openInBrowser(url), [openInBrowser, url]);
   const { colors } = useTheme();
 
   return (
     <ButtonPressAnimation compensateForTransformOrigin onPress={handlePress} scaleTo={scaleTo} transformOrigin={transformOrigin}>
       <Container {...props}>
         {!emoji && <Icon color={color || colors.appleBlue} name={emojiName} />}
-        <Text color={color || colors.appleBlue} size="medium" weight={weight}>
+        <Text color={color || colors.appleBlue} size="lmedium" weight={weight}>
           {emoji}
           {display || formatURLForDisplay(url)}
         </Text>

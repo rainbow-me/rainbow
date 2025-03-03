@@ -62,9 +62,9 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
 
   const formattedHash = shortenTxHashString(hash);
 
-  const onViewOnBlockExplorerPress = () => {
+  const onViewOnBlockExplorerPress = async () => {
     if (transaction.explorerUrl) {
-      openInBrowser(transaction.explorerUrl);
+      await openInBrowser(transaction.explorerUrl);
     } else {
       ethereumUtils.openTransactionInBlockExplorer({ hash, chainId });
     }

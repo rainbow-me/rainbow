@@ -679,7 +679,7 @@ export function NFTSingleOfferSheet() {
                     justifyContent="center"
                     alignItems="center"
                     style={{ overflow: 'hidden' }}
-                    onPress={() => {
+                    onPress={async () => {
                       analyticsV2.track(analyticsV2.event.nftOffersViewedExternalOffer, {
                         marketplace: offer.marketplace.name,
                         offerValueUSD: offer.grossAmount.usd,
@@ -695,7 +695,7 @@ export function NFTSingleOfferSheet() {
                           network: offer.network,
                         },
                       });
-                      openInBrowser(offer.url);
+                      await openInBrowser(offer.url);
                     }}
                   >
                     <Text color="label" align="center" size="17pt" weight="heavy">

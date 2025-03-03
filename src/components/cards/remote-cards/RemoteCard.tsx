@@ -72,14 +72,14 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
 
   const accent = useForegroundColor(getColorFromString(card?.accentColor || undefined));
 
-  const onPress = useCallback(() => {
+  const onPress = useCallback(async () => {
     analyticsV2.track(analyticsV2.event.remoteCardPrimaryButtonPressed, {
       cardKey: card?.cardKey ?? 'unknown-backend-driven-card',
       action: card?.primaryButton.url || card?.primaryButton.route,
       props: JSON.stringify(card?.primaryButton.props),
     });
     if (card?.primaryButton && card?.primaryButton.url) {
-      openInBrowser(card?.primaryButton.url);
+      await openInBrowser(card?.primaryButton.url);
     } else if (card?.primaryButton && card?.primaryButton.route) {
       navigate(card?.primaryButton.route, card?.primaryButton.props);
     }

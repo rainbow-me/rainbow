@@ -36,11 +36,11 @@ const ExternalLinkWarningSheet = () => {
     onClose?.();
   }, [onClose, goBack]);
 
-  const handleLink = useCallback(() => {
+  const handleLink = useCallback(async () => {
     goBack();
     onClose?.();
-    openInBrowser(url);
-  }, [onClose, goBack, url]);
+    await openInBrowser(url);
+  }, [goBack, onClose, openInBrowser, url]);
 
   return (
     <Container deviceHeight={deviceHeight} height={ExternalLinkWarningSheetHeight} insets={insets}>

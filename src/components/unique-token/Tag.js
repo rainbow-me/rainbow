@@ -109,12 +109,12 @@ const Tag = ({
   const openInBrowser = useOpenInBrowser();
 
   const handlePressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }) => {
+    async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === PropertyActionsEnum.viewTraitOnNftMarketplace) {
         const nftTraitUrl = getNftTraitUrl(marketplaceId, slug, title, originalValue);
-        openInBrowser(nftTraitUrl);
+        await openInBrowser(nftTraitUrl);
       } else if (actionKey === PropertyActionsEnum.openURL) {
-        openInBrowser(originalValue);
+        await openInBrowser(originalValue);
       }
     },
     [marketplaceId, slug, title, originalValue, openInBrowser]
@@ -137,12 +137,12 @@ const Tag = ({
         showSeparators: true,
         title: '',
       },
-      idx => {
+      async idx => {
         if (androidContractActions[idx] === viewTraitOnNftMarketplaceAction.actionTitle) {
           const nftTraitUrl = getNftTraitUrl(marketplaceId, slug, title, originalValue);
-          openInBrowser(nftTraitUrl);
+          await openInBrowser(nftTraitUrl);
         } else if (androidContractActions[idx] === openTraitURLInBrowserAction.actionTitle) {
-          openInBrowser(originalValue);
+          await openInBrowser(originalValue);
         }
       }
     );

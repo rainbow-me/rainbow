@@ -345,7 +345,7 @@ const MintSheet = () => {
         contract: mintCollection.id || '',
         chainId: mintCollection.chainId,
       });
-      openInBrowser(buildMintDotFunUrl(mintCollection.id!, chainId));
+      await openInBrowser(buildMintDotFunUrl(mintCollection.id!, chainId));
       return;
     }
 

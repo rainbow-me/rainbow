@@ -173,7 +173,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 const AddFundsInterstitial = ({ network }) => {
   const openInBrowser = useOpenInBrowser();
 
-  const onAddFromFaucet = accountAddress => openInBrowser(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
+  const onAddFromFaucet = async accountAddress => await openInBrowser(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
   const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
