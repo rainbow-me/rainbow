@@ -18,17 +18,14 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { formatUnits } from 'viem';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
-import {
-  SkImage,
-  // useAnimatedImageValue,
-  useImage,
-} from '@shopify/react-native-skia';
+import { SkImage, useAnimatedImageValue, useImage } from '@shopify/react-native-skia';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
-// import { SharedValue } from 'react-native-reanimated';
+import { SharedValue } from 'react-native-reanimated';
 
 type TokenLauncherContextType = {
   chainNativeAssetRequiredForTransactionGas: string;
   tokenSkiaImage: SkImage | null;
+  tokenAnimatedSkiaImage: SharedValue<SkImage | null>;
   accentColors: {
     opacity100: string;
     opacity30: string;
@@ -83,10 +80,9 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
 
   const imageUrl = useTokenLauncherStore(state => state.imageUrl);
   const imageUri = useTokenLauncherStore(state => state.imageUrl);
-  // This hook works for both normal images and gifs
-  // TODO: this is causing problems for the success image step
-  // const tokenSkiaImage = useAnimatedImageValue(imageUri);
   const tokenSkiaImage = useImage(imageUri);
+  // The result of this hook works for displaying both normal images and gifs
+  const tokenAnimatedSkiaImage = useAnimatedImageValue(imageUri);
 
   const imageDerivedColor = usePersistentDominantColorFromImage(imageUrl);
 
@@ -186,7 +182,9 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   }, [ethPriceNative, ethPriceUsd, setEthPriceNative, setEthPriceUsd]);
 
   return (
-    <TokenLauncherContext.Provider value={{ accentColors, chainNativeAssetRequiredForTransactionGas, tokenSkiaImage }}>
+    <TokenLauncherContext.Provider
+      value={{ accentColors, chainNativeAssetRequiredForTransactionGas, tokenSkiaImage, tokenAnimatedSkiaImage }}
+    >
       {children}
     </TokenLauncherContext.Provider>
   );

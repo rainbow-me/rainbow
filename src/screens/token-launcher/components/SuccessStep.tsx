@@ -93,15 +93,13 @@ function RotatingSunrays({ width, height, focalRadius }: { width: number; height
 }
 
 function SuccessHero({ width, height }: { width: number; height: number }) {
-  const { tokenSkiaImage, accentColors } = useTokenLauncherContext();
+  const { tokenAnimatedSkiaImage, accentColors } = useTokenLauncherContext();
 
   const tokenImageBadgeSize = 208;
   const centerX = width / 2;
   const centerY = height / 2;
   const sunraysSize = 445;
   const radius = tokenImageBadgeSize / 16 - 10;
-
-  if (!tokenSkiaImage) return null;
 
   return (
     <Box height={height} width={width}>
@@ -118,7 +116,7 @@ function SuccessHero({ width, height }: { width: number; height: number }) {
           <RotatingSunrays width={sunraysSize} height={sunraysSize} focalRadius={radius} />
         </Group>
         <Group transform={[{ translateX: centerX - tokenImageBadgeSize / 2 }, { translateY: centerY - tokenImageBadgeSize / 2 }]}>
-          <TokenImageBadge size={tokenImageBadgeSize} image={tokenSkiaImage} accentColor={accentColors.opacity100} />
+          <TokenImageBadge size={tokenImageBadgeSize} image={tokenAnimatedSkiaImage} accentColor={accentColors.opacity100} />
         </Group>
       </Canvas>
     </Box>
