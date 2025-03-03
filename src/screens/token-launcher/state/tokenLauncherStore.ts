@@ -15,7 +15,8 @@ import { parseUnits } from '@ethersproject/units';
 import { TransactionOptions } from '@rainbow-me/swaps';
 import { TokenLauncher } from '@/hooks/useTokenLauncher';
 import { LaunchTokenResponse } from '@rainbow-me/token-launcher';
-
+import { Alert } from 'react-native';
+import { logger, RainbowError } from '@/logger';
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
 
@@ -405,8 +406,12 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       } else {
         return await TokenLauncher.launchToken(params);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error('error creating token', e);
+      Alert.alert(`${(e as Error).message}`);
+      logger.error(new RainbowError('[TokenLauncher]: Error launching token'), {
+        message: (e as Error).message,
+      });
     }
   },
 }));

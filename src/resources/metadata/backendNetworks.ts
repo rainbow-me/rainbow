@@ -22,7 +22,6 @@ export async function fetchBackendNetworks(): Promise<BackendNetworksResponse> {
   });
 
   const responseBody = await response.json();
-  console.log('responseBody', responseBody);
 
   return responseBody?.data as BackendNetworksResponse;
 }
