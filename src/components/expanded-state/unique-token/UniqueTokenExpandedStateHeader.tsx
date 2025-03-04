@@ -336,10 +336,10 @@ const UniqueTokenExpandedStateHeader = ({
         }
       } else if (actionKey === FamilyActionsEnum.twitter) {
         const twitterUrl = 'https://twitter.com/' + asset.collection.twitter_username;
-        await openInBrowser(twitterUrl);
+        await openInBrowser(twitterUrl, false);
       } else if (actionKey === FamilyActionsEnum.discord && asset.collection.discord_url) {
         const discordUrl = asset.collection.discord_url;
-        await openInBrowser(discordUrl);
+        await openInBrowser(discordUrl, false);
       }
     },
     [
@@ -395,6 +395,7 @@ const UniqueTokenExpandedStateHeader = ({
     },
     [
       asset,
+      openInBrowser,
       rainbowWebUrl,
       setClipboard,
       isHiddenAsset,
@@ -441,9 +442,9 @@ const UniqueTokenExpandedStateHeader = ({
             asset.external_link || asset.collection.external_url
           );
         } else if (idx === twitterIndex) {
-          await openInBrowser('https://twitter.com/' + asset.collection.twitter_username);
+          await openInBrowser('https://twitter.com/' + asset.collection.twitter_username, false);
         } else if (idx === discordIndex && asset.collection.discord_url) {
-          await openInBrowser(asset.collection.discord_url);
+          await openInBrowser(asset.collection.discord_url, false);
         }
       }
     );
