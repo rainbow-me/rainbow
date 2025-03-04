@@ -5,14 +5,14 @@ import { View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useUploadToCloudinary } from '../hooks/useUploadToCloudinary';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { Canvas, Image, Shadow, RoundedRect, rrect, rect, Box as SkBox, Group } from '@shopify/react-native-skia';
+import { Canvas, Image, Shadow, rrect, rect, Box as SkBox, Group } from '@shopify/react-native-skia';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Extrapolation, interpolate, useDerivedValue } from 'react-native-reanimated';
 
 const SIZE = 112;
 
 export function TokenLogo() {
-  const { accentColors, tokenAnimatedSkiaImage } = useTokenLauncherContext();
+  const { accentColors, tokenImage } = useTokenLauncherContext();
 
   const imageUri = useTokenLauncherStore(state => state.imageUri);
   const setImageUri = useTokenLauncherStore(state => state.setImageUri);
@@ -57,7 +57,7 @@ export function TokenLogo() {
     <Box justifyContent="center" alignItems="center">
       <ButtonPressAnimation onPress={onPress}>
         <Box width={SIZE} height={SIZE} justifyContent="center" alignItems="center">
-          {tokenAnimatedSkiaImage && imageUri && (
+          {tokenImage && imageUri && (
             <Canvas style={{ width: SIZE + shadowOverflowBuffer, height: SIZE + shadowOverflowBuffer }}>
               <Group transform={[{ translateX: shadowOverflowBuffer / 2 }, { translateY: shadowOverflowBuffer / 2 }]}>
                 <SkBox opacity={dropShadowsOpacity} box={roundedRect}>
@@ -65,7 +65,7 @@ export function TokenLogo() {
                   <Shadow dx={0} dy={30} blur={17} color={'rgba(37, 41, 46, 0.2)'} />
                   <Shadow dx={0} dy={0} blur={10} color={accentColors.opacity12} />
                 </SkBox>
-                <Image clip={roundedRect} x={0} y={0} width={SIZE} height={SIZE} image={tokenAnimatedSkiaImage} fit="cover" />
+                <Image clip={roundedRect} x={0} y={0} width={SIZE} height={SIZE} image={tokenImage} fit="cover" />
                 <SkBox box={roundedRect}>
                   <Shadow dx={0} dy={0.7} blur={3.52 / 2} color={'rgba(255, 255, 255, 1)'} inner shadowOnly />
                 </SkBox>

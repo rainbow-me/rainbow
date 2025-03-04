@@ -1,6 +1,6 @@
 import React, { useMemo, memo } from 'react';
 
-import { Canvas, Shadow, useImage, Image, Fill, Blur, rect, rrect, Box, Group } from '@shopify/react-native-skia';
+import { Canvas, Shadow, Image, Fill, Blur, rect, rrect, Box, Group } from '@shopify/react-native-skia';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
@@ -9,12 +9,10 @@ import { useForegroundColor } from '@/design-system';
 
 export const SkiaBackground = memo(function SkiaBackground({ width, height }: { width: number; height: number }) {
   const separatorSecondaryColor = useForegroundColor('separatorSecondary');
-  const { accentColors } = useTokenLauncherContext();
-  const shadowColor = accentColors.opacity20;
-
-  const stepIndex = useTokenLauncherStore(state => state.stepIndex);
+  const { accentColors, tokenBackgroundImage } = useTokenLauncherContext();
   const imageUri = useTokenLauncherStore(state => state.imageUri);
-  const image = useImage(imageUri);
+  const stepIndex = useTokenLauncherStore(state => state.stepIndex);
+  const shadowColor = accentColors.opacity20;
 
   const roundedRect = useMemo(() => {
     return rrect(rect(0, 0, width, height), 42, 42);
@@ -41,11 +39,11 @@ export const SkiaBackground = memo(function SkiaBackground({ width, height }: { 
     return interpolate(stepIndex.value, [2, 3], [0, 1], Extrapolation.CLAMP);
   });
 
-  if (!imageUri) return null;
+  if (!tokenBackgroundImage || !imageUri) return null;
 
   return (
     <Canvas style={{ width, height }}>
-      <Image x={0} y={0} width={width} height={height} image={image} fit="cover">
+      <Image x={0} y={0} width={width} height={height} image={tokenBackgroundImage} fit="cover">
         <Blur blur={100} />
       </Image>
 
