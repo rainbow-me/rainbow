@@ -30,6 +30,8 @@ import { getProvider } from '@/handlers/web3';
 import { useTokenLaunchGasOptions } from '../hooks/useTokenLaunchGasOptions';
 import { colors } from '@/styles';
 
+import { useTokenLauncher } from '@/hooks/useTokenLauncher';
+import { staleBalancesStore } from '@/state/staleBalances';
 export const FOOTER_HEIGHT = 56 + 16 + 8;
 
 function HoldToCreateButton() {
@@ -48,6 +50,8 @@ function HoldToCreateButton() {
   });
 
   const isProcessing = step === 'creating';
+  const { addStaleBalance } = staleBalancesStore.getState();
+
   const isLongPressAvailableForBiometryType =
     biometryType === BiometryTypes.FaceID || biometryType === BiometryTypes.Face || biometryType === BiometryTypes.none;
   const showBiometryIcon = !IS_ANDROID && isLongPressAvailableForBiometryType && !isHardwareWallet;
@@ -64,19 +68,28 @@ function HoldToCreateButton() {
     if (isHardwareWallet) {
       // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
     } else {
-      // if (wallet) {
-      //   await createToken({ wallet: wallet as Wallet, transactionOptions });
-      // }
-      // TESTING
-      setTimeout(() => {
-        setStep('success');
-      }, 5000);
+      if (wallet) {
+        const createTokenResponse = await createToken({ wallet: wallet as Wallet, transactionOptions });
+        if (createTokenResponse) {
+          console.log('createTokenResponse', createTokenResponse);
+          addStaleBalance({
+            address: accountAddress,
+            chainId,
+            info: {
+              address: createTokenResponse.tokenAddress,
+              transactionHash: createTokenResponse.transaction.hash,
+            },
+          });
+          setStep('success');
+        } else {
+          setStep('review');
+        }
+      }
     }
-  }, [setStep, chainId, accountAddress, isHardwareWallet, createToken, transactionOptions]);
+  }, [isHardwareWallet, createToken, accountAddress, chainId, transactionOptions, setStep, addStaleBalance]);
 
   return (
     <HoldToActivateButton
-      testID="hold-to-create-button"
       backgroundColor={accentColors.opacity100}
       disabledBackgroundColor={accentColors.opacity12}
       isProcessing={isProcessing}
@@ -89,6 +102,7 @@ function HoldToCreateButton() {
         color: accentColors.highContrastTextColor,
       }}
       progressColor={accentColors.highContrastTextColor}
+      testID="hold-to-create-button"
     />
   );
 }
@@ -259,6 +273,8 @@ export function TokenLauncherFooter() {
       height: withTiming(isVisible ? 42 : 0, TIMING_CONFIGS.buttonPressConfig),
     };
   });
+
+  useTokenLauncher();
 
   return (
     <Animated.View>

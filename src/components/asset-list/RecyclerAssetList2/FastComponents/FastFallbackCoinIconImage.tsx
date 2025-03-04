@@ -6,11 +6,13 @@ import { ThemeContextProps } from '@/theme';
 
 export const FastFallbackCoinIconImage = React.memo(function FastFallbackCoinIconImage({
   children,
+  disableShadow = true,
   icon,
   shadowColor,
   size = 40,
 }: {
   children: () => React.ReactNode;
+  disableShadow?: boolean;
   icon?: string;
   shadowColor: string;
   size?: number;
@@ -20,7 +22,13 @@ export const FastFallbackCoinIconImage = React.memo(function FastFallbackCoinIco
   const [didErrorForUrl, setDidErrorForUrl] = useState<string | undefined>(undefined);
 
   return (
-    <View style={[sx.coinIconContainer, sx.withShadow, { shadowColor, height: size, width: size, borderRadius: size / 2 }]}>
+    <View
+      style={[
+        sx.coinIconContainer,
+        !disableShadow && sx.withShadow,
+        { borderRadius: size / 2, height: size, shadowColor: disableShadow ? undefined : shadowColor, width: size },
+      ]}
+    >
       {icon === undefined || icon === '' || didErrorForUrl === icon ? (
         <View style={sx.fallbackWrapper}>{children()}</View>
       ) : (
@@ -64,13 +72,12 @@ const sx = StyleSheet.create({
     width: '100%',
   },
   withShadow: {
-    // ⚠️ CB: Disabling coin icon shadows for now because they are negatively impacting performance
-    // elevation: 6,
-    // shadowOffset: {
-    //   height: 4,
-    //   width: 0,
-    // },
-    // shadowOpacity: 0.3,
-    // shadowRadius: 6,
+    elevation: 6,
+    shadowOffset: {
+      height: 4,
+      width: 0,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
   },
 });

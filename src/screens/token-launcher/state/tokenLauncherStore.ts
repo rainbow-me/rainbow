@@ -10,11 +10,13 @@ import store from '@/redux/store';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { formatCurrency } from '@/helpers/strings';
 import { validateLinkWorklet, validateNameWorklet, validateSymbolWorklet, validateTotalSupplyWorklet } from '../helpers/inputValidators';
-import { launchRainbowSuperTokenAndBuy, getInitialTick, launchRainbowSuperToken } from '@rainbow-me/token-launcher';
 import { Wallet } from '@ethersproject/wallet';
 import { parseUnits } from '@ethersproject/units';
 import { TransactionOptions } from '@rainbow-me/swaps';
-
+import { TokenLauncher } from '@/hooks/useTokenLauncher';
+import { LaunchTokenResponse } from '@rainbow-me/token-launcher';
+import { Alert } from 'react-native';
+import { logger, RainbowError } from '@/logger';
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
 
@@ -100,11 +102,16 @@ interface TokenLauncherStore {
   setEthPriceNative: (ethPriceNative: number) => void;
   setGasSpeed: (gasSpeed: GasSpeed) => void;
   setHasValidPrebuyAmount: (hasValidPrebuyAmount: boolean) => void;
-  setHasSufficientChainNativeAssetForTransactionGas: (hasSufficientChainNativeAssetForTransactionGas: boolean) => void;
-  // actions
+  setHasSufficientChainNativeAssetForTransactionGas: (hasSufficientChainNativeAssetForTransactionGas: boolean) => void; // actions
   reset: () => void;
   validateForm: () => void;
-  createToken: ({ wallet, transactionOptions }: { wallet: Wallet; transactionOptions: TransactionOptions }) => Promise<void>;
+  createToken: ({
+    wallet,
+    transactionOptions,
+  }: {
+    wallet: Wallet;
+    transactionOptions: TransactionOptions;
+  }) => Promise<LaunchTokenResponse | undefined>;
 }
 
 // TODO: for testing. Remove before merging
@@ -350,7 +357,13 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   validateForm: () => {
     // TODO: validate all field values before submission to sdk for creation
   },
-  createToken: async ({ wallet, transactionOptions }: { wallet: Wallet; transactionOptions: TransactionOptions }) => {
+  createToken: async ({
+    wallet,
+    transactionOptions,
+  }: {
+    wallet: Wallet;
+    transactionOptions: TransactionOptions;
+  }): Promise<LaunchTokenResponse | undefined> => {
     const cohortIds = get()
       .airdropRecipients.filter(r => r.type === 'group')
       .map(recipient => recipient.value);
@@ -359,7 +372,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       .map(recipient => recipient.value);
     const targetEth = get().tokenomics()?.price.targetEth;
     try {
-      const initialTick = await getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
+      const initialTick = TokenLauncher.getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
       const shouldBuy = get().creatorBuyInEth > 0;
       const params = {
         name: get().name,
@@ -388,15 +401,19 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         },
       };
       if (shouldBuy) {
-        await launchRainbowSuperTokenAndBuy({
+        return await TokenLauncher.launchTokenAndBuy({
           ...params,
           amountIn: parseUnits(get().creatorBuyInEth.toString(), 18).toString(),
         });
       } else {
-        await launchRainbowSuperToken(params);
+        return await TokenLauncher.launchToken(params);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error('error creating token', e);
+      Alert.alert(`${(e as Error).message}`);
+      logger.error(new RainbowError('[TokenLauncher]: Error launching token'), {
+        message: (e as Error).message,
+      });
     }
   },
 }));

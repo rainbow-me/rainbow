@@ -3,7 +3,7 @@ import { ParsedAddressAsset } from '@/entities';
 import { add, greaterThan, multiply } from '@/helpers/utilities';
 import { RainbowError, logger } from '@/logger';
 import { SupportedCurrencyKey, supportedNativeCurrencies } from '@/references';
-import { addysHttp } from '@/resources/addys/claimables/query';
+import { getAddysHttpClient } from '@/resources/addys/client';
 import { fetchAnvilBalancesByChainId } from '@/resources/assets/anvilAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -61,10 +61,11 @@ export async function fetchUserAssets(
     if (staleBalanceParam) {
       url += staleBalanceParam;
     }
-    const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
+    const res = await getAddysHttpClient().get<AddressAssetsReceivedMessage>(url, {
       abortController,
       timeout: USER_ASSETS_TIMEOUT_DURATION,
     });
+
     const chainIdsInResponse = res?.data?.meta?.chain_ids || [];
     const chainIdsWithErrors = res?.data?.meta?.chain_ids_with_errors || [];
     const assets = res?.data?.payload?.assets?.filter(asset => !asset.asset.defi_position) || [];
@@ -162,7 +163,7 @@ async function fetchUserAssetsForChain(params: {
 
   try {
     const url = `/${chainId}/${address}/assets`;
-    const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
+    const res = await getAddysHttpClient().get<AddressAssetsReceivedMessage>(url, {
       params: {
         currency: currency.toLowerCase(),
       },
@@ -270,9 +271,10 @@ export function setUserAssets({
 
   if (isArray) {
     for (const asset of userAssets) {
-      if (!chainIdsWithErrors?.includes(asset.chainId)) {
-        allAssets.push(asset);
-      }
+      // if (!chainIdsWithErrors?.includes(asset.chainId)) {
+      // THIS IS A HACK TO GET A TF WORKING WHILE BACKEND IS ADDRESSING AN ISSUE
+      allAssets.push(asset);
+      // }
     }
   } else {
     for (const [chainId, assetsDict] of Object.entries(userAssets)) {

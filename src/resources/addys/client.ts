@@ -1,0 +1,19 @@
+import { RainbowFetchClient } from '@/rainbow-fetch';
+import { ADDYS_API_KEY, ADDYS_BASE_URL } from 'react-native-dotenv';
+
+let addysHttp: RainbowFetchClient | undefined;
+
+export const getAddysHttpClient = () => {
+  const clientUrl = addysHttp?.baseURL;
+  const baseUrl = ADDYS_BASE_URL;
+  if (!addysHttp || clientUrl !== baseUrl) {
+    addysHttp = new RainbowFetchClient({
+      baseURL: ADDYS_BASE_URL,
+      headers: {
+        Authorization: `Bearer ${ADDYS_API_KEY}`,
+      },
+    });
+  }
+
+  return addysHttp;
+};

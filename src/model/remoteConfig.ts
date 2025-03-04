@@ -142,7 +142,7 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   remote_promo_enabled: false,
   points_notifications_toggle: true,
   dapp_browser: true,
-  idfa_check_enabled: true,
+  idfa_check_enabled: false,
   rewards_enabled: true,
 
   degen_mode: true,
