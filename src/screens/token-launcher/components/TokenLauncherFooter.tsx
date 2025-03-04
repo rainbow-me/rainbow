@@ -57,7 +57,6 @@ function HoldToCreateButton() {
   const showBiometryIcon = !IS_ANDROID && isLongPressAvailableForBiometryType && !isHardwareWallet;
 
   const handleLongPress = useCallback(async () => {
-    // TESTING
     setStep('creating');
     const provider = getProvider({ chainId });
     const wallet = await loadWallet({
@@ -116,9 +115,8 @@ function ContinueButton() {
     setStep('review');
   }, [setStep]);
 
-  // TODO: remove the "&& false", it's for testing
   return (
-    <ButtonPressAnimation disabled={!canContinueToReview && false} onPress={goToReviewStep}>
+    <ButtonPressAnimation disabled={!canContinueToReview} onPress={goToReviewStep}>
       <Box
         backgroundColor={colors.white}
         justifyContent="center"

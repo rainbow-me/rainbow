@@ -114,27 +114,12 @@ interface TokenLauncherStore {
   }) => Promise<LaunchTokenResponse | undefined>;
 }
 
-// TODO: for testing. Remove before merging
-const testTokenInfo = {
-  imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
-  imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
-  name: 'Test Token',
-  symbol: 'TEST',
-  description: 'This is a test token',
-};
-
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
-  // imageUri: '',
-  // imageUrl: '',
-  // name: '',
-  // symbol: '',
-  // description: '',
-  // TODO: for testing. Remove before merging
-  imageUrl: testTokenInfo.imageUrl,
-  imageUri: testTokenInfo.imageUri,
-  name: testTokenInfo.name,
-  symbol: testTokenInfo.symbol,
-  description: testTokenInfo.description,
+  imageUri: '',
+  imageUrl: '',
+  name: '',
+  symbol: '',
+  description: '',
   airdropRecipients: [],
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
@@ -146,10 +131,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   step: 'info' as const,
   stepIndex: makeMutable(0),
   stepSharedValue: makeMutable('info'),
-  // TODO: for testing. Remove before merging
-  // step: 'success' as const,
-  // stepIndex: makeMutable(3),
-  // stepSharedValue: makeMutable('success'),
   gasSpeed: GasSpeed.FAST,
   hasSufficientChainNativeAssetForTransactionGas: true,
   hasValidPrebuyAmount: true,
