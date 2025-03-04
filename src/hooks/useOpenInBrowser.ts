@@ -10,7 +10,7 @@ export function useOpenInBrowser() {
       if (supported) {
         return Linking.openURL(url);
       }
-      console.log('could not open url', url);
+      console.log('No deeplinking available for url:', url);
       return;
     }
 
