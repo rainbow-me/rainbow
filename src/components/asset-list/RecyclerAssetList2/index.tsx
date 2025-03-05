@@ -189,47 +189,58 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
   );
 
   return (
-    <Box
-      as={RNAnimated.View}
-      style={[
-        {
-          shadowColor: isDarkMode ? colors.shadowBlack : colors.rowDividerExtraLight,
-          shadowOffset: { width: 0, height: isDarkMode ? 4 : 1 },
-          // shadowOpacity: isDarkMode ? 0.4 : 0.04,
-          shadowRadius: isDarkMode ? 20 : 0,
-          zIndex: 1,
-        },
-        shadowOpacityStyle,
-      ]}
-    >
+    <>
       <Box
         as={RNAnimated.View}
-        background="surfacePrimary"
         style={[
           {
-            height: navbarHeight + insets.top + 24,
-            width: '100%',
-            position: 'absolute',
-            shadowColor: colors.shadowBlack,
-            shadowOffset: { width: 0, height: 1 },
+            shadowColor: isDarkMode ? colors.shadowBlack : colors.rowDividerExtraLight,
+            shadowOffset: { width: 0, height: isDarkMode ? 4 : 1 },
             // shadowOpacity: isDarkMode ? 0.4 : 0.04,
-            shadowRadius: 3,
-            top: navbarHeight + insets.top - 24,
+            shadowRadius: isDarkMode ? 20 : 0,
+            zIndex: 1,
+            height: navbarHeight + insets.top,
           },
-          animatedStyle,
+          shadowOpacityStyle,
         ]}
       >
         <Box
+          as={RNAnimated.View}
           background="surfacePrimary"
-          style={{
-            alignItems: 'center',
-            height: navbarHeight,
-            justifyContent: 'center',
-            top: insets.top + 24,
-          }}
-        />
+          style={[
+            {
+              height: navbarHeight + insets.top + 24,
+              width: '100%',
+              position: 'absolute',
+              shadowColor: colors.shadowBlack,
+              shadowOffset: { width: 0, height: 1 },
+              // shadowOpacity: isDarkMode ? 0.4 : 0.04,
+              shadowRadius: 3,
+              top: navbarHeight + insets.top - 24,
+            },
+            animatedStyle,
+          ]}
+        >
+          <Box
+            background="surfacePrimary"
+            style={{
+              alignItems: 'center',
+              height: navbarHeight,
+              justifyContent: 'center',
+              top: insets.top + 24,
+            }}
+          />
+        </Box>
       </Box>
-      <Box style={{ top: navbarHeight + insets.top, zIndex: 100 }}>
+      <Box
+        style={{
+          position: 'absolute',
+          top: navbarHeight + insets.top,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+        }}
+      >
         <Navbar
           hasStatusBarInset
           leftComponent={
@@ -248,14 +259,14 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
                 }}
               >
                 <View>
-                  <Navbar.Item>
+                  <Navbar.Item testID={'settings-menu'}>
                     <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
                   </Navbar.Item>
                 </View>
               </AndroidContextMenu>
             ) : (
-              <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
-                <Navbar.Item testID={'settings-menu'}>
+              <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem} testID={'settings-menu'}>
+                <Navbar.Item>
                   <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
                 </Navbar.Item>
               </ContextMenuButton>
@@ -274,6 +285,6 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
           }
         />
       </Box>
-    </Box>
+    </>
   );
 }

@@ -245,6 +245,11 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
         break;
       }
 
+      case 'e2e': {
+        // Ignore, will be handled in TestDeeplinkHandler.
+        break;
+      }
+
       default: {
         logger.debug(`[handleDeeplink]: default`, { url });
         const addressOrENS = pathname?.split('/profile/')?.[1] ?? pathname?.split('/')?.[1];

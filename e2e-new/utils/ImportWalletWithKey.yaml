@@ -1,0 +1,18 @@
+appId: ${APP_ID}
+env:
+  PKEY: ${DEV_PKEY}
+  NAME: 'Test Wallet'
+---
+- assertVisible:
+    id: welcome-screen
+
+- openLink: rainbow://e2e/import?privateKey=${PKEY}&name=${NAME}
+# The first time a simulator opens a link it shows a dialog.
+- runFlow:
+    when:
+      visible: 'Open in .*'
+      platform: iOS
+    commands:
+      - tapOn: 'Open'
+- assertVisible:
+    id: wallet-screen
