@@ -1,0 +1,84 @@
+name: Android e2e tests
+
+on: [pull_request]
+jobs:
+  android-e2e:
+    runs-on: blacksmith-8vcpu-ubuntu-2204
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Java environment
+        uses: useblacksmith/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install secret tools
+        run: sudo apt install libsecret-tools
+
+      - name: Setup env
+        env:
+            DEPLOY_PKEY_DOTENV_REPO: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+        run: |
+            mkdir -p /home/runner/.ssh
+            echo "$DEPLOY_PKEY_DOTENV_REPO" > /home/runner/.ssh/dotenv
+            chmod 600 /home/runner/.ssh/dotenv
+            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+            ssh-add /home/runner/.ssh/dotenv
+            git clone git@github.com:rainbow-me/rainbow-env.git
+            mv rainbow-env/dotenv .env
+            mv rainbow-env/android/app/google-services.json android/app/google-services.json
+            rm -rf rainbow-env
+
+      - name: Setup scripts
+        env:
+            DEPLOY_PKEY_SCRIPTS_REPO: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+            SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+            CI_SCRIPTS_RN_UPGRADE: ${{ secrets.CI_SCRIPTS_RN_UPGRADE }}
+        run: |
+            mkdir -p /home/runner/.ssh
+            echo "$DEPLOY_PKEY_SCRIPTS_REPO" > /home/runner/.ssh/scripts
+            chmod 600 /home/runner/.ssh/scripts
+            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+            ssh-add /home/runner/.ssh/scripts
+            eval $CI_SCRIPTS_RN_UPGRADE
+            sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
+
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - name: Cache Yarn dependencies
+        uses: useblacksmith/cache@v5
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            .yarn/cache
+            .yarn/install-state.gz
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Cache Gradle build
+        uses: useblacksmith/setup-gradle/setup-gradle@v5
+        with:
+          cache-read-only: false
+
+      - name: Install dependencies
+        run: |
+          yarn install && yarn setup
+
+      - name: Check for frozen lockfile
+        run: ./scripts/check-lockfile.sh
+
+      - name: Audit CI
+        run: yarn audit-ci --config audit-ci.jsonc
+
+      - name: Build the app in Release mode
+        run: yarn gradle assembleRelease -PreactNativeArchitectures=x86_64 -PisE2E=true

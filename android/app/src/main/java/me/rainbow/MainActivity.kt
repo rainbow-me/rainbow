@@ -9,14 +9,14 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.modules.network.OkHttpClientProvider
 import com.zoontek.rnbootsplash.RNBootSplash
 import io.branch.rnbranch.RNBranchModule
-import me.rainbow.NativeModules.Internals.CustomNetworkModule
+// import me.rainbow.NativeModules.Internals.CustomNetworkModule
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage
 
 class MainActivity : ReactActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         RNBootSplash.init(this, R.style.BootTheme) // Initialize the splash screen
         super.onCreate(null) // Pass null here as required by react-native-screens
-        OkHttpClientProvider.setOkHttpClientFactory(CustomNetworkModule())
+        // OkHttpClientProvider.setOkHttpClientFactory(CustomNetworkModule())
         WebView.setWebContentsDebuggingEnabled(false)
     }
 
