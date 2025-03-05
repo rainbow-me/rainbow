@@ -19,7 +19,8 @@ export function useTokenLauncher(): typeof TokenLauncher {
   const currentConfig = useMemo(() => TokenLauncher.getConfig(), []);
 
   useEffect(() => {
-    if (currentConfig.SUPPORTED_NETWORKS?.length === 0) {
+    console.log('launcherSupportedNetworks', launcherSupportedChains);
+    if (currentConfig.SUPPORTED_NETWORKS?.length !== launcherSupportedChains.length) {
       TL.configure({
         SUPPORTED_NETWORKS: launcherSupportedChains,
       });

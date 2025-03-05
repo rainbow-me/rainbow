@@ -14,11 +14,6 @@ import { time } from '@/utils';
 const INITIAL_BACKEND_NETWORKS = buildTimeNetworks;
 const DEFAULT_PRIVATE_MEMPOOL_TIMEOUT = time.minutes(2);
 
-interface BackendNetworksData {
-  backendChains: Chain[];
-  backendNetworks: BackendNetworksResponse;
-}
-
 export interface BackendNetworksState {
   backendChains: Chain[];
   backendNetworks: BackendNetworksResponse;
@@ -115,16 +110,20 @@ function createParameterizedSelector<T, Args extends unknown[]>(
   };
 }
 
-export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse, never, BackendNetworksState, BackendNetworksData>(
+export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse, never, BackendNetworksState>(
   {
     fetcher: fetchBackendNetworks,
-    transform: data => {
-      return {
-        backendChains: transformBackendNetworksToChains(data.networks),
-        backendNetworks: data,
-      };
+    setData: ({ data, set }) => {
+      set(state => {
+        if (isEqual(state.backendNetworks, data)) return state;
+        return {
+          backendChains: transformBackendNetworksToChains(data.networks),
+          backendNetworks: data,
+        };
+      });
     },
-    staleTime: time.minutes(10),
+    debugMode: true,
+    staleTime: time.minutes(1),
   },
 
   (_, get) => ({
@@ -180,6 +179,21 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
         },
         {} as Record<ChainId, BackendNetwork['nativeAsset']>
       )
+    ),
+
+    getTokenLauncherSupportedChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.launcher?.v1?.enabled).map(network => toChainId(network.id))
+    ),
+
+    getTokenLauncherSupportedChainInfo: createSelector(networks =>
+      networks.networks
+        .filter(network => network.enabledServices.launcher?.v1?.enabled)
+        .map(network => {
+          return {
+            chainId: toChainId(network.id),
+            contractAddress: network.enabledServices.launcher?.v1?.contractAddress || '',
+          };
+        })
     ),
 
     getChainsLabel: createSelector(networks =>
@@ -320,21 +334,6 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
 
     getNftSupportedChainIds: createSelector(networks =>
       networks.networks.filter(network => network.enabledServices.nftProxy.enabled).map(network => toChainId(network.id))
-    ),
-
-    getTokenLauncherSupportedChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.launcher?.v1?.enabled).map(network => toChainId(network.id))
-    ),
-
-    getTokenLauncherSupportedChainInfo: createSelector(networks =>
-      networks.networks
-        .filter(network => network.enabledServices.launcher?.v1?.enabled)
-        .map(network => {
-          return {
-            chainId: toChainId(network.id),
-            contractAddress: network.enabledServices.launcher?.v1?.contractAddress || '',
-          };
-        })
     ),
 
     getFlashbotsSupportedChainIds: createSelector(() => [ChainId.mainnet]),
