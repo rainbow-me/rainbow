@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
+import * as i18n from '@/languages';
 import { Box, Text, TextShadow } from '@/design-system';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { Canvas, LinearGradient, Path, vec, Skia, Group, BlurMask } from '@shopify/react-native-skia';
@@ -139,11 +140,11 @@ export function SuccessStep() {
       <Box style={{ position: 'absolute', bottom: 40 }} paddingHorizontal={'44px'} gap={20} alignItems="center">
         <TextShadow blur={10} color="rgba(255, 255, 255, 0.12)">
           <Text align="center" size="44pt" weight="bold" color={'label'}>
-            {`$${symbol} is live!`}
+            {i18n.t(i18n.l.token_launcher.success.title, { symbol })}
           </Text>
         </TextShadow>
         <Text size="20pt" weight="medium" align="center" color={'labelSecondary'} style={{ lineHeight: 27 }}>
-          {`Congrats, you just launched ${name} into the world! Share it to spread the vibes`}
+          {i18n.t(i18n.l.token_launcher.success.congrats, { name })}
         </Text>
       </Box>
     </Box>

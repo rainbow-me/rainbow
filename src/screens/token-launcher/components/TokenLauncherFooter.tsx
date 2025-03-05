@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import * as i18n from '@/languages';
 import { Box, Inline, Separator, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
@@ -59,13 +60,12 @@ function HoldToCreateButton() {
   const showBiometryIcon = !IS_ANDROID && isLongPressAvailableForBiometryType && !isHardwareWallet;
 
   const handleLongPress = useCallback(async () => {
-    // TESTING
-    setStep('creating');
     const provider = getProvider({ chainId });
     const wallet = await loadWallet({
       address: accountAddress,
       provider,
     });
+    setStep('creating');
 
     if (isHardwareWallet) {
       // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
@@ -96,8 +96,8 @@ function HoldToCreateButton() {
       disabledBackgroundColor={accentColors.opacity12}
       isProcessing={isProcessing}
       showBiometryIcon={showBiometryIcon}
-      processingLabel={'Creating...'}
-      label={'Hold to Create'}
+      processingLabel={i18n.t(i18n.l.token_launcher.buttons.creating)}
+      label={i18n.t(i18n.l.token_launcher.buttons.hold_to_create)}
       onLongPress={handleLongPress}
       height={48}
       textStyle={{
@@ -130,7 +130,7 @@ function ContinueButton() {
         style={{ opacity: canContinueToReview ? 1 : 0.2 }}
       >
         <Text color={{ custom: colors.black }} size="20pt" weight="heavy" style={{ opacity: canContinueToReview ? 1 : 0.5 }}>
-          {'Continue'}
+          {i18n.t(i18n.l.button.continue)}
         </Text>
       </Box>
     </ButtonPressAnimation>
@@ -193,7 +193,7 @@ function TokenPreview() {
           </Text>
           <Box flexDirection="row" alignItems="center" gap={4}>
             <Text color="labelQuaternary" size="11pt" weight="bold">
-              {`MCAP`}
+              {i18n.t(i18n.l.token_launcher.titles.mcap)}
             </Text>
             <Text color="labelTertiary" size="11pt" weight="bold">
               {`${tokenMarketCap}`}
@@ -329,7 +329,7 @@ export function TokenLauncherFooter() {
           }}
         >
           <Text align="center" color="labelTertiary" size="20pt" weight="heavy">
-            {'Skip'}
+            {i18n.t(i18n.l.button.skip)}
           </Text>
         </ButtonPressAnimation>
       </Animated.View>

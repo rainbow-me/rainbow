@@ -1,4 +1,5 @@
 import React from 'react';
+import * as i18n from '@/languages';
 import { ScrollView, StyleSheet } from 'react-native';
 import { Box, Text, TextShadow } from '@/design-system';
 import { TokenLogo } from './TokenLogo';
@@ -36,7 +37,7 @@ function TokenAllocationCard() {
   return (
     <Box gap={20} backgroundColor={CARD_BACKGROUND_COLOR} padding={'20px'} borderRadius={FIELD_BORDER_RADIUS} width={'full'}>
       <Text size="17pt" weight="heavy" color={'label'}>
-        {'Token allocation'}
+        {i18n.t(i18n.l.token_launcher.review.token_allocation)}
       </Text>
       <Box gap={4}>
         <Box
@@ -51,7 +52,7 @@ function TokenAllocationCard() {
           <Box flexGrow={1} flexDirection="row" alignItems="center" gap={10}>
             <AddressAvatar url={accountImage} address={accountAddress} label={accountAddress} color={accountColor} size={20} />
             <Text size="17pt" weight="medium" color={'labelSecondary'}>
-              {'Your share'}
+              {i18n.t(i18n.l.token_launcher.review.your_share)}
             </Text>
           </Box>
           <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
@@ -129,7 +130,7 @@ function AboutCard() {
   return (
     <Box gap={20} backgroundColor={CARD_BACKGROUND_COLOR} padding={'20px'} borderRadius={FIELD_BORDER_RADIUS} width={'full'}>
       <Text size="17pt" weight="heavy" color={'label'}>
-        {'About'}
+        {i18n.t(i18n.l.token_launcher.review.about)}
       </Text>
       {description !== '' && (
         <Text size="17pt" weight="medium" color={'labelSecondary'}>
@@ -209,7 +210,7 @@ function TotalCostPill() {
       <Box style={StyleSheet.absoluteFill} backgroundColor={accentColors.opacity12} />
       <Box style={StyleSheet.absoluteFill} backgroundColor={'rgba(255, 255, 255, 0.08)'} />
       <Text size="17pt" weight="heavy" color={'label'}>
-        {'Total cost'}
+        {i18n.t(i18n.l.token_launcher.review.total_cost)}
       </Text>
       <Box flexDirection="row" alignItems="center" gap={4}>
         <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
@@ -267,7 +268,7 @@ export function ReviewStep() {
                 </Text>
               </TextShadow>
               <Text size="15pt" weight="bold" color={'labelSecondary'}>
-                {'Initial price'}
+                {i18n.t(i18n.l.token_launcher.review.initial_price)}
               </Text>
             </Box>
             <Box gap={12} flexGrow={1} padding={'20px'} backgroundColor={accentColors.opacity12} borderRadius={FIELD_BORDER_RADIUS}>
@@ -277,7 +278,7 @@ export function ReviewStep() {
                 </Text>
               </TextShadow>
               <Text size="15pt" weight="bold" color={'labelSecondary'}>
-                {'Market cap'}
+                {i18n.t(i18n.l.token_launcher.review.market_cap)}
               </Text>
             </Box>
           </Box>
@@ -294,7 +295,7 @@ export function ReviewStep() {
               borderRadius={FIELD_BORDER_RADIUS}
             >
               <Text size="17pt" weight="heavy" color={'label'}>
-                {'Total Supply'}
+                {i18n.t(i18n.l.token_launcher.review.total_supply)}
               </Text>
               <Text size="17pt" weight="bold" style={{ textTransform: 'capitalize' }} color={{ custom: accentColors.opacity100 }}>
                 {abbreviateNumber(tokenSupply, 2, 'long', true)}
@@ -312,7 +313,7 @@ export function ReviewStep() {
               borderRadius={FIELD_BORDER_RADIUS}
             >
               <Text size="17pt" weight="heavy" color={'label'}>
-                {'Network'}
+                {i18n.t(i18n.l.token_launcher.review.network)}
               </Text>
               <Box flexDirection="row" alignItems="center" gap={8}>
                 <ChainImage position="relative" chainId={tokenChainId} size={16} />

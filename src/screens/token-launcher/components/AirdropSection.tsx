@@ -1,4 +1,5 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
+import * as i18n from '@/languages';
 import { Bleed, Box, Separator, Text, TextIcon, TextShadow } from '@/design-system';
 import { CollapsableField } from './CollapsableField';
 import { SingleFieldInput } from './SingleFieldInput';
@@ -118,7 +119,7 @@ function SuggestedUsers({ suggestions }: { suggestions: SuggestedUser[] }) {
   return (
     <Box gap={12}>
       <Text color="labelTertiary" size="13pt" weight="heavy">
-        {'SUGGESTED USERS'}
+        {i18n.t(i18n.l.token_launcher.airdrop.suggested_users)}
       </Text>
       <Bleed horizontal={'20px'}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingLeft: 20 }}>
@@ -183,7 +184,7 @@ function AirdropGroups() {
   return (
     <Box gap={12}>
       <Text color="labelTertiary" size="13pt" weight="heavy">
-        {'AIRDROP LISTS'}
+        {i18n.t(i18n.l.token_launcher.airdrop.airdrop_lists)}
       </Text>
       <Bleed vertical={'3px'} horizontal={'20px'}>
         <ScrollView
@@ -328,7 +329,7 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
     <SingleFieldInput
       showPaste
       icon={labelIcon}
-      placeholder="Address or ENS"
+      placeholder={i18n.t(i18n.l.token_launcher.airdrop.address_or_ens)}
       textAlign="left"
       inputStyle={{ textAlign: 'left', paddingLeft: 8 }}
       validationWorklet={(text: string) => {

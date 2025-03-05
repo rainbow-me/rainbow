@@ -1,4 +1,5 @@
 import React from 'react';
+import * as i18n from '@/languages';
 import { Box, Text } from '@/design-system';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { RainbowTokenFlip } from './RainbowTokenFlip';
@@ -15,7 +16,7 @@ export function CreatingStep() {
       <Box gap={32} alignItems="center">
         <RainbowTokenFlip color={accentColors.opacity100} image={tokenImage} size={100} />
         <Text size="20pt" weight="bold" color={'label'}>
-          {`Deploying $${symbol}...`}
+          {i18n.t(i18n.l.token_launcher.creating.deploying, { symbol })}
         </Text>
       </Box>
     </Box>

@@ -1,4 +1,5 @@
 import React from 'react';
+import * as i18n from '@/languages';
 import { Box, Inline, Separator, Text, TextShadow } from '@/design-system';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { FIELD_BORDER_RADIUS } from '../constants';
@@ -19,7 +20,7 @@ export function AllocationBreakdown() {
           {tokenPrice}
         </Text>
         <Text color="labelQuaternary" size="13pt" weight="bold">
-          {'START PRICE'}
+          {i18n.t(i18n.l.token_launcher.allocation_breakdown.start_price)}
         </Text>
       </Box>
       <Separator color={'separatorSecondary'} />
@@ -38,7 +39,7 @@ export function AllocationBreakdown() {
             </Text>
           </TextShadow>
           <Text color={{ custom: accentColors.opacity100 }} size="13pt" weight="bold">
-            {'MY SHARE'}
+            {i18n.t(i18n.l.token_launcher.allocation_breakdown.my_share)}
           </Text>
         </Box>
         <Box gap={12} width={'1/2'} justifyContent="center" alignItems="center">
@@ -46,7 +47,7 @@ export function AllocationBreakdown() {
             {`${convertAmountToPercentageDisplay(allocationBips.airdrop / 100, 2, 2, !isAirdropping)}`}
           </Text>
           <Text color={isAirdropping ? 'label' : 'labelQuaternary'} size="13pt" weight="bold">
-            {'AIRDROPPING'}
+            {i18n.t(i18n.l.token_launcher.allocation_breakdown.airdropping)}
           </Text>
         </Box>
       </Inline>

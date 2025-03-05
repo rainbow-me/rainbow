@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Box, ColorModeProvider } from '@/design-system';
 import { FOOTER_HEIGHT, TokenLauncherFooter } from './components/TokenLauncherFooter';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT, TokenLauncherHeader } from './components/TokenLauncherHeader';
 import { InfoInputStep } from './components/InfoInputStep';
 import { ReviewStep } from './components/ReviewStep';
-import { KeyboardAvoidingView, KeyboardProvider, KeyboardStickyView, useKeyboardController } from 'react-native-keyboard-controller';
+import { KeyboardAvoidingView, KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useTokenLauncherStore } from './state/tokenLauncherStore';
 import Animated, { Extrapolation, FadeIn, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { SkiaBackground } from './components/SkiaBackground';
@@ -129,14 +129,6 @@ function TokenLauncherScreenContent() {
 }
 
 export function TokenLauncherScreen() {
-  // const { setEnabled: setKeyboardControllerEnabled } = useKeyboardController();
-
-  // useEffect(() => {
-  //   return () => {
-  //     setKeyboardControllerEnabled(false);
-  //   };
-  // }, [setKeyboardControllerEnabled]);
-
   return (
     <ColorModeProvider value="dark">
       <TokenLauncherContextProvider>

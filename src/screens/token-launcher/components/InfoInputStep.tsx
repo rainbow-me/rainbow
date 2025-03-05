@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import * as i18n from '@/languages';
 import { Bleed, Box, Text, useForegroundColor, Separator } from '@/design-system';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { FOOTER_HEIGHT } from './TokenLauncherFooter';
@@ -29,7 +30,7 @@ function TotalSupplyInput() {
         return validateTotalSupplyWorklet(parseInt(text.trim()) || 0);
       }}
       inputMode="numeric"
-      title="Total Supply"
+      title={i18n.t(i18n.l.token_launcher.titles.total_supply)}
       subtitle={formattedTotalSupply}
       defaultValue={DEFAULT_TOTAL_SUPPLY.toString()}
     />
@@ -50,8 +51,8 @@ function SymbolInput() {
       spellCheck={false}
       inputStyle={{ textTransform: 'uppercase' }}
       autoCapitalize="characters"
-      title="Ticker"
-      placeholder="$NAME"
+      title={i18n.t(i18n.l.token_launcher.titles.ticker)}
+      placeholder={i18n.t(i18n.l.token_launcher.placeholders.ticker)}
     />
   );
 }
@@ -67,8 +68,8 @@ function NameInput() {
       }}
       spellCheck={false}
       autoCapitalize="sentences"
-      title="Name"
-      placeholder="Enter coin name"
+      title={i18n.t(i18n.l.token_launcher.titles.name)}
+      placeholder={i18n.t(i18n.l.token_launcher.placeholders.enter_coin_name)}
     />
   );
 }
@@ -80,7 +81,7 @@ function RequiredInfoSection() {
       <Box flexDirection="row" alignItems="center" gap={10}>
         <Icon name="asterisk" color={labelQuaternary} size={10} />
         <Text color="labelQuaternary" size="13pt" weight="heavy">
-          {'REQUIRED INFO'}
+          {i18n.t(i18n.l.token_launcher.titles.required_info)}
         </Text>
       </Box>
       <Box gap={8}>
@@ -98,7 +99,7 @@ function AboutSection() {
     <Box gap={16} paddingVertical={'20px'}>
       <Box paddingHorizontal={'20px'}>
         <Text color="labelQuaternary" size="13pt" weight="heavy">
-          {'ABOUT'}
+          {i18n.t(i18n.l.token_launcher.titles.about)}
         </Text>
       </Box>
       <Box gap={8} width={'full'}>

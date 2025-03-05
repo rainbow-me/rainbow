@@ -24,11 +24,11 @@ export function TokenLauncherHeader() {
   const setStep = useTokenLauncherStore(state => state.setStep);
   let title = '';
   if (step === 'info') {
-    title = 'New Coin';
+    title = i18n.t(i18n.l.token_launcher.header.new_coin);
   } else if (step === 'review') {
-    title = 'Review';
+    title = i18n.t(i18n.l.token_launcher.header.review);
   } else if (step === 'creating') {
-    title = 'Creating';
+    title = i18n.t(i18n.l.token_launcher.header.creating);
   }
 
   const handlePressExit = useCallback(() => {
@@ -36,7 +36,7 @@ export function TokenLauncherHeader() {
       {
         cancelButtonIndex: 1,
         destructiveButtonIndex: 0,
-        options: ['Discard & Exit', i18n.t(i18n.l.button.cancel)],
+        options: [i18n.t(i18n.l.token_launcher.discard_and_exit), i18n.t(i18n.l.button.cancel)],
       },
       (buttonIndex: number) => {
         if (buttonIndex === 0) {
