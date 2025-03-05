@@ -320,8 +320,6 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
       networks.networks.filter(network => network.enabledServices.nftProxy.enabled).map(network => toChainId(network.id))
     ),
 
-    getFlashbotsSupportedChainIds: createSelector(() => [ChainId.mainnet]),
-
     getTokenLauncherSupportedChainIds: createSelector(networks =>
       networks.networks.filter(network => network.enabledServices.launcher?.v1?.enabled).map(network => toChainId(network.id))
     ),
@@ -336,6 +334,8 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
           };
         })
     ),
+
+    getFlashbotsSupportedChainIds: createSelector(() => [ChainId.mainnet]),
 
     getShouldDefaultToFastGasChainIds: createSelector(() => [ChainId.mainnet, ChainId.polygon, ChainId.goerli]),
 
