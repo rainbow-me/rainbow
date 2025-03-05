@@ -1,0 +1,13 @@
+appId: ${APP_ID}
+tags:
+  - auth
+  - parallel
+---
+- clearState
+- launchApp:
+    arguments:
+      isE2ETest: true
+- tapOn: 'Get a new wallet'
+- runFlow: ../utils/MaybeSetupPin.yaml
+- assertVisible:
+    id: wallet-screen
