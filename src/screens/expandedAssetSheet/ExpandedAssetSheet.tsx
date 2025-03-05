@@ -4,12 +4,11 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { SheetContent } from './components/SheetContent';
 import { SlackSheet } from '@/components/sheet';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { StatusBar } from 'react-native';
 import { Box, useColorMode } from '@/design-system';
-import { SHEET_FOOTER_HEIGHT, SheetFooter } from './components/SheetFooter';
+import { SheetFooter } from './components/SheetFooter';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { RootStackParamList } from '@/navigation/types';
-import { safeAreaInsetValues } from '@/utils';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
 const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
@@ -17,6 +16,7 @@ const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
 function ExpandedAssetSheetContent() {
   const { isDarkMode } = useColorMode();
   const { accentColors } = useExpandedAssetSheetContext();
+  const safeAreaInsets = useSafeAreaInsets();
 
   return (
     <>
@@ -27,17 +27,16 @@ function ExpandedAssetSheetContent() {
         scrollEnabled
         removeTopPadding
         hideHandle
-        additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
-        bottomInset={SHEET_FOOTER_HEIGHT}
+        additionalTopPadding={false}
         scrollIndicatorInsets={{
-          bottom: safeAreaInsetValues.bottom + 32 + 46,
-          top: safeAreaInsetValues.top + 32,
+          bottom: safeAreaInsets.bottom,
+          top: safeAreaInsets.top + 32,
         }}
       >
         <SheetContent />
       </SlackSheet>
       <Box position="absolute" top="0px" left="0px" right="0px" width="full" pointerEvents="none">
-        <Box backgroundColor={accentColors.background} height={75} width="full">
+        <Box backgroundColor={accentColors.background} height={safeAreaInsets.top + (IS_ANDROID ? 24 : 12)} width="full">
           <Box
             height={{ custom: 5 }}
             width={{ custom: 36 }}
