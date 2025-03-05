@@ -14,11 +14,6 @@ import { time } from '@/utils';
 const INITIAL_BACKEND_NETWORKS = buildTimeNetworks;
 const DEFAULT_PRIVATE_MEMPOOL_TIMEOUT = time.minutes(2);
 
-interface BackendNetworksData {
-  backendChains: Chain[];
-  backendNetworks: BackendNetworksResponse;
-}
-
 export interface BackendNetworksState {
   backendChains: Chain[];
   backendNetworks: BackendNetworksResponse;
@@ -115,14 +110,17 @@ function createParameterizedSelector<T, Args extends unknown[]>(
   };
 }
 
-export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse, never, BackendNetworksState, BackendNetworksData>(
+export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse, never, BackendNetworksState, BackendNetworksResponse>(
   {
     fetcher: fetchBackendNetworks,
-    transform: data => {
-      return {
-        backendChains: transformBackendNetworksToChains(data.networks),
-        backendNetworks: data,
-      };
+    setData: ({ data, set }) => {
+      set(state => {
+        if (isEqual(state.backendNetworks, data)) return state;
+        return {
+          backendChains: transformBackendNetworksToChains(data.networks),
+          backendNetworks: data,
+        };
+      });
     },
     staleTime: time.minutes(10),
   },
