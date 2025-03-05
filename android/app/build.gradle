@@ -32,7 +32,7 @@ def getPassword(String currentUser, String keyChain) {
 import com.android.build.OutputFile
 
 apply plugin: "com.facebook.react"
-apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
+// apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 
 react {
 	    /* Folders */
@@ -44,13 +44,13 @@ react {
 	    // codegenDir = file("../node_modules/@react-native/codegen")
 	    //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
 	    // cliFile = file("../node_modules/react-native/cli.js")
-	
+
 	    /* Variants */
 	    //   The list of variants to that are debuggable. For those we're going to
 	    //   skip the bundling of the JS bundle and the assets. By default is just 'debug'.
 	    //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
 	    // debuggableVariants = ["liteDebug", "prodDebug"]
-	
+
 	    /* Bundling */
 	    //   A list containing the node command and its flags. Default is just 'node'.
 	    // nodeExecutableAndArgs = ["node"]
@@ -70,7 +70,7 @@ react {
 	    //   A list of extra flags to pass to the 'bundle' commands.
 	    //   See https://github.com/react-native-community/cli/blob/main/docs/commands.md#bundle
 	    // extraPackagerArgs = []
-	
+
 	    /* Hermes Commands */
 	    //   The hermes compiler command to run. By default it is 'hermesc'
 	    // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
@@ -142,7 +142,7 @@ android {
         renderscriptSupportModeEnabled true
         multiDexEnabled true
         testBuildType System.getProperty('testBuildType', 'debug')
-        missingDimensionStrategy 'detox', 'full'        
+        missingDimensionStrategy 'detox', 'full'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         manifestPlaceholders = [
@@ -179,7 +179,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             // Detox-specific additions to pro-guard
@@ -212,7 +212,7 @@ dependencies {
 
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-    
+
     implementation("com.github.NovaCrypto:BIP39:0e7fa95f80") {
         exclude group: "io.github.novacrypto", module: "ToRuntime"
         exclude group: "io.github.novacrypto", module: "SHA256"

@@ -1,0 +1,7 @@
+appId: ${APP_ID}
+---
+- launchApp
+- tapOn: "I already have one"
+- tapOn: "Import a Secret Phrase or Private Key"
+- tapOn: "Enter a recovery phrase or private key"
+- inputText: ${DEV_PKEY}
