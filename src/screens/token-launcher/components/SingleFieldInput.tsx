@@ -69,6 +69,10 @@ const FieldInput = React.memo(
             lineHeight: undefined,
           },
           inputStyle,
+          {
+            padding: 0,
+            paddingVertical: 0,
+          },
         ]}
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...textInputProps}

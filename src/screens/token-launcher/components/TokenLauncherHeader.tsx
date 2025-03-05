@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import * as i18n from '@/languages';
-import { Box, Text } from '@/design-system';
+import { Box, Text, TextIcon } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { BlurView } from '@react-native-community/blur';
@@ -10,6 +10,7 @@ import { useAccountProfile } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { showActionSheetWithOptions } from '@/utils';
+import { IS_IOS } from '@/env';
 
 const EXIT_BUTTON_SIZE = 36;
 // padding top + exit button + inner padding + padding bottom + blur padding
@@ -99,7 +100,7 @@ export function TokenLauncherHeader() {
         {step === 'info' && (
           <ButtonPressAnimation onPress={handlePressExit}>
             <Box
-              as={BlurView}
+              as={IS_IOS ? BlurView : Box}
               borderWidth={THICK_BORDER_WIDTH}
               alignItems="center"
               justifyContent="center"
@@ -109,9 +110,9 @@ export function TokenLauncherHeader() {
               borderRadius={EXIT_BUTTON_SIZE / 2}
               blurAmount={12}
             >
-              <Text size="icon 16px" weight="heavy" color="labelSecondary">
-                􀆄
-              </Text>
+              <TextIcon containerSize={EXIT_BUTTON_SIZE} size="icon 16px" weight="heavy" color="labelSecondary">
+                {'􀆄'}
+              </TextIcon>
             </Box>
           </ButtonPressAnimation>
         )}

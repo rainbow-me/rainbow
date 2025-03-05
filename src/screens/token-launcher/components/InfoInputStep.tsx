@@ -131,7 +131,6 @@ export function InfoInputStep() {
       keyboardDismissMode="interactive"
       bottomOffset={FOOTER_HEIGHT + 36}
       extraKeyboardSpace={FOOTER_HEIGHT}
-      // extraKeyboardSpace={-(TOKEN_PREVIEW_BAR_HEIGHT + safeAreaInsetValues.bottom)}
     >
       <Box width="full" alignItems="center" paddingBottom={'20px'} paddingHorizontal="20px">
         <Box paddingBottom={'16px'}>

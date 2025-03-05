@@ -356,6 +356,7 @@ function AirdropGroupField({ recipient }: { recipient: AirdropRecipient }) {
       style={{
         backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
         paddingHorizontal: 16,
+        paddingVertical: 8,
         borderRadius: FIELD_INNER_BORDER_RADIUS,
         flex: 1,
       }}

@@ -19,14 +19,13 @@ export function DescriptionField() {
           backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
           paddingHorizontal: 16,
         }}
-        // TODO: Allegedly no longer needed
-        // validationWorklet={text => {
-        //   'worklet';
-        //   if (text.trim().length > MAX_DESCRIPTION_LENGTH) {
-        //     return `Too long, friend.`;
-        //   }
-        //   return '';
-        // }}
+        validationWorklet={text => {
+          'worklet';
+          if (text.trim().length > MAX_DESCRIPTION_LENGTH) {
+            return { error: true, message: `Too long, friend.` };
+          }
+        }}
+        textAlignVertical="top"
         onInputChange={text => setDescription(text)}
         numberOfLines={3}
         textAlign="left"

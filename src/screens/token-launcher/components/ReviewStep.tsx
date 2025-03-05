@@ -27,7 +27,7 @@ function TokenAllocationCard() {
   const { accountColor, accountImage, accountAddress } = useAccountProfile();
 
   const allocationBips = useTokenLauncherStore(state => state.allocationBips());
-  const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
+  const airdropRecipients = useTokenLauncherStore(state => state.validAirdropRecipients());
   const totalAirdropAddresses = airdropRecipients.reduce((acc, recipient) => {
     return acc + recipient.count;
   }, 0);
