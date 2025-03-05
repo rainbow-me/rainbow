@@ -1,6 +1,6 @@
 import React, { useMemo, memo } from 'react';
 
-import { Canvas, Shadow, Image, Fill, Blur, rect, rrect, Box, Group } from '@shopify/react-native-skia';
+import { Canvas, Shadow, Image, Fill, rect, rrect, Box, Group, BackdropBlur } from '@shopify/react-native-skia';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
@@ -43,11 +43,10 @@ export const SkiaBackground = memo(function SkiaBackground({ width, height }: { 
 
   return (
     <Canvas style={{ width, height }}>
-      <Image x={0} y={0} width={width} height={height} image={tokenBackgroundImage} fit="cover">
-        <Blur blur={100} />
-      </Image>
-
-      <Fill opacity={dimOverlayOpacity} color="rgba(26, 26, 26, 0.75)" />
+      <Image x={0} y={0} width={width} height={height} image={tokenBackgroundImage} fit="cover" />
+      <BackdropBlur antiAlias dither blur={100} clip={{ x: 0, y: 0, width: width, height: height }}>
+        <Fill opacity={dimOverlayOpacity} antiAlias dither color="rgba(26, 26, 26, 0.75)" />
+      </BackdropBlur>
 
       <Box box={roundedRect} strokeWidth={THICK_BORDER_WIDTH * 2} style="stroke" color={separatorSecondaryColor} />
 

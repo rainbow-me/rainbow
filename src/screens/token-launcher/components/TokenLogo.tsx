@@ -27,6 +27,7 @@ export function TokenLogo() {
   });
 
   const onPress = useCallback(async () => {
+    // NOTE: There is a bug on iOS simulator devices running iOS 18.0 - https://developer.apple.com/forums/thread/763636
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,

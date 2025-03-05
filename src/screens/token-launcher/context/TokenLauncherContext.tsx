@@ -24,8 +24,8 @@ import { SharedValue } from 'react-native-reanimated';
 
 type TokenLauncherContextType = {
   chainNativeAssetRequiredForTransactionGas: string;
-  tokenSkiaImage: SkImage | null;
-  tokenAnimatedSkiaImage: SharedValue<SkImage | null>;
+  tokenBackgroundImage: SkImage | null;
+  tokenImage: SkImage | null | SharedValue<SkImage | null>;
   accentColors: {
     opacity100: string;
     opacity30: string;
@@ -73,6 +73,8 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
     state => state.setHasSufficientChainNativeAssetForTransactionGas
   );
 
+  console.log('token launcher context');
+
   const gasSettings = useGasSettings(chainId, gasSpeed);
 
   const setEthPriceUsd = useTokenLauncherStore(state => state.setEthPriceUsd);
@@ -80,9 +82,20 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
 
   const imageUrl = useTokenLauncherStore(state => state.imageUrl);
   const imageUri = useTokenLauncherStore(state => state.imageUrl);
-  const tokenSkiaImage = useImage(imageUri);
+  const isImageGif = useMemo(() => imageUri?.endsWith('.gif'), [imageUri]);
+
+  const skiaImage = useImage(imageUri);
   // The result of this hook works for displaying both normal images and gifs
-  const tokenAnimatedSkiaImage = useAnimatedImageValue(imageUri);
+  const animatedSkiaImage = useAnimatedImageValue(imageUri);
+
+  const tokenImage: SkImage | null | SharedValue<SkImage | null> = useMemo(() => {
+    if (isImageGif) {
+      return animatedSkiaImage;
+    }
+    return skiaImage;
+  }, [animatedSkiaImage, isImageGif, skiaImage]);
+
+  const tokenBackgroundImage: SkImage | null = skiaImage;
 
   const imageDerivedColor = usePersistentDominantColorFromImage(imageUrl);
 
@@ -182,9 +195,7 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   }, [ethPriceNative, ethPriceUsd, setEthPriceNative, setEthPriceUsd]);
 
   return (
-    <TokenLauncherContext.Provider
-      value={{ accentColors, chainNativeAssetRequiredForTransactionGas, tokenSkiaImage, tokenAnimatedSkiaImage }}
-    >
+    <TokenLauncherContext.Provider value={{ accentColors, chainNativeAssetRequiredForTransactionGas, tokenImage, tokenBackgroundImage }}>
       {children}
     </TokenLauncherContext.Provider>
   );
