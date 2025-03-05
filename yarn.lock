@@ -5176,9 +5176,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/provider@npm:0.1.1":
-  version: 0.1.1
-  resolution: "@rainbow-me/provider@npm:0.1.1"
+"@rainbow-me/provider@npm:0.1.2":
+  version: 0.1.2
+  resolution: "@rainbow-me/provider@npm:0.1.2"
   dependencies:
     "@ethersproject/abstract-provider": "npm:5.7.0"
     "@ethersproject/bignumber": "npm:5.7.0"
@@ -5186,7 +5186,7 @@ __metadata:
     "@metamask/eth-sig-util": "npm:7.0.1"
     eventemitter3: "npm:5.0.1"
     viem: "npm:1.21.4"
-  checksum: 10c0/dcc62cbaf3e6a999e89d794bfbc95c62b2e3debb3c9370aef0d59a52dda623b64bc15a1f6eafc7eb8e15a6a37797e13f2b49c539efeb582b3d2a3dd12e2f8c60
+  checksum: 10c0/8dae49c22d64b3bec75bf0f0af3400b1b86a393914d7ec1f6be1462eb8920b89b7aeff6597292a930ba9232b862a3a0b048cfe0f6735d132c85123cb4d44b2bb
   languageName: node
   linkType: hard
 
@@ -8728,7 +8728,7 @@ __metadata:
     "@ledgerhq/react-native-hw-transport-ble": "npm:6.33.4"
     "@metamask/eth-sig-util": "npm:7.0.2"
     "@notifee/react-native": "npm:7.8.2"
-    "@rainbow-me/provider": "npm:0.1.1"
+    "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
     "@rainbow-me/swaps": "npm:0.32.0"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
