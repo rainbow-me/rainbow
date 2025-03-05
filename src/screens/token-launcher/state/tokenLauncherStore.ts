@@ -58,6 +58,8 @@ interface TokenLauncherStore {
   hasValidPrebuyAmount: boolean;
   // derived state
   formattedTotalSupply: () => string;
+  validAirdropRecipients: () => AirdropRecipient[];
+  validLinks: () => Link[];
   tokenPrice: () => string;
   tokenMarketCap: () => string;
   hasCompletedRequiredFields: () => boolean;
@@ -155,6 +157,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   hasValidPrebuyAmount: true,
   // derived state
   formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 2, 'long', true),
+  validAirdropRecipients: () => get().airdropRecipients.filter(recipient => recipient.isValid),
+  validLinks: () => get().links.filter(link => !validateLinkWorklet({ link: link.input, type: link.type })),
   tokenPrice: () => {
     const { nativeCurrency } = store.getState().settings;
     const tokenomics = get().tokenomics();
@@ -192,7 +196,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const { airdropRecipients, links, hasCompletedRequiredFields, hasSufficientChainNativeAssetForTransactionGas, hasValidPrebuyAmount } =
       get();
 
-    const allAirdropRecipientsValid = airdropRecipients.every(recipient => recipient.isValid);
+    // Empty address inputs do not prevent continuing, they are just ignored
+    const allAirdropRecipientsValid = airdropRecipients.every(recipient => recipient.isValid || recipient.value === '');
     const allLinksValid = links.every(link => !validateLinkWorklet({ link: link.input, type: link.type }));
 
     return (
@@ -212,14 +217,14 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     };
   },
   tokenomics: () => {
-    const { ethPriceUsd, airdropRecipients, totalSupply, creatorBuyInEth } = get();
+    const { ethPriceUsd, validAirdropRecipients, totalSupply, creatorBuyInEth } = get();
     if (!ethPriceUsd) return;
 
     return calculateTokenomics({
       targetMarketCapUsd: TARGET_MARKET_CAP_IN_USD,
       totalSupply,
       ethPriceUsd,
-      hasAirdrop: airdropRecipients.filter(recipient => recipient.isValid).length > 0,
+      hasAirdrop: validAirdropRecipients().length > 0,
       amountInEth: creatorBuyInEth,
     });
   },
@@ -339,7 +344,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       name: '',
       symbol: '',
       description: '',
-      links: [],
+      links: [{ input: '', type: 'website', url: '' }],
       creatorBuyInEth: 0,
       ethPriceUsd: 0,
       ethPriceNative: 0,
