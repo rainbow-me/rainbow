@@ -88,6 +88,7 @@ export default function WelcomeScreen() {
         contentAnimation.value = 1;
         createWalletButtonAnimation.value = 1;
         colorAnimation.value = 0;
+        hideSplashScreen();
         return;
       }
 

@@ -14,7 +14,10 @@ import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage
 
 class MainActivity : ReactActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        RNBootSplash.init(this, R.style.BootTheme) // Initialize the splash screen
+        val isE2ETest = intent.extras?.getBoolean("isE2ETest") ?: false;
+        if (!isE2ETest) {
+            RNBootSplash.init(this, R.style.BootTheme) // Initialize the splash screen
+        }
         super.onCreate(null) // Pass null here as required by react-native-screens
         OkHttpClientProvider.setOkHttpClientFactory(CustomNetworkModule())
         WebView.setWebContentsDebuggingEnabled(false)
