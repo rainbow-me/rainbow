@@ -32,7 +32,9 @@ import { colors } from '@/styles';
 
 import { useTokenLauncher } from '@/hooks/useTokenLauncher';
 import { staleBalancesStore } from '@/state/staleBalances';
-export const FOOTER_HEIGHT = 56 + 16 + 8;
+
+// height + top padding + bottom padding
+export const FOOTER_HEIGHT = 48 + 16 + 8;
 
 function HoldToCreateButton() {
   const { accentColors } = useTokenLauncherContext();
@@ -116,9 +118,8 @@ function ContinueButton() {
     setStep('review');
   }, [setStep]);
 
-  // TODO: remove the "&& false", it's for testing
   return (
-    <ButtonPressAnimation disabled={!canContinueToReview && false} onPress={goToReviewStep}>
+    <ButtonPressAnimation disabled={!canContinueToReview} onPress={goToReviewStep}>
       <Box
         backgroundColor={colors.white}
         justifyContent="center"
@@ -183,24 +184,21 @@ function TokenPreview() {
             </Text>
           </Box>
         )}
-        <Box gap={10}>
-          <Inline alignVertical="center" space="8px">
-            <Text color="label" size="15pt" weight="bold">
-              {`$${symbolLabel}`}
+        <Box gap={8}>
+          <Text color="labelSecondary" size="11pt" weight="bold">
+            {`$${symbolLabel}`}
+          </Text>
+          <Text color="labelTertiary" size="15pt" weight="bold">
+            {`${tokenPrice}`}
+          </Text>
+          <Box flexDirection="row" alignItems="center" gap={4}>
+            <Text color="labelQuaternary" size="11pt" weight="bold">
+              {`MCAP`}
             </Text>
-            <Box height={4} width={4} background="fillTertiary" borderRadius={2} />
-            <Text color="label" size="15pt" weight="bold">
-              {tokenPrice}
+            <Text color="labelTertiary" size="11pt" weight="bold">
+              {`${tokenMarketCap}`}
             </Text>
-          </Inline>
-          <Inline wrap={false} alignVertical="center" space="4px">
-            <Text color="labelQuaternary" size="13pt" weight="bold">
-              {'MCAP'}
-            </Text>
-            <Text color="labelTertiary" size="13pt" weight="bold">
-              {tokenMarketCap}
-            </Text>
-          </Inline>
+          </Box>
         </Box>
       </Inline>
     </Animated.View>
@@ -237,7 +235,6 @@ export function TokenLauncherFooter() {
 
     const isInputStep = stepIndex.value === 0;
     const targetWidth = isInputStep ? continueButtonWidth.value : containerWidth.value - 32;
-
     return {
       display: stepSharedValue.value === 'info' ? 'flex' : 'none',
       width: interpolate(stepIndex.value, [0, 1], [continueButtonWidth.value, targetWidth], Extrapolation.CLAMP),
@@ -258,7 +255,6 @@ export function TokenLauncherFooter() {
   const shareButtonAnimatedStyle = useAnimatedStyle(() => {
     const fullWidth = containerWidth.value - 32;
     const isVisible = stepSharedValue.value === 'success';
-
     return {
       opacity: 1,
       width: fullWidth,
@@ -283,6 +279,8 @@ export function TokenLauncherFooter() {
         flexDirection="row"
         justifyContent="space-between"
         alignItems="center"
+        paddingTop="16px"
+        paddingBottom="8px"
         height={FOOTER_HEIGHT}
         onLayout={e => {
           containerWidth.value = e.nativeEvent.layout.width;

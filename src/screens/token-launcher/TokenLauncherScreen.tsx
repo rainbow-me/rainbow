@@ -45,9 +45,9 @@ function TokenLauncherScreenContent() {
   const step = useTokenLauncherStore(state => state.step);
 
   const footerHeight = FOOTER_HEIGHT + (step === 'success' ? 42 : 0);
-  const contentContainerHeight = screenHeight - (IS_ANDROID ? 0 : safeAreaTop) - safeAreaBottom - footerHeight;
+  const contentContainerHeight = screenHeight - footerHeight - (IS_ANDROID ? 0 : safeAreaTop + safeAreaBottom);
 
-  const stickyFooterKeyboardOffset = useMemo(() => ({ closed: 0, opened: safeAreaBottom }), [safeAreaBottom]);
+  const stickyFooterKeyboardOffset = useMemo(() => ({ closed: 0, opened: IS_ANDROID ? 0 : safeAreaBottom }), [safeAreaBottom]);
 
   const infoStepAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: interpolate(stepIndex.value, [0, 1], [0, -screenWidth], Extrapolation.CLAMP) }],
@@ -56,6 +56,8 @@ function TokenLauncherScreenContent() {
   const reviewStepAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: interpolate(stepIndex.value, [0, 1], [screenWidth, 0], Extrapolation.CLAMP) }],
   }));
+
+  const keyboardVerticalOffset = IS_ANDROID ? FOOTER_HEIGHT + safeAreaBottom : FOOTER_HEIGHT;
 
   return (
     <>
@@ -67,7 +69,7 @@ function TokenLauncherScreenContent() {
         backgroundColor={tokenImage ? 'transparent' : '#000'}
         style={{ flex: 1, height: screenHeight, paddingBottom: safeAreaBottom, paddingTop: safeAreaTop }}
       >
-        <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={FOOTER_HEIGHT} style={{ flex: 1 }}>
+        <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={keyboardVerticalOffset} style={{ flex: 1 }}>
           <Box
             borderWidth={THICK_BORDER_WIDTH}
             borderColor={'separatorSecondary'}
@@ -75,8 +77,8 @@ function TokenLauncherScreenContent() {
             borderRadius={42}
             style={{ maxHeight: contentContainerHeight, paddingTop: IS_ANDROID ? TOKEN_LAUNCHER_HEADER_HEIGHT : 0 }}
           >
-            <Box style={StyleSheet.absoluteFill}>
-              <SkiaBackground width={screenWidth} height={contentContainerHeight} />
+            <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2 }]}>
+              <SkiaBackground width={contentContainerHeight} height={contentContainerHeight} />
             </Box>
             <Animated.View style={[infoStepAnimatedStyle, { width: screenWidth }]}>
               <InfoInputStep />
