@@ -110,7 +110,7 @@ function createParameterizedSelector<T, Args extends unknown[]>(
   };
 }
 
-export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse, never, BackendNetworksState>(
+export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse, never, BackendNetworksState, BackendNetworksResponse>(
   {
     fetcher: fetchBackendNetworks,
     setData: ({ data, set }) => {
@@ -122,8 +122,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
         };
       });
     },
-    debugMode: true,
-    staleTime: time.minutes(1),
+    staleTime: time.minutes(10),
   },
 
   (_, get) => ({
@@ -179,21 +178,6 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
         },
         {} as Record<ChainId, BackendNetwork['nativeAsset']>
       )
-    ),
-
-    getTokenLauncherSupportedChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.launcher?.v1?.enabled).map(network => toChainId(network.id))
-    ),
-
-    getTokenLauncherSupportedChainInfo: createSelector(networks =>
-      networks.networks
-        .filter(network => network.enabledServices.launcher?.v1?.enabled)
-        .map(network => {
-          return {
-            chainId: toChainId(network.id),
-            contractAddress: network.enabledServices.launcher?.v1?.contractAddress || '',
-          };
-        })
     ),
 
     getChainsLabel: createSelector(networks =>
@@ -337,6 +321,21 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     ),
 
     getFlashbotsSupportedChainIds: createSelector(() => [ChainId.mainnet]),
+
+    getTokenLauncherSupportedChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.launcher?.v1?.enabled).map(network => toChainId(network.id))
+    ),
+
+    getTokenLauncherSupportedChainInfo: createSelector(networks =>
+      networks.networks
+        .filter(network => network.enabledServices.launcher?.v1?.enabled)
+        .map(network => {
+          return {
+            chainId: toChainId(network.id),
+            contractAddress: network.enabledServices.launcher?.v1?.contractAddress || '',
+          };
+        })
+    ),
 
     getShouldDefaultToFastGasChainIds: createSelector(() => [ChainId.mainnet, ChainId.polygon, ChainId.goerli]),
 
