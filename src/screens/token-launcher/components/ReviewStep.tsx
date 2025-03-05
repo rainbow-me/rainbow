@@ -15,7 +15,6 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT } from './TokenLauncherHeader';
 import FastImage from 'react-native-fast-image';
 import { BlurView } from '@react-native-community/blur';
-import LinearGradient from 'react-native-linear-gradient';
 import { isAddress } from '@ethersproject/address';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
 import { IS_IOS } from '@/env';
@@ -173,13 +172,13 @@ function AboutCard() {
 }
 
 function TotalCostPill() {
-  const { accentColors } = useTokenLauncherContext();
+  const { accentColors, chainNativeAsset } = useTokenLauncherContext();
   const { nativeCurrency } = useAccountSettings();
 
-  const creatorBuyInEth = useTokenLauncherStore(state => state.creatorBuyInEth);
-  const ethPriceNative = useTokenLauncherStore(state => state.ethPriceNative);
+  const extraBuyAmount = useTokenLauncherStore(state => state.extraBuyAmount);
+  const chainNativeAssetNativePrice = useTokenLauncherStore(state => state.chainNativeAssetNativePrice);
 
-  const totalCost = creatorBuyInEth * ethPriceNative;
+  const totalCost = extraBuyAmount * chainNativeAssetNativePrice;
   const formattedTotalCost = convertAmountToNativeDisplay(totalCost, nativeCurrency, 2, false, totalCost >= 10000);
 
   // TODO: to give a shadow you need a solid color background, which defeats the purpose of the blurview
@@ -214,7 +213,7 @@ function TotalCostPill() {
       </Text>
       <Box flexDirection="row" alignItems="center" gap={4}>
         <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
-          {`${creatorBuyInEth} ETH`}
+          {`${extraBuyAmount} ${chainNativeAsset.symbol}`}
         </Text>
         <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity30 }}>
           {'≈'}
@@ -235,7 +234,7 @@ export function ReviewStep() {
   const tokenMarketCap = useTokenLauncherStore(state => state.tokenMarketCap());
   const tokenSupply = useTokenLauncherStore(state => state.totalSupply);
   const tokenChainId = useTokenLauncherStore(state => state.chainId);
-  const prebuyAmount = useTokenLauncherStore(state => state.creatorBuyInEth);
+  const prebuyAmount = useTokenLauncherStore(state => state.extraBuyAmount);
   const hasPrebuy = prebuyAmount > 0;
   const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[tokenChainId];
 

@@ -79,29 +79,32 @@ function PrebuyAmountButton({
 }
 
 export function PrebuySection() {
-  const { chainNativeAssetRequiredForTransactionGas } = useTokenLauncherContext();
+  const { chainNativeAssetRequiredForTransactionGas, chainNativeAsset } = useTokenLauncherContext();
   const tokenomics = useTokenLauncherStore(state => state.tokenomics());
-  const marketCapEth = tokenomics?.marketCap.targetEth ?? 10;
+  const marketCapChainNativeAsset = tokenomics?.marketCap.targetEth ?? 10;
   const setHasValidPrebuyAmount = useTokenLauncherStore(state => state.setHasValidPrebuyAmount);
   const chainId = useTokenLauncherStore(state => state.chainId);
-  const setCreatorBuyInEth = useTokenLauncherStore(state => state.setCreatorBuyInEth);
-  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
+  const setExtraBuyAmount = useTokenLauncherStore(state => state.setExtraBuyAmount);
+  const chainNativeAssetUser = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
+  const chainNativeAssetSymbol = chainNativeAsset?.symbol;
+
+  const selectedAmount = useSharedValue(0);
 
   const chainNativeAssetAvailableBalance = useMemo(() => {
-    const balance = nativeAssetForChain?.balance.amount;
+    const balance = chainNativeAssetUser?.balance.amount;
     if (!balance) {
       return 0;
     }
     const balanceMinusGas = subtract(balance, chainNativeAssetRequiredForTransactionGas);
     return lessThan(balanceMinusGas, 0) ? 0 : balanceMinusGas;
-  }, [nativeAssetForChain, chainNativeAssetRequiredForTransactionGas]);
+  }, [chainNativeAssetUser, chainNativeAssetRequiredForTransactionGas]);
 
   const nativeAssetForChainAvailableBalanceDisplay = useMemo(() => {
-    if (!nativeAssetForChain) {
+    if (!chainNativeAsset) {
       return '0';
     }
-    return convertAmountToBalanceDisplay(chainNativeAssetAvailableBalance, nativeAssetForChain);
-  }, [chainNativeAssetAvailableBalance, nativeAssetForChain]);
+    return convertAmountToBalanceDisplay(chainNativeAssetAvailableBalance, chainNativeAsset);
+  }, [chainNativeAssetAvailableBalance, chainNativeAsset]);
 
   const inputRef = useRef<SingleFieldInputRef>(null);
   const borderColor = useForegroundColor('buttonStroke');
@@ -119,11 +122,11 @@ export function PrebuySection() {
     }
   );
 
-  const prebuyEthOptions = useMemo(() => {
+  const prebuyOptions = useMemo(() => {
     const totalSupplyPercentages = TOTAL_SUPPLY_PREBUY_PERCENTAGES;
 
     const amounts = totalSupplyPercentages.map(percentage => {
-      return roundToSignificant1or5(marketCapEth * percentage);
+      return roundToSignificant1or5(marketCapChainNativeAsset * percentage);
     });
 
     const uniqueAmounts = Array.from(new Set(amounts));
@@ -132,7 +135,7 @@ export function PrebuySection() {
     let nextPercentage = totalSupplyPercentages[totalSupplyPercentages.length - 1] + 0.025;
 
     while (uniqueAmounts.length < 4) {
-      const rawAmount = marketCapEth * nextPercentage;
+      const rawAmount = marketCapChainNativeAsset * nextPercentage;
       const amount = roundToSignificant1or5(rawAmount);
       if (!uniqueAmounts.some(option => option === amount)) {
         uniqueAmounts.push(amount);
@@ -141,12 +144,12 @@ export function PrebuySection() {
     }
 
     return uniqueAmounts.slice(0, 4).map(amount => ({
-      label: `${amount} ETH`,
+      label: `${amount} ${chainNativeAssetSymbol}`,
       amount,
     }));
-  }, [marketCapEth]);
+  }, [marketCapChainNativeAsset, chainNativeAssetSymbol]);
 
-  const maxPrebuyAmountEth = prebuyEthOptions[prebuyEthOptions.length - 1].amount;
+  const maxPrebuyAmount = prebuyOptions[prebuyOptions.length - 1].amount;
 
   const customInputSubtitle = useDerivedValue(() => {
     return error.value === '' ? `Balance After Gas Fee: ${nativeAssetForChainAvailableBalanceDisplay}` : error.value;
@@ -158,34 +161,32 @@ export function PrebuySection() {
     };
   });
 
-  const selectedPrebuyEthAmount = useSharedValue(0);
-
   return (
     <CollapsableField title="Pre-buy more tokens">
       <Box gap={16}>
         <Grid columns={2} spacing={8}>
-          {prebuyEthOptions.map(option => (
+          {prebuyOptions.map(option => (
             <PrebuyAmountButton
               key={option.amount}
               label={option.label}
               amount={option.amount}
-              selectedAmount={selectedPrebuyEthAmount}
+              selectedAmount={selectedAmount}
               onPressJS={() => {
-                const isSelected = selectedPrebuyEthAmount.value === option.amount;
+                const isSelected = selectedAmount.value === option.amount;
                 if (isSelected) {
-                  setCreatorBuyInEth(option.amount);
+                  setExtraBuyAmount(option.amount);
                   inputRef.current?.setNativeTextWithInputValidation(option.amount.toString());
                 } else {
-                  setCreatorBuyInEth(0);
+                  setExtraBuyAmount(0);
                   inputRef.current?.setNativeTextWithInputValidation('');
                 }
               }}
               onPressWorklet={() => {
                 'worklet';
-                if (selectedPrebuyEthAmount.value === option.amount) {
-                  selectedPrebuyEthAmount.value = 0;
+                if (selectedAmount.value === option.amount) {
+                  selectedAmount.value = 0;
                 } else {
-                  selectedPrebuyEthAmount.value = option.amount;
+                  selectedAmount.value = option.amount;
                 }
               }}
             />
@@ -195,16 +196,16 @@ export function PrebuySection() {
         <Box gap={8}>
           <SingleFieldInput
             ref={inputRef}
-            title="ETH"
+            title={chainNativeAssetSymbol}
             labelPosition="right"
             placeholder="Custom amount"
             inputMode="decimal"
             onInputChange={text => {
               'worklet';
-              if (selectedPrebuyEthAmount.value !== 0) {
-                selectedPrebuyEthAmount.value = 0;
+              if (selectedAmount.value !== 0) {
+                selectedAmount.value = 0;
               }
-              runOnJS(setCreatorBuyInEth)(parseFloat(text));
+              runOnJS(setExtraBuyAmount)(parseFloat(text));
             }}
             validationWorklet={text => {
               'worklet';
@@ -217,8 +218,8 @@ export function PrebuySection() {
                 return { error: true };
               }
 
-              if (lessThanWorklet(maxPrebuyAmountEth, amount)) {
-                error.value = `Exceeds max pre-buy amount of ${maxPrebuyAmountEth} ETH`;
+              if (lessThanWorklet(maxPrebuyAmount, amount)) {
+                error.value = `Exceeds max pre-buy amount of ${maxPrebuyAmount} ${chainNativeAssetSymbol}`;
                 return { error: true };
               }
 

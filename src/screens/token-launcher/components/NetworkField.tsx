@@ -22,7 +22,7 @@ export function NetworkField() {
   );
   const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[chainId];
   const navigation = useNavigation();
-  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
+  const chainNativeAsset = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
   // TODO: data only exists in staging currently, uncomment when live
   const allowedNetworks = useBackendNetworksStore.getState().getTokenLauncherSupportedChainIds();
 
@@ -46,7 +46,7 @@ export function NetworkField() {
         <Box gap={10}>
           <FieldLabel>Network</FieldLabel>
           <Text color="labelSecondary" size="13pt" weight="medium">
-            {`Balance: ${nativeAssetForChain?.balance.display ?? '0.00'}`}
+            {`Balance: ${chainNativeAsset?.balance.display ?? '0.00'}`}
           </Text>
         </Box>
         <Bleed right={{ custom: 7 }}>

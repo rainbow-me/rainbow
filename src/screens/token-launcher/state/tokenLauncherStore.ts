@@ -46,13 +46,13 @@ interface TokenLauncherStore {
   totalSupply: number;
   description: string;
   links: Link[];
-  creatorBuyInEth: number;
+  extraBuyAmount: number;
   airdropRecipients: AirdropRecipient[];
   step: Step;
   stepIndex: SharedValue<number>;
   stepSharedValue: SharedValue<string>;
-  ethPriceUsd: number;
-  ethPriceNative: number;
+  chainNativeAssetUsdPrice: number;
+  chainNativeAssetNativePrice: number;
   gasSpeed: GasSpeed;
   hasSufficientChainNativeAssetForTransactionGas: boolean;
   hasValidPrebuyAmount: boolean;
@@ -80,7 +80,7 @@ interface TokenLauncherStore {
   addLink: (type: LinkType) => void;
   editLink: ({ index, input, url }: { index: number; input: string; url: string }) => void;
   deleteLink: (index: number) => void;
-  setCreatorBuyInEth: (amount: number) => void;
+  setExtraBuyAmount: (amount: number) => void;
   setDescription: (description: string) => void;
   setStep: (step: Step) => void;
   addAirdropGroup: ({ groupId, label, count, imageUrl }: { groupId: string; label: string; count: number; imageUrl: string }) => void;
@@ -100,13 +100,12 @@ interface TokenLauncherStore {
     label?: string;
   }) => void;
   deleteAirdropRecipient: (id: string) => void;
-  setEthPriceUsd: (ethPriceUsd: number) => void;
-  setEthPriceNative: (ethPriceNative: number) => void;
+  setChainNativeAssetUsdPrice: (chainNativeAssetUsdPrice: number) => void;
+  setChainNativeAssetNativePrice: (chainNativeAssetNativePrice: number) => void;
   setGasSpeed: (gasSpeed: GasSpeed) => void;
   setHasValidPrebuyAmount: (hasValidPrebuyAmount: boolean) => void;
   setHasSufficientChainNativeAssetForTransactionGas: (hasSufficientChainNativeAssetForTransactionGas: boolean) => void; // actions
   reset: () => void;
-  validateForm: () => void;
   createToken: ({
     wallet,
     transactionOptions,
@@ -142,9 +141,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   totalSupply: DEFAULT_TOTAL_SUPPLY,
   links: [{ input: '', type: 'website', url: '' }],
   // TODO: align this name with other names for this
-  creatorBuyInEth: 0,
-  ethPriceUsd: 0,
-  ethPriceNative: 0,
+  extraBuyAmount: 0,
+  chainNativeAssetUsdPrice: 0,
+  chainNativeAssetNativePrice: 0,
   step: 'info' as const,
   stepIndex: makeMutable(0),
   stepSharedValue: makeMutable('info'),
@@ -164,9 +163,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const tokenomics = get().tokenomics();
 
     const actualPriceEth = tokenomics?.price.actualEth;
-    const ethPriceNative = get().ethPriceNative;
+    const chainNativeAssetNativePrice = get().chainNativeAssetNativePrice;
 
-    const actualPriceNative = actualPriceEth && ethPriceNative ? actualPriceEth * ethPriceNative : 0;
+    const actualPriceNative = actualPriceEth && chainNativeAssetNativePrice ? actualPriceEth * chainNativeAssetNativePrice : 0;
 
     return formatCurrency(actualPriceNative, {
       currency: nativeCurrency,
@@ -177,9 +176,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const tokenomics = get().tokenomics();
 
     const actualMarketCapEth = tokenomics?.marketCap.actualEth;
-    const ethPriceNative = get().ethPriceNative;
+    const chainNativeAssetNativePrice = get().chainNativeAssetNativePrice;
 
-    const actualMarketCapNative = actualMarketCapEth && ethPriceNative ? actualMarketCapEth * ethPriceNative : 0;
+    const actualMarketCapNative = actualMarketCapEth && chainNativeAssetNativePrice ? actualMarketCapEth * chainNativeAssetNativePrice : 0;
 
     return convertAmountToNativeDisplay(actualMarketCapNative, nativeCurrency, 2, true, true);
   },
@@ -217,15 +216,17 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     };
   },
   tokenomics: () => {
-    const { ethPriceUsd, validAirdropRecipients, totalSupply, creatorBuyInEth } = get();
-    if (!ethPriceUsd) return;
+    const { chainNativeAssetUsdPrice, validAirdropRecipients, totalSupply, extraBuyAmount } = get();
+    if (!chainNativeAssetUsdPrice) return;
 
     return calculateTokenomics({
       targetMarketCapUsd: TARGET_MARKET_CAP_IN_USD,
       totalSupply,
-      ethPriceUsd,
+      // TODO: name change
+      ethPriceUsd: chainNativeAssetUsdPrice,
       hasAirdrop: validAirdropRecipients().length > 0,
-      amountInEth: creatorBuyInEth,
+      // TODO: name change
+      amountInEth: extraBuyAmount,
     });
   },
   // setters
@@ -251,8 +252,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   deleteLink: (index: number) => {
     set({ links: get().links.filter((_, i) => i !== index) });
   },
-  setCreatorBuyInEth: (amount: number) => {
-    set({ creatorBuyInEth: amount });
+  setExtraBuyAmount: (amount: number) => {
+    set({ extraBuyAmount: amount });
   },
   setStep: (step: Step) => {
     let newIndex = 0;
@@ -321,11 +322,11 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   deleteAirdropRecipient: (id: string) => {
     set({ airdropRecipients: get().airdropRecipients.filter(a => a.id !== id) });
   },
-  setEthPriceUsd: (ethPriceUsd: number) => {
-    set({ ethPriceUsd });
+  setChainNativeAssetUsdPrice: (chainNativeAssetUsdPrice: number) => {
+    set({ chainNativeAssetUsdPrice });
   },
-  setEthPriceNative: (ethPriceNative: number) => {
-    set({ ethPriceNative });
+  setChainNativeAssetNativePrice: (chainNativeAssetNativePrice: number) => {
+    set({ chainNativeAssetNativePrice });
   },
   setGasSpeed: (gasSpeed: GasSpeed) => {
     set({ gasSpeed });
@@ -338,6 +339,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   },
   // actions
   reset: () => {
+    get().stepIndex.value = 0;
+    get().stepSharedValue.value = 'info';
     set({
       imageUri: '',
       imageUrl: '',
@@ -345,22 +348,17 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       symbol: '',
       description: '',
       links: [{ input: '', type: 'website', url: '' }],
-      creatorBuyInEth: 0,
-      ethPriceUsd: 0,
-      ethPriceNative: 0,
+      extraBuyAmount: 0,
+      chainNativeAssetUsdPrice: 0,
+      chainNativeAssetNativePrice: 0,
       gasSpeed: GasSpeed.FAST,
       hasSufficientChainNativeAssetForTransactionGas: true,
       hasValidPrebuyAmount: true,
       airdropRecipients: [],
       step: 'info' as const,
-      stepIndex: makeMutable(0),
-      stepSharedValue: makeMutable('info'),
       chainId: DEFAULT_CHAIN_ID,
       totalSupply: DEFAULT_TOTAL_SUPPLY,
     });
-  },
-  validateForm: () => {
-    // TODO: validate all field values before submission to sdk for creation
   },
   createToken: async ({
     wallet,
@@ -378,7 +376,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const targetEth = get().tokenomics()?.price.targetEth;
     try {
       const initialTick = TokenLauncher.getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
-      const shouldBuy = get().creatorBuyInEth > 0;
+      const shouldBuy = get().extraBuyAmount > 0;
       const params = {
         name: get().name,
         symbol: get().symbol,
@@ -392,7 +390,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
           },
           {} as Record<LinkType, string>
         ),
-        amountIn: parseUnits(get().creatorBuyInEth.toString(), 'ether').toString(),
+        amountIn: parseUnits(get().extraBuyAmount.toString(), 'ether').toString(),
         initialTick,
         wallet,
         transactionOptions: {
@@ -408,7 +406,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       if (shouldBuy) {
         return await TokenLauncher.launchTokenAndBuy({
           ...params,
-          amountIn: parseUnits(get().creatorBuyInEth.toString(), 18).toString(),
+          amountIn: parseUnits(get().extraBuyAmount.toString(), 18).toString(),
         });
       } else {
         return await TokenLauncher.launchToken(params);

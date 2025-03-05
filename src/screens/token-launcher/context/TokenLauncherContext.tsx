@@ -6,8 +6,7 @@ import { useColorMode } from '@/design-system';
 import { useTheme } from '@/theme';
 import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR } from '../constants';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { ChainId } from '@/state/backendNetworks/types';
-import { ETH_ADDRESS } from '@/references';
+import { BackendNetwork, ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils';
 import { useAccountSettings } from '@/hooks';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
@@ -26,6 +25,7 @@ type TokenLauncherContextType = {
   chainNativeAssetRequiredForTransactionGas: string;
   tokenBackgroundImage: SkImage | null;
   tokenImage: SkImage | null | SharedValue<SkImage | null>;
+  chainNativeAsset: BackendNetwork['nativeAsset'];
   accentColors: {
     opacity100: string;
     opacity90: string;
@@ -78,13 +78,14 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   const setHasSufficientChainNativeAssetForTransactionGas = useTokenLauncherStore(
     state => state.setHasSufficientChainNativeAssetForTransactionGas
   );
+  const chainNativeAsset = useBackendNetworksStore(state => state.getChainsNativeAsset()[chainId]);
 
-  console.log('token launcher context');
+  // console.log('token launcher context');
 
   const gasSettings = useGasSettings(chainId, gasSpeed);
 
-  const setEthPriceUsd = useTokenLauncherStore(state => state.setEthPriceUsd);
-  const setEthPriceNative = useTokenLauncherStore(state => state.setEthPriceNative);
+  const setChainNativeAssetUsdPrice = useTokenLauncherStore(state => state.setChainNativeAssetUsdPrice);
+  const setChainNativeAssetNativePrice = useTokenLauncherStore(state => state.setChainNativeAssetNativePrice);
 
   const imageUrl = useTokenLauncherStore(state => state.imageUrl);
   const imageUri = useTokenLauncherStore(state => state.imageUrl);
@@ -149,10 +150,9 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
       isPrebuying: false,
     });
     const gasFeeWei = calculateGasFeeWorklet(gasSettings, gasLimit);
-    const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
 
-    return formatUnits(safeBigInt(gasFeeWei), nativeAsset.decimals);
-  }, [chainId, gasSettings]);
+    return formatUnits(safeBigInt(gasFeeWei), chainNativeAsset.decimals);
+  }, [chainId, chainNativeAsset, gasSettings]);
 
   useEffect(() => {
     const userNativeAsset = userAssetsStore.getState().getNativeAssetForChain(chainId);
@@ -162,52 +162,46 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
     setHasSufficientChainNativeAssetForTransactionGas(hasSufficientChainNativeAssetForTransactionGas);
   }, [chainId, chainNativeAssetRequiredForTransactionGas, setHasSufficientChainNativeAssetForTransactionGas]);
 
-  // TODO: We need eth price in both USD and the user's native currency. We need USD because the target price is USD.
-  // We need the native currency for display. Is there a better way to do this then calling two separate fetches?
-
-  // TODO: does it matter if we only use mainnet here? Do we want to poll the price and if so, how often?
-  const { data: ethAssetUsd } = useExternalToken(
+  // We explicitly need it in USD as well as the user's native currency because the target market cap is in USD
+  const { data: chainNativeAssetUsd } = useExternalToken(
     {
-      address: ETH_ADDRESS,
-      chainId: ChainId.mainnet,
-      // We explicitly need it in USD because the target market cap is in USD
+      address: chainNativeAsset.address,
+      chainId: chainId,
       currency: 'USD',
     },
     {
-      // We're okay with initially showing stale data
       keepPreviousData: true,
-      // We always want to know the latest price
       staleTime: time.minutes(1),
     }
   );
-  const { data: ethAssetNative } = useExternalToken(
+  const { data: chainNativeAssetNative } = useExternalToken(
     {
-      address: ETH_ADDRESS,
-      chainId: ChainId.mainnet,
+      address: chainNativeAsset.address,
+      chainId: chainId,
       currency: nativeCurrency,
     },
     {
-      // We're okay with initially showing stale data
       keepPreviousData: true,
-      // We always want to know the latest price
       staleTime: time.minutes(1),
     }
   );
 
-  const ethPriceUsd = ethAssetUsd?.price.value;
-  const ethPriceNative = ethAssetNative?.price.value;
+  const chainNativeAssetUsdPrice = chainNativeAssetUsd?.price.value;
+  const chainNativeAssetNativePrice = chainNativeAssetNative?.price.value;
 
   useEffect(() => {
-    if (ethPriceUsd) {
-      setEthPriceUsd(ethPriceUsd);
+    if (chainNativeAssetUsdPrice) {
+      setChainNativeAssetUsdPrice(chainNativeAssetUsdPrice);
     }
-    if (ethPriceNative) {
-      setEthPriceNative(ethPriceNative);
+    if (chainNativeAssetNativePrice) {
+      setChainNativeAssetNativePrice(chainNativeAssetNativePrice);
     }
-  }, [ethPriceNative, ethPriceUsd, setEthPriceNative, setEthPriceUsd]);
+  }, [chainNativeAssetNativePrice, chainNativeAssetUsdPrice, setChainNativeAssetNativePrice, setChainNativeAssetUsdPrice]);
 
   return (
-    <TokenLauncherContext.Provider value={{ accentColors, chainNativeAssetRequiredForTransactionGas, tokenImage, tokenBackgroundImage }}>
+    <TokenLauncherContext.Provider
+      value={{ accentColors, chainNativeAssetRequiredForTransactionGas, tokenImage, tokenBackgroundImage, chainNativeAsset }}
+    >
       {children}
     </TokenLauncherContext.Provider>
   );
