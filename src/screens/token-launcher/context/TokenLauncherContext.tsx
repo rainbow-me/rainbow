@@ -28,6 +28,12 @@ type TokenLauncherContextType = {
   tokenImage: SkImage | null | SharedValue<SkImage | null>;
   accentColors: {
     opacity100: string;
+    opacity90: string;
+    opacity80: string;
+    opacity70: string;
+    opacity60: string;
+    opacity50: string;
+    opacity40: string;
     opacity30: string;
     opacity20: string;
     opacity12: string;
@@ -116,6 +122,12 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
 
     return {
       opacity100: primaryColor,
+      opacity90: getAlphaColor(primaryColor, 0.9),
+      opacity80: getAlphaColor(primaryColor, 0.8),
+      opacity70: getAlphaColor(primaryColor, 0.7),
+      opacity60: getAlphaColor(primaryColor, 0.6),
+      opacity50: getAlphaColor(primaryColor, 0.5),
+      opacity40: getAlphaColor(primaryColor, 0.4),
       opacity30: getAlphaColor(primaryColor, 0.3),
       opacity20: getAlphaColor(primaryColor, 0.2),
       opacity12: getAlphaColor(primaryColor, 0.12),

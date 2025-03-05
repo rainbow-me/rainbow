@@ -18,6 +18,7 @@ import { BlurView } from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 import { isAddress } from '@ethersproject/address';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
+import { IS_IOS } from '@/env';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
 const TOTAL_COST_PILL_HEIGHT = 52;
@@ -181,10 +182,12 @@ function TotalCostPill() {
   const totalCost = creatorBuyInEth * ethPriceNative;
   const formattedTotalCost = convertAmountToNativeDisplay(totalCost, nativeCurrency, 2, false, totalCost >= 10000);
 
+  // TODO: to give a shadow you need a solid color background, which defeats the purpose of the blurview
   return (
     <Box
-      as={BlurView}
+      as={IS_IOS ? BlurView : Box}
       height={TOTAL_COST_PILL_HEIGHT}
+      background={'surfacePrimary'}
       flexDirection="row"
       alignItems="center"
       justifyContent="space-between"
@@ -194,11 +197,18 @@ function TotalCostPill() {
       borderWidth={FIELD_BORDER_WIDTH}
       borderColor={{ custom: accentColors.opacity10 }}
       blurAmount={24}
-      blurType="ultraThinMaterial"
-      // TODO: to give this a dark shadow you need a dark background color which messes with the blurview
-      // shadow={'30px'}
+      shadow={{
+        custom: {
+          ios: [{ x: 0, y: 20, blur: 30, color: 'shadowFar', opacity: 0.3 }],
+          android: { elevation: 16, color: 'shadowFar', opacity: 0.55 },
+        },
+      }}
+      style={{
+        backgroundColor: accentColors.opacity30,
+      }}
     >
-      <LinearGradient colors={[accentColors.opacity12, 'rgba(255, 255, 255, 0.08)']} style={StyleSheet.absoluteFill} />
+      <Box style={StyleSheet.absoluteFill} backgroundColor={accentColors.opacity12} />
+      <Box style={StyleSheet.absoluteFill} backgroundColor={'rgba(255, 255, 255, 0.08)'} />
       <Text size="17pt" weight="heavy" color={'label'}>
         {'Total cost'}
       </Text>
