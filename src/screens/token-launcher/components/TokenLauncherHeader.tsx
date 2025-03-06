@@ -19,6 +19,7 @@ export const TOKEN_LAUNCHER_HEADER_HEIGHT = 20 + 36 + 8 + 12 + 12;
 export function TokenLauncherHeader() {
   const navigation = useNavigation();
   const { accountColor, accountImage, accountAddress } = useAccountProfile();
+  const hasEnteredAnyInfo = useTokenLauncherStore(state => state.hasEnteredAnyInfo);
   const step = useTokenLauncherStore(state => state.step);
   const setStep = useTokenLauncherStore(state => state.setStep);
   let title = '';
@@ -31,6 +32,11 @@ export function TokenLauncherHeader() {
   }
 
   const handlePressExit = useCallback(() => {
+    if (!hasEnteredAnyInfo()) {
+      navigation.goBack();
+      return;
+    }
+
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 1,
@@ -43,7 +49,7 @@ export function TokenLauncherHeader() {
         }
       }
     );
-  }, [navigation]);
+  }, [navigation, hasEnteredAnyInfo]);
 
   return (
     <Box

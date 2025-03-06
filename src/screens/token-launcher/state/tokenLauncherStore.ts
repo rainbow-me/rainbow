@@ -63,6 +63,7 @@ interface TokenLauncherStore {
   hasValidPrebuyAmount: boolean;
   maxAirdropRecipientCount: number;
   // derived state
+  hasEnteredAnyInfo: () => boolean;
   formattedTotalSupply: () => string;
   validAirdropRecipients: () => AirdropRecipient[];
   validLinks: () => Link[];
@@ -153,6 +154,19 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   hasValidPrebuyAmount: true,
   maxAirdropRecipientCount: DEFAULT_MAX_AIRDROP_RECIPIENTS,
   // derived state
+  hasEnteredAnyInfo: () => {
+    const { name, symbol, imageUrl, totalSupply, description, extraBuyAmount, validLinks, validAirdropRecipients } = get();
+    return (
+      name !== '' ||
+      symbol !== '' ||
+      imageUrl !== '' ||
+      totalSupply !== DEFAULT_TOTAL_SUPPLY ||
+      description !== '' ||
+      validLinks().length > 1 ||
+      validAirdropRecipients().length > 0 ||
+      extraBuyAmount > 0
+    );
+  },
   formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 2, 'long', true),
   validAirdropRecipients: () => get().airdropRecipients.filter(recipient => recipient.isValid),
   validLinks: () => get().links.filter(link => !validateLinkWorklet({ link: link.input, type: link.type })),
