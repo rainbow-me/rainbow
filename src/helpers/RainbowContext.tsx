@@ -4,26 +4,32 @@ import { useSharedValue } from 'react-native-reanimated';
 import DevButton from '../components/dev-buttons/DevButton';
 import Emoji from '../components/text/Emoji';
 import { showConnectToAnvilButton, showReloadButton, showSwitchModeButton } from '../config/debug';
-import { defaultConfig } from '@/config/experimental';
-
+import { defaultConfig, defaultConfigValues } from '@/config/experimental';
 import { useTheme } from '../theme/ThemeContext';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { logger, RainbowError } from '@/logger';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { IS_TEST } from '@/env';
+import { IS_DEV, IS_TEST } from '@/env';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type GlobalState = any;
 
 export type RainbowContextType = {
-  config: Record<keyof typeof defaultConfig, boolean>;
+  config: Record<keyof typeof defaultConfig, boolean> | Record<string, never>;
   setConfig: (newConfig: Record<string, boolean>) => void;
-  setGlobalState: (newState: any) => void;
+  setGlobalState: (newState: GlobalState) => void;
 };
 
 export const RainbowContext = createContext<RainbowContextType>({
   config: {},
-  setConfig: () => {},
-  setGlobalState: () => {},
+  setConfig: () => {
+    return;
+  },
+  setGlobalState: () => {
+    return;
+  },
 });
 
 const storageKey = 'config';
@@ -37,9 +43,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   // on unmounting all shared values.
   useSharedValue(0);
   const setConnectedToAnvil = useConnectedToAnvilStore(state => state.setConnectedToAnvil);
-  const [config, setConfig] = useState<Record<string, boolean>>(
-    Object.entries(defaultConfig).reduce((acc, [key, { value }]) => ({ ...acc, [key]: value }), {})
-  );
+  const [config, setConfig] = useState<Record<string, boolean>>(defaultConfigValues);
   const [globalState, updateGlobalState] = useState({});
 
   useEffect(() => {
@@ -54,7 +58,10 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
     setConfig(newConfig);
   }, []);
 
-  const setGlobalState = useCallback((newState: any) => updateGlobalState(prev => ({ ...prev, ...(newState || {}) })), [updateGlobalState]);
+  const setGlobalState = useCallback(
+    (newState: GlobalState) => updateGlobalState(prev => ({ ...prev, ...(newState || {}) })),
+    [updateGlobalState]
+  );
 
   const initialValue = useMemo(
     () => ({
@@ -72,10 +79,10 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
     try {
       setConnectedToAnvil(true);
       logger.debug('connected to anvil');
-    } catch (e: any) {
+    } catch (e) {
       setConnectedToAnvil(false);
       logger.error(new RainbowError('error connecting to anvil'), {
-        message: e.message,
+        message: e instanceof Error ? e.message : String(e),
       });
     }
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
@@ -85,14 +92,13 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
     <RainbowContext.Provider value={initialValue}>
       {children}
       {/* @ts-expect-error ts-migrate(2741) FIXME: Property 'color' is missing in type... Remove this comment to see the full error message */}
-      {showReloadButton && __DEV__ && <DevButton initialDisplacement={200} />}
-      {((showConnectToAnvilButton && __DEV__) || IS_TEST) && (
+      {showReloadButton && IS_DEV && <DevButton initialDisplacement={200} />}
+      {((showConnectToAnvilButton && IS_DEV) || IS_TEST) && (
         <DevButton color={colors.purple} onPress={connectToAnvil} initialDisplacement={150} testID={'dev-button-anvil'} size={20}>
-          {/* @ts-ignore */}
           <Emoji>👷</Emoji>
         </DevButton>
       )}
-      {showSwitchModeButton && __DEV__ && (
+      {showSwitchModeButton && IS_DEV && (
         <DevButton color={colors.dark} onPress={() => setTheme(isDarkMode ? 'light' : 'dark')}>
           <Emoji>{isDarkMode ? '🌞' : '🌚'}</Emoji>
         </DevButton>
