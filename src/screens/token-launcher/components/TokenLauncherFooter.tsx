@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import * as i18n from '@/languages';
 import { Box, Inline, Separator, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import Animated, {
   Extrapolation,
@@ -52,7 +52,7 @@ function HoldToCreateButton() {
     gasSpeed,
   });
 
-  const isProcessing = step === 'creating';
+  const isProcessing = step === NavigationSteps.CREATING;
   const { addStaleBalance } = staleBalancesStore.getState();
 
   const isLongPressAvailableForBiometryType =
@@ -65,7 +65,7 @@ function HoldToCreateButton() {
       address: accountAddress,
       provider,
     });
-    setStep('creating');
+    setStep(NavigationSteps.CREATING);
 
     if (isHardwareWallet) {
       // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
@@ -82,9 +82,9 @@ function HoldToCreateButton() {
               transactionHash: createTokenResponse.transaction.hash,
             },
           });
-          setStep('success');
+          setStep(NavigationSteps.SUCCESS);
         } else {
-          setStep('review');
+          setStep(NavigationSteps.REVIEW);
         }
       }
     }
@@ -115,7 +115,7 @@ function ContinueButton() {
 
   const goToReviewStep = useCallback(() => {
     Keyboard.dismiss();
-    setStep('review');
+    setStep(NavigationSteps.REVIEW);
   }, [setStep]);
 
   return (
@@ -211,7 +211,7 @@ export function TokenLauncherFooter() {
   const chainId = useTokenLauncherStore(state => state.chainId);
   const step = useTokenLauncherStore(state => state.step);
   const stepSharedValue = useTokenLauncherStore(state => state.stepSharedValue);
-  const stepIndex = useTokenLauncherStore(state => state.stepIndex);
+  const stepAnimatedSharedValue = useTokenLauncherStore(state => state.stepAnimatedSharedValue);
 
   const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
   const setGasSpeed = useTokenLauncherStore(state => state.setGasSpeed);
@@ -233,28 +233,38 @@ export function TokenLauncherFooter() {
     // Don't apply any width until we've measured the button
     if (continueButtonWidth.value === 0) return {};
 
-    const isInputStep = stepIndex.value === 0;
+    const isInputStep = stepSharedValue.value === NavigationSteps.INFO;
     const targetWidth = isInputStep ? continueButtonWidth.value : containerWidth.value - 32;
     return {
-      display: stepSharedValue.value === 'info' ? 'flex' : 'none',
-      width: interpolate(stepIndex.value, [0, 1], [continueButtonWidth.value, targetWidth], Extrapolation.CLAMP),
-      opacity: interpolate(stepIndex.value, [0, 1], [1, 0], Extrapolation.CLAMP),
+      display: stepSharedValue.value === NavigationSteps.INFO ? 'flex' : 'none',
+      width: interpolate(
+        stepAnimatedSharedValue.value,
+        [NavigationSteps.INFO, NavigationSteps.REVIEW],
+        [continueButtonWidth.value, targetWidth],
+        Extrapolation.CLAMP
+      ),
+      opacity: interpolate(stepAnimatedSharedValue.value, [NavigationSteps.INFO, NavigationSteps.REVIEW], [1, 0], Extrapolation.CLAMP),
     };
   });
 
   const createButtonAnimatedStyle = useAnimatedStyle(() => {
     const fullWidth = containerWidth.value - 32;
-    const isVisible = stepSharedValue.value === 'review' || stepSharedValue.value === 'creating';
+    const isVisible = stepSharedValue.value === NavigationSteps.REVIEW || stepSharedValue.value === NavigationSteps.CREATING;
     return {
       display: isVisible ? 'flex' : 'none',
-      width: interpolate(stepIndex.value, [0, 1, 2], [continueButtonWidth.value, createButtonWidth.value, fullWidth], Extrapolation.CLAMP),
-      opacity: interpolate(stepIndex.value, [0, 1], [0, 1], Extrapolation.CLAMP),
+      width: interpolate(
+        stepAnimatedSharedValue.value,
+        [NavigationSteps.INFO, NavigationSteps.REVIEW, NavigationSteps.CREATING],
+        [continueButtonWidth.value, createButtonWidth.value, fullWidth],
+        Extrapolation.CLAMP
+      ),
+      opacity: interpolate(stepAnimatedSharedValue.value, [NavigationSteps.INFO, NavigationSteps.REVIEW], [0, 1], Extrapolation.CLAMP),
     };
   });
 
   const shareButtonAnimatedStyle = useAnimatedStyle(() => {
     const fullWidth = containerWidth.value - 32;
-    const isVisible = stepSharedValue.value === 'success';
+    const isVisible = stepSharedValue.value === NavigationSteps.SUCCESS;
     return {
       opacity: 1,
       width: fullWidth,
@@ -263,7 +273,7 @@ export function TokenLauncherFooter() {
   });
 
   const skipButtonAnimatedStyle = useAnimatedStyle(() => {
-    const isVisible = stepSharedValue.value === 'success';
+    const isVisible = stepSharedValue.value === NavigationSteps.SUCCESS;
     return {
       display: isVisible ? 'flex' : 'none',
       height: withTiming(isVisible ? 42 : 0, TIMING_CONFIGS.buttonPressConfig),
@@ -286,8 +296,8 @@ export function TokenLauncherFooter() {
           containerWidth.value = e.nativeEvent.layout.width;
         }}
       >
-        {step === 'info' && <TokenPreview />}
-        {step === 'review' && (
+        {step === NavigationSteps.INFO && <TokenPreview />}
+        {step === NavigationSteps.REVIEW && (
           <Animated.View
             entering={FadeIn.duration(STEP_TRANSITION_DURATION)}
             onLayout={e => {

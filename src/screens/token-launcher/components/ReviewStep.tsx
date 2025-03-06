@@ -18,7 +18,7 @@ import FastImage from 'react-native-fast-image';
 import { BlurView } from '@react-native-community/blur';
 import { isAddress } from '@ethersproject/address';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
 const TOTAL_COST_PILL_HEIGHT = 52;
@@ -246,6 +246,7 @@ export function ReviewStep() {
         contentInset={{ top: TOKEN_LAUNCHER_HEADER_HEIGHT }}
         contentContainerStyle={{
           paddingBottom: 24 + (hasPrebuy ? TOTAL_COST_PILL_HEIGHT : 0),
+          paddingTop: IS_ANDROID ? TOKEN_LAUNCHER_HEADER_HEIGHT : 0,
         }}
       >
         <Box width="full" paddingHorizontal={'20px'} alignItems="center">

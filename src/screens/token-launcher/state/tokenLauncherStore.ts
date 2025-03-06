@@ -23,7 +23,12 @@ export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma
 export type LinkType = 'website' | 'x' | 'telegram' | 'farcaster' | 'discord' | 'other';
 export type Link = { input: string; type: LinkType; url: string };
 
-type Step = 'info' | 'review' | 'creating' | 'success';
+export const enum NavigationSteps {
+  INFO = 0,
+  REVIEW = 1,
+  CREATING = 2,
+  SUCCESS = 3,
+}
 
 export type AirdropRecipient = {
   type: 'group' | 'address';
@@ -48,9 +53,9 @@ interface TokenLauncherStore {
   links: Link[];
   extraBuyAmount: number;
   airdropRecipients: AirdropRecipient[];
-  step: Step;
-  stepIndex: SharedValue<number>;
-  stepSharedValue: SharedValue<string>;
+  step: NavigationSteps;
+  stepSharedValue: SharedValue<NavigationSteps>;
+  stepAnimatedSharedValue: SharedValue<NavigationSteps>;
   chainNativeAssetUsdPrice: number;
   chainNativeAssetNativePrice: number;
   gasSpeed: GasSpeed;
@@ -82,7 +87,7 @@ interface TokenLauncherStore {
   deleteLink: (index: number) => void;
   setExtraBuyAmount: (amount: number) => void;
   setDescription: (description: string) => void;
-  setStep: (step: Step) => void;
+  setStep: (step: NavigationSteps) => void;
   addAirdropGroup: ({ groupId, label, count, imageUrl }: { groupId: string; label: string; count: number; imageUrl: string }) => void;
   addOrEditAirdropAddress: ({
     id,
@@ -115,6 +120,15 @@ interface TokenLauncherStore {
   }) => Promise<LaunchTokenResponse | undefined>;
 }
 
+// TODO: for testing. Remove before final merge
+// const testTokenInfo = {
+//   imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+//   imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+//   name: 'Test Token',
+//   symbol: 'TEST',
+//   description: 'This is a test token',
+// };
+
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
   imageUri: '',
   imageUrl: '',
@@ -125,13 +139,12 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
   links: [{ input: '', type: 'website', url: '' }],
-  // TODO: align this name with other names for this
   extraBuyAmount: 0,
   chainNativeAssetUsdPrice: 0,
   chainNativeAssetNativePrice: 0,
-  step: 'info' as const,
-  stepIndex: makeMutable(0),
-  stepSharedValue: makeMutable('info'),
+  step: NavigationSteps.INFO,
+  stepSharedValue: makeMutable(NavigationSteps.INFO as NavigationSteps),
+  stepAnimatedSharedValue: makeMutable(NavigationSteps.INFO as NavigationSteps),
   gasSpeed: GasSpeed.FAST,
   hasSufficientChainNativeAssetForTransactionGas: true,
   hasValidPrebuyAmount: true,
@@ -236,15 +249,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   setExtraBuyAmount: (amount: number) => {
     set({ extraBuyAmount: amount });
   },
-  setStep: (step: Step) => {
-    let newIndex = 0;
-    if (step === 'info') newIndex = 0;
-    else if (step === 'review') newIndex = 1;
-    else if (step === 'creating') newIndex = 2;
-    else if (step === 'success') newIndex = 3;
-
-    // TODO:
-    get().stepIndex.value = withTiming(newIndex, TIMING_CONFIGS.slowFadeConfig);
+  setStep: (step: NavigationSteps) => {
+    get().stepAnimatedSharedValue.value = withTiming(step, TIMING_CONFIGS.slowFadeConfig);
     get().stepSharedValue.value = step;
     set({ step });
   },
@@ -320,8 +326,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   },
   // actions
   reset: () => {
-    get().stepIndex.value = 0;
-    get().stepSharedValue.value = 'info';
+    get().stepAnimatedSharedValue.value = NavigationSteps.INFO;
+    get().stepSharedValue.value = NavigationSteps.INFO;
     set({
       imageUri: '',
       imageUrl: '',
@@ -336,7 +342,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       hasSufficientChainNativeAssetForTransactionGas: true,
       hasValidPrebuyAmount: true,
       airdropRecipients: [],
-      step: 'info' as const,
+      step: NavigationSteps.INFO,
       chainId: DEFAULT_CHAIN_ID,
       totalSupply: DEFAULT_TOTAL_SUPPLY,
     });

@@ -5,7 +5,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { BlurView } from '@react-native-community/blur';
 import { useNavigation } from '@/navigation';
-import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { useAccountProfile } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
@@ -23,11 +23,11 @@ export function TokenLauncherHeader() {
   const step = useTokenLauncherStore(state => state.step);
   const setStep = useTokenLauncherStore(state => state.setStep);
   let title = '';
-  if (step === 'info') {
+  if (step === NavigationSteps.INFO) {
     title = i18n.t(i18n.l.token_launcher.header.new_coin);
-  } else if (step === 'review') {
+  } else if (step === NavigationSteps.REVIEW) {
     title = i18n.t(i18n.l.token_launcher.header.review);
-  } else if (step === 'creating') {
+  } else if (step === NavigationSteps.CREATING) {
     title = i18n.t(i18n.l.token_launcher.header.creating);
   }
 
@@ -72,7 +72,7 @@ export function TokenLauncherHeader() {
         reducedTransparencyFallbackColor="rgba(255, 255, 255, 0.06)"
       /> */}
       <Box flexDirection="row" alignItems="center" justifyContent="space-between" padding="4px">
-        {step === 'info' && (
+        {step === NavigationSteps.INFO && (
           <ButtonPressAnimation onPress={() => navigation.navigate(Routes.CHANGE_WALLET_SHEET, { hideReadOnlyWallets: true })}>
             <AddressAvatar
               url={accountImage}
@@ -83,21 +83,21 @@ export function TokenLauncherHeader() {
             />
           </ButtonPressAnimation>
         )}
-        {step === 'review' && (
+        {step === NavigationSteps.REVIEW && (
           <ButtonPressAnimation
             style={{ width: EXIT_BUTTON_SIZE, height: EXIT_BUTTON_SIZE, justifyContent: 'center', alignItems: 'center' }}
-            onPress={() => setStep('info')}
+            onPress={() => setStep(NavigationSteps.INFO)}
           >
             <Text size="20pt" weight="heavy" color="label">
               􀆉
             </Text>
           </ButtonPressAnimation>
         )}
-        {step === 'creating' && <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />}
+        {step === NavigationSteps.CREATING && <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />}
         <Text size="20pt" weight="heavy" color="label">
           {title}
         </Text>
-        {step === 'info' && (
+        {step === NavigationSteps.INFO && (
           <ButtonPressAnimation onPress={handlePressExit}>
             <Box
               as={IS_IOS ? BlurView : Box}
@@ -116,7 +116,9 @@ export function TokenLauncherHeader() {
             </Box>
           </ButtonPressAnimation>
         )}
-        {(step === 'review' || step === 'creating') && <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />}
+        {(step === NavigationSteps.REVIEW || step === NavigationSteps.CREATING) && (
+          <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />
+        )}
       </Box>
     </Box>
   );

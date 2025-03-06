@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import { Box, ColorModeProvider } from '@/design-system';
 import { FOOTER_HEIGHT, TokenLauncherFooter } from './components/TokenLauncherFooter';
-import { TOKEN_LAUNCHER_HEADER_HEIGHT, TokenLauncherHeader } from './components/TokenLauncherHeader';
+import { TokenLauncherHeader } from './components/TokenLauncherHeader';
 import { InfoInputStep } from './components/InfoInputStep';
 import { ReviewStep } from './components/ReviewStep';
 import { KeyboardAvoidingView, KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
-import { useTokenLauncherStore } from './state/tokenLauncherStore';
+import { NavigationSteps, useTokenLauncherStore } from './state/tokenLauncherStore';
 import Animated, { Extrapolation, FadeIn, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { SkiaBackground } from './components/SkiaBackground';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -41,20 +41,38 @@ function TokenLauncherScreenContent() {
   const safeAreaTop = safeAreaInsets.top;
 
   const { tokenImage } = useTokenLauncherContext();
-  const stepIndex = useTokenLauncherStore(state => state.stepIndex);
+  const stepAnimatedSharedValue = useTokenLauncherStore(state => state.stepAnimatedSharedValue);
   const step = useTokenLauncherStore(state => state.step);
 
-  const footerHeight = FOOTER_HEIGHT + (step === 'success' ? 42 : 0);
+  const footerHeight = FOOTER_HEIGHT + (step === NavigationSteps.SUCCESS ? 42 : 0);
   const contentContainerHeight = screenHeight - footerHeight - (IS_ANDROID ? 0 : safeAreaTop + safeAreaBottom);
 
   const stickyFooterKeyboardOffset = useMemo(() => ({ closed: 0, opened: IS_ANDROID ? 0 : safeAreaBottom }), [safeAreaBottom]);
 
   const infoStepAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: interpolate(stepIndex.value, [0, 1], [0, -screenWidth], Extrapolation.CLAMP) }],
+    transform: [
+      {
+        translateX: interpolate(
+          stepAnimatedSharedValue.value,
+          [NavigationSteps.INFO, NavigationSteps.REVIEW],
+          [0, -screenWidth],
+          Extrapolation.CLAMP
+        ),
+      },
+    ],
   }));
 
   const reviewStepAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: interpolate(stepIndex.value, [0, 1], [screenWidth, 0], Extrapolation.CLAMP) }],
+    transform: [
+      {
+        translateX: interpolate(
+          stepAnimatedSharedValue.value,
+          [NavigationSteps.INFO, NavigationSteps.REVIEW],
+          [screenWidth, 0],
+          Extrapolation.CLAMP
+        ),
+      },
+    ],
   }));
 
   const keyboardVerticalOffset = IS_ANDROID ? FOOTER_HEIGHT + safeAreaBottom : FOOTER_HEIGHT;
@@ -75,7 +93,7 @@ function TokenLauncherScreenContent() {
             borderColor={'separatorSecondary'}
             background="surfacePrimary"
             borderRadius={42}
-            style={{ maxHeight: contentContainerHeight, paddingTop: IS_ANDROID ? TOKEN_LAUNCHER_HEADER_HEIGHT : 0 }}
+            style={{ maxHeight: contentContainerHeight }}
           >
             <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2 }]}>
               <SkiaBackground width={contentContainerHeight} height={contentContainerHeight} />
@@ -83,7 +101,7 @@ function TokenLauncherScreenContent() {
             <Animated.View style={[infoStepAnimatedStyle, { width: screenWidth }]}>
               <InfoInputStep />
             </Animated.View>
-            {(step === 'review' || step === 'info') && (
+            {(step === NavigationSteps.REVIEW || step === NavigationSteps.INFO) && (
               <Animated.View
                 exiting={reviewStepExitingAnimation}
                 style={[
@@ -101,7 +119,7 @@ function TokenLauncherScreenContent() {
                 <ReviewStep />
               </Animated.View>
             )}
-            {step === 'creating' && (
+            {step === NavigationSteps.CREATING && (
               <Animated.View
                 entering={FadeIn.duration(250)}
                 style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}
@@ -109,7 +127,7 @@ function TokenLauncherScreenContent() {
                 <CreatingStep />
               </Animated.View>
             )}
-            {step === 'success' && (
+            {step === NavigationSteps.SUCCESS && (
               <Animated.View
                 entering={FadeIn.duration(250)}
                 style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}

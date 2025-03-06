@@ -6,7 +6,6 @@ export const BLUE = '#268FFF';
 export const FIELD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.02)';
 export const FIELD_BORDER_COLOR = 'rgba(255, 255, 255, 0.03)';
 export const UNFOCUSED_FIELD_BORDER_COLOR = 'rgba(255, 255, 255, 0.03)';
-// export const FOCUSED_FIELD_BORDER_COLOR = 'rgba(255, 255, 255, 0.25)';
 export const FOCUSED_FIELD_BORDER_COLOR = BLUE;
 export const INNER_FIELD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.05)';
 export const FIELD_BORDER_WIDTH = 2.5;

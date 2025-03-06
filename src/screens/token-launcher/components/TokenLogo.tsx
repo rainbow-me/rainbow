@@ -1,10 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
+import * as i18n from '@/languages';
 import { Box, Text, TextIcon } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useUploadToCloudinary } from '../hooks/useUploadToCloudinary';
-import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { Canvas, Image, Shadow, rrect, rect, Box as SkBox, Group } from '@shopify/react-native-skia';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Extrapolation, interpolate, useDerivedValue } from 'react-native-reanimated';
@@ -17,13 +18,13 @@ export function TokenLogo() {
   const imageUri = useTokenLauncherStore(state => state.imageUri);
   const setImageUri = useTokenLauncherStore(state => state.setImageUri);
   const setImageUrl = useTokenLauncherStore(state => state.setImageUrl);
-  const stepIndex = useTokenLauncherStore(state => state.stepIndex);
+  const stepAnimatedSharedValue = useTokenLauncherStore(state => state.stepAnimatedSharedValue);
 
   // TODO: show loading UI if takes longer than 2 seconds
   const { upload, isUploading, error } = useUploadToCloudinary();
 
   const dropShadowsOpacity = useDerivedValue(() => {
-    return interpolate(stepIndex.value, [0, 1], [0, 1], Extrapolation.CLAMP);
+    return interpolate(stepAnimatedSharedValue.value, [NavigationSteps.INFO, NavigationSteps.REVIEW], [0, 1], Extrapolation.CLAMP);
   });
 
   const onPress = useCallback(async () => {
@@ -118,7 +119,10 @@ export function TokenLogo() {
       {error && (
         <Box paddingTop={'12px'}>
           <Text align="center" size="13pt" color={'red'} weight="medium">
-            {'Sorry, there was an error uploading your image.\nPlease try again.'}
+            {i18n.t(i18n.l.token_launcher.image_upload_error.title)}
+          </Text>
+          <Text align="center" size="13pt" color={'red'} weight="medium">
+            {i18n.t(i18n.l.token_launcher.image_upload_error.subtitle)}
           </Text>
         </Box>
       )}

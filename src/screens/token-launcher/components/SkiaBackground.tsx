@@ -1,7 +1,7 @@
 import React, { useMemo, memo } from 'react';
 
 import { Canvas, Shadow, Image, Fill, rect, rrect, Box, Group, BackdropBlur } from '@shopify/react-native-skia';
-import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Extrapolation, interpolate, useDerivedValue } from 'react-native-reanimated';
@@ -11,7 +11,7 @@ export const SkiaBackground = memo(function SkiaBackground({ width, height }: { 
   const separatorSecondaryColor = useForegroundColor('separatorSecondary');
   const { accentColors, tokenBackgroundImage } = useTokenLauncherContext();
   const imageUri = useTokenLauncherStore(state => state.imageUri);
-  const stepIndex = useTokenLauncherStore(state => state.stepIndex);
+  const stepAnimatedSharedValue = useTokenLauncherStore(state => state.stepAnimatedSharedValue);
   const shadowColor = accentColors.opacity20;
 
   const roundedRect = useMemo(() => {
@@ -19,24 +19,28 @@ export const SkiaBackground = memo(function SkiaBackground({ width, height }: { 
   }, [width, height]);
 
   const dimOverlayOpacity = useDerivedValue(() => {
-    // 3 is success
-    return interpolate(stepIndex.value, [2, 3], [1, 0], Extrapolation.CLAMP);
+    return interpolate(stepAnimatedSharedValue.value, [NavigationSteps.CREATING, NavigationSteps.SUCCESS], [1, 0], Extrapolation.CLAMP);
   });
 
   const reviewAndCreatingStepEffectsOpacity = useDerivedValue(() => {
-    return interpolate(stepIndex.value, [0, 1, 2, 3], [0, 1, 1, 0], Extrapolation.CLAMP);
+    return interpolate(
+      stepAnimatedSharedValue.value,
+      [NavigationSteps.INFO, NavigationSteps.REVIEW, NavigationSteps.CREATING, NavigationSteps.SUCCESS],
+      [0, 1, 1, 0],
+      Extrapolation.CLAMP
+    );
   });
 
   const innerShadowOneBlur = useDerivedValue(() => {
-    return interpolate(stepIndex.value, [0, 1], [0, 20], Extrapolation.CLAMP);
+    return interpolate(stepAnimatedSharedValue.value, [NavigationSteps.INFO, NavigationSteps.REVIEW], [0, 20], Extrapolation.CLAMP);
   });
 
   const innerShadowTwoBlur = useDerivedValue(() => {
-    return interpolate(stepIndex.value, [0, 1], [0, 2], Extrapolation.CLAMP);
+    return interpolate(stepAnimatedSharedValue.value, [NavigationSteps.INFO, NavigationSteps.REVIEW], [0, 2], Extrapolation.CLAMP);
   });
 
   const successStepEffectsOpacity = useDerivedValue(() => {
-    return interpolate(stepIndex.value, [2, 3], [0, 1], Extrapolation.CLAMP);
+    return interpolate(stepAnimatedSharedValue.value, [NavigationSteps.CREATING, NavigationSteps.SUCCESS], [0, 1], Extrapolation.CLAMP);
   });
 
   if (!tokenBackgroundImage || !imageUri) return null;

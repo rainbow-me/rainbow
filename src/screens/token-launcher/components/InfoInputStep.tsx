@@ -15,6 +15,7 @@ import { TokenAllocationSection } from './TokenAllocationSection';
 import Animated from 'react-native-reanimated';
 import { validateNameWorklet, validateSymbolWorklet, validateTotalSupplyWorklet } from '../helpers/inputValidators';
 import { Icon } from '@/components/icons';
+import { IS_ANDROID } from '@/env';
 
 function TotalSupplyInput() {
   const setTotalSupply = useTokenLauncherStore(state => state.setTotalSupply);
@@ -128,9 +129,10 @@ export function InfoInputStep() {
         alignSelf: 'stretch',
         flexGrow: 1,
         justifyContent: 'center',
+        paddingTop: IS_ANDROID ? TOKEN_LAUNCHER_HEADER_HEIGHT : 0,
       }}
       keyboardDismissMode="interactive"
-      bottomOffset={FOOTER_HEIGHT + 36}
+      bottomOffset={FOOTER_HEIGHT + (IS_ANDROID ? 56 : 36)}
       extraKeyboardSpace={FOOTER_HEIGHT}
     >
       <Box width="full" alignItems="center" paddingBottom={'20px'} paddingHorizontal="20px">

@@ -3164,6 +3164,10 @@
         "suggested_users": "SUGGESTED USERS",
         "airdrop_lists": "AIRDROP LISTS"
       },
+      "image_upload_error": {
+        "title": "Sorry, there was an error uploading your image.",
+        "subtitle": "Please try again."
+      },
       "allocation_breakdown": {
         "my_share": "MY SHARE",
         "airdropping": "AIRDROPPING",
@@ -3188,7 +3192,7 @@
         "deploying": "Deploying %{symbol}..."
       },
       "success": {
-        "title": "${symbol} is live!",
+        "title": "%{symbol} is live!",
         "congrats": "Congrats, you just launched %{name} into the world! Share it to spread the vibes"
       },
       "input_errors": {
