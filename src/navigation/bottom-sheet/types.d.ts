@@ -95,7 +95,13 @@ export type BottomSheetDescriptorMap = {
 export type BottomSheetNavigationOptions = Partial<
   Pick<
     BottomSheetProps,
-    'index' | 'snapPoints' | 'animationDuration' | 'animationEasing' | 'enableContentPanningGesture' | 'enableHandlePanningGesture'
+    | 'index'
+    | 'snapPoints'
+    | 'animationDuration'
+    | 'animationEasing'
+    | 'enableContentPanningGesture'
+    | 'enableHandlePanningGesture'
+    | 'enablePanDownToClose'
   >
 > & {
   backdropOpacity?: number;
