@@ -1054,8 +1054,8 @@ export function createQueryStore<
       });
       paramUnsubscribes.push(unsub);
     }
-  } else if (subscriptionManager.get().enabled !== initialStoreEnabled) {
-    subscriptionManager.setEnabled(initialStoreEnabled);
+  } else if (initialStoreEnabled !== initialData.enabled) {
+    queryStore.setState(state => ({ ...state, enabled: initialData.enabled }));
   }
 
   for (const k in attachVals?.params) {
