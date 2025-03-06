@@ -143,3 +143,7 @@ export const maybeSignSource = (source: Source, options?: Record<string, unknown
 export const imageToPng = (url: string, w: number) => {
   return maybeSignUri(url, { fm: 'png', w });
 };
+
+export const getSizedImageUrl = (url: string | undefined, size = 40) => {
+  return url ? maybeSignUri(url, { h: size, w: size }) : undefined;
+};

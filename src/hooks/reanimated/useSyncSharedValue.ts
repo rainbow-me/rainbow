@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { DerivedValue, SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
-import { deepEqualWorklet, shallowEqualWorklet } from '@/worklets/comparisons';
+import { deepEqual, shallowEqual } from '@/worklets/comparisons';
 
 interface BaseSyncParams<T> {
   /** The depth of comparison for object values. @default 'deep' */
@@ -62,10 +62,7 @@ export function useSyncSharedValue<T>({ compareDepth = 'deep', pauseSync, setSta
       if (isPaused) return false;
 
       if (typeof sharedValue.value === 'object' && sharedValue.value !== null && typeof state === 'object' && state !== null) {
-        const isEqual =
-          compareDepth === 'deep'
-            ? deepEqualWorklet(sharedValue.value as Record<string, any>, state as Record<string, any>)
-            : shallowEqualWorklet(sharedValue.value as Record<string, any>, state as Record<string, any>);
+        const isEqual = compareDepth === 'deep' ? deepEqual(sharedValue.value, state) : shallowEqual(sharedValue.value, state);
         return !isEqual;
       }
 
