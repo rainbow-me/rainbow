@@ -67,12 +67,10 @@ const FieldInput = React.memo(
             marginBottom: 0,
             marginTop: 0,
             lineHeight: undefined,
-          },
-          inputStyle,
-          {
-            padding: 0,
+            // Resets Android's default vertical padding
             paddingVertical: 0,
           },
+          inputStyle,
         ]}
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...textInputProps}
