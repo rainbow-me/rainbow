@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
 import * as i18n from '@/languages';
-import { Box, Text, TextIcon } from '@/design-system';
+import { Box, Text, TextIcon, TextShadow } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import { View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useUploadToCloudinary } from '../hooks/useUploadToCloudinary';
 import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
@@ -39,11 +39,19 @@ export function TokenLogo() {
     if (result.assets && result.assets.length > 0) {
       const uri = result.assets[0].uri;
       setImageUri(uri);
+
+      // Start timer for upload
+      const startTime = Date.now();
       const url = await upload(uri);
+      const uploadTime = Date.now() - startTime;
+
+      console.log(`Image upload took ${uploadTime}ms`);
+
       if (url) {
         setImageUrl(url);
       } else {
         // TODO: log & show error
+        console.error('Failed to upload image', { uploadTime });
       }
     }
   }, [setImageUri, setImageUrl, upload]);
@@ -78,23 +86,34 @@ export function TokenLogo() {
             </Canvas>
           )}
           {!imageUri && (
-            <View
-              style={{
-                width: '100%',
-                height: '100%',
-                backgroundColor: accentColors.opacity10,
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: SIZE / 2,
-                borderWidth: 3,
-                borderColor: accentColors.opacity30,
-                borderStyle: 'dashed',
-              }}
+            <Box
+              shadow={'30px'}
+              borderRadius={SIZE / 2}
+              shadowOpacity={0.24}
+              shadowColor={accentColors.opacity100}
+              background={'surfacePrimary'}
+              style={StyleSheet.absoluteFill}
             >
-              <Text size="34pt" color={{ custom: accentColors.opacity100 }} weight="bold">
-                {'􀅼'}
-              </Text>
-            </View>
+              <Box
+                width={'full'}
+                height={'full'}
+                backgroundColor={accentColors.opacity10}
+                justifyContent={'center'}
+                alignItems={'center'}
+                borderRadius={SIZE / 2}
+                style={{
+                  borderStyle: 'dashed',
+                  borderWidth: 3,
+                  borderColor: accentColors.opacity30,
+                }}
+              >
+                <TextShadow blur={12} shadowOpacity={0.24} color={accentColors.opacity100}>
+                  <Text size="34pt" color={{ custom: accentColors.opacity100 }} weight="bold">
+                    {'􀅼'}
+                  </Text>
+                </TextShadow>
+              </Box>
+            </Box>
           )}
         </Box>
         {error && (

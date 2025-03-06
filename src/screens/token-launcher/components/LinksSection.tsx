@@ -35,7 +35,7 @@ export const LINK_SETTINGS = {
     Icon: () => (
       <IconContainer height={20} width={20}>
         <Bleed left="6px">
-          <Icon name="telegram" width="20" height="12" />
+          <Icon name="telegram" width="20" height="12" color={colors.white} />
         </Bleed>
       </IconContainer>
     ),
