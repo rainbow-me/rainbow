@@ -1,6 +1,6 @@
 import { StatusBar } from 'react-native';
 import { Easing, WithSpringConfig, WithTimingConfig } from 'react-native-reanimated';
-import { IS_IOS, IS_TEST } from '@/env';
+import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { DEVICE_HEIGHT, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
@@ -22,7 +22,7 @@ export const REVIEW_SHEET_HEIGHT = 412;
 export const SETTINGS_SHEET_HEIGHT = 299;
 export const SETTINGS_SHEET_ROW_GAP = 28;
 export const GAS_SHEET_HEIGHT = 274;
-export const BOTTOM_ACTION_BAR_HEIGHT = 114;
+export const BOTTOM_ACTION_BAR_HEIGHT = IS_ANDROID ? 48 + 32 + safeAreaInsetValues.bottom : 114;
 export const BASE_INPUT_HEIGHT = 104;
 export const BASE_INPUT_WIDTH = deviceUtils.dimensions.width - 24;
 export const EXPANDED_REVIEW_SECTION = 408;
