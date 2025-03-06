@@ -465,7 +465,9 @@ export function AirdropSection() {
       <Box gap={16}>
         {hasExceededMaxAirdropRecipients && (
           <Text color="red" size="15pt" weight="heavy">
-            {i18n.t(i18n.l.token_launcher.airdrop.max_recipients_reached, { maxRecipientCount })}
+            {i18n.t(i18n.l.token_launcher.airdrop.max_recipients_reached, {
+              maxRecipientCount: abbreviateNumber(maxRecipientCount, 0, 'short'),
+            })}
           </Text>
         )}
         <AirdropRecipients />

@@ -53,16 +53,19 @@ const FieldInput = React.memo(
       size: '17pt',
       weight: 'bold',
     });
+    const textAlign = textInputProps.textAlign || (labelPosition === 'left' ? 'right' : 'left');
 
     return (
       <AnimatedInput
         ref={ref}
+        numberOfLines={1}
         style={[
           inputTextStyle,
           {
             flex: 1,
             height: '100%',
-            textAlign: labelPosition === 'left' ? 'right' : 'left',
+            textAlign,
+            paddingLeft: labelPosition === 'left' && textAlign === 'right' ? 16 : 0,
             // These three custom values applied by the useTextStyle hook need to be overriden or the text will be misaligned / cut off
             marginBottom: 0,
             marginTop: 0,
@@ -116,7 +119,7 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
     const hasError = useSharedValue(false);
     const [isSubtitleVisible, setIsSubtitleVisible] = useState(true);
 
-    // We expose a custom ref to the parent component because we want to run the validation logic when the native text is set
+    // We expose a custom ref to the parent component because we want to run the validation logic when the native text is set imperatively
     useImperativeHandle(ref, () => ({
       focus: () => {
         internalRef.current?.focus();
@@ -133,7 +136,7 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
       setNativeTextWithInputValidation: (text: string) => {
         internalRef.current?.setNativeProps({ text });
         inputValue.value = text;
-        // We cannot run this worklet with runOnUI here (see below)
+        // We cannot run this worklet with runOnUI here
         // https://github.com/software-mansion/react-native-reanimated/discussions/5199
         if (validationWorklet) {
           const result = validationWorklet(text);
@@ -223,7 +226,9 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
     );
 
     const LabelContent = () => (
-      <Animated.View style={{ position: 'relative', gap: 10 }}>
+      <Animated.View
+        style={{ position: 'relative', gap: 10, paddingRight: labelPosition === 'left' && textInputProps.textAlign === 'right' ? 20 : 0 }}
+      >
         <Animated.View style={titleContainerStyle}>{title ? <FieldLabel>{title}</FieldLabel> : <Box>{icon}</Box>}</Animated.View>
         <Animated.View style={{ position: 'absolute', top: TITLE_GAP }}>
           <AnimatedText
@@ -247,7 +252,6 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
       </Animated.View>
     );
 
-    // TODO: memoize this
     const PasteButton = () => (
       <Animated.View style={pasteButtonStyle}>
         <ButtonPressAnimation onPress={handlePaste}>

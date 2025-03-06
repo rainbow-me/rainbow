@@ -163,7 +163,7 @@ function TokenPreview() {
   const chainId = useTokenLauncherStore(state => state.chainId);
   const tokenPrice = useTokenLauncherStore(state => state.tokenPrice());
   const tokenMarketCap = useTokenLauncherStore(state => state.tokenMarketCap());
-  const symbolLabel = symbol === '' ? 'NAME' : symbol;
+  const symbolLabel = symbol === '' ? i18n.t(i18n.l.token_launcher.placeholders.ticker) : `$${symbol}`;
 
   return (
     <Animated.View exiting={FadeOut.duration(STEP_TRANSITION_DURATION)} style={{ flex: 1 }}>
@@ -185,18 +185,18 @@ function TokenPreview() {
           </Box>
         )}
         <Box gap={8}>
-          <Text color="labelSecondary" size="11pt" weight="bold">
-            {`$${symbolLabel}`}
+          <Text style={{ maxWidth: 125 }} numberOfLines={1} color="labelSecondary" size="11pt" weight="bold">
+            {symbolLabel}
           </Text>
-          <Text color="labelTertiary" size="15pt" weight="bold">
-            {`${tokenPrice}`}
+          <Text numberOfLines={1} color="labelTertiary" size="15pt" weight="bold">
+            {tokenPrice}
           </Text>
           <Box flexDirection="row" alignItems="center" gap={4}>
             <Text color="labelQuaternary" size="11pt" weight="bold">
               {i18n.t(i18n.l.token_launcher.titles.mcap)}
             </Text>
             <Text color="labelTertiary" size="11pt" weight="bold">
-              {`${tokenMarketCap}`}
+              {tokenMarketCap}
             </Text>
           </Box>
         </Box>
@@ -207,7 +207,6 @@ function TokenPreview() {
 
 export function TokenLauncherFooter() {
   const navigation = useNavigation();
-  const resetStore = useTokenLauncherStore(state => state.reset);
   const chainId = useTokenLauncherStore(state => state.chainId);
   const step = useTokenLauncherStore(state => state.step);
   const stepSharedValue = useTokenLauncherStore(state => state.stepSharedValue);
