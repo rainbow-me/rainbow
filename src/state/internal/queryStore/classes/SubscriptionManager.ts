@@ -8,6 +8,10 @@ interface SubscriptionManagerConfig {
    * The store's `disableAutoRefetching` option, passed through from the query config.
    */
   disableAutoRefetching: boolean;
+  /**
+   * The initial enabled state for the SubscriptionManager.
+   */
+  initialEnabled: boolean;
 }
 
 /**
@@ -40,7 +44,8 @@ export class SubscriptionManager {
   /**
    * Creates a new SubscriptionManager instance.
    */
-  constructor({ disableAutoRefetching }: SubscriptionManagerConfig) {
+  constructor({ disableAutoRefetching, initialEnabled }: SubscriptionManagerConfig) {
+    this.enabled = initialEnabled;
     if (disableAutoRefetching) {
       this.fetchThrottleMs = time.seconds(5);
     }
