@@ -23,7 +23,7 @@ export function NetworkField() {
   );
   const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[chainId];
   const navigation = useNavigation();
-  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
+  const chainNativeAsset = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
   const allowedNetworks = useBackendNetworksStore.getState().getTokenLauncherSupportedChainIds();
 
   const onChainSelected = (chainId: number) => {
