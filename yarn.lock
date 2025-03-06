@@ -4209,6 +4209,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@legendapp/list@npm:1.0.0-beta.11":
+  version: 1.0.0-beta.11
+  resolution: "@legendapp/list@npm:1.0.0-beta.11"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/9c07dd83c8feb4fdd3b3d6a94126f497e6ed83c2230e04ebbc38be6c1ef780420556f545e7ee03cc53ce8ef80815c69808068de0f2dafa0d943d7cfb36052398
+  languageName: node
+  linkType: hard
+
 "@metamask/abi-utils@npm:^2.0.2":
   version: 2.0.4
   resolution: "@metamask/abi-utils@npm:2.0.4"
@@ -8726,6 +8736,7 @@ __metadata:
     "@lavamoat/preinstall-always-fail": "npm:2.0.0"
     "@ledgerhq/hw-app-eth": "npm:6.39.0"
     "@ledgerhq/react-native-hw-transport-ble": "npm:6.33.4"
+    "@legendapp/list": "npm:1.0.0-beta.11"
     "@metamask/eth-sig-util": "npm:7.0.2"
     "@notifee/react-native": "npm:7.8.2"
     "@rainbow-me/provider": "npm:0.1.2"
@@ -8832,6 +8843,7 @@ __metadata:
     expo: "npm:51.0.38"
     expo-store-review: "npm:7.0.2"
     fast-text-encoding: "npm:1.0.4"
+    figma-squircle: "npm:1.1.0"
     global: "npm:4.4.0"
     grapheme-splitter: "npm:1.0.4"
     graphql: "npm:15.3.0"
@@ -14711,6 +14723,13 @@ __metadata:
   version: 4.1.1
   resolution: "fetch-retry@npm:4.1.1"
   checksum: 10c0/f55cdc82d096e8ef92f92218a8379a01d56cc01726a0ac554845eb943758ceca8be2619682678adfbff88ecb4d97269375200af7ca94a726a8195781aa4c2f49
+  languageName: node
+  linkType: hard
+
+"figma-squircle@npm:1.1.0":
+  version: 1.1.0
+  resolution: "figma-squircle@npm:1.1.0"
+  checksum: 10c0/2879c5d69ad1908d4c76b4e7dc87a1d72cd023d601bd31b9d38b219558867dd8d5a7953e25a8ae7753344a79d412e85d3ecbda4df7a5a2243509d138b5b62aed
   languageName: node
   linkType: hard
 
