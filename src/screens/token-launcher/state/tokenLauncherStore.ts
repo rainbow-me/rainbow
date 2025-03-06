@@ -1,6 +1,6 @@
 import { abbreviateNumber, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, TARGET_MARKET_CAP_IN_USD } from '../constants';
+import { DEFAULT_CHAIN_ID, DEFAULT_MAX_AIRDROP_RECIPIENTS, DEFAULT_TOTAL_SUPPLY, TARGET_MARKET_CAP_IN_USD } from '../constants';
 import { makeMutable, SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import chroma from 'chroma-js';
@@ -61,10 +61,12 @@ interface TokenLauncherStore {
   gasSpeed: GasSpeed;
   hasSufficientChainNativeAssetForTransactionGas: boolean;
   hasValidPrebuyAmount: boolean;
+  maxAirdropRecipientCount: number;
   // derived state
   formattedTotalSupply: () => string;
   validAirdropRecipients: () => AirdropRecipient[];
   validLinks: () => Link[];
+  hasExceededMaxAirdropRecipients: () => boolean;
   tokenPrice: () => string;
   tokenMarketCap: () => string;
   hasCompletedRequiredFields: () => boolean;
@@ -80,6 +82,7 @@ interface TokenLauncherStore {
   setImageUrl: (url: string) => void;
   setName: (name: string) => void;
   setSymbol: (symbol: string) => void;
+  setMaxAirdropRecipientCount: (count: number) => void;
   setChainId: (chainId: number) => void;
   setTotalSupply: (totalSupply: number) => void;
   addLink: (type: LinkType) => void;
@@ -148,10 +151,16 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   gasSpeed: GasSpeed.FAST,
   hasSufficientChainNativeAssetForTransactionGas: true,
   hasValidPrebuyAmount: true,
+  maxAirdropRecipientCount: DEFAULT_MAX_AIRDROP_RECIPIENTS,
   // derived state
   formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 2, 'long', true),
   validAirdropRecipients: () => get().airdropRecipients.filter(recipient => recipient.isValid),
   validLinks: () => get().links.filter(link => !validateLinkWorklet({ link: link.input, type: link.type })),
+  hasExceededMaxAirdropRecipients: () => {
+    const { maxAirdropRecipientCount, airdropRecipients } = get();
+    const totalRecipientCount = airdropRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
+    return totalRecipientCount > maxAirdropRecipientCount;
+  },
   tokenPrice: () => {
     const { nativeCurrency } = store.getState().settings;
     const tokenomics = get().tokenomics();
@@ -186,8 +195,14 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     return !nameValidation?.error && !symbolValidation?.error && !supplyValidation?.error && imageUrl !== '';
   },
   canContinueToReview: () => {
-    const { airdropRecipients, links, hasCompletedRequiredFields, hasSufficientChainNativeAssetForTransactionGas, hasValidPrebuyAmount } =
-      get();
+    const {
+      airdropRecipients,
+      links,
+      hasCompletedRequiredFields,
+      hasExceededMaxAirdropRecipients,
+      hasSufficientChainNativeAssetForTransactionGas,
+      hasValidPrebuyAmount,
+    } = get();
 
     // Empty address inputs do not prevent continuing, they are just ignored
     const allAirdropRecipientsValid = airdropRecipients.every(recipient => recipient.isValid || recipient.value === '');
@@ -195,6 +210,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
     return (
       hasCompletedRequiredFields() &&
+      !hasExceededMaxAirdropRecipients() &&
       allAirdropRecipientsValid &&
       allLinksValid &&
       hasSufficientChainNativeAssetForTransactionGas &&
@@ -231,6 +247,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     set({
       imageUrl: url,
     });
+  },
+  setMaxAirdropRecipientCount: (count: number) => {
+    set({ maxAirdropRecipientCount: count });
   },
   setName: (name: string) => set({ name }),
   setSymbol: (symbol: string) => set({ symbol }),

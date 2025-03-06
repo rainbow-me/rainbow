@@ -19,8 +19,9 @@ export const INPUT_HEIGHT = 66;
 export const SMALL_INPUT_HEIGHT = 50;
 
 export const MAX_SYMBOL_BYTES = 32;
-export const MAX_DESCRIPTION_BYTES = 2000;
+export const MAX_DESCRIPTION_BYTES = 2_000;
 export const MAX_NAME_BYTES = 32;
+export const DEFAULT_MAX_AIRDROP_RECIPIENTS = 20_000;
 
 export const DEFAULT_CHAIN_ID = base.id;
 export const DEFAULT_TOTAL_SUPPLY = 1_000_000_000;

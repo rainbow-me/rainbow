@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { AnimatedText, Box, Text, useForegroundColor } from '@/design-system';
 import Animated, { FadeIn, SharedValue, useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { FIELD_BACKGROUND_COLOR, FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, COLLAPSABLE_FIELD_ANIMATION } from '../constants';
@@ -39,10 +39,11 @@ function AnimatedPlusMinusIcon({ collapsed }: { collapsed: SharedValue<boolean> 
 
 type CollapsableFieldProps = {
   title: string;
+  style?: StyleProp<ViewStyle>;
   children: React.ReactNode;
 };
 
-export function CollapsableField({ title, children }: CollapsableFieldProps) {
+export function CollapsableField({ title, children, style }: CollapsableFieldProps) {
   const borderColor = useForegroundColor('buttonStroke');
   const collapsed = useSharedValue(true);
 
@@ -65,7 +66,7 @@ export function CollapsableField({ title, children }: CollapsableFieldProps) {
   });
 
   return (
-    <Animated.View layout={COLLAPSABLE_FIELD_ANIMATION} style={[styles.container, { borderColor }]}>
+    <Animated.View layout={COLLAPSABLE_FIELD_ANIMATION} style={[styles.container, { borderColor }, style]}>
       <Animated.View style={[styles.header, headerStyle]}>
         <GestureHandlerButton
           hapticTrigger="tap-end"
