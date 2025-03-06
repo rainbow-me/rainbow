@@ -37,8 +37,6 @@ export function SheetFooter() {
 
   const colorMode = useMemo(() => getAccentColorMode(accentColors.color, isDarkMode), [accentColors.color, isDarkMode]);
 
-  console.log('safeAreaInsets', safeAreaInsets);
-
   return (
     <Box pointerEvents="box-none" position="absolute" bottom="0px" width="full">
       <EasingGradient
