@@ -1,0 +1,6 @@
+appId: ${APP_ID}
+tags:
+  - auth
+---
+- launchApp
+- tapOn: "Get a new wallet"

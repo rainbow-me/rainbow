@@ -1,7 +1,23 @@
 appId: ${APP_ID}
+tags:
+  - auth
 ---
+- clearState
 - launchApp
 - tapOn: "I already have one"
 - tapOn: "Import a Secret Phrase or Private Key"
 - tapOn: "Enter a recovery phrase or private key"
 - inputText: ${DEV_PKEY}
+- hideKeyboard
+- tapOn: "Continue"
+- inputText: "PKEY"
+- tapOn: "Import Wallet"
+- tapOn:
+    text: "1"
+    repeat: 4
+- tapOn:
+    text: "1"
+    repeat: 4
+- assertVisible:
+    id: wallet-screen
+
