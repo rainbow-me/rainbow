@@ -28,7 +28,7 @@ interface RainbowCoinEffectProps {
   size: number;
 }
 
-export const EXPANDED_STATE_ROUTE = Routes.EXPANDED_ASSET_SHEET_V2;
+const EXPANDED_STATE_ROUTE = Routes.EXPANDED_ASSET_SHEET_V2;
 
 export const RainbowCoinEffect = memo(function RainbowCoinEffect({ color: providedColor, imageUrl, size = 40 }: RainbowCoinEffectProps) {
   const { isDarkMode } = useColorMode();
