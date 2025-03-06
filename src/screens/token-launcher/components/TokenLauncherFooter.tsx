@@ -334,7 +334,6 @@ export function TokenLauncherFooter() {
       <Animated.View style={[skipButtonAnimatedStyle, { paddingTop: 16 }]}>
         <ButtonPressAnimation
           onPress={() => {
-            resetStore();
             navigation.goBack();
           }}
         >

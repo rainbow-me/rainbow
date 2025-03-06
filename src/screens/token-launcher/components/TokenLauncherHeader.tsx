@@ -19,7 +19,6 @@ export const TOKEN_LAUNCHER_HEADER_HEIGHT = 20 + 36 + 8 + 12 + 12;
 export function TokenLauncherHeader() {
   const navigation = useNavigation();
   const { accountColor, accountImage, accountAddress } = useAccountProfile();
-  const resetStore = useTokenLauncherStore(state => state.reset);
   const step = useTokenLauncherStore(state => state.step);
   const setStep = useTokenLauncherStore(state => state.setStep);
   let title = '';
@@ -40,12 +39,11 @@ export function TokenLauncherHeader() {
       },
       (buttonIndex: number) => {
         if (buttonIndex === 0) {
-          resetStore();
           navigation.goBack();
         }
       }
     );
-  }, [navigation, resetStore]);
+  }, [navigation]);
 
   return (
     <Box

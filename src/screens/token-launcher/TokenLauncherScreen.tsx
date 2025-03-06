@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Box, ColorModeProvider } from '@/design-system';
 import { FOOTER_HEIGHT, TokenLauncherFooter } from './components/TokenLauncherFooter';
 import { TokenLauncherHeader } from './components/TokenLauncherHeader';
@@ -42,10 +42,17 @@ function TokenLauncherScreenContent() {
 
   const { tokenImage } = useTokenLauncherContext();
   const stepAnimatedSharedValue = useTokenLauncherStore(state => state.stepAnimatedSharedValue);
+  const resetStore = useTokenLauncherStore(state => state.reset);
   const step = useTokenLauncherStore(state => state.step);
 
   const footerHeight = FOOTER_HEIGHT + (step === NavigationSteps.SUCCESS ? 42 : 0);
   const contentContainerHeight = screenHeight - footerHeight - (IS_ANDROID ? 0 : safeAreaTop + safeAreaBottom);
+
+  useEffect(() => {
+    return () => {
+      resetStore();
+    };
+  }, [resetStore]);
 
   const stickyFooterKeyboardOffset = useMemo(() => ({ closed: 0, opened: IS_ANDROID ? 0 : safeAreaBottom }), [safeAreaBottom]);
 
@@ -95,8 +102,13 @@ function TokenLauncherScreenContent() {
             borderRadius={42}
             style={{ maxHeight: contentContainerHeight }}
           >
-            <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2 }]}>
+            {/* TODO: break shadows effects into separate component because dimensions are different than image bg */}
+            {/* <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2 }]}>
               <SkiaBackground width={contentContainerHeight} height={contentContainerHeight} />
+            </Box> */}
+
+            <Box style={StyleSheet.absoluteFill}>
+              <SkiaBackground width={screenWidth} height={contentContainerHeight} />
             </Box>
             <Animated.View style={[infoStepAnimatedStyle, { width: screenWidth }]}>
               <InfoInputStep />
