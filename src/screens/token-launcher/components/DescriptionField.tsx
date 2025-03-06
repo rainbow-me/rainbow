@@ -2,8 +2,9 @@ import React from 'react';
 import * as i18n from '@/languages';
 import { CollapsableField } from './CollapsableField';
 import { SingleFieldInput } from './SingleFieldInput';
-import { FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR, MAX_DESCRIPTION_LENGTH } from '../constants';
+import { FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { validateDescriptionWorklet } from '../helpers/inputValidators';
 
 export function DescriptionField() {
   const setDescription = useTokenLauncherStore(state => state.setDescription);
@@ -20,12 +21,7 @@ export function DescriptionField() {
           backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
           paddingHorizontal: 16,
         }}
-        validationWorklet={text => {
-          'worklet';
-          if (text.trim().length > MAX_DESCRIPTION_LENGTH) {
-            return { error: true, message: i18n.t(i18n.l.token_launcher.input_errors.too_long) };
-          }
-        }}
+        validationWorklet={validateDescriptionWorklet}
         textAlignVertical="top"
         onInputChange={text => setDescription(text)}
         numberOfLines={3}

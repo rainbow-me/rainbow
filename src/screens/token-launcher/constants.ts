@@ -19,9 +19,9 @@ export const STEP_TRANSITION_DURATION = 200;
 export const INPUT_HEIGHT = 66;
 export const SMALL_INPUT_HEIGHT = 50;
 
-export const MAX_SYMBOL_LENGTH = 10;
-export const MAX_DESCRIPTION_LENGTH = 240;
-export const MAX_NAME_LENGTH = 20;
+export const MAX_SYMBOL_BYTES = 32;
+export const MAX_DESCRIPTION_BYTES = 2000;
+export const MAX_NAME_BYTES = 32;
 
 export const DEFAULT_CHAIN_ID = base.id;
 export const DEFAULT_TOTAL_SUPPLY = 1_000_000_000;

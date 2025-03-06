@@ -3193,7 +3193,11 @@
       },
       "input_errors": {
         "too_long": "Too long, friend.",
-        "invalid_input": "Invalid input"
+        "invalid_input": "Invalid input",
+        "symbol_required": "Symbol is required",
+        "name_required": "Name is required",
+        "too_big": "Too big.",
+        "must_be_greater_than_0": "Must be greater than 0"
       },
       "titles": {
         "total_supply": "Total Supply",
