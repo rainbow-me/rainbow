@@ -53,12 +53,13 @@ export const useEasingGradient = ({
   return useMemo(() => {
     const colors: string[] = [];
     const locations: number[] = [];
+    const roundedSteps = Math.round(steps);
 
     const startColorWithOpacity = chroma(startColor).alpha(startOpacity);
     const endColorWithOpacity = chroma(endColor).alpha(endOpacity);
 
-    for (let i = 0; i <= steps; i++) {
-      const t = i / steps;
+    for (let i = 0; i <= roundedSteps; i++) {
+      const t = i / roundedSteps;
       const easedT = easing(t);
 
       const interpolatedColor = chroma.mix(startColorWithOpacity, endColorWithOpacity, easedT, 'rgb');
