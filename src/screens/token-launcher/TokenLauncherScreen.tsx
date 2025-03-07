@@ -7,7 +7,7 @@ import { ReviewStep } from './components/ReviewStep';
 import { KeyboardAvoidingView, KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { NavigationSteps, useTokenLauncherStore } from './state/tokenLauncherStore';
 import Animated, { Extrapolation, FadeIn, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { SkiaBackground } from './components/SkiaBackground';
+import { StepBlurredImageBackground } from './components/StepBlurredImageBackground';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { TokenLauncherContextProvider, useTokenLauncherContext } from './context/TokenLauncherContext';
 import { CreatingStep } from './components/CreatingStep';
@@ -16,6 +16,7 @@ import { SuccessStep } from './components/SuccessStep';
 import { JumboBlurredImageBackground } from './components/JumboBlurredImageBackground';
 import { IS_ANDROID } from '@/env';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StepBorderEffects } from './components/StepBorderEffects';
 
 function reviewStepExitingAnimation() {
   'worklet';
@@ -102,13 +103,11 @@ function TokenLauncherScreenContent() {
             borderRadius={42}
             style={{ maxHeight: contentContainerHeight }}
           >
-            {/* TODO: break shadows effects into separate component because dimensions are different than image bg */}
-            {/* <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2 }]}>
-              <SkiaBackground width={contentContainerHeight} height={contentContainerHeight} />
-            </Box> */}
-
+            <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2 }]}>
+              <StepBlurredImageBackground width={contentContainerHeight} height={contentContainerHeight} />
+            </Box>
             <Box style={StyleSheet.absoluteFill}>
-              <SkiaBackground width={screenWidth} height={contentContainerHeight} />
+              <StepBorderEffects width={screenWidth} height={contentContainerHeight} />
             </Box>
             <Animated.View style={[infoStepAnimatedStyle, { width: screenWidth }]}>
               <InfoInputStep />
