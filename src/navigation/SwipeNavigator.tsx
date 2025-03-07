@@ -1,4 +1,5 @@
 import ConditionalWrap from 'conditional-wrap';
+import { BlurView } from 'react-native-blur-view';
 import { LIGHT_SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -20,12 +21,11 @@ import { PointsScreen } from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen';
 import { useTheme } from '@/theme';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { BlurView } from '@react-native-community/blur';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import { MaterialTopTabDescriptorMap } from '@react-navigation/material-top-tabs/lib/typescript/src/types';
 import { NavigationHelpers, ParamListBase, RouteProp } from '@react-navigation/native';
 import React, { useCallback, useMemo, useRef } from 'react';
-import { InteractionManager, View } from 'react-native';
+import { InteractionManager, StyleSheet } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedReaction,
@@ -329,18 +329,9 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   return (
     <Box bottom={{ custom: 0 }} height={{ custom: TAB_BAR_HEIGHT }} pointerEvents="box-none" position="absolute" width="full">
       <Box as={Animated.View} style={[shadowStyles.outer, IS_IOS ? dappBrowserTabBarShadowStyle : {}, hideForBrowserTabViewStyle]}>
-        <Box as={Animated.View} style={[shadowStyles.inner, IS_IOS ? dappBrowserTabBarShadowStyle : {}]}>
-          {/* @ts-expect-error The conditional as={} is causing type errors */}
-          <Box
-            as={IS_IOS ? BlurView : View}
-            height={{ custom: TAB_BAR_HEIGHT }}
-            width="full"
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...(IS_IOS && {
-              blurAmount: 40,
-              blurType: isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight',
-            })}
-          >
+      <Box as={Animated.View} style={[shadowStyles.inner, IS_IOS ? dappBrowserTabBarShadowStyle : {}]}>
+          <Box height={{ custom: TAB_BAR_HEIGHT }} width="full">
+            {IS_IOS && <BlurView blurStyle={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'} style={StyleSheet.absoluteFill} />}
             <Box
               height="full"
               position="absolute"

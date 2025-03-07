@@ -117,26 +117,19 @@ export const FlipButton = () => {
         ]}
       >
         <GestureHandlerButton onPressWorklet={handleFlipAssets} scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
-          {/* TODO: Temp fix - rewrite to actually avoid type errors */}
-          {/* @ts-expect-error The conditional as={} is causing type errors */}
-          <Box
-            alignItems="center"
-            as={IS_IOS ? AnimatedBlurView : Animated.View}
-            justifyContent="center"
-            style={[
-              AnimatedSwapStyles.flipButtonFetchingStyle,
-              styles.flipButton,
-              {
-                backgroundColor: IS_ANDROID ? (isDarkMode ? globalColors.blueGrey100 : globalColors.white100) : undefined,
-                borderColor: isDarkMode ? SEPARATOR_COLOR : opacity(globalColors.white100, 0.5),
-              },
-            ]}
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...(IS_IOS && {
-              blurAmount: 10,
-              blurType: isDarkMode ? undefined : 'light',
-            })}
-          >
+          <Box alignItems="center" justifyContent="center" style={styles.flipButtonContainer}>
+            <AnimatedBlurView
+              blurIntensity={10}
+              blurStyle={isDarkMode ? 'regular' : 'light'}
+              style={[
+                AnimatedSwapStyles.flipButtonFetchingStyle,
+                styles.flipButton,
+                {
+                  backgroundColor: IS_ANDROID ? (isDarkMode ? globalColors.blueGrey100 : globalColors.white100) : undefined,
+                  borderColor: isDarkMode ? SEPARATOR_COLOR : opacity(globalColors.white100, 0.5),
+                },
+              ]}
+            />
             <IconContainer size={24} opacity={isDarkMode ? 0.6 : 0.8}>
               <Box alignItems="center" justifyContent="center">
                 <Bleed bottom={{ custom: IS_IOS ? 0.5 : 4 }}>
@@ -178,8 +171,15 @@ const SpinnerComponent = () => {
   );
 };
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   flipButton: {
+    borderRadius: 15,
+    height: 30,
+    overflow: 'hidden',
+    position: 'absolute',
+    width: 30,
+  },
+  flipButtonContainer: {
     borderRadius: 15,
     height: 30,
     width: 30,

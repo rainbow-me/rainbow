@@ -5253,16 +5253,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/blur@npm:4.4.1":
-  version: 4.4.1
-  resolution: "@react-native-community/blur@npm:4.4.1"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/f8f3b2e0dc630d93219c5db822a5d283754beedf31b8e481c17bca6f8b2a29d0e24cad4c5013f692f120a3336490dc5b1b3990a68c714c3308151adf92686ad7
-  languageName: node
-  linkType: hard
-
 "@react-native-community/cli-clean@npm:13.6.9":
   version: 13.6.9
   resolution: "@react-native-community/cli-clean@npm:13.6.9"
@@ -8734,7 +8724,6 @@ __metadata:
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-native-camera-roll/camera-roll": "npm:7.7.0"
     "@react-native-clipboard/clipboard": "npm:1.13.2"
-    "@react-native-community/blur": "npm:4.4.1"
     "@react-native-community/netinfo": "npm:9.0.0"
     "@react-native-firebase/app": "npm:20.1.0"
     "@react-native-firebase/messaging": "npm:20.1.0"
@@ -8882,6 +8871,7 @@ __metadata:
     react-native-aes-crypto: "rainbow-me/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b"
     react-native-animateable-text: "npm:0.12.1"
     react-native-ble-plx: "npm:3.2.1"
+    react-native-blur-view: "christianbaroni/react-native-blur-view#2548117e37750f2c08ef0ec8c7e1c38e1294c9a8"
     react-native-bootsplash: "npm:5.5.3"
     react-native-branch: "npm:5.3.1"
     react-native-change-icon: "npm:4.0.0"
@@ -22245,6 +22235,16 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/04463138444bae9128b7b7b16468f86156bb466c6586a97cc4fc3f6cde40647211e8afb2a713c24cf74c39464ddc535a63899897a5bc4b3d6b4916d100bda68e
+  languageName: node
+  linkType: hard
+
+"react-native-blur-view@christianbaroni/react-native-blur-view#2548117e37750f2c08ef0ec8c7e1c38e1294c9a8":
+  version: 1.0.0
+  resolution: "react-native-blur-view@https://github.com/christianbaroni/react-native-blur-view.git#commit=2548117e37750f2c08ef0ec8c7e1c38e1294c9a8"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/35a5a708ffb7cfb8a599f8b0329cf433e7958fa83d1c25affd76c234beb6bea420553c975cacf6743d089882914a0adfb8ad96346a4ac9a5f5acd4b5d407ce6a
   languageName: node
   linkType: hard
 

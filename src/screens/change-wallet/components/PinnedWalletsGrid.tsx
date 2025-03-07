@@ -1,10 +1,10 @@
 import { Draggable, DraggableGrid, DraggableGridProps, UniqueIdentifier } from '@/components/drag-and-drop';
-import { Box, HitSlop, Inline, Stack, Text } from '@/design-system';
+import { Box, HitSlop, Inline, Stack, Text, TextIcon } from '@/design-system';
 import React, { useCallback, useMemo } from 'react';
+import { BlurView } from 'react-native-blur-view';
 import { AddressItem, AddressMenuAction, AddressMenuActionData, PANEL_INSET_HORIZONTAL } from '../ChangeWalletSheet';
 import { AddressAvatar } from './AddressAvatar';
 import { ButtonPressAnimation } from '@/components/animations';
-import { BlurView } from '@react-native-community/blur';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { SelectedAddressBadge } from './SelectedAddressBadge';
 import { JiggleAnimation } from '@/components/animations/JiggleAnimation';
@@ -16,6 +16,7 @@ import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
 import { triggerHaptics } from 'react-native-turbo-haptics';
+import { StyleSheet } from 'react-native';
 
 const UNPIN_BADGE_SIZE = 28;
 const PINS_PER_ROW = 3;
@@ -164,21 +165,25 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                       {editMode && (
                         <Box position="absolute" bottom={'0px'} right={'0px'}>
                           <ButtonPressAnimation onPress={() => removePinnedAddress(account.address)}>
-                            <HitSlop space="16px">
+                          <HitSlop space="16px">
                               <Box
-                                as={IS_IOS ? BlurView : Box}
                                 width={{ custom: UNPIN_BADGE_SIZE }}
                                 height={{ custom: UNPIN_BADGE_SIZE }}
                                 justifyContent="center"
                                 alignItems="center"
-                                blurAmount={24}
-                                blurType={isDarkMode ? 'materialDark' : 'materialLight'}
                                 backgroundColor={IS_IOS ? 'transparent' : colors.darkGrey}
                                 borderRadius={UNPIN_BADGE_SIZE / 2}
+                                style={{ overflow: 'hidden' }}
                               >
-                                <Text color="label" size="icon 12px" weight="bold">
+                                {IS_IOS && (
+                                  <BlurView
+                                    blurStyle={isDarkMode ? 'materialDark' : 'materialLight'}
+                                    style={[StyleSheet.absoluteFill, { borderRadius: UNPIN_BADGE_SIZE / 2, overflow: 'hidden' }]}
+                                  />
+                                )}
+                                <TextIcon color="label" containerSize={UNPIN_BADGE_SIZE} size="icon 12px" weight="heavy">
                                   {'􀅽'}
-                                </Text>
+                                </TextIcon>
                               </Box>
                             </HitSlop>
                           </ButtonPressAnimation>

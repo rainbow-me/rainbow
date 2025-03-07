@@ -1,4 +1,4 @@
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'react-native-blur-view';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -180,7 +180,7 @@ const CustomizeNetworksBanner = !shouldShowCustomizeNetworksBanner(customizeNetw
       return (
         <DesignSystemProvider colorMode="light">
           <Animated.View entering={FadeIn.duration(300).delay(600)} exiting={FadeOutUp.duration(200)} style={sx.banner}>
-            <MaskedView
+          <MaskedView
               maskElement={
                 <Svg width="100%" height={BANNER_HEIGHT} viewBox="0 0 353 75" fill="none">
                   <Path
@@ -190,32 +190,31 @@ const CustomizeNetworksBanner = !shouldShowCustomizeNetworksBanner(customizeNetw
                 </Svg>
               }
             >
-              <BlurView blurType="xlight" blurAmount={6} style={sx.bannerBlurView}>
-                <View style={sx.bannerContent}>
-                  <LinearGradient colors={['#268FFF1F', '#268FFF14']} angle={135} useAngle style={sx.bannerGradient}>
-                    <Text color={{ custom: blue }} size="17pt" weight="heavy">
-                      􀍱
-                    </Text>
-                  </LinearGradient>
-                  <View style={{ gap: 10 }}>
-                    <Text weight="heavy" size="15pt" color="labelSecondary">
-                      {i18n.t(t.customize_networks_banner.title)}
-                    </Text>
-                    <Text weight="semibold" size="13pt" color="labelQuaternary">
-                      {i18n.t(t.customize_networks_banner.tap_the)}{' '}
-                      <Text weight="bold" size="13pt" color={{ custom: blue }}>
-                        {i18n.t(t.edit)}
-                      </Text>{' '}
-                      {i18n.t(t.customize_networks_banner.button_to_set_up)}
-                    </Text>
-                  </View>
-                  <Pressable style={{ marginLeft: 'auto', height: '100%' }} onPress={dismissCustomizeNetworksBanner}>
-                    <Text weight="heavy" size="13pt" color="labelQuaternary">
-                      􀆄
-                    </Text>
-                  </Pressable>
+              <BlurView blurStyle="extraLight" blurIntensity={6} style={sx.bannerBlurView} />
+              <View style={sx.bannerContent}>
+                <LinearGradient colors={['#268FFF1F', '#268FFF14']} angle={135} useAngle style={sx.bannerGradient}>
+                  <Text color={{ custom: blue }} size="17pt" weight="heavy">
+                    􀍱
+                  </Text>
+                </LinearGradient>
+                <View style={{ gap: 10 }}>
+                  <Text weight="heavy" size="15pt" color="labelSecondary">
+                    {i18n.t(t.customize_networks_banner.title)}
+                  </Text>
+                  <Text weight="semibold" size="13pt" color="labelQuaternary">
+                    {i18n.t(t.customize_networks_banner.tap_the)}{' '}
+                    <Text weight="bold" size="13pt" color={{ custom: blue }}>
+                      {i18n.t(t.edit)}
+                    </Text>{' '}
+                    {i18n.t(t.customize_networks_banner.button_to_set_up)}
+                  </Text>
                 </View>
-              </BlurView>
+                <Pressable style={{ marginLeft: 'auto', height: '100%' }} onPress={dismissCustomizeNetworksBanner}>
+                  <Text weight="heavy" size="13pt" color="labelQuaternary">
+                    􀆄
+                  </Text>
+                </Pressable>
+              </View>
             </MaskedView>
           </Animated.View>
         </DesignSystemProvider>
@@ -904,7 +903,7 @@ type SheetProps = PropsWithChildren<Pick<NetworkSwitcherProps, 'onClose' | 'canE
   scrollViewContentHeight: SharedValue<number>;
 };
 
-function Sheet({ children, title, editing, expanded, onClose, canEdit, scrollY, scrollViewHeight, scrollViewContentHeight }: SheetProps) {
+function Sheet({ children, title, editing, onClose, canEdit, scrollY, scrollViewHeight, scrollViewContentHeight }: SheetProps) {
   const { isDarkMode } = useColorMode();
   const surfacePrimary = useBackgroundColor('surfacePrimary');
   const backgroundColor = isDarkMode ? '#191A1C' : surfacePrimary;
