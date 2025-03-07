@@ -1,5 +1,6 @@
-import React, { memo, useCallback, useMemo, useState } from 'react';
-import { Bleed, Box, Separator, Text, TextIcon, TextShadow } from '@/design-system';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import * as i18n from '@/languages';
+import { Bleed, Box, Separator, Text, TextIcon, TextShadow, useForegroundColor } from '@/design-system';
 import { CollapsableField } from './CollapsableField';
 import { SingleFieldInput } from './SingleFieldInput';
 import {
@@ -22,85 +23,84 @@ import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Skeleton } from '@/screens/points/components/Skeleton';
 import { ScrollView } from 'react-native';
+import { colors } from '@/styles';
 
 const airdropSuggestions = {
-  predefinedCohorts: [
-    {
-      id: '0_rainbow-users',
-      Name: 'All Rainbow Users',
-      icons: {
-        iconURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png',
-      },
-      totalUsers: 1400000,
-    },
-    {
-      id: '1_top-rainbow-points',
-      Name: 'Top 1000 Rainbow Points',
-      icons: {
-        iconURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png',
-      },
-      totalUsers: 1000,
-    },
-    {
-      id: '2_top-farcaster',
-      Name: 'Top 1000 Farcaster Users',
-      icons: {
-        iconURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1697055518/dapps/ingested_www.farcaster.xyz.png',
-        pfp1URL:
-          'https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/341d47e1-f746-4f5c-8fbe-d9e56fa66100/anim=false,fit=contain,f=auto,w=336',
-        pfp2URL: 'https://wrpcd.net/cdn-cgi/image/anim=false,fit=contain,f=auto,w=336/https%3A%2F%2Fi.imgur.com%2F4t3zVHj.jpg',
-      },
-      totalUsers: 1000,
-    },
-  ],
-  personalizedCohorts: [
-    {
-      id: '0_farcaster-followers',
-      Name: 'Farcaster Followers',
-      icons: {
-        iconURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1697055518/dapps/ingested_www.farcaster.xyz.png',
-        pfp1URL:
-          'https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/3f0c4a24-9cf9-41f2-52ba-22862ae80a00/anim=false,fit=contain,f=auto,w=336',
-      },
-      totalUsers: 1,
-      addresses: [
-        {
-          username: 'sulkian',
-          address: '0x5dfcf95b7d689c11197d1576ccd505f1f3188319',
-          pfpURL:
-            'https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/3f0c4a24-9cf9-41f2-52ba-22862ae80a00/anim=false,fit=contain,f=auto,w=336',
-          type: 'Farcaster',
-          typePfpURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1697055518/dapps/ingested_www.farcaster.xyz.png',
+  meta: {
+    maxUserAllocations: 22025,
+  },
+  data: {
+    predefinedCohorts: [
+      {
+        id: '0_rainbow-users',
+        Name: 'All Rainbow Users',
+        icons: {
+          iconURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png',
         },
-      ],
-    },
-  ],
-  suggested: [
-    {
-      username: 'sulkian',
-      address: '0x5dfcf95b7d689c11197d1576ccd505f1f3188319',
-      pfpURL:
-        'https://rainbowme-res.cloudinary.com/image/upload/v1680723839/ens-marquee/eafa8f2a4702a08838eb/0x96a77560146501eAEB5e6D5B7d8DD1eD23DEfa23.png',
-      type: 'Farcaster',
-      typePfpURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1697055518/dapps/ingested_www.farcaster.xyz.png',
-    },
-    {
-      username: 'ihateethereum.eth',
-      address: '0x4888c0030b743c17C89A8AF875155cf75dCfd1E1',
-      pfpURL:
-        'https://rainbowme-res.cloudinary.com/image/upload/v1680723839/ens-marquee/eafa8f2a4702a08838eb/0x3C6aEFF92b4B35C2e1b196B57d0f8FFB56884A17.jpg',
-      type: 'ENS',
-      typePfpURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1688069140/dapps/ingested_ens.domains.png',
-    },
-    // TODO: ask about this, do not think we should be displaying raw addresses no one will know what / who they are
-    // {
-    //   address: '0xA059BA83C047c8EE6f94726CA5f644b7122Cac61',
-    //   pfpURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1739452782/token-launcher/backend/nopfp.png',
-    //   type: 'Rainbow',
-    //   typePfpURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png',
-    // },
-  ],
-} as const;
+        totalUsers: 1400000,
+      },
+      {
+        id: '1_top-rainbow-points',
+        Name: 'Top 1000 Rainbow Points',
+        icons: {
+          iconURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png',
+        },
+        totalUsers: 1000,
+      },
+      {
+        id: '2_top-farcaster',
+        Name: 'Top 1000 Farcaster Users',
+        icons: {
+          iconURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1697055518/dapps/ingested_www.farcaster.xyz.png',
+          pfp1URL:
+            'https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/341d47e1-f746-4f5c-8fbe-d9e56fa66100/anim=false,fit=contain,f=auto,w=336',
+          pfp2URL: 'https://wrpcd.net/cdn-cgi/image/anim=false,fit=contain,f=auto,w=336/https%3A%2F%2Fi.imgur.com%2F4t3zVHj.jpg',
+        },
+        totalUsers: 1000,
+      },
+    ],
+    personalizedCohorts: [
+      {
+        id: '0_farcaster-followers',
+        Name: 'Farcaster Followers',
+        icons: {
+          iconURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1697055518/dapps/ingested_www.farcaster.xyz.png',
+          pfp1URL:
+            'https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/3f0c4a24-9cf9-41f2-52ba-22862ae80a00/anim=false,fit=contain,f=auto,w=336',
+        },
+        totalUsers: 1,
+        addresses: [
+          {
+            username: 'sulkian',
+            address: '0x5dfcf95b7d689c11197d1576ccd505f1f3188319',
+            pfpURL:
+              'https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/3f0c4a24-9cf9-41f2-52ba-22862ae80a00/anim=false,fit=contain,f=auto,w=336',
+            type: 'Farcaster',
+            typePfpURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1697055518/dapps/ingested_www.farcaster.xyz.png',
+          },
+        ],
+      },
+    ],
+    suggested: [
+      {
+        username: 'sulkian',
+        address: '0x5dfcf95b7d689c11197d1576ccd505f1f3188319',
+        pfpURL:
+          'https://rainbowme-res.cloudinary.com/image/upload/v1680723839/ens-marquee/eafa8f2a4702a08838eb/0x96a77560146501eAEB5e6D5B7d8DD1eD23DEfa23.png',
+        type: 'Farcaster',
+        typePfpURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1697055518/dapps/ingested_www.farcaster.xyz.png',
+      },
+      {
+        username: 'ihateethereum.eth',
+        address: '0x4888c0030b743c17C89A8AF875155cf75dCfd1E1',
+        pfpURL:
+          'https://rainbowme-res.cloudinary.com/image/upload/v1680723839/ens-marquee/eafa8f2a4702a08838eb/0x3C6aEFF92b4B35C2e1b196B57d0f8FFB56884A17.jpg',
+        type: 'ENS',
+        typePfpURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1688069140/dapps/ingested_ens.domains.png',
+      },
+    ],
+  },
+};
 
 type SuggestedUser = {
   username?: string;
@@ -118,7 +118,7 @@ function SuggestedUsers({ suggestions }: { suggestions: SuggestedUser[] }) {
   return (
     <Box gap={12}>
       <Text color="labelTertiary" size="13pt" weight="heavy">
-        {'SUGGESTED USERS'}
+        {i18n.t(i18n.l.token_launcher.airdrop.suggested_users)}
       </Text>
       <Bleed horizontal={'20px'}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingLeft: 20 }}>
@@ -178,12 +178,13 @@ function AirdropGroups() {
   const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
 
   // TODO: will come from backend / sdk
-  const airdropGroups = [...airdropSuggestions.predefinedCohorts, ...airdropSuggestions.personalizedCohorts];
+  const airdropSuggestionData = airdropSuggestions.data;
+  const airdropGroups = [...airdropSuggestionData.predefinedCohorts, ...airdropSuggestionData.personalizedCohorts];
 
   return (
     <Box gap={12}>
       <Text color="labelTertiary" size="13pt" weight="heavy">
-        {'AIRDROP LISTS'}
+        {i18n.t(i18n.l.token_launcher.airdrop.airdrop_lists)}
       </Text>
       <Bleed vertical={'3px'} horizontal={'20px'}>
         <ScrollView
@@ -328,7 +329,7 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
     <SingleFieldInput
       showPaste
       icon={labelIcon}
-      placeholder="Address or ENS"
+      placeholder={i18n.t(i18n.l.token_launcher.airdrop.address_or_ens)}
       textAlign="left"
       inputStyle={{ textAlign: 'left', paddingLeft: 8 }}
       validationWorklet={(text: string) => {
@@ -356,6 +357,7 @@ function AirdropGroupField({ recipient }: { recipient: AirdropRecipient }) {
       style={{
         backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
         paddingHorizontal: 16,
+        paddingVertical: 8,
         borderRadius: FIELD_INNER_BORDER_RADIUS,
         flex: 1,
       }}
@@ -449,10 +451,25 @@ function AirdropRecipients() {
 
 export function AirdropSection() {
   const { accentColors } = useTokenLauncherContext();
+  const borderColor = useForegroundColor('buttonStroke');
+  const maxRecipientCount = airdropSuggestions.meta.maxUserAllocations;
+  const setMaxAirdropRecipientCount = useTokenLauncherStore(state => state.setMaxAirdropRecipientCount);
+  const hasExceededMaxAirdropRecipients = useTokenLauncherStore(state => state.hasExceededMaxAirdropRecipients());
+
+  useEffect(() => {
+    setMaxAirdropRecipientCount(maxRecipientCount);
+  }, [maxRecipientCount, setMaxAirdropRecipientCount]);
 
   return (
-    <CollapsableField title="Airdrop">
+    <CollapsableField title="Airdrop" style={{ borderColor: hasExceededMaxAirdropRecipients ? colors.red : borderColor }}>
       <Box gap={16}>
+        {hasExceededMaxAirdropRecipients && (
+          <Text color="red" size="15pt" weight="heavy">
+            {i18n.t(i18n.l.token_launcher.airdrop.max_recipients_reached, {
+              maxRecipientCount: abbreviateNumber(maxRecipientCount, 0, 'short'),
+            })}
+          </Text>
+        )}
         <AirdropRecipients />
         <Animated.View style={{ gap: 16 }} layout={COLLAPSABLE_FIELD_ANIMATION}>
           <Separator color={{ custom: accentColors.opacity3 }} />
@@ -460,7 +477,7 @@ export function AirdropSection() {
         </Animated.View>
 
         {/* @ts-expect-error TODO: remove, will get fixed when we have backend integration */}
-        <SuggestedUsers suggestions={airdropSuggestions.suggested} />
+        <SuggestedUsers suggestions={airdropSuggestions.data.suggested} />
       </Box>
     </CollapsableField>
   );

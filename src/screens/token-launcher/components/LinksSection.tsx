@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as i18n from '@/languages';
 import { StyleSheet } from 'react-native';
 import { CollapsableField } from './CollapsableField';
 import { Bleed, Box, IconContainer, Separator, Text, TextIcon, TextShadow } from '@/design-system';
@@ -21,36 +22,35 @@ import { Grid } from './Grid';
 import { validateLinkWorklet } from '../helpers/inputValidators';
 import { colors } from '@/styles';
 
-// TODO: add discord (maybe)
 export const LINK_SETTINGS = {
   x: {
     Icon: () => <Icon name="x" color={'white'} size={26} />,
     iconBackgroundColor: '#000000',
     primaryColor: '#000000',
-    placeholder: 'Username',
-    displayName: 'X/Twitter',
+    placeholder: i18n.t(i18n.l.token_launcher.links.x.placeholder),
+    displayName: i18n.t(i18n.l.token_launcher.links.x.name),
     type: 'x',
   },
   telegram: {
     Icon: () => (
       <IconContainer height={20} width={20}>
         <Bleed left="6px">
-          <Icon name="telegram" width="20" height="12" />
+          <Icon name="telegram" width="20" height="12" color={colors.white} />
         </Bleed>
       </IconContainer>
     ),
     iconBackgroundColor: '#24A1DE',
     primaryColor: '#24A1DE',
-    placeholder: 'Channel',
-    displayName: 'Telegram',
+    placeholder: i18n.t(i18n.l.token_launcher.links.telegram.placeholder),
+    displayName: i18n.t(i18n.l.token_launcher.links.telegram.name),
     type: 'telegram',
   },
   farcaster: {
     Icon: () => <FastImage source={require('@/assets/warpcast.png')} style={{ width: 20, height: 20 }} />,
     iconBackgroundColor: '#855DCD',
     primaryColor: '#855DCD',
-    placeholder: 'Username',
-    displayName: 'Farcaster',
+    placeholder: i18n.t(i18n.l.token_launcher.links.farcaster.placeholder),
+    displayName: i18n.t(i18n.l.token_launcher.links.farcaster.name),
     type: 'farcaster',
   },
   website: {
@@ -68,8 +68,8 @@ export const LINK_SETTINGS = {
     ),
     iconBackgroundColor: colors.appleBlue,
     primaryColor: '#fff',
-    placeholder: 'https://token.com',
-    displayName: 'Website',
+    placeholder: i18n.t(i18n.l.token_launcher.links.website.placeholder),
+    displayName: i18n.t(i18n.l.token_launcher.links.website.name),
     type: 'website',
   },
   other: {
@@ -80,8 +80,8 @@ export const LINK_SETTINGS = {
     ),
     iconBackgroundColor: '#000000',
     primaryColor: '#000000',
-    placeholder: 'https://other.com',
-    displayName: 'Other',
+    placeholder: i18n.t(i18n.l.token_launcher.links.other.placeholder),
+    displayName: i18n.t(i18n.l.token_launcher.links.other.name),
     type: 'other',
   },
 };
@@ -142,7 +142,7 @@ function LinkField({ link, index }: { link: Link; index: number }) {
       {!isValid && (
         <Box paddingVertical={'8px'} paddingHorizontal={'20px'}>
           <Text color="red" size="13pt" weight="heavy">
-            {'Invalid input'}
+            {i18n.t(i18n.l.token_launcher.input_errors.invalid_input)}
           </Text>
         </Box>
       )}
@@ -170,7 +170,7 @@ export function LinksSection() {
         <Box paddingVertical="16px">
           <Separator color="separatorSecondary" />
           <Text style={{ paddingTop: 16 }} color="labelSecondary" size="17pt" weight="heavy">
-            {'Add More'}
+            {i18n.t(i18n.l.token_launcher.links.add_more)}
           </Text>
         </Box>
         <Grid columns={2} spacing={8}>

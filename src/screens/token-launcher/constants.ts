@@ -6,7 +6,6 @@ export const BLUE = '#268FFF';
 export const FIELD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.02)';
 export const FIELD_BORDER_COLOR = 'rgba(255, 255, 255, 0.03)';
 export const UNFOCUSED_FIELD_BORDER_COLOR = 'rgba(255, 255, 255, 0.03)';
-// export const FOCUSED_FIELD_BORDER_COLOR = 'rgba(255, 255, 255, 0.25)';
 export const FOCUSED_FIELD_BORDER_COLOR = BLUE;
 export const INNER_FIELD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.05)';
 export const FIELD_BORDER_WIDTH = 2.5;
@@ -19,9 +18,10 @@ export const STEP_TRANSITION_DURATION = 200;
 export const INPUT_HEIGHT = 66;
 export const SMALL_INPUT_HEIGHT = 50;
 
-export const MAX_SYMBOL_LENGTH = 10;
-export const MAX_DESCRIPTION_LENGTH = 240;
-export const MAX_NAME_LENGTH = 20;
+export const MAX_SYMBOL_BYTES = 32;
+export const MAX_DESCRIPTION_BYTES = 2_000;
+export const MAX_NAME_BYTES = 32;
+export const DEFAULT_MAX_AIRDROP_RECIPIENTS = 20_000;
 
 export const DEFAULT_CHAIN_ID = base.id;
 export const DEFAULT_TOTAL_SUPPLY = 1_000_000_000;

@@ -1,14 +1,16 @@
 import React from 'react';
+import * as i18n from '@/languages';
 import { CollapsableField } from './CollapsableField';
 import { SingleFieldInput } from './SingleFieldInput';
-import { FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR, MAX_DESCRIPTION_LENGTH } from '../constants';
+import { FIELD_INNER_BORDER_RADIUS, INNER_FIELD_BACKGROUND_COLOR } from '../constants';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { validateDescriptionWorklet } from '../helpers/inputValidators';
 
 export function DescriptionField() {
   const setDescription = useTokenLauncherStore(state => state.setDescription);
 
   return (
-    <CollapsableField title="Description">
+    <CollapsableField title={i18n.t(i18n.l.token_launcher.titles.description)}>
       <SingleFieldInput
         multiline
         style={{
@@ -19,20 +21,14 @@ export function DescriptionField() {
           backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
           paddingHorizontal: 16,
         }}
-        // TODO: Allegedly no longer needed
-        // validationWorklet={text => {
-        //   'worklet';
-        //   if (text.trim().length > MAX_DESCRIPTION_LENGTH) {
-        //     return `Too long, friend.`;
-        //   }
-        //   return '';
-        // }}
+        validationWorklet={validateDescriptionWorklet}
+        textAlignVertical="top"
         onInputChange={text => setDescription(text)}
         numberOfLines={3}
         textAlign="left"
         inputStyle={{ textAlign: 'left' }}
         autoCorrect={true}
-        placeholder="Describe your coin"
+        placeholder={i18n.t(i18n.l.token_launcher.placeholders.describe_your_coin)}
       />
     </CollapsableField>
   );

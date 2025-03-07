@@ -1,4 +1,5 @@
 import React from 'react';
+import * as i18n from '@/languages';
 import { Bleed, Box, Text, TextIcon, useForegroundColor } from '@/design-system';
 import { FieldContainer } from './FieldContainer';
 import { FieldLabel } from './FieldLabel';
@@ -22,7 +23,7 @@ export function NetworkField() {
   );
   const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[chainId];
   const navigation = useNavigation();
-  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
+  const chainNativeAsset = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
   const allowedNetworks = useBackendNetworksStore.getState().getTokenLauncherSupportedChainIds();
 
   const onChainSelected = (chainId: number) => {
@@ -45,7 +46,7 @@ export function NetworkField() {
         <Box gap={10}>
           <FieldLabel>Network</FieldLabel>
           <Text color="labelSecondary" size="13pt" weight="medium">
-            {`Balance: ${nativeAssetForChain?.balance.display ?? '0.00'}`}
+            {i18n.t(i18n.l.token_launcher.network_field.balance, { balance: chainNativeAsset?.balance.display ?? '0.00' })}
           </Text>
         </Box>
         <Bleed right={{ custom: 7 }}>
@@ -93,7 +94,7 @@ export function NetworkField() {
       {!hasSufficientChainNativeAssetForTransactionGas && (
         <Box paddingHorizontal={'20px'}>
           <Text color="red" size="13pt" weight="bold">
-            {'Not enough funds to launch a token'}
+            {i18n.t(i18n.l.token_launcher.network_field.not_enough_funds)}
           </Text>
         </Box>
       )}

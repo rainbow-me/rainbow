@@ -22,6 +22,7 @@ import Animated, {
   Easing,
   makeMutable,
   runOnUI,
+  SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -39,7 +40,7 @@ import { clamp, opacity } from '@/__swaps__/utils/swaps';
 
 interface RainbowCoinEffectProps {
   color: string;
-  image: SkImage;
+  image: SkImage | SharedValue<SkImage | null>;
   partyMode?: boolean;
   size: number;
 }

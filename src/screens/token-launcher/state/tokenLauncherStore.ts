@@ -1,6 +1,6 @@
 import { abbreviateNumber, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { DEFAULT_CHAIN_ID, DEFAULT_TOTAL_SUPPLY, TARGET_MARKET_CAP_IN_USD } from '../constants';
+import { DEFAULT_CHAIN_ID, DEFAULT_MAX_AIRDROP_RECIPIENTS, DEFAULT_TOTAL_SUPPLY, TARGET_MARKET_CAP_IN_USD } from '../constants';
 import { makeMutable, SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import chroma from 'chroma-js';
@@ -23,7 +23,12 @@ export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma
 export type LinkType = 'website' | 'x' | 'telegram' | 'farcaster' | 'discord' | 'other';
 export type Link = { input: string; type: LinkType; url: string };
 
-type Step = 'info' | 'review' | 'creating' | 'success';
+export const enum NavigationSteps {
+  INFO = 0,
+  REVIEW = 1,
+  CREATING = 2,
+  SUCCESS = 3,
+}
 
 export type AirdropRecipient = {
   type: 'group' | 'address';
@@ -46,18 +51,24 @@ interface TokenLauncherStore {
   totalSupply: number;
   description: string;
   links: Link[];
-  creatorBuyInEth: number;
+  extraBuyAmount: number;
   airdropRecipients: AirdropRecipient[];
-  step: Step;
-  stepIndex: SharedValue<number>;
-  stepSharedValue: SharedValue<string>;
-  ethPriceUsd: number;
-  ethPriceNative: number;
+  step: NavigationSteps;
+  stepSharedValue: SharedValue<NavigationSteps>;
+  stepAnimatedSharedValue: SharedValue<NavigationSteps>;
+  chainNativeAssetUsdPrice: number;
+  chainNativeAssetNativePrice: number;
   gasSpeed: GasSpeed;
+  chainNativeAssetRequiredForTransactionGas: string;
   hasSufficientChainNativeAssetForTransactionGas: boolean;
   hasValidPrebuyAmount: boolean;
+  maxAirdropRecipientCount: number;
   // derived state
+  hasEnteredAnyInfo: () => boolean;
   formattedTotalSupply: () => string;
+  validAirdropRecipients: () => AirdropRecipient[];
+  validLinks: () => Link[];
+  hasExceededMaxAirdropRecipients: () => boolean;
   tokenPrice: () => string;
   tokenMarketCap: () => string;
   hasCompletedRequiredFields: () => boolean;
@@ -73,14 +84,15 @@ interface TokenLauncherStore {
   setImageUrl: (url: string) => void;
   setName: (name: string) => void;
   setSymbol: (symbol: string) => void;
+  setMaxAirdropRecipientCount: (count: number) => void;
   setChainId: (chainId: number) => void;
   setTotalSupply: (totalSupply: number) => void;
   addLink: (type: LinkType) => void;
   editLink: ({ index, input, url }: { index: number; input: string; url: string }) => void;
   deleteLink: (index: number) => void;
-  setCreatorBuyInEth: (amount: number) => void;
+  setExtraBuyAmount: (amount: number) => void;
   setDescription: (description: string) => void;
-  setStep: (step: Step) => void;
+  setStep: (step: NavigationSteps) => void;
   addAirdropGroup: ({ groupId, label, count, imageUrl }: { groupId: string; label: string; count: number; imageUrl: string }) => void;
   addOrEditAirdropAddress: ({
     id,
@@ -98,13 +110,13 @@ interface TokenLauncherStore {
     label?: string;
   }) => void;
   deleteAirdropRecipient: (id: string) => void;
-  setEthPriceUsd: (ethPriceUsd: number) => void;
-  setEthPriceNative: (ethPriceNative: number) => void;
+  setChainNativeAssetUsdPrice: (chainNativeAssetUsdPrice: number) => void;
+  setChainNativeAssetNativePrice: (chainNativeAssetNativePrice: number) => void;
+  setChainNativeAssetRequiredForTransactionGas: (chainNativeAssetRequiredForTransactionGas: string) => void;
   setGasSpeed: (gasSpeed: GasSpeed) => void;
   setHasValidPrebuyAmount: (hasValidPrebuyAmount: boolean) => void;
-  setHasSufficientChainNativeAssetForTransactionGas: (hasSufficientChainNativeAssetForTransactionGas: boolean) => void; // actions
+  setHasSufficientChainNativeAssetForTransactionGas: (hasSufficientChainNativeAssetForTransactionGas: boolean) => void;
   reset: () => void;
-  validateForm: () => void;
   createToken: ({
     wallet,
     transactionOptions,
@@ -113,6 +125,15 @@ interface TokenLauncherStore {
     transactionOptions: TransactionOptions;
   }) => Promise<LaunchTokenResponse | undefined>;
 }
+
+// TODO: for testing. Remove before final merge
+// const testTokenInfo = {
+//   imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+//   imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+//   name: 'Test Token',
+//   symbol: 'TEST',
+//   description: 'This is a test token',
+// };
 
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
   imageUri: '',
@@ -124,26 +145,47 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
   links: [{ input: '', type: 'website', url: '' }],
-  // TODO: align this name with other names for this
-  creatorBuyInEth: 0,
-  ethPriceUsd: 0,
-  ethPriceNative: 0,
-  step: 'info' as const,
-  stepIndex: makeMutable(0),
-  stepSharedValue: makeMutable('info'),
+  extraBuyAmount: 0,
+  chainNativeAssetUsdPrice: 0,
+  chainNativeAssetNativePrice: 0,
+  step: NavigationSteps.INFO,
+  stepSharedValue: makeMutable(NavigationSteps.INFO as NavigationSteps),
+  stepAnimatedSharedValue: makeMutable(NavigationSteps.INFO as NavigationSteps),
   gasSpeed: GasSpeed.FAST,
+  chainNativeAssetRequiredForTransactionGas: '0',
   hasSufficientChainNativeAssetForTransactionGas: true,
   hasValidPrebuyAmount: true,
+  maxAirdropRecipientCount: DEFAULT_MAX_AIRDROP_RECIPIENTS,
   // derived state
+  hasEnteredAnyInfo: () => {
+    const { name, symbol, imageUrl, totalSupply, description, extraBuyAmount, validLinks, validAirdropRecipients } = get();
+    return (
+      name !== '' ||
+      symbol !== '' ||
+      imageUrl !== '' ||
+      totalSupply !== DEFAULT_TOTAL_SUPPLY ||
+      description !== '' ||
+      validLinks().length > 1 ||
+      validAirdropRecipients().length > 0 ||
+      extraBuyAmount > 0
+    );
+  },
   formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 2, 'long', true),
+  validAirdropRecipients: () => get().airdropRecipients.filter(recipient => recipient.isValid),
+  validLinks: () => get().links.filter(link => !validateLinkWorklet({ link: link.input, type: link.type })),
+  hasExceededMaxAirdropRecipients: () => {
+    const { maxAirdropRecipientCount, airdropRecipients } = get();
+    const totalRecipientCount = airdropRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
+    return totalRecipientCount > maxAirdropRecipientCount;
+  },
   tokenPrice: () => {
     const { nativeCurrency } = store.getState().settings;
     const tokenomics = get().tokenomics();
 
     const actualPriceEth = tokenomics?.price.actualEth;
-    const ethPriceNative = get().ethPriceNative;
+    const chainNativeAssetNativePrice = get().chainNativeAssetNativePrice;
 
-    const actualPriceNative = actualPriceEth && ethPriceNative ? actualPriceEth * ethPriceNative : 0;
+    const actualPriceNative = actualPriceEth && chainNativeAssetNativePrice ? actualPriceEth * chainNativeAssetNativePrice : 0;
 
     return formatCurrency(actualPriceNative, {
       currency: nativeCurrency,
@@ -154,9 +196,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const tokenomics = get().tokenomics();
 
     const actualMarketCapEth = tokenomics?.marketCap.actualEth;
-    const ethPriceNative = get().ethPriceNative;
+    const chainNativeAssetNativePrice = get().chainNativeAssetNativePrice;
 
-    const actualMarketCapNative = actualMarketCapEth && ethPriceNative ? actualMarketCapEth * ethPriceNative : 0;
+    const actualMarketCapNative = actualMarketCapEth && chainNativeAssetNativePrice ? actualMarketCapEth * chainNativeAssetNativePrice : 0;
 
     return convertAmountToNativeDisplay(actualMarketCapNative, nativeCurrency, 2, true, true);
   },
@@ -170,14 +212,22 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     return !nameValidation?.error && !symbolValidation?.error && !supplyValidation?.error && imageUrl !== '';
   },
   canContinueToReview: () => {
-    const { airdropRecipients, links, hasCompletedRequiredFields, hasSufficientChainNativeAssetForTransactionGas, hasValidPrebuyAmount } =
-      get();
+    const {
+      airdropRecipients,
+      links,
+      hasCompletedRequiredFields,
+      hasExceededMaxAirdropRecipients,
+      hasSufficientChainNativeAssetForTransactionGas,
+      hasValidPrebuyAmount,
+    } = get();
 
-    const allAirdropRecipientsValid = airdropRecipients.every(recipient => recipient.isValid);
+    // Empty address inputs do not prevent continuing, they are just ignored
+    const allAirdropRecipientsValid = airdropRecipients.every(recipient => recipient.isValid || recipient.value === '');
     const allLinksValid = links.every(link => !validateLinkWorklet({ link: link.input, type: link.type }));
 
     return (
       hasCompletedRequiredFields() &&
+      !hasExceededMaxAirdropRecipients() &&
       allAirdropRecipientsValid &&
       allLinksValid &&
       hasSufficientChainNativeAssetForTransactionGas &&
@@ -193,15 +243,17 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     };
   },
   tokenomics: () => {
-    const { ethPriceUsd, airdropRecipients, totalSupply, creatorBuyInEth } = get();
-    if (!ethPriceUsd) return;
+    const { chainNativeAssetUsdPrice, validAirdropRecipients, totalSupply, extraBuyAmount } = get();
+    if (!chainNativeAssetUsdPrice) return;
 
     return calculateTokenomics({
       targetMarketCapUsd: TARGET_MARKET_CAP_IN_USD,
       totalSupply,
-      ethPriceUsd,
-      hasAirdrop: airdropRecipients.filter(recipient => recipient.isValid).length > 0,
-      amountInEth: creatorBuyInEth,
+      // TODO: name change
+      ethPriceUsd: chainNativeAssetUsdPrice,
+      hasAirdrop: validAirdropRecipients().length > 0,
+      // TODO: name change
+      amountInEth: extraBuyAmount,
     });
   },
   // setters
@@ -212,6 +264,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     set({
       imageUrl: url,
     });
+  },
+  setMaxAirdropRecipientCount: (count: number) => {
+    set({ maxAirdropRecipientCount: count });
   },
   setName: (name: string) => set({ name }),
   setSymbol: (symbol: string) => set({ symbol }),
@@ -227,18 +282,11 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   deleteLink: (index: number) => {
     set({ links: get().links.filter((_, i) => i !== index) });
   },
-  setCreatorBuyInEth: (amount: number) => {
-    set({ creatorBuyInEth: amount });
+  setExtraBuyAmount: (amount: number) => {
+    set({ extraBuyAmount: amount });
   },
-  setStep: (step: Step) => {
-    let newIndex = 0;
-    if (step === 'info') newIndex = 0;
-    else if (step === 'review') newIndex = 1;
-    else if (step === 'creating') newIndex = 2;
-    else if (step === 'success') newIndex = 3;
-
-    // TODO:
-    get().stepIndex.value = withTiming(newIndex, TIMING_CONFIGS.slowFadeConfig);
+  setStep: (step: NavigationSteps) => {
+    get().stepAnimatedSharedValue.value = withTiming(step, TIMING_CONFIGS.slowFadeConfig);
     get().stepSharedValue.value = step;
     set({ step });
   },
@@ -297,11 +345,14 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   deleteAirdropRecipient: (id: string) => {
     set({ airdropRecipients: get().airdropRecipients.filter(a => a.id !== id) });
   },
-  setEthPriceUsd: (ethPriceUsd: number) => {
-    set({ ethPriceUsd });
+  setChainNativeAssetRequiredForTransactionGas: (chainNativeAssetRequiredForTransactionGas: string) => {
+    set({ chainNativeAssetRequiredForTransactionGas });
   },
-  setEthPriceNative: (ethPriceNative: number) => {
-    set({ ethPriceNative });
+  setChainNativeAssetUsdPrice: (chainNativeAssetUsdPrice: number) => {
+    set({ chainNativeAssetUsdPrice });
+  },
+  setChainNativeAssetNativePrice: (chainNativeAssetNativePrice: number) => {
+    set({ chainNativeAssetNativePrice });
   },
   setGasSpeed: (gasSpeed: GasSpeed) => {
     set({ gasSpeed });
@@ -314,29 +365,27 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   },
   // actions
   reset: () => {
+    get().stepAnimatedSharedValue.value = NavigationSteps.INFO;
+    get().stepSharedValue.value = NavigationSteps.INFO;
     set({
       imageUri: '',
       imageUrl: '',
       name: '',
       symbol: '',
       description: '',
-      links: [],
-      creatorBuyInEth: 0,
-      ethPriceUsd: 0,
-      ethPriceNative: 0,
+      links: [{ input: '', type: 'website', url: '' }],
+      extraBuyAmount: 0,
+      chainNativeAssetUsdPrice: 0,
+      chainNativeAssetNativePrice: 0,
       gasSpeed: GasSpeed.FAST,
       hasSufficientChainNativeAssetForTransactionGas: true,
+      chainNativeAssetRequiredForTransactionGas: '0',
       hasValidPrebuyAmount: true,
       airdropRecipients: [],
-      step: 'info' as const,
-      stepIndex: makeMutable(0),
-      stepSharedValue: makeMutable('info'),
+      step: NavigationSteps.INFO,
       chainId: DEFAULT_CHAIN_ID,
       totalSupply: DEFAULT_TOTAL_SUPPLY,
     });
-  },
-  validateForm: () => {
-    // TODO: validate all field values before submission to sdk for creation
   },
   createToken: async ({
     wallet,
@@ -354,7 +403,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const targetEth = get().tokenomics()?.price.targetEth;
     try {
       const initialTick = TokenLauncher.getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
-      const shouldBuy = get().creatorBuyInEth > 0;
+      const shouldBuy = get().extraBuyAmount > 0;
       const params = {
         name: get().name,
         symbol: get().symbol,
@@ -368,7 +417,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
           },
           {} as Record<LinkType, string>
         ),
-        amountIn: parseUnits(get().creatorBuyInEth.toString(), 'ether').toString(),
+        amountIn: parseUnits(get().extraBuyAmount.toString(), 'ether').toString(),
         initialTick,
         wallet,
         transactionOptions: {
@@ -384,7 +433,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       if (shouldBuy) {
         return await TokenLauncher.launchTokenAndBuy({
           ...params,
-          amountIn: parseUnits(get().creatorBuyInEth.toString(), 18).toString(),
+          amountIn: parseUnits(get().extraBuyAmount.toString(), 18).toString(),
         });
       } else {
         return await TokenLauncher.launchToken(params);

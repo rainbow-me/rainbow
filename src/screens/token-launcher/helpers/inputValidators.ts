@@ -1,36 +1,60 @@
+import * as i18n from '@/languages';
 import { isValidURLWorklet } from '@/components/DappBrowser/utils';
-import { MAX_NAME_LENGTH, MAX_SYMBOL_LENGTH, MAX_TOTAL_SUPPLY } from '../constants';
+import { MAX_DESCRIPTION_BYTES, MAX_NAME_BYTES, MAX_SYMBOL_BYTES, MAX_TOTAL_SUPPLY } from '../constants';
 import { LinkType } from '../state/tokenLauncherStore';
 
 export type ValidationResult = { error: boolean; message?: string } | undefined;
 
+const encoder = new TextEncoder();
+
+function countStringBytesWorklet(str: string) {
+  'worklet';
+  return encoder.encode(str).length;
+}
+
 export function validateNameWorklet(name: string): ValidationResult {
   'worklet';
-  if (name.trim().length > MAX_NAME_LENGTH) {
-    return { error: true, message: 'Too long, friend.' };
+  const trimmedName = name.trim();
+  const byteCount = countStringBytesWorklet(trimmedName);
+
+  if (byteCount > MAX_NAME_BYTES) {
+    return { error: true, message: i18n.t(i18n.l.token_launcher.input_errors.too_long) };
   }
-  if (name.trim().length === 0) {
-    return { error: true, message: 'Name is required' };
+  if (byteCount === 0) {
+    return { error: true, message: i18n.t(i18n.l.token_launcher.input_errors.name_required) };
   }
 }
 
 export function validateSymbolWorklet(symbol: string): ValidationResult {
   'worklet';
-  if (symbol.trim().length > MAX_SYMBOL_LENGTH) {
-    return { error: true, message: 'Too long, friend.' };
+  const trimmedSymbol = symbol.trim();
+  const byteCount = countStringBytesWorklet(trimmedSymbol);
+
+  if (byteCount > MAX_SYMBOL_BYTES) {
+    return { error: true, message: i18n.t(i18n.l.token_launcher.input_errors.too_long) };
   }
-  if (symbol.trim().length === 0) {
-    return { error: true, message: 'Symbol is required' };
+  if (byteCount === 0) {
+    return { error: true, message: i18n.t(i18n.l.token_launcher.input_errors.symbol_required) };
   }
 }
 
 export function validateTotalSupplyWorklet(supply: number): ValidationResult {
   'worklet';
   if (supply > MAX_TOTAL_SUPPLY) {
-    return { error: true, message: 'Too big.' };
+    return { error: true, message: i18n.t(i18n.l.token_launcher.input_errors.too_big) };
   }
   if (supply <= 0) {
-    return { error: true, message: 'Must be greater than 0' };
+    return { error: true, message: i18n.t(i18n.l.token_launcher.input_errors.must_be_greater_than_0) };
+  }
+}
+
+export function validateDescriptionWorklet(description: string): ValidationResult {
+  'worklet';
+  const trimmedDescription = description.trim();
+  const byteCount = countStringBytesWorklet(trimmedDescription);
+
+  if (byteCount > MAX_DESCRIPTION_BYTES) {
+    return { error: true, message: i18n.t(i18n.l.token_launcher.input_errors.too_long) };
   }
 }
 

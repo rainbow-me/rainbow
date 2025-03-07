@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
+import * as i18n from '@/languages';
 import { Box, Text, TextShadow } from '@/design-system';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { Canvas, LinearGradient, Path, vec, Skia, Group, BlurMask } from '@shopify/react-native-skia';
@@ -93,7 +94,7 @@ function RotatingSunrays({ width, height, focalRadius }: { width: number; height
 }
 
 function SuccessHero({ width, height }: { width: number; height: number }) {
-  const { tokenAnimatedSkiaImage, accentColors } = useTokenLauncherContext();
+  const { tokenImage, accentColors } = useTokenLauncherContext();
 
   const tokenImageBadgeSize = 208;
   const centerX = width / 2;
@@ -116,7 +117,7 @@ function SuccessHero({ width, height }: { width: number; height: number }) {
           <RotatingSunrays width={sunraysSize} height={sunraysSize} focalRadius={radius} />
         </Group>
         <Group transform={[{ translateX: centerX - tokenImageBadgeSize / 2 }, { translateY: centerY - tokenImageBadgeSize / 2 }]}>
-          <TokenImageBadge size={tokenImageBadgeSize} image={tokenAnimatedSkiaImage} accentColor={accentColors.opacity100} />
+          {tokenImage && <TokenImageBadge size={tokenImageBadgeSize} image={tokenImage} accentColor={accentColors.opacity100} />}
         </Group>
       </Canvas>
     </Box>
@@ -139,11 +140,11 @@ export function SuccessStep() {
       <Box style={{ position: 'absolute', bottom: 40 }} paddingHorizontal={'44px'} gap={20} alignItems="center">
         <TextShadow blur={10} color="rgba(255, 255, 255, 0.12)">
           <Text align="center" size="44pt" weight="bold" color={'label'}>
-            {`$${symbol} is live!`}
+            {i18n.t(i18n.l.token_launcher.success.title, { symbol })}
           </Text>
         </TextShadow>
         <Text size="20pt" weight="medium" align="center" color={'labelSecondary'} style={{ lineHeight: 27 }}>
-          {`Congrats, you just launched ${name} into the world! Share it to spread the vibes`}
+          {i18n.t(i18n.l.token_launcher.success.congrats, { name })}
         </Text>
       </Box>
     </Box>

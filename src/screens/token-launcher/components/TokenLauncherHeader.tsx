@@ -1,15 +1,16 @@
 import React, { useCallback } from 'react';
 import * as i18n from '@/languages';
-import { Box, Text } from '@/design-system';
+import { Box, Text, TextIcon } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { BlurView } from '@react-native-community/blur';
 import { useNavigation } from '@/navigation';
-import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { useAccountProfile } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { showActionSheetWithOptions } from '@/utils';
+import { IS_IOS } from '@/env';
 
 const EXIT_BUTTON_SIZE = 36;
 // padding top + exit button + inner padding + padding bottom + blur padding
@@ -18,33 +19,37 @@ export const TOKEN_LAUNCHER_HEADER_HEIGHT = 20 + 36 + 8 + 12 + 12;
 export function TokenLauncherHeader() {
   const navigation = useNavigation();
   const { accountColor, accountImage, accountAddress } = useAccountProfile();
-  const resetStore = useTokenLauncherStore(state => state.reset);
+  const hasEnteredAnyInfo = useTokenLauncherStore(state => state.hasEnteredAnyInfo);
   const step = useTokenLauncherStore(state => state.step);
   const setStep = useTokenLauncherStore(state => state.setStep);
   let title = '';
-  if (step === 'info') {
-    title = 'New Coin';
-  } else if (step === 'review') {
-    title = 'Review';
-  } else if (step === 'creating') {
-    title = 'Creating';
+  if (step === NavigationSteps.INFO) {
+    title = i18n.t(i18n.l.token_launcher.header.new_coin);
+  } else if (step === NavigationSteps.REVIEW) {
+    title = i18n.t(i18n.l.token_launcher.header.review);
+  } else if (step === NavigationSteps.CREATING) {
+    title = i18n.t(i18n.l.token_launcher.header.creating);
   }
 
   const handlePressExit = useCallback(() => {
+    if (!hasEnteredAnyInfo()) {
+      navigation.goBack();
+      return;
+    }
+
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 1,
         destructiveButtonIndex: 0,
-        options: ['Discard & Exit', i18n.t(i18n.l.button.cancel)],
+        options: [i18n.t(i18n.l.token_launcher.discard_and_exit), i18n.t(i18n.l.button.cancel)],
       },
       (buttonIndex: number) => {
         if (buttonIndex === 0) {
-          resetStore();
           navigation.goBack();
         }
       }
     );
-  }, [navigation, resetStore]);
+  }, [navigation, hasEnteredAnyInfo]);
 
   return (
     <Box
@@ -71,7 +76,7 @@ export function TokenLauncherHeader() {
         reducedTransparencyFallbackColor="rgba(255, 255, 255, 0.06)"
       /> */}
       <Box flexDirection="row" alignItems="center" justifyContent="space-between" padding="4px">
-        {step === 'info' && (
+        {step === NavigationSteps.INFO && (
           <ButtonPressAnimation onPress={() => navigation.navigate(Routes.CHANGE_WALLET_SHEET, { hideReadOnlyWallets: true })}>
             <AddressAvatar
               url={accountImage}
@@ -82,24 +87,24 @@ export function TokenLauncherHeader() {
             />
           </ButtonPressAnimation>
         )}
-        {step === 'review' && (
+        {step === NavigationSteps.REVIEW && (
           <ButtonPressAnimation
             style={{ width: EXIT_BUTTON_SIZE, height: EXIT_BUTTON_SIZE, justifyContent: 'center', alignItems: 'center' }}
-            onPress={() => setStep('info')}
+            onPress={() => setStep(NavigationSteps.INFO)}
           >
             <Text size="20pt" weight="heavy" color="label">
               􀆉
             </Text>
           </ButtonPressAnimation>
         )}
-        {step === 'creating' && <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />}
+        {step === NavigationSteps.CREATING && <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />}
         <Text size="20pt" weight="heavy" color="label">
           {title}
         </Text>
-        {step === 'info' && (
+        {step === NavigationSteps.INFO && (
           <ButtonPressAnimation onPress={handlePressExit}>
             <Box
-              as={BlurView}
+              as={IS_IOS ? BlurView : Box}
               borderWidth={THICK_BORDER_WIDTH}
               alignItems="center"
               justifyContent="center"
@@ -109,13 +114,15 @@ export function TokenLauncherHeader() {
               borderRadius={EXIT_BUTTON_SIZE / 2}
               blurAmount={12}
             >
-              <Text size="icon 16px" weight="heavy" color="labelSecondary">
-                􀆄
-              </Text>
+              <TextIcon containerSize={EXIT_BUTTON_SIZE} size="icon 16px" weight="heavy" color="labelSecondary">
+                {'􀆄'}
+              </TextIcon>
             </Box>
           </ButtonPressAnimation>
         )}
-        {(step === 'review' || step === 'creating') && <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />}
+        {(step === NavigationSteps.REVIEW || step === NavigationSteps.CREATING) && (
+          <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />
+        )}
       </Box>
     </Box>
   );
