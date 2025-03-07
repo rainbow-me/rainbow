@@ -3,7 +3,8 @@ import React, { memo, useState } from 'react';
 import { SkiaText, SkiaTextChild } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
 import { useCleanup } from '@/hooks/useCleanup';
-import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import * as i18n from '@/languages';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { DEFAULT_CARD_SIZE, SkiaCard, SkiaCardProps } from './SkiaCard';
 import { plusButtonSvg, stars } from './cardSvgs';
 
@@ -12,7 +13,7 @@ const PLUS_BUTTON_HORIZONTAL_INSET = (DEFAULT_CARD_SIZE - PLUS_BUTTON_SIZE) / 2;
 
 const CARD_CONFIG = {
   colors: {
-    coinIconDropShadow: opacityWorklet(globalColors.grey100, 0.15),
+    coinIconDropShadow: opacity(globalColors.grey100, 0.15),
     coinIconInnerShadowDark: opacity(globalColors.grey100, 0.3),
     coinIconInnerShadowLight: opacity(globalColors.white100, 0.8),
     coinIconStroke: opacity(globalColors.white100, 0.175),
@@ -148,8 +149,8 @@ export const LaunchCard = memo(function LaunchCard() {
                 x={20}
                 y={DEFAULT_CARD_SIZE - (42 + 30)}
               >
-                <SkiaTextChild>{'Launch\n'}</SkiaTextChild>
-                <SkiaTextChild opacity={0.6}>your Coin</SkiaTextChild>
+                <SkiaTextChild>{i18n.t(i18n.l.token_launcher.cards.launch.line_one)}</SkiaTextChild>
+                <SkiaTextChild opacity={0.6}>{i18n.t(i18n.l.token_launcher.cards.launch.line_two)}</SkiaTextChild>
               </SkiaText>
             }
           >

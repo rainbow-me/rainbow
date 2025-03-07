@@ -18,6 +18,7 @@ import { SkiaText } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { useCleanup } from '@/hooks/useCleanup';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
@@ -28,6 +29,7 @@ import { DEFAULT_CARD_SIZE, SkiaCard, SkiaCardProps } from './SkiaCard';
 const BADGE_SIZE = 28;
 const COIN_ICON_TOP_INSET = 56;
 const COIN_ICON_SIZE = 64;
+const BADGE_X_OFFSET = (BADGE_SIZE + 8) / 2 - 0.5;
 
 // ============ Temporary ==================================================== //
 const COIN_ICON_TEST_URLS = {
@@ -103,16 +105,24 @@ const CARD_CONFIG = {
     yOffset: -20,
   },
   colors: {
+    black28: opacity(globalColors.grey100, 0.28),
+    black30: opacity(globalColors.grey100, 0.3),
     coinIconDropShadow: opacity(globalColors.grey100, 0.35),
     coinIconOuterCircle: opacity(globalColors.white100, 0.3),
+    white08: opacity(globalColors.white100, 0.08),
+    white15: opacity(globalColors.white100, 0.15),
+    white60: opacity(globalColors.white100, 0.6),
+    white80: opacity(globalColors.white100, 0.8),
+    whiteTextColor: { custom: globalColors.white100 },
   },
   dimensions: {
     badge: {
       size: BADGE_SIZE,
+      translateX: [{ translateX: BADGE_X_OFFSET - 95 }],
       x: DEFAULT_CARD_SIZE / 2 + COIN_ICON_SIZE / 2 - BADGE_SIZE / 2 + BADGE_SIZE / 3,
       y: DEFAULT_CARD_SIZE - 58.5,
     },
-    textXOffset: (BADGE_SIZE + 8) / 2 - 0.5,
+    textXOffset: BADGE_X_OFFSET,
   },
   gradient: {
     colors: ['#1F6480', '#2288AD', '#2399C3', '#399EC6', '#518EAB', '#4E697B'],
@@ -123,7 +133,7 @@ const CARD_CONFIG = {
 
 const CARD_PROPS: Partial<SkiaCardProps> = {
   shadowColor: {
-    dark: opacity(globalColors.grey100, 0.3),
+    dark: CARD_CONFIG.colors.black30,
     light: opacity(CARD_CONFIG.gradient.colors[CARD_CONFIG.gradient.colors.length - 1], 0.48),
   },
   strokeOpacity: { start: 0.12, end: 0.04 },
@@ -136,6 +146,8 @@ export const AirdropsCard = memo(function AirdropsCard() {
   const [url, setUrl] = useState(() => getRandomIconUrl());
 
   const airdropIconUrl = useAirdropsStore(state => getSizedImageUrl(state.getData()?.claimables?.[0]?.asset?.icon_url));
+  // TODO: Need to make the badge positioning and sizing dynamic (cap is temporary)
+  const numberOfAirdrops = useAirdropsStore(state => Math.min(state.getData()?.claimables?.length ?? 0, 9));
   const coinIconImage = useImage(url);
 
   const onLongPress = useCallback(() => {
@@ -157,8 +169,8 @@ export const AirdropsCard = memo(function AirdropsCard() {
       skiaBackground={
         <Paint antiAlias dither>
           <LinearGradient colors={CARD_CONFIG.gradient.colors} end={CARD_CONFIG.gradient.end} start={CARD_CONFIG.gradient.start} />
-          <BlendColor mode="plus" color={opacity(globalColors.white100, 0.08)} />
-          <BlendColor mode="softLight" color={opacity(globalColors.grey100, 0.28)} />
+          <BlendColor mode="plus" color={CARD_CONFIG.colors.white08} />
+          <BlendColor mode="softLight" color={CARD_CONFIG.colors.black28} />
         </Paint>
       }
       skiaForeground={
@@ -198,16 +210,16 @@ export const AirdropsCard = memo(function AirdropsCard() {
           {/* Coin icon inner shadows */}
           <Circle color="transparent" cx={DEFAULT_CARD_SIZE / 2} cy={COIN_ICON_TOP_INSET} r={COIN_ICON_SIZE / 2}>
             <Paint antiAlias dither>
-              <Shadow blur={2} color={opacity(globalColors.grey100, 0.3)} dx={0} dy={-1.5} inner shadowOnly />
-              <Shadow blur={1.25} color={opacity(globalColors.white100, 0.8)} dx={0} dy={1.5} inner shadowOnly />
+              <Shadow blur={2} color={CARD_CONFIG.colors.black30} dx={0} dy={-1.5} inner shadowOnly />
+              <Shadow blur={1.25} color={CARD_CONFIG.colors.white80} dx={0} dy={1.5} inner shadowOnly />
             </Paint>
           </Circle>
 
           {/* Number of airdrops bubble */}
-          <Group transform={[{ translateX: -95 + CARD_CONFIG.dimensions.textXOffset }]}>
+          <Group transform={CARD_CONFIG.dimensions.badge.translateX}>
             <Circle
               blendMode="softLight"
-              color={opacity(globalColors.white100, 0.8)}
+              color={CARD_CONFIG.colors.white80}
               cx={CARD_CONFIG.dimensions.badge.x}
               cy={CARD_CONFIG.dimensions.badge.y}
               r={BADGE_SIZE / 2}
@@ -216,21 +228,21 @@ export const AirdropsCard = memo(function AirdropsCard() {
             </Circle>
 
             <Circle
-              color={opacity(globalColors.white100, 0.15)}
+              color={CARD_CONFIG.colors.white15}
               cx={CARD_CONFIG.dimensions.badge.x}
               cy={CARD_CONFIG.dimensions.badge.y}
               r={BADGE_SIZE / 2}
             >
-              <Shadow blur={6} color={opacity(globalColors.grey100, 1)} dx={0} dy={8} shadowOnly />
+              <Shadow blur={6} color={globalColors.grey100} dx={0} dy={8} shadowOnly />
               <Paint antiAlias dither>
-                <Shadow blur={4} color={opacity(globalColors.white100, 0.6)} dx={0} dy={3} inner shadowOnly />
-                <Shadow blur={1.25} color={opacity(globalColors.white100, 0.8)} dx={0} dy={1.5} inner shadowOnly />
+                <Shadow blur={4} color={CARD_CONFIG.colors.white60} dx={0} dy={3} inner shadowOnly />
+                <Shadow blur={1.25} color={CARD_CONFIG.colors.white80} dx={0} dy={1.5} inner shadowOnly />
               </Paint>
             </Circle>
 
             <SkiaText
               align="center"
-              color={{ custom: globalColors.white100 }}
+              color={CARD_CONFIG.colors.whiteTextColor}
               lineHeight={26}
               size="20pt"
               weight="heavy"
@@ -238,21 +250,21 @@ export const AirdropsCard = memo(function AirdropsCard() {
               x={DEFAULT_CARD_SIZE / 2 + COIN_ICON_SIZE / 2 - BADGE_SIZE / 2 + BADGE_SIZE / 3 - BADGE_SIZE / 2}
               y={CARD_CONFIG.dimensions.badge.y - CARD_CONFIG.dimensions.badge.size / 2}
             >
-              8
+              {numberOfAirdrops}
             </SkiaText>
           </Group>
 
           {/* Card text */}
           <SkiaText
             align="center"
-            color={{ custom: globalColors.white100 }}
+            color={CARD_CONFIG.colors.whiteTextColor}
             size="22pt"
             weight="heavy"
             width={DEFAULT_CARD_SIZE}
             x={CARD_CONFIG.dimensions.textXOffset}
             y={DEFAULT_CARD_SIZE - 73}
           >
-            Airdrops
+            {i18n.t(i18n.l.token_launcher.cards.airdrops.title)}
           </SkiaText>
 
           <SkiaText
@@ -265,7 +277,9 @@ export const AirdropsCard = memo(function AirdropsCard() {
             x={0}
             y={DEFAULT_CARD_SIZE - 36}
           >
-            AVAILABLE TO CLAIM
+            {numberOfAirdrops
+              ? i18n.t(i18n.l.token_launcher.cards.airdrops.subtitle_has_airdrops)
+              : i18n.t(i18n.l.token_launcher.cards.airdrops.subtitle_no_airdrops)}
           </SkiaText>
         </Group>
       }

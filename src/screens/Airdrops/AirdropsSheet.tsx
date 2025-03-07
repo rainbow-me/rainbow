@@ -10,6 +10,7 @@ import { Box, IconContainer, Separator, Stack, Text, TextIcon, globalColors, use
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { Asset } from '@/entities/tokens';
 import { IS_IOS } from '@/env';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { Claimable } from '@/resources/addys/claimables/types';
@@ -46,7 +47,7 @@ export const AirdropsSheet = () => {
         <Box alignItems="center" gap={24} justifyContent="center" paddingTop="32px" width="full">
           <SheetHandleFixedToTop />
           <Text align="center" color="label" containsEmoji size="20pt" weight="heavy">
-            Claim Rainbow Coins
+            {i18n.t(i18n.l.token_launcher.airdrops_sheet.title)}
           </Text>
           <Box width={DEVICE_WIDTH - 26 * 2}>
             <Separator color={{ custom: opacity(separator, 0.025) }} thickness={1} />
@@ -141,7 +142,7 @@ const EmptyState = () => {
           </Text>
         </IconContainer>
         <Text align="center" color={EMPTY_STATE_TEXT_COLORS[isDarkMode ? 'dark' : 'light']} size="22pt" weight="heavy">
-          No airdrops yet…
+          {i18n.t(i18n.l.token_launcher.airdrops_sheet.empty_state_title)}
         </Text>
       </Stack>
     </View>
@@ -194,7 +195,7 @@ const AirdropCoinRow = memo(
                 􀎽
               </TextIcon>
               <Text align="center" color={isDarkMode ? BLACK_TEXT_COLOR : WHITE_TEXT_COLOR} numberOfLines={1} size="17pt" weight="bold">
-                Claim
+                {i18n.t(i18n.l.token_launcher.airdrops_sheet.claim_button_text)}
               </Text>
             </View>
           </ButtonPressAnimation>
