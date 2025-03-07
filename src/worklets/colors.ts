@@ -39,11 +39,37 @@ export function colorToHex(r: number, g: number, b: number): string {
 }
 
 /**
- * Helper function to convert RGB component to its luminance contribution
+ * Clamp color value between 0 and 1 (by default)
  */
-function luminanceComponent(x: number): number {
+export function clampColor(v: number, min = 0, max = 1): number {
   'worklet';
+  return Math.max(min, Math.min(max, v));
+}
+
+/**
+ * Converts an sRGB gamma-encoded value to linear space.
+ * Optionally clamps the input between 0 and 1.
+ *
+ * @param value - The sRGB value.
+ * @param clampInput - Whether to clamp the value (default false).
+ * @returns The linearized value.
+ */
+export function gammaToLinear(value: number, clampInput = false): number {
+  'worklet';
+  const x = clampInput ? clampColor(value, 0, 1) : value;
   return x <= 0.04045 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
+}
+
+/**
+ * Converts a linear RGB value to gamma-encoded sRGB space.
+ *
+ * @param value - The linear value.
+ * @returns The gamma-encoded value.
+ */
+export function linearToGamma(value: number): number {
+  'worklet';
+  if (value <= 0.0031308) return 12.92 * value;
+  return 1.055 * Math.pow(value, 1 / 2.4) - 0.055;
 }
 
 /**
@@ -57,9 +83,9 @@ export function getLuminanceWorklet(color: string): number {
     return 0; // Return 0 luminance for invalid colors
   }
   const [r, g, b] = convertToRGBA(processedColor);
-  const rLum = luminanceComponent(r);
-  const gLum = luminanceComponent(g);
-  const bLum = luminanceComponent(b);
+  const rLum = gammaToLinear(r);
+  const gLum = gammaToLinear(g);
+  const bLum = gammaToLinear(b);
   return 0.2126 * rLum + 0.7152 * gLum + 0.0722 * bLum;
 }
 
@@ -105,14 +131,6 @@ export function toGammaSpace(RGBA: ParsedColorArray, gamma = 2.2): ParsedColorAr
 export function toLinearSpace(RGBA: ParsedColorArray, gamma = 2.2): ParsedColorArray {
   'worklet';
   return [Math.pow(RGBA[0], gamma), Math.pow(RGBA[1], gamma), Math.pow(RGBA[2], gamma), RGBA[3]];
-}
-
-/**
- * Clamp color value between 0 and 1 (by default)
- */
-export function clampColor(v: number, min = 0, max = 1): number {
-  'worklet';
-  return Math.max(min, Math.min(max, v));
 }
 
 /**
@@ -219,25 +237,6 @@ export function interpolateHue(h1: number, h2: number, t: number): number {
 }
 
 /**
- * Convert sRGB gamma-encoded value to linear space
- */
-export function linearize(v: number): number {
-  'worklet';
-  const clampedV = clampColor(v, 0, 1);
-  if (clampedV <= 0.04045) return clampedV / 12.92;
-  return Math.pow((clampedV + 0.055) / 1.055, 2.4);
-}
-
-/**
- * Convert linear RGB to sRGB gamma-encoded space
- */
-export function delinearize(v: number): number {
-  'worklet';
-  if (v <= 0.0031308) return 12.92 * v;
-  return 1.055 * Math.pow(v, 1 / 2.4) - 0.055;
-}
-
-/**
  * Check if a color is in RGB gamut
  */
 function isInGamut(rgb: { r: number; g: number; b: number }): boolean {
@@ -251,9 +250,9 @@ function isInGamut(rgb: { r: number; g: number; b: number }): boolean {
 export function rgbToOklab(r: number, g: number, b: number): { L: number; a: number; b: number } {
   'worklet';
   // Convert RGB to linear RGB
-  const lr = linearize(r);
-  const lg = linearize(g);
-  const lb = linearize(b);
+  const lr = gammaToLinear(r, true);
+  const lg = gammaToLinear(g, true);
+  const lb = gammaToLinear(b, true);
 
   // Convert to LMS with safety to prevent negative values
   const l = Math.max(1e-8, 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb);
@@ -298,9 +297,9 @@ export function oklabToRgb(L: number, a: number, b: number): { r: number; g: num
 
   // Delinearize and clamp
   return {
-    r: clampColor(delinearize(lr)),
-    g: clampColor(delinearize(lg)),
-    b: clampColor(delinearize(lb)),
+    r: clampColor(linearToGamma(lr)),
+    g: clampColor(linearToGamma(lg)),
+    b: clampColor(linearToGamma(lb)),
   };
 }
 

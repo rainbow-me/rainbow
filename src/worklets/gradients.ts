@@ -63,15 +63,10 @@ export function generateRainbowGradient(color: string, options: GradientOptions 
 
   // Process the input color
   const processedColor = processColor(color);
-  if (!processedColor) {
-    return Array(numColors).fill('#FF1493'); // Default if invalid
-  }
+  if (!processedColor) return Array(numColors).fill('#FF1493'); // Default if invalid
 
   // Convert to RGBA
   const [r, g, b] = convertToRGBA(processedColor);
-
-  // Create the input color hex for first and last positions
-  // const inputColorHex = colorToHex(r, g, b);
 
   // Convert to Oklab
   const { L, a: aLab, b: bLab } = rgbToOklab(r, g, b);
@@ -87,9 +82,7 @@ export function generateRainbowGradient(color: string, options: GradientOptions 
   const sourceOklch = { L: baseL, C: baseC, H: srcH };
 
   // Generate only the intermediate colors (without first and last positions)
-  // This is crucial for creating a seamless angular gradient
   const intermediatePoints = generateOklchPoints(
-    // { L: baseL, C: baseC, H: srcH },
     sourceOklch,
     strategy,
     clampColor(numColors - 2, 1, 20), // Only generate intermediate colors
@@ -218,7 +211,6 @@ function generateOklchPoints(
           C = source.C * (1.15 - 0.15 * tt);
         }
 
-        // Add variance with stronger effect
         points.push({
           L: addVariance(L, 0.2, variance, 0.25, 0.95),
           C: addVariance(C, 0.3, variance, 0.02, 0.4),
@@ -261,7 +253,6 @@ function generateOklchPoints(
           C = source.C * (1.25 - 0.25 * tt);
         }
 
-        // Add variance with stronger effect
         points.push({
           L: addVariance(L, 0.25, variance, 0.25, 0.95),
           C: addVariance(C, 0.3, variance, 0.02, 0.4),
