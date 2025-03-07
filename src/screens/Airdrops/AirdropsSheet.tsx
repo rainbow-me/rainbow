@@ -2,7 +2,7 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { LegendList } from '@legendapp/list';
 import React, { memo, useCallback } from 'react';
 import { View, StyleSheet, ScrollViewProps } from 'react-native';
-import { PANEL_COLOR_DARK, PANEL_COLOR_LIGHT, Panel } from '@/components/SmoothPager/ListPanel';
+import { PANEL_COLOR_DARK, Panel } from '@/components/SmoothPager/ListPanel';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { SheetHandleFixedToTop } from '@/components/sheet';
@@ -48,7 +48,7 @@ export const AirdropsSheet = () => {
           <Text align="center" color="label" containsEmoji size="20pt" weight="heavy">
             Claim Rainbow Coins
           </Text>
-          <Box width={DEVICE_WIDTH - 28 * 2}>
+          <Box width={DEVICE_WIDTH - 26 * 2}>
             <Separator color={{ custom: opacity(separator, 0.025) }} thickness={1} />
           </Box>
         </Box>
@@ -91,7 +91,7 @@ const AirdropsList = () => {
     [handlePress, isDarkMode]
   );
 
-  return airdrops ? (
+  return airdrops?.length ? (
     <LegendList
       contentContainerStyle={styles.scrollContent}
       data={airdrops}
@@ -112,7 +112,12 @@ const AirdropsList = () => {
   );
 };
 
-const PANEL_COLORS = { dark: { custom: PANEL_COLOR_DARK }, light: { custom: PANEL_COLOR_LIGHT } };
+const AndroidScrollView = ({ children, ...props }: ScrollViewProps) => {
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  return <BottomSheetScrollView {...props}>{children}</BottomSheetScrollView>;
+};
+
+const DARK_PANEL_COLOR = { custom: PANEL_COLOR_DARK };
 const EMPTY_STATE_TEXT_COLORS = {
   dark: { custom: opacity(getColorForTheme('labelQuaternary', 'dark'), 0.2) },
   light: { custom: opacity(getColorForTheme('labelQuaternary', 'light'), 0.2) },
@@ -124,14 +129,14 @@ const EmptyState = () => {
     <View style={styles.emptyStateContainer}>
       <Stack alignHorizontal="center" space="20px">
         <IconContainer
-          background="fillSecondary"
+          background={isDarkMode ? 'fillSecondary' : 'fill'}
           borderColor={isDarkMode ? 'separatorTertiary' : undefined}
           borderRadius={38}
           borderWidth={isDarkMode ? THICK_BORDER_WIDTH * 2 : undefined}
           height={76}
           width={76}
         >
-          <Text align="center" color={PANEL_COLORS[isDarkMode ? 'dark' : 'light']} size="44pt" weight="heavy">
+          <Text align="center" color={isDarkMode ? DARK_PANEL_COLOR : WHITE_TEXT_COLOR} size="44pt" weight="heavy">
             􁎢
           </Text>
         </IconContainer>
@@ -141,11 +146,6 @@ const EmptyState = () => {
       </Stack>
     </View>
   );
-};
-
-const AndroidScrollView = ({ children, ...props }: ScrollViewProps) => {
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  return <BottomSheetScrollView {...props}>{children}</BottomSheetScrollView>;
 };
 
 const BLACK_TEXT_COLOR = { custom: globalColors.grey100 };
