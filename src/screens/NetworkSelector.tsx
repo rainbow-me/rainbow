@@ -180,7 +180,7 @@ const CustomizeNetworksBanner = !shouldShowCustomizeNetworksBanner(customizeNetw
       return (
         <DesignSystemProvider colorMode="light">
           <Animated.View entering={FadeIn.duration(300).delay(600)} exiting={FadeOutUp.duration(200)} style={sx.banner}>
-          <MaskedView
+            <MaskedView
               maskElement={
                 <Svg width="100%" height={BANNER_HEIGHT} viewBox="0 0 353 75" fill="none">
                   <Path

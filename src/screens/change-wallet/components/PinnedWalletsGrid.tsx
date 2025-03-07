@@ -165,7 +165,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                       {editMode && (
                         <Box position="absolute" bottom={'0px'} right={'0px'}>
                           <ButtonPressAnimation onPress={() => removePinnedAddress(account.address)}>
-                          <HitSlop space="16px">
+                            <HitSlop space="16px">
                               <Box
                                 width={{ custom: UNPIN_BADGE_SIZE }}
                                 height={{ custom: UNPIN_BADGE_SIZE }}

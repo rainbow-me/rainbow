@@ -329,7 +329,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   return (
     <Box bottom={{ custom: 0 }} height={{ custom: TAB_BAR_HEIGHT }} pointerEvents="box-none" position="absolute" width="full">
       <Box as={Animated.View} style={[shadowStyles.outer, IS_IOS ? dappBrowserTabBarShadowStyle : {}, hideForBrowserTabViewStyle]}>
-      <Box as={Animated.View} style={[shadowStyles.inner, IS_IOS ? dappBrowserTabBarShadowStyle : {}]}>
+        <Box as={Animated.View} style={[shadowStyles.inner, IS_IOS ? dappBrowserTabBarShadowStyle : {}]}>
           <Box height={{ custom: TAB_BAR_HEIGHT }} width="full">
             {IS_IOS && <BlurView blurStyle={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'} style={StyleSheet.absoluteFill} />}
             <Box
