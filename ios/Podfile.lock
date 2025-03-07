@@ -1268,7 +1268,7 @@ PODS:
     - DoubleConversion
     - glog
     - hermes-engine
-    - MMKV (>= 1.3.3)
+    - MMKV (>= 2.0.0)
     - RCT-Folly (= 2024.01.01.00)
     - RCTRequired
     - RCTTypeSafety
@@ -1303,7 +1303,7 @@ PODS:
     - React-Core
   - react-native-screen-corner-radius (0.2.2):
     - React
-  - react-native-skia (1.8.2):
+  - react-native-skia (1.9.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1893,7 +1893,7 @@ PODS:
     - RNSound/Core (= 0.11.2)
   - RNSound/Core (0.11.2):
     - React-Core
-  - RNSVG (15.8.0):
+  - RNSVG (15.11.2):
     - React-Core
   - RNTextSize (4.0.0-rc.1):
     - React
@@ -2473,7 +2473,7 @@ SPEC CHECKSUMS:
   Permission-Notifications: e254bc5abf9c33a6ac6b9f68f4c406d5bf7ab46e
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   Rainbow-Internals: ebb58dacc43c3061546db8d1fc04939ff4af194d
-  RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
+  RCT-Folly: 5dc73daec3476616d19e8a53f0156176f7b55461
   RCTDeprecation: 4c7eeb42be0b2e95195563c49be08d0b839d22b4
   RCTRequired: d530a0f489699c8500e944fde963102c42dcd0c2
   RCTTypeSafety: b20878506b094fa3d9007d7b9e4be0faa3562499
@@ -2511,7 +2511,7 @@ SPEC CHECKSUMS:
   react-native-mail: 824fe88e2323c1ce0a93e5f46db4056abf432928
   react-native-menu: c7860bd437b7f835153b5af3bc839ffa7ab8bfa1
   react-native-minimizer: d6db020c36a58447adba28f969f70a7098cfadb8
-  react-native-mmkv: f8155c2efbe795cb0c7586d00ff484b1c9388af0
+  react-native-mmkv: 6357d10378b8f6dff0a233edec82e5a0523804ca
   react-native-netinfo: 8fa5cbcb4a8e69e265ff685b9e54c175ef2bbd40
   react-native-pager-view: b497c577ff14f86e62d1457756c062769e73ac87
   react-native-palette-full: d25c07e220328405154382094a6e933ad76f74dc
@@ -2520,10 +2520,10 @@ SPEC CHECKSUMS:
   react-native-restart: f6f591aeb40194c41b9b5013901f00e6cf7d0f29
   react-native-safe-area-context: b13be9714d9771fbde0120bc519c963484de3a71
   react-native-screen-corner-radius: 81229df69e6f990502b813b92a0e8267c64d9dd9
-  react-native-skia: d0f075344d4e9333110c4f82dcf86d61105e90f9
+  react-native-skia: 1c5bb0ca0ac6ec1aac7a068fedac350ddfe20dd8
   react-native-splash-screen: 95994222cc95c236bd3cdc59fe45ed5f27969594
   react-native-text-input-mask: b83b8b571cba4bf18fb9b7a0bb8319a14201db9e
-  react-native-udp: afd81d997ff141501da6ac680667fd8319545da1
+  react-native-udp: 33844c2b4a0430271e46cd069a6152cc4c482095
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
   react-native-video: ffe771ad37b8a388b848f56bd4ea5a5887967cde
   react-native-view-shot: a415d816cfe77ed39bd6d88c128eca56f108d195
@@ -2580,7 +2580,7 @@ SPEC CHECKSUMS:
   RNSentry: c7599e193a28c0b10456ebc9f4e568f4adc69954
   RNShare: c6c861ad593bdd4856342724c00d5da64c4ff22f
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b
-  RNSVG: 8542aa11770b27563714bbd8494a8436385fc85f
+  RNSVG: 2df577ee9762d1b6deef820173b59b064c2570fe
   RNTextSize: c5e0593c898ad57ef5061464c154ab855da06047
   RSCrashReporter: 6b8376ac729b0289ebe0908553e5f56d8171f313
   Rudder: 04713668b0b7d46f214e6b7b46b60134849661aa
@@ -2597,7 +2597,7 @@ SPEC CHECKSUMS:
   ToolTipMenu: 490f8094d1bc7387bfb2e5ceb5027cc21f5b7bf3
   TurboHaptics: f1f015d7b9547720f1fdc076600a38fe2fdd9094
   VisionCamera: 1fc0a21e2bc13d687c75925c52d63a26028adefd
-  Yoga: 04f1db30bb810187397fa4c37dd1868a27af229c
+  Yoga: 88480008ccacea6301ff7bf58726e27a72931c8d
 
 PODFILE CHECKSUM: 98c3fc206d7041ac7388693bb0753109d1884b57
 
