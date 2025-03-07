@@ -1,28 +1,17 @@
-import React, { createContext, useContext, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import { getAlphaColor, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { useColorMode } from '@/design-system';
 import { useTheme } from '@/theme';
 import { DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR } from '../constants';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { BackendNetwork, ChainId } from '@/state/backendNetworks/types';
-import { time } from '@/utils';
-import { useAccountSettings } from '@/hooks';
-import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
-import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
-import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
+import { BackendNetwork } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { formatUnits } from 'viem';
-import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
-import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 import { SkImage, useAnimatedImageValue, useImage } from '@shopify/react-native-skia';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { SharedValue } from 'react-native-reanimated';
 
 type TokenLauncherContextType = {
-  chainNativeAssetRequiredForTransactionGas: string;
   tokenBackgroundImage: SkImage | null;
   tokenImage: SkImage | null | SharedValue<SkImage | null>;
   chainNativeAsset: BackendNetwork['nativeAsset'];
@@ -56,35 +45,12 @@ export function useTokenLauncherContext() {
   return context;
 }
 
-// TODO: these values will likely come from sdk
-export function estimateLaunchTransactionGasLimit({
-  chainId,
-  gasSettings,
-  isPrebuying,
-}: {
-  chainId: ChainId;
-  gasSettings: GasSettings | undefined;
-  isPrebuying: boolean;
-}) {
-  return '8000000';
-}
-
 export function TokenLauncherContextProvider({ children }: { children: React.ReactNode }) {
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
-  const { nativeCurrency } = useAccountSettings();
   const chainId = useTokenLauncherStore(state => state.chainId);
-  const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
-  const setHasSufficientChainNativeAssetForTransactionGas = useTokenLauncherStore(
-    state => state.setHasSufficientChainNativeAssetForTransactionGas
-  );
   const chainNativeAsset = useBackendNetworksStore(state => state.getChainsNativeAsset()[chainId]);
-  const gasSettings = useGasSettings(chainId, gasSpeed);
 
-  const setChainNativeAssetUsdPrice = useTokenLauncherStore(state => state.setChainNativeAssetUsdPrice);
-  const setChainNativeAssetNativePrice = useTokenLauncherStore(state => state.setChainNativeAssetNativePrice);
-
-  // const imageUrl = useTokenLauncherStore(state => state.imageUrl);
   const imageUri = useTokenLauncherStore(state => state.imageUri);
   const isImageGif = useMemo(() => imageUri?.endsWith('.gif'), [imageUri]);
 
@@ -112,7 +78,7 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
         primaryColor = getHighContrastColor(primaryColor, isDarkMode);
       }
     } catch (e) {
-      // do nothing
+      // TODO:
     }
 
     const highContrastTextColor = getHighContrastTextColorWorklet(primaryColor, undefined, false);
@@ -137,67 +103,8 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
     };
   }, [colors, imageDerivedColor, isDarkMode]);
 
-  const chainNativeAssetRequiredForTransactionGas = useMemo(() => {
-    if (!gasSettings) return '0';
-
-    const gasLimit = estimateLaunchTransactionGasLimit({
-      chainId,
-      gasSettings,
-      isPrebuying: false,
-    });
-    const gasFeeWei = calculateGasFeeWorklet(gasSettings, gasLimit);
-
-    return formatUnits(safeBigInt(gasFeeWei), chainNativeAsset.decimals);
-  }, [chainId, chainNativeAsset, gasSettings]);
-
-  useEffect(() => {
-    const userNativeAsset = userAssetsStore.getState().getNativeAssetForChain(chainId);
-    const userBalance = userNativeAsset?.balance?.amount || '0';
-
-    const hasSufficientChainNativeAssetForTransactionGas = lessThanOrEqualToWorklet(chainNativeAssetRequiredForTransactionGas, userBalance);
-    setHasSufficientChainNativeAssetForTransactionGas(hasSufficientChainNativeAssetForTransactionGas);
-  }, [chainId, chainNativeAssetRequiredForTransactionGas, setHasSufficientChainNativeAssetForTransactionGas]);
-
-  // We explicitly need it in USD as well as the user's native currency because the target market cap is in USD
-  const { data: chainNativeAssetUsd } = useExternalToken(
-    {
-      address: chainNativeAsset.address,
-      chainId: chainId,
-      currency: 'USD',
-    },
-    {
-      keepPreviousData: true,
-      staleTime: time.minutes(1),
-    }
-  );
-  const { data: chainNativeAssetNative } = useExternalToken(
-    {
-      address: chainNativeAsset.address,
-      chainId: chainId,
-      currency: nativeCurrency,
-    },
-    {
-      keepPreviousData: true,
-      staleTime: time.minutes(1),
-    }
-  );
-
-  const chainNativeAssetUsdPrice = chainNativeAssetUsd?.price.value;
-  const chainNativeAssetNativePrice = chainNativeAssetNative?.price.value;
-
-  useEffect(() => {
-    if (chainNativeAssetUsdPrice) {
-      setChainNativeAssetUsdPrice(chainNativeAssetUsdPrice);
-    }
-    if (chainNativeAssetNativePrice) {
-      setChainNativeAssetNativePrice(chainNativeAssetNativePrice);
-    }
-  }, [chainNativeAssetNativePrice, chainNativeAssetUsdPrice, setChainNativeAssetNativePrice, setChainNativeAssetUsdPrice]);
-
   return (
-    <TokenLauncherContext.Provider
-      value={{ accentColors, chainNativeAssetRequiredForTransactionGas, tokenImage, tokenBackgroundImage, chainNativeAsset }}
-    >
+    <TokenLauncherContext.Provider value={{ accentColors, tokenImage, tokenBackgroundImage, chainNativeAsset }}>
       {children}
     </TokenLauncherContext.Provider>
   );

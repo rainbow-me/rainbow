@@ -17,6 +17,7 @@ import { JumboBlurredImageBackground } from './components/JumboBlurredImageBackg
 import { IS_ANDROID } from '@/env';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StepBorderEffects } from './components/StepBorderEffects';
+import { PriceAndGasSync } from './components/PriceAndGasSync';
 
 function reviewStepExitingAnimation() {
   'worklet';
@@ -164,6 +165,8 @@ export function TokenLauncherScreen() {
         <KeyboardProvider statusBarTranslucent={false} preserveEdgeToEdge={false} navigationBarTranslucent={false}>
           <TokenLauncherScreenContent />
         </KeyboardProvider>
+        {/* This component returns null, and is just used to sync price and gas data */}
+        <PriceAndGasSync />
       </TokenLauncherContextProvider>
     </ColorModeProvider>
   );

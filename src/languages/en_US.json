@@ -3178,6 +3178,9 @@
         "balance": "Balance: %{balance}",
         "not_enough_funds": "Not enough funds to launch a token"
       },
+      "prebuy": {
+        "balance_after_gas_fee": "Balance After Gas Fee: %{balance}"
+      },
       "review": {
         "token_allocation": "Token allocation",
         "your_share": "Your share",
@@ -3202,7 +3205,9 @@
         "symbol_required": "Ticker is required",
         "name_required": "Name is required",
         "too_big": "Too big.",
-        "must_be_greater_than_0": "Must be greater than 0"
+        "must_be_greater_than_0": "Must be greater than 0",
+        "amount_is_greater_than_balance": "Amount is greater than balance",
+        "amount_is_greater_than_max_prebuy_amount": "Exceeds max pre-buy amount of %{maxPrebuyAmount} %{chainNativeAssetSymbol}"
       },
       "titles": {
         "total_supply": "Total Supply",

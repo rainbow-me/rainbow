@@ -59,6 +59,7 @@ interface TokenLauncherStore {
   chainNativeAssetUsdPrice: number;
   chainNativeAssetNativePrice: number;
   gasSpeed: GasSpeed;
+  chainNativeAssetRequiredForTransactionGas: string;
   hasSufficientChainNativeAssetForTransactionGas: boolean;
   hasValidPrebuyAmount: boolean;
   maxAirdropRecipientCount: number;
@@ -111,9 +112,10 @@ interface TokenLauncherStore {
   deleteAirdropRecipient: (id: string) => void;
   setChainNativeAssetUsdPrice: (chainNativeAssetUsdPrice: number) => void;
   setChainNativeAssetNativePrice: (chainNativeAssetNativePrice: number) => void;
+  setChainNativeAssetRequiredForTransactionGas: (chainNativeAssetRequiredForTransactionGas: string) => void;
   setGasSpeed: (gasSpeed: GasSpeed) => void;
   setHasValidPrebuyAmount: (hasValidPrebuyAmount: boolean) => void;
-  setHasSufficientChainNativeAssetForTransactionGas: (hasSufficientChainNativeAssetForTransactionGas: boolean) => void; // actions
+  setHasSufficientChainNativeAssetForTransactionGas: (hasSufficientChainNativeAssetForTransactionGas: boolean) => void;
   reset: () => void;
   createToken: ({
     wallet,
@@ -150,6 +152,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   stepSharedValue: makeMutable(NavigationSteps.INFO as NavigationSteps),
   stepAnimatedSharedValue: makeMutable(NavigationSteps.INFO as NavigationSteps),
   gasSpeed: GasSpeed.FAST,
+  chainNativeAssetRequiredForTransactionGas: '0',
   hasSufficientChainNativeAssetForTransactionGas: true,
   hasValidPrebuyAmount: true,
   maxAirdropRecipientCount: DEFAULT_MAX_AIRDROP_RECIPIENTS,
@@ -342,6 +345,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   deleteAirdropRecipient: (id: string) => {
     set({ airdropRecipients: get().airdropRecipients.filter(a => a.id !== id) });
   },
+  setChainNativeAssetRequiredForTransactionGas: (chainNativeAssetRequiredForTransactionGas: string) => {
+    set({ chainNativeAssetRequiredForTransactionGas });
+  },
   setChainNativeAssetUsdPrice: (chainNativeAssetUsdPrice: number) => {
     set({ chainNativeAssetUsdPrice });
   },
@@ -373,6 +379,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       chainNativeAssetNativePrice: 0,
       gasSpeed: GasSpeed.FAST,
       hasSufficientChainNativeAssetForTransactionGas: true,
+      chainNativeAssetRequiredForTransactionGas: '0',
       hasValidPrebuyAmount: true,
       airdropRecipients: [],
       step: NavigationSteps.INFO,

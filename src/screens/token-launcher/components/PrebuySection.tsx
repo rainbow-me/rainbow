@@ -1,4 +1,5 @@
 import React, { useMemo, useRef } from 'react';
+import * as i18n from '@/languages';
 import { AnimatedText, Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { CollapsableField } from './CollapsableField';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
@@ -79,8 +80,9 @@ function PrebuyAmountButton({
 }
 
 export function PrebuySection() {
-  const { chainNativeAssetRequiredForTransactionGas, chainNativeAsset } = useTokenLauncherContext();
+  const { chainNativeAsset } = useTokenLauncherContext();
   const tokenomics = useTokenLauncherStore(state => state.tokenomics());
+  const chainNativeAssetRequiredForTransactionGas = useTokenLauncherStore(state => state.chainNativeAssetRequiredForTransactionGas);
   const marketCapChainNativeAsset = tokenomics?.marketCap.targetEth ?? 10;
   const setHasValidPrebuyAmount = useTokenLauncherStore(state => state.setHasValidPrebuyAmount);
   const chainId = useTokenLauncherStore(state => state.chainId);
@@ -153,6 +155,10 @@ export function PrebuySection() {
 
   const customInputSubtitle = useDerivedValue(() => {
     return error.value === '' ? `Balance After Gas Fee: ${nativeAssetForChainAvailableBalanceDisplay}` : error.value;
+    // TODO: uses localization in this derived value causes crash
+    // return error.value === ''
+    //   ? `${i18n.t(i18n.l.token_launcher.prebuy.balance_after_gas_fee, { balance: nativeAssetForChainAvailableBalanceDisplay })}`
+    //   : error.value;
   });
 
   const customInputSubtitleStyle = useAnimatedStyle(() => {
@@ -214,12 +220,15 @@ export function PrebuySection() {
               const amount = parseFloat(text) || 0;
 
               if (lessThanWorklet(chainNativeAssetAvailableBalance, amount)) {
-                error.value = `Amount is greater than balance`;
+                error.value = i18n.t(i18n.l.token_launcher.input_errors.amount_is_greater_than_balance);
                 return { error: true };
               }
 
               if (lessThanWorklet(maxPrebuyAmount, amount)) {
-                error.value = `Exceeds max pre-buy amount of ${maxPrebuyAmount} ${chainNativeAssetSymbol}`;
+                error.value = i18n.t(i18n.l.token_launcher.input_errors.amount_is_greater_than_max_prebuy_amount, {
+                  maxPrebuyAmount: maxPrebuyAmount,
+                  chainNativeAssetSymbol,
+                });
                 return { error: true };
               }
 
