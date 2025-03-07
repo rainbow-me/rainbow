@@ -1,7 +1,6 @@
 import { AIRDROP_BPS, CREATOR_BPS, CREATOR_BPS_WITH_AIRDROP } from '../constants';
-import { parseUnits } from 'viem';
 import { TokenLauncher } from '@/hooks/useTokenLauncher';
-
+import { parseUnits } from '@ethersproject/units';
 // 1% fee
 const POOL_FEE = 10000;
 // 1_000_000 for 0.01% precision
