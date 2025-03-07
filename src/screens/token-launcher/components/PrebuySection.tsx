@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import * as i18n from '@/languages';
-import { AnimatedText, Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
+import { AnimatedText, Box, Separator, useForegroundColor } from '@/design-system';
 import { CollapsableField } from './CollapsableField';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
@@ -17,7 +17,7 @@ import { Grid } from './Grid';
 import { SingleFieldInput, SingleFieldInputRef } from './SingleFieldInput';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
-import { convertAmountToBalanceDisplay, lessThan, roundToSignificant1or5, subtract } from '@/helpers/utilities';
+import { convertAmountToBalanceDisplay, lessThan, subtract } from '@/helpers/utilities';
 import { lessThanWorklet } from '@/safe-math/SafeMath';
 
 function PrebuyAmountButton({
@@ -125,30 +125,21 @@ export function PrebuySection() {
   );
 
   const prebuyOptions = useMemo(() => {
-    const totalSupplyPercentages = TOTAL_SUPPLY_PREBUY_PERCENTAGES;
-
-    const amounts = totalSupplyPercentages.map(percentage => {
-      return roundToSignificant1or5(marketCapChainNativeAsset * percentage);
-    });
-
-    const uniqueAmounts = Array.from(new Set(amounts));
-
-    // If we lost any options due to deduplication, add more with higher percentages
-    let nextPercentage = totalSupplyPercentages[totalSupplyPercentages.length - 1] + 0.025;
-
-    while (uniqueAmounts.length < 4) {
-      const rawAmount = marketCapChainNativeAsset * nextPercentage;
-      const amount = roundToSignificant1or5(rawAmount);
-      if (!uniqueAmounts.some(option => option === amount)) {
-        uniqueAmounts.push(amount);
+    return TOTAL_SUPPLY_PREBUY_PERCENTAGES.map(percentage => {
+      if (!marketCapChainNativeAsset) {
+        return {
+          label: '0 ETH',
+          amount: 0,
+        };
       }
-      nextPercentage += 0.025;
-    }
 
-    return uniqueAmounts.slice(0, 4).map(amount => ({
-      label: `${amount} ${chainNativeAssetSymbol}`,
-      amount,
-    }));
+      const nativeAssetAmount = (marketCapChainNativeAsset * percentage).toFixed(2);
+
+      return {
+        label: `${nativeAssetAmount} ${chainNativeAssetSymbol}`,
+        amount: parseFloat(nativeAssetAmount),
+      };
+    });
   }, [marketCapChainNativeAsset, chainNativeAssetSymbol]);
 
   const maxPrebuyAmount = prebuyOptions[prebuyOptions.length - 1].amount;

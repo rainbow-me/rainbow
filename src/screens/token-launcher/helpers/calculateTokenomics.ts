@@ -1,7 +1,6 @@
 import { AIRDROP_BPS, CREATOR_BPS, CREATOR_BPS_WITH_AIRDROP } from '../constants';
-import { parseUnits } from 'viem';
 import { TokenLauncher } from '@/hooks/useTokenLauncher';
-
+import { parseUnits } from '@ethersproject/units';
 // 1% fee
 const POOL_FEE = 10000;
 // 1_000_000 for 0.01% precision
@@ -52,43 +51,52 @@ export function calculateTokenomics({
 
   // TODO: all these calculations are wrong
   if (amountInEth > 0) {
+    // Calculate fee and amount after fee
     const feeAmount = (amountInEth * POOL_FEE) / FEE_DENOMINATOR;
     const amountInAfterFee = amountInEth - feeAmount;
-    const tokensOut = amountInAfterFee / actualPriceEth;
 
-    // Calculate price impact
-    const initialLiquidityValue = lpSupply * actualPriceEth;
-    const priceImpact = (amountInEth / initialLiquidityValue) * 100;
+    // Assume the liquidity pool (LP) has these initial reserves:
+    const initialPoolEth = lpSupply * actualPriceEth;
+    const initialPoolTokens = lpSupply;
 
-    // Post-swap market cap
-    const remainingLpTokens = lpSupply - tokensOut;
-    const postSwapMarketCapUsd = remainingLpTokens * actualPriceEth * ethPriceUsd;
-    const postSwapMarketCapEth = postSwapMarketCapUsd / ethPriceUsd;
-    const postSwapPriceUsd = postSwapMarketCapUsd / totalSupply;
-    const postSwapPriceEth = postSwapPriceUsd / ethPriceUsd;
+    // Using the constant-product formula to simulate the swap:
+    // tokensOut = initialPoolTokens - (initialPoolEth * initialPoolTokens) / (initialPoolEth + amountInAfterFee)
+    const tokensOut = initialPoolTokens - (initialPoolEth * initialPoolTokens) / (initialPoolEth + amountInAfterFee);
 
-    actualMarketCapUsd = postSwapMarketCapUsd;
-    actualMarketCapEth = postSwapMarketCapEth;
-    actualPriceUsd = postSwapPriceUsd;
-    actualPriceEth = postSwapPriceEth;
+    // Update the pool's reserves after the swap:
+    const newPoolEth = initialPoolEth + amountInAfterFee;
+    const newPoolTokens = initialPoolTokens - tokensOut;
 
+    // Derive the new token price from the updated pool:
+    const newPriceEth = newPoolEth / newPoolTokens;
+    const newPriceUsd = newPriceEth * ethPriceUsd;
+
+    // Calculate a new market cap using the full total supply:
+    const newMarketCapUsd = totalSupply * newPriceUsd;
+    const newMarketCapEth = totalSupply * newPriceEth;
+
+    // Calculate the price impact as the percentage change in price:
+    const priceImpact = ((newPriceEth - actualPriceEth) / actualPriceEth) * 100;
+
+    // Update the creator's tokens (they receive the tokens bought from the pool)
     creatorAmount += tokensOut;
+
+    // Recalculate allocations with updated creator tokens:
     creatorAllocationBips = (creatorAmount / totalSupply) * 10000;
     lpAllocationBips = 10000 - creatorAllocationBips - airdropAllocationBips;
     lpSupply = totalSupply - creatorAmount - airdropAmount;
 
+    // Replace our original price and market cap with the new values
+    actualPriceEth = newPriceEth;
+    actualPriceUsd = newPriceUsd;
+    actualMarketCapUsd = newMarketCapUsd;
+    actualMarketCapEth = newMarketCapEth;
+
     swap = {
-      input: {
-        amountInEth,
-        feeAmount,
-        amountInAfterFee,
-      },
-      output: {
-        tokensOut,
-        priceImpact,
-      },
-      marketCapAfterUsd: postSwapMarketCapUsd,
-      marketCapAfterEth: postSwapMarketCapEth,
+      input: { amountInEth, feeAmount, amountInAfterFee },
+      output: { tokensOut, priceImpact },
+      marketCapAfterUsd: newMarketCapUsd,
+      marketCapAfterEth: newMarketCapEth,
     };
   }
 
