@@ -262,8 +262,7 @@ const styles = StyleSheet.create({
     height: COIN_ROW_HEIGHT + COIN_ROW_GAP,
     justifyContent: 'center',
     gap: 12,
-    paddingLeft: 24,
-    paddingRight: 20,
+    paddingHorizontal: 24,
     width: '100%',
   },
   rowEnd: {
