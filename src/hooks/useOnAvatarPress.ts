@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
 import { useCallback } from 'react';
-import { Linking } from 'react-native';
 import { ImageOrVideo } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
@@ -26,6 +25,7 @@ import { isZero } from '@/helpers/utilities';
 import { IS_IOS } from '@/env';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { MenuConfig } from '@/components/native-context-menu/contextMenu';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 type UseOnAvatarPressProps = {
   /** Is the avatar selection being used on the wallet or transaction screen? */
@@ -54,6 +54,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const { openPicker } = useImagePicker();
   const { startRegistration } = useENSRegistration();
   const { setNextEmoji } = useUpdateEmoji();
+  const openInBrowser = useOpenInBrowser();
 
   const onAvatarRemovePhoto = useCallback(async () => {
     const newWallets: typeof wallets = {
@@ -110,12 +111,12 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     navigate(Routes.REGISTER_ENS_NAVIGATOR);
   }, [navigate]);
 
-  const onAvatarWebProfile = useCallback(() => {
+  const onAvatarWebProfile = useCallback(async () => {
     const rainbowURL = buildRainbowUrl(null, accountENS, accountAddress);
     if (rainbowURL) {
-      Linking.openURL(rainbowURL);
+      await openInBrowser(rainbowURL);
     }
-  }, [accountAddress, accountENS]);
+  }, [accountAddress, accountENS, openInBrowser]);
 
   const onAvatarViewProfile = useCallback(() => {
     analytics.track('Viewed ENS profile', {

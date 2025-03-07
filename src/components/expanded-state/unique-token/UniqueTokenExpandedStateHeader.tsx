@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import URL from 'url-parse';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
@@ -22,6 +22,7 @@ import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simpleha
 import { ContextCircleButton } from '@/components/context-menu';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -261,6 +262,8 @@ const UniqueTokenExpandedStateHeader = ({
   const isENS = asset.asset_contract?.address?.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
+  const openInBrowser = useOpenInBrowser();
+
   const assetMenuConfig = useMemo(() => {
     const AssetActions = getAssetActions({ chainId: asset.chainId });
 
@@ -323,24 +326,35 @@ const UniqueTokenExpandedStateHeader = ({
 
   const handlePressFamilyMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey } }) => {
+    async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === FamilyActionsEnum.viewCollection && asset.marketplaceCollectionUrl) {
-        Linking.openURL(asset.marketplaceCollectionUrl);
+        await openInBrowser(asset.marketplaceCollectionUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
-        // @ts-expect-error external_link and external_url could be null or undefined?
-        Linking.openURL(asset.external_link || asset.collection.external_url);
+        const websiteUrl = asset.external_link || asset.collection.external_url;
+        if (websiteUrl) {
+          await openInBrowser(websiteUrl);
+        }
       } else if (actionKey === FamilyActionsEnum.twitter) {
-        Linking.openURL('https://twitter.com/' + asset.collection.twitter_username);
+        const twitterUrl = 'https://twitter.com/' + asset.collection.twitter_username;
+        await openInBrowser(twitterUrl, false);
       } else if (actionKey === FamilyActionsEnum.discord && asset.collection.discord_url) {
-        Linking.openURL(asset.collection.discord_url);
+        const discordUrl = asset.collection.discord_url;
+        await openInBrowser(discordUrl, false);
       }
     },
-    [asset]
+    [
+      asset.collection.discord_url,
+      asset.collection.external_url,
+      asset.collection.twitter_username,
+      asset.external_link,
+      asset.marketplaceCollectionUrl,
+      openInBrowser,
+    ]
   );
 
   const handlePressAssetMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey } }) => {
+    async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
         ethereumUtils.openNftInBlockExplorer({
           // @ts-expect-error address could be undefined?
@@ -349,11 +363,11 @@ const UniqueTokenExpandedStateHeader = ({
           chainId: asset.chainId,
         });
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
-        Linking.openURL(rainbowWebUrl);
+        await openInBrowser(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.opensea) {
-        Linking.openURL(`https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`);
+        await openInBrowser(`https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`);
       } else if (actionKey === AssetActionsEnum.looksrare) {
-        Linking.openURL(`https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`);
+        await openInBrowser(`https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`);
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
@@ -381,6 +395,7 @@ const UniqueTokenExpandedStateHeader = ({
     },
     [
       asset,
+      openInBrowser,
       rainbowWebUrl,
       setClipboard,
       isHiddenAsset,
@@ -418,18 +433,18 @@ const UniqueTokenExpandedStateHeader = ({
         showSeparators: true,
         title: '',
       },
-      (idx: number) => {
+      async (idx: number) => {
         if (idx === collectionIndex && asset.marketplaceCollectionUrl) {
-          Linking.openURL(asset.marketplaceCollectionUrl);
+          await openInBrowser(asset.marketplaceCollectionUrl);
         } else if (idx === websiteIndex) {
-          Linking.openURL(
+          await openInBrowser(
             // @ts-expect-error external_link and external_url could be null or undefined?
             asset.external_link || asset.collection.external_url
           );
         } else if (idx === twitterIndex) {
-          Linking.openURL('https://twitter.com/' + asset.collection.twitter_username);
+          await openInBrowser('https://twitter.com/' + asset.collection.twitter_username, false);
         } else if (idx === discordIndex && asset.collection.discord_url) {
-          Linking.openURL(asset.collection.discord_url);
+          await openInBrowser(asset.collection.discord_url, false);
         }
       }
     );
@@ -439,6 +454,7 @@ const UniqueTokenExpandedStateHeader = ({
     asset.collection.twitter_username,
     asset.external_link,
     asset.marketplaceCollectionUrl,
+    openInBrowser,
   ]);
 
   const overflowMenuHitSlop: Space = '15px (Deprecated)';

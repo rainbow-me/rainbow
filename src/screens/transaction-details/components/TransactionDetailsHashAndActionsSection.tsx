@@ -18,7 +18,7 @@ import Routes from '@/navigation/routesNames';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import WalletTypes from '@/helpers/walletTypes';
-import { Linking } from 'react-native';
+import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -27,6 +27,7 @@ type Props = {
 
 export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ transaction, presentToast }) => {
   const { colors } = useTheme();
+  const openInBrowser = useOpenInBrowser();
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
   const { network, status, chainId } = transaction;
   const isReadOnly = useSelector((state: AppState) => state.wallets.selected?.type === WalletTypes.readOnly);
@@ -61,9 +62,9 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
 
   const formattedHash = shortenTxHashString(hash);
 
-  const onViewOnBlockExplorerPress = () => {
+  const onViewOnBlockExplorerPress = async () => {
     if (transaction.explorerUrl) {
-      Linking.openURL(transaction.explorerUrl);
+      await openInBrowser(transaction.explorerUrl);
     } else {
       ethereumUtils.openTransactionInBlockExplorer({ hash, chainId });
     }
