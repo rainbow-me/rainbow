@@ -79,16 +79,13 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
     state => state.setHasSufficientChainNativeAssetForTransactionGas
   );
   const chainNativeAsset = useBackendNetworksStore(state => state.getChainsNativeAsset()[chainId]);
-
-  // console.log('token launcher context');
-
   const gasSettings = useGasSettings(chainId, gasSpeed);
 
   const setChainNativeAssetUsdPrice = useTokenLauncherStore(state => state.setChainNativeAssetUsdPrice);
   const setChainNativeAssetNativePrice = useTokenLauncherStore(state => state.setChainNativeAssetNativePrice);
 
-  const imageUrl = useTokenLauncherStore(state => state.imageUrl);
-  const imageUri = useTokenLauncherStore(state => state.imageUrl);
+  // const imageUrl = useTokenLauncherStore(state => state.imageUrl);
+  const imageUri = useTokenLauncherStore(state => state.imageUri);
   const isImageGif = useMemo(() => imageUri?.endsWith('.gif'), [imageUri]);
 
   const skiaImage = useImage(imageUri);
@@ -103,8 +100,7 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   }, [animatedSkiaImage, isImageGif, skiaImage]);
 
   const tokenBackgroundImage: SkImage | null = skiaImage;
-
-  const imageDerivedColor = usePersistentDominantColorFromImage(imageUrl);
+  const imageDerivedColor = usePersistentDominantColorFromImage(imageUri);
 
   const accentColors = useMemo(() => {
     let primaryColor = imageDerivedColor ?? DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR;
