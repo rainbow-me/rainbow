@@ -1,6 +1,6 @@
-import { BlurView } from '@react-native-community/blur';
 import React, { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
@@ -10,7 +10,6 @@ import {
   Border,
   Box,
   ColorModeProvider,
-  Cover,
   Inline,
   Inset,
   Stack,
@@ -447,17 +446,7 @@ const Card = memo(function Card({
         <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} style={styles.cardContextMenuButton}>
           <ButtonPressAnimation scaleTo={0.8} style={{ padding: 12 }}>
             <Box borderRadius={12} height={{ custom: 24 }} style={{ overflow: 'hidden' }} width={{ custom: 24 }}>
-              <Cover>
-                {IS_IOS ? (
-                  <BlurView
-                    blurAmount={10}
-                    blurType={isDarkMode ? 'chromeMaterialDark' : 'light'}
-                    style={[styles.contextMenuBlurBackground, { backgroundColor: isDarkMode ? undefined : 'rgba(244, 248, 255, 0.04)' }]}
-                  />
-                ) : (
-                  <Box background="fillQuaternary" height="full" width="full" />
-                )}
-              </Cover>
+              <Box background="fillQuaternary" height="full" position="absolute" width="full" />
               <TextIcon
                 color="labelSecondary"
                 containerSize={24}
@@ -487,7 +476,12 @@ const CardBackground = memo(function CardBackgroundOverlay({
       <ImgixImage enableFasterImage size={CARD_WIDTH} source={{ uri: imageUrl }} style={styles.cardBackgroundImage} />
       {IS_IOS ? (
         <>
-          <BlurView blurAmount={isDarkMode ? 36 : 64} blurType={isDarkMode ? undefined : 'light'} style={styles.absoluteFill} />
+          <BlurView
+            blurIntensity={isDarkMode ? 36 : 64}
+            blurStyle={isDarkMode ? 'regular' : 'light'}
+            saturationIntensity={2}
+            style={styles.absoluteFill}
+          />
           {!isDarkMode && (
             <EasingGradient
               endColor={globalColors.grey100}
@@ -671,6 +665,7 @@ const styles = StyleSheet.create({
   },
   contextMenuBlurBackground: {
     height: '100%',
+    position: 'absolute',
     width: '100%',
   },
   favoritesContainer: {
