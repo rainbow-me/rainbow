@@ -7,6 +7,8 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { RAINBOW_COIN_EFFECT, useExperimentalFlag } from '@/config';
 import { Stack, Text, TextShadow, Bleed, Box } from '@/design-system';
 import ChartTypes from '@/helpers/chartTypes';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { useAccountSettings } from '@/hooks';
 import { useChartData } from '@/react-native-animated-charts/src';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
@@ -34,6 +36,7 @@ export default function ChartExpandedStateHeader({
   const shouldUseRainbowCoinEffect = useExperimentalFlag(RAINBOW_COIN_EFFECT);
   const theme = useTheme();
   const color = givenColors || theme.colors.dark;
+  const { nativeCurrency } = useAccountSettings();
 
   const { data } = useChartData();
 
@@ -41,6 +44,13 @@ export default function ChartExpandedStateHeader({
     const firstValue = data?.points?.[0]?.y;
     return firstValue === Number(firstValue) && !!firstValue;
   }, [data]);
+
+  const price = useMemo(
+    () => convertAmountToNativeDisplay(latestPrice, nativeCurrency),
+    // we need to make sure we recreate this value only when chart's data change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, latestPrice, nativeCurrency]
+  );
 
   const isNoPriceData = latestPrice === noPriceData;
 
@@ -106,7 +116,7 @@ export default function ChartExpandedStateHeader({
             {titleOrNoPriceData}
           </Text>
         </TextShadow>
-        <ChartPriceLabel defaultValue={title} isNoPriceData={isNoPriceData} isPool={isPool} priceRef={priceRef} priceValue={latestPrice} />
+        <ChartPriceLabel defaultValue={title} isNoPriceData={isNoPriceData} isPool={isPool} priceRef={priceRef} priceValue={price} />
         <Animated.View style={showPriceChangeStyle}>
           <Bleed top={'6px'}>
             <Box gap={8} flexDirection="row" alignItems="center">
