@@ -11,4 +11,4 @@ else
   DETOX_CONFIG="ios.sim.release"
 fi
 
-./node_modules/.bin/detox test ./e2e/parallel/ -c "$DETOX_CONFIG" --maxWorkers 2 --R 3
+./node_modules/.bin/detox test ./e2e/parallel/ -c "$DETOX_CONFIG" --maxWorkers 1 --R 3
