@@ -336,7 +336,7 @@ function SuggestedUserField({ recipient }: { recipient: AirdropRecipient }) {
       style={{ backgroundColor: INNER_FIELD_BACKGROUND_COLOR, paddingHorizontal: 16, borderRadius: FIELD_INNER_BORDER_RADIUS, flex: 1 }}
     >
       <Box flexDirection="row" alignItems="center" gap={8}>
-        <FastImage source={{ uri: recipient.imageUrl ?? '' }} style={{ width: 20, height: 20, borderRadius: 10 }} />
+        <ImgixImage source={{ uri: recipient.imageUrl ?? '' }} style={{ width: 20, height: 20, borderRadius: 10 }} />
         <Text style={{ flex: 1 }} numberOfLines={1} color="labelSecondary" size="17pt" weight="heavy">
           {recipient.label}
         </Text>
