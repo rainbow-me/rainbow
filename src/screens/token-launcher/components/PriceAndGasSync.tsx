@@ -1,30 +1,16 @@
 import { useEffect, useMemo, memo } from 'react';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils';
 import { useAccountSettings } from '@/hooks';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
-import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { formatUnits } from 'viem';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
-
-// TODO: these values will likely come from sdk
-function estimateLaunchTransactionGasLimit({
-  chainId,
-  gasSettings,
-  isPrebuying,
-}: {
-  chainId: ChainId;
-  gasSettings: GasSettings | undefined;
-  isPrebuying: boolean;
-}) {
-  return '8000000';
-}
+import { TOKEN_LAUNCH_GAS_LIMIT } from '../constants';
 
 // Handles syncing price and gas data without triggering high level re-renders
 function _PriceAndGasSync() {
@@ -46,15 +32,10 @@ function _PriceAndGasSync() {
   const chainNativeAssetRequiredForTransactionGas = useMemo(() => {
     if (!gasSettings) return '0';
 
-    const gasLimit = estimateLaunchTransactionGasLimit({
-      chainId,
-      gasSettings,
-      isPrebuying: false,
-    });
-    const gasFeeWei = calculateGasFeeWorklet(gasSettings, gasLimit);
+    const gasFeeWei = calculateGasFeeWorklet(gasSettings, TOKEN_LAUNCH_GAS_LIMIT);
 
     return formatUnits(safeBigInt(gasFeeWei), chainNativeAsset.decimals);
-  }, [chainId, chainNativeAsset, gasSettings]);
+  }, [chainNativeAsset, gasSettings]);
 
   useEffect(() => {
     const userBalance = userNativeAsset?.balance?.amount || '0';

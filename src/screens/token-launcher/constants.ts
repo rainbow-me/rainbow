@@ -35,6 +35,7 @@ export const TOTAL_SUPPLY_PREBUY_PERCENTAGES = [0.005, 0.01, 0.05, 0.1];
 export const CREATOR_BPS = 69;
 export const CREATOR_BPS_WITH_AIRDROP = 46;
 export const AIRDROP_BPS = 23;
+export const TOKEN_LAUNCH_GAS_LIMIT = '8000000';
 
 const ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
 
