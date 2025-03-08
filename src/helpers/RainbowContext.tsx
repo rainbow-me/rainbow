@@ -13,13 +13,10 @@ import Routes from '@rainbow-me/routes';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { IS_DEV, IS_TEST } from '@/env';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type GlobalState = any;
-
 export type RainbowContextType = {
   config: Record<keyof typeof defaultConfig, boolean> | Record<string, never>;
   setConfig: (newConfig: Record<string, boolean>) => void;
-  setGlobalState: (newState: GlobalState) => void;
+  setGlobalState: (newState: Record<string, unknown>) => void;
 };
 
 export const RainbowContext = createContext<RainbowContextType>({
@@ -59,7 +56,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   }, []);
 
   const setGlobalState = useCallback(
-    (newState: GlobalState) => updateGlobalState(prev => ({ ...prev, ...(newState || {}) })),
+    (newState: Record<string, unknown>) => updateGlobalState(prev => ({ ...prev, ...(newState || {}) })),
     [updateGlobalState]
   );
 
