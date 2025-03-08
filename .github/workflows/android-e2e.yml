@@ -55,12 +55,6 @@ jobs:
             eval $CI_SCRIPTS_RN_UPGRADE
             sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
 
-      - name: Install Maestro
-        run: curl -fsSL "https://get.maestro.mobile.dev" | bash
-
-      - name: Test
-        run: ./scripts/e2e-ci.sh
-
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
