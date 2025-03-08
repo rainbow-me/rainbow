@@ -1,6 +1,6 @@
 import React, { ReactElement, useMemo } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
-import { IS_IOS, IS_TEST } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useColorMode } from '../../color/ColorMode';
 import { useForegroundColor } from '../../color/useForegroundColor';
@@ -20,9 +20,9 @@ export interface TextShadowProps {
   y?: number;
 }
 
-const isAnimatedTextChild = (child: ReactElement<TextProps | AnimatedTextProps>): child is ReactElement<AnimatedTextProps> => {
+function isAnimatedTextChild(child: ReactElement<TextProps | AnimatedTextProps>): child is ReactElement<AnimatedTextProps> {
   return child.type === AnimatedText;
-};
+}
 
 export const TextShadow = ({
   blur = 16,
@@ -37,55 +37,97 @@ export const TextShadow = ({
   y = 0,
 }: TextShadowProps) => {
   const { isDarkMode } = useColorMode();
-
   const inferredTextColor = useForegroundColor(children.props.color ?? 'label');
   const isAnimatedText = isAnimatedTextChild(children);
 
-  const [internalContainerStyle, internalTextStyle] = useMemo(() => {
-    const extraSpaceForShadow = blur + Math.max(Math.abs(x), Math.abs(y));
-    return [
-      // Container style
-      { margin: -extraSpaceForShadow },
-
-      // Text style
-      {
-        ...(isAnimatedText
-          ? {
-              marginBottom: -extraSpaceForShadow,
-              marginLeft: -extraSpaceForShadow,
-              marginRight: -extraSpaceForShadow,
-              marginTop: -extraSpaceForShadow,
-            }
-          : {}),
-        padding: extraSpaceForShadow,
-        textShadowColor:
-          (isDarkMode || enableInLightMode) && !disabled ? opacity(color || inferredTextColor, shadowOpacity) : 'transparent',
-        textShadowOffset: { width: x, height: y },
-        textShadowRadius: blur,
-      },
-    ];
-  }, [blur, color, disabled, enableInLightMode, inferredTextColor, isAnimatedText, isDarkMode, shadowOpacity, x, y]);
-
-  return !IS_TEST && (IS_IOS || enableOnAndroid) ? (
-    <>
-      {isAnimatedText ? (
-        // eslint-disable-next-line react/jsx-props-no-spreading
-        <AnimatedText {...children.props} style={[children.props.style, internalTextStyle]} />
-      ) : (
-        <View style={[internalContainerStyle, containerStyle]}>
-          <Text
-            color={{ custom: 'transparent' }}
-            numberOfLines={children.props.numberOfLines}
-            size={children.props.size}
-            style={[children.props.style, internalTextStyle]}
-            weight={children.props.weight}
-          >
-            {children}
-          </Text>
-        </View>
-      )}
-    </>
-  ) : (
-    <>{children}</>
+  const { internalContainerStyle, internalPositionStyle, internalShadowStyle } = useMemo(
+    () =>
+      generateTextShadowStyles({
+        blur,
+        color,
+        disabled,
+        enableInLightMode,
+        inferredTextColor,
+        isAnimatedText,
+        isDarkMode,
+        shadowOpacity,
+        x,
+        y,
+      }),
+    [blur, color, disabled, enableInLightMode, inferredTextColor, isAnimatedText, isDarkMode, shadowOpacity, x, y]
   );
+
+  if (IS_TEST || (IS_ANDROID && !enableOnAndroid)) return children;
+
+  return isAnimatedText ? (
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <AnimatedText {...children.props} style={[internalShadowStyle, children.props.style, internalPositionStyle]} />
+  ) : (
+    <View style={[containerStyle, internalContainerStyle]}>
+      <Text
+        numberOfLines={children.props.numberOfLines}
+        color={{ custom: 'transparent' }}
+        size={children.props.size}
+        style={[internalShadowStyle, children.props.style, internalPositionStyle]}
+        weight={children.props.weight}
+      >
+        {children}
+      </Text>
+    </View>
+  );
+};
+
+interface GenerateTextShadowStylesParams {
+  blur: number;
+  color?: string;
+  disabled?: boolean;
+  enableInLightMode?: boolean;
+  inferredTextColor: string;
+  isAnimatedText: boolean;
+  isDarkMode: boolean;
+  shadowOpacity: number;
+  x: number;
+  y: number;
+}
+
+const generateTextShadowStyles = ({
+  blur,
+  color,
+  disabled,
+  enableInLightMode,
+  inferredTextColor,
+  isAnimatedText,
+  isDarkMode,
+  shadowOpacity,
+  x,
+  y,
+}: GenerateTextShadowStylesParams) => {
+  const extraSpaceForShadow = blur + Math.max(Math.abs(x), Math.abs(y));
+  return {
+    internalContainerStyle: {
+      marginBottom: -extraSpaceForShadow,
+      marginLeft: -extraSpaceForShadow,
+      marginRight: -extraSpaceForShadow,
+      marginTop: -extraSpaceForShadow,
+    },
+    internalPositionStyle: {
+      ...(isAnimatedText
+        ? {
+            marginBottom: -extraSpaceForShadow,
+            marginLeft: -extraSpaceForShadow,
+            marginRight: -extraSpaceForShadow,
+            marginTop: -extraSpaceForShadow,
+          }
+        : {}),
+      paddingBottom: extraSpaceForShadow,
+      paddingLeft: extraSpaceForShadow,
+      paddingRight: extraSpaceForShadow,
+      paddingTop: extraSpaceForShadow,
+    },
+    internalShadowStyle: {
+      textShadowColor: (isDarkMode || enableInLightMode) && !disabled ? opacity(color || inferredTextColor, shadowOpacity) : 'transparent',
+      textShadowOffset: { height: y, width: x },
+      textShadowRadius: blur,
+    },
+  };
 };

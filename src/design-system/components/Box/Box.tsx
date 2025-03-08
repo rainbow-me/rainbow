@@ -93,6 +93,11 @@ export type BoxProps = {
         background: BackgroundProviderProps['color'];
         shadow: Shadow;
       }
+    | {
+        background?: never;
+        shadow: Shadow;
+        style: ViewStyle & { backgroundColor: string };
+      }
   );
 
 type PolymorphicBox = Polymorphic.ForwardRefComponent<typeof View, BoxProps>;
@@ -274,10 +279,17 @@ export const Box = forwardRef(function Box(
 
   const style = useMemo(() => [styles, styleProp], [styles, styleProp]);
 
-  return background ? (
-    <BackgroundProvider color={background} style={style}>
+  const styleHasBackgroundColor = !!(styleProp && 'backgroundColor' in styleProp && styleProp.backgroundColor !== 'transparent');
+  const backgroundToUse = styleHasBackgroundColor && typeof styleProp.backgroundColor === 'string' ? styleProp.backgroundColor : background;
+
+  return backgroundToUse ? (
+    <BackgroundProvider color={backgroundToUse} style={style}>
       {({ backgroundColor, backgroundStyle }) => (
-        <ApplyShadow backgroundColor={backgroundColor} shadows={shadows}>
+        <ApplyShadow
+          backgroundColor={backgroundColor ?? (styleProp && 'backgroundColor' in styleProp ? styleProp.backgroundColor : undefined)}
+          shadows={shadows}
+        >
+          {/* eslint-disable-next-line react/jsx-props-no-spreading */}
           <ComponentToUse style={backgroundStyle} {...restProps} ref={ref}>
             {children}
             {borderColor || borderWidth ? (
@@ -296,6 +308,7 @@ export const Box = forwardRef(function Box(
       )}
     </BackgroundProvider>
   ) : (
+    // eslint-disable-next-line react/jsx-props-no-spreading
     <ComponentToUse style={style} {...restProps} ref={ref}>
       {children}
       {borderColor || borderWidth ? (

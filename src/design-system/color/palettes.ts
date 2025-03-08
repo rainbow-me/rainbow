@@ -694,6 +694,7 @@ export const foregroundColors: Record<ForegroundColor, ContextualColorValue<stri
  * some color modes can inherit from others, e.g. `"dark"` and `"darkTinted"`.
  */
 export function getValueForColorMode<Value>(value: Value | ContextualColorValue<Value>, colorMode: ColorMode): Value {
+  'worklet';
   if (typeof value === 'object' && value !== null && 'light' in value) {
     if (colorMode === 'darkTinted') {
       return value.darkTinted ?? value.dark;
@@ -710,8 +711,8 @@ export function getValueForColorMode<Value>(value: Value | ContextualColorValue<
 }
 
 export function getDefaultAccentColorForColorMode(colorMode: ColorMode) {
+  'worklet';
   const defaultAccentColor = backgroundColors.blue;
-
   return getValueForColorMode(defaultAccentColor, colorMode);
 }
 

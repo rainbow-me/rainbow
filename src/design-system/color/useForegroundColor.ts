@@ -1,7 +1,16 @@
 import { useContext } from 'react';
 import { AccentColorContext } from './AccentColorContext';
 import { ColorModeContext } from './ColorMode';
-import { ContextualColorValue, ForegroundColor, getDefaultAccentColorForColorMode, getValueForColorMode } from './palettes';
+import {
+  BackgroundColorValue,
+  ColorMode,
+  ContextualColorValue,
+  ForegroundColor,
+  TextColor,
+  foregroundColors,
+  getDefaultAccentColorForColorMode,
+  getValueForColorMode,
+} from './palettes';
 
 export type CustomColor<Value extends string = string> = {
   custom: Value | ContextualColorValue<Value>;
@@ -44,4 +53,22 @@ export function useForegroundColors(
  */
 export function useForegroundColor(color: ForegroundColor | 'accent' | CustomColor): string {
   return useForegroundColors([color])[0];
+}
+
+export function getColorForTheme(
+  color: ForegroundColor | TextColor | CustomColor | 'accent',
+  colorMode: ColorMode,
+  accentColor?: BackgroundColorValue | null
+): string {
+  'worklet';
+  const binaryColorMode = colorMode === 'dark' || colorMode === 'darkTinted' ? 'dark' : 'light';
+  switch (color) {
+    case 'accent':
+      return accentColor?.color ?? getDefaultAccentColorForColorMode(binaryColorMode).color;
+    default:
+      if (typeof color === 'object' && 'custom' in color) {
+        return typeof color.custom === 'string' ? color.custom : color.custom[binaryColorMode];
+      }
+      return foregroundColors[color][binaryColorMode];
+  }
 }

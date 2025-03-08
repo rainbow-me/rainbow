@@ -17,7 +17,7 @@ export const getHighContrastColor = (color: string, isDarkMode: boolean) => {
       return brightenedColor;
     } else {
       const [l, c, h] = chroma(color).lch();
-      return chroma.lch(l - Math.min(28, Math.max(0, (CONTRAST_THRESHOLD - contrast) * 24)), c, h).css();
+      return chroma.lch(l - Math.min(28, Math.max(0, (CONTRAST_THRESHOLD - contrast) * (c < 8 ? 32 : 24))), c, h).css();
     }
   } else return color;
 };

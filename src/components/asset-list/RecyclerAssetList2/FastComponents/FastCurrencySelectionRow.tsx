@@ -9,11 +9,9 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
-import { deviceUtils } from '@/utils';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { ChainId } from '@/state/backendNetworks/types';
-import { IS_TEST } from '@/env';
+import { IS_IOS, IS_TEST } from '@/env';
 
 const SafeRadialGradient = (IS_TEST ? View : RadialGradient) as typeof RadialGradient;
 
@@ -79,17 +77,16 @@ export function Info({ contextMenuProps, showFavoriteButton, theme }: InfoProps)
   );
 }
 
-const deviceWidth = deviceUtils.dimensions.width;
-
 export default React.memo(function FastCurrencySelectionRow({
   item: {
+    colors,
+    icon_url,
     native,
     balance,
     showBalance,
     showFavoriteButton,
     onPress,
     theme,
-    nativeCurrency,
     nativeCurrencySymbol,
     favorite,
     toggleFavorite,
@@ -102,9 +99,8 @@ export default React.memo(function FastCurrencySelectionRow({
     disabled,
   },
 }: FastCurrencySelectionRowProps) {
-  const { colors } = theme;
-  const { data: item } = useExternalToken({ address, chainId, currency: nativeCurrency });
-  const rowTestID = `${testID}-exchange-coin-row-${symbol ?? item?.symbol ?? ''}-${chainId || ChainId.mainnet}`;
+  const { colors: themeColors } = theme;
+  const rowTestID = `${testID}-exchange-coin-row-${symbol ?? ''}-${chainId || ChainId.mainnet}`;
   const isInfoButtonVisible = !isNativeAsset(address, chainId) && !showBalance;
 
   return (
@@ -120,9 +116,9 @@ export default React.memo(function FastCurrencySelectionRow({
           <View style={sx.iconContainer}>
             <RainbowCoinIcon
               chainId={chainId}
-              color={item?.colors?.primary || item?.colors?.fallback || undefined}
-              icon={item?.iconUrl || ''}
-              symbol={item?.symbol || symbol}
+              color={colors?.primary || colors?.fallback || undefined}
+              icon={icon_url || ''}
+              symbol={symbol}
             />
           </View>
           <View style={sx.innerContainer}>
@@ -135,8 +131,12 @@ export default React.memo(function FastCurrencySelectionRow({
                 },
               ]}
             >
-              <RNText ellipsizeMode="tail" numberOfLines={1} style={[sx.name, { color: colors.dark }, showBalance && sx.nameWithBalances]}>
-                {name ?? item?.name}
+              <RNText
+                ellipsizeMode="tail"
+                numberOfLines={1}
+                style={[sx.name, { color: themeColors.dark }, showBalance && sx.nameWithBalances]}
+              >
+                {name}
               </RNText>
               {!showBalance && (
                 <RNText
@@ -149,7 +149,7 @@ export default React.memo(function FastCurrencySelectionRow({
                     },
                   ]}
                 >
-                  {item?.symbol || symbol}
+                  {symbol}
                 </RNText>
               )}
             </View>
@@ -171,7 +171,7 @@ export default React.memo(function FastCurrencySelectionRow({
           {isInfoButtonVisible && <Info contextMenuProps={contextMenuProps} showFavoriteButton={showFavoriteButton} theme={theme} />}
           {showFavoriteButton &&
             chainId === ChainId.mainnet &&
-            (ios ? (
+            (IS_IOS ? (
               <FloatingEmojis
                 centerVertically
                 disableHorizontalMovement
@@ -247,9 +247,9 @@ const sx = StyleSheet.create({
     width: 30,
   },
   igradient: {
-    paddingBottom: ios ? 0 : 2.5,
+    paddingBottom: IS_IOS ? 0 : 2.5,
     paddingLeft: 2.5,
-    paddingTop: ios ? 1 : 0,
+    paddingTop: IS_IOS ? 1 : 0,
   },
   info: {
     paddingRight: 4,
@@ -264,7 +264,7 @@ const sx = StyleSheet.create({
   name: {
     fontSize: getFontSize(fonts.size.lmedium),
     letterSpacing: 0.5,
-    lineHeight: ios ? 16 : 17,
+    lineHeight: IS_IOS ? 16 : 17,
     ...fontWithWidth(fonts.weight.semibold),
   },
   nameWithBalances: {
@@ -289,15 +289,15 @@ const sx = StyleSheet.create({
     color: colors.yellowFavorite,
   },
   starGradient: {
-    paddingBottom: ios ? 3 : 5,
-    paddingLeft: ios ? 1 : 0,
+    paddingBottom: IS_IOS ? 3 : 5,
+    paddingLeft: IS_IOS ? 1 : 0,
     paddingTop: 3,
     width: 30,
   },
   symbol: {
     fontSize: getFontSize(fonts.size.smedium),
     letterSpacing: 0.5,
-    lineHeight: ios ? 13.5 : 16,
+    lineHeight: IS_IOS ? 13.5 : 16,
     paddingTop: 5.5,
     ...fontWithWidth(fonts.weight.medium),
   },

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useCallback, useMemo } from 'react';
 import { DerivedValue, SharedValue, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { deepEqual, shallowEqual } from '@/worklets/comparisons';

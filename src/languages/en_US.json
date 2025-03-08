@@ -3158,6 +3158,24 @@
       "show_more": "More Networks",
       "all_networks": "All Networks"
     },
+    "token_launcher": {
+      "airdrops_sheet": {
+        "claim_button_text": "Claim",
+        "empty_state_title": "No airdrops yet…",
+        "title": "Claim Rainbow Coins"
+      },
+      "cards": {
+        "airdrops": {
+          "subtitle_has_airdrops": "AVAILABLE TO CLAIM",
+          "subtitle_no_airdrops": "NO AIRDROPS YET",
+          "title": "Airdrops"
+        },
+        "launch": {
+          "line_one": "Launch\n",
+          "line_two": "your Coin"
+        }
+      }
+    },
     "done": "Done",
     "copy": "Copy",
     "paste": "Paste"

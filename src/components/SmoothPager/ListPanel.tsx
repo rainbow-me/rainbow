@@ -39,6 +39,9 @@ export const TapToDismiss = memo(function TapToDismiss() {
 
 const PANEL_INSET = 8;
 export const PANEL_WIDTH = DEVICE_WIDTH - PANEL_INSET * 2;
+export const PANEL_COLOR_DARK = globalColors.white10;
+export const PANEL_COLOR_LIGHT = '#F7F7F9';
+
 const PANEL_BORDER_RADIUS = 42;
 const LIST_SCROLL_INDICATOR_BOTTOM_INSET = { bottom: PANEL_BORDER_RADIUS };
 
