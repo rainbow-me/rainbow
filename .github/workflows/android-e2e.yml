@@ -91,10 +91,17 @@ jobs:
       - name: Install Maestro
         run: curl -fsSL "https://get.maestro.mobile.dev" | bash
 
+      - name: Setup Android Emulator
+        id: android-emulator
+        uses: ./.github/actions/android-emulator/
+        with:
+          api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
+          profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
+          ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
+
       - name: Run tests
         uses: reactivecircus/android-emulator-runner@v2
         id: e2e_test
-        continue-on-error: true
         with:
           api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
           target: google_apis
