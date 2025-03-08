@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Shareables.cpp b/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Shareables.cpp
-index 4087065..f22bd06 100644
+index 86e2f68..0bd8be7 100644
 --- a/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Shareables.cpp
 +++ b/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Shareables.cpp
 @@ -47,7 +47,12 @@ jsi::Value makeShareableClone(
@@ -48,47 +48,6 @@ index 1b556f6..8cd4fcb 100644
  #endif
      [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
    }
-diff --git a/node_modules/react-native-reanimated/src/propsAllowlists.ts b/node_modules/react-native-reanimated/src/propsAllowlists.ts
-index 39c77a1..8bcbc7e 100644
---- a/node_modules/react-native-reanimated/src/propsAllowlists.ts
-+++ b/node_modules/react-native-reanimated/src/propsAllowlists.ts
-@@ -84,6 +84,7 @@ export const PropsAllowlists: AllowlistsHolder = {
-     elevation: true,
-     fontSize: true,
-     lineHeight: true,
-+    textShadowColor: true,
-     textShadowRadius: true,
-     textShadowOffset: true,
-     letterSpacing: true,
-diff --git a/node_modules/react-native-reanimated/src/shareables.ts b/node_modules/react-native-reanimated/src/shareables.ts
-index 44e961f..1b57980 100644
---- a/node_modules/react-native-reanimated/src/shareables.ts
-+++ b/node_modules/react-native-reanimated/src/shareables.ts
-@@ -128,6 +128,7 @@ export function makeShareableCloneRecursive<T>(
-   const type = typeof value;
-   const isTypeObject = type === 'object';
-   const isTypeFunction = type === 'function';
-+  let isCacheableWorklet = false;
-   if ((isTypeObject || isTypeFunction) && value !== null) {
-     const cached = shareableMappingCache.get(value);
-     if (cached === shareableMappingFlag) {
-@@ -166,6 +167,7 @@ export function makeShareableCloneRecursive<T>(
-       } else if (isPlainJSObject(value) || isTypeFunction) {
-         toAdapt = {};
-         if (isWorkletFunction(value)) {
-+          isCacheableWorklet = true;
-           if (__DEV__) {
-             const babelVersion = value.__initData.version;
-             if (babelVersion !== undefined && babelVersion !== jsVersion) {
-@@ -275,7 +277,7 @@ Offending code was: \`${getWorkletCode(value)}\``);
-       }
-       const adapted = NativeReanimatedModule.makeShareableClone(
-         toAdapt,
--        shouldPersistRemote,
-+        shouldPersistRemote || isCacheableWorklet,
-         value
-       );
-       shareableMappingCache.set(value, adapted);
 diff --git a/node_modules/react-native-reanimated/lib/typescript/interpolateColor.d.ts b/node_modules/react-native-reanimated/lib/typescript/interpolateColor.d.ts
 index 375da59..3566819 100644
 --- a/node_modules/react-native-reanimated/lib/typescript/interpolateColor.d.ts
@@ -110,12 +69,12 @@ index 375da59..3566819 100644
  export interface InterpolateConfig {
      inputRange: readonly number[];
 diff --git a/node_modules/react-native-reanimated/src/interpolateColor.ts b/node_modules/react-native-reanimated/src/interpolateColor.ts
-index f7987b0..6ecff4b 100644
+index f7987b0..83e6c63 100644
 --- a/node_modules/react-native-reanimated/src/interpolateColor.ts
 +++ b/node_modules/react-native-reanimated/src/interpolateColor.ts
 @@ -1,4 +1,5 @@
  'use strict';
-+import { culori } from '@/worklets/oklab';
++import { culori } from './oklab';
  import {
    hsvToColor,
    RGBtoHSV,
@@ -359,3 +318,188 @@ index f7987b0..6ecff4b 100644
  }
  
  export interface InterpolateConfig {
+diff --git a/node_modules/react-native-reanimated/src/lrgb.ts b/node_modules/react-native-reanimated/src/lrgb.ts
+new file mode 100644
+index 0000000..511f65f
+--- /dev/null
++++ b/node_modules/react-native-reanimated/src/lrgb.ts
+@@ -0,0 +1,66 @@
++'use strict';
++export interface LabColor {
++  l: number;
++  a: number;
++  b: number;
++  alpha?: number;
++}
++
++export interface RGB {
++  r: number;
++  g: number;
++  b: number;
++}
++
++export interface RGBA extends RGB {
++  alpha?: number;
++}
++
++/*
++ * This code is copied from Reanimated 3.17.0, which requires RN 0.75+.
++ */
++
++const channelFromLrgb = (c = 0) => {
++  'worklet';
++  const abs = Math.abs(c);
++  if (abs > 0.0031308) {
++    return (Math.sign(c) || 1) * (1.055 * Math.pow(abs, 1 / 2.4) - 0.055);
++  }
++  return c * 12.92;
++};
++
++const convertLrgbToRgb = ({ r, g, b, alpha }: RGBA): RGBA => {
++  'worklet';
++  return {
++    r: channelFromLrgb(r),
++    g: channelFromLrgb(g),
++    b: channelFromLrgb(b),
++    alpha,
++  };
++};
++
++const channelToLrgb = (c = 0) => {
++  'worklet';
++  const abs = Math.abs(c);
++  if (abs <= 0.04045) {
++    return c / 12.92;
++  }
++  return (Math.sign(c) || 1) * Math.pow((abs + 0.055) / 1.055, 2.4);
++};
++
++const convertRgbToLrgb = ({ r, g, b, alpha }: RGBA) => {
++  'worklet';
++  return {
++    r: channelToLrgb(r),
++    g: channelToLrgb(g),
++    b: channelToLrgb(b),
++    alpha,
++  };
++};
++
++export const lrgb = {
++  convert: {
++    fromRgb: convertRgbToLrgb,
++    toRgb: convertLrgbToRgb,
++  },
++};
+diff --git a/node_modules/react-native-reanimated/src/oklab.ts b/node_modules/react-native-reanimated/src/oklab.ts
+new file mode 100644
+index 0000000..fc599e1
+--- /dev/null
++++ b/node_modules/react-native-reanimated/src/oklab.ts
+@@ -0,0 +1,66 @@
++'use strict';
++import { LabColor, RGBA, lrgb } from './lrgb';
++
++/*
++ * This code is copied from Reanimated 3.17.0, which requires RN 0.75+.
++ */
++
++function convertLrgbToOklab({ r = 0, g = 0, b = 0, alpha }: RGBA): LabColor {
++  'worklet';
++  const L = Math.cbrt(0.41222147079999993 * r + 0.5363325363 * g + 0.0514459929 * b);
++  const M = Math.cbrt(0.2119034981999999 * r + 0.6806995450999999 * g + 0.1073969566 * b);
++  const S = Math.cbrt(0.08830246189999998 * r + 0.2817188376 * g + 0.6299787005000002 * b);
++
++  return {
++    l: 0.2104542553 * L + 0.793617785 * M - 0.0040720468 * S,
++    a: 1.9779984951 * L - 2.428592205 * M + 0.4505937099 * S,
++    b: 0.0259040371 * L + 0.7827717662 * M - 0.808675766 * S,
++    alpha,
++  };
++}
++
++function convertRgbToOklab(rgb: RGBA) {
++  'worklet';
++  const lrgbColor = lrgb.convert.fromRgb(rgb);
++  const result = convertLrgbToOklab(lrgbColor);
++  if (rgb.r === rgb.b && rgb.b === rgb.g) {
++    result.a = 0;
++    result.b = 0;
++  }
++  return result;
++}
++
++function convertOklabToLrgb({ l = 0, a = 0, b = 0, alpha }: LabColor): RGBA {
++  'worklet';
++  /* eslint-disable @typescript-eslint/no-loss-of-precision */
++  const L = Math.pow(l * 0.99999999845051981432 + 0.39633779217376785678 * a + 0.21580375806075880339 * b, 3);
++  const M = Math.pow(l * 1.0000000088817607767 - 0.1055613423236563494 * a - 0.063854174771705903402 * b, 3);
++  const S = Math.pow(l * 1.0000000546724109177 - 0.089484182094965759684 * a - 1.2914855378640917399 * b, 3);
++  /* eslint-enable */
++
++  return {
++    r: +4.076741661347994 * L - 3.307711590408193 * M + 0.230969928729428 * S,
++    g: -1.2684380040921763 * L + 2.6097574006633715 * M - 0.3413193963102197 * S,
++    b: -0.004196086541837188 * L - 0.7034186144594493 * M + 1.7076147009309444 * S,
++    alpha,
++  };
++}
++
++function convertOklabToRgb(labColor: LabColor): RGBA {
++  'worklet';
++  const roundChannel = (channel: number) => Math.ceil(channel * 100_000) / 100_000;
++
++  const lrgbColor = convertOklabToLrgb(labColor);
++  const rgbColor = lrgb.convert.toRgb(lrgbColor);
++  rgbColor.r = roundChannel(rgbColor.r);
++  rgbColor.g = roundChannel(rgbColor.g);
++  rgbColor.b = roundChannel(rgbColor.b);
++  return rgbColor;
++}
++
++export const culori = {
++  convert: {
++    fromRgb: convertRgbToOklab,
++    toRgb: convertOklabToRgb,
++  },
++};
+diff --git a/node_modules/react-native-reanimated/src/propsAllowlists.ts b/node_modules/react-native-reanimated/src/propsAllowlists.ts
+index 39c77a1..8bcbc7e 100644
+--- a/node_modules/react-native-reanimated/src/propsAllowlists.ts
++++ b/node_modules/react-native-reanimated/src/propsAllowlists.ts
+@@ -84,6 +84,7 @@ export const PropsAllowlists: AllowlistsHolder = {
+     elevation: true,
+     fontSize: true,
+     lineHeight: true,
++    textShadowColor: true,
+     textShadowRadius: true,
+     textShadowOffset: true,
+     letterSpacing: true,
+diff --git a/node_modules/react-native-reanimated/src/shareables.ts b/node_modules/react-native-reanimated/src/shareables.ts
+index 44e961f..1b57980 100644
+--- a/node_modules/react-native-reanimated/src/shareables.ts
++++ b/node_modules/react-native-reanimated/src/shareables.ts
+@@ -128,6 +128,7 @@ export function makeShareableCloneRecursive<T>(
+   const type = typeof value;
+   const isTypeObject = type === 'object';
+   const isTypeFunction = type === 'function';
++  let isCacheableWorklet = false;
+   if ((isTypeObject || isTypeFunction) && value !== null) {
+     const cached = shareableMappingCache.get(value);
+     if (cached === shareableMappingFlag) {
+@@ -166,6 +167,7 @@ export function makeShareableCloneRecursive<T>(
+       } else if (isPlainJSObject(value) || isTypeFunction) {
+         toAdapt = {};
+         if (isWorkletFunction(value)) {
++          isCacheableWorklet = true;
+           if (__DEV__) {
+             const babelVersion = value.__initData.version;
+             if (babelVersion !== undefined && babelVersion !== jsVersion) {
+@@ -275,7 +277,7 @@ Offending code was: \`${getWorkletCode(value)}\``);
+       }
+       const adapted = NativeReanimatedModule.makeShareableClone(
+         toAdapt,
+-        shouldPersistRemote,
++        shouldPersistRemote || isCacheableWorklet,
+         value
+       );
+       shareableMappingCache.set(value, adapted);
