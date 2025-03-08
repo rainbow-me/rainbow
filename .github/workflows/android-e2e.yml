@@ -111,4 +111,6 @@ jobs:
           disable-animations: true
           profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
           ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
-          script: ./scripts/e2e.sh
+          script: |
+            export PATH="$PATH:$HOME/.maestro/bin"
+            ./scripts/e2e.sh
