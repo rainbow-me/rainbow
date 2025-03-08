@@ -1,7 +1,6 @@
-import { BlurView } from '@react-native-community/blur';
-
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
 import { useSharedValue } from 'react-native-reanimated';
 
 import useWallets from '../../hooks/useWallets';
@@ -28,15 +27,15 @@ import Spinner from '@/components/Spinner';
 import { delay } from '@/utils/delay';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { UniqueAsset } from '@/entities';
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { PoapMintError } from '@/utils/poaps';
 import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
 
 const BackgroundBlur = styled(BlurView).attrs({
-  blurAmount: 100,
-  blurType: 'light',
+  blurIntensity: 100,
+  blurStyle: 'light',
 })({
   ...position.coverAsObject,
 });
@@ -60,7 +59,7 @@ const BlurWrapper = styled(View).attrs({
   overflow: 'hidden',
   position: 'absolute',
   width: ({ width }: BlurWrapperProps) => width,
-  ...(android ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
+  ...(IS_ANDROID ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
 });
 
 interface PoapSheetProps {
@@ -189,7 +188,7 @@ const PoapSheet = () => {
         await claimPoapByQrHash();
       }
     }
-  }, [claimPoapByQrHash, claimPoapBySecret, claimStatus, goBack, navigate, nft, poapMintType]);
+  }, [claimPoapByQrHash, claimPoapBySecret, claimStatus, navigate, nft, poapMintType]);
 
   useEffect(() => {
     const nft = nfts.find(item => item.image_original_url === poapEvent.imageUrl);
@@ -217,7 +216,7 @@ const PoapSheet = () => {
 
   return (
     <>
-      {ios && (
+      {IS_IOS && (
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
             <ImgixImage
@@ -231,7 +230,7 @@ const PoapSheet = () => {
         </BlurWrapper>
       )}
       <SlackSheet
-        backgroundColor={isDarkMode ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})` : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`}
+        backgroundColor={isDarkMode ? `rgba(22, 22, 22, ${IS_IOS ? 0.4 : 1})` : `rgba(26, 26, 26, ${IS_IOS ? 0.4 : 1})`}
         height={'100%'}
         ref={sheetRef}
         scrollEnabled
