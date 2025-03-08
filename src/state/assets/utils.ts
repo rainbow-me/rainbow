@@ -23,7 +23,11 @@ import { UserAssetsState, UserAssetsParams } from './types';
 import { userAssetsStore, useUserAssetsStore } from './userAssets';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 
-const USER_ASSETS_TIMEOUT_DURATION = time.seconds(10);
+// CHANGE THIS DO NOT LEAVE THIS IN THE PROJECT THIS NEEDS TO BE RETURNED BACK TO A SANE TIMEOUT DURATION
+// CHANGE THIS DO NOT LEAVE THIS IN THE PROJECT THIS NEEDS TO BE RETURNED BACK TO A SANE TIMEOUT DURATION
+// CHANGE THIS DO NOT LEAVE THIS IN THE PROJECT THIS NEEDS TO BE RETURNED BACK TO A SANE TIMEOUT DURATION
+// CHANGE THIS DO NOT LEAVE THIS IN THE PROJECT THIS NEEDS TO BE RETURNED BACK TO A SANE TIMEOUT DURATION
+const USER_ASSETS_TIMEOUT_DURATION = time.seconds(60);
 
 // ============ Fetch Utils ==================================================== //
 
