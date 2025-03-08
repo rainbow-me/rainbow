@@ -39,7 +39,7 @@ import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, us
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useDebouncedCallback } from 'use-debounce';
 import { NavigationSteps } from './useSwapNavigation';
-import { deepEqualWorklet } from '@/worklets/comparisons';
+import { deepEqual } from '@/worklets/comparisons';
 import { analyticsTrackQuoteFailed } from './analyticsTrackQuoteFailed';
 
 const REMOTE_CONFIG = getRemoteConfig();
@@ -831,7 +831,7 @@ export function useSwapInputsController({
       values: inputValues.value,
     }),
     (current, previous) => {
-      if (previous && !deepEqualWorklet(current, previous)) {
+      if (previous && !deepEqual(current, previous)) {
         // Handle updating input values based on the input method
         if (inputMethod.value === 'slider' && internalSelectedInputAsset.value && current.sliderXPosition !== previous.sliderXPosition) {
           // If the slider position changes

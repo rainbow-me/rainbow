@@ -12,6 +12,7 @@ export { default as useAppVersion } from './useAppVersion';
 export { default as useAsset } from './useAsset';
 export { default as useBiometryType } from './useBiometryType';
 export { default as useBooleanState } from './useBooleanState';
+export { useCleanup } from './useCleanup';
 export { default as useClipboard } from './useClipboard';
 export { default as useCoinListEdited } from './useCoinListEdited';
 export { default as useCoinListEditOptions, useCoinListFinishEditingOptions } from './useCoinListEditOptions';
