@@ -29,6 +29,9 @@ import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
 import walletTypes from '@/helpers/walletTypes';
+import { NavbarOverlay } from './NavbarOverlay';
+import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+import { ScrollView } from 'react-native-gesture-handler';
 
 enum WalletLoadingStates {
   IDLE = 0,
@@ -165,29 +168,36 @@ function WalletScreen() {
 
   const { highContrastAccentColor } = useAccountAccentColor();
 
+  const position = useSharedValue(0);
+  const scrollHandler = useAnimatedScrollHandler(event => {
+    position.value = event.contentOffset.y;
+  });
+
   return (
     <Box as={Page} flex={1} testID="wallet-screen">
       <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
-        {/* @ts-expect-error JavaScript component */}
-        <AssetList
+        <NavbarOverlay position={position} />
+        <Animated.ScrollView showsVerticalScrollIndicator={false} onScroll={scrollHandler} style={{ flex: 1 }}>
+          {/* Wallet components HERE */}
+          {/* 1. Profile & Name / Balance */}
+          {/* 2. Action Buttons */}
+          {/* 3. Asset list */}
+          {/* 4. Claimables */}
+          {/* 5. Positions */}
+          {/* 6. Collectibles */}
+        </Animated.ScrollView>
+        {/* <AssetList
           accentColor={highContrastAccentColor}
           disableRefreshControl={isLoadingUserAssetsAndAddress || isLoadingBalance}
           isLoading={IS_ANDROID && (isLoadingUserAssetsAndAddress || isLoadingBalance)}
           isWalletEthZero={isWalletEthZero}
           network={currentNetwork}
           walletBriefSectionsData={walletBriefSectionsData}
-        />
+        /> */}
       </Box>
       <ToastPositionContainer>
         <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" testID="address-copied-toast" />
       </ToastPositionContainer>
-
-      {/* NOTE: The components below render null and are solely for keeping react-query and Zustand in sync */}
-      <RemoteCardsSync />
-      <RemotePromoSheetSync />
-
-      {/* NOTE: This component listens for Mobile Wallet Protocol requests and handles them */}
-      <MobileWalletProtocolListener />
     </Box>
   );
 }

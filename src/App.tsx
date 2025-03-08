@@ -39,6 +39,9 @@ import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
 import { getAndroidBottomInset } from './utils/deviceUtils';
+import { MobileWalletProtocolListener } from './components/MobileWalletProtocolListener';
+import { RemoteCardsSync } from './state/sync/RemoteCardsSync';
+import { RemotePromoSheetSync } from './state/sync/RemotePromoSheetSync';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -83,6 +86,9 @@ function App({ walletReady }: AppProps) {
       <NotificationsHandler walletReady={walletReady} />
       <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
       <BackupsSync />
+      <MobileWalletProtocolListener />
+      <RemoteCardsSync />
+      <RemotePromoSheetSync />
       <AbsolutePortalRoot />
     </>
   );

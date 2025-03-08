@@ -1,84 +1,25 @@
 import React, { useMemo } from 'react';
-import { Animated as RNAnimated, View } from 'react-native';
+import { View } from 'react-native';
+import Animated, { interpolate, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useMemoOne } from 'use-memo-one';
-import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
-import RawMemoRecyclerAssetList from './core/RawRecyclerList';
-import { StickyHeaderManager } from './core/StickyHeaders';
-import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
-import { UniqueAsset } from '@/entities';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { ProfileNameRow } from './profile-header/ProfileNameRow';
+import { ProfileNameRow } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileNameRow';
 import AndroidContextMenu from '@/components/context-menu/ContextMenu.android';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { analytics } from '@/analytics';
 import lang from 'i18n-js';
 import { IS_ANDROID } from '@/env';
+import { useAccountAccentColor } from '@/hooks';
 
-export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
-
-function RecyclerAssetList({
-  accentColor,
-  disablePullDownToRefresh,
-  externalAddress,
-  onPressUniqueToken,
-  type = 'wallet',
-  walletBriefSectionsData,
-}: {
-  accentColor?: string;
-  disablePullDownToRefresh?: boolean;
-  /** An "external address" is an address that is not the current account address. */
-  externalAddress?: string;
-  onPressUniqueToken?: (asset: UniqueAsset) => void;
-  type?: AssetListType;
-  walletBriefSectionsData: any[];
-}) {
-  const { memoizedResult: briefSectionsData, additionalData } = useMemoBriefSectionData({
-    briefSectionsData: walletBriefSectionsData,
-    externalAddress,
-    type,
-  });
-
-  const insets = useSafeAreaInsets();
-
-  const position = useMemoOne(() => new RNAnimated.Value(type === 'wallet' ? -insets.top : 0), []);
-
-  const extendedState = useMemo(
-    () => ({ additionalData, externalAddress, onPressUniqueToken }),
-    [additionalData, externalAddress, onPressUniqueToken]
-  );
-
-  return (
-    <RecyclerAssetListScrollPositionContext.Provider value={position}>
-      {type === 'wallet' && <NavbarOverlay accentColor={accentColor} position={position} />}
-      <StickyHeaderManager yOffset={ios ? navbarHeight + insets.top - 8 : 100}>
-        <RawMemoRecyclerAssetList
-          briefSectionsData={briefSectionsData}
-          disablePullDownToRefresh={!!disablePullDownToRefresh}
-          extendedState={extendedState}
-          scrollIndicatorInsets={{
-            bottom: insets.bottom + 14,
-            top: 132,
-          }}
-          type={type}
-        />
-      </StickyHeaderManager>
-    </RecyclerAssetListScrollPositionContext.Provider>
-  );
-}
-
-export default React.memo(RecyclerAssetList);
-
-// //////////////////////////////////////////////////////////
-
-export function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
+export function NavbarOverlay({ position }: { position: SharedValue<number> }) {
   const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
+  const { highContrastAccentColor } = useAccountAccentColor();
 
   const handlePressQRCode = React.useCallback(() => {
     analytics.track('Tapped "My QR Code"', {
@@ -101,50 +42,23 @@ export function NavbarOverlay({ accentColor, position }: { accentColor?: string;
   }, [navigate]);
 
   const yOffset = IS_ANDROID ? 80 : 0;
-  const shadowOpacityStyle = useMemo(
-    () => ({
-      shadowOpacity: position!.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [0, yOffset, yOffset + 19],
-        outputRange: [0, 0, isDarkMode ? 0.2 : 1],
-      }),
-    }),
-    [isDarkMode, position, yOffset]
-  );
-  const animatedStyle = useMemo(
-    () => ({
-      opacity: position!.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [0, yOffset, yOffset + 38],
-        outputRange: [0, 1, 1],
-      }),
-      shadowOpacity: position!.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [0, yOffset, yOffset + 19],
-        outputRange: [0, 0, isDarkMode ? 0.2 : 0],
-      }),
-      transform: [
-        {
-          translateY: position!.interpolate({
-            extrapolate: 'clamp',
-            inputRange: [0, yOffset, yOffset + 38],
-            outputRange: [0, 24, 0],
-          }),
-        },
-      ],
-    }),
-    [isDarkMode, position, yOffset]
-  );
-  const walletNameStyle = useMemo(
-    () => ({
-      opacity: position!.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [0, yOffset, yOffset + 38],
-        outputRange: [0, 0, 1],
-      }),
-    }),
-    [position, yOffset]
-  );
+  const shadowOpacityStyle = useAnimatedStyle(() => ({
+    shadowOpacity: interpolate(position.value, [0, yOffset, yOffset + 19], [0, 0, isDarkMode ? 0.2 : 1]),
+  }));
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(position.value, [0, yOffset, yOffset + 38], [0, 1, 1]),
+    shadowOpacity: interpolate(position.value, [0, yOffset, yOffset + 19], [0, 0, isDarkMode ? 0.2 : 0]),
+    transform: [
+      {
+        translateY: interpolate(position.value, [0, yOffset, yOffset + 38], [0, 24, 0]),
+      },
+    ],
+  }));
+
+  const walletNameStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(position.value, [0, yOffset, yOffset + 38], [0, 0, 1]),
+  }));
 
   // ////////////////////////////////////////////////////
   // Context Menu
@@ -189,13 +103,11 @@ export function NavbarOverlay({ accentColor, position }: { accentColor?: string;
   );
 
   return (
-    <Box
-      as={RNAnimated.View}
+    <Animated.View
       style={[
         {
           shadowColor: isDarkMode ? colors.shadowBlack : colors.rowDividerExtraLight,
           shadowOffset: { width: 0, height: isDarkMode ? 4 : 1 },
-          // shadowOpacity: isDarkMode ? 0.4 : 0.04,
           shadowRadius: isDarkMode ? 20 : 0,
           zIndex: 1,
         },
@@ -203,7 +115,7 @@ export function NavbarOverlay({ accentColor, position }: { accentColor?: string;
       ]}
     >
       <Box
-        as={RNAnimated.View}
+        as={Animated.View}
         background="surfacePrimary"
         style={[
           {
@@ -212,7 +124,6 @@ export function NavbarOverlay({ accentColor, position }: { accentColor?: string;
             position: 'absolute',
             shadowColor: colors.shadowBlack,
             shadowOffset: { width: 0, height: 1 },
-            // shadowOpacity: isDarkMode ? 0.4 : 0.04,
             shadowRadius: 3,
             top: navbarHeight + insets.top - 24,
           },
@@ -234,7 +145,7 @@ export function NavbarOverlay({ accentColor, position }: { accentColor?: string;
           hasStatusBarInset
           leftComponent={
             <Navbar.Item onPress={handlePressQRScanner}>
-              <Navbar.TextIcon color={accentColor as string} icon="􀎹" />
+              <Navbar.TextIcon color={highContrastAccentColor} icon="􀎹" />
             </Navbar.Item>
           }
           rightComponent={
@@ -249,14 +160,14 @@ export function NavbarOverlay({ accentColor, position }: { accentColor?: string;
               >
                 <View>
                   <Navbar.Item>
-                    <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
+                    <Navbar.TextIcon color={highContrastAccentColor} icon="􀍠" />
                   </Navbar.Item>
                 </View>
               </AndroidContextMenu>
             ) : (
               <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
                 <Navbar.Item testID={'settings-menu'}>
-                  <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
+                  <Navbar.TextIcon color={highContrastAccentColor} icon="􀍠" />
                 </Navbar.Item>
               </ContextMenuButton>
             )
@@ -264,7 +175,7 @@ export function NavbarOverlay({ accentColor, position }: { accentColor?: string;
           titleComponent={
             <Box
               alignItems="center"
-              as={RNAnimated.View}
+              as={Animated.View}
               height={{ custom: navbarHeight }}
               justifyContent="center"
               style={[walletNameStyle, { alignSelf: 'center', bottom: 2 }]}
@@ -274,6 +185,6 @@ export function NavbarOverlay({ accentColor, position }: { accentColor?: string;
           }
         />
       </Box>
-    </Box>
+    </Animated.View>
   );
 }
