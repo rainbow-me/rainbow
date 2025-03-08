@@ -1,16 +1,18 @@
 import React, { useCallback } from 'react';
+import { StyleSheet } from 'react-native';
 import * as i18n from '@/languages';
 import { Box, Text, TextIcon } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'react-native-blur-view';
 import { useNavigation } from '@/navigation';
 import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { useAccountProfile } from '@/hooks';
+import { useAccountProfile, useDimensions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { showActionSheetWithOptions } from '@/utils';
 import { IS_IOS } from '@/env';
+import { BlurGradient } from '@/components/blur/BlurGradient';
 
 const EXIT_BUTTON_SIZE = 36;
 // padding top + exit button + inner padding + padding bottom + blur padding
@@ -18,10 +20,13 @@ export const TOKEN_LAUNCHER_HEADER_HEIGHT = 20 + 36 + 8 + 12 + 12;
 
 export function TokenLauncherHeader() {
   const navigation = useNavigation();
+  const { width: deviceWidth } = useDimensions();
   const { accountColor, accountImage, accountAddress } = useAccountProfile();
   const hasEnteredAnyInfo = useTokenLauncherStore(state => state.hasEnteredAnyInfo);
   const step = useTokenLauncherStore(state => state.step);
   const setStep = useTokenLauncherStore(state => state.setStep);
+  const imageUri = useTokenLauncherStore(state => state.imageUri);
+
   let title = '';
   if (step === NavigationSteps.INFO) {
     title = i18n.t(i18n.l.token_launcher.header.new_coin);
@@ -55,26 +60,23 @@ export function TokenLauncherHeader() {
     <Box
       position="absolute"
       top="0px"
-      width="full"
+      width={'full'}
       paddingHorizontal="20px"
       paddingTop="20px"
       paddingBottom="12px"
       height={TOKEN_LAUNCHER_HEADER_HEIGHT}
       zIndex={2}
     >
-      {/* TODO: convert to new blur view when available */}
-      {/* <BlurView
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-        }}
-        blurType="chromeMaterialDark"
-        blurAmount={12}
-        reducedTransparencyFallbackColor="rgba(255, 255, 255, 0.06)"
-      /> */}
+      {imageUri && (
+        <BlurGradient
+          height={TOKEN_LAUNCHER_HEADER_HEIGHT}
+          width={deviceWidth}
+          fadeTo="top"
+          intensity={12}
+          style={[StyleSheet.absoluteFill]}
+        />
+      )}
+
       <Box flexDirection="row" alignItems="center" justifyContent="space-between" padding="4px">
         {step === NavigationSteps.INFO && (
           <ButtonPressAnimation onPress={() => navigation.navigate(Routes.CHANGE_WALLET_SHEET, { hideReadOnlyWallets: true })}>
@@ -104,7 +106,6 @@ export function TokenLauncherHeader() {
         {step === NavigationSteps.INFO && (
           <ButtonPressAnimation onPress={handlePressExit}>
             <Box
-              as={IS_IOS ? BlurView : Box}
               borderWidth={THICK_BORDER_WIDTH}
               alignItems="center"
               justifyContent="center"
@@ -112,8 +113,8 @@ export function TokenLauncherHeader() {
               height={EXIT_BUTTON_SIZE}
               backgroundColor="fillSecondary"
               borderRadius={EXIT_BUTTON_SIZE / 2}
-              blurAmount={12}
             >
+              <BlurView blurStyle="light" blurIntensity={10} style={StyleSheet.absoluteFill} />
               <TextIcon containerSize={EXIT_BUTTON_SIZE} size="icon 16px" weight="heavy" color="labelSecondary">
                 {'􀆄'}
               </TextIcon>

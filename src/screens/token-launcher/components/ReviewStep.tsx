@@ -15,10 +15,10 @@ import { LINK_SETTINGS } from './LinksSection';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT } from './TokenLauncherHeader';
 import FastImage from 'react-native-fast-image';
-import { BlurView } from '@react-native-community/blur';
+// import { BlurView } from 'react-native-blur-view';
 import { isAddress } from '@ethersproject/address';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID } from '@/env';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
 const TOTAL_COST_PILL_HEIGHT = 52;
@@ -182,10 +182,9 @@ function TotalCostPill() {
   const totalCost = extraBuyAmount * chainNativeAssetNativePrice;
   const formattedTotalCost = convertAmountToNativeDisplay(totalCost, nativeCurrency, 2, false, totalCost >= 10000);
 
-  // TODO: to give a shadow you need a solid color background, which defeats the purpose of the blurview
+  // TODO: This is supposed to be a blurview, but to give a shadow you need a solid color background, which defeats the purpose of the blurview
   return (
     <Box
-      as={IS_IOS ? BlurView : Box}
       height={TOTAL_COST_PILL_HEIGHT}
       background={'surfacePrimary'}
       flexDirection="row"
@@ -196,7 +195,6 @@ function TotalCostPill() {
       borderRadius={26}
       borderWidth={FIELD_BORDER_WIDTH}
       borderColor={{ custom: accentColors.opacity10 }}
-      blurAmount={24}
       shadow={{
         custom: {
           ios: [{ x: 0, y: 20, blur: 30, color: 'shadowFar', opacity: 0.3 }],

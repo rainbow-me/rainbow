@@ -40,18 +40,15 @@ export function TokenLogo() {
       const uri = result.assets[0].uri;
       setImageUri(uri);
 
-      // Start timer for upload
       const startTime = Date.now();
       const url = await upload(uri);
       const uploadTime = Date.now() - startTime;
 
       console.log(`Image upload took ${uploadTime}ms`);
 
+      // if no url is returned the upload function throws an error, this is just a sanity check
       if (url) {
         setImageUrl(url);
-      } else {
-        // TODO: log & show error
-        console.error('Failed to upload image', { uploadTime });
       }
     }
   }, [setImageUri, setImageUrl, upload]);
@@ -136,7 +133,7 @@ export function TokenLogo() {
       </ButtonPressAnimation>
 
       {error && (
-        <Box paddingTop={'12px'}>
+        <Box gap={8} paddingTop={'12px'}>
           <Text align="center" size="13pt" color={'red'} weight="medium">
             {i18n.t(i18n.l.token_launcher.image_upload_error.title)}
           </Text>

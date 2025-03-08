@@ -68,7 +68,6 @@ async function airdropSuggestionsQueryFunction({ address }: AirdropSuggestionsPa
   const url = `/v1/airdrop/${address}/suggestions`;
   try {
     const airdropSuggestions = await tokenLauncherHttp.get<AirdropSuggestions>(url, { abortController });
-    console.log('airdropSuggestions', JSON.stringify(airdropSuggestions.data.data.suggestedUsers, null, 2));
     return airdropSuggestions.data;
   } catch (e) {
     logger.error(new RainbowError('[airdropSuggestionsQueryFunction]: Airdrop suggestions failed'), { url });

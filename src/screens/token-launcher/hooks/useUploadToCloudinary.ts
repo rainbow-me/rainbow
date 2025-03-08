@@ -9,7 +9,11 @@ export function useUploadToCloudinary() {
   const upload = async (uri: string) => {
     setIsUploading(true);
     try {
-      return await uploadImageToCloudinary(uri);
+      const url = await uploadImageToCloudinary(uri);
+      if (!url) {
+        throw new Error('Failed to upload image');
+      }
+      return url;
     } catch (e) {
       const error = e as Error;
       logger.error(new RainbowError('[useUploadToCloudinary]: uploadImageToCloudinary failed'), {
