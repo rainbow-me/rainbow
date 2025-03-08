@@ -22,98 +22,64 @@ import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar'
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Skeleton } from '@/screens/points/components/Skeleton';
-import { ScrollView } from 'react-native';
+import { FlatList, ScrollView } from 'react-native';
 import { colors } from '@/styles';
+import {
+  AirdropCohort,
+  AirdropSuggestedUser,
+  AirdropPersonalizedCohort,
+  useAirdropSuggestionsStore,
+} from '../state/airdropSuggestionsStore';
+import { ImgixImage } from '@/components/images';
 
-const airdropSuggestions = {
-  meta: {
-    maxUserAllocations: 22025,
-  },
-  data: {
-    predefinedCohorts: [
-      {
-        id: '0_rainbow-users',
-        Name: 'All Rainbow Users',
-        icons: {
-          iconURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png',
-        },
-        totalUsers: 1400000,
-      },
-      {
-        id: '1_top-rainbow-points',
-        Name: 'Top 1000 Rainbow Points',
-        icons: {
-          iconURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png',
-        },
-        totalUsers: 1000,
-      },
-      {
-        id: '2_top-farcaster',
-        Name: 'Top 1000 Farcaster Users',
-        icons: {
-          iconURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1697055518/dapps/ingested_www.farcaster.xyz.png',
-          pfp1URL:
-            'https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/341d47e1-f746-4f5c-8fbe-d9e56fa66100/anim=false,fit=contain,f=auto,w=336',
-          pfp2URL: 'https://wrpcd.net/cdn-cgi/image/anim=false,fit=contain,f=auto,w=336/https%3A%2F%2Fi.imgur.com%2F4t3zVHj.jpg',
-        },
-        totalUsers: 1000,
-      },
-    ],
-    personalizedCohorts: [
-      {
-        id: '0_farcaster-followers',
-        Name: 'Farcaster Followers',
-        icons: {
-          iconURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1697055518/dapps/ingested_www.farcaster.xyz.png',
-          pfp1URL:
-            'https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/3f0c4a24-9cf9-41f2-52ba-22862ae80a00/anim=false,fit=contain,f=auto,w=336',
-        },
-        totalUsers: 1,
-        addresses: [
-          {
-            username: 'sulkian',
-            address: '0x5dfcf95b7d689c11197d1576ccd505f1f3188319',
-            pfpURL:
-              'https://wrpcd.net/cdn-cgi/imagedelivery/BXluQx4ige9GuW0Ia56BHw/3f0c4a24-9cf9-41f2-52ba-22862ae80a00/anim=false,fit=contain,f=auto,w=336',
-            type: 'Farcaster',
-            typePfpURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1697055518/dapps/ingested_www.farcaster.xyz.png',
-          },
-        ],
-      },
-    ],
-    suggested: [
-      {
-        username: 'sulkian',
-        address: '0x5dfcf95b7d689c11197d1576ccd505f1f3188319',
-        pfpURL:
-          'https://rainbowme-res.cloudinary.com/image/upload/v1680723839/ens-marquee/eafa8f2a4702a08838eb/0x96a77560146501eAEB5e6D5B7d8DD1eD23DEfa23.png',
-        type: 'Farcaster',
-        typePfpURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1697055518/dapps/ingested_www.farcaster.xyz.png',
-      },
-      {
-        username: 'ihateethereum.eth',
-        address: '0x4888c0030b743c17C89A8AF875155cf75dCfd1E1',
-        pfpURL:
-          'https://rainbowme-res.cloudinary.com/image/upload/v1680723839/ens-marquee/eafa8f2a4702a08838eb/0x3C6aEFF92b4B35C2e1b196B57d0f8FFB56884A17.jpg',
-        type: 'ENS',
-        typePfpURL: 'https://rainbowme-res.cloudinary.com/image/upload/v1688069140/dapps/ingested_ens.domains.png',
-      },
-    ],
-  },
-};
-
-type SuggestedUser = {
-  username?: string;
-  address: string;
-  pfpURL: string;
-  type: 'Farcaster' | 'ENS' | 'Rainbow';
-  typePfpURL: string;
-};
-
-function SuggestedUsers({ suggestions }: { suggestions: SuggestedUser[] }) {
+function SuggestedUsers({ users }: { users: AirdropSuggestedUser[] }) {
   const { accentColors } = useTokenLauncherContext();
   const addOrEditAirdropAddress = useTokenLauncherStore(state => state.addOrEditAirdropAddress);
   const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
+
+  const renderSuggestedUser = (user: AirdropSuggestedUser) => {
+    const isExistingRecipient = airdropRecipients.some(recipient => recipient.id === user.address);
+
+    return (
+      <ButtonPressAnimation
+        key={user.address}
+        disabled={isExistingRecipient}
+        onPress={() =>
+          addOrEditAirdropAddress({
+            id: user.address,
+            address: user.address,
+            imageUrl: user.pfpURL,
+            isValid: true,
+            isSuggested: true,
+            label: user.username,
+          })
+        }
+      >
+        <Box
+          backgroundColor={accentColors.opacity6}
+          borderWidth={FIELD_BORDER_WIDTH}
+          borderColor={{ custom: accentColors.opacity3 }}
+          paddingHorizontal={'16px'}
+          paddingVertical={'12px'}
+          flexDirection="row"
+          alignItems="center"
+          gap={12}
+          borderRadius={FIELD_BORDER_RADIUS}
+          style={{ opacity: isExistingRecipient ? 0.5 : 1 }}
+        >
+          <Box>
+            <ImgixImage source={{ uri: user.pfpURL }} style={{ width: 28, height: 28, borderRadius: 14 }} />
+            <Box style={{ position: 'absolute', bottom: -14 / 4, right: -14 / 4 }}>
+              <FastImage source={{ uri: user.typeIconURL }} style={{ width: 14, height: 14, borderRadius: 7 }} />
+            </Box>
+          </Box>
+          <Text color={{ custom: accentColors.opacity100 }} size="15pt" weight="heavy">
+            {user.username ?? user.address}
+          </Text>
+        </Box>
+      </ButtonPressAnimation>
+    );
+  };
 
   return (
     <Box gap={12}>
@@ -121,65 +87,33 @@ function SuggestedUsers({ suggestions }: { suggestions: SuggestedUser[] }) {
         {i18n.t(i18n.l.token_launcher.airdrop.suggested_users)}
       </Text>
       <Bleed horizontal={'20px'}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingLeft: 20 }}>
-          {suggestions.map(suggestion => {
-            const isExistingRecipient = airdropRecipients.some(recipient => recipient.id === suggestion.address);
-
-            return (
-              <ButtonPressAnimation
-                key={suggestion.address}
-                disabled={isExistingRecipient}
-                onPress={() =>
-                  addOrEditAirdropAddress({
-                    id: suggestion.address,
-                    address: suggestion.address,
-                    imageUrl: suggestion.pfpURL,
-                    isValid: true,
-                    isSuggested: true,
-                    label: suggestion.username,
-                  })
-                }
-              >
-                <Box
-                  backgroundColor={accentColors.opacity6}
-                  borderWidth={FIELD_BORDER_WIDTH}
-                  borderColor={{ custom: accentColors.opacity3 }}
-                  paddingHorizontal={'16px'}
-                  paddingVertical={'12px'}
-                  flexDirection="row"
-                  alignItems="center"
-                  gap={12}
-                  borderRadius={FIELD_BORDER_RADIUS}
-                  style={{ opacity: isExistingRecipient ? 0.5 : 1 }}
-                >
-                  <Box>
-                    <FastImage source={{ uri: suggestion.pfpURL }} style={{ width: 28, height: 28, borderRadius: 14 }} />
-                    <Box style={{ position: 'absolute', bottom: -14 / 4, right: -14 / 4 }}>
-                      <FastImage source={{ uri: suggestion.typePfpURL }} style={{ width: 14, height: 14, borderRadius: 7 }} />
-                    </Box>
-                  </Box>
-                  <Text color={{ custom: accentColors.opacity100 }} size="15pt" weight="heavy">
-                    {suggestion.username ?? suggestion.address}
-                  </Text>
-                </Box>
-              </ButtonPressAnimation>
-            );
-          })}
-        </ScrollView>
+        <FlatList
+          data={users}
+          renderItem={({ item }) => renderSuggestedUser(item)}
+          keyExtractor={item => item.address}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 8, paddingLeft: 20 }}
+          initialNumToRender={10}
+        />
       </Bleed>
     </Box>
   );
 }
 
-function AirdropGroups() {
+function AirdropGroups({
+  predefinedCohorts,
+  personalizedCohorts,
+}: {
+  predefinedCohorts: AirdropCohort[];
+  personalizedCohorts: AirdropPersonalizedCohort[];
+}) {
   const { accentColors } = useTokenLauncherContext();
 
   const addAirdropGroup = useTokenLauncherStore(state => state.addAirdropGroup);
   const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
 
-  // TODO: will come from backend / sdk
-  const airdropSuggestionData = airdropSuggestions.data;
-  const airdropGroups = [...airdropSuggestionData.predefinedCohorts, ...airdropSuggestionData.personalizedCohorts];
+  const airdropGroups = [...predefinedCohorts, ...personalizedCohorts];
 
   return (
     <Box gap={12}>
@@ -204,7 +138,7 @@ function AirdropGroups() {
                 key={item.id}
                 disabled={isSelected}
                 onPress={() =>
-                  addAirdropGroup({ groupId: item.id, label: item.Name, count: item.totalUsers, imageUrl: item.icons.iconURL })
+                  addAirdropGroup({ groupId: item.id ?? item.name, label: item.name, count: item.totalUsers, imageUrl: item.icons.iconURL })
                 }
               >
                 <Box
@@ -246,9 +180,21 @@ function AirdropGroups() {
                   <FastImage source={{ uri: item.icons.iconURL }} style={{ width: 42, height: 42, borderRadius: 21 }} />
                   <TextShadow blur={12} shadowOpacity={0.24} color={accentColors.opacity100}>
                     <Text numberOfLines={2} align="center" color={{ custom: accentColors.opacity100 }} size="15pt" weight="heavy">
-                      {item.Name}
+                      {item.name}
                     </Text>
                   </TextShadow>
+                  <Box
+                    justifyContent="center"
+                    alignItems="center"
+                    backgroundColor={accentColors.opacity6}
+                    borderRadius={12}
+                    paddingHorizontal={'8px'}
+                    paddingVertical={'4px'}
+                  >
+                    <Text numberOfLines={1} align="center" color={{ custom: accentColors.opacity100 }} size="15pt" weight="heavy">
+                      {abbreviateNumber(item.totalUsers, 1)}
+                    </Text>
+                  </Box>
                 </Box>
               </ButtonPressAnimation>
             );
@@ -452,7 +398,9 @@ function AirdropRecipients() {
 export function AirdropSection() {
   const { accentColors } = useTokenLauncherContext();
   const borderColor = useForegroundColor('buttonStroke');
-  const maxRecipientCount = airdropSuggestions.meta.maxUserAllocations;
+  const airdropSuggestions = useAirdropSuggestionsStore(state => state.getData());
+  const maxRecipientCount = airdropSuggestions?.meta.maxUserAllocations ?? 0;
+
   const setMaxAirdropRecipientCount = useTokenLauncherStore(state => state.setMaxAirdropRecipientCount);
   const hasExceededMaxAirdropRecipients = useTokenLauncherStore(state => state.hasExceededMaxAirdropRecipients());
 
@@ -461,7 +409,10 @@ export function AirdropSection() {
   }, [maxRecipientCount, setMaxAirdropRecipientCount]);
 
   return (
-    <CollapsableField title="Airdrop" style={{ borderColor: hasExceededMaxAirdropRecipients ? colors.red : borderColor }}>
+    <CollapsableField
+      title={i18n.t(i18n.l.token_launcher.titles.airdrop)}
+      style={{ borderColor: hasExceededMaxAirdropRecipients ? colors.red : borderColor }}
+    >
       <Box gap={16}>
         {hasExceededMaxAirdropRecipients && (
           <Text color="red" size="15pt" weight="heavy">
@@ -473,11 +424,15 @@ export function AirdropSection() {
         <AirdropRecipients />
         <Animated.View style={{ gap: 16 }} layout={COLLAPSABLE_FIELD_ANIMATION}>
           <Separator color={{ custom: accentColors.opacity3 }} />
-          <AirdropGroups />
+          {airdropSuggestions && (
+            <AirdropGroups
+              predefinedCohorts={airdropSuggestions.data.predefinedCohorts}
+              personalizedCohorts={airdropSuggestions.data.personalizedCohorts}
+            />
+          )}
         </Animated.View>
 
-        {/* @ts-expect-error TODO: remove, will get fixed when we have backend integration */}
-        <SuggestedUsers suggestions={airdropSuggestions.data.suggested} />
+        {airdropSuggestions && <SuggestedUsers users={airdropSuggestions.data.suggestedUsers} />}
       </Box>
     </CollapsableField>
   );

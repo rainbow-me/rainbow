@@ -3214,6 +3214,7 @@
         "ticker": "Ticker",
         "name": "Name",
         "description": "Description",
+        "airdrop": "Airdrop",
         "required_info": "REQUIRED INFO",
         "about": "ABOUT",
         "token_allocation": "Token allocation",
