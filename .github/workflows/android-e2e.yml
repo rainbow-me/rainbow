@@ -8,6 +8,11 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
 
+    env:
+      ANDROID_EMULATOR_API_LEVEL: 33
+      ANDROID_EMULATOR_PROFILE: pixel_6
+      ANDROID_EMULATOR_RAM_SIZE: 2048M
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -82,3 +87,21 @@ jobs:
 
       - name: Build the app in Release mode
         run: yarn gradle assembleRelease -PreactNativeArchitectures=x86_64 -PisE2E=true
+
+      - name: Install Maestro
+        run: curl -fsSL "https://get.maestro.mobile.dev" | bash
+
+      - name: Run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        id: e2e_test
+        continue-on-error: true
+        with:
+          api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-metrics
+          disable-animations: true
+          profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
+          ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
+          script: ./scripts/e2e.sh
