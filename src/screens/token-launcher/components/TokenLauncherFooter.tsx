@@ -15,7 +15,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { STEP_TRANSITION_DURATION } from '../constants';
-import { Keyboard } from 'react-native';
+import { Keyboard, Share } from 'react-native';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { GasButton } from './gas/GasButton';
 import { useAccountSettings, useBiometryType, useWallets } from '@/hooks';
@@ -33,6 +33,8 @@ import { colors } from '@/styles';
 
 import { useTokenLauncher } from '@/hooks/useTokenLauncher';
 import { staleBalancesStore } from '@/state/staleBalances';
+import { buildTokenDeeplink } from '@/handlers/deeplinks';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 // height + top padding + bottom padding
 export const FOOTER_HEIGHT = 48 + 16 + 8;
@@ -73,7 +75,6 @@ function HoldToCreateButton() {
       if (wallet) {
         const createTokenResponse = await createToken({ wallet: wallet as Wallet, transactionOptions });
         if (createTokenResponse) {
-          console.log('createTokenResponse', createTokenResponse);
           addStaleBalance({
             address: accountAddress,
             chainId,
@@ -139,8 +140,24 @@ function ContinueButton() {
 
 function ShareButton() {
   const { accentColors } = useTokenLauncherContext();
+  const launchedTokenAddress = useTokenLauncherStore(state => state.launchedTokenAddress);
+  const chainId = useTokenLauncherStore(state => state.chainId);
+  const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
+
   return (
-    <ButtonPressAnimation onPress={() => {}}>
+    <ButtonPressAnimation
+      onPress={() => {
+        // This should never happen
+        if (!launchedTokenAddress || !chainId) return;
+
+        Share.share({
+          url: buildTokenDeeplink({
+            networkLabel: chainLabels[chainId],
+            contractAddress: launchedTokenAddress,
+          }),
+        });
+      }}
+    >
       <Box
         backgroundColor={accentColors.opacity100}
         justifyContent="center"
@@ -150,7 +167,7 @@ function ShareButton() {
         height={48}
       >
         <Text color={{ custom: accentColors.highContrastTextColor }} size="20pt" weight="heavy">
-          {'􀈂 Share Link'}
+          {`􀈂 ${i18n.t(i18n.l.token_launcher.buttons.share_link)}`}
         </Text>
       </Box>
     </ButtonPressAnimation>

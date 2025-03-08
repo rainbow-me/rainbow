@@ -3227,7 +3227,8 @@
       },
       "buttons": {
         "hold_to_create": "Hold to Create",
-        "creating": "Creating..."
+        "creating": "Creating...",
+        "share_link": "Share Link"
       },
       "header": {
         "new_coin": "New Coin",

@@ -427,6 +427,6 @@ async function handleSwapsDeeplink(url: string) {
   navigateToSwaps(params);
 }
 
-export function buildTokenDeeplink(uniqueId: string) {
-  return `https://rainbow.me/token?addr=${uniqueId}`;
+export function buildTokenDeeplink({ networkLabel, contractAddress }: { networkLabel: string; contractAddress: string }) {
+  return `https://rainbow.me/token/${networkLabel.toLowerCase()}/${contractAddress}`;
 }

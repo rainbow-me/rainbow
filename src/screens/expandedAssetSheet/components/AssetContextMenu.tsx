@@ -12,6 +12,7 @@ import { IS_ANDROID } from '@/env';
 import { Box, TextIcon } from '@/design-system';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import { Share } from 'react-native';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 // This is meant to for the context menu to be offset properly, but it does not work for the horizontal offset
 const HIT_SLOP = 16;
@@ -35,6 +36,7 @@ export function AssetContextMenu() {
   const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
 
   const { currentAction, setPinnedCoins } = useCoinListFinishEditingOptions();
+  const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
 
   useEffect(() => {
     // Ensure this expanded state's asset is always actively inside
@@ -134,7 +136,10 @@ export function AssetContextMenu() {
         break;
       case ContextMenuActions.Share:
         Share.share({
-          url: buildTokenDeeplink(asset.uniqueId),
+          url: buildTokenDeeplink({
+            networkLabel: chainLabels[asset.chainId],
+            contractAddress: asset.address,
+          }),
         });
         break;
       case ContextMenuActions.BlockExplorer:

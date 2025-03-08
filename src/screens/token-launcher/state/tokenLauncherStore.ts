@@ -63,6 +63,7 @@ interface TokenLauncherStore {
   hasSufficientChainNativeAssetForTransactionGas: boolean;
   hasValidPrebuyAmount: boolean;
   maxAirdropRecipientCount: number;
+  launchedTokenAddress: string | null;
   // derived state
   hasEnteredAnyInfo: () => boolean;
   formattedTotalSupply: () => string;
@@ -156,6 +157,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   hasSufficientChainNativeAssetForTransactionGas: true,
   hasValidPrebuyAmount: true,
   maxAirdropRecipientCount: DEFAULT_MAX_AIRDROP_RECIPIENTS,
+  launchedTokenAddress: null,
   // derived state
   hasEnteredAnyInfo: () => {
     const { name, symbol, imageUrl, totalSupply, description, extraBuyAmount, validLinks, validAirdropRecipients } = get();
@@ -430,14 +432,19 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
           addresses: recipientAddresses,
         },
       };
+      let result;
       if (shouldBuy) {
-        return await TokenLauncher.launchTokenAndBuy({
+        result = await TokenLauncher.launchTokenAndBuy({
           ...params,
           amountIn: parseUnits(get().extraBuyAmount.toString(), 18).toString(),
         });
       } else {
-        return await TokenLauncher.launchToken(params);
+        result = await TokenLauncher.launchToken(params);
       }
+      if (result) {
+        set({ launchedTokenAddress: result.tokenAddress });
+      }
+      return result;
     } catch (e: any) {
       console.error('error creating token', e);
       Alert.alert(`${(e as Error).message}`);
