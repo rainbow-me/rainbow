@@ -1,116 +1,150 @@
-![](https://pbs.twimg.com/profile_banners/1103191459409420288/1573207178/1500x500)
+<p align="center">
+  <img src="https://pbs.twimg.com/profile_banners/1103191459409420288/1573207178/1500x500" alt="Rainbow Wallet Banner">
+</p>
 
-### 🌈️ Rainbow
+<h1 align="center">🌈 Rainbow Wallet</h1>
 
-> the Ethereum wallet that lives in your pocket!
+<p align="center">
+  <strong>The Ethereum wallet that lives in your pocket!</strong>
+</p>
 
-📲️ [Available on the iOS App Store.](https://apps.apple.com/app/apple-store/id1457119021?pt=119997837&ct=github&mt=8)
+<div align="center">
 
-🤖 [Android available on the Google Play Store](https://play.google.com/store/apps/details?id=me.rainbow&utm_campaign=gh&utm_source=referral&utm_medium=gh)
+[![GitHub Repo stars](https://img.shields.io/github/stars/rainbow-me/rainbow?logo=github&color=yellow)](https://github.com/rainbow-me/rainbow/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/rainbow-me/rainbow?logo=github&color=blue)](https://github.com/rainbow-me/rainbow/network/members)
+[![GitHub last commit](https://img.shields.io/github/last-commit/rainbow-me/rainbow?logo=git)](https://github.com/rainbow-me/rainbow/commits/main)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Twitter](https://img.shields.io/twitter/follow/rainbowdotme?style=social)](https://twitter.com/rainbowdotme)
 
-💻 [Browser extension available on](https://rainbow.me/download?utm_campaign=gh&utm_source=referral&utm_medium=gh), [Chrome](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh), [Brave](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh), [Edge](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh), [FireFox](https://addons.mozilla.org/en-US/firefox/addon/rainbow-extension/?utm_campaign=gh&utm_source=referral&utm_medium=gh), and [Arc](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh).
+</div>
 
-🐦️ [Follow us on Twitter](https://twitter.com/rainbowdotme)
+---
 
-## Setup
+## 📲 **Download Rainbow Wallet**
 
-### General
+✅ **[iOS App Store](https://apps.apple.com/app/apple-store/id1457119021?pt=119997837&ct=github&mt=8)**  
+✅ **[Google Play Store](https://play.google.com/store/apps/details?id=me.rainbow&utm_campaign=gh&utm_source=referral&utm_medium=gh)**  
+✅ **Browser Extension** ([Download](https://rainbow.me/download?utm_campaign=gh&utm_source=referral&utm_medium=gh))  
+🌐 **Available for**: [Chrome](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh), [Brave](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh), [Edge](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh), [Firefox](https://addons.mozilla.org/en-US/firefox/addon/rainbow-extension/?utm_campaign=gh&utm_source=referral&utm_medium=gh), and [Arc](https://chrome.google.com/webstore/detail/rainbow/opfgelmcmbiajamepnmloijbpoleiama?utm_campaign=gh&utm_source=referral&utm_medium=gh).
 
-- Install NVM or Node.js 16: https://github.com/creationix/nvm
-- Install all project dependencies with `yarn setup`
+---
 
-### MacOS
+## ⚙️ **Setup**
 
-1. Install the [latest version of XCode](https://developer.apple.com/xcode/).
+### ✅ **General Requirements**
+- Install **NVM** or **Node.js 16**: [NVM GitHub](https://github.com/creationix/nvm)
+- Install dependencies:
 
-2. Install Watchman:
+📌 Run:
+```sh
+yarn setup
+```
 
-   ```shell
-   brew install watchman
-   ```
+---
 
-3. Install CocoaPods:
+## 🏗 **Installation Guide**
 
-   ```shell
-   sudo gem install cocoapods
-   ```
+### **MacOS Setup**
+1️⃣ **Install XCode** – [Download Here](https://developer.apple.com/xcode/)  
+2️⃣ **Install Watchman**:
+📌 Run:
+```sh
+brew install watchman
+```
+3️⃣ **Install CocoaPods**:
+📌 Run:
+```sh
+sudo gem install cocoapods
+```
+4️⃣ **Install Required Dependencies**:
+📌 Run:
+```sh
+yarn install-bundle && yarn install-pods
+```
 
-4. Install the required bundles and Pods for this project:
-   ```shell
-   yarn install-bundle && yarn install-pods
-   ```
+---
 
-### Linux
+### **Linux Setup**
+1️⃣ **Install Dependencies**:
+📌 Run:
+```sh
+sudo apt install libsecret-tools watchman
+```
+2️⃣ **Follow React Native Setup** – [Guide Here](https://reactnative.dev/docs/environment-setup)  
+   _(Includes installing Android Studio, SDK, Emulator, etc.)_
+3️⃣ **Ensure Android Virtual Device (AVD) is Available**  
+   _or use a physical device._
 
-1. Install system dependencies:
+---
 
-   ```shell
-   sudo apt install libsecret-tools watchman
-   ```
+## 🚀 **Development**
 
-2. Follow the [React Native environment setup
-   instructions](https://reactnative.dev/docs/environment-setup) carefully,
-   which will involve installing Android Studio, the Android SDK, the emulator,
-   etc. and making them available in your `$PATH`.
+### **Preflight Checklist**
+1️⃣ **Use Correct Node Version**:
+📌 Run:
+```sh
+nvm use
+```
+2️⃣ **Set Up `.env` File** (Use `env.example` as a guide).  
+   🔹 _Some features are not yet accessible as we're working with our **Data Providers** to provide open-source API keys._  
 
-3. Ensure at least one [AVD
-   image](https://developer.android.com/studio/run/managing-avds) is available
-   for the emulator (unless using a physical device).
+3️⃣ **Generate API Keys**  
+You'll need API keys from the following services to interact with certain features. Here are some helpful resources:  
+- 🔹 **[Etherscan API](https://etherscan.io/apis)**  
+- 🔹 **[Infura API](https://infura.io/)**  
+- 🔹 **[ETH Gas Station API](https://docs.ethgasstation.info/)**  
+- 🔹 **[Imgix API](https://www.imgix.com/)**  
 
-## Developing
+4️⃣ **Add `google-services.json`**  
+Ensure that the `google-services.json` file is placed in the relevant project directory to avoid compile errors.  
+- You can use either:  
+  - ✅ The **live Google Services configuration** (for internal development).  
+  - ✅ A **self-provided configuration** for a personal Firebase project (third-party contributors).  
+- **Important:** The file must be registered under the package name: `me.rainbow`.  
 
-If you are new to React Native, this is a helpful introduction:
-https://reactnative.dev/docs/getting-started
+---
 
-### Preflight
+### 🖥 **Running on MacOS**
 
-1. Run `nvm use` to force Node.js v16.
+**Note:** Darwin versions of the application can only be developed/built on Darwin platforms with XCode.
 
-2. Set up your .env file, use our env.example as a guide.
+📌 Start the React Native Webserver:
+```sh
+yarn start
+```
+📌 Open XCode and run:
+```sh
+open rainbow-wallet/ios/Rainbow.xcworkspace
+```
+📌 Click **Play** ▶️ to run the project.
 
-   **_Note that some features are currently not accessible, we are working with our Data Providers in order to provide open source API Keys!_**
+---
 
-   Here are some resources to generate your own API keys:
+### 📱 **Running on Linux**
 
-   - Etherscan: https://etherscan.io/apis
-   - Infura: https://infura.io/
-   - ETH Gas Station: https://docs.ethgasstation.info/
-   - Imgix: https://www.imgix.com/
+**Note:** Linux development environments cannot develop or build Darwin versions of the project.
 
-3. Ensure a `google-services.json` has been added to the relevant project
-   directory/directories so the compile will not fail.
+📌 Start React Native Webserver:
+```sh
+yarn start
+```
+📌 Build & Install the Android Debug Version:
+```sh
+yarn android
+```
 
-   This can either be the live Google Services config (for internal development)
-   or a self-provided config for a personal Firebase project (third-party
-   contributors) registered under the package name `me.rainbow`.
+---
 
-### MacOS
+## 📜 **License**
+This project is licensed under **MIT License**.  
+See [LICENSE](LICENSE) for details.
 
-_Note: Darwin versions of the application can only be developed/built on Darwin
-platforms with XCode._
+---
 
-1. Start a React Native webserver with:
+## 📬 **Stay Connected**
+<p align="left">
+  <a href="https://x.com/rainbowdotme">
+    <img src="https://img.shields.io/badge/Twitter-000000?logo=x&logoColor=white&style=for-the-badge" alt="Twitter (X)">
+  </a>
+</p>
 
-   ```shell
-   yarn start
-   ```
-
-2. Open `rainbow-wallet/ios/Rainbow.xcworkspace` in XCode.
-
-3. Run the project by clicking the play button.
-
-### Linux
-
-_Note: Linux development environments cannot develop or build Darwin versions of the
-project._
-
-1. Start a React Native webserver with:
-
-   ```shell
-   yarn start
-   ```
-
-2. Build/install/start the debug version of the app in an emulator with:
-   ```shell
-   yarn android
-   ```
