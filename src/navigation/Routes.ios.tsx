@@ -109,8 +109,8 @@ import { RootStackParamList } from './types';
 import WalletLoadingListener from '@/components/WalletLoadingListener';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
 import { LogSheet } from '@/components/debugging/LogSheet';
-import { NetworkSelector } from '@/components/NetworkSwitcher';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
+import { NetworkSelector } from '@/screens/NetworkSelector';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();

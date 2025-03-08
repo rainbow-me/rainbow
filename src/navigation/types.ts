@@ -15,6 +15,7 @@ import { Address } from 'viem';
 import { SharedValue } from 'react-native-reanimated';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { TextProps } from '@/design-system';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -119,9 +120,20 @@ export type RootStackParamList = {
     selected: SharedValue<ChainId | undefined> | ChainId | undefined;
     setSelected: (chainId: ChainId | undefined) => void;
     onClose?: VoidFunction;
+    fillPinnedSection?: boolean;
+    canSelect?: boolean;
     canEdit?: boolean;
     canSelectAllNetworks?: boolean;
     allowedNetworks?: ChainId[];
+    goBackOnSelect?: boolean;
+    title?: string;
+    actionButton?: {
+      color?: TextProps['color'];
+      icon?: string;
+      weight?: TextProps['weight'];
+      label: string;
+      onPress?: () => void;
+    };
   };
   [Routes.LOG_SHEET]: {
     data: {

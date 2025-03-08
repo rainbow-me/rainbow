@@ -16,7 +16,10 @@ import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
+import { GestureHandlerButton } from '../GestureHandlerButton';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { UserAssetFilter } from '@/__swaps__/types/assets';
 import { TokenToBuyListItem } from '@/__swaps__/types/search';
 
 type ChainSelectionProps = {
@@ -31,13 +34,12 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
   const { selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
 
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
-  const networkBadges = useBackendNetworksStore(state => state.getChainsBadge());
 
   // chains sorted by balance on output, chains without balance hidden on input
   const balanceSortedChainList = useUserAssetsStore(state => (output ? state.getBalanceSortedChainList() : state.getChainsWithBalance()));
   const filter = useUserAssetsStore(state => state.filter);
 
-  const inputListFilter = useSharedValue(filter);
+  const inputListFilter = useSharedValue<UserAssetFilter | undefined>(filter === 'all' ? undefined : filter);
 
   const accentColor = useMemo(() => {
     if (c.contrast(accountColor, isDarkMode ? '#191A1C' : globalColors.white100) < (isDarkMode ? 2.125 : 1.5)) {
@@ -51,63 +53,43 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
   const chainName = useDerivedValue(() => {
     return output
       ? chainLabels[selectedOutputChainId.value]
-      : inputListFilter.value === 'all'
+      : inputListFilter.value === undefined
         ? allText
         : chainLabels[inputListFilter.value as ChainId];
   });
 
   const handleSelectChain = useCallback(
-    (actionKey: string) => {
+    (chainId: ChainId | undefined) => {
       animatedRef.current?.scrollToOffset({ animated: true, offset: 0 });
 
-      if (output) {
-        setSelectedOutputChainId(Number(actionKey) as ChainId);
+      if (output && chainId) {
+        setSelectedOutputChainId(chainId);
       } else {
-        inputListFilter.value = actionKey === 'all' ? 'all' : (Number(actionKey) as ChainId);
+        inputListFilter.value = chainId;
         userAssetsStore.setState({
-          filter: actionKey === 'all' ? 'all' : (Number(actionKey) as ChainId),
+          filter: chainId === undefined ? 'all' : chainId,
         });
       }
 
       analyticsV2.track(analyticsV2.event.swapsChangedChainId, {
         inputAsset: swapsStore.getState().inputAsset,
         type: output ? 'output' : 'input',
-        chainId: Number(actionKey) as ChainId,
+        chainId,
       });
     },
     [animatedRef, inputListFilter, output, setSelectedOutputChainId]
   );
 
-  const menuConfig = useMemo(() => {
-    let supportedChains: MenuItem<string>[] = [];
-    supportedChains = balanceSortedChainList.map(chainId => {
-      return {
-        actionKey: `${chainId}`,
-        actionTitle: chainLabels[chainId],
-        icon: {
-          iconType: 'REMOTE',
-          iconValue: {
-            uri: networkBadges[chainId],
-          },
-        },
-      };
+  const navigateToNetworkSelector = useCallback(() => {
+    Navigation.handleAction(Routes.NETWORK_SELECTOR, {
+      selected: output ? selectedOutputChainId : inputListFilter,
+      setSelected: handleSelectChain,
+      canSelectAllNetworks: !output,
+      goBackOnSelect: true,
+      canEdit: false,
+      allowedNetworks: balanceSortedChainList,
     });
-
-    if (!output) {
-      supportedChains.unshift({
-        actionKey: 'all',
-        actionTitle: i18n.t(i18n.l.exchange.all_networks),
-        icon: {
-          iconType: 'SYSTEM',
-          iconValue: 'globe',
-        },
-      });
-    }
-
-    return {
-      menuItems: supportedChains,
-    };
-  }, [balanceSortedChainList, chainLabels, networkBadges, output]);
+  }, [balanceSortedChainList, handleSelectChain, output, selectedOutputChainId]);
 
   return (
     <Box as={Animated.View} paddingBottom={output ? '8px' : { custom: 14 }} paddingHorizontal="20px" paddingTop="20px">
@@ -151,7 +133,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
           </Inline>
         )}
 
-        <DropdownMenu menuConfig={menuConfig} onPressMenuItem={handleSelectChain} testID={`chain-selection-${output ? 'output' : 'input'}`}>
+        <GestureHandlerButton onPressJS={navigateToNetworkSelector} testID={`chain-selection-${output ? 'output' : 'input'}`}>
           <Box paddingVertical="6px" paddingLeft="16px" flexDirection="row" alignItems="center" justifyContent="center" gap={6}>
             <ChainButtonIcon output={output} />
             <AnimatedText color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
@@ -161,7 +143,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
               􀆏
             </Text>
           </Box>
-        </DropdownMenu>
+        </GestureHandlerButton>
       </Inline>
     </Box>
   );
