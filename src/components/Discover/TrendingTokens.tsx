@@ -1,14 +1,15 @@
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { globalColors, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-
+import RainbowTokenFilter from '@/assets/RainbowTokenFilter.png';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { analyticsV2 } from '@/analytics';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
-import { SortDirection, Timeframe, TrendingCategory, TrendingSort } from '@/graphql/__generated__/arc';
+import { SortDirection, Timeframe, TrendingSort } from '@/graphql/__generated__/arc';
+import { categories, TrendingCategory, sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
@@ -16,11 +17,10 @@ import Routes from '@/navigation/routesNames';
 import { FarcasterUser, TrendingToken, useTrendingTokens } from '@/resources/trendingTokens/trendingTokens';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
 import { useCallback, useEffect, useMemo } from 'react';
-import React, { FlatList, View } from 'react-native';
+import React, { FlatList, View, Image } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated, { runOnJS, useSharedValue } from 'react-native-reanimated';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
 import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWallets';
 import { ImgixImage } from '../images';
@@ -173,7 +173,7 @@ function CategoryFilterButton({
   highlightedBackgroundColor,
 }: {
   category: TrendingCategory;
-  icon: string;
+  icon: string | JSX.Element;
   iconColor: string | { default: string; selected: string };
   highlightedBackgroundColor: string;
   iconWidth?: number;
@@ -211,15 +211,19 @@ function CategoryFilterButton({
           borderColor,
         }}
       >
-        <TextIcon
-          color={{ custom: typeof iconColor === 'string' ? iconColor : selected ? iconColor.selected : iconColor.default }}
-          size="icon 13px"
-          textStyle={{ marginTop: IS_IOS ? -3.5 : -2 }}
-          weight="heavy"
-          width={iconWidth}
-        >
-          {icon}
-        </TextIcon>
+        {typeof icon === 'string' ? (
+          <TextIcon
+            color={{ custom: typeof iconColor === 'string' ? iconColor : selected ? iconColor.selected : iconColor.default }}
+            size="icon 13px"
+            textStyle={{ marginTop: IS_IOS ? -3.5 : -2 }}
+            weight="heavy"
+            width={iconWidth}
+          >
+            {icon}
+          </TextIcon>
+        ) : (
+          icon
+        )}
         <View>
           {/* This first Text element sets the width of the container */}
           <Text align="center" color="label" size="17pt" weight="heavy" style={{ opacity: 0 }}>
@@ -671,14 +675,21 @@ export function TrendingTokens() {
           style={{ marginHorizontal: -padding }}
         >
           <CategoryFilterButton
-            category={TrendingCategory.Trending}
+            category={categories[0]}
             label={i18n.t(t.filters.categories.TRENDING)}
             icon="􀙭"
             iconColor={'#D0281C'}
             highlightedBackgroundColor={'#E6A39E'}
           />
           <CategoryFilterButton
-            category={TrendingCategory.New}
+            category={categories[1]}
+            label={i18n.t(t.filters.categories.RAINBOW)}
+            icon={<Image source={RainbowTokenFilter} width={16} height={16} />}
+            iconColor={'#D0281C'}
+            highlightedBackgroundColor={'#E6A39E'}
+          />
+          <CategoryFilterButton
+            category={categories[2]}
             label={i18n.t(t.filters.categories.NEW)}
             icon="􀋃"
             iconColor={{ default: isDarkMode ? globalColors.yellow60 : '#FFBB00', selected: '#F5A200' }}
@@ -686,7 +697,7 @@ export function TrendingTokens() {
             iconWidth={18}
           />
           <CategoryFilterButton
-            category={TrendingCategory.Farcaster}
+            category={categories[3]}
             label={i18n.t(t.filters.categories.FARCASTER)}
             icon="􀌥"
             iconColor={'#5F5AFA'}
