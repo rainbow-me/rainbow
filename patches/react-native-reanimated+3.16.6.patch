@@ -115,7 +115,7 @@ index f7987b0..6ecff4b 100644
 +++ b/node_modules/react-native-reanimated/src/interpolateColor.ts
 @@ -1,4 +1,5 @@
  'use strict';
-+import { culori } from '../../../src/worklets/oklab';
++import { culori } from '@/worklets/oklab';
  import {
    hsvToColor,
    RGBtoHSV,
