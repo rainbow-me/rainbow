@@ -28,7 +28,6 @@ export function NetworkField() {
 
   const onChainSelected = (chainId: number) => {
     setChainId(chainId);
-    navigation.getParent()?.goBack();
   };
 
   return (
@@ -55,6 +54,7 @@ export function NetworkField() {
               navigation.navigate(Routes.NETWORK_SELECTOR, {
                 selected: chainId,
                 setSelected: onChainSelected,
+                goBackOnSelect: true,
                 canEdit: false,
                 canSelectAllNetworks: false,
                 allowedNetworks,
