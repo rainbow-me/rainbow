@@ -1,4 +1,4 @@
-import { ADDYS_BASE_URL, ADDYS_API_KEY } from 'react-native-dotenv';
+import { ADDYS_API_KEY, ADDYS_BASE_URL } from 'react-native-dotenv';
 import { qs } from 'url-parse';
 import { Address } from 'viem';
 import { NativeCurrencyKey } from '@/entities';
@@ -72,10 +72,11 @@ const INITIAL_PAGE_SIZE = 12;
 const FULL_PAGE_SIZE = 100;
 const STALE_TIME = time.minutes(5);
 
+let paginationPromise: { address: Address | string; currency: NativeCurrencyKey; promise: Promise<void> } | null = null;
+
 export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsParams, AirdropsState>(
   {
     fetcher: fetchTokenLauncherAirdrops,
-
     cacheTime: time.days(1),
     staleTime: STALE_TIME,
     params: {
@@ -90,9 +91,11 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
     airdrops: null,
 
     async fetchNextPage() {
-      const { airdrops: storedAirdrops, fetch, getPaginationInfo } = get();
       const { address, currency } = userAssetsStoreManager.getState();
-
+      if (paginationPromise && paginationPromise.address === address && paginationPromise.currency === currency) {
+        return paginationPromise.promise;
+      }
+      const { airdrops: storedAirdrops, fetch, getPaginationInfo } = get();
       const airdrops = storedAirdrops?.address === address && storedAirdrops?.currency === currency ? storedAirdrops : null;
       const paginationInfo = getPaginationInfo();
       const nextPage = (airdrops ? paginationInfo?.next : paginationInfo?.total_pages === 1 ? null : 1) ?? null;
@@ -105,37 +108,51 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
           airdrops && nextPage > 1 ? Object.values(airdrops.fetchedAt).some(fetchedAt => now - fetchedAt > STALE_TIME) : false;
 
         if (!isStale) {
-          const data = await fetch({ page: nextPage, pageSize: FULL_PAGE_SIZE }, { force: true, skipStoreUpdates: true });
-          if (!data) return;
-          set({
-            airdrops: {
-              address,
-              claimables: airdrops?.claimables ? [...airdrops.claimables, ...data.claimables] : data.claimables,
-              currency,
-              fetchedAt: airdrops?.fetchedAt ? { ...airdrops.fetchedAt, [nextPage]: Date.now() } : { [nextPage]: Date.now() },
-              pagination: data.pagination,
-            },
-          });
-          return;
+          paginationPromise = {
+            address,
+            currency,
+            promise: fetch({ page: nextPage, pageSize: FULL_PAGE_SIZE }, { force: true, skipStoreUpdates: true })
+              .then(data => {
+                if (!data) return;
+                set({
+                  airdrops: {
+                    address,
+                    claimables: airdrops?.claimables ? [...airdrops.claimables, ...data.claimables] : data.claimables,
+                    currency,
+                    fetchedAt: airdrops?.fetchedAt ? { ...airdrops.fetchedAt, [nextPage]: Date.now() } : { [nextPage]: Date.now() },
+                    pagination: data.pagination,
+                  },
+                });
+              })
+              .finally(() => (paginationPromise = null)),
+          };
+
+          return paginationPromise.promise;
         }
 
         // If the airdrops data is stale, refetch all pages up to the next page
         const pages = Array.from({ length: nextPage }, (_, i) => i + 1);
-        const data = await Promise.all(
-          pages.map(page => fetch({ page, pageSize: FULL_PAGE_SIZE }, { force: true, skipStoreUpdates: true }))
-        );
-        const validResults = data.filter(Boolean);
-        if (!validResults.length) return;
+        paginationPromise = {
+          address,
+          currency,
+          promise: Promise.all(pages.map(page => fetch({ page, pageSize: FULL_PAGE_SIZE }, { force: true, skipStoreUpdates: true })))
+            .then(data => {
+              const validResults = data.filter(Boolean);
+              if (!validResults.length) return;
+              set({
+                airdrops: {
+                  address,
+                  claimables: validResults.flatMap(r => r.claimables),
+                  currency,
+                  fetchedAt: Object.fromEntries(pages.map(page => [page, now])),
+                  pagination: validResults[validResults.length - 1]?.pagination ?? null,
+                },
+              });
+            })
+            .finally(() => (paginationPromise = null)),
+        };
 
-        set({
-          airdrops: {
-            address,
-            claimables: validResults.flatMap(r => r.claimables),
-            currency,
-            fetchedAt: Object.fromEntries(pages.map(page => [page, now])),
-            pagination: validResults[validResults.length - 1]?.pagination ?? null,
-          },
-        });
+        return paginationPromise.promise;
       }
     },
 
