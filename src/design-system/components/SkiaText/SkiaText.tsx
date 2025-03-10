@@ -1,16 +1,10 @@
-import { AnimatedProp, Paragraph, SkParagraph, Transforms3d } from '@shopify/react-native-skia';
+import { AnimatedProp, Paragraph, SkPaint, SkParagraph, Transforms3d } from '@shopify/react-native-skia';
 import React, { ReactNode, useCallback, useContext, useMemo } from 'react';
 import { DerivedValue, isSharedValue, useDerivedValue } from 'react-native-reanimated';
 import { TextAlign } from '@/components/text/types';
 import { AccentColorContext } from '@/design-system/color/AccentColorContext';
-import {
-  BackgroundColorValue,
-  ColorMode,
-  TextColor,
-  foregroundColors,
-  getDefaultAccentColorForColorMode,
-} from '@/design-system/color/palettes';
-import { CustomColor } from '@/design-system/color/useForegroundColor';
+import { ColorMode, TextColor } from '@/design-system/color/palettes';
+import { CustomColor, getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
@@ -18,8 +12,10 @@ import { IS_IOS } from '@/env';
 import { SharedOrDerivedValueText } from '../Text/AnimatedText';
 
 export interface SkiaTextChildProps {
+  backgroundPaint?: SkPaint;
   children: string;
   color?: TextColor | CustomColor;
+  foregroundPaint?: SkPaint;
   opacity?: number;
   weight?: TextWeight;
 }
@@ -28,9 +24,11 @@ export const SkiaTextChild: React.FC<SkiaTextChildProps> = () => null;
 
 export interface SkiaTextProps {
   align?: TextAlign;
+  backgroundPaint?: SkPaint;
   children: ReactNode | SharedOrDerivedValueText | string;
   color?: TextColor | CustomColor;
   colorMode?: ColorMode;
+  foregroundPaint?: SkPaint;
   letterSpacing?: number;
   lineHeight?: number;
   onLayout?: (paragraph: SkParagraph) => void;
@@ -52,9 +50,11 @@ function isSharedOrDerivedValueText(children: ReactNode | SharedOrDerivedValueTe
 
 export const SkiaText = ({
   align = 'left',
+  backgroundPaint,
   children,
   color: providedColor = 'label',
   colorMode = 'dark',
+  foregroundPaint,
   letterSpacing,
   lineHeight,
   onLayout,
@@ -66,13 +66,13 @@ export const SkiaText = ({
   y,
 }: SkiaTextProps) => {
   const accentColor = useContext(AccentColorContext);
-  const color = getTextColor(providedColor, colorMode, accentColor);
+  const color = getColorForTheme(providedColor, colorMode, accentColor);
 
   const getSegmentColor = useCallback(
     (textColor: TextColor | CustomColor | undefined) => {
       'worklet';
       if (!textColor) return color;
-      return getTextColor(textColor, colorMode, accentColor);
+      return getColorForTheme(textColor, colorMode, accentColor);
     },
     [accentColor, color, colorMode]
   );
@@ -81,14 +81,15 @@ export const SkiaText = ({
     useMemo(
       () => ({
         align,
+        backgroundPaint,
         color,
-        colorMode,
+        foregroundPaint,
         letterSpacing,
         lineHeight,
         size,
         weight,
       }),
-      [align, color, colorMode, letterSpacing, lineHeight, size, weight]
+      [align, backgroundPaint, color, foregroundPaint, letterSpacing, lineHeight, size, weight]
     )
   );
 
@@ -139,17 +140,3 @@ export const SkiaText = ({
 
   return <Paragraph paragraph={paragraph} transform={transform} width={width} x={x} y={y} />;
 };
-
-function getTextColor(color: TextColor | CustomColor | 'accent', colorMode: ColorMode, accentColor: BackgroundColorValue | null): string {
-  'worklet';
-  const binaryColorMode = colorMode === 'dark' || colorMode === 'darkTinted' ? 'dark' : 'light';
-  switch (color) {
-    case 'accent':
-      return accentColor?.color ?? getDefaultAccentColorForColorMode(binaryColorMode).color;
-    default:
-      if (typeof color === 'object' && 'custom' in color) {
-        return typeof color.custom === 'string' ? color.custom : color.custom[binaryColorMode];
-      }
-      return foregroundColors[color][binaryColorMode];
-  }
-}

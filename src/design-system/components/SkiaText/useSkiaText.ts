@@ -1,4 +1,4 @@
-import { Skia, SkParagraph, SkTextStyle } from '@shopify/react-native-skia';
+import { SkPaint, SkParagraph, SkTextStyle, Skia } from '@shopify/react-native-skia';
 import { useCallback } from 'react';
 import { TextAlign } from '@/components/text/types';
 import { SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
@@ -9,19 +9,23 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { getSkiaFontWeight, useSkiaFontManager } from './skiaFontManager';
 
 interface TextSegment {
+  backgroundPaint?: SkPaint;
   color?: string;
+  foregroundPaint?: SkPaint;
   opacity?: number;
   text: SharedOrDerivedValueText | string;
   weight?: TextWeight;
 }
 
 interface UseSkiaTextOptions {
-  align?: TextAlign;
+  align: TextAlign | undefined;
+  backgroundPaint: SkPaint | undefined;
   color: string;
+  foregroundPaint: SkPaint | undefined;
   letterSpacing: number | undefined;
   lineHeight: number | undefined;
   size: TextSize;
-  weight?: TextWeight;
+  weight: TextWeight | undefined;
 }
 
 /**
@@ -31,7 +35,9 @@ interface UseSkiaTextOptions {
  */
 export function useSkiaText({
   align = 'left',
+  backgroundPaint,
   color,
+  foregroundPaint,
   letterSpacing,
   lineHeight,
   size,
@@ -53,6 +59,8 @@ export function useSkiaText({
       const fontInfo = typeHierarchy.text[size];
       paragraphBuilder.reset();
 
+      if (foregroundPaint) foregroundPaint.setColor(Skia.Color(color));
+
       segments.forEach(segment => {
         const segmentStyle = getTextStyle({
           color,
@@ -64,10 +72,11 @@ export function useSkiaText({
           weightOverride: segment.weight,
         });
 
+        if (segment.foregroundPaint) segment.foregroundPaint.setColor(segmentStyle.color);
         if (segment.opacity !== undefined && segment.color) {
           segmentStyle.color = Skia.Color(opacityWorklet(segment.color, segment.opacity));
         }
-        paragraphBuilder.pushStyle(segmentStyle);
+        paragraphBuilder.pushStyle(segmentStyle, segment.foregroundPaint ?? foregroundPaint, segment.backgroundPaint ?? backgroundPaint);
         paragraphBuilder.addText(typeof segment.text === 'string' ? segment.text : segment.text.value ?? '');
         paragraphBuilder.pop();
       });
@@ -76,7 +85,7 @@ export function useSkiaText({
     },
     // Only the weight dependency is omitted on Android (see comment above)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [color, letterSpacing, lineHeight, manager.paragraphBuilder, size, weightDep]
+    [backgroundPaint, color, foregroundPaint, letterSpacing, lineHeight, manager.paragraphBuilder, size, weightDep]
   );
 
   return buildParagraph;
@@ -102,7 +111,7 @@ function getTextStyle({
   lineHeight: number | undefined;
   weight: TextWeight;
   weightOverride?: TextWeight;
-}): SkTextStyle {
+}): Required<Pick<SkTextStyle, 'color' | 'fontFamilies' | 'fontSize' | 'fontStyle' | 'heightMultiplier' | 'letterSpacing'>> {
   'worklet';
   return {
     color: Skia.Color(colorOverride ?? color),

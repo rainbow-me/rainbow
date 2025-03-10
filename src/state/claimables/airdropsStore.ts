@@ -1,17 +1,23 @@
-import { ADDYS_API_KEY } from 'react-native-dotenv';
+import { ADDYS_BASE_URL, ADDYS_API_KEY } from 'react-native-dotenv';
 import { qs } from 'url-parse';
 import { Address } from 'viem';
 import { NativeCurrencyKey } from '@/entities';
 import { logger, RainbowError } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { AddysClaimable, Claimable } from '@/resources/addys/claimables/types';
+import { AddysClaimable, Claimable as AirdropClaimable } from '@/resources/addys/claimables/types';
 import { parseClaimables } from '@/resources/addys/claimables/utils';
 import { AddysConsolidatedError } from '@/resources/addys/types';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
-import { userAssetsStoreManager } from '../assets/userAssetsStoreManager';
 
-// ============ ⚠️ WIP ⚠️ ====================================================== //
+const addysHttp = new RainbowFetchClient({
+  baseURL: ADDYS_BASE_URL,
+  headers: {
+    Authorization: `Bearer ${ADDYS_API_KEY}`,
+  },
+});
 
 type PaginationInfo = {
   current_page: number;
@@ -21,10 +27,10 @@ type PaginationInfo = {
   total_pages: number;
 };
 
-type AirdropClaimablesResponse = {
+type AirdropsResponse = {
+  pagination: PaginationInfo;
   payload: {
     claimables: AddysClaimable[];
-    pagination: PaginationInfo;
   };
   metadata: {
     errors?: AddysConsolidatedError[];
@@ -32,102 +38,161 @@ type AirdropClaimablesResponse = {
   };
 };
 
-type AirdropsFetcherParams = {
+type AirdropsParams = {
   address: Address | string | null;
   currency: NativeCurrencyKey;
   page: number;
   pageSize: number;
 };
 
-const ADDYS_BASE_URL = 'https://addys.s.rainbow.me/v3';
-
-const addysHttp = new RainbowFetchClient({
-  baseURL: ADDYS_BASE_URL,
-  headers: {
-    Authorization: `Bearer ${ADDYS_API_KEY}`,
-  },
-});
-
 type AirdropsQueryData = {
-  claimables: Claimable[];
+  claimables: AirdropClaimable[];
   pagination: PaginationInfo | null;
 };
 
 type AirdropsState = {
-  claimables: Claimable[];
-  currentPage: number;
-  pagination: PaginationInfo | null;
+  airdrops: {
+    address: Address | string;
+    claimables: AirdropClaimable[];
+    currency: NativeCurrencyKey;
+    fetchedAt: { [pageNumber: number]: number };
+    pagination: PaginationInfo | null;
+  } | null;
+  fetchNextPage: () => Promise<void>;
+  getAirdrops: () => AirdropClaimable[] | null;
+  getCurrentPage: () => number | null;
+  getNextPage: () => number | null;
+  getNumberOfAirdrops: () => number | null;
+  getPaginationInfo: () => PaginationInfo | null;
+  hasNextPage: () => boolean;
 };
 
-export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsFetcherParams /* , AirdropsState */>(
+const EMPTY_RETURN_DATA: AirdropsQueryData = { claimables: [], pagination: null };
+const INITIAL_PAGE_SIZE = 12;
+const FULL_PAGE_SIZE = 100;
+const STALE_TIME = time.minutes(5);
+
+export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsParams, AirdropsState>(
   {
     fetcher: fetchTokenLauncherAirdrops,
-    // setData: ({ data, set }) =>
-    //   set({
-    //     claimables: data.claimables,
-    //     pagination: data.pagination,
-    //     currentPage: data.pagination?.current_page || 1,
-    //   }),
 
-    cacheTime: ({ page }) => (page === 1 ? time.days(7) : time.hours(1)),
-    // debugMode: true,
-    disableAutoRefetching: true,
-    keepPreviousData: true,
-    // staleTime: time.minutes(2),
-    staleTime: time.minutes(30),
+    cacheTime: time.days(1),
+    staleTime: STALE_TIME,
     params: {
-      // address: $ => $(userAssetsStoreManager).address,
-      address: '0x50e97E480661533b5382E33705e4ce1EB182222E',
+      address: $ => $(userAssetsStoreManager).address,
       currency: $ => $(userAssetsStoreManager).currency,
       page: 1,
-      pageSize: 100,
+      pageSize: INITIAL_PAGE_SIZE,
     },
   },
 
-  // (_, get) => ({
-  //   claimables: [],
-  //   currentPage: 1,
-  //   pagination: null,
+  (set, get) => ({
+    airdrops: null,
 
-  //   // Helper methods
-  //   getClaimables: () => get().claimables,
-  //   getPaginationInfo: () => get().pagination,
-  //   getCurrentPage: () => get().currentPage,
-  //   hasNextPage: () => get().pagination?.next !== null || false,
-  //   getTotalPages: () => get().pagination?.total_pages || 0,
-  //   getTotalElements: () => get().pagination?.total_elements || 0,
-  // }),
+    async fetchNextPage() {
+      const { airdrops: storedAirdrops, fetch, getPaginationInfo } = get();
+      const { address, currency } = userAssetsStoreManager.getState();
 
-  { storageKey: 'tokenLauncherAirdrops2tests' }
+      const airdrops = storedAirdrops?.address === address && storedAirdrops?.currency === currency ? storedAirdrops : null;
+      const paginationInfo = getPaginationInfo();
+      const nextPage = (airdrops ? paginationInfo?.next : paginationInfo?.total_pages === 1 ? null : 1) ?? null;
+      const hasNextPage = nextPage !== null;
+
+      if (hasNextPage) {
+        if (!address) return;
+        const now = Date.now();
+        const isStale =
+          airdrops && nextPage > 1 ? Object.values(airdrops.fetchedAt).some(fetchedAt => now - fetchedAt > STALE_TIME) : false;
+
+        if (!isStale) {
+          const data = await fetch({ page: nextPage, pageSize: FULL_PAGE_SIZE }, { force: true, skipStoreUpdates: true });
+          if (!data) return;
+          set({
+            airdrops: {
+              address,
+              claimables: airdrops?.claimables ? [...airdrops.claimables, ...data.claimables] : data.claimables,
+              currency,
+              fetchedAt: airdrops?.fetchedAt ? { ...airdrops.fetchedAt, [nextPage]: Date.now() } : { [nextPage]: Date.now() },
+              pagination: data.pagination,
+            },
+          });
+          return;
+        }
+
+        // If the airdrops data is stale, refetch all pages up to the next page
+        const pages = Array.from({ length: nextPage }, (_, i) => i + 1);
+        const data = await Promise.all(
+          pages.map(page => fetch({ page, pageSize: FULL_PAGE_SIZE }, { force: true, skipStoreUpdates: true }))
+        );
+        const validResults = data.filter(Boolean);
+        if (!validResults.length) return;
+
+        set({
+          airdrops: {
+            address,
+            claimables: validResults.flatMap(r => r.claimables),
+            currency,
+            fetchedAt: Object.fromEntries(pages.map(page => [page, now])),
+            pagination: validResults[validResults.length - 1]?.pagination ?? null,
+          },
+        });
+      }
+    },
+
+    getAirdrops: () => {
+      const { airdrops, getData } = get();
+      const { address, currency } = userAssetsStoreManager.getState();
+      if (!address || !airdrops || address !== airdrops.address || currency !== airdrops.currency) {
+        return getData()?.claimables || null;
+      }
+      return airdrops.claimables;
+    },
+
+    getCurrentPage: () => get().getPaginationInfo()?.current_page ?? null,
+
+    getNextPage: () => get().getPaginationInfo()?.next ?? null,
+
+    getNumberOfAirdrops: () => get().getPaginationInfo()?.total_elements ?? null,
+
+    hasNextPage: () => Boolean(get().getPaginationInfo()?.next),
+
+    getPaginationInfo: () => {
+      const { airdrops, getData } = get();
+      const { address, currency } = userAssetsStoreManager.getState();
+      if (!address || !airdrops || address !== airdrops.address || currency !== airdrops.currency) {
+        return getData()?.pagination ?? null;
+      }
+      return airdrops.pagination;
+    },
+  }),
+
+  {
+    partialize: () => ({}),
+    storageKey: 'airdropsStore',
+  }
 );
 
-const EMPTY_RETURN_DATA: AirdropsQueryData = { claimables: [], pagination: null };
-
 async function fetchTokenLauncherAirdrops(
-  { address, currency, page, pageSize }: AirdropsFetcherParams,
+  { address, currency, page, pageSize }: AirdropsParams,
   abortController: AbortController | null
-) {
+): Promise<AirdropsQueryData> {
   if (!address) {
     abortController?.abort();
     return EMPTY_RETURN_DATA;
   }
 
   try {
-    // const chainIds = useBackendNetworksStore.getState().getSupportedChainIds().join(',');
-    const chainIds = '1,73571';
-    // const url = `/${chainIds}/${address}/claimables/rainbow`;
+    const chainIds = useBackendNetworksStore.getState().getSupportedChainIds().join(',');
     const url = `/${chainIds}/${address}/claimables/rainbow?${qs.stringify({
       currency: currency.toLowerCase(),
       page: page.toString(),
       page_size: pageSize.toString(),
     })}`;
 
-    const { data } = await addysHttp.get<AirdropClaimablesResponse>(url, {
+    const { data } = await addysHttp.get<AirdropsResponse>(url, {
       signal: abortController?.signal,
       timeout: time.seconds(20),
     });
-
-    // console.log('data', JSON.stringify(data, null, 2).slice(0, 2500));
 
     if (data.metadata.status !== 'ok') {
       logger.error(new RainbowError('[fetchTokenLauncherAirdrops]: Failed to fetch airdrop claimables (API error)'), {
@@ -139,7 +204,7 @@ async function fetchTokenLauncherAirdrops(
 
     return {
       claimables: parseClaimables(data.payload.claimables, currency),
-      pagination: data.payload.pagination,
+      pagination: data.pagination,
     };
   } catch (e) {
     if (e instanceof Error && e.name === 'AbortError') return EMPTY_RETURN_DATA;

@@ -14,6 +14,8 @@ import {
   vec,
 } from '@shopify/react-native-skia';
 import React, { memo, useCallback, useState } from 'react';
+import { useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SkiaText } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
 import { getSizedImageUrl } from '@/handlers/imgix';
@@ -22,6 +24,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { getCirclePath } from '@/worklets/skia';
 import { DEFAULT_CARD_SIZE, SkiaCard, SkiaCardProps } from './SkiaCard';
@@ -117,7 +120,10 @@ const CARD_CONFIG = {
   },
   dimensions: {
     badge: {
+      lineHeight: (numberOfAirdrops: number | null) => (!numberOfAirdrops || numberOfAirdrops < 10 ? 26 : numberOfAirdrops < 100 ? 24 : 22),
       size: BADGE_SIZE,
+      textSize: (numberOfAirdrops: number | null) =>
+        !numberOfAirdrops || numberOfAirdrops < 10 ? '20pt' : numberOfAirdrops < 100 ? '13pt' : '11pt',
       translateX: [{ translateX: BADGE_X_OFFSET - 95 }],
       x: DEFAULT_CARD_SIZE / 2 + COIN_ICON_SIZE / 2 - BADGE_SIZE / 2 + BADGE_SIZE / 3,
       y: DEFAULT_CARD_SIZE - 58.5,
@@ -146,9 +152,17 @@ export const AirdropsCard = memo(function AirdropsCard() {
   const [url, setUrl] = useState(() => getRandomIconUrl());
 
   const airdropIconUrl = useAirdropsStore(state => getSizedImageUrl(state.getData()?.claimables?.[0]?.asset?.icon_url));
-  // TODO: Need to make the badge positioning and sizing dynamic (cap is temporary)
-  const numberOfAirdrops = useAirdropsStore(state => Math.min(state.getData()?.claimables?.length ?? 0, 9));
+  const numberOfAirdrops = useAirdropsStore(state => state.getNumberOfAirdrops());
   const coinIconImage = useImage(url);
+
+  const animatedActiveSwipeRoute = useNavigationStore(state => state.animatedActiveSwipeRoute);
+  const shouldPlayEnterAnimation = useSharedValue(false);
+
+  const enterAnimation = useDerivedValue(() => (shouldPlayEnterAnimation.value ? withSpring(0, SPRING_CONFIGS.tabGestureConfig) : -2250));
+  const enterAnimationTransform = useDerivedValue(() => [
+    { translateY: enterAnimation.value },
+    { scaleY: enterAnimation.value > 0 ? 1 - enterAnimation.value / 150 : 1 },
+  ]);
 
   const onLongPress = useCallback(() => {
     setUrl(url => (url ? getNextIconUrl(url, airdropIconUrl) : getRandomIconUrl()));
@@ -158,11 +172,22 @@ export const AirdropsCard = memo(function AirdropsCard() {
     navigate(Routes.AIRDROPS_SHEET);
   }, [navigate]);
 
-  useCleanup(() => coinIconPath?.dispose?.());
+  useAnimatedReaction(
+    () => animatedActiveSwipeRoute.value === Routes.DISCOVER_SCREEN,
+    shouldTrigger => {
+      if (shouldTrigger) shouldPlayEnterAnimation.value = true;
+      else shouldPlayEnterAnimation.value = false;
+    },
+    []
+  );
+
   useCleanup(() => coinIconImage?.dispose?.(), [coinIconImage]);
+  useCleanup(() => coinIconPath?.dispose?.());
 
   return (
     <SkiaCard
+      height={DEFAULT_CARD_SIZE}
+      width={DEFAULT_CARD_SIZE}
       onLongPress={onLongPress}
       onPress={onPress}
       shadowColor={CARD_PROPS.shadowColor}
@@ -190,7 +215,13 @@ export const AirdropsCard = memo(function AirdropsCard() {
           </Group>
 
           {/* Coin icon drop shadow */}
-          <Circle color={CARD_CONFIG.colors.coinIconOuterCircle} cx={DEFAULT_CARD_SIZE / 2} cy={COIN_ICON_TOP_INSET} r={COIN_ICON_SIZE / 2}>
+          <Circle
+            color={CARD_CONFIG.colors.coinIconOuterCircle}
+            cx={DEFAULT_CARD_SIZE / 2}
+            cy={COIN_ICON_TOP_INSET}
+            r={COIN_ICON_SIZE / 2}
+            transform={enterAnimationTransform}
+          >
             <Paint antiAlias blendMode="overlay" dither>
               <Shadow blur={15} color={CARD_CONFIG.colors.coinIconDropShadow} dx={0} dy={10} shadowOnly />
             </Paint>
@@ -202,13 +233,20 @@ export const AirdropsCard = memo(function AirdropsCard() {
             fit="cover"
             height={COIN_ICON_SIZE}
             image={coinIconImage}
+            transform={enterAnimationTransform}
             width={COIN_ICON_SIZE}
             x={DEFAULT_CARD_SIZE / 2 - COIN_ICON_SIZE / 2}
             y={COIN_ICON_TOP_INSET - COIN_ICON_SIZE / 2}
           />
 
           {/* Coin icon inner shadows */}
-          <Circle color="transparent" cx={DEFAULT_CARD_SIZE / 2} cy={COIN_ICON_TOP_INSET} r={COIN_ICON_SIZE / 2}>
+          <Circle
+            color="transparent"
+            cx={DEFAULT_CARD_SIZE / 2}
+            cy={COIN_ICON_TOP_INSET}
+            r={COIN_ICON_SIZE / 2}
+            transform={enterAnimationTransform}
+          >
             <Paint antiAlias dither>
               <Shadow blur={2} color={CARD_CONFIG.colors.black30} dx={0} dy={-1.5} inner shadowOnly />
               <Shadow blur={1.25} color={CARD_CONFIG.colors.white80} dx={0} dy={1.5} inner shadowOnly />
@@ -243,14 +281,14 @@ export const AirdropsCard = memo(function AirdropsCard() {
             <SkiaText
               align="center"
               color={CARD_CONFIG.colors.whiteTextColor}
-              lineHeight={26}
-              size="20pt"
+              lineHeight={CARD_CONFIG.dimensions.badge.lineHeight(numberOfAirdrops)}
+              size={CARD_CONFIG.dimensions.badge.textSize(numberOfAirdrops)}
               weight="heavy"
               width={BADGE_SIZE}
               x={DEFAULT_CARD_SIZE / 2 + COIN_ICON_SIZE / 2 - BADGE_SIZE / 2 + BADGE_SIZE / 3 - BADGE_SIZE / 2}
               y={CARD_CONFIG.dimensions.badge.y - CARD_CONFIG.dimensions.badge.size / 2}
             >
-              {numberOfAirdrops}
+              {numberOfAirdrops === null ? '?' : numberOfAirdrops}
             </SkiaText>
           </Group>
 
@@ -279,7 +317,9 @@ export const AirdropsCard = memo(function AirdropsCard() {
           >
             {numberOfAirdrops
               ? i18n.t(i18n.l.token_launcher.cards.airdrops.subtitle_has_airdrops)
-              : i18n.t(i18n.l.token_launcher.cards.airdrops.subtitle_no_airdrops)}
+              : numberOfAirdrops === null
+                ? i18n.t(i18n.l.token_launcher.cards.airdrops.subtitle_loading)
+                : i18n.t(i18n.l.token_launcher.cards.airdrops.subtitle_no_airdrops)}
           </SkiaText>
         </Group>
       }

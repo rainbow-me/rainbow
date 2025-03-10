@@ -63,7 +63,8 @@ const AirdropsList = () => {
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
 
-  const airdrops = useAirdropsStore(state => state.getData()?.claimables);
+  const airdrops = useAirdropsStore(state => state.getAirdrops());
+  const fetchNextPage = useAirdropsStore(state => state.fetchNextPage);
 
   const handlePress = useCallback(
     (address: string, asset: Asset, chainId: ChainId) => {
@@ -96,15 +97,16 @@ const AirdropsList = () => {
     <LegendList
       contentContainerStyle={styles.scrollContent}
       data={airdrops}
-      drawDistance={PANEL_HEIGHT}
+      drawDistance={PANEL_HEIGHT / 2}
       estimatedItemSize={COIN_ROW_HEIGHT + COIN_ROW_GAP}
       keyExtractor={keyExtractor}
       keyboardShouldPersistTaps="always"
       maintainVisibleContentPosition
+      onEndReached={fetchNextPage}
       recycleItems
       removeClippedSubviews
       renderItem={renderItem}
-      renderScrollComponent={IS_IOS ? undefined : AndroidScrollView}
+      renderScrollComponent={AndroidScrollView}
       scrollIndicatorInsets={SCROLL_INDICATOR_INSETS}
       style={styles.scrollView}
     />

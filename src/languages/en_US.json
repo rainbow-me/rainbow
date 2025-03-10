@@ -3161,11 +3161,12 @@
     "token_launcher": {
       "airdrops_sheet": {
         "claim_button_text": "Claim",
-        "empty_state_title": "No airdrops yet…",
+        "empty_state_title": "No Airdrops Yet",
         "title": "Claim Rainbow Coins"
       },
       "cards": {
         "airdrops": {
+          "subtitle_loading": "LOADING",
           "subtitle_has_airdrops": "AVAILABLE TO CLAIM",
           "subtitle_no_airdrops": "NO AIRDROPS YET",
           "title": "Airdrops"
