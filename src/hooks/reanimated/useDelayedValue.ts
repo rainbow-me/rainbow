@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { DerivedValue, SharedValue, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
-import { deepEqualWorklet, shallowEqualWorklet } from '@/worklets/comparisons';
+import { deepEqual, shallowEqual } from '@/worklets/comparisons';
 import { useAnimatedTime } from './useAnimatedTime';
 
 interface DelayedValueConfig {
@@ -46,9 +46,7 @@ export function useDelayedValue<T>(
       delayedValue.value !== null
     ) {
       const isEqual =
-        compareDepth === 'deep'
-          ? deepEqualWorklet(sharedValue.value, delayedValue.value)
-          : shallowEqualWorklet(sharedValue.value, delayedValue.value);
+        compareDepth === 'deep' ? deepEqual(sharedValue.value, delayedValue.value) : shallowEqual(sharedValue.value, delayedValue.value);
 
       if (!isEqual) {
         delayedValue.value = sharedValue.value;
@@ -58,18 +56,28 @@ export function useDelayedValue<T>(
     }
   }, [compareDepth, delayedValue, sharedValue]);
 
-  const { start } = useAnimatedTime({
-    autoStart: false,
-    durationMs: wait,
-    onEndWorklet: updateDelayedValue,
-    onStartWorklet: currentTime => {
+  const onStartWorklet = useCallback(
+    (currentTime: SharedValue<number>) => {
       'worklet';
       if (leading && currentTime.value === 0) {
         updateDelayedValue();
       }
     },
-    shouldRepeat: false,
-  });
+    [leading, updateDelayedValue]
+  );
+
+  const { start } = useAnimatedTime(
+    useMemo(
+      () => ({
+        autoStart: false,
+        durationMs: wait,
+        onEndWorklet: updateDelayedValue,
+        onStartWorklet,
+        shouldRepeat: false,
+      }),
+      [onStartWorklet, updateDelayedValue, wait]
+    )
+  );
 
   useAnimatedReaction(
     () => sharedValue.value,
