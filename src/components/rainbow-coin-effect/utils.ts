@@ -111,7 +111,7 @@ export function startAnimations({
   const repeatingAnimation = withRepeat(
     withSequence(
       withTiming(0, INTERNAL_SPRING_CONFIGS.linearZero),
-      withTiming(0, INTERNAL_SPRING_CONFIGS.linearSixSeconds),
+      withTiming(0, INTERNAL_SPRING_CONFIGS.linearFiveSeconds),
       withSpring(-ANIMATION_CONFIGS.TILT_AMPLITUDE_X, INTERNAL_SPRING_CONFIGS.spinSpring)
     ),
     -1,
@@ -177,7 +177,7 @@ export function onPressCoinIcon({
       tiltX.value = withRepeat(
         withSequence(
           withTiming(0, INTERNAL_SPRING_CONFIGS.linearZero),
-          withTiming(0, INTERNAL_SPRING_CONFIGS.linearSixSeconds),
+          withTiming(0, INTERNAL_SPRING_CONFIGS.linearFiveSeconds),
           withSpring(-ANIMATION_CONFIGS.TILT_AMPLITUDE_X, INTERNAL_SPRING_CONFIGS.spinSpring)
         ),
         -1,
