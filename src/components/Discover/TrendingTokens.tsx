@@ -703,7 +703,7 @@ export function TrendingTokens() {
             label={i18n.t(t.filters.categories.RAINBOW)}
             icon={<Image source={RainbowTokenFilter} width={16} height={16} />}
             iconColor={'#40CA61'}
-            highlightedBackgroundColor={'#7C1A75'}
+            highlightedBackgroundColor={'#C4C4DD'}
             selectedChainId={selectedChainId}
           />
           <CategoryFilterButton
