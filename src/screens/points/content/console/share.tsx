@@ -13,13 +13,12 @@ import { LineBreak } from '../../components/LineBreak';
 import { Bleed, Box, Inline, Stack } from '@/design-system';
 import { metadataPOSTClient } from '@/graphql';
 import { analyticsV2 } from '@/analytics';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 export const Share = () => {
   const { intent, setAnimationKey, setStep } = usePointsProfileContext();
   const { accountENS, accountAddress } = useAccountProfile();
   const { width: deviceWidth } = useDimensions();
-  const openInBrowser = useOpenInBrowser();
 
   const [showShareButtons, setShowShareButtons] = useState(false);
 
@@ -82,7 +81,7 @@ export const Share = () => {
                 analyticsV2.track(analyticsV2.event.pointsOnboardingScreenPressedShareToXButton);
                 const beginNextPhase = setTimeout(async () => {
                   if (intent) {
-                    await openInBrowser(intent, false);
+                    openInBrowser(intent, false);
                     await metadataPOSTClient.redeemCodeForPoints({
                       address: accountAddress,
                       redemptionCode: 'TWITTERSHARED',

@@ -10,10 +10,9 @@ import { analyticsV2 } from '@/analytics';
 import { moonpayGetWidgetURL } from '@/resources/f2c';
 import { WrappedAlert } from '@/helpers/alert';
 import * as lang from '@/languages';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 export function Moonpay({ accountAddress, config }: { accountAddress: string; config: ProviderConfig }) {
-  const openInBrowser = useOpenInBrowser();
   return (
     <ButtonPressAnimation
       onPress={async () => {
@@ -40,7 +39,7 @@ export function Moonpay({ accountAddress, config }: { accountAddress: string; co
             provider: FiatProviderName.Moonpay,
           });
 
-          await openInBrowser(url);
+          openInBrowser(url);
         } catch (e) {
           logger.error(new RainbowError('[AddCash]: failed to open provider'), {
             provider: FiatProviderName.Moonpay,

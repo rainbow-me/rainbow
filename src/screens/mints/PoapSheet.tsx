@@ -33,7 +33,7 @@ import * as i18n from '@/languages';
 import { PoapMintError } from '@/utils/poaps';
 import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -76,7 +76,6 @@ const PoapSheet = () => {
   const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
   const { isReadOnlyWallet } = useWallets();
-  const openInBrowser = useOpenInBrowser();
 
   const params = useRoute();
   const {
@@ -301,7 +300,7 @@ const PoapSheet = () => {
                     analyticsV2.track(event.poapsViewedOnPoap, {
                       eventId: poapEvent.id,
                     });
-                    await openInBrowser(poapGalleryUrl);
+                    openInBrowser(poapGalleryUrl);
                   }}
                 >
                   <Text size="15pt" color="labelSecondary" weight="bold">

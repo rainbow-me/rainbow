@@ -9,7 +9,7 @@ import { ENS_RECORDS, REGISTRATION_MODES, textRecordFields } from '@/helpers/ens
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 type ImageSource = { imageUrl?: string | null };
 type ENSImages = {
@@ -163,13 +163,12 @@ export default function useENSRecordDisplayProperties({
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { startRegistration } = useENSRegistration();
-  const openInBrowser = useOpenInBrowser();
 
   const handlePressMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'open-url' && url) {
-        await openInBrowser(url);
+        openInBrowser(url);
       }
       if (actionKey === 'copy') {
         setClipboard(recordValue);
@@ -183,7 +182,7 @@ export default function useENSRecordDisplayProperties({
         });
       }
     },
-    [ensName, navigate, openInBrowser, recordKey, recordValue, setClipboard, startRegistration, url]
+    [ensName, navigate, recordKey, recordValue, setClipboard, startRegistration, url]
   );
 
   const Button = useCallback(

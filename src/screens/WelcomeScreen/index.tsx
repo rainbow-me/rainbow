@@ -30,7 +30,7 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import { logger } from '@/logger';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const Container = styled(View)({
   ...position.coverAsObject,
@@ -72,7 +72,6 @@ export default function WelcomeScreen() {
   const { colors, isDarkMode } = useTheme();
   const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
   const hideSplashScreen = useHideSplashScreen();
-  const openInBrowser = useOpenInBrowser();
 
   const contentAnimation = useSharedValue(1);
   const colorAnimation = useSharedValue(0);
@@ -188,8 +187,8 @@ export default function WelcomeScreen() {
   }, [dangerouslyGetState, navigate, replace]);
 
   const handlePressTerms = useCallback(async () => {
-    await openInBrowser('https://rainbow.me/terms-of-use', false);
-  }, [openInBrowser]);
+    openInBrowser('https://rainbow.me/terms-of-use', false);
+  }, []);
 
   const showRestoreSheet = useCallback(() => {
     analytics.track('Tapped "I already have one"');

@@ -56,7 +56,7 @@ import { metadataPOSTClient } from '@/graphql';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -141,7 +141,6 @@ const MintSheet = () => {
   const [mintStatus, setMintStatus] = useState<'none' | 'minting' | 'minted' | 'error'>('none');
   const txRef = useRef<string>();
   const [isGasReady, setIsGasReady] = useState<boolean>(false);
-  const openInBrowser = useOpenInBrowser();
 
   const { data: ensAvatar } = useENSAvatar(ensName, {
     enabled: Boolean(ensName),
@@ -345,7 +344,7 @@ const MintSheet = () => {
         contract: mintCollection.id || '',
         chainId: mintCollection.chainId,
       });
-      await openInBrowser(buildMintDotFunUrl(mintCollection.id!, chainId));
+      openInBrowser(buildMintDotFunUrl(mintCollection.id!, chainId));
       return;
     }
 

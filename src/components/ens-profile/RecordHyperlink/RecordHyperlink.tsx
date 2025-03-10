@@ -3,13 +3,12 @@ import React, { useCallback } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Text } from '@/design-system';
 import Routes from '@/navigation/routesNames';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const ENS_REGEX = /[^\s]+.eth/g;
 
 export default function RecordHyperlink({ value }: { value: string }) {
   const { goBack, navigate } = useNavigation();
-  const openInBrowser = useOpenInBrowser();
 
   const navigateToProfile = useCallback(async () => {
     if (value.match(ENS_REGEX)) {
@@ -19,9 +18,9 @@ export default function RecordHyperlink({ value }: { value: string }) {
         fromRoute: 'RecordHyperlink',
       });
     } else {
-      await openInBrowser((value.match('https') ? '' : 'https://') + value);
+      openInBrowser((value.match('https') ? '' : 'https://') + value);
     }
-  }, [value, goBack, navigate, openInBrowser]);
+  }, [value, goBack, navigate]);
 
   return (
     <ButtonPressAnimation onPress={navigateToProfile}>

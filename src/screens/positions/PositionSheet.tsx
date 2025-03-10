@@ -15,7 +15,7 @@ import { capitalize } from 'lodash';
 import { RainbowPosition } from '@/resources/defi/types';
 import { LpPositionListItem } from './LpPositionListItem';
 import { RootStackParamList } from '@/navigation/types';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -47,7 +47,6 @@ export const PositionSheet: React.FC = () => {
   } = useRoute<RouteProp<RootStackParamList, 'PositionSheet'>>();
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
-  const openInBrowser = useOpenInBrowser();
 
   const positionColor =
     position.dapp.colors.primary || position.dapp.colors.fallback || (isDarkMode ? globalColors.white100 : globalColors.white10);
@@ -60,8 +59,8 @@ export const PositionSheet: React.FC = () => {
       dapp: position.type,
       url: position.dapp.url,
     });
-    await openInBrowser(position.dapp.url);
-  }, [openInBrowser, position.dapp.url, position.type]);
+    openInBrowser(position.dapp.url);
+  }, [position.dapp.url, position.type]);
 
   return (
     <BackgroundProvider color="surfaceSecondary">

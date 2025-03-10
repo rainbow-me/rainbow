@@ -15,7 +15,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;
@@ -89,7 +89,7 @@ export function PairHardwareWalletSigningSheet() {
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
-  const openInBrowser = useOpenInBrowser();
+
   const { busy, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({ showImportModal: true });
 
   const items: ItemDetails[] = [
@@ -178,9 +178,7 @@ export function PairHardwareWalletSigningSheet() {
                 {i18n.t(TRANSLATIONS.blind_signing_description)}
               </Text>
               <ButtonPressAnimation
-                onPress={async () =>
-                  await openInBrowser('https://www.ledger.com/academy/enable-blind-signing-why-when-and-how-to-stay-safe')
-                }
+                onPress={async () => openInBrowser('https://www.ledger.com/academy/enable-blind-signing-why-when-and-how-to-stay-safe')}
                 scaleTo={0.9}
               >
                 <Text align="center" color="blue" weight="semibold" size="15pt / 135%">

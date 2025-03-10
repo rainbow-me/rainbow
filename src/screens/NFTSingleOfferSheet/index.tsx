@@ -53,7 +53,7 @@ import { metadataPOSTClient } from '@/graphql';
 import { ethUnits } from '@/references';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -93,7 +93,6 @@ export function NFTSingleOfferSheet() {
   const {
     data: { nftsMap },
   } = useLegacyNFTs({ address: accountAddress });
-  const openInBrowser = useOpenInBrowser();
 
   const { offer } = params as { offer: NftOffer };
   const offerChainId = useBackendNetworksStore.getState().getChainsIdByName()[offer.network as Network];
@@ -695,7 +694,7 @@ export function NFTSingleOfferSheet() {
                           network: offer.network,
                         },
                       });
-                      await openInBrowser(offer.url);
+                      openInBrowser(offer.url);
                     }}
                   >
                     <Text color="label" align="center" size="17pt" weight="heavy">

@@ -69,7 +69,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analyticsV2 } from '@/analytics';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -364,9 +364,8 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     }
   }, [colors.whiteLabel, imageColor]);
 
-  const openInBrowser = useOpenInBrowser();
-  const handlePressMarketplaceName = useCallback(async () => await openInBrowser(asset.permalink), [asset.permalink, openInBrowser]);
-  const handlePressParty = useCallback(async () => await openInBrowser(asset.external_link!), [asset.external_link, openInBrowser]);
+  const handlePressMarketplaceName = useCallback(async () => openInBrowser(asset.permalink), [asset.permalink]);
+  const handlePressParty = useCallback(async () => openInBrowser(asset.external_link!), [asset.external_link]);
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {

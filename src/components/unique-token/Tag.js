@@ -10,7 +10,7 @@ import { Inline } from '@/design-system';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { magicMemo, showActionSheetWithOptions } from '@/utils';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const HairlineSpace = '\u200a';
 
@@ -106,18 +106,17 @@ const Tag = ({
   const isURL = typeof originalValue === 'string' && originalValue.toLowerCase().startsWith('https://');
 
   const viewTraitOnNftMarketplaceAction = getViewTraitOnNftMarketplaceAction(marketplaceName);
-  const openInBrowser = useOpenInBrowser();
 
   const handlePressMenuItem = useCallback(
     async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === PropertyActionsEnum.viewTraitOnNftMarketplace) {
         const nftTraitUrl = getNftTraitUrl(marketplaceId, slug, title, originalValue);
-        await openInBrowser(nftTraitUrl);
+        openInBrowser(nftTraitUrl);
       } else if (actionKey === PropertyActionsEnum.openURL) {
-        await openInBrowser(originalValue);
+        openInBrowser(originalValue);
       }
     },
-    [marketplaceId, slug, title, originalValue, openInBrowser]
+    [marketplaceId, slug, title, originalValue]
   );
 
   const onPressAndroid = useCallback(() => {
@@ -140,22 +139,13 @@ const Tag = ({
       async idx => {
         if (androidContractActions[idx] === viewTraitOnNftMarketplaceAction.actionTitle) {
           const nftTraitUrl = getNftTraitUrl(marketplaceId, slug, title, originalValue);
-          await openInBrowser(nftTraitUrl);
+          openInBrowser(nftTraitUrl);
         } else if (androidContractActions[idx] === openTraitURLInBrowserAction.actionTitle) {
-          await openInBrowser(originalValue);
+          openInBrowser(originalValue);
         }
       }
     );
-  }, [
-    hideNftMarketplaceAction,
-    isURL,
-    viewTraitOnNftMarketplaceAction.actionTitle,
-    marketplaceId,
-    slug,
-    title,
-    originalValue,
-    openInBrowser,
-  ]);
+  }, [hideNftMarketplaceAction, isURL, viewTraitOnNftMarketplaceAction.actionTitle, marketplaceId, slug, title, originalValue]);
 
   const menuConfig = useMemo(() => {
     const menuItems = [];

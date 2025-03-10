@@ -33,7 +33,7 @@ import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { Box } from '@/design-system';
 import { capitalize } from 'lodash';
 import { backupsStore } from '@/state/backups/backups';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
@@ -61,7 +61,6 @@ const SettingsSection = ({
   const { language, nativeCurrency } = useAccountSettings();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
-  const openInBrowser = useOpenInBrowser();
 
   const { backupProvider, backups } = backupsStore(state => ({
     backupProvider: state.backupProvider,
@@ -87,10 +86,10 @@ const SettingsSection = ({
 
   // if deeplink, open externally. if not, open in app browser
   const onPressTwitter = useCallback(async () => {
-    await openInBrowser(SettingsExternalURLs.twitterWebUrl);
-  }, [openInBrowser]);
+    openInBrowser(SettingsExternalURLs.twitterWebUrl, false);
+  }, []);
 
-  const onPressLearn = useCallback(async () => await openInBrowser(SettingsExternalURLs.rainbowLearn), [openInBrowser]);
+  const onPressLearn = useCallback(async () => openInBrowser(SettingsExternalURLs.rainbowLearn), []);
 
   const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets, backups), [wallets, backups]);
 

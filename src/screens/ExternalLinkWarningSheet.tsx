@@ -12,7 +12,7 @@ import { fonts, fontWithWidth, position } from '@/styles';
 import { useTheme } from '@/theme';
 import { formatURLForDisplay } from '@/utils';
 import { IS_ANDROID } from '@/env';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 export const ExternalLinkWarningSheetHeight = 380 + (IS_ANDROID ? 20 : 0);
 
@@ -24,7 +24,6 @@ const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeigh
 const ExternalLinkWarningSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeAreaInsets();
-  const openInBrowser = useOpenInBrowser();
 
   // @ts-expect-error
   const { params: { url, onClose } = {} } = useRoute();
@@ -39,8 +38,8 @@ const ExternalLinkWarningSheet = () => {
   const handleLink = useCallback(async () => {
     goBack();
     onClose?.();
-    await openInBrowser(url);
-  }, [goBack, onClose, openInBrowser, url]);
+    openInBrowser(url);
+  }, [goBack, onClose, url]);
 
   return (
     <Container deviceHeight={deviceHeight} height={ExternalLinkWarningSheetHeight} insets={insets}>

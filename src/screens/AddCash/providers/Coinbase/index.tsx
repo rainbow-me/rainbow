@@ -10,10 +10,9 @@ import { analyticsV2 } from '@/analytics';
 import { coinbaseGetWidgetURL } from '@/resources/f2c';
 import { WrappedAlert } from '@/helpers/alert';
 import * as lang from '@/languages';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 export function Coinbase({ accountAddress, config }: { accountAddress: string; config: ProviderConfig }) {
-  const openInBrowser = useOpenInBrowser();
   return (
     <ButtonPressAnimation
       onPress={async () => {
@@ -39,7 +38,7 @@ export function Coinbase({ accountAddress, config }: { accountAddress: string; c
             provider: FiatProviderName.Coinbase,
           });
 
-          await openInBrowser(url);
+          openInBrowser(url);
         } catch (e) {
           logger.error(new RainbowError('[AddCash]: failed to open provider'), {
             provider: FiatProviderName.Coinbase,

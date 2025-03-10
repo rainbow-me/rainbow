@@ -16,7 +16,7 @@ import { ImgixImage } from '@/components/images';
 import RestoreYourWallet from '@/assets/RestoreYourWallet.png';
 import { Source } from 'react-native-fast-image';
 import { useNavigation } from '@/navigation';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const imageSize = 40;
 
@@ -29,13 +29,12 @@ export default function CheckIdentifierScreen() {
   const sheetHeight = getHeightForStep(walletBackupStepTypes.check_identifier);
 
   const [isChecking, setIsChecking] = useState(false);
-  const openInBrowser = useOpenInBrowser();
 
   const ErrorAlert = () =>
     Alert({
       buttons: [
         {
-          onPress: async () => await openInBrowser('https://rainbow.me/support'),
+          onPress: async () => openInBrowser('https://rainbow.me/support'),
           text: lang.t(lang.l.check_identifier.error_alert.contact_support),
         },
         {

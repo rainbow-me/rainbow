@@ -16,7 +16,7 @@ import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoShe
 import { RootStackParamList } from '@/navigation/types';
 import { Colors } from '@/styles';
 import { getHighContrastColor } from '@/__swaps__/utils/swaps';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const DEFAULT_HEADER_HEIGHT = 285;
 const DEFAULT_HEADER_WIDTH = 390;
@@ -68,7 +68,6 @@ export function RemotePromoSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, 'RemotePromoSheet'>>();
   const { campaignId, campaignKey } = params;
   const { language } = useAccountSettings();
-  const openInBrowser = useOpenInBrowser();
 
   useEffect(() => {
     return () => {
@@ -98,8 +97,8 @@ export function RemotePromoSheet() {
   };
 
   const externalNavigation = useCallback(async () => {
-    await openInBrowser(data?.promoSheet?.primaryButtonProps.props.url);
-  }, [data?.promoSheet?.primaryButtonProps.props.url, openInBrowser]);
+    openInBrowser(data?.promoSheet?.primaryButtonProps.props.url);
+  }, [data?.promoSheet?.primaryButtonProps.props.url]);
 
   const internalNavigation = useCallback(() => {
     goBack();

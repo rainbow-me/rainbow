@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import URL from 'url-parse';
 import { useNavigation } from './Navigation';
 import Routes from './routesNames';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 // External link warnings will be skipped for these domains
 const trustedDomains = [
@@ -25,17 +25,17 @@ const trustedDomains = [
 
 export default function useUntrustedUrlOpener(): (url: string) => void {
   const { navigate } = useNavigation();
-  const openInBrowser = useOpenInBrowser();
+
   return useCallback(
     async (url: string) => {
       const { hostname } = new URL(url);
 
       if (trustedDomains.some(trustedDomain => hostname === trustedDomain || hostname.endsWith(`.${trustedDomain}`))) {
-        await openInBrowser(url);
+        openInBrowser(url);
       } else {
         navigate(Routes.EXTERNAL_LINK_WARNING_SHEET, { url });
       }
     },
-    [navigate, openInBrowser]
+    [navigate]
   );
 }

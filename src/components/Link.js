@@ -6,7 +6,7 @@ import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';
 import styled from '@/styled-thing';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const Container = styled(RowWithMargins).attrs({
   align: 'center',
@@ -26,8 +26,7 @@ const Link = ({
   weight = 'semibold',
   ...props
 }) => {
-  const openInBrowser = useOpenInBrowser();
-  const handlePress = useCallback(async () => await openInBrowser(url), [openInBrowser, url]);
+  const handlePress = useCallback(async () => openInBrowser(url), [url]);
   const { colors } = useTheme();
 
   return (

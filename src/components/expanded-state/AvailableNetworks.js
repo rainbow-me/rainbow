@@ -12,12 +12,11 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import Divider from '@/components/Divider';
 import { Text } from '../text';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginHorizontal = 19, prominent }) => {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
-  const openInBrowser = useOpenInBrowser();
 
   const radialGradientProps = {
     center: [0, 1],
@@ -32,8 +31,8 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginHorizontal = 
   const availableChainIds = Object.keys(networks).map(network => Number(network));
 
   const linkToHop = useCallback(async () => {
-    await openInBrowser('https://app.hop.exchange/#/send');
-  }, [openInBrowser]);
+    openInBrowser('https://app.hop.exchange/#/send');
+  }, []);
 
   const handleAvailableNetworksPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {

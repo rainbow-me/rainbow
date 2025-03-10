@@ -20,7 +20,7 @@ import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { useRoute } from '@react-navigation/native';
 import { Network } from '@/state/backendNetworks/types';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const ContainerWidth = 261;
 
@@ -171,9 +171,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 };
 
 const AddFundsInterstitial = ({ network }) => {
-  const openInBrowser = useOpenInBrowser();
-
-  const onAddFromFaucet = async accountAddress => await openInBrowser(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
+  const onAddFromFaucet = async accountAddress => openInBrowser(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
   const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
@@ -200,7 +198,7 @@ const AddFundsInterstitial = ({ network }) => {
         routeName,
       });
     },
-    [isDamaged, navigate, routeName, accountAddress]
+    [isDamaged, navigate, routeName]
   );
 
   const addFundsToAccountAddress = useCallback(() => onAddFromFaucet(accountAddress), [accountAddress]);

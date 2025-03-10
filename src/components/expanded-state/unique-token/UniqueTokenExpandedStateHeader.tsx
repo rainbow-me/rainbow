@@ -22,7 +22,7 @@ import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simpleha
 import { ContextCircleButton } from '@/components/context-menu';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useOpenInBrowser } from '@/hooks/useOpenInBrowser';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -262,7 +262,6 @@ const UniqueTokenExpandedStateHeader = ({
   const isENS = asset.asset_contract?.address?.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
-  const openInBrowser = useOpenInBrowser();
 
   const assetMenuConfig = useMemo(() => {
     const AssetActions = getAssetActions({ chainId: asset.chainId });
@@ -328,18 +327,18 @@ const UniqueTokenExpandedStateHeader = ({
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === FamilyActionsEnum.viewCollection && asset.marketplaceCollectionUrl) {
-        await openInBrowser(asset.marketplaceCollectionUrl);
+        openInBrowser(asset.marketplaceCollectionUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
         const websiteUrl = asset.external_link || asset.collection.external_url;
         if (websiteUrl) {
-          await openInBrowser(websiteUrl);
+          openInBrowser(websiteUrl);
         }
       } else if (actionKey === FamilyActionsEnum.twitter) {
         const twitterUrl = 'https://twitter.com/' + asset.collection.twitter_username;
-        await openInBrowser(twitterUrl, false);
+        openInBrowser(twitterUrl, false);
       } else if (actionKey === FamilyActionsEnum.discord && asset.collection.discord_url) {
         const discordUrl = asset.collection.discord_url;
-        await openInBrowser(discordUrl, false);
+        openInBrowser(discordUrl, false);
       }
     },
     [
@@ -348,7 +347,6 @@ const UniqueTokenExpandedStateHeader = ({
       asset.collection.twitter_username,
       asset.external_link,
       asset.marketplaceCollectionUrl,
-      openInBrowser,
     ]
   );
 
@@ -363,11 +361,11 @@ const UniqueTokenExpandedStateHeader = ({
           chainId: asset.chainId,
         });
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
-        await openInBrowser(rainbowWebUrl);
+        openInBrowser(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.opensea) {
-        await openInBrowser(`https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`);
+        openInBrowser(`https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`);
       } else if (actionKey === AssetActionsEnum.looksrare) {
-        await openInBrowser(`https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`);
+        openInBrowser(`https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`);
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
@@ -395,7 +393,6 @@ const UniqueTokenExpandedStateHeader = ({
     },
     [
       asset,
-      openInBrowser,
       rainbowWebUrl,
       setClipboard,
       isHiddenAsset,
@@ -435,16 +432,16 @@ const UniqueTokenExpandedStateHeader = ({
       },
       async (idx: number) => {
         if (idx === collectionIndex && asset.marketplaceCollectionUrl) {
-          await openInBrowser(asset.marketplaceCollectionUrl);
+          openInBrowser(asset.marketplaceCollectionUrl);
         } else if (idx === websiteIndex) {
-          await openInBrowser(
+          openInBrowser(
             // @ts-expect-error external_link and external_url could be null or undefined?
             asset.external_link || asset.collection.external_url
           );
         } else if (idx === twitterIndex) {
-          await openInBrowser('https://twitter.com/' + asset.collection.twitter_username, false);
+          openInBrowser('https://twitter.com/' + asset.collection.twitter_username, false);
         } else if (idx === discordIndex && asset.collection.discord_url) {
-          await openInBrowser(asset.collection.discord_url, false);
+          openInBrowser(asset.collection.discord_url, false);
         }
       }
     );
@@ -454,7 +451,6 @@ const UniqueTokenExpandedStateHeader = ({
     asset.collection.twitter_username,
     asset.external_link,
     asset.marketplaceCollectionUrl,
-    openInBrowser,
   ]);
 
   const overflowMenuHitSlop: Space = '15px (Deprecated)';
