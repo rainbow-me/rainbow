@@ -12,7 +12,7 @@ export const ANIMATION_CONFIGS = {
 
 export const INTERNAL_SPRING_CONFIGS = {
   initialSpinDelay: { duration: time.seconds(0.5), easing: Easing.linear },
-  linearSixSeconds: { duration: time.seconds(5), easing: Easing.linear },
+  linearFiveSeconds: { duration: time.seconds(5), easing: Easing.linear },
   linearZero: { duration: 0, easing: Easing.linear },
   spinSpring: { damping: 100, mass: 0.4, stiffness: 22 },
   spinSpringWithVelocity: { damping: 100, mass: 0.4, stiffness: 22, velocity: 100 },
