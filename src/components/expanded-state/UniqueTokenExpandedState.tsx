@@ -365,8 +365,8 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     }
   }, [colors.whiteLabel, imageColor]);
 
-  const handlePressMarketplaceName = useCallback(async () => openInBrowser(asset.permalink), [asset.permalink]);
-  const handlePressParty = useCallback(async () => openInBrowser(asset.external_link!), [asset.external_link]);
+  const handlePressMarketplaceName = useCallback(() => openInBrowser(asset.permalink), [asset.permalink]);
+  const handlePressParty = useCallback(() => openInBrowser(asset.external_link!), [asset.external_link]);
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {

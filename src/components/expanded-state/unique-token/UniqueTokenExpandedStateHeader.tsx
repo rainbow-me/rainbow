@@ -262,7 +262,6 @@ const UniqueTokenExpandedStateHeader = ({
   const isENS = asset.asset_contract?.address?.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
-
   const assetMenuConfig = useMemo(() => {
     const AssetActions = getAssetActions({ chainId: asset.chainId });
 
@@ -325,7 +324,7 @@ const UniqueTokenExpandedStateHeader = ({
 
   const handlePressFamilyMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    async ({ nativeEvent: { actionKey } }) => {
+    ({ nativeEvent: { actionKey } }) => {
       if (actionKey === FamilyActionsEnum.viewCollection && asset.marketplaceCollectionUrl) {
         openInBrowser(asset.marketplaceCollectionUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
@@ -352,7 +351,7 @@ const UniqueTokenExpandedStateHeader = ({
 
   const handlePressAssetMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    async ({ nativeEvent: { actionKey } }) => {
+    ({ nativeEvent: { actionKey } }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
         ethereumUtils.openNftInBlockExplorer({
           // @ts-expect-error address could be undefined?
@@ -430,7 +429,7 @@ const UniqueTokenExpandedStateHeader = ({
         showSeparators: true,
         title: '',
       },
-      async (idx: number) => {
+      (idx: number) => {
         if (idx === collectionIndex && asset.marketplaceCollectionUrl) {
           openInBrowser(asset.marketplaceCollectionUrl);
         } else if (idx === websiteIndex) {

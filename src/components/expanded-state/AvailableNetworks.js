@@ -30,7 +30,7 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginHorizontal = 
 
   const availableChainIds = Object.keys(networks).map(network => Number(network));
 
-  const linkToHop = useCallback(async () => {
+  const linkToHop = useCallback(() => {
     openInBrowser('https://app.hop.exchange/#/send');
   }, []);
 

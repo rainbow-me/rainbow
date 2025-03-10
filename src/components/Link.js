@@ -26,7 +26,7 @@ const Link = ({
   weight = 'semibold',
   ...props
 }) => {
-  const handlePress = useCallback(async () => openInBrowser(url), [url]);
+  const handlePress = useCallback(() => openInBrowser(url), [url]);
   const { colors } = useTheme();
 
   return (

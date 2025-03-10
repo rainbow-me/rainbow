@@ -108,7 +108,7 @@ const Tag = ({
   const viewTraitOnNftMarketplaceAction = getViewTraitOnNftMarketplaceAction(marketplaceName);
 
   const handlePressMenuItem = useCallback(
-    async ({ nativeEvent: { actionKey } }) => {
+    ({ nativeEvent: { actionKey } }) => {
       if (actionKey === PropertyActionsEnum.viewTraitOnNftMarketplace) {
         const nftTraitUrl = getNftTraitUrl(marketplaceId, slug, title, originalValue);
         openInBrowser(nftTraitUrl);
@@ -136,7 +136,7 @@ const Tag = ({
         showSeparators: true,
         title: '',
       },
-      async idx => {
+      idx => {
         if (androidContractActions[idx] === viewTraitOnNftMarketplaceAction.actionTitle) {
           const nftTraitUrl = getNftTraitUrl(marketplaceId, slug, title, originalValue);
           openInBrowser(nftTraitUrl);

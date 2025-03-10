@@ -31,7 +31,7 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
   const { accentColors } = useExpandedAssetSheetContext();
 
   return (
-    <ButtonPressAnimation onPress={async () => openInBrowser(url)} scaleTo={0.96}>
+    <ButtonPressAnimation onPress={() => openInBrowser(url)} scaleTo={0.96}>
       <Row highlighted={highlighted}>
         <Box width="full" flexDirection="row" alignItems="center">
           <Inline space="12px" alignVertical="center">

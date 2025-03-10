@@ -77,7 +77,7 @@ export const Share = () => {
             <NeonButton
               color="#FEC101"
               label={i18n.t(i18n.l.points.console.share_to_x)}
-              onPress={async () => {
+              onPress={() => {
                 analyticsV2.track(analyticsV2.event.pointsOnboardingScreenPressedShareToXButton);
                 const beginNextPhase = setTimeout(async () => {
                   if (intent) {

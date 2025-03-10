@@ -89,7 +89,6 @@ export function PairHardwareWalletSigningSheet() {
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
-
   const { busy, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({ showImportModal: true });
 
   const items: ItemDetails[] = [
@@ -178,7 +177,7 @@ export function PairHardwareWalletSigningSheet() {
                 {i18n.t(TRANSLATIONS.blind_signing_description)}
               </Text>
               <ButtonPressAnimation
-                onPress={async () => openInBrowser('https://www.ledger.com/academy/enable-blind-signing-why-when-and-how-to-stay-safe')}
+                onPress={() => openInBrowser('https://www.ledger.com/academy/enable-blind-signing-why-when-and-how-to-stay-safe')}
                 scaleTo={0.9}
               >
                 <Text align="center" color="blue" weight="semibold" size="15pt / 135%">

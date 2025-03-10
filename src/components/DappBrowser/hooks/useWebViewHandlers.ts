@@ -176,7 +176,7 @@ export function useWebViewHandlers({
   );
 
   const handleOnOpenWindow = useCallback(
-    async (syntheticEvent: { nativeEvent: { targetUrl: string } }) => {
+    (syntheticEvent: { nativeEvent: { targetUrl: string } }) => {
       const { nativeEvent } = syntheticEvent;
       const { targetUrl } = nativeEvent;
 

@@ -27,7 +27,6 @@ type Props = {
 
 export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ transaction, presentToast }) => {
   const { colors } = useTheme();
-
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
   const { network, status, chainId } = transaction;
   const isReadOnly = useSelector((state: AppState) => state.wallets.selected?.type === WalletTypes.readOnly);
@@ -62,7 +61,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
 
   const formattedHash = shortenTxHashString(hash);
 
-  const onViewOnBlockExplorerPress = async () => {
+  const onViewOnBlockExplorerPress = () => {
     if (transaction.explorerUrl) {
       openInBrowser(transaction.explorerUrl);
     } else {

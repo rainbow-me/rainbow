@@ -23,7 +23,7 @@ export const PairHardwareWalletIntroSheet = () => {
             <Text align="center" color="labelTertiary" weight="semibold" size="15pt / 135%">
               {i18n.t(TRANSLATIONS.connect_your_ledger)}
             </Text>
-            <ButtonPressAnimation onPress={async () => openInBrowser('https://www.ledger.com')} scaleTo={0.9}>
+            <ButtonPressAnimation onPress={() => openInBrowser('https://www.ledger.com')} scaleTo={0.9}>
               <Text align="center" color="blue" weight="semibold" size="15pt / 135%">
                 {i18n.t(TRANSLATIONS.learn_more_about_ledger)}
               </Text>

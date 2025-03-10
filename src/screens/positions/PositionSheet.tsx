@@ -54,7 +54,7 @@ export const PositionSheet: React.FC = () => {
   const deposits = position.deposits.filter(deposit => !deposit.isLp);
   const lpDeposits = position.deposits.filter(deposit => deposit.isLp);
 
-  const openDapp = useCallback(async () => {
+  const openDapp = useCallback(() => {
     analyticsV2.track(event.positionsOpenedExternalDapp, {
       dapp: position.type,
       url: position.dapp.url,

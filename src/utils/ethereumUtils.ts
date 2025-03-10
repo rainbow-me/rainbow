@@ -41,6 +41,7 @@ import { ChainId, Network } from '@/state/backendNetworks/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { openInBrowser } from './openInBrowser';
 
 /**
  * @deprecated - use `getUniqueId` instead for chainIds
@@ -359,25 +360,25 @@ function getBlockExplorer({ chainId }: { chainId: ChainId }) {
 
 function openAddressInBlockExplorer({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
   const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
-  Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url: `${explorer}/address/${address}` });
+  openInBrowser(`${explorer}/address/${address}`);
 }
 
 function openTokenEtherscanURL({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
   if (!isString(address)) return;
   const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
-  Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url: `${explorer}/token/${address}` });
+  openInBrowser(`${explorer}/token/${address}`);
 }
 
 function openNftInBlockExplorer({ contractAddress, tokenId, chainId }: { contractAddress: string; tokenId: string; chainId: ChainId }) {
   const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
-  Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url: `${explorer}/token/${contractAddress}?a=${tokenId}` });
+  openInBrowser(`${explorer}/token/${contractAddress}?a=${tokenId}`);
 }
 
 function openTransactionInBlockExplorer({ hash, chainId }: { hash: string; chainId: ChainId }) {
   const normalizedHash = hash.replace(/-.*/g, '');
   if (!isString(hash)) return;
   const explorer = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.blockExplorers?.default?.url;
-  Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url: `${explorer}/tx/${normalizedHash}` });
+  openInBrowser(`${explorer}/tx/${normalizedHash}`);
 }
 
 async function parseEthereumUrl(data: string) {

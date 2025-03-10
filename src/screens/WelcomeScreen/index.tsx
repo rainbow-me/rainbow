@@ -186,7 +186,7 @@ export default function WelcomeScreen() {
     });
   }, [dangerouslyGetState, navigate, replace]);
 
-  const handlePressTerms = useCallback(async () => {
+  const handlePressTerms = useCallback(() => {
     openInBrowser('https://rainbow.me/terms-of-use', false);
   }, []);
 

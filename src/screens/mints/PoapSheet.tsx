@@ -75,7 +75,6 @@ const PoapSheet = () => {
   const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
   const { isReadOnlyWallet } = useWallets();
-
   const params = useRoute();
   const {
     data: { nfts },
@@ -295,7 +294,7 @@ const PoapSheet = () => {
                   </SheetActionButton>
                 </SheetActionButtonRow>
                 <ButtonPressAnimation
-                  onPress={async () => {
+                  onPress={() => {
                     analyticsV2.track(event.poapsViewedOnPoap, {
                       eventId: poapEvent.id,
                     });

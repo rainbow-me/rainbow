@@ -84,12 +84,11 @@ const SettingsSection = ({
     });
   }, []);
 
-  // if deeplink, open externally. if not, open in app browser
-  const onPressTwitter = useCallback(async () => {
+  const onPressTwitter = useCallback(() => {
     openInBrowser(SettingsExternalURLs.twitterWebUrl, false);
   }, []);
 
-  const onPressLearn = useCallback(async () => openInBrowser(SettingsExternalURLs.rainbowLearn), []);
+  const onPressLearn = useCallback(() => openInBrowser(SettingsExternalURLs.rainbowLearn), []);
 
   const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets, backups), [wallets, backups]);
 

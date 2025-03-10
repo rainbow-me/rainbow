@@ -20,8 +20,7 @@ import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { Navigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -435,14 +434,14 @@ export const explainers = (params, theme) => {
           <Text
             color={colors?.appleBlue}
             onPress={() =>
-              Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, {
-                url: buildRainbowLearnUrl({
+              openInBrowser(
+                buildRainbowLearnUrl({
                   url: 'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing',
                   query: {
                     campaign: 'explain',
                   },
-                }),
-              })
+                })
+              )
             }
             size="large"
             suppressHighlighting
@@ -475,14 +474,14 @@ export const explainers = (params, theme) => {
           <Text
             color={colors?.appleBlue}
             onPress={() =>
-              Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, {
-                url: buildRainbowLearnUrl({
+              openInBrowser(
+                buildRainbowLearnUrl({
                   url: 'https://support.rainbow.me/en/articles/8324868-fee-on-transfer-tokens',
                   query: {
                     campaign: 'explain',
                   },
-                }),
-              })
+                })
+              )
             }
             size="large"
             suppressHighlighting
@@ -609,14 +608,14 @@ export const explainers = (params, theme) => {
           <Text
             color={colors?.appleBlue}
             onPress={() =>
-              Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, {
-                url: buildRainbowLearnUrl({
+              openInBrowser(
+                buildRainbowLearnUrl({
                   url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
                   query: {
                     campaign: 'explain',
                   },
-                }),
-              })
+                })
+              )
             }
             size="large"
             suppressHighlighting
@@ -643,14 +642,14 @@ export const explainers = (params, theme) => {
           <Text
             color={colors?.appleBlue}
             onPress={() =>
-              Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, {
-                url: buildRainbowLearnUrl({
+              openInBrowser(
+                buildRainbowLearnUrl({
                   url: 'https://learn.rainbow.me/swap-with-confidence-with-rainbow',
                   query: {
                     campaign: 'explain',
                   },
-                }),
-              })
+                })
+              )
             }
             size="large"
             suppressHighlighting
@@ -672,11 +671,7 @@ export const explainers = (params, theme) => {
           {lang.t('explain.slippage.still_curious.fragment1')}
           <Text
             color={colors?.appleBlue}
-            onPress={() =>
-              Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, {
-                url: 'https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges',
-              })
-            }
+            onPress={() => openInBrowser('https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges')}
             size="large"
             suppressHighlighting
             weight="semibold"
@@ -725,7 +720,7 @@ const ExplainSheet = () => {
   }, [goBack, params]);
 
   const handleReadMore = useCallback(() => {
-    explainSheetConfig?.readMoreLink && Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url: explainSheetConfig.readMoreLink });
+    explainSheetConfig?.readMoreLink && openInBrowser(explainSheetConfig.readMoreLink);
   }, [explainSheetConfig?.readMoreLink]);
 
   const EmojiText = type === 'verified' ? Gradient : Emoji;

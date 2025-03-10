@@ -4,8 +4,7 @@ import { debounce } from 'lodash';
 import Mailer from 'react-native-mail';
 import { Alert } from '../components/alerts';
 import * as i18n from '@/languages';
-import { Navigation } from '@/navigation';
-import Routes from '@/navigation/Routes';
+import { openInBrowser } from '@/utils/openInBrowser';
 const SupportEmailAddress = 'support@rainbow.me';
 
 // this whole file
@@ -30,8 +29,7 @@ const SupportErrorAlert = () =>
 
 const handleMailError = debounce(error => (error ? SupportErrorAlert() : null), 250);
 
-const openLearnMorePage = () =>
-  Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url: 'https://support.rainbow.me/en/articles/7975958-an-error-occurred' });
+const openLearnMorePage = () => openInBrowser('https://support.rainbow.me/en/articles/7975958-an-error-occurred');
 
 const messageSupport = () => Mailer.mail(supportEmailOptions, handleMailError);
 

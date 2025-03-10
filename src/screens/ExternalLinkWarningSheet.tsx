@@ -24,7 +24,6 @@ const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeigh
 const ExternalLinkWarningSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeAreaInsets();
-
   // @ts-expect-error
   const { params: { url, onClose } = {} } = useRoute();
   const { colors } = useTheme();
@@ -35,7 +34,7 @@ const ExternalLinkWarningSheet = () => {
     onClose?.();
   }, [onClose, goBack]);
 
-  const handleLink = useCallback(async () => {
+  const handleLink = useCallback(() => {
     goBack();
     onClose?.();
     openInBrowser(url);

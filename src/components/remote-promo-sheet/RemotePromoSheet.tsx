@@ -96,7 +96,7 @@ export function RemotePromoSheet() {
     }
   };
 
-  const externalNavigation = useCallback(async () => {
+  const externalNavigation = useCallback(() => {
     openInBrowser(data?.promoSheet?.primaryButtonProps.props.url);
   }, [data?.promoSheet?.primaryButtonProps.props.url]);
 

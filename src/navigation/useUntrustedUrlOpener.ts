@@ -27,7 +27,7 @@ export default function useUntrustedUrlOpener(): (url: string) => void {
   const { navigate } = useNavigation();
 
   return useCallback(
-    async (url: string) => {
+    (url: string) => {
       const { hostname } = new URL(url);
 
       if (trustedDomains.some(trustedDomain => hostname === trustedDomain || hostname.endsWith(`.${trustedDomain}`))) {

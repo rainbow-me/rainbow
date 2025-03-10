@@ -1,7 +1,6 @@
 import React, { ReactNode, useCallback } from 'react';
 import { Text as NativeText, TextStyle } from 'react-native';
-import { Navigation } from '@/navigation';
-import Routes from '@/navigation/Routes';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const style: TextStyle = {
   textDecorationLine: 'underline',
@@ -22,7 +21,7 @@ export function TextLink({ children, url, handleLinkPress }: TextLinkProps) {
     if (handleLinkPress) {
       handleLinkPress(url);
     } else {
-      Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url });
+      openInBrowser(url);
     }
   }, [handleLinkPress, url]);
 
