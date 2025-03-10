@@ -20,7 +20,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { useCallback, useEffect, useMemo } from 'react';
 import React, { FlatList, View, Image } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated, { useSharedValue } from 'react-native-reanimated';
+import Animated, { SharedValue, useSharedValue } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
 import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWallets';
 import { ImgixImage } from '../images';
@@ -171,6 +171,7 @@ function CategoryFilterButton({
   iconColor,
   label,
   highlightedBackgroundColor,
+  selectedChainId,
 }: {
   category: TrendingCategory;
   icon: string | JSX.Element;
@@ -178,10 +179,12 @@ function CategoryFilterButton({
   highlightedBackgroundColor: string;
   iconWidth?: number;
   label: string;
+  selectedChainId: SharedValue<ChainId | undefined>;
 }) {
   const { isDarkMode } = useColorMode();
   const fillTertiary = useBackgroundColor('fillTertiary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
+  const tokenLauncherNetworks = useBackendNetworksStore(state => state.getTokenLauncherSupportedChainIds());
 
   const selected = useTrendingTokensStore(state => state.category === category);
 
@@ -194,7 +197,14 @@ function CategoryFilterButton({
 
   const selectCategory = useCallback(() => {
     useTrendingTokensStore.getState().setCategory(category);
-  }, [category]);
+    if (category === 'Rainbow') {
+      const { chainId } = useTrendingTokensStore.getState();
+      if (chainId && !tokenLauncherNetworks.includes(chainId)) {
+        useTrendingTokensStore.getState().setChainId(undefined);
+        selectedChainId.value = undefined;
+      }
+    }
+  }, [category, tokenLauncherNetworks, selectedChainId]);
 
   return (
     <ButtonPressAnimation scaleTo={0.92} onPress={selectCategory}>
@@ -512,12 +522,15 @@ function NoResults() {
   );
 }
 
-function NetworkFilter() {
-  const chainId = useTrendingTokensStore(state => state.chainId);
-  const selected = useSharedValue<ChainId | undefined>(chainId);
+function NetworkFilter({ selectedChainId }: { selectedChainId: SharedValue<ChainId | undefined> }) {
+  const { chainId, category } = useTrendingTokensStore(state => ({
+    chainId: state.chainId,
+    category: state.category,
+  }));
 
   const chainColor = useBackendNetworksStore(state => state.getColorsForChainId(chainId || ChainId.mainnet, false));
   const setChainId = useTrendingTokensStore(state => state.setChainId);
+  const tokenLauncherNetworks = useBackendNetworksStore(state => state.getTokenLauncherSupportedChainIds());
 
   const { icon, label, lightenedNetworkColor } = useMemo(() => {
     if (!chainId) return { icon: '􀤆', label: i18n.t(t.all), lightenedNetworkColor: undefined };
@@ -534,18 +547,19 @@ function NetworkFilter() {
 
   const setSelected = useCallback(
     (chainId: ChainId | undefined) => {
-      selected.value = chainId;
+      selectedChainId.value = chainId;
       setChainId(chainId);
     },
-    [selected, setChainId]
+    [selectedChainId, setChainId]
   );
 
   const navigateToNetworkSelector = useCallback(() => {
     Navigation.handleAction(Routes.NETWORK_SELECTOR, {
-      selected,
+      selected: selectedChainId,
       setSelected,
+      allowedNetworks: category === 'Rainbow' ? tokenLauncherNetworks : undefined,
     });
-  }, [selected, setSelected]);
+  }, [selectedChainId, setSelected, category, tokenLauncherNetworks]);
 
   return (
     <FilterButton
@@ -665,6 +679,8 @@ const padding = 20;
 
 export function TrendingTokens() {
   const { isDarkMode } = useColorMode();
+  const selectedChainId = useSharedValue<ChainId | undefined>(undefined);
+
   return (
     <View style={{ gap: 28 }}>
       <View style={{ gap: 12, justifyContent: 'center' }}>
@@ -680,13 +696,15 @@ export function TrendingTokens() {
             icon="􀙭"
             iconColor={'#D0281C'}
             highlightedBackgroundColor={'#E6A39E'}
+            selectedChainId={selectedChainId}
           />
           <CategoryFilterButton
             category={categories[1]}
             label={i18n.t(t.filters.categories.RAINBOW)}
             icon={<Image source={RainbowTokenFilter} width={16} height={16} />}
-            iconColor={'#D0281C'}
-            highlightedBackgroundColor={'#E6A39E'}
+            iconColor={'#40CA61'}
+            highlightedBackgroundColor={'#7C1A75'}
+            selectedChainId={selectedChainId}
           />
           <CategoryFilterButton
             category={categories[2]}
@@ -695,6 +713,7 @@ export function TrendingTokens() {
             iconColor={{ default: isDarkMode ? globalColors.yellow60 : '#FFBB00', selected: '#F5A200' }}
             highlightedBackgroundColor={'#FFEAC2'}
             iconWidth={18}
+            selectedChainId={selectedChainId}
           />
           <CategoryFilterButton
             category={categories[3]}
@@ -703,6 +722,7 @@ export function TrendingTokens() {
             iconColor={'#5F5AFA'}
             highlightedBackgroundColor={'#B9B7F7'}
             iconWidth={20}
+            selectedChainId={selectedChainId}
           />
         </Animated.ScrollView>
 
@@ -712,7 +732,7 @@ export function TrendingTokens() {
           contentContainerStyle={{ alignItems: 'center', flexDirection: 'row', gap: 12, paddingHorizontal: padding }}
           style={{ marginHorizontal: -padding }}
         >
-          <NetworkFilter />
+          <NetworkFilter selectedChainId={selectedChainId} />
           <TimeFilter />
           <SortFilter />
         </Animated.ScrollView>
