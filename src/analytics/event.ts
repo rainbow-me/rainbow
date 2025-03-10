@@ -181,6 +181,11 @@ export const event = {
   changeTimeframeFilter: 'trending_tokens.change_timeframe_filter',
   changeSortFilter: 'trending_tokens.change_sort_filter',
   hasLinkedFarcaster: 'trending_tokens.has_linked_farcaster',
+
+  // token launcher
+  tokenLauncherStepChanged: 'token_launcher.step_changed',
+  tokenLauncherTokenCreated: 'token_launcher.token_created',
+  tokenLauncherSharePressed: 'token_launcher.share_pressed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -768,4 +773,24 @@ export type EventProperties = {
     personalizedTrending: boolean;
     walletHash: string;
   };
+
+  // token launcher
+  [event.tokenLauncherStepChanged]: {
+    step: string;
+  };
+  [event.tokenLauncherTokenCreated]: {
+    address: string;
+    chainId: ChainId;
+    symbol: string;
+    name: string;
+    logoUrl: string;
+    description: string | undefined;
+    totalSupply: number;
+    links: Record<string, string>;
+    extraBuyAmount: number;
+    airdropRecipientCount: number;
+    airdropAddressCount: number;
+    airdropCohortIds: string[];
+  };
+  [event.tokenLauncherSharePressed]: undefined;
 };
