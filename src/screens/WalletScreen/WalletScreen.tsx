@@ -1,12 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
 import {
-  useAccountAccentColor,
   useAccountSettings,
   useInitializeWallet,
   useLoadAccountLateData,
@@ -20,23 +18,20 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { analyticsV2 } from '@/analytics';
 import { AppState } from '@/redux/store';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
-import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
-import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
+import { IS_ANDROID } from '@/env';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
 import walletTypes from '@/helpers/walletTypes';
 import { NavbarOverlay } from './NavbarOverlay';
-import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
-import { ProfileAvatarRow } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
-import { ProfileStickyHeaderHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileStickyHeader';
+import Animated from 'react-native-reanimated';
 import { ScrollPositionProvider, useScrollPosition } from './ScrollPositionContext';
-import { StickyHeaderManager } from '@/components/asset-list/RecyclerAssetList2/core/StickyHeaders';
 import { ProfileAvatar } from './ProfileAvatar';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { ProfileName } from './ProfileName';
+import { ProfileBalance } from './ProfileBalance';
+import { ProfileActionButtons } from './ProfileActionButtons';
 
 enum WalletLoadingStates {
   IDLE = 0,
@@ -45,50 +40,52 @@ enum WalletLoadingStates {
 }
 
 function WalletPage() {
-  const { scrollHandler } = useScrollPosition();
+  const { scrollHandler, scrollViewRef } = useScrollPosition();
   const insets = useSafeAreaInsets();
 
   return (
-    // TODO: Figure out Android offset
-    <StickyHeaderManager yOffset={IS_IOS ? navbarHeight + insets.top - 8 : 100}>
-      <Box as={Page} flex={1} testID="wallet-screen">
-        <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
-          <NavbarOverlay />
+    <Box as={Page} flex={1} testID="wallet-screen">
+      <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
+        <NavbarOverlay />
 
-          <Animated.ScrollView
-            showsVerticalScrollIndicator={false}
-            onScroll={scrollHandler}
-            style={{ flex: 1, paddingTop: insets.top }}
-            bounces={true}
-            scrollEventThrottle={16} // Standard value for smooth animations without excessive updates
-            contentContainerStyle={{
-              paddingBottom: TAB_BAR_HEIGHT, // Add some bottom padding for better UX
-            }}
-          >
-            <Box alignItems="center" width="full" marginTop={{ custom: ProfileStickyHeaderHeight }}>
-              <ProfileAvatar />
-            </Box>
+        <Animated.ScrollView
+          // refreshControl={<RefreshControl refreshing={false} onRefresh={() => {}} />}
+          ref={scrollViewRef}
+          showsVerticalScrollIndicator={false}
+          onScroll={scrollHandler}
+          style={{ flex: 1, paddingTop: insets.top }}
+          scrollEventThrottle={16} // Standard value for smooth animations without excessive updates
+          contentContainerStyle={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+            alignItems: 'center',
+            paddingBottom: TAB_BAR_HEIGHT, // Add some bottom padding for better UX
+          }}
+        >
+          <ProfileAvatar />
+          <ProfileName />
+          <ProfileBalance />
+          <ProfileActionButtons />
 
-            <Box height={{ custom: 1000 }}></Box>
-            {/* Wallet components HERE */}
-            {/* 1. Profile & Name / Balance */}
-            {/* 2. Action Buttons */}
-            {/* 3. Asset list */}
-            {/* 4. Claimables */}
-            {/* 5. Positions */}
-            {/* 6. Collectibles */}
-          </Animated.ScrollView>
-          {/* <AssetList
-            accentColor={highContrastAccentColor}
-            disableRefreshControl={isLoadingUserAssetsAndAddress || isLoadingBalance}
-            isLoading={IS_ANDROID && (isLoadingUserAssetsAndAddress || isLoadingBalance)}
-            isWalletEthZero={isWalletEthZero}
-            network={currentNetwork}
-            walletBriefSectionsData={walletBriefSectionsData}
-          /> */}
-        </Box>
+          <Box height={{ custom: 1000 }}></Box>
+          {/* Wallet components HERE */}
+          {/* 2. Action Buttons */}
+          {/* 3. Asset list */}
+          {/* 4. Claimables */}
+          {/* 5. Positions */}
+          {/* 6. Collectibles */}
+        </Animated.ScrollView>
+        {/* <AssetList
+          accentColor={highContrastAccentColor}
+          disableRefreshControl={isLoadingUserAssetsAndAddress || isLoadingBalance}
+          isLoading={IS_ANDROID && (isLoadingUserAssetsAndAddress || isLoadingBalance)}
+          isWalletEthZero={isWalletEthZero}
+          network={currentNetwork}
+          walletBriefSectionsData={walletBriefSectionsData}
+        /> */}
       </Box>
-    </StickyHeaderManager>
+    </Box>
   );
 }
 
@@ -215,12 +212,6 @@ function WalletScreen() {
   }, [appIcon]);
 
   const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);
-
-  const isLoadingUserAssetsAndAddress = isLoadingUserAssets && !!accountAddress;
-
-  const { highContrastAccentColor } = useAccountAccentColor();
-
-  const position = useSharedValue(0);
 
   return (
     <ScrollPositionProvider>

@@ -12,6 +12,7 @@ import ContextMenu from '@/components/native-context-menu/contextMenu';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { useScrollPosition } from './ScrollPositionContext';
+import { ProfileStickyHeaderHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileStickyHeader';
 export const ProfileAvatarRowHeight = 80;
 export const ProfileAvatarRowTopInset = 24;
 export const ProfileAvatarSize = 80;
@@ -94,7 +95,7 @@ export function ProfileAvatar({ size = ProfileAvatarSize }) {
 
   return (
     <AccentColorProvider color={accentColor}>
-      <Animated.View style={[animatedStyle, { zIndex: 500 }]}>
+      <Animated.View style={[animatedStyle, { zIndex: 500, marginTop: ProfileStickyHeaderHeight }]}>
         <Animated.View style={expandStyle}>
           <ContextMenuButton menuConfig={avatarContextMenuConfig} onPressMenuItem={handlePressMenuItem}>
             <ButtonPressAnimation onPress={onAvatarPressProfile} scale={0.8} testID="avatar-button" overflowMargin={20}>

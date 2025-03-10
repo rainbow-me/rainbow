@@ -1,100 +1,85 @@
 import React from 'react';
-import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { interpolate, interpolateColor, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
-import { Box } from '@/design-system';
+import { Box, useBackgroundColor } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { ProfileNameRow } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileNameRow';
 import { analytics } from '@/analytics';
 import * as lang from '@/languages';
-import { IS_ANDROID } from '@/env';
 import { useAccountAccentColor } from '@/hooks';
-import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
+import { DropdownMenu } from '@/components/DropdownMenu';
 import { useScrollPosition } from './ScrollPositionContext';
+import { ProfileName } from './ProfileName';
+
+const SETTINGS_MENU_ITEMS = {
+  settings: {
+    actionKey: 'settings',
+    actionTitle: lang.t(lang.l.settings.label),
+    icon: { iconType: 'SYSTEM', iconValue: 'gear' },
+    route: Routes.SETTINGS_SHEET,
+  },
+  qrCode: {
+    actionKey: 'qrCode',
+    actionTitle: lang.t(lang.l.button.my_qr_code),
+    icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
+    route: Routes.RECEIVE_MODAL,
+  },
+  connectedApps: {
+    actionKey: 'connectedApps',
+    actionTitle: lang.t(lang.l.wallet.connected_apps),
+    icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
+    route: Routes.CONNECTED_DAPPS,
+  },
+} as const;
 
 export function NavbarOverlay() {
   const { position } = useScrollPosition();
   const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
+  const bgColor = useBackgroundColor('surfacePrimary');
   const { highContrastAccentColor } = useAccountAccentColor();
 
-  const handlePressQRCode = React.useCallback(() => {
-    analytics.track('Tapped "My QR Code"', {
-      category: 'home screen',
-    });
+  const yOffset = insets.top + 16;
+  const shadowOpacityStyle = useAnimatedStyle(() => {
+    return {
+      shadowOpacity: interpolate(position.value, [0, yOffset, yOffset + 19], [0, 0, isDarkMode ? 0.2 : 1], 'clamp'),
+    };
+  });
 
-    navigate(Routes.RECEIVE_MODAL);
-  }, [navigate]);
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: interpolateColor(position.value, [0, yOffset, yOffset + 16], [colors.transparent, colors.transparent, bgColor]),
+      opacity: interpolate(position.value, [0, yOffset, yOffset + 38], [0, 1, 1], 'clamp'),
+      shadowOpacity: interpolate(position.value, [0, yOffset, yOffset + 19], [0, 0, isDarkMode ? 0.2 : 0], 'clamp'),
+      transform: [
+        {
+          translateY: interpolate(position.value, [0, yOffset, yOffset + 38], [0, 24, 0], 'clamp'),
+        },
+      ],
+    };
+  });
 
-  const handlePressConnectedApps = React.useCallback(() => {
-    navigate(Routes.CONNECTED_DAPPS);
-  }, [navigate]);
-
-  const handlePressQRScanner = React.useCallback(() => {
-    navigate(Routes.QR_SCANNER_SCREEN);
-  }, [navigate]);
-
-  const handlePressSettings = React.useCallback(() => {
-    navigate(Routes.SETTINGS_SHEET);
-  }, [navigate]);
-
-  const yOffset = IS_ANDROID ? 80 : 0;
-  const shadowOpacityStyle = useAnimatedStyle(() => ({
-    shadowOpacity: interpolate(position.value, [0, yOffset, yOffset + 19], [0, 0, isDarkMode ? 0.2 : 1]),
-  }));
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(position.value, [0, yOffset, yOffset + 38], [0, 1, 1]),
-    shadowOpacity: interpolate(position.value, [0, yOffset, yOffset + 19], [0, 0, isDarkMode ? 0.2 : 0]),
-    transform: [
-      {
-        translateY: interpolate(position.value, [0, yOffset, yOffset + 38], [0, 24, 0]),
-      },
-    ],
-  }));
-
-  const walletNameStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(position.value, [0, yOffset, yOffset + 38], [0, 0, 1]),
-  }));
-
-  const menuItems: MenuItem<string>[] = React.useMemo(
-    () => [
-      {
-        actionKey: 'settings',
-        actionTitle: lang.t(lang.l.settings.label),
-        icon: { iconType: 'SYSTEM', iconValue: 'gear' },
-      },
-      {
-        actionKey: 'qrCode',
-        actionTitle: lang.t(lang.l.button.my_qr_code),
-        icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
-      },
-
-      {
-        actionKey: 'connectedApps',
-        actionTitle: lang.t(lang.l.wallet.connected_apps),
-        icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
-      },
-    ],
-    []
-  );
+  const walletNameStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(position.value, [0, yOffset, yOffset + 38], [0, 0, 1], 'clamp');
+    return {
+      pointerEvents: opacity > 0.5 ? 'auto' : 'none',
+      opacity,
+    };
+  });
 
   const handlePressMenuItem = React.useCallback(
-    (e: string) => {
-      if (e === 'settings') {
-        handlePressSettings();
-      }
+    (e: keyof typeof SETTINGS_MENU_ITEMS) => {
       if (e === 'qrCode') {
-        handlePressQRCode();
+        analytics.track('Tapped "My QR Code"', {
+          category: 'home screen',
+        });
       }
-      if (e === 'connectedApps') {
-        handlePressConnectedApps();
-      }
+      navigate(SETTINGS_MENU_ITEMS[e].route);
     },
-    [handlePressConnectedApps, handlePressQRCode, handlePressSettings]
+    [navigate]
   );
 
   return (
@@ -111,7 +96,8 @@ export function NavbarOverlay() {
     >
       <Box
         as={Animated.View}
-        background="surfacePrimary"
+        alignItems="center"
+        justifyContent="center"
         style={[
           {
             height: navbarHeight + insets.top + 24,
@@ -121,30 +107,21 @@ export function NavbarOverlay() {
             shadowOffset: { width: 0, height: 1 },
             shadowRadius: 3,
             top: navbarHeight + insets.top - 24,
+            paddingTop: insets.top + 24,
           },
           animatedStyle,
         ]}
-      >
-        <Box
-          background="surfacePrimary"
-          style={{
-            alignItems: 'center',
-            height: navbarHeight,
-            justifyContent: 'center',
-            top: insets.top + 24,
-          }}
-        />
-      </Box>
+      />
       <Box style={{ top: navbarHeight + insets.top, zIndex: 100 }}>
         <Navbar
           hasStatusBarInset
           leftComponent={
-            <Navbar.Item onPress={handlePressQRScanner}>
+            <Navbar.Item onPress={() => handlePressMenuItem('qrCode')}>
               <Navbar.TextIcon color={highContrastAccentColor} icon="􀎹" />
             </Navbar.Item>
           }
           rightComponent={
-            <DropdownMenu menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
+            <DropdownMenu menuConfig={{ menuItems: Object.values(SETTINGS_MENU_ITEMS) }} onPressMenuItem={handlePressMenuItem}>
               <Navbar.Item testID={'settings-menu'}>
                 <Navbar.TextIcon color={highContrastAccentColor} icon="􀍠" />
               </Navbar.Item>
@@ -158,7 +135,7 @@ export function NavbarOverlay() {
               justifyContent="center"
               style={[walletNameStyle, { alignSelf: 'center', bottom: 2 }]}
             >
-              <ProfileNameRow variant="header" />
+              <ProfileName />
             </Box>
           }
         />
