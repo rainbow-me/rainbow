@@ -1,23 +1,15 @@
-import { ADDYS_API_KEY, ADDYS_BASE_URL } from 'react-native-dotenv';
 import { qs } from 'url-parse';
 import { Address } from 'viem';
 import { NativeCurrencyKey } from '@/entities';
 import { logger, RainbowError } from '@/logger';
-import { RainbowFetchClient } from '@/rainbow-fetch';
 import { AddysClaimable, Claimable as AirdropClaimable } from '@/resources/addys/claimables/types';
 import { parseClaimables } from '@/resources/addys/claimables/utils';
+import { getAddysHttpClient } from '@/resources/addys/client';
 import { AddysConsolidatedError } from '@/resources/addys/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
-
-const addysHttp = new RainbowFetchClient({
-  baseURL: ADDYS_BASE_URL,
-  headers: {
-    Authorization: `Bearer ${ADDYS_API_KEY}`,
-  },
-});
 
 type PaginationInfo = {
   current_page: number;
@@ -206,7 +198,7 @@ async function fetchTokenLauncherAirdrops(
       page_size: pageSize.toString(),
     })}`;
 
-    const { data } = await addysHttp.get<AirdropsResponse>(url, {
+    const { data } = await getAddysHttpClient().get<AirdropsResponse>(url, {
       signal: abortController?.signal,
       timeout: time.seconds(20),
     });
