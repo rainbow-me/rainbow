@@ -6,11 +6,12 @@ import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetr
 
 export const useTrackDiscoverScreenTime = () => {
   const isOnDiscoverScreen = useNavigationStore(state => state.isRouteActive(Routes.DISCOVER_SCREEN));
+  const activeRoute = useNavigationStore(state => state.activeRoute);
 
   useEffect(() => {
     const data = currentlyTrackedMetrics.get(PerformanceMetrics.timeSpentOnDiscoverScreen);
 
-    if (!isOnDiscoverScreen && data?.startTimestamp) {
+    if (!isOnDiscoverScreen && activeRoute !== Routes.NETWORK_SELECTOR && data?.startTimestamp) {
       PerformanceTracking.finishMeasuring(PerformanceMetrics.timeSpentOnDiscoverScreen);
     }
 
