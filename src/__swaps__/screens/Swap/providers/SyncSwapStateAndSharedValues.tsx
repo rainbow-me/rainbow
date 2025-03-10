@@ -18,7 +18,7 @@ import { ParsedAddressAsset } from '@/entities';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { deepEqualWorklet } from '@/worklets/comparisons';
 import { debounce } from 'lodash';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { runOnJS, runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { create } from 'zustand';
 import { GasSettings } from '../hooks/useCustomGas';
@@ -29,6 +29,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { getSwapsNavigationParams } from '../navigateToSwaps';
 
 const BUFFER_RATIO = 0.5;
 
@@ -54,25 +55,28 @@ export const SyncQuoteSharedValuesToState = () => {
 
   // Updates the state as a single block in response to quote changes to ensure the gas fee is cleanly updated once
   useAnimatedReaction(
-    () => quote.value,
-    (current, previous) => {
-      if (!assetToSell.value || !assetToBuy.value || !current || 'error' in current) return;
+    () => ({ quote: quote.value }),
+    (current, prev) => {
+      if (!assetToSell.value || (prev !== null && current.quote && 'error' in current.quote)) return;
 
-      const isSwappingMoreThanAvailableBalance = greaterThanWorklet(
-        current.sellAmount.toString(),
-        toScaledIntegerWorklet(assetToSell.value.balance.amount, assetToSell.value.decimals)
-      );
+      const isSwappingMoreThanAvailableBalance =
+        !!current.quote &&
+        !('error' in current.quote) &&
+        greaterThanWorklet(
+          current.quote.sellAmount.toString(),
+          toScaledIntegerWorklet(assetToSell.value.balance.amount, assetToSell.value.decimals)
+        );
 
       // Skip gas fee recalculation if the user is trying to swap more than their available balance, as it isn't
       // needed and was previously resulting in errors in useEstimatedGasFee.
       if (isSwappingMoreThanAvailableBalance) return;
 
-      if (!deepEqualWorklet(current, previous)) {
+      if (!deepEqualWorklet(current, prev)) {
         runOnJS(setInternalSyncedSwapStore)({
-          assetToBuy: assetToBuy.value,
+          assetToBuy: assetToBuy.value ?? undefined,
           assetToSell: assetToSell.value,
           chainId: assetToSell.value?.chainId,
-          quote: current,
+          quote: current.quote,
         });
       }
     },
@@ -136,27 +140,37 @@ const getHasEnoughFundsForGasWorklet = ({
 
 export function SyncGasStateToSharedValues() {
   const { hasEnoughFundsForGas, internalSelectedInputAsset } = useSwapContext();
-  const preferredNetwork = useSwapsStore(s => s.preferredNetwork);
 
-  const initialChainId = useMemo(
-    () => internalSelectedInputAsset.value?.chainId || preferredNetwork || ChainId.mainnet,
-    [internalSelectedInputAsset, preferredNetwork]
-  );
-  const { assetToSell, chainId = initialChainId, quote } = useSyncedSwapQuoteStore();
+  const [initialInfo] = useState(() => {
+    const params = getSwapsNavigationParams();
+    return {
+      assetToSell: params.inputAsset,
+      chainId: params.inputAsset?.chainId || useSwapsStore.getState().preferredNetwork || ChainId.mainnet,
+    };
+  });
 
+  const { assetToSell = initialInfo.assetToSell, chainId = initialInfo.chainId, quote } = useSyncedSwapQuoteStore();
   const gasSettings = useSelectedGas(chainId);
 
-  const { address: nativeCurrencyAddress } = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
+  const nativeAssets = useBackendNetworksStore(state => state.getChainsNativeAsset());
+  const nativeCurrencyUniqueId = useMemo(() => getUniqueId(nativeAssets[chainId]?.address, chainId), [chainId, nativeAssets]);
 
-  const isLoadingNativeNetworkAsset = useUserAssetsStore(state => state.isLoadingUserAssets);
-  const userNativeNetworkAsset = useUserAssetsStore(state => state.getLegacyUserAsset(getUniqueId(nativeCurrencyAddress, chainId)));
+  const isLoadingNativeNetworkAsset = useUserAssetsStore(state => state.getStatus().isInitialLoading);
+  const userNativeNetworkAsset = useUserAssetsStore(state => state.getLegacyUserAsset(nativeCurrencyUniqueId));
 
   const { data: estimatedGasLimit } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
 
   const gasFeeRange = useSharedValue<[string, string] | null>(null);
 
   useAnimatedReaction(
-    () => ({ inputAsset: internalSelectedInputAsset.value, bufferRange: gasFeeRange.value }),
+    () => ({
+      bufferRange: gasFeeRange.value,
+      inputAsset: {
+        chainId: internalSelectedInputAsset.value?.chainId,
+        isNativeAsset: internalSelectedInputAsset.value?.isNativeAsset,
+        uniqueId: internalSelectedInputAsset.value?.uniqueId,
+      },
+    }),
     (current, previous) => {
       const { inputAsset: currInputAsset, bufferRange: currBufferRange } = current;
       const { inputAsset: prevInputAsset, bufferRange: prevBufferRange } = previous || {};
@@ -185,11 +199,12 @@ export function SyncGasStateToSharedValues() {
   );
 
   useEffect(() => {
-    const safeQuoteValue = quote && !('error' in quote) && quote.value ? new BigNumber(quote.value.toString()).toFixed() : '0';
+    const isValidQuote = quote && !('error' in quote);
+    const safeQuoteValue = isValidQuote && quote.value ? new BigNumber(quote.value.toString()).toFixed() : '0';
 
     runOnUI(() => {
       hasEnoughFundsForGas.value = undefined;
-      if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote || isLoadingNativeNetworkAsset) return;
+      if (!gasSettings || !isValidQuote || !estimatedGasLimit || isLoadingNativeNetworkAsset) return;
 
       // NOTE: if we don't have a gas price or max base fee or max priority fee, we can't calculate the gas fee
       if (

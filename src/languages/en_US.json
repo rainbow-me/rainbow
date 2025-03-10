@@ -483,7 +483,8 @@
         "a_network": "a network",
         "swap_failed": "Swap Failed",
         "receive": "Receive",
-        "on": "on"
+        "on": "on",
+        "reset": "Reset"
       }
     },
     "cloud": {
@@ -515,34 +516,40 @@
     },
     "developer_settings": {
       "alert": "Alert",
+      "analyze_env_variables": "Analyze ENV Variables",
+      "analyze_react_query": "Analyze React Query",
       "applied": "APPLIED",
-      "backups_deleted_successfully": "Backups deleted successfully",
-      "clear_async_storage": "Clear async storage",
+      "backups_deleted_successfully": "Backups Deleted Successfully",
+      "clear_async_storage": "Clear AsyncStorage",
       "clear_pending_txs": "Clear Pending Transactions",
       "clear_image_cache": "Clear Image Cache",
       "clear_image_metadata_cache": "Clear Image Metadata Cache",
-      "clear_local_storage": "Clear local storage",
-      "clear_mmkv_storage": "Clear MMKV storage",
-      "connect_to_anvil": "Connect to anvil",
-      "disconnect_to_anvil": "Disconnect from anvil",
-      "crash_app_render_error": "Crash app (render error)",
+      "clear_local_storage": "Clear Local Storage",
+      "clear_mmkv_storage": "Clear MMKV Storage",
+      "clear_react_query_cache": "Clear React Query Cache",
+      "connect_to_anvil": "Connect to Anvil",
+      "copy_fcm_token": "Copy FCM Token",
+      "copy_log_lines": "Copy Log Lines",
+      "copy_signing_wallet_address": "Copy Signing Wallet Address",
+      "disconnect_to_anvil": "Disconnect from Anvil",
+      "crash_app_render_error": "Crash App (Render Error)",
       "enable_testnets": "Enable Testnets",
-      "installing_update": "Installing update",
-      "navigation_entry_point": "Navigation entry point",
-      "no_update": "No update",
+      "installing_update": "Installing Update",
+      "navigation_entry_point": "Navigation Entry Point",
+      "no_update": "No Update",
       "not_applied": "NOT APPLIED",
       "notifications_debug": "Notifications Debug",
-      "remove_all_backups": "Remove all backups",
+      "remove_all_backups": "Remove All Backups",
       "keychain": {
         "menu_title": "Reset Keychain",
-        "delete_wallets": "Delete all wallets",
+        "delete_wallets": "Delete All Wallets",
         "alert_title": "Careful!",
         "alert_body": "🚨🚨🚨 \nThis will permanently delete all of your wallets private keys & data, please make sure you have everything backed up before proceeding!! \n🚨🚨🚨"
       },
-      "restart_app": "Restart app",
-      "reset_experimental_config": "Reset experimental config",
+      "restart_app": "Restart App",
+      "reset_experimental_config": "Reset Experimental Config",
       "status": "Status",
-      "sync_codepush": "Sync codepush"
+      "sync_codepush": "Sync CodePush"
     },
     "discover": {
       "pulse": {
@@ -3135,7 +3142,7 @@
         }
       }
     },
-    "network_switcher": {
+    "network_selector": {
       "customize_networks_banner": {
         "title": "Customize Networks",
         "tap_the": "Tap the",

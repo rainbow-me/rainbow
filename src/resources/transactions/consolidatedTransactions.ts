@@ -2,13 +2,11 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { InfiniteQueryConfig, QueryConfig, QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
 import { NativeCurrencyKey, RainbowTransaction, TransactionApiResponse, TransactionsReceivedMessage } from '@/entities';
 import { RainbowError, logger } from '@/logger';
-import { rainbowFetch } from '@/rainbow-fetch';
-import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { parseTransaction } from '@/parsers/transactions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { getAddysHttpClient } from '@/resources/addys/client';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
-const CONSOLIDATED_TRANSACTIONS_TIMEOUT = 20000;
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -60,16 +58,11 @@ export async function consolidatedTransactionsQueryFunction({
 }: QueryFunctionArgs<typeof consolidatedTransactionsQueryKey>): Promise<_QueryResult> {
   try {
     const chainIdsString = chainIds.join(',');
-    const url = `https://addys.p.rainbow.me/v3/${chainIdsString}/${address}/transactions`;
-    const response = await rainbowFetch(url, {
+    const response = await getAddysHttpClient().get(`/${chainIdsString}/${address}/transactions`, {
       method: 'get',
       params: {
         currency: currency.toLowerCase(),
         ...(pageParam ? { pageCursor: pageParam } : {}),
-      },
-      timeout: CONSOLIDATED_TRANSACTIONS_TIMEOUT,
-      headers: {
-        Authorization: `Bearer ${ADDYS_API_KEY}`,
       },
     });
 

@@ -104,7 +104,7 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
   const { width: deviceWidth } = useDimensions();
   const { accountName } = useAccountProfile();
   const { navigate } = useNavigation();
-  const { isLoadingUserAssets } = useUserAssetsStore(state => state.isLoadingUserAssets);
+  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
@@ -134,6 +134,7 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
         isCoinListEdited={isCoinListEdited}
         title={title}
         totalValue={totalValue}
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...props}
       >
         {!title && (

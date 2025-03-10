@@ -73,4 +73,8 @@ declare module 'react-native-dotenv' {
   export const RUDDERSTACK_DATA_PLANE_URL: string;
   export const SILENCE_EMOJI_WARNINGS: boolean;
   export const MWP_ENCRYPTION_KEY: string;
+  export const METADATA_BASE_URL: string;
+  export const ADDYS_BASE_URL: string;
+  export const TOKEN_LAUNCHER_URL: string;
+  export const TOKEN_LAUNCHER_API_KEY: string;
 }

@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
 import Animated, { interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Box, TextIcon, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { deviceUtils } from '@/utils';
-import { AnimatedBlurView } from '../AnimatedComponents/AnimatedBlurView';
 import { useBrowserContext } from './BrowserContext';
 import { TAB_VIEW_COLUMN_WIDTH } from './Dimensions';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
@@ -108,12 +108,11 @@ export const CloseTabButton = ({ tabId }: { tabId: TabId }) => {
     <Animated.View style={[styles.containerStyle, containerStyle]}>
       <Box as={Animated.View} position="absolute" style={singleTabStyle}>
         {IS_IOS ? (
-          <Box
-            as={AnimatedBlurView}
-            blurAmount={10}
-            blurType={isDarkMode ? 'materialDark' : 'materialLight'}
-            style={[styles.closeButtonStyle, closeButtonStyle, { borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB / 2 }]}
-          >
+          <Animated.View style={[styles.closeButtonStyle, closeButtonStyle, { borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB / 2 }]}>
+            <BlurView
+              blurStyle={isDarkMode ? 'chromeMaterialDark' : 'materialLight'}
+              style={[StyleSheet.absoluteFill, { borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB / 2, overflow: 'hidden' }]}
+            />
             <Box
               background="fillSecondary"
               borderRadius={SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB / 2}
@@ -122,7 +121,7 @@ export const CloseTabButton = ({ tabId }: { tabId: TabId }) => {
               width="full"
             />
             <XIcon buttonSize={SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB} multipleTabsOpen={false} />
-          </Box>
+          </Animated.View>
         ) : (
           <Box
             as={Animated.View}
@@ -143,12 +142,11 @@ export const CloseTabButton = ({ tabId }: { tabId: TabId }) => {
       </Box>
       <Box as={Animated.View} position="absolute" style={multipleTabsStyle}>
         {IS_IOS ? (
-          <Box
-            as={AnimatedBlurView}
-            blurAmount={10}
-            blurType={isDarkMode ? 'materialDark' : 'materialLight'}
-            style={[styles.closeButtonStyle, closeButtonStyle, { borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE / 2 }]}
-          >
+          <Animated.View style={[styles.closeButtonStyle, closeButtonStyle, { borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE / 2 }]}>
+            <BlurView
+              blurStyle={isDarkMode ? 'materialDark' : 'materialLight'}
+              style={[StyleSheet.absoluteFill, { borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE / 2, overflow: 'hidden' }]}
+            />
             <Box
               background="fillSecondary"
               borderRadius={SCALE_ADJUSTED_X_BUTTON_SIZE / 2}
@@ -157,7 +155,7 @@ export const CloseTabButton = ({ tabId }: { tabId: TabId }) => {
               width="full"
             />
             <XIcon buttonSize={SCALE_ADJUSTED_X_BUTTON_SIZE} multipleTabsOpen={true} />
-          </Box>
+          </Animated.View>
         ) : (
           <Box
             as={Animated.View}
@@ -198,6 +196,7 @@ const styles = StyleSheet.create({
   closeButtonStyle: {
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   containerStyle: {
     alignItems: 'center',

@@ -53,7 +53,7 @@ const CoinDividerEditButton = ({ isSmallBalancesOpen, onPress }) => {
       opacity: 0.6,
       transform: [
         { translateX: 0 + animation.value * 5 },
-        { translateY: (IS_ANDROID ? 4 : 0) + animation.value * 1.25 },
+        { translateY: (IS_ANDROID ? (!animation.value ? 2.5 : 4) : 0) + animation.value * 1.25 },
         { rotate: animation.value * -90 + 'deg' },
       ],
     };
@@ -74,6 +74,7 @@ const CoinDividerEditButton = ({ isSmallBalancesOpen, onPress }) => {
             opacity={1}
             size="lmedium"
             weight="bold"
+            style={{ marginTop: IS_ANDROID ? -4 : 0 }}
           >
             {isSmallBalancesOpen ? i18n.t(i18n.l.button.less) : i18n.t(i18n.l.button.all)}
           </AnimatedText>

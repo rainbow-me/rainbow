@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useContext, useState } from 'react';
-// @ts-ignore
+// @ts-expect-error - react-native-restart is not typed
 import Restart from 'react-native-restart';
 import { useDispatch } from 'react-redux';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -37,13 +37,14 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { addDefaultNotificationGroupSettings } from '@/notifications/settings/initialization';
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import FastImage from 'react-native-fast-image';
+import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
+import { analyzeEnvVariables } from '@/utils/analyzeEnvVariables';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
   const { wallets } = useWallets();
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
-  const dispatch = useDispatch();
 
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
@@ -72,7 +73,7 @@ const DevSection = () => {
       logger.error(new RainbowError(`[DevSection] error connecting to anvil: ${e}`));
     }
     navigate(Routes.PROFILE_SCREEN);
-  }, [dispatch, navigate, setConnectedToAnvil]);
+  }, [navigate, setConnectedToAnvil]);
 
   const checkAlert = useCallback(async () => {
     try {
@@ -259,6 +260,30 @@ const DevSection = () => {
         <>
           <Menu header="Rainbow Developer Settings">
             <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🔄" isEmoji />}
+              onPress={() => Restart.Restart()}
+              size={52}
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.restart_app')} />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🔍" isEmoji />}
+              onPress={analyzeEnvVariables}
+              size={52}
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.analyze_env_variables')} />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🔦" isEmoji />}
+              onPress={() => analyzeReactQueryStore()}
+              size={52}
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.analyze_react_query')} />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🗑️" isEmoji />}
+              onPress={() => clearReactQueryCache()}
+              size={52}
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_react_query_cache')} />}
+            />
+            <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
               onPress={clearAsyncStorage}
               size={52}
@@ -283,12 +308,6 @@ const DevSection = () => {
               onPress={clearImageCache}
               size={52}
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_image_cache')} />}
-            />
-            <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="🔄" isEmoji />}
-              onPress={() => Restart.Restart()}
-              size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.restart_app')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
@@ -350,7 +369,7 @@ const DevSection = () => {
                 Alert.alert(publicKey ? `Copied` : `Couldn't get public key`);
               }}
               size={52}
-              titleComponent={<MenuItem.Title text={'Copy signing wallet address'} />}
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.copy_signing_wallet_address')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🌎" isEmoji />}
@@ -361,10 +380,10 @@ const DevSection = () => {
                   Clipboard.setString(fcmToken);
                 }
 
-                Alert.alert(fcmToken ? `Copied` : `Couldn't get fcm token`);
+                Alert.alert(fcmToken ? 'Copied' : "Couldn't get FCM token");
               }}
               size={52}
-              titleComponent={<MenuItem.Title text={'Copy FCM token'} />}
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.copy_fcm_token')} />}
             />
             {getExperimetalFlag(LOG_PUSH) && (
               <MenuItem
@@ -375,7 +394,7 @@ const DevSection = () => {
                   Alert.alert(`Copied`);
                 }}
                 size={52}
-                titleComponent={<MenuItem.Title text={'Copy log lines'} />}
+                titleComponent={<MenuItem.Title text={lang.t('developer_settings.copy_log_lines')} />}
               />
             )}
           </Menu>

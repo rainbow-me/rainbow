@@ -2,7 +2,7 @@ import mapValues from 'lodash/mapValues';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 import { convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
-import { userAssetsStoreManager } from '@/state/assets/userAssets';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import useAccountSettings from './useAccountSettings';
 import useWalletBalances from './useWalletBalances';
 import useWallets from './useWallets';
@@ -21,7 +21,7 @@ export default function useWalletsWithBalancesAndNames() {
           return {
             ...account,
             balances: balances[lowerCaseAddress],
-            hiddenBalances: hiddenBalances[lowerCaseAddress],
+            hiddenBalances: hiddenBalances[account.address],
             balancesMinusHiddenBalances: balances[lowerCaseAddress]?.totalBalanceDisplay
               ? convertAmountToNativeDisplay(
                   subtract(balances[lowerCaseAddress].totalBalanceAmount, hiddenBalances[account.address] ?? '0'),

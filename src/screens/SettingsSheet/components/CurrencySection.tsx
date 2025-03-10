@@ -5,11 +5,14 @@ import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
+import { IS_IOS } from '@/env';
 import { useAccountSettings } from '@/hooks';
 import { ETH_ADDRESS, WBTC_ADDRESS, emojis, supportedNativeCurrencies } from '@/references';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
+import { NativeCurrencyKey } from '@/entities';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [name, emoji]);
 
@@ -26,10 +29,11 @@ const CurrencySection = () => {
   const { data: ETH } = useExternalToken({ address: ETH_ADDRESS, chainId: ChainId.mainnet, currency: nativeCurrency });
 
   const onSelectCurrency = useCallback(
-    (currency: any) => {
+    (currency: NativeCurrencyKey) => {
+      userAssetsStoreManager.setState({ currency });
       settingsChangeNativeCurrency(currency);
       // reload widget timelines only if on ios version 14 or above
-      if (ios && parseInt(Platform.Version as string) >= 14) {
+      if (IS_IOS && parseInt(Platform.Version as string) >= 14) {
         reloadTimelines('PriceWidget');
       }
       analytics.track('Changed native currency', { currency });

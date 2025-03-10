@@ -7,7 +7,7 @@ import { ResponseByTheme } from '../utils/swaps';
 
 export type AddressOrEth = Address | typeof ETH_ADDRESS;
 
-export type UserAssetFilter = 'all' | ChainId;
+export type UserAssetFilter = ChainId | 'all';
 
 export interface ExtendedAnimatedAssetWithColors extends ParsedSearchAsset {
   // colors
