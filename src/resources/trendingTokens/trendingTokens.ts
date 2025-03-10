@@ -65,6 +65,7 @@ let tokenSearchHttp: RainbowFetchClient | undefined;
 const getTokenSearchHttp = () => {
   const clientUrl = tokenSearchHttp?.baseURL;
   const baseUrl = `${TOKEN_SEARCH_URL}/v3/trending/rainbow`;
+
   if (!tokenSearchHttp || clientUrl !== baseUrl) {
     tokenSearchHttp = new RainbowFetchClient({
       baseURL: baseUrl,
@@ -100,22 +101,21 @@ type TrendingRainbowToken = {
 };
 
 async function fetchRainbowTokens({
-  queryKey: [
-    { currency = store.getState().settings.nativeCurrency, category, sortBy, sortDirection, timeframe, walletAddress, chainId, limit },
-  ],
+  queryKey: [{ currency = store.getState().settings.nativeCurrency, sortBy, sortDirection, timeframe, walletAddress, chainId, limit }],
 }: {
   queryKey: TrendingTokensQueryKey;
 }) {
   try {
-    const url = qs.stringify({
+    const params = {
       currency: currency.toLowerCase(),
       timeframe,
-      category: 'new',
-      sortBy,
+      category: 'new', // QQ: Does this ever change?
+      sortBy: sortBy.toLowerCase(),
       sortDirection,
-    });
+      userAddress: walletAddress,
+    };
 
-    console.log('url', url);
+    const url = `${chainId ? `/${chainId}` : ''}/?${qs.stringify(params)}`;
 
     const response = await getTokenSearchHttp().get<TrendingRainbowToken[]>(url);
 
