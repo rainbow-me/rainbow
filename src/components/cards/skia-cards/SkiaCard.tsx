@@ -21,6 +21,7 @@ export type SkiaCardProps = {
   innerShadowOpacity?: ValueByTheme<number>;
   onLongPress?: () => void;
   onPress?: () => void;
+  scaleTo?: number;
   shadowColor?: ValueByTheme<string>;
   skiaBackground?: ReactNode;
   skiaForeground?: ReactNode;
@@ -45,6 +46,7 @@ export const SkiaCard = memo(function SkiaCard({
   innerShadowOpacity = { dark: 1, light: 0.4 },
   onLongPress,
   onPress,
+  scaleTo = 0.88,
   shadowColor = { dark: 'transparent', light: color || 'transparent' },
   skiaBackground,
   skiaForeground,
@@ -76,7 +78,7 @@ export const SkiaCard = memo(function SkiaCard({
   );
 
   return (
-    <ButtonPressAnimation onLongPress={onLongPress} onPress={onPress} scaleTo={0.9} style={styles.container}>
+    <ButtonPressAnimation onLongPress={onLongPress} onPress={onPress} scaleTo={scaleTo} style={styles.container}>
       <View style={styles.shadowLayer} />
       <View style={styles.innerContainer}>
         <Canvas style={styles.canvas}>
