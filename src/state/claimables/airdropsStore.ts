@@ -2,6 +2,7 @@ import { qs } from 'url-parse';
 import { Address } from 'viem';
 import { NativeCurrencyKey } from '@/entities';
 import { logger, RainbowError } from '@/logger';
+import Routes from '@/navigation/routesNames';
 import { AddysClaimable, Claimable as AirdropClaimable } from '@/resources/addys/claimables/types';
 import { parseClaimables } from '@/resources/addys/claimables/utils';
 import { getAddysHttpClient } from '@/resources/addys/client';
@@ -9,6 +10,7 @@ import { AddysConsolidatedError } from '@/resources/addys/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { createQueryStore } from '@/state/internal/createQueryStore';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { time } from '@/utils/time';
 
 type PaginationInfo = {
@@ -62,21 +64,22 @@ type AirdropsState = {
 const EMPTY_RETURN_DATA: AirdropsQueryData = { claimables: [], pagination: null };
 const INITIAL_PAGE_SIZE = 12;
 const FULL_PAGE_SIZE = 100;
-const STALE_TIME = time.minutes(5);
+const STALE_TIME = time.minutes(4);
 
 let paginationPromise: { address: Address | string; currency: NativeCurrencyKey; promise: Promise<void> } | null = null;
 
 export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsParams, AirdropsState>(
   {
-    fetcher: fetchTokenLauncherAirdrops,
+    fetcher: fetchAirdrops,
+    onFetched: ({ params, set }) => prunePaginatedData(params, set),
     cacheTime: time.days(1),
-    staleTime: STALE_TIME,
     params: {
       address: $ => $(userAssetsStoreManager).address,
       currency: $ => $(userAssetsStoreManager).currency,
       page: 1,
       pageSize: INITIAL_PAGE_SIZE,
     },
+    staleTime: STALE_TIME,
   },
 
   (set, get) => ({
@@ -181,7 +184,7 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
   }
 );
 
-async function fetchTokenLauncherAirdrops(
+async function fetchAirdrops(
   { address, currency, page, pageSize }: AirdropsParams,
   abortController: AbortController | null
 ): Promise<AirdropsQueryData> {
@@ -222,4 +225,27 @@ async function fetchTokenLauncherAirdrops(
     });
     return EMPTY_RETURN_DATA;
   }
+}
+
+function isOnAirdropsRoute(): boolean {
+  const { activeRoute } = useNavigationStore.getState();
+  return activeRoute === Routes.AIRDROPS_SHEET || activeRoute === Routes.CLAIM_AIRDROP_SHEET;
+}
+
+function prunePaginatedData(
+  params: AirdropsParams,
+  set: (partial: AirdropsState | Partial<AirdropsState> | ((state: AirdropsState) => AirdropsState | Partial<AirdropsState>)) => void
+): void {
+  const { airdrops } = useAirdropsStore.getState();
+  if (!airdrops || isOnAirdropsRoute()) return;
+
+  const didParamsChange = airdrops.address !== params.address || airdrops.currency !== params.currency;
+  if (didParamsChange) {
+    set({ airdrops: null });
+    return;
+  }
+
+  const now = Date.now();
+  const isStale = Object.values(airdrops.fetchedAt).some(fetchedAt => now - fetchedAt > STALE_TIME);
+  if (isStale) set({ airdrops: null });
 }
