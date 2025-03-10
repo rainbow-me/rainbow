@@ -34,6 +34,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
+  airdropsSheetConfig,
   backupSheetConfig,
   basicSheetConfig,
   hardwareWalletTxNavigatorConfig,
@@ -278,8 +279,8 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
       <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
       <NativeStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} {...expandedAssetSheetV2Config} />
-      <NativeStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} {...panelConfig} />
-      <NativeStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} {...panelConfig} />
+      <NativeStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} {...airdropsSheetConfig} />
+      <NativeStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} {...airdropsSheetConfig} />
       <NativeStack.Screen component={LogSheet} name={Routes.LOG_SHEET} {...panelConfig} />
     </NativeStack.Navigator>
   );
