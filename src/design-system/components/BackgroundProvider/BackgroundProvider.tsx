@@ -2,10 +2,10 @@ import React, { useContext, useMemo } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { AccentColorContext } from '../../color/AccentColorContext';
 import { ColorModeContext, ColorModeProvider } from '../../color/ColorMode';
-import { BackgroundColor, getDefaultAccentColorForColorMode } from '../../color/palettes';
+import { BackgroundColor, backgroundColors, getDefaultAccentColorForColorMode } from '../../color/palettes';
 
 export type BackgroundProviderProps = {
-  color: BackgroundColor | 'accent';
+  color: BackgroundColor | 'accent' | string;
   children: ({
     backgroundColor,
     backgroundStyle,
@@ -27,7 +27,13 @@ export function BackgroundProvider({ color, children, style: styleProp }: Backgr
   const { backgroundColors, colorMode } = useContext(ColorModeContext);
   const accentColorContextValue = useContext(AccentColorContext);
   const accentColor = accentColorContextValue ?? getDefaultAccentColorForColorMode(colorMode);
-  const background = color === 'accent' ? accentColor : backgroundColors[color];
+
+  const background = useMemo(() => {
+    if (color === 'accent') return accentColor;
+    if (isBackgroundColorType(color)) return backgroundColors[color];
+    return { color, mode: colorMode };
+  }, [accentColor, backgroundColors, color, colorMode]);
+
   const style = useMemo(
     () => [{ backgroundColor: background.color }, ...(Array.isArray(styleProp) ? styleProp : [styleProp])],
     [background, styleProp]
@@ -41,7 +47,20 @@ export function BackgroundProvider({ color, children, style: styleProp }: Backgr
   return <ColorModeProvider value={background.mode}>{child}</ColorModeProvider>;
 }
 
-export function useBackgroundColor(color: BackgroundColor) {
-  const { backgroundColors } = useContext(ColorModeContext);
-  return backgroundColors[color].color;
+export function useBackgroundColor(color: string): string;
+export function useBackgroundColor(color: BackgroundColor): BackgroundColor;
+export function useBackgroundColor(color: BackgroundColor | string): BackgroundColor | string {
+  const { backgroundColors, colorMode } = useContext(ColorModeContext);
+  const accentColorContextValue = useContext(AccentColorContext);
+
+  const backgroundColor = useMemo(() => {
+    if (color === 'accent') return (accentColorContextValue ?? getDefaultAccentColorForColorMode(colorMode)).color;
+    return isBackgroundColorType(color) ? backgroundColors[color].color : color;
+  }, [color, backgroundColors, accentColorContextValue, colorMode]);
+
+  return backgroundColor;
+}
+
+function isBackgroundColorType(color: BackgroundProviderProps['color']): color is BackgroundColor {
+  return color in backgroundColors;
 }

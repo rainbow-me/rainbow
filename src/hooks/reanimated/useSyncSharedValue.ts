@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { DerivedValue, SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { deepEqual, shallowEqual } from '@/worklets/comparisons';
 
