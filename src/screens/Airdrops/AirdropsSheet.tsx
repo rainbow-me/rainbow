@@ -106,7 +106,7 @@ const AirdropsList = () => {
       recycleItems
       removeClippedSubviews
       renderItem={renderItem}
-      renderScrollComponent={AndroidScrollView}
+      renderScrollComponent={IS_IOS ? undefined : AndroidScrollView}
       scrollIndicatorInsets={SCROLL_INDICATOR_INSETS}
       style={styles.scrollView}
     />
