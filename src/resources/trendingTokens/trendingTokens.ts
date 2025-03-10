@@ -7,7 +7,15 @@ import { TrendingCategory, TrendingSort, TrendingTimeframe } from '@/state/trend
 import { Address } from 'viem';
 import { NativeCurrencyKey } from '@/entities';
 import store from '@/redux/store';
-import { SortDirection, TrendingSort as ArcTrendingSort, Colors, Market, Bridging, TrendingData } from '@/graphql/__generated__/arc';
+import {
+  SortDirection,
+  TrendingSort as ArcTrendingSort,
+  Colors,
+  Market,
+  Bridging,
+  TrendingData,
+  Timeframe,
+} from '@/graphql/__generated__/arc';
 import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { RainbowFetchClient } from '@/rainbow-fetch';
@@ -100,6 +108,19 @@ type TrendingRainbowToken = {
   transferable: boolean;
 };
 
+const convertTimeframe = (timeframe: Timeframe) => {
+  switch (timeframe) {
+    case Timeframe.H12:
+      return '12h';
+    case Timeframe.H24:
+      return '24h';
+    case Timeframe.D3:
+      return '3d';
+    case Timeframe.D7:
+      return '7d';
+  }
+};
+
 async function fetchRainbowTokens({
   queryKey: [{ currency = store.getState().settings.nativeCurrency, sortBy, sortDirection, timeframe, walletAddress, chainId, limit }],
 }: {
@@ -108,20 +129,20 @@ async function fetchRainbowTokens({
   try {
     const params = {
       currency: currency.toLowerCase(),
-      timeframe,
+      timeframe: convertTimeframe(timeframe), // FIXME: Once https://linear.app/rainbow/issue/APP-2382/add-rainbow-list-to-trending-tokens#comment-07814b37 is resolved
       category: 'new', // QQ: Does this ever change?
       sortBy: sortBy.toLowerCase(),
-      sortDirection,
+      sortDirection: sortDirection?.toLowerCase(),
       userAddress: walletAddress,
     };
 
-    const url = `${chainId ? `/${chainId}` : ''}/?${qs.stringify(params)}`;
+    const url = `${chainId ? `/${chainId}` : ''}?${qs.stringify(params)}`;
 
-    const response = await getTokenSearchHttp().get<TrendingRainbowToken[]>(url);
+    const response = await getTokenSearchHttp().get<{ data: TrendingRainbowToken[] }>(url);
 
     const trendingTokens: TrendingToken[] = [];
 
-    for (const token of response.data) {
+    for (const token of response.data.data) {
       const { address, name, symbol, chainId, decimals, trending, market, icon_url, colors } = token;
       const { bought_stats } = trending.swap_data;
       const highlightedFriends = (bought_stats.farcaster_users || []).reduce((friends, friend) => {
