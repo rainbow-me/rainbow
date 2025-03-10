@@ -13,7 +13,7 @@ import { TokenLauncherContextProvider, useTokenLauncherContext } from './context
 import { CreatingStep } from './components/CreatingStep';
 import { StyleSheet, useWindowDimensions } from 'react-native';
 import { SuccessStep } from './components/SuccessStep';
-import { JumboBlurredImageBackground } from './components/JumboBlurredImageBackground';
+import { ScreenBlurredImageBackground } from './components/ScreenBlurredImageBackground';
 import { IS_ANDROID } from '@/env';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StepBorderEffects } from './components/StepBorderEffects';
@@ -89,7 +89,7 @@ function TokenLauncherScreenContent() {
   return (
     <>
       <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2 }]}>
-        <JumboBlurredImageBackground width={941} height={941} />
+        <ScreenBlurredImageBackground width={screenHeight} height={screenHeight} />
       </Box>
       <Box
         width="full"
@@ -104,10 +104,11 @@ function TokenLauncherScreenContent() {
             borderRadius={42}
             style={{ maxHeight: contentContainerHeight }}
           >
-            <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2 }]}>
+            <TokenLauncherHeader contentContainerHeight={contentContainerHeight} />
+            <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2, pointerEvents: 'none' }]}>
               <StepBlurredImageBackground width={contentContainerHeight} height={contentContainerHeight} />
             </Box>
-            <Box style={StyleSheet.absoluteFill}>
+            <Box style={[StyleSheet.absoluteFill, { zIndex: 3, pointerEvents: 'none' }]}>
               <StepBorderEffects width={screenWidth} height={contentContainerHeight} />
             </Box>
             <Animated.View style={[infoStepAnimatedStyle, { width: screenWidth }]}>
@@ -147,7 +148,6 @@ function TokenLauncherScreenContent() {
                 <SuccessStep />
               </Animated.View>
             )}
-            <TokenLauncherHeader />
           </Box>
         </KeyboardAvoidingView>
         <KeyboardStickyView offset={stickyFooterKeyboardOffset}>
