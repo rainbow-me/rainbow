@@ -304,7 +304,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     });
   },
   addAirdropGroup: ({ groupId, label, count, imageUrl }: { groupId: string; label: string; count: number; imageUrl: string }) => {
-    // TODO: the imageUrl will come from the backend when integrated
     const recipient = {
       type: 'group' as const,
       id: Math.random().toString(),

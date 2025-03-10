@@ -265,7 +265,8 @@ export function TokenLauncherFooter() {
 
   const createButtonAnimatedStyle = useAnimatedStyle(() => {
     const fullWidth = containerWidth.value - 32;
-    const isVisible = stepSharedValue.value === NavigationSteps.REVIEW || stepSharedValue.value === NavigationSteps.CREATING;
+    // We use this animated value here because otherwise the button will disappear immediately when going back to input step
+    const isVisible = stepAnimatedSharedValue.value > NavigationSteps.INFO && stepAnimatedSharedValue.value <= NavigationSteps.CREATING;
     return {
       display: isVisible ? 'flex' : 'none',
       width: interpolate(
