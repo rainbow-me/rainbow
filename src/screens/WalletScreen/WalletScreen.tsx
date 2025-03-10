@@ -20,7 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { analyticsV2 } from '@/analytics';
 import { AppState } from '@/redux/store';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
@@ -31,12 +31,65 @@ import Routes from '@/navigation/Routes';
 import walletTypes from '@/helpers/walletTypes';
 import { NavbarOverlay } from './NavbarOverlay';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
-import { ScrollView } from 'react-native-gesture-handler';
+import { ProfileAvatarRow } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
+import { ProfileStickyHeaderHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileStickyHeader';
+import { ScrollPositionProvider, useScrollPosition } from './ScrollPositionContext';
+import { StickyHeaderManager } from '@/components/asset-list/RecyclerAssetList2/core/StickyHeaders';
+import { ProfileAvatar } from './ProfileAvatar';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 enum WalletLoadingStates {
   IDLE = 0,
   INITIALIZING = 1,
   INITIALIZED = 2,
+}
+
+function WalletPage() {
+  const { scrollHandler } = useScrollPosition();
+  const insets = useSafeAreaInsets();
+
+  return (
+    // TODO: Figure out Android offset
+    <StickyHeaderManager yOffset={IS_IOS ? navbarHeight + insets.top - 8 : 100}>
+      <Box as={Page} flex={1} testID="wallet-screen">
+        <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
+          <NavbarOverlay />
+
+          <Animated.ScrollView
+            showsVerticalScrollIndicator={false}
+            onScroll={scrollHandler}
+            style={{ flex: 1, paddingTop: insets.top }}
+            bounces={true}
+            scrollEventThrottle={16} // Standard value for smooth animations without excessive updates
+            contentContainerStyle={{
+              paddingBottom: TAB_BAR_HEIGHT, // Add some bottom padding for better UX
+            }}
+          >
+            <Box alignItems="center" width="full" marginTop={{ custom: ProfileStickyHeaderHeight }}>
+              <ProfileAvatar />
+            </Box>
+
+            <Box height={{ custom: 1000 }}></Box>
+            {/* Wallet components HERE */}
+            {/* 1. Profile & Name / Balance */}
+            {/* 2. Action Buttons */}
+            {/* 3. Asset list */}
+            {/* 4. Claimables */}
+            {/* 5. Positions */}
+            {/* 6. Collectibles */}
+          </Animated.ScrollView>
+          {/* <AssetList
+            accentColor={highContrastAccentColor}
+            disableRefreshControl={isLoadingUserAssetsAndAddress || isLoadingBalance}
+            isLoading={IS_ANDROID && (isLoadingUserAssetsAndAddress || isLoadingBalance)}
+            isWalletEthZero={isWalletEthZero}
+            network={currentNetwork}
+            walletBriefSectionsData={walletBriefSectionsData}
+          /> */}
+        </Box>
+      </Box>
+    </StickyHeaderManager>
+  );
 }
 
 function WalletScreen() {
@@ -48,7 +101,6 @@ function WalletScreen() {
   const { network: currentNetwork, accountAddress, appIcon } = useAccountSettings();
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
-  const insets = useSafeAreaInsets();
   const { wallets } = useWallets();
 
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
@@ -169,36 +221,14 @@ function WalletScreen() {
   const { highContrastAccentColor } = useAccountAccentColor();
 
   const position = useSharedValue(0);
-  const scrollHandler = useAnimatedScrollHandler(event => {
-    position.value = event.contentOffset.y;
-  });
 
   return (
-    <Box as={Page} flex={1} testID="wallet-screen">
-      <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
-        <NavbarOverlay position={position} />
-        <Animated.ScrollView showsVerticalScrollIndicator={false} onScroll={scrollHandler} style={{ flex: 1 }}>
-          {/* Wallet components HERE */}
-          {/* 1. Profile & Name / Balance */}
-          {/* 2. Action Buttons */}
-          {/* 3. Asset list */}
-          {/* 4. Claimables */}
-          {/* 5. Positions */}
-          {/* 6. Collectibles */}
-        </Animated.ScrollView>
-        {/* <AssetList
-          accentColor={highContrastAccentColor}
-          disableRefreshControl={isLoadingUserAssetsAndAddress || isLoadingBalance}
-          isLoading={IS_ANDROID && (isLoadingUserAssetsAndAddress || isLoadingBalance)}
-          isWalletEthZero={isWalletEthZero}
-          network={currentNetwork}
-          walletBriefSectionsData={walletBriefSectionsData}
-        /> */}
-      </Box>
+    <ScrollPositionProvider>
+      <WalletPage />
       <ToastPositionContainer>
         <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" testID="address-copied-toast" />
       </ToastPositionContainer>
-    </Box>
+    </ScrollPositionProvider>
   );
 }
 

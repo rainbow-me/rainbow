@@ -17,7 +17,7 @@ import RecyclerListViewScrollToTopProvider, {
 import DappBrowserScreen from '@/screens/dapp-browser/DappBrowserScreen';
 import { discoverOpenSearchFnRef } from '@/components/Discover/DiscoverSearchContainer';
 import { PointsScreen } from '@/screens/points/PointsScreen';
-import WalletScreen from '@/screens/WalletScreen';
+import WalletScreen from '@/screens/WalletScreen/WalletScreen';
 import { useTheme } from '@/theme';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { BlurView } from '@react-native-community/blur';

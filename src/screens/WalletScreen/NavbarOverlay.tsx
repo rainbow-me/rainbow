@@ -1,6 +1,5 @@
-import React, { useMemo } from 'react';
-import { View } from 'react-native';
-import Animated, { interpolate, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import React from 'react';
+import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
@@ -8,14 +7,15 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { ProfileNameRow } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileNameRow';
-import AndroidContextMenu from '@/components/context-menu/ContextMenu.android';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { analytics } from '@/analytics';
-import lang from 'i18n-js';
+import * as lang from '@/languages';
 import { IS_ANDROID } from '@/env';
 import { useAccountAccentColor } from '@/hooks';
+import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
+import { useScrollPosition } from './ScrollPositionContext';
 
-export function NavbarOverlay({ position }: { position: SharedValue<number> }) {
+export function NavbarOverlay() {
+  const { position } = useScrollPosition();
   const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
@@ -60,42 +60,37 @@ export function NavbarOverlay({ position }: { position: SharedValue<number> }) {
     opacity: interpolate(position.value, [0, yOffset, yOffset + 38], [0, 0, 1]),
   }));
 
-  // ////////////////////////////////////////////////////
-  // Context Menu
-  const menuConfig = React.useMemo(
-    () => ({
-      menuItems: [
-        {
-          actionKey: 'settings',
-          actionTitle: lang.t('settings.label'),
-          icon: { iconType: 'SYSTEM', iconValue: 'gear' },
-        },
-        {
-          actionKey: 'qrCode',
-          actionTitle: lang.t('button.my_qr_code'),
-          icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
-        },
+  const menuItems: MenuItem<string>[] = React.useMemo(
+    () => [
+      {
+        actionKey: 'settings',
+        actionTitle: lang.t(lang.l.settings.label),
+        icon: { iconType: 'SYSTEM', iconValue: 'gear' },
+      },
+      {
+        actionKey: 'qrCode',
+        actionTitle: lang.t(lang.l.button.my_qr_code),
+        icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
+      },
 
-        {
-          actionKey: 'connectedApps',
-          actionTitle: lang.t('wallet.connected_apps'),
-          icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
-        },
-      ].filter(Boolean),
-      ...(ios ? { menuTitle: '' } : {}),
-    }),
+      {
+        actionKey: 'connectedApps',
+        actionTitle: lang.t(lang.l.wallet.connected_apps),
+        icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
+      },
+    ],
     []
   );
 
   const handlePressMenuItem = React.useCallback(
-    (e: any) => {
-      if (e.nativeEvent.actionKey === 'settings') {
+    (e: string) => {
+      if (e === 'settings') {
         handlePressSettings();
       }
-      if (e.nativeEvent.actionKey === 'qrCode') {
+      if (e === 'qrCode') {
         handlePressQRCode();
       }
-      if (e.nativeEvent.actionKey === 'connectedApps') {
+      if (e === 'connectedApps') {
         handlePressConnectedApps();
       }
     },
@@ -149,28 +144,11 @@ export function NavbarOverlay({ position }: { position: SharedValue<number> }) {
             </Navbar.Item>
           }
           rightComponent={
-            IS_ANDROID ? (
-              <AndroidContextMenu
-                dynamicOptions={undefined}
-                options={menuConfig.menuItems.map(item => item?.actionTitle)}
-                cancelButtonIndex={menuConfig.menuItems.length - 1}
-                onPressActionSheet={(buttonIndex: number) => {
-                  handlePressMenuItem({ nativeEvent: { actionKey: menuConfig.menuItems[buttonIndex]?.actionKey } });
-                }}
-              >
-                <View>
-                  <Navbar.Item>
-                    <Navbar.TextIcon color={highContrastAccentColor} icon="􀍠" />
-                  </Navbar.Item>
-                </View>
-              </AndroidContextMenu>
-            ) : (
-              <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
-                <Navbar.Item testID={'settings-menu'}>
-                  <Navbar.TextIcon color={highContrastAccentColor} icon="􀍠" />
-                </Navbar.Item>
-              </ContextMenuButton>
-            )
+            <DropdownMenu menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
+              <Navbar.Item testID={'settings-menu'}>
+                <Navbar.TextIcon color={highContrastAccentColor} icon="􀍠" />
+              </Navbar.Item>
+            </DropdownMenu>
           }
           titleComponent={
             <Box
