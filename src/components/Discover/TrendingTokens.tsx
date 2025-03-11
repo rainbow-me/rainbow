@@ -28,8 +28,9 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountSettings } from '@/hooks';
 import { getColorWorklet, getMixedColor, opacity } from '@/__swaps__/utils/swaps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { IS_IOS } from '@/env';
+import { IS_IOS, IS_TEST } from '@/env';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { RAINBOW_TRENDING_TOKENS_LIST, useExperimentalFlag } from '@/config';
 
 const t = i18n.l.trending_tokens;
 
@@ -675,11 +676,29 @@ function TrendingTokenData() {
   );
 }
 
+function RainbowFeatureFlagListener() {
+  const { rainbow_trending_tokens_list_enabled } = useRemoteConfig();
+  const rainbowTrendingTokensListEnabled =
+    (useExperimentalFlag(RAINBOW_TRENDING_TOKENS_LIST) || rainbow_trending_tokens_list_enabled) && !IS_TEST;
+
+  // If the rainbow list was selected and the flag is disabled, set the category to the "Trending" category
+  useEffect(() => {
+    if (!rainbowTrendingTokensListEnabled) {
+      useTrendingTokensStore.getState().setCategory(categories[0]);
+    }
+  }, [rainbowTrendingTokensListEnabled]);
+
+  return null;
+}
+
 const padding = 20;
 
 export function TrendingTokens() {
+  const { rainbow_trending_tokens_list_enabled } = useRemoteConfig();
   const { isDarkMode } = useColorMode();
   const selectedChainId = useSharedValue<ChainId | undefined>(undefined);
+  const rainbowTrendingTokensListEnabled =
+    (useExperimentalFlag(RAINBOW_TRENDING_TOKENS_LIST) || rainbow_trending_tokens_list_enabled) && !IS_TEST;
 
   return (
     <View style={{ gap: 28 }}>
@@ -698,14 +717,16 @@ export function TrendingTokens() {
             highlightedBackgroundColor={'#E6A39E'}
             selectedChainId={selectedChainId}
           />
-          <CategoryFilterButton
-            category={categories[1]}
-            label={i18n.t(t.filters.categories.RAINBOW)}
-            icon={<Image source={RainbowTokenFilter} width={16} height={16} />}
-            iconColor={'#40CA61'}
-            highlightedBackgroundColor={'#C4C4DD'}
-            selectedChainId={selectedChainId}
-          />
+          {rainbowTrendingTokensListEnabled && (
+            <CategoryFilterButton
+              category={categories[1]}
+              label={i18n.t(t.filters.categories.RAINBOW)}
+              icon={<Image source={RainbowTokenFilter} width={16} height={16} />}
+              iconColor={'#40CA61'}
+              highlightedBackgroundColor={'#C4C4DD'}
+              selectedChainId={selectedChainId}
+            />
+          )}
           <CategoryFilterButton
             category={categories[2]}
             label={i18n.t(t.filters.categories.NEW)}
@@ -740,6 +761,7 @@ export function TrendingTokens() {
 
       <TrendingTokenData />
       <ReportAnalytics />
+      <RainbowFeatureFlagListener />
     </View>
   );
 }

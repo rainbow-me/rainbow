@@ -9,9 +9,8 @@ import useExperimentalFlag, {
   FEATURED_RESULTS,
   TRENDING_TOKENS,
 } from '@rainbow-me/config/experimentalHooks';
-import { isTestnetChain } from '@/handlers/web3';
 import { Inline, Inset, Stack, Box, Separator } from '@/design-system';
-import { useAccountSettings, useWallets } from '@/hooks';
+import { useWallets } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
 import { GasCard } from '@/components/cards/GasCard';
@@ -37,18 +36,18 @@ import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
 export const HORIZONTAL_PADDING = 20;
 
 export default function DiscoverHome() {
-  const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results, trending_tokens_enabled } = useRemoteConfig();
+  const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results, trending_tokens_enabled, new_discover_cards_enabled } =
+    useRemoteConfig();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
   const featuredResultsEnabled = (useExperimentalFlag(FEATURED_RESULTS) || featured_results) && !IS_TEST;
   const mintsEnabled = (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
-  const newDiscoverCardsEnabled = useExperimentalFlag(NEW_DISCOVER_CARDS);
+  const newDiscoverCardsEnabled = (useExperimentalFlag(NEW_DISCOVER_CARDS) || new_discover_cards_enabled) && !IS_TEST;
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
-  // const testNetwork = isTestnetChain({ chainId });
   const isTokenLauncherTestflight = true;
   const { navigate } = useNavigation();
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
