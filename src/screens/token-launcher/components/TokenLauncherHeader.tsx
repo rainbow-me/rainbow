@@ -13,6 +13,7 @@ import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar'
 import { showActionSheetWithOptions } from '@/utils';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { IS_IOS } from '@/env';
 
 const EXIT_BUTTON_SIZE = 36;
 // padding top + exit button + inner padding + padding bottom + blur padding
@@ -69,7 +70,7 @@ export function TokenLauncherHeader({ contentContainerHeight }: { contentContain
       zIndex={2}
     >
       <Box paddingHorizontal="20px" paddingTop="20px" paddingBottom="12px" style={{ flex: 1 }}>
-        {isTokenImageVisible ? (
+        {isTokenImageVisible && IS_IOS ? (
           <BlurGradient
             height={TOKEN_LAUNCHER_HEADER_HEIGHT}
             width={deviceWidth}

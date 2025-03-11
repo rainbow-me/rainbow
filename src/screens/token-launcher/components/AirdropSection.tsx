@@ -22,7 +22,7 @@ import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar'
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Skeleton } from '@/screens/points/components/Skeleton';
-import { FlatList, ScrollView } from 'react-native';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { colors } from '@/styles';
 import {
   AirdropCohort,
@@ -99,7 +99,7 @@ function SuggestedUsers({ users }: { users: AirdropSuggestedUser[] }) {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ gap: 8, paddingLeft: 20 }}
-            initialNumToRender={10}
+            initialNumToRender={5}
           />
           <FlatList
             data={rowTwoUsers}
@@ -108,7 +108,7 @@ function SuggestedUsers({ users }: { users: AirdropSuggestedUser[] }) {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ gap: 8, paddingLeft: 20 }}
-            initialNumToRender={10}
+            initialNumToRender={5}
           />
         </Box>
       </Bleed>
