@@ -63,7 +63,7 @@ export function NavbarOverlay() {
   });
 
   const walletNameStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(position.value, [0, yOffset, yOffset + 38], [0, 0, 1], 'clamp');
+    const opacity = interpolate(position.value, [0, yOffset + 16, yOffset + 38], [0, 0, 1], 'clamp');
     return {
       pointerEvents: opacity > 0.5 ? 'auto' : 'none',
       opacity,

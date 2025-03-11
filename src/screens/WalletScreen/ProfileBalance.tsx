@@ -4,11 +4,12 @@ import { Box, Text } from '@/design-system';
 import { useAccountSettings, useWallets, useWalletsWithBalancesAndNames } from '@/hooks';
 
 export const ProfileBalanceRowHeight = 24;
+export const ProfilePadding = 12;
+export const ProfileBalanceTotalHeight = ProfileBalanceRowHeight + ProfilePadding * 2;
 
 export function ProfileBalance() {
   const placeholderHeight = ProfileBalanceRowHeight;
   const placeholderWidth = 200;
-
   const { accountAddress } = useAccountSettings();
   const { selectedWallet } = useWallets();
 
@@ -23,7 +24,7 @@ export function ProfileBalance() {
   }, [accountWithBalance]);
 
   return (
-    <Box padding="12px">
+    <Box padding={`${ProfilePadding}px`}>
       {typeof accountWithBalance === 'undefined' ? (
         <Box height={{ custom: placeholderHeight }} width={{ custom: placeholderWidth }}>
           <Skeleton>

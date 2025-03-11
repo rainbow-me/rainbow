@@ -3,14 +3,14 @@ import React from 'react';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { HapticType } from 'react-native-turbo-haptics';
 import { Bleed, Box, BoxProps, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { TextColor } from '@/design-system/color/palettes';
+import { ForegroundColor, TextColor } from '@/design-system/color/palettes';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { position } from '@/styles';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton, GestureHandlerButtonProps } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { clamp, opacity } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -18,6 +18,7 @@ import { useBrowserContext } from './BrowserContext';
 import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { BrowserButtonShadows } from './DappBrowserShadows';
 import { BrowserWorkletsContextType } from './types';
+import { CustomColor } from '@/design-system/color/useForegroundColor';
 
 export const TabViewToolbar = () => {
   const { extraWebViewHeight, tabViewProgress, tabViewVisible } = useBrowserContext();
@@ -67,7 +68,7 @@ const NewTabButton = ({ newTabWorklet }: { newTabWorklet: BrowserWorkletsContext
 
 const DoneButton = ({ toggleTabViewWorklet }: { toggleTabViewWorklet: (activeIndex?: number | undefined) => void }) => {
   return (
-    <BaseButton onPressWorklet={toggleTabViewWorklet} paddingHorizontal="20px">
+    <BaseButton gestureButtonProps={{ style: { padding: 8 } }} onPressWorklet={toggleTabViewWorklet} paddingHorizontal="20px">
       <Text align="center" color="label" size="20pt" weight="heavy">
         {i18n.t(i18n.l.button.done)}
       </Text>
@@ -79,6 +80,8 @@ type BaseButtonProps = {
   children?: React.ReactNode;
   disableHaptics?: boolean;
   hapticType?: HapticType;
+  buttonColor?: ForegroundColor | 'accent' | CustomColor;
+  borderColor?: ForegroundColor | 'accent' | CustomColor;
   icon?: string;
   iconColor?: TextColor;
   iconSize?: TextSize;
@@ -86,15 +89,19 @@ type BaseButtonProps = {
   lightShadows?: boolean;
   onPress?: () => void;
   onPressWorklet?: () => void;
+  paddingVertical?: BoxProps['paddingVertical'];
   paddingHorizontal?: BoxProps['paddingHorizontal'];
   scaleTo?: number;
   width?: number;
+  gestureButtonProps?: Partial<GestureHandlerButtonProps>;
 };
 
-const BaseButton = ({
+export const BaseButton = ({
   children,
   disableHaptics = false,
   hapticType,
+  buttonColor = 'fillSecondary',
+  borderColor = 'separatorSecondary',
   icon,
   iconColor = 'labelSecondary',
   iconSize = 'icon 17px',
@@ -102,17 +109,19 @@ const BaseButton = ({
   lightShadows = true,
   onPress,
   onPressWorklet,
+  paddingVertical = { custom: 15 },
   paddingHorizontal = '16px',
   scaleTo,
   width,
+  gestureButtonProps,
 }: BaseButtonProps) => {
   const { isDarkMode } = useColorMode();
-  const fillSecondary = useForegroundColor('fillSecondary');
-  const separatorSecondary = useForegroundColor('separatorSecondary');
+  const _buttonColor = useForegroundColor(buttonColor);
+  const _borderColor = useForegroundColor(borderColor);
 
-  const buttonColorIOS = isDarkMode ? fillSecondary : opacity(globalColors.white100, 0.9);
+  const buttonColorIOS = isDarkMode ? _buttonColor : opacity(globalColors.white100, 0.9);
   const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
-  const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
+  const btnColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
 
   return (
     <BrowserButtonShadows lightShadows={lightShadows}>
@@ -126,12 +135,13 @@ const BaseButton = ({
             onPressWorklet?.();
           }}
           scaleTo={scaleTo}
-          style={{ padding: 8 }}
+          {...gestureButtonProps}
         >
           <Box
             borderRadius={22}
             paddingHorizontal={width ? undefined : paddingHorizontal}
-            style={{ borderCurve: 'continuous', height: 44, overflow: 'hidden', width }}
+            paddingVertical={paddingVertical}
+            style={{ borderCurve: 'continuous', overflow: 'hidden', width }}
             alignItems="center"
             justifyContent="center"
           >
@@ -160,8 +170,8 @@ const BaseButton = ({
             <Box
               style={[
                 {
-                  backgroundColor: buttonColor,
-                  borderColor: separatorSecondary,
+                  backgroundColor: btnColor,
+                  borderColor: _borderColor,
                   borderCurve: 'continuous',
                   borderRadius: 22,
                   borderWidth: IS_IOS && isDarkMode ? THICK_BORDER_WIDTH : 0,

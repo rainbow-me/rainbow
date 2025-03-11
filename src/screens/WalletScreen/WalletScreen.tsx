@@ -9,6 +9,7 @@ import {
   useInitializeWallet,
   useLoadAccountLateData,
   useLoadGlobalLateData,
+  useRefreshAccountData,
   useWallets,
   useWalletSectionsData,
 } from '@/hooks';
@@ -32,6 +33,8 @@ import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { ProfileName } from './ProfileName';
 import { ProfileBalance } from './ProfileBalance';
 import { ProfileActionButtons } from './ProfileActionButtons';
+import { RefreshControl, View } from 'react-native';
+import { UserAssetsList } from './UserAssetsList';
 
 enum WalletLoadingStates {
   IDLE = 0,
@@ -42,48 +45,42 @@ enum WalletLoadingStates {
 function WalletPage() {
   const { scrollHandler, scrollViewRef } = useScrollPosition();
   const insets = useSafeAreaInsets();
+  const { refresh, isRefreshing } = useRefreshAccountData();
 
   return (
     <Box as={Page} flex={1} testID="wallet-screen">
-      <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
+      <Box
+        style={{
+          flex: 1,
+          marginTop: -(navbarHeight + insets.top),
+        }}
+      >
         <NavbarOverlay />
 
         <Animated.ScrollView
-          // refreshControl={<RefreshControl refreshing={false} onRefresh={() => {}} />}
+          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />}
           ref={scrollViewRef}
           showsVerticalScrollIndicator={false}
           onScroll={scrollHandler}
-          style={{ flex: 1, paddingTop: insets.top }}
-          scrollEventThrottle={16} // Standard value for smooth animations without excessive updates
+          style={{
+            flex: 1,
+            paddingTop: insets.top,
+          }}
+          scrollEventThrottle={16}
           contentContainerStyle={{
+            paddingBottom: TAB_BAR_HEIGHT + insets.top,
             display: 'flex',
             flexDirection: 'column',
             gap: 12,
             alignItems: 'center',
-            paddingBottom: TAB_BAR_HEIGHT, // Add some bottom padding for better UX
           }}
         >
           <ProfileAvatar />
           <ProfileName />
           <ProfileBalance />
           <ProfileActionButtons />
-
-          <Box height={{ custom: 1000 }}></Box>
-          {/* Wallet components HERE */}
-          {/* 2. Action Buttons */}
-          {/* 3. Asset list */}
-          {/* 4. Claimables */}
-          {/* 5. Positions */}
-          {/* 6. Collectibles */}
+          <UserAssetsList />
         </Animated.ScrollView>
-        {/* <AssetList
-          accentColor={highContrastAccentColor}
-          disableRefreshControl={isLoadingUserAssetsAndAddress || isLoadingBalance}
-          isLoading={IS_ANDROID && (isLoadingUserAssetsAndAddress || isLoadingBalance)}
-          isWalletEthZero={isWalletEthZero}
-          network={currentNetwork}
-          walletBriefSectionsData={walletBriefSectionsData}
-        /> */}
       </Box>
     </Box>
   );
@@ -101,12 +98,6 @@ function WalletScreen() {
   const { wallets } = useWallets();
 
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
-  const {
-    isWalletEthZero,
-    isLoadingUserAssets,
-    isLoadingBalance,
-    briefSectionsData: walletBriefSectionsData,
-  } = useWalletSectionsData({ type: 'wallet' });
 
   useEffect(() => {
     if (!wallets) return;

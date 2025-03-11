@@ -17,6 +17,8 @@ import React, { useCallback, useMemo } from 'react';
 import { GestureResponderEvent } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { trimTrailingZeros } from '@/__swaps__/utils/swaps';
+import { TextColor } from '@/design-system/color/palettes';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 
@@ -43,6 +45,7 @@ interface InputCoinRowProps {
   isTrending?: boolean;
   isSupportedChain?: never;
   nativePriceChange?: string;
+  showPriceChange?: boolean;
   onPress: (asset: ParsedSearchAsset | null) => void;
   output?: false | undefined;
   uniqueId?: never;
@@ -61,6 +64,7 @@ interface OutputCoinRowProps extends PartialAsset {
   onPress: () => void;
   output: true;
   nativePriceChange?: string;
+  showPriceChange?: never;
   isTrending?: boolean;
   isSupportedChain: boolean;
   testID?: string;
@@ -73,6 +77,8 @@ export function CoinRow({
   hideFavoriteButton,
   isFavorite,
   isSupportedChain,
+  nativePriceChange,
+  showPriceChange,
   onPress,
   output,
   uniqueIdOrAsset,
@@ -89,21 +95,17 @@ export function CoinRow({
   const asset = output ? outputAsset : inputAsset;
   const { address, chainId, colors, icon_url, isVerified, mainnetAddress, name, symbol } = asset || {};
 
-  /**
-* ⚠️ TODO: Re-enable when trending tokens are added
-*
-* const percentChange = useMemo(() => {
-*   if (isTrending && nativePriceChange) {
-*     const rawChange = parseFloat(nativePriceChange);
-*     const isNegative = rawChange < 0;
-*     const prefix = isNegative ? '-' : '+';
-*     const color: TextColor = isNegative ? 'red' : 'green';
-*     const change = `${trimTrailingZeros(Math.abs(rawChange).toFixed(1))}%`;
+  const percentChange = useMemo(() => {
+    if (nativePriceChange) {
+      const rawChange = parseFloat(nativePriceChange);
+      const isNegative = rawChange < 0;
+      const prefix = isNegative ? '-' : '+';
+      const color: TextColor = isNegative ? 'red' : 'green';
+      const change = `${trimTrailingZeros(Math.abs(rawChange).toFixed(1))}%`;
 
-*     return { change, color, prefix };
-*   }
-* }, [isTrending, nativePriceChange]);
-*/
+      return { change, color, prefix };
+    }
+  }, [nativePriceChange]);
 
   const favoritesIconColor = useMemo(() => {
     return isFavorite ? '#FFCB0F' : undefined;
@@ -164,20 +166,24 @@ export function CoinRow({
                       <Text color="labelTertiary" numberOfLines={1} size="13pt" weight="semibold">
                         {output ? symbol : `${inputAsset?.balance.display}`}
                       </Text>
-                      {/* {nativePriceChange && percenChange && (
-                        <Inline alignVertical="center" space={{ custom: 1 }} wrap={false}>
-                          <Text align="center" color={percentChange.color} size="12pt" weight="bold">
-                            {percentChange.prefix}
-                          </Text>
-                          <Text color={percentChange.color} size="13pt" weight="semibold">
-                            {percentChange.change}
-                          </Text>
-                        </Inline>
-                      )} */}
                     </Inline>
                   </Box>
                 </Box>
-                {!output && <BalancePill balance={inputAsset?.native?.balance.display ?? ''} />}
+                <Box alignItems="flex-end">
+                  {!output && (
+                    <BalancePill showPriceChange={showPriceChange ?? false} balance={inputAsset?.native?.balance.display ?? ''} />
+                  )}
+                  {showPriceChange && percentChange && (
+                    <Inline alignVertical="center" space={{ custom: 1 }} wrap={false}>
+                      <Text align="center" color={percentChange.color} size="12pt" weight="bold">
+                        {percentChange.prefix}
+                      </Text>
+                      <Text color={percentChange.color} size="13pt" weight="semibold">
+                        {percentChange.change}
+                      </Text>
+                    </Inline>
+                  )}
+                </Box>
               </Box>
             </HitSlop>
           </ButtonPressAnimation>
@@ -186,7 +192,7 @@ export function CoinRow({
           <Column width="content">
             <Box paddingLeft="12px" paddingRight="20px">
               <Inline space="10px">
-                <InfoButton address={address} chainId={chainId} isSupportedChain={isSupportedChain} isVerified={isVerified} />
+                <InfoButton address={address} chainId={chainId} isSupportedChain={isSupportedChain} />
                 {!hideFavoriteButton && <CoinRowButton color={favoritesIconColor} onPress={handleToggleFavorite} icon="􀋃" weight="black" />}
               </Inline>
             </Box>
@@ -197,17 +203,7 @@ export function CoinRow({
   );
 }
 
-const InfoButton = ({
-  address,
-  chainId,
-  isSupportedChain,
-  isVerified,
-}: {
-  address: string;
-  chainId: ChainId;
-  isSupportedChain: boolean;
-  isVerified: boolean | undefined;
-}) => {
+const InfoButton = ({ address, chainId, isSupportedChain }: { address: string; chainId: ChainId; isSupportedChain: boolean }) => {
   const handleCopy = useCallback(() => {
     haptics.selection();
     setClipboard(address);
@@ -258,7 +254,7 @@ const InfoButton = ({
     };
 
     return { options, menuConfig };
-  }, [address, chainId, handleCopy, isSupportedChain, isVerified]);
+  }, [address, chainId, handleCopy, isSupportedChain]);
 
   const handlePressMenuItem = async ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => {
     if (actionKey === 'copyAddress') {
