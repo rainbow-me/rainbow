@@ -1,5 +1,5 @@
 import { AIRDROP_BPS, CREATOR_BPS, CREATOR_BPS_WITH_AIRDROP } from '../constants';
-import { TokenLauncher } from '@/hooks/useTokenLauncher';
+import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
 import { parseUnits } from '@ethersproject/units';
 // 1% fee
 const POOL_FEE = 10000;
@@ -38,7 +38,7 @@ export function calculateTokenomics({
   const targetPriceUsd = targetMarketCapUsd / totalSupply;
   const targetPriceEth = targetPriceUsd / ethPriceUsd;
 
-  const tick = TokenLauncher.getInitialTick(parseUnits(targetPriceEth?.toFixed(18) ?? '0', 18));
+  const tick = TokenLauncherSDK.getInitialTick(parseUnits(targetPriceEth?.toFixed(18) ?? '0', 18));
 
   // Calculate actual starting values with rounded tick
   let actualPriceEth = Math.pow(1.0001, tick);

@@ -13,8 +13,8 @@ import { validateLinkWorklet, validateNameWorklet, validateSymbolWorklet, valida
 import { Wallet } from '@ethersproject/wallet';
 import { parseUnits } from '@ethersproject/units';
 import { TransactionOptions } from '@rainbow-me/swaps';
-import { TokenLauncher } from '@/hooks/useTokenLauncher';
-import { LaunchTokenResponse } from '@rainbow-me/token-launcher';
+import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
+import { LaunchTokenResponse, TokenLauncherSDKError } from '@rainbow-me/token-launcher';
 import { Alert } from 'react-native';
 import { logger, RainbowError } from '@/logger';
 import { analyticsV2 } from '@/analytics';
@@ -426,8 +426,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     );
 
     try {
-      const initialTick = TokenLauncher.getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
-
+      const initialTick = TokenLauncherSDK.getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
       const params = {
         name,
         symbol,
@@ -452,12 +451,12 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       const shouldBuy = extraBuyAmount > 0;
       let result;
       if (shouldBuy) {
-        result = await TokenLauncher.launchTokenAndBuy({
+        result = await TokenLauncherSDK.launchTokenAndBuy({
           ...params,
           amountIn: parseUnits(extraBuyAmount.toString(), 18).toString(),
         });
       } else {
-        result = await TokenLauncher.launchToken(params);
+        result = await TokenLauncherSDK.launchToken(params);
       }
       if (result) {
         set({ launchedTokenAddress: result.tokenAddress });
@@ -477,13 +476,15 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         });
       }
       return result;
-    } catch (e: unknown) {
-      const error = e instanceof Error ? e : new Error(String(e));
-      console.error('error creating token', error);
-      Alert.alert(`${error.message}`);
-      logger.error(new RainbowError('[TokenLauncher]: Error launching token'), {
-        message: error.message,
-      });
+    } catch (error) {
+      Alert.alert(`${(error as Error).message}`);
+      let metadata = {
+        message: (error as Error).message,
+      };
+      if (error instanceof TokenLauncherSDKError) {
+        metadata = { ...metadata, ...error.context };
+      }
+      logger.error(new RainbowError('[TokenLauncher]: Error launching token'), metadata);
     }
   },
 }));
