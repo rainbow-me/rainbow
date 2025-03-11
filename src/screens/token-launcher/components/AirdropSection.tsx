@@ -38,6 +38,8 @@ function SuggestedUsers({ users }: { users: AirdropSuggestedUser[] }) {
   const { accentColors } = useTokenLauncherContext();
   const addOrEditAirdropAddress = useTokenLauncherStore(state => state.addOrEditAirdropAddress);
   const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
+  const rowOneUsers = useMemo(() => users.slice(0, Math.ceil(users.length / 2)), [users]);
+  const rowTwoUsers = useMemo(() => users.slice(Math.ceil(users.length / 2)), [users]);
 
   const renderSuggestedUser = (user: AirdropSuggestedUser) => {
     const isExistingRecipient = airdropRecipients.some(recipient => recipient.id === user.address);
@@ -89,15 +91,26 @@ function SuggestedUsers({ users }: { users: AirdropSuggestedUser[] }) {
         {i18n.t(i18n.l.token_launcher.airdrop.suggested_users)}
       </Text>
       <Bleed horizontal={'20px'}>
-        <FlatList
-          data={users}
-          renderItem={({ item }) => renderSuggestedUser(item)}
-          keyExtractor={item => item.address}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 8, paddingLeft: 20 }}
-          initialNumToRender={10}
-        />
+        <Box gap={8}>
+          <FlatList
+            data={rowOneUsers}
+            renderItem={({ item }) => renderSuggestedUser(item)}
+            keyExtractor={item => item.address}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: 8, paddingLeft: 20 }}
+            initialNumToRender={10}
+          />
+          <FlatList
+            data={rowTwoUsers}
+            renderItem={({ item }) => renderSuggestedUser(item)}
+            keyExtractor={item => item.address}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: 8, paddingLeft: 20 }}
+            initialNumToRender={10}
+          />
+        </Box>
       </Bleed>
     </Box>
   );
