@@ -24,24 +24,20 @@ import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Skeleton } from '@/screens/points/components/Skeleton';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { colors } from '@/styles';
-import {
-  AirdropCohort,
-  AirdropSuggestedUser,
-  AirdropPersonalizedCohort,
-  useAirdropSuggestionsStore,
-} from '../state/airdropSuggestionsStore';
+import { useAirdropSuggestionsStore } from '../state/airdropSuggestionsStore';
 import { ImgixImage } from '@/components/images';
 import { fetchENSAddress } from '@/hooks/useENSAddress';
 import { logger, RainbowError } from '@/logger';
+import { PersonalizedCohort, PredefinedCohort, SuggestedUser } from '@rainbow-me/token-launcher';
 
-function SuggestedUsers({ users }: { users: AirdropSuggestedUser[] }) {
+function SuggestedUsers({ users }: { users: SuggestedUser[] }) {
   const { accentColors } = useTokenLauncherContext();
   const addOrEditAirdropAddress = useTokenLauncherStore(state => state.addOrEditAirdropAddress);
   const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
   const rowOneUsers = useMemo(() => users.slice(0, Math.ceil(users.length / 2)), [users]);
   const rowTwoUsers = useMemo(() => users.slice(Math.ceil(users.length / 2)), [users]);
 
-  const renderSuggestedUser = (user: AirdropSuggestedUser) => {
+  const renderSuggestedUser = (user: SuggestedUser) => {
     const isExistingRecipient = airdropRecipients.some(recipient => recipient.id === user.address);
 
     return (
@@ -120,8 +116,8 @@ function AirdropGroups({
   predefinedCohorts,
   personalizedCohorts,
 }: {
-  predefinedCohorts: AirdropCohort[];
-  personalizedCohorts: AirdropPersonalizedCohort[];
+  predefinedCohorts: PredefinedCohort[];
+  personalizedCohorts: PersonalizedCohort[];
 }) {
   const { accentColors } = useTokenLauncherContext();
 
@@ -146,15 +142,14 @@ function AirdropGroups({
           showsHorizontalScrollIndicator={false}
         >
           {airdropGroups.map(item => {
-            const isSelected = airdropRecipients.some(recipient => recipient.type === 'group' && recipient.value === item.id);
+            const isSelected = airdropRecipients.some(recipient => recipient.type === 'group' && recipient.value === groupId);
+            const groupId = 'id' in item ? item.id : item.name;
 
             return (
               <ButtonPressAnimation
-                key={item.id}
+                key={groupId}
                 disabled={isSelected}
-                onPress={() =>
-                  addAirdropGroup({ groupId: item.id ?? item.name, label: item.name, count: item.totalUsers, imageUrl: item.icons.iconURL })
-                }
+                onPress={() => addAirdropGroup({ groupId, label: item.name, count: item.totalUsers, imageUrl: item.icons.iconURL })}
               >
                 <Box
                   height={133}
@@ -168,7 +163,6 @@ function AirdropGroups({
                   paddingVertical={'16px'}
                   justifyContent="center"
                   alignItems="center"
-                  key={item.id}
                   style={{
                     overflow: 'visible',
                     opacity: isSelected ? 0.5 : 1,
