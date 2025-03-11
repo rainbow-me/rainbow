@@ -112,7 +112,7 @@ function TokenAllocationCard() {
                 </Box>
               </Box>
               <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
-                {`${convertAmountToPercentageDisplay((bipsPerAirdropAddress * recipient.count) / 100, 0, 1, false)}`}
+                {`${convertAmountToPercentageDisplay((bipsPerAirdropAddress * recipient.count) / 100, 0, undefined, false)}`}
               </Text>
             </Box>
           );
