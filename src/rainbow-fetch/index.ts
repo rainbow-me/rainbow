@@ -90,7 +90,6 @@ function generateError({
   response: Response;
   responseBody: any;
 }) {
-  console.log('responseBody', responseBody);
   const message = responseBody?.error || responseBody?.message || response?.statusText || 'There was an error with the request.';
 
   const error: RainbowFetchError = new Error(message);

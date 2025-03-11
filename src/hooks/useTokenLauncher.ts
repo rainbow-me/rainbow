@@ -12,9 +12,8 @@ const config: TokenLauncherConfig = {
 
 TL.configure(config);
 
-export function useTokenLauncher(): typeof TokenLauncher {
-  const { getTokenLauncherSupportedChainInfo } = useBackendNetworksStore();
-  const launcherSupportedChains = getTokenLauncherSupportedChainInfo();
+export function useTokenLauncher(): typeof TokenLauncherSDK {
+  const launcherSupportedChains = useBackendNetworksStore(state => state.getTokenLauncherSupportedChainInfo());
   useEffect(() => {
     TL.configure({
       SUPPORTED_NETWORKS: launcherSupportedChains,
@@ -25,4 +24,4 @@ export function useTokenLauncher(): typeof TokenLauncher {
   return TL;
 }
 
-export const TokenLauncher = TL;
+export const TokenLauncherSDK = TL;
