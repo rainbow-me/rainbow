@@ -792,5 +792,9 @@ export type EventProperties = {
     airdropAddressCount: number;
     airdropCohortIds: string[];
   };
-  [event.tokenLauncherSharePressed]: undefined;
+  [event.tokenLauncherSharePressed]: {
+    tokenAddress: string;
+    chainId: ChainId;
+    url: string;
+  };
 };

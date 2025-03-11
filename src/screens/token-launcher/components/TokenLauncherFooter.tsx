@@ -35,6 +35,7 @@ import { useTokenLauncher } from '@/hooks/useTokenLauncher';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { analyticsV2 } from '@/analytics';
 
 // height + top padding + bottom padding
 export const FOOTER_HEIGHT = 48 + 16 + 8;
@@ -146,15 +147,21 @@ function ShareButton() {
 
   return (
     <ButtonPressAnimation
-      onPress={() => {
+      onPress={async () => {
         // This should never happen
         if (!launchedTokenAddress || !chainId) return;
 
-        Share.share({
-          url: buildTokenDeeplink({
-            networkLabel: chainLabels[chainId],
-            contractAddress: launchedTokenAddress,
-          }),
+        const url = buildTokenDeeplink({
+          networkLabel: chainLabels[chainId],
+          contractAddress: launchedTokenAddress,
+        });
+        await Share.share({
+          url,
+        });
+        analyticsV2.track(analyticsV2.event.tokenLauncherSharePressed, {
+          tokenAddress: launchedTokenAddress,
+          chainId,
+          url,
         });
       }}
     >
