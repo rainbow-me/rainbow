@@ -1,10 +1,14 @@
 import React from 'react';
-import Animated, { AnimatedProps } from 'react-native-reanimated';
-import { ViewStyle } from 'react-native';
+import Animated, { StyleProps } from 'react-native-reanimated';
 import { FIELD_BACKGROUND_COLOR, FIELD_BORDER_COLOR, FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH } from '../constants';
 import { IS_ANDROID } from '@/env';
 
-export function FieldContainer({ style, children }: { style?: AnimatedProps<ViewStyle>; children: React.ReactNode }) {
+type FieldContainerProps = {
+  style?: StyleProps | undefined;
+  children: React.ReactNode;
+};
+
+export function FieldContainer({ style, children }: FieldContainerProps) {
   return (
     <Animated.View
       style={[
@@ -17,7 +21,6 @@ export function FieldContainer({ style, children }: { style?: AnimatedProps<View
           paddingHorizontal: 20,
           backgroundColor: FIELD_BACKGROUND_COLOR,
         },
-        // @ts-expect-error TODO: fix
         style,
       ]}
     >

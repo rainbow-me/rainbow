@@ -17,6 +17,7 @@ export function DescriptionField() {
           // required to override default height and allow the multiline input to grow
           height: undefined,
           minHeight: 75,
+          maxHeight: 300,
           borderRadius: FIELD_INNER_BORDER_RADIUS,
           backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
           paddingHorizontal: 16,

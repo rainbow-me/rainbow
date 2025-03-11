@@ -14,9 +14,9 @@ export function useUploadToCloudinary() {
         throw new Error('Failed to upload image');
       }
       return url;
-    } catch (e) {
-      const error = e as Error;
-      logger.error(new RainbowError('[useUploadToCloudinary]: uploadImageToCloudinary failed'), {
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e : new Error(String(e));
+      logger.error(new RainbowError('[useUploadToCloudinary]: Failed to upload image to Cloudinary'), {
         message: error.message,
       });
       setError(error);

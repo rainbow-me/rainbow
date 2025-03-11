@@ -263,7 +263,6 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
     );
 
     return (
-      // @ts-expect-error TODO: fix this
       <FieldContainer style={[containerStyle, { height: INPUT_HEIGHT }, style]}>
         <Box height={'full'} flexDirection="row" alignItems="center" justifyContent="space-between">
           {labelPosition === 'right' && showPaste && <PasteButton />}

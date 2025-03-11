@@ -10,6 +10,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { SkImage, useAnimatedImageValue, useImage } from '@shopify/react-native-skia';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { SharedValue } from 'react-native-reanimated';
+import { logger, RainbowError } from '@/logger';
 
 type TokenLauncherContextType = {
   tokenBackgroundImage: SkImage | null;
@@ -77,8 +78,11 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
       } else if (!isDarkMode) {
         primaryColor = getHighContrastColor(primaryColor, isDarkMode);
       }
-    } catch (e) {
-      // TODO:
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e : new Error(String(e));
+      logger.error(new RainbowError('[TokenLauncher]: Error getting dominant color from image'), {
+        message: error.message,
+      });
     }
 
     const highContrastTextColor = getHighContrastTextColorWorklet(primaryColor, undefined, false);

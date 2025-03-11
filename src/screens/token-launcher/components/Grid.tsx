@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 
-// TODO: Ask about moving this to design system
+// This should be a component in the design system, but would need more work
 export function Grid({ children, columns = 2, spacing = 10 }: { children: React.ReactNode; columns?: number; spacing?: number }) {
   const rows = React.useMemo(() => {
     const items = React.Children.toArray(children);

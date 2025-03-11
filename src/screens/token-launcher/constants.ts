@@ -31,7 +31,7 @@ export const MAX_TOTAL_SUPPLY = BigInt('1157920892373161954235709850086879078532
 
 export const TOTAL_SUPPLY_PREBUY_PERCENTAGES = [0.005, 0.01, 0.05, 0.1];
 
-// TODO: these should probably come from the sdk & read from contract becasue the contract can change these values
+// TODO: At some point these should be fetched through the sdk to the contract, because the contract can change these values
 export const CREATOR_BPS = 69;
 export const CREATOR_BPS_WITH_AIRDROP = 46;
 export const AIRDROP_BPS = 23;

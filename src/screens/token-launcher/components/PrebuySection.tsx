@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import * as i18n from '@/languages';
-import { AnimatedText, Box, Separator, useForegroundColor } from '@/design-system';
+import { AnimatedText, Box, Separator, TextShadow, useForegroundColor } from '@/design-system';
 import { CollapsableField } from './CollapsableField';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
@@ -57,7 +57,7 @@ function PrebuyAmountButton({
         containerStyle,
         {
           flex: 1,
-          paddingVertical: 14 - FIELD_BORDER_WIDTH,
+          paddingVertical: 10 - FIELD_BORDER_WIDTH,
           borderRadius: FIELD_BORDER_RADIUS,
           borderWidth: FIELD_BORDER_WIDTH,
           borderColor: accentColors.opacity3,
@@ -69,12 +69,11 @@ function PrebuyAmountButton({
       onPressJS={onPressJS}
       hapticTrigger="tap-end"
     >
-      {/* TODO: This is adding extra padding */}
-      {/* <TextShadow blur={12} shadowOpacity={0.24} color={accentColors.primary}> */}
-      <AnimatedText style={textStyle} size="17pt" weight="heavy">
-        {label}
-      </AnimatedText>
-      {/* </TextShadow> */}
+      <TextShadow blur={12} shadowOpacity={0.24} color={accentColors.opacity100}>
+        <AnimatedText style={textStyle} size="17pt" weight="heavy">
+          {label}
+        </AnimatedText>
+      </TextShadow>
     </GestureHandlerButton>
   );
 }
@@ -107,6 +106,10 @@ export function PrebuySection() {
     }
     return convertAmountToBalanceDisplay(chainNativeAssetAvailableBalance, chainNativeAsset);
   }, [chainNativeAssetAvailableBalance, chainNativeAsset]);
+
+  const balanceAfterGasFeeText = useMemo(() => {
+    return `${i18n.t(i18n.l.token_launcher.prebuy.balance_after_gas_fee, { balance: nativeAssetForChainAvailableBalanceDisplay })}`;
+  }, [nativeAssetForChainAvailableBalanceDisplay]);
 
   const inputRef = useRef<SingleFieldInputRef>(null);
   const borderColor = useForegroundColor('buttonStroke');
@@ -145,11 +148,7 @@ export function PrebuySection() {
   const maxPrebuyAmount = prebuyOptions[prebuyOptions.length - 1].amount;
 
   const customInputSubtitle = useDerivedValue(() => {
-    return error.value === '' ? `Balance After Gas Fee: ${nativeAssetForChainAvailableBalanceDisplay}` : error.value;
-    // TODO: uses localization in this derived value causes crash
-    // return error.value === ''
-    //   ? `${i18n.t(i18n.l.token_launcher.prebuy.balance_after_gas_fee, { balance: nativeAssetForChainAvailableBalanceDisplay })}`
-    //   : error.value;
+    return error.value === '' ? balanceAfterGasFeeText : error.value;
   });
 
   const customInputSubtitleStyle = useAnimatedStyle(() => {
@@ -206,8 +205,6 @@ export function PrebuySection() {
             }}
             validationWorklet={text => {
               'worklet';
-              // Kind of jank that we're changing "state" in this callback by setting error.value
-              // TODO: is it safe to use parseFloat here?
               const amount = parseFloat(text) || 0;
 
               if (lessThanWorklet(chainNativeAssetAvailableBalance, amount)) {

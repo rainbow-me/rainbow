@@ -476,7 +476,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         });
       }
       return result;
-    } catch (error) {
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e : new Error(String(e));
       Alert.alert(`${(error as Error).message}`);
       let metadata = {
         message: (error as Error).message,

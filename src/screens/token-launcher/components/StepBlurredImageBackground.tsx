@@ -23,7 +23,7 @@ export const StepBlurredImageBackground = memo(function StepBlurredImageBackgrou
       <BackdropBlur antiAlias dither blur={100} clip={{ x: 0, y: 0, width: width, height: height }}>
         <Fill opacity={dimOverlayOpacity} antiAlias dither color="rgba(26, 26, 26, 0.75)" />
       </BackdropBlur>
-      {/* TODO: might be solution for haloing */}
+      {/* might be solution for haloing */}
       {/* <Group
         layer={
           <Paint antiAlias dither>
