@@ -17,7 +17,7 @@ import Animated from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { FieldContainer } from './FieldContainer';
 import { abbreviateNumber } from '@/helpers/utilities';
-import { checkIsValidAddressOrDomainFormat } from '@/helpers/validators';
+import { checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
@@ -31,11 +31,15 @@ import {
   useAirdropSuggestionsStore,
 } from '../state/airdropSuggestionsStore';
 import { ImgixImage } from '@/components/images';
+import { fetchENSAddress } from '@/hooks/useENSAddress';
+import { logger, RainbowError } from '@/logger';
 
 function SuggestedUsers({ users }: { users: AirdropSuggestedUser[] }) {
   const { accentColors } = useTokenLauncherContext();
   const addOrEditAirdropAddress = useTokenLauncherStore(state => state.addOrEditAirdropAddress);
   const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
+  const rowOneUsers = useMemo(() => users.slice(0, Math.ceil(users.length / 2)), [users]);
+  const rowTwoUsers = useMemo(() => users.slice(Math.ceil(users.length / 2)), [users]);
 
   const renderSuggestedUser = (user: AirdropSuggestedUser) => {
     const isExistingRecipient = airdropRecipients.some(recipient => recipient.id === user.address);
@@ -87,15 +91,26 @@ function SuggestedUsers({ users }: { users: AirdropSuggestedUser[] }) {
         {i18n.t(i18n.l.token_launcher.airdrop.suggested_users)}
       </Text>
       <Bleed horizontal={'20px'}>
-        <FlatList
-          data={users}
-          renderItem={({ item }) => renderSuggestedUser(item)}
-          keyExtractor={item => item.address}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 8, paddingLeft: 20 }}
-          initialNumToRender={10}
-        />
+        <Box gap={8}>
+          <FlatList
+            data={rowOneUsers}
+            renderItem={({ item }) => renderSuggestedUser(item)}
+            keyExtractor={item => item.address}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: 8, paddingLeft: 20 }}
+            initialNumToRender={10}
+          />
+          <FlatList
+            data={rowTwoUsers}
+            renderItem={({ item }) => renderSuggestedUser(item)}
+            keyExtractor={item => item.address}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: 8, paddingLeft: 20 }}
+            initialNumToRender={10}
+          />
+        </Box>
       </Bleed>
     </Box>
   );
@@ -213,7 +228,7 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
   const [isValidAddress, setIsValidAddress] = useState(true);
   const [addressImage, setAddressImage] = useState<string | null>(null);
   const [address, setAddress] = useState('');
-  const [isFetchingEnsAvatar, setIsFetchingEnsAvatar] = useState(false);
+  const [isFetchingEnsData, setIsFetchingEnsData] = useState(false);
 
   const handleInputChange = useCallback(
     async (text: string) => {
@@ -225,14 +240,31 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
       if (isValid !== isValidAddress) {
         setIsValidAddress(isValid);
 
-        if (isValid) {
-          setIsFetchingEnsAvatar(true);
-          const avatar = await fetchENSAvatar(text);
-          const imageUrl = avatar?.imageUrl ?? null;
+        // If the address is a valid ENS address, fetch the avatar and address
+        if (isValid && isENSAddressFormat(text)) {
+          setIsFetchingEnsData(true);
+          try {
+            const [avatar, ensAddress] = await Promise.all([fetchENSAvatar(text), fetchENSAddress(text)]);
+            const imageUrl = avatar?.imageUrl ?? null;
 
-          setAddressImage(imageUrl);
-          setIsFetchingEnsAvatar(false);
-          addOrEditAirdropAddress({ id, address: text, isValid, imageUrl });
+            if (!ensAddress) {
+              setIsValidAddress(false);
+              throw new Error('No address found for ENS name');
+            }
+
+            setAddressImage(imageUrl);
+
+            addOrEditAirdropAddress({ id, address: ensAddress, label: text, isValid, imageUrl });
+          } catch (e: unknown) {
+            const error = e as Error;
+            logger.error(new RainbowError('[TokenLauncher]: Error fetching ENS data'), {
+              message: error.message,
+            });
+          } finally {
+            setIsFetchingEnsData(false);
+          }
+        } else if (isValid) {
+          addOrEditAirdropAddress({ id, address: text, isValid });
         }
       }
     },
@@ -265,11 +297,11 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
         </Box>
       );
     }
-    if (isFetchingEnsAvatar) {
+    if (isFetchingEnsData) {
       return <Skeleton width={20} height={20} />;
     }
     return <AddressAvatar address={address} url={addressImage} size={20} color={accentColors.opacity100} label={''} />;
-  }, [isValidAddress, accentColors, address, addressImage, isFetchingEnsAvatar]);
+  }, [isValidAddress, accentColors, address, addressImage, isFetchingEnsData]);
 
   return (
     <SingleFieldInput
@@ -336,7 +368,7 @@ function SuggestedUserField({ recipient }: { recipient: AirdropRecipient }) {
       style={{ backgroundColor: INNER_FIELD_BACKGROUND_COLOR, paddingHorizontal: 16, borderRadius: FIELD_INNER_BORDER_RADIUS, flex: 1 }}
     >
       <Box flexDirection="row" alignItems="center" gap={8}>
-        <FastImage source={{ uri: recipient.imageUrl ?? '' }} style={{ width: 20, height: 20, borderRadius: 10 }} />
+        <ImgixImage source={{ uri: recipient.imageUrl ?? '' }} style={{ width: 20, height: 20, borderRadius: 10 }} />
         <Text style={{ flex: 1 }} numberOfLines={1} color="labelSecondary" size="17pt" weight="heavy">
           {recipient.label}
         </Text>

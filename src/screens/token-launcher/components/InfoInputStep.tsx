@@ -122,14 +122,10 @@ function SectionSeparator() {
 export function InfoInputStep() {
   return (
     <KeyboardAwareScrollView
-      contentOffset={{ x: 0, y: -TOKEN_LAUNCHER_HEADER_HEIGHT }}
-      contentInset={{ top: TOKEN_LAUNCHER_HEADER_HEIGHT }}
+      scrollIndicatorInsets={{ top: TOKEN_LAUNCHER_HEADER_HEIGHT }}
       contentContainerStyle={{
-        alignItems: 'center',
-        alignSelf: 'stretch',
         flexGrow: 1,
-        justifyContent: 'center',
-        paddingTop: IS_ANDROID ? TOKEN_LAUNCHER_HEADER_HEIGHT : 0,
+        paddingTop: TOKEN_LAUNCHER_HEADER_HEIGHT,
       }}
       keyboardDismissMode="interactive"
       bottomOffset={FOOTER_HEIGHT + (IS_ANDROID ? 56 : 36)}

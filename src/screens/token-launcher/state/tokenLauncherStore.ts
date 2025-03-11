@@ -17,6 +17,7 @@ import { TokenLauncher } from '@/hooks/useTokenLauncher';
 import { LaunchTokenResponse } from '@rainbow-me/token-launcher';
 import { Alert } from 'react-native';
 import { logger, RainbowError } from '@/logger';
+import { analyticsV2 } from '@/analytics';
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
 
@@ -29,6 +30,13 @@ export const enum NavigationSteps {
   CREATING = 2,
   SUCCESS = 3,
 }
+
+const NavigationStepsNames: Record<NavigationSteps, string> = {
+  [NavigationSteps.INFO]: 'INFO',
+  [NavigationSteps.REVIEW]: 'REVIEW',
+  [NavigationSteps.CREATING]: 'CREATING',
+  [NavigationSteps.SUCCESS]: 'SUCCESS',
+};
 
 export type AirdropRecipient = {
   type: 'group' | 'address';
@@ -291,9 +299,11 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     get().stepAnimatedSharedValue.value = withTiming(step, TIMING_CONFIGS.slowFadeConfig);
     get().stepSharedValue.value = step;
     set({ step });
+    analyticsV2.track(analyticsV2.event.tokenLauncherStepChanged, {
+      step: NavigationStepsNames[step],
+    });
   },
   addAirdropGroup: ({ groupId, label, count, imageUrl }: { groupId: string; label: string; count: number; imageUrl: string }) => {
-    // TODO: the imageUrl will come from the backend when integrated
     const recipient = {
       type: 'group' as const,
       id: Math.random().toString(),
@@ -327,7 +337,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     if (isExistingRecipient) {
       set({
         airdropRecipients: airdropRecipients.map(a =>
-          a.id === id ? { ...a, value: address, label: address, isValid, imageUrl: imageUrl ?? null } : a
+          a.id === id ? { ...a, value: address, label: label ?? address, isValid, imageUrl: imageUrl ?? null } : a
         ),
       });
     } else {
@@ -396,30 +406,36 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     wallet: Wallet;
     transactionOptions: TransactionOptions;
   }): Promise<LaunchTokenResponse | undefined> => {
-    const cohortIds = get()
-      .airdropRecipients.filter(r => r.type === 'group')
-      .map(recipient => recipient.value);
-    const recipientAddresses = get()
-      .airdropRecipients.filter(r => r.type === 'address')
-      .map(recipient => recipient.value);
-    const targetEth = get().tokenomics()?.price.targetEth;
+    const { name, chainId, symbol, description, imageUrl, tokenomics, totalSupply, extraBuyAmount } = get();
+
+    const airdropRecipients = get().validAirdropRecipients();
+    const links = get().validLinks();
+
+    const airdropCohortIds = airdropRecipients.filter(r => r.type === 'group').map(recipient => recipient.value);
+    const airdropRecipientAddresses = airdropRecipients.filter(r => r.type === 'address').map(recipient => recipient.value);
+    const airdropRecipientCount = airdropRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
+
+    const targetEth = tokenomics()?.price.targetEth;
+    const formattedTotalSupply = parseUnits(totalSupply.toString(), 18).toString();
+    const linksByType = links.reduce(
+      (acc, link) => {
+        acc[link.type] = link.url;
+        return acc;
+      },
+      {} as Record<LinkType, string>
+    );
+
     try {
       const initialTick = TokenLauncher.getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
-      const shouldBuy = get().extraBuyAmount > 0;
+
       const params = {
-        name: get().name,
-        symbol: get().symbol,
-        description: get().description,
-        logoUrl: get().imageUrl,
-        supply: parseUnits(get().totalSupply.toString(), 18).toString(),
-        links: get().links.reduce(
-          (acc, link) => {
-            acc[link.type] = link.url;
-            return acc;
-          },
-          {} as Record<LinkType, string>
-        ),
-        amountIn: parseUnits(get().extraBuyAmount.toString(), 'ether').toString(),
+        name,
+        symbol,
+        description,
+        logoUrl: imageUrl,
+        supply: formattedTotalSupply,
+        links: linksByType,
+        amountIn: parseUnits(extraBuyAmount.toString(), 'ether').toString(),
         initialTick,
         wallet,
         transactionOptions: {
@@ -428,28 +444,45 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
           maxPriorityFeePerGas: transactionOptions.maxPriorityFeePerGas,
         },
         airdropMetadata: {
-          cohortIds,
-          addresses: recipientAddresses,
+          cohortIds: airdropCohortIds,
+          addresses: airdropRecipientAddresses,
         },
       };
+
+      const shouldBuy = extraBuyAmount > 0;
       let result;
       if (shouldBuy) {
         result = await TokenLauncher.launchTokenAndBuy({
           ...params,
-          amountIn: parseUnits(get().extraBuyAmount.toString(), 18).toString(),
+          amountIn: parseUnits(extraBuyAmount.toString(), 18).toString(),
         });
       } else {
         result = await TokenLauncher.launchToken(params);
       }
       if (result) {
         set({ launchedTokenAddress: result.tokenAddress });
+        analyticsV2.track(analyticsV2.event.tokenLauncherTokenCreated, {
+          address: result.tokenAddress,
+          chainId,
+          symbol,
+          name,
+          logoUrl: imageUrl,
+          description,
+          totalSupply,
+          links: linksByType,
+          extraBuyAmount: extraBuyAmount,
+          airdropRecipientCount,
+          airdropAddressCount: airdropRecipientAddresses.length,
+          airdropCohortIds: airdropCohortIds,
+        });
       }
       return result;
-    } catch (e: any) {
-      console.error('error creating token', e);
-      Alert.alert(`${(e as Error).message}`);
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e : new Error(String(e));
+      console.error('error creating token', error);
+      Alert.alert(`${error.message}`);
       logger.error(new RainbowError('[TokenLauncher]: Error launching token'), {
-        message: (e as Error).message,
+        message: error.message,
       });
     }
   },

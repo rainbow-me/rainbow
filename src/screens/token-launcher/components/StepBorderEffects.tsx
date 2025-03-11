@@ -50,7 +50,7 @@ export const StepBorderEffects = memo(function StepBorderEffects({ width, height
         </Box>
       </Group>
       <Group opacity={successStepEffectsOpacity}>
-        <Box box={roundedRect} strokeWidth={8} style="stroke" color={'rgba(255, 255, 255, 0.1)'} />
+        <Box box={roundedRect} strokeWidth={4 * 2} style="stroke" color={'rgba(255, 255, 255, 0.1)'} />
         <Box box={roundedRect} blendMode={'plus'}>
           <Shadow dx={0} dy={0} blur={8} color={'rgba(255, 255, 255, 0.4)'} inner shadowOnly />
         </Box>

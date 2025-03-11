@@ -15,10 +15,9 @@ import { LINK_SETTINGS } from './LinksSection';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT } from './TokenLauncherHeader';
 import FastImage from 'react-native-fast-image';
-// import { BlurView } from 'react-native-blur-view';
-import { isAddress } from '@ethersproject/address';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
-import { IS_ANDROID } from '@/env';
+import { isENSAddressFormat } from '@/helpers/validators';
+import { isAddress } from 'viem';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
 const TOTAL_COST_PILL_HEIGHT = 52;
@@ -60,7 +59,12 @@ function TokenAllocationCard() {
           </Text>
         </Box>
         {airdropRecipients.map(recipient => {
-          const label = isAddress(recipient.value) ? abbreviateAddress(recipient.value, 4, 4) : recipient.label;
+          const isEnsOrCohort = isENSAddressFormat(recipient.label) || recipient.type === 'group';
+          const label = isEnsOrCohort
+            ? recipient.label
+            : isAddress(recipient.label)
+              ? abbreviateAddress(recipient.value, 4, 4)
+              : recipient.label;
 
           return (
             <Box
@@ -240,11 +244,11 @@ export function ReviewStep() {
   return (
     <>
       <ScrollView
-        contentOffset={{ x: 0, y: -TOKEN_LAUNCHER_HEADER_HEIGHT }}
-        contentInset={{ top: TOKEN_LAUNCHER_HEADER_HEIGHT }}
+        scrollIndicatorInsets={{ top: TOKEN_LAUNCHER_HEADER_HEIGHT }}
         contentContainerStyle={{
-          paddingBottom: 24 + (hasPrebuy ? TOTAL_COST_PILL_HEIGHT : 0),
-          paddingTop: IS_ANDROID ? TOKEN_LAUNCHER_HEADER_HEIGHT : 0,
+          flexGrow: 1,
+          paddingTop: TOKEN_LAUNCHER_HEADER_HEIGHT,
+          paddingBottom: hasPrebuy ? TOTAL_COST_PILL_HEIGHT : 0,
         }}
       >
         <Box width="full" paddingHorizontal={'20px'} alignItems="center">

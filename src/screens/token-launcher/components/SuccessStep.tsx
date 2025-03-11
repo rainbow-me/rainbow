@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import * as i18n from '@/languages';
 import { Box, Text, TextShadow } from '@/design-system';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
@@ -8,6 +8,7 @@ import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Easing, useDerivedValue, withRepeat, withTiming, useSharedValue } from 'react-native-reanimated';
 import FastImage from 'react-native-fast-image';
 import { useDimensions } from '@/hooks';
+import { TextSize } from '@/design-system/components/Text/Text';
 
 function Cone({ height, baseWidth, headWidth }: { height: number; baseWidth: number; headWidth: number }) {
   const path = Skia.Path.Make();
@@ -132,6 +133,17 @@ export function SuccessStep() {
   const heroHeight = Math.min(deviceHeight * 0.7, 500);
   const heroWidth = deviceWidth;
 
+  const titleFontSize: TextSize = useMemo(() => {
+    if (symbol.length > 20) {
+      return '15pt';
+    } else if (symbol.length > 16) {
+      return '22pt';
+    } else if (symbol.length > 10) {
+      return '34pt';
+    }
+    return '44pt';
+  }, [symbol]);
+
   return (
     <Box style={{ flex: 1, alignItems: 'center' }}>
       <Box style={{ position: 'absolute', top: 0 }}>
@@ -139,11 +151,19 @@ export function SuccessStep() {
       </Box>
       <Box style={{ position: 'absolute', bottom: 40 }} paddingHorizontal={'44px'} gap={20} alignItems="center">
         <TextShadow blur={10} color="rgba(255, 255, 255, 0.12)">
-          <Text align="center" size="44pt" weight="bold" color={'label'}>
+          <Text numberOfLines={1} ellipsizeMode="tail" align="center" size={titleFontSize} weight="bold" color={'label'}>
             {i18n.t(i18n.l.token_launcher.success.title, { symbol })}
           </Text>
         </TextShadow>
-        <Text size="20pt" weight="medium" align="center" color={'labelSecondary'} style={{ lineHeight: 27 }}>
+        <Text
+          numberOfLines={3}
+          ellipsizeMode="tail"
+          size="20pt"
+          weight="medium"
+          align="center"
+          color={'labelSecondary'}
+          style={{ lineHeight: 27 }}
+        >
           {i18n.t(i18n.l.token_launcher.success.congrats, { name })}
         </Text>
       </Box>

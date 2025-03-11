@@ -1,8 +1,12 @@
 import React from 'react';
 import { Bleed } from '../Bleed/Bleed';
-import { Box } from '../Box/Box';
+import { Box, BoxProps } from '../Box/Box';
 
 export type IconContainerProps = {
+  background?: BoxProps['background'];
+  borderColor?: BoxProps['borderColor'];
+  borderWidth?: BoxProps['borderWidth'];
+  borderRadius?: BoxProps['borderRadius'];
   children: React.ReactNode;
   height?: number;
   hitSlop?: number;
@@ -11,9 +15,20 @@ export type IconContainerProps = {
   width?: number;
 };
 
-export const IconContainer = ({ children, height, hitSlop, opacity, size = 16, width }: IconContainerProps) => {
+export const IconContainer = ({
+  background,
+  borderColor,
+  borderRadius,
+  borderWidth,
+  children,
+  height,
+  hitSlop,
+  opacity,
+  size = 16,
+  width,
+}: IconContainerProps) => {
   // Prevents wide icons from being clipped
-  const extraHorizontalSpace = 4;
+  const extraHorizontalSpace = background ? 0 : 4;
 
   return (
     <Bleed
@@ -23,6 +38,10 @@ export const IconContainer = ({ children, height, hitSlop, opacity, size = 16, w
     >
       <Box
         alignItems="center"
+        background={background}
+        borderColor={borderColor}
+        borderRadius={borderRadius}
+        borderWidth={borderWidth}
         height={{ custom: height || size }}
         justifyContent="center"
         marginHorizontal={hitSlop ? { custom: hitSlop } : undefined}

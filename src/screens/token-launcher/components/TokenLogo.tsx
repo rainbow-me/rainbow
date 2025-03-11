@@ -58,7 +58,7 @@ export function TokenLogo() {
   }, []);
 
   // Skia canvas does not support shadow overflow, so we need to add a buffer of the largest shadow offset
-  const shadowOverflowBuffer = 30;
+  const shadowOverflowBuffer = 30 + 17;
 
   return (
     <Box justifyContent="center" alignItems="center">
@@ -68,9 +68,10 @@ export function TokenLogo() {
             <Canvas style={{ width: SIZE + shadowOverflowBuffer, height: SIZE + shadowOverflowBuffer }}>
               <Group transform={[{ translateX: shadowOverflowBuffer / 2 }, { translateY: shadowOverflowBuffer / 2 }]}>
                 <SkBox opacity={dropShadowsOpacity} box={roundedRect}>
-                  <Shadow dx={0} dy={4} blur={6} color={accentColors.opacity30} />
-                  <Shadow dx={0} dy={30} blur={17} color={'rgba(37, 41, 46, 0.2)'} />
-                  <Shadow dx={0} dy={0} blur={10} color={accentColors.opacity12} />
+                  <Shadow dx={0} dy={4} blur={12 / 2} color={accentColors.opacity30} />
+                  {/* TODO: In design spec but doesn't look good, ask if can remove */}
+                  {/* <Shadow dx={0} dy={30} blur={34 / 2} color={'rgba(37, 41, 46, 0.2)'} /> */}
+                  <Shadow dx={0} dy={0} blur={20 / 2} color={accentColors.opacity12} />
                 </SkBox>
                 <Image clip={roundedRect} x={0} y={0} width={SIZE} height={SIZE} image={tokenImage} fit="cover" />
                 <SkBox box={roundedRect}>

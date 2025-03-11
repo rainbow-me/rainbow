@@ -35,6 +35,7 @@ import { useTokenLauncher } from '@/hooks/useTokenLauncher';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { analyticsV2 } from '@/analytics';
 
 // height + top padding + bottom padding
 export const FOOTER_HEIGHT = 48 + 16 + 8;
@@ -146,15 +147,21 @@ function ShareButton() {
 
   return (
     <ButtonPressAnimation
-      onPress={() => {
+      onPress={async () => {
         // This should never happen
         if (!launchedTokenAddress || !chainId) return;
 
-        Share.share({
-          url: buildTokenDeeplink({
-            networkLabel: chainLabels[chainId],
-            contractAddress: launchedTokenAddress,
-          }),
+        const url = buildTokenDeeplink({
+          networkLabel: chainLabels[chainId],
+          contractAddress: launchedTokenAddress,
+        });
+        await Share.share({
+          url,
+        });
+        analyticsV2.track(analyticsV2.event.tokenLauncherSharePressed, {
+          tokenAddress: launchedTokenAddress,
+          chainId,
+          url,
         });
       }}
     >
@@ -265,7 +272,8 @@ export function TokenLauncherFooter() {
 
   const createButtonAnimatedStyle = useAnimatedStyle(() => {
     const fullWidth = containerWidth.value - 32;
-    const isVisible = stepSharedValue.value === NavigationSteps.REVIEW || stepSharedValue.value === NavigationSteps.CREATING;
+    // We use this animated value here because otherwise the button will disappear immediately when going back to input step
+    const isVisible = stepAnimatedSharedValue.value > NavigationSteps.INFO && stepAnimatedSharedValue.value <= NavigationSteps.CREATING;
     return {
       display: isVisible ? 'flex' : 'none',
       width: interpolate(

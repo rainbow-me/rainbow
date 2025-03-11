@@ -3,7 +3,7 @@ import React from 'react';
 import { Canvas, Image, Fill, Blur } from '@shopify/react-native-skia';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 
-export function JumboBlurredImageBackground({ width, height }: { width: number; height: number }) {
+export function ScreenBlurredImageBackground({ width, height }: { width: number; height: number }) {
   const { tokenBackgroundImage } = useTokenLauncherContext();
 
   return (

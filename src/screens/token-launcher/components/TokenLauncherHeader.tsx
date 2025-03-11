@@ -11,14 +11,14 @@ import { useAccountProfile, useDimensions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { showActionSheetWithOptions } from '@/utils';
-import { IS_IOS } from '@/env';
 import { BlurGradient } from '@/components/blur/BlurGradient';
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 
 const EXIT_BUTTON_SIZE = 36;
 // padding top + exit button + inner padding + padding bottom + blur padding
 export const TOKEN_LAUNCHER_HEADER_HEIGHT = 20 + 36 + 8 + 12 + 12;
 
-export function TokenLauncherHeader() {
+export function TokenLauncherHeader({ contentContainerHeight }: { contentContainerHeight: number }) {
   const navigation = useNavigation();
   const { width: deviceWidth } = useDimensions();
   const { accountColor, accountImage, accountAddress } = useAccountProfile();
@@ -26,6 +26,7 @@ export function TokenLauncherHeader() {
   const step = useTokenLauncherStore(state => state.step);
   const setStep = useTokenLauncherStore(state => state.setStep);
   const imageUri = useTokenLauncherStore(state => state.imageUri);
+  const { tokenImage } = useTokenLauncherContext();
 
   let title = '';
   if (step === NavigationSteps.INFO) {
@@ -56,74 +57,89 @@ export function TokenLauncherHeader() {
     );
   }, [navigation, hasEnteredAnyInfo]);
 
+  const isTokenImageVisible = imageUri && tokenImage;
+
   return (
     <Box
       position="absolute"
       top="0px"
       width={'full'}
-      paddingHorizontal="20px"
-      paddingTop="20px"
-      paddingBottom="12px"
       height={TOKEN_LAUNCHER_HEADER_HEIGHT}
+      paddingHorizontal={{ custom: THICK_BORDER_WIDTH }}
       zIndex={2}
     >
-      {imageUri && (
-        <BlurGradient
-          height={TOKEN_LAUNCHER_HEADER_HEIGHT}
-          width={deviceWidth}
-          fadeTo="top"
-          intensity={12}
-          style={[StyleSheet.absoluteFill]}
-        />
-      )}
-
-      <Box flexDirection="row" alignItems="center" justifyContent="space-between" padding="4px">
-        {step === NavigationSteps.INFO && (
-          <ButtonPressAnimation onPress={() => navigation.navigate(Routes.CHANGE_WALLET_SHEET, { hideReadOnlyWallets: true })}>
-            <AddressAvatar
-              url={accountImage}
-              address={accountAddress}
-              label={accountAddress}
-              color={accountColor}
-              size={EXIT_BUTTON_SIZE}
-            />
-          </ButtonPressAnimation>
-        )}
-        {step === NavigationSteps.REVIEW && (
-          <ButtonPressAnimation
-            style={{ width: EXIT_BUTTON_SIZE, height: EXIT_BUTTON_SIZE, justifyContent: 'center', alignItems: 'center' }}
-            onPress={() => setStep(NavigationSteps.INFO)}
+      <Box paddingHorizontal="20px" paddingTop="20px" paddingBottom="12px" style={{ flex: 1 }}>
+        {isTokenImageVisible ? (
+          <BlurGradient
+            height={TOKEN_LAUNCHER_HEADER_HEIGHT}
+            width={deviceWidth}
+            fadeTo="top"
+            intensity={12}
+            style={StyleSheet.absoluteFill}
+          />
+        ) : (
+          <Box
+            overflow="hidden"
+            height={TOKEN_LAUNCHER_HEADER_HEIGHT - 16}
+            width={deviceWidth - THICK_BORDER_WIDTH * 2}
+            style={StyleSheet.absoluteFill}
           >
-            <Text size="20pt" weight="heavy" color="label">
-              􀆉
-            </Text>
-          </ButtonPressAnimation>
-        )}
-        {step === NavigationSteps.CREATING && <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />}
-        <Text size="20pt" weight="heavy" color="label">
-          {title}
-        </Text>
-        {step === NavigationSteps.INFO && (
-          <ButtonPressAnimation onPress={handlePressExit}>
             <Box
-              borderWidth={THICK_BORDER_WIDTH}
-              alignItems="center"
-              justifyContent="center"
-              width={EXIT_BUTTON_SIZE}
-              height={EXIT_BUTTON_SIZE}
-              backgroundColor="fillSecondary"
-              borderRadius={EXIT_BUTTON_SIZE / 2}
+              height={contentContainerHeight - THICK_BORDER_WIDTH * 2}
+              borderRadius={42 - THICK_BORDER_WIDTH}
+              width="full"
+              background="surfacePrimary"
+            />
+          </Box>
+        )}
+        <Box flexDirection="row" alignItems="center" justifyContent="space-between" padding="4px">
+          {step === NavigationSteps.INFO && (
+            <ButtonPressAnimation onPress={() => navigation.navigate(Routes.CHANGE_WALLET_SHEET, { hideReadOnlyWallets: true })}>
+              <AddressAvatar
+                url={accountImage}
+                address={accountAddress}
+                label={accountAddress}
+                color={accountColor}
+                size={EXIT_BUTTON_SIZE}
+              />
+            </ButtonPressAnimation>
+          )}
+          {step === NavigationSteps.REVIEW && (
+            <ButtonPressAnimation
+              style={{ width: EXIT_BUTTON_SIZE, height: EXIT_BUTTON_SIZE, justifyContent: 'center', alignItems: 'center' }}
+              onPress={() => setStep(NavigationSteps.INFO)}
             >
-              <BlurView blurStyle="light" blurIntensity={10} style={StyleSheet.absoluteFill} />
-              <TextIcon containerSize={EXIT_BUTTON_SIZE} size="icon 16px" weight="heavy" color="labelSecondary">
-                {'􀆄'}
-              </TextIcon>
-            </Box>
-          </ButtonPressAnimation>
-        )}
-        {(step === NavigationSteps.REVIEW || step === NavigationSteps.CREATING) && (
-          <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />
-        )}
+              <Text size="20pt" weight="heavy" color="label">
+                􀆉
+              </Text>
+            </ButtonPressAnimation>
+          )}
+          {step === NavigationSteps.CREATING && <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />}
+          <Text size="20pt" weight="heavy" color="label">
+            {title}
+          </Text>
+          {step === NavigationSteps.INFO && (
+            <ButtonPressAnimation onPress={handlePressExit}>
+              <Box
+                borderWidth={THICK_BORDER_WIDTH}
+                alignItems="center"
+                justifyContent="center"
+                width={EXIT_BUTTON_SIZE}
+                height={EXIT_BUTTON_SIZE}
+                background="fillSecondary"
+                borderRadius={EXIT_BUTTON_SIZE / 2}
+              >
+                <BlurView blurIntensity={12} style={StyleSheet.absoluteFill} />
+                <TextIcon containerSize={EXIT_BUTTON_SIZE} size="icon 16px" weight="heavy" color="labelSecondary">
+                  {'􀆄'}
+                </TextIcon>
+              </Box>
+            </ButtonPressAnimation>
+          )}
+          {(step === NavigationSteps.REVIEW || step === NavigationSteps.CREATING) && (
+            <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />
+          )}
+        </Box>
       </Box>
     </Box>
   );
