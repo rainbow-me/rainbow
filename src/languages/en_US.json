@@ -3174,7 +3174,26 @@
       "allocation_breakdown": {
         "my_share": "MY SHARE",
         "airdropping": "AIRDROPPING",
-        "start_price": "START PRICE"
+        "start_price": "START PRICE",
+        "sections": {
+          "my_share": {
+            "title": "Creator Share",
+            "description": "Your personal stake in the project"
+          },
+          "airdropping": {
+            "title": "Creator Share",
+            "description": "Distributed to friends and supporters"
+          },
+          "liquidity_pool": {
+            "title": "Liquidity Pool Share",
+            "description": "Ensures smooth trading and liquidity"
+          },
+          "rainbow_share": {
+            "title": "Rainbow Share",
+            "description": "Supports Rainbow's platform"
+          }
+        }
+
       },
       "network_field": {
         "balance": "Balance: %{balance}",
@@ -3219,7 +3238,8 @@
         "airdrop": "Airdrop",
         "required_info": "REQUIRED INFO",
         "about": "ABOUT",
-        "token_allocation": "Token allocation",
+        "token_allocation": "Token Allocation",
+        "token_allocation_breakdown": "Token Allocation Breakdown",
         "mcap": "MCAP"
       },
       "placeholders": {
@@ -3230,7 +3250,10 @@
       "buttons": {
         "hold_to_create": "Hold to Create",
         "creating": "Creating...",
-        "share_link": "Share Link"
+        "share_link": "Share Link",
+        "token_allocation_info": "More Info",
+        "got_it": "Got it",
+        "cancel": "Cancel"
       },
       "header": {
         "new_coin": "New Coin",
