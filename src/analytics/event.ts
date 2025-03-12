@@ -10,6 +10,7 @@ import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
 import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
 import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
+import { TokenLauncherAnalyticsParams } from '@/screens/token-launcher/state/tokenLauncherStore';
 
 /**
  * All events, used by `analytics.track()`
@@ -187,6 +188,8 @@ export const event = {
   tokenLauncherTokenCreated: 'token_launcher.token_created',
   tokenLauncherSharePressed: 'token_launcher.share_pressed',
   tokenLauncherAbandoned: 'token_launcher.abandoned',
+  tokenLauncherCreationFailed: 'token_launcher.creation_failed',
+  tokenLauncherImageUploadFailed: 'token_launcher.image_upload_failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -779,46 +782,20 @@ export type EventProperties = {
   [event.tokenLauncherStepChanged]: {
     step: string;
   };
-  [event.tokenLauncherAbandoned]: {
-    chainId: number;
-    symbol: string | undefined;
-    name: string | undefined;
-    logoUrl: string | undefined;
-    description: string | undefined;
-    totalSupply: number;
-    links: Record<string, string>;
-    extraBuyAmount: number;
-    airdropTotalRecipientsCount: number;
-    airdropTotalAddressCount: number;
-    airdropManuallyAddedRecipientsCount: number;
-    airdropSuggestedRecipientsCount: number;
-    airdropPredefinedCohortRecipientsCount: number;
-    airdropSuggestedCohortRecipientsCount: number;
-    airdropPersonalizedCohortIds: string[];
-    airdropPredefinedCohortIds: string[];
+  [event.tokenLauncherImageUploadFailed]: {
+    error: string;
+    url?: string;
+    isModerated?: boolean;
   };
-  [event.tokenLauncherTokenCreated]: {
-    chainId: number;
-    address: string | undefined;
-    symbol: string | undefined;
-    name: string | undefined;
-    logoUrl: string | undefined;
-    description: string | undefined;
-    totalSupply: number;
-    links: Record<string, string>;
-    extraBuyAmount: number;
-    airdropTotalRecipientsCount: number;
-    airdropTotalAddressCount: number;
-    airdropManuallyAddedRecipientsCount: number;
-    airdropSuggestedRecipientsCount: number;
-    airdropPredefinedCohortRecipientsCount: number;
-    airdropSuggestedCohortRecipientsCount: number;
-    airdropPersonalizedCohortIds: string[];
-    airdropPredefinedCohortIds: string[];
+  [event.tokenLauncherCreationFailed]: TokenLauncherAnalyticsParams & {
+    error: string;
+    operation?: string;
+    source?: string;
+    transactionHash?: string;
   };
-  [event.tokenLauncherSharePressed]: {
-    tokenAddress: string;
-    chainId: ChainId;
+  [event.tokenLauncherAbandoned]: TokenLauncherAnalyticsParams;
+  [event.tokenLauncherTokenCreated]: TokenLauncherAnalyticsParams;
+  [event.tokenLauncherSharePressed]: TokenLauncherAnalyticsParams & {
     url: string;
   };
 };

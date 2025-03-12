@@ -17,7 +17,44 @@ function getMimeType(uri: string): string {
   return imageMimeTypes[extension] || 'image/jpeg';
 }
 
-export async function uploadImageToCloudinary(uri: string): Promise<string> {
+type CloudinaryUploadResponse = {
+  asset_id: string;
+  public_id: string;
+  version: number;
+  version_id: string;
+  signature: string;
+  width: number;
+  height: number;
+  format: string;
+  resource_type: string;
+  created_at: string;
+  tags: string[];
+  bytes: number;
+  type: string;
+  etag: string;
+  placeholder: boolean;
+  url: string;
+  secure_url: string;
+  folder: string;
+  access_mode: string;
+  moderation?: Array<{
+    kind: string;
+    status: 'rejected' | 'approved' | 'pending';
+    response: {
+      moderation_labels: Array<{
+        confidence: number;
+        name: string;
+        parent_name: string;
+      }>;
+      moderation_model_version: string;
+    };
+    updated_at: string;
+  }>;
+  original_filename: string;
+  original_extension: string;
+};
+
+export async function uploadImageToCloudinary(uri: string): Promise<{ url: string; isModerated: boolean }> {
   const formData = new FormData();
 
   const mimeType = getMimeType(uri);
@@ -41,6 +78,9 @@ export async function uploadImageToCloudinary(uri: string): Promise<string> {
     throw new Error('Upload failed');
   }
 
-  const data = await response.json();
-  return data.secure_url;
+  const data = (await response.json()) as CloudinaryUploadResponse;
+  return {
+    url: data.secure_url,
+    isModerated: data.moderation?.[0]?.status === 'rejected',
+  };
 }

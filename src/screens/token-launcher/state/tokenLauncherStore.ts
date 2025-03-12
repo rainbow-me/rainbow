@@ -56,14 +56,16 @@ export type AirdropRecipient = {
   isSuggested?: boolean;
 };
 
-export type AnalyticsParams = {
+export type TokenLauncherAnalyticsParams = {
+  address?: string;
   chainId: number;
+  imageModerated: boolean | undefined;
   symbol: string | undefined;
   name: string | undefined;
   logoUrl: string | undefined;
   description: string | undefined;
   totalSupply: number;
-  links: Record<LinkType, string>;
+  links: Record<string, string>;
   extraBuyAmount: number;
   airdropTotalRecipientsCount: number;
   airdropTotalAddressCount: number;
@@ -98,6 +100,7 @@ interface TokenLauncherStore {
   hasValidPrebuyAmount: boolean;
   maxAirdropRecipientCount: number;
   launchedTokenAddress: string | null;
+  imageModerated: boolean;
   // derived state
   hasEnteredAnyInfo: () => boolean;
   formattedTotalSupply: () => string;
@@ -114,7 +117,7 @@ interface TokenLauncherStore {
     lp: number;
   };
   tokenomics: () => ReturnType<typeof calculateTokenomics> | undefined;
-  getAnalyticsParams: () => AnalyticsParams;
+  getAnalyticsParams: () => TokenLauncherAnalyticsParams;
   // setters
   setImageUri: (uri: string) => void;
   setImageUrl: (url: string) => void;
@@ -129,6 +132,7 @@ interface TokenLauncherStore {
   setExtraBuyAmount: (amount: number) => void;
   setDescription: (description: string) => void;
   setStep: (step: NavigationSteps) => void;
+  setImageModerated: (moderated: boolean) => void;
   addAirdropGroup: ({
     groupId,
     label,
@@ -206,6 +210,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   hasValidPrebuyAmount: true,
   maxAirdropRecipientCount: DEFAULT_MAX_AIRDROP_RECIPIENTS,
   launchedTokenAddress: null,
+  imageModerated: false,
   // derived state
   hasEnteredAnyInfo: () => {
     const { name, symbol, imageUrl, totalSupply, description, extraBuyAmount, validLinks, validAirdropRecipients } = get();
@@ -307,7 +312,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     });
   },
   getAnalyticsParams: () => {
-    const { name, chainId, symbol, description, imageUrl, totalSupply, extraBuyAmount } = get();
+    const { name, chainId, symbol, description, imageUrl, totalSupply, extraBuyAmount, imageModerated } = get();
 
     const airdropRecipients = get().validAirdropRecipients();
     const links = get().validLinks();
@@ -334,7 +339,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         acc[link.type] = link.url;
         return acc;
       },
-      {} as Record<LinkType, string>
+      {} as Record<string, string>
     );
 
     return {
@@ -346,6 +351,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       totalSupply,
       links: linksByType,
       extraBuyAmount: extraBuyAmount,
+      imageModerated: imageUrl === '' ? undefined : imageModerated,
       airdropTotalRecipientsCount,
       // individual address counts
       airdropTotalAddressCount: airdropRecipientAddresses.length,
@@ -492,6 +498,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   setHasSufficientChainNativeAssetForTransactionGas: (hasSufficientChainNativeAssetForTransactionGas: boolean) => {
     set({ hasSufficientChainNativeAssetForTransactionGas });
   },
+  setImageModerated: (moderated: boolean) => {
+    set({ imageModerated: moderated });
+  },
   // actions
   reset: () => {
     get().stepAnimatedSharedValue.value = NavigationSteps.INFO;
@@ -523,10 +532,11 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     wallet: Wallet;
     transactionOptions: TransactionOptions;
   }): Promise<LaunchTokenResponse | undefined> => {
-    const { name, symbol, description, imageUrl, tokenomics, totalSupply, extraBuyAmount } = get();
+    const { name, symbol, description, imageUrl, tokenomics, totalSupply, extraBuyAmount, getAnalyticsParams } = get();
 
     const airdropRecipients = get().validAirdropRecipients();
     const links = get().validLinks();
+    const analyticsParams = getAnalyticsParams();
 
     const airdropCohortIds = airdropRecipients.filter(r => r.type === 'group').map(recipient => recipient.value);
     const airdropRecipientAddresses = airdropRecipients.filter(r => r.type === 'address').map(recipient => recipient.value);
@@ -582,7 +592,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         set({ launchedTokenAddress: result.tokenAddress });
         analyticsV2.track(analyticsV2.event.tokenLauncherTokenCreated, {
           address: result.tokenAddress,
-          ...get().getAnalyticsParams(),
+          ...analyticsParams,
         });
       }
       return result;
@@ -594,8 +604,15 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       if (error instanceof TokenLauncherSDKError) {
         metadata = { ...metadata, ...error.context };
       }
-      Alert.alert('Error launching token', error.message);
+      analyticsV2.track(analyticsV2.event.tokenLauncherCreationFailed, {
+        ...analyticsParams,
+        error: error.message,
+        operation: 'operation' in metadata ? (metadata.operation as string) : undefined,
+        source: 'source' in metadata ? (metadata.source as string) : undefined,
+        transactionHash: 'transactionHash' in metadata ? (metadata.transactionHash as string) : undefined,
+      });
       logger.error(new RainbowError('[TokenLauncher]: Error launching token'), metadata);
+      Alert.alert('Error launching token', error.message);
     }
   },
 }));

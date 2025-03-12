@@ -47,6 +47,7 @@ function HoldToCreateButton() {
   const setStep = useTokenLauncherStore(state => state.setStep);
   const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
   const chainId = useTokenLauncherStore(state => state.chainId);
+  const getAnalyticsParams = useTokenLauncherStore(state => state.getAnalyticsParams);
   const { isHardwareWallet } = useWallets();
   const biometryType = useBiometryType();
   const { accountAddress } = useAccountSettings();
@@ -95,9 +96,13 @@ function HoldToCreateButton() {
       // }
     } catch (e: unknown) {
       const error = e instanceof Error ? e : new Error(String(e));
-      Alert.alert(`${error.message}`);
+      Alert.alert('Error initiating token creation', `${error.message}`);
       logger.error(new RainbowError('[TokenLauncher]: Error Initiating Token Creation'), {
         message: error.message,
+      });
+      analyticsV2.track(analyticsV2.event.tokenLauncherCreationFailed, {
+        ...getAnalyticsParams(),
+        error: error.message,
       });
     } finally {
       setIsProcessing(false);
@@ -156,6 +161,7 @@ function ShareButton() {
   const launchedTokenAddress = useTokenLauncherStore(state => state.launchedTokenAddress);
   const chainId = useTokenLauncherStore(state => state.chainId);
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
+  const getAnalyticsParams = useTokenLauncherStore(state => state.getAnalyticsParams);
 
   return (
     <ButtonPressAnimation
@@ -171,9 +177,9 @@ function ShareButton() {
           url,
         });
         analyticsV2.track(analyticsV2.event.tokenLauncherSharePressed, {
-          tokenAddress: launchedTokenAddress,
-          chainId,
+          address: launchedTokenAddress,
           url,
+          ...getAnalyticsParams(),
         });
       }}
     >
