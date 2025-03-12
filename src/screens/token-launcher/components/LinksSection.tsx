@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import * as i18n from '@/languages';
 import { StyleSheet } from 'react-native';
 import { CollapsableField } from './CollapsableField';
@@ -92,6 +93,7 @@ export const LINK_SETTINGS = {
   },
 };
 
+// TODO: When RN version is updated to 0.79+, set the lineBreakModeIOS: https://github.com/facebook/react-native/issues/44107
 function LinkField({ link, index }: { link: Link; index: number }) {
   const imageUri = useTokenLauncherStore(state => state.imageUri);
   const editLink = useTokenLauncherStore(state => state.editLink);
@@ -111,20 +113,30 @@ function LinkField({ link, index }: { link: Link; index: number }) {
 
   const [isValid, setIsValid] = useState(true);
 
-  const onInputChange = (input: string) => {
+  const onInputChange = useDebouncedCallback((input: string) => {
     editLink({ index, input, url: input });
     const isValidInput = !validateLinkWorklet({ link: input, type: link.type });
     if (isValidInput !== isValid) {
       setIsValid(isValidInput);
     }
-  };
+  }, 300);
+
+  const validationWorklet = useCallback(
+    (input: string) => {
+      'worklet';
+      return validateLinkWorklet({ link: input, type: link.type });
+    },
+    [link.type]
+  );
 
   return (
     <Box>
       <Box flexDirection="row" alignItems="center" gap={16}>
         <SingleFieldInput
+          numberOfLines={1}
           style={{
             flex: 1,
+            width: '100%',
             backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
             paddingHorizontal: 16,
             borderRadius: FIELD_INNER_BORDER_RADIUS,
@@ -142,11 +154,9 @@ function LinkField({ link, index }: { link: Link; index: number }) {
               <Icon />
             </Box>
           }
-          validationWorklet={(input: string) => {
-            return validateLinkWorklet({ link: input, type: link.type });
-          }}
+          validationWorklet={validationWorklet}
           textAlign="left"
-          inputStyle={{ textAlign: 'left', paddingLeft: 8 }}
+          inputStyle={{ paddingLeft: 8 }}
           onInputChange={onInputChange}
           placeholder={placeholder}
           autoCorrect={false}
