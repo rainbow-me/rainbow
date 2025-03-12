@@ -5,7 +5,7 @@ import { Box, Text, TextShadow } from '@/design-system';
 import { TokenLogo } from './TokenLogo';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH } from '../constants';
+import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, LINK_ICON_SIZE } from '../constants';
 import { abbreviateNumber, convertAmountToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -18,6 +18,8 @@ import FastImage from 'react-native-fast-image';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
 import { isENSAddressFormat } from '@/helpers/validators';
 import { isAddress } from 'viem';
+import { formatURLForDisplay } from '@/utils';
+import { isValidURLWorklet } from '@/components/DappBrowser/utils';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
 const TOTAL_COST_PILL_HEIGHT = 52;
@@ -125,6 +127,7 @@ function TokenAllocationCard() {
 function AboutCard() {
   const { accentColors } = useTokenLauncherContext();
 
+  const imageUri = useTokenLauncherStore(state => state.imageUri);
   const description = useTokenLauncherStore(state => state.description);
   // Emtpy links do not prevent you from continuing, but they are not valid so they are not shown
   const links = useTokenLauncherStore(state => state.links.filter(link => link.input !== ''));
@@ -144,7 +147,21 @@ function AboutCard() {
       {links.length > 0 && (
         <Box gap={4}>
           {links.map(link => {
-            const { Icon, displayName } = LINK_SETTINGS[link.type as keyof typeof LINK_SETTINGS];
+            const linkSettings = LINK_SETTINGS[link.type as keyof typeof LINK_SETTINGS];
+            const Icon =
+              link.type === 'website' && imageUri
+                ? // eslint-disable-next-line react/display-name
+                  () => (
+                    <FastImage
+                      source={{ uri: imageUri }}
+                      style={{ width: LINK_ICON_SIZE, height: LINK_ICON_SIZE, borderRadius: LINK_ICON_SIZE / 2 }}
+                    />
+                  )
+                : linkSettings.Icon;
+
+            const { displayName } = linkSettings;
+            const input = isValidURLWorklet(link.input) ? formatURLForDisplay(link.input) : link.input;
+
             return (
               <Box
                 key={link.input}
@@ -161,11 +178,11 @@ function AboutCard() {
                 <Box width={20} height={20} justifyContent="center" alignItems="center">
                   <Icon />
                 </Box>
-                <Text style={{ flex: 1 }} size="17pt" weight="medium" color={'labelSecondary'}>
+                <Text size="17pt" weight="medium" color={'labelSecondary'}>
                   {displayName}
                 </Text>
-                <Text size="17pt" weight="medium" color={{ custom: accentColors.opacity100 }}>
-                  {link.input}
+                <Text style={{ flex: 1 }} size="17pt" weight="medium" color={{ custom: accentColors.opacity100 }} numberOfLines={1}>
+                  {input}
                 </Text>
               </Box>
             );
@@ -248,11 +265,11 @@ export function ReviewStep() {
         contentContainerStyle={{
           flexGrow: 1,
           paddingTop: TOKEN_LAUNCHER_HEADER_HEIGHT,
-          paddingBottom: hasPrebuy ? TOTAL_COST_PILL_HEIGHT : 0,
+          paddingBottom: hasPrebuy ? TOTAL_COST_PILL_HEIGHT : 24,
         }}
       >
         <Box width="full" paddingHorizontal={'20px'} alignItems="center">
-          <TokenLogo />
+          <TokenLogo disabled={true} />
           <Box alignItems="center" paddingTop={'20px'} gap={14}>
             <TextShadow blur={12} shadowOpacity={0.24}>
               <Text size="44pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>

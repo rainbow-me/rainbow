@@ -3,6 +3,7 @@ import { LinearTransition } from 'react-native-reanimated';
 import { base } from 'viem/chains';
 
 export const BLUE = '#268FFF';
+export const ERROR_RED = '#FF4143';
 export const FIELD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.02)';
 export const FIELD_BORDER_COLOR = 'rgba(255, 255, 255, 0.03)';
 export const UNFOCUSED_FIELD_BORDER_COLOR = 'rgba(255, 255, 255, 0.03)';
@@ -17,6 +18,7 @@ export const DEFAULT_TOKEN_IMAGE_PRIMARY_COLOR = BLUE;
 export const STEP_TRANSITION_DURATION = 200;
 export const INPUT_HEIGHT = 66;
 export const SMALL_INPUT_HEIGHT = 50;
+export const LINK_ICON_SIZE = 20;
 
 export const MAX_SYMBOL_BYTES = 32;
 export const MAX_DESCRIPTION_BYTES = 2_000;
@@ -32,9 +34,10 @@ export const MAX_TOTAL_SUPPLY = BigInt('1157920892373161954235709850086879078532
 export const TOTAL_SUPPLY_PREBUY_PERCENTAGES = [0.005, 0.01, 0.05, 0.1];
 
 // TODO: At some point these should be fetched through the sdk to the contract, because the contract can change these values
-export const CREATOR_BPS = 69;
-export const CREATOR_BPS_WITH_AIRDROP = 46;
-export const AIRDROP_BPS = 23;
+export const CREATOR_BPS = 100;
+export const CREATOR_BPS_WITH_AIRDROP = 50;
+export const AIRDROP_BPS = 50;
+export const RAINBOW_BPS = 500;
 export const TOKEN_LAUNCH_GAS_LIMIT = '8000000';
 
 const ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
