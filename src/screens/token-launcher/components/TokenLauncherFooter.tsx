@@ -71,28 +71,28 @@ function HoldToCreateButton() {
         provider,
       });
       setStep(NavigationSteps.CREATING);
-
-      if (isHardwareWallet) {
-        // TODO: is this all that's needed for hardware wallet support?
-        // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
-      } else {
-        if (wallet) {
-          const createTokenResponse = await createToken({ wallet: wallet as Wallet, transactionOptions });
-          if (createTokenResponse) {
-            addStaleBalance({
-              address: accountAddress,
-              chainId,
-              info: {
-                address: createTokenResponse.tokenAddress,
-                transactionHash: createTokenResponse.transaction.hash,
-              },
-            });
-            setStep(NavigationSteps.SUCCESS);
-          } else {
-            setStep(NavigationSteps.REVIEW);
-          }
+      if (wallet) {
+        const createTokenResponse = await createToken({ wallet: wallet as Wallet, transactionOptions });
+        if (createTokenResponse) {
+          addStaleBalance({
+            address: accountAddress,
+            chainId,
+            info: {
+              address: createTokenResponse.tokenAddress,
+              transactionHash: createTokenResponse.transaction.hash,
+            },
+          });
+          setStep(NavigationSteps.SUCCESS);
+        } else {
+          setStep(NavigationSteps.REVIEW);
         }
       }
+
+      // TODO: implement later
+      // if (isHardwareWallet) {
+      // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
+      // } else {
+      // }
     } catch (e: unknown) {
       const error = e instanceof Error ? e : new Error(String(e));
       Alert.alert(`${error.message}`);
