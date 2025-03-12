@@ -42,7 +42,6 @@ function TokenLauncherScreenContent() {
   const safeAreaBottom = safeAreaInsets.bottom;
   const safeAreaTop = safeAreaInsets.top;
 
-  const { tokenImage } = useTokenLauncherContext();
   const stepAnimatedSharedValue = useTokenLauncherStore(state => state.stepAnimatedSharedValue);
   const resetStore = useTokenLauncherStore(state => state.reset);
   const step = useTokenLauncherStore(state => state.step);
@@ -87,74 +86,66 @@ function TokenLauncherScreenContent() {
   const keyboardVerticalOffset = IS_ANDROID ? FOOTER_HEIGHT + safeAreaBottom : FOOTER_HEIGHT;
 
   return (
-    <>
+    <Box
+      width="full"
+      backgroundColor={'#000'}
+      style={{ flex: 1, height: screenHeight, paddingBottom: safeAreaBottom, paddingTop: safeAreaTop }}
+    >
       <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2 }]}>
         <ScreenBlurredImageBackground width={screenHeight} height={screenHeight} />
       </Box>
-      <Box
-        width="full"
-        backgroundColor={tokenImage ? 'transparent' : '#000'}
-        style={{ flex: 1, height: screenHeight, paddingBottom: safeAreaBottom, paddingTop: safeAreaTop }}
-      >
-        <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={keyboardVerticalOffset} style={{ flex: 1 }}>
-          <Box
-            borderWidth={THICK_BORDER_WIDTH}
-            borderColor={'separatorSecondary'}
-            background="surfacePrimary"
-            borderRadius={42}
-            style={{ maxHeight: contentContainerHeight }}
-          >
-            <TokenLauncherHeader contentContainerHeight={contentContainerHeight} />
-            <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2, pointerEvents: 'none' }]}>
-              <StepBlurredImageBackground width={contentContainerHeight} height={contentContainerHeight} />
-            </Box>
-            <Box style={[StyleSheet.absoluteFill, { zIndex: 3, pointerEvents: 'none' }]}>
-              <StepBorderEffects width={screenWidth} height={contentContainerHeight} />
-            </Box>
-            <Animated.View style={[infoStepAnimatedStyle, { width: screenWidth }]}>
-              <InfoInputStep />
-            </Animated.View>
-            {(step === NavigationSteps.REVIEW || step === NavigationSteps.INFO) && (
-              <Animated.View
-                exiting={reviewStepExitingAnimation}
-                style={[
-                  reviewStepAnimatedStyle,
-                  {
-                    // required to prevent the keyboard avoidance from breaking
-                    position: 'absolute',
-                    width: screenWidth,
-                    height: '100%',
-                    // required for exiting animation to work
-                    zIndex: 1,
-                  },
-                ]}
-              >
-                <ReviewStep />
-              </Animated.View>
-            )}
-            {step === NavigationSteps.CREATING && (
-              <Animated.View
-                entering={FadeIn.duration(250)}
-                style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}
-              >
-                <CreatingStep />
-              </Animated.View>
-            )}
-            {step === NavigationSteps.SUCCESS && (
-              <Animated.View
-                entering={FadeIn.duration(250)}
-                style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}
-              >
-                <SuccessStep />
-              </Animated.View>
-            )}
+      <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={keyboardVerticalOffset} style={{ flex: 1 }}>
+        <Box
+          borderWidth={THICK_BORDER_WIDTH}
+          borderColor={'separatorSecondary'}
+          background="surfacePrimary"
+          borderRadius={42}
+          style={{ maxHeight: contentContainerHeight }}
+        >
+          <TokenLauncherHeader contentContainerHeight={contentContainerHeight} />
+          <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2, pointerEvents: 'none' }]}>
+            <StepBlurredImageBackground width={contentContainerHeight} height={contentContainerHeight} />
           </Box>
-        </KeyboardAvoidingView>
-        <KeyboardStickyView offset={stickyFooterKeyboardOffset}>
-          <TokenLauncherFooter />
-        </KeyboardStickyView>
-      </Box>
-    </>
+          <Box style={[StyleSheet.absoluteFill, { zIndex: 3, pointerEvents: 'none' }]}>
+            <StepBorderEffects width={screenWidth} height={contentContainerHeight} />
+          </Box>
+          <Animated.View style={[infoStepAnimatedStyle, { width: screenWidth }]}>
+            <InfoInputStep />
+          </Animated.View>
+          {(step === NavigationSteps.REVIEW || step === NavigationSteps.INFO) && (
+            <Animated.View
+              exiting={reviewStepExitingAnimation}
+              style={[
+                reviewStepAnimatedStyle,
+                {
+                  // required to prevent the keyboard avoidance from breaking
+                  position: 'absolute',
+                  width: screenWidth,
+                  height: '100%',
+                  // required for exiting animation to work
+                  zIndex: 1,
+                },
+              ]}
+            >
+              <ReviewStep />
+            </Animated.View>
+          )}
+          {step === NavigationSteps.CREATING && (
+            <Animated.View entering={FadeIn.duration(250)} style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}>
+              <CreatingStep />
+            </Animated.View>
+          )}
+          {step === NavigationSteps.SUCCESS && (
+            <Animated.View entering={FadeIn.duration(250)} style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}>
+              <SuccessStep />
+            </Animated.View>
+          )}
+        </Box>
+      </KeyboardAvoidingView>
+      <KeyboardStickyView offset={stickyFooterKeyboardOffset}>
+        <TokenLauncherFooter />
+      </KeyboardStickyView>
+    </Box>
   );
 }
 

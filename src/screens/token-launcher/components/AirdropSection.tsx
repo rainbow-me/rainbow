@@ -10,6 +10,7 @@ import {
   FIELD_BORDER_RADIUS,
   COLLAPSABLE_FIELD_ANIMATION,
   SMALL_INPUT_HEIGHT,
+  ERROR_RED,
 } from '../constants';
 import { AirdropRecipient, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import FastImage from 'react-native-fast-image';
@@ -142,8 +143,8 @@ function AirdropGroups({
           showsHorizontalScrollIndicator={false}
         >
           {airdropGroups.map(item => {
-            const isSelected = airdropRecipients.some(recipient => recipient.type === 'group' && recipient.value === groupId);
             const groupId = 'id' in item ? item.id : item.name;
+            const isSelected = airdropRecipients.some(recipient => recipient.type === 'group' && recipient.value === groupId);
 
             return (
               <ButtonPressAnimation
@@ -152,15 +153,13 @@ function AirdropGroups({
                 onPress={() => addAirdropGroup({ groupId, label: item.name, count: item.totalUsers, imageUrl: item.icons.iconURL })}
               >
                 <Box
-                  height={133}
                   width={154.5}
                   borderWidth={FIELD_BORDER_WIDTH}
                   gap={12}
                   borderColor={{ custom: accentColors.opacity3 }}
                   borderRadius={FIELD_BORDER_RADIUS}
                   backgroundColor={accentColors.opacity6}
-                  paddingHorizontal={'16px'}
-                  paddingVertical={'16px'}
+                  padding={'16px'}
                   justifyContent="center"
                   alignItems="center"
                   style={{
@@ -193,14 +192,21 @@ function AirdropGroups({
                     </Text>
                   </TextShadow>
                   <Box
+                    height={18}
                     justifyContent="center"
                     alignItems="center"
                     backgroundColor={accentColors.opacity6}
-                    borderRadius={12}
-                    paddingHorizontal={'8px'}
-                    paddingVertical={'4px'}
+                    borderRadius={7}
+                    paddingHorizontal={'4px'}
+                    borderWidth={1.667}
+                    borderColor={'fillTertiary'}
+                    position="absolute"
+                    style={{
+                      top: 16,
+                      left: 16,
+                    }}
                   >
-                    <Text numberOfLines={1} align="center" color={{ custom: accentColors.opacity100 }} size="15pt" weight="heavy">
+                    <Text numberOfLines={1} align="center" color={{ custom: accentColors.opacity100 }} size="11pt" weight="heavy">
                       {abbreviateNumber(item.totalUsers, 1)}
                     </Text>
                   </Box>
@@ -268,7 +274,7 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
   const labelIcon = useMemo(() => {
     if (address !== '' && !isValidAddress) {
       return (
-        <TextIcon containerSize={20} color={'red'} size="icon 17px" weight="heavy">
+        <TextIcon containerSize={20} color={{ custom: ERROR_RED }} size="icon 17px" weight="heavy">
           {'􀁟'}
         </TextIcon>
       );
@@ -313,7 +319,7 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
       style={{
         flex: 1,
         backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
-        paddingHorizontal: 16,
+        paddingHorizontal: 12,
         borderRadius: FIELD_INNER_BORDER_RADIUS,
         height: SMALL_INPUT_HEIGHT,
       }}
@@ -327,9 +333,10 @@ function AirdropGroupField({ recipient }: { recipient: AirdropRecipient }) {
   return (
     <FieldContainer
       style={{
+        height: SMALL_INPUT_HEIGHT,
+        paddingHorizontal: 12,
+        justifyContent: 'center',
         backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
-        paddingHorizontal: 16,
-        paddingVertical: 8,
         borderRadius: FIELD_INNER_BORDER_RADIUS,
         flex: 1,
       }}
@@ -437,11 +444,11 @@ export function AirdropSection() {
   return (
     <CollapsableField
       title={i18n.t(i18n.l.token_launcher.titles.airdrop)}
-      style={{ borderColor: hasExceededMaxAirdropRecipients ? colors.red : borderColor }}
+      style={{ borderColor: hasExceededMaxAirdropRecipients ? ERROR_RED : borderColor }}
     >
       <Box gap={16}>
         {hasExceededMaxAirdropRecipients && (
-          <Text color="red" size="15pt" weight="heavy">
+          <Text color={{ custom: ERROR_RED }} size="15pt" weight="heavy">
             {i18n.t(i18n.l.token_launcher.airdrop.max_recipients_reached, {
               maxRecipientCount: abbreviateNumber(maxRecipientCount, 0, 'short'),
             })}

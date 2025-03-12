@@ -6,6 +6,7 @@ import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/Gestur
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { runOnJS, SharedValue, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import {
+  ERROR_RED,
   FIELD_BORDER_RADIUS,
   FIELD_BORDER_WIDTH,
   FIELD_INNER_BORDER_RADIUS,
@@ -113,7 +114,6 @@ export function PrebuySection() {
 
   const inputRef = useRef<SingleFieldInputRef>(null);
   const borderColor = useForegroundColor('buttonStroke');
-  const errorColor = useForegroundColor('red');
   const subtitleColor = useForegroundColor('labelQuaternary');
 
   const error = useSharedValue('');
@@ -153,7 +153,7 @@ export function PrebuySection() {
 
   const customInputSubtitleStyle = useAnimatedStyle(() => {
     return {
-      color: error.value === '' ? subtitleColor : errorColor,
+      color: error.value === '' ? subtitleColor : ERROR_RED,
     };
   });
 

@@ -50,7 +50,6 @@ function SymbolInput() {
         setSymbol(text);
       }}
       spellCheck={false}
-      inputStyle={{ textTransform: 'uppercase' }}
       autoCapitalize="characters"
       title={i18n.t(i18n.l.token_launcher.titles.ticker)}
       placeholder={i18n.t(i18n.l.token_launcher.placeholders.ticker)}
@@ -68,7 +67,7 @@ function NameInput() {
         setName(text);
       }}
       spellCheck={false}
-      autoCapitalize="sentences"
+      autoCapitalize="words"
       title={i18n.t(i18n.l.token_launcher.titles.name)}
       placeholder={i18n.t(i18n.l.token_launcher.placeholders.enter_coin_name)}
     />
@@ -103,7 +102,7 @@ function AboutSection() {
           {i18n.t(i18n.l.token_launcher.titles.about)}
         </Text>
       </Box>
-      <Box gap={8} width={'full'}>
+      <Box gap={12} width={'full'}>
         <DescriptionField />
         <LinksSection />
       </Box>

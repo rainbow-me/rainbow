@@ -1,7 +1,7 @@
 import { abbreviateNumber, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { DEFAULT_CHAIN_ID, DEFAULT_MAX_AIRDROP_RECIPIENTS, DEFAULT_TOTAL_SUPPLY, TARGET_MARKET_CAP_IN_USD } from '../constants';
-import { makeMutable, SharedValue, withTiming } from 'react-native-reanimated';
+import { makeMutable, runOnUI, SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import chroma from 'chroma-js';
 import { memoFn } from '@/utils/memoFn';
@@ -296,14 +296,24 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     set({ extraBuyAmount: amount });
   },
   setStep: (step: NavigationSteps) => {
-    get().stepAnimatedSharedValue.value = withTiming(step, TIMING_CONFIGS.slowFadeConfig);
-    get().stepSharedValue.value = step;
+    const { stepSharedValue, stepAnimatedSharedValue } = get();
+    runOnUI(() => {
+      stepAnimatedSharedValue.value = withTiming(step, TIMING_CONFIGS.slowFadeConfig);
+      stepSharedValue.value = step;
+    })();
     set({ step });
     analyticsV2.track(analyticsV2.event.tokenLauncherStepChanged, {
       step: NavigationStepsNames[step],
     });
   },
   addAirdropGroup: ({ groupId, label, count, imageUrl }: { groupId: string; label: string; count: number; imageUrl: string }) => {
+    const { airdropRecipients } = get();
+    const existingGroups = airdropRecipients.filter(recipient => recipient.type === 'group');
+    const existingGroup = existingGroups.find(group => group.value === groupId);
+    // You cannot add the same group twice
+    if (existingGroup) {
+      return;
+    }
     const recipient = {
       type: 'group' as const,
       id: Math.random().toString(),
@@ -313,7 +323,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       isValid: true,
       imageUrl,
     };
-    set({ airdropRecipients: [...get().airdropRecipients, recipient] });
+    set({ airdropRecipients: [...airdropRecipients, recipient] });
   },
   // Add & edit are combined here to avoid the AddressInput component needing to subscribe to the list
   addOrEditAirdropAddress: ({

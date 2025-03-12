@@ -16,7 +16,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { colors } from '@/styles';
 import { FieldContainer } from './FieldContainer';
 import { FieldLabel } from './FieldLabel';
-import { UNFOCUSED_FIELD_BORDER_COLOR, FOCUSED_FIELD_BORDER_COLOR, INPUT_HEIGHT } from '../constants';
+import { UNFOCUSED_FIELD_BORDER_COLOR, FOCUSED_FIELD_BORDER_COLOR, INPUT_HEIGHT, ERROR_RED } from '../constants';
 import { ButtonPressAnimation } from '@/components/animations';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
@@ -201,7 +201,7 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
     }, [_onChangeText, internalRef]);
 
     const containerStyle = useAnimatedStyle(() => ({
-      borderColor: hasError.value ? colors.red : isFocused.value ? FOCUSED_FIELD_BORDER_COLOR : UNFOCUSED_FIELD_BORDER_COLOR,
+      borderColor: hasError.value ? ERROR_RED : isFocused.value ? FOCUSED_FIELD_BORDER_COLOR : UNFOCUSED_FIELD_BORDER_COLOR,
     }));
 
     const titleContainerStyle = useAnimatedStyle(() => ({
@@ -237,7 +237,7 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
               // Arbitrary width to prevent text from clipping
               width: 400,
             }}
-            color="red"
+            color={{ custom: ERROR_RED }}
             size="13pt"
             weight="bold"
           >
