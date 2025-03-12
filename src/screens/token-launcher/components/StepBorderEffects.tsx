@@ -26,13 +26,13 @@ export const StepBorderEffects = memo(function StepBorderEffects({ width, height
     );
   });
 
-  const innerShadowOneBlur = useDerivedValue(() => {
-    return interpolate(stepAnimatedSharedValue.value, [NavigationSteps.INFO, NavigationSteps.REVIEW], [0, 10], Extrapolation.CLAMP);
-  });
-
-  const innerShadowTwoBlur = useDerivedValue(() => {
-    return interpolate(stepAnimatedSharedValue.value, [NavigationSteps.INFO, NavigationSteps.REVIEW], [0, 2], Extrapolation.CLAMP);
-  });
+  // Looks nicer, but trying to optimize the performance right now. Potentially add back in later.
+  // const innerShadowOneBlur = useDerivedValue(() => {
+  //   return interpolate(stepAnimatedSharedValue.value, [NavigationSteps.INFO, NavigationSteps.REVIEW], [0, 10], Extrapolation.CLAMP);
+  // });
+  // const innerShadowTwoBlur = useDerivedValue(() => {
+  //   return interpolate(stepAnimatedSharedValue.value, [NavigationSteps.INFO, NavigationSteps.REVIEW], [0, 2], Extrapolation.CLAMP);
+  // });
 
   const successStepEffectsOpacity = useDerivedValue(() => {
     return interpolate(stepAnimatedSharedValue.value, [NavigationSteps.CREATING, NavigationSteps.SUCCESS], [0, 1], Extrapolation.CLAMP);
@@ -43,10 +43,10 @@ export const StepBorderEffects = memo(function StepBorderEffects({ width, height
       <Box box={roundedRect} strokeWidth={THICK_BORDER_WIDTH * 2} style="stroke" color={separatorSecondaryColor} />
       <Group antiAlias dither opacity={reviewAndCreatingStepEffectsOpacity}>
         <Box box={roundedRect}>
-          <Shadow dx={0} dy={0} blur={innerShadowOneBlur} color={shadowColor} inner shadowOnly />
+          <Shadow dx={0} dy={0} blur={20 / 2} color={shadowColor} inner shadowOnly />
         </Box>
         <Box box={roundedRect}>
-          <Shadow dx={0} dy={0} blur={innerShadowTwoBlur} color={shadowColor} inner shadowOnly />
+          <Shadow dx={0} dy={0} blur={4 / 2} color={shadowColor} inner shadowOnly />
         </Box>
       </Group>
       <Group opacity={successStepEffectsOpacity}>
