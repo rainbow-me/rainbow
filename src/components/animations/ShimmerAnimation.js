@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import styled from '@/styled-thing';
 import { position } from '@/styles';

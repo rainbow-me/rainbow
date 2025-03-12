@@ -17,6 +17,7 @@ import Animated, {
   useAnimatedGestureHandler,
   useAnimatedProps,
   useAnimatedStyle,
+  useDerivedValue,
   withTiming,
 } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
@@ -53,6 +54,7 @@ import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
 import { freezeWebsite, getWebsiteMetadata, unfreezeWebsite } from './scripts';
 import { BrowserTabProps, ScreenshotType } from './types';
 import { normalizeUrlForRecents } from './utils';
+import { FasterImageProps } from '@candlefinance/faster-image';
 
 export const BrowserTab = React.memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
   const { isDarkMode } = useColorMode();
@@ -154,19 +156,24 @@ const TabScreenshot = React.memo(function TabScreenshot({
   animatedStyle: AnimatedStyle;
   screenshotData: DerivedValue<ScreenshotType | undefined>;
 }) {
-  const animatedProps = useAnimatedProps(() => {
+  // const animatedProps = useAnimatedProps<FasterImageProps>(() => {
+  //   return {
+  //     source: {
+  //       ...TAB_SCREENSHOT_FASTER_IMAGE_CONFIG,
+  //       url: screenshotData.value?.uri ? `file://${screenshotData.value.uri}` : '',
+  //     },
+  //   };
+  // });
+
+  const source = useDerivedValue(() => {
     return {
-      source: {
-        ...TAB_SCREENSHOT_FASTER_IMAGE_CONFIG,
-        url: screenshotData.value?.uri ? `file://${screenshotData.value.uri}` : '',
-      },
+      ...TAB_SCREENSHOT_FASTER_IMAGE_CONFIG,
+      url: screenshotData.value?.uri ? `file://${screenshotData.value.uri}` : '',
     };
   });
 
   return (
-    // ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error
-    // @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps
-    <AnimatedFasterImage animatedProps={animatedProps} style={[styles.screenshotContainerStyle, animatedStyle]} />
+    <AnimatedFasterImage /* animatedProps={animatedProps} */ source={source} style={[styles.screenshotContainerStyle, animatedStyle]} />
   );
 });
 

@@ -1,8 +1,9 @@
 import React, { LegacyRef, useMemo } from 'react';
-import { requireNativeComponent, View, ViewStyle } from 'react-native';
-import { BaseButtonAnimationProps, TransformOrigin } from './types';
+import { View, ViewStyle } from 'react-native';
 import styled from '@/styled-thing';
 import { HapticFeedback, HapticFeedbackType } from '@/utils/haptics';
+import RawNativeButton from './ButtonNativeComponent';
+import { BaseButtonAnimationProps, TransformOrigin } from './types';
 
 interface Props extends BaseButtonAnimationProps {
   compensateForTransformOrigin?: boolean;
@@ -17,11 +18,25 @@ interface Props extends BaseButtonAnimationProps {
   useLateHaptic?: boolean;
 }
 
-interface SpecificRawNativeButtonProps extends Props {
-  transformOrigin?: TransformOrigin;
-}
+// const defaultButtonProps = {
+//   shouldLongPressHoldPress: false,
+//   disabled: false,
+//   duration: 0.16,
+//   pressOutDuration: -1,
+//   enableHapticFeedback: true,
+//   hapticType: 'selection',
+//   transformOrigin: { x: 0.5, y: 0.5 },
+//   minLongPressDuration: 0.5,
+//   scaleTo: 0.97,
+//   useLateHaptic: true,
+//   throttle: false,
+// };
 
-const RawNativeButton = requireNativeComponent<SpecificRawNativeButtonProps>('Button');
+// interface SpecificRawNativeButtonProps extends Props {
+//   transformOrigin?: TransformOrigin;
+// }
+
+// const RawNativeButton = requireNativeComponent<SpecificRawNativeButtonProps>('Button');
 
 const ButtonWithTransformOrigin = styled(RawNativeButton)(({ transformOrigin }: { transformOrigin: TransformOrigin }) => {
   if (!transformOrigin) return {};
@@ -102,6 +117,7 @@ const NativeButton = React.forwardRef(
       </View>
     ) : (
       <RawNativeButton
+        // {...defaultButtonProps}
         {...props}
         duration={duration}
         enableHapticFeedback={enableHapticFeedback}

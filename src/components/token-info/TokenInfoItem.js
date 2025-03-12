@@ -114,12 +114,12 @@ export default function TokenInfoItem({
             isENS={isENS}
             isNft={isNft}
           >
-            <ShimmerAnimation
+            {/* <ShimmerAnimation
               color={isNft ? colors.alpha(colors.whiteLabel, 0.04) : colors.alpha(colors.blueGreyDark, 0.06)}
               enabled
               gradientColor={isNft ? colors.alpha(colors.whiteLabel, 0.04) : colors.alpha(colors.blueGreyDark, 0.06)}
               width={50}
-            />
+            /> */}
           </WrapperView>
         )}
       </ColumnWithMargins>

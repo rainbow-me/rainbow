@@ -20,7 +20,7 @@ import { useAccountProfile, useDimensions } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { ImgixImage } from '../images';
 import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'react-native-blur-view';
 import { View } from 'react-native';
 import { IS_IOS } from '@/env';
 import { Media } from '../Media';
@@ -139,8 +139,8 @@ export function FeaturedMintCard() {
                   <Cover>
                     {IS_IOS ? (
                       <BlurView
-                        blurAmount={100}
-                        blurType="light"
+                        blurIntensity={100}
+                        blurStyle="light"
                         style={{
                           height: '100%',
                           width: '100%',

@@ -1,4 +1,4 @@
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur';
 import { uniqueId } from 'lodash';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, LayoutChangeEvent, Pressable, PressableProps, StyleSheet, View } from 'react-native';
@@ -255,7 +255,7 @@ function ImagePreview({ backgroundOverlay, index, id, opacity: givenOpacity, yPo
                 >
                   <Box style={position.coverAsObject}>
                     <Box as={ImgixImage} height="full" source={{ uri: imageUrl }} width="full" size={FULL_NFT_IMAGE_SIZE} />
-                    <Box as={BlurView} blurAmount={100} blurType="light" style={position.coverAsObject} />
+                    <Box as={BlurView} intensity={100} style={position.coverAsObject} tint="light" />
                   </Box>
                 </Box>
               )}

@@ -24,7 +24,7 @@ import { useAccountAccentColor, useAccountProfile, useAccountSettings, useClipbo
 import { useTheme } from '@/theme';
 import { ScrollView } from 'react-native-gesture-handler';
 import MaskedView from '@react-native-masked-view/masked-view';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { measureText, safeAreaInsetValues } from '@/utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
@@ -890,9 +890,9 @@ export function PointsContent() {
                       as={LinearGradient}
                       style={{ padding: 5 / 3, borderRadius: 18 + 5 / 3 }}
                       colors={['#31BCC4', '#57EA5F', '#F0D83F', '#DF5337', '#B756A7']}
-                      useAngle={true}
-                      angle={-15}
-                      angleCenter={{ x: 0.5, y: 0.5 }}
+                      // useAngle={true}
+                      // angle={-15}
+                      // angleCenter={{ x: 0.5, y: 0.5 }}
                     >
                       <Box
                         background="surfaceSecondaryElevated"

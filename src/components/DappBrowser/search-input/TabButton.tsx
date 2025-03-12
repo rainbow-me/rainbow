@@ -3,7 +3,7 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { Bleed, Box, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import position from '@/styles/position';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'react-native-blur-view';
 import React from 'react';
 import { TextInput } from 'react-native';
 import { BrowserButtonShadows } from '../DappBrowserShadows';
@@ -57,10 +57,11 @@ export const TabButton = React.memo(function TabButton({
               {isFocused ? '􀆈' : '􀐅'}
             </Text>
             {IS_IOS && (
+              // @ts-expect-error BlurView causes type errors
               <Box
                 as={BlurView}
-                blurAmount={20}
-                blurType={isDarkMode ? 'dark' : 'light'}
+                blurIntensity={40}
+                blurStyle={isDarkMode ? 'dark' : 'light'}
                 style={[
                   {
                     zIndex: -1,

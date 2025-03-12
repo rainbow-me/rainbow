@@ -1,4 +1,4 @@
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
@@ -27,8 +27,7 @@ const EmojisStickyListItem = ({ index, scrollPosition, headerData }: Props) => {
       <Animated.View style={animatedStyle}>
         {ios ? (
           <BlurView
-            blurAmount={10}
-            blurType="light"
+            intensity={10}
             style={[
               sx.sectionStickyBlur,
               {
@@ -38,6 +37,7 @@ const EmojisStickyListItem = ({ index, scrollPosition, headerData }: Props) => {
                     : Categories[categoryKeys[categoryKeys.length - 1]].width,
               },
             ]}
+            tint="light"
           >
             <Text style={[sx.sectionStickyHeader, { backgroundColor: colors.alpha(colors.white, 0.7) }]}>{headerData.title}</Text>
           </BlurView>

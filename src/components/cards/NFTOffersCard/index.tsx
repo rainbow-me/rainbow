@@ -186,11 +186,11 @@ export const NFTOffersCard = () => {
                     }}
                   >
                     {/* unfortunately shimmer width must be hardcoded */}
-                    <ShimmerAnimation
+                    {/* <ShimmerAnimation
                       color={buttonColor}
                       // 86 = 20px horizontal padding + 10px spacing + 36px refresh button width
                       width={deviceWidth - 86}
-                    />
+                    /> */}
                     <Text color="label" align="center" size="15pt" weight="bold">
                       {i18n.t(i18n.l.nft_offers.card.button)}
                     </Text>

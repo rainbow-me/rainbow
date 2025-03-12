@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 // @ts-expect-error - no declaration file
 import TextInputMask from 'react-native-text-input-mask';
 import { ButtonPressAnimation } from '@/components/animations';

@@ -134,10 +134,11 @@ export const CloseTabButton = ({ animatedTabIndex, gestureScale, gestureX, tabId
       <GestureHandlerButton disableButtonPressWrapper onPressWorklet={closeTab} pointerEvents="auto" style={styles.buttonPressWrapperStyle}>
         <Box as={Animated.View} position="absolute" style={singleTabStyle}>
           {IS_IOS ? (
+            // @ts-expect-error - as prop is causing type conflicts
             <Box
               as={AnimatedBlurView}
-              blurAmount={10}
-              blurType={isDarkMode ? 'materialDark' : 'materialLight'}
+              blurIntensity={10}
+              blurStyle={isDarkMode ? 'materialDark' : 'materialLight'}
               style={[styles.closeButtonStyle, closeButtonStyle, { borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB / 2 }]}
             >
               <Box
@@ -169,10 +170,11 @@ export const CloseTabButton = ({ animatedTabIndex, gestureScale, gestureX, tabId
         </Box>
         <Box as={Animated.View} position="absolute" style={multipleTabsStyle}>
           {IS_IOS ? (
+            // @ts-expect-error - as prop is causing type conflicts
             <Box
               as={AnimatedBlurView}
-              blurAmount={10}
-              blurType={isDarkMode ? 'materialDark' : 'materialLight'}
+              blurIntensity={10}
+              blurStyle={isDarkMode ? 'materialDark' : 'materialLight'}
               style={[styles.closeButtonStyle, closeButtonStyle, { borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE / 2 }]}
             >
               <Box
@@ -223,15 +225,16 @@ const XIcon = ({ buttonSize, multipleTabsOpen }: { buttonSize: number; multipleT
 
 const styles = StyleSheet.create({
   buttonPressWrapperStyle: {
-    zIndex: 99999999999,
     alignItems: 'center',
     height: '100%',
     justifyContent: 'center',
     width: '100%',
+    zIndex: 99999999999,
   },
   closeButtonStyle: {
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   containerStyle: {
     position: 'absolute',

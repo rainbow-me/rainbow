@@ -1,4 +1,4 @@
-import ImgixClient from 'imgix-core-js';
+import ImgixClient from '@imgix/js-core';
 import LRUCache from 'mnemonist/lru-cache';
 import { PixelRatio } from 'react-native';
 import { IMGIX_DOMAIN as domain, IMGIX_TOKEN as secureURLToken } from 'react-native-dotenv';

@@ -4,7 +4,7 @@ import FloatingEmojis from './FloatingEmojis';
 import { useClipboard } from '@/hooks';
 import { magicMemo } from '@/utils';
 
-const CopyFloatingEmojis = ({ children, disabled, onPress, textToCopy, ...props }) => {
+const CopyFloatingEmojis = ({ children, disabled, onPress, textToCopy, scaleTo = 0.86, ...props }) => {
   const { setClipboard } = useClipboard();
 
   return (
@@ -22,6 +22,7 @@ const CopyFloatingEmojis = ({ children, disabled, onPress, textToCopy, ...props 
             }
           }}
           radiusAndroid={24}
+          scaleTo={scaleTo}
           wrapperProps={{
             containerStyle: {
               padding: 10,
@@ -35,4 +36,4 @@ const CopyFloatingEmojis = ({ children, disabled, onPress, textToCopy, ...props 
   );
 };
 
-export default magicMemo(CopyFloatingEmojis, ['disabled', 'onPress', 'textToCopy']);
+export default magicMemo(CopyFloatingEmojis, ['disabled', 'onPress', 'scaleTo', 'textToCopy']);

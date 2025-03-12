@@ -14,7 +14,7 @@ export const Skeleton = ({ width, height }: { width: number; height: number }) =
   return (
     <AccentColorProvider color={skeletonColor}>
       <Box background="accent" height={{ custom: height }} width={{ custom: width }} borderRadius={18} style={{ overflow: 'hidden' }}>
-        <ShimmerAnimation color={shimmerColor} width={width} gradientColor={shimmerColor} />
+        {/* <ShimmerAnimation color={shimmerColor} width={width} gradientColor={shimmerColor} /> */}
       </Box>
     </AccentColorProvider>
   );

@@ -1,7 +1,7 @@
-import { BlurView } from '@react-native-community/blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { BlurView } from 'react-native-blur-view';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import {
@@ -484,8 +484,8 @@ const Card = memo(function Card({
               <Cover>
                 {IS_IOS ? (
                   <BlurView
-                    blurAmount={10}
-                    blurType={isDarkMode ? 'chromeMaterialDark' : 'light'}
+                    blurIntensity={20}
+                    blurStyle={isDarkMode ? 'chromeMaterialDark' : 'light'}
                     style={{
                       width: '100%',
                       height: '100%',
@@ -535,8 +535,11 @@ const CardBackground = memo(function CardBackgroundOverlay({
       {IS_IOS ? (
         <>
           <BlurView
-            blurAmount={isDarkMode ? 36 : 64}
-            blurType={isDarkMode ? undefined : 'light'}
+            blurIntensity={isDarkMode ? 36 : 64}
+            blurStyle={isDarkMode ? 'regular' : 'light'}
+            // blurIntensity={10}
+            // blurStyle="ultraThinMaterialDark"
+            saturationIntensity={1.5}
             style={{ height: '100%', position: 'absolute', width: '100%' }}
           />
           {!isDarkMode && (
@@ -711,10 +714,10 @@ const styles = StyleSheet.create({
   },
   cardContextMenuButton: {
     alignItems: 'center',
-    top: 0,
-    right: 0,
     height: 48,
     justifyContent: 'center',
+    right: 12,
+    top: -12,
     width: 48,
     position: 'absolute',
   },

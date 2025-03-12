@@ -1,4 +1,4 @@
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'react-native-blur-view';
 import { useFocusEffect } from '@react-navigation/native';
 import c from 'chroma-js';
 import lang from 'i18n-js';
@@ -68,8 +68,8 @@ import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { ChainId } from '@/chains/types';
 
 const BackgroundBlur = styled(BlurView).attrs({
-  blurAmount: 100,
-  blurType: 'light',
+  blurIntensity: 100,
+  blurStyle: 'light',
 })({
   ...position.coverAsObject,
 });

@@ -3,10 +3,10 @@ import { AccentColorProvider, Box, Cover, Inline, globalColors, Text } from '@/d
 import { IS_IOS } from '@/env';
 import { MintsFilter, getMintsFilterLabel, useMintsFilter } from '@/resources/mints';
 import { useTheme } from '@/theme';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'react-native-blur-view';
 import React from 'react';
 import { View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 
 function FilterButton({ filter }: { filter: MintsFilter }) {
   const { filter: currentFilter, setFilter } = useMintsFilter();
@@ -74,6 +74,7 @@ export function TabBar() {
         shadowColor: globalColors.grey100,
         shadowOffset: { width: 0, height: 15 },
         shadowRadius: 22.5,
+        // eslint-disable-next-line no-nested-ternary
         shadowOpacity: IS_IOS ? (isDarkMode ? 0.8 : 0.3) : 1,
         elevation: 24,
         alignSelf: 'center',
@@ -92,13 +93,13 @@ export function TabBar() {
           }}
         >
           <BlurView
-            blurAmount={15}
-            blurType={isDarkMode ? 'chromeMaterialDark' : 'light'}
+            blurIntensity={15}
+            blurStyle={isDarkMode ? 'chromeMaterialDark' : 'light'}
             style={{ height: '100%', width: '100%', borderRadius: 23 }}
           />
         </Box>
       </Cover>
-      {/* @ts-ignore */}
+      {/* @ts-expect-error The conditional as={} is causing type errors */}
       <Box
         as={isDarkMode ? Box : LinearGradient}
         style={{

@@ -15,7 +15,7 @@ import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtil
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations';
 import { noop } from 'lodash';
 import { ChainId } from '@/chains/types';

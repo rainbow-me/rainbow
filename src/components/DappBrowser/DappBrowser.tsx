@@ -1,6 +1,9 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect } from 'react';
 import { InteractionManager, StyleSheet } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
 import Animated, {
+  interpolate,
   interpolateColor,
   useAnimatedProps,
   useAnimatedReaction,
@@ -15,6 +18,7 @@ import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { useNavigation } from '@/navigation';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserHistoryStore } from '@/state/browserHistory';
+import { clamp } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
 import { BrowserTab } from './BrowserTab';
@@ -24,6 +28,7 @@ import { TabViewToolbar } from './TabViewToolbar';
 import { calculateScrollPositionToCenterTab, useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTriggers';
 import { useSmoothScrollView } from './hooks/useSmoothScrollView';
 import { pruneScreenshots } from './screenshots';
+import { safeAreaInsetValues } from '@/utils';
 import { Search } from './search/Search';
 import { SearchContextProvider } from './search/SearchContext';
 
@@ -64,11 +69,48 @@ const DappBrowserComponent = () => {
       <TabViewScrollView>
         <TabViewContent />
       </TabViewScrollView>
+      <TabViewBlurHeader />
       <ProgressBar />
       <TabViewToolbar />
       <SearchContextProvider>
         <Search />
       </SearchContextProvider>
+    </>
+  );
+};
+
+const TabViewBlurHeader = () => {
+  const { tabViewProgress } = useBrowserContext();
+  const { isDarkMode } = useColorMode();
+
+  const tabViewBlurStyle = useAnimatedStyle(() => {
+    const progress = clamp(tabViewProgress.value / 100, 0, 1);
+    const opacity = interpolate(progress, [0, 0.1, 1], [0, 1, 1]);
+    return {
+      opacity,
+      transform: [{ translateY: (1 - progress) * -8 }],
+    };
+  });
+
+  return (
+    <>
+      <Animated.View style={[styles.blurHeaderWrapper, tabViewBlurStyle]}>
+        <LinearGradient
+          colors={isDarkMode ? ['rgba(10, 10, 10, 1)', 'rgba(10, 10, 10, 0)'] : ['rgba(242, 242, 245, 0.4)', 'rgba(242, 242, 245, 0)']}
+          end={{ x: 0.5, y: 1 }}
+          start={{ x: 0.5, y: 0 }}
+          style={styles.blurHeaderGradient}
+        />
+        <BlurView
+          blurIntensity={4}
+          blurStyle="variable"
+          gradientPoints={[
+            { x: DEVICE_WIDTH / 2, y: safeAreaInsetValues.top + 20 },
+            { x: DEVICE_WIDTH / 2, y: 0 },
+          ]}
+          style={styles.blurHeader}
+        />
+      </Animated.View>
     </>
   );
 };
@@ -132,7 +174,7 @@ const TabViewBackground = () => {
 };
 
 const TabViewScrollView = ({ children }: { children: React.ReactNode }) => {
-  const { animatedActiveTabIndex, currentlyOpenTabIds, scrollViewRef, tabViewVisible } = useBrowserContext();
+  const { animatedActiveTabIndex, currentlyOpenTabIds, scrollViewOffset, scrollViewRef, tabViewVisible } = useBrowserContext();
   const { jitterCorrection, scrollViewHeight, smoothScrollHandler } = useSmoothScrollView();
 
   const scrollEnabledProp = useAnimatedProps(() => ({
@@ -153,6 +195,7 @@ const TabViewScrollView = ({ children }: { children: React.ReactNode }) => {
       onScroll={smoothScrollHandler}
       pinchGestureEnabled={false}
       ref={scrollViewRef}
+      scrollViewOffset={scrollViewOffset}
       showsVerticalScrollIndicator={false}
       testID={'browser-screen'}
     >
@@ -192,6 +235,24 @@ const TabViewContent = () => {
 };
 
 const styles = StyleSheet.create({
+  blurHeader: {
+    height: safeAreaInsetValues.top + 20,
+    width: DEVICE_WIDTH,
+  },
+  blurHeaderGradient: {
+    height: safeAreaInsetValues.top,
+    position: 'absolute',
+    top: 0,
+    width: DEVICE_WIDTH,
+  },
+  blurHeaderWrapper: {
+    height: safeAreaInsetValues.top + 20,
+    pointerEvents: 'none',
+    position: 'absolute',
+    top: 0,
+    width: DEVICE_WIDTH,
+    zIndex: 100,
+  },
   overflowHidden: {
     overflow: 'hidden',
   },

@@ -4,7 +4,6 @@ import '@ethersproject/shims';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReactNative from 'react-native';
 import Storage from 'react-native-storage';
-// import { debugLayoutAnimations } from './src/config/debug';
 import { mmkvStorageBackend } from '@/handlers/localstorage/mmkvStorageBackend';
 import { logger } from '@/logger';
 import 'fast-text-encoding';
@@ -98,37 +97,6 @@ const isDev = typeof __DEV__ === 'boolean' && __DEV__;
 process.env.NODE_ENV = isDev ? 'development' : 'production';
 if (typeof localStorage !== 'undefined') {
   localStorage.debug = isDev ? '*' : '';
-}
-
-ReactNative.LayoutAnimation.configureNext = () => null;
-// const oldConfigureNext = ReactNative.LayoutAnimation.configureNext;
-
-// if (
-//   !ReactNative.LayoutAnimation.configureNext.__shimmed &&
-//   debugLayoutAnimations
-// ) {
-//   ReactNative.LayoutAnimation.configureNext = (...args) => {
-//     logger.debug('[shim]: LayoutAnimation.configureNext', args);
-//     oldConfigureNext(...args);
-//   };
-//   ReactNative.LayoutAnimation.configureNext.__shimmed = true;
-// }
-
-if (!ReactNative.InteractionManager._shimmed) {
-  const oldCreateInteractionHandle = ReactNative.InteractionManager.createInteractionHandle;
-
-  ReactNative.InteractionManager.createInteractionHandle = function (finishAutomatically = true) {
-    const handle = oldCreateInteractionHandle();
-    if (finishAutomatically) {
-      setTimeout(() => {
-        ReactNative.InteractionManager.clearInteractionHandle(handle);
-        logger.debug(`[shim]: Interaction finished automatically`);
-      }, 3000);
-    }
-    return handle;
-  };
-
-  ReactNative.InteractionManager._shimmed = true;
 }
 
 // If using the crypto shim, uncomment the following line to ensure

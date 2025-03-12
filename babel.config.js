@@ -25,7 +25,10 @@ module.exports = function (api) {
     [
       'module-resolver',
       {
-        alias: getAliasesFromTsConfig(),
+        alias: {
+          ...getAliasesFromTsConfig(),
+          'react-native-fast-image': '@d11/react-native-fast-image',
+        },
         extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
         root: ['./src'],
       },
@@ -36,7 +39,6 @@ module.exports = function (api) {
     'date-fns',
     'graphql-tag',
     ['lodash', { id: ['lodash', 'recompact'] }],
-    'react-native-reanimated/plugin',
     [
       'module:react-native-dotenv',
       {
@@ -44,6 +46,7 @@ module.exports = function (api) {
         moduleName: 'react-native-dotenv',
       },
     ],
+    'react-native-reanimated/plugin',
   ];
 
   const presets = ['module:@react-native/babel-preset'];

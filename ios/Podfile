@@ -1,5 +1,5 @@
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
-platform :ios, '15.0'
+platform :ios, '15.1'
 source 'https://github.com/CocoaPods/Specs.git'
 #use_modular_headers!
 
@@ -53,15 +53,12 @@ target 'Rainbow' do
   # Pods for Rainbow
   config = use_native_modules!
 
-  # Flags change depending on the env values.
-  flags = get_default_flags()
-
   use_react_native!(
     privacy_file_aggregation_enabled: false,
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods
     :hermes_enabled => ENV['USE_HERMES'] != 'NO',
-    :fabric_enabled => flags[:fabric_enabled],
+    :fabric_enabled => true,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )

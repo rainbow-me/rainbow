@@ -10,7 +10,7 @@ import React, {
   useState,
 } from 'react';
 import { InteractionManager, Keyboard, SectionList, SectionListData } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import FastCurrencySelectionRow from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';

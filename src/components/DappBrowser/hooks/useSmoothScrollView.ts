@@ -29,18 +29,22 @@ export function useSmoothScrollView() {
     return withSpring(height, SPRING_CONFIGS.slowSpring);
   });
 
-  const contentContainerHeight = useSharedValue(scrollViewHeight.value);
+  const contentContainerHeight = scrollViewHeight; // useSharedValue(scrollViewHeight.value);
 
-  const smoothScrollHandler = useAnimatedScrollHandler({
-    onScroll: event => {
-      scrollViewOffset.value = event.contentOffset.y;
-      if (IS_IOS) {
-        contentContainerHeight.value = event.contentSize.height;
-      }
-    },
-  });
+  // const smoothScrollHandler = useAnimatedScrollHandler({
+  //   onScroll: event => {
+  //     scrollViewOffset.value = event.contentOffset.y;
+  //     if (IS_IOS) {
+  //       contentContainerHeight.value = event.contentSize.height;
+  //     }
+  //   },
+  // });
+
+  const smoothScrollHandler = undefined;
 
   const jitterCorrection = useDerivedValue(() => {
+    return 0;
+
     if (IS_ANDROID) return 0;
 
     const rawScrollViewHeight =

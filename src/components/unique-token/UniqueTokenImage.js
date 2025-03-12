@@ -1,4 +1,4 @@
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'react-native-blur-view';
 import React, { Fragment, useCallback, useState } from 'react';
 import { View, Image } from 'react-native';
 import { buildUniqueTokenName } from '../../helpers/assets';
@@ -27,8 +27,8 @@ const ImageTile = styled(Image)({
 });
 
 const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
-  blurAmount: 40,
-  blurType: isDarkMode ? 'dark' : 'light',
+  blurIntensity: 40,
+  blurStyle: isDarkMode ? 'dark' : 'light',
 }))({
   ...position.coverAsObject,
   zIndex: 1,

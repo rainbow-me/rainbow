@@ -2,6 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData, View } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { AnimatedText, Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { BlurView } from 'react-native-blur-view';
 import Animated, {
   AnimatedRef,
   AnimatedStyle,
@@ -14,7 +15,6 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -370,12 +370,9 @@ const AddressBar = React.memo(function AddressBar({
             </AnimatedText>
           </Animated.View>
           {IS_IOS && (
-            <Box
-              as={AnimatedBlurView}
-              blurAmount={20}
-              blurType={isDarkMode ? 'dark' : 'light'}
-              style={[styles.blurViewStyle, pointerEventsStyle]}
-            />
+            <Animated.View style={[styles.blurViewWrapper, pointerEventsStyle]}>
+              <BlurView blurIntensity={40} blurStyle={isDarkMode ? 'dark' : 'light'} style={styles.blurViewStyle} />
+            </Animated.View>
           )}
           <Animated.View
             style={[
@@ -471,6 +468,11 @@ const styles = StyleSheet.create({
   blurViewStyle: {
     borderCurve: 'continuous',
     borderRadius: 18,
+    height: SEARCH_BAR_HEIGHT,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  blurViewWrapper: {
     height: SEARCH_BAR_HEIGHT,
     position: 'absolute',
     width: '100%',

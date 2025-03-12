@@ -2,7 +2,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import PropTypes from 'prop-types';
 import React, { createElement } from 'react';
 import { View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import Text from './Text';
 
 const GradientText = ({ angle, angleCenter, children, colors, end, renderer, start, steps, ...props }) => {

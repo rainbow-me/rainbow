@@ -111,7 +111,11 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   var originalMethod: Method? = nil
   func hackParent() {
     hacked = true
-    self.ppview = config!.superview!.superview!
+    guard let ppview = config?.superview?.superview else {
+        print("Error: superview is nil")
+        return
+    }
+    self.ppview = ppview
     let poldClass: AnyClass = type(of: self.ppview!)
     if !PanModalViewController.swizzled {
       self.originalMethod = class_getInstanceMethod(poldClass, #selector(UIView.hitTest(_:with:)))

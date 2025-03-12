@@ -133,8 +133,8 @@ export const FlipButton = () => {
             ]}
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...(IS_IOS && {
-              blurAmount: 10,
-              blurType: isDarkMode ? undefined : 'light',
+              blurIntensity: 10,
+              blurStyle: isDarkMode ? 'regular' : 'light',
             })}
           >
             <IconContainer size={24} opacity={isDarkMode ? 0.6 : 0.8}>
@@ -182,6 +182,7 @@ export const styles = StyleSheet.create({
   flipButton: {
     borderRadius: 15,
     height: 30,
+    overflow: 'hidden',
     width: 30,
   },
 });

@@ -4,7 +4,7 @@ import { IS_TESTING } from 'react-native-dotenv';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { InteractionManager, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import ActivityIndicator from '../components/ActivityIndicator';
 import IntroMarquee from '../components/ens-registration/IntroMarquee/IntroMarquee';
 import { SheetActionButton } from '../components/sheet';

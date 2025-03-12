@@ -18,7 +18,7 @@ import { PointsScreen } from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'react-native-blur-view';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import { MaterialTopTabDescriptorMap } from '@react-navigation/material-top-tabs/lib/typescript/src/types';
 import { NavigationHelpers, ParamListBase, RouteProp } from '@react-navigation/native';
@@ -343,8 +343,8 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
             width="full"
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...(IS_IOS && {
-              blurAmount: 40,
-              blurType: isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight',
+              blurIntensity: 80,
+              blurStyle: isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight',
             })}
           >
             <Box

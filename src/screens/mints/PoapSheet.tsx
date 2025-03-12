@@ -1,4 +1,4 @@
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur';
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
@@ -35,8 +35,8 @@ import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
 
 const BackgroundBlur = styled(BlurView).attrs({
-  blurAmount: 100,
-  blurType: 'light',
+  intensity: 100,
+  tint: 'light',
 })({
   ...position.coverAsObject,
 });

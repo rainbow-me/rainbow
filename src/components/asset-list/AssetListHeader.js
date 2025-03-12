@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { abbreviations, magicMemo, measureText } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';

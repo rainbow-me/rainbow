@@ -44,7 +44,7 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
       }),
     };
 
-    const shouldUseFasterImage = enableFasterImage || fasterImageConfig;
+    const shouldUseFasterImage = true || enableFasterImage || fasterImageConfig;
     const fasterImageStyle = shouldUseFasterImage ? StyleSheet.flatten(style) : undefined;
 
     return {
@@ -73,7 +73,7 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
   }
 
   handleError = (err: any) => {
-    const { onError, retryOnError, maxRetries = 5 } = this.props;
+    const { onError, retryOnError, maxRetries = 0 } = this.props;
     const { retryCount } = this.state;
     // We don't want to retry if there is a 404.
     const isNotFound = err?.nativeEvent?.statusCode === 404 || err?.nativeEvent?.message?.includes('404');
@@ -100,13 +100,13 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
     const conditionalProps = shouldUseFasterImage
       ? {
           key: `${typeof source === 'object' && source.uri ? source.uri : ''}` || undefined,
-          onError: this.props.onError,
-          onLoad: undefined,
-          onSuccess: this.props.onLoad,
+          // onError: this.props.onError,
+          // onLoad: undefined,
+          // onSuccess: this.props.onLoad,
         }
       : {
           key: `${typeof source === 'object' && source.uri ? source.uri : JSON.stringify(source)}-${retryCount}`,
-          onError: this.handleError,
+          // onError: this.handleError,
         };
 
     return <Component {...props} {...conditionalProps} source={source} />;

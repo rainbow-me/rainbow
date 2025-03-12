@@ -62,7 +62,7 @@ export function MintsCard() {
           }}
         >
           {/* unfortunately shimmer width must be hardcoded */}
-          <ShimmerAnimation
+          {/* <ShimmerAnimation
             color={fillSecondary}
             width={
               deviceWidth -
@@ -71,7 +71,7 @@ export function MintsCard() {
               // 46 = 36px refresh button width + 10px spacing
               46
             }
-          />
+          /> */}
           <Text color="label" align="center" size="15pt" weight="bold">
             {i18n.t(i18n.l.mints.mints_card.view_all_mints)}
           </Text>

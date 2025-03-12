@@ -1,4 +1,4 @@
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'expo-blur';
 import React from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import ActivityIndicator from '../ActivityIndicator';
@@ -27,8 +27,8 @@ const Overlay = styled(Centered)({
 });
 
 const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
-  blurAmount: 40,
-  blurType: isDarkMode ? 'dark' : 'light',
+  intensity: 40,
+  tint: isDarkMode ? 'dark' : 'light',
 }))({
   ...position.coverAsObject,
   zIndex: 1,

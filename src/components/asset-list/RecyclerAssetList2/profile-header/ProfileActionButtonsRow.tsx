@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-clipboard/clipboard';
 import lang from 'i18n-js';
 import * as React from 'react';
-import { InteractionManager, PressableProps } from 'react-native';
+import { InteractionManager, PressableProps, View } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
@@ -44,31 +44,31 @@ export function ProfileActionButtonsRow() {
   if (!accentColorLoaded) return null;
 
   return (
-    <Box width="full">
+    <Box width="full" style={{ zIndex: 1000 }}>
       <Inset horizontal={{ custom: 17 }}>
         <AccentColorProvider color={accentColor}>
           <Columns>
             {addCashEnabled && (
               <Column>
-                <Animated.View style={[expandStyle]}>
+                <Animated.View style={expandStyle}>
                   <BuyButton />
                 </Animated.View>
               </Column>
             )}
             {swapEnabled && (
               <Column>
-                <Animated.View style={[expandStyle]}>
+                <Animated.View style={expandStyle}>
                   <SwapButton />
                 </Animated.View>
               </Column>
             )}
             <Column>
-              <Animated.View style={[expandStyle]}>
+              <Animated.View style={expandStyle}>
                 <SendButton />
               </Animated.View>
             </Column>
             <Column>
-              <Animated.View style={[expandStyle]}>
+              <Animated.View style={expandStyle}>
                 <MoreButton />
               </Animated.View>
             </Column>
@@ -92,49 +92,51 @@ function ActionButton({
 }) {
   const { colorMode } = useColorMode();
   return (
-    <ButtonPressAnimation onPress={onPress} pointerEvents="box-only" scale={0.8} testID={testID}>
-      <Stack alignHorizontal="center" space="10px">
-        <Box
-          alignItems="center"
-          background="accent"
-          borderRadius={60}
-          height={{ custom: 60 }}
-          justifyContent="center"
-          shadow={{
-            custom: {
-              ios: [
-                {
-                  x: 0,
-                  y: 8,
-                  blur: 24,
-                  opacity: 0.3,
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.8} testID={testID}>
+      <View>
+        <Stack alignHorizontal="center" space="10px">
+          <Box
+            alignItems="center"
+            background="accent"
+            borderRadius={60}
+            height={{ custom: 60 }}
+            justifyContent="center"
+            shadow={{
+              custom: {
+                ios: [
+                  {
+                    x: 0,
+                    y: 8,
+                    blur: 24,
+                    opacity: 0.3,
+                    color: colorMode === 'dark' ? 'shadowFar' : 'accent',
+                  },
+                  {
+                    x: 0,
+                    y: 2,
+                    blur: 6,
+                    opacity: 0.04,
+                    color: 'shadowFar',
+                  },
+                ],
+                android: {
+                  elevation: 21,
+                  opacity: 1,
                   color: colorMode === 'dark' ? 'shadowFar' : 'accent',
                 },
-                {
-                  x: 0,
-                  y: 2,
-                  blur: 6,
-                  opacity: 0.04,
-                  color: 'shadowFar',
-                },
-              ],
-              android: {
-                elevation: 21,
-                opacity: 1,
-                color: colorMode === 'dark' ? 'shadowFar' : 'accent',
               },
-            },
-          }}
-          width={{ custom: 60 }}
-        >
-          <Text align="center" color="label" size="icon 23px" weight="bold">
-            {icon}
+            }}
+            width={{ custom: 60 }}
+          >
+            <Text align="center" color="label" size="icon 23px" weight="bold">
+              {icon}
+            </Text>
+          </Box>
+          <Text color="secondary80 (Deprecated)" size="14px / 19px (Deprecated)" weight="medium">
+            {children}
           </Text>
-        </Box>
-        <Text color="secondary80 (Deprecated)" size="14px / 19px (Deprecated)" weight="medium">
-          {children}
-        </Text>
-      </Stack>
+        </Stack>
+      </View>
     </ButtonPressAnimation>
   );
 }
@@ -157,11 +159,9 @@ function BuyButton() {
   }, [isDamaged, navigate]);
 
   return (
-    <Box>
-      <ActionButton icon="􀁌" onPress={handlePress} testID="buy-button">
-        {lang.t('wallet.buy')}
-      </ActionButton>
-    </Box>
+    <ActionButton icon="􀁌" onPress={handlePress} testID="buy-button">
+      {lang.t('wallet.buy')}
+    </ActionButton>
   );
 }
 
@@ -235,7 +235,7 @@ export function MoreButton() {
   return (
     <>
       {/* @ts-expect-error JavaScript component */}
-      <CopyFloatingEmojis textToCopy={accountAddress}>
+      <CopyFloatingEmojis scaleTo={0.5} textToCopy={accountAddress}>
         <ActionButton onPress={handlePressCopy} icon="􀐅" testID="receive-button">
           {lang.t('wallet.copy')}
         </ActionButton>

@@ -1,4 +1,4 @@
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from 'react-native-blur-view';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Linking, StatusBar, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
@@ -63,8 +63,8 @@ const NFT_IMAGE_HEIGHT = 250;
 const INSET_OFFSET = 56;
 
 const BackgroundBlur = styled(BlurView).attrs({
-  blurAmount: 100,
-  blurType: 'light',
+  blurIntensity: 100,
+  blurStyle: 'light',
 })({
   ...position.coverAsObject,
 });
