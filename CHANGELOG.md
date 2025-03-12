@@ -15,6 +15,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.60] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.60)
+
+### Added
+
+- Network Switcher Implementations (#6466)
+
+### Changed
+
+- Moved lastNetworks reference into both selectors so we update when the selector reference changes (#6465)
+- Use BE endpoints from dotenv (#6425)
+- Addys refactor (#6472)
+- Swaps search optimizations (#6384)
+- Bumped provider and regen inpage (#6476)
+
+### Fixed
+
+- Fixed address and ens names cut off in send flow on Android (#6461)
+- Fixed when the IDFA prompt should show (#6469)
+- Manually added necessary device info for amplitude to trade android devices (#6462)
+- Fixed open in Rainbow on safari on iOS 18 (#6473)
+- Ensure env vars are defined when instantiating http client (#6474)
+- Fixed an issue in gas estimation (#6475)
+
 ## [1.9.59] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.59)
 
 ### Added

@@ -4209,6 +4209,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@legendapp/list@npm:1.0.0-beta.15":
+  version: 1.0.0-beta.15
+  resolution: "@legendapp/list@npm:1.0.0-beta.15"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/bf81af96488828f79cac366cca1b6c0fa0437dc8f2c0b29b4c3e8d4960007b72d84c7e1d2d6372e9b5ab657d15d07ec1aa7cb83006ec3e33f7a5736e38bd44a6
+  languageName: node
+  linkType: hard
+
 "@metamask/abi-utils@npm:^2.0.2":
   version: 2.0.4
   resolution: "@metamask/abi-utils@npm:2.0.4"
@@ -5250,16 +5260,6 @@ __metadata:
     react: ">=16.0"
     react-native: ">=0.57.0"
   checksum: 10c0/7f4c1b40b3f22633053cd83e3c0cb669fe123212cf84724863c5433b1ee18cac6a1cdba845cc01cfe737b92b7bca4c236754eb1f3efa73a4de66b3f2bc954caa
-  languageName: node
-  linkType: hard
-
-"@react-native-community/blur@npm:4.4.1":
-  version: 4.4.1
-  resolution: "@react-native-community/blur@npm:4.4.1"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/f8f3b2e0dc630d93219c5db822a5d283754beedf31b8e481c17bca6f8b2a29d0e24cad4c5013f692f120a3336490dc5b1b3990a68c714c3308151adf92686ad7
   languageName: node
   linkType: hard
 
@@ -6474,9 +6474,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/react-native-skia@npm:1.8.2":
-  version: 1.8.2
-  resolution: "@shopify/react-native-skia@npm:1.8.2"
+"@shopify/react-native-skia@npm:1.9.0":
+  version: 1.9.0
+  resolution: "@shopify/react-native-skia@npm:1.9.0"
   dependencies:
     canvaskit-wasm: "npm:0.39.1"
     react-reconciler: "npm:0.27.0"
@@ -6491,7 +6491,7 @@ __metadata:
       optional: true
   bin:
     setup-skia-web: ./scripts/setup-canvaskit.js
-  checksum: 10c0/38486b76b8cf9e0c8879fa6ebc393d259494651fff64080a9f33c6887417b4c79ecc28c7fd9845a20006ec17403df33b3ea795354b9d968de56a327e027cbb80
+  checksum: 10c0/44b302498dfaf5c863b6ab7de3d8d0841b2a22bd91a7a7750e0e69aa3ed0ec4f5ce24656dd8676193d52cb0e3313261ba481c6df8633b44e3b2e73c902ffe6b3
   languageName: node
   linkType: hard
 
@@ -8726,6 +8726,7 @@ __metadata:
     "@lavamoat/preinstall-always-fail": "npm:2.0.0"
     "@ledgerhq/hw-app-eth": "npm:6.39.0"
     "@ledgerhq/react-native-hw-transport-ble": "npm:6.33.4"
+    "@legendapp/list": "npm:1.0.0-beta.15"
     "@metamask/eth-sig-util": "npm:7.0.2"
     "@notifee/react-native": "npm:7.8.2"
     "@rainbow-me/provider": "npm:0.1.2"
@@ -8734,7 +8735,6 @@ __metadata:
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-native-camera-roll/camera-roll": "npm:7.7.0"
     "@react-native-clipboard/clipboard": "npm:1.13.2"
-    "@react-native-community/blur": "npm:4.4.1"
     "@react-native-community/netinfo": "npm:9.0.0"
     "@react-native-firebase/app": "npm:20.1.0"
     "@react-native-firebase/messaging": "npm:20.1.0"
@@ -8754,7 +8754,7 @@ __metadata:
     "@rudderstack/rudder-sdk-react-native": "npm:2.0.0"
     "@sentry/react-native": "npm:5.35.0"
     "@shopify/flash-list": "npm:1.7.2"
-    "@shopify/react-native-skia": "npm:1.8.2"
+    "@shopify/react-native-skia": "npm:1.9.0"
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
     "@testing-library/react-native": "npm:11.2.0"
@@ -8832,6 +8832,7 @@ __metadata:
     expo: "npm:51.0.38"
     expo-store-review: "npm:7.0.2"
     fast-text-encoding: "npm:1.0.4"
+    figma-squircle: "npm:1.1.0"
     global: "npm:4.4.0"
     grapheme-splitter: "npm:1.0.4"
     graphql: "npm:15.3.0"
@@ -8882,6 +8883,7 @@ __metadata:
     react-native-aes-crypto: "rainbow-me/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b"
     react-native-animateable-text: "npm:0.12.1"
     react-native-ble-plx: "npm:3.2.1"
+    react-native-blur-view: "christianbaroni/react-native-blur-view#2548117e37750f2c08ef0ec8c7e1c38e1294c9a8"
     react-native-bootsplash: "npm:5.5.3"
     react-native-branch: "npm:5.3.1"
     react-native-change-icon: "npm:4.0.0"
@@ -8927,7 +8929,7 @@ __metadata:
     react-native-sound: "npm:0.11.2"
     react-native-splash-screen: "npm:3.3.0"
     react-native-storage: "npm:1.0.1"
-    react-native-svg: "npm:15.8.0"
+    react-native-svg: "npm:15.11.2"
     react-native-tab-view: "npm:3.5.1"
     react-native-tcp: "npm:3.3.2"
     react-native-text-input-mask: "npm:2.0.0"
@@ -14711,6 +14713,13 @@ __metadata:
   version: 4.1.1
   resolution: "fetch-retry@npm:4.1.1"
   checksum: 10c0/f55cdc82d096e8ef92f92218a8379a01d56cc01726a0ac554845eb943758ceca8be2619682678adfbff88ecb4d97269375200af7ca94a726a8195781aa4c2f49
+  languageName: node
+  linkType: hard
+
+"figma-squircle@npm:1.1.0":
+  version: 1.1.0
+  resolution: "figma-squircle@npm:1.1.0"
+  checksum: 10c0/2879c5d69ad1908d4c76b4e7dc87a1d72cd023d601bd31b9d38b219558867dd8d5a7953e25a8ae7753344a79d412e85d3ecbda4df7a5a2243509d138b5b62aed
   languageName: node
   linkType: hard
 
@@ -22248,6 +22257,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-blur-view@christianbaroni/react-native-blur-view#2548117e37750f2c08ef0ec8c7e1c38e1294c9a8":
+  version: 1.0.0
+  resolution: "react-native-blur-view@https://github.com/christianbaroni/react-native-blur-view.git#commit=2548117e37750f2c08ef0ec8c7e1c38e1294c9a8"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/35a5a708ffb7cfb8a599f8b0329cf433e7958fa83d1c25affd76c234beb6bea420553c975cacf6743d089882914a0adfb8ad96346a4ac9a5f5acd4b5d407ce6a
+  languageName: node
+  linkType: hard
+
 "react-native-bootsplash@npm:5.5.3":
   version: 5.5.3
   resolution: "react-native-bootsplash@npm:5.5.3"
@@ -22756,9 +22775,9 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"react-native-svg@npm:15.8.0":
-  version: 15.8.0
-  resolution: "react-native-svg@npm:15.8.0"
+"react-native-svg@npm:15.11.2":
+  version: 15.11.2
+  resolution: "react-native-svg@npm:15.11.2"
   dependencies:
     css-select: "npm:^5.1.0"
     css-tree: "npm:^1.1.3"
@@ -22766,7 +22785,7 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/03d2cb19c799da6ba41dea0dc414338d01a55549ea4e4a370315c8ec34e1c6de430a62b538f099423060edc8bea6df134f765bde862770059404617c3c296af8
+  checksum: 10c0/040f3a298db80f4a282f9616c9550d7978beebc518de523eb417106afd7f5cb1d021424ea287cedba705f0c48aa15631056c42a79c4b46edcafa34cba71aed63
   languageName: node
   linkType: hard
 
