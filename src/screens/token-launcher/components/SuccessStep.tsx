@@ -134,12 +134,14 @@ export function SuccessStep() {
   const heroWidth = deviceWidth;
 
   const titleFontSize: TextSize = useMemo(() => {
-    if (symbol.length > 20) {
+    if (symbol.length > 22) {
+      return '11pt';
+    } else if (symbol.length >= 18) {
       return '15pt';
-    } else if (symbol.length > 16) {
+    } else if (symbol.length >= 12) {
       return '22pt';
-    } else if (symbol.length > 10) {
-      return '34pt';
+    } else if (symbol.length >= 6) {
+      return '30pt';
     }
     return '44pt';
   }, [symbol]);

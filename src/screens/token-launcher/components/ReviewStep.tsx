@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import * as i18n from '@/languages';
 import { ScrollView, StyleSheet } from 'react-native';
 import { Box, Text, TextShadow } from '@/design-system';
 import { TokenLogo } from './TokenLogo';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
-import { useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, LINK_ICON_SIZE } from '../constants';
 import { abbreviateNumber, convertAmountToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
@@ -20,6 +20,7 @@ import { isENSAddressFormat } from '@/helpers/validators';
 import { isAddress } from 'viem';
 import { formatURLForDisplay } from '@/utils';
 import { isValidURLWorklet } from '@/components/DappBrowser/utils';
+import { TextSize } from '@/design-system/components/Text/Text';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
 const TOTAL_COST_PILL_HEIGHT = 52;
@@ -193,6 +194,63 @@ function AboutCard() {
   );
 }
 
+function NetworkCard() {
+  const { accentColors } = useTokenLauncherContext();
+  const { chainId } = useTokenLauncherStore();
+  const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[chainId];
+  const tokenChainId = useTokenLauncherStore(state => state.chainId);
+
+  return (
+    <Box
+      width={'full'}
+      height={60}
+      backgroundColor={CARD_BACKGROUND_COLOR}
+      flexDirection="row"
+      justifyContent="space-between"
+      alignItems="center"
+      paddingVertical={'16px'}
+      paddingHorizontal={'20px'}
+      borderRadius={FIELD_BORDER_RADIUS}
+    >
+      <Text size="17pt" weight="heavy" color={'label'}>
+        {i18n.t(i18n.l.token_launcher.review.network)}
+      </Text>
+      <Box flexDirection="row" alignItems="center" gap={8}>
+        <ChainImage position="relative" chainId={tokenChainId} size={16} />
+        <Text color={{ custom: accentColors.opacity100 }} size="17pt" weight="heavy" style={{ textTransform: 'capitalize' }}>
+          {networkLabel}
+        </Text>
+      </Box>
+    </Box>
+  );
+}
+
+function TotalSupplyCard() {
+  const { accentColors } = useTokenLauncherContext();
+  const tokenSupply = useTokenLauncherStore(state => state.totalSupply);
+
+  return (
+    <Box
+      width={'full'}
+      height={60}
+      backgroundColor={CARD_BACKGROUND_COLOR}
+      flexDirection="row"
+      justifyContent="space-between"
+      alignItems="center"
+      paddingVertical={'16px'}
+      paddingHorizontal={'20px'}
+      borderRadius={FIELD_BORDER_RADIUS}
+    >
+      <Text size="17pt" weight="heavy" color={'label'}>
+        {i18n.t(i18n.l.token_launcher.review.total_supply)}
+      </Text>
+      <Text size="17pt" weight="bold" style={{ textTransform: 'capitalize' }} color={{ custom: accentColors.opacity100 }}>
+        {abbreviateNumber(tokenSupply, 2, 'long', true)}
+      </Text>
+    </Box>
+  );
+}
+
 function TotalCostPill() {
   const { accentColors, chainNativeAsset } = useTokenLauncherContext();
   const { nativeCurrency } = useAccountSettings();
@@ -222,11 +280,8 @@ function TotalCostPill() {
           android: { elevation: 16, color: 'shadowFar', opacity: 0.55 },
         },
       }}
-      style={{
-        backgroundColor: accentColors.opacity30,
-      }}
     >
-      <Box style={StyleSheet.absoluteFill} backgroundColor={accentColors.opacity12} />
+      <Box style={StyleSheet.absoluteFill} backgroundColor={accentColors.opacity40} />
       <Box style={StyleSheet.absoluteFill} backgroundColor={'rgba(255, 255, 255, 0.08)'} />
       <Text size="17pt" weight="heavy" color={'label'}>
         {i18n.t(i18n.l.token_launcher.review.total_cost)}
@@ -246,104 +301,101 @@ function TotalCostPill() {
   );
 }
 
-export function ReviewStep() {
+// Because this review step is rendered while the info input step is renderd, we don't want to trigger whole tree re-renders when the inputs are changing
+function TokenSymbolAndName() {
   const { accentColors } = useTokenLauncherContext();
   const tokenSymbol = useTokenLauncherStore(state => state.symbol);
   const tokenName = useTokenLauncherStore(state => state.name);
-  const tokenPrice = useTokenLauncherStore(state => state.tokenPrice());
-  const tokenMarketCap = useTokenLauncherStore(state => state.tokenMarketCap());
-  const tokenSupply = useTokenLauncherStore(state => state.totalSupply);
-  const tokenChainId = useTokenLauncherStore(state => state.chainId);
-  const prebuyAmount = useTokenLauncherStore(state => state.extraBuyAmount);
-  const hasPrebuy = prebuyAmount > 0;
-  const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[tokenChainId];
+
+  const symbolFontSize: TextSize = useMemo(() => {
+    if (tokenSymbol.length > 24) {
+      return '11pt';
+    } else if (tokenSymbol.length >= 20) {
+      return '15pt';
+    } else if (tokenSymbol.length >= 14) {
+      return '22pt';
+    } else if (tokenSymbol.length >= 8) {
+      return '34pt';
+    }
+    return '44pt';
+  }, [tokenSymbol]);
 
   return (
-    <>
+    <Box alignItems="center" paddingTop={'20px'} gap={14}>
+      <TextShadow blur={12} shadowOpacity={0.24}>
+        <Text size={symbolFontSize} weight="heavy" color={{ custom: accentColors.opacity100 }}>
+          {`$${tokenSymbol}`}
+        </Text>
+      </TextShadow>
+      <Text size="20pt" weight="bold" color={'labelSecondary'}>
+        {tokenName}
+      </Text>
+    </Box>
+  );
+}
+
+function TokenPriceAndMarketCap() {
+  const { accentColors } = useTokenLauncherContext();
+  const tokenPrice = useTokenLauncherStore(state => state.tokenPrice());
+  const tokenMarketCap = useTokenLauncherStore(state => state.tokenMarketCap());
+
+  return (
+    <Box gap={12} flexDirection="row" justifyContent="space-between" paddingVertical={'20px'}>
+      <Box gap={12} flexGrow={1} padding={'20px'} backgroundColor={accentColors.opacity12} borderRadius={FIELD_BORDER_RADIUS}>
+        <TextShadow blur={12} shadowOpacity={0.24}>
+          <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
+            {tokenPrice}
+          </Text>
+        </TextShadow>
+        <Text size="15pt" weight="bold" color={'labelSecondary'}>
+          {i18n.t(i18n.l.token_launcher.review.initial_price)}
+        </Text>
+      </Box>
+      <Box gap={12} flexGrow={1} padding={'20px'} backgroundColor={accentColors.opacity12} borderRadius={FIELD_BORDER_RADIUS}>
+        <TextShadow blur={12} shadowOpacity={0.24}>
+          <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
+            {tokenMarketCap}
+          </Text>
+        </TextShadow>
+        <Text size="15pt" weight="bold" color={'labelSecondary'}>
+          {i18n.t(i18n.l.token_launcher.review.market_cap)}
+        </Text>
+      </Box>
+    </Box>
+  );
+}
+
+export function ReviewStep() {
+  const step = useTokenLauncherStore(state => state.step);
+  const isVisible = step === NavigationSteps.REVIEW;
+  const prebuyAmount = useTokenLauncherStore(state => state.extraBuyAmount);
+  const hasPrebuy = prebuyAmount > 0;
+
+  return (
+    <Box style={{ flex: 1 }}>
       <ScrollView
         scrollIndicatorInsets={{ top: TOKEN_LAUNCHER_HEADER_HEIGHT }}
         contentContainerStyle={{
+          // Without this, the scrollview will get stuck on every layout after its first
           flexGrow: 1,
           paddingTop: TOKEN_LAUNCHER_HEADER_HEIGHT,
-          paddingBottom: hasPrebuy ? TOTAL_COST_PILL_HEIGHT : 24,
+          paddingBottom: hasPrebuy ? TOTAL_COST_PILL_HEIGHT + 24 : 24,
         }}
       >
         <Box width="full" paddingHorizontal={'20px'} alignItems="center">
           <TokenLogo disabled={true} />
-          <Box alignItems="center" paddingTop={'20px'} gap={14}>
-            <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text size="44pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-                {`$${tokenSymbol}`}
-              </Text>
-            </TextShadow>
-            <Text size="20pt" weight="bold" color={'labelSecondary'}>
-              {tokenName}
-            </Text>
-          </Box>
-          <Box gap={12} flexDirection="row" justifyContent="space-between" paddingVertical={'20px'}>
-            <Box gap={12} flexGrow={1} padding={'20px'} backgroundColor={accentColors.opacity12} borderRadius={FIELD_BORDER_RADIUS}>
-              <TextShadow blur={12} shadowOpacity={0.24}>
-                <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-                  {tokenPrice}
-                </Text>
-              </TextShadow>
-              <Text size="15pt" weight="bold" color={'labelSecondary'}>
-                {i18n.t(i18n.l.token_launcher.review.initial_price)}
-              </Text>
-            </Box>
-            <Box gap={12} flexGrow={1} padding={'20px'} backgroundColor={accentColors.opacity12} borderRadius={FIELD_BORDER_RADIUS}>
-              <TextShadow blur={12} shadowOpacity={0.24}>
-                <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-                  {tokenMarketCap}
-                </Text>
-              </TextShadow>
-              <Text size="15pt" weight="bold" color={'labelSecondary'}>
-                {i18n.t(i18n.l.token_launcher.review.market_cap)}
-              </Text>
-            </Box>
-          </Box>
+          <TokenSymbolAndName />
+          <TokenPriceAndMarketCap />
           <Box width={'full'} gap={8}>
-            <Box
-              width={'full'}
-              height={60}
-              backgroundColor={CARD_BACKGROUND_COLOR}
-              flexDirection="row"
-              justifyContent="space-between"
-              alignItems="center"
-              paddingVertical={'16px'}
-              paddingHorizontal={'20px'}
-              borderRadius={FIELD_BORDER_RADIUS}
-            >
-              <Text size="17pt" weight="heavy" color={'label'}>
-                {i18n.t(i18n.l.token_launcher.review.total_supply)}
-              </Text>
-              <Text size="17pt" weight="bold" style={{ textTransform: 'capitalize' }} color={{ custom: accentColors.opacity100 }}>
-                {abbreviateNumber(tokenSupply, 2, 'long', true)}
-              </Text>
-            </Box>
-            <Box
-              width={'full'}
-              height={60}
-              backgroundColor={CARD_BACKGROUND_COLOR}
-              flexDirection="row"
-              justifyContent="space-between"
-              alignItems="center"
-              paddingVertical={'16px'}
-              paddingHorizontal={'20px'}
-              borderRadius={FIELD_BORDER_RADIUS}
-            >
-              <Text size="17pt" weight="heavy" color={'label'}>
-                {i18n.t(i18n.l.token_launcher.review.network)}
-              </Text>
-              <Box flexDirection="row" alignItems="center" gap={8}>
-                <ChainImage position="relative" chainId={tokenChainId} size={16} />
-                <Text color={{ custom: accentColors.opacity100 }} size="17pt" weight="heavy" style={{ textTransform: 'capitalize' }}>
-                  {networkLabel}
-                </Text>
-              </Box>
-            </Box>
-            <TokenAllocationCard />
-            <AboutCard />
+            {/* These sections specifically we won't want re-rendering while the inputs are changing, everything else is inconsequential */}
+            {isVisible && (
+              <>
+                <TotalSupplyCard />
+                <NetworkCard />
+                <TokenAllocationCard />
+                <AboutCard />
+              </>
+            )}
           </Box>
         </Box>
       </ScrollView>
@@ -352,6 +404,6 @@ export function ReviewStep() {
           <TotalCostPill />
         </Box>
       )}
-    </>
+    </Box>
   );
 }
