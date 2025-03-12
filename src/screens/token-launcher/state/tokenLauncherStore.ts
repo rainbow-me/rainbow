@@ -52,6 +52,7 @@ export type AirdropRecipient = {
   count: number;
   isValid: boolean;
   imageUrl: string | null;
+  addresses?: string[];
   isSuggested?: boolean;
 };
 
@@ -108,7 +109,19 @@ interface TokenLauncherStore {
   setExtraBuyAmount: (amount: number) => void;
   setDescription: (description: string) => void;
   setStep: (step: NavigationSteps) => void;
-  addAirdropGroup: ({ groupId, label, count, imageUrl }: { groupId: string; label: string; count: number; imageUrl: string }) => void;
+  addAirdropGroup: ({
+    groupId,
+    label,
+    count,
+    imageUrl,
+    addresses,
+  }: {
+    groupId: string;
+    label: string;
+    count: number;
+    imageUrl: string;
+    addresses?: string[];
+  }) => void;
   addOrEditAirdropAddress: ({
     id,
     address,
@@ -313,7 +326,19 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       step: NavigationStepsNames[step],
     });
   },
-  addAirdropGroup: ({ groupId, label, count, imageUrl }: { groupId: string; label: string; count: number; imageUrl: string }) => {
+  addAirdropGroup: ({
+    groupId,
+    label,
+    count,
+    imageUrl,
+    addresses,
+  }: {
+    groupId: string;
+    label: string;
+    count: number;
+    imageUrl: string;
+    addresses?: string[];
+  }) => {
     const { airdropRecipients } = get();
     const existingGroups = airdropRecipients.filter(recipient => recipient.type === 'group');
     const existingGroup = existingGroups.find(group => group.value === groupId);
@@ -321,6 +346,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     if (existingGroup) {
       return;
     }
+
     const recipient = {
       type: 'group' as const,
       id: Math.random().toString(),
@@ -329,6 +355,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       count,
       isValid: true,
       imageUrl,
+      // addresses are for personalized cohorts where we need to send the sdk the addresses and not the cohort id
+      addresses,
     };
     set({ airdropRecipients: [...airdropRecipients, recipient] });
   },
@@ -430,6 +458,10 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
     const airdropCohortIds = airdropRecipients.filter(r => r.type === 'group').map(recipient => recipient.value);
     const airdropRecipientAddresses = airdropRecipients.filter(r => r.type === 'address').map(recipient => recipient.value);
+    const airdropPersonalizedCohortAddresses = airdropRecipients
+      .filter(r => r.type === 'group' && r.addresses)
+      .flatMap(recipient => recipient.addresses || []);
+    const allAirdropAddresses = [...airdropRecipientAddresses, ...airdropPersonalizedCohortAddresses];
     const airdropRecipientCount = airdropRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
 
     const targetEth = tokenomics()?.price.targetEth;
@@ -461,7 +493,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         },
         airdropMetadata: {
           cohortIds: airdropCohortIds,
-          addresses: airdropRecipientAddresses,
+          addresses: allAirdropAddresses,
         },
       };
 

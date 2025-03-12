@@ -24,7 +24,6 @@ import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Skeleton } from '@/screens/points/components/Skeleton';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
-import { colors } from '@/styles';
 import { useAirdropSuggestionsStore } from '../state/airdropSuggestionsStore';
 import { ImgixImage } from '@/components/images';
 import { fetchENSAddress } from '@/hooks/useENSAddress';
@@ -150,7 +149,15 @@ function AirdropGroups({
               <ButtonPressAnimation
                 key={groupId}
                 disabled={isSelected}
-                onPress={() => addAirdropGroup({ groupId, label: item.name, count: item.totalUsers, imageUrl: item.icons.iconURL })}
+                onPress={() =>
+                  addAirdropGroup({
+                    groupId,
+                    label: item.name,
+                    count: item.totalUsers,
+                    imageUrl: item.icons.iconURL,
+                    addresses: 'addresses' in item ? item.addresses.map(address => address.address) : undefined,
+                  })
+                }
               >
                 <Box
                   width={154.5}
