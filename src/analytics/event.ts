@@ -186,6 +186,7 @@ export const event = {
   tokenLauncherStepChanged: 'token_launcher.step_changed',
   tokenLauncherTokenCreated: 'token_launcher.token_created',
   tokenLauncherSharePressed: 'token_launcher.share_pressed',
+  tokenLauncherAbandoned: 'token_launcher.abandoned',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -778,19 +779,42 @@ export type EventProperties = {
   [event.tokenLauncherStepChanged]: {
     step: string;
   };
-  [event.tokenLauncherTokenCreated]: {
-    address: string;
-    chainId: ChainId;
-    symbol: string;
-    name: string;
-    logoUrl: string;
+  [event.tokenLauncherAbandoned]: {
+    chainId: number;
+    symbol: string | undefined;
+    name: string | undefined;
+    logoUrl: string | undefined;
     description: string | undefined;
     totalSupply: number;
     links: Record<string, string>;
     extraBuyAmount: number;
-    airdropRecipientCount: number;
-    airdropAddressCount: number;
-    airdropCohortIds: string[];
+    airdropTotalRecipientsCount: number;
+    airdropTotalAddressCount: number;
+    airdropManuallyAddedRecipientsCount: number;
+    airdropSuggestedRecipientsCount: number;
+    airdropPredefinedCohortRecipientsCount: number;
+    airdropSuggestedCohortRecipientsCount: number;
+    airdropPersonalizedCohortIds: string[];
+    airdropPredefinedCohortIds: string[];
+  };
+  [event.tokenLauncherTokenCreated]: {
+    chainId: number;
+    address: string | undefined;
+    symbol: string | undefined;
+    name: string | undefined;
+    logoUrl: string | undefined;
+    description: string | undefined;
+    totalSupply: number;
+    links: Record<string, string>;
+    extraBuyAmount: number;
+    airdropTotalRecipientsCount: number;
+    airdropTotalAddressCount: number;
+    airdropManuallyAddedRecipientsCount: number;
+    airdropSuggestedRecipientsCount: number;
+    airdropPredefinedCohortRecipientsCount: number;
+    airdropSuggestedCohortRecipientsCount: number;
+    airdropPersonalizedCohortIds: string[];
+    airdropPredefinedCohortIds: string[];
   };
   [event.tokenLauncherSharePressed]: {
     tokenAddress: string;

@@ -14,6 +14,7 @@ import { showActionSheetWithOptions } from '@/utils';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { IS_IOS } from '@/env';
+import { analyticsV2 } from '@/analytics';
 
 const EXIT_BUTTON_SIZE = 36;
 // padding top + exit button + inner padding + padding bottom + blur padding
@@ -27,6 +28,7 @@ export function TokenLauncherHeader({ contentContainerHeight }: { contentContain
   const step = useTokenLauncherStore(state => state.step);
   const setStep = useTokenLauncherStore(state => state.setStep);
   const imageUri = useTokenLauncherStore(state => state.imageUri);
+  const getAnalyticsParams = useTokenLauncherStore(state => state.getAnalyticsParams);
   const { tokenImage } = useTokenLauncherContext();
 
   let title = '';
@@ -53,10 +55,13 @@ export function TokenLauncherHeader({ contentContainerHeight }: { contentContain
       (buttonIndex: number) => {
         if (buttonIndex === 0) {
           navigation.goBack();
+          analyticsV2.track(analyticsV2.event.tokenLauncherAbandoned, {
+            ...getAnalyticsParams(),
+          });
         }
       }
     );
-  }, [navigation, hasEnteredAnyInfo]);
+  }, [navigation, hasEnteredAnyInfo, getAnalyticsParams]);
 
   const isTokenImageVisible = imageUri && tokenImage;
 
