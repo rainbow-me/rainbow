@@ -68,28 +68,12 @@ export function CollapsableField({ title, children, style }: CollapsableFieldPro
   return (
     <Animated.View layout={COLLAPSABLE_FIELD_ANIMATION} style={[styles.container, { borderColor }, style]}>
       <Animated.View style={[styles.header, headerStyle]}>
-        <GestureHandlerButton
-          hapticTrigger="tap-end"
-          hapticType="soft"
-          onPressWorklet={toggleCollapsed}
-          style={{
-            margin: -HIT_SLOP,
-            padding: HIT_SLOP,
-          }}
-        >
+        <GestureHandlerButton hapticTrigger="tap-end" hapticType="soft" onPressWorklet={toggleCollapsed} hitSlop={HIT_SLOP}>
           <Text color="label" size="17pt" weight="heavy">
             {title}
           </Text>
         </GestureHandlerButton>
-        <GestureHandlerButton
-          hapticTrigger="tap-end"
-          hapticType="soft"
-          onPressWorklet={toggleCollapsed}
-          style={{
-            margin: -HIT_SLOP,
-            padding: HIT_SLOP,
-          }}
-        >
+        <GestureHandlerButton hapticTrigger="tap-end" hapticType="soft" onPressWorklet={toggleCollapsed} hitSlop={HIT_SLOP}>
           <AnimatedPlusMinusIcon collapsed={collapsed} />
         </GestureHandlerButton>
       </Animated.View>

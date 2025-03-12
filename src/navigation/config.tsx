@@ -603,12 +603,15 @@ export const portalSheetConfig: PartialNavigatorConfigOptions = {
 
 export const tokenLauncherConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+    }),
     gestureEnabled: false,
-    backgroundColor: colors.themedColors?.shadowBlack,
-    backgroundOpacity: 0.7,
-    topOffset: 0,
     dismissable: false,
-    customStack: true,
+    topOffset: 0,
+    // backgroundColor: colors.themedColors?.shadowBlack,
+    // backgroundOpacity: 0.7,
+    // customStack: true,
   }),
 };
 
