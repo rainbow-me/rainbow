@@ -6,23 +6,28 @@ import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
+import { GestureResponderEvent } from 'react-native';
 
 export const CoinRowButton = ({
   color,
   icon,
+  whiteIcon,
   onPress,
   outline,
   size,
   weight,
   disabled,
+  opacityOverride,
 }: {
   color?: string;
-  icon: string;
-  onPress?: () => void;
+  icon?: string;
+  whiteIcon?: boolean;
+  onPress?: (event: GestureResponderEvent) => void;
   outline?: boolean;
   size?: TextSize;
   weight?: TextWeight;
   disabled?: boolean;
+  opacityOverride?: number;
 }) => {
   const { isDarkMode } = useColorMode();
   const fillTertiary = useForegroundColor('fillTertiary');
@@ -40,7 +45,7 @@ export const CoinRowButton = ({
           backgroundColor: outline
             ? 'transparent'
             : color
-              ? opacity(color, isDarkMode ? 0.16 : 0.25)
+              ? opacity(color, typeof opacityOverride === 'number' ? opacityOverride : isDarkMode ? 0.16 : 0.25)
               : isDarkMode
                 ? fillQuaternary
                 : opacity(fillTertiary, 0.04),
@@ -49,15 +54,17 @@ export const CoinRowButton = ({
         }}
         width={{ custom: 28 }}
       >
-        <TextIcon
-          color={color ? { custom: color } : 'labelQuaternary'}
-          containerSize={28}
-          opacity={isDarkMode ? 1 : 0.75}
-          size={size || 'icon 12px'}
-          weight={weight || 'heavy'}
-        >
-          {icon}
-        </TextIcon>
+        {icon && (
+          <TextIcon
+            color={whiteIcon ? { custom: '#FFF' } : color ? { custom: color } : 'labelQuaternary'}
+            containerSize={28}
+            opacity={isDarkMode ? 1 : 0.75}
+            size={size || 'icon 12px'}
+            weight={weight || 'heavy'}
+          >
+            {icon}
+          </TextIcon>
+        )}
       </Box>
     </ButtonPressAnimation>
   );

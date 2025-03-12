@@ -19,9 +19,16 @@ import {
   parsedSearchAssetToParsedAddressAsset,
   setUserAssets,
 } from './utils';
+import { MMKV } from 'react-native-mmkv';
+import { BooleanMap } from '@/screens/WalletScreen/UserAssetsList';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
+
+const getOldPinnedAssetsData = (address: Address | string): BooleanMap | null => {
+  const pinnedAssets = new MMKV().getString('pinned-coins-obj-' + address);
+  return pinnedAssets ? JSON.parse(pinnedAssets) : null;
+};
 
 export const createUserAssetsStore = (address: Address | string) =>
   createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, TransformedUserAssetsData>(
@@ -57,6 +64,7 @@ export const createUserAssetsStore = (address: Address | string) =>
       chainBalances: new Map(),
       currentAbortController: new AbortController(),
       filter: 'all',
+      pinnedAssets: new Set<UniqueId>(),
       hiddenAssets: new Set<UniqueId>(),
       hiddenAssetsBalance: null,
       idsByChain: new Map<UserAssetFilter, UniqueId[]>(),
@@ -115,6 +123,32 @@ export const createUserAssetsStore = (address: Address | string) =>
       },
 
       getUserAssets: () => Array.from(get().userAssets.values()) || [],
+
+      getNonPinnedAndHiddenUserAssets: () => {
+        const { userAssets, hiddenAssets, pinnedAssets } = get();
+        return Array.from(userAssets.values()).filter(asset => !hiddenAssets.has(asset.uniqueId) && !pinnedAssets.has(asset.uniqueId));
+      },
+
+      getUserAssetsWithPinnedFirstAndHiddenAssetsLast: () => {
+        const { userAssets, hiddenAssets, pinnedAssets } = get();
+        // Get pinned assets first
+        const pinnedAssetsList = Array.from(pinnedAssets)
+          .map(id => userAssets.get(id))
+          .filter((asset): asset is ParsedSearchAsset => asset !== undefined);
+
+        // Get non-pinned and non-hidden assets
+        const regularAssets = Array.from(userAssets.values()).filter(
+          asset => !pinnedAssets.has(asset.uniqueId) && !hiddenAssets.has(asset.uniqueId)
+        );
+
+        // Get hidden assets last
+        const hiddenAssetsList = Array.from(hiddenAssets)
+          .map(id => userAssets.get(id))
+          .filter((asset): asset is ParsedSearchAsset => asset !== undefined);
+
+        // Combine all three lists in order
+        return [...pinnedAssetsList, ...regularAssets, ...hiddenAssetsList];
+      },
 
       selectUserAssetIds: function* (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) {
         const { currentAbortController, idsByChain, userAssets } = get();
@@ -176,6 +210,8 @@ export const createUserAssetsStore = (address: Address | string) =>
 
       getHiddenAssetsIds: () => Array.from(get().hiddenAssets),
 
+      getPinnedAssetsIds: () => Array.from(get().pinnedAssets),
+
       getTotalBalance: () => {
         const chainBalances = get().chainBalances;
         if (!chainBalances.size) return 0;
@@ -194,6 +230,10 @@ export const createUserAssetsStore = (address: Address | string) =>
               hiddenAssets.delete(uniqueId);
             } else {
               hiddenAssets.add(uniqueId);
+              // we need to also check if the asset was pinned and unpin it
+              if (state.pinnedAssets.has(uniqueId)) {
+                state.pinnedAssets.delete(uniqueId);
+              }
             }
           });
 
@@ -206,6 +246,25 @@ export const createUserAssetsStore = (address: Address | string) =>
           return { hiddenAssets, hiddenAssetsBalance };
         });
       },
+
+      setPinnedAssets: (uniqueIds: UniqueId[]) => {
+        set(state => {
+          const pinnedAssets = new Set(state.pinnedAssets);
+          uniqueIds.forEach(uniqueId => {
+            if (pinnedAssets.has(uniqueId)) {
+              pinnedAssets.delete(uniqueId);
+            } else {
+              pinnedAssets.add(uniqueId);
+              // we need to also check if the asset was hidden and unhide it
+              if (state.hiddenAssets.has(uniqueId)) {
+                state.hiddenAssets.delete(uniqueId);
+              }
+            }
+          });
+
+          return { pinnedAssets };
+        });
+      },
     }),
 
     address.length
@@ -215,6 +274,7 @@ export const createUserAssetsStore = (address: Address | string) =>
             ({
               chainBalances: state.chainBalances,
               filter: state.filter,
+              pinnedAssets: state.pinnedAssets,
               hiddenAssets: state.hiddenAssets,
               idsByChain: state.idsByChain,
               legacyUserAssets: state.legacyUserAssets,
@@ -222,7 +282,21 @@ export const createUserAssetsStore = (address: Address | string) =>
             }) satisfies Required<UserAssetsStateToPersist>,
           serializer: serializeUserAssetsState,
           storageKey: `userAssets_${address}`,
-          version: 1,
+          version: 2,
+          migrate: (persistedState: unknown, version: number) => {
+            if (version === 1) {
+              // Migrates old pinned assets data from MMKV to Zustand
+              const oldState = persistedState as UserAssetsStateToPersist;
+              const oldPinnedAssets = getOldPinnedAssetsData(address);
+              if (oldPinnedAssets) {
+                return {
+                  ...oldState,
+                  pinnedAssets: new Set(Object.keys(oldPinnedAssets)),
+                };
+              }
+            }
+            return persistedState as Partial<UserAssetsState>;
+          },
         }
       : undefined
   );

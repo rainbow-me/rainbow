@@ -33,6 +33,7 @@ export interface UserAssetsState {
   currentAbortController: AbortController;
   filter: UserAssetFilter;
   hiddenAssets: Set<UniqueId>;
+  pinnedAssets: Set<UniqueId>;
   hiddenAssetsBalance: string | null;
   idsByChain: Map<UserAssetFilter, UniqueId[]>;
   inputSearchQuery: string;
@@ -43,6 +44,7 @@ export interface UserAssetsState {
   getChainsWithBalance: () => ChainId[];
   getFilteredUserAssetIds: () => UniqueId[];
   getHiddenAssetsIds: () => UniqueId[];
+  getPinnedAssetsIds: () => UniqueId[];
   getHighestValueNativeAsset: () => ParsedSearchAsset | null;
   getLegacyUserAsset: (uniqueId: UniqueId) => ParsedAddressAsset | null;
   getNativeAssetForChain: (chainId: ChainId) => ParsedSearchAsset | null;
@@ -50,9 +52,12 @@ export interface UserAssetsState {
   getTotalBalance: () => number | undefined;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
   getUserAssets: () => ParsedSearchAsset[];
+  getNonPinnedAndHiddenUserAssets: () => ParsedSearchAsset[];
+  getUserAssetsWithPinnedFirstAndHiddenAssetsLast: () => ParsedSearchAsset[];
   selectUserAssetIds: (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) => Generator<UniqueId, void, unknown>;
   selectUserAssets: (selector: (asset: ParsedSearchAsset) => boolean) => Generator<[UniqueId, ParsedSearchAsset], void, unknown>;
   setHiddenAssets: (uniqueIds: UniqueId[]) => void;
+  setPinnedAssets: (uniqueIds: UniqueId[]) => void;
   setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
   setSearchQuery: (query: string) => void;
   setUserAssets: ({

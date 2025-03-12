@@ -18,7 +18,8 @@ import { GestureResponderEvent } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { trimTrailingZeros } from '@/__swaps__/utils/swaps';
-import { TextColor } from '@/design-system/color/palettes';
+import { ForegroundColor, globalColors, TextColor } from '@/design-system/color/palettes';
+import { useAssetsListStore } from '@/screens/WalletScreen/UserAssetsList';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 
@@ -46,6 +47,8 @@ interface InputCoinRowProps {
   isSupportedChain?: never;
   nativePriceChange?: string;
   showPriceChange?: boolean;
+  isSelected?: boolean;
+  isEditing?: boolean;
   onPress: (asset: ParsedSearchAsset | null) => void;
   output?: false | undefined;
   uniqueId?: never;
@@ -65,6 +68,8 @@ interface OutputCoinRowProps extends PartialAsset {
   output: true;
   nativePriceChange?: string;
   showPriceChange?: never;
+  isSelected?: never;
+  isEditing?: never;
   isTrending?: boolean;
   isSupportedChain: boolean;
   testID?: string;
@@ -79,6 +84,8 @@ export function CoinRow({
   isSupportedChain,
   nativePriceChange,
   showPriceChange,
+  isSelected,
+  isEditing,
   onPress,
   output,
   uniqueIdOrAsset,
@@ -111,6 +118,10 @@ export function CoinRow({
     return isFavorite ? '#FFCB0F' : undefined;
   }, [isFavorite]);
 
+  const selectedIconColor = useMemo(() => {
+    return isSelected ? '#3898FF' : undefined;
+  }, [isSelected]);
+
   const handleToggleFavorite = useCallback(() => {
     if (!address) return;
 
@@ -136,6 +147,18 @@ export function CoinRow({
   return (
     <Box testID={testID} style={{ height: COIN_ROW_WITH_PADDING_HEIGHT, width: '100%' }}>
       <Columns alignVertical="center">
+        {isEditing && (
+          <Column style={{ paddingLeft: 20 }} width="content">
+            <CoinRowButton
+              color={selectedIconColor}
+              onPress={onPressHandler}
+              icon={isSelected ? '􀆅' : undefined}
+              weight="black"
+              whiteIcon
+              opacityOverride={1}
+            />
+          </Column>
+        )}
         <Column>
           <ButtonPressAnimation disallowInterruption onPress={onPressHandler} scaleTo={0.95}>
             <HitSlop vertical="10px">

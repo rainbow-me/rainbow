@@ -12,8 +12,6 @@ import { deviceUtils } from '@/utils';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useAccountSettings } from '@/hooks';
 import { useScrollPosition } from './ScrollPositionContext';
-import { useMMKVObject } from 'react-native-mmkv';
-import { difference } from 'lodash';
 import { BaseButton } from '@/components/DappBrowser/TabViewToolbar';
 
 const MAX_CONDENSED_ASSETS = 6;
@@ -48,7 +46,7 @@ type AssetsListStore = {
   removeSelectedAsset: (assetId: UniqueId) => void;
 
   // Current action based on selection
-  getCurrentAction: (pinnedAssets: BooleanMap, hiddenAssets: string[]) => EditAction;
+  getCurrentAction: (pinnedAssets: UniqueId[], hiddenAssets: UniqueId[]) => EditAction;
 };
 
 const assetsListStore = createRainbowStore<AssetsListStore>((set, get) => ({
@@ -99,16 +97,23 @@ const assetsListStore = createRainbowStore<AssetsListStore>((set, get) => ({
 
     if (selectedCount === 0) {
       return EditAction.none;
-    } else if (selectedCount > 0 && difference(hiddenAssets, selectedAssets).length === hiddenAssets.length - selectedCount) {
-      return EditAction.unhide;
-    } else if (
-      selectedCount > 0 &&
-      difference(Object.keys(pinnedAssets), selectedAssets).length === Object.keys(pinnedAssets).length - selectedCount
-    ) {
-      return EditAction.unpin;
-    } else {
-      return EditAction.standard;
     }
+
+    // Check if all selected assets are hidden (for unhide action)
+    const allSelectedAreHidden = selectedAssets.every(assetId => hiddenAssets.includes(assetId));
+
+    if (selectedCount > 0 && allSelectedAreHidden) {
+      return EditAction.unhide;
+    }
+
+    // Check if all selected assets are pinned (for unpin action)
+    const allSelectedArePinned = selectedAssets.every(assetId => pinnedAssets.includes(assetId));
+
+    if (selectedCount > 0 && allSelectedArePinned) {
+      return EditAction.unpin;
+    }
+
+    return EditAction.standard;
   },
 }));
 
@@ -145,9 +150,10 @@ export function useAssetsListControls() {
 
 // New hook for asset list edit options
 export function useAssetListEditOptions() {
-  const { accountAddress } = useAccountSettings();
   const hiddenAssets = useUserAssetsStore(state => state.getHiddenAssetsIds());
   const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
+  const pinnedAssets = useUserAssetsStore(state => state.getPinnedAssetsIds());
+  const setPinnedAssets = useUserAssetsStore(state => state.setPinnedAssets);
 
   // Get selection management functions from the store
   const { selectedAssets, clearSelectedAssets, toggleSelectedAsset, addSelectedAsset, removeSelectedAsset, getCurrentAction } =
@@ -159,9 +165,6 @@ export function useAssetListEditOptions() {
       removeSelectedAsset: state.removeSelectedAsset,
       getCurrentAction: state.getCurrentAction,
     }));
-
-  // Use MMKV for persisted pinned assets (just like in useCoinListEditOptions)
-  const [pinnedAssets = {}, setPinnedAssetsObject] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
 
   // Calculate current action based on selected assets
   const currentAction = useMemo(() => {
@@ -176,32 +179,21 @@ export function useAssetListEditOptions() {
       switch (action) {
         case EditAction.pin: {
           // Add selected assets to pinned assets
-          const updatedPinnedAssets = { ...pinnedAssets };
-          selectedAssetsArray.forEach(assetId => {
-            updatedPinnedAssets[assetId] = true;
-          });
-          setPinnedAssetsObject(updatedPinnedAssets);
+          const newPinnedAssets = selectedAssetsArray.filter(assetId => !pinnedAssets.includes(assetId));
+          setPinnedAssets(newPinnedAssets);
           break;
         }
         case EditAction.unpin: {
-          // Remove selected assets from pinned assets
-          const updatedPinnedAssets = { ...pinnedAssets };
-          selectedAssetsArray.forEach(assetId => {
-            delete updatedPinnedAssets[assetId];
-          });
-          setPinnedAssetsObject(updatedPinnedAssets);
+          setPinnedAssets(selectedAssetsArray);
           break;
         }
         case EditAction.hide: {
-          // Add selected assets to hidden assets
-          const newHiddenAssets = [...hiddenAssets, ...selectedAssetsArray];
+          const newHiddenAssets = selectedAssetsArray.filter(assetId => !hiddenAssets.includes(assetId));
           setHiddenAssets(newHiddenAssets);
           break;
         }
         case EditAction.unhide: {
-          // Remove selected assets from hidden assets
-          const newHiddenAssets = hiddenAssets.filter(id => !selectedAssets.has(id));
-          setHiddenAssets(newHiddenAssets);
+          setHiddenAssets(selectedAssetsArray);
           break;
         }
         default:
@@ -211,7 +203,7 @@ export function useAssetListEditOptions() {
       // Clear selections after applying changes
       clearSelectedAssets();
     },
-    [selectedAssets, pinnedAssets, hiddenAssets, setPinnedAssetsObject, setHiddenAssets, clearSelectedAssets]
+    [selectedAssets, pinnedAssets, hiddenAssets, setPinnedAssets, setHiddenAssets, clearSelectedAssets]
   );
 
   return {
@@ -267,25 +259,45 @@ const keyExtractor = (item: UserAssetListItem): string => {
 };
 
 const MemoizedCoinRow = memo(
-  ({ asset, navigateToTokenChart }: { asset: ParsedSearchAsset; navigateToTokenChart: (asset: ParsedSearchAsset) => void }) => (
+  ({
+    asset,
+    isEditing,
+    isSelected,
+    onPress,
+  }: {
+    asset: ParsedSearchAsset;
+    isEditing: boolean;
+    isSelected: boolean;
+    onPress: (asset: ParsedSearchAsset | null) => void;
+  }) => (
     <CoinRow
-      onPress={() => navigateToTokenChart(asset)}
+      onPress={onPress}
       output={false}
       uniqueIdOrAsset={asset}
+      isEditing={isEditing}
+      isSelected={isSelected}
       nativePriceChange={asset.native.price?.change}
       showPriceChange
       testID={`asset-list-item-${asset.uniqueId}`}
     />
   ),
-  (prevProps, nextProps) => prevProps.asset.uniqueId === nextProps.asset.uniqueId
+  (prevProps, nextProps) =>
+    prevProps.asset.uniqueId === nextProps.asset.uniqueId &&
+    prevProps.isEditing === nextProps.isEditing &&
+    prevProps.isSelected === nextProps.isSelected
 );
 MemoizedCoinRow.displayName = 'MemoizedCoinRow';
 
 export function UserAssetsList() {
   const { navigate } = useNavigation();
-  const { isExpanded } = useAssetsListStore(state => state);
-  const userAssets = useUserAssetsStore(state => state.getUserAssets());
+  const userAssets = useUserAssetsStore(state => state.getUserAssetsWithPinnedFirstAndHiddenAssetsLast());
   const flatListRef = useRef<FlatList<UserAssetListItem>>(null);
+  const { selectedAssets, isEditMode, isExpanded, toggleSelectedAsset } = useAssetsListStore(state => ({
+    selectedAssets: state.selectedAssets,
+    isEditMode: state.isEditMode,
+    isExpanded: state.isExpanded,
+    toggleSelectedAsset: state.toggleSelectedAsset,
+  }));
 
   const { topAssets, bottomAssets } = useMemo(() => {
     if (userAssets.length <= MAX_CONDENSED_ASSETS) {
@@ -320,11 +332,16 @@ export function UserAssetsList() {
     return data;
   }, [topAssets, bottomAssets, isExpanded]);
 
-  const navigateToTokenChart = useCallback(
-    (asset: ParsedSearchAsset) => {
-      navigate(Routes.EXPANDED_ASSET_SHEET_V2, { asset, address: asset.address, chainId: asset.chainId });
+  const onPressHandler = useCallback(
+    (asset: ParsedSearchAsset | null) => {
+      if (!asset) return;
+      if (isEditMode) {
+        toggleSelectedAsset(asset.uniqueId);
+      } else {
+        navigate(Routes.EXPANDED_ASSET_SHEET_V2, { asset, address: asset.address, chainId: asset.chainId });
+      }
     },
-    [navigate]
+    [navigate, isEditMode, toggleSelectedAsset]
   );
 
   const renderItem = useCallback(
@@ -333,9 +350,16 @@ export function UserAssetsList() {
         return <DividerSection />;
       }
 
-      return <MemoizedCoinRow asset={item.asset} navigateToTokenChart={navigateToTokenChart} />;
+      return (
+        <MemoizedCoinRow
+          asset={item.asset}
+          isEditing={isEditMode}
+          isSelected={selectedAssets.has(item.asset.uniqueId)}
+          onPress={onPressHandler}
+        />
+      );
     },
-    [navigateToTokenChart]
+    [onPressHandler, selectedAssets, isEditMode]
   );
 
   // Calculate height for both the container and the FlatList
@@ -382,25 +406,13 @@ const DividerSection = memo(function DividerSection() {
 
   // Handle pin button press
   const handlePinPress = useCallback(() => {
-    finishEditing(EditAction.pin);
-  }, [finishEditing]);
+    finishEditing(currentAction === EditAction.unpin ? EditAction.unpin : EditAction.pin);
+  }, [finishEditing, currentAction]);
 
   // Handle hide button press
   const handleHidePress = useCallback(() => {
-    finishEditing(EditAction.hide);
-  }, [finishEditing]);
-
-  // Handle action based on current selection context
-  const handleActionPress = useCallback(() => {
-    if (currentAction === EditAction.unhide) {
-      finishEditing(EditAction.unhide);
-    } else if (currentAction === EditAction.unpin) {
-      finishEditing(EditAction.unpin);
-    } else {
-      // Toggle edit mode if no specific action
-      handleToggleEditMode();
-    }
-  }, [currentAction, finishEditing, handleToggleEditMode]);
+    finishEditing(currentAction === EditAction.unhide ? EditAction.unhide : EditAction.hide);
+  }, [finishEditing, currentAction]);
 
   return (
     <Box
@@ -470,7 +482,7 @@ const DividerSection = memo(function DividerSection() {
           gestureButtonProps={{ style: { paddingHorizontal: 8 } }}
           paddingHorizontal="12px"
           paddingVertical="10px"
-          onPress={handleActionPress}
+          onPress={handleToggleEditMode}
         >
           <Text color={isEditMode ? 'label' : 'labelTertiary'} size="17pt" weight="semibold" numberOfLines={1}>
             {isEditMode ? 'Done' : 'Edit'}

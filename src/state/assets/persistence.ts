@@ -5,7 +5,7 @@ import { UserAssetsState } from './types';
 
 export type UserAssetsStateToPersist = Pick<
   Partial<UserAssetsState>,
-  'chainBalances' | 'filter' | 'hiddenAssets' | 'idsByChain' | 'legacyUserAssets' | 'userAssets'
+  'chainBalances' | 'filter' | 'hiddenAssets' | 'idsByChain' | 'legacyUserAssets' | 'userAssets' | 'pinnedAssets'
 >;
 
 type PersistedUserAssetsState = Pick<UserAssetsStateToPersist, 'filter' | 'legacyUserAssets'> & {
@@ -13,6 +13,7 @@ type PersistedUserAssetsState = Pick<UserAssetsStateToPersist, 'filter' | 'legac
   hiddenAssets: UniqueId[]; // Set
   idsByChain: Array<[UserAssetFilter, UniqueId[]]>; // Map
   userAssets: Array<[UniqueId, ParsedSearchAsset]>; // Map
+  pinnedAssets: UniqueId[]; // Set
 };
 
 export function serializeUserAssetsState(state: UserAssetsStateToPersist, version?: number) {
@@ -23,6 +24,7 @@ export function serializeUserAssetsState(state: UserAssetsStateToPersist, versio
       idsByChain: state.idsByChain ? Array.from(state.idsByChain.entries()) : [],
       userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
       hiddenAssets: state.hiddenAssets ? Array.from(state.hiddenAssets.values()) : [],
+      pinnedAssets: state.pinnedAssets ? Array.from(state.pinnedAssets.values()) : [],
     };
     return JSON.stringify({ state: transformedStateToPersist, version });
   } catch (error) {
@@ -78,6 +80,15 @@ export function deserializeUserAssetsState(serializedState: string) {
     logger.error(new RainbowError(`[userAssetsStore]: Failed to convert hiddenAssets from user assets storage`), { error });
   }
 
+  let pinnedAssets = new Set<UniqueId>();
+  try {
+    if (state.pinnedAssets) {
+      pinnedAssets = new Set(state.pinnedAssets);
+    }
+  } catch (error) {
+    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert pinnedAssets from user assets storage`), { error });
+  }
+
   return {
     state: {
       ...state,
@@ -85,6 +96,7 @@ export function deserializeUserAssetsState(serializedState: string) {
       hiddenAssets,
       idsByChain,
       userAssets: userAssetsData,
+      pinnedAssets,
     },
     version,
   };
