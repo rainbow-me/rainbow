@@ -1,6 +1,12 @@
 import { abbreviateNumber, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { DEFAULT_CHAIN_ID, DEFAULT_MAX_AIRDROP_RECIPIENTS, DEFAULT_TOTAL_SUPPLY, TARGET_MARKET_CAP_IN_USD } from '../constants';
+import {
+  DEFAULT_CHAIN_ID,
+  DEFAULT_MAX_AIRDROP_RECIPIENTS,
+  DEFAULT_TOTAL_SUPPLY,
+  MAX_TOTAL_SUPPLY,
+  TARGET_MARKET_CAP_IN_USD,
+} from '../constants';
 import { makeMutable, runOnUI, SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import chroma from 'chroma-js';
@@ -135,14 +141,14 @@ interface TokenLauncherStore {
   }) => Promise<LaunchTokenResponse | undefined>;
 }
 
-// TODO: for testing. Remove before final merge
-// const testTokenInfo = {
-//   imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
-//   imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
-//   name: 'Test Token',
-//   symbol: 'TEST',
-//   description: 'This is a test token',
-// };
+// For testing. Makes it easier to test the token creation flow without having to enter all the info.
+const testTokenInfo = {
+  imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+  imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+  name: 'Test Token',
+  symbol: 'TEST',
+  description: 'This is a test token',
+};
 
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
   imageUri: '',
@@ -150,6 +156,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   name: '',
   symbol: '',
   description: '',
+  // ...testTokenInfo,
   airdropRecipients: [],
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
@@ -254,7 +261,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   },
   tokenomics: () => {
     const { chainNativeAssetUsdPrice, validAirdropRecipients, totalSupply, extraBuyAmount } = get();
-    if (!chainNativeAssetUsdPrice) return;
+    if (!chainNativeAssetUsdPrice || totalSupply > MAX_TOTAL_SUPPLY) return;
 
     return calculateTokenomics({
       targetMarketCapUsd: TARGET_MARKET_CAP_IN_USD,
@@ -494,6 +501,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       if (error instanceof TokenLauncherSDKError) {
         metadata = { ...metadata, ...error.context };
       }
+      Alert.alert('Error launching token', error.message);
       logger.error(new RainbowError('[TokenLauncher]: Error launching token'), metadata);
     }
   },
