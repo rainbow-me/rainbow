@@ -5,11 +5,13 @@ import { useAccountSettings } from '@/hooks';
 import { getProvider } from '@/handlers/web3';
 import { haptics } from '@/utils';
 import { queryClient } from '@/react-query';
-import { ADDYS_BASE_URL, addysHttp, claimablesQueryKey } from '@/resources/addys/claimables/query';
+import { getAddysHttpClient } from '@/resources/addys/client';
+import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
 import { ClaimStatus } from '../../shared/types';
 import { analyticsV2 } from '@/analytics';
+import { ADDYS_BASE_URL } from 'react-native-dotenv';
 
 enum ErrorMessages {
   CLAIM_API_CALL_FAILED = 'Failed to execute sponsored claim api call',
@@ -65,7 +67,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
 
       if (claimable.action.method === 'GET') {
         try {
-          response = await addysHttp.get(path);
+          response = await getAddysHttpClient().get(path);
         } catch (e) {
           haptics.notificationError();
           setClaimStatus('recoverableError');
@@ -87,7 +89,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         }
       } else {
         try {
-          response = await addysHttp.post(path);
+          response = await getAddysHttpClient().post(path);
         } catch (e) {
           haptics.notificationError();
           setClaimStatus('recoverableError');

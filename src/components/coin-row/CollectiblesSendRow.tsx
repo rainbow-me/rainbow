@@ -1,5 +1,5 @@
 import React, { Fragment, useMemo } from 'react';
-import { PressableProps, TouchableWithoutFeedback } from 'react-native';
+import { PressableProps, TouchableWithoutFeedback, StyleSheet } from 'react-native';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { deviceUtils, getUniqueTokenType, magicMemo } from '../../utils';
@@ -33,6 +33,7 @@ const BottomRow = ({ selected, subtitle }: { selected: boolean; subtitle: string
       letterSpacing="roundedMedium"
       size="smedium"
       weight={selected ? 'bold' : 'regular'}
+      style={sx.bottomRow}
     >
       {subtitle}
     </TruncatedText>
@@ -136,6 +137,12 @@ const CollectiblesSendRow = React.memo(
   },
   (props, nextProps) => buildAssetUniqueIdentifier(props.item) !== buildAssetUniqueIdentifier(nextProps.item)
 );
+
+const sx = StyleSheet.create({
+  bottomRow: {
+    marginTop: ios ? 0 : -6,
+  },
+});
 
 CollectiblesSendRow.displayName = 'CollectiblesSendRow';
 // @ts-expect-error

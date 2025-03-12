@@ -3,30 +3,23 @@ import { useQuery } from '@tanstack/react-query';
 import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 
 import { NativeCurrencyKey } from '@/entities';
-import { rainbowFetch } from '@/rainbow-fetch';
-import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { AddysPositionsResponse, PositionsArgs } from './types';
 import { parsePositions } from './utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { DEFI_POSITIONS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
-
-export const buildPositionsUrl = (address: string) => {
-  const networkString = useBackendNetworksStore.getState().getSupportedChainIds().join(',');
-  return `https://addys.p.rainbow.me/v3/${networkString}/${address}/positions`;
-};
+import { getAddysHttpClient } from '@/resources/addys/client';
 
 const getPositions = async (address: string, currency: NativeCurrencyKey): Promise<AddysPositionsResponse> => {
-  const response = await rainbowFetch(buildPositionsUrl(address), {
-    method: 'get',
+  const networkString = useBackendNetworksStore.getState().getSupportedChainIds().join(',');
+  const url = `/${networkString}/${address}/positions`;
+  const response = await getAddysHttpClient().get<AddysPositionsResponse>(url, {
     params: {
       currency,
       enableThirdParty: 'true',
     },
-    headers: {
-      Authorization: `Bearer ${ADDYS_API_KEY}`,
-    },
   });
+
   if (response.data) {
     return response.data;
   }

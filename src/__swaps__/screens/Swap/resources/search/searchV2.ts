@@ -1,19 +1,19 @@
 import qs from 'qs';
-import { getProvider } from '@/handlers/web3';
+import { getAddress, isAddress } from '@ethersproject/address';
 import { groupBy } from 'lodash';
+import { getProvider } from '@/handlers/web3';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { getAddress, isAddress } from '@ethersproject/address';
-import { getUniqueId } from '@/utils/ethereumUtils';
 import { Contract } from '@ethersproject/contracts';
 import { erc20ABI } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { SearchAsset, TokenSearchAssetKey } from '@/__swaps__/types/search';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { parseTokenSearchResults, parseTokenSearchAcrossNetworks } from './utils';
+import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search'; // TODO JIN: token search threshold
 import { time } from '@/utils';
+import { parseTokenSearchResults, parseTokenSearchAcrossNetworks } from './utils';
 
 type SearchItemWithRelevance = SearchAsset & {
   relevance: number;
@@ -24,9 +24,14 @@ type SearchItemWithRelevance = SearchAsset & {
 const MAX_VERIFIED_RESULTS = 24;
 const MAX_UNVERIFIED_RESULTS = 6;
 
-const NO_RESULTS: SearchAsset[] = [];
-const NO_VERIFIED_RESULTS: VerifiedResults = { bridgeAsset: null, crosschainResults: [], results: [] };
+const NO_RESULTS: SearchAsset[] = []; // TODO JIN - still needed?
+const NO_VERIFIED_RESULTS: VerifiedResults = { crosschainResults: [], results: [] };
 const NO_DISCOVER_RESULTS: DiscoverSearchResults = { verifiedAssets: [], highLiquidityAssets: [], lowLiquidityAssets: [] };
+
+enum SearchMode {
+  CurrentNetwork = 'currentNetwork',
+  Crosschain = 'crosschain',
+}
 
 export enum TokenLists {
   HighLiquidity = 'highLiquidityAssets',
@@ -54,8 +59,7 @@ type DiscoverSearchQueryState = {
   searchQuery: string;
 };
 
-type VerifiedResults = {
-  bridgeAsset: SearchAsset | null;
+export type VerifiedResults = {
   crosschainResults: SearchAsset[];
   results: SearchAsset[];
 };
@@ -72,6 +76,7 @@ export const useSwapsSearchStore = createRainbowStore<{ searchQuery: string }>((
 
 export const useDiscoverSearchQueryStore = createRainbowStore<DiscoverSearchQueryState>(() => ({ isSearching: false, searchQuery: '' }));
 
+// TODO JIN - is the TokenSearchState required? is the () => bridgeAsset required?
 export const useTokenSearchStore = createQueryStore<VerifiedResults, TokenSearchParams<TokenLists.Verified>, TokenSearchState>(
   {
     cacheTime: params => (params.query?.length ? time.seconds(15) : time.hours(1)),
@@ -94,8 +99,7 @@ export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], Tok
     cacheTime: params => ((params.query?.length ?? 0) > 2 ? time.seconds(15) : time.minutes(2)),
     fetcher: (params, abortController) => ((params.query?.length ?? 0) > 2 ? searchUnverifiedTokens(params, abortController) : NO_RESULTS),
     transform: (data, { query }) =>
-      query && isAddress(query) ? getExactMatches(data, query, MAX_UNVERIFIED_RESULTS) : data.slice(0, MAX_UNVERIFIED_RESULTS),
-
+      query && isAddress(query) ? getExactMatches(data, query, true, MAX_UNVERIFIED_RESULTS) : data.slice(0, MAX_UNVERIFIED_RESULTS),
     disableAutoRefetching: true,
     keepPreviousData: true,
     params: {
@@ -182,11 +186,13 @@ const getTokenRelevance = ({
 
 const selectTopDiscoverSearchResults = ({
   abortController,
+  isAddressSearch,
   searchQuery,
   data,
 }: {
   abortController: AbortController | null;
   searchQuery: string;
+  isAddressSearch: boolean;
   data: SearchAsset[];
 }): DiscoverSearchResults => {
   if (abortController?.signal.aborted) return NO_DISCOVER_RESULTS;
@@ -195,7 +201,7 @@ const selectTopDiscoverSearchResults = ({
     const isMatch = hasIcon || searchQuery.length > 2;
 
     if (!isMatch) {
-      const crosschainMatch = getExactMatches([asset], searchQuery);
+      const crosschainMatch = getExactMatches([asset], searchQuery, isAddressSearch);
       return crosschainMatch.length > 0;
     }
 
@@ -264,9 +270,7 @@ function buildTokenSearchUrlParams<T extends TokenLists>({
     list,
     query,
   };
-
   const isAddressSearch = !!query && isAddress(query);
-
   const url = `${chainId ? `/${chainId}` : ''}/?${qs.stringify(queryParams)}`;
   return { isAddressSearch, queryParams, url };
 }
@@ -274,104 +278,97 @@ function buildTokenSearchUrlParams<T extends TokenLists>({
 // ============ Search Result Utils ============================================ //
 
 /**
+ * Sorts an array of SearchAsset based on mode and, if provided, normalizedQuery.
+ */
+// TODO JIN - do I still need this?
+function sortSearchResults(assets: SearchAsset[], mode: SearchMode, normalizedQuery?: string): void {
+  assets.sort((a, b) => {
+    if (a.isNativeAsset !== b.isNativeAsset) return a.isNativeAsset ? -1 : 1;
+    if (a.highLiquidity !== b.highLiquidity) return a.highLiquidity ? -1 : 1;
+
+    if (mode === 'currentNetwork' && normalizedQuery) {
+      const aNameMatch =
+        !!normalizedQuery &&
+        ((a.name && a.name.toLowerCase().includes(normalizedQuery)) || (a.symbol && a.symbol.toLowerCase().includes(normalizedQuery)));
+      const bNameMatch =
+        !!normalizedQuery &&
+        ((b.name && b.name.toLowerCase().includes(normalizedQuery)) || (b.symbol && b.symbol.toLowerCase().includes(normalizedQuery)));
+      if (aNameMatch !== bNameMatch) return aNameMatch ? -1 : 1;
+    }
+
+    return Object.keys(b.networks).length - Object.keys(a.networks).length;
+  });
+}
+
+/**
  * Selects top search results based on the provided parameters.
  */
 function selectTopSearchResults({
   abortController,
   data,
-  isCrosschainSearch: isCrosschainSearchParam,
+  isAddressSearch,
+  mode,
   query,
   toChainId,
 }: {
   abortController: AbortController | null;
   data: SearchAsset[];
-  isCrosschainSearch?: boolean;
+  isAddressSearch: boolean;
+  mode: SearchMode;
   query: string | undefined;
   toChainId: ChainId;
 }): VerifiedResults {
   const normalizedQuery = query?.trim().toLowerCase();
   const queryHasMultipleChars = !!(normalizedQuery && normalizedQuery.length > 1);
-  const currentChainResults: SearchAsset[] = [];
-  const crosschainResults: SearchAsset[] = [];
-  let bridgeAsset: SearchAsset | null = null;
+  const matches: SearchAsset[] = [];
+  let results: VerifiedResults;
 
-  const inputAsset = useSwapsStore.getState().inputAsset;
-  const suggestedBridgeAssetAddress = inputAsset?.networks?.[toChainId]?.address ?? null;
-  const isCrosschainSearch = isCrosschainSearchParam ?? (suggestedBridgeAssetAddress && inputAsset && inputAsset.chainId !== toChainId);
-
-  for (const asset of data) {
-    if (abortController?.signal.aborted) break;
-    const isCurrentNetwork = asset.chainId === toChainId;
-
-    if (
-      !isCrosschainSearchParam &&
-      suggestedBridgeAssetAddress &&
-      (isCrosschainSearch ? asset.address === suggestedBridgeAssetAddress : asset.mainnetAddress === inputAsset?.mainnetAddress)
-    ) {
-      bridgeAsset = asset;
-      if (isCrosschainSearch) continue;
+  switch (mode) {
+    case SearchMode.CurrentNetwork: {
+      for (const asset of data) {
+        if (abortController?.signal.aborted) break;
+        if (asset.chainId === toChainId && (!!asset.icon_url || queryHasMultipleChars)) {
+          matches.push(asset);
+        }
+      }
+      sortSearchResults(matches, mode, normalizedQuery);
+      results = { crosschainResults: [], results: matches.slice(0, MAX_VERIFIED_RESULTS) };
+      break;
     }
-
-    const isMatch = !isCrosschainSearchParam && isCurrentNetwork && (!!asset.icon_url || queryHasMultipleChars);
-
-    if (isMatch) {
-      currentChainResults.push(asset);
-    } else {
-      const isCrosschainMatch =
-        (!isCurrentNetwork && queryHasMultipleChars && isExactMatch(asset, normalizedQuery)) ||
-        (!isCrosschainSearchParam && asset.isNativeAsset);
-      if (isCrosschainMatch) crosschainResults.push(asset);
+    case SearchMode.Crosschain: {
+      for (const asset of data) {
+        if (abortController?.signal.aborted) break;
+        if (asset.chainId !== toChainId && queryHasMultipleChars && isExactMatch(asset, normalizedQuery, isAddressSearch)) {
+          matches.push(asset);
+        }
+      }
+      sortSearchResults(matches, mode, normalizedQuery);
+      results = { crosschainResults: matches.slice(0, MAX_VERIFIED_RESULTS), results: [] };
+      break;
     }
   }
 
   if (abortController?.signal.aborted) return NO_VERIFIED_RESULTS;
-
-  currentChainResults.sort((a, b) => {
-    if (a.isNativeAsset !== b.isNativeAsset) return a.isNativeAsset ? -1 : 1;
-    if (a.highLiquidity !== b.highLiquidity) return a.highLiquidity ? -1 : 1;
-
-    const aNameMatch =
-      !!normalizedQuery && (a.name?.toLowerCase().includes(normalizedQuery) || a.symbol?.toLowerCase().includes(normalizedQuery));
-    const bNameMatch =
-      !!normalizedQuery && (b.name?.toLowerCase().includes(normalizedQuery) || b.symbol?.toLowerCase().includes(normalizedQuery));
-    if (aNameMatch !== bNameMatch) return aNameMatch ? -1 : 1;
-
-    return Object.keys(b.networks).length - Object.keys(a.networks).length;
-  });
-
-  if (isCrosschainSearchParam) {
-    crosschainResults.sort((a, b) => {
-      if (a.isNativeAsset !== b.isNativeAsset) return a.isNativeAsset ? -1 : 1;
-      if (a.highLiquidity !== b.highLiquidity) return a.highLiquidity ? -1 : 1;
-      return Object.keys(b.networks).length - Object.keys(a.networks).length;
-    });
-  }
-
-  return {
-    bridgeAsset,
-    crosschainResults,
-    results: currentChainResults.slice(0, MAX_VERIFIED_RESULTS),
-  };
+  return results;
 }
 
 /**
  * Determines if an asset is an exact match for the query.
  */
-function isExactMatch(asset: SearchAsset, query: string): boolean {
-  return query === asset.address?.toLowerCase() || asset.symbol?.toLowerCase() === query || asset.name?.toLowerCase() === query;
+function isExactMatch(asset: SearchAsset, query: string, isAddress: boolean): boolean {
+  const normalizedQuery = query.trim().toLowerCase();
+  return (
+    asset.symbol?.toLowerCase() === normalizedQuery ||
+    asset.name?.toLowerCase() === normalizedQuery ||
+    (isAddress && asset.address?.toLowerCase() === normalizedQuery)
+  );
 }
 
 /**
  * Retrieves exact matches from asset data.
  */
-function getExactMatches(data: SearchAsset[], query: string, slice?: number): SearchAsset[] {
-  const normalizedQuery = query.trim().toLowerCase();
-  const results = data.filter(
-    asset =>
-      normalizedQuery === asset.address?.toLowerCase() ||
-      asset.symbol?.toLowerCase() === normalizedQuery ||
-      asset.name?.toLowerCase() === normalizedQuery
-  );
+function getExactMatches(data: SearchAsset[], query: string, isAddress: boolean, slice?: number): SearchAsset[] {
+  const results = data.filter(asset => isExactMatch(asset, query, isAddress));
   return slice !== undefined ? results.slice(0, slice) : results;
 }
 
@@ -429,7 +426,7 @@ export async function discoverSearchQueryFunction(
     query,
   };
 
-  const isAddressSearch = query && isAddress(query);
+  const isAddressSearch = !!query && isAddress(query);
 
   const searchDefaultVerifiedList = query === '';
   if (searchDefaultVerifiedList) {
@@ -452,6 +449,7 @@ export async function discoverSearchQueryFunction(
     return selectTopDiscoverSearchResults({
       abortController,
       data: parseTokenSearchAcrossNetworks(tokenSearch.data.data),
+      isAddressSearch,
       searchQuery: query,
     });
   } catch (e) {
@@ -488,14 +486,12 @@ export async function searchVerifiedTokens(
       );
 
       return {
-        bridgeAsset: null,
         crosschainResults: parseTokenSearchResults(addressMatchesOnOtherChains),
         results: [],
       };
     }
 
     return {
-      bridgeAsset: null,
       crosschainResults: [],
       results: parseTokenSearchResults(results, chainId),
     };
@@ -508,7 +504,8 @@ export async function searchVerifiedTokens(
     return selectTopSearchResults({
       abortController,
       data: parseTokenSearchResults(crosschainData),
-      isCrosschainSearch: true,
+      isAddressSearch,
+      mode: SearchMode.Crosschain,
       query,
       toChainId: chainId,
     });
@@ -517,6 +514,8 @@ export async function searchVerifiedTokens(
   return selectTopSearchResults({
     abortController,
     data: parseTokenSearchResults(results, chainId),
+    isAddressSearch,
+    mode: SearchMode.CurrentNetwork,
     query,
     toChainId: chainId,
   });

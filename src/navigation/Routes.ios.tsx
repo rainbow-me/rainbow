@@ -34,6 +34,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
+  airdropsSheetConfig,
   backupSheetConfig,
   basicSheetConfig,
   hardwareWalletTxNavigatorConfig,
@@ -87,6 +88,8 @@ import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
+import { AirdropsSheet } from '@/screens/Airdrops/AirdropsSheet';
+import { ClaimAirdropSheet } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { Portal } from '@/screens/Portal';
 import PoapSheet from '@/screens/mints/PoapSheet';
@@ -108,7 +111,7 @@ import { RootStackParamList } from './types';
 import WalletLoadingListener from '@/components/WalletLoadingListener';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
 import { LogSheet } from '@/components/debugging/LogSheet';
-import { NetworkSelector } from '@/components/NetworkSwitcher';
+import { NetworkSelector } from '@/screens/NetworkSelector';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -276,6 +279,8 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
       <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
       <NativeStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} {...expandedAssetSheetV2Config} />
+      <NativeStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} {...airdropsSheetConfig} />
+      <NativeStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} {...airdropsSheetConfig} />
       <NativeStack.Screen component={LogSheet} name={Routes.LOG_SHEET} {...panelConfig} />
     </NativeStack.Navigator>
   );

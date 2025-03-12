@@ -87,7 +87,10 @@ final class TokenProvider {
   }
   
   private func getRainbowTokenList() -> RainbowTokenList? {
-    let url = URL(string: "https://metadata.p.rainbow.me/token-list/rainbow-token-list.json")!
+    guard let infoDictionary: [String: Any] = Bundle.main.infoDictionary else { return nil }
+    guard let metadataBaseUrl: String = infoDictionary["NATIVE_METADATA_BASE_URL"] as? String else { return nil }
+
+    let url = URL(string: "\(metadataBaseUrl)/token-list/rainbow-token-list.json")!
     
     let semaphore = DispatchSemaphore(value: 0)
     

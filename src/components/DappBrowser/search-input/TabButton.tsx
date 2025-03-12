@@ -1,7 +1,7 @@
-import { BlurView } from '@react-native-community/blur';
 import ConditionalWrap from 'conditional-wrap';
 import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, TextInput } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
 import { AnimatedRef, runOnJS, runOnUI, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { AnimatedText, Bleed, Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
@@ -219,7 +219,7 @@ const BlurLayer = memo(function BlurLayer({ buttonColor }: { buttonColor: string
 
   return (
     <>
-      {IS_IOS && <Box as={BlurView} blurAmount={20} blurType={isDarkMode ? 'dark' : 'light'} style={styles.blurLayer} />}
+      {IS_IOS && <BlurView blurIntensity={20} blurStyle={isDarkMode ? 'dark' : 'light'} style={styles.blurLayer} />}
       <Box
         style={[
           styles.blurTint,

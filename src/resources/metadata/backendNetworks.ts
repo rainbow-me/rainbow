@@ -1,5 +1,6 @@
 import { BackendNetwork } from '@/state/backendNetworks/types';
 import { BACKEND_NETWORKS_QUERY } from './sharedQueries';
+import { METADATA_BASE_URL } from 'react-native-dotenv';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -12,7 +13,8 @@ export interface BackendNetworksResponse {
 // Query Function
 
 export async function fetchBackendNetworks(): Promise<BackendNetworksResponse> {
-  const response = await fetch('https://metadata.p.rainbow.me/v1/graph', {
+  const BASE_URL = METADATA_BASE_URL;
+  const response = await fetch(`${BASE_URL}/v1/graph`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

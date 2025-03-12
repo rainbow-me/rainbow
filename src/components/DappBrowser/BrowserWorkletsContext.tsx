@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext } from 'react';
 import { runOnJS, useAnimatedReaction, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { deepEqualWorklet } from '@/worklets/comparisons';
+import { deepEqual } from '@/worklets/comparisons';
 import { useBrowserContext, useBrowserTabBarContext } from './BrowserContext';
 import { RAINBOW_HOME } from './constants';
 import { BrowserWorkletsContextType, ScreenshotType, TabOperation, TabViewGestureStates } from './types';
@@ -269,7 +269,7 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
   useAnimatedReaction(
     () => animatedTabUrls.value,
     (current, previous) => {
-      if (previous && !deepEqualWorklet(current, previous)) {
+      if (previous && !deepEqual(current, previous)) {
         // Prune any URLs belonging to tabs that have been closed
         animatedTabUrls.modify(urls => {
           Object.keys(urls).forEach(tabId => {

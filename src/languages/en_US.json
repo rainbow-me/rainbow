@@ -483,7 +483,8 @@
         "a_network": "a network",
         "swap_failed": "Swap Failed",
         "receive": "Receive",
-        "on": "on"
+        "on": "on",
+        "reset": "Reset"
       }
     },
     "cloud": {
@@ -515,6 +516,7 @@
     },
     "developer_settings": {
       "alert": "Alert",
+      "analyze_env_variables": "Analyze ENV Variables",
       "analyze_react_query": "Analyze React Query",
       "applied": "APPLIED",
       "backups_deleted_successfully": "Backups Deleted Successfully",
@@ -3140,7 +3142,7 @@
         }
       }
     },
-    "network_switcher": {
+    "network_selector": {
       "customize_networks_banner": {
         "title": "Customize Networks",
         "tap_the": "Tap the",
@@ -3155,6 +3157,25 @@
       "more": "More",
       "show_more": "More Networks",
       "all_networks": "All Networks"
+    },
+    "token_launcher": {
+      "airdrops_sheet": {
+        "claim_button_text": "Claim",
+        "empty_state_title": "No Airdrops Yet",
+        "title": "Claim Rainbow Coins"
+      },
+      "cards": {
+        "airdrops": {
+          "subtitle_loading": "LOADING",
+          "subtitle_has_airdrops": "AVAILABLE TO CLAIM",
+          "subtitle_no_airdrops": "NO AIRDROPS YET",
+          "title": "Airdrops"
+        },
+        "launch": {
+          "line_one": "Launch\n",
+          "line_two": "your Coin"
+        }
+      }
     },
     "done": "Done",
     "copy": "Copy",

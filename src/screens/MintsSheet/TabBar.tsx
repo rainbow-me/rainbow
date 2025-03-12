@@ -1,12 +1,12 @@
+import React from 'react';
+import { View } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
+import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AccentColorProvider, Box, Cover, Inline, globalColors, Text } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { MintsFilter, getMintsFilterLabel, useMintsFilter } from '@/resources/mints';
 import { useTheme } from '@/theme';
-import { BlurView } from '@react-native-community/blur';
-import React from 'react';
-import { View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 
 function FilterButton({ filter }: { filter: MintsFilter }) {
   const { filter: currentFilter, setFilter } = useMintsFilter();
@@ -91,11 +91,7 @@ export function TabBar() {
             overflow: 'hidden',
           }}
         >
-          <BlurView
-            blurAmount={15}
-            blurType={isDarkMode ? 'chromeMaterialDark' : 'light'}
-            style={{ height: '100%', width: '100%', borderRadius: 23 }}
-          />
+          <BlurView blurStyle={isDarkMode ? 'chromeMaterialDark' : 'light'} style={{ height: '100%', width: '100%', borderRadius: 23 }} />
         </Box>
       </Cover>
       {/* @ts-ignore */}
