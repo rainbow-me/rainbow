@@ -24,7 +24,7 @@ const Handle = styled(View)({
   zIndex: 9,
 });
 
-export default function SheetHandle({ color, showBlur = false, ...props }: { color?: string; showBlur?: boolean; props?: ViewProps }) {
+export default function SheetHandle({ color, showBlur = false, ...props }: { color?: string; showBlur?: boolean } & ViewProps) {
   const { isDarkMode } = useTheme();
   // eslint-disable-next-line react/jsx-props-no-spreading
   return <Handle {...props} color={color} isDarkMode={isDarkMode} showBlur={showBlur} />;
