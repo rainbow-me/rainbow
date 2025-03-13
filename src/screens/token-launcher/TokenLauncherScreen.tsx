@@ -6,12 +6,12 @@ import { InfoInputStep } from './components/InfoInputStep';
 import { ReviewStep } from './components/ReviewStep';
 import { KeyboardAvoidingView, KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { NavigationSteps, useTokenLauncherStore } from './state/tokenLauncherStore';
-import Animated, { Extrapolation, FadeIn, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { StepBlurredImageBackground } from './components/StepBlurredImageBackground';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { TokenLauncherContextProvider, useTokenLauncherContext } from './context/TokenLauncherContext';
+import { TokenLauncherContextProvider } from './context/TokenLauncherContext';
 import { CreatingStep } from './components/CreatingStep';
-import { StyleSheet, useWindowDimensions } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { SuccessStep } from './components/SuccessStep';
 import { ScreenBlurredImageBackground } from './components/ScreenBlurredImageBackground';
 import { IS_ANDROID } from '@/env';
@@ -36,8 +36,11 @@ function reviewStepExitingAnimation() {
   };
 }
 
+const fadeInAnimation = FadeIn.duration(250);
+const fadeOutAnimation = FadeOut.duration(250);
+
 function TokenLauncherScreenContent() {
-  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('screen');
   const safeAreaInsets = useSafeAreaInsets();
   const safeAreaBottom = safeAreaInsets.bottom;
   const safeAreaTop = safeAreaInsets.top;
@@ -54,6 +57,8 @@ function TokenLauncherScreenContent() {
       resetStore();
     };
   }, [resetStore]);
+
+  const isReviewStepVisible = useMemo(() => step === NavigationSteps.REVIEW || step === NavigationSteps.INFO, [step]);
 
   const stickyFooterKeyboardOffset = useMemo(() => ({ closed: 0, opened: IS_ANDROID ? 0 : safeAreaBottom }), [safeAreaBottom]);
 
@@ -112,7 +117,7 @@ function TokenLauncherScreenContent() {
           <Animated.View style={[infoStepAnimatedStyle, { width: screenWidth }]}>
             <InfoInputStep />
           </Animated.View>
-          {(step === NavigationSteps.REVIEW || step === NavigationSteps.INFO) && (
+          {isReviewStepVisible && (
             <Animated.View
               exiting={reviewStepExitingAnimation}
               style={[
@@ -131,12 +136,20 @@ function TokenLauncherScreenContent() {
             </Animated.View>
           )}
           {step === NavigationSteps.CREATING && (
-            <Animated.View entering={FadeIn.duration(250)} style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}>
+            <Animated.View
+              entering={fadeInAnimation}
+              exiting={fadeOutAnimation}
+              style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}
+            >
               <CreatingStep />
             </Animated.View>
           )}
           {step === NavigationSteps.SUCCESS && (
-            <Animated.View entering={FadeIn.duration(250)} style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}>
+            <Animated.View
+              entering={fadeInAnimation}
+              exiting={fadeOutAnimation}
+              style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}
+            >
               <SuccessStep />
             </Animated.View>
           )}

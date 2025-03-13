@@ -50,18 +50,16 @@ export function TokenImageBadge({
     <Group>
       {/* Token image background */}
       <Group>
-        {/* Main background fill */}
-        <Path path={outterPath} color="white">
-          <Shadow dx={0} dy={80} blur={40} color="rgba(232, 177, 112, 1)" />
-        </Path>
-
-        {/* Glow effect */}
-        <Path path={outterPath}>
-          <Shadow dx={0} dy={0} blur={22} color="rgba(245, 248, 255, 0.2)" />
-        </Path>
+        {/* Left out for now as design did not consider image variants where center of the image is not the same color as accent color */}
+        {/* <Shadow dx={0} dy={80} blur={40} color={accentColor} /> */}
 
         {/* Base white fill */}
         <Path path={outterPath} color="white" />
+
+        {/* Glow effect */}
+        <Path path={outterPath} blendMode="plus">
+          <Shadow dx={0} dy={0} blur={22} color="rgba(245, 248, 255, 0.2)" />
+        </Path>
 
         {/* Blue linear gradient overlay with opacity */}
         <Path path={outterPath} opacity={0.7}>

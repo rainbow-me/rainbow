@@ -71,8 +71,8 @@ function HoldToCreateButton() {
         address: accountAddress,
         provider,
       });
-      setStep(NavigationSteps.CREATING);
       if (wallet) {
+        setStep(NavigationSteps.CREATING);
         const createTokenResponse = await createToken({ wallet: wallet as Wallet, transactionOptions });
         if (createTokenResponse) {
           addStaleBalance({
@@ -87,6 +87,8 @@ function HoldToCreateButton() {
         } else {
           setStep(NavigationSteps.REVIEW);
         }
+      } else {
+        // Did not get biometry to load wallet
       }
 
       // TODO: implement later

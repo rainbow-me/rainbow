@@ -373,7 +373,14 @@ function AirdropGroupField({ recipient }: { recipient: AirdropRecipient }) {
 function SuggestedUserField({ recipient }: { recipient: AirdropRecipient }) {
   return (
     <FieldContainer
-      style={{ backgroundColor: INNER_FIELD_BACKGROUND_COLOR, paddingHorizontal: 16, borderRadius: FIELD_INNER_BORDER_RADIUS, flex: 1 }}
+      style={{
+        height: SMALL_INPUT_HEIGHT,
+        justifyContent: 'center',
+        backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
+        paddingHorizontal: 16,
+        borderRadius: FIELD_INNER_BORDER_RADIUS,
+        flex: 1,
+      }}
     >
       <Box flexDirection="row" alignItems="center" gap={8}>
         <ImgixImage source={{ uri: recipient.imageUrl ?? '' }} style={{ width: 20, height: 20, borderRadius: 10 }} />

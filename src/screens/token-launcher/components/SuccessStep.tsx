@@ -5,7 +5,7 @@ import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { Canvas, LinearGradient, Path, vec, Skia, Group, BlurMask } from '@shopify/react-native-skia';
 import { TokenImageBadge } from './TokenImageBadge';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
-import { Easing, useDerivedValue, withRepeat, withTiming, useSharedValue } from 'react-native-reanimated';
+import { Easing, useDerivedValue, withRepeat, withTiming, useSharedValue, runOnUI } from 'react-native-reanimated';
 import FastImage from 'react-native-fast-image';
 import { useDimensions } from '@/hooks';
 import { TextSize } from '@/design-system/components/Text/Text';
@@ -40,6 +40,7 @@ function RotatingSunrays({ width, height, focalRadius }: { width: number; height
   const backgroundRotation = useSharedValue(0);
 
   const startRotationAnimation = useCallback(() => {
+    'worklet';
     backgroundRotation.value = withRepeat(
       withTiming(360, {
         duration: 15000,
@@ -50,7 +51,9 @@ function RotatingSunrays({ width, height, focalRadius }: { width: number; height
   }, [backgroundRotation]);
 
   useEffect(() => {
-    startRotationAnimation();
+    runOnUI(() => {
+      startRotationAnimation();
+    })();
   }, [startRotationAnimation]);
 
   const backgroundTransform = useDerivedValue(() => {
@@ -102,18 +105,26 @@ function SuccessHero({ width, height }: { width: number; height: number }) {
   const centerY = height / 2;
   const sunraysSize = 445;
   const radius = tokenImageBadgeSize / 16 - 10;
+  const rainbowImageDimensions = { width: 234, height: 350 };
 
   return (
-    <Box height={height} width={width}>
+    <Box height={'full'} width={'full'}>
       <FastImage
         source={require('@/assets/blurredHalfRainbow.png')}
-        style={{ right: 0, top: height / 3, position: 'absolute', height: 350, width: 234 }}
+        style={{ right: 0, top: '25%', position: 'absolute', height: rainbowImageDimensions.height, width: rainbowImageDimensions.width }}
       />
       <FastImage
         source={require('@/assets/blurredHalfRainbow.png')}
-        style={{ left: 0, top: height / 3, position: 'absolute', height: 350, width: 234, transform: [{ scaleX: -1 }] }}
+        style={{
+          left: 0,
+          top: '25%',
+          position: 'absolute',
+          height: rainbowImageDimensions.height,
+          width: rainbowImageDimensions.width,
+          transform: [{ scaleX: -1 }],
+        }}
       />
-      <Canvas style={{ height, width }}>
+      <Canvas style={{ height: '100%', width: '100%' }}>
         <Group opacity={0.3} transform={[{ translateX: centerX - sunraysSize / 2 }, { translateY: centerY - sunraysSize / 2 }]}>
           <RotatingSunrays width={sunraysSize} height={sunraysSize} focalRadius={radius} />
         </Group>
@@ -148,7 +159,7 @@ export function SuccessStep() {
 
   return (
     <Box style={{ flex: 1, alignItems: 'center' }}>
-      <Box style={{ position: 'absolute', top: 0 }}>
+      <Box height={'full'} width={'full'} position={'absolute'} top={'0px'}>
         <SuccessHero width={heroWidth} height={heroHeight} />
       </Box>
       <Box style={{ position: 'absolute', bottom: 40 }} paddingHorizontal={'44px'} gap={20} alignItems="center">

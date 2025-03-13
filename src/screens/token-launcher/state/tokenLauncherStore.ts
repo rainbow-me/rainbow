@@ -179,13 +179,20 @@ interface TokenLauncherStore {
 }
 
 // For testing. Makes it easier to test the token creation flow without having to enter all the info.
-const testTokenInfo = {
-  imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
-  imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
-  name: 'Test Token',
-  symbol: 'TEST',
-  description: 'This is a test token',
-};
+// const testTokenInfo = {
+//   // Gray image
+//   // imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1741722824/token-launcher/tokens/fjcou8ceqmxbg9ncoduy.jpg',
+//   // imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1741722824/token-launcher/tokens/fjcou8ceqmxbg9ncoduy.jpg',
+//   // bright image
+//   imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+//   imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+//   name: 'Test Token',
+//   symbol: 'TEST',
+//   description: 'This is a test token',
+// };
+
+// Should always be INFO, but can be changed to any step to test the flow easier
+const INITIAL_STEP = NavigationSteps.INFO;
 
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
   imageUri: '',
@@ -193,17 +200,16 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   name: '',
   symbol: '',
   description: '',
-  // ...testTokenInfo,
+  links: [{ input: '', type: 'website' as LinkType, url: '' }],
   airdropRecipients: [],
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
-  links: [{ input: '', type: 'website', url: '' }],
   extraBuyAmount: 0,
   chainNativeAssetUsdPrice: 0,
   chainNativeAssetNativePrice: 0,
-  step: NavigationSteps.INFO,
-  stepSharedValue: makeMutable(NavigationSteps.INFO as NavigationSteps),
-  stepAnimatedSharedValue: makeMutable(NavigationSteps.INFO as NavigationSteps),
+  step: INITIAL_STEP,
+  stepSharedValue: makeMutable(INITIAL_STEP as NavigationSteps),
+  stepAnimatedSharedValue: makeMutable(INITIAL_STEP as NavigationSteps),
   gasSpeed: GasSpeed.FAST,
   chainNativeAssetRequiredForTransactionGas: '0',
   hasSufficientChainNativeAssetForTransactionGas: true,
