@@ -3193,7 +3193,6 @@
             "description": "Supports Rainbow's platform"
           }
         }
-
       },
       "network_field": {
         "balance": "Balance: %{balance}",
