@@ -7,7 +7,7 @@ import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { generateRainbowGradient } from '@/worklets/gradients';
 import { getCirclePath } from '@/worklets/skia';
-import { ANIMATION_CONFIGS, BORDER_THICKNESS, CANVAS_VIEW_BUFFER_FACTOR, INTERNAL_SPRING_CONFIGS } from './constants';
+import { ANIMATION_CONFIGS, CANVAS_VIEW_BUFFER_FACTOR, INTERNAL_SPRING_CONFIGS } from './constants';
 
 interface RainbowCoinEffectConfig {
   canvasCenter: number;
@@ -31,14 +31,16 @@ export function getRainbowCoinEffectConfig({
   color: providedColor,
   isDarkMode,
   size,
+  strokeWidth,
 }: {
   color: string;
   isDarkMode: boolean;
   size: number;
+  strokeWidth: number;
 }): RainbowCoinEffectConfig {
   const color = getHighContrastColor(providedColor, isDarkMode);
   const innerRadius = size / 2;
-  const outerRadius = innerRadius + BORDER_THICKNESS;
+  const outerRadius = innerRadius + strokeWidth;
   const canvasSize = size * CANVAS_VIEW_BUFFER_FACTOR;
   const canvasCenter = canvasSize / 2;
   const circlePath = getCirclePath(point(canvasCenter, canvasCenter), innerRadius + 0.2);

@@ -17,7 +17,7 @@ export function Separator({ color, direction = 'horizontal', thickness = 2 }: Se
   const style = useMemo(
     () => ({
       backgroundColor: foregroundColor,
-      borderRadius: 1,
+      borderRadius: thickness / 2,
       ...(direction === 'horizontal'
         ? {
             height: thickness,

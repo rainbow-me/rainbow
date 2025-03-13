@@ -5,7 +5,7 @@ import { parseAsset } from '@/resources/assets/assets';
 import { Network } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
-export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCurrencyKey): Claimable[] => {
+export const parseClaimables = <T extends Claimable>(claimables: AddysClaimable[], currency: NativeCurrencyKey): T[] => {
   return claimables
     .map(claimable => {
       if (
@@ -53,5 +53,5 @@ export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCu
         };
       }
     })
-    .filter((c): c is Claimable => !!c);
+    .filter((c): c is T => !!c);
 };

@@ -1,9 +1,10 @@
 import { qs } from 'url-parse';
 import { Address } from 'viem';
 import { NativeCurrencyKey } from '@/entities';
+import { getSizedImageUrl } from '@/handlers/imgix';
 import { logger, RainbowError } from '@/logger';
 import Routes from '@/navigation/routesNames';
-import { AddysClaimable, Claimable as AirdropClaimable } from '@/resources/addys/claimables/types';
+import { AddysClaimable, TransactionClaimable } from '@/resources/addys/claimables/types';
 import { parseClaimables } from '@/resources/addys/claimables/utils';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { AddysConsolidatedError } from '@/resources/addys/types';
@@ -40,38 +41,39 @@ type AirdropsParams = {
 };
 
 type AirdropsQueryData = {
-  claimables: AirdropClaimable[];
+  claimables: TransactionClaimable[];
   pagination: PaginationInfo | null;
 };
 
 type AirdropsState = {
   airdrops: {
     address: Address | string;
-    claimables: AirdropClaimable[];
+    claimables: TransactionClaimable[];
     currency: NativeCurrencyKey;
     fetchedAt: { [pageNumber: number]: number };
     pagination: PaginationInfo | null;
   } | null;
   fetchNextPage: () => Promise<void>;
-  getAirdrops: () => AirdropClaimable[] | null;
+  getAirdrops: () => TransactionClaimable[] | null;
   getCurrentPage: () => number | null;
+  getFirstCoinIconUrl: (size?: number) => string | null;
   getNextPage: () => number | null;
   getNumberOfAirdrops: () => number | null;
   getPaginationInfo: () => PaginationInfo | null;
   hasNextPage: () => boolean;
 };
 
+export const INITIAL_PAGE_SIZE = 12;
+export const FULL_PAGE_SIZE = 100;
 const EMPTY_RETURN_DATA: AirdropsQueryData = { claimables: [], pagination: null };
-const INITIAL_PAGE_SIZE = 12;
-const FULL_PAGE_SIZE = 100;
-const STALE_TIME = time.minutes(4);
+const STALE_TIME = time.minutes(3);
 
 let paginationPromise: { address: Address | string; currency: NativeCurrencyKey; promise: Promise<void> } | null = null;
 
 export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsParams, AirdropsState>(
   {
     fetcher: fetchAirdrops,
-    onFetched: ({ params, set }) => prunePaginatedData(params, set),
+    onFetched: ({ data, params, set }) => prunePaginatedData(data, params, set),
     cacheTime: time.days(1),
     params: {
       address: $ => $(userAssetsStoreManager).address,
@@ -154,7 +156,7 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
     getAirdrops: () => {
       const { airdrops, getData } = get();
       const { address, currency } = userAssetsStoreManager.getState();
-      if (!address || !airdrops || address !== airdrops.address || currency !== airdrops.currency) {
+      if (!address || !airdrops || !airdrops.claimables.length || address !== airdrops.address || currency !== airdrops.currency) {
         return getData()?.claimables || null;
       }
       return airdrops.claimables;
@@ -162,16 +164,27 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
 
     getCurrentPage: () => get().getPaginationInfo()?.current_page ?? null,
 
+    getFirstCoinIconUrl: size => {
+      const airdrops = get().getAirdrops();
+      if (!airdrops?.length) return null;
+      for (const claimable of airdrops) {
+        if (claimable.asset.icon_url) {
+          return (size && getSizedImageUrl(claimable.asset.icon_url, size)) || claimable.asset.icon_url;
+        }
+      }
+      return null;
+    },
+
     getNextPage: () => get().getPaginationInfo()?.next ?? null,
 
-    getNumberOfAirdrops: () => get().getPaginationInfo()?.total_elements ?? null,
+    getNumberOfAirdrops: () => get().getData()?.pagination?.total_elements ?? null,
 
     hasNextPage: () => Boolean(get().getPaginationInfo()?.next),
 
     getPaginationInfo: () => {
       const { airdrops, getData } = get();
       const { address, currency } = userAssetsStoreManager.getState();
-      if (!address || !airdrops || address !== airdrops.address || currency !== airdrops.currency) {
+      if (!address || !airdrops || !airdrops.claimables.length || address !== airdrops.address || currency !== airdrops.currency) {
         return getData()?.pagination ?? null;
       }
       return airdrops.pagination;
@@ -233,11 +246,32 @@ function isOnAirdropsRoute(): boolean {
 }
 
 function prunePaginatedData(
+  data: AirdropsQueryData,
   params: AirdropsParams,
   set: (partial: AirdropsState | Partial<AirdropsState> | ((state: AirdropsState) => AirdropsState | Partial<AirdropsState>)) => void
 ): void {
-  const { airdrops } = useAirdropsStore.getState();
-  if (!airdrops || isOnAirdropsRoute()) return;
+  const isOnAirdrops = isOnAirdropsRoute();
+  if (isOnAirdrops && params.page === 1 && params.pageSize === FULL_PAGE_SIZE && params.address) {
+    set({
+      airdrops: {
+        address: params.address,
+        claimables: data.claimables,
+        currency: params.currency,
+        fetchedAt: { [params.page]: Date.now() },
+        pagination: data.pagination,
+      },
+    });
+    return;
+  }
+
+  const { airdrops, getNumberOfAirdrops } = useAirdropsStore.getState();
+  if (!airdrops || isOnAirdrops) return;
+
+  const didNumberOfAirdropsChange = getNumberOfAirdrops() !== airdrops.pagination?.total_elements;
+  if (didNumberOfAirdropsChange) {
+    set({ airdrops: null });
+    return;
+  }
 
   const didParamsChange = airdrops.address !== params.address || airdrops.currency !== params.currency;
   if (didParamsChange) {

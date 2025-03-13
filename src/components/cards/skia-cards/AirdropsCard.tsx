@@ -8,6 +8,7 @@ import {
   LinearGradient,
   Paint,
   Shadow,
+  SkParagraph,
   SkPath,
   point,
   useImage,
@@ -18,7 +19,6 @@ import { useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SkiaText } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
-import { getSizedImageUrl } from '@/handlers/imgix';
 import { useCleanup } from '@/hooks/useCleanup';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
@@ -30,75 +30,10 @@ import { getCirclePath } from '@/worklets/skia';
 import { DEFAULT_CARD_SIZE, SkiaCard, SkiaCardProps } from './SkiaCard';
 
 const BADGE_SIZE = 28;
-const COIN_ICON_TOP_INSET = 56;
-const COIN_ICON_SIZE = 64;
 const BADGE_X_OFFSET = (BADGE_SIZE + 8) / 2 - 0.5;
-
-// ============ Temporary ==================================================== //
-const COIN_ICON_TEST_URLS = {
-  one: getSizedImageUrl(
-    'https://dd.dexscreener.com/ds-data/tokens/base/0xd93dc936e60e9e275cbe6f225e9c065951b9b1d4.png?size=lg&key=f43ffc',
-    COIN_ICON_SIZE
-  ),
-  two: getSizedImageUrl(
-    'https://dd.dexscreener.com/ds-data/tokens/base/0x5a34646b860485f012435e2486edb375615d1c7b.png?size=lg&key=0c7e85',
-    COIN_ICON_SIZE
-  ),
-  three: getSizedImageUrl(
-    'https://dd.dexscreener.com/ds-data/tokens/base/0x1035ae3f87a91084c6c5084d0615cc6121c5e228.png?size=lg&key=d73e1a',
-    COIN_ICON_SIZE
-  ),
-  four: getSizedImageUrl(
-    'https://dd.dexscreener.com/ds-data/tokens/base/0xba5e66fb16944da22a62ea4fd70ad02008744460.png?size=lg&key=82652d',
-    COIN_ICON_SIZE
-  ),
-  five: getSizedImageUrl(
-    'https://dd.dexscreener.com/ds-data/tokens/base/0x17d70172c7c4205bd39ce80f7f0ee660b7dc5a23.png?size=lg&key=33eb6e',
-    COIN_ICON_SIZE
-  ),
-  six: getSizedImageUrl(
-    'https://dd.dexscreener.com/ds-data/tokens/solana/G1UXAxnGttB8hQFRt35xvnimC3Y2Nm9pF8saWrHNpump.png?size=lg&key=d08cfb',
-    COIN_ICON_SIZE
-  ),
-};
-function getRandomIconUrl() {
-  const random = Math.round(Math.random() * 7);
-  switch (random) {
-    case 0:
-      return COIN_ICON_TEST_URLS.one;
-    case 1:
-      return COIN_ICON_TEST_URLS.two;
-    case 2:
-      return COIN_ICON_TEST_URLS.three;
-    case 3:
-      return COIN_ICON_TEST_URLS.four;
-    case 4:
-      return COIN_ICON_TEST_URLS.five;
-    case 5:
-    default:
-      return COIN_ICON_TEST_URLS.six;
-  }
-}
-function getNextIconUrl(currentUrl: string, airdropIconUrl: string | undefined) {
-  switch (currentUrl) {
-    case COIN_ICON_TEST_URLS.one:
-      return COIN_ICON_TEST_URLS.two;
-    case COIN_ICON_TEST_URLS.two:
-      return COIN_ICON_TEST_URLS.three;
-    case COIN_ICON_TEST_URLS.three:
-      return COIN_ICON_TEST_URLS.four;
-    case COIN_ICON_TEST_URLS.four:
-      return COIN_ICON_TEST_URLS.five;
-    case COIN_ICON_TEST_URLS.five:
-      return COIN_ICON_TEST_URLS.six;
-    case COIN_ICON_TEST_URLS.six:
-      return airdropIconUrl ?? COIN_ICON_TEST_URLS.one;
-    case airdropIconUrl:
-    default:
-      return COIN_ICON_TEST_URLS.one;
-  }
-}
-// ============ End ========================================================== //
+const CARD_HEIGHT = 175;
+const COIN_ICON_SIZE = 64;
+const COIN_ICON_TOP_INSET = 56;
 
 const CARD_CONFIG = {
   backgroundBlur: {
@@ -126,13 +61,13 @@ const CARD_CONFIG = {
         !numberOfAirdrops || numberOfAirdrops < 10 ? '20pt' : numberOfAirdrops < 100 ? '13pt' : '11pt',
       translateX: [{ translateX: BADGE_X_OFFSET - 95 }],
       x: DEFAULT_CARD_SIZE / 2 + COIN_ICON_SIZE / 2 - BADGE_SIZE / 2 + BADGE_SIZE / 3,
-      y: DEFAULT_CARD_SIZE - 58.5,
+      y: CARD_HEIGHT - 58.5,
     },
     textXOffset: BADGE_X_OFFSET,
   },
   gradient: {
     colors: ['#1F6480', '#2288AD', '#2399C3', '#399EC6', '#518EAB', '#4E697B'],
-    end: vec(DEFAULT_CARD_SIZE / 2, DEFAULT_CARD_SIZE),
+    end: vec(DEFAULT_CARD_SIZE / 2, CARD_HEIGHT),
     start: vec(DEFAULT_CARD_SIZE / 2, 0),
   },
 };
@@ -147,16 +82,15 @@ const CARD_PROPS: Partial<SkiaCardProps> = {
 
 export const AirdropsCard = memo(function AirdropsCard() {
   const { navigate } = useNavigation();
-
   const [coinIconPath] = useState(() => getCoinIconPath());
-  const [url, setUrl] = useState(() => getRandomIconUrl());
 
-  const airdropIconUrl = useAirdropsStore(state => getSizedImageUrl(state.getData()?.claimables?.[0]?.asset?.icon_url));
+  const url = useAirdropsStore(state => state.getFirstCoinIconUrl(COIN_ICON_SIZE));
   const numberOfAirdrops = useAirdropsStore(state => state.getNumberOfAirdrops());
   const coinIconImage = useImage(url);
 
   const animatedActiveSwipeRoute = useNavigationStore(state => state.animatedActiveSwipeRoute);
   const shouldPlayEnterAnimation = useSharedValue(false);
+  const badgeOffset = useSharedValue<[{ translateX: number }] | undefined>(undefined);
 
   const enterAnimation = useDerivedValue(() => (shouldPlayEnterAnimation.value ? withSpring(0, SPRING_CONFIGS.tabGestureConfig) : -2250));
   const enterAnimationTransform = useDerivedValue(() => [
@@ -164,13 +98,20 @@ export const AirdropsCard = memo(function AirdropsCard() {
     { scaleY: enterAnimation.value > 0 ? 1 - enterAnimation.value / 150 : 1 },
   ]);
 
-  const onLongPress = useCallback(() => {
-    setUrl(url => (url ? getNextIconUrl(url, airdropIconUrl) : getRandomIconUrl()));
-  }, [airdropIconUrl]);
-
   const onPress = useCallback(() => {
-    navigate(Routes.AIRDROPS_SHEET);
+    const { getAirdrops, getNumberOfAirdrops } = useAirdropsStore.getState();
+    if (getNumberOfAirdrops() === 1) navigate(Routes.CLAIM_AIRDROP_SHEET, { claimable: getAirdrops()?.[0] });
+    else navigate(Routes.AIRDROPS_SHEET);
   }, [navigate]);
+
+  const setBadgePosition = useCallback(
+    (paragraph: SkParagraph) => {
+      'worklet';
+      const [{ x }] = paragraph.getLineMetrics();
+      badgeOffset.value = [{ translateX: x - BADGE_X_OFFSET }];
+    },
+    [badgeOffset]
+  );
 
   useAnimatedReaction(
     () => animatedActiveSwipeRoute.value === Routes.DISCOVER_SCREEN,
@@ -187,9 +128,8 @@ export const AirdropsCard = memo(function AirdropsCard() {
 
   return (
     <SkiaCard
-      height={DEFAULT_CARD_SIZE}
+      height={CARD_HEIGHT}
       width={DEFAULT_CARD_SIZE}
-      onLongPress={onLongPress}
       onPress={onPress}
       shadowColor={CARD_PROPS.shadowColor}
       skiaBackground={
@@ -255,11 +195,11 @@ export const AirdropsCard = memo(function AirdropsCard() {
           </Circle>
 
           {/* Number of airdrops bubble */}
-          <Group transform={CARD_CONFIG.dimensions.badge.translateX}>
+          <Group transform={badgeOffset}>
             <Circle
               blendMode="softLight"
               color={CARD_CONFIG.colors.white80}
-              cx={CARD_CONFIG.dimensions.badge.x}
+              cx={CARD_CONFIG.dimensions.badge.size / 2}
               cy={CARD_CONFIG.dimensions.badge.y}
               r={BADGE_SIZE / 2}
             >
@@ -268,7 +208,7 @@ export const AirdropsCard = memo(function AirdropsCard() {
 
             <Circle
               color={CARD_CONFIG.colors.white15}
-              cx={CARD_CONFIG.dimensions.badge.x}
+              cx={CARD_CONFIG.dimensions.badge.size / 2}
               cy={CARD_CONFIG.dimensions.badge.y}
               r={BADGE_SIZE / 2}
             >
@@ -286,7 +226,7 @@ export const AirdropsCard = memo(function AirdropsCard() {
               size={CARD_CONFIG.dimensions.badge.textSize(numberOfAirdrops)}
               weight="heavy"
               width={BADGE_SIZE}
-              x={DEFAULT_CARD_SIZE / 2 + COIN_ICON_SIZE / 2 - BADGE_SIZE / 2 + BADGE_SIZE / 3 - BADGE_SIZE / 2}
+              x={0}
               y={CARD_CONFIG.dimensions.badge.y - CARD_CONFIG.dimensions.badge.size / 2}
             >
               {numberOfAirdrops === null ? '?' : numberOfAirdrops}
@@ -297,13 +237,16 @@ export const AirdropsCard = memo(function AirdropsCard() {
           <SkiaText
             align="center"
             color={CARD_CONFIG.colors.whiteTextColor}
+            onLayout={setBadgePosition}
             size="22pt"
             weight="heavy"
             width={DEFAULT_CARD_SIZE}
             x={CARD_CONFIG.dimensions.textXOffset}
-            y={DEFAULT_CARD_SIZE - 73}
+            y={CARD_HEIGHT - 73}
           >
-            {i18n.t(i18n.l.token_launcher.cards.airdrops.title)}
+            {numberOfAirdrops === 1
+              ? i18n.t(i18n.l.token_launcher.cards.airdrops.title_singular)
+              : i18n.t(i18n.l.token_launcher.cards.airdrops.title)}
           </SkiaText>
 
           <SkiaText
@@ -314,7 +257,7 @@ export const AirdropsCard = memo(function AirdropsCard() {
             weight="heavy"
             width={DEFAULT_CARD_SIZE}
             x={0}
-            y={DEFAULT_CARD_SIZE - 36}
+            y={CARD_HEIGHT - 36}
           >
             {numberOfAirdrops
               ? i18n.t(i18n.l.token_launcher.cards.airdrops.subtitle_has_airdrops)

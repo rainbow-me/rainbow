@@ -55,11 +55,8 @@ export function useSwapEstimatedGasFee(overrideGasSettings?: GasSettings) {
   const { assetToSell, quote, chainId = preferredNetwork || ChainId.mainnet } = useSyncedSwapQuoteStore();
   const gasSettings = useSelectedGas(chainId);
 
-  const { data: estimatedGasLimit, isFetching } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
+  const estimatedGasLimit = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
   const estimatedFee = useEstimatedGasFee({ chainId, gasLimit: estimatedGasLimit, gasSettings: overrideGasSettings || gasSettings });
 
-  return {
-    data: estimatedFee,
-    isFetching,
-  };
+  return estimatedFee;
 }
