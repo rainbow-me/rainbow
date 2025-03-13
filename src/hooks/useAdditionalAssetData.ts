@@ -33,7 +33,6 @@ async function getAdditionalAssetData({ address, chainId, currency }: Additional
     chainId,
     currency,
   });
-
   if (data.token) {
     return data.token as TokenMetadata;
   }

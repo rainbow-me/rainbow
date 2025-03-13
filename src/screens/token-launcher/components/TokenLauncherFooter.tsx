@@ -69,7 +69,7 @@ function HoldToCreateButton() {
       provider,
     });
     setStep(NavigationSteps.CREATING);
-
+    console.log('handling long press!!!!');
     if (isHardwareWallet) {
       // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
     } else {

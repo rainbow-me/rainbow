@@ -18,11 +18,10 @@ import { LaunchTokenResponse, TokenLauncherSDKError } from '@rainbow-me/token-la
 import { Alert } from 'react-native';
 import { logger, RainbowError } from '@/logger';
 import { analyticsV2 } from '@/analytics';
+import { Link, LinkType } from '../types';
+import { superTokenStore } from './rainbowSuperTokenStore';
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
-
-export type LinkType = 'website' | 'x' | 'telegram' | 'farcaster' | 'discord' | 'other';
-export type Link = { input: string; type: LinkType; url: string };
 
 export const enum NavigationSteps {
   INFO = 0,
@@ -407,6 +406,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     transactionOptions: TransactionOptions;
   }): Promise<LaunchTokenResponse | undefined> => {
     const { name, chainId, symbol, description, imageUrl, tokenomics, totalSupply, extraBuyAmount } = get();
+    const addSuperToken = superTokenStore.getState().addSuperToken;
 
     const airdropRecipients = get().validAirdropRecipients();
     const links = get().validLinks();
@@ -434,7 +434,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         logoUrl: imageUrl,
         supply: formattedTotalSupply,
         links: linksByType,
-        amountIn: parseUnits(extraBuyAmount.toString(), 'ether').toString(),
+        amountIn: parseUnits(extraBuyAmount.toString(), 18).toString(),
         initialTick,
         wallet,
         transactionOptions: {
@@ -451,15 +451,25 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       const shouldBuy = extraBuyAmount > 0;
       let result;
       if (shouldBuy) {
-        result = await TokenLauncherSDK.launchTokenAndBuy({
-          ...params,
-          amountIn: parseUnits(extraBuyAmount.toString(), 18).toString(),
-        });
+        result = await TokenLauncherSDK.launchTokenAndBuy(params);
       } else {
         result = await TokenLauncherSDK.launchToken(params);
       }
+
       if (result) {
         set({ launchedTokenAddress: result.tokenAddress });
+
+        // Add token to SuperTokenStore
+        addSuperToken({
+          address: result.tokenAddress,
+          chainId,
+          name,
+          symbol,
+          description,
+          imageUrl,
+          links: linksByType,
+        });
+
         analyticsV2.track(analyticsV2.event.tokenLauncherTokenCreated, {
           address: result.tokenAddress,
           chainId,
