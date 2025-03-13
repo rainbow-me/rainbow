@@ -609,9 +609,6 @@ export const tokenLauncherConfig: PartialNavigatorConfigOptions = {
     gestureEnabled: false,
     dismissable: false,
     topOffset: 0,
-    // backgroundColor: colors.themedColors?.shadowBlack,
-    // backgroundOpacity: 0.7,
-    // customStack: true,
   }),
 };
 
