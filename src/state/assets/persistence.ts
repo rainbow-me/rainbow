@@ -2,6 +2,7 @@ import { RainbowError, logger } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { UserAssetsState } from './types';
+import { makeMutable, SharedValue } from 'react-native-reanimated';
 
 export type UserAssetsStateToPersist = Pick<
   Partial<UserAssetsState>,
@@ -14,11 +15,13 @@ type PersistedUserAssetsState = Pick<UserAssetsStateToPersist, 'filter' | 'legac
   idsByChain: Array<[UserAssetFilter, UniqueId[]]>; // Map
   userAssets: Array<[UniqueId, ParsedSearchAsset]>; // Map
   pinnedAssets: UniqueId[]; // Set
+  hiddenAssetsSharedvalue: SharedValue<UniqueId[]>; // Set
+  pinnedAssetsSharedvalue: SharedValue<UniqueId[]>; // Set
 };
 
 export function serializeUserAssetsState(state: UserAssetsStateToPersist, version?: number) {
   try {
-    const transformedStateToPersist: PersistedUserAssetsState = {
+    const transformedStateToPersist: Omit<PersistedUserAssetsState, 'hiddenAssetsSharedvalue' | 'pinnedAssetsSharedvalue'> = {
       ...state,
       chainBalances: state.chainBalances ? Array.from(state.chainBalances.entries()) : [],
       idsByChain: state.idsByChain ? Array.from(state.idsByChain.entries()) : [],
@@ -89,6 +92,9 @@ export function deserializeUserAssetsState(serializedState: string) {
     logger.error(new RainbowError(`[userAssetsStore]: Failed to convert pinnedAssets from user assets storage`), { error });
   }
 
+  const hiddenAssetsSharedvalue = makeMutable(Array.from(hiddenAssets.values()));
+  const pinnedAssetsSharedvalue = makeMutable(Array.from(pinnedAssets.values()));
+
   return {
     state: {
       ...state,
@@ -97,6 +103,8 @@ export function deserializeUserAssetsState(serializedState: string) {
       idsByChain,
       userAssets: userAssetsData,
       pinnedAssets,
+      hiddenAssetsSharedvalue,
+      pinnedAssetsSharedvalue,
     },
     version,
   };

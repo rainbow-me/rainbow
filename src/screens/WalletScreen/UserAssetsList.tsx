@@ -1,400 +1,108 @@
-import React, { memo, useCallback, useMemo, useRef } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { subWorklet } from '@/safe-math/SafeMath';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { FlatList, InteractionManager } from 'react-native';
-import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
-import { ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { Box, Text } from '@/design-system';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { ListRenderItem, StyleSheet } from 'react-native';
+import { AnimatedText, Box, Inset, useForegroundColor } from '@/design-system';
+import { convertAmountToNativeDisplay, isZero } from '@/helpers/utilities';
 import { deviceUtils } from '@/utils';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useAccountSettings } from '@/hooks';
-import { useScrollPosition } from './ScrollPositionContext';
 import { BaseButton } from '@/components/DappBrowser/TabViewToolbar';
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
+import { useUserAssetsListContext, DIVIDER_HEIGHT, MAX_CONDENSED_ASSETS, EditAction } from './UserAssetsListContext';
+import { CoinRow } from './CoinRow';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { ChainId } from '@/state/backendNetworks/types';
+import { AssetListItemSkeleton } from '@/components/asset-list';
+import { EthCard } from '@/components/cards/EthCard';
+import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
+import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
+import { DiscoverMoreButton } from '@/components/asset-list/RecyclerAssetList2/core/DiscoverMoreButton';
 
-const MAX_CONDENSED_ASSETS = 6;
-const DIVIDER_HEIGHT = 40;
-
-// Define the edit actions enum (similar to useCoinListEditOptions)
-export enum EditAction {
-  none = 'NONE',
-  standard = 'STANDARD',
-  pin = 'PIN',
-  unpin = 'UNPIN',
-  hide = 'HIDE',
-  unhide = 'UNHIDE',
-}
-
-// Define the boolean map interface from useCoinListEditOptions
-export interface BooleanMap {
-  [index: string]: boolean;
-}
-
-type AssetsListStore = {
-  selectedAssets: Set<UniqueId>;
-  isExpanded: boolean;
-  toggleIsExpanded: () => void;
-  isEditMode: boolean;
-  toggleEditMode: () => void;
-
-  // Add functions to manage selected assets
-  clearSelectedAssets: () => void;
-  toggleSelectedAsset: (assetId: UniqueId) => void;
-  addSelectedAsset: (assetId: UniqueId) => void;
-  removeSelectedAsset: (assetId: UniqueId) => void;
-
-  // Current action based on selection
-  getCurrentAction: (pinnedAssets: UniqueId[], hiddenAssets: UniqueId[]) => EditAction;
-};
-
-const assetsListStore = createRainbowStore<AssetsListStore>((set, get) => ({
-  selectedAssets: new Set(),
-  isExpanded: false,
-  toggleIsExpanded: () => set(s => ({ isExpanded: !s.isExpanded })),
-  isEditMode: false,
-  toggleEditMode: () =>
-    set(s => ({
-      isEditMode: !s.isEditMode,
-      // Clear selections when toggling edit mode off
-      selectedAssets: !s.isEditMode ? s.selectedAssets : new Set(),
-    })),
-
-  // Implement selection management functions
-  clearSelectedAssets: () => set({ selectedAssets: new Set() }),
-
-  toggleSelectedAsset: (assetId: UniqueId) =>
-    set(state => {
-      const newSelectedAssets = new Set(state.selectedAssets);
-      if (newSelectedAssets.has(assetId)) {
-        newSelectedAssets.delete(assetId);
-      } else {
-        newSelectedAssets.add(assetId);
-      }
-      return { selectedAssets: newSelectedAssets };
-    }),
-
-  addSelectedAsset: (assetId: UniqueId) =>
-    set(state => {
-      const newSelectedAssets = new Set(state.selectedAssets);
-      newSelectedAssets.add(assetId);
-      return { selectedAssets: newSelectedAssets };
-    }),
-
-  removeSelectedAsset: (assetId: UniqueId) =>
-    set(state => {
-      const newSelectedAssets = new Set(state.selectedAssets);
-      newSelectedAssets.delete(assetId);
-      return { selectedAssets: newSelectedAssets };
-    }),
-
-  // Function to determine current action based on selected assets
-  getCurrentAction: (pinnedAssets, hiddenAssets) => {
-    const state = get();
-    const selectedAssets = Array.from(state.selectedAssets);
-    const selectedCount = selectedAssets.length;
-
-    if (selectedCount === 0) {
-      return EditAction.none;
-    }
-
-    // Check if all selected assets are hidden (for unhide action)
-    const allSelectedAreHidden = selectedAssets.every(assetId => hiddenAssets.includes(assetId));
-
-    if (selectedCount > 0 && allSelectedAreHidden) {
-      return EditAction.unhide;
-    }
-
-    // Check if all selected assets are pinned (for unpin action)
-    const allSelectedArePinned = selectedAssets.every(assetId => pinnedAssets.includes(assetId));
-
-    if (selectedCount > 0 && allSelectedArePinned) {
-      return EditAction.unpin;
-    }
-
-    return EditAction.standard;
-  },
-}));
-
-// Create a custom hook that combines the store with ScrollPosition context
-export function useAssetsListStore<T>(selector: (state: AssetsListStore) => T): T {
-  return assetsListStore(selector);
-}
-
-// Hook to get the toggle functions with content size updates
-export function useAssetsListControls() {
-  const { toggleIsExpanded, toggleEditMode } = assetsListStore(state => ({
-    toggleIsExpanded: state.toggleIsExpanded,
-    toggleEditMode: state.toggleEditMode,
-  }));
-  const { updateContentSize } = useScrollPosition();
-
-  const handleToggleExpand = useCallback(() => {
-    toggleIsExpanded();
-
-    InteractionManager.runAfterInteractions(() => {
-      updateContentSize();
-    });
-  }, [toggleIsExpanded, updateContentSize]);
-
-  const handleToggleEditMode = useCallback(() => {
-    toggleEditMode();
-  }, [toggleEditMode]);
-
-  return {
-    handleToggleExpand,
-    handleToggleEditMode,
-  };
-}
-
-// New hook for asset list edit options
-export function useAssetListEditOptions() {
-  const hiddenAssets = useUserAssetsStore(state => state.getHiddenAssetsIds());
-  const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
-  const pinnedAssets = useUserAssetsStore(state => state.getPinnedAssetsIds());
-  const setPinnedAssets = useUserAssetsStore(state => state.setPinnedAssets);
-
-  // Get selection management functions from the store
-  const { selectedAssets, clearSelectedAssets, toggleSelectedAsset, addSelectedAsset, removeSelectedAsset, getCurrentAction } =
-    assetsListStore(state => ({
-      selectedAssets: state.selectedAssets,
-      clearSelectedAssets: state.clearSelectedAssets,
-      toggleSelectedAsset: state.toggleSelectedAsset,
-      addSelectedAsset: state.addSelectedAsset,
-      removeSelectedAsset: state.removeSelectedAsset,
-      getCurrentAction: state.getCurrentAction,
-    }));
-
-  // Calculate current action based on selected assets
-  const currentAction = useMemo(() => {
-    return getCurrentAction(pinnedAssets, hiddenAssets);
-  }, [getCurrentAction, pinnedAssets, hiddenAssets]);
-
-  // Function to finish editing (apply changes)
-  const finishEditing = useCallback(
-    (action: EditAction) => {
-      const selectedAssetsArray = Array.from(selectedAssets);
-
-      switch (action) {
-        case EditAction.pin: {
-          // Add selected assets to pinned assets
-          const newPinnedAssets = selectedAssetsArray.filter(assetId => !pinnedAssets.includes(assetId));
-          setPinnedAssets(newPinnedAssets);
-          break;
-        }
-        case EditAction.unpin: {
-          setPinnedAssets(selectedAssetsArray);
-          break;
-        }
-        case EditAction.hide: {
-          const newHiddenAssets = selectedAssetsArray.filter(assetId => !hiddenAssets.includes(assetId));
-          setHiddenAssets(newHiddenAssets);
-          break;
-        }
-        case EditAction.unhide: {
-          setHiddenAssets(selectedAssetsArray);
-          break;
-        }
-        default:
-          break;
-      }
-
-      // Clear selections after applying changes
-      clearSelectedAssets();
-    },
-    [selectedAssets, pinnedAssets, hiddenAssets, setPinnedAssets, setHiddenAssets, clearSelectedAssets]
-  );
-
-  return {
-    selectedAssets,
-    pinnedAssets,
-    hiddenAssets,
-    clearSelectedAssets,
-    toggleSelectedAsset,
-    addSelectedAsset,
-    removeSelectedAsset,
-    currentAction,
-    finishEditing,
-  };
-}
-
-type SectionIds = 'top-assets' | 'divider' | 'bottom-assets' | 'hidden-assets';
-
-interface AssetListItem {
-  type: 'asset';
-  asset: ParsedSearchAsset;
-  sectionId: SectionIds;
-}
-
-interface DividerListItem {
-  type: 'divider';
-  sectionId: SectionIds;
-}
-
-type UserAssetListItem = AssetListItem | DividerListItem;
-
-// This is a crucial optimization for FlatList performance
-const getItemLayout = (data: ArrayLike<UserAssetListItem> | null | undefined, index: number) => {
-  if (!data) return { length: 0, offset: 0, index };
-
-  const item = data[index];
-  const length = item?.type === 'divider' ? DIVIDER_HEIGHT : COIN_ROW_WITH_PADDING_HEIGHT;
-
-  // Calculate the offset by summing up heights of previous items
-  let offset = 0;
-  for (let i = 0; i < index; i++) {
-    const prevItem = data[i];
-    offset += prevItem?.type === 'divider' ? DIVIDER_HEIGHT : COIN_ROW_WITH_PADDING_HEIGHT;
+const keyExtractor = (item: number): string => {
+  if (item < MAX_CONDENSED_ASSETS || item > MAX_CONDENSED_ASSETS + 1) {
+    return `asset-${item}`;
   }
-
-  return { length, offset, index };
+  return `divider-${item}`;
 };
 
-const keyExtractor = (item: UserAssetListItem): string => {
-  if (item.type === 'asset') {
-    return `asset-${item.asset.uniqueId}`;
+const ListEmptyComponent = memo(function ListEmptyComponent() {
+  const mainnetEthBalance = useUserAssetsStore(state => state.getNativeAssetForChain(ChainId.mainnet))?.balance.amount ?? 0;
+
+  if (isZero(mainnetEthBalance)) {
+    return (
+      <Inset horizontal="20px">
+        <Box paddingVertical="24px" alignItems="center" gap={12}>
+          <ReceiveAssetsCard />
+          <EthCard />
+          <RotatingLearnCard />
+          <Box paddingVertical="12px">
+            <DiscoverMoreButton />
+          </Box>
+        </Box>
+      </Inset>
+    );
   }
-  return `divider-${item.sectionId}`;
-};
-
-const MemoizedCoinRow = memo(
-  ({
-    asset,
-    isEditing,
-    isSelected,
-    onPress,
-  }: {
-    asset: ParsedSearchAsset;
-    isEditing: boolean;
-    isSelected: boolean;
-    onPress: (asset: ParsedSearchAsset | null) => void;
-  }) => (
-    <CoinRow
-      onPress={onPress}
-      output={false}
-      uniqueIdOrAsset={asset}
-      isEditing={isEditing}
-      isSelected={isSelected}
-      nativePriceChange={asset.native.price?.change}
-      showPriceChange
-      testID={`asset-list-item-${asset.uniqueId}`}
-    />
-  ),
-  (prevProps, nextProps) =>
-    prevProps.asset.uniqueId === nextProps.asset.uniqueId &&
-    prevProps.isEditing === nextProps.isEditing &&
-    prevProps.isSelected === nextProps.isSelected
-);
-MemoizedCoinRow.displayName = 'MemoizedCoinRow';
-
-export function UserAssetsList() {
-  const { navigate } = useNavigation();
-  const userAssets = useUserAssetsStore(state => state.getUserAssetsWithPinnedFirstAndHiddenAssetsLast());
-  const flatListRef = useRef<FlatList<UserAssetListItem>>(null);
-  const { selectedAssets, isEditMode, isExpanded, toggleSelectedAsset } = useAssetsListStore(state => ({
-    selectedAssets: state.selectedAssets,
-    isEditMode: state.isEditMode,
-    isExpanded: state.isExpanded,
-    toggleSelectedAsset: state.toggleSelectedAsset,
-  }));
-
-  const { topAssets, bottomAssets } = useMemo(() => {
-    if (userAssets.length <= MAX_CONDENSED_ASSETS) {
-      return { topAssets: userAssets, bottomAssets: [] };
-    }
-    return {
-      topAssets: userAssets.slice(0, MAX_CONDENSED_ASSETS),
-      bottomAssets: userAssets.slice(MAX_CONDENSED_ASSETS),
-    };
-  }, [userAssets]);
-
-  const sectionedData = useMemo(() => {
-    const data: UserAssetListItem[] = [
-      ...topAssets.map(asset => ({
-        type: 'asset' as const,
-        asset,
-        sectionId: 'top-assets' as SectionIds,
-      })),
-      { type: 'divider', sectionId: 'divider' },
-    ];
-
-    if (isExpanded && bottomAssets.length > 0) {
-      data.push(
-        ...bottomAssets.map(asset => ({
-          type: 'asset' as const,
-          asset,
-          sectionId: 'bottom-assets' as SectionIds,
-        }))
-      );
-    }
-
-    return data;
-  }, [topAssets, bottomAssets, isExpanded]);
-
-  const onPressHandler = useCallback(
-    (asset: ParsedSearchAsset | null) => {
-      if (!asset) return;
-      if (isEditMode) {
-        toggleSelectedAsset(asset.uniqueId);
-      } else {
-        navigate(Routes.EXPANDED_ASSET_SHEET_V2, { asset, address: asset.address, chainId: asset.chainId });
-      }
-    },
-    [navigate, isEditMode, toggleSelectedAsset]
-  );
-
-  const renderItem = useCallback(
-    ({ item }: { item: UserAssetListItem }) => {
-      if (item.type === 'divider') {
-        return <DividerSection />;
-      }
-
-      return (
-        <MemoizedCoinRow
-          asset={item.asset}
-          isEditing={isEditMode}
-          isSelected={selectedAssets.has(item.asset.uniqueId)}
-          onPress={onPressHandler}
-        />
-      );
-    },
-    [onPressHandler, selectedAssets, isEditMode]
-  );
-
-  // Calculate height for both the container and the FlatList
-  const listHeight = useMemo(() => {
-    const topAssetsHeight = topAssets.length * COIN_ROW_WITH_PADDING_HEIGHT;
-    const dividerHeight = DIVIDER_HEIGHT;
-    const bottomAssetsHeight = isExpanded ? bottomAssets.length * COIN_ROW_WITH_PADDING_HEIGHT : 0;
-
-    return topAssetsHeight + dividerHeight + bottomAssetsHeight;
-  }, [topAssets, bottomAssets, isExpanded]);
 
   return (
-    <FlatList
-      data={sectionedData}
-      ref={flatListRef}
-      getItemLayout={getItemLayout}
-      initialNumToRender={MAX_CONDENSED_ASSETS + 2}
+    <>
+      {Array.from({ length: MAX_CONDENSED_ASSETS - 1 }, (_, index) => (
+        <AssetListItemSkeleton animated descendingOpacity index={index} key={`skeleton${index}`} />
+      ))}
+    </>
+  );
+});
+
+export function UserAssetsList() {
+  const [totalAssets, setTotalAssets] = useState<number>(0);
+  const { sections, flatlistRef } = useUserAssetsListContext();
+  const isLoading = useUserAssetsStore(state => state.status === 'loading');
+
+  useAnimatedReaction(
+    () => sections.value,
+    currentSections => {
+      if (currentSections.length === 1 && currentSections[0].type === 'divider') return;
+      runOnJS(setTotalAssets)(currentSections.length);
+    },
+    [sections]
+  );
+
+  const data = useMemo(() => {
+    return Array.from<number>({ length: totalAssets }).map((_, index) => index);
+  }, [totalAssets]);
+
+  const renderItem: ListRenderItem<number> = useCallback(({ index }) => {
+    if (index === MAX_CONDENSED_ASSETS) {
+      return <DividerSection />;
+    }
+
+    // -1 to account for the divider
+    return <CoinRow index={index > MAX_CONDENSED_ASSETS ? index - 1 : index} />;
+  }, []);
+
+  const shouldShowEmptyComponent = isLoading || (!isLoading && totalAssets === 0);
+
+  if (shouldShowEmptyComponent) {
+    return <ListEmptyComponent />;
+  }
+
+  return (
+    <Animated.FlatList
+      data={data}
+      ref={flatlistRef}
       keyExtractor={keyExtractor}
-      keyboardShouldPersistTaps="always"
-      removeClippedSubviews={false}
       renderItem={renderItem}
+      initialNumToRender={MAX_CONDENSED_ASSETS + 2}
+      keyboardShouldPersistTaps="always"
       scrollEnabled={false}
-      style={{ height: listHeight, width: deviceUtils.dimensions.width }}
+      style={[{ flex: 1, width: deviceUtils.dimensions.width }]}
       showsVerticalScrollIndicator={false}
     />
   );
 }
 
-const DividerSection = memo(function DividerSection() {
+const Balance = () => {
+  const { isExpanded } = useUserAssetsListContext();
   const { nativeCurrency } = useAccountSettings();
-  const { isExpanded, isEditMode } = useAssetsListStore(state => state);
-  const { handleToggleExpand, handleToggleEditMode } = useAssetsListControls();
-
-  const { selectedAssets, finishEditing, currentAction } = useAssetListEditOptions();
-
   const totalBalance = useUserAssetsStore(state => state.getTotalBalance());
   const hiddenBalance = useUserAssetsStore(state => state.hiddenAssetsBalance);
 
@@ -404,91 +112,187 @@ const DividerSection = memo(function DividerSection() {
     return subWorklet(totalBalance, hiddenBalance);
   }, [totalBalance, hiddenBalance]);
 
-  // Handle pin button press
-  const handlePinPress = useCallback(() => {
-    finishEditing(currentAction === EditAction.unpin ? EditAction.unpin : EditAction.pin);
-  }, [finishEditing, currentAction]);
-
-  // Handle hide button press
-  const handleHidePress = useCallback(() => {
-    finishEditing(currentAction === EditAction.unhide ? EditAction.unhide : EditAction.hide);
-  }, [finishEditing, currentAction]);
+  const balanceStyles = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(isExpanded.value ? 0 : 1, TIMING_CONFIGS.fastFadeConfig),
+      display: isExpanded.value ? 'none' : 'flex',
+    };
+  });
 
   return (
-    <Box
-      paddingHorizontal="12px"
-      paddingVertical="6px"
-      flexDirection="row"
-      justifyContent="space-between"
-      alignItems="center"
-      height={DIVIDER_HEIGHT}
-      testID="assets-list-divider"
-    >
-      {!isEditMode && (
-        <BaseButton
-          gestureButtonProps={{ style: { paddingHorizontal: 8 } }}
-          paddingHorizontal="12px"
-          paddingVertical="10px"
-          onPress={handleToggleExpand}
-        >
-          <Box gap={isExpanded ? 4 : 0} flexDirection="row" alignItems="center" justifyContent="center">
-            <Text color="labelTertiary" size="17pt" weight="semibold" numberOfLines={1}>
-              {isExpanded ? 'Less' : 'All'}
-            </Text>
-            <Text size="15pt" color="labelTertiary" weight="bold">
-              {isExpanded ? '􀆇' : ' 􀆊'}
-            </Text>
-          </Box>
-        </BaseButton>
-      )}
-      {isEditMode && (
-        <Box gap={8} flexDirection="row" alignItems="center">
-          <BaseButton
-            scaleTo={selectedAssets.size === 0 ? 1 : undefined}
-            disableHaptics={selectedAssets.size === 0}
-            buttonColor={selectedAssets.size > 0 ? 'accent' : 'fillTertiary'}
-            gestureButtonProps={{ style: { paddingHorizontal: 8 } }}
-            paddingHorizontal="12px"
-            paddingVertical="10px"
-            onPress={handlePinPress}
-          >
-            <Text color={selectedAssets.size > 0 ? 'label' : 'labelQuaternary'} size="17pt" weight="semibold" numberOfLines={1}>
-              {currentAction === EditAction.unpin ? 'Unpin' : 'Pin'}
-            </Text>
-          </BaseButton>
-          <BaseButton
-            scaleTo={selectedAssets.size === 0 ? 1 : undefined}
-            disableHaptics={selectedAssets.size === 0}
-            buttonColor={selectedAssets.size > 0 ? 'accent' : 'fillTertiary'}
-            gestureButtonProps={{ style: { paddingHorizontal: 8 } }}
-            paddingHorizontal="12px"
-            paddingVertical="10px"
-            onPress={handleHidePress}
-          >
-            <Text color={selectedAssets.size > 0 ? 'label' : 'labelQuaternary'} size="17pt" weight="semibold" numberOfLines={1}>
-              {currentAction === EditAction.unhide ? 'Unhide' : 'Hide'}
-            </Text>
-          </BaseButton>
-        </Box>
-      )}
-      {!isExpanded && (
-        <Text color="labelTertiary" size="17pt" weight="semibold" numberOfLines={1}>
-          {convertAmountToNativeDisplay(balance ?? '0', nativeCurrency)}
-        </Text>
-      )}
-      {isExpanded && (
-        <BaseButton
-          buttonColor={isEditMode ? 'accent' : 'fillSecondary'}
-          gestureButtonProps={{ style: { paddingHorizontal: 8 } }}
-          paddingHorizontal="12px"
-          paddingVertical="10px"
-          onPress={handleToggleEditMode}
-        >
-          <Text color={isEditMode ? 'label' : 'labelTertiary'} size="17pt" weight="semibold" numberOfLines={1}>
-            {isEditMode ? 'Done' : 'Edit'}
-          </Text>
-        </BaseButton>
-      )}
-    </Box>
+    <AnimatedText color="labelTertiary" size="17pt" weight="semibold" numberOfLines={1} style={balanceStyles}>
+      {convertAmountToNativeDisplay(balance ?? '0', nativeCurrency)}
+    </AnimatedText>
   );
+};
+
+const ExpandButton = () => {
+  const { isExpanded, isEditing, toggleExpanded } = useUserAssetsListContext();
+
+  const label = useDerivedValue<string>(() => {
+    // TODO: i18n
+    return isExpanded.value ? 'Less 􀆇' : 'All 􀆊';
+  });
+
+  const buttonStyles = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(isEditing.value ? 0 : 1, TIMING_CONFIGS.fastFadeConfig),
+      display: isEditing.value ? 'none' : 'flex',
+    };
+  });
+
+  return (
+    <BaseButton paddingHorizontal="12px" paddingVertical="10px" onPressWorklet={toggleExpanded} style={buttonStyles}>
+      <AnimatedText size="17pt" color="labelTertiary" weight="semibold" numberOfLines={1}>
+        {label}
+      </AnimatedText>
+    </BaseButton>
+  );
+};
+
+// TODO: Get 'accent' background color to work with useAnimatedStyle and BaseButton
+function EditButton() {
+  const { isEditing, isExpanded, toggleEditing } = useUserAssetsListContext();
+
+  const labelColor = useForegroundColor('label');
+  const labelTertiaryColor = useForegroundColor('labelTertiary');
+
+  const buttonStyles = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(isExpanded.value ? 1 : 0, TIMING_CONFIGS.fastFadeConfig),
+      // backgroundColor: withTiming(isEditing.value ? accentColor : fillSecondaryColor, TIMING_CONFIGS.fastFadeConfig),
+      display: isExpanded.value ? 'flex' : 'none',
+    };
+  });
+
+  const label = useDerivedValue<string>(() => {
+    return isEditing.value ? 'Done' : 'Edit';
+  });
+
+  const textStyles = useAnimatedStyle(() => {
+    return {
+      color: withTiming(isEditing.value ? labelColor : labelTertiaryColor, TIMING_CONFIGS.tabPressConfig),
+    };
+  });
+
+  return (
+    <BaseButton style={buttonStyles} paddingHorizontal="12px" paddingVertical="10px" onPressWorklet={toggleEditing}>
+      <AnimatedText style={textStyles} size="17pt" weight="semibold" numberOfLines={1}>
+        {label}
+      </AnimatedText>
+    </BaseButton>
+  );
+}
+
+function PinButtons() {
+  const { isEditing, selectedAssets, currentAction } = useUserAssetsListContext();
+
+  const labelColor = useForegroundColor('label');
+  const labelTertiaryColor = useForegroundColor('labelTertiary');
+
+  const handlePinPress = () => {
+    'worklet';
+    console.log('pin');
+  };
+
+  const handleHidePress = () => {
+    'worklet';
+    console.log('hide');
+  };
+
+  const containerStyles = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(isEditing.value ? 1 : 0, TIMING_CONFIGS.fastFadeConfig),
+      display: isEditing.value ? 'flex' : 'none',
+    };
+  });
+
+  const buttonStyles = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(isEditing.value ? (selectedAssets.value.length > 0 ? 1 : 0.4) : 0, TIMING_CONFIGS.fastFadeConfig),
+      pointerEvents: isEditing.value && selectedAssets.value.length > 0 ? 'auto' : 'none',
+    };
+  });
+
+  // TODO: i18n
+  const pinLabel = useDerivedValue<string>(() => {
+    if (currentAction.value === EditAction.unpin) {
+      return 'Unpin';
+    }
+    return 'Pin';
+  });
+
+  // TODO: i18n
+  const hideLabel = useDerivedValue<string>(() => {
+    if (currentAction.value === EditAction.unhide) {
+      return 'Unhide';
+    }
+    return 'Hide';
+  });
+
+  const textStyles = useAnimatedStyle(() => {
+    return {
+      color: withTiming(isEditing.value ? labelColor : labelTertiaryColor, TIMING_CONFIGS.tabPressConfig),
+    };
+  });
+
+  return (
+    <Animated.View style={[sx.actionButtons, containerStyles]}>
+      <BaseButton paddingHorizontal="12px" paddingVertical="10px" onPressWorklet={handlePinPress} style={buttonStyles}>
+        <AnimatedText style={textStyles} size="17pt" weight="semibold" numberOfLines={1}>
+          {pinLabel}
+        </AnimatedText>
+      </BaseButton>
+      <BaseButton paddingHorizontal="12px" paddingVertical="10px" onPressWorklet={handleHidePress} style={buttonStyles}>
+        <AnimatedText style={textStyles} size="17pt" weight="semibold" numberOfLines={1}>
+          {hideLabel}
+        </AnimatedText>
+      </BaseButton>
+    </Animated.View>
+  );
+}
+
+function DividerSection() {
+  return (
+    <Animated.View style={sx.container} testID="assets-list-divider">
+      <Box style={sx.leftSide}>
+        <ExpandButton />
+        <PinButtons />
+      </Box>
+      <Box style={sx.rightSide}>
+        <Balance />
+        <EditButton />
+      </Box>
+    </Animated.View>
+  );
+}
+
+const sx = StyleSheet.create({
+  container: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: DIVIDER_HEIGHT,
+  },
+  leftSide: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  rightSide: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 20,
+    alignItems: 'center',
+    position: 'absolute',
+    left: 0,
+  },
 });

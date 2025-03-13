@@ -20,7 +20,8 @@ import {
   setUserAssets,
 } from './utils';
 import { MMKV } from 'react-native-mmkv';
-import { BooleanMap } from '@/screens/WalletScreen/UserAssetsList';
+import { BooleanMap } from '@/hooks/useCoinListEditOptions';
+import { makeMutable } from 'react-native-reanimated';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
@@ -65,7 +66,9 @@ export const createUserAssetsStore = (address: Address | string) =>
       currentAbortController: new AbortController(),
       filter: 'all',
       pinnedAssets: new Set<UniqueId>(),
+      pinnedAssetsSharedvalue: makeMutable<Array<UniqueId>>([]),
       hiddenAssets: new Set<UniqueId>(),
+      hiddenAssetsSharedvalue: makeMutable<Array<UniqueId>>([]),
       hiddenAssetsBalance: null,
       idsByChain: new Map<UserAssetFilter, UniqueId[]>(),
       inputSearchQuery: '',
@@ -243,6 +246,8 @@ export const createUserAssetsStore = (address: Address | string) =>
             userAssets: state.userAssets,
           });
 
+          state.hiddenAssetsSharedvalue.value = Array.from(hiddenAssets);
+
           return { hiddenAssets, hiddenAssetsBalance };
         });
       },
@@ -261,6 +266,8 @@ export const createUserAssetsStore = (address: Address | string) =>
               }
             }
           });
+
+          state.pinnedAssetsSharedvalue.value = Array.from(pinnedAssets);
 
           return { pinnedAssets };
         });

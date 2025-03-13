@@ -4,6 +4,7 @@ import { SupportedCurrencyKey } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
+import { SharedValue } from 'react-native-reanimated';
 
 export type UserAssetsStoreType = ReturnType<
   typeof createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, TransformedUserAssetsData>
@@ -33,7 +34,9 @@ export interface UserAssetsState {
   currentAbortController: AbortController;
   filter: UserAssetFilter;
   hiddenAssets: Set<UniqueId>;
+  hiddenAssetsSharedvalue: SharedValue<Array<UniqueId>>;
   pinnedAssets: Set<UniqueId>;
+  pinnedAssetsSharedvalue: SharedValue<Array<UniqueId>>;
   hiddenAssetsBalance: string | null;
   idsByChain: Map<UserAssetFilter, UniqueId[]>;
   inputSearchQuery: string;

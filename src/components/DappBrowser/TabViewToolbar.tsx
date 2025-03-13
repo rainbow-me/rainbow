@@ -1,6 +1,7 @@
 import React from 'react';
+import { ViewStyle, StyleProp } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
-import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { AnimatedStyle, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { HapticType } from 'react-native-turbo-haptics';
 import { Bleed, Box, BoxProps, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { ForegroundColor, TextColor } from '@/design-system/color/palettes';
@@ -10,7 +11,7 @@ import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { position } from '@/styles';
-import { GestureHandlerButton, GestureHandlerButtonProps } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { clamp, opacity } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -68,7 +69,7 @@ const NewTabButton = ({ newTabWorklet }: { newTabWorklet: BrowserWorkletsContext
 
 const DoneButton = ({ toggleTabViewWorklet }: { toggleTabViewWorklet: (activeIndex?: number | undefined) => void }) => {
   return (
-    <BaseButton gestureButtonProps={{ style: { padding: 8 } }} onPressWorklet={toggleTabViewWorklet} paddingHorizontal="20px">
+    <BaseButton style={{ padding: 8 }} onPressWorklet={toggleTabViewWorklet} paddingHorizontal="20px">
       <Text align="center" color="label" size="20pt" weight="heavy">
         {i18n.t(i18n.l.button.done)}
       </Text>
@@ -93,7 +94,7 @@ type BaseButtonProps = {
   paddingHorizontal?: BoxProps['paddingHorizontal'];
   scaleTo?: number;
   width?: number;
-  gestureButtonProps?: Partial<GestureHandlerButtonProps>;
+  style?: StyleProp<ViewStyle> | AnimatedStyle;
 };
 
 export const BaseButton = ({
@@ -113,7 +114,7 @@ export const BaseButton = ({
   paddingHorizontal = '16px',
   scaleTo,
   width,
-  gestureButtonProps,
+  style,
 }: BaseButtonProps) => {
   const { isDarkMode } = useColorMode();
   const _buttonColor = useForegroundColor(buttonColor);
@@ -135,7 +136,7 @@ export const BaseButton = ({
             onPressWorklet?.();
           }}
           scaleTo={scaleTo}
-          {...gestureButtonProps}
+          style={style}
         >
           <Box
             borderRadius={22}
