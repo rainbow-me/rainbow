@@ -11,7 +11,7 @@ import { SkImage, useAnimatedImageValue, useImage } from '@shopify/react-native-
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { SharedValue } from 'react-native-reanimated';
 import { logger, RainbowError } from '@/logger';
-import { useCoinListEditOptions, useCoinListFinishEditingOptions } from '@/hooks';
+import { useCleanup, useCoinListEditOptions, useCoinListFinishEditingOptions } from '@/hooks';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
 type TokenLauncherContextType = {
@@ -56,17 +56,14 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   const launchedTokenAddress = useTokenLauncherStore(state => state.launchedTokenAddress);
 
   // Handle automatically pinning token when it is created
-  const { clearSelectedCoins, pushSelectedCoin } = useCoinListEditOptions();
-  const { setPinnedCoins } = useCoinListFinishEditingOptions();
+  const { addPinnedCoin } = useCoinListEditOptions();
   useEffect(() => {
     // As soon as token is created, pin it
     if (launchedTokenAddress) {
       const launchedTokenUniqueId = getUniqueId(launchedTokenAddress, chainId);
-      pushSelectedCoin(launchedTokenUniqueId);
-      setPinnedCoins();
-      clearSelectedCoins();
+      addPinnedCoin(launchedTokenUniqueId);
     }
-  }, [launchedTokenAddress, chainId, pushSelectedCoin, clearSelectedCoins, setPinnedCoins]);
+  }, [launchedTokenAddress, chainId, addPinnedCoin]);
 
   const imageUri = useTokenLauncherStore(state => state.imageUri);
   const isImageGif = useMemo(() => imageUri?.endsWith('.gif'), [imageUri]);
@@ -81,6 +78,11 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
     }
     return skiaImage;
   }, [animatedSkiaImage, isImageGif, skiaImage]);
+
+  useCleanup(() => {
+    skiaImage?.dispose();
+    animatedSkiaImage?.value?.dispose();
+  });
 
   const tokenBackgroundImage: SkImage | null = skiaImage;
   const imageDerivedColor = usePersistentDominantColorFromImage(imageUri);
