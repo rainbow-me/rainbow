@@ -29,6 +29,9 @@ import { ImgixImage } from '@/components/images';
 import { fetchENSAddress } from '@/hooks/useENSAddress';
 import { logger, RainbowError } from '@/logger';
 import { PersonalizedCohort, PredefinedCohort, SuggestedUser } from '@rainbow-me/token-launcher';
+import { addressHashedEmoji, addressHashedColorIndex } from '@/utils/profileUtils';
+import { ContactAvatar } from '@/components/contacts';
+import { colors } from '@/styles';
 
 function SuggestedUsers({ users }: { users: SuggestedUser[] }) {
   const { accentColors } = useTokenLauncherContext();
@@ -307,7 +310,16 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
     if (isFetchingEnsData) {
       return <Skeleton width={20} height={20} />;
     }
-    return <AddressAvatar address={address} url={addressImage} size={20} color={accentColors.opacity100} label={''} />;
+    return addressImage ? (
+      <AddressAvatar address={address} url={addressImage} size={20} color={accentColors.opacity100} label={''} />
+    ) : (
+      <ContactAvatar
+        hideShadow
+        color={colors.avatarBackgrounds[addressHashedColorIndex(address) ?? 0]}
+        size="smaller"
+        value={addressHashedEmoji(address)}
+      />
+    );
   }, [isValidAddress, accentColors, address, addressImage, isFetchingEnsData]);
 
   return (

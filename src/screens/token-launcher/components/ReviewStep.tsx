@@ -21,6 +21,9 @@ import { isAddress } from 'viem';
 import { formatURLForDisplay } from '@/utils';
 import { isValidURLWorklet } from '@/components/DappBrowser/utils';
 import { TextSize } from '@/design-system/components/Text/Text';
+import { ContactAvatar } from '@/components/contacts';
+import { colors } from '@/styles';
+import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
 const TOTAL_COST_PILL_HEIGHT = 52;
@@ -84,9 +87,23 @@ function TokenAllocationCard() {
               borderColor={{ custom: accentColors.opacity2 }}
             >
               <Box flexDirection="row" alignItems="center" gap={8} style={{ flex: 1 }}>
-                {recipient.type === 'address' && (
-                  <AddressAvatar address={recipient.value} url={recipient.imageUrl} size={20} color={accentColors.opacity100} label={''} />
-                )}
+                {recipient.type === 'address' &&
+                  (recipient.imageUrl ? (
+                    <AddressAvatar
+                      address={recipient.value}
+                      url={recipient.imageUrl}
+                      size={20}
+                      color={accentColors.opacity100}
+                      label={''}
+                    />
+                  ) : (
+                    <ContactAvatar
+                      hideShadow
+                      color={colors.avatarBackgrounds[addressHashedColorIndex(recipient.label) ?? 0]}
+                      size="smaller"
+                      value={addressHashedEmoji(recipient.label)}
+                    />
+                  ))}
                 {recipient.type === 'group' && (
                   <FastImage
                     source={{ uri: recipient.imageUrl ?? '' }}
