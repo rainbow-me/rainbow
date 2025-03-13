@@ -3,7 +3,7 @@ import * as i18n from '@/languages';
 import { StyleSheet } from 'react-native';
 import { CollapsableField } from './CollapsableField';
 import { Bleed, Box, IconContainer, Separator, Text, TextIcon, TextShadow } from '@/design-system';
-import { useTokenLauncherStore, Link, LinkType } from '../state/tokenLauncherStore';
+import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import Animated from 'react-native-reanimated';
 import { SingleFieldInput } from './SingleFieldInput';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -21,6 +21,7 @@ import FastImage from 'react-native-fast-image';
 import { Grid } from './Grid';
 import { validateLinkWorklet } from '../helpers/inputValidators';
 import { colors } from '@/styles';
+import { Link, LinkType } from '../types';
 
 export const LINK_SETTINGS = {
   x: {

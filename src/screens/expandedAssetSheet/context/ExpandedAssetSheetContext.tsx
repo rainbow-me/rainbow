@@ -179,8 +179,6 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
   }, [address, asset, assetUniqueId, chainId, colors]);
 
   const rainbowSuperToken = useSuperTokenStore(state => state.getSuperToken(address, chainId));
-  const fullState = useSuperTokenStore(state => state.tokens);
-  console.log('full state: ', fullState);
 
   const fullAsset = useMemo(() => {
     const iconUrl = rainbowSuperToken?.imageUrl ?? basicAsset.iconUrl;
