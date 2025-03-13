@@ -1,7 +1,7 @@
 import * as i18n from '@/languages';
 import { isValidURLWorklet } from '@/components/DappBrowser/utils';
 import { MAX_DESCRIPTION_BYTES, MAX_NAME_BYTES, MAX_SYMBOL_BYTES, MAX_TOTAL_SUPPLY } from '../constants';
-import { LinkType } from '../state/tokenLauncherStore';
+import { LinkType } from '../types';
 
 export type ValidationResult = { error: boolean; message?: string } | undefined;
 
