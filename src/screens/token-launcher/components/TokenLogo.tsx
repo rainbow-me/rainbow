@@ -40,16 +40,10 @@ export function TokenLogo({ size = SIZE, disabled = false }: { size?: number; di
     if (result.assets && result.assets.length > 0) {
       const uri = result.assets[0].uri;
       setImageUri(uri);
-
-      const startTime = Date.now();
-      const url = await upload(uri);
-      const uploadTime = Date.now() - startTime;
-
-      console.log(`Image upload took ${uploadTime}ms`);
-
-      // if no url is returned the upload function throws an error, this is just a sanity check
-      if (url) {
-        setImageUrl(url);
+      const response = await upload(uri);
+      // if no url is returned the upload function throws an error, this is just for the types
+      if (response?.url) {
+        setImageUrl(response.url);
       }
     }
   }, [setImageUri, setImageUrl, upload]);
