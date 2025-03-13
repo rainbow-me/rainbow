@@ -576,7 +576,11 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         transactionOptions: {
           gasLimit: transactionOptions.gasLimit,
           maxFeePerGas: transactionOptions.maxFeePerGas,
-          maxPriorityFeePerGas: transactionOptions.maxPriorityFeePerGas,
+          // In functioning cases this should always select maxPriorityFeePerGas's value
+          maxPriorityFeePerGas: Math.min(
+            Number(transactionOptions.maxPriorityFeePerGas ?? 0),
+            Number(transactionOptions.maxFeePerGas ?? 0)
+          ).toString(),
         },
         airdropMetadata: {
           cohortIds: airdropCohortIds,
