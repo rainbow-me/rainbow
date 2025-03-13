@@ -10,6 +10,7 @@ import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
 import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
 import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
+import { TokenLauncherAnalyticsParams } from '@/screens/token-launcher/state/tokenLauncherStore';
 
 /**
  * All events, used by `analytics.track()`
@@ -186,6 +187,9 @@ export const event = {
   tokenLauncherStepChanged: 'token_launcher.step_changed',
   tokenLauncherTokenCreated: 'token_launcher.token_created',
   tokenLauncherSharePressed: 'token_launcher.share_pressed',
+  tokenLauncherAbandoned: 'token_launcher.abandoned',
+  tokenLauncherCreationFailed: 'token_launcher.creation_failed',
+  tokenLauncherImageUploadFailed: 'token_launcher.image_upload_failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -778,23 +782,20 @@ export type EventProperties = {
   [event.tokenLauncherStepChanged]: {
     step: string;
   };
-  [event.tokenLauncherTokenCreated]: {
-    address: string;
-    chainId: ChainId;
-    symbol: string;
-    name: string;
-    logoUrl: string;
-    description: string | undefined;
-    totalSupply: number;
-    links: Record<string, string>;
-    extraBuyAmount: number;
-    airdropRecipientCount: number;
-    airdropAddressCount: number;
-    airdropCohortIds: string[];
+  [event.tokenLauncherImageUploadFailed]: {
+    error: string;
+    url?: string;
+    isModerated?: boolean;
   };
-  [event.tokenLauncherSharePressed]: {
-    tokenAddress: string;
-    chainId: ChainId;
+  [event.tokenLauncherCreationFailed]: TokenLauncherAnalyticsParams & {
+    error: string;
+    operation?: string;
+    source?: string;
+    transactionHash?: string;
+  };
+  [event.tokenLauncherAbandoned]: TokenLauncherAnalyticsParams;
+  [event.tokenLauncherTokenCreated]: TokenLauncherAnalyticsParams;
+  [event.tokenLauncherSharePressed]: TokenLauncherAnalyticsParams & {
     url: string;
   };
 };

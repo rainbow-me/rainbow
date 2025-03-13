@@ -1,7 +1,13 @@
 import { abbreviateNumber, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { DEFAULT_CHAIN_ID, DEFAULT_MAX_AIRDROP_RECIPIENTS, DEFAULT_TOTAL_SUPPLY, TARGET_MARKET_CAP_IN_USD } from '../constants';
-import { makeMutable, SharedValue, withTiming } from 'react-native-reanimated';
+import {
+  DEFAULT_CHAIN_ID,
+  DEFAULT_MAX_AIRDROP_RECIPIENTS,
+  DEFAULT_TOTAL_SUPPLY,
+  MAX_TOTAL_SUPPLY,
+  TARGET_MARKET_CAP_IN_USD,
+} from '../constants';
+import { makeMutable, runOnUI, SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import chroma from 'chroma-js';
 import { memoFn } from '@/utils/memoFn';
@@ -45,7 +51,29 @@ export type AirdropRecipient = {
   count: number;
   isValid: boolean;
   imageUrl: string | null;
+  addresses?: string[];
   isSuggested?: boolean;
+};
+
+export type TokenLauncherAnalyticsParams = {
+  address?: string;
+  chainId: number;
+  imageModerated: boolean | undefined;
+  symbol: string | undefined;
+  name: string | undefined;
+  logoUrl: string | undefined;
+  description: string | undefined;
+  totalSupply: number;
+  links: Record<string, string>;
+  extraBuyAmount: number;
+  airdropTotalRecipientsCount: number;
+  airdropTotalAddressCount: number;
+  airdropManuallyAddedRecipientsCount: number;
+  airdropSuggestedRecipientsCount: number;
+  airdropPredefinedCohortRecipientsCount: number;
+  airdropSuggestedCohortRecipientsCount: number;
+  airdropPersonalizedCohortIds: string[];
+  airdropPredefinedCohortIds: string[];
 };
 
 interface TokenLauncherStore {
@@ -71,6 +99,7 @@ interface TokenLauncherStore {
   hasValidPrebuyAmount: boolean;
   maxAirdropRecipientCount: number;
   launchedTokenAddress: string | null;
+  imageModerated: boolean;
   // derived state
   hasEnteredAnyInfo: () => boolean;
   formattedTotalSupply: () => string;
@@ -87,6 +116,7 @@ interface TokenLauncherStore {
     lp: number;
   };
   tokenomics: () => ReturnType<typeof calculateTokenomics> | undefined;
+  getAnalyticsParams: () => TokenLauncherAnalyticsParams;
   // setters
   setImageUri: (uri: string) => void;
   setImageUrl: (url: string) => void;
@@ -101,7 +131,20 @@ interface TokenLauncherStore {
   setExtraBuyAmount: (amount: number) => void;
   setDescription: (description: string) => void;
   setStep: (step: NavigationSteps) => void;
-  addAirdropGroup: ({ groupId, label, count, imageUrl }: { groupId: string; label: string; count: number; imageUrl: string }) => void;
+  setImageModerated: (moderated: boolean) => void;
+  addAirdropGroup: ({
+    groupId,
+    label,
+    count,
+    imageUrl,
+    addresses,
+  }: {
+    groupId: string;
+    label: string;
+    count: number;
+    imageUrl: string;
+    addresses?: string[];
+  }) => void;
   addOrEditAirdropAddress: ({
     id,
     address,
@@ -134,8 +177,12 @@ interface TokenLauncherStore {
   }) => Promise<LaunchTokenResponse | undefined>;
 }
 
-// TODO: for testing. Remove before final merge
+// For testing. Makes it easier to test the token creation flow without having to enter all the info.
 // const testTokenInfo = {
+//   // Gray image
+//   // imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1741722824/token-launcher/tokens/fjcou8ceqmxbg9ncoduy.jpg',
+//   // imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1741722824/token-launcher/tokens/fjcou8ceqmxbg9ncoduy.jpg',
+//   // bright image
 //   imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
 //   imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
 //   name: 'Test Token',
@@ -143,28 +190,32 @@ interface TokenLauncherStore {
 //   description: 'This is a test token',
 // };
 
+// Should always be INFO, but can be changed to any step to test the flow easier
+const INITIAL_STEP = NavigationSteps.INFO;
+
 export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set, get) => ({
   imageUri: '',
   imageUrl: '',
   name: '',
   symbol: '',
   description: '',
+  links: [{ input: '', type: 'website' as LinkType, url: '' }],
   airdropRecipients: [],
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
-  links: [{ input: '', type: 'website', url: '' }],
   extraBuyAmount: 0,
   chainNativeAssetUsdPrice: 0,
   chainNativeAssetNativePrice: 0,
-  step: NavigationSteps.INFO,
-  stepSharedValue: makeMutable(NavigationSteps.INFO as NavigationSteps),
-  stepAnimatedSharedValue: makeMutable(NavigationSteps.INFO as NavigationSteps),
+  step: INITIAL_STEP,
+  stepSharedValue: makeMutable(INITIAL_STEP as NavigationSteps),
+  stepAnimatedSharedValue: makeMutable(INITIAL_STEP as NavigationSteps),
   gasSpeed: GasSpeed.FAST,
   chainNativeAssetRequiredForTransactionGas: '0',
   hasSufficientChainNativeAssetForTransactionGas: true,
   hasValidPrebuyAmount: true,
   maxAirdropRecipientCount: DEFAULT_MAX_AIRDROP_RECIPIENTS,
   launchedTokenAddress: null,
+  imageModerated: false,
   // derived state
   hasEnteredAnyInfo: () => {
     const { name, symbol, imageUrl, totalSupply, description, extraBuyAmount, validLinks, validAirdropRecipients } = get();
@@ -253,7 +304,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   },
   tokenomics: () => {
     const { chainNativeAssetUsdPrice, validAirdropRecipients, totalSupply, extraBuyAmount } = get();
-    if (!chainNativeAssetUsdPrice) return;
+    if (!chainNativeAssetUsdPrice || totalSupply > MAX_TOTAL_SUPPLY) return;
 
     return calculateTokenomics({
       targetMarketCapUsd: TARGET_MARKET_CAP_IN_USD,
@@ -264,6 +315,59 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       // TODO: name change
       amountInEth: extraBuyAmount,
     });
+  },
+  getAnalyticsParams: () => {
+    const { name, chainId, symbol, description, imageUrl, totalSupply, extraBuyAmount, imageModerated } = get();
+
+    const airdropRecipients = get().validAirdropRecipients();
+    const links = get().validLinks();
+
+    const airdropPredefinedCohortRecipients = airdropRecipients.filter(r => r.type === 'group' && !r.addresses);
+    const airdropPredefinedCohortIds = airdropPredefinedCohortRecipients.map(recipient => recipient.value);
+    const airdropPredefinedCohortRecipientsCount = airdropPredefinedCohortRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
+    const airdropSuggestedCohortRecipients = airdropRecipients.filter(r => r.type === 'group' && r.addresses);
+    const airdropSuggestedCohortRecipientsCount = airdropSuggestedCohortRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
+
+    // These are not really ids, but backend doesn't return ids for these in the same way
+    const airdropPersonalizedCohortIds = airdropRecipients
+      .filter(r => r.type === 'group' && r.addresses)
+      .flatMap(recipient => recipient.label);
+
+    const airdropRecipientAddresses = airdropRecipients.filter(r => r.type === 'address').map(recipient => recipient.value);
+    const airdropManuallyAddedRecipients = airdropRecipients.filter(r => r.type === 'address' && !r.isSuggested);
+    const airdropSuggestedRecipients = airdropRecipients.filter(r => r.type === 'address' && r.isSuggested);
+
+    const airdropTotalRecipientsCount = airdropRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
+
+    const linksByType = links.reduce(
+      (acc, link) => {
+        acc[link.type] = link.url;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+
+    return {
+      chainId,
+      symbol: symbol === '' ? undefined : symbol,
+      name: name === '' ? undefined : name,
+      logoUrl: imageUrl === '' ? undefined : imageUrl,
+      description: description === '' ? undefined : description,
+      totalSupply,
+      links: linksByType,
+      extraBuyAmount: extraBuyAmount,
+      imageModerated: imageUrl === '' ? undefined : imageModerated,
+      airdropTotalRecipientsCount,
+      // individual address counts
+      airdropTotalAddressCount: airdropRecipientAddresses.length,
+      airdropManuallyAddedRecipientsCount: airdropManuallyAddedRecipients.length,
+      airdropSuggestedRecipientsCount: airdropSuggestedRecipients.length,
+      // cohort counts
+      airdropPredefinedCohortRecipientsCount,
+      airdropSuggestedCohortRecipientsCount,
+      airdropPersonalizedCohortIds,
+      airdropPredefinedCohortIds,
+    };
   },
   // setters
   setImageUri: (uri: string) => {
@@ -295,14 +399,37 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     set({ extraBuyAmount: amount });
   },
   setStep: (step: NavigationSteps) => {
-    get().stepAnimatedSharedValue.value = withTiming(step, TIMING_CONFIGS.slowFadeConfig);
-    get().stepSharedValue.value = step;
+    const { stepSharedValue, stepAnimatedSharedValue } = get();
+    runOnUI(() => {
+      stepAnimatedSharedValue.value = withTiming(step, TIMING_CONFIGS.slowFadeConfig);
+      stepSharedValue.value = step;
+    })();
     set({ step });
     analyticsV2.track(analyticsV2.event.tokenLauncherStepChanged, {
       step: NavigationStepsNames[step],
     });
   },
-  addAirdropGroup: ({ groupId, label, count, imageUrl }: { groupId: string; label: string; count: number; imageUrl: string }) => {
+  addAirdropGroup: ({
+    groupId,
+    label,
+    count,
+    imageUrl,
+    addresses,
+  }: {
+    groupId: string;
+    label: string;
+    count: number;
+    imageUrl: string;
+    addresses?: string[];
+  }) => {
+    const { airdropRecipients } = get();
+    const existingGroups = airdropRecipients.filter(recipient => recipient.type === 'group');
+    const existingGroup = existingGroups.find(group => group.value === groupId);
+    // You cannot add the same group twice
+    if (existingGroup) {
+      return;
+    }
+
     const recipient = {
       type: 'group' as const,
       id: Math.random().toString(),
@@ -311,8 +438,10 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       count,
       isValid: true,
       imageUrl,
+      // addresses are for personalized cohorts where we need to send the sdk the addresses and not the cohort id
+      addresses,
     };
-    set({ airdropRecipients: [...get().airdropRecipients, recipient] });
+    set({ airdropRecipients: [...airdropRecipients, recipient] });
   },
   // Add & edit are combined here to avoid the AddressInput component needing to subscribe to the list
   addOrEditAirdropAddress: ({
@@ -374,6 +503,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   setHasSufficientChainNativeAssetForTransactionGas: (hasSufficientChainNativeAssetForTransactionGas: boolean) => {
     set({ hasSufficientChainNativeAssetForTransactionGas });
   },
+  setImageModerated: (moderated: boolean) => {
+    set({ imageModerated: moderated });
+  },
   // actions
   reset: () => {
     get().stepAnimatedSharedValue.value = NavigationSteps.INFO;
@@ -405,15 +537,19 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     wallet: Wallet;
     transactionOptions: TransactionOptions;
   }): Promise<LaunchTokenResponse | undefined> => {
-    const { name, chainId, symbol, description, imageUrl, tokenomics, totalSupply, extraBuyAmount } = get();
+    const { name, chainId, symbol, description, imageUrl, tokenomics, totalSupply, extraBuyAmount, getAnalyticsParams } = get();
     const addSuperToken = superTokenStore.getState().addSuperToken;
 
     const airdropRecipients = get().validAirdropRecipients();
     const links = get().validLinks();
+    const analyticsParams = getAnalyticsParams();
 
     const airdropCohortIds = airdropRecipients.filter(r => r.type === 'group').map(recipient => recipient.value);
     const airdropRecipientAddresses = airdropRecipients.filter(r => r.type === 'address').map(recipient => recipient.value);
-    const airdropRecipientCount = airdropRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
+    const airdropPersonalizedCohortAddresses = airdropRecipients
+      .filter(r => r.type === 'group' && r.addresses)
+      .flatMap(recipient => recipient.addresses || []);
+    const allAirdropAddresses = [...airdropRecipientAddresses, ...airdropPersonalizedCohortAddresses];
 
     const targetEth = tokenomics()?.price.targetEth;
     const formattedTotalSupply = parseUnits(totalSupply.toString(), 18).toString();
@@ -444,7 +580,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         },
         airdropMetadata: {
           cohortIds: airdropCohortIds,
-          addresses: airdropRecipientAddresses,
+          addresses: allAirdropAddresses,
         },
       };
 
@@ -472,30 +608,27 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
         analyticsV2.track(analyticsV2.event.tokenLauncherTokenCreated, {
           address: result.tokenAddress,
-          chainId,
-          symbol,
-          name,
-          logoUrl: imageUrl,
-          description,
-          totalSupply,
-          links: linksByType,
-          extraBuyAmount: extraBuyAmount,
-          airdropRecipientCount,
-          airdropAddressCount: airdropRecipientAddresses.length,
-          airdropCohortIds: airdropCohortIds,
+          ...analyticsParams,
         });
       }
       return result;
     } catch (e: unknown) {
       const error = e instanceof Error ? e : new Error(String(e));
-      Alert.alert(`${(error as Error).message}`);
       let metadata = {
-        message: (error as Error).message,
+        message: error.message,
       };
       if (error instanceof TokenLauncherSDKError) {
         metadata = { ...metadata, ...error.context };
       }
+      analyticsV2.track(analyticsV2.event.tokenLauncherCreationFailed, {
+        ...analyticsParams,
+        error: error.message,
+        operation: 'operation' in metadata ? (metadata.operation as string) : undefined,
+        source: 'source' in metadata ? (metadata.source as string) : undefined,
+        transactionHash: 'transactionHash' in metadata ? (metadata.transactionHash as string) : undefined,
+      });
       logger.error(new RainbowError('[TokenLauncher]: Error launching token'), metadata);
+      Alert.alert('Error launching token', error.message);
     }
   },
 }));

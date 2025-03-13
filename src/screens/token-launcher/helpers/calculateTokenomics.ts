@@ -1,4 +1,4 @@
-import { AIRDROP_BPS, CREATOR_BPS, CREATOR_BPS_WITH_AIRDROP } from '../constants';
+import { AIRDROP_BPS, CREATOR_BPS, CREATOR_BPS_WITH_AIRDROP, RAINBOW_BPS } from '../constants';
 import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
 import { parseUnits } from '@ethersproject/units';
 // 1% fee
@@ -26,12 +26,14 @@ export function calculateTokenomics({
   // Calculate supply allocations (same logic as in contract)
   const creatorBaseBips = hasAirdrop ? CREATOR_BPS_WITH_AIRDROP : CREATOR_BPS;
   const airdropAllocationBips = hasAirdrop ? AIRDROP_BPS : 0;
-  let lpAllocationBips = 10000 - creatorBaseBips - airdropAllocationBips;
+  const rainbowFoundationAllocationBips = RAINBOW_BPS;
+  let lpAllocationBips = 10000 - creatorBaseBips - airdropAllocationBips - rainbowFoundationAllocationBips;
   let creatorAllocationBips = creatorBaseBips;
 
   let creatorAmount = (totalSupply * creatorBaseBips) / 10000;
   const airdropAmount = (totalSupply * airdropAllocationBips) / 10000;
-  let lpSupply = totalSupply - creatorAmount - airdropAmount;
+  const rainbowFoundationAmount = (totalSupply * rainbowFoundationAllocationBips) / 10000;
+  let lpSupply = totalSupply - creatorAmount - airdropAmount - rainbowFoundationAmount;
 
   // Calculate required price per token to achieve market cap
   const targetMarketCapEth = targetMarketCapUsd / ethPriceUsd;

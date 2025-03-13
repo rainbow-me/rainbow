@@ -1,12 +1,12 @@
 import React from 'react';
 import * as i18n from '@/languages';
-import { Bleed, Box, Text, TextIcon, useForegroundColor } from '@/design-system';
+import { Bleed, Box, Text, TextIcon } from '@/design-system';
 import { FieldContainer } from './FieldContainer';
 import { FieldLabel } from './FieldLabel';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { FIELD_BORDER_COLOR, FIELD_BORDER_WIDTH, INPUT_HEIGHT } from '../constants';
+import { ERROR_RED, FIELD_BORDER_COLOR, FIELD_BORDER_WIDTH, INPUT_HEIGHT } from '../constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -15,7 +15,6 @@ import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 
 export function NetworkField() {
   const { accentColors } = useTokenLauncherContext();
-  const red = useForegroundColor('red');
   const chainId = useTokenLauncherStore(state => state.chainId);
   const setChainId = useTokenLauncherStore(state => state.setChainId);
   const hasSufficientChainNativeAssetForTransactionGas = useTokenLauncherStore(
@@ -38,13 +37,13 @@ export function NetworkField() {
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          borderColor: hasSufficientChainNativeAssetForTransactionGas ? FIELD_BORDER_COLOR : red,
+          borderColor: hasSufficientChainNativeAssetForTransactionGas ? FIELD_BORDER_COLOR : ERROR_RED,
           gap: 8,
         }}
       >
         <Box gap={10}>
-          <FieldLabel>Network</FieldLabel>
-          <Text color="labelSecondary" size="13pt" weight="medium">
+          <FieldLabel>{i18n.t(i18n.l.token_launcher.titles.network)}</FieldLabel>
+          <Text color="labelSecondary" size="13pt" weight="bold">
             {i18n.t(i18n.l.token_launcher.network_field.balance, { balance: chainNativeAsset?.balance.display ?? '0.00' })}
           </Text>
         </Box>
@@ -93,7 +92,7 @@ export function NetworkField() {
       </FieldContainer>
       {!hasSufficientChainNativeAssetForTransactionGas && (
         <Box paddingHorizontal={'20px'}>
-          <Text color="red" size="13pt" weight="bold">
+          <Text color={{ custom: ERROR_RED }} size="13pt" weight="bold">
             {i18n.t(i18n.l.token_launcher.network_field.not_enough_funds)}
           </Text>
         </Box>

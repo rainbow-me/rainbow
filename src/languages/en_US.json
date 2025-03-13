@@ -3217,7 +3217,7 @@
       },
       "success": {
         "title": "%{symbol} is live!",
-        "congrats": "Congrats, you just launched %{name} into the world! Share it to spread the vibes"
+        "congrats": "Congrats, you just launched %{name} into the world! Share it to spread the vibes."
       },
       "input_errors": {
         "too_long": "Too long, friend.",
@@ -3233,6 +3233,7 @@
         "total_supply": "Total Supply",
         "ticker": "Ticker",
         "name": "Name",
+        "network": "Network",
         "description": "Description",
         "airdrop": "Airdrop",
         "required_info": "REQUIRED INFO",
@@ -3274,7 +3275,7 @@
         },
         "website": {
           "name": "Website",
-          "placeholder": "https://example.com"
+          "placeholder": "https://homepage.com"
         },
         "other": {
           "name": "Other",

@@ -92,6 +92,7 @@ import WalletConnectIcon from './svg/WalletConnectIcon';
 import WalletSwitcherCaret from './svg/WalletSwitcherCaret';
 import WarningCircledIcon from './svg/WarningCircledIcon';
 import WarningIcon from './svg/WarningIcon';
+import { WarpcastIcon } from './svg/WarpcastIcon';
 import BridgeIcon from './svg/BridgeIcon';
 import { DragHandlerIcon } from './svg/DragHandlerIcon';
 
@@ -191,6 +192,7 @@ const IconTypes = {
   walletSwitcherCaret: WalletSwitcherCaret,
   warning: WarningIcon,
   warningCircled: WarningCircledIcon,
+  warpcast: WarpcastIcon,
   x: XIcon,
 };
 

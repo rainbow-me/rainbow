@@ -9,10 +9,11 @@ import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherSt
 import { Canvas, Image, Shadow, rrect, rect, Box as SkBox, Group } from '@shopify/react-native-skia';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Extrapolation, interpolate, useDerivedValue } from 'react-native-reanimated';
+import { ERROR_RED } from '../constants';
 
 const SIZE = 112;
 
-export function TokenLogo() {
+export function TokenLogo({ size = SIZE, disabled = false }: { size?: number; disabled?: boolean }) {
   const { accentColors, tokenImage } = useTokenLauncherContext();
 
   const imageUri = useTokenLauncherStore(state => state.imageUri);
@@ -39,22 +40,16 @@ export function TokenLogo() {
     if (result.assets && result.assets.length > 0) {
       const uri = result.assets[0].uri;
       setImageUri(uri);
-
-      const startTime = Date.now();
-      const url = await upload(uri);
-      const uploadTime = Date.now() - startTime;
-
-      console.log(`Image upload took ${uploadTime}ms`);
-
-      // if no url is returned the upload function throws an error, this is just a sanity check
-      if (url) {
-        setImageUrl(url);
+      const response = await upload(uri);
+      // if no url is returned the upload function throws an error, this is just for the types
+      if (response?.url) {
+        setImageUrl(response.url);
       }
     }
   }, [setImageUri, setImageUrl, upload]);
 
   const roundedRect = useMemo(() => {
-    return rrect(rect(0, 0, SIZE, SIZE), SIZE / 2, SIZE / 2);
+    return rrect(rect(0, 0, size, size), size / 2, size / 2);
   }, []);
 
   // Skia canvas does not support shadow overflow, so we need to add a buffer of the largest shadow offset
@@ -62,10 +57,10 @@ export function TokenLogo() {
 
   return (
     <Box justifyContent="center" alignItems="center">
-      <ButtonPressAnimation onPress={onPress}>
-        <Box width={SIZE} height={SIZE} justifyContent="center" alignItems="center">
+      <ButtonPressAnimation onPress={onPress} disabled={disabled}>
+        <Box width={size} height={size} justifyContent="center" alignItems="center">
           {tokenImage && imageUri && (
-            <Canvas style={{ width: SIZE + shadowOverflowBuffer, height: SIZE + shadowOverflowBuffer }}>
+            <Canvas style={{ width: size + shadowOverflowBuffer, height: size + shadowOverflowBuffer }}>
               <Group transform={[{ translateX: shadowOverflowBuffer / 2 }, { translateY: shadowOverflowBuffer / 2 }]}>
                 <SkBox opacity={dropShadowsOpacity} box={roundedRect}>
                   <Shadow dx={0} dy={4} blur={12 / 2} color={accentColors.opacity30} />
@@ -73,7 +68,7 @@ export function TokenLogo() {
                   {/* <Shadow dx={0} dy={30} blur={34 / 2} color={'rgba(37, 41, 46, 0.2)'} /> */}
                   <Shadow dx={0} dy={0} blur={20 / 2} color={accentColors.opacity12} />
                 </SkBox>
-                <Image clip={roundedRect} x={0} y={0} width={SIZE} height={SIZE} image={tokenImage} fit="cover" />
+                <Image clip={roundedRect} x={0} y={0} width={size} height={size} image={tokenImage} fit="cover" />
                 <SkBox box={roundedRect}>
                   <Shadow dx={0} dy={0.7} blur={3.52 / 2} color={'rgba(255, 255, 255, 1)'} inner shadowOnly />
                 </SkBox>
@@ -86,7 +81,7 @@ export function TokenLogo() {
           {!imageUri && (
             <Box
               shadow={'30px'}
-              borderRadius={SIZE / 2}
+              borderRadius={size / 2}
               shadowOpacity={0.24}
               shadowColor={accentColors.opacity100}
               background={'surfacePrimary'}
@@ -98,7 +93,7 @@ export function TokenLogo() {
                 backgroundColor={accentColors.opacity10}
                 justifyContent={'center'}
                 alignItems={'center'}
-                borderRadius={SIZE / 2}
+                borderRadius={size / 2}
                 style={{
                   borderStyle: 'dashed',
                   borderWidth: 3,
@@ -119,7 +114,7 @@ export function TokenLogo() {
             width={28}
             height={28}
             borderRadius={28 / 2}
-            background={'red'}
+            backgroundColor={ERROR_RED}
             style={{
               position: 'absolute',
               right: 0,
@@ -135,10 +130,10 @@ export function TokenLogo() {
 
       {error && (
         <Box gap={8} paddingTop={'12px'}>
-          <Text align="center" size="13pt" color={'red'} weight="medium">
+          <Text align="center" size="13pt" color={{ custom: ERROR_RED }} weight="medium">
             {i18n.t(i18n.l.token_launcher.image_upload_error.title)}
           </Text>
-          <Text align="center" size="13pt" color={'red'} weight="medium">
+          <Text align="center" size="13pt" color={{ custom: ERROR_RED }} weight="medium">
             {i18n.t(i18n.l.token_launcher.image_upload_error.subtitle)}
           </Text>
         </Box>

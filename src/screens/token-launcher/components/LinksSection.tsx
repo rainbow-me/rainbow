@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import * as i18n from '@/languages';
 import { StyleSheet } from 'react-native';
 import { CollapsableField } from './CollapsableField';
@@ -15,6 +16,8 @@ import {
   FIELD_INNER_BORDER_RADIUS,
   INNER_FIELD_BACKGROUND_COLOR,
   SMALL_INPUT_HEIGHT,
+  LINK_ICON_SIZE,
+  ERROR_RED,
 } from '../constants';
 import { useTheme } from '@/theme';
 import FastImage from 'react-native-fast-image';
@@ -34,7 +37,7 @@ export const LINK_SETTINGS = {
   },
   telegram: {
     Icon: () => (
-      <IconContainer height={20} width={20}>
+      <IconContainer height={LINK_ICON_SIZE} width={LINK_ICON_SIZE}>
         <Bleed left="6px">
           <Icon name="telegram" width="20" height="12" color={colors.white} />
         </Bleed>
@@ -47,7 +50,11 @@ export const LINK_SETTINGS = {
     type: 'telegram',
   },
   farcaster: {
-    Icon: () => <FastImage source={require('@/assets/warpcast.png')} style={{ width: 20, height: 20 }} />,
+    Icon: () => (
+      <IconContainer height={LINK_ICON_SIZE} width={LINK_ICON_SIZE}>
+        <Icon name="warpcast" color={colors.white} width={14} />
+      </IconContainer>
+    ),
     iconBackgroundColor: '#855DCD',
     primaryColor: '#855DCD',
     placeholder: i18n.t(i18n.l.token_launcher.links.farcaster.placeholder),
@@ -59,7 +66,7 @@ export const LINK_SETTINGS = {
       <TextIcon
         // This specific globe icon has a problem being centered. Even this is not absolutely centered, but it's closer
         textStyle={{ marginLeft: StyleSheet.hairlineWidth * 2 }}
-        containerSize={20}
+        containerSize={LINK_ICON_SIZE}
         color="label"
         size="icon 13px"
         weight="heavy"
@@ -75,7 +82,7 @@ export const LINK_SETTINGS = {
   },
   other: {
     Icon: () => (
-      <TextIcon containerSize={20} color="label" size="icon 10px" weight="heavy">
+      <TextIcon containerSize={LINK_ICON_SIZE} color="label" size="icon 10px" weight="heavy">
         {'􀉣'}
       </TextIcon>
     ),
@@ -87,42 +94,70 @@ export const LINK_SETTINGS = {
   },
 };
 
+// TODO: When RN version is updated to 0.79+, set the lineBreakModeIOS: https://github.com/facebook/react-native/issues/44107
 function LinkField({ link, index }: { link: Link; index: number }) {
+  const imageUri = useTokenLauncherStore(state => state.imageUri);
   const editLink = useTokenLauncherStore(state => state.editLink);
   const deleteLink = useTokenLauncherStore(state => state.deleteLink);
-  const { Icon, placeholder, iconBackgroundColor } = LINK_SETTINGS[link.type as keyof typeof LINK_SETTINGS];
+  const linkSettings = LINK_SETTINGS[link.type as keyof typeof LINK_SETTINGS];
+  const { placeholder, iconBackgroundColor } = linkSettings;
+
+  const Icon = useMemo(() => {
+    if (link.type === 'website' && imageUri) {
+      // eslint-disable-next-line react/display-name
+      return () => (
+        <FastImage source={{ uri: imageUri }} style={{ width: LINK_ICON_SIZE, height: LINK_ICON_SIZE, borderRadius: LINK_ICON_SIZE / 2 }} />
+      );
+    }
+    return linkSettings.Icon;
+  }, [link.type, linkSettings, imageUri]);
 
   const [isValid, setIsValid] = useState(true);
 
-  const onInputChange = (input: string) => {
+  const onInputChange = useDebouncedCallback((input: string) => {
     editLink({ index, input, url: input });
     const isValidInput = !validateLinkWorklet({ link: input, type: link.type });
     if (isValidInput !== isValid) {
       setIsValid(isValidInput);
     }
-  };
+  }, 300);
+
+  const validationWorklet = useCallback(
+    (input: string) => {
+      'worklet';
+      return validateLinkWorklet({ link: input, type: link.type });
+    },
+    [link.type]
+  );
 
   return (
     <Box>
       <Box flexDirection="row" alignItems="center" gap={16}>
         <SingleFieldInput
+          numberOfLines={1}
           style={{
             flex: 1,
+            width: '100%',
             backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
             paddingHorizontal: 16,
             borderRadius: FIELD_INNER_BORDER_RADIUS,
             height: SMALL_INPUT_HEIGHT,
           }}
           icon={
-            <Box width={20} height={20} borderRadius={10} backgroundColor={iconBackgroundColor} justifyContent="center" alignItems="center">
+            <Box
+              width={LINK_ICON_SIZE}
+              height={LINK_ICON_SIZE}
+              borderRadius={LINK_ICON_SIZE / 2}
+              backgroundColor={iconBackgroundColor}
+              justifyContent="center"
+              alignItems="center"
+            >
               <Icon />
             </Box>
           }
-          validationWorklet={(input: string) => {
-            return validateLinkWorklet({ link: input, type: link.type });
-          }}
+          validationWorklet={validationWorklet}
           textAlign="left"
-          inputStyle={{ textAlign: 'left', paddingLeft: 8 }}
+          inputStyle={{ paddingLeft: 8 }}
           onInputChange={onInputChange}
           placeholder={placeholder}
           autoCorrect={false}
@@ -142,7 +177,7 @@ function LinkField({ link, index }: { link: Link; index: number }) {
       </Box>
       {!isValid && (
         <Box paddingVertical={'8px'} paddingHorizontal={'20px'}>
-          <Text color="red" size="13pt" weight="heavy">
+          <Text color={{ custom: ERROR_RED }} size="13pt" weight="heavy">
             {i18n.t(i18n.l.token_launcher.input_errors.invalid_input)}
           </Text>
         </Box>
@@ -194,9 +229,9 @@ export function LinksSection() {
                 >
                   <Box flexDirection="row" alignItems="center" gap={8}>
                     <Box
-                      width={20}
-                      height={20}
-                      borderRadius={10}
+                      width={LINK_ICON_SIZE}
+                      height={LINK_ICON_SIZE}
+                      borderRadius={LINK_ICON_SIZE / 2}
                       backgroundColor={iconBackgroundColor}
                       justifyContent="center"
                       alignItems="center"

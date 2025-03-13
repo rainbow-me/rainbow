@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import * as i18n from '@/languages';
 import { AnimatedText, Box, Separator, TextShadow, useForegroundColor } from '@/design-system';
 import { CollapsableField } from './CollapsableField';
@@ -6,6 +6,7 @@ import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/Gestur
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { runOnJS, SharedValue, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import {
+  ERROR_RED,
   FIELD_BORDER_RADIUS,
   FIELD_BORDER_WIDTH,
   FIELD_INNER_BORDER_RADIUS,
@@ -19,6 +20,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { convertAmountToBalanceDisplay, lessThan, subtract } from '@/helpers/utilities';
 import { lessThanWorklet } from '@/safe-math/SafeMath';
+import { useDebouncedCallback } from 'use-debounce';
 
 function PrebuyAmountButton({
   label,
@@ -113,7 +115,6 @@ export function PrebuySection() {
 
   const inputRef = useRef<SingleFieldInputRef>(null);
   const borderColor = useForegroundColor('buttonStroke');
-  const errorColor = useForegroundColor('red');
   const subtitleColor = useForegroundColor('labelQuaternary');
 
   const error = useSharedValue('');
@@ -153,9 +154,47 @@ export function PrebuySection() {
 
   const customInputSubtitleStyle = useAnimatedStyle(() => {
     return {
-      color: error.value === '' ? subtitleColor : errorColor,
+      color: error.value === '' ? subtitleColor : ERROR_RED,
     };
   });
+
+  const onInputChange = useDebouncedCallback((text: string) => {
+    'worklet';
+    if (selectedAmount.value !== 0) {
+      selectedAmount.value = 0;
+    }
+    const value = parseFloat(text) || 0;
+    const isValueOutOfRange = lessThanWorklet(chainNativeAssetAvailableBalance, value) || lessThanWorklet(maxPrebuyAmount, value);
+    // Don't set the amount if it's out of range to avoid extreme tokenomics calculations
+    if (!isValueOutOfRange) {
+      runOnJS(setExtraBuyAmount)(value);
+    }
+  }, 300);
+
+  const validationWorklet = useCallback(
+    (text: string) => {
+      'worklet';
+      const amount = parseFloat(text) || 0;
+
+      if (lessThanWorklet(chainNativeAssetAvailableBalance, amount)) {
+        error.value = i18n.t(i18n.l.token_launcher.input_errors.amount_is_greater_than_balance);
+        return { error: true };
+      }
+
+      if (lessThanWorklet(maxPrebuyAmount, amount)) {
+        error.value = i18n.t(i18n.l.token_launcher.input_errors.amount_is_greater_than_max_prebuy_amount, {
+          maxPrebuyAmount: maxPrebuyAmount,
+          chainNativeAssetSymbol,
+        });
+        return { error: true };
+      }
+
+      if (error.value !== '') {
+        error.value = '';
+      }
+    },
+    [chainNativeAssetAvailableBalance, chainNativeAssetSymbol, error, maxPrebuyAmount]
+  );
 
   return (
     <CollapsableField title="Pre-buy more tokens">
@@ -196,34 +235,8 @@ export function PrebuySection() {
             labelPosition="right"
             placeholder="Custom amount"
             inputMode="decimal"
-            onInputChange={text => {
-              'worklet';
-              if (selectedAmount.value !== 0) {
-                selectedAmount.value = 0;
-              }
-              runOnJS(setExtraBuyAmount)(parseFloat(text));
-            }}
-            validationWorklet={text => {
-              'worklet';
-              const amount = parseFloat(text) || 0;
-
-              if (lessThanWorklet(chainNativeAssetAvailableBalance, amount)) {
-                error.value = i18n.t(i18n.l.token_launcher.input_errors.amount_is_greater_than_balance);
-                return { error: true };
-              }
-
-              if (lessThanWorklet(maxPrebuyAmount, amount)) {
-                error.value = i18n.t(i18n.l.token_launcher.input_errors.amount_is_greater_than_max_prebuy_amount, {
-                  maxPrebuyAmount: maxPrebuyAmount,
-                  chainNativeAssetSymbol,
-                });
-                return { error: true };
-              }
-
-              if (error.value !== '') {
-                error.value = '';
-              }
-            }}
+            onInputChange={onInputChange}
+            validationWorklet={validationWorklet}
             style={{
               backgroundColor: INNER_FIELD_BACKGROUND_COLOR,
               paddingHorizontal: 16,

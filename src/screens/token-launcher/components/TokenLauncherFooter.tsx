@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import * as i18n from '@/languages';
 import { Box, Inline, Separator, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -15,7 +15,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { STEP_TRANSITION_DURATION } from '../constants';
-import { Keyboard, Share } from 'react-native';
+import { Alert, Keyboard, Share } from 'react-native';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { GasButton } from './gas/GasButton';
 import { useAccountSettings, useBiometryType, useWallets } from '@/hooks';
@@ -36,6 +36,7 @@ import { staleBalancesStore } from '@/state/staleBalances';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { analyticsV2 } from '@/analytics';
+import { logger, RainbowError } from '@/logger';
 
 // height + top padding + bottom padding
 export const FOOTER_HEIGHT = 48 + 16 + 8;
@@ -46,7 +47,7 @@ function HoldToCreateButton() {
   const setStep = useTokenLauncherStore(state => state.setStep);
   const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
   const chainId = useTokenLauncherStore(state => state.chainId);
-  const step = useTokenLauncherStore(state => state.step);
+  const getAnalyticsParams = useTokenLauncherStore(state => state.getAnalyticsParams);
   const { isHardwareWallet } = useWallets();
   const biometryType = useBiometryType();
   const { accountAddress } = useAccountSettings();
@@ -55,24 +56,23 @@ function HoldToCreateButton() {
     gasSpeed,
   });
 
-  const isProcessing = step === NavigationSteps.CREATING;
   const { addStaleBalance } = staleBalancesStore.getState();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const isLongPressAvailableForBiometryType =
     biometryType === BiometryTypes.FaceID || biometryType === BiometryTypes.Face || biometryType === BiometryTypes.none;
   const showBiometryIcon = !IS_ANDROID && isLongPressAvailableForBiometryType && !isHardwareWallet;
 
   const handleLongPress = useCallback(async () => {
-    const provider = getProvider({ chainId });
-    const wallet = await loadWallet({
-      address: accountAddress,
-      provider,
-    });
-    setStep(NavigationSteps.CREATING);
-    if (isHardwareWallet) {
-      // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
-    } else {
+    try {
+      setIsProcessing(true);
+      const provider = getProvider({ chainId });
+      const wallet = await loadWallet({
+        address: accountAddress,
+        provider,
+      });
       if (wallet) {
+        setStep(NavigationSteps.CREATING);
         const createTokenResponse = await createToken({ wallet: wallet as Wallet, transactionOptions });
         if (createTokenResponse) {
           addStaleBalance({
@@ -87,7 +87,27 @@ function HoldToCreateButton() {
         } else {
           setStep(NavigationSteps.REVIEW);
         }
+      } else {
+        // Did not get biometry to load wallet
       }
+
+      // TODO: implement later
+      // if (isHardwareWallet) {
+      // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
+      // } else {
+      // }
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e : new Error(String(e));
+      Alert.alert('Error initiating token creation', `${error.message}`);
+      logger.error(new RainbowError('[TokenLauncher]: Error Initiating Token Creation'), {
+        message: error.message,
+      });
+      analyticsV2.track(analyticsV2.event.tokenLauncherCreationFailed, {
+        ...getAnalyticsParams(),
+        error: error.message,
+      });
+    } finally {
+      setIsProcessing(false);
     }
   }, [isHardwareWallet, createToken, accountAddress, chainId, transactionOptions, setStep, addStaleBalance]);
 
@@ -143,6 +163,7 @@ function ShareButton() {
   const launchedTokenAddress = useTokenLauncherStore(state => state.launchedTokenAddress);
   const chainId = useTokenLauncherStore(state => state.chainId);
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
+  const getAnalyticsParams = useTokenLauncherStore(state => state.getAnalyticsParams);
 
   return (
     <ButtonPressAnimation
@@ -158,9 +179,9 @@ function ShareButton() {
           url,
         });
         analyticsV2.track(analyticsV2.event.tokenLauncherSharePressed, {
-          tokenAddress: launchedTokenAddress,
-          chainId,
+          address: launchedTokenAddress,
           url,
+          ...getAnalyticsParams(),
         });
       }}
     >

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { uploadImageToCloudinary } from '../helpers/uploadToCloudinary';
 import { logger, RainbowError } from '@/logger';
+import { analyticsV2 } from '@/analytics';
 
 export function useUploadToCloudinary() {
   const [isUploading, setIsUploading] = useState(false);
@@ -8,16 +9,25 @@ export function useUploadToCloudinary() {
 
   const upload = async (uri: string) => {
     setIsUploading(true);
+    let url;
+    let isModerated;
     try {
-      const url = await uploadImageToCloudinary(uri);
-      if (!url) {
+      const response = await uploadImageToCloudinary(uri);
+      if (!response.url) {
         throw new Error('Failed to upload image');
       }
-      return url;
+      url = response.url;
+      isModerated = response.isModerated;
+      return { url, isModerated };
     } catch (e: unknown) {
       const error = e instanceof Error ? e : new Error(String(e));
       logger.error(new RainbowError('[useUploadToCloudinary]: Failed to upload image to Cloudinary'), {
         message: error.message,
+      });
+      analyticsV2.track(analyticsV2.event.tokenLauncherImageUploadFailed, {
+        error: error.message,
+        url,
+        isModerated,
       });
       setError(error);
     } finally {

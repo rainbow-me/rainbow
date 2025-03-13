@@ -9,6 +9,10 @@ import { DEFAULT_CARD_SIZE, SkiaCard, SkiaCardProps } from './SkiaCard';
 import { plusButtonSvg, stars } from './cardSvgs';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
+import { enableActionsOnReadOnlyWallet } from '@/config';
+import store from '@/redux/store';
+import walletTypes from '@/helpers/walletTypes';
+import { watchingAlert } from '@/utils';
 
 const PLUS_BUTTON_SIZE = 64;
 const PLUS_BUTTON_HORIZONTAL_INSET = (DEFAULT_CARD_SIZE - PLUS_BUTTON_SIZE) / 2;
@@ -57,10 +61,17 @@ const CARD_PROPS: Partial<SkiaCardProps> = {
   },
 };
 
+function isCurrentWalletReadOnly() {
+  return store.getState().wallets.selected?.type === walletTypes.readOnly;
+}
+
 export const LaunchCard = memo(function LaunchCard() {
   const { navigate } = useNavigation();
 
-  const onPress = useCallback(() => {
+  const navigateToTokenLauncher = useCallback(() => {
+    if (!enableActionsOnReadOnlyWallet && isCurrentWalletReadOnly()) {
+      return watchingAlert();
+    }
     navigate(Routes.TOKEN_LAUNCHER_SCREEN);
   }, [navigate]);
 
@@ -82,7 +93,7 @@ export const LaunchCard = memo(function LaunchCard() {
 
   return (
     <SkiaCard
-      onPress={onPress}
+      onPress={navigateToTokenLauncher}
       shadowColor={CARD_PROPS.shadowColor}
       skiaBackground={
         <Paint antiAlias dither>
