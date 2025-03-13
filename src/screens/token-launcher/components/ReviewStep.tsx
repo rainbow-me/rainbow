@@ -130,8 +130,7 @@ function AboutCard() {
 
   const imageUri = useTokenLauncherStore(state => state.imageUri);
   const description = useTokenLauncherStore(state => state.description);
-  // Emtpy links do not prevent you from continuing, but they are not valid so they are not shown
-  const links = useTokenLauncherStore(state => state.links.filter(link => link.input !== ''));
+  const links = useTokenLauncherStore(state => state.validLinks());
 
   if (description === '' && links.length === 0) return null;
 
@@ -182,9 +181,11 @@ function AboutCard() {
                 <Text size="17pt" weight="medium" color={'labelSecondary'}>
                   {displayName}
                 </Text>
-                <Text style={{ flex: 1 }} size="17pt" weight="medium" color={{ custom: accentColors.opacity100 }} numberOfLines={1}>
-                  {input}
-                </Text>
+                <Box justifyContent="flex-end" flexDirection="row" style={{ flex: 1 }}>
+                  <Text size="17pt" weight="medium" color={{ custom: accentColors.opacity100 }} numberOfLines={1}>
+                    {input}
+                  </Text>
+                </Box>
               </Box>
             );
           })}

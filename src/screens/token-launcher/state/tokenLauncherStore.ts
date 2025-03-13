@@ -15,7 +15,13 @@ import { calculateTokenomics } from '../helpers/calculateTokenomics';
 import store from '@/redux/store';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { formatCurrency } from '@/helpers/strings';
-import { validateLinkWorklet, validateNameWorklet, validateSymbolWorklet, validateTotalSupplyWorklet } from '../helpers/inputValidators';
+import {
+  formatLinkInputToUrl,
+  validateLinkWorklet,
+  validateNameWorklet,
+  validateSymbolWorklet,
+  validateTotalSupplyWorklet,
+} from '../helpers/inputValidators';
 import { Wallet } from '@ethersproject/wallet';
 import { parseUnits } from '@ethersproject/units';
 import { TransactionOptions } from '@rainbow-me/swaps';
@@ -105,6 +111,7 @@ interface TokenLauncherStore {
   formattedTotalSupply: () => string;
   validAirdropRecipients: () => AirdropRecipient[];
   validLinks: () => Link[];
+  linkUrlsByType: () => Record<LinkType, string>;
   hasExceededMaxAirdropRecipients: () => boolean;
   tokenPrice: () => string;
   tokenMarketCap: () => string;
@@ -126,7 +133,7 @@ interface TokenLauncherStore {
   setChainId: (chainId: number) => void;
   setTotalSupply: (totalSupply: number) => void;
   addLink: (type: LinkType) => void;
-  editLink: ({ index, input, url }: { index: number; input: string; url: string }) => void;
+  editLink: ({ index, input }: { index: number; input: string }) => void;
   deleteLink: (index: number) => void;
   setExtraBuyAmount: (amount: number) => void;
   setDescription: (description: string) => void;
@@ -199,7 +206,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   name: '',
   symbol: '',
   description: '',
-  links: [{ input: '', type: 'website' as LinkType, url: '' }],
+  links: [{ input: '', type: 'website' as LinkType }],
   airdropRecipients: [],
   chainId: DEFAULT_CHAIN_ID,
   totalSupply: DEFAULT_TOTAL_SUPPLY,
@@ -225,14 +232,28 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       imageUrl !== '' ||
       totalSupply !== DEFAULT_TOTAL_SUPPLY ||
       description !== '' ||
-      validLinks().length > 1 ||
+      validLinks().length > 0 ||
       validAirdropRecipients().length > 0 ||
       extraBuyAmount > 0
     );
   },
   formattedTotalSupply: () => abbreviateNumber(get().totalSupply, 2, 'long', true),
   validAirdropRecipients: () => get().airdropRecipients.filter(recipient => recipient.isValid),
-  validLinks: () => get().links.filter(link => !validateLinkWorklet({ link: link.input, type: link.type })),
+  validLinks: () =>
+    get()
+      .links.filter(link => link.input.trim() !== '')
+      .filter(link => !validateLinkWorklet({ link: link.input, type: link.type })),
+  linkUrlsByType: () => {
+    return get()
+      .validLinks()
+      .reduce(
+        (acc, link) => {
+          acc[link.type] = formatLinkInputToUrl({ input: link.input, linkType: link.type });
+          return acc;
+        },
+        {} as Record<LinkType, string>
+      );
+  },
   hasExceededMaxAirdropRecipients: () => {
     const { maxAirdropRecipientCount, airdropRecipients } = get();
     const totalRecipientCount = airdropRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
@@ -320,7 +341,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const { name, chainId, symbol, description, imageUrl, totalSupply, extraBuyAmount, imageModerated } = get();
 
     const airdropRecipients = get().validAirdropRecipients();
-    const links = get().validLinks();
 
     const airdropPredefinedCohortRecipients = airdropRecipients.filter(r => r.type === 'group' && !r.addresses);
     const airdropPredefinedCohortIds = airdropPredefinedCohortRecipients.map(recipient => recipient.value);
@@ -339,13 +359,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
     const airdropTotalRecipientsCount = airdropRecipients.reduce((acc, recipient) => acc + recipient.count, 0);
 
-    const linksByType = links.reduce(
-      (acc, link) => {
-        acc[link.type] = link.url;
-        return acc;
-      },
-      {} as Record<string, string>
-    );
+    const linksByType = get().linkUrlsByType();
 
     return {
       chainId,
@@ -387,10 +401,10 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
   setChainId: (chainId: number) => set({ chainId }),
   setTotalSupply: (totalSupply: number) => set({ totalSupply }),
   addLink: (type: LinkType) => {
-    set({ links: [...get().links, { input: '', type, url: '' }] });
+    set({ links: [...get().links, { input: '', type }] });
   },
-  editLink: ({ index, input, url }: { index: number; input: string; url: string }) => {
-    set({ links: get().links.map((link, i) => (i === index ? { ...link, input, url } : link)) });
+  editLink: ({ index, input }: { index: number; input: string }) => {
+    set({ links: get().links.map((link, i) => (i === index ? { ...link, input: input.trim() } : link)) });
   },
   deleteLink: (index: number) => {
     set({ links: get().links.filter((_, i) => i !== index) });
@@ -516,7 +530,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       name: '',
       symbol: '',
       description: '',
-      links: [{ input: '', type: 'website', url: '' }],
+      links: [{ input: '', type: 'website' }],
       extraBuyAmount: 0,
       chainNativeAssetUsdPrice: 0,
       chainNativeAssetNativePrice: 0,
@@ -541,10 +555,9 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const addSuperToken = superTokenStore.getState().addSuperToken;
 
     const airdropRecipients = get().validAirdropRecipients();
-    const links = get().validLinks();
     const analyticsParams = getAnalyticsParams();
 
-    const airdropCohortIds = airdropRecipients.filter(r => r.type === 'group').map(recipient => recipient.value);
+    const airdropPredefinedCohortIds = airdropRecipients.filter(r => r.type === 'group' && !r.addresses).map(recipient => recipient.value);
     const airdropRecipientAddresses = airdropRecipients.filter(r => r.type === 'address').map(recipient => recipient.value);
     const airdropPersonalizedCohortAddresses = airdropRecipients
       .filter(r => r.type === 'group' && r.addresses)
@@ -553,13 +566,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
     const targetEth = tokenomics()?.price.targetEth;
     const formattedTotalSupply = parseUnits(totalSupply.toString(), 18).toString();
-    const linksByType = links.reduce(
-      (acc, link) => {
-        acc[link.type] = link.url;
-        return acc;
-      },
-      {} as Record<LinkType, string>
-    );
+    const linksByType = get().linkUrlsByType();
 
     try {
       const initialTick = TokenLauncherSDK.getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
@@ -583,7 +590,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
           ).toString(),
         },
         airdropMetadata: {
-          cohortIds: airdropCohortIds,
+          cohortIds: airdropPredefinedCohortIds,
           addresses: allAirdropAddresses,
         },
       };

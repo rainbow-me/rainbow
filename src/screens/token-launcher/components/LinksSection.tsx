@@ -115,12 +115,12 @@ function LinkField({ link, index }: { link: Link; index: number }) {
   const [isValid, setIsValid] = useState(true);
 
   const onInputChange = useDebouncedCallback((input: string) => {
-    editLink({ index, input, url: input });
+    editLink({ index, input });
     const isValidInput = !validateLinkWorklet({ link: input, type: link.type });
     if (isValidInput !== isValid) {
       setIsValid(isValidInput);
     }
-  }, 300);
+  }, 500);
 
   const validationWorklet = useCallback(
     (input: string) => {

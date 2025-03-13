@@ -3175,13 +3175,14 @@
         "my_share": "MY SHARE",
         "airdropping": "AIRDROPPING",
         "start_price": "START PRICE",
+
         "sections": {
           "my_share": {
             "title": "Creator Share",
             "description": "Your personal stake in the project"
           },
           "airdropping": {
-            "title": "Creator Share",
+            "title": "Airdrop Share",
             "description": "Distributed to friends and supporters"
           },
           "liquidity_pool": {
@@ -3238,7 +3239,7 @@
         "airdrop": "Airdrop",
         "required_info": "REQUIRED INFO",
         "about": "ABOUT",
-        "token_allocation": "Token Allocation",
+        "token_allocation": "TOKEN ALLOCATION",
         "token_allocation_breakdown": "Token Allocation Breakdown",
         "mcap": "MCAP"
       },

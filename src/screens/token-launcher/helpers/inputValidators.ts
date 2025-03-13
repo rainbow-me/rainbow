@@ -72,7 +72,7 @@ type PlatformConfig = SocialPlatformConfig | UrlOnlyPlatformConfig;
 const PLATFORM_CONFIGS: Record<LinkType, PlatformConfig> = {
   x: {
     usernameRegex: /^@?[a-zA-Z0-9_]{1,15}$/,
-    baseUrls: ['twitter.com/', 'x.com/'],
+    baseUrls: ['x.com/', 'twitter.com/'],
   },
   telegram: {
     usernameRegex: /^@?[a-zA-Z0-9_]{5,32}$/,
@@ -93,6 +93,32 @@ const PLATFORM_CONFIGS: Record<LinkType, PlatformConfig> = {
     requiresValidUrl: true,
   },
 };
+
+export function formatLinkInputToUrl({ input, linkType }: { input: string; linkType: LinkType }): string {
+  if (!input) return '';
+
+  const config = PLATFORM_CONFIGS[linkType];
+
+  if (input.startsWith('http://') || input.startsWith('https://')) {
+    return input;
+  }
+
+  if ('requiresValidUrl' in config) {
+    // Add https:// if it's missing
+    return input.includes('://') ? input : `https://${input}`;
+  }
+
+  const { baseUrls } = config as SocialPlatformConfig;
+
+  // Check if it's already a URL with one of the platform's base URLs
+  const isUrl = baseUrls.some(baseUrl => input.includes(baseUrl));
+  if (isUrl) {
+    return input.includes('://') ? input : `https://${input}`;
+  }
+
+  // It's a username, so format it as a URL
+  return `https://${baseUrls[0]}${input}`;
+}
 
 export function validateLinkWorklet({ link, type }: { link: string; type: LinkType }): ValidationResult {
   'worklet';
