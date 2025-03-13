@@ -1,7 +1,7 @@
 import { Address } from 'viem';
-import { AddysAsset, AddysConsolidatedError, AddysResponseStatus } from '../types';
-import { ChainId } from '@/state/backendNetworks/types';
 import { ParsedAddressAsset } from '@/entities';
+import { ChainId } from '@/state/backendNetworks/types';
+import { AddysAsset, AddysConsolidatedError, AddysResponseStatus } from '../types';
 
 interface Colors {
   primary: string;
@@ -36,6 +36,7 @@ interface AddysBaseClaimable {
   network: ChainId;
   asset: AddysAsset;
   amount: string;
+  creator_address: string;
   dapp: DApp;
   total_usd_value: number;
 }
@@ -43,6 +44,10 @@ interface AddysBaseClaimable {
 interface AddysTransactionClaimable extends AddysBaseClaimable {
   claim_action_type: 'transaction';
   claim_action: ClaimActionTransaction[];
+}
+
+interface AddysRainbowClaimable extends AddysTransactionClaimable {
+  creator_address: string;
 }
 
 interface AddysSponsoredClaimable extends AddysBaseClaimable {
@@ -55,7 +60,7 @@ interface AddysUnsupportedClaimable extends AddysBaseClaimable {
   claim_action?: ClaimAction[];
 }
 
-export type AddysClaimable = AddysTransactionClaimable | AddysSponsoredClaimable | AddysUnsupportedClaimable;
+export type AddysClaimable = AddysTransactionClaimable | AddysRainbowClaimable | AddysSponsoredClaimable | AddysUnsupportedClaimable;
 
 interface ConsolidatedClaimablesPayloadResponse {
   claimables: AddysClaimable[];
@@ -76,7 +81,7 @@ export interface ConsolidatedClaimablesResponse {
   payload: ConsolidatedClaimablesPayloadResponse;
 }
 
-interface BaseClaimable {
+export interface BaseClaimable {
   asset: ParsedAddressAsset;
   chainId: ChainId;
   name: string;
@@ -95,12 +100,16 @@ export interface TransactionClaimable extends BaseClaimable {
   action: { to: Address; data: string };
 }
 
+export interface RainbowClaimable extends TransactionClaimable {
+  creatorAddress: string;
+}
+
 export interface SponsoredClaimable extends BaseClaimable {
   type: 'sponsored';
   action: { url: string; method: string };
 }
 
-export type Claimable = TransactionClaimable | SponsoredClaimable;
+export type Claimable = TransactionClaimable | RainbowClaimable | SponsoredClaimable;
 
 interface ClaimTransactionStatus {
   network: ChainId;

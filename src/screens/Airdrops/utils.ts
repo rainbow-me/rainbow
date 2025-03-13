@@ -10,7 +10,7 @@ import { add, convertAmountToNativeDisplayWorklet, multiply, formatNumber } from
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { weiToGwei } from '@/parsers';
-import { TransactionClaimable } from '@/resources/addys/claimables/types';
+import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -46,7 +46,7 @@ export async function executeAirdropClaim({
   gasSettings,
 }: {
   accountAddress: string;
-  claimable: TransactionClaimable;
+  claimable: RainbowClaimable;
   gasLimit: string;
   gasSettings: GasSettings;
 }): Promise<{ error?: string; success: boolean; txHash?: string }> {
@@ -148,7 +148,7 @@ export async function executeAirdropClaim({
 /**
  * Extracts transaction data from a claimable.
  */
-function getClaimableTransactionData(claimable: TransactionClaimable): ClaimableTransactionData {
+function getClaimableTransactionData(claimable: RainbowClaimable): ClaimableTransactionData {
   return {
     airdropId: claimable.uniqueId,
     amount: claimable.value.claimAsset.amount,
@@ -163,7 +163,7 @@ function getClaimableTransactionData(claimable: TransactionClaimable): Claimable
 /**
  * Estimates gas limit for an airdrop claim transaction.
  */
-export async function getAirdropClaimGasLimit(claimable: TransactionClaimable, accountAddress: string): Promise<string | undefined> {
+export async function getAirdropClaimGasLimit(claimable: RainbowClaimable, accountAddress: string): Promise<string | undefined> {
   try {
     const { chainId, data, to } = getClaimableTransactionData(claimable);
     const provider = getProvider({ chainId });
@@ -246,7 +246,7 @@ function buildClaimTransaction({
   txHash,
 }: {
   accountAddress: Address | string;
-  claimable: TransactionClaimable;
+  claimable: RainbowClaimable;
   chainId: ChainId;
   gasLimit: string;
   nonce: number;

@@ -4,7 +4,7 @@ import { NativeCurrencyKey } from '@/entities';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { logger, RainbowError } from '@/logger';
 import Routes from '@/navigation/routesNames';
-import { AddysClaimable, TransactionClaimable } from '@/resources/addys/claimables/types';
+import { AddysClaimable, RainbowClaimable } from '@/resources/addys/claimables/types';
 import { parseClaimables } from '@/resources/addys/claimables/utils';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { AddysConsolidatedError } from '@/resources/addys/types';
@@ -41,20 +41,20 @@ type AirdropsParams = {
 };
 
 type AirdropsQueryData = {
-  claimables: TransactionClaimable[];
+  claimables: RainbowClaimable[];
   pagination: PaginationInfo | null;
 };
 
 type AirdropsState = {
   airdrops: {
     address: Address | string;
-    claimables: TransactionClaimable[];
+    claimables: RainbowClaimable[];
     currency: NativeCurrencyKey;
     fetchedAt: { [pageNumber: number]: number };
     pagination: PaginationInfo | null;
   } | null;
   fetchNextPage: () => Promise<void>;
-  getAirdrops: () => TransactionClaimable[] | null;
+  getAirdrops: () => RainbowClaimable[] | null;
   getCurrentPage: () => number | null;
   getFirstCoinIconUrl: (size?: number) => string | null;
   getNextPage: () => number | null;

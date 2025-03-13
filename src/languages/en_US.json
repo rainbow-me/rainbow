@@ -3185,7 +3185,8 @@
         "hold_to_claim": "Hold to Claim",
         "hold_to_retry": "Hold to Retry",
         "title": "Claim $%{symbol}",
-        "to_claim_on": "to claim on %{network}"
+        "to_claim_on": "to claim on %{network}",
+        "you": "You"
       }
     },
     "done": "Done",

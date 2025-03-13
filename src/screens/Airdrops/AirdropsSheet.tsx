@@ -15,7 +15,7 @@ import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { Claimable, TransactionClaimable } from '@/resources/addys/claimables/types';
+import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { ChainId } from '@/state/backendNetworks/types';
 import { FULL_PAGE_SIZE, INITIAL_PAGE_SIZE, useAirdropsStore } from '@/state/claimables/airdropsStore';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -31,7 +31,7 @@ interface AirdropClaimable {
   icon: string;
   isDarkMode: boolean;
   name: string;
-  onPress: (claimable: Claimable) => void;
+  onPress: (claimable: RainbowClaimable) => void;
   symbol: string;
   uniqueId: string;
 }
@@ -99,7 +99,7 @@ const CloseButton = () => {
   );
 };
 
-const EMPTY_LIST_DATA: TransactionClaimable[] = [];
+const EMPTY_LIST_DATA: RainbowClaimable[] = [];
 
 const AirdropsList = () => {
   const { isDarkMode } = useColorMode();
@@ -115,14 +115,14 @@ const AirdropsList = () => {
   }, []);
 
   const onPressCoinRow = useCallback(
-    (claimable: Claimable) => {
+    (claimable: RainbowClaimable) => {
       navigate(Routes.CLAIM_AIRDROP_SHEET, { claimable });
     },
     [navigate]
   );
 
   const renderItem = useCallback(
-    ({ item }: { item: Claimable }) => {
+    ({ item }: { item: RainbowClaimable }) => {
       return (
         <AirdropCoinRow
           address={item.asset.address}
@@ -155,14 +155,14 @@ const AirdropsList = () => {
       recycleItems
       removeClippedSubviews
       renderItem={renderItem}
-      renderScrollComponent={IS_IOS ? undefined : ListScrollView}
+      renderScrollComponent={ListScrollView}
       scrollIndicatorInsets={SCROLL_INDICATOR_INSETS}
       style={styles.scrollView}
     />
   );
 };
 
-function keyExtractor(item: Claimable): string {
+function keyExtractor(item: RainbowClaimable): string {
   return item.uniqueId;
 }
 
@@ -189,10 +189,10 @@ const PullToRefresh = () => {
       setTimeout(resolve, time.seconds(1));
     });
     const maxWait = new Promise(resolve => {
-      setTimeout(resolve, time.seconds(3));
+      setTimeout(resolve, time.seconds(5));
     });
     try {
-      const fetchPromise = useAirdropsStore.getState().fetch({ pageSize: FULL_PAGE_SIZE }, { staleTime: time.seconds(10) });
+      const fetchPromise = useAirdropsStore.getState().fetch({ pageSize: FULL_PAGE_SIZE }, { staleTime: time.seconds(3) });
       await Promise.race([Promise.all([fetchPromise, minWait]), maxWait]);
     } finally {
       setIsRefreshing(false);

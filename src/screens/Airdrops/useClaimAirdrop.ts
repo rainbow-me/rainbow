@@ -3,7 +3,7 @@ import { runOnJS, SharedValue, useSharedValue } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useAccountSettings } from '@/hooks';
 import { RainbowError, logger } from '@/logger';
-import { TransactionClaimable } from '@/resources/addys/claimables/types';
+import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { FULL_PAGE_SIZE, useAirdropsStore } from '@/state/claimables/airdropsStore';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
@@ -34,7 +34,7 @@ const INITIAL_GAS_INFO: AirdropGasInfo = {
   sufficientFundsForGas: false,
 };
 
-export function useClaimAirdrop(claimable: TransactionClaimable) {
+export function useClaimAirdrop(claimable: RainbowClaimable) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const gasSettingsRef = useRef<MeteorologyGasSuggestions[typeof GAS_SPEED] | 'disabled' | undefined>(undefined);
   const claimStatus = useSharedValue<ClaimStatus>(ClaimStatus.NOT_READY);
@@ -145,7 +145,7 @@ async function handleAndExecuteClaim({
 }: {
   accountAddress: string;
   claimStatus: SharedValue<ClaimStatus>;
-  claimable: TransactionClaimable;
+  claimable: RainbowClaimable;
   gasLimit: string;
   gasSettings: GasSettings;
   gasSettingsRef: MutableRefObject<MeteorologyGasSuggestions[typeof GAS_SPEED] | 'disabled' | undefined>;

@@ -1,7 +1,7 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Blur, Canvas, Fill, Image, Shadow, Paint, useImage, Circle, point, Group } from '@shopify/react-native-skia';
 import c from 'chroma-js';
-import React, { memo, useState, useCallback, useMemo } from 'react';
+import React, { memo, useState, useCallback, useMemo, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
@@ -29,7 +29,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { RootStackParamList } from '@/navigation/types';
-import { TransactionClaimable } from '@/resources/addys/claimables/types';
+import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -40,6 +40,8 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { getCirclePath } from '@/worklets/skia';
 import { AirdropGasInfo, ClaimStatus, useClaimAirdrop } from './useClaimAirdrop';
 import { GasInfo } from './utils';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
+import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 
 const COIN_ICON_SIZE = 96;
 const PANEL_HEIGHT = 530;
@@ -98,6 +100,7 @@ export const ClaimAirdropSheet = () => {
               <PanelContent
                 airdropAmount={claimable.value.claimAsset.display}
                 airdropValue={claimable.value.nativeAsset.display}
+                creatorAddress={claimable.creatorAddress}
                 highContrastColor={highContrastColor}
               />
               <PanelFooter claimable={claimable} highContrastColor={highContrastColor} />
@@ -127,10 +130,12 @@ const PanelHeader = memo(function PanelHeader({ symbol }: { symbol: string }) {
 const PanelContent = memo(function PanelContent({
   airdropAmount,
   airdropValue,
+  creatorAddress,
   highContrastColor,
 }: {
   airdropAmount: string;
   airdropValue: string;
+  creatorAddress: string;
   highContrastColor: string;
 }) {
   return (
@@ -161,19 +166,19 @@ const PanelContent = memo(function PanelContent({
       </Stack>
 
       <Inline alignHorizontal="center" alignVertical="center" space={{ custom: 7 }}>
-        <Avatar />
+        <Avatar creatorAddress={creatorAddress} />
         <Inline alignHorizontal="center" alignVertical="center" space="3px">
           <Text align="center" color="labelQuaternary" size="13pt" weight="semibold">
             {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.gifted_to)}
           </Text>
           <Text align="center" color="labelTertiary" size="13pt" weight="bold">
-            You
+            {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.you)}
           </Text>
           <Text align="center" color="labelQuaternary" size="13pt" weight="semibold">
             {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.by)}
           </Text>
           <Text align="center" color="labelTertiary" size="13pt" weight="bold">
-            kane.eth
+            {formatAddressForDisplay(creatorAddress, 4, 6)}
           </Text>
         </Inline>
       </Inline>
@@ -181,7 +186,7 @@ const PanelContent = memo(function PanelContent({
   );
 });
 
-const PanelFooter = ({ claimable, highContrastColor }: { claimable: TransactionClaimable; highContrastColor: string }) => {
+const PanelFooter = ({ claimable, highContrastColor }: { claimable: RainbowClaimable; highContrastColor: string }) => {
   const { goBack } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
   const { claimAirdropWorklet, claimStatus, gasInfo } = useClaimAirdrop(claimable);
@@ -296,10 +301,18 @@ const PanelFooterContent = memo(function PanelFooterContent({
   );
 });
 
-const Avatar = memo(function Avatar({ iconUrl }: { iconUrl?: string }) {
+const Avatar = memo(function Avatar({ creatorAddress }: { creatorAddress: string }) {
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    fetchENSAvatar(creatorAddress, { swallowError: true }).then(data => {
+      if (data?.imageUrl) setAvatarUrl(data.imageUrl);
+    });
+  }, [creatorAddress]);
+
   return (
     <Bleed vertical="6px">
-      <ImgixImage enableFasterImage size={16} source={{ uri: iconUrl }} style={styles.avatar} />
+      <ImgixImage enableFasterImage size={16} source={{ uri: getSizedImageUrl(avatarUrl, 16) }} style={styles.avatar} />
     </Bleed>
   );
 });
@@ -393,6 +406,7 @@ const styles = StyleSheet.create({
   avatar: {
     borderRadius: 8,
     height: 16,
+    overflow: 'hidden',
     width: 16,
   },
   backgroundFill: {
