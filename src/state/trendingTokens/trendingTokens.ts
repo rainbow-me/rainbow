@@ -7,7 +7,7 @@ import {
   TrendingSort as ArcTrendingSort,
 } from '@/graphql/__generated__/arc';
 
-export const categories = [ArcTrendingCategory.Trending, ArcTrendingCategory.New, ArcTrendingCategory.Farcaster] as const;
+export const categories = [ArcTrendingCategory.Trending, 'Rainbow', ArcTrendingCategory.New, ArcTrendingCategory.Farcaster] as const;
 export type TrendingCategory = (typeof categories)[number];
 export const sortFilters = [
   ArcTrendingSort.Recommended,

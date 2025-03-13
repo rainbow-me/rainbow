@@ -33,6 +33,8 @@ export const TRENDING_TOKENS = 'Trending Tokens';
 export const PERFORMANCE_TOAST = 'Performance Toast';
 export const RAINBOW_COIN_EFFECT = 'Rainbow Coin Effect';
 export const NEW_DISCOVER_CARDS = 'New Discover Cards';
+export const RAINBOW_TRENDING_TOKENS_LIST = 'Rainbow Trending Tokens List';
+
 /**
  * A developer setting that pushes log lines to an array in-memory so that
  * they can be "dumped" or copied out of the app and analyzed.
@@ -74,6 +76,7 @@ const config = {
   [PERFORMANCE_TOAST]: { settings: true, value: false },
   [RAINBOW_COIN_EFFECT]: { settings: true, value: false },
   [NEW_DISCOVER_CARDS]: { settings: true, value: false },
+  [RAINBOW_TRENDING_TOKENS_LIST]: { settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */

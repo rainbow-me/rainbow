@@ -3121,6 +3121,7 @@
       "filters": {
         "categories": {
           "TRENDING": "Trending",
+          "RAINBOW": "Rainbow",
           "NEW": "New",
           "FARCASTER": "Farcaster"
         },

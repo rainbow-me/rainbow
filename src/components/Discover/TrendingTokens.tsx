@@ -1,14 +1,15 @@
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { globalColors, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-
+import RainbowTokenFilter from '@/assets/RainbowTokenFilter.png';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { analyticsV2 } from '@/analytics';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import Skeleton, { FakeAvatar, FakeText } from '@/components/skeleton/Skeleton';
-import { SortDirection, Timeframe, TrendingCategory, TrendingSort } from '@/graphql/__generated__/arc';
+import { SortDirection, Timeframe, TrendingSort } from '@/graphql/__generated__/arc';
+import { categories, TrendingCategory, sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
@@ -16,11 +17,10 @@ import Routes from '@/navigation/routesNames';
 import { FarcasterUser, TrendingToken, useTrendingTokens } from '@/resources/trendingTokens/trendingTokens';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { sortFilters, timeFilters, useTrendingTokensStore } from '@/state/trendingTokens/trendingTokens';
 import { useCallback, useEffect, useMemo } from 'react';
-import React, { FlatList, View } from 'react-native';
+import React, { FlatList, View, Image } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated, { runOnJS, useSharedValue } from 'react-native-reanimated';
+import Animated, { SharedValue, useSharedValue } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
 import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWallets';
 import { ImgixImage } from '../images';
@@ -28,8 +28,9 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountSettings } from '@/hooks';
 import { getColorWorklet, getMixedColor, opacity } from '@/__swaps__/utils/swaps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { IS_IOS } from '@/env';
+import { IS_IOS, IS_TEST } from '@/env';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { RAINBOW_TRENDING_TOKENS_LIST, useExperimentalFlag } from '@/config';
 
 const t = i18n.l.trending_tokens;
 
@@ -171,17 +172,20 @@ function CategoryFilterButton({
   iconColor,
   label,
   highlightedBackgroundColor,
+  selectedChainId,
 }: {
   category: TrendingCategory;
-  icon: string;
+  icon: string | JSX.Element;
   iconColor: string | { default: string; selected: string };
   highlightedBackgroundColor: string;
   iconWidth?: number;
   label: string;
+  selectedChainId: SharedValue<ChainId | undefined>;
 }) {
   const { isDarkMode } = useColorMode();
   const fillTertiary = useBackgroundColor('fillTertiary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
+  const tokenLauncherNetworks = useBackendNetworksStore(state => state.getTokenLauncherSupportedChainIds());
 
   const selected = useTrendingTokensStore(state => state.category === category);
 
@@ -194,7 +198,14 @@ function CategoryFilterButton({
 
   const selectCategory = useCallback(() => {
     useTrendingTokensStore.getState().setCategory(category);
-  }, [category]);
+    if (category === 'Rainbow') {
+      const { chainId } = useTrendingTokensStore.getState();
+      if (chainId && !tokenLauncherNetworks.includes(chainId)) {
+        useTrendingTokensStore.getState().setChainId(undefined);
+        selectedChainId.value = undefined;
+      }
+    }
+  }, [category, tokenLauncherNetworks, selectedChainId]);
 
   return (
     <ButtonPressAnimation scaleTo={0.92} onPress={selectCategory}>
@@ -211,15 +222,19 @@ function CategoryFilterButton({
           borderColor,
         }}
       >
-        <TextIcon
-          color={{ custom: typeof iconColor === 'string' ? iconColor : selected ? iconColor.selected : iconColor.default }}
-          size="icon 13px"
-          textStyle={{ marginTop: IS_IOS ? -3.5 : -2 }}
-          weight="heavy"
-          width={iconWidth}
-        >
-          {icon}
-        </TextIcon>
+        {typeof icon === 'string' ? (
+          <TextIcon
+            color={{ custom: typeof iconColor === 'string' ? iconColor : selected ? iconColor.selected : iconColor.default }}
+            size="icon 13px"
+            textStyle={{ marginTop: IS_IOS ? -3.5 : -2 }}
+            weight="heavy"
+            width={iconWidth}
+          >
+            {icon}
+          </TextIcon>
+        ) : (
+          icon
+        )}
         <View>
           {/* This first Text element sets the width of the container */}
           <Text align="center" color="label" size="17pt" weight="heavy" style={{ opacity: 0 }}>
@@ -508,12 +523,15 @@ function NoResults() {
   );
 }
 
-function NetworkFilter() {
-  const chainId = useTrendingTokensStore(state => state.chainId);
-  const selected = useSharedValue<ChainId | undefined>(chainId);
+function NetworkFilter({ selectedChainId }: { selectedChainId: SharedValue<ChainId | undefined> }) {
+  const { chainId, category } = useTrendingTokensStore(state => ({
+    chainId: state.chainId,
+    category: state.category,
+  }));
 
   const chainColor = useBackendNetworksStore(state => state.getColorsForChainId(chainId || ChainId.mainnet, false));
   const setChainId = useTrendingTokensStore(state => state.setChainId);
+  const tokenLauncherNetworks = useBackendNetworksStore(state => state.getTokenLauncherSupportedChainIds());
 
   const { icon, label, lightenedNetworkColor } = useMemo(() => {
     if (!chainId) return { icon: '􀤆', label: i18n.t(t.all), lightenedNetworkColor: undefined };
@@ -530,18 +548,19 @@ function NetworkFilter() {
 
   const setSelected = useCallback(
     (chainId: ChainId | undefined) => {
-      selected.value = chainId;
+      selectedChainId.value = chainId;
       setChainId(chainId);
     },
-    [selected, setChainId]
+    [selectedChainId, setChainId]
   );
 
   const navigateToNetworkSelector = useCallback(() => {
     Navigation.handleAction(Routes.NETWORK_SELECTOR, {
-      selected,
+      selected: selectedChainId,
       setSelected,
+      allowedNetworks: category === 'Rainbow' ? tokenLauncherNetworks : undefined,
     });
-  }, [selected, setSelected]);
+  }, [selectedChainId, setSelected, category, tokenLauncherNetworks]);
 
   return (
     <FilterButton
@@ -657,10 +676,30 @@ function TrendingTokenData() {
   );
 }
 
+function RainbowFeatureFlagListener() {
+  const { rainbow_trending_tokens_list_enabled } = useRemoteConfig();
+  const rainbowTrendingTokensListEnabled =
+    (useExperimentalFlag(RAINBOW_TRENDING_TOKENS_LIST) || rainbow_trending_tokens_list_enabled) && !IS_TEST;
+
+  // If the rainbow list was selected and the flag is disabled, set the category to the "Trending" category
+  useEffect(() => {
+    if (!rainbowTrendingTokensListEnabled) {
+      useTrendingTokensStore.getState().setCategory(categories[0]);
+    }
+  }, [rainbowTrendingTokensListEnabled]);
+
+  return null;
+}
+
 const padding = 20;
 
 export function TrendingTokens() {
+  const { rainbow_trending_tokens_list_enabled } = useRemoteConfig();
   const { isDarkMode } = useColorMode();
+  const selectedChainId = useSharedValue<ChainId | undefined>(undefined);
+  const rainbowTrendingTokensListEnabled =
+    (useExperimentalFlag(RAINBOW_TRENDING_TOKENS_LIST) || rainbow_trending_tokens_list_enabled) && !IS_TEST;
+
   return (
     <View style={{ gap: 28 }}>
       <View style={{ gap: 12, justifyContent: 'center' }}>
@@ -671,27 +710,40 @@ export function TrendingTokens() {
           style={{ marginHorizontal: -padding }}
         >
           <CategoryFilterButton
-            category={TrendingCategory.Trending}
+            category={categories[0]}
             label={i18n.t(t.filters.categories.TRENDING)}
             icon="􀙭"
             iconColor={'#D0281C'}
             highlightedBackgroundColor={'#E6A39E'}
+            selectedChainId={selectedChainId}
           />
+          {rainbowTrendingTokensListEnabled && (
+            <CategoryFilterButton
+              category={categories[1]}
+              label={i18n.t(t.filters.categories.RAINBOW)}
+              icon={<Image source={RainbowTokenFilter} width={16} height={16} />}
+              iconColor={'#40CA61'}
+              highlightedBackgroundColor={'#C4C4DD'}
+              selectedChainId={selectedChainId}
+            />
+          )}
           <CategoryFilterButton
-            category={TrendingCategory.New}
+            category={categories[2]}
             label={i18n.t(t.filters.categories.NEW)}
             icon="􀋃"
             iconColor={{ default: isDarkMode ? globalColors.yellow60 : '#FFBB00', selected: '#F5A200' }}
             highlightedBackgroundColor={'#FFEAC2'}
             iconWidth={18}
+            selectedChainId={selectedChainId}
           />
           <CategoryFilterButton
-            category={TrendingCategory.Farcaster}
+            category={categories[3]}
             label={i18n.t(t.filters.categories.FARCASTER)}
             icon="􀌥"
             iconColor={'#5F5AFA'}
             highlightedBackgroundColor={'#B9B7F7'}
             iconWidth={20}
+            selectedChainId={selectedChainId}
           />
         </Animated.ScrollView>
 
@@ -701,7 +753,7 @@ export function TrendingTokens() {
           contentContainerStyle={{ alignItems: 'center', flexDirection: 'row', gap: 12, paddingHorizontal: padding }}
           style={{ marginHorizontal: -padding }}
         >
-          <NetworkFilter />
+          <NetworkFilter selectedChainId={selectedChainId} />
           <TimeFilter />
           <SortFilter />
         </Animated.ScrollView>
@@ -709,6 +761,7 @@ export function TrendingTokens() {
 
       <TrendingTokenData />
       <ReportAnalytics />
+      <RainbowFeatureFlagListener />
     </View>
   );
 }
