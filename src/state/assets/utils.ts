@@ -23,11 +23,7 @@ import { UserAssetsState, UserAssetsParams } from './types';
 import { userAssetsStore, useUserAssetsStore } from './userAssets';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 
-// CHANGE THIS DO NOT LEAVE THIS IN THE PROJECT THIS NEEDS TO BE RETURNED BACK TO A SANE TIMEOUT DURATION
-// CHANGE THIS DO NOT LEAVE THIS IN THE PROJECT THIS NEEDS TO BE RETURNED BACK TO A SANE TIMEOUT DURATION
-// CHANGE THIS DO NOT LEAVE THIS IN THE PROJECT THIS NEEDS TO BE RETURNED BACK TO A SANE TIMEOUT DURATION
-// CHANGE THIS DO NOT LEAVE THIS IN THE PROJECT THIS NEEDS TO BE RETURNED BACK TO A SANE TIMEOUT DURATION
-const USER_ASSETS_TIMEOUT_DURATION = time.seconds(60);
+const USER_ASSETS_TIMEOUT_DURATION = time.seconds(10);
 
 // ============ Fetch Utils ==================================================== //
 
@@ -275,10 +271,9 @@ export function setUserAssets({
 
   if (isArray) {
     for (const asset of userAssets) {
-      // if (!chainIdsWithErrors?.includes(asset.chainId)) {
-      // THIS IS A HACK TO GET A TF WORKING WHILE BACKEND IS ADDRESSING AN ISSUE
-      allAssets.push(asset);
-      // }
+      if (!chainIdsWithErrors?.includes(asset.chainId)) {
+        allAssets.push(asset);
+      }
     }
   } else {
     for (const [chainId, assetsDict] of Object.entries(userAssets)) {

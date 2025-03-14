@@ -162,8 +162,7 @@ export interface BackendNetworkServices {
   nftProxy: {
     enabled: boolean;
   };
-  // TODO: remove optional once default networks is updated with field
-  launcher?: {
+  launcher: {
     v1: {
       enabled: boolean;
       contractAddress: string;

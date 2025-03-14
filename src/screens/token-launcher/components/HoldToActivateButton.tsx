@@ -9,7 +9,6 @@ import HoldToAuthorizeButtonIcon from '@/components/buttons/hold-to-authorize/Ho
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
 import { Box, Text, TextProps } from '@/design-system';
-import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { colors } from '@/styles';
 import { useWallets } from '@/hooks';
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
@@ -33,7 +32,7 @@ function LabelWithBiometryIcon({ label, showIcon = true, testID, color, ...textP
 
   return (
     <>
-      {/* TODO: */}
+      {/* TODO: note from Kane regarding the color of the Ledger icon potentially being off */}
       {isHardwareWallet && showIcon && <LedgerIcon color={color || colors.appleBlue} />}
       <Text
         testID={testID || label}
