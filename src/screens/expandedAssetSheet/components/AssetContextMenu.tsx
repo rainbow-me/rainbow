@@ -141,7 +141,6 @@ export function AssetContextMenu() {
             networkLabel: chainLabels[asset.chainId],
             contractAddress: asset.address,
           });
-        console.log('url', url, assetMetadata?.links?.rainbow?.url);
         Share.share({
           url,
         });
