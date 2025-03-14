@@ -610,8 +610,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         addSuperToken({
           address: result.tokenAddress,
           chainId,
-          name,
-          symbol,
           description,
           imageUrl,
           links: linksByType,

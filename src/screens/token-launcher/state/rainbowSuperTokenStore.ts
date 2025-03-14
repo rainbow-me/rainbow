@@ -5,11 +5,8 @@ import { useStoreWithEqualityFn } from 'zustand/traditional';
 export interface SuperToken {
   address: string;
   chainId: number;
-  name: string;
-  symbol: string;
   description?: string;
   imageUrl?: string;
-  totalSupply?: string;
   links?: TokenLinks;
 }
 
@@ -33,34 +30,40 @@ export type SuperTokenStoreState = {
 
 export const getSuperTokenKey = (address: string, chainId: number): string => `${address.toLowerCase()}_${chainId}`;
 
-export const superTokenStore = createRainbowStore<SuperTokenStoreState>((set, get) => ({
-  tokens: {},
-  getSuperToken: (address?: string, chainId?: number) => {
-    if (!address || !chainId) return undefined;
-    const key = getSuperTokenKey(address, chainId);
-    return get().tokens[key];
-  },
-  addSuperToken: (token: AddSuperTokenParams) => {
-    const key = getSuperTokenKey(token.address, token.chainId);
-    set(state => ({
-      tokens: {
-        ...state.tokens,
-        [key]: {
-          ...token,
-          links: token.links ? formatSuperTokenLinks(token.links) : undefined,
+export const superTokenStore = createRainbowStore<SuperTokenStoreState>(
+  (set, get) => ({
+    tokens: {},
+    getSuperToken: (address?: string, chainId?: number) => {
+      if (!address || !chainId) return undefined;
+      const key = getSuperTokenKey(address, chainId);
+      return get().tokens[key];
+    },
+    addSuperToken: (token: AddSuperTokenParams) => {
+      const key = getSuperTokenKey(token.address, token.chainId);
+      set(state => ({
+        tokens: {
+          ...state.tokens,
+          [key]: {
+            ...token,
+            links: token.links ? formatSuperTokenLinks(token.links) : undefined,
+          },
         },
-      },
-    }));
-  },
-  removeSuperToken: (address: string, chainId: number) => {
-    const key = getSuperTokenKey(address, chainId);
-    set(state => {
-      const newTokens = { ...state.tokens };
-      delete newTokens[key];
-      return { tokens: newTokens };
-    });
-  },
-}));
+      }));
+    },
+    removeSuperToken: (address: string, chainId: number) => {
+      const key = getSuperTokenKey(address, chainId);
+      set(state => {
+        const newTokens = { ...state.tokens };
+        delete newTokens[key];
+        return { tokens: newTokens };
+      });
+    },
+  }),
+  {
+    version: 0,
+    storageKey: 'superTokens',
+  }
+);
 
 export const useSuperTokenStore = <T>(selector: (state: SuperTokenStoreState) => T) =>
   useStoreWithEqualityFn(superTokenStore, selector, Object.is);
