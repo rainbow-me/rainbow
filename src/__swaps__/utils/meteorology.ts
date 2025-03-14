@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { NotifyOnChangeProps, useQuery } from '@tanstack/react-query';
 
 import { ChainId } from '@/state/backendNetworks/types';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
@@ -51,14 +51,31 @@ export async function fetchMeteorology(
 
 export function useMeteorology<Selected = MeteorologyResult>(
   { chainId }: MeteorologyArgs,
-  { select, enabled }: { select?: (data: MeteorologyResult) => Selected; enabled?: boolean }
+  {
+    enabled,
+    keepPreviousData,
+    select,
+    notifyOnChangeProps,
+    onSuccess,
+    staleTime,
+  }: {
+    enabled?: boolean;
+    keepPreviousData?: boolean;
+    select?: (data: MeteorologyResult) => Selected;
+    notifyOnChangeProps?: NotifyOnChangeProps;
+    onSuccess?: (data: Selected) => void;
+    staleTime?: number;
+  }
 ) {
   return useQuery(meteorologyQueryKey({ chainId }), meteorologyQueryFunction, {
-    select,
     enabled,
-    refetchInterval: 12_000, // 12 seconds
-    staleTime: 12_000, // 12 seconds
+    keepPreviousData,
+    notifyOnChangeProps,
+    onSuccess,
+    select,
     cacheTime: 36_000, // 36 seconds
+    refetchInterval: 12_000, // 12 seconds
+    staleTime: staleTime ?? 12_000, // 12 seconds
   });
 }
 
@@ -173,14 +190,37 @@ export function useEstimatedTime({ chainId, speed }: { chainId: ChainId; speed: 
   );
 }
 
-type GasSuggestions = ReturnType<typeof selectGasSuggestions>;
-export type GasSuggestion = GasSuggestions[keyof GasSuggestions];
-export function useMeteorologySuggestions({ chainId, enabled }: { chainId: ChainId; enabled?: boolean }) {
+export type MeteorologyGasSuggestions = {
+  urgent: GasSettings;
+  fast: GasSettings;
+  normal: GasSettings;
+};
+export type GasSuggestion = MeteorologyGasSuggestions[keyof MeteorologyGasSuggestions];
+
+export function useMeteorologySuggestions({
+  chainId,
+  enabled,
+  keepPreviousData,
+  notifyOnChangeProps,
+  onSuccess,
+  staleTime,
+}: {
+  chainId: ChainId;
+  enabled?: boolean;
+  keepPreviousData?: boolean;
+  notifyOnChangeProps?: NotifyOnChangeProps;
+  onSuccess?: (data: MeteorologyGasSuggestions) => void;
+  staleTime?: number;
+}) {
   return useMeteorology(
     { chainId },
     {
       select: useCallback((data: MeteorologyResult) => selectGasSuggestions(data), []),
       enabled,
+      keepPreviousData,
+      notifyOnChangeProps,
+      onSuccess,
+      staleTime,
     }
   );
 }

@@ -11,6 +11,11 @@ const storage = new MMKV({
 const COLOR_TO_MEASURE_AGAINST = '#333333';
 const SIZE_FOR_COLOR_CALCULATION = 40;
 
+export function getCachedImageColor(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  return storage.getString(url);
+}
+
 export function usePersistentDominantColorFromImage(url?: string | null) {
   const cachedColor = useMemo(() => (url ? storage.getString(url) : undefined), [url]);
   const [color, setColor] = useState(cachedColor);

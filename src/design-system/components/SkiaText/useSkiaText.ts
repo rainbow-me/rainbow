@@ -1,4 +1,4 @@
-import { SkPaint, SkParagraph, SkTextStyle, Skia } from '@shopify/react-native-skia';
+import { SkPaint, SkParagraph, SkTextShadow, SkTextStyle, Skia } from '@shopify/react-native-skia';
 import { useCallback } from 'react';
 import { TextAlign } from '@/components/text/types';
 import { SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
@@ -13,6 +13,7 @@ interface TextSegment {
   color?: string;
   foregroundPaint?: SkPaint;
   opacity?: number;
+  shadows?: SkTextShadow[];
   text: SharedOrDerivedValueText | string;
   weight?: TextWeight;
 }
@@ -24,6 +25,7 @@ interface UseSkiaTextOptions {
   foregroundPaint: SkPaint | undefined;
   letterSpacing: number | undefined;
   lineHeight: number | undefined;
+  shadows: SkTextShadow[] | undefined;
   size: TextSize;
   weight: TextWeight | undefined;
 }
@@ -40,6 +42,7 @@ export function useSkiaText({
   foregroundPaint,
   letterSpacing,
   lineHeight,
+  shadows,
   size,
   weight = 'regular',
 }: UseSkiaTextOptions): (segments: TextSegment[]) => SkParagraph | null {
@@ -73,6 +76,7 @@ export function useSkiaText({
         });
 
         if (segment.foregroundPaint) segment.foregroundPaint.setColor(segmentStyle.color);
+        if (shadows || segment.shadows) segmentStyle.shadows = segment.shadows;
         if (segment.opacity !== undefined && segment.color) {
           segmentStyle.color = Skia.Color(opacityWorklet(segment.color, segment.opacity));
         }
@@ -111,7 +115,9 @@ function getTextStyle({
   lineHeight: number | undefined;
   weight: TextWeight;
   weightOverride?: TextWeight;
-}): Required<Pick<SkTextStyle, 'color' | 'fontFamilies' | 'fontSize' | 'fontStyle' | 'heightMultiplier' | 'letterSpacing'>> {
+}): Required<Pick<SkTextStyle, 'color' | 'fontFamilies' | 'fontSize' | 'fontStyle' | 'heightMultiplier' | 'letterSpacing'>> & {
+  shadows?: SkTextShadow[];
+} {
   'worklet';
   return {
     color: Skia.Color(colorOverride ?? color),

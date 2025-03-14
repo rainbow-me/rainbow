@@ -3169,12 +3169,26 @@
           "subtitle_loading": "LOADING",
           "subtitle_has_airdrops": "AVAILABLE TO CLAIM",
           "subtitle_no_airdrops": "NO AIRDROPS YET",
-          "title": "Airdrops"
+          "title": "Airdrops",
+          "title_singular": "Airdrop"
         },
         "launch": {
           "line_one": "Launch\n",
           "line_two": "your Coin"
         }
+      },
+      "claim_airdrop_sheet": {
+        "by": "by",
+        "claiming": "Claiming",
+        "created_by": "Created by %{name}",
+        "gifted_to": "Gifted to",
+        "hold_to_claim": "Hold to Claim",
+        "hold_to_retry": "Hold to Retry",
+        "successfully_claimed": "Successfully Claimed",
+        "title": "Claim $%{symbol}",
+        "to_claim_on": "to claim on %{network}",
+        "view_coin": "View Coin",
+        "you": "You"
       }
     },
     "done": "Done",
