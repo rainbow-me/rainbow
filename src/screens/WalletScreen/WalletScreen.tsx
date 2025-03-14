@@ -53,7 +53,7 @@ function WalletPage() {
           }}
           scrollEventThrottle={16}
           contentContainerStyle={{
-            paddingBottom: TAB_BAR_HEIGHT + insets.top,
+            paddingBottom: TAB_BAR_HEIGHT + insets.top + 12,
             display: 'flex',
             flexDirection: 'column',
             gap: 12,
@@ -69,13 +69,11 @@ function WalletPage() {
             <SyncUserAssetsStoreWithContext />
           </UserAssetsListProvider>
 
-          <Box style={{ flex: 1 }} justifyContent="space-between" alignItems="center">
-            <ClaimablesProvider>
-              <ClaimablesHeader />
-              <Claimables />
-              <ClaimablesSync />
-            </ClaimablesProvider>
-          </Box>
+          <ClaimablesProvider>
+            <ClaimablesHeader />
+            <Claimables />
+            <ClaimablesSync />
+          </ClaimablesProvider>
         </Animated.ScrollView>
       </Box>
     </Box>

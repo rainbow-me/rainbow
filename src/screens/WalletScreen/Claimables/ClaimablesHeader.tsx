@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { Image } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
-import { AnimatedText, Box, Inline, Text } from '@/design-system';
+import { AnimatedText, Box, Inline, Text, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 import { useAccountSettings } from '@/hooks';
 import { useClaimables } from '@/resources/addys/claimables/query';
@@ -104,13 +104,14 @@ function ClaimablesBalance() {
   });
 
   return (
-    <AnimatedText style={[balanceStyles, { paddingRight: 4 }]} size="20pt" color={'label'} weight="regular">
+    <AnimatedText style={[balanceStyles, { paddingRight: 4 }]} size="20pt" color="label" weight="regular">
       {total}
     </AnimatedText>
   );
 }
 
 export function ClaimablesHeader() {
+  const caretColor = useForegroundColor('label');
   const { rewards_enabled } = useRemoteConfig();
   const ethRewardsEnabled = (rewards_enabled || getExperimetalFlag(ETH_REWARDS)) && !IS_TEST;
   const { nativeCurrencySymbol } = useAccountSettings();
@@ -149,6 +150,7 @@ export function ClaimablesHeader() {
             <ClaimablesBalance />
             <AnimatedImgixImage
               source={CaretImageSource}
+              tintColor={caretColor}
               style={[
                 caretStyles,
                 {
