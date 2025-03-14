@@ -10,7 +10,7 @@ import { getAddysHttpClient } from '@/resources/addys/client';
 import { AddysConsolidatedError } from '@/resources/addys/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { createQueryStore } from '@/state/internal/createQueryStore';
+import { CacheEntry, createQueryStore } from '@/state/internal/createQueryStore';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { time } from '@/utils/time';
 
@@ -45,6 +45,9 @@ type AirdropsQueryData = {
   pagination: PaginationInfo | null;
 };
 
+type UniqueId = string;
+type Timestamp = number;
+
 type AirdropsState = {
   airdrops: {
     address: Address | string;
@@ -53,6 +56,7 @@ type AirdropsState = {
     fetchedAt: { [pageNumber: number]: number };
     pagination: PaginationInfo | null;
   } | null;
+  recentlyClaimed: Map<UniqueId, Timestamp> | null;
   fetchNextPage: () => Promise<void>;
   getAirdrops: () => RainbowClaimable[] | null;
   getCurrentPage: () => number | null;
@@ -61,19 +65,22 @@ type AirdropsState = {
   getNumberOfAirdrops: () => number | null;
   getPaginationInfo: () => PaginationInfo | null;
   hasNextPage: () => boolean;
+  markClaimed: (uniqueId: string) => void;
 };
 
 export const INITIAL_PAGE_SIZE = 12;
 export const FULL_PAGE_SIZE = 100;
+
 const EMPTY_RETURN_DATA: AirdropsQueryData = { claimables: [], pagination: null };
-const STALE_TIME = time.minutes(3);
+const OPTIMISTIC_UPDATE_EVICTION_TIME = time.minutes(3);
+const STALE_TIME = time.minutes(2);
 
 let paginationPromise: { address: Address | string; currency: NativeCurrencyKey; promise: Promise<void> } | null = null;
 
 export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsParams, AirdropsState>(
   {
     fetcher: fetchAirdrops,
-    onFetched: ({ data, params, set }) => prunePaginatedData(data, params, set),
+    onFetched: ({ data, params, set }) => pruneAirdropsData(data, params, set),
     cacheTime: time.days(1),
     params: {
       address: $ => $(userAssetsStoreManager).address,
@@ -86,6 +93,7 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
 
   (set, get) => ({
     airdrops: null,
+    recentlyClaimed: null,
 
     async fetchNextPage() {
       const { address, currency } = userAssetsStoreManager.getState();
@@ -179,8 +187,6 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
 
     getNumberOfAirdrops: () => get().getData()?.pagination?.total_elements ?? null,
 
-    hasNextPage: () => Boolean(get().getPaginationInfo()?.next),
-
     getPaginationInfo: () => {
       const { airdrops, getData } = get();
       const { address, currency } = userAssetsStoreManager.getState();
@@ -189,10 +195,40 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
       }
       return airdrops.pagination;
     },
+
+    hasNextPage: () => Boolean(get().getPaginationInfo()?.next),
+
+    markClaimed: (uniqueId: string) => {
+      set(state => {
+        const { airdrops, queryCache, queryKey, recentlyClaimed } = state;
+        const cacheEntry = queryCache[queryKey];
+
+        let newAirdrops: AirdropsState['airdrops'] | null = null;
+        let newCacheEntry: CacheEntry<AirdropsQueryData> | null = null;
+
+        if (airdrops?.claimables.length) {
+          const result = applyOptimisticClaim(airdrops, uniqueId);
+          if (result) newAirdrops = { ...airdrops, ...result };
+        }
+        if (cacheEntry?.data) {
+          const result = applyOptimisticClaim(cacheEntry.data, uniqueId);
+          if (result) newCacheEntry = { ...cacheEntry, data: result };
+        }
+
+        if (!newAirdrops && !newCacheEntry) return state;
+
+        return {
+          ...state,
+          airdrops: newAirdrops,
+          queryCache: newCacheEntry ? { ...queryCache, [queryKey]: newCacheEntry } : queryCache,
+          recentlyClaimed: new Map(recentlyClaimed).set(uniqueId, Date.now()),
+        };
+      });
+    },
   }),
 
   {
-    partialize: () => ({}),
+    partialize: state => ({ recentlyClaimed: state.recentlyClaimed }),
     storageKey: 'airdropsStore',
   }
 );
@@ -206,38 +242,50 @@ async function fetchAirdrops(
     return EMPTY_RETURN_DATA;
   }
 
-  try {
-    const chainIds = useBackendNetworksStore.getState().getSupportedChainIds().join(',');
-    const url = `/${chainIds}/${address}/claimables/rainbow?${qs.stringify({
-      currency: currency.toLowerCase(),
-      page: page.toString(),
-      page_size: pageSize.toString(),
-    })}`;
+  const chainIds = useBackendNetworksStore.getState().getSupportedChainIds().join(',');
+  const url = `/${chainIds}/${address}/claimables/rainbow?${qs.stringify({
+    currency: currency.toLowerCase(),
+    page: page.toString(),
+    page_size: pageSize.toString(),
+  })}`;
 
-    const { data } = await getAddysHttpClient().get<AirdropsResponse>(url, {
-      signal: abortController?.signal,
-      timeout: time.seconds(20),
+  const { data } = await getAddysHttpClient().get<AirdropsResponse>(url, {
+    signal: abortController?.signal,
+    timeout: time.seconds(20),
+  });
+
+  if (data.metadata.status !== 'ok') {
+    logger.error(new RainbowError('[fetchTokenLauncherAirdrops]: Failed to fetch airdrop claimables (API error)'), {
+      message: data.metadata.errors,
     });
-
-    if (data.metadata.status !== 'ok') {
-      logger.error(new RainbowError('[fetchTokenLauncherAirdrops]: Failed to fetch airdrop claimables (API error)'), {
-        message: data.metadata.errors,
-      });
-      abortController?.abort();
-      return EMPTY_RETURN_DATA;
-    }
-
-    return {
-      claimables: parseClaimables(data.payload.claimables, currency),
-      pagination: data.pagination,
-    };
-  } catch (e) {
-    if (e instanceof Error && e.name === 'AbortError') return EMPTY_RETURN_DATA;
-    logger.error(new RainbowError('[fetchTokenLauncherAirdrops]: Failed to fetch airdrop claimables (client error)'), {
-      message: e instanceof Error ? e.message : String(e),
-    });
+    abortController?.abort();
     return EMPTY_RETURN_DATA;
   }
+
+  const recentlyClaimed = useAirdropsStore.getState().recentlyClaimed;
+  const claimables = parseClaimables<RainbowClaimable>(data.payload.claimables, currency, recentlyClaimed);
+  const prunedCount = recentlyClaimed ? data.payload.claimables.length - claimables.length : 0;
+
+  return {
+    claimables,
+    pagination: prunedCount ? { ...data.pagination, total_elements: data.pagination.total_elements - prunedCount } : data.pagination,
+  };
+}
+
+/**
+ * Applies an optimistic claim to an `AirdropsQueryData` object.
+ * @returns The updated `AirdropsQueryData`, or `null` if the update has no effect.
+ */
+function applyOptimisticClaim(data: AirdropsQueryData, uniqueId: string): AirdropsQueryData | null {
+  const filteredClaimables = data.claimables.filter(claimable => claimable.uniqueId !== uniqueId);
+  if (filteredClaimables.length !== data.claimables.length) {
+    const existingPagination = data.pagination;
+    const pagination: PaginationInfo | null = existingPagination
+      ? { ...existingPagination, total_elements: existingPagination.total_elements - 1 }
+      : null;
+    return { ...data, claimables: filteredClaimables, pagination };
+  }
+  return null;
 }
 
 function isOnAirdropsRoute(): boolean {
@@ -245,13 +293,30 @@ function isOnAirdropsRoute(): boolean {
   return activeRoute === Routes.AIRDROPS_SHEET || activeRoute === Routes.CLAIM_AIRDROP_SHEET;
 }
 
-function prunePaginatedData(
+function pruneAirdropsData(
   data: AirdropsQueryData,
   params: AirdropsParams,
   set: (partial: AirdropsState | Partial<AirdropsState> | ((state: AirdropsState) => AirdropsState | Partial<AirdropsState>)) => void
 ): void {
-  const isOnAirdrops = isOnAirdropsRoute();
-  if (isOnAirdrops && params.page === 1 && params.pageSize === FULL_PAGE_SIZE && params.address) {
+  // Prune expired optimistic updates
+  const { airdrops, getNumberOfAirdrops, recentlyClaimed } = useAirdropsStore.getState();
+  let newRecentlyClaimed: Map<UniqueId, Timestamp> | null = null;
+  let didPruneRecentlyClaimed = false;
+
+  if (recentlyClaimed?.size) {
+    const now = Date.now();
+    newRecentlyClaimed = new Map<UniqueId, Timestamp>();
+    for (const [uniqueId, timestamp] of recentlyClaimed.entries()) {
+      const isExpired = now - timestamp > OPTIMISTIC_UPDATE_EVICTION_TIME;
+      if (!isExpired) newRecentlyClaimed.set(uniqueId, timestamp);
+      else didPruneRecentlyClaimed = true;
+    }
+  }
+  if (!didPruneRecentlyClaimed) newRecentlyClaimed = recentlyClaimed;
+
+  // Handle airdrops sheet pull-to-refresh case
+  const isAirdropsSheetOpen = isOnAirdropsRoute();
+  if (isAirdropsSheetOpen && params.page === 1 && params.pageSize === FULL_PAGE_SIZE && params.address) {
     set({
       airdrops: {
         address: params.address,
@@ -260,26 +325,30 @@ function prunePaginatedData(
         fetchedAt: { [params.page]: Date.now() },
         pagination: data.pagination,
       },
+      recentlyClaimed: newRecentlyClaimed,
     });
     return;
   }
 
-  const { airdrops, getNumberOfAirdrops } = useAirdropsStore.getState();
-  if (!airdrops || isOnAirdrops) return;
+  if (!airdrops || isAirdropsSheetOpen) {
+    if (didPruneRecentlyClaimed) set({ recentlyClaimed: newRecentlyClaimed });
+    return;
+  }
 
+  // If outside of the airdrops sheet, check conditions that warrant pruning the airdrops data
   const didNumberOfAirdropsChange = getNumberOfAirdrops() !== airdrops.pagination?.total_elements;
   if (didNumberOfAirdropsChange) {
-    set({ airdrops: null });
+    set({ airdrops: null, recentlyClaimed: newRecentlyClaimed });
     return;
   }
 
   const didParamsChange = airdrops.address !== params.address || airdrops.currency !== params.currency;
   if (didParamsChange) {
-    set({ airdrops: null });
+    set({ airdrops: null, recentlyClaimed: newRecentlyClaimed });
     return;
   }
 
   const now = Date.now();
   const isStale = Object.values(airdrops.fetchedAt).some(fetchedAt => now - fetchedAt > STALE_TIME);
-  if (isStale) set({ airdrops: null });
+  if (isStale) set({ airdrops: null, recentlyClaimed: newRecentlyClaimed });
 }

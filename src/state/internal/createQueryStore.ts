@@ -83,7 +83,7 @@ interface FetchOptions {
  * Represents an entry in the query cache, which stores fetched data along with metadata, and error information
  * in the event the most recent fetch failed.
  */
-type CacheEntry<TData> = {
+export type CacheEntry<TData> = {
   cacheTime: number;
   data: TData | null;
 } & (

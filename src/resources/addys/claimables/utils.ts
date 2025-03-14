@@ -5,12 +5,17 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { Network } from '@/state/backendNetworks/types';
 import { AddysClaimable, BaseClaimable, Claimable, RainbowClaimable } from './types';
 
-export const parseClaimables = <C extends Claimable>(claimables: AddysClaimable[], currency: NativeCurrencyKey): C[] => {
+export const parseClaimables = <C extends Claimable>(
+  claimables: AddysClaimable[],
+  currency: NativeCurrencyKey,
+  prune?: Map<string, number> | null
+): C[] => {
   return claimables
     .map(claimable => {
       if (
         !(claimable.claim_action_type === 'transaction' || claimable.claim_action_type === 'sponsored') ||
-        !claimable.claim_action?.length
+        !claimable.claim_action?.length ||
+        prune?.has(claimable.unique_id)
       ) {
         return undefined;
       }

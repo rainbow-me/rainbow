@@ -4,13 +4,12 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useAccountSettings } from '@/hooks';
 import { RainbowError, logger } from '@/logger';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
-import { FULL_PAGE_SIZE, useAirdropsStore } from '@/state/claimables/airdropsStore';
+import { useAirdropsStore } from '@/state/claimables/airdropsStore';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { MeteorologyGasSuggestions } from '@/__swaps__/utils/meteorology';
 import { GasInfo, getAirdropClaimGasLimit, executeAirdropClaim, getGasInfo } from './utils';
-import { time } from '@/utils';
 
 export interface AirdropGasInfo extends GasInfo {
   lastUpdated: number;
@@ -18,12 +17,18 @@ export interface AirdropGasInfo extends GasInfo {
 
 export enum ClaimStatus {
   CLAIMING = 'claiming',
+  CONFIRMED = 'confirmed',
   INSUFFICIENT_GAS = 'insufficientGas',
   NOT_READY = 'notReady',
   READY = 'ready',
   RECOVERABLE_ERROR = 'recoverableError',
-  SUCCESS = 'success',
   UNRECOVERABLE_ERROR = 'unrecoverableError',
+}
+
+/** Ethers `TransactionReceipt` status codes */
+enum TransactionStatus {
+  FAILED = 0,
+  SUCCEEDED = 1,
 }
 
 const GAS_SPEED = GasSpeed.FAST;
@@ -88,7 +93,7 @@ export function useClaimAirdrop(claimable: RainbowClaimable) {
           gasSettingsRef.current = gasSettings[GAS_SPEED];
           updateGasInfo(gasSettings);
         },
-        // Ensure onSuccess is always run on mount
+        // Ensure onSuccess always runs on mount
         staleTime: 0,
       }),
       [updateGasInfo]
@@ -152,8 +157,9 @@ async function handleAndExecuteClaim({
 }): Promise<void> {
   try {
     logger.log('[useClaimAirdrop]: Executing claim transaction', {
-      claimable: claimable.uniqueId,
+      claimableId: claimable.uniqueId,
       chainId: claimable.chainId,
+      symbol: claimable.asset.symbol,
     });
 
     const result = await executeAirdropClaim({
@@ -161,22 +167,33 @@ async function handleAndExecuteClaim({
       claimable,
       gasLimit,
       gasSettings,
+      onConfirm: receipt => {
+        switch (receipt.status) {
+          case TransactionStatus.SUCCEEDED:
+            claimStatus.value = ClaimStatus.CONFIRMED;
+            triggerHaptics('notificationSuccess');
+            useAirdropsStore.getState().markClaimed(claimable.uniqueId);
+            logger.log('[useClaimAirdrop]: Claim transaction confirmed', { confirmations: receipt.confirmations });
+            return;
+          case TransactionStatus.FAILED:
+            gasSettingsRef.current = gasSettings;
+            claimStatus.value = ClaimStatus.RECOVERABLE_ERROR;
+            triggerHaptics('notificationError');
+            logger.warn('[useClaimAirdrop]: Claim transaction failed', { error: result.error });
+            return;
+        }
+      },
     });
 
     if (result.success) {
-      claimStatus.value = ClaimStatus.SUCCESS;
-      triggerHaptics('notificationSuccess');
       gasSettingsRef.current = 'disabled';
-      setTimeout(() => {
-        useAirdropsStore.getState().fetch({ pageSize: FULL_PAGE_SIZE }, { staleTime: time.seconds(10) });
-      }, time.seconds(5));
-      logger.log('[useClaimAirdrop]: Claim transaction successful');
     } else {
       claimStatus.value = ClaimStatus.RECOVERABLE_ERROR;
       triggerHaptics('notificationError');
       logger.warn('[useClaimAirdrop]: Claim transaction failed', { error: result.error });
     }
   } catch (error) {
+    gasSettingsRef.current = gasSettings;
     claimStatus.value = ClaimStatus.RECOVERABLE_ERROR;
     triggerHaptics('notificationError');
     logger.error(new RainbowError('[useClaimAirdrop]: Unhandled error during claim'), { error });

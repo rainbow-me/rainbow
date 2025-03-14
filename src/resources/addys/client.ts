@@ -17,3 +17,10 @@ export const getAddysHttpClient = () => {
 
   return addysHttp;
 };
+
+/**
+ * Returns `true` if in an addys staging environment, else `false`.
+ */
+export function isStaging(): boolean {
+  return ADDYS_BASE_URL.includes('.s.');
+}

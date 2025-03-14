@@ -185,16 +185,24 @@ const PullToRefresh = () => {
 
   const onRefresh = useCallback(async () => {
     setIsRefreshing(true);
+
+    let minWaitTimeout;
     const minWait = new Promise(resolve => {
-      setTimeout(resolve, time.seconds(1));
+      minWaitTimeout = setTimeout(resolve, time.seconds(1));
     });
+    let maxWaitTimeout;
     const maxWait = new Promise(resolve => {
-      setTimeout(resolve, time.seconds(5));
+      maxWaitTimeout = setTimeout(resolve, time.seconds(10));
     });
+
     try {
-      const fetchPromise = useAirdropsStore.getState().fetch({ pageSize: FULL_PAGE_SIZE }, { staleTime: time.seconds(3) });
+      const fetchPromise = useAirdropsStore
+        .getState()
+        .fetch({ pageSize: FULL_PAGE_SIZE }, { cacheTime: time.zero, staleTime: time.seconds(2), updateQueryKey: false });
       await Promise.race([Promise.all([fetchPromise, minWait]), maxWait]);
     } finally {
+      clearTimeout(minWaitTimeout);
+      clearTimeout(maxWaitTimeout);
       setIsRefreshing(false);
     }
   }, []);
@@ -345,6 +353,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    minHeight: PANEL_HEIGHT - HEADER_HEIGHT,
   },
   textContainer: {
     flex: 1,

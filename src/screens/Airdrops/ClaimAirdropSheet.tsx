@@ -3,15 +3,15 @@ import { Blur, Canvas, Fill, Image, Shadow, Paint, useImage, Circle, point, Grou
 import c from 'chroma-js';
 import React, { memo, useState, useCallback, useMemo, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import { Address } from 'viem';
+import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { ImgixImage } from '@/components/images';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import {
   AnimatedText,
-  Bleed,
   Box,
   ColorModeProvider,
   Inline,
@@ -23,25 +23,29 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
+import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { fetchReverseRecord } from '@/handlers/ens';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { useCleanup, useWallets } from '@/hooks';
+import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { RootStackParamList } from '@/navigation/types';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { darkModeThemeColors } from '@/styles/colors';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
-import { safeAreaInsetValues, watchingAlert } from '@/utils';
+import { safeAreaInsetValues, time, watchingAlert } from '@/utils';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { getCirclePath } from '@/worklets/skia';
 import { AirdropGasInfo, ClaimStatus, useClaimAirdrop } from './useClaimAirdrop';
 import { GasInfo } from './utils';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
-import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 
 const COIN_ICON_SIZE = 96;
 const PANEL_HEIGHT = 530;
@@ -67,7 +71,7 @@ function getButtonLabel(claimStatus: ClaimStatus, gasInfo: GasInfo) {
       return BUTTON_LABELS.holdToClaim;
     case ClaimStatus.CLAIMING:
       return BUTTON_LABELS.claiming;
-    case ClaimStatus.SUCCESS:
+    case ClaimStatus.CONFIRMED:
       return BUTTON_LABELS.done;
     case ClaimStatus.RECOVERABLE_ERROR:
       return BUTTON_LABELS.holdToRetry;
@@ -127,7 +131,7 @@ const PanelHeader = memo(function PanelHeader({ symbol }: { symbol: string }) {
   );
 });
 
-const PanelContent = memo(function PanelContent({
+const PanelContent = ({
   airdropAmount,
   airdropValue,
   creatorAddress,
@@ -135,9 +139,9 @@ const PanelContent = memo(function PanelContent({
 }: {
   airdropAmount: string;
   airdropValue: string;
-  creatorAddress: string;
+  creatorAddress: Address;
   highContrastColor: string;
-}) {
+}) => {
   return (
     <>
       <Stack alignHorizontal="center" space="20px">
@@ -165,8 +169,32 @@ const PanelContent = memo(function PanelContent({
         </Box>
       </Stack>
 
+      <CreatedBySection creatorAddress={creatorAddress} />
+    </>
+  );
+};
+
+const CreatedBySection = memo(function CreatedBySection({ creatorAddress }: { creatorAddress: Address }) {
+  const ensOrAddress = useSharedValue<string | null | undefined>(undefined);
+  const avatarUrl = useSharedValue<string | null | undefined>(undefined);
+
+  const revealWhenLoaded = useAnimatedStyle(() => {
+    const hasLoaded = ensOrAddress.value !== undefined;
+    return {
+      opacity: withTiming(hasLoaded ? 1 : 0, TIMING_CONFIGS.slowestFadeConfig),
+      transform: [{ translateY: withTiming(hasLoaded ? 0 : 10, TIMING_CONFIGS.slowestFadeConfig) }],
+    };
+    ``;
+  });
+
+  useEffect(() => {
+    fetchAndSetEnsData({ address: creatorAddress, avatarUrl, ensOrAddress });
+  }, [avatarUrl, creatorAddress, ensOrAddress]);
+
+  return (
+    <Animated.View style={revealWhenLoaded}>
       <Inline alignHorizontal="center" alignVertical="center" space={{ custom: 7 }}>
-        <Avatar creatorAddress={creatorAddress} />
+        <CreatorAvatar avatarUrl={avatarUrl} creatorAddress={creatorAddress} />
         <Inline alignHorizontal="center" alignVertical="center" space="3px">
           <Text align="center" color="labelQuaternary" size="13pt" weight="semibold">
             {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.gifted_to)}
@@ -177,21 +205,57 @@ const PanelContent = memo(function PanelContent({
           <Text align="center" color="labelQuaternary" size="13pt" weight="semibold">
             {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.by)}
           </Text>
-          <Text align="center" color="labelTertiary" size="13pt" weight="bold">
-            {formatAddressForDisplay(creatorAddress, 4, 6)}
-          </Text>
+          <CreatorAddress ensOrAddress={ensOrAddress} />
         </Inline>
       </Inline>
-    </>
+    </Animated.View>
   );
 });
+
+const CreatorAddress = ({ ensOrAddress }: { ensOrAddress: SharedValue<string | null | undefined> }) => {
+  return (
+    <AnimatedText align="center" color="labelTertiary" size="13pt" weight="bold">
+      {ensOrAddress}
+    </AnimatedText>
+  );
+};
+
+const CreatorAvatar = ({ avatarUrl, creatorAddress }: { avatarUrl: SharedValue<string | null | undefined>; creatorAddress: string }) => {
+  const [{ color, emoji }] = useState(() => ({
+    color: darkModeThemeColors.avatarBackgrounds[addressHashedColorIndex(creatorAddress) ?? 0],
+    emoji: addressHashedEmoji(creatorAddress),
+  }));
+
+  const emojiAvatarStyle = useAnimatedStyle(() => {
+    const shouldDisplay = avatarUrl.value === null;
+    return { opacity: withTiming(shouldDisplay ? 1 : 0, TIMING_CONFIGS.slowerFadeConfig) };
+  });
+
+  const imageAvatarStyle = useAnimatedStyle(() => {
+    const shouldDisplay = !!avatarUrl.value;
+    return { opacity: withTiming(shouldDisplay ? 1 : 0, TIMING_CONFIGS.slowerFadeConfig) };
+  });
+
+  return (
+    <View style={styles.avatarWrapper}>
+      <AnimatedImage url={avatarUrl} style={[styles.avatar, imageAvatarStyle]} />
+      <Animated.View style={[styles.avatar, emojiAvatarStyle]}>
+        <Box alignItems="center" backgroundColor={color} borderRadius={8} height={16} justifyContent="center" width={16}>
+          <Text align="center" color="label" size="icon 8px" style={{ lineHeight: 16 }} weight="bold">
+            {emoji}
+          </Text>
+        </Box>
+      </Animated.View>
+    </View>
+  );
+};
 
 const PanelFooter = ({ claimable, highContrastColor }: { claimable: RainbowClaimable; highContrastColor: string }) => {
   const { goBack } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
   const { claimAirdropWorklet, claimStatus, gasInfo } = useClaimAirdrop(claimable);
 
-  const handleClaim = useCallback(() => {
+  const claimAirdrop = useCallback(() => {
     'worklet';
     if (isReadOnlyWallet) {
       runOnJS(watchingAlert)();
@@ -199,7 +263,7 @@ const PanelFooter = ({ claimable, highContrastColor }: { claimable: RainbowClaim
     }
     if (claimStatus.value === ClaimStatus.READY || claimStatus.value === ClaimStatus.RECOVERABLE_ERROR) {
       claimAirdropWorklet();
-    } else if (claimStatus.value === ClaimStatus.SUCCESS) {
+    } else if (claimStatus.value === ClaimStatus.CONFIRMED) {
       goBack();
     }
   }, [claimAirdropWorklet, claimStatus, goBack, isReadOnlyWallet]);
@@ -207,27 +271,27 @@ const PanelFooter = ({ claimable, highContrastColor }: { claimable: RainbowClaim
   return (
     <PanelFooterContent
       chainLabel={useBackendNetworksStore(state => state.getChainsLabel()[claimable.asset.chainId])}
+      claimAirdrop={claimAirdrop}
       claimStatus={claimStatus}
       gasInfo={gasInfo}
-      handleClaim={handleClaim}
       highContrastColor={highContrastColor}
     />
   );
 };
 
-const PanelFooterContent = memo(function PanelFooterContent({
+const PanelFooterContent = ({
   chainLabel,
+  claimAirdrop,
   claimStatus,
   gasInfo,
-  handleClaim,
   highContrastColor,
 }: {
   chainLabel: string;
+  claimAirdrop: () => void;
   claimStatus: SharedValue<ClaimStatus>;
   gasInfo: SharedValue<AirdropGasInfo>;
-  handleClaim: () => void;
   highContrastColor: string;
-}) {
+}) => {
   const { goBack } = useNavigation();
 
   const labelTertiary = useForegroundColor('labelTertiary');
@@ -237,19 +301,19 @@ const PanelFooterContent = memo(function PanelFooterContent({
   const gasFeeDisplay = useDerivedValue(() => gasInfo.value.gasFeeDisplay);
 
   const buttonStyle = useAnimatedStyle(() => {
-    const isButtonDisabled =
-      claimStatus.value !== ClaimStatus.READY &&
-      claimStatus.value !== ClaimStatus.SUCCESS &&
-      claimStatus.value !== ClaimStatus.RECOVERABLE_ERROR;
+    const shouldEnable =
+      claimStatus.value === ClaimStatus.READY ||
+      claimStatus.value === ClaimStatus.RECOVERABLE_ERROR ||
+      claimStatus.value === ClaimStatus.CONFIRMED;
     return {
-      opacity: withTiming(isButtonDisabled ? 0.5 : 1, TIMING_CONFIGS.slowFadeConfig),
-      pointerEvents: isButtonDisabled ? 'none' : 'auto',
+      opacity: withTiming(shouldEnable ? 1 : 0.5, TIMING_CONFIGS.slowestFadeConfig),
+      pointerEvents: shouldEnable ? 'auto' : 'none',
     };
   });
 
   const gasFeeStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(gasInfo.value.gasFeeDisplay ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
-    transform: [{ translateY: withSpring(gasInfo.value.gasFeeDisplay ? 0 : -12, SPRING_CONFIGS.springConfig) }],
+    opacity: withTiming(gasInfo.value.gasFeeDisplay ? 1 : 0, TIMING_CONFIGS.slowestFadeConfig),
+    transform: [{ translateY: withTiming(gasInfo.value.gasFeeDisplay ? 0 : 10, TIMING_CONFIGS.slowestFadeConfig) }],
   }));
 
   const insufficientFundsTextColor = useAnimatedStyle(() => ({
@@ -258,7 +322,7 @@ const PanelFooterContent = memo(function PanelFooterContent({
 
   const onPress = useCallback(() => {
     'worklet';
-    if (claimStatus.value === ClaimStatus.SUCCESS) runOnJS(goBack)();
+    if (claimStatus.value === ClaimStatus.CONFIRMED) runOnJS(goBack)();
   }, [claimStatus, goBack]);
 
   return (
@@ -269,12 +333,18 @@ const PanelFooterContent = memo(function PanelFooterContent({
 
       <GestureHandlerButton
         longPressDuration={400}
-        onLongPressWorklet={handleClaim}
+        onLongPressWorklet={claimAirdrop}
         onPressWorklet={onPress}
         scaleTo={0.925}
         style={[{ backgroundColor: highContrastColor }, styles.submitButton, buttonStyle]}
       >
-        <AnimatedText align="center" color={{ custom: getHighContrastTextColorWorklet(highContrastColor, 3) }} size="20pt" weight="heavy">
+        <AnimatedText
+          align="center"
+          color={{ custom: getHighContrastTextColorWorklet(highContrastColor, 3) }}
+          size="20pt"
+          style={styles.flex}
+          weight="heavy"
+        >
           {buttonLabel}
         </AnimatedText>
       </GestureHandlerButton>
@@ -299,23 +369,7 @@ const PanelFooterContent = memo(function PanelFooterContent({
       </Animated.View>
     </Box>
   );
-});
-
-const Avatar = memo(function Avatar({ creatorAddress }: { creatorAddress: string }) {
-  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    fetchENSAvatar(creatorAddress, { swallowError: true }).then(data => {
-      if (data?.imageUrl) setAvatarUrl(data.imageUrl);
-    });
-  }, [creatorAddress]);
-
-  return (
-    <Bleed vertical="6px">
-      <ImgixImage enableFasterImage size={16} source={{ uri: getSizedImageUrl(avatarUrl, 16) }} style={styles.avatar} />
-    </Bleed>
-  );
-});
+};
 
 const COLORS = {
   coinIconDropShadow: opacity(globalColors.grey100, 0.28),
@@ -325,7 +379,7 @@ const COLORS = {
 
 const COIN_ICON_Y_POSITION = 147;
 
-const SkiaBackground = memo(function BackgroundBlur({
+const SkiaBackground = memo(function SkiaBackground({
   color,
   imageUrl,
   originalColor,
@@ -337,8 +391,8 @@ const SkiaBackground = memo(function BackgroundBlur({
   const [coinIconPath] = useState(() => getCirclePath(point(PANEL_WIDTH / 2, COIN_ICON_Y_POSITION), COIN_ICON_SIZE / 2));
   const image = useImage(imageUrl);
 
-  const imageOpacity = useDerivedValue(() => (image ? withTiming(1, TIMING_CONFIGS.slowFadeConfig) : 0));
-  const shadowOpacity = useDerivedValue(() => (color ? withTiming(0.44, TIMING_CONFIGS.slowFadeConfig) : 0));
+  const imageOpacity = useDerivedValue(() => (image ? withTiming(1, TIMING_CONFIGS.slowerFadeConfig) : 0));
+  const shadowOpacity = useDerivedValue(() => (color ? withTiming(0.44, TIMING_CONFIGS.slowerFadeConfig) : 0));
   const shadowColor = useDerivedValue(() => (color ? opacityWorklet(color, shadowOpacity.value) : 'rgba(0, 0, 0, 0)'));
 
   useCleanup(() => coinIconPath?.dispose?.());
@@ -402,11 +456,73 @@ function getBrightenedColor(color: string | undefined): string {
   } else return brightenedColor;
 }
 
+function getFallbackAddress(address: Address) {
+  return formatAddressForDisplay(address, 4, 6);
+}
+
+async function fetchAndSetEnsData({
+  address,
+  avatarUrl,
+  ensOrAddress,
+}: {
+  address: Address;
+  avatarUrl: SharedValue<string | null | undefined>;
+  ensOrAddress: SharedValue<string | null | undefined>;
+}) {
+  let resolved = false;
+  let timeoutId: NodeJS.Timeout | null = null;
+
+  const timeoutPromise = new Promise<null>(resolve => {
+    timeoutId = setTimeout(() => resolve(null), time.seconds(3));
+  });
+
+  try {
+    await Promise.race([
+      fetchReverseRecord(address).then(async name => {
+        if (!name) {
+          avatarUrl.value = null;
+          ensOrAddress.value = getFallbackAddress(address);
+          if (timeoutId) clearTimeout(timeoutId);
+          return;
+        }
+        resolved = true;
+        ensOrAddress.value = name;
+        const avatar = (await fetchENSAvatar(name, { cacheFirst: true }))?.imageUrl;
+        const sizedImageUrl = avatar ? getSizedImageUrl(avatar, 16) : null;
+        avatarUrl.value = sizedImageUrl || null;
+        if (timeoutId) clearTimeout(timeoutId);
+        return;
+      }),
+      timeoutPromise.then(() => {
+        if (resolved) return;
+        avatarUrl.value = null;
+        ensOrAddress.value = getFallbackAddress(address);
+      }),
+    ]);
+  } catch (error) {
+    if (resolved) return;
+    ensOrAddress.value = getFallbackAddress(address);
+    avatarUrl.value = null;
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+}
+
 const styles = StyleSheet.create({
   avatar: {
-    borderRadius: 8,
     height: 16,
     overflow: 'hidden',
+    position: 'absolute',
+    width: 16,
+  },
+  avatarWrapper: {
+    alignItems: 'center',
+    backgroundColor: getColorForTheme('fillTertiary', 'dark'),
+    borderRadius: 8,
+    height: 16,
+    justifyContent: 'center',
+    marginVertical: -4,
+    overflow: 'hidden',
+    position: 'relative',
     width: 16,
   },
   backgroundFill: {

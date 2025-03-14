@@ -1,4 +1,4 @@
-import { TransactionRequest } from '@ethersproject/abstract-provider';
+import { TransactionReceipt, TransactionRequest } from '@ethersproject/abstract-provider';
 import { Wallet } from '@ethersproject/wallet';
 import { Address, formatUnits } from 'viem';
 import { analyticsV2 } from '@/analytics';
@@ -11,14 +11,17 @@ import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { weiToGwei } from '@/parsers';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
+import { isStaging } from '@/resources/addys/client';
 import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
+import { addNewTransaction } from '@/state/pendingTransactions';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
+import { time } from '@/utils';
 
 export interface GasInfo {
   gasFeeDisplay: string | undefined;
@@ -44,20 +47,23 @@ export async function executeAirdropClaim({
   claimable,
   gasLimit,
   gasSettings,
+  onConfirm,
 }: {
   accountAddress: string;
   claimable: RainbowClaimable;
   gasLimit: string;
   gasSettings: GasSettings;
+  onConfirm?: (receipt: TransactionReceipt) => void;
 }): Promise<{ error?: string; success: boolean; txHash?: string }> {
   const { airdropId, amount, chainId, data, symbol, to, usdValue } = getClaimableTransactionData(claimable);
+  const nonce = await getNextNonce({ address: accountAddress, chainId });
 
   const txPayload: TransactionRequest = {
     chainId,
     data,
     from: accountAddress,
     gasLimit: toHex(gasLimit),
-    nonce: await getNextNonce({ address: accountAddress, chainId }),
+    nonce,
     to,
     value: '0x0',
   };
@@ -83,21 +89,21 @@ export async function executeAirdropClaim({
   if (!wallet) return { error: '[claimAirdrop] Biometrics auth failure', success: false };
 
   try {
-    logger.log('[claimAirdrop]: Attempting to sign transaction', { txPayload });
     const signedTx = await wallet.signTransaction(txPayload);
     const receipt = await provider.sendTransaction(signedTx);
 
-    // TODO: Enable in production
-    // addNewTransaction(
-    //   buildClaimTransaction({
-    //     accountAddress,
-    //     claimable,
-    //     chainId,
-    //     gasLimit,
-    //     nonce,
-    //     txHash: receipt.hash,
-    //   })
-    // );
+    if (!isStaging()) {
+      addNewTransaction(
+        buildClaimTransaction({
+          accountAddress,
+          claimable,
+          chainId,
+          gasLimit,
+          nonce,
+          txHash: receipt.hash,
+        })
+      );
+    }
 
     logger.log('[claimAirdrop]: Transaction successfully submitted', { chainId, hash: receipt.hash });
 
@@ -113,6 +119,11 @@ export async function executeAirdropClaim({
       usdValue,
     });
 
+    if (onConfirm)
+      provider.waitForTransaction(receipt.hash, 1, time.minutes(1)).then(receipt => {
+        onConfirm(receipt);
+      });
+
     return { success: true, txHash: receipt.hash };
   } catch (e) {
     const errorMessage = e instanceof Error ? e.message : String(e);
@@ -124,7 +135,6 @@ export async function executeAirdropClaim({
     logger.error(new RainbowError('[claimAirdrop]: Failed to execute claim transaction'), {
       isUserCancelled,
       message: errorMessage,
-      txPayload,
     });
 
     analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
