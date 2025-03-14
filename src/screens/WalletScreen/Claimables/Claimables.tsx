@@ -45,6 +45,7 @@ export function Claimables() {
     return {
       height: withTiming(isExpanded.value ? height : 0, TIMING_CONFIGS.fadeConfig),
       opacity: withTiming(isExpanded.value ? 1 : 0, TIMING_CONFIGS.fadeConfig),
+      pointerEvents: isExpanded.value ? 'auto' : 'none',
     };
   });
 

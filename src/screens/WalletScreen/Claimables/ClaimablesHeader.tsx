@@ -28,7 +28,7 @@ import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/Gestur
 const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
 
 const TokenFamilyHeaderAnimationDuration = 200;
-const TokenFamilyHeaderHeight = 48;
+const TokenFamilyHeaderHeight = 40;
 
 type ClaimablesStore = {
   currentAddress: string;

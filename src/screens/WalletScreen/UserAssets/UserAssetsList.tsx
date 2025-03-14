@@ -84,7 +84,7 @@ export function UserAssetsList() {
       initialNumToRender={MAX_CONDENSED_ASSETS + 1}
       keyboardShouldPersistTaps="always"
       scrollEnabled={false}
-      style={[{ flex: 1, width: deviceUtils.dimensions.width }]}
+      style={[{ flex: 1, width: deviceUtils.dimensions.width, paddingBottom: 12 }]}
       showsVerticalScrollIndicator={false}
       windowSize={30}
     />
