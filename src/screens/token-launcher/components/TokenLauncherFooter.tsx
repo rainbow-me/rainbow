@@ -104,7 +104,7 @@ function HoldToCreateButton() {
 
     setIsProcessing(false);
 
-    // TODO: implement later
+    // TODO: HW wallet signing works but we should incorporate the hw connection modal at some point
     // if (isHardwareWallet) {
     // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
     // } else {}
