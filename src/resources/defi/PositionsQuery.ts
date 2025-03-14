@@ -10,7 +10,11 @@ import { DEFI_POSITIONS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { getAddysHttpClient } from '@/resources/addys/client';
 
-const getPositions = async (address: string, currency: NativeCurrencyKey): Promise<AddysPositionsResponse> => {
+export const getPositions = async (
+  address: string,
+  currency: NativeCurrencyKey,
+  abortController: AbortController | null
+): Promise<AddysPositionsResponse> => {
   const networkString = useBackendNetworksStore.getState().getSupportedChainIds().join(',');
   const url = `/${networkString}/${address}/positions`;
   const response = await getAddysHttpClient().get<AddysPositionsResponse>(url, {
@@ -18,6 +22,7 @@ const getPositions = async (address: string, currency: NativeCurrencyKey): Promi
       currency,
       enableThirdParty: 'true',
     },
+    abortController,
   });
 
   if (response.data) {

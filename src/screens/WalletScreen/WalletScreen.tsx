@@ -23,9 +23,11 @@ import { useAppIconIdentify } from './hooks/useAppIconIdentify';
 import { useRemoveFirstScreen } from './hooks/useRemoveFirstScreen';
 import { useInitializeAndSetParams } from './hooks/useInitializeAndSetParams';
 import { useLoadDeferredData } from './hooks/useLoadDeferredData';
-import { ClaimablesHeader, ClaimablesSync } from './Claimables/ClaimablesHeader';
+import { ClaimablesHeader } from './Claimables/ClaimablesHeader';
 import { Claimables } from './Claimables/Claimables';
 import { ClaimablesProvider } from './Claimables/ClaimablesContext';
+import { PositionsHeader } from './Positions/PositionsHeader';
+import { PositionsProvider } from './Positions/PositionsContext';
 
 function WalletPage() {
   const { scrollHandler, scrollViewRef } = useScrollPosition();
@@ -72,8 +74,11 @@ function WalletPage() {
           <ClaimablesProvider>
             <ClaimablesHeader />
             <Claimables />
-            <ClaimablesSync />
           </ClaimablesProvider>
+
+          <PositionsProvider>
+            <PositionsHeader />
+          </PositionsProvider>
         </Animated.ScrollView>
       </Box>
     </Box>

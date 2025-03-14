@@ -1,95 +1,74 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Image } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import { AnimatedText, Box, Inline, Text, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 import { useAccountSettings } from '@/hooks';
-import { claimablesQueryFunction } from '@/resources/addys/claimables/query';
-import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { useClaimables } from '@/resources/addys/claimables/query';
+import { usePoints } from '@/resources/points';
+import { useNativeAsset } from '@/utils/ethereumUtils';
 import { ChainId } from '@/state/backendNetworks/types';
 import {
   add,
   convertAmountAndPriceToNativeDisplay,
   convertAmountToNativeDisplay,
   convertRawAmountToBalance,
-  greaterThan,
   isZero,
 } from '@/helpers/utilities';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { deviceUtils, time } from '@/utils';
-import { useClaimablesContext } from './ClaimablesContext';
+import { IS_TEST } from '@/env';
+import { DEFI_POSITIONS, ETH_REWARDS, getExperimetalFlag } from '@/config';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { usePositionsContext } from './PositionsContext';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { getPositions, usePositions } from '@/resources/defi/PositionsQuery';
 import { createQueryStore } from '@/state/internal/createQueryStore';
+import { AddysPositionsResponse, PositionsArgs, RainbowPositions } from '@/resources/defi/types';
 import { NativeCurrencyKey } from '@/entities';
-import { Address } from 'viem';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { Address } from 'viem';
 import { logger, RainbowError } from '@/logger';
-import { metadataPOSTClient } from '@/graphql';
-import { Claimable } from '@/resources/addys/claimables/types';
+import { parsePositions } from '@/resources/defi/utils';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
 
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 40;
 
-export type ClaimablesArgs = {
+type PositionsStoreParams = {
   address: Address | string | null;
   currency: NativeCurrencyKey;
 };
 
-export type ClaimablesStore = {
-  claimables: Claimable[];
-  totalValue: string;
+const STABLE_OBJECT: RainbowPositions = {
+  totals: {
+    totals: { amount: '0', display: '0' },
+    totalLocked: '0',
+    borrows: { amount: '0', display: '0' },
+    claimables: { amount: '0', display: '0' },
+    deposits: { amount: '0', display: '0' },
+    stakes: { amount: '0', display: '0' },
+    total: { amount: '0', display: '0' },
+  },
+  positionTokens: [],
+  positions: [],
 };
 
-const STABLE_OBJECT: ClaimablesStore = {
-  claimables: [],
-  totalValue: '0',
-};
-
-export const claimablesStore = createQueryStore<ClaimablesStore, ClaimablesArgs>({
+export const positionsStore = createQueryStore<RainbowPositions, PositionsStoreParams>({
   fetcher: async ({ address, currency }, abortController) => {
     try {
       if (!address) {
         abortController?.abort();
         return STABLE_OBJECT;
       }
-
-      // Since we expose ETH Rewards as a claimable, we also need to fetch the points data from metadata client
-      const points = await metadataPOSTClient.getPointsDataForWallet({ address });
-      const claimables = ((await claimablesQueryFunction({ address, currency, abortController })) || STABLE_OBJECT.claimables).sort(
-        (a, b) => (greaterThan(a.value.nativeAsset.amount || '0', b.value.nativeAsset.amount || '0') ? -1 : 1)
-      );
-
-      if (points?.points?.user?.rewards?.claimable) {
-        const ethNativeAsset = await getNativeAssetForNetwork({ chainId: ChainId.mainnet });
-        if (ethNativeAsset) {
-          const claimableETH = convertRawAmountToBalance(points?.points?.user?.rewards?.claimable || '0', {
-            decimals: 18,
-            symbol: 'ETH',
-          });
-          const { amount } = convertAmountAndPriceToNativeDisplay(claimableETH.amount, ethNativeAsset.price?.value || 0, currency);
-          const ethRewardsClaimable = {
-            value: {
-              nativeAsset: {
-                amount,
-              },
-            },
-            uniqueId: 'rainbow-eth-rewards',
-          } as Claimable;
-          claimables.unshift(ethRewardsClaimable);
-        }
-      }
-
-      return {
-        claimables,
-        totalValue: claimables.reduce((acc, claimable) => add(acc, claimable.value.nativeAsset.amount || '0'), '0'),
-        ethRewardsAmount: points?.points?.user?.rewards?.claimable || '0',
-      };
+      const response = await getPositions(address, currency, abortController);
+      return parsePositions(response, currency);
     } catch (e) {
       if (e instanceof Error && e.name === 'AbortError') return STABLE_OBJECT;
-      logger.error(new RainbowError('[claimablesStore]: Failed to fetch claimables'), { e });
+      logger.error(new RainbowError('[positionsStore]: Failed to fetch positions'), { e });
       return STABLE_OBJECT;
     }
   },
@@ -99,37 +78,35 @@ export const claimablesStore = createQueryStore<ClaimablesStore, ClaimablesArgs>
   },
   keepPreviousData: true,
   enabled: $ => $(userAssetsStoreManager, state => !!state.address),
-  staleTime: time.minutes(2),
+  staleTime: time.hours(1),
 });
 
-function ClaimablesBalance() {
-  const { isExpanded } = useClaimablesContext();
-  const totalValue = claimablesStore(state => state.getData())?.totalValue || '0';
-  const { nativeCurrency } = useAccountSettings();
-
-  const total = useMemo(() => {
-    return convertAmountToNativeDisplay(totalValue, nativeCurrency);
-  }, [nativeCurrency, totalValue]);
-
+function PositionsBalance() {
+  const { isExpanded } = usePositionsContext();
+  const positions = positionsStore(state => state.getData());
   const balanceStyles = useAnimatedStyle(() => {
     return {
       opacity: withTiming(isExpanded.value ? 0 : 1, TIMING_CONFIGS.fadeConfig),
     };
   });
 
+  if (!positions) return null;
+
   return (
     <AnimatedText style={[balanceStyles, { paddingRight: 4 }]} size="20pt" color="label" weight="regular">
-      {total}
+      {positions.totals.total.display}
     </AnimatedText>
   );
 }
 
-export function ClaimablesHeader() {
+export function PositionsHeader() {
   const caretColor = useForegroundColor('label');
+  const { positions_enabled } = useRemoteConfig();
+  const positionsEnabled = (positions_enabled || getExperimetalFlag(DEFI_POSITIONS)) && !IS_TEST;
   const { nativeCurrencySymbol } = useAccountSettings();
-  const { isExpanded, toggleExpanded } = useClaimablesContext();
+  const { isExpanded, toggleExpanded } = usePositionsContext();
 
-  const totalValue = claimablesStore(state => state.getData())?.totalValue || '0';
+  const totalValue = positionsStore(state => state.getData()?.totals.total.display);
 
   const caretStyles = useAnimatedStyle(() => {
     return {
@@ -144,7 +121,7 @@ export function ClaimablesHeader() {
     };
   });
 
-  if (isZero(totalValue.replace(nativeCurrencySymbol, ''))) return null;
+  if (!positionsEnabled || !totalValue || isZero(totalValue.replace(nativeCurrencySymbol, ''))) return null;
 
   return (
     <GestureHandlerButton onPressWorklet={toggleExpanded} scaleTo={1.05} testID={`claimables-list-header`}>
@@ -156,10 +133,10 @@ export function ClaimablesHeader() {
       >
         <Inline alignHorizontal="justify" alignVertical="center">
           <Text size="22pt" color={'label'} weight="heavy">
-            {i18n.t(i18n.l.account.tab_claimables)}
+            {i18n.t(i18n.l.account.tab_positions)}
           </Text>
           <Inline horizontalSpace={'8px'} alignVertical="center">
-            <ClaimablesBalance />
+            <PositionsBalance />
             <AnimatedImgixImage
               source={CaretImageSource}
               tintColor={caretColor}
