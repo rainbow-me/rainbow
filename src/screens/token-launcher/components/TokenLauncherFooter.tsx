@@ -15,7 +15,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { STEP_TRANSITION_DURATION } from '../constants';
-import { Alert, Keyboard, Share } from 'react-native';
+import { Keyboard, Share } from 'react-native';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { GasButton } from './gas/GasButton';
 import { useAccountSettings, useBiometryType, useWallets } from '@/hooks';
@@ -37,6 +37,8 @@ import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { analyticsV2 } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
+import showWalletErrorAlert from '@/helpers/support';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
 
 // height + top padding + bottom padding
 export const FOOTER_HEIGHT = 48 + 16 + 8;
@@ -47,7 +49,6 @@ function HoldToCreateButton() {
   const setStep = useTokenLauncherStore(state => state.setStep);
   const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
   const chainId = useTokenLauncherStore(state => state.chainId);
-  const getAnalyticsParams = useTokenLauncherStore(state => state.getAnalyticsParams);
   const { isHardwareWallet } = useWallets();
   const biometryType = useBiometryType();
   const { accountAddress } = useAccountSettings();
@@ -64,52 +65,50 @@ function HoldToCreateButton() {
   const showBiometryIcon = !IS_ANDROID && isLongPressAvailableForBiometryType && !isHardwareWallet;
 
   const handleLongPress = useCallback(async () => {
-    try {
-      setIsProcessing(true);
-      const provider = getProvider({ chainId });
-      const wallet = await loadWallet({
-        address: accountAddress,
-        provider,
-      });
-      if (wallet) {
-        setStep(NavigationSteps.CREATING);
-        const createTokenResponse = await createToken({ wallet: wallet as Wallet, transactionOptions });
-        if (createTokenResponse) {
-          addStaleBalance({
-            address: accountAddress,
-            chainId,
-            info: {
-              address: createTokenResponse.tokenAddress,
-              transactionHash: createTokenResponse.transaction.hash,
-            },
-          });
-          setStep(NavigationSteps.SUCCESS);
-        } else {
-          setStep(NavigationSteps.REVIEW);
-        }
-      } else {
-        // Did not get biometry to load wallet
-      }
+    setIsProcessing(true);
 
-      // TODO: implement later
-      // if (isHardwareWallet) {
-      // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
-      // } else {
-      // }
-    } catch (e: unknown) {
+    const provider = getProvider({ chainId });
+    let wallet: Wallet | LedgerSigner | null = null;
+
+    try {
+      wallet = await loadWallet({ address: accountAddress, provider });
+    } catch (e) {
+      showWalletErrorAlert();
       const error = e instanceof Error ? e : new Error(String(e));
-      Alert.alert('Error initiating token creation', `${error.message}`);
-      logger.error(new RainbowError('[TokenLauncher]: Error Initiating Token Creation'), {
+      logger.error(new RainbowError('[TokenLauncher]: Error Loading Wallet'), {
         message: error.message,
       });
-      analyticsV2.track(analyticsV2.event.tokenLauncherCreationFailed, {
-        ...getAnalyticsParams(),
+      analyticsV2.track(analyticsV2.event.tokenLauncherWalletLoadFailed, {
         error: error.message,
       });
-    } finally {
       setIsProcessing(false);
     }
-  }, [isHardwareWallet, createToken, accountAddress, chainId, transactionOptions, setStep, addStaleBalance]);
+
+    if (wallet) {
+      setStep(NavigationSteps.CREATING);
+      const createTokenResponse = await createToken({ wallet: wallet as Wallet, transactionOptions });
+      if (createTokenResponse) {
+        addStaleBalance({
+          address: accountAddress,
+          chainId,
+          info: {
+            address: createTokenResponse.tokenAddress,
+            transactionHash: createTokenResponse.transaction.hash,
+          },
+        });
+        setStep(NavigationSteps.SUCCESS);
+      } else {
+        setStep(NavigationSteps.REVIEW);
+      }
+    }
+
+    setIsProcessing(false);
+
+    // TODO: implement later
+    // if (isHardwareWallet) {
+    // navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: createToken });
+    // } else {}
+  }, [createToken, accountAddress, chainId, transactionOptions, setStep, addStaleBalance]);
 
   return (
     <HoldToActivateButton

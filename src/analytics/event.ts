@@ -190,6 +190,7 @@ export const event = {
   tokenLauncherAbandoned: 'token_launcher.abandoned',
   tokenLauncherCreationFailed: 'token_launcher.creation_failed',
   tokenLauncherImageUploadFailed: 'token_launcher.image_upload_failed',
+  tokenLauncherWalletLoadFailed: 'token_launcher.wallet_load_failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -781,6 +782,9 @@ export type EventProperties = {
   // token launcher
   [event.tokenLauncherStepChanged]: {
     step: string;
+  };
+  [event.tokenLauncherWalletLoadFailed]: {
+    error: string;
   };
   [event.tokenLauncherImageUploadFailed]: {
     error: string;
