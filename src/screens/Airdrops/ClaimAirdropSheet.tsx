@@ -135,7 +135,7 @@ const PanelHeader = memo(function PanelHeader({ symbol }: { symbol: string }) {
   const sheetHandleColor = foregroundColors.labelQuaternary.dark;
   return (
     <Box alignItems="center" gap={24} justifyContent="center" paddingTop="32px" width="full">
-      <SheetHandleFixedToTop color={sheetHandleColor} showBlur={true} top={11} />
+      <SheetHandleFixedToTop color={sheetHandleColor} showBlur={true} top={10} />
       <Text align="center" color="label" numberOfLines={1} size="20pt" weight="heavy">
         {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.title, { symbol })}
       </Text>
