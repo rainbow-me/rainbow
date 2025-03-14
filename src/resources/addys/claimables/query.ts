@@ -58,9 +58,9 @@ type ClaimablesResult = QueryFunctionResult<typeof claimablesQueryFunction>;
 // ///////////////////////////////////////////////
 // Query Hook
 
-export function useClaimables(
+export function useClaimables<T extends ClaimablesResult>(
   { address, currency }: ClaimablesArgs,
-  config: QueryConfigWithSelect<ClaimablesResult, Error, ClaimablesResult, ClaimablesQueryKey> = {}
+  config: QueryConfigWithSelect<ClaimablesResult, Error, T, ClaimablesQueryKey> = {}
 ) {
   const { claimables: remoteFlag } = useRemoteConfig();
   const localFlag = useExperimentalFlag(CLAIMABLES);

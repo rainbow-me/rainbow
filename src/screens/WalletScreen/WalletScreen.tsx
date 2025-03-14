@@ -16,13 +16,16 @@ import { ProfileName } from './ProfileName';
 import { ProfileBalance } from './ProfileBalance';
 import { ProfileActionButtons } from './ProfileActionButtons';
 import { RefreshControl } from 'react-native';
-import { UserAssetsList } from './UserAssetsList';
-import { SyncUserAssetsStoreWithContext, UserAssetsListProvider } from './UserAssetsListContext';
+import { UserAssetsList } from './UserAssets/UserAssetsList';
+import { SyncUserAssetsStoreWithContext, UserAssetsListProvider } from './UserAssets/UserAssetsListContext';
 import { useWalletCohort } from './hooks/useWalletCohort';
 import { useAppIconIdentify } from './hooks/useAppIconIdentify';
 import { useRemoveFirstScreen } from './hooks/useRemoveFirstScreen';
 import { useInitializeAndSetParams } from './hooks/useInitializeAndSetParams';
 import { useLoadDeferredData } from './hooks/useLoadDeferredData';
+import { ClaimablesHeader, ClaimablesSync } from './Claimables/ClaimablesHeader';
+import { Claimables } from './Claimables/Claimables';
+import { ClaimablesProvider } from './Claimables/ClaimablesContext';
 
 function WalletPage() {
   const { scrollHandler, scrollViewRef } = useScrollPosition();
@@ -65,6 +68,14 @@ function WalletPage() {
             <UserAssetsList />
             <SyncUserAssetsStoreWithContext />
           </UserAssetsListProvider>
+
+          <Box style={{ flex: 1 }} justifyContent="space-between" alignItems="center">
+            <ClaimablesProvider>
+              <ClaimablesHeader />
+              <Claimables />
+              <ClaimablesSync />
+            </ClaimablesProvider>
+          </Box>
         </Animated.ScrollView>
       </Box>
     </Box>
