@@ -22,7 +22,6 @@ type AirdropSuggestionsParams = {
 
 export const useAirdropSuggestionsStore = createQueryStore<GetAirdropSuggestionsResponse, AirdropSuggestionsParams>(
   {
-    // fetcher: airdropSuggestionsQueryFunction,
     fetcher: async ({ address }) => {
       if (!address) return noSuggestionsData;
       const suggestions = await TokenLauncherSDK.getAirdropSuggestions(address);
