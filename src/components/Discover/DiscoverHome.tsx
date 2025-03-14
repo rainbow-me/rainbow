@@ -9,8 +9,8 @@ import useExperimentalFlag, {
   FEATURED_RESULTS,
   TRENDING_TOKENS,
 } from '@rainbow-me/config/experimentalHooks';
-import { Inline, Inset, Stack, Box, Separator } from '@/design-system';
-import { useWallets } from '@/hooks';
+import { Inline, Inset, Stack, Box, Separator, useColorMode } from '@/design-system';
+import { useAccountSettings, useWallets } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
 import { GasCard } from '@/components/cards/GasCard';
@@ -29,8 +29,9 @@ import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultS
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { AirdropsCard } from '@/components/cards/skia-cards/AirdropsCard';
 import { LaunchCard } from '@/components/cards/skia-cards/LaunchCard';
-import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
 
 export const HORIZONTAL_PADDING = 20;
@@ -38,6 +39,7 @@ export const HORIZONTAL_PADDING = 20;
 export default function DiscoverHome() {
   const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results, trending_tokens_enabled, new_discover_cards_enabled } =
     useRemoteConfig();
+  const { isDarkMode } = useColorMode();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -80,11 +82,11 @@ export default function DiscoverHome() {
               {isProfilesEnabled && <ENSSearchCard />}
             </Inline>
           )}
-          <Separator color="separatorTertiary" thickness={1} />
+          <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} thickness={1} />
           {trendingTokensEnabled && (
             <>
               <TrendingTokens />
-              <Separator color="separatorTertiary" thickness={1} />
+              <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} thickness={1} />
             </>
           )}
           <RemoteCardCarousel />

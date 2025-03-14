@@ -133,10 +133,6 @@ export function GestureHandlerButton({
     if (requireExternalGestureToFail) longPress.requireExternalGestureToFail(requireExternalGestureToFail);
     if (simultaneousWithExternalGesture) longPress.simultaneousWithExternalGesture(simultaneousWithExternalGesture);
 
-    const tapEnabled = !!(onPressStartWorklet || onPressJS || onPressWorklet);
-
-    if (!tapEnabled) return longPress;
-
     return Gesture.Race(tap, longPress);
   }, [
     blocksExternalGesture,

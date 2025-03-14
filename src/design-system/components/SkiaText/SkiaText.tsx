@@ -1,6 +1,6 @@
-import { AnimatedProp, Paragraph, SkPaint, SkParagraph, Transforms3d } from '@shopify/react-native-skia';
+import { AnimatedProp, Paragraph, SkPaint, SkParagraph, SkTextShadow, Transforms3d } from '@shopify/react-native-skia';
 import React, { ReactNode, useCallback, useContext, useMemo } from 'react';
-import { DerivedValue, isSharedValue, useDerivedValue } from 'react-native-reanimated';
+import { isSharedValue, runOnUI, useDerivedValue } from 'react-native-reanimated';
 import { TextAlign } from '@/components/text/types';
 import { AccentColorContext } from '@/design-system/color/AccentColorContext';
 import { ColorMode, TextColor } from '@/design-system/color/palettes';
@@ -11,27 +11,47 @@ import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS } from '@/env';
 import { SharedOrDerivedValueText } from '../Text/AnimatedText';
 
-export interface SkiaTextChildProps {
-  backgroundPaint?: SkPaint;
-  children: string;
-  color?: TextColor | CustomColor;
-  foregroundPaint?: SkPaint;
-  opacity?: number;
-  weight?: TextWeight;
-}
-
-export const SkiaTextChild: React.FC<SkiaTextChildProps> = () => null;
-
 export interface SkiaTextProps {
   align?: TextAlign;
+  /**
+   * Useful for applying fills or effects to the text's background. Simply define a
+   * SkPaint object and pass it to the `SkiaText` component.
+   * @example
+   * ```tsx
+   * // At module scope (or otherwise made stable)
+   * const backgroundPaint = Skia.Paint();
+   * backgroundPaint.setShader(
+   *   source.makeShader([0, 0, 256, 256, ...colors])
+   * );
+   * ```
+   * @docs https://shopify.github.io/react-native-skia/docs/text/paragraph#using-paints
+   */
   backgroundPaint?: SkPaint;
   children: ReactNode | SharedOrDerivedValueText | string;
   color?: TextColor | CustomColor;
   colorMode?: ColorMode;
+  /**
+   * Useful for applying fills or effects to the text itself. Simply define a
+   * SkPaint object and pass it to the `SkiaText` component.
+   * @example
+   * ```tsx
+   * // At module scope (or otherwise made stable)
+   * const foregroundPaint = Skia.Paint();
+   * foregroundPaint.setMaskFilter(
+   *   Skia.MaskFilter.MakeBlur(BlurStyle.Normal, 10, false)
+   * );
+   * ```
+   * @docs https://shopify.github.io/react-native-skia/docs/text/paragraph#using-paints
+   */
   foregroundPaint?: SkPaint;
   letterSpacing?: number;
   lineHeight?: number;
+  /**
+   * Can be a worklet function. Receives the raw `paragraph` object, which
+   * contains methods that can be used to obtain detailed text metrics.
+   */
   onLayout?: (paragraph: SkParagraph) => void;
+  shadows?: SkTextShadow[];
   size: TextSize;
   transform?: AnimatedProp<Transforms3d | undefined>;
   weight?: TextWeight;
@@ -40,13 +60,17 @@ export interface SkiaTextProps {
   y: AnimatedProp<number>;
 }
 
-export interface SkiaTextHandle {
-  get: () => DerivedValue<SkParagraph | null>;
+export interface SkiaTextChildProps {
+  backgroundPaint?: SkiaTextProps['backgroundPaint'];
+  children: string;
+  color?: SkiaTextProps['color'];
+  foregroundPaint?: SkiaTextProps['foregroundPaint'];
+  opacity?: number;
+  shadows?: SkTextShadow[];
+  weight?: SkiaTextProps['weight'];
 }
 
-function isSharedOrDerivedValueText(children: ReactNode | SharedOrDerivedValueText | string): children is SharedOrDerivedValueText {
-  return isSharedValue<string>(children);
-}
+export const SkiaTextChild: React.FC<SkiaTextChildProps> = () => null;
 
 export const SkiaText = ({
   align = 'left',
@@ -58,6 +82,7 @@ export const SkiaText = ({
   letterSpacing,
   lineHeight,
   onLayout,
+  shadows,
   size,
   transform,
   weight = 'bold',
@@ -86,10 +111,11 @@ export const SkiaText = ({
         foregroundPaint,
         letterSpacing,
         lineHeight,
+        shadows,
         size,
         weight,
       }),
-      [align, backgroundPaint, color, foregroundPaint, letterSpacing, lineHeight, size, weight]
+      [align, backgroundPaint, color, foregroundPaint, letterSpacing, lineHeight, shadows, size, weight]
     )
   );
 
@@ -103,10 +129,17 @@ export const SkiaText = ({
     if (hasSegments) {
       return childOrChildrenArray.map(child => {
         if (React.isValidElement(child) && child.type === SkiaTextChild) {
-          const { children: text, color: segColor, weight: segWeight, opacity: segOpacity }: SkiaTextChildProps = child.props;
+          const {
+            children: text,
+            color: segColor,
+            shadows: segShadows,
+            weight: segWeight,
+            opacity: segOpacity,
+          }: SkiaTextChildProps = child.props;
           return {
             color: getSegmentColor(segColor),
             opacity: segOpacity,
+            shadows: segShadows,
             text,
             weight: segWeight,
           };
@@ -131,12 +164,24 @@ export const SkiaText = ({
   const paragraph = useDerivedValue(() => {
     if (!buildParagraph) return null;
     const paragraph = buildParagraph(segments);
+
     if (onLayout && paragraph) {
-      paragraph.layout(typeof width === 'number' ? width : width.value);
-      onLayout(paragraph);
+      if (_WORKLET) {
+        paragraph.layout(typeof width === 'number' ? width : width.value);
+        onLayout(paragraph);
+      } else {
+        runOnUI(() => {
+          paragraph.layout(typeof width === 'number' ? width : width.value);
+          onLayout(paragraph);
+        })();
+      }
     }
     return paragraph;
-  }, [buildParagraph, segmentsDep]);
+  }, [buildParagraph, onLayout, segmentsDep]);
 
   return <Paragraph paragraph={paragraph} transform={transform} width={width} x={x} y={y} />;
 };
+
+function isSharedOrDerivedValueText(children: ReactNode | SharedOrDerivedValueText | string): children is SharedOrDerivedValueText {
+  return isSharedValue<string>(children);
+}

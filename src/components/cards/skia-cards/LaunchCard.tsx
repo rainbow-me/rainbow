@@ -14,15 +14,16 @@ import store from '@/redux/store';
 import walletTypes from '@/helpers/walletTypes';
 import { watchingAlert } from '@/utils';
 
+const CARD_HEIGHT = 175;
 const PLUS_BUTTON_SIZE = 64;
 const PLUS_BUTTON_HORIZONTAL_INSET = (DEFAULT_CARD_SIZE - PLUS_BUTTON_SIZE) / 2;
 
 const CARD_CONFIG = {
   colors: {
-    coinIconDropShadow: opacity(globalColors.grey100, 0.15),
-    coinIconInnerShadowDark: opacity(globalColors.grey100, 0.3),
-    coinIconInnerShadowLight: opacity(globalColors.white100, 0.8),
-    coinIconStroke: opacity(globalColors.white100, 0.175),
+    plusButtonDropShadow: opacity(globalColors.grey100, 0.15),
+    plusButtonInnerShadowDark: opacity(globalColors.grey100, 0.3),
+    plusButtonInnerShadowLight: opacity(globalColors.white100, 0.8),
+    plusButtonStroke: opacity(globalColors.white100, 0.175),
   },
   dimensions: {
     plusButton: {
@@ -38,18 +39,18 @@ const CARD_CONFIG = {
   gradients: {
     card: {
       colors: ['#EBAF09', '#FFC800'],
-      end: vec(DEFAULT_CARD_SIZE, DEFAULT_CARD_SIZE / 2),
-      start: vec(0, DEFAULT_CARD_SIZE / 2),
+      end: vec(DEFAULT_CARD_SIZE, CARD_HEIGHT / 2),
+      start: vec(0, CARD_HEIGHT / 2),
     },
     plusButton: {
       colors: ['#FFC31D', '#FFDF23'],
-      end: vec(DEFAULT_CARD_SIZE - PLUS_BUTTON_HORIZONTAL_INSET, DEFAULT_CARD_SIZE / 2),
-      start: vec(PLUS_BUTTON_HORIZONTAL_INSET, DEFAULT_CARD_SIZE / 2),
+      end: vec(DEFAULT_CARD_SIZE - PLUS_BUTTON_HORIZONTAL_INSET, CARD_HEIGHT / 2),
+      start: vec(PLUS_BUTTON_HORIZONTAL_INSET, CARD_HEIGHT / 2),
     },
     text: {
       colors: ['#3D1E0A', '#7A600A'],
-      end: vec(DEFAULT_CARD_SIZE - 20, DEFAULT_CARD_SIZE / 2),
-      start: vec(20, DEFAULT_CARD_SIZE / 2),
+      end: vec(DEFAULT_CARD_SIZE - 20, CARD_HEIGHT / 2),
+      start: vec(20, CARD_HEIGHT / 2),
     },
   },
 };
@@ -68,13 +69,6 @@ function isCurrentWalletReadOnly() {
 export const LaunchCard = memo(function LaunchCard() {
   const { navigate } = useNavigation();
 
-  const navigateToTokenLauncher = useCallback(() => {
-    if (!enableActionsOnReadOnlyWallet && isCurrentWalletReadOnly()) {
-      return watchingAlert();
-    }
-    navigate(Routes.TOKEN_LAUNCHER_SCREEN);
-  }, [navigate]);
-
   const [svgs] = useState(() => ({
     plusButton: plusButtonSvg(),
     stars: {
@@ -83,6 +77,13 @@ export const LaunchCard = memo(function LaunchCard() {
       three: stars.three(),
     },
   }));
+
+  const navigateToTokenLauncher = useCallback(() => {
+    if (!enableActionsOnReadOnlyWallet && isCurrentWalletReadOnly()) {
+      return watchingAlert();
+    }
+    navigate(Routes.TOKEN_LAUNCHER_SCREEN);
+  }, [navigate]);
 
   useCleanup(() => {
     svgs.plusButton?.dispose?.();
@@ -93,6 +94,7 @@ export const LaunchCard = memo(function LaunchCard() {
 
   return (
     <SkiaCard
+      height={CARD_HEIGHT}
       onPress={navigateToTokenLauncher}
       shadowColor={CARD_PROPS.shadowColor}
       skiaBackground={
@@ -120,9 +122,9 @@ export const LaunchCard = memo(function LaunchCard() {
 
           <Circle color="transparent" cx={DEFAULT_CARD_SIZE / 2} cy={CARD_CONFIG.dimensions.plusButton.y} r={PLUS_BUTTON_SIZE / 2}>
             <Paint antiAlias dither>
-              <Shadow blur={15} color={CARD_CONFIG.colors.coinIconDropShadow} dx={0} dy={10} />
-              <Shadow blur={2} color={CARD_CONFIG.colors.coinIconInnerShadowDark} dx={0} dy={-1.5} inner />
-              <Shadow blur={1.25} color={CARD_CONFIG.colors.coinIconInnerShadowLight} dx={0} dy={1.5} inner />
+              <Shadow blur={15} color={CARD_CONFIG.colors.plusButtonDropShadow} dx={0} dy={10} />
+              <Shadow blur={2} color={CARD_CONFIG.colors.plusButtonInnerShadowDark} dx={0} dy={-1.5} inner />
+              <Shadow blur={1.25} color={CARD_CONFIG.colors.plusButtonInnerShadowLight} dx={0} dy={1.5} inner />
 
               <LinearGradient
                 colors={CARD_CONFIG.gradients.plusButton.colors}
@@ -134,7 +136,7 @@ export const LaunchCard = memo(function LaunchCard() {
 
           <Circle
             blendMode="plus"
-            color={CARD_CONFIG.colors.coinIconStroke}
+            color={CARD_CONFIG.colors.plusButtonStroke}
             cx={DEFAULT_CARD_SIZE / 2}
             cy={CARD_CONFIG.dimensions.plusButton.y}
             r={PLUS_BUTTON_SIZE / 2 - 2}
@@ -167,14 +169,14 @@ export const LaunchCard = memo(function LaunchCard() {
                 weight="heavy"
                 width={DEFAULT_CARD_SIZE - 40}
                 x={20}
-                y={DEFAULT_CARD_SIZE - (42 + 30)}
+                y={CARD_HEIGHT - (42 + 30)}
               >
                 <SkiaTextChild>{i18n.t(i18n.l.token_launcher.cards.launch.line_one)}</SkiaTextChild>
                 <SkiaTextChild opacity={0.6}>{i18n.t(i18n.l.token_launcher.cards.launch.line_two)}</SkiaTextChild>
               </SkiaText>
             }
           >
-            <Rect height={DEFAULT_CARD_SIZE} width={DEFAULT_CARD_SIZE - 40} x={20} y={DEFAULT_CARD_SIZE - (42 + 30)} />
+            <Rect height={CARD_HEIGHT} width={DEFAULT_CARD_SIZE - 40} x={20} y={CARD_HEIGHT - (42 + 30)} />
             <LinearGradient
               colors={CARD_CONFIG.gradients.text.colors}
               end={CARD_CONFIG.gradients.text.end}
