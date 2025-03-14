@@ -3184,8 +3184,10 @@
         "gifted_to": "Gifted to",
         "hold_to_claim": "Hold to Claim",
         "hold_to_retry": "Hold to Retry",
+        "successfully_claimed": "Successfully Claimed",
         "title": "Claim $%{symbol}",
         "to_claim_on": "to claim on %{network}",
+        "view_coin": "View Coin",
         "you": "You"
       }
     },
