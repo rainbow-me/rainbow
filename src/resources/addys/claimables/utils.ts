@@ -37,7 +37,7 @@ export const parseClaimables = <C extends Claimable>(claimables: AddysClaimable[
       };
 
       if (claimable.claim_action_type === 'transaction') {
-        if (claimable.creator_address) {
+        if ('creator_address' in claimable) {
           Object.assign<BaseClaimable, Partial<RainbowClaimable>>(baseClaimable, { creatorAddress: claimable.creator_address });
         }
         return {

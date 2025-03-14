@@ -4,7 +4,7 @@ import { PortalSheetProps } from '@/screens/Portal';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 import { ParsedAddressAsset, PendingTransaction, UniqueAsset } from '@/entities';
-import { Claimable, TransactionClaimable } from '@/resources/addys/claimables/types';
+import { Claimable, RainbowClaimable } from '@/resources/addys/claimables/types';
 import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/walletConnect/types';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { RainbowWallet } from '@/model/wallet';
@@ -133,7 +133,7 @@ export type RootStackParamList = {
     };
   };
   [Routes.CLAIM_AIRDROP_SHEET]: {
-    claimable: TransactionClaimable;
+    claimable: RainbowClaimable;
   };
   [Routes.LOG_SHEET]: {
     data: {

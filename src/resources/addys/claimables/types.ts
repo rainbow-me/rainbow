@@ -36,7 +36,6 @@ interface AddysBaseClaimable {
   network: ChainId;
   asset: AddysAsset;
   amount: string;
-  creator_address: string;
   dapp: DApp;
   total_usd_value: number;
 }
@@ -47,7 +46,7 @@ interface AddysTransactionClaimable extends AddysBaseClaimable {
 }
 
 interface AddysRainbowClaimable extends AddysTransactionClaimable {
-  creator_address: string;
+  creator_address: Address;
 }
 
 interface AddysSponsoredClaimable extends AddysBaseClaimable {
@@ -101,7 +100,7 @@ export interface TransactionClaimable extends BaseClaimable {
 }
 
 export interface RainbowClaimable extends TransactionClaimable {
-  creatorAddress: string;
+  creatorAddress: Address;
 }
 
 export interface SponsoredClaimable extends BaseClaimable {
