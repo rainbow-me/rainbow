@@ -72,7 +72,7 @@ export const INITIAL_PAGE_SIZE = 12;
 export const FULL_PAGE_SIZE = 100;
 
 const EMPTY_RETURN_DATA: AirdropsQueryData = { claimables: [], pagination: null };
-const OPTIMISTIC_UPDATE_EVICTION_TIME = time.minutes(3);
+const OPTIMISTIC_UPDATE_EVICTION_TIME = time.minutes(5);
 const STALE_TIME = time.minutes(2);
 
 let paginationPromise: { address: Address | string; currency: NativeCurrencyKey; promise: Promise<void> } | null = null;

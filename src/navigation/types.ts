@@ -134,6 +134,7 @@ export type RootStackParamList = {
   };
   [Routes.CLAIM_AIRDROP_SHEET]: {
     claimable: RainbowClaimable;
+    hideViewTokenButton?: boolean;
   };
   [Routes.LOG_SHEET]: {
     data: {

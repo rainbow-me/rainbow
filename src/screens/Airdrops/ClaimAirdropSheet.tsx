@@ -8,12 +8,15 @@ import { Address } from 'viem';
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListPanel';
+import { ButtonPressAnimation } from '@/components/animations';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import {
   AnimatedText,
+  Bleed,
   Box,
   ColorModeProvider,
+  IconContainer,
   Inline,
   Separator,
   Stack,
@@ -24,6 +27,7 @@ import {
 } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { IS_IOS } from '@/env';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { useCleanup, useWallets } from '@/hooks';
@@ -31,6 +35,7 @@ import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -48,7 +53,9 @@ import { AirdropGasInfo, ClaimStatus, useClaimAirdrop } from './useClaimAirdrop'
 import { GasInfo } from './utils';
 
 const COIN_ICON_SIZE = 96;
-const PANEL_HEIGHT = 530;
+const PANEL_HEIGHT = 593;
+const EXTRA_BUTTON_HEIGHT = 64;
+const SINGLE_BUTTON_PANEL_HEIGHT = PANEL_HEIGHT - EXTRA_BUTTON_HEIGHT;
 
 const BUTTON_LABELS = {
   claiming: i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.claiming),
@@ -82,7 +89,7 @@ function getButtonLabel(claimStatus: ClaimStatus, gasInfo: GasInfo) {
 
 export const ClaimAirdropSheet = () => {
   const {
-    params: { claimable },
+    params: { claimable, hideViewTokenButton = false },
   } = useRoute<RouteProp<RootStackParamList, 'ClaimAirdropSheet'>>();
 
   const [iconUrl] = useState(() => ({ uri: getSizedImageUrl(claimable.asset.icon_url, COIN_ICON_SIZE) }));
@@ -94,22 +101,30 @@ export const ClaimAirdropSheet = () => {
       <View style={styles.container}>
         <TapToDismiss />
 
-        <Panel height={PANEL_HEIGHT} innerBorderWidth={0} outerBorderColor={opacity(highContrastColor, 0.1)} outerBorderWidth={2.5}>
-          <SkiaBackground color={highContrastColor} imageUrl={iconUrl.uri} originalColor={color} />
+        <Panel
+          height={hideViewTokenButton ? SINGLE_BUTTON_PANEL_HEIGHT : PANEL_HEIGHT}
+          innerBorderWidth={0}
+          outerBorderColor={opacity(highContrastColor, 0.1)}
+          outerBorderWidth={2.5}
+          style={styles.panel}
+        >
+          <SkiaBackground
+            color={highContrastColor}
+            hideViewTokenButton={hideViewTokenButton}
+            imageUrl={iconUrl.uri}
+            originalColor={color}
+          />
           <PanelHeader symbol={claimable.asset.symbol} />
 
-          <Box alignItems="center" gap={28} justifyContent="center" paddingTop="24px" style={styles.flex}>
-            <View style={styles.image} />
-            <Stack alignHorizontal="center" space="28px">
-              <PanelContent
-                airdropAmount={claimable.value.claimAsset.display}
-                airdropValue={claimable.value.nativeAsset.display}
-                creatorAddress={claimable.creatorAddress}
-                highContrastColor={highContrastColor}
-              />
-              <PanelFooter claimable={claimable} highContrastColor={highContrastColor} />
-            </Stack>
-          </Box>
+          <Stack alignHorizontal="center" space="20px">
+            <PanelContent
+              airdropAmount={claimable.value.claimAsset.display}
+              airdropValue={claimable.value.nativeAsset.display}
+              creatorAddress={claimable.creatorAddress}
+              highContrastColor={highContrastColor}
+            />
+            <PanelFooter claimable={claimable} hideViewTokenButton={hideViewTokenButton} highContrastColor={highContrastColor} />
+          </Stack>
         </Panel>
       </View>
     </ColorModeProvider>
@@ -120,7 +135,7 @@ const PanelHeader = memo(function PanelHeader({ symbol }: { symbol: string }) {
   const sheetHandleColor = foregroundColors.labelQuaternary.dark;
   return (
     <Box alignItems="center" gap={24} justifyContent="center" paddingTop="32px" width="full">
-      <SheetHandleFixedToTop color={sheetHandleColor} showBlur={true} />
+      <SheetHandleFixedToTop color={sheetHandleColor} showBlur={true} top={11} />
       <Text align="center" color="label" numberOfLines={1} size="20pt" weight="heavy">
         {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.title, { symbol })}
       </Text>
@@ -144,7 +159,7 @@ const PanelContent = ({
 }) => {
   return (
     <>
-      <Stack alignHorizontal="center" space="20px">
+      <Box alignItems="center" gap={20} paddingBottom="8px">
         <TextShadow blur={16} shadowOpacity={0.2}>
           <Text align="center" color={{ custom: highContrastColor }} numberOfLines={1} size="44pt" weight="black">
             {airdropValue}
@@ -167,7 +182,7 @@ const PanelContent = ({
             </Text>
           </TextShadow>
         </Box>
-      </Stack>
+      </Box>
 
       <CreatedBySection creatorAddress={creatorAddress} />
     </>
@@ -237,20 +252,30 @@ const CreatorAvatar = ({ avatarUrl, creatorAddress }: { avatarUrl: SharedValue<s
   });
 
   return (
-    <View style={styles.avatarWrapper}>
-      <AnimatedImage url={avatarUrl} style={[styles.avatar, imageAvatarStyle]} />
-      <Animated.View style={[styles.avatar, emojiAvatarStyle]}>
-        <Box alignItems="center" backgroundColor={color} borderRadius={8} height={16} justifyContent="center" width={16}>
-          <Text align="center" color="label" size="icon 8px" style={{ lineHeight: 16 }} weight="bold">
-            {emoji}
-          </Text>
-        </Box>
-      </Animated.View>
-    </View>
+    <Bleed vertical="8px">
+      <View style={styles.avatarWrapper}>
+        <AnimatedImage url={avatarUrl} style={[styles.avatar, imageAvatarStyle]} />
+        <Animated.View style={[styles.avatar, emojiAvatarStyle]}>
+          <Box alignItems="center" backgroundColor={color} borderRadius={8} height={16} justifyContent="center" width={16}>
+            <Text align="center" color="label" size="icon 8px" style={{ lineHeight: 16 }} weight="bold">
+              {emoji}
+            </Text>
+          </Box>
+        </Animated.View>
+      </View>
+    </Bleed>
   );
 };
 
-const PanelFooter = ({ claimable, highContrastColor }: { claimable: RainbowClaimable; highContrastColor: string }) => {
+const PanelFooter = ({
+  claimable,
+  hideViewTokenButton,
+  highContrastColor,
+}: {
+  claimable: RainbowClaimable;
+  hideViewTokenButton: boolean;
+  highContrastColor: string;
+}) => {
   const { goBack } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
   const { claimAirdropWorklet, claimStatus, gasInfo } = useClaimAirdrop(claimable);
@@ -272,8 +297,10 @@ const PanelFooter = ({ claimable, highContrastColor }: { claimable: RainbowClaim
     <PanelFooterContent
       chainLabel={useBackendNetworksStore(state => state.getChainsLabel()[claimable.asset.chainId])}
       claimAirdrop={claimAirdrop}
+      claimable={claimable}
       claimStatus={claimStatus}
       gasInfo={gasInfo}
+      hideViewTokenButton={hideViewTokenButton}
       highContrastColor={highContrastColor}
     />
   );
@@ -282,17 +309,21 @@ const PanelFooter = ({ claimable, highContrastColor }: { claimable: RainbowClaim
 const PanelFooterContent = ({
   chainLabel,
   claimAirdrop,
+  claimable,
   claimStatus,
   gasInfo,
+  hideViewTokenButton,
   highContrastColor,
 }: {
   chainLabel: string;
   claimAirdrop: () => void;
+  claimable: RainbowClaimable;
   claimStatus: SharedValue<ClaimStatus>;
   gasInfo: SharedValue<AirdropGasInfo>;
+  hideViewTokenButton: boolean;
   highContrastColor: string;
 }) => {
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
 
   const labelTertiary = useForegroundColor('labelTertiary');
   const red = useForegroundColor('red');
@@ -301,53 +332,93 @@ const PanelFooterContent = ({
   const gasFeeDisplay = useDerivedValue(() => gasInfo.value.gasFeeDisplay);
 
   const buttonStyle = useAnimatedStyle(() => {
-    const shouldEnable =
+    const enableButton =
       claimStatus.value === ClaimStatus.READY ||
       claimStatus.value === ClaimStatus.RECOVERABLE_ERROR ||
       claimStatus.value === ClaimStatus.CONFIRMED;
     return {
-      opacity: withTiming(shouldEnable ? 1 : 0.5, TIMING_CONFIGS.slowestFadeConfig),
-      pointerEvents: shouldEnable ? 'auto' : 'none',
+      opacity: withTiming(enableButton ? 1 : 0.5, TIMING_CONFIGS.slowestFadeConfig),
+      pointerEvents: enableButton ? 'auto' : 'none',
     };
   });
 
-  const gasFeeStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(gasInfo.value.gasFeeDisplay ? 1 : 0, TIMING_CONFIGS.slowestFadeConfig),
-    transform: [{ translateY: withTiming(gasInfo.value.gasFeeDisplay ? 0 : 10, TIMING_CONFIGS.slowestFadeConfig) }],
-  }));
+  const gasFeeStyle = useAnimatedStyle(() => {
+    const shouldDisplay = gasInfo.value.gasFeeDisplay && claimStatus.value !== ClaimStatus.CONFIRMED;
+    return {
+      opacity: withTiming(shouldDisplay ? 1 : 0, TIMING_CONFIGS.slowestFadeConfig),
+      transform: [{ translateY: withTiming(shouldDisplay ? 0 : 10, TIMING_CONFIGS.slowestFadeConfig) }],
+    };
+  });
+
+  const successStyle = useAnimatedStyle(() => {
+    const shouldDisplay = claimStatus.value === ClaimStatus.CONFIRMED;
+    return {
+      opacity: withTiming(shouldDisplay ? 1 : 0, TIMING_CONFIGS.slowestFadeConfig),
+      transform: [{ translateY: withTiming(shouldDisplay ? 0 : -10, TIMING_CONFIGS.slowestFadeConfig) }],
+    };
+  });
 
   const insufficientFundsTextColor = useAnimatedStyle(() => ({
     color: claimStatus.value === ClaimStatus.INSUFFICIENT_GAS ? red : labelTertiary,
   }));
 
-  const onPress = useCallback(() => {
+  const closeSheet = useCallback(() => {
     'worklet';
     if (claimStatus.value === ClaimStatus.CONFIRMED) runOnJS(goBack)();
   }, [claimStatus, goBack]);
 
+  const viewToken = useCallback(() => {
+    navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
+      address: claimable.asset.address,
+      asset: claimable.asset,
+      chainId: claimable.chainId,
+    });
+  }, [navigate, claimable]);
+
   return (
-    <Box alignItems="center" gap={24} justifyContent="center" paddingBottom="24px" paddingTop="16px">
+    <Box alignItems="center" gap={24} justifyContent="center" paddingBottom="28px" paddingTop="20px">
       <Box width={DEVICE_WIDTH - 30 * 2}>
         <Separator color="separatorTertiary" thickness={THICK_BORDER_WIDTH} />
       </Box>
 
-      <GestureHandlerButton
-        longPressDuration={400}
-        onLongPressWorklet={claimAirdrop}
-        onPressWorklet={onPress}
-        scaleTo={0.925}
-        style={[{ backgroundColor: highContrastColor }, styles.submitButton, buttonStyle]}
-      >
-        <AnimatedText
-          align="center"
-          color={{ custom: getHighContrastTextColorWorklet(highContrastColor, 3) }}
-          size="20pt"
-          style={styles.flex}
-          weight="heavy"
+      <Stack alignHorizontal="center" space="16px">
+        <GestureHandlerButton
+          longPressDuration={400}
+          onLongPressWorklet={claimAirdrop}
+          onPressWorklet={closeSheet}
+          scaleTo={0.925}
+          style={[{ backgroundColor: highContrastColor }, styles.submitButton, buttonStyle]}
         >
-          {buttonLabel}
-        </AnimatedText>
-      </GestureHandlerButton>
+          <AnimatedText
+            align="center"
+            color={{ custom: getHighContrastTextColorWorklet(highContrastColor, 3) }}
+            size="20pt"
+            style={styles.flex}
+            weight="heavy"
+          >
+            {buttonLabel}
+          </AnimatedText>
+        </GestureHandlerButton>
+
+        {!hideViewTokenButton && (
+          <ButtonPressAnimation onPress={viewToken} scaleTo={0.925} style={styles.viewTokenButton}>
+            <Box
+              alignItems="center"
+              backgroundColor={opacity(highContrastColor, 0.08)}
+              borderColor={{ custom: opacity(highContrastColor, 0.06) }}
+              borderRadius={24}
+              borderWidth={2}
+              height={48}
+              justifyContent="center"
+              width="full"
+            >
+              <Text align="center" color={{ custom: highContrastColor }} size="20pt" weight="heavy">
+                {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.view_coin)}
+              </Text>
+            </Box>
+          </ButtonPressAnimation>
+        )}
+      </Stack>
 
       <Animated.View style={[styles.gasFeeContainer, gasFeeStyle]}>
         <AnimatedTextIcon
@@ -367,6 +438,21 @@ const PanelFooterContent = ({
           {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.to_claim_on, { network: chainLabel })}
         </Text>
       </Animated.View>
+
+      <Animated.View style={[styles.successContainer, successStyle]}>
+        <IconContainer>
+          <TextShadow blur={16} shadowOpacity={0.4}>
+            <Text align="center" color={{ custom: highContrastColor }} size="icon 12px" weight="black">
+              􀇻
+            </Text>
+          </TextShadow>
+        </IconContainer>
+        <TextShadow blur={16} shadowOpacity={0.4}>
+          <Text align="center" color={{ custom: highContrastColor }} size="13pt" weight="heavy">
+            {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.successfully_claimed)}
+          </Text>
+        </TextShadow>
+      </Animated.View>
     </Box>
   );
 };
@@ -381,10 +467,12 @@ const COIN_ICON_Y_POSITION = 147;
 
 const SkiaBackground = memo(function SkiaBackground({
   color,
+  hideViewTokenButton,
   imageUrl,
   originalColor,
 }: {
   color: string | undefined;
+  hideViewTokenButton: boolean;
   imageUrl: string | undefined;
   originalColor: string | undefined;
 }) {
@@ -404,12 +492,16 @@ const SkiaBackground = memo(function SkiaBackground({
         {/* Blurred background image */}
         <Fill color={originalColor} />
         <Image
-          height={styles.backgroundImage.height}
+          height={styles.backgroundImage.height - (hideViewTokenButton ? EXTRA_BUTTON_HEIGHT : 0)}
           image={image}
           opacity={imageOpacity}
           width={styles.backgroundImage.width}
           x={(PANEL_WIDTH - styles.backgroundImage.width) / 2}
-          y={(PANEL_HEIGHT - styles.backgroundImage.height) / 2}
+          y={
+            ((hideViewTokenButton ? SINGLE_BUTTON_PANEL_HEIGHT : PANEL_HEIGHT) -
+              (styles.backgroundImage.height - (hideViewTokenButton ? EXTRA_BUTTON_HEIGHT : 0))) /
+            2
+          }
         />
         <Blur blur={100} />
         <Fill color="rgba(26, 26, 26, 0.75)" />
@@ -520,23 +612,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     height: 16,
     justifyContent: 'center',
-    marginVertical: -4,
+    marginTop: IS_IOS ? undefined : -3,
     overflow: 'hidden',
     position: 'relative',
     width: 16,
-  },
-  backgroundFill: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(26, 26, 26, 0.75)',
-    bottom: 0,
-    height: '100%',
-    justifyContent: 'center',
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    width: '100%',
-    zIndex: 3,
   },
   backgroundImage: {
     height: PANEL_HEIGHT + PANEL_WIDTH,
@@ -550,17 +629,6 @@ const styles = StyleSheet.create({
     paddingBottom: safeAreaInsetValues.bottom,
     pointerEvents: 'box-none',
   },
-  fill: {
-    alignItems: 'center',
-    bottom: 0,
-    height: '100%',
-    justifyContent: 'center',
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    width: '100%',
-  },
   flex: {
     alignItems: 'center',
     flex: 1,
@@ -571,21 +639,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 4,
   },
-  image: {
-    height: COIN_ICON_SIZE,
-    opacity: 0,
-    width: COIN_ICON_SIZE,
-  },
-  scrollContent: {
-    paddingBottom: 44,
-    paddingTop: 40,
-  },
-  scrollView: {
-    flex: 1,
-    paddingHorizontal: 28,
-  },
-  separatorContainer: {
-    marginTop: -16,
+  panel: {
+    justifyContent: 'space-between',
   },
   submitButton: {
     alignItems: 'center',
@@ -594,6 +649,17 @@ const styles = StyleSheet.create({
     gap: 6,
     height: 48,
     justifyContent: 'center',
+    width: DEVICE_WIDTH - 30 * 2,
+  },
+  successContainer: {
+    alignSelf: 'center',
+    bottom: 24,
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 5,
+    position: 'absolute',
+  },
+  viewTokenButton: {
     width: DEVICE_WIDTH - 30 * 2,
   },
 });
