@@ -104,8 +104,14 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
        */
       case 'token': {
         logger.debug(`[handleDeeplink]: token`);
-        const networkLabel = pathname.split('/')[2];
-        const address = pathname.split('/')[3];
+        let networkLabel = pathname.split('/')[2]?.toLowerCase();
+        const address = pathname.split('/')[3]?.toLowerCase();
+        // Some chains have different link labels for aesthetic reasons
+        if (networkLabel === 'ethereum') {
+          networkLabel = 'mainnet';
+        } else if (networkLabel === 'zksync') {
+          networkLabel = 'zksync-era';
+        }
         const chainId = useBackendNetworksStore.getState().getChainsIdByName()[networkLabel];
         const uniqueId = getUniqueId(address, chainId);
 

@@ -30,7 +30,7 @@ const ContextMenuActions = {
 type ContextMenuAction = (typeof ContextMenuActions)[keyof typeof ContextMenuActions];
 
 export function AssetContextMenu() {
-  const { accentColors, basicAsset: asset } = useExpandedAssetSheetContext();
+  const { accentColors, basicAsset: asset, assetMetadata } = useExpandedAssetSheetContext();
 
   const { clearSelectedCoins, pushSelectedCoin } = useCoinListEditOptions();
   const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
@@ -134,14 +134,19 @@ export function AssetContextMenu() {
       case ContextMenuActions.Copy:
         Clipboard.setString(asset.address);
         break;
-      case ContextMenuActions.Share:
-        Share.share({
-          url: buildTokenDeeplink({
+      case ContextMenuActions.Share: {
+        const url =
+          assetMetadata?.links?.rainbow?.url ??
+          buildTokenDeeplink({
             networkLabel: chainLabels[asset.chainId],
             contractAddress: asset.address,
-          }),
+          });
+        console.log('url', url, assetMetadata?.links?.rainbow?.url);
+        Share.share({
+          url,
         });
         break;
+      }
       case ContextMenuActions.BlockExplorer:
         ethereumUtils.openTokenEtherscanURL({ address: asset.address, chainId: asset.chainId });
         break;
