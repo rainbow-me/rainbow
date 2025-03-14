@@ -652,9 +652,9 @@ const styles = StyleSheet.create({
     width: DEVICE_WIDTH - 30 * 2,
   },
   successContainer: {
+    alignItems: 'center',
     alignSelf: 'center',
     bottom: 24,
-    alignItems: 'center',
     flexDirection: 'row',
     gap: 5,
     position: 'absolute',
