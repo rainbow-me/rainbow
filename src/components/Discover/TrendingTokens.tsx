@@ -31,6 +31,7 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_IOS, IS_TEST } from '@/env';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { RAINBOW_TRENDING_TOKENS_LIST, useExperimentalFlag } from '@/config';
+import { shallowEqual } from '@/worklets/comparisons';
 
 const t = i18n.l.trending_tokens;
 
@@ -122,12 +123,16 @@ function FilterButton({
 function useTrendingTokensData() {
   const { nativeCurrency } = useAccountSettings();
   const remoteConfig = useRemoteConfig();
-  const { chainId, category, timeframe, sort } = useTrendingTokensStore(state => ({
-    chainId: state.chainId,
-    category: state.category,
-    timeframe: state.timeframe,
-    sort: state.sort,
-  }));
+
+  const { chainId, category, timeframe, sort } = useTrendingTokensStore(
+    state => ({
+      chainId: state.chainId,
+      category: state.category,
+      timeframe: state.timeframe,
+      sort: state.sort,
+    }),
+    shallowEqual
+  );
 
   const walletAddress = useFarcasterAccountForWallets();
 
@@ -145,7 +150,14 @@ function useTrendingTokensData() {
 
 function ReportAnalytics() {
   const activeSwipeRoute = useNavigationStore(state => state.activeSwipeRoute);
-  const { category, chainId } = useTrendingTokensStore(state => ({ category: state.category, chainId: state.chainId }));
+  const { category, chainId } = useTrendingTokensStore(
+    state => ({
+      category: state.category,
+      chainId: state.chainId,
+    }),
+    shallowEqual
+  );
+
   const { data: trendingTokens, isLoading } = useTrendingTokensData();
 
   useEffect(() => {
@@ -524,10 +536,13 @@ function NoResults() {
 }
 
 function NetworkFilter({ selectedChainId }: { selectedChainId: SharedValue<ChainId | undefined> }) {
-  const { chainId, category } = useTrendingTokensStore(state => ({
-    chainId: state.chainId,
-    category: state.category,
-  }));
+  const { chainId, category } = useTrendingTokensStore(
+    state => ({
+      chainId: state.chainId,
+      category: state.category,
+    }),
+    shallowEqual
+  );
 
   const chainColor = useBackendNetworksStore(state => state.getColorsForChainId(chainId || ChainId.mainnet, false));
   const setChainId = useTrendingTokensStore(state => state.setChainId);
