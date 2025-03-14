@@ -33,6 +33,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
+import { isTestnetChain } from '@/handlers/web3';
 
 export const HORIZONTAL_PADDING = 20;
 
@@ -50,7 +51,8 @@ export default function DiscoverHome() {
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
-  const isTokenLauncherTestflight = true;
+  const { chainId } = useAccountSettings();
+  const testNetwork = isTestnetChain({ chainId });
   const { navigate } = useNavigation();
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
@@ -69,7 +71,7 @@ export default function DiscoverHome() {
 
   return (
     <Inset top="20px" bottom={{ custom: 200 }} horizontal={{ custom: HORIZONTAL_PADDING }}>
-      {isTokenLauncherTestflight ? (
+      {!testNetwork ? (
         <Box gap={20}>
           {newDiscoverCardsEnabled ? (
             <Box flexDirection="row" gap={12} width="full">

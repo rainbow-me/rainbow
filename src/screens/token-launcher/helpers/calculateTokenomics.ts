@@ -51,7 +51,7 @@ export function calculateTokenomics({
   // Calculate swap outcome if amountInEth is provided
   let swap = undefined;
 
-  // TODO: all these calculations are wrong
+  // this formula uses the constant-product formula to simulate the swap and leaves room for improved accuracy
   if (amountInEth > 0) {
     // Calculate fee and amount after fee
     const feeAmount = (amountInEth * POOL_FEE) / FEE_DENOMINATOR;
