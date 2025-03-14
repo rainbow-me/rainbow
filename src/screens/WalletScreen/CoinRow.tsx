@@ -104,7 +104,7 @@ export function CoinRow({ index }: { index: number }) {
   }, [index, handleNavigateToAsset, isEditing, toggleSelectedAsset]);
 
   return (
-    <GestureHandlerButton onPressWorklet={onPress} scaleTo={0.95}>
+    <GestureHandlerButton disableHaptics onPressWorklet={onPress} scaleTo={0.95}>
       <Columns alignVertical="center">
         <Column>
           <HitSlop vertical="10px">

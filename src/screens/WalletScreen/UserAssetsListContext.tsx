@@ -1,7 +1,8 @@
-import React, { createContext, useCallback, useContext } from 'react';
+import React, { createContext, useCallback, useContext, useEffect } from 'react';
 import Animated, {
   AnimatedRef,
   makeMutable,
+  runOnJS,
   SharedValue,
   useAnimatedReaction,
   useAnimatedRef,
@@ -10,7 +11,9 @@ import Animated, {
 import { noop } from 'lodash';
 
 import { UniqueId, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { useAccountSettings } from '@/hooks';
 
 export enum EditAction {
   none = 'NONE',
@@ -70,10 +73,26 @@ export function useUserAssetsListContext() {
 export const MAX_CONDENSED_ASSETS = 6;
 export const DIVIDER_HEIGHT = 48;
 
+type WalletAssetsStore = {
+  currentAccountAddress: string;
+  totalAssets: number;
+  setTotalAssets: (totalAssets: number) => void;
+};
+
+export const walletAssetsStore = createRainbowStore<WalletAssetsStore>(set => ({
+  currentAccountAddress: userAssetsStore.getState().address,
+  totalAssets: userAssetsStore.getState().getUserAssetsWithPinnedFirstAndHiddenAssetsLast().length
+    ? Math.min(userAssetsStore.getState().getUserAssetsWithPinnedFirstAndHiddenAssetsLast().length, MAX_CONDENSED_ASSETS + 1)
+    : 0,
+  setTotalAssets: (totalAssets: number) => set({ totalAssets }),
+}));
+
 export function UserAssetsListProvider({ children }: { children: React.ReactNode }) {
   const flatlistRef = useAnimatedRef<Animated.FlatList<number>>();
   const selectedAssets = makeMutable<Array<UniqueId>>([]);
-  const sections = makeMutable<UserAssetListItem[]>([]);
+  const sections = makeMutable<UserAssetListItem[]>(
+    buildSections(userAssetsStore.getState().getUserAssetsWithPinnedFirstAndHiddenAssetsLast(), false)
+  );
   const isExpanded = makeMutable<boolean>(false);
   const isEditing = makeMutable<boolean>(false);
 
@@ -149,6 +168,19 @@ export function UserAssetsListProvider({ children }: { children: React.ReactNode
     return EditAction.standard;
   });
 
+  const setAssetsCount = useCallback((count: number) => {
+    walletAssetsStore.getState().setTotalAssets(count);
+  }, []);
+
+  useAnimatedReaction(
+    () => sections.value,
+    currentSections => {
+      if (currentSections.length === 1 && currentSections[0].type === 'divider') return;
+      runOnJS(setAssetsCount)(currentSections.length < MAX_CONDENSED_ASSETS ? currentSections.length - 1 : currentSections.length);
+    },
+    [sections]
+  );
+
   return (
     <UserAssetsListContext.Provider
       value={{
@@ -173,7 +205,24 @@ const buildSection = (assets: ParsedSearchAsset[], sectionId: SectionIds): Asset
   return assets.map(asset => ({ type: 'asset' as const, asset, sectionId }));
 };
 
+const buildSections = (userAssets: ParsedSearchAsset[], isExpanded: boolean): UserAssetListItem[] => {
+  'worklet';
+  if (userAssets.length <= MAX_CONDENSED_ASSETS || !isExpanded) {
+    const topSection = buildSection(userAssets.slice(0, MAX_CONDENSED_ASSETS), 'top-assets');
+    const divider = { type: 'divider' as const, sectionId: 'divider' as const };
+
+    return [...topSection, divider];
+  } else {
+    const topSection = buildSection(userAssets.slice(0, MAX_CONDENSED_ASSETS), 'top-assets');
+    const divider = { type: 'divider' as const, sectionId: 'divider' as const };
+    const bottomSection = buildSection(userAssets.slice(MAX_CONDENSED_ASSETS), 'bottom-assets');
+
+    return [...topSection, divider, ...bottomSection];
+  }
+};
+
 export function SyncUserAssetsStoreWithContext() {
+  const { accountAddress } = useAccountSettings();
   const { sections, isExpanded } = useUserAssetsListContext();
   const userAssets = useUserAssetsStore(state => state.getUserAssetsWithPinnedFirstAndHiddenAssetsLast());
 
@@ -186,21 +235,17 @@ export function SyncUserAssetsStoreWithContext() {
       // FIXME: Implement this to prevent unnecessary updates
       // if (deepEqual(acc.userAssets, previous?.userAssets) && acc.isExpanded === previous?.isExpanded) return;
 
-      if (acc.userAssets.length <= MAX_CONDENSED_ASSETS || !acc.isExpanded) {
-        const topSection = buildSection(acc.userAssets.slice(0, MAX_CONDENSED_ASSETS), 'top-assets');
-        const divider = { type: 'divider' as const, sectionId: 'divider' as const };
-
-        sections.value = [...topSection, divider];
-      } else {
-        const topSection = buildSection(acc.userAssets.slice(0, MAX_CONDENSED_ASSETS), 'top-assets');
-        const divider = { type: 'divider' as const, sectionId: 'divider' as const };
-        const bottomSection = buildSection(acc.userAssets.slice(MAX_CONDENSED_ASSETS), 'bottom-assets');
-
-        sections.value = [...topSection, divider, ...bottomSection];
-      }
+      sections.value = buildSections(acc.userAssets, acc.isExpanded);
     },
     [userAssets]
   );
+
+  // Update the total assets count when the account address changes
+  useEffect(() => {
+    if (walletAssetsStore.getState().currentAccountAddress !== accountAddress) {
+      walletAssetsStore.getState().setTotalAssets(userAssets.length ? Math.min(userAssets.length, MAX_CONDENSED_ASSETS + 1) : 0);
+    }
+  }, [accountAddress]);
 
   return null;
 }

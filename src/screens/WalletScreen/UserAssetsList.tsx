@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { subWorklet } from '@/safe-math/SafeMath';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ListRenderItem, StyleSheet } from 'react-native';
@@ -7,8 +7,8 @@ import { convertAmountToNativeDisplay, isZero } from '@/helpers/utilities';
 import { deviceUtils } from '@/utils';
 import { useAccountSettings } from '@/hooks';
 import { BaseButton } from '@/components/DappBrowser/TabViewToolbar';
-import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
-import { useUserAssetsListContext, DIVIDER_HEIGHT, MAX_CONDENSED_ASSETS, EditAction } from './UserAssetsListContext';
+import Animated, { useAnimatedStyle, useDerivedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import { useUserAssetsListContext, DIVIDER_HEIGHT, MAX_CONDENSED_ASSETS, EditAction, walletAssetsStore } from './UserAssetsListContext';
 import { CoinRow } from './CoinRow';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -17,6 +17,8 @@ import { EthCard } from '@/components/cards/EthCard';
 import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
 import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
 import { DiscoverMoreButton } from '@/components/asset-list/RecyclerAssetList2/core/DiscoverMoreButton';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { sliderConfig, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
 
 const keyExtractor = (item: number): string => {
   if (item < MAX_CONDENSED_ASSETS || item > MAX_CONDENSED_ASSETS + 1) {
@@ -53,18 +55,8 @@ const ListEmptyComponent = memo(function ListEmptyComponent() {
 });
 
 export function UserAssetsList() {
-  const [totalAssets, setTotalAssets] = useState<number>(0);
-  const { sections, flatlistRef } = useUserAssetsListContext();
-  const isLoading = useUserAssetsStore(state => state.status === 'loading');
-
-  useAnimatedReaction(
-    () => sections.value,
-    currentSections => {
-      if (currentSections.length === 1 && currentSections[0].type === 'divider') return;
-      runOnJS(setTotalAssets)(currentSections.length);
-    },
-    [sections]
-  );
+  const { flatlistRef } = useUserAssetsListContext();
+  const totalAssets = walletAssetsStore(state => state.totalAssets);
 
   const data = useMemo(() => {
     return Array.from<number>({ length: totalAssets }).map((_, index) => index);
@@ -79,9 +71,7 @@ export function UserAssetsList() {
     return <CoinRow index={index > MAX_CONDENSED_ASSETS ? index - 1 : index} />;
   }, []);
 
-  const shouldShowEmptyComponent = isLoading || (!isLoading && totalAssets === 0);
-
-  if (shouldShowEmptyComponent) {
+  if (totalAssets === 0) {
     return <ListEmptyComponent />;
   }
 
@@ -91,11 +81,12 @@ export function UserAssetsList() {
       ref={flatlistRef}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
-      initialNumToRender={MAX_CONDENSED_ASSETS + 2}
+      initialNumToRender={MAX_CONDENSED_ASSETS + 1}
       keyboardShouldPersistTaps="always"
       scrollEnabled={false}
       style={[{ flex: 1, width: deviceUtils.dimensions.width }]}
       showsVerticalScrollIndicator={false}
+      windowSize={30}
     />
   );
 }
@@ -103,6 +94,11 @@ export function UserAssetsList() {
 const Balance = () => {
   const { isExpanded } = useUserAssetsListContext();
   const { nativeCurrency } = useAccountSettings();
+
+  const textColor = useForegroundColor('labelTertiary');
+  const zeroAmountColor = opacity(textColor, 0.3);
+
+  const isLoading = useUserAssetsStore(state => state.status === 'loading');
   const totalBalance = useUserAssetsStore(state => state.getTotalBalance());
   const hiddenBalance = useUserAssetsStore(state => state.hiddenAssetsBalance);
 
@@ -113,8 +109,13 @@ const Balance = () => {
   }, [totalBalance, hiddenBalance]);
 
   const balanceStyles = useAnimatedStyle(() => {
+    const loadingOpacity = isLoading
+      ? withRepeat(withSequence(withTiming(0.5, pulsingConfig), withTiming(1, pulsingConfig)), -1, true)
+      : withSpring(1, sliderConfig);
+
     return {
-      opacity: withTiming(isExpanded.value ? 0 : 1, TIMING_CONFIGS.fastFadeConfig),
+      color: withTiming(isLoading ? zeroAmountColor : textColor, TIMING_CONFIGS.slowFadeConfig),
+      opacity: isExpanded.value ? 0 : loadingOpacity,
       display: isExpanded.value ? 'none' : 'flex',
     };
   });
