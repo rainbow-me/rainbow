@@ -98,6 +98,7 @@ export function TokenImageBadge({
           y={(size - imageScaledSize) / 2}
           width={imageScaledSize}
           height={imageScaledSize}
+          fit="cover"
         />
         <Path path={innerPath}>
           <Shadow dx={0} dy={0} blur={4 / 2} color={'rgba(255, 255, 255, 1)'} inner shadowOnly />
