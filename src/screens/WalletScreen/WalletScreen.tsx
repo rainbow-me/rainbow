@@ -28,6 +28,7 @@ import { Claimables } from './Claimables/Claimables';
 import { ClaimablesProvider } from './Claimables/ClaimablesContext';
 import { PositionsHeader } from './Positions/PositionsHeader';
 import { PositionsProvider } from './Positions/PositionsContext';
+import { Positions } from './Positions/Positions';
 
 function WalletPage() {
   const { scrollHandler, scrollViewRef } = useScrollPosition();
@@ -78,6 +79,7 @@ function WalletPage() {
 
           <PositionsProvider>
             <PositionsHeader />
+            <Positions />
           </PositionsProvider>
         </Animated.ScrollView>
       </Box>
