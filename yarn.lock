@@ -5235,7 +5235,7 @@ __metadata:
 
 "@rainbow-me/token-launcher@file:src/vendor/rainbow-me-token-launcher-0.1.0.tgz::locator=Rainbow%40workspace%3A.":
   version: 0.1.0
-  resolution: "@rainbow-me/token-launcher@file:src/vendor/rainbow-me-token-launcher-0.1.0.tgz#src/vendor/rainbow-me-token-launcher-0.1.0.tgz::hash=640b3e&locator=Rainbow%40workspace%3A."
+  resolution: "@rainbow-me/token-launcher@file:src/vendor/rainbow-me-token-launcher-0.1.0.tgz#src/vendor/rainbow-me-token-launcher-0.1.0.tgz::hash=09e1fc&locator=Rainbow%40workspace%3A."
   dependencies:
     "@ethereumjs/util": "npm:9.0.0"
     "@ethersproject/abi": "npm:5.7.0"
@@ -5254,9 +5254,11 @@ __metadata:
     "@metamask/eth-sig-util": "npm:7.0.0"
     "@uniswap/sdk-core": "npm:^3.0.0"
     decimal.js: "npm:^10.5.0"
+    eslint-config-rainbow: "npm:4.3.0"
     jsbi: "npm:^4.3.0"
+    prettier: "npm:^3.3.3"
     tiny-invariant: "npm:^1.3.3"
-  checksum: 10c0/6e023a33e6398e699a1fc8782c46e764889910cff61c76cb73d9edb9652bf9a51794e8f8eb9e29a0921ab0f339673fa1d4ceb09617954f55eee2ab9840e4b8c9
+  checksum: 10c0/4b24b1794b0caa479ce6f2b2da490bc4960914aeb960655f307a7b9f1bff7aafd7a4cc4252dffc754c045e8db8b9472906755e5df2c317db3e0e99736056c29c
   languageName: node
   linkType: hard
 
@@ -21732,6 +21734,15 @@ __metadata:
   bin:
     prettier: bin/prettier.cjs
   checksum: 10c0/b85828b08e7505716324e4245549b9205c0cacb25342a030ba8885aba2039a115dbcf75a0b7ca3b37bc9d101ee61fab8113fc69ca3359f2a226f1ecc07ad2e26
+  languageName: node
+  linkType: hard
+
+"prettier@npm:^3.3.3":
+  version: 3.5.3
+  resolution: "prettier@npm:3.5.3"
+  bin:
+    prettier: bin/prettier.cjs
+  checksum: 10c0/3880cb90b9dc0635819ab52ff571518c35bd7f15a6e80a2054c05dbc8a3aa6e74f135519e91197de63705bcb38388ded7e7230e2178432a1468005406238b877
   languageName: node
   linkType: hard
 
