@@ -1,4 +1,4 @@
-import { Linking, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import React, { useCallback } from 'react';
 import { get } from 'lodash';
 
@@ -16,6 +16,7 @@ import { analyticsV2 } from '@/analytics';
 import { FlashList } from '@shopify/flash-list';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const ICON_SIZE = 36;
 const CARD_BORDER_RADIUS = 20;
@@ -76,11 +77,11 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
       props: JSON.stringify(card?.primaryButton.props),
     });
     if (card?.primaryButton && card?.primaryButton.url) {
-      Linking.openURL(card?.primaryButton.url);
+      openInBrowser(card?.primaryButton.url);
     } else if (card?.primaryButton && card?.primaryButton.route) {
       navigate(card?.primaryButton.route, card?.primaryButton.props);
     }
-  }, [navigate, card?.primaryButton, card?.cardKey]);
+  }, [card?.cardKey, card?.primaryButton, navigate]);
 
   const onDismiss = useCallback(() => {
     analyticsV2.track(analyticsV2.event.remoteCardDismissed, {

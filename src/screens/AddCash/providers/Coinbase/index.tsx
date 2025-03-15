@@ -1,5 +1,4 @@
 import React from 'react';
-import { Linking } from 'react-native';
 import { nanoid } from 'nanoid/non-secure';
 
 import { logger, RainbowError } from '@/logger';
@@ -11,6 +10,7 @@ import { analyticsV2 } from '@/analytics';
 import { coinbaseGetWidgetURL } from '@/resources/f2c';
 import { WrappedAlert } from '@/helpers/alert';
 import * as lang from '@/languages';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 export function Coinbase({ accountAddress, config }: { accountAddress: string; config: ProviderConfig }) {
   return (
@@ -38,7 +38,7 @@ export function Coinbase({ accountAddress, config }: { accountAddress: string; c
             provider: FiatProviderName.Coinbase,
           });
 
-          Linking.openURL(url);
+          openInBrowser(url);
         } catch (e) {
           logger.error(new RainbowError('[AddCash]: failed to open provider'), {
             provider: FiatProviderName.Coinbase,

@@ -1,6 +1,5 @@
 import { values } from 'lodash';
 import { useCallback } from 'react';
-import { Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { backupWalletToCloud } from '../model/backup';
 import { setWalletBackedUp } from '../redux/wallets';
@@ -15,6 +14,7 @@ import { getSupportedBiometryType } from '@/keychain';
 import { IS_ANDROID } from '@/env';
 import { authenticateWithPIN } from '@/handlers/authentication';
 import * as i18n from '@/languages';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 export function getUserError(e: Error) {
   switch (e.message) {
@@ -81,7 +81,7 @@ export default function useWalletCloudBackup() {
             [
               {
                 onPress: () => {
-                  Linking.openURL('https://support.apple.com/en-us/HT204025');
+                  openInBrowser('https://support.apple.com/en-us/HT204025');
                   analytics.track('View how to Enable iCloud', {
                     category: 'backup',
                   });

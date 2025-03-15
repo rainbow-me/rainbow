@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
 import { useCallback } from 'react';
-import { Linking } from 'react-native';
 import { ImageOrVideo } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
@@ -26,6 +25,7 @@ import { isZero } from '@/helpers/utilities';
 import { IS_IOS } from '@/env';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { MenuConfig } from '@/components/native-context-menu/contextMenu';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 type UseOnAvatarPressProps = {
   /** Is the avatar selection being used on the wallet or transaction screen? */
@@ -113,7 +113,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const onAvatarWebProfile = useCallback(() => {
     const rainbowURL = buildRainbowUrl(null, accountENS, accountAddress);
     if (rainbowURL) {
-      Linking.openURL(rainbowURL);
+      openInBrowser(rainbowURL);
     }
   }, [accountAddress, accountENS]);
 

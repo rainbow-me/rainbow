@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Reanimated, {
   Easing,
   interpolateColor,
@@ -30,6 +30,7 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import { logger } from '@/logger';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const Container = styled(View)({
   ...position.coverAsObject,
@@ -186,7 +187,7 @@ export default function WelcomeScreen() {
   }, [dangerouslyGetState, navigate, replace]);
 
   const handlePressTerms = useCallback(() => {
-    Linking.openURL('https://rainbow.me/terms-of-use');
+    openInBrowser('https://rainbow.me/terms-of-use', false);
   }, []);
 
   const showRestoreSheet = useCallback(() => {

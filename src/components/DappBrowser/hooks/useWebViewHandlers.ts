@@ -16,6 +16,7 @@ import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { handleProviderRequestApp } from '../handleProviderRequest';
 import { TabId } from '../types';
 import { generateUniqueIdWorklet, isValidAppStoreUrl } from '../utils';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 interface UseWebViewHandlersParams {
   addRecent: BrowserHistoryStore['addRecent'];
@@ -180,7 +181,7 @@ export function useWebViewHandlers({
       const { targetUrl } = nativeEvent;
 
       if (isValidAppStoreUrl(targetUrl)) {
-        Linking.openURL(targetUrl);
+        openInBrowser(targetUrl);
         return;
       }
 

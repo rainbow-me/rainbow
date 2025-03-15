@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NativeModules, Linking } from 'react-native';
+import { NativeModules } from 'react-native';
 import { captureException } from '@sentry/react-native';
 import { endsWith } from 'lodash';
 import {
@@ -35,6 +35,7 @@ import { getRemoteConfig } from './remoteConfig';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { AppDispatch } from '@/redux/store';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
@@ -140,7 +141,7 @@ export const executeFnIfCloudBackupAvailable = async <T>({ fn, logout = false }:
         [
           {
             onPress: () => {
-              Linking.openURL('https://support.apple.com/en-us/HT204025');
+              openInBrowser('https://support.apple.com/en-us/HT204025');
             },
             text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
           },

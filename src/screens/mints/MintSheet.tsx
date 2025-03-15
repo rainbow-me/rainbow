@@ -56,6 +56,7 @@ import { metadataPOSTClient } from '@/graphql';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -343,7 +344,7 @@ const MintSheet = () => {
         contract: mintCollection.id || '',
         chainId: mintCollection.chainId,
       });
-      Linking.openURL(buildMintDotFunUrl(mintCollection.id!, chainId));
+      openInBrowser(buildMintDotFunUrl(mintCollection.id!, chainId));
       return;
     }
 

@@ -4,11 +4,11 @@ import { Bleed, Box, IconContainer, Inline, Stack, Text, TextShadow } from '@/de
 import { Row } from '../shared/Row';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Linking } from 'react-native';
 import { formatURLForDisplay } from '@/utils';
 import { XIcon } from '../../icons/XIcon';
 import { Icon } from '@/components/icons';
 import { formatUrl } from '@/components/DappBrowser/utils';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 interface RowItem {
   icon?: string;
@@ -31,7 +31,7 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
   const { accentColors } = useExpandedAssetSheetContext();
 
   return (
-    <ButtonPressAnimation onPress={() => Linking.openURL(url)} scaleTo={0.96}>
+    <ButtonPressAnimation onPress={() => openInBrowser(url)} scaleTo={0.96}>
       <Row highlighted={highlighted}>
         <Box width="full" flexDirection="row" alignItems="center">
           <Inline space="12px" alignVertical="center">
