@@ -8,9 +8,14 @@ tags:
     arguments:
       isE2ETest: true
 - runFlow: ../utils/ImportWalletWithKey.yaml
-- tapOn:
-    id: settings-menu
-- tapOn: 'Settings'
+# There is some flakeyness here sometimes and the menu doesn't
+# open so allow retries.s
+- retry:
+    maxRetries: 3
+    commands:
+      - tapOn:
+          id: settings-menu
+      - tapOn: 'Settings'
 - tapOn:
     id: backup-section
 - tapOn:
