@@ -144,7 +144,6 @@ const SheetActionButton: React.FC<SheetActionButtonProps> = ({
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
     >
-      {/*  @ts-expect-error JavaScript component with an improper typing for children prop */}
       <ShadowStack
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...position.coverAsObject}

@@ -29,6 +29,9 @@ import { ClaimablesProvider } from './Claimables/ClaimablesContext';
 import { PositionsHeader } from './Positions/PositionsHeader';
 import { PositionsProvider } from './Positions/PositionsContext';
 import { Positions } from './Positions/Positions';
+import { CollectiblesProvider } from './Collectibles/CollectiblesContext';
+import { CollectiblesHeader } from './Collectibles/CollectiblesHeader';
+import { CollectiblesList } from './Collectibles/CollectiblesList';
 
 function WalletPage() {
   const { scrollHandler, scrollViewRef } = useScrollPosition();
@@ -81,6 +84,11 @@ function WalletPage() {
             <PositionsHeader />
             <Positions />
           </PositionsProvider>
+
+          <CollectiblesProvider>
+            <CollectiblesHeader />
+            <CollectiblesList />
+          </CollectiblesProvider>
         </Animated.ScrollView>
       </Box>
     </Box>

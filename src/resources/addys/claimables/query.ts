@@ -16,7 +16,7 @@ import { getAddysHttpClient } from '../client';
 export type ClaimablesArgs = {
   address: string;
   currency: NativeCurrencyKey;
-  abortController: AbortController | null;
+  abortController?: AbortController | null;
 };
 
 // ///////////////////////////////////////////////
@@ -30,7 +30,7 @@ type ClaimablesQueryKey = ReturnType<typeof claimablesQueryKey>;
 // ///////////////////////////////////////////////
 // Query Function
 
-export async function claimablesQueryFunction({ address, currency, abortController }: ClaimablesArgs) {
+export async function claimablesQueryFunction({ address, currency }: ClaimablesArgs) {
   try {
     const url = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/claimables`;
     const { data } = await getAddysHttpClient().get<ConsolidatedClaimablesResponse>(url, {

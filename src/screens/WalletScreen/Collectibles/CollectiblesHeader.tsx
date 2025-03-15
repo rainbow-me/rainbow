@@ -8,8 +8,9 @@ import { colors } from '@/styles';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
 import { IS_IOS } from '@/env';
+import { deviceUtils } from '@/utils';
 
-const TokenFamilyHeaderHeight = 48;
+const CollectiblesHeaderHeight = 40;
 
 const getIconForSortType = (selected: NftCollectionSortCriterion) => {
   switch (selected) {
@@ -33,7 +34,7 @@ const getMenuItemIcon = (value: NftCollectionSortCriterion) => {
   }
 };
 
-const CollectiblesHeader = () => {
+export function CollectiblesHeader() {
   const { nftSort, nftSortDirection, updateNFTSort } = useNftSort();
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
@@ -42,10 +43,9 @@ const CollectiblesHeader = () => {
 
   return (
     <Box
-      height={{ custom: TokenFamilyHeaderHeight }}
-      paddingBottom="2px"
+      height={{ custom: CollectiblesHeaderHeight }}
+      width={{ custom: deviceUtils.dimensions.width }}
       paddingHorizontal={'19px (Deprecated)'}
-      justifyContent="flex-end"
       key={`collectibles_${nftSort}`}
       testID={`collectibles-list-header`}
     >
@@ -99,8 +99,4 @@ const CollectiblesHeader = () => {
       </Inline>
     </Box>
   );
-};
-
-CollectiblesHeader.height = TokenFamilyHeaderHeight;
-
-export default CollectiblesHeader;
+}
