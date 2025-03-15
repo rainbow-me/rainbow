@@ -1,5 +1,5 @@
 import { BlendColor, Circle, Group, ImageSVG, LinearGradient, Mask, Paint, Rect, Shadow, vec } from '@shopify/react-native-skia';
-import React, { memo, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { SkiaText, SkiaTextChild } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
 import { useCleanup } from '@/hooks/useCleanup';
@@ -7,6 +7,12 @@ import * as i18n from '@/languages';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { DEFAULT_CARD_SIZE, SkiaCard, SkiaCardProps } from './SkiaCard';
 import { plusButtonSvg, stars } from './cardSvgs';
+import Routes from '@/navigation/routesNames';
+import { useNavigation } from '@/navigation';
+import { enableActionsOnReadOnlyWallet } from '@/config';
+import store from '@/redux/store';
+import walletTypes from '@/helpers/walletTypes';
+import { watchingAlert } from '@/utils';
 
 const CARD_HEIGHT = 175;
 const PLUS_BUTTON_SIZE = 64;
@@ -56,7 +62,13 @@ const CARD_PROPS: Partial<SkiaCardProps> = {
   },
 };
 
+function isCurrentWalletReadOnly() {
+  return store.getState().wallets.selected?.type === walletTypes.readOnly;
+}
+
 export const LaunchCard = memo(function LaunchCard() {
+  const { navigate } = useNavigation();
+
   const [svgs] = useState(() => ({
     plusButton: plusButtonSvg(),
     stars: {
@@ -65,6 +77,13 @@ export const LaunchCard = memo(function LaunchCard() {
       three: stars.three(),
     },
   }));
+
+  const navigateToTokenLauncher = useCallback(() => {
+    if (!enableActionsOnReadOnlyWallet && isCurrentWalletReadOnly()) {
+      return watchingAlert();
+    }
+    navigate(Routes.TOKEN_LAUNCHER_SCREEN);
+  }, [navigate]);
 
   useCleanup(() => {
     svgs.plusButton?.dispose?.();
@@ -76,6 +95,7 @@ export const LaunchCard = memo(function LaunchCard() {
   return (
     <SkiaCard
       height={CARD_HEIGHT}
+      onPress={navigateToTokenLauncher}
       shadowColor={CARD_PROPS.shadowColor}
       skiaBackground={
         <Paint antiAlias dither>

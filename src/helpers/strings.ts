@@ -82,23 +82,14 @@ const toSubscript = (str: string | number) => str.toString().replace(/[0-9]/g, n
 /*
   converts 6.9e-7 to 0.00000069
 */
-const toDecimalString = (num: number): string => {
-  const [coefficient, exponent] = num.toExponential(20).split('e');
-  const exp = parseInt(exponent);
-  const digits = coefficient.replace('.', '').replace(/0+$/, '');
-
-  if (exp >= 0) {
-    const position = exp + 1;
-    if (position >= digits.length) return digits + '0'.repeat(position - digits.length);
-    return digits.slice(0, position) + (digits.slice(position) && '.' + digits.slice(position));
-  }
-  return '0.' + '0'.repeat(Math.abs(exp) - 1) + digits;
-};
+function toDecimalString(num: number): string {
+  return num.toFixed(20).replace(/\.?0+$/, '');
+}
 
 /*
   formats a numeric string like 0000069 to 0₅69
 */
-function formatFraction(fraction: string) {
+export function formatFraction(fraction: string) {
   const leadingZeros = fraction.match(/^[0]+/)?.[0].length || 0;
   if (+fraction === 0) return '00';
 

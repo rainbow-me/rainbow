@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Text, useForegroundColor } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { addressHashedEmoji } from '@/utils/profileUtils';
@@ -33,6 +33,15 @@ function AddressEmojiAvatar({
         colors.avatarBackgrounds[color] ?? fillTertiary
       : color;
 
+  const textSize = useMemo(() => {
+    if (size > 50) {
+      return '44pt';
+    } else if (size < 24) {
+      return '11pt';
+    }
+    return '17pt';
+  }, [size]);
+
   return (
     <Box
       alignItems="center"
@@ -42,7 +51,7 @@ function AddressEmojiAvatar({
       style={{ backgroundColor }}
       width={{ custom: size }}
     >
-      <Text align="center" color="label" containsEmoji size={size > 50 ? '44pt' : 'icon 18px'} weight="heavy">
+      <Text align="center" color="label" containsEmoji size={textSize} weight="heavy">
         {accountSymbol}
       </Text>
     </Box>

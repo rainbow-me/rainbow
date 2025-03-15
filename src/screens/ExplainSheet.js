@@ -10,7 +10,7 @@ import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
-import { Box } from '@/design-system';
+import { Box, DebugLayout, Text as DSText, Separator, Stack } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
@@ -19,6 +19,7 @@ import { buildRainbowLearnUrl } from '@/utils/buildRainbowUrl';
 import { cloudPlatformAccountName } from '@/utils/platform';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
+
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
@@ -136,7 +137,7 @@ const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
 });
 
 const ENS_PRIMARY_NAME_EXPLAINER =
-  'People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to “primary.”';
+  'People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to "primary."';
 
 const ENS_ON_CHAIN_DATA_WARNING_EXPLAINER =
   'The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing.';
@@ -147,11 +148,11 @@ const ENS_PRIMARY_NAME_TITLE = 'What does it mean to set my ENS name?';
 
 const ENS_MANAGER_TITLE = `What is the .eth manager?`;
 
-const ENS_MANAGER_EXPLAINER = `The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name’s controller.`;
+const ENS_MANAGER_EXPLAINER = `The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller.`;
 
 const ENS_OWNER_TITLE = `What is the .eth name owner?`;
 
-const ENS_OWNER_EXPLAINER = `The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name’s registrant.`;
+const ENS_OWNER_EXPLAINER = `The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant.`;
 
 const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
 
@@ -160,7 +161,7 @@ const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to 
 const ENS_CONFIGURATION_TITLE = 'What do these options mean?';
 
 const ENS_CONFIGURATION_EXPLAINER =
-  'When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient’s address and make the recipient address the manager of the name.';
+  "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name.";
 
 export const explainers = (params, theme) => {
   const colors = theme?.colors;
@@ -684,6 +685,45 @@ export const explainers = (params, theme) => {
       text: lang.t('explain.slippage.text'),
       title: lang.t('explain.slippage.title'),
     },
+    token_allocation: {
+      extraHeight: 144,
+      emoji: '💸',
+      title: lang.t(lang.l.token_launcher.titles.token_allocation_breakdown),
+      button: {
+        label: lang.t(lang.l.token_launcher.buttons.got_it),
+        bgColor: 'rgba(38, 143, 255, 0.06)',
+        textColor: '#268FFF',
+      },
+      stillCurious: (
+        <Box paddingVertical={24} paddingHorizontal={20} gap={24} justifyContent="center" alignItems="center" style={{ flex: 1 }}>
+          {params?.sections?.map((section, index) => (
+            <>
+              <Box alignItems="center" justifyContent="center" gap={12} key={section.title} style={{ marginBottom: 8 }}>
+                <Box flexDirection="row" alignItems="center" gap={2}>
+                  <DSText color="label" size="17pt" weight="semibold">
+                    {section.title}
+                  </DSText>
+                  <DSText color="labelQuaternary" size="15pt" weight="medium">
+                    ·
+                  </DSText>
+                  <DSText color="label" size="17pt" weight="semibold">
+                    {section.value}
+                  </DSText>
+                </Box>
+                <DSText color="labelQuaternary" size="17pt" weight="medium">
+                  {section.description}
+                </DSText>
+              </Box>
+              {index < params?.sections?.length - 1 && (
+                <Box width="100%">
+                  <Separator color="separatorSecondary" width="100%" height={1} />
+                </Box>
+              )}
+            </>
+          ))}
+        </Box>
+      ),
+    },
   };
 };
 
@@ -772,6 +812,7 @@ const ExplainSheet = () => {
         textColor={explainSheetConfig.button?.textColor ?? theme.colors.appleBlue}
         weight="heavy"
         testID={'explainer-sheet-accent'}
+        marginBottom={type === 'token_allocation' ? insets.bottom : 0}
       />
     );
     const buttonArray = [secondaryButton, accentCta];

@@ -75,6 +75,7 @@ import {
   recieveModalSheetConfig,
   expandedAssetSheetV2Config,
   networkSelectorConfig,
+  tokenLauncherConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -82,7 +83,7 @@ import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
+import createNativeStackCoolModalNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
@@ -112,10 +113,11 @@ import { RootStackParamList } from './types';
 import WalletLoadingListener from '@/components/WalletLoadingListener';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
 import { LogSheet } from '@/components/debugging/LogSheet';
+import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { NetworkSelector } from '@/screens/NetworkSelector';
 
 const Stack = createStackNavigator();
-const NativeStack = createNativeStackNavigator();
+const NativeStack = createNativeStackCoolModalNavigator();
 
 function SendFlowNavigator() {
   return (
@@ -283,6 +285,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} {...airdropsSheetConfig} />
       <NativeStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} {...claimAirdropSheetConfig} />
       <NativeStack.Screen component={LogSheet} name={Routes.LOG_SHEET} {...panelConfig} />
+      <NativeStack.Screen component={TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} {...tokenLauncherConfig} />
     </NativeStack.Navigator>
   );
 }

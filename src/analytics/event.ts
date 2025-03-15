@@ -10,6 +10,7 @@ import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
 import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
 import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
+import { TokenLauncherAnalyticsParams } from '@/screens/token-launcher/state/tokenLauncherStore';
 
 /**
  * All events, used by `analytics.track()`
@@ -181,6 +182,15 @@ export const event = {
   changeTimeframeFilter: 'trending_tokens.change_timeframe_filter',
   changeSortFilter: 'trending_tokens.change_sort_filter',
   hasLinkedFarcaster: 'trending_tokens.has_linked_farcaster',
+
+  // token launcher
+  tokenLauncherStepChanged: 'token_launcher.step_changed',
+  tokenLauncherTokenCreated: 'token_launcher.token_created',
+  tokenLauncherSharePressed: 'token_launcher.share_pressed',
+  tokenLauncherAbandoned: 'token_launcher.abandoned',
+  tokenLauncherCreationFailed: 'token_launcher.creation_failed',
+  tokenLauncherImageUploadFailed: 'token_launcher.image_upload_failed',
+  tokenLauncherWalletLoadFailed: 'token_launcher.wallet_load_failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -767,5 +777,29 @@ export type EventProperties = {
     hasFarcaster: boolean;
     personalizedTrending: boolean;
     walletHash: string;
+  };
+
+  // token launcher
+  [event.tokenLauncherStepChanged]: {
+    step: string;
+  };
+  [event.tokenLauncherWalletLoadFailed]: {
+    error: string;
+  };
+  [event.tokenLauncherImageUploadFailed]: {
+    error: string;
+    url?: string;
+    isModerated?: boolean;
+  };
+  [event.tokenLauncherCreationFailed]: TokenLauncherAnalyticsParams & {
+    error: string;
+    operation?: string;
+    source?: string;
+    transactionHash?: string;
+  };
+  [event.tokenLauncherAbandoned]: TokenLauncherAnalyticsParams;
+  [event.tokenLauncherTokenCreated]: TokenLauncherAnalyticsParams;
+  [event.tokenLauncherSharePressed]: TokenLauncherAnalyticsParams & {
+    url: string;
   };
 };

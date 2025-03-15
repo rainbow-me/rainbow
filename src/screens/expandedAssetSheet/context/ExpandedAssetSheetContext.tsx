@@ -18,6 +18,7 @@ import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useTheme } from '@/theme';
 import { time } from '@/utils';
 import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
+import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 
 export enum SectionId {
   PROFIT = 'profit',
@@ -177,14 +178,22 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
     return base;
   }, [address, asset, assetUniqueId, chainId, colors]);
 
+  const rainbowSuperToken = useSuperTokenStore(state => state.getSuperToken(address, chainId));
+
   const fullAsset = useMemo(() => {
-    if (externalAsset)
+    const iconUrl = rainbowSuperToken?.imageUrl ?? basicAsset.iconUrl;
+    if (externalAsset) {
       return {
         ...basicAsset,
         ...externalAsset,
+        iconUrl,
       } satisfies ExpandedSheetAsset;
-    return basicAsset;
-  }, [externalAsset, basicAsset]);
+    }
+    return {
+      ...basicAsset,
+      iconUrl,
+    } satisfies ExpandedSheetAsset;
+  }, [externalAsset, basicAsset, rainbowSuperToken]);
 
   // @ts-expect-error: the field with a type difference is not used & irrelevant to the hook (price)
   const assetColor = useColorForAsset(fullAsset);
@@ -194,6 +203,18 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
     chainId,
     currency: nativeCurrency,
   });
+
+  const superMetadata = useMemo(() => {
+    if (rainbowSuperToken) {
+      return {
+        ...metadata,
+        icon_url: rainbowSuperToken.imageUrl,
+        description: rainbowSuperToken.description,
+        links: rainbowSuperToken.links || metadata?.links,
+      };
+    }
+    return metadata;
+  }, [rainbowSuperToken, metadata]);
 
   const accentColors: AccentColors = useMemo(() => {
     const background = isDarkMode
@@ -238,7 +259,7 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
         accentColors,
         basicAsset: fullAsset,
         accountAsset,
-        assetMetadata: metadata,
+        assetMetadata: superMetadata,
         expandedSections,
         isOwnedAsset,
         isLoadingMetadata,

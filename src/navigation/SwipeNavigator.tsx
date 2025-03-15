@@ -20,7 +20,7 @@ import { discoverOpenSearchFnRef } from '@/components/Discover/DiscoverSearchCon
 import { PointsScreen } from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen';
 import { useTheme } from '@/theme';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { deviceUtils } from '@/utils';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import { MaterialTopTabDescriptorMap } from '@react-navigation/material-top-tabs/lib/typescript/src/types';
 import { NavigationHelpers, ParamListBase, RouteProp } from '@react-navigation/native';
@@ -45,19 +45,12 @@ import SectionListScrollToTopProvider, { useSectionListScrollToTopContext } from
 import Routes from './routesNames';
 import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
 import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
-import { isUsingButtonNavigation, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
+import { initialWindowMetrics } from 'react-native-safe-area-context';
 
 export const TAB_BAR_HEIGHT = getTabBarHeight();
 
 function getTabBarHeight() {
-  if (IS_IOS) {
-    return 48 + safeAreaInsetValues.bottom;
-  }
-  if (!isUsingButtonNavigation()) {
-    return 48 + NAVIGATION_BAR_HEIGHT;
-  }
-  // If button navigation is enabled, bottom padding is applied at the root level
-  return 48;
+  return 48 + (initialWindowMetrics?.insets.bottom ?? 0);
 }
 
 const HORIZONTAL_TAB_BAR_INSET = 6;

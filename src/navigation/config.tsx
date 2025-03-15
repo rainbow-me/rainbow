@@ -615,6 +615,17 @@ export const portalSheetConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
+export const tokenLauncherConfig: PartialNavigatorConfigOptions = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+    }),
+    gestureEnabled: false,
+    dismissable: false,
+    topOffset: 0,
+  }),
+};
+
 export const stackNavigationConfig = {
   headerMode: 'none',
   keyboardHandlingEnabled: ios,

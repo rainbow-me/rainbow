@@ -12,6 +12,7 @@ import { IS_ANDROID } from '@/env';
 import { Box, TextIcon } from '@/design-system';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import { Share } from 'react-native';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 // This is meant to for the context menu to be offset properly, but it does not work for the horizontal offset
 const HIT_SLOP = 16;
@@ -29,12 +30,13 @@ const ContextMenuActions = {
 type ContextMenuAction = (typeof ContextMenuActions)[keyof typeof ContextMenuActions];
 
 export function AssetContextMenu() {
-  const { accentColors, basicAsset: asset } = useExpandedAssetSheetContext();
+  const { accentColors, basicAsset: asset, assetMetadata } = useExpandedAssetSheetContext();
 
   const { clearSelectedCoins, pushSelectedCoin } = useCoinListEditOptions();
   const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
 
   const { currentAction, setPinnedCoins } = useCoinListFinishEditingOptions();
+  const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
 
   useEffect(() => {
     // Ensure this expanded state's asset is always actively inside
@@ -132,11 +134,18 @@ export function AssetContextMenu() {
       case ContextMenuActions.Copy:
         Clipboard.setString(asset.address);
         break;
-      case ContextMenuActions.Share:
+      case ContextMenuActions.Share: {
+        const url =
+          assetMetadata?.links?.rainbow?.url ??
+          buildTokenDeeplink({
+            networkLabel: chainLabels[asset.chainId],
+            contractAddress: asset.address,
+          });
         Share.share({
-          url: buildTokenDeeplink(asset.uniqueId),
+          url,
         });
         break;
+      }
       case ContextMenuActions.BlockExplorer:
         ethereumUtils.openTokenEtherscanURL({ address: asset.address, chainId: asset.chainId });
         break;
