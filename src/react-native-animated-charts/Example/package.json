@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.11.4",
-    "@babel/runtime": "^7.11.2",
+    "@babel/runtime": "^7.26.10",
     "babel-jest": "^26.3.0",
     "babel-plugin-styled-components": "^1.11.1",
     "glob-to-regexp": "^0.4.1",
