@@ -12,24 +12,21 @@ import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { showActionSheetWithOptions } from '@/utils';
 import { BlurGradient } from '@/components/blur/BlurGradient';
-import { useTokenLauncherContext } from '../context/TokenLauncherContext';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { analyticsV2 } from '@/analytics';
 
 const EXIT_BUTTON_SIZE = 36;
 // padding top + exit button + inner padding + padding bottom + blur padding
-export const TOKEN_LAUNCHER_HEADER_HEIGHT = 20 + 36 + 8 + 12 + 12;
+export const TOKEN_LAUNCHER_HEADER_HEIGHT = 20 + 36 + 4 + 12 + 12;
+export const TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS = { bottom: 42, top: TOKEN_LAUNCHER_HEADER_HEIGHT };
 
-export function TokenLauncherHeader({ contentContainerHeight }: { contentContainerHeight: number }) {
+export function TokenLauncherHeader() {
   const navigation = useNavigation();
   const { width: deviceWidth } = useDimensions();
   const { accountColor, accountImage, accountAddress } = useAccountProfile();
   const hasEnteredAnyInfo = useTokenLauncherStore(state => state.hasEnteredAnyInfo);
   const step = useTokenLauncherStore(state => state.step);
   const setStep = useTokenLauncherStore(state => state.setStep);
-  const imageUri = useTokenLauncherStore(state => state.imageUri);
   const getAnalyticsParams = useTokenLauncherStore(state => state.getAnalyticsParams);
-  const { tokenImage } = useTokenLauncherContext();
 
   let title = '';
   if (step === NavigationSteps.INFO) {
@@ -63,44 +60,22 @@ export function TokenLauncherHeader({ contentContainerHeight }: { contentContain
     );
   }, [navigation, hasEnteredAnyInfo, getAnalyticsParams]);
 
-  const isTokenImageVisible = imageUri && tokenImage;
-
   return (
-    <Box
-      position="absolute"
-      top="0px"
-      width={'full'}
-      height={TOKEN_LAUNCHER_HEADER_HEIGHT}
-      paddingHorizontal={{ custom: THICK_BORDER_WIDTH }}
-      zIndex={2}
-    >
-      <Box paddingHorizontal="20px" paddingTop="20px" paddingBottom="12px" style={{ flex: 1 }}>
-        {isTokenImageVisible ? (
-          <BlurGradient
-            height={TOKEN_LAUNCHER_HEADER_HEIGHT}
-            width={deviceWidth}
-            fadeTo="top"
-            intensity={12}
-            style={StyleSheet.absoluteFill}
-          />
-        ) : (
-          <Box
-            overflow="hidden"
-            height={TOKEN_LAUNCHER_HEADER_HEIGHT - 16}
-            width={deviceWidth - THICK_BORDER_WIDTH * 2}
-            style={StyleSheet.absoluteFill}
-          >
-            <Box
-              height={contentContainerHeight - THICK_BORDER_WIDTH * 2}
-              borderRadius={42 - THICK_BORDER_WIDTH}
-              width="full"
-              background="surfacePrimary"
-            />
-          </Box>
-        )}
-        <Box flexDirection="row" alignItems="center" justifyContent="space-between" padding="4px">
+    <Box position="absolute" top="0px" width={'full'} height={TOKEN_LAUNCHER_HEADER_HEIGHT} pointerEvents="box-none" zIndex={2}>
+      <Box paddingHorizontal="20px" paddingTop="20px" paddingBottom="12px" pointerEvents="box-none" style={{ flex: 1 }}>
+        <BlurGradient
+          height={TOKEN_LAUNCHER_HEADER_HEIGHT}
+          width={deviceWidth}
+          fadeTo="top"
+          intensity={12}
+          style={StyleSheet.absoluteFill}
+        />
+        <Box flexDirection="row" alignItems="center" justifyContent="space-between" padding="2px" pointerEvents="box-none">
           {step === NavigationSteps.INFO && (
-            <ButtonPressAnimation onPress={() => navigation.navigate(Routes.CHANGE_WALLET_SHEET, { hideReadOnlyWallets: true })}>
+            <ButtonPressAnimation
+              onPress={() => navigation.navigate(Routes.CHANGE_WALLET_SHEET, { hideReadOnlyWallets: true })}
+              scaleTo={0.8}
+            >
               <AddressAvatar
                 url={accountImage}
                 address={accountAddress}
@@ -112,16 +87,22 @@ export function TokenLauncherHeader({ contentContainerHeight }: { contentContain
           )}
           {step === NavigationSteps.REVIEW && (
             <ButtonPressAnimation
-              style={{ width: EXIT_BUTTON_SIZE, height: EXIT_BUTTON_SIZE, justifyContent: 'center', alignItems: 'center' }}
+              scaleTo={0.8}
+              style={{
+                width: EXIT_BUTTON_SIZE,
+                height: EXIT_BUTTON_SIZE,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
               onPress={() => setStep(NavigationSteps.INFO)}
             >
-              <Text size="20pt" weight="heavy" color="label">
+              <TextIcon size="icon 20px" weight="heavy" color="label">
                 􀆉
-              </Text>
+              </TextIcon>
             </ButtonPressAnimation>
           )}
           {step === NavigationSteps.CREATING && <Box width={EXIT_BUTTON_SIZE} height={EXIT_BUTTON_SIZE} />}
-          <Text size="20pt" weight="heavy" color="label">
+          <Text align="center" size="20pt" weight="heavy" color="label">
             {title}
           </Text>
           {step === NavigationSteps.INFO && (
@@ -132,10 +113,10 @@ export function TokenLauncherHeader({ contentContainerHeight }: { contentContain
                 justifyContent="center"
                 width={EXIT_BUTTON_SIZE}
                 height={EXIT_BUTTON_SIZE}
-                background="fillSecondary"
+                background="fillTertiary"
                 borderRadius={EXIT_BUTTON_SIZE / 2}
               >
-                <BlurView blurIntensity={12} style={StyleSheet.absoluteFill} />
+                <BlurView blurIntensity={12} blurStyle="plain" style={StyleSheet.absoluteFill} />
                 <TextIcon containerSize={EXIT_BUTTON_SIZE} size="icon 16px" weight="heavy" color="labelSecondary">
                   {'􀆄'}
                 </TextIcon>

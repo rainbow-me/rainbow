@@ -10,6 +10,10 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { convertAmountToPercentageDisplay } from '@/helpers/utilities';
+import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { opacity } from '@/__swaps__/utils/swaps';
+
+const LABEL_QUINARY = { custom: opacity(getColorForTheme('labelQuaternary', 'dark'), 0.3) };
 
 function TokenAllocationInfoButton() {
   const { navigate } = useNavigation();
@@ -48,10 +52,10 @@ function TokenAllocationInfoButton() {
   return (
     <ButtonPressAnimation onPress={showTokenAllocationInfo}>
       <Box flexDirection="row" alignItems="center" justifyContent="center" gap={4} hitSlop={12}>
-        <Text color="labelQuaternary" size="icon 13px" weight="heavy">
+        <Text align="center" color={LABEL_QUINARY} size="icon 12px" style={{ opacity: 0.8 }} weight="heavy">
           􀅴
         </Text>
-        <Text color="labelQuaternary" uppercase size="13pt" weight="heavy">
+        <Text align="right" color={LABEL_QUINARY} uppercase size="13pt" weight="heavy">
           {i18n.t(i18n.l.token_launcher.buttons.token_allocation_info)}
         </Text>
       </Box>
@@ -63,7 +67,7 @@ export function TokenAllocationSection() {
   return (
     <Box gap={16} paddingVertical={'20px'} width="full">
       <Box paddingHorizontal={'20px'} flexDirection="row" alignItems="center" justifyContent="space-between">
-        <Text color="labelQuaternary" size="13pt" weight="heavy">
+        <Text color={LABEL_QUINARY} size="13pt" weight="heavy">
           {i18n.t(i18n.l.token_launcher.titles.token_allocation)}
         </Text>
 

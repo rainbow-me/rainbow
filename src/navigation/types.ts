@@ -110,6 +110,7 @@ export type RootStackParamList = {
     address: string;
     chainId: ChainId;
     asset: ExpandedSheetParamAsset;
+    hideClaimSection?: boolean;
   };
   [Routes.POSITION_SHEET]: {
     position: RainbowPosition;

@@ -1,6 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
+import Svg, { Circle } from 'react-native-svg';
 import * as i18n from '@/languages';
 import { Box, Text, TextIcon, TextShadow } from '@/design-system';
+import { IS_IOS } from '@/env';
 import { ButtonPressAnimation } from '@/components/animations';
 import { StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -22,7 +24,7 @@ export function TokenLogo({ size = SIZE, disabled = false }: { size?: number; di
   const stepAnimatedSharedValue = useTokenLauncherStore(state => state.stepAnimatedSharedValue);
 
   // TODO: show loading UI if takes longer than 2 seconds
-  const { upload, isUploading, error } = useUploadToCloudinary();
+  const { upload, error } = useUploadToCloudinary();
 
   const dropShadowsOpacity = useDerivedValue(() => {
     return interpolate(stepAnimatedSharedValue.value, [NavigationSteps.INFO, NavigationSteps.REVIEW], [0, 1], Extrapolation.CLAMP);
@@ -50,7 +52,7 @@ export function TokenLogo({ size = SIZE, disabled = false }: { size?: number; di
 
   const roundedRect = useMemo(() => {
     return rrect(rect(0, 0, size, size), size / 2, size / 2);
-  }, []);
+  }, [size]);
 
   // Skia canvas does not support shadow overflow, so we need to add a buffer of the largest shadow offset
   const shadowOverflowBuffer = 30 + 17;
@@ -79,29 +81,29 @@ export function TokenLogo({ size = SIZE, disabled = false }: { size?: number; di
             </Canvas>
           )}
           {!imageUri && (
-            <Box
-              shadow={'30px'}
-              borderRadius={size / 2}
-              shadowOpacity={0.24}
-              shadowColor={accentColors.opacity100}
-              background={'surfacePrimary'}
-              style={StyleSheet.absoluteFill}
-            >
-              <Box
-                width={'full'}
-                height={'full'}
-                backgroundColor={accentColors.opacity10}
-                justifyContent={'center'}
-                alignItems={'center'}
-                borderRadius={size / 2}
-                style={{
-                  borderStyle: 'dashed',
-                  borderWidth: 3,
-                  borderColor: accentColors.opacity30,
-                }}
-              >
-                <TextShadow blur={12} shadowOpacity={0.24} color={accentColors.opacity100}>
-                  <Text size="34pt" color={{ custom: accentColors.opacity100 }} weight="bold">
+            <Box borderRadius={size / 2} style={StyleSheet.absoluteFill}>
+              <Box width={'full'} height={'full'} justifyContent={'center'} alignItems={'center'}>
+                <Box
+                  backgroundColor={IS_IOS ? accentColors.opacity6 : accentColors.opacity10}
+                  borderRadius={size / 2}
+                  height={size - 14}
+                  position="absolute"
+                  width={size - 14}
+                />
+                <Svg width="100%" height="100%" viewBox={`0 0 ${size} ${size}`} style={StyleSheet.absoluteFill}>
+                  <Circle
+                    cx={size / 2}
+                    cy={size / 2}
+                    r={(size - 3.5) / 2}
+                    stroke={accentColors.opacity20}
+                    strokeWidth={3.5}
+                    strokeDasharray={[7, 11]}
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                </Svg>
+                <TextShadow blur={40} shadowOpacity={1} color={accentColors.opacity100}>
+                  <Text align="center" size="icon 34px" color={{ custom: accentColors.opacity100 }} weight="heavy">
                     {'􀅼'}
                   </Text>
                 </TextShadow>

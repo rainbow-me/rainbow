@@ -17,6 +17,7 @@ export function FieldContainer({ style, children }: FieldContainerProps) {
           borderWidth: FIELD_BORDER_WIDTH,
           borderRadius: FIELD_BORDER_RADIUS,
           borderColor: FIELD_BORDER_COLOR,
+          overflow: 'hidden',
           paddingVertical: IS_ANDROID ? 0 : 8,
           paddingHorizontal: 20,
           backgroundColor: FIELD_BACKGROUND_COLOR,

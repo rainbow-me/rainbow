@@ -89,7 +89,7 @@ export function useSkiaText({
     },
     // Only the weight dependency is omitted on Android (see comment above)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [backgroundPaint, color, foregroundPaint, letterSpacing, lineHeight, manager.paragraphBuilder, size, weightDep]
+    [backgroundPaint, color, foregroundPaint, letterSpacing, lineHeight, manager.paragraphBuilder, shadows, size, weightDep]
   );
 
   return buildParagraph;

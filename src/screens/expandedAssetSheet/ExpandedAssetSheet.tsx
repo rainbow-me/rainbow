@@ -60,11 +60,11 @@ function ExpandedAssetSheetContent() {
 
 export function ExpandedAssetSheet() {
   const {
-    params: { asset, address, chainId },
+    params: { asset, address, chainId, hideClaimSection = false },
   } = useRoute<RouteProp<RootStackParamList, 'ExpandedAssetSheetV2'>>();
 
   return (
-    <ExpandedAssetSheetContextProvider asset={asset} address={address} chainId={chainId}>
+    <ExpandedAssetSheetContextProvider asset={asset} address={address} chainId={chainId} hideClaimSection={hideClaimSection}>
       <ExpandedAssetSheetContent />
     </ExpandedAssetSheetContextProvider>
   );

@@ -59,6 +59,7 @@ type AirdropsState = {
   recentlyClaimed: Map<UniqueId, Timestamp> | null;
   fetchNextPage: () => Promise<void>;
   getAirdrops: () => RainbowClaimable[] | null;
+  getClaimable: (uniqueId: string) => RainbowClaimable | null;
   getCurrentPage: () => number | null;
   getFirstCoinIconUrl: (size?: number) => string | null;
   getNextPage: () => number | null;
@@ -170,6 +171,12 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
       return airdrops.claimables;
     },
 
+    getClaimable: uniqueId => {
+      const airdrops = get().getAirdrops();
+      if (!airdrops?.length) return null;
+      return airdrops.find(claimable => claimable.asset.uniqueId === uniqueId) || null;
+    },
+
     getCurrentPage: () => get().getPaginationInfo()?.current_page ?? null,
 
     getFirstCoinIconUrl: size => {
@@ -185,7 +192,7 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
 
     getNextPage: () => get().getPaginationInfo()?.next ?? null,
 
-    getNumberOfAirdrops: () => get().getData()?.pagination?.total_elements ?? null,
+    getNumberOfAirdrops: () => get().getPaginationInfo()?.total_elements ?? null,
 
     getPaginationInfo: () => {
       const { airdrops, getData } = get();
@@ -198,7 +205,7 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
 
     hasNextPage: () => Boolean(get().getPaginationInfo()?.next),
 
-    markClaimed: (uniqueId: string) => {
+    markClaimed: uniqueId => {
       set(state => {
         const { airdrops, queryCache, queryKey, recentlyClaimed } = state;
         const cacheEntry = queryCache[queryKey];

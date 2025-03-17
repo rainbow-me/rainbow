@@ -11,7 +11,7 @@ import { SkImage, useAnimatedImageValue, useImage } from '@shopify/react-native-
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { SharedValue } from 'react-native-reanimated';
 import { logger, RainbowError } from '@/logger';
-import { useCleanup, useCoinListEditOptions, useCoinListFinishEditingOptions } from '@/hooks';
+import { useCleanup, useCoinListEditOptions } from '@/hooks';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
 type TokenLauncherContextType = {
@@ -28,6 +28,7 @@ type TokenLauncherContextType = {
     opacity40: string;
     opacity30: string;
     opacity20: string;
+    opacity16: string;
     opacity12: string;
     opacity10: string;
     opacity6: string;
@@ -68,9 +69,9 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   const imageUri = useTokenLauncherStore(state => state.imageUri);
   const isImageGif = useMemo(() => imageUri?.endsWith('.gif'), [imageUri]);
 
-  const skiaImage = useImage(imageUri);
+  const skiaImage = useImage(imageUri || undefined);
   // The result of this hook works for displaying both normal images and gifs
-  const animatedSkiaImage = useAnimatedImageValue(imageUri);
+  const animatedSkiaImage = useAnimatedImageValue(imageUri || undefined);
 
   const tokenImage: SkImage | null | SharedValue<SkImage | null> = useMemo(() => {
     if (isImageGif) {
@@ -115,6 +116,7 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
       opacity40: getAlphaColor(primaryColor, 0.4),
       opacity30: getAlphaColor(primaryColor, 0.3),
       opacity20: getAlphaColor(primaryColor, 0.2),
+      opacity16: getAlphaColor(primaryColor, 0.16),
       opacity12: getAlphaColor(primaryColor, 0.12),
       opacity10: getAlphaColor(primaryColor, 0.1),
       opacity6: getAlphaColor(primaryColor, 0.06),

@@ -30,6 +30,8 @@ import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { getSizedImageUrl } from '@/handlers/imgix';
+import { containsEmoji } from '@/helpers/strings';
+import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
 import { useCleanup, useWallets } from '@/hooks';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
@@ -92,7 +94,11 @@ export const ClaimAirdropSheet = () => {
     params: { claimable, hideViewTokenButton = false },
   } = useRoute<RouteProp<RootStackParamList, 'ClaimAirdropSheet'>>();
 
-  const [iconUrl] = useState(() => ({ uri: getSizedImageUrl(claimable.asset.icon_url, COIN_ICON_SIZE) }));
+  const [{ iconUrl, symbolHasEmoji }] = useState(() => ({
+    iconUrl: { uri: getSizedImageUrl(claimable.asset.icon_url, COIN_ICON_SIZE) },
+    symbolHasEmoji: containsEmoji(claimable.asset.symbol),
+  }));
+
   const color = usePersistentDominantColorFromImage(claimable.asset.icon_url || iconUrl.uri);
   const highContrastColor = useMemo(() => getBrightenedColor(color), [color]);
 
@@ -114,14 +120,16 @@ export const ClaimAirdropSheet = () => {
             imageUrl={iconUrl.uri}
             originalColor={color}
           />
-          <PanelHeader symbol={claimable.asset.symbol} />
+          <PanelHeader symbol={claimable.asset.symbol} symbolHasEmoji={symbolHasEmoji} />
 
           <Stack alignHorizontal="center" space="20px">
             <PanelContent
-              airdropAmount={claimable.value.claimAsset.display}
+              airdropAmount={claimable.value.claimAsset.amount}
               airdropValue={claimable.value.nativeAsset.display}
               creatorAddress={claimable.creatorAddress}
               highContrastColor={highContrastColor}
+              symbol={claimable.asset.symbol}
+              symbolHasEmoji={symbolHasEmoji}
             />
             <PanelFooter claimable={claimable} hideViewTokenButton={hideViewTokenButton} highContrastColor={highContrastColor} />
           </Stack>
@@ -131,12 +139,12 @@ export const ClaimAirdropSheet = () => {
   );
 };
 
-const PanelHeader = memo(function PanelHeader({ symbol }: { symbol: string }) {
+const PanelHeader = memo(function PanelHeader({ symbol, symbolHasEmoji }: { symbol: string; symbolHasEmoji: boolean }) {
   const sheetHandleColor = foregroundColors.labelQuaternary.dark;
   return (
     <Box alignItems="center" gap={24} justifyContent="center" paddingTop="32px" width="full">
       <SheetHandleFixedToTop color={sheetHandleColor} showBlur={true} top={10} />
-      <Text align="center" color="label" numberOfLines={1} size="20pt" weight="heavy">
+      <Text align="center" color="label" containsEmoji={symbolHasEmoji} numberOfLines={1} size="20pt" weight="heavy">
         {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.title, { symbol })}
       </Text>
       <Box width={DEVICE_WIDTH - 30 * 2}>
@@ -151,12 +159,20 @@ const PanelContent = ({
   airdropValue,
   creatorAddress,
   highContrastColor,
+  symbol,
+  symbolHasEmoji,
 }: {
   airdropAmount: string;
   airdropValue: string;
   creatorAddress: Address;
   highContrastColor: string;
+  symbol: string;
+  symbolHasEmoji: boolean;
 }) => {
+  const formattedAirdropAmount = useMemo(
+    () => convertAmountToBalanceDisplay(airdropAmount, { decimals: 18, symbol }, undefined, true),
+    [airdropAmount, symbol]
+  );
   return (
     <>
       <Box alignItems="center" gap={20} paddingBottom="8px">
@@ -177,8 +193,15 @@ const PanelContent = ({
           paddingHorizontal="16px"
         >
           <TextShadow blur={16} color={highContrastColor} shadowOpacity={0.5}>
-            <Text align="center" color={{ custom: highContrastColor }} numberOfLines={1} size="20pt" weight="heavy">
-              {airdropAmount}
+            <Text
+              align="center"
+              color={{ custom: highContrastColor }}
+              containsEmoji={symbolHasEmoji}
+              numberOfLines={1}
+              size="20pt"
+              weight="heavy"
+            >
+              {formattedAirdropAmount}
             </Text>
           </TextShadow>
         </Box>
@@ -372,6 +395,7 @@ const PanelFooterContent = ({
       address: claimable.asset.address,
       asset: claimable.asset,
       chainId: claimable.chainId,
+      hideClaimSection: true,
     });
   }, [navigate, claimable]);
 
@@ -412,9 +436,11 @@ const PanelFooterContent = ({
               justifyContent="center"
               width="full"
             >
-              <Text align="center" color={{ custom: highContrastColor }} size="20pt" weight="heavy">
-                {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.view_coin)}
-              </Text>
+              <TextShadow blur={16} color={highContrastColor} shadowOpacity={0.2}>
+                <Text align="center" color={{ custom: highContrastColor }} size="20pt" weight="heavy">
+                  {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.view_coin)}
+                </Text>
+              </TextShadow>
             </Box>
           </ButtonPressAnimation>
         )}

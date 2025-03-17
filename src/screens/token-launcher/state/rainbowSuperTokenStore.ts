@@ -1,6 +1,5 @@
 import { TokenLink, TokenLinks } from '@/graphql/__generated__/metadata';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { useStoreWithEqualityFn } from 'zustand/traditional';
 
 export interface SuperToken {
   address: string;
@@ -30,7 +29,7 @@ export type SuperTokenStoreState = {
 
 export const getSuperTokenKey = (address: string, chainId: number): string => `${address.toLowerCase()}_${chainId}`;
 
-export const superTokenStore = createRainbowStore<SuperTokenStoreState>(
+export const useSuperTokenStore = createRainbowStore<SuperTokenStoreState>(
   (set, get) => ({
     tokens: {},
     getSuperToken: (address?: string, chainId?: number) => {
@@ -64,9 +63,6 @@ export const superTokenStore = createRainbowStore<SuperTokenStoreState>(
     storageKey: 'superTokens',
   }
 );
-
-export const useSuperTokenStore = <T>(selector: (state: SuperTokenStoreState) => T) =>
-  useStoreWithEqualityFn(superTokenStore, selector, Object.is);
 
 const formatSuperTokenLinks = (links: AddSuperTokenParams['links']): TokenLinks => {
   return Object.entries(links ?? {}).reduce(

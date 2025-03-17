@@ -8949,7 +8949,7 @@ __metadata:
     react-native-indicators: "npm:0.17.0"
     react-native-ios-context-menu: "npm:1.15.3"
     react-native-keyboard-area: "npm:1.0.6"
-    react-native-keyboard-controller: "npm:1.16.0"
+    react-native-keyboard-controller: "npm:1.16.7"
     react-native-keychain: "npm:8.0.0"
     react-native-level-fs: "npm:3.0.1"
     react-native-linear-gradient: "npm:2.8.3"
@@ -22627,16 +22627,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-keyboard-controller@npm:1.16.0":
-  version: 1.16.0
-  resolution: "react-native-keyboard-controller@npm:1.16.0"
+"react-native-keyboard-controller@npm:1.16.7":
+  version: 1.16.7
+  resolution: "react-native-keyboard-controller@npm:1.16.7"
   dependencies:
     react-native-is-edge-to-edge: "npm:^1.1.6"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-reanimated: ">=3.0.0"
-  checksum: 10c0/bbd92237ae842a7df77c43f7fe15c2f3eadd8fcffdcf2f9ea8990b19197be4e640145f226e6d438f4c84da83f9f5e6e1b0c88941c010e14b84872fa8c41a4633
+  checksum: 10c0/0500924254b80b4c9d159dfb3172b5a8858aa229fba40d0c7dcd20ddc4547a942f5b46c45f416d753e1d6007acbaa64d276857595dccf415fe3e50c887067143
   languageName: node
   linkType: hard
 

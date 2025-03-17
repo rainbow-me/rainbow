@@ -9,7 +9,19 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
-import { Box, IconContainer, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import {
+  Box,
+  BoxProps,
+  IconContainer,
+  Separator,
+  Stack,
+  Text,
+  TextProps,
+  TextShadow,
+  globalColors,
+  useColorMode,
+  useForegroundColor,
+} from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
@@ -23,13 +35,12 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { safeAreaInsetValues, time } from '@/utils';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
-interface AirdropClaimable {
+export interface AirdropClaimable {
   address: string;
   airdropValue: string;
   chainId: ChainId;
   hasZeroValue: boolean;
   icon: string;
-  isDarkMode: boolean;
   name: string;
   onPress: (claimable: RainbowClaimable) => void;
   symbol: string;
@@ -102,7 +113,6 @@ const CloseButton = () => {
 const EMPTY_LIST_DATA: RainbowClaimable[] = [];
 
 const AirdropsList = () => {
-  const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
 
   const airdrops = useAirdropsStore(state => state.getAirdrops());
@@ -130,15 +140,14 @@ const AirdropsList = () => {
           chainId={item.chainId}
           hasZeroValue={Number(item.value.nativeAsset.amount) === 0}
           icon={item.asset.icon_url ?? item.iconUrl}
-          isDarkMode={isDarkMode}
-          name={item.name}
+          name={item.asset.name}
           onPress={() => onPressCoinRow(item)}
           symbol={item.asset.symbol}
-          uniqueId={item.uniqueId}
+          uniqueId={item.asset.uniqueId}
         />
       );
     },
-    [isDarkMode, onPressCoinRow]
+    [onPressCoinRow]
   );
 
   return (
@@ -180,7 +189,7 @@ const ListScrollView = ({ children, ...props }: ScrollViewProps) => {
   );
 };
 
-const PullToRefresh = () => {
+export const PullToRefresh = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
@@ -244,7 +253,7 @@ const EmptyState = () => {
 const WHITE_TEXT_COLOR = { custom: globalColors.white100 };
 
 const AirdropCoinRow = memo(
-  function AirdropCoinRow({ airdropValue, chainId, hasZeroValue, icon, isDarkMode, name, onPress, symbol }: AirdropClaimable) {
+  function AirdropCoinRow({ airdropValue, chainId, hasZeroValue, icon, name, onPress, symbol }: AirdropClaimable) {
     return (
       <ButtonPressAnimation onPress={onPress} scaleTo={0.95} style={styles.buttonPressWrapper}>
         <View style={styles.rowContainer}>
@@ -260,21 +269,7 @@ const AirdropCoinRow = memo(
           </View>
 
           <View style={styles.rowEnd}>
-            <Box
-              alignItems="center"
-              background="fillQuaternary"
-              borderColor={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'}
-              borderRadius={12}
-              borderWidth={THICK_BORDER_WIDTH}
-              height={28}
-              justifyContent="center"
-              paddingHorizontal="8px"
-              pointerEvents="none"
-            >
-              <Text align="center" color={hasZeroValue ? 'labelTertiary' : 'label'} numberOfLines={1} size="17pt" weight="bold">
-                {airdropValue}
-              </Text>
-            </Box>
+            <BalancePill airdropValue={airdropValue} hasZeroValue={hasZeroValue} />
           </View>
         </View>
       </ButtonPressAnimation>
@@ -282,6 +277,55 @@ const AirdropCoinRow = memo(
   },
   (prev, next) => prev.uniqueId === next.uniqueId && prev.airdropValue === next.airdropValue && prev.hasZeroValue === next.hasZeroValue
 );
+
+export const BalancePill = ({
+  airdropValue,
+  backgroundColor = 'fillQuaternary',
+  borderColor,
+  hasZeroValue,
+  shadowBlur,
+  shadowColor,
+  shadowOpacity,
+  textColor = 'label',
+  zeroValueColor = 'labelTertiary',
+}: {
+  airdropValue: string;
+  backgroundColor?: BoxProps['background'];
+  borderColor?: BoxProps['borderColor'];
+  hasZeroValue: boolean;
+  shadowBlur?: number;
+  shadowColor?: string;
+  shadowOpacity?: number;
+  textColor?: TextProps['color'];
+  zeroValueColor?: TextProps['color'];
+}) => {
+  const { isDarkMode } = useColorMode();
+  return (
+    <Box
+      alignItems="center"
+      background={backgroundColor}
+      borderColor={borderColor ?? (isDarkMode ? 'separatorSecondary' : 'separatorTertiary')}
+      borderRadius={12}
+      borderWidth={THICK_BORDER_WIDTH}
+      height={28}
+      justifyContent="center"
+      paddingHorizontal="8px"
+      pointerEvents="none"
+    >
+      {shadowBlur || shadowColor || shadowOpacity ? (
+        <TextShadow blur={shadowBlur} color={shadowColor} shadowOpacity={shadowOpacity}>
+          <Text align="center" color={hasZeroValue ? zeroValueColor : textColor} numberOfLines={1} size="17pt" weight="bold">
+            {airdropValue}
+          </Text>
+        </TextShadow>
+      ) : (
+        <Text align="center" color={hasZeroValue ? zeroValueColor : textColor} numberOfLines={1} size="17pt" weight="bold">
+          {airdropValue}
+        </Text>
+      )}
+    </Box>
+  );
+};
 
 const styles = StyleSheet.create({
   buttonPressWrapper: {

@@ -8,7 +8,7 @@ import { useTheme } from '@/theme';
 const CONTRAST_THRESHOLD = 2.125;
 
 export const getHighContrastColor = (color: string, isDarkMode: boolean) => {
-  if (typeof color !== 'string') return color;
+  if (typeof color !== 'string' || !color) return color;
   const contrast = chroma.contrast(color, isDarkMode ? '#191A1C' : globalColors.white100);
 
   if (contrast < CONTRAST_THRESHOLD) {
