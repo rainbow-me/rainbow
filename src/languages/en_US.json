@@ -345,6 +345,7 @@
       "receive": "Receive",
       "remove": "Remove",
       "save": "Save",
+      "skip": "Skip",
       "send": "Send",
       "send_another": "Send Another",
       "share": "Share",
@@ -518,6 +519,7 @@
       "alert": "Alert",
       "analyze_env_variables": "Analyze ENV Variables",
       "analyze_react_query": "Analyze React Query",
+      "analyze_env_variables": "Analyze ENV Variables",
       "applied": "APPLIED",
       "backups_deleted_successfully": "Backups Deleted Successfully",
       "clear_async_storage": "Clear AsyncStorage",
@@ -3119,6 +3121,7 @@
       "filters": {
         "categories": {
           "TRENDING": "Trending",
+          "RAINBOW": "Rainbow",
           "NEW": "New",
           "FARCASTER": "Farcaster"
         },
@@ -3159,6 +3162,130 @@
       "all_networks": "All Networks"
     },
     "token_launcher": {
+      "airdrop": {
+        "address_or_ens": "Address or ENS",
+        "suggested_users": "SUGGESTED USERS",
+        "airdrop_lists": "AIRDROP LISTS",
+        "max_recipients_reached": "Max %{maxRecipientCount} recipients reached"
+      },
+      "image_upload_error": {
+        "title": "Sorry, there was an error uploading your image.",
+        "subtitle": "Please try again."
+      },
+      "allocation_breakdown": {
+        "my_share": "MY SHARE",
+        "airdropping": "AIRDROPPING",
+        "start_price": "START PRICE",
+
+        "sections": {
+          "my_share": {
+            "title": "Creator Share",
+            "description": "Your personal stake in the project"
+          },
+          "airdropping": {
+            "title": "Airdrop Share",
+            "description": "Distributed to friends and supporters"
+          },
+          "liquidity_pool": {
+            "title": "Liquidity Pool Share",
+            "description": "Ensures smooth trading and liquidity"
+          },
+          "rainbow_share": {
+            "title": "Over the Rainbow",
+            "description": "Future Community Distributions"
+          }
+        }
+      },
+      "network_field": {
+        "balance": "Balance: %{balance}",
+        "not_enough_funds": "Not enough funds to launch a token"
+      },
+      "prebuy": {
+        "balance_after_gas_fee": "Balance After Gas Fee: %{balance}"
+      },
+      "review": {
+        "token_allocation": "Token allocation",
+        "your_share": "Your share",
+        "airdropping": "Airdropping",
+        "about": "About",
+        "total_cost": "Total cost",
+        "initial_price": "Initial price",
+        "market_cap": "Market cap",
+        "total_supply": "Total supply",
+        "network": "Network"
+      },
+      "creating": {
+        "deploying": "Deploying %{symbol}..."
+      },
+      "success": {
+        "title": "%{symbol} is live!",
+        "congrats": "Congrats, you just launched %{name} into the world! Share it to spread the vibes."
+      },
+      "input_errors": {
+        "too_long": "Too long, friend.",
+        "invalid_input": "Invalid input",
+        "symbol_required": "Ticker is required",
+        "name_required": "Name is required",
+        "too_big": "Too big.",
+        "must_be_greater_than_0": "Must be greater than 0",
+        "amount_is_greater_than_balance": "Amount is greater than balance",
+        "amount_is_greater_than_max_prebuy_amount": "Exceeds max pre-buy amount of %{maxPrebuyAmount} %{chainNativeAssetSymbol}"
+      },
+      "titles": {
+        "total_supply": "Total Supply",
+        "ticker": "Ticker",
+        "name": "Name",
+        "network": "Network",
+        "description": "Description",
+        "airdrop": "Airdrop",
+        "required_info": "REQUIRED INFO",
+        "about": "ABOUT",
+        "token_allocation": "TOKEN ALLOCATION",
+        "token_allocation_breakdown": "Token Allocation Breakdown",
+        "mcap": "MCAP"
+      },
+      "placeholders": {
+        "ticker": "$NAME",
+        "enter_coin_name": "Enter coin name",
+        "describe_your_coin": "Describe your coin"
+      },
+      "buttons": {
+        "hold_to_create": "Hold to Create",
+        "creating": "Creating...",
+        "share_link": "Share Link",
+        "token_allocation_info": "More Info",
+        "got_it": "Got it",
+        "cancel": "Cancel"
+      },
+      "header": {
+        "new_coin": "New Coin",
+        "review": "Review",
+        "creating": "Creating"
+      },
+      "links": {
+        "x": {
+          "name": "X/Twitter",
+          "placeholder": "Username"
+        },
+        "telegram": {
+          "name": "Telegram",
+          "placeholder": "Channel"
+        },
+        "farcaster": {
+          "name": "Farcaster",
+          "placeholder": "Username"
+        },
+        "website": {
+          "name": "Website",
+          "placeholder": "https://homepage.com"
+        },
+        "other": {
+          "name": "Other",
+          "placeholder": "https://other.com"
+        },
+        "add_more": "Add More"
+      },
+      "discard_and_exit": "Discard & Exit",
       "airdrops_sheet": {
         "claim_button_text": "Claim",
         "empty_state_title": "No Airdrops Yet",
@@ -3169,12 +3296,26 @@
           "subtitle_loading": "LOADING",
           "subtitle_has_airdrops": "AVAILABLE TO CLAIM",
           "subtitle_no_airdrops": "NO AIRDROPS YET",
-          "title": "Airdrops"
+          "title": "Airdrops",
+          "title_singular": "Airdrop"
         },
         "launch": {
           "line_one": "Launch\n",
           "line_two": "your Coin"
         }
+      },
+      "claim_airdrop_sheet": {
+        "by": "by",
+        "claiming": "Claiming",
+        "created_by": "Created by %{name}",
+        "gifted_to": "Gifted to",
+        "hold_to_claim": "Hold to Claim",
+        "hold_to_retry": "Hold to Retry",
+        "successfully_claimed": "Successfully Claimed",
+        "title": "Claim $%{symbol}",
+        "to_claim_on": "to claim on %{network}",
+        "view_coin": "View Coin",
+        "you": "You"
       }
     },
     "done": "Done",

@@ -8,6 +8,7 @@ import { AboutSection, BalanceSection, BuySection, MarketStatsSection, ChartSect
 import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SEPARATOR_COLOR = 'rgba(245, 248, 255, 0.025)';
 const LIGHT_SEPARATOR_COLOR = 'rgba(9, 17, 31, 0.025)';
@@ -16,6 +17,7 @@ export function SheetContent() {
   const { nativeCurrency } = useAccountSettings();
   const { colorMode, isDarkMode } = useColorMode();
   const { accentColors, basicAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(asset.chainId));
   const buyWithAsset = useAccountAsset(nativeAssetForChain?.uniqueId ?? '', nativeCurrency);
@@ -30,7 +32,7 @@ export function SheetContent() {
           height="full"
           width="full"
           paddingTop={{ custom: 96 }}
-          paddingBottom={{ custom: SHEET_FOOTER_HEIGHT }}
+          paddingBottom={{ custom: SHEET_FOOTER_HEIGHT + safeAreaInsets.bottom }}
           paddingHorizontal="24px"
         >
           <Bleed horizontal={'24px'}>

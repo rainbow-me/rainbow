@@ -67,7 +67,6 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
   const { nativeCurrency } = useAccountSettings();
 
   const chainsNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset();
-
   // keep native assets up to date for gas price calculations
   // NOTE: We only fetch the native asset for mainnet and chains that don't use ETH as their native token
   const chainsToFetch = Object.entries(chainsNativeAsset).filter(

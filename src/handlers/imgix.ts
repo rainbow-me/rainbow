@@ -140,10 +140,10 @@ export const maybeSignSource = (source: Source, options?: Record<string, unknown
   return source;
 };
 
-export const imageToPng = (url: string, w: number) => {
+export const imageToPng = (url: string, w: number): string | undefined => {
   return maybeSignUri(url, { fm: 'png', w });
 };
 
-export const getSizedImageUrl = (url: string | undefined, size = 40) => {
+export const getSizedImageUrl = (url: string | undefined, size = 40): string | undefined => {
   return url ? maybeSignUri(url, { h: size, w: size }) : undefined;
 };

@@ -24,16 +24,29 @@ import { cancelAnimations, getRainbowCoinEffectConfig, onPressCoinIcon, startAni
 
 interface RainbowCoinEffectProps {
   color: string;
+  disableShadow?: boolean;
   imageUrl: string;
+  perspective?: number;
+  route?: (typeof Routes)[keyof typeof Routes];
   size: number;
+  strokeWidth?: number;
 }
 
-const EXPANDED_STATE_ROUTE = Routes.EXPANDED_ASSET_SHEET_V2;
-
-export const RainbowCoinEffect = memo(function RainbowCoinEffect({ color: providedColor, imageUrl, size = 40 }: RainbowCoinEffectProps) {
+export const RainbowCoinEffect = memo(function RainbowCoinEffect({
+  color: providedColor,
+  disableShadow = false,
+  imageUrl,
+  perspective = 80,
+  route = Routes.EXPANDED_ASSET_SHEET_V2,
+  size = 40,
+  strokeWidth = BORDER_THICKNESS,
+}: RainbowCoinEffectProps) {
   const { isDarkMode } = useColorMode();
   const { canvasCenter, circlePath, color, colors, dimensionsStyle, gradientColors, gradientCenter, imageRect, innerRadius, outerRadius } =
-    useMemo(() => getRainbowCoinEffectConfig({ color: providedColor, isDarkMode, size }), [isDarkMode, providedColor, size]);
+    useMemo(
+      () => getRainbowCoinEffectConfig({ color: providedColor, isDarkMode, size, strokeWidth }),
+      [isDarkMode, providedColor, size, strokeWidth]
+    );
 
   const animatedActiveRoute = useNavigationStore(state => state.animatedActiveRoute);
   const sizedImageUrl = useMemo(() => getSizedImageUrl(imageUrl, size), [imageUrl, size]);
@@ -49,12 +62,12 @@ export const RainbowCoinEffect = memo(function RainbowCoinEffect({ color: provid
   }, [rotation]);
 
   const animatedTiltStyle = useAnimatedStyle(() => {
-    if (!_WORKLET) return { transform: [{ perspective: 80 }, { scale: 1 }, { rotateY: '0deg' }] };
+    if (!_WORKLET) return { transform: [{ perspective }, { scale: 1 }, { rotateY: '0deg' }] };
     const isUserTriggeredSpin = targetRotation?.value !== undefined;
     const shouldScaleDown = targetRotation?.value !== undefined && Math.abs(targetRotation.value) - Math.abs(tiltX.value) < 180;
     return {
       transform: [
-        { perspective: 80 },
+        { perspective },
         {
           scale: isUserTriggeredSpin
             ? shouldScaleDown
@@ -73,7 +86,7 @@ export const RainbowCoinEffect = memo(function RainbowCoinEffect({ color: provid
   });
 
   const imageOpacity = useDerivedValue(() => (image ? withTiming(1, TIMING_CONFIGS.slowFadeConfig) : 0));
-  const isExpandedStateActive = useDerivedValue(() => !_WORKLET || animatedActiveRoute.value === EXPANDED_STATE_ROUTE);
+  const isExpandedStateActive = useDerivedValue(() => !_WORKLET || animatedActiveRoute.value === route);
 
   const onLongPress = useCallback(() => {
     'worklet';
@@ -129,10 +142,12 @@ export const RainbowCoinEffect = memo(function RainbowCoinEffect({ color: provid
     >
       <Animated.View style={[styles.container, dimensionsStyle.outer, animatedTiltStyle]}>
         <Canvas style={dimensionsStyle.inner}>
-          <Circle cx={canvasCenter} cy={canvasCenter} r={innerRadius + BORDER_THICKNESS} style="stroke" strokeWidth={BORDER_THICKNESS * 2}>
-            <Paint antiAlias blendMode="overlay" dither>
-              <Shadow blur={4} color={colors.darkOverlayShadow} dx={0} dy={0} />
-            </Paint>
+          <Circle cx={canvasCenter} cy={canvasCenter} r={innerRadius + strokeWidth} style="stroke" strokeWidth={strokeWidth * 2}>
+            {!disableShadow && (
+              <Paint antiAlias blendMode="overlay" dither>
+                <Shadow blur={4} color={colors.darkOverlayShadow} dx={0} dy={0} />
+              </Paint>
+            )}
             <SweepGradient c={gradientCenter} colors={gradientColors} transform={gradientAnimation} />
           </Circle>
 

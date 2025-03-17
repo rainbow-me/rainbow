@@ -17,7 +17,7 @@ const Label = styled(Text).attrs(({ color, size = fonts.size.larger, theme: { co
   weight,
 }))({});
 
-function useBiometryIconString({ showIcon, isHardwareWallet }) {
+export function useBiometryIconString({ showIcon, isHardwareWallet }) {
   const biometryType = useBiometryType();
 
   const isFace = biometryType === Face || biometryType === FaceID;
@@ -42,8 +42,8 @@ function useBiometryIconString({ showIcon, isHardwareWallet }) {
 }
 
 export default function BiometricButtonContent({ label, showIcon = true, testID, ...props }) {
-  const biometryIcon = useBiometryIconString(!IS_ANDROID && showIcon);
   const { isHardwareWallet } = useWallets();
+  const biometryIcon = useBiometryIconString({ showIcon: !IS_ANDROID && showIcon, isHardwareWallet });
   const { colors } = useTheme();
   return (
     <>

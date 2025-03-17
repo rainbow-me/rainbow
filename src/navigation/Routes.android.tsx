@@ -57,6 +57,7 @@ import {
   consoleSheetPreset,
   appIconUnlockSheetPreset,
   swapSheetPreset,
+  tokenLauncherSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -96,6 +97,7 @@ import { RootStackParamList } from './types';
 import WalletLoadingListener from '@/components/WalletLoadingListener';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
 import { LogSheet } from '@/components/debugging/LogSheet';
+import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { NetworkSelector } from '@/screens/NetworkSelector';
 
 const Stack = createStackNavigator();
@@ -254,6 +256,7 @@ function BSNavigator() {
       <BSStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} />
       <BSStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} />
       <BSStack.Screen component={LogSheet} name={Routes.LOG_SHEET} />
+      <BSStack.Screen component={TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} options={tokenLauncherSheetPreset} />
     </BSStack.Navigator>
   );
 }

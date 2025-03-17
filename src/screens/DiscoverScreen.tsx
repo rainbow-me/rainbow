@@ -1,26 +1,25 @@
-import React, { useEffect } from 'react';
-import { Keyboard } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-import { Box } from '@/design-system';
-import { Page } from '@/components/layout';
-import { Navbar } from '@/components/navbar/Navbar';
+import React, { memo, useEffect } from 'react';
+import { Keyboard } from 'react-native';
+import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import DiscoverScreenContent from '@/components/Discover/DiscoverScreenContent';
+import DiscoverScreenProvider, { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { Page } from '@/components/layout';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { Navbar } from '@/components/navbar/Navbar';
+import { Box } from '@/design-system';
 import { useAccountProfile } from '@/hooks';
-import Routes from '@/navigation/routesNames';
-import { useNavigation } from '@/navigation';
-import { safeAreaInsetValues } from '@/utils';
 import * as i18n from '@/languages';
-import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
-import DiscoverScreenProvider, { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { safeAreaInsetValues } from '@/utils';
 
 export let discoverScrollToTopFnRef: () => number | null = () => null;
 
 const Content = () => {
   const { navigate } = useNavigation();
-  const isFocused = useIsFocused();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
 
   const { isSearching, scrollToTop, scrollViewRef } = useDiscoverScreenContext();
@@ -35,12 +34,6 @@ const Content = () => {
       scrollY.value = event.contentOffset.y;
     },
   });
-
-  useEffect(() => {
-    if (isSearching && !isFocused) {
-      Keyboard.dismiss();
-    }
-  }, [isFocused, isSearching]);
 
   useEffect(() => {
     discoverScrollToTopFnRef = scrollToTop;
@@ -76,9 +69,25 @@ const Content = () => {
       >
         <DiscoverScreenContent />
       </Box>
+
+      <KeyboardDismissHandler />
     </Box>
   );
 };
+
+const KeyboardDismissHandler = memo(function KeyboardDismissHandler() {
+  const isFocused = useIsFocused();
+  const { isSearching, setIsSearching } = useDiscoverScreenContext();
+
+  useEffect(() => {
+    if (!isFocused && isSearching) {
+      setIsSearching(false);
+      Keyboard.dismiss();
+    }
+  }, [isFocused, isSearching, setIsSearching]);
+
+  return null;
+});
 
 export default function DiscoverScreen() {
   return (

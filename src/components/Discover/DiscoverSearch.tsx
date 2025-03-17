@@ -20,7 +20,6 @@ import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { IS_TEST } from '@/env';
-import { uniqBy } from 'lodash';
 import { useTheme } from '@/theme';
 import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

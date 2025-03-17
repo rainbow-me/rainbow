@@ -61,17 +61,7 @@ export function MintsCard() {
             navigate(Routes.MINTS_SHEET);
           }}
         >
-          {/* unfortunately shimmer width must be hardcoded */}
-          <ShimmerAnimation
-            color={fillSecondary}
-            width={
-              deviceWidth -
-              // 40 = 20px padding on each side
-              40 -
-              // 46 = 36px refresh button width + 10px spacing
-              46
-            }
-          />
+          <ShimmerAnimation color={fillSecondary} />
           <Text color="label" align="center" size="15pt" weight="bold">
             {i18n.t(i18n.l.mints.mints_card.view_all_mints)}
           </Text>
