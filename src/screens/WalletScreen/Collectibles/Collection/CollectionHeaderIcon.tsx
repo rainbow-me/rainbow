@@ -1,6 +1,6 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import eyeSlash from '@/assets/sf-eye.slash.png';
 import { Text } from '@/design-system';
@@ -9,12 +9,12 @@ import { borders } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { FallbackIcon, initials } from '@/utils';
 import ShadowStack from '@/react-native-shadow-stack';
-import * as i18n from '@/languages';
+import { ViewProps } from 'react-native-svg/lib/typescript/fabric/utils';
 
 type Props = {
   name: string;
-  image?: string;
-  style?: any;
+  image?: string | 'hidden';
+  style?: StyleProp<ViewStyle>;
 };
 
 const shadowsFactory = (colors: ThemeContextProps['colors']) => [[0, 3, android ? 5 : 9, colors.shadow, 0.1]];
@@ -25,7 +25,11 @@ const sx = StyleSheet.create({
   },
 });
 
-const circleStyle = borders.buildCircleAsObject(30);
+const circleStyle = borders.buildCircleAsObject(30) as {
+  height: number;
+  width: number;
+  borderRadius: number;
+};
 
 export function CollectionHeaderIcon({ name, image, style }: Props) {
   const { colors } = useTheme();
@@ -51,7 +55,7 @@ export function CollectionHeaderIcon({ name, image, style }: Props) {
     );
   }
 
-  if (name === lang.t('button.hidden')) {
+  if (name === i18n.t(i18n.l.button.hidden) || image === 'hidden') {
     return (
       <View
         style={[
@@ -69,16 +73,12 @@ export function CollectionHeaderIcon({ name, image, style }: Props) {
     );
   }
 
-  const source = {
-    uri: image,
-  };
-
+  const source = image && image !== 'hidden' ? { uri: image } : undefined;
   const symbol = initials(name);
 
   return (
-    // @ts-expect-error - typescript types
     <ShadowStack {...circleStyle} backgroundColor={colors.white} shadows={shadows} style={style}>
-      {image ? <ImgixImage size={30} source={source} style={circleStyle} /> : <FallbackIcon {...circleStyle} symbol={symbol} />}
+      {source ? <ImgixImage size={30} source={source} style={circleStyle} /> : <FallbackIcon {...circleStyle} symbol={symbol} />}
     </ShadowStack>
   );
 }

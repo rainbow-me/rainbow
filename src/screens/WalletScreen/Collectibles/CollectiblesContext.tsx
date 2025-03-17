@@ -10,7 +10,7 @@ export type CollectiblesContextType = {
 };
 
 const DEFAULT_OPEN_COLLECTIONS: Record<CollectionName, boolean> = {
-  showcase: true,
+  Showcase: true,
 };
 
 export const CollectiblesContext = createContext<CollectiblesContextType>({
@@ -21,13 +21,16 @@ export const CollectiblesContext = createContext<CollectiblesContextType>({
 export const CollectiblesProvider = ({ children }: { children: React.ReactNode }) => {
   const openedCollections = useSharedValue(DEFAULT_OPEN_COLLECTIONS);
 
-  const toggleCollection = useCallback((collectionName: CollectionName) => {
-    'worklet';
-    openedCollections.modify(collections => ({
-      ...collections,
-      [collectionName]: !collections[collectionName],
-    }));
-  }, []);
+  const toggleCollection = useCallback(
+    (collectionName: CollectionName) => {
+      'worklet';
+      openedCollections.modify(collections => ({
+        ...collections,
+        [collectionName]: !collections[collectionName],
+      }));
+    },
+    [openedCollections]
+  );
 
   return <CollectiblesContext.Provider value={{ openedCollections, toggleCollection }}>{children}</CollectiblesContext.Provider>;
 };

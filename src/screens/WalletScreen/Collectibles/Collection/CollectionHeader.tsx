@@ -20,26 +20,28 @@ export const TokenFamilyHeaderHeight = 50;
 
 type Props = {
   name: string;
+  isSpecialCollection?: boolean;
 };
 
-function CollectionBalance({ collectionName }: { collectionName: string }) {
+function CollectionBalance({ collectionName, isSpecialCollection }: { collectionName: string; isSpecialCollection?: boolean }) {
   const { accountAddress } = useAccountSettings();
   const { nftSort, nftSortDirection } = useNftSort();
   const { openedCollections } = useCollectiblesContext();
 
-  const { data: collection } = useLegacyNFTs({
+  const { data: collection = [] } = useLegacyNFTs({
     address: accountAddress,
     sortBy: nftSort,
     sortDirection: nftSortDirection,
     config: {
+      enabled: !isSpecialCollection,
       select(data) {
-        return groupBy(data.nfts, token => token.familyName)[collectionName];
+        return groupBy(data.nfts, token => token.familyName)[collectionName] || [];
       },
     },
   });
 
   const amountStyles = useAnimatedStyle(() => {
-    const isOpen = openedCollections.value[collectionName];
+    const isOpen = openedCollections.value[collectionName.toLowerCase()];
 
     return {
       opacity: withTiming(isOpen ? 0 : 1, TIMING_CONFIGS.fadeConfig),
@@ -47,8 +49,10 @@ function CollectionBalance({ collectionName }: { collectionName: string }) {
   });
 
   const total = useMemo(() => {
-    return `${collection.length}`;
-  }, [collection]);
+    return !isSpecialCollection ? `${collection.length}` : undefined;
+  }, [collection, isSpecialCollection]);
+
+  if (isSpecialCollection) return null;
 
   return (
     <AnimatedText style={[amountStyles, { paddingRight: 4 }]} size="20pt" color="label" weight="regular">
@@ -57,23 +61,30 @@ function CollectionBalance({ collectionName }: { collectionName: string }) {
   );
 }
 
-export function CollectionHeader({ name }: Props) {
-  const { nftSort, nftSortDirection } = useNftSort();
+export function CollectionHeader({ name, isSpecialCollection }: Props) {
   const { accountAddress } = useAccountSettings();
   const { openedCollections, toggleCollection } = useCollectiblesContext();
+  const { nftSort, nftSortDirection } = useNftSort();
   const caretColor = useForegroundColor('label');
   const hiddenColor = useForegroundColor('labelTertiary');
+  const isHidden = name === i18n.t(i18n.l.button.hidden);
+  const isShowcase = name === i18n.t(i18n.l.account.tab_showcase);
 
-  const { data: collection } = useLegacyNFTs({
+  // Only fetch collection data for regular collections
+  const { data: collectionInfo } = useLegacyNFTs({
     address: accountAddress,
     sortBy: nftSort,
     sortDirection: nftSortDirection,
     config: {
+      // Skip fetching for special collections to reduce unnecessary renders
+      enabled: !isSpecialCollection,
       select(data) {
-        return groupBy(data.nfts, token => token.familyName)[name];
+        const collections = groupBy(data.nfts, token => token.familyName);
+        return collections[name] ? collections[name][0] : null;
       },
     },
   });
+
   const handlePress = useCallback(() => {
     'worklet';
     toggleCollection(name);
@@ -93,33 +104,31 @@ export function CollectionHeader({ name }: Props) {
     };
   });
 
-  if (!collection?.[0]?.familyImage) return null;
+  // Get image based on collection type
+  const getImageForCollection = () => {
+    if (isSpecialCollection) {
+      if (isShowcase) return '🏆'; // Trophy emoji for showcase
+      if (isHidden) return 'hidden' as const; // Special value for hidden
+      return undefined;
+    }
 
-  const { familyImage } = collection[0];
+    return collectionInfo?.familyImage;
+  };
 
   return (
     <GestureHandlerButton onPressWorklet={handlePress} scaleTo={1.05}>
       <View style={[sx.content]}>
         <View style={[sx.center]}>
-          <CollectionHeaderIcon image={familyImage} name={name} />
+          <CollectionHeaderIcon image={getImageForCollection()} name={name} />
         </View>
         <View style={[sx.title, { paddingLeft: 10 }]}>
-          <Text
-            color={name === i18n.t(i18n.l.button.hidden) ? 'labelTertiary' : 'label'}
-            numberOfLines={1}
-            size="18px / 27px (Deprecated)"
-            weight="heavy"
-          >
+          <Text color={isHidden ? 'labelTertiary' : 'label'} numberOfLines={1} size="18px / 27px (Deprecated)" weight="heavy">
             {name}
           </Text>
         </View>
         <Inline horizontalSpace={'8px'} alignVertical="center">
-          <CollectionBalance collectionName={name} />
-          <AnimatedImgixImage
-            source={CaretImageSource}
-            tintColor={name === i18n.t(i18n.l.button.hidden) ? hiddenColor : caretColor}
-            style={[caretStyles, sx.chevron]}
-          />
+          <CollectionBalance collectionName={name} isSpecialCollection={isSpecialCollection} />
+          <AnimatedImgixImage source={CaretImageSource} tintColor={isHidden ? hiddenColor : caretColor} style={[caretStyles, sx.chevron]} />
         </Inline>
       </View>
     </GestureHandlerButton>

@@ -35,7 +35,7 @@ function formatSymbol(symbol, width) {
   return _cache[key];
 }
 
-const FallbackIcon = ({ color = '#3A3D51', height, style, symbol = '', textStyles, width, ...props }) => {
+const FallbackIcon = ({ color = '#3A3D51', height, style = undefined, symbol = '', textStyles = undefined, width, ...props }) => {
   const formattedSymbol = formatSymbol(symbol, width);
 
   const fontSize = buildFallbackFontSize(formattedSymbol, width);

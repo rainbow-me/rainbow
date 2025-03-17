@@ -14,9 +14,9 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { UniqueAsset } from '@/entities';
+import * as i18n from '@/languages';
 
 // Constants for layout measurements
-const COLLECTION_HEADER_HEIGHT = 60;
 const NFT_CARD_SIZE = (deviceUtils.dimensions.width - 38 - 10) / 2;
 const NFT_ITEM_HEIGHT = NFT_CARD_SIZE + 12;
 const STAGGER_DELAY = 50;
@@ -27,13 +27,13 @@ type CollectiblesListItem = {
   name: string;
   tokens?: UniqueAsset[];
   rowIndex?: number;
+  isSpecialCollection?: boolean;
 };
 
 const keyExtractor = (item: CollectiblesListItem): string => {
   return `${item.type}-${item.id}`;
 };
 
-// Component to render a row of NFTs (2 side by side)
 function NFTRow({ tokens, collectionName, rowIndex = 0 }: { tokens: UniqueAsset[]; collectionName: string; rowIndex: number }) {
   const { navigate } = useNavigation();
   const { openedCollections } = useCollectiblesContext();
@@ -91,14 +91,16 @@ export function CollectiblesList() {
     sortDirection: nftSortDirection,
     config: {
       select(data) {
-        const groups = groupBy(data.nfts, token => token.familyName);
-        return Object.entries(groups)
-          .filter(([_, tokens]) => !hiddenTokens.includes(tokens[0].fullUniqueId) && !showcaseTokens.includes(tokens[0].fullUniqueId))
-          .map(([familyName, tokens]) => ({
-            familyName,
-            tokens,
-          }))
-          .filter(({ familyName }) => familyName);
+        return {
+          nfts: data.nfts,
+          collections: Object.entries(groupBy(data.nfts, token => token.familyName))
+            .filter(([_, tokens]) => !hiddenTokens.includes(tokens[0].fullUniqueId) && !showcaseTokens.includes(tokens[0].fullUniqueId))
+            .map(([familyName, tokens]) => ({
+              familyName,
+              tokens,
+            }))
+            .filter(({ familyName }) => familyName),
+        };
       },
     },
   });
@@ -106,9 +108,43 @@ export function CollectiblesList() {
   const listData = useMemo(() => {
     if (!collections) return [];
 
-    return collections.reduce<CollectiblesListItem[]>((acc, collection) => {
+    const result: CollectiblesListItem[] = [];
+
+    // Add showcase collection if it has tokens (at the TOP)
+    const showcaseNfts = collections.nfts.filter(token => showcaseTokens.includes(token.uniqueId));
+    if (showcaseNfts.length > 0) {
+      // Add showcase header
+      result.push({
+        type: 'header',
+        id: 'showcase',
+        name: i18n.t(i18n.l.account.tab_showcase),
+        isSpecialCollection: true,
+      });
+
+      // Group showcase tokens into rows
+      const showcaseRows: UniqueAsset[][] = [];
+      for (let i = 0; i < showcaseNfts.length; i += 2) {
+        const pair = showcaseNfts.slice(i, i + 2);
+        showcaseRows.push(pair);
+      }
+
+      // Add showcase rows
+      showcaseRows.forEach((tokenPair, rowIndex) => {
+        result.push({
+          type: 'row',
+          id: `showcase-row-${rowIndex}`,
+          name: i18n.t(i18n.l.account.tab_showcase),
+          tokens: tokenPair,
+          rowIndex,
+          isSpecialCollection: true,
+        });
+      });
+    }
+
+    // Add regular collections (in the MIDDLE)
+    collections.collections.forEach(collection => {
       // Add header
-      acc.push({
+      result.push({
         type: 'header',
         id: collection.familyName,
         name: collection.familyName,
@@ -123,7 +159,7 @@ export function CollectiblesList() {
 
       // Add rows to the list
       rows.forEach((tokenPair, rowIndex) => {
-        acc.push({
+        result.push({
           type: 'row',
           id: `${collection.familyName}-row-${rowIndex}`,
           name: collection.familyName,
@@ -131,14 +167,45 @@ export function CollectiblesList() {
           rowIndex,
         });
       });
+    });
 
-      return acc;
-    }, []);
-  }, [collections]);
+    // Add hidden collection if it has tokens (at the BOTTOM)
+    const hiddenNfts = collections.nfts.filter(token => hiddenTokens.includes(token.fullUniqueId));
+    if (hiddenNfts.length > 0) {
+      // Add hidden header
+      result.push({
+        type: 'header',
+        id: 'hidden',
+        name: i18n.t(i18n.l.button.hidden),
+        isSpecialCollection: true,
+      });
+
+      // Group hidden tokens into rows
+      const hiddenRows: UniqueAsset[][] = [];
+      for (let i = 0; i < hiddenNfts.length; i += 2) {
+        const pair = hiddenNfts.slice(i, i + 2);
+        hiddenRows.push(pair);
+      }
+
+      // Add hidden rows
+      hiddenRows.forEach((tokenPair, rowIndex) => {
+        result.push({
+          type: 'row',
+          id: `hidden-row-${rowIndex}`,
+          name: i18n.t(i18n.l.button.hidden),
+          tokens: tokenPair,
+          rowIndex,
+          isSpecialCollection: true,
+        });
+      });
+    }
+
+    return result;
+  }, [collections, showcaseTokens, hiddenTokens]);
 
   const renderItem: ListRenderItem<CollectiblesListItem> = useCallback(({ item }) => {
     if (item.type === 'header') {
-      return <CollectionHeader name={item.name} />;
+      return <CollectionHeader name={item.name} isSpecialCollection={item.isSpecialCollection} />;
     }
 
     if (item.type === 'row' && item.tokens) {
@@ -148,38 +215,22 @@ export function CollectiblesList() {
     return null;
   }, []);
 
-  const getItemLayout = useCallback((data: ArrayLike<CollectiblesListItem> | null | undefined, index: number) => {
-    if (!data) return { length: 0, offset: 0, index };
-
-    const items = Array.from(data);
-    let offset = 0;
-
-    for (let i = 0; i < index; i++) {
-      const curr = items[i];
-      if (curr.type === 'header') {
-        offset += COLLECTION_HEADER_HEIGHT;
-      } else if (curr.type === 'row') {
-        offset += NFT_ITEM_HEIGHT + 12; // Include marginBottom
-      }
-    }
-
-    const item = items[index];
-    const length = item?.type === 'header' ? COLLECTION_HEADER_HEIGHT : NFT_ITEM_HEIGHT;
-
-    return { length, offset, index };
-  }, []);
+  if (isLoading) {
+    return <EmptyCollectiblesList isLoading={true} />;
+  }
 
   return (
     <Animated.FlatList
       data={listData}
       keyExtractor={keyExtractor}
-      ListEmptyComponent={<EmptyCollectiblesList isLoading={isLoading} />}
+      ListEmptyComponent={<EmptyCollectiblesList isLoading={false} />}
       renderItem={renderItem}
-      getItemLayout={getItemLayout}
       scrollEnabled={false}
       style={styles.flatList}
       showsVerticalScrollIndicator={false}
       windowSize={10}
+      initialNumToRender={20}
+      removeClippedSubviews={false}
     />
   );
 }
