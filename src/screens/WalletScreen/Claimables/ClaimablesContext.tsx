@@ -1,7 +1,22 @@
 import React, { createContext, useCallback, useContext } from 'react';
 import { noop } from 'lodash';
+import { MMKV } from 'react-native-mmkv';
+import { makeMutable, runOnJS, SharedValue, useSharedValue } from 'react-native-reanimated';
+import { Address } from 'viem';
+import useAccountSettings from '@/hooks/useAccountSettings';
+import { logger } from '@/logger';
 
-import { makeMutable, SharedValue, useSharedValue } from 'react-native-reanimated';
+const mmkv = new MMKV();
+
+const getInitialClaimablesState = (accountAddress: Address) => {
+  try {
+    const claimablesState = mmkv.getBoolean(`claimables-open-${accountAddress}`);
+    return claimablesState ?? false;
+  } catch (error) {
+    logger.warn('Failed to get claimables initial state', { error });
+    return false;
+  }
+};
 
 type ClaimablesContextType = {
   isExpanded: SharedValue<boolean>;
@@ -14,13 +29,22 @@ export const ClaimablesContext = createContext<ClaimablesContextType>({
 });
 
 export const ClaimablesProvider = ({ children }: { children: React.ReactNode }) => {
-  const isExpanded = useSharedValue(false);
+  const { accountAddress } = useAccountSettings();
+  const isExpanded = useSharedValue(getInitialClaimablesState(accountAddress));
+
+  const persistClaimablesState = useCallback(
+    (data: boolean) => {
+      mmkv.set(`claimables-open-${accountAddress}`, data);
+    },
+    [accountAddress]
+  );
 
   const toggleExpanded = useCallback(() => {
     'worklet';
 
     isExpanded.value = !isExpanded.value;
-  }, [isExpanded]);
+    runOnJS(persistClaimablesState)(isExpanded.value);
+  }, [isExpanded, accountAddress]);
 
   return <ClaimablesContext.Provider value={{ isExpanded, toggleExpanded }}>{children}</ClaimablesContext.Provider>;
 };
