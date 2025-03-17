@@ -23,7 +23,7 @@ import { UserAssetsState, UserAssetsParams } from './types';
 import { userAssetsStore, useUserAssetsStore } from './userAssets';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 
-const USER_ASSETS_TIMEOUT_DURATION = time.seconds(10);
+const USER_ASSETS_TIMEOUT_DURATION = time.seconds(40);
 
 // ============ Fetch Utils ==================================================== //
 
