@@ -3,7 +3,7 @@ import { ParsedAddressAsset } from '@/entities';
 import { add, greaterThan, multiply } from '@/helpers/utilities';
 import { RainbowError, logger } from '@/logger';
 import { SupportedCurrencyKey, supportedNativeCurrencies } from '@/references';
-import { getAddysHttpClient } from '@/resources/addys/client';
+import { getAddysHttpClient, isStaging } from '@/resources/addys/client';
 import { fetchAnvilBalancesByChainId } from '@/resources/assets/anvilAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -23,7 +23,7 @@ import { UserAssetsState, UserAssetsParams } from './types';
 import { userAssetsStore, useUserAssetsStore } from './userAssets';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 
-const USER_ASSETS_TIMEOUT_DURATION = time.seconds(40);
+const USER_ASSETS_TIMEOUT_DURATION = time.seconds(isStaging() ? 40 : 10);
 
 // ============ Fetch Utils ==================================================== //
 
