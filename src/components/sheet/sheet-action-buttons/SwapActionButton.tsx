@@ -1,9 +1,10 @@
 import lang from 'i18n-js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import SheetActionButton from './SheetActionButton';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { RainbowToken } from '@/entities';
+import { containsEmoji } from '@/helpers/strings';
 import { ethereumUtils } from '@/utils';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
@@ -31,6 +32,7 @@ function SwapActionButton({ asset, color: givenColor, height, icon, inputType, l
   const navigate = useNavigationForNonReadOnlyWallets();
 
   const color = givenColor || colors.swapPurple;
+  const symbolHasEmoji = useMemo(() => (label ? containsEmoji(label) : false), [label]);
 
   const goToSwap = useCallback(async () => {
     const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
@@ -143,12 +145,12 @@ function SwapActionButton({ asset, color: givenColor, height, icon, inputType, l
           <TextIcon color="label" size="icon 18px" weight="heavy">
             {icon}
           </TextIcon>
-          <Text align="center" color="label" numberOfLines={1} size="20pt" weight="heavy">
+          <Text align="center" color="label" containsEmoji={symbolHasEmoji} numberOfLines={1} size="20pt" weight="heavy">
             {label || `${lang.t('button.swap')}`}
           </Text>
         </Inline>
       ) : (
-        <Text align="center" color="label" numberOfLines={1} size="20pt" weight="heavy">
+        <Text align="center" color="label" containsEmoji={symbolHasEmoji} numberOfLines={1} size="20pt" weight="heavy">
           {label || `${lang.t('button.swap')}`}
         </Text>
       )}

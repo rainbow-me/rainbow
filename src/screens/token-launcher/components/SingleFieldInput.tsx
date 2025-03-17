@@ -1,6 +1,6 @@
 import React, { useCallback, forwardRef, useImperativeHandle, useState } from 'react';
-import { AnimatedText, Box, Text, useTextStyle } from '@/design-system';
-import { Input } from '@/components/inputs';
+import { AnimatedText, AnimatedTextProps, Box, Text, useTextStyle } from '@/design-system';
+import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import Animated, {
   withTiming,
   runOnUI,
@@ -9,17 +9,16 @@ import Animated, {
   useSharedValue,
   runOnJS,
   useAnimatedReaction,
+  AnimatedStyle,
 } from 'react-native-reanimated';
 import { TextInput, TextInputProps, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { colors } from '@/styles';
 import { FieldContainer } from './FieldContainer';
 import { FieldLabel } from './FieldLabel';
 import { UNFOCUSED_FIELD_BORDER_COLOR, FOCUSED_FIELD_BORDER_COLOR, INPUT_HEIGHT, ERROR_RED } from '../constants';
 import { ButtonPressAnimation } from '@/components/animations';
 
-const AnimatedInput = Animated.createAnimatedComponent(Input);
 const TITLE_GAP = 10;
 
 interface SingleFieldInputProps extends TextInputProps {
@@ -225,64 +224,114 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
       [errorLabel, subtitle]
     );
 
-    const LabelContent = () => (
-      <Animated.View
-        style={{ position: 'relative', gap: 10, paddingRight: labelPosition === 'left' && textInputProps.textAlign === 'right' ? 20 : 0 }}
-      >
-        <Animated.View style={titleContainerStyle}>{title ? <FieldLabel>{title}</FieldLabel> : <Box>{icon}</Box>}</Animated.View>
-        <Animated.View style={{ position: 'absolute', top: TITLE_GAP }}>
-          <AnimatedText
-            numberOfLines={1}
-            style={{
-              // Arbitrary width to prevent text from clipping
-              width: 400,
-            }}
-            color={{ custom: ERROR_RED }}
-            size="13pt"
-            weight="bold"
-          >
-            {errorLabel}
-          </AnimatedText>
-        </Animated.View>
-        {subtitle && isSubtitleVisible && (
-          <Text color="labelSecondary" size="13pt" weight="bold">
-            {subtitle}
-          </Text>
-        )}
-      </Animated.View>
-    );
-
-    const PasteButton = () => (
-      <Animated.View style={pasteButtonStyle}>
-        <ButtonPressAnimation onPress={handlePaste}>
-          <Text color="labelTertiary" size="17pt" weight="heavy">
-            {pasteButtonText}
-          </Text>
-        </ButtonPressAnimation>
-      </Animated.View>
-    );
-
     return (
       <FieldContainer style={[containerStyle, { height: INPUT_HEIGHT }, style]}>
-        <Box height={'full'} flexDirection="row" alignItems="center" justifyContent="space-between">
-          {labelPosition === 'right' && showPaste && <PasteButton />}
-          {labelPosition === 'left' && (title || icon) && <LabelContent />}
+        <Box alignItems="center" flexDirection="row" height="full" justifyContent="space-between">
+          {labelPosition === 'right' && showPaste && (
+            <PasteButton handlePaste={handlePaste} pasteButtonStyle={pasteButtonStyle} pasteButtonText={pasteButtonText} />
+          )}
+          {labelPosition === 'left' && (title || icon) && (
+            <LabelContent
+              errorLabel={errorLabel}
+              icon={icon}
+              isSubtitleVisible={isSubtitleVisible}
+              labelPosition={labelPosition}
+              textInputProps={textInputProps}
+              title={title}
+              titleContainerStyle={titleContainerStyle}
+            />
+          )}
           <FieldInput
-            ref={internalRef}
-            labelPosition={labelPosition}
             inputStyle={inputStyle}
-            onFocus={_onFocus}
+            labelPosition={labelPosition}
             onBlur={_onBlur}
             onChangeText={_onChangeText}
+            onFocus={_onFocus}
+            ref={internalRef}
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...textInputProps}
           />
-          {labelPosition === 'left' && showPaste && <PasteButton />}
-          {labelPosition === 'right' && (title || icon) && <LabelContent />}
+          {labelPosition === 'left' && showPaste && (
+            <PasteButton handlePaste={handlePaste} pasteButtonStyle={pasteButtonStyle} pasteButtonText={pasteButtonText} />
+          )}
+          {labelPosition === 'right' && (title || icon) && (
+            <LabelContent
+              errorLabel={errorLabel}
+              icon={icon}
+              isSubtitleVisible={isSubtitleVisible}
+              labelPosition={labelPosition}
+              textInputProps={textInputProps}
+              title={title}
+              titleContainerStyle={titleContainerStyle}
+            />
+          )}
         </Box>
       </FieldContainer>
     );
   }
+);
+
+const LabelContent = ({
+  errorLabel,
+  icon,
+  isSubtitleVisible,
+  labelPosition,
+  subtitle,
+  textInputProps,
+  title,
+  titleContainerStyle,
+}: {
+  errorLabel: AnimatedTextProps['children'];
+  icon?: React.ReactNode;
+  isSubtitleVisible: boolean;
+  labelPosition: 'left' | 'right';
+  subtitle?: string;
+  textInputProps: TextInputProps;
+  title?: string;
+  titleContainerStyle: AnimatedStyle;
+}) => (
+  <Animated.View
+    style={{ position: 'relative', gap: 10, paddingRight: labelPosition === 'left' && textInputProps.textAlign === 'right' ? 20 : 0 }}
+  >
+    <Animated.View style={titleContainerStyle}>{title ? <FieldLabel>{title}</FieldLabel> : <Box>{icon}</Box>}</Animated.View>
+    <Animated.View style={{ position: 'absolute', top: TITLE_GAP }}>
+      <AnimatedText
+        numberOfLines={1}
+        style={{
+          // Arbitrary width to prevent text from clipping
+          width: 400,
+        }}
+        color={{ custom: ERROR_RED }}
+        size="13pt"
+        weight="bold"
+      >
+        {errorLabel}
+      </AnimatedText>
+    </Animated.View>
+    {subtitle && isSubtitleVisible && (
+      <Text color="labelQuaternary" size="13pt" weight="bold">
+        {subtitle}
+      </Text>
+    )}
+  </Animated.View>
+);
+
+const PasteButton = ({
+  handlePaste,
+  pasteButtonStyle,
+  pasteButtonText,
+}: {
+  handlePaste: () => void;
+  pasteButtonStyle: AnimatedStyle;
+  pasteButtonText: string;
+}) => (
+  <Animated.View style={pasteButtonStyle}>
+    <ButtonPressAnimation onPress={handlePaste}>
+      <Text color="labelTertiary" size="17pt" weight="heavy">
+        {pasteButtonText}
+      </Text>
+    </ButtonPressAnimation>
+  </Animated.View>
 );
 
 SingleFieldInput.displayName = 'SingleFieldInput';

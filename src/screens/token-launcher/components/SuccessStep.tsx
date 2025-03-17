@@ -43,7 +43,7 @@ function RotatingSunrays({ width, height, focalRadius }: { width: number; height
     'worklet';
     backgroundRotation.value = withRepeat(
       withTiming(360, {
-        duration: 15000,
+        duration: 20000,
         easing: Easing.linear,
       }),
       -1
@@ -125,7 +125,7 @@ function SuccessHero({ width, height }: { width: number; height: number }) {
         }}
       />
       <Canvas style={{ height: '100%', width: '100%' }}>
-        <Group opacity={0.3} transform={[{ translateX: centerX - sunraysSize / 2 }, { translateY: centerY - sunraysSize / 2 }]}>
+        <Group opacity={0.25} transform={[{ translateX: centerX - sunraysSize / 2 }, { translateY: centerY - sunraysSize / 2 }]}>
           <RotatingSunrays width={sunraysSize} height={sunraysSize} focalRadius={radius} />
         </Group>
         <Group transform={[{ translateX: centerX - tokenImageBadgeSize / 2 }, { translateY: centerY - tokenImageBadgeSize / 2 }]}>
@@ -164,7 +164,7 @@ export function SuccessStep() {
       </Box>
       <Box style={{ position: 'absolute', bottom: 40 }} paddingHorizontal={'44px'} gap={20} alignItems="center">
         <TextShadow blur={10} color="rgba(255, 255, 255, 0.12)">
-          <Text numberOfLines={1} ellipsizeMode="tail" align="center" size={titleFontSize} weight="bold" color={'label'}>
+          <Text numberOfLines={2} ellipsizeMode="tail" align="center" size={titleFontSize} weight="bold" color={'label'}>
             {i18n.t(i18n.l.token_launcher.success.title, { symbol: `$${symbol}` })}
           </Text>
         </TextShadow>

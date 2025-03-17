@@ -60,6 +60,7 @@ export const Border = memo(function Border({
         borderWidth,
         overflow: 'hidden',
         pointerEvents: 'none',
+        zIndex: 100,
       }}
     />
   ) : null;

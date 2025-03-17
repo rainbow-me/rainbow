@@ -13,7 +13,7 @@ import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar'
 import { useAccountProfile, useAccountSettings } from '@/hooks';
 import { LINK_SETTINGS } from './LinksSection';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { TOKEN_LAUNCHER_HEADER_HEIGHT } from './TokenLauncherHeader';
+import { TOKEN_LAUNCHER_HEADER_HEIGHT, TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS } from './TokenLauncherHeader';
 import FastImage from 'react-native-fast-image';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
 import { isENSAddressFormat } from '@/helpers/validators';
@@ -389,16 +389,21 @@ export function ReviewStep() {
   const prebuyAmount = useTokenLauncherStore(state => state.extraBuyAmount);
   const hasPrebuy = prebuyAmount > 0;
 
+  const contentContainerStyle = useMemo(() => {
+    return {
+      // Without this, the scrollview will get stuck on every layout after its first
+      flexGrow: 1,
+      paddingTop: TOKEN_LAUNCHER_HEADER_HEIGHT,
+      paddingBottom: hasPrebuy ? TOTAL_COST_PILL_HEIGHT + 24 : 24,
+    };
+  }, [hasPrebuy]);
+
   return (
-    <Box style={{ flex: 1 }}>
+    <Box style={styles.flex}>
       <ScrollView
-        scrollIndicatorInsets={{ top: TOKEN_LAUNCHER_HEADER_HEIGHT }}
-        contentContainerStyle={{
-          // Without this, the scrollview will get stuck on every layout after its first
-          flexGrow: 1,
-          paddingTop: TOKEN_LAUNCHER_HEADER_HEIGHT,
-          paddingBottom: hasPrebuy ? TOTAL_COST_PILL_HEIGHT + 24 : 24,
-        }}
+        contentContainerStyle={contentContainerStyle}
+        scrollIndicatorInsets={TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS}
+        showsVerticalScrollIndicator={false}
       >
         <Box width="full" paddingHorizontal={'20px'} alignItems="center">
           <TokenLogo disabled={true} />
@@ -425,3 +430,9 @@ export function ReviewStep() {
     </Box>
   );
 }
+
+const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+});

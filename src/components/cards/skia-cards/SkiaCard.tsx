@@ -46,7 +46,7 @@ export const SkiaCard = memo(function SkiaCard({
   innerShadowOpacity = { dark: 1, light: 0.4 },
   onLongPress,
   onPress,
-  scaleTo = 0.88,
+  scaleTo = 0.86,
   shadowColor = { dark: 'transparent', light: color || 'transparent' },
   skiaBackground,
   skiaForeground,
@@ -150,7 +150,7 @@ const CardHighlights = memo(function CardHighlights({
   );
 });
 
-function getSquirclePath({
+export function getSquirclePath({
   borderRadius,
   cornerSmoothing = IS_IOS ? 0.6 : 0,
   height,

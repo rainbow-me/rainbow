@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import * as i18n from '@/languages';
 import { SectionId, useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
 import { AccentColorProvider, Bleed, Box, ColorModeProvider, Separator, Stack, useColorMode } from '@/design-system';
 import { CollapsibleSection, LAYOUT_ANIMATION } from './shared/CollapsibleSection';
 import Animated from 'react-native-reanimated';
-import { AboutSection, BalanceSection, BuySection, MarketStatsSection, ChartSection } from './sections';
+import { AboutSection, BalanceSection, BuySection, MarketStatsSection, ChartSection, ClaimSection } from './sections';
 import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
@@ -16,7 +16,7 @@ const LIGHT_SEPARATOR_COLOR = 'rgba(9, 17, 31, 0.025)';
 export function SheetContent() {
   const { nativeCurrency } = useAccountSettings();
   const { colorMode, isDarkMode } = useColorMode();
-  const { accentColors, basicAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
+  const { accentColors, basicAsset: asset, hideClaimSection, isOwnedAsset } = useExpandedAssetSheetContext();
   const safeAreaInsets = useSafeAreaInsets();
 
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(asset.chainId));
@@ -24,6 +24,7 @@ export function SheetContent() {
   const assetIsBuyWithAsset = asset.uniqueId === buyWithAsset?.uniqueId;
 
   const isBuySectionVisible = !assetIsBuyWithAsset && buyWithAsset;
+  const [claimable] = useState(() => (hideClaimSection ? null : useAirdropsStore.getState().getClaimable(asset.uniqueId)));
 
   return (
     <AccentColorProvider color={accentColors.color}>
@@ -50,6 +51,14 @@ export function SheetContent() {
               <Animated.View layout={LAYOUT_ANIMATION}>
                 <BalanceSection />
               </Animated.View>
+            )}
+            {claimable && (
+              <CollapsibleSection
+                content={<ClaimSection claimable={claimable} />}
+                icon="􀑉"
+                id={SectionId.CLAIM}
+                primaryText={i18n.t(i18n.l.expanded_state.sections.claim.title)}
+              />
             )}
             <CollapsibleSection
               content={<MarketStatsSection />}

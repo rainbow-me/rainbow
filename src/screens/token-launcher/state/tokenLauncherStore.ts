@@ -31,7 +31,7 @@ import { Alert } from 'react-native';
 import { logger, RainbowError } from '@/logger';
 import { analyticsV2 } from '@/analytics';
 import { Link, LinkType } from '../types';
-import { superTokenStore } from './rainbowSuperTokenStore';
+import { useSuperTokenStore } from './rainbowSuperTokenStore';
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
 
@@ -552,7 +552,6 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     transactionOptions: TransactionOptions;
   }): Promise<LaunchTokenResponse | undefined> => {
     const { name, chainId, symbol, description, imageUrl, tokenomics, totalSupply, extraBuyAmount, getAnalyticsParams } = get();
-    const addSuperToken = superTokenStore.getState().addSuperToken;
 
     const airdropRecipients = get().validAirdropRecipients();
     const analyticsParams = getAnalyticsParams();
@@ -607,7 +606,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         set({ launchedTokenAddress: result.tokenAddress });
 
         // Add token to SuperTokenStore
-        addSuperToken({
+        useSuperTokenStore.getState().addSuperToken({
           address: result.tokenAddress,
           chainId,
           description,

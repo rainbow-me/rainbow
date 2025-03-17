@@ -619,10 +619,14 @@ export const tokenLauncherConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
+      backgroundOpacity: 1,
+      cornerRadius: 0,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
     }),
-    gestureEnabled: false,
     dismissable: false,
-    topOffset: 0,
+    gestureEnabled: false,
   }),
 };
 

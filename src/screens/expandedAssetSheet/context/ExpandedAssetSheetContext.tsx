@@ -25,6 +25,7 @@ export enum SectionId {
   MARKET_STATS = 'marketStats',
   BUY = 'buy',
   BRIDGE = 'bridge',
+  CLAIM = 'claim',
   HISTORY = 'history',
   HOLDERS = 'holders',
   ABOUT = 'about',
@@ -35,6 +36,7 @@ const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
   [SectionId.MARKET_STATS]: true,
   [SectionId.BUY]: true,
   [SectionId.BRIDGE]: true,
+  [SectionId.CLAIM]: true,
   [SectionId.HISTORY]: true,
   [SectionId.HOLDERS]: true,
   [SectionId.ABOUT]: true,
@@ -81,6 +83,7 @@ type ExpandedAssetSheetContextType = {
   accountAsset: ParsedAddressAsset | undefined;
   assetMetadata: TokenMetadata | null | undefined;
   expandedSections: SharedValue<Record<SectionId, boolean>>;
+  hideClaimSection: boolean;
   isOwnedAsset: boolean;
   isLoadingMetadata: boolean;
 };
@@ -90,6 +93,7 @@ type ExpandedAssetSheetContextProviderProps = {
   address: string;
   chainId: ChainId;
   children: React.ReactNode;
+  hideClaimSection: boolean;
 };
 
 const ExpandedAssetSheetContext = createContext<ExpandedAssetSheetContextType | undefined>(undefined);
@@ -102,7 +106,13 @@ export function useExpandedAssetSheetContext() {
   return context;
 }
 
-export function ExpandedAssetSheetContextProvider({ asset, address, chainId, children }: ExpandedAssetSheetContextProviderProps) {
+export function ExpandedAssetSheetContextProvider({
+  asset,
+  address,
+  chainId,
+  children,
+  hideClaimSection = false,
+}: ExpandedAssetSheetContextProviderProps) {
   const { nativeCurrency } = useAccountSettings();
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
@@ -131,8 +141,7 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
 
   // This is constructed so that rendering is not delayed by the external asset fetch
   const basicAsset = useMemo(() => {
-    const chainNameById = useBackendNetworksStore.getState().getChainsName();
-    const chainName = chainNameById[chainId];
+    const chainName = useBackendNetworksStore.getState().getChainsName()[chainId];
     const assetColors = 'color' in asset && asset.color ? { primary: asset.color } : asset.colors;
 
     const base: BasicAsset = {
@@ -261,6 +270,7 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
         accountAsset,
         assetMetadata: superMetadata,
         expandedSections,
+        hideClaimSection,
         isOwnedAsset,
         isLoadingMetadata,
       }}

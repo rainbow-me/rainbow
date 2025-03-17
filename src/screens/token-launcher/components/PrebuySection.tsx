@@ -65,6 +65,7 @@ function PrebuyAmountButton({
           borderColor: accentColors.opacity3,
           justifyContent: 'center',
           alignItems: 'center',
+          overflow: 'hidden',
         },
       ]}
       onPressWorklet={onPressWorklet}
@@ -197,7 +198,7 @@ export function PrebuySection() {
   );
 
   return (
-    <CollapsableField title="Pre-buy more tokens">
+    <CollapsableField title={i18n.t(i18n.l.token_launcher.prebuy.title)}>
       <Box gap={16}>
         <Grid columns={2} spacing={8}>
           {prebuyOptions.map(option => (

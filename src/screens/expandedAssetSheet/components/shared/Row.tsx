@@ -1,7 +1,8 @@
 import React from 'react';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { Box } from '@/design-system';
+import { Box, useColorMode, useForegroundColor } from '@/design-system';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 
 interface RowProps {
@@ -11,13 +12,19 @@ interface RowProps {
 
 export function Row({ children, highlighted }: RowProps) {
   const { accentColors } = useExpandedAssetSheetContext();
+  const { isDarkMode } = useColorMode();
+
+  const fill = useForegroundColor('fill');
+  const separator = useForegroundColor('separator');
 
   const containerStyle = useAnimatedStyle(() => {
     const isHighlighted = typeof highlighted === 'object' ? highlighted.value : highlighted;
+    const colorForBackground = isDarkMode ? accentColors.surfaceSecondary : opacityWorklet(fill, 0.025);
+    const colorForBorder = isDarkMode ? accentColors.borderSecondary : opacityWorklet(separator, 0.01);
 
     return {
-      backgroundColor: isHighlighted ? accentColors.surfaceSecondary : 'transparent',
-      borderColor: isHighlighted ? accentColors.borderSecondary : 'transparent',
+      backgroundColor: isHighlighted ? colorForBackground : 'transparent',
+      borderColor: isHighlighted ? colorForBorder : 'transparent',
     };
   });
 

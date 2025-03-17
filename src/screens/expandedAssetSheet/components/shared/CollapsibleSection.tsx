@@ -55,14 +55,15 @@ const SectionHeader = React.memo(function SectionHeader({ icon, primaryText, sec
       }}
       hapticTrigger="tap-end"
       hapticType="soft"
+      hitSlop={{ bottom: 28, left: 24, right: 24, top: 28 }}
       scaleTo={0.95}
-      style={{ justifyContent: 'center', zIndex: 10, marginVertical: -24, paddingVertical: 24 }}
+      style={{ height: 14, justifyContent: 'center', zIndex: 10 }}
     >
       <Box height={{ custom: 14 }} flexDirection="row" justifyContent="space-between" alignItems="center">
         <Box flexDirection="row" gap={10} alignItems="center">
           <IconContainer height={14} width={24}>
             <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text weight="bold" align="center" size="17pt" color="accent">
+              <Text align="center" color="accent" size="icon 17px" weight="bold">
                 {icon}
               </Text>
             </TextShadow>
