@@ -5,7 +5,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ImgixImage } from '@/components/images';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { AccentColorProvider, Box, Cover, useColorMode } from '@/design-system';
-import { useAccountProfile, useLatestCallback, useOnAvatarPress } from '@/hooks';
+import { useAccountProfile, useLatestCallback, useOnAvatarPress, withPerformanceTracking } from '@/hooks';
 import { useTheme } from '@/theme';
 import { getFirstGrapheme } from '@/utils';
 import ContextMenu from '@/components/native-context-menu/contextMenu';
@@ -17,7 +17,7 @@ export const ProfileAvatarRowHeight = 80;
 export const ProfileAvatarRowTopInset = 24;
 export const ProfileAvatarSize = 80;
 
-export function ProfileAvatar({ size = ProfileAvatarSize }) {
+function ProfileAvatarComponent({ size = ProfileAvatarSize }) {
   const { position } = useScrollPosition();
 
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
@@ -172,6 +172,8 @@ export function ProfileAvatar({ size = ProfileAvatarSize }) {
     </AccentColorProvider>
   );
 }
+
+export const ProfileAvatar = withPerformanceTracking(ProfileAvatarComponent);
 
 export function EmojiAvatar({ size }: { size: number }) {
   const { colors } = useTheme();

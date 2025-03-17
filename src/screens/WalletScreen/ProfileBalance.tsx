@@ -1,14 +1,14 @@
 import * as React from 'react';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { Box, Text } from '@/design-system';
-import { useAccountSettings, useWallets, useWalletsWithBalancesAndNames } from '@/hooks';
+import { useAccountSettings, useWallets, useWalletsWithBalancesAndNames, withPerformanceTracking } from '@/hooks';
 import { isZero } from '@/helpers/utilities';
 
 export const ProfileBalanceRowHeight = 24;
 export const ProfilePadding = 12;
 export const ProfileBalanceTotalHeight = ProfileBalanceRowHeight + ProfilePadding * 2;
 
-export function ProfileBalance() {
+function ProfileBalanceComponent() {
   const placeholderHeight = ProfileBalanceRowHeight;
   const placeholderWidth = 200;
   const { accountAddress, nativeCurrencySymbol } = useAccountSettings();
@@ -45,3 +45,5 @@ export function ProfileBalance() {
     </Box>
   );
 }
+
+export const ProfileBalance = withPerformanceTracking(ProfileBalanceComponent);

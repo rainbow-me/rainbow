@@ -2,7 +2,7 @@ import React from 'react';
 import { Page } from '../../components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
-import { useRefreshAccountData } from '@/hooks';
+import { useRefreshAccountData, PerformanceProvider } from '@/hooks';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -114,10 +114,12 @@ export function WalletScreen() {
   useLoadDeferredData();
 
   return (
-    <ScrollPositionProvider>
-      <WalletPage />
-      <WalletScreenToast />
-    </ScrollPositionProvider>
+    <PerformanceProvider>
+      <ScrollPositionProvider>
+        <WalletPage />
+        <WalletScreenToast />
+      </ScrollPositionProvider>
+    </PerformanceProvider>
   );
 }
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { ListRenderItem, StyleSheet, View } from 'react-native';
 import { deviceUtils } from '@/utils';
-import { useAccountSettings, useHiddenTokens, useShowcaseTokens } from '@/hooks';
+import { useAccountSettings, useHiddenTokens, useShowcaseTokens, withPerformanceTracking } from '@/hooks';
 import Animated, { useAnimatedStyle, withTiming, withDelay } from 'react-native-reanimated';
 import { CollectionHeader } from './Collection/CollectionHeader';
 import { useLegacyNFTs } from '@/resources/nfts';
@@ -79,7 +79,7 @@ function NFTRow({ tokens, collectionName, rowIndex = 0 }: { tokens: UniqueAsset[
   );
 }
 
-export function CollectiblesList() {
+function CollectiblesListComponent() {
   const { accountAddress } = useAccountSettings();
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
@@ -234,6 +234,8 @@ export function CollectiblesList() {
     />
   );
 }
+
+export const CollectiblesList = withPerformanceTracking(CollectiblesListComponent);
 
 const styles = StyleSheet.create({
   flatList: {

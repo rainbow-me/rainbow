@@ -1,6 +1,6 @@
 import React from 'react';
 import { claimablesStore } from './ClaimablesHeader';
-import { useAccountSettings } from '@/hooks';
+import { useAccountSettings, withPerformanceTracking } from '@/hooks';
 import { isZero } from '@/helpers/utilities';
 import { Claimable as ClaimableType } from '@/resources/addys/claimables/types';
 import { Claimable, ClaimableHeight } from './Claimable';
@@ -11,7 +11,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 const STABLE_ARRAY: ClaimableType[] = [];
 
-export function Claimables() {
+function ClaimablesComponent() {
   const { isExpanded } = useClaimablesContext();
   const { nativeCurrencySymbol } = useAccountSettings();
 
@@ -37,3 +37,5 @@ export function Claimables() {
     </Animated.View>
   );
 }
+
+export const Claimables = withPerformanceTracking(ClaimablesComponent);

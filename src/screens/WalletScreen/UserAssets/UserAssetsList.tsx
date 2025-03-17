@@ -5,7 +5,7 @@ import { ListRenderItem, StyleSheet } from 'react-native';
 import { AnimatedText, Box, Inset, useForegroundColor } from '@/design-system';
 import { convertAmountToNativeDisplay, isZero } from '@/helpers/utilities';
 import { deviceUtils } from '@/utils';
-import { useAccountSettings } from '@/hooks';
+import { useAccountSettings, withPerformanceTracking } from '@/hooks';
 import { BaseButton } from '@/components/DappBrowser/TabViewToolbar';
 import Animated, { useAnimatedStyle, useDerivedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { useUserAssetsListContext, DIVIDER_HEIGHT, MAX_CONDENSED_ASSETS, EditAction, walletAssetsStore } from './UserAssetsListContext';
@@ -55,7 +55,7 @@ const ListEmptyComponent = memo(function ListEmptyComponent() {
   );
 });
 
-export function UserAssetsList() {
+function UserAssetsListComponent() {
   const { flatlistRef } = useUserAssetsListContext();
   const totalAssets = walletAssetsStore(state => state.totalAssets);
 
@@ -90,6 +90,8 @@ export function UserAssetsList() {
     />
   );
 }
+
+export const UserAssetsList = withPerformanceTracking(UserAssetsListComponent);
 
 const Balance = () => {
   const { isExpanded } = useUserAssetsListContext();

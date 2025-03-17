@@ -7,10 +7,11 @@ import { usePositionsContext } from './PositionsContext';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { RainbowPosition } from '@/resources/defi/types';
 import { Box } from '@/design-system';
+import { withPerformanceTracking } from '@/hooks/withPerformanceTracking';
 
 const STABLE_ARRAY: RainbowPosition[] = [];
 
-export function Positions() {
+function PositionsComponent() {
   const { isExpanded } = usePositionsContext();
 
   const positions = positionsStore(state => state.getData())?.positions || STABLE_ARRAY;
@@ -52,3 +53,5 @@ export function Positions() {
     </Animated.View>
   );
 }
+
+export const Positions = withPerformanceTracking(PositionsComponent);

@@ -4,7 +4,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Icon } from '@/components/icons';
 import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
-import { useAccountProfile, useDimensions } from '@/hooks';
+import { useAccountProfile, useDimensions, withPerformanceTracking } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
@@ -18,7 +18,7 @@ const CARET_ICON_WIDTH = 22;
 const HIT_SLOP = 16;
 const GAP = 4;
 
-export function ProfileName() {
+function ProfileNameComponent() {
   const { accountENS, accountName } = useAccountProfile();
 
   const { navigate } = useNavigation();
@@ -78,3 +78,5 @@ export function ProfileName() {
     </Box>
   );
 }
+
+export const ProfileName = withPerformanceTracking(ProfileNameComponent);

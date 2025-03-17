@@ -105,3 +105,6 @@ export { useAccountAccentColor } from './useAccountAccentColor';
 export { useDebounce } from './useDebounce';
 export { default as useSearchCurrencyList } from './useSearchCurrencyList';
 export { default as useFeesPanelInputRefs } from './useFeesPanelInputRefs';
+export * from './useComponentLoadTime';
+export * from './usePerformanceContext';
+export * from './withPerformanceTracking';
