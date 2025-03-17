@@ -9,6 +9,7 @@ import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAirdropsStore } from '@/state/claimables/airdropsStore';
 
 const SEPARATOR_COLOR = 'rgba(245, 248, 255, 0.025)';
 const LIGHT_SEPARATOR_COLOR = 'rgba(9, 17, 31, 0.025)';
