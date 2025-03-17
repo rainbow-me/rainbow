@@ -22,7 +22,20 @@ export default function useCoinListEditOptions() {
 
   const setSelectedItems = useSetRecoilState(selectedItemsAtom);
 
-  const [pinnedCoins = INITIAL_PINNED_COINS] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
+  const [pinnedCoins = INITIAL_PINNED_COINS, setPinnedCoinsObject] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
+
+  const addPinnedCoin = useCallback(
+    (uniqueId: string) => {
+      setPinnedCoinsObject((prev: BooleanMap | undefined) => {
+        return {
+          ...(prev ?? {}),
+          [uniqueId]: true,
+        };
+      });
+    },
+    [setPinnedCoinsObject]
+  );
+
   const pushSelectedCoin = useCallback(
     (item: string) =>
       setSelectedItems(prev => {
@@ -48,6 +61,7 @@ export default function useCoinListEditOptions() {
   const clearSelectedCoins = useCallback(() => setSelectedItems([]), [setSelectedItems]);
 
   return {
+    addPinnedCoin,
     clearSelectedCoins,
     pinnedCoinsObj: pinnedCoins,
     pushSelectedCoin,

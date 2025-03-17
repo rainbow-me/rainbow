@@ -1,21 +1,26 @@
 import { NativeCurrencyKey } from '@/entities';
-import { AddysClaimable, Claimable } from './types';
 import { convertRawAmountToBalance, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
 import { parseAsset } from '@/resources/assets/assets';
-import { Network } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { Network } from '@/state/backendNetworks/types';
+import { AddysClaimable, BaseClaimable, Claimable, RainbowClaimable } from './types';
 
-export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCurrencyKey): Claimable[] => {
+export const parseClaimables = <C extends Claimable>(
+  claimables: AddysClaimable[],
+  currency: NativeCurrencyKey,
+  prune?: Map<string, number> | null
+): C[] => {
   return claimables
     .map(claimable => {
       if (
         !(claimable.claim_action_type === 'transaction' || claimable.claim_action_type === 'sponsored') ||
-        !claimable.claim_action?.length
+        !claimable.claim_action?.length ||
+        prune?.has(claimable.unique_id)
       ) {
         return undefined;
       }
 
-      const baseClaimable = {
+      const baseClaimable: BaseClaimable = {
         asset: parseAsset({
           address: claimable.asset.asset_code,
           asset: {
@@ -37,9 +42,12 @@ export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCu
       };
 
       if (claimable.claim_action_type === 'transaction') {
+        if ('creator_address' in claimable) {
+          Object.assign<BaseClaimable, Partial<RainbowClaimable>>(baseClaimable, { creatorAddress: claimable.creator_address });
+        }
         return {
           ...baseClaimable,
-          type: 'transaction' as const,
+          type: 'transaction',
           action: {
             to: claimable.claim_action[0].address_to,
             data: claimable.claim_action[0].calldata,
@@ -48,10 +56,10 @@ export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCu
       } else if (claimable.claim_action_type === 'sponsored') {
         return {
           ...baseClaimable,
-          type: 'sponsored' as const,
+          type: 'sponsored',
           action: { method: claimable.claim_action[0].method, url: claimable.claim_action[0].url },
         };
       }
     })
-    .filter((c): c is Claimable => !!c);
+    .filter((c): c is C => !!c);
 };

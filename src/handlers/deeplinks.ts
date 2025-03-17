@@ -10,7 +10,7 @@ import { delay } from '@/utils/delay';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import ethereumUtils, { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
+import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueId } from '@/utils/ethereumUtils';
 import { logger } from '@/logger';
 import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
 import { analyticsV2 } from '@/analytics';
@@ -100,15 +100,22 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
 
       /**
        * Links from website to an individual token
+       * ex. rainbow://token/base/0x0578d8A44db98B23BF096A382e016e29a5Ce0ffe
        */
       case 'token': {
         logger.debug(`[handleDeeplink]: token`);
-        // The addr param is really the uniqueId, but not changing the name to avoid breaking existing deeplinks
-        const { addr } = query;
-        const uniqueId = (addr as string)?.toLowerCase() ?? '';
+        let networkLabel = pathname.split('/')[2]?.toLowerCase();
+        const address = pathname.split('/')[3]?.toLowerCase();
+        // Some chains have different link labels for aesthetic reasons
+        if (networkLabel === 'ethereum') {
+          networkLabel = 'mainnet';
+        } else if (networkLabel === 'zksync') {
+          networkLabel = 'zksync-era';
+        }
+        const chainId = useBackendNetworksStore.getState().getChainsIdByName()[networkLabel];
+        const uniqueId = getUniqueId(address, chainId);
 
-        if (uniqueId && uniqueId.length > 0) {
-          const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
+        if (address && chainId && uniqueId) {
           const currency = store.getState().settings.nativeCurrency;
           const asset = await fetchExternalToken({ address, chainId, currency });
 
@@ -427,6 +434,6 @@ async function handleSwapsDeeplink(url: string) {
   navigateToSwaps(params);
 }
 
-export function buildTokenDeeplink(uniqueId: string) {
-  return `https://rainbow.me/token?addr=${uniqueId}`;
+export function buildTokenDeeplink({ networkLabel, contractAddress }: { networkLabel: string; contractAddress: string }) {
+  return `https://rainbow.me/token/${networkLabel.toLowerCase()}/${contractAddress}`;
 }

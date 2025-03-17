@@ -72,7 +72,7 @@ export function useSwapEstimatedGasLimit(
   config: QueryConfigWithSelect<EstimateSwapGasLimitResult, Error, EstimateSwapGasLimitResult, EstimateSwapGasLimitQueryKey> = {}
 ) {
   const placeholderData = chainId && { chainId, gasLimit: gasUnits.basic_swap[chainId] };
-  const { data, isFetching } = useQuery(
+  const { data } = useQuery(
     estimateSwapGasLimitQueryKey({
       chainId,
       quote,
@@ -82,7 +82,7 @@ export function useSwapEstimatedGasLimit(
     {
       staleTime: 30 * 1000, // 30s
       cacheTime: 60 * 1000, // 1min
-      notifyOnChangeProps: ['data', 'isFetching'],
+      notifyOnChangeProps: ['data'],
       keepPreviousData: true,
       enabled: !!chainId && !!quote && !!assetToSell && assetToSell.chainId === chainId,
       placeholderData,
@@ -93,8 +93,5 @@ export function useSwapEstimatedGasLimit(
   // we keepPreviousData so we can return the previous gasLimit while fetching
   // which is great when refetching for the same chainId, but we don't want to keep the previous data
   // when fetching for a different chainId
-  return {
-    data: data && data.chainId === chainId ? data.gasLimit : placeholderData?.gasLimit,
-    isFetching,
-  };
+  return data && data.chainId === chainId ? data.gasLimit : placeholderData?.gasLimit;
 }

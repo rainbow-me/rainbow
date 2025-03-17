@@ -9,8 +9,7 @@ import useExperimentalFlag, {
   FEATURED_RESULTS,
   TRENDING_TOKENS,
 } from '@rainbow-me/config/experimentalHooks';
-import { isTestnetChain } from '@/handlers/web3';
-import { Inline, Inset, Stack, Box, Separator } from '@/design-system';
+import { Inline, Inset, Stack, Box, Separator, useColorMode } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
@@ -30,25 +29,29 @@ import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultS
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { AirdropsCard } from '@/components/cards/skia-cards/AirdropsCard';
 import { LaunchCard } from '@/components/cards/skia-cards/LaunchCard';
-import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
+import { isTestnetChain } from '@/handlers/web3';
 
 export const HORIZONTAL_PADDING = 20;
 
 export default function DiscoverHome() {
-  const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results, trending_tokens_enabled } = useRemoteConfig();
-  const { chainId } = useAccountSettings();
+  const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results, trending_tokens_enabled, new_discover_cards_enabled } =
+    useRemoteConfig();
+  const { isDarkMode } = useColorMode();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
   const featuredResultsEnabled = (useExperimentalFlag(FEATURED_RESULTS) || featured_results) && !IS_TEST;
   const mintsEnabled = (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
-  const newDiscoverCardsEnabled = useExperimentalFlag(NEW_DISCOVER_CARDS);
+  const newDiscoverCardsEnabled = (useExperimentalFlag(NEW_DISCOVER_CARDS) || new_discover_cards_enabled) && !IS_TEST;
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
+  const { chainId } = useAccountSettings();
   const testNetwork = isTestnetChain({ chainId });
   const { navigate } = useNavigation();
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
@@ -81,11 +84,11 @@ export default function DiscoverHome() {
               {isProfilesEnabled && <ENSSearchCard />}
             </Inline>
           )}
-          <Separator color="separatorTertiary" thickness={1} />
+          <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} thickness={1} />
           {trendingTokensEnabled && (
             <>
               <TrendingTokens />
-              <Separator color="separatorTertiary" thickness={1} />
+              <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} thickness={1} />
             </>
           )}
           <RemoteCardCarousel />

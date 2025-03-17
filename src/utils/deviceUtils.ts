@@ -46,6 +46,9 @@ export function isUsingButtonNavigation() {
   return NAVIGATION_BAR_HEIGHT > 40;
 }
 
+// The extra space moves the safe area inset slightly so that the top of the navigation bar is not directly on the bottom of the content
+export const ANDROID_EXTRA_BOTTOM_INSET = isUsingButtonNavigation() ? 12 : 0;
+
 export function getAndroidBottomInset() {
   // @ts-expect-error ts-migrate(2339) FIXME: Property 'getInset' does not exist on type 'Compon... Remove this comment to see the full error message
   return isUsingButtonNavigation() ? (SafeAreaView.getInset('bottom') ?? 0) + NAVIGATION_BAR_HEIGHT : SafeAreaView.getInset('bottom') ?? 0;

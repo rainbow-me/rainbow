@@ -34,11 +34,10 @@ import { ReviewPromptAction } from '@/storage/schema';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
-import { IS_ANDROID, IS_DEV } from '@/env';
+import { IS_DEV } from '@/env';
 import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
-import { getAndroidBottomInset } from './utils/deviceUtils';
 import { MobileWalletProtocolListener } from './components/MobileWalletProtocolListener';
 import { RemoteCardsSync } from './state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from './state/sync/RemotePromoSheetSync';
@@ -50,12 +49,7 @@ if (IS_DEV) {
 
 enableScreens();
 
-const ANDROID_BOTTOM_INSET = IS_ANDROID ? getAndroidBottomInset() : 0;
-
 const sx = StyleSheet.create({
-  androidNavigationBarPadding: {
-    paddingBottom: ANDROID_BOTTOM_INSET,
-  },
   container: {
     flex: 1,
     overflow: 'hidden',
@@ -74,7 +68,7 @@ function App({ walletReady }: AppProps) {
 
   return (
     <>
-      <View style={[sx.container, IS_ANDROID ? sx.androidNavigationBarPadding : {}]}>
+      <View style={sx.container}>
         {initialRoute && (
           <InitialRouteContext.Provider value={initialRoute}>
             <Routes ref={handleNavigatorRef} />

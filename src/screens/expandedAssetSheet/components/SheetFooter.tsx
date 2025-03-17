@@ -13,12 +13,14 @@ import { isTestnetChain } from '@/handlers/web3';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ColorMode, globalColors } from '@/design-system/color/palettes';
 import { ParsedAddressAsset } from '@/entities';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// 32px for the gradient + 46px for the buttons + 44px for the bottom padding
-export const SHEET_FOOTER_HEIGHT = 32 + 46 + 44;
+// 32px for the easing gradient + 48px for the buttons + 12px for the extra bottom padding away from the area inset
+export const SHEET_FOOTER_HEIGHT = 32 + 48 + 12;
 
 export function SheetFooter() {
   const { accentColors, basicAsset: asset, accountAsset, isOwnedAsset } = useExpandedAssetSheetContext();
+  const safeAreaInsets = useSafeAreaInsets();
   const { isDarkMode } = useColorMode();
 
   const { swagg_enabled, f2c_enabled } = useRemoteConfig();
@@ -45,7 +47,12 @@ export function SheetFooter() {
         style={{ height: 32, width: '100%', pointerEvents: 'none' }}
       />
       <ColorModeProvider value={colorMode}>
-        <Box paddingHorizontal={'24px'} backgroundColor={accentColors.background} width="full" paddingBottom="44px">
+        <Box
+          paddingHorizontal={'24px'}
+          backgroundColor={accentColors.background}
+          width="full"
+          paddingBottom={{ custom: safeAreaInsets.bottom + 12 }}
+        >
           <Columns space="16px">
             <Column width="content">
               <AssetContextMenu />

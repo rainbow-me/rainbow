@@ -1,8 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { ScrollView, ScrollViewProps, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
-import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { ScrollView, ScrollViewProps, StyleProp, StyleSheet, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
+import Animated, { AnimatedStyle, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ImgixImage } from '@/components/images';
 import {
@@ -18,15 +16,17 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID } from '@/env';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { useAccountAccentColor } from '@/hooks';
+import { useNavigation } from '@/navigation';
 import { colors } from '@/styles';
+import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { TOP_INSET } from '../DappBrowser/Dimensions';
-import { useNavigation } from '@/navigation';
-import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
-import { useAccountAccentColor } from '@/hooks';
-import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const TapToDismiss = memo(function TapToDismiss() {
   const { goBack } = useNavigation();
@@ -299,25 +299,59 @@ export const ListEmojiAvatar = React.memo(function ListEmojiAvatar({
   );
 });
 
-export const Panel = ({ children, height }: { children?: React.ReactNode; height?: number }) => {
+export const Panel = ({
+  children,
+  height,
+  innerBorderColor,
+  innerBorderWidth,
+  outerBorderColor,
+  outerBorderWidth,
+  style,
+}: {
+  children?: React.ReactNode;
+  height?: number;
+  innerBorderColor?: string;
+  innerBorderWidth?: number;
+  outerBorderColor?: string;
+  outerBorderWidth?: number;
+  style?: StyleProp<ViewStyle> | AnimatedStyle;
+}) => {
   const { isDarkMode } = useColorMode();
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  return (
-    <Box
-      style={[
+  const { borders, panelContainerStyle } = useMemo(() => {
+    return {
+      borders: isDarkMode ? (
+        <Box
+          style={[
+            controlPanelStyles.panelBorderContainer,
+            { borderColor: outerBorderColor || opacity(globalColors.grey100, 0.4) },
+            outerBorderWidth !== undefined ? { borderWidth: outerBorderWidth } : undefined,
+          ]}
+        >
+          <Box
+            style={[
+              controlPanelStyles.panelBorder,
+              { borderColor: innerBorderColor || separatorSecondary },
+              innerBorderWidth !== undefined ? { borderWidth: innerBorderWidth } : undefined,
+            ]}
+          />
+        </Box>
+      ) : null,
+
+      panelContainerStyle: [
         controlPanelStyles.panel,
         isDarkMode ? controlPanelStyles.panelBackgroundDark : controlPanelStyles.panelBackgroundLight,
         { height },
-      ]}
-    >
+      ],
+    };
+  }, [height, innerBorderColor, innerBorderWidth, isDarkMode, outerBorderColor, outerBorderWidth, separatorSecondary]);
+
+  return (
+    <Animated.View style={[panelContainerStyle, style]}>
       {children}
-      {IS_IOS && isDarkMode && (
-        <Box style={controlPanelStyles.panelBorderContainer}>
-          <Box style={[controlPanelStyles.panelBorder, { borderColor: separatorSecondary }]} />
-        </Box>
-      )}
-    </Box>
+      {borders}
+    </Animated.View>
   );
 };
 
@@ -442,7 +476,6 @@ export const controlPanelStyles = StyleSheet.create({
   },
   panelBorderContainer: {
     backgroundColor: 'transparent',
-    borderColor: opacity(globalColors.grey100, 0.4),
     borderCurve: 'continuous',
     borderWidth: 2 / 3,
     borderRadius: PANEL_BORDER_RADIUS,
