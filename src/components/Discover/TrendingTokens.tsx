@@ -563,7 +563,7 @@ function NetworkFilter({ selectedChainId }: { selectedChainId: SharedValue<Chain
     return {
       icon: (
         <View style={{ marginRight: 2 }}>
-          <ChainImage chainId={chainId} size={16} position="relative" shadow={false} />
+          <ChainImage chainId={chainId} size={16} position="relative" />
         </View>
       ),
       label: useBackendNetworksStore.getState().getChainsLabel()[chainId],
