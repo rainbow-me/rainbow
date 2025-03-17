@@ -1,10 +1,8 @@
-import lang from 'i18n-js';
-import React, { useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import * as i18n from '@/languages';
+import React, { useCallback, useMemo } from 'react';
+import { StyleSheet, View, Image } from 'react-native';
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
-import { Text, useForegroundColor } from '@/design-system';
-import { ImgixImage } from '@/components/images';
+import { AnimatedText, Inline, Text, useForegroundColor } from '@/design-system';
 import { useCollectiblesContext } from '../CollectiblesContext';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import Animated, { useAnimatedStyle, Easing, withTiming } from 'react-native-reanimated';
@@ -15,12 +13,49 @@ import { useAccountSettings } from '@/hooks';
 import { useNftSort } from '@/hooks/useNFTsSortBy';
 import { groupBy } from 'lodash';
 
+const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
+
 export const TokenFamilyHeaderAnimationDuration = 200;
 export const TokenFamilyHeaderHeight = 50;
 
 type Props = {
   name: string;
 };
+
+function CollectionBalance({ collectionName }: { collectionName: string }) {
+  const { accountAddress } = useAccountSettings();
+  const { nftSort, nftSortDirection } = useNftSort();
+  const { openedCollections } = useCollectiblesContext();
+
+  const { data: collection } = useLegacyNFTs({
+    address: accountAddress,
+    sortBy: nftSort,
+    sortDirection: nftSortDirection,
+    config: {
+      select(data) {
+        return groupBy(data.nfts, token => token.familyName)[collectionName];
+      },
+    },
+  });
+
+  const amountStyles = useAnimatedStyle(() => {
+    const isOpen = openedCollections.value[collectionName];
+
+    return {
+      opacity: withTiming(isOpen ? 0 : 1, TIMING_CONFIGS.fadeConfig),
+    };
+  });
+
+  const total = useMemo(() => {
+    return `${collection.length}`;
+  }, [collection]);
+
+  return (
+    <AnimatedText style={[amountStyles, { paddingRight: 4 }]} size="20pt" color="label" weight="regular">
+      {total}
+    </AnimatedText>
+  );
+}
 
 export function CollectionHeader({ name }: Props) {
   const { nftSort, nftSortDirection } = useNftSort();
@@ -58,14 +93,6 @@ export function CollectionHeader({ name }: Props) {
     };
   });
 
-  const amountStyles = useAnimatedStyle(() => {
-    const isOpen = openedCollections.value[name];
-
-    return {
-      opacity: withTiming(isOpen ? 0 : 1, TIMING_CONFIGS.fadeConfig),
-    };
-  });
-
   if (!collection?.[0]?.familyImage) return null;
 
   const { familyImage } = collection[0];
@@ -78,7 +105,7 @@ export function CollectionHeader({ name }: Props) {
         </View>
         <View style={[sx.title, { paddingLeft: 10 }]}>
           <Text
-            color={name === lang.t('button.hidden') ? 'labelTertiary' : 'label'}
+            color={name === i18n.t(i18n.l.button.hidden) ? 'labelTertiary' : 'label'}
             numberOfLines={1}
             size="18px / 27px (Deprecated)"
             weight="heavy"
@@ -86,21 +113,14 @@ export function CollectionHeader({ name }: Props) {
             {name}
           </Text>
         </View>
-        <View style={[sx.center, sx.amountContainer]}>
-          <Animated.View style={amountStyles}>
-            <Text align="right" color={name === lang.t('button.hidden') ? 'labelTertiary' : 'label'} size="18px / 27px (Deprecated)">
-              {collection.length}
-            </Text>
-          </Animated.View>
-          <Animated.View style={caretStyles}>
-            <FastImage
-              resizeMode={ImgixImage.resizeMode.contain}
-              source={CaretImageSource}
-              style={sx.chevron}
-              tintColor={name === lang.t('button.hidden') ? hiddenColor : caretColor}
-            />
-          </Animated.View>
-        </View>
+        <Inline horizontalSpace={'8px'} alignVertical="center">
+          <CollectionBalance collectionName={name} />
+          <AnimatedImgixImage
+            source={CaretImageSource}
+            tintColor={name === i18n.t(i18n.l.button.hidden) ? hiddenColor : caretColor}
+            style={[caretStyles, sx.chevron]}
+          />
+        </Inline>
       </View>
     </GestureHandlerButton>
   );
@@ -117,6 +137,8 @@ const sx = StyleSheet.create({
   },
   chevron: {
     height: 18,
+    marginBottom: 1,
+    right: 5,
     width: 8,
   },
   content: {

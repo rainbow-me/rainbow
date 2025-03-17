@@ -29,8 +29,9 @@ const keyExtractor = (item: number): string => {
 
 const ListEmptyComponent = memo(function ListEmptyComponent() {
   const mainnetEthBalance = useUserAssetsStore(state => state.getNativeAssetForChain(ChainId.mainnet))?.balance.amount ?? 0;
+  const isLoading = useUserAssetsStore(state => state.status === 'loading');
 
-  if (isZero(mainnetEthBalance)) {
+  if (isZero(mainnetEthBalance) && !isLoading) {
     return (
       <Inset horizontal="20px">
         <Box paddingVertical="24px" alignItems="center" gap={12}>
@@ -82,7 +83,6 @@ export function UserAssetsList() {
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       initialNumToRender={MAX_CONDENSED_ASSETS + 1}
-      keyboardShouldPersistTaps="always"
       scrollEnabled={false}
       style={[{ flex: 1, width: deviceUtils.dimensions.width, paddingBottom: 12 }]}
       showsVerticalScrollIndicator={false}
