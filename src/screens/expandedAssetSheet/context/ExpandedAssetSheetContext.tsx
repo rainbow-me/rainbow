@@ -218,6 +218,7 @@ export function ExpandedAssetSheetContextProvider({
     if (rainbowSuperToken) {
       return {
         ...metadata,
+        rainbow: metadata?.rainbow ?? true,
         icon_url: rainbowSuperToken.imageUrl,
         description: rainbowSuperToken.description,
         links: rainbowSuperToken.links || metadata?.links,
@@ -226,10 +227,7 @@ export function ExpandedAssetSheetContextProvider({
     return metadata;
   }, [rainbowSuperToken, metadata]);
 
-  // TODO: Replace with data from the metadata endpoint once available
-  const isRainbowToken = useMemo(() => {
-    return !!(asset.icon_url?.startsWith('https://rainbowme-res.cloudinary.com') && asset.icon_url?.includes('/token-launcher/'));
-  }, [asset.icon_url]);
+  const isRainbowToken = superMetadata?.rainbow ?? false;
 
   const accentColors: AccentColors = useMemo(() => {
     const background = isDarkMode
