@@ -1,7 +1,7 @@
 import { NativeCurrencyKey } from '@/entities';
-import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey } from '@/react-query';
-import { useQuery } from '@tanstack/react-query';
-import { ConsolidatedClaimablesResponse } from './types';
+import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
+import { useQuery, type QueryFunctionContext } from '@tanstack/react-query';
+import { Claimable, ConsolidatedClaimablesResponse } from './types';
 import { logger, RainbowError } from '@/logger';
 import { parseClaimables } from './utils';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -9,12 +9,13 @@ import { CLAIMABLES, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getAddysHttpClient } from '../client';
+import { Address } from 'viem';
 
 // ///////////////////////////////////////////////
 // Query Types
 
 export type ClaimablesArgs = {
-  address: string;
+  address: Address | string | null;
   currency: NativeCurrencyKey;
   abortController?: AbortController | null;
 };
@@ -22,21 +23,21 @@ export type ClaimablesArgs = {
 // ///////////////////////////////////////////////
 // Query Key
 
-export const claimablesQueryKey = ({ address, currency }: ClaimablesArgs) =>
-  createQueryKey('claimables', { address, currency }, { persisterVersion: 4 });
+export const claimablesQueryKey = ({ address, currency, abortController }: ClaimablesArgs) =>
+  createQueryKey('claimables', { address, currency, abortController }, { persisterVersion: 4 });
 
 type ClaimablesQueryKey = ReturnType<typeof claimablesQueryKey>;
 
-// ///////////////////////////////////////////////
-// Query Function
+const STABLE_CLAIMABLES: ReturnType<typeof parseClaimables<Claimable>> = [];
 
-export async function claimablesQueryFunction({ address, currency }: ClaimablesArgs) {
+export async function getClaimables({ address, currency, abortController }: ClaimablesArgs) {
   try {
     const url = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/claimables`;
     const { data } = await getAddysHttpClient().get<ConsolidatedClaimablesResponse>(url, {
       params: {
         currency: currency.toLowerCase(),
       },
+      signal: abortController?.signal,
       timeout: 20000,
     });
 
@@ -44,29 +45,42 @@ export async function claimablesQueryFunction({ address, currency }: ClaimablesA
       logger.error(new RainbowError('[claimablesQueryFunction]: Failed to fetch claimables (API error)'), {
         message: data.metadata.errors,
       });
+      if (!data.payload.claimables.length) {
+        return STABLE_CLAIMABLES;
+      }
     }
 
     return parseClaimables(data.payload.claimables, currency);
   } catch (e) {
+    if (e instanceof Error && e.name === 'AbortError') return STABLE_CLAIMABLES;
     logger.error(new RainbowError('[claimablesQueryFunction]: Failed to fetch claimables (client error)'), {
       message: (e as Error)?.message,
     });
+    return STABLE_CLAIMABLES;
   }
 }
 
-export type ClaimablesResult = QueryFunctionResult<typeof claimablesQueryFunction>;
+// ///////////////////////////////////////////////
+// Query Function
+
+export async function claimablesQueryFunction({ queryKey }: QueryFunctionContext<ClaimablesQueryKey>) {
+  const [{ address, currency, abortController }] = queryKey;
+  return getClaimables({ address, currency, abortController });
+}
+
+export type ClaimablesResult = Awaited<ReturnType<typeof claimablesQueryFunction>>;
 
 // ///////////////////////////////////////////////
 // Query Hook
 
 export function useClaimables<T extends ClaimablesResult>(
-  { address, currency }: ClaimablesArgs,
+  { address, currency, abortController }: ClaimablesArgs,
   config: QueryConfigWithSelect<ClaimablesResult, Error, T, ClaimablesQueryKey> = {}
 ) {
   const { claimables: remoteFlag } = useRemoteConfig();
   const localFlag = useExperimentalFlag(CLAIMABLES);
 
-  return useQuery(claimablesQueryKey({ address, currency }), claimablesQueryFunction, {
+  return useQuery(claimablesQueryKey({ address, currency, abortController }), claimablesQueryFunction, {
     ...config,
     enabled: !!address && (remoteFlag || localFlag) && !IS_TEST,
     staleTime: 1000 * 60 * 2,

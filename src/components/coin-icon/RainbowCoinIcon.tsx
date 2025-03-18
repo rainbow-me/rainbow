@@ -1,23 +1,25 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { ChainId } from '@/state/backendNetworks/types';
 import { borders, fonts } from '@/styles';
 import { useTheme } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback } from '@/utils';
 import { FastFallbackCoinIconImage } from '../asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
 import { ChainImage } from './ChainImage';
+import { FontWeight } from '@/design-system/docs/system/tokens.css';
+import { TextAlign } from '../text/types';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
-  fontWeight: fonts.weight.bold,
+  fontWeight: fonts.weight.bold as FontWeight,
   letterSpacing: fonts.letterSpacing.roundedTight,
   marginBottom: 0.5,
-  textAlign: 'center',
+  textAlign: 'center' as TextAlign,
 };
 
 const fallbackIconStyle = (size: number) => ({
   ...borders.buildCircleAsObject(size),
-  position: 'absolute',
+  position: 'absolute' as ViewStyle['position'],
 });
 
 export default React.memo(function RainbowCoinIcon({

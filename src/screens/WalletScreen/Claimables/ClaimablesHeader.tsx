@@ -5,7 +5,7 @@ import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import { AnimatedText, Box, Inline, Text, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 import { useAccountSettings } from '@/hooks';
-import { claimablesQueryFunction } from '@/resources/addys/claimables/query';
+import { getClaimables } from '@/resources/addys/claimables/query';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { ChainId } from '@/state/backendNetworks/types';
 import {
@@ -58,8 +58,8 @@ export const claimablesStore = createQueryStore<ClaimablesStore, ClaimablesArgs>
 
       // Since we expose ETH Rewards as a claimable, we also need to fetch the points data from metadata client
       const points = await metadataPOSTClient.getPointsDataForWallet({ address });
-      const claimables = ((await claimablesQueryFunction({ address, currency, abortController })) || STABLE_OBJECT.claimables).sort(
-        (a, b) => (greaterThan(a.value.nativeAsset.amount || '0', b.value.nativeAsset.amount || '0') ? -1 : 1)
+      const claimables = (await getClaimables({ address, currency, abortController })).sort((a, b) =>
+        greaterThan(a.value.nativeAsset.amount || '0', b.value.nativeAsset.amount || '0') ? -1 : 1
       );
 
       if (points?.points?.user?.rewards?.claimable) {
@@ -70,15 +70,17 @@ export const claimablesStore = createQueryStore<ClaimablesStore, ClaimablesArgs>
             symbol: 'ETH',
           });
           const { amount } = convertAmountAndPriceToNativeDisplay(claimableETH.amount, ethNativeAsset.price?.value || 0, currency);
-          const ethRewardsClaimable = {
-            value: {
-              nativeAsset: {
-                amount,
+          if (!isZero(amount)) {
+            const ethRewardsClaimable = {
+              value: {
+                nativeAsset: {
+                  amount,
+                },
               },
-            },
-            uniqueId: 'rainbow-eth-rewards',
-          } as Claimable;
-          claimables.unshift(ethRewardsClaimable);
+              uniqueId: 'rainbow-eth-rewards',
+            } as Claimable;
+            claimables.unshift(ethRewardsClaimable);
+          }
         }
       }
 

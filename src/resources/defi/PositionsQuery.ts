@@ -13,7 +13,7 @@ import { getAddysHttpClient } from '@/resources/addys/client';
 export const getPositions = async (
   address: string,
   currency: NativeCurrencyKey,
-  abortController: AbortController | null
+  abortController?: AbortController | null
 ): Promise<AddysPositionsResponse> => {
   const networkString = useBackendNetworksStore.getState().getSupportedChainIds().join(',');
   const url = `/${networkString}/${address}/positions`;

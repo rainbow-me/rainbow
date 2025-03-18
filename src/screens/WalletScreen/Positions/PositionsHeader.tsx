@@ -1,32 +1,21 @@
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 import { Image } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import { AnimatedText, Box, Inline, Text, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 import { useAccountSettings } from '@/hooks';
-import { useClaimables } from '@/resources/addys/claimables/query';
-import { usePoints } from '@/resources/points';
-import { useNativeAsset } from '@/utils/ethereumUtils';
-import { ChainId } from '@/state/backendNetworks/types';
-import {
-  add,
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToNativeDisplay,
-  convertRawAmountToBalance,
-  isZero,
-} from '@/helpers/utilities';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { isZero } from '@/helpers/utilities';
 import { deviceUtils, time } from '@/utils';
 import { IS_TEST } from '@/env';
-import { DEFI_POSITIONS, ETH_REWARDS, getExperimetalFlag } from '@/config';
+import { DEFI_POSITIONS, getExperimetalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositionsContext } from './PositionsContext';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { getPositions, usePositions } from '@/resources/defi/PositionsQuery';
+import { getPositions } from '@/resources/defi/PositionsQuery';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { AddysPositionsResponse, PositionsArgs, RainbowPositions } from '@/resources/defi/types';
+import { RainbowPositions } from '@/resources/defi/types';
 import { NativeCurrencyKey } from '@/entities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { Address } from 'viem';
