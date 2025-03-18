@@ -193,17 +193,17 @@ interface TokenLauncherStore {
 }
 
 // For testing. Makes it easier to test the token creation flow without having to enter all the info.
-const testTokenInfo = {
-  // Gray image
-  // imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1741722824/token-launcher/tokens/fjcou8ceqmxbg9ncoduy.jpg',
-  // imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1741722824/token-launcher/tokens/fjcou8ceqmxbg9ncoduy.jpg',
-  // bright image
-  // imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
-  // imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
-  // name: 'Test Token',
-  // symbol: 'TEST',
-  // description: 'This is a test token',
-};
+// const testTokenInfo = {
+// Gray image
+// imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1741722824/token-launcher/tokens/fjcou8ceqmxbg9ncoduy.jpg',
+// imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1741722824/token-launcher/tokens/fjcou8ceqmxbg9ncoduy.jpg',
+// bright image
+// imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+// imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+// name: 'Test Token',
+// symbol: 'TEST',
+// description: 'This is a test token',
+// };
 
 // Should always be INFO, but can be changed to any step to test the flow easier
 const INITIAL_STEP = NavigationSteps.INFO;
