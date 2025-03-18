@@ -86,6 +86,7 @@ type ExpandedAssetSheetContextType = {
   hideClaimSection: boolean;
   isOwnedAsset: boolean;
   isLoadingMetadata: boolean;
+  isRainbowToken: boolean;
 };
 
 type ExpandedAssetSheetContextProviderProps = {
@@ -225,6 +226,11 @@ export function ExpandedAssetSheetContextProvider({
     return metadata;
   }, [rainbowSuperToken, metadata]);
 
+  // TODO: Replace with data from the metadata endpoint once available
+  const isRainbowToken = useMemo(() => {
+    return !!(asset.icon_url?.startsWith('https://rainbowme-res.cloudinary.com') && asset.icon_url?.includes('/token-launcher/'));
+  }, [asset.icon_url]);
+
   const accentColors: AccentColors = useMemo(() => {
     const background = isDarkMode
       ? chroma(
@@ -273,6 +279,7 @@ export function ExpandedAssetSheetContextProvider({
         hideClaimSection,
         isOwnedAsset,
         isLoadingMetadata,
+        isRainbowToken,
       }}
     >
       {children}
