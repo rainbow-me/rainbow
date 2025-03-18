@@ -226,10 +226,11 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
     });
     return config;
   } catch (e) {
+    if (e instanceof Error && e.message === 'The request timed out') return DEFAULT_CONFIG;
     logger.error(new RainbowError(`[remoteConfig]: Failed to fetch remote config`), {
       error: e,
     });
-    throw e;
+    return DEFAULT_CONFIG;
   } finally {
     logger.debug(`[remoteConfig]: Current remote config:\n${JSON.stringify(config, null, 2)}`);
   }
