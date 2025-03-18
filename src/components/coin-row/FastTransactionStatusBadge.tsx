@@ -7,8 +7,6 @@ import * as lang from '@/languages';
 import { ActivityTypeIcon } from './FastTransactionCoinRow';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 
-const LAUNCH_DESCRIPTION = 'launchRainbowSuperToken';
-
 const sx = StyleSheet.create({
   icon: {
     marginRight: 2,

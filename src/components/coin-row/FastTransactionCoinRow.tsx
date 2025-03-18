@@ -27,8 +27,6 @@ import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 import { ChainImage } from '../coin-icon/ChainImage';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 
-const LAUNCH_DESCRIPTION = 'launchRainbowSuperToken';
-
 export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;
   if (approvalAmount === 'UNLIMITED') return lang.t(lang.l.transactions.approvals.unlimited);
