@@ -135,12 +135,10 @@ export function AssetContextMenu() {
         Clipboard.setString(asset.address);
         break;
       case ContextMenuActions.Share: {
-        const url =
-          assetMetadata?.links?.rainbow?.url ??
-          buildTokenDeeplink({
-            networkLabel: chainLabels[asset.chainId],
-            contractAddress: asset.address,
-          });
+        const url = buildTokenDeeplink({
+          networkLabel: chainLabels[asset.chainId],
+          contractAddress: asset.address,
+        });
         Share.share({
           url,
         });
