@@ -480,6 +480,9 @@ fragment TokenLinksFragment on TokenLinks {
   homepage {
     ...TokenLinkFragment
   }
+  rainbow {
+    ...TokenLinkFragment
+  }
   reddit {
     ...TokenLinkFragment
   }
