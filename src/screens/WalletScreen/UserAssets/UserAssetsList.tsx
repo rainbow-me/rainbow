@@ -219,6 +219,7 @@ function PinButtons() {
 
   // TODO: i18n
   const pinLabel = useDerivedValue<string>(() => {
+    console.log('currentAction.value', currentAction.value);
     if (currentAction.value === EditAction.unpin) {
       return 'Unpin';
     }

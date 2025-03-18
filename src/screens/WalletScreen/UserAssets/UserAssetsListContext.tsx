@@ -40,7 +40,7 @@ interface DividerListItem {
 export type UserAssetListItem = AssetListItem | DividerListItem;
 
 type UserAssetsListActions = {
-  toggleSelectedAsset: (index: number) => void;
+  toggleSelectedAsset: (asset: ParsedSearchAsset) => void;
   toggleExpanded: () => void;
   toggleEditing: () => void;
 };
@@ -52,6 +52,8 @@ type UserAssetsListContextType = {
   isExpanded: SharedValue<boolean>;
   isEditing: SharedValue<boolean>;
   currentAction: SharedValue<EditAction>;
+  hiddenAssets: SharedValue<Array<UniqueId>>;
+  pinnedAssets: SharedValue<Array<UniqueId>>;
 } & UserAssetsListActions;
 
 export const UserAssetsListContext = createContext<UserAssetsListContextType>({
@@ -61,6 +63,8 @@ export const UserAssetsListContext = createContext<UserAssetsListContextType>({
   isExpanded: makeMutable<boolean>(false),
   isEditing: makeMutable<boolean>(false),
   currentAction: makeMutable<EditAction>(EditAction.none),
+  hiddenAssets: makeMutable<Array<UniqueId>>([]),
+  pinnedAssets: makeMutable<Array<UniqueId>>([]),
   toggleSelectedAsset: noop,
   toggleExpanded: noop,
   toggleEditing: noop,
@@ -100,21 +104,15 @@ export function UserAssetsListProvider({ children }: { children: React.ReactNode
   const pinnedAssets = useUserAssetsStore(state => state.pinnedAssetsSharedvalue);
 
   const toggleSelectedAsset = useCallback(
-    (index: number) => {
+    (asset: ParsedSearchAsset) => {
       'worklet';
-      // shift indices to account for the divider
-      if (index >= MAX_CONDENSED_ASSETS) {
-        index = index + 1;
-      }
-
-      const asset = sections.value[index] as AssetListItem;
       if (!asset) return;
 
       selectedAssets.modify(set => {
-        if (set.includes(asset.asset.uniqueId)) {
-          set.splice(set.indexOf(asset.asset.uniqueId), 1);
+        if (set.includes(asset.uniqueId)) {
+          set.splice(set.indexOf(asset.uniqueId), 1);
         } else {
-          set.push(asset.asset.uniqueId);
+          set.push(asset.uniqueId);
         }
         return set;
       });
@@ -145,21 +143,18 @@ export function UserAssetsListProvider({ children }: { children: React.ReactNode
 
     // if every selected asset is pinned, return unpin
     const allSelectedAssetsPinned = allSelectedAssetIds.every(id => pinnedAssets.value.includes(id));
-
     if (allSelectedAssetIds.length > 0 && allSelectedAssetsPinned) {
       return EditAction.unpin;
     }
 
     // if no assets are pinned, return pin
     const anySelectedAssetsPinned = allSelectedAssetIds.some(id => pinnedAssets.value.includes(id));
-
     if (!anySelectedAssetsPinned) {
       return EditAction.pin;
     }
 
     // if no assets are hidden, return hide
     const anySelectedAssetsHidden = allSelectedAssetIds.some(id => hiddenAssets.value.includes(id));
-
     if (!anySelectedAssetsHidden) {
       return EditAction.hide;
     }
@@ -167,6 +162,24 @@ export function UserAssetsListProvider({ children }: { children: React.ReactNode
     // else return standard
     return EditAction.standard;
   });
+
+  const finishEditing = useCallback((action: EditAction) => {
+    'worklet';
+    switch (action) {
+      case EditAction.pin:
+        break;
+      case EditAction.unpin:
+        break;
+      case EditAction.hide:
+        break;
+      case EditAction.unhide:
+        break;
+      case EditAction.standard:
+        break;
+      case EditAction.none:
+        break;
+    }
+  }, []);
 
   const setAssetsCount = useCallback((count: number) => {
     walletAssetsStore.getState().setTotalAssets(count);
@@ -193,6 +206,8 @@ export function UserAssetsListProvider({ children }: { children: React.ReactNode
         toggleEditing,
         toggleSelectedAsset,
         currentAction,
+        hiddenAssets,
+        pinnedAssets,
       }}
     >
       {children}
@@ -245,7 +260,7 @@ export function SyncUserAssetsStoreWithContext() {
     if (walletAssetsStore.getState().currentAccountAddress !== accountAddress) {
       walletAssetsStore.getState().setTotalAssets(userAssets.length ? Math.min(userAssets.length, MAX_CONDENSED_ASSETS + 1) : 0);
     }
-  }, [accountAddress]);
+  }, [accountAddress, userAssets?.length]);
 
   return null;
 }
