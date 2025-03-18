@@ -555,6 +555,7 @@ query tokenMetadata($address: String!, $chainId: Int!, $currency: String) {
       relativeChange24h
       value
     }
+    rainbow
     totalSupply
     volume1d
   }
