@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RainbowTransaction } from '@/entities';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { BackgroundProvider, Box } from '@/design-system';
 import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
 import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
@@ -56,10 +56,14 @@ export const TransactionDetails = () => {
     <BackgroundProvider color="surfacePrimaryElevated">
       {({ backgroundColor }) => (
         <SlackSheet
-          contentHeight={sheetHeight}
           backgroundColor={backgroundColor}
-          height={IS_ANDROID ? sheetHeight : '100%'}
-          deferredHeight={IS_ANDROID}
+          {...(IS_IOS
+            ? { height: '100%' }
+            : {
+                additionalTopPadding: true,
+                contentHeight: sheetHeight,
+              })}
+          scrollEnabled
           showsVerticalScrollIndicator={false}
         >
           <Box paddingHorizontal="20px" paddingBottom="20px" onLayout={onSheetContentLayout}>
