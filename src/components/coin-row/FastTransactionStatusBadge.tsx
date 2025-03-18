@@ -1,10 +1,12 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Text, useForegroundColor } from '@/design-system';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import * as lang from '@/languages';
 import { ActivityTypeIcon } from './FastTransactionCoinRow';
+
+const LAUNCH_DESCRIPTION = 'launchRainbowSuperToken';
 
 const sx = StyleSheet.create({
   icon: {
@@ -25,10 +27,26 @@ export default React.memo(function FastTransactionStatusBadge({
   style?: StyleProp<ViewStyle>;
 }) {
   let statusColor = useForegroundColor('labelTertiary');
+  // @ts-expect-error - some of these are dot.notation and some are strings
+  let actionTitle = lang.t(lang.l.transactions.type[transaction?.title]);
   if (transaction?.status === TransactionStatus.pending) {
     statusColor = colors.appleBlue;
   } else if (transaction?.status === 'failed') {
     statusColor = colors.red;
+  }
+
+  if (transaction?.description === LAUNCH_DESCRIPTION) {
+    switch (transaction?.status) {
+      case TransactionStatus.pending:
+        actionTitle = lang.t(lang.l.transactions.type.token_launch.pending);
+        break;
+      case TransactionStatus.confirmed:
+        actionTitle = lang.t(lang.l.transactions.type.token_launch.confirmed);
+        break;
+      case TransactionStatus.failed:
+        actionTitle = lang.t(lang.l.transactions.type.token_launch.failed);
+        break;
+    }
   }
 
   return (
@@ -37,8 +55,7 @@ export default React.memo(function FastTransactionStatusBadge({
         <ActivityTypeIcon transaction={transaction} color={statusColor} />
       </View>
       <Text color={{ custom: statusColor }} size="14px / 19px (Deprecated)" weight="semibold">
-        {/* @ts-expect-error - some of these are dot.notation and some are strings */}
-        {lang.t(lang.l.transactions.type[transaction?.title])}{' '}
+        {actionTitle}
       </Text>
     </View>
   );

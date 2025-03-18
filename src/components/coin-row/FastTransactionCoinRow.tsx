@@ -25,6 +25,9 @@ import * as lang from '@/languages';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 import { ChainImage } from '../coin-icon/ChainImage';
+import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
+
+const LAUNCH_DESCRIPTION = 'launchRainbowSuperToken';
 
 export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;
@@ -183,7 +186,7 @@ const BottomRow = React.memo(function BottomRow({
   let tag: string | undefined;
   if (type === 'contract_interaction' && to) {
     description = transaction.contract?.name || address(to, 6, 4);
-    tag = transaction.description;
+    tag = transaction.description === LAUNCH_DESCRIPTION ? '' : transaction.description;
   }
 
   if (transaction?.type === 'mint') {
@@ -258,6 +261,7 @@ export const ActivityIcon = ({
   size?: 40 | 20 | 14 | 16;
   theme: ThemeContextProps;
 }) => {
+  const rainbowSuperToken = useSuperTokenStore(state => state.getSuperTokenByTransactionHash(transaction.hash));
   if (['wrap', 'unwrap', 'swap'].includes(transaction?.type)) {
     const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
     const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
@@ -265,7 +269,18 @@ export const ActivityIcon = ({
     if (!!inAsset?.icon_url && !!outAsset?.icon_url)
       return <TwoCoinsIcon over={inAsset} under={outAsset} badge={badge && transaction.chainId !== ChainId.mainnet} />;
   }
-  if (transaction?.contract?.iconUrl) {
+
+  const contractIconUrl = transaction?.contract?.iconUrl;
+  const rainbowSuperTokenIconUrl = rainbowSuperToken?.imageUrl;
+  const iconUrl = contractIconUrl || rainbowSuperTokenIconUrl;
+  let color;
+  if (contractIconUrl) {
+    color = transaction.asset?.color || rainbowSuperToken?.color;
+  } else if (rainbowSuperToken) {
+    color = rainbowSuperToken.color;
+  }
+
+  if (iconUrl) {
     return (
       <View
         style={{
@@ -278,7 +293,7 @@ export const ActivityIcon = ({
       >
         <View
           style={{
-            shadowColor: !transaction?.asset?.color ? globalColors.grey100 : transaction.asset.color,
+            shadowColor: !color ? globalColors.grey100 : color,
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.24,
             shadowRadius: 9,

@@ -32,6 +32,7 @@ import { logger, RainbowError } from '@/logger';
 import { analyticsV2 } from '@/analytics';
 import { Link, LinkType } from '../types';
 import { useSuperTokenStore } from './rainbowSuperTokenStore';
+import { calculateAndCacheDominantColor } from '@/hooks/usePersistentDominantColorFromImage';
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
 
@@ -612,6 +613,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
           description,
           imageUrl,
           links: linksByType,
+          color: await calculateAndCacheDominantColor(imageUrl),
+          transactionHash: result.transaction.hash,
         });
 
         analyticsV2.track(analyticsV2.event.tokenLauncherTokenCreated, {

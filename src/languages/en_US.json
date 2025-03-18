@@ -2269,6 +2269,11 @@
           "confirmed": "Interacted",
           "failed": "Interaction Failed"
         },
+        "token_launch": {
+          "pending": "Launching Rainbow Super Token",
+          "confirmed": "Launched Rainbow Super Token",
+          "failed": "Launch Failed"
+        },
         "swap": {
           "pending": "Swapping",
           "confirmed": "Swapped",
