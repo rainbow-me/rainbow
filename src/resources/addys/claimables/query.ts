@@ -47,9 +47,11 @@ async function claimablesQueryFunction({ queryKey: [{ address, currency }] }: Qu
 
     return parseClaimables(data.payload.claimables, currency);
   } catch (e) {
+    if (e instanceof Error && e.name === 'AbortError') return [];
     logger.error(new RainbowError('[claimablesQueryFunction]: Failed to fetch claimables (client error)'), {
       message: (e as Error)?.message,
     });
+    return [];
   }
 }
 
