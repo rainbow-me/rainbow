@@ -39,6 +39,18 @@ interface ClaimableTransactionData {
   usdValue: number;
 }
 
+type ExecuteAirdropClaimResult =
+  | {
+      error?: never;
+      success: true;
+      txHash: string;
+    }
+  | {
+      error: string;
+      success: false;
+      txHash?: never;
+    };
+
 /**
  * Executes an airdrop claim transaction.
  */
@@ -54,7 +66,7 @@ export async function executeAirdropClaim({
   gasLimit: string;
   gasSettings: GasSettings;
   onConfirm?: (receipt: TransactionReceipt) => void;
-}): Promise<{ error?: string; success: boolean; txHash?: string }> {
+}): Promise<ExecuteAirdropClaimResult> {
   const { airdropId, amount, chainId, data, symbol, to, usdValue } = getClaimableTransactionData(claimable);
   const nonce = await getNextNonce({ address: accountAddress, chainId });
 
