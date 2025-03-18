@@ -151,7 +151,7 @@ export function ClaimablesHeader() {
       <Box
         width={deviceUtils.dimensions.width}
         height={{ custom: TokenFamilyHeaderHeight }}
-        paddingHorizontal={'19px (Deprecated)'}
+        paddingHorizontal="20px"
         justifyContent="space-between"
       >
         <Inline alignHorizontal="justify" alignVertical="center">

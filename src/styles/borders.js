@@ -19,10 +19,14 @@ border.buildCircle = size => `
   border-radius: ${size / 2};
 `;
 
-border.buildCircleAsObject = size => ({
-  ...position.sizeAsObject(size),
-  borderRadius: size / 2,
-});
+border.buildCircleAsObject = size => {
+  const { width = size, height = size } = position.sizeAsObject(size);
+  return {
+    width,
+    height,
+    borderRadius: size / 2,
+  };
+};
 
 border.buildRadius = (direction, value = border.radius) => {
   if (direction === 'bottom' || direction === 'top') {

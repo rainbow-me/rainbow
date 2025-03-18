@@ -9,11 +9,10 @@ import { borders } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { FallbackIcon, initials } from '@/utils';
 import ShadowStack from '@/react-native-shadow-stack';
-import { ViewProps } from 'react-native-svg/lib/typescript/fabric/utils';
 
 type Props = {
   name: string;
-  image?: string | 'hidden';
+  image: string | null | undefined;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -25,11 +24,7 @@ const sx = StyleSheet.create({
   },
 });
 
-const circleStyle = borders.buildCircleAsObject(30) as {
-  height: number;
-  width: number;
-  borderRadius: number;
-};
+const circleStyle = borders.buildCircleAsObject(30);
 
 export function CollectionHeaderIcon({ name, image, style }: Props) {
   const { colors } = useTheme();

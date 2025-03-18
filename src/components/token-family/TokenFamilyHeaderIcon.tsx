@@ -78,14 +78,8 @@ export default React.memo(function TokenFamilyHeaderIcon({ familyImage, familyNa
   const symbol = initials(familyName);
 
   return (
-    // @ts-expect-error - typescript types
     <ShadowStack {...circleStyle} backgroundColor={colors.white} shadows={shadows} style={style}>
-      {familyImage ? (
-        <ImgixImage size={30} source={source} style={circleStyle} />
-      ) : (
-        // @ts-expect-error - typescript types
-        <FallbackIcon {...circleStyle} symbol={symbol} />
-      )}
+      {familyImage ? <ImgixImage size={30} source={source} style={circleStyle} /> : <FallbackIcon {...circleStyle} symbol={symbol} />}
     </ShadowStack>
   );
 });

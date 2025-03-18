@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 const sx = StyleSheet.create({
@@ -14,7 +14,7 @@ const sx = StyleSheet.create({
   },
 });
 
-function buildFallbackFontSize(symbol, width) {
+function buildFallbackFontSize(symbol: string | undefined, width: number): number {
   if (!symbol) return 0;
   else if (width < 30 || symbol.length > 4) return 8;
   else if (symbol.length === 4) return 10;
@@ -22,8 +22,8 @@ function buildFallbackFontSize(symbol, width) {
   return 11;
 }
 
-const _cache = {};
-function formatSymbol(symbol, width) {
+const _cache: Record<string, string> = {};
+function formatSymbol(symbol: string | undefined, width: number): string {
   if (!symbol) return '';
 
   const key = `${symbol}-${width}`;
@@ -35,7 +35,26 @@ function formatSymbol(symbol, width) {
   return _cache[key];
 }
 
-const FallbackIcon = ({ color = '#3A3D51', height, style = undefined, symbol = '', textStyles = undefined, width, ...props }) => {
+interface FallbackIconProps extends React.ComponentProps<typeof Animated.View> {
+  color?: string;
+  height: number;
+  style?: ViewStyle;
+  symbol?: string;
+  textStyles?: TextStyle;
+  width: number;
+  shadowColor?: string;
+  size?: number;
+}
+
+const FallbackIcon = ({
+  color = '#3A3D51',
+  height,
+  style = undefined,
+  symbol = '',
+  textStyles = undefined,
+  width,
+  ...props
+}: FallbackIconProps) => {
   const formattedSymbol = formatSymbol(symbol, width);
 
   const fontSize = buildFallbackFontSize(formattedSymbol, width);
@@ -58,7 +77,14 @@ const FallbackIcon = ({ color = '#3A3D51', height, style = undefined, symbol = '
   );
 };
 
-const arePropsEqual = (prev, next) =>
+interface FallbackIconPropsForComparison {
+  color: string;
+  shadowColor: string;
+  size: number;
+  symbol: string;
+}
+
+const arePropsEqual = (prev: FallbackIconPropsForComparison, next: FallbackIconPropsForComparison): boolean =>
   prev.color === next.color && prev.shadowColor === next.shadowColor && prev.size === next.size && prev.symbol === next.symbol;
 
-export default React.memo(FallbackIcon, arePropsEqual);
+export default React.memo(FallbackIcon, arePropsEqual as any);

@@ -63,8 +63,8 @@ function NFTRow({ tokens, collectionName, rowIndex = 0 }: { tokens: UniqueAsset[
 
     return {
       // Only animate height changes
-      height: withDelay(itemDelay, withTiming(isOpen ? NFT_ITEM_HEIGHT : 0, TIMING_CONFIGS.fadeConfig)),
-      marginBottom: withDelay(itemDelay, withTiming(isOpen ? 12 : 0, TIMING_CONFIGS.fadeConfig)),
+      height: withDelay(itemDelay, withTiming(isOpen ? NFT_ITEM_HEIGHT : 0, TIMING_CONFIGS.fastFadeConfig)),
+      marginBottom: withDelay(itemDelay, withTiming(isOpen ? 12 : 0, TIMING_CONFIGS.fastFadeConfig)),
     };
   });
 
@@ -94,7 +94,7 @@ function CollectiblesListComponent() {
         return {
           nfts: data.nfts,
           collections: Object.entries(groupBy(data.nfts, token => token.familyName))
-            .filter(([_, tokens]) => !hiddenTokens.includes(tokens[0].fullUniqueId) && !showcaseTokens.includes(tokens[0].fullUniqueId))
+            .filter(([_, tokens]) => !hiddenTokens.includes(tokens[0].fullUniqueId) && !showcaseTokens.includes(tokens[0].uniqueId))
             .map(([familyName, tokens]) => ({
               familyName,
               tokens,
@@ -118,7 +118,6 @@ function CollectiblesListComponent() {
         type: 'header',
         id: 'showcase',
         name: i18n.t(i18n.l.account.tab_showcase),
-        isSpecialCollection: true,
       });
 
       // Group showcase tokens into rows
@@ -136,7 +135,6 @@ function CollectiblesListComponent() {
           name: i18n.t(i18n.l.account.tab_showcase),
           tokens: tokenPair,
           rowIndex,
-          isSpecialCollection: true,
         });
       });
     }
@@ -177,7 +175,6 @@ function CollectiblesListComponent() {
         type: 'header',
         id: 'hidden',
         name: i18n.t(i18n.l.button.hidden),
-        isSpecialCollection: true,
       });
 
       // Group hidden tokens into rows
@@ -195,7 +192,6 @@ function CollectiblesListComponent() {
           name: i18n.t(i18n.l.button.hidden),
           tokens: tokenPair,
           rowIndex,
-          isSpecialCollection: true,
         });
       });
     }
