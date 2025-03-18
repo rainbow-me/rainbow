@@ -14,6 +14,10 @@ import { UniqueId, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useAccountSettings } from '@/hooks';
+import { MMKV } from 'react-native-mmkv';
+import { BooleanMap } from '@/hooks/useCoinListEditOptions';
+
+const mmkv = new MMKV();
 
 export enum EditAction {
   none = 'NONE',
@@ -43,6 +47,7 @@ type UserAssetsListActions = {
   toggleSelectedAsset: (asset: ParsedSearchAsset) => void;
   toggleExpanded: () => void;
   toggleEditing: () => void;
+  finishEditing: (action: EditAction) => void;
 };
 
 type UserAssetsListContextType = {
@@ -68,6 +73,7 @@ export const UserAssetsListContext = createContext<UserAssetsListContextType>({
   toggleSelectedAsset: noop,
   toggleExpanded: noop,
   toggleEditing: noop,
+  finishEditing: noop,
 });
 
 export function useUserAssetsListContext() {
@@ -163,23 +169,88 @@ export function UserAssetsListProvider({ children }: { children: React.ReactNode
     return EditAction.standard;
   });
 
-  const finishEditing = useCallback((action: EditAction) => {
-    'worklet';
-    switch (action) {
-      case EditAction.pin:
-        break;
-      case EditAction.unpin:
-        break;
-      case EditAction.hide:
-        break;
-      case EditAction.unhide:
-        break;
-      case EditAction.standard:
-        break;
-      case EditAction.none:
-        break;
-    }
+  const persistHiddenAssets = useCallback((hiddenAssets: Array<UniqueId>) => {
+    userAssetsStore.getState().setHiddenAssets(hiddenAssets);
+    // TODO: Bring in initial pinned / hidden coins from mmkv
   }, []);
+
+  const persistPinnedAssets = useCallback((pinnedAssets: Array<UniqueId>) => {
+    userAssetsStore.getState().setPinnedAssets(pinnedAssets);
+    // TODO: Bring in initial pinned / hidden coins from mmkv
+  }, []);
+
+  const finishEditing = useCallback(
+    (action: EditAction) => {
+      'worklet';
+
+      const selectedIds = Array.from(selectedAssets.value);
+
+      switch (action) {
+        case EditAction.pin: {
+          // Add selected assets to pinned assets - ensure no duplicates
+          const newPinnedAssets = [...new Set([...pinnedAssets.value, ...selectedIds])];
+          pinnedAssets.value = newPinnedAssets;
+
+          // Remove from hidden assets when pinning
+          const newHiddenAssets = hiddenAssets.value.filter(id => !selectedIds.includes(id));
+          if (newHiddenAssets.length !== hiddenAssets.value.length) {
+            hiddenAssets.value = newHiddenAssets;
+            runOnJS(persistHiddenAssets)(newHiddenAssets);
+          }
+
+          runOnJS(persistPinnedAssets)(newPinnedAssets);
+          break;
+        }
+        case EditAction.unpin: {
+          // Remove selected assets from pinned assets
+          const filteredAssets = pinnedAssets.value.filter(id => !selectedIds.includes(id));
+          pinnedAssets.value = filteredAssets;
+          runOnJS(persistPinnedAssets)(filteredAssets);
+          break;
+        }
+        case EditAction.hide: {
+          // Add selected assets to hidden assets - ensure no duplicates
+          const newHiddenAssets = [...new Set([...hiddenAssets.value, ...selectedIds])];
+          hiddenAssets.value = newHiddenAssets;
+
+          // Remove from pinned assets when hiding
+          const newPinnedAssets = pinnedAssets.value.filter(id => !selectedIds.includes(id));
+          if (newPinnedAssets.length !== pinnedAssets.value.length) {
+            pinnedAssets.value = newPinnedAssets;
+            runOnJS(persistPinnedAssets)(newPinnedAssets);
+          }
+
+          runOnJS(persistHiddenAssets)(newHiddenAssets);
+          break;
+        }
+        case EditAction.unhide: {
+          // Remove selected assets from hidden assets
+          const filteredAssets = hiddenAssets.value.filter(id => !selectedIds.includes(id));
+          hiddenAssets.value = filteredAssets;
+          runOnJS(persistHiddenAssets)(filteredAssets);
+          break;
+        }
+        case EditAction.standard: {
+          // In standard mode, we'll handle pinning/unpinning and hiding/unhiding based on current state
+          // For assets that are neither pinned nor hidden, we'll pin them
+          const assetsToPinIds = selectedIds.filter(id => !pinnedAssets.value.includes(id) && !hiddenAssets.value.includes(id));
+
+          if (assetsToPinIds.length > 0) {
+            const newPinnedAssets = [...pinnedAssets.value, ...assetsToPinIds];
+            pinnedAssets.value = newPinnedAssets;
+            runOnJS(persistPinnedAssets)(newPinnedAssets);
+          }
+          break;
+        }
+        case EditAction.none:
+          break;
+      }
+
+      // Clear selected assets after any action
+      selectedAssets.value = [];
+    },
+    [hiddenAssets, pinnedAssets, selectedAssets, persistHiddenAssets, persistPinnedAssets]
+  );
 
   const setAssetsCount = useCallback((count: number) => {
     walletAssetsStore.getState().setTotalAssets(count);
@@ -208,6 +279,7 @@ export function UserAssetsListProvider({ children }: { children: React.ReactNode
         currentAction,
         hiddenAssets,
         pinnedAssets,
+        finishEditing,
       }}
     >
       {children}

@@ -188,20 +188,20 @@ function EditButton() {
 }
 
 function PinButtons() {
-  const { isEditing, selectedAssets, currentAction } = useUserAssetsListContext();
+  const { isEditing, selectedAssets, currentAction, finishEditing } = useUserAssetsListContext();
 
   const labelColor = useForegroundColor('label');
   const labelTertiaryColor = useForegroundColor('labelTertiary');
 
-  const handlePinPress = () => {
+  const handlePinPress = useCallback(() => {
     'worklet';
-    console.log('pin');
-  };
+    finishEditing(currentAction.value === EditAction.unpin ? EditAction.unpin : EditAction.pin);
+  }, [finishEditing, currentAction]);
 
-  const handleHidePress = () => {
+  const handleHidePress = useCallback(() => {
     'worklet';
-    console.log('hide');
-  };
+    finishEditing(currentAction.value === EditAction.unhide ? EditAction.unhide : EditAction.hide);
+  }, [finishEditing, currentAction]);
 
   const containerStyles = useAnimatedStyle(() => {
     return {
@@ -219,7 +219,6 @@ function PinButtons() {
 
   // TODO: i18n
   const pinLabel = useDerivedValue<string>(() => {
-    console.log('currentAction.value', currentAction.value);
     if (currentAction.value === EditAction.unpin) {
       return 'Unpin';
     }
