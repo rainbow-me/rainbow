@@ -5,6 +5,7 @@ import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import * as lang from '@/languages';
 import { ActivityTypeIcon } from './FastTransactionCoinRow';
+import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 
 const LAUNCH_DESCRIPTION = 'launchRainbowSuperToken';
 
@@ -26,6 +27,7 @@ export default React.memo(function FastTransactionStatusBadge({
   colors: ThemeContextProps['colors'];
   style?: StyleProp<ViewStyle>;
 }) {
+  const rainbowSuperToken = useSuperTokenStore(state => state.getSuperTokenByTransactionHash(transaction.hash));
   let statusColor = useForegroundColor('labelTertiary');
   // @ts-expect-error - some of these are dot.notation and some are strings
   let actionTitle = lang.t(lang.l.transactions.type[transaction?.title]);
@@ -35,7 +37,7 @@ export default React.memo(function FastTransactionStatusBadge({
     statusColor = colors.red;
   }
 
-  if (transaction?.description === LAUNCH_DESCRIPTION) {
+  if (rainbowSuperToken) {
     switch (transaction?.status) {
       case TransactionStatus.pending:
         actionTitle = lang.t(lang.l.transactions.type.token_launch.pending);

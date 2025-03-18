@@ -180,13 +180,14 @@ const BottomRow = React.memo(function BottomRow({
   theme: ThemeContextProps;
 }) {
   const { type, to, asset } = transaction;
+  const rainbowSuperToken = useSuperTokenStore(state => state.getSuperTokenByTransactionHash(transaction.hash));
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
   let description = transaction.description;
   let tag: string | undefined;
   if (type === 'contract_interaction' && to) {
     description = transaction.contract?.name || address(to, 6, 4);
-    tag = transaction.description === LAUNCH_DESCRIPTION ? '' : transaction.description;
+    tag = rainbowSuperToken ? '' : transaction.description;
   }
 
   if (transaction?.type === 'mint') {
@@ -272,12 +273,12 @@ export const ActivityIcon = ({
 
   const contractIconUrl = transaction?.contract?.iconUrl;
   const rainbowSuperTokenIconUrl = rainbowSuperToken?.imageUrl;
-  const iconUrl = contractIconUrl || rainbowSuperTokenIconUrl;
+  const iconUrl = rainbowSuperTokenIconUrl || contractIconUrl;
   let color;
-  if (contractIconUrl) {
-    color = transaction.asset?.color || rainbowSuperToken?.color;
-  } else if (rainbowSuperToken) {
+  if (rainbowSuperToken) {
     color = rainbowSuperToken.color;
+  } else if (contractIconUrl) {
+    color = transaction.asset?.color;
   }
 
   if (iconUrl) {
@@ -307,7 +308,7 @@ export const ActivityIcon = ({
               borderRadius: 10,
             }}
             source={{
-              uri: transaction?.contract?.iconUrl,
+              uri: iconUrl,
             }}
           />
         </View>
