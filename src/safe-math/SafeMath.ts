@@ -395,7 +395,7 @@ export function toFixedWorklet(num: string | number, decimalPlaces: number): str
   const [bigIntNum, numDecimalPlaces] = removeDecimalWorklet(numStr);
   const scaledBigIntNum = scaleUpWorklet(bigIntNum, numDecimalPlaces);
 
-  const scaleFactor = BigInt(10) ** BigInt(20 - decimalPlaces);
+  const scaleFactor = BigInt(10) ** BigInt(20 - safeDecimalPlaces);
   const half = scaleFactor / BigInt(2);
 
   // Handle sign separately so we correctly round negative numbers
