@@ -86,6 +86,7 @@ type ExpandedAssetSheetContextType = {
   hideClaimSection: boolean;
   isOwnedAsset: boolean;
   isLoadingMetadata: boolean;
+  isRainbowToken: boolean;
 };
 
 type ExpandedAssetSheetContextProviderProps = {
@@ -217,6 +218,7 @@ export function ExpandedAssetSheetContextProvider({
     if (rainbowSuperToken) {
       return {
         ...metadata,
+        rainbow: metadata?.rainbow ?? true,
         icon_url: rainbowSuperToken.imageUrl,
         description: rainbowSuperToken.description,
         links: rainbowSuperToken.links || metadata?.links,
@@ -224,6 +226,8 @@ export function ExpandedAssetSheetContextProvider({
     }
     return metadata;
   }, [rainbowSuperToken, metadata]);
+
+  const isRainbowToken = superMetadata?.rainbow ?? false;
 
   const accentColors: AccentColors = useMemo(() => {
     const background = isDarkMode
@@ -273,6 +277,7 @@ export function ExpandedAssetSheetContextProvider({
         hideClaimSection,
         isOwnedAsset,
         isLoadingMetadata,
+        isRainbowToken,
       }}
     >
       {children}

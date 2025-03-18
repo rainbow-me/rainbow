@@ -70,7 +70,7 @@ export function SheetContent() {
             {isBuySectionVisible && (
               <CollapsibleSection
                 content={<BuySection />}
-                icon="􀋥"
+                icon="􀡓"
                 id={SectionId.BUY}
                 primaryText={i18n.t(i18n.l.expanded_state.sections.buy.title)}
                 secondaryText={asset.symbol}

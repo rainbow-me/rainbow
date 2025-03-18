@@ -142,7 +142,7 @@ export const ClaimAirdropSheet = () => {
 const PanelHeader = memo(function PanelHeader({ symbol, symbolHasEmoji }: { symbol: string; symbolHasEmoji: boolean }) {
   const sheetHandleColor = foregroundColors.labelQuaternary.dark;
   return (
-    <Box alignItems="center" gap={24} justifyContent="center" paddingTop="32px" width="full">
+    <Box alignItems="center" gap={24} justifyContent="center" paddingHorizontal="44px" paddingTop="32px" width="full">
       <SheetHandleFixedToTop color={sheetHandleColor} showBlur={true} top={10} />
       <Text align="center" color="label" containsEmoji={symbolHasEmoji} numberOfLines={1} size="20pt" weight="heavy">
         {i18n.t(i18n.l.token_launcher.claim_airdrop_sheet.title, { symbol })}
@@ -175,7 +175,7 @@ const PanelContent = ({
   );
   return (
     <>
-      <Box alignItems="center" gap={20} paddingBottom="8px">
+      <Box alignItems="center" gap={20} paddingBottom="8px" paddingHorizontal="44px">
         <TextShadow blur={16} shadowOpacity={0.2}>
           <Text align="center" color={{ custom: highContrastColor }} numberOfLines={1} size="44pt" weight="black">
             {airdropValue}
