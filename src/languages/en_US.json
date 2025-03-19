@@ -3330,6 +3330,23 @@
         "to_claim_on": "to claim on %{network}",
         "view_coin": "View Coin",
         "you": "You"
+      },
+      "errors": {
+        "header": "Error launching token",
+        "api_request_failed": "API request failed",
+        "api_response_invalid": "API response invalid",
+        "contract_interaction_failed": "Contract interaction failed",
+        "gas_estimation_failed": "Gas estimation failed",
+        "insufficient_funds": "Insufficient funds",
+        "submission_details_missing": "Submission details missing",
+        "transaction_rejected": "Transaction rejected",
+        "transaction_failed": "Transaction failed",
+        "transaction_simulation_failed": "Transaction simulation failed",
+        "unknown_error": "Unknown error",
+        "wallet_connection_error": "Wallet connection error",
+        "wallet_not_connected": "Wallet not connected",
+        "invalid_params": "Invalid parameters",
+        "missing_required_param": "Missing required parameters"
       }
     },
     "done": "Done",
