@@ -584,6 +584,14 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
     try {
       const initialTick = TokenLauncherSDK.getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
+      const gasParams = transactionOptions.gasPrice
+        ? {
+            gasPrice: transactionOptions.gasPrice,
+          }
+        : {
+            maxFeePerGas: transactionOptions.maxFeePerGas,
+            maxPriorityFeePerGas: transactionOptions.maxPriorityFeePerGas,
+          };
       const params = {
         name,
         symbol,
@@ -596,12 +604,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         wallet,
         transactionOptions: {
           gasLimit: transactionOptions.gasLimit,
-          maxFeePerGas: transactionOptions.maxFeePerGas,
-          // In functioning cases this should always select maxPriorityFeePerGas's value
-          maxPriorityFeePerGas: Math.min(
-            Number(transactionOptions.maxPriorityFeePerGas ?? 0),
-            Number(transactionOptions.maxFeePerGas ?? 0)
-          ).toString(),
+          ...gasParams,
         },
         airdropMetadata: {
           cohortIds: airdropPredefinedCohortIds,
