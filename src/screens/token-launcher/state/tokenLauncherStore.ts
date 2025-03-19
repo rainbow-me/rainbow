@@ -641,7 +641,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         const chainsName = useBackendNetworksStore.getState().getChainsName();
 
         const transaction: NewTransaction = {
-          status: TransactionStatus.launching,
+          status: TransactionStatus.pending,
           chainId,
           asset: {
             address: result.tokenAddress,
