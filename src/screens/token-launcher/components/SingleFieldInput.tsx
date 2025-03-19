@@ -226,7 +226,7 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
 
     return (
       <FieldContainer style={[containerStyle, { height: INPUT_HEIGHT }, style]}>
-        <Box height={'full'} flexDirection="row" alignItems="center" justifyContent="space-between">
+        <Box alignItems="center" flexDirection="row" height="full" justifyContent="space-between">
           {labelPosition === 'right' && showPaste && (
             <PasteButton handlePaste={handlePaste} pasteButtonStyle={pasteButtonStyle} pasteButtonText={pasteButtonText} />
           )}
