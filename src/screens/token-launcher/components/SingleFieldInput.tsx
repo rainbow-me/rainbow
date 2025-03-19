@@ -243,12 +243,12 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
             />
           )}
           <FieldInput
-            ref={internalRef}
-            labelPosition={labelPosition}
             inputStyle={inputStyle}
-            onFocus={_onFocus}
+            labelPosition={labelPosition}
             onBlur={_onBlur}
             onChangeText={_onChangeText}
+            onFocus={_onFocus}
+            ref={internalRef}
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...textInputProps}
           />
