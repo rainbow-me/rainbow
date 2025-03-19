@@ -226,7 +226,7 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
 
     return (
       <FieldContainer style={[containerStyle, { height: INPUT_HEIGHT }, style]}>
-        <Box alignItems="center" flexDirection="row" height="full" justifyContent="space-between">
+        <Box height={'full'} flexDirection="row" alignItems="center" justifyContent="space-between">
           {labelPosition === 'right' && showPaste && (
             <PasteButton handlePaste={handlePaste} pasteButtonStyle={pasteButtonStyle} pasteButtonText={pasteButtonText} />
           )}
@@ -236,18 +236,19 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
               icon={icon}
               isSubtitleVisible={isSubtitleVisible}
               labelPosition={labelPosition}
-              textInputProps={textInputProps}
+              subtitle={subtitle}
+              textAlign={textInputProps.textAlign}
               title={title}
               titleContainerStyle={titleContainerStyle}
             />
           )}
           <FieldInput
-            inputStyle={inputStyle}
+            ref={internalRef}
             labelPosition={labelPosition}
+            inputStyle={inputStyle}
+            onFocus={_onFocus}
             onBlur={_onBlur}
             onChangeText={_onChangeText}
-            onFocus={_onFocus}
-            ref={internalRef}
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...textInputProps}
           />
@@ -260,7 +261,8 @@ export const SingleFieldInput = forwardRef<SingleFieldInputRef, SingleFieldInput
               icon={icon}
               isSubtitleVisible={isSubtitleVisible}
               labelPosition={labelPosition}
-              textInputProps={textInputProps}
+              subtitle={subtitle}
+              textAlign={textInputProps.textAlign}
               title={title}
               titleContainerStyle={titleContainerStyle}
             />
@@ -277,22 +279,20 @@ const LabelContent = ({
   isSubtitleVisible,
   labelPosition,
   subtitle,
-  textInputProps,
+  textAlign,
   title,
   titleContainerStyle,
 }: {
   errorLabel: AnimatedTextProps['children'];
-  icon?: React.ReactNode;
+  icon: React.ReactNode;
   isSubtitleVisible: boolean;
   labelPosition: 'left' | 'right';
-  subtitle?: string;
-  textInputProps: TextInputProps;
-  title?: string;
+  subtitle: string | undefined;
+  textAlign: TextInputProps['textAlign'];
+  title: string | undefined;
   titleContainerStyle: AnimatedStyle;
 }) => (
-  <Animated.View
-    style={{ position: 'relative', gap: 10, paddingRight: labelPosition === 'left' && textInputProps.textAlign === 'right' ? 20 : 0 }}
-  >
+  <Animated.View style={{ position: 'relative', gap: 10, paddingRight: labelPosition === 'left' && textAlign === 'right' ? 20 : 0 }}>
     <Animated.View style={titleContainerStyle}>{title ? <FieldLabel>{title}</FieldLabel> : <Box>{icon}</Box>}</Animated.View>
     <Animated.View style={{ position: 'absolute', top: TITLE_GAP }}>
       <AnimatedText
