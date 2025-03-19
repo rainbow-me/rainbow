@@ -178,10 +178,10 @@ const BottomRow = React.memo(function BottomRow({
   theme: ThemeContextProps;
 }) {
   const { type, to, asset } = transaction;
-  const rainbowSuperToken = useSuperTokenStore(state => state.getSuperTokenByTransactionHash(transaction.hash));
+  const rainbowSuperToken = useSuperTokenStore.getState().getSuperTokenByTransactionHash(transaction.hash);
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const isRainbowTokenLaunch = type === 'launch' || type === 'launchAndBuy';
+  const isRainbowTokenLaunch = type === 'launch';
 
   let description = transaction.description;
   let tag: string | undefined;
