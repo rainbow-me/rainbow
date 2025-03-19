@@ -94,17 +94,17 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
 function truncate(text: string) {
   const minTruncatedLength = 100;
 
-  const paragraphs = text.split('\n').filter(paragraph => paragraph.trim().length > 0);
+  const paragraphs = text.split('\n')?.filter(paragraph => paragraph.trim()?.length > 0);
 
   const firstParagraph = paragraphs[0];
   const secondParagraph = paragraphs[1];
   const first4Sentences = text.split('.').slice(0, 4).join('.') + '.';
 
-  const firstSection = firstParagraph.length > minTruncatedLength ? firstParagraph : [firstParagraph, secondParagraph].join('\n\n');
-  const shorterOne = first4Sentences.length < firstSection.length ? first4Sentences : firstSection;
+  const firstSection = firstParagraph?.length > minTruncatedLength ? firstParagraph : [firstParagraph, secondParagraph].join('\n\n');
+  const shorterOne = first4Sentences?.length < firstSection?.length ? first4Sentences : firstSection;
 
   // If there is not much to expand, return the whole text
-  if (text.length < shorterOne.length * 1.5) {
+  if (text?.length < shorterOne?.length * 1.5) {
     return text;
   }
 
@@ -115,7 +115,7 @@ function Description({ text }: { text: string }) {
   const { accentColors } = useExpandedAssetSheetContext();
 
   const truncatedText = useMemo(() => truncate(text), [text]);
-  const canExpand = text.length > truncatedText.length;
+  const canExpand = text?.length > truncatedText?.length;
   const [showFullDescription, setShowFullDescription] = useState(!canExpand);
 
   return (
@@ -210,7 +210,7 @@ export function AboutSection() {
 
   return (
     <Box gap={40}>
-      <Box gap={4} marginBottom={rowItems.length % 2 === 0 ? '-12px' : undefined}>
+      <Box gap={4} marginBottom={rowItems?.length % 2 === 0 ? '-12px' : undefined}>
         {rowItems.map((item, index) => (
           <RowButton
             key={`${item.title}-${index}`}
