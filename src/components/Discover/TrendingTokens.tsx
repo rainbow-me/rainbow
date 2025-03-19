@@ -1,5 +1,5 @@
 import { DropdownMenu } from '@/components/DropdownMenu';
-import { globalColors, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
+import { globalColors, IconContainer, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import RainbowTokenFilter from '@/assets/RainbowTokenFilter.png';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -226,7 +226,7 @@ function CategoryFilterButton({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          gap: 4,
+          gap: typeof icon === 'string' ? 4 : 10,
           height: 36,
           paddingHorizontal: 12,
           borderRadius: 18,
@@ -245,7 +245,9 @@ function CategoryFilterButton({
             {icon}
           </TextIcon>
         ) : (
-          icon
+          <IconContainer height={8} width={12}>
+            {icon}
+          </IconContainer>
         )}
         <View>
           {/* This first Text element sets the width of the container */}

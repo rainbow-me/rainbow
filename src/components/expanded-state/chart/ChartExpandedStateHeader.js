@@ -10,6 +10,7 @@ import ChartTypes from '@/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
 import { useChartData } from '@/react-native-animated-charts/src';
+import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ColumnWithMargins } from '../../layout';
@@ -39,6 +40,7 @@ export default function ChartExpandedStateHeader({
   const { nativeCurrency } = useAccountSettings();
 
   const { data } = useChartData();
+  const { isRainbowToken } = useExpandedAssetSheetContext();
 
   const chartDataExists = useMemo(() => {
     const firstValue = data?.points?.[0]?.y;
@@ -93,7 +95,7 @@ export default function ChartExpandedStateHeader({
   return (
     <Container testID={'expanded-state-header'} showChart={showChart}>
       <Stack space={'20px'}>
-        {shouldUseRainbowCoinEffect && asset?.iconUrl ? (
+        {(isRainbowToken || shouldUseRainbowCoinEffect) && asset?.iconUrl ? (
           <RainbowCoinEffect color={asset?.colors?.primary} imageUrl={asset?.iconUrl} size={44} />
         ) : (
           <RainbowCoinIcon
