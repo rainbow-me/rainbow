@@ -74,6 +74,7 @@ export const parseTransaction = async (
   });
 
   const type = isValidTransactionType(meta.type) ? meta.type : 'contract_interaction';
+
   const asset: RainbowTransaction['asset'] = meta.asset?.asset_code
     ? parseAsset({ asset: meta.asset, address: meta.asset.asset_code })
     : getAssetFromChanges(changes, type);
