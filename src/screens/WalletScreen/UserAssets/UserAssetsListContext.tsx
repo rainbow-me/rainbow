@@ -4,6 +4,7 @@ import { noop } from 'lodash';
 
 import { UniqueId } from '@/__swaps__/types/assets';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { ViewToken } from 'react-native';
 
 export enum EditAction {
   none = 'NONE',

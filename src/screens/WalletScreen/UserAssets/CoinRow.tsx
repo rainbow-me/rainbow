@@ -7,7 +7,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { TextColor } from '@/design-system/color/palettes';
 import { trimTrailingZeros } from '@/__swaps__/utils/swaps';
-import { useUserAssetsListContext } from './UserAssetsListContext';
+import { MAX_CONDENSED_ASSETS, useUserAssetsListContext } from './UserAssetsListContext';
 import Animated, { runOnJS, withTiming, useAnimatedStyle } from 'react-native-reanimated';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -164,9 +164,8 @@ const CoinCheckButton = memo(function CoinCheckButton({ uniqueId }: { uniqueId: 
   );
 });
 
-export function CoinRow({ uniqueId }: { uniqueId: UniqueId }) {
-  const { isEditing, toggleSelectedAsset } = useUserAssetsListContext();
-  // const asset = useUserAssetsStore(state => state.getUserAsset(uniqueId));
+export function CoinRow({ uniqueId, index }: { uniqueId: UniqueId; index: number }) {
+  const { isEditing, isExpanded, toggleSelectedAsset, hiddenAssets, selectedAssets } = useUserAssetsListContext();
 
   const handleNavigateToAsset = useCallback(() => {
     const asset = useUserAssetsStore.getState().getUserAsset(uniqueId);
@@ -190,8 +189,30 @@ export function CoinRow({ uniqueId }: { uniqueId: UniqueId }) {
     }
   }, [handleNavigateToAsset, isEditing, toggleSelectedAsset]);
 
+  const rowStyle = useAnimatedStyle(() => {
+    const isHidden = hiddenAssets.value.includes(uniqueId);
+    const isSelected = selectedAssets.value.includes(uniqueId);
+
+    // Determine if the row should be shown based on hidden status and edit mode
+    const shouldShow = !isHidden || (isHidden && isEditing.value);
+
+    // Set opacity based on visibility conditions
+    const baseOpacity = isHidden && !isSelected ? 0.4 : 1;
+    const positionOpacity = isExpanded.value || (!isExpanded.value && index <= MAX_CONDENSED_ASSETS) ? 1 : 0;
+
+    // Final opacity is 0 if either condition fails
+    const opacity = shouldShow && positionOpacity ? baseOpacity : 0;
+    const pointerEvents = opacity > 0 ? 'auto' : 'none';
+
+    return {
+      opacity: withTiming(opacity, TIMING_CONFIGS.fadeConfig),
+      height: withTiming(shouldShow ? COIN_ROW_WITH_PADDING_HEIGHT : 0, TIMING_CONFIGS.fadeConfig),
+      pointerEvents,
+    };
+  }, [isExpanded, hiddenAssets, index]);
+
   return (
-    <GestureHandlerButton disableHaptics onPressWorklet={onPress} scaleTo={0.95}>
+    <GestureHandlerButton style={rowStyle} disableHaptics onPressWorklet={onPress} scaleTo={0.95}>
       <Columns alignVertical="center">
         <Column width="content" style={checkmarkBackgroundDynamicStyle}>
           <CoinCheckButton uniqueId={uniqueId} />

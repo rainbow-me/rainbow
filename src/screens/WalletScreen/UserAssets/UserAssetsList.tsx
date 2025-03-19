@@ -7,10 +7,18 @@ import { convertAmountToNativeDisplay, isZero } from '@/helpers/utilities';
 import { deviceUtils } from '@/utils';
 import { useAccountSettings, withPerformanceTracking } from '@/hooks';
 import { BaseButton } from '@/components/DappBrowser/TabViewToolbar';
-import Animated, { useAnimatedStyle, useDerivedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  JumpingTransition,
+  useAnimatedStyle,
+  useDerivedValue,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { useUserAssetsListContext, DIVIDER_HEIGHT, MAX_CONDENSED_ASSETS, EditAction, UserAssetListItem } from './UserAssetsListContext';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from './CoinRow';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ChainId } from '@/state/backendNetworks/types';
 import { AssetListItemSkeleton } from '@/components/asset-list';
 import { EthCard } from '@/components/cards/EthCard';
@@ -19,6 +27,8 @@ import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
 import { DiscoverMoreButton } from '@/components/asset-list/RecyclerAssetList2/core/DiscoverMoreButton';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { sliderConfig, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
+
+const LIST_BOTTOM_PADDING = 20;
 
 const keyExtractor = (item: UserAssetListItem): string => {
   if (item.type === 'asset') {
@@ -56,7 +66,7 @@ const ListEmptyComponent = memo(function ListEmptyComponent() {
 });
 
 function UserAssetsListComponent() {
-  const { flatlistRef, isExpanded } = useUserAssetsListContext();
+  const { flatlistRef, isExpanded, isEditing, hiddenAssets } = useUserAssetsListContext();
 
   const userAssets = useUserAssetsStore(state => state.getUserAssetsWithPinnedFirstAndHiddenAssetsLast());
 
@@ -72,24 +82,25 @@ function UserAssetsListComponent() {
     return [...topSection, divider, ...bottomSection];
   }, [userAssets]);
 
-  const renderItem: ListRenderItem<UserAssetListItem> = useCallback(({ item }) => {
+  const renderItem: ListRenderItem<UserAssetListItem> = useCallback(({ item, index }) => {
     if (item.type === 'divider') {
       return <DividerSection />;
     }
 
-    return <CoinRow uniqueId={item.uniqueId} />;
+    return <CoinRow uniqueId={item.uniqueId} index={index} />;
   }, []);
 
   const listStyle = useAnimatedStyle(() => {
+    const assetLength = isEditing.value ? userAssets.length : userAssets.length - hiddenAssets.value.length;
     return {
       height: withSpring(
         isExpanded.value
-          ? userAssets.length * COIN_ROW_WITH_PADDING_HEIGHT + DIVIDER_HEIGHT
-          : MAX_CONDENSED_ASSETS * COIN_ROW_WITH_PADDING_HEIGHT + DIVIDER_HEIGHT,
-        TIMING_CONFIGS.fastFadeConfig
+          ? assetLength * COIN_ROW_WITH_PADDING_HEIGHT + DIVIDER_HEIGHT + LIST_BOTTOM_PADDING
+          : MAX_CONDENSED_ASSETS * COIN_ROW_WITH_PADDING_HEIGHT + DIVIDER_HEIGHT + LIST_BOTTOM_PADDING,
+        SPRING_CONFIGS.springConfig
       ),
     };
-  });
+  }, [isExpanded, userAssets]);
 
   if (userAssets.length === 0) {
     return <ListEmptyComponent />;
@@ -103,8 +114,9 @@ function UserAssetsListComponent() {
       renderItem={renderItem}
       initialNumToRender={MAX_CONDENSED_ASSETS + 1}
       scrollEnabled={false}
-      style={[listStyle, { flex: 1, width: deviceUtils.dimensions.width, paddingBottom: 12 }]}
+      style={[listStyle, { flex: 1, width: deviceUtils.dimensions.width, paddingBottom: LIST_BOTTOM_PADDING }]}
       showsVerticalScrollIndicator={false}
+      itemLayoutAnimation={JumpingTransition}
       windowSize={30}
     />
   );
