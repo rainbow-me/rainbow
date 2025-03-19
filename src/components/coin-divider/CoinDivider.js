@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useContext, useRef, useState } from 'react';
 import { Animated, LayoutAnimation, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 import { useRecyclerAssetListPosition } from '../asset-list/RecyclerAssetList2/core/Contexts';
 import { StickyHeaderContext } from '../asset-list/RecyclerAssetList2/core/StickyHeaders';
 import { Row, RowWithMargins } from '../layout';

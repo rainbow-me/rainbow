@@ -3,7 +3,7 @@ import { useCallback, useMemo, useRef } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import useAccountSettings from './useAccountSettings';
-import EditAction from '@/helpers/EditAction';
+import { EditAction } from '@/screens/WalletScreen/UserAssets/UserAssetsListContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const selectedItemsAtom = atom<string[]>({
@@ -101,7 +101,7 @@ export function useCoinListFinishEditingOptions() {
     }
   }, [hiddenAssets, pinnedCoins, selectedItems]);
 
-  const currentActionNonReactive = useRef<keyof typeof EditAction>();
+  const currentActionNonReactive = useRef<EditAction>(currentAction);
   currentActionNonReactive.current = currentAction;
 
   const setPinnedCoins = useCallback(() => {
@@ -135,7 +135,7 @@ export function useCoinListFinishEditingOptions() {
     )
       return;
 
-    setHiddenAssets([...(selectedItemsNonReactive.current || [])]);
+    setHiddenAssets([...(selectedItemsNonReactive.current || [])], currentActionNonReactive.current);
 
     setSelectedItems([]);
   }, [setHiddenAssets, setSelectedItems]);

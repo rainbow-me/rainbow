@@ -2,7 +2,7 @@ import { Box, Column, Columns, HitSlop, Inline, Text, useColorMode } from '@/des
 import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { TextColor } from '@/design-system/color/palettes';
@@ -15,50 +15,55 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { borders, colors, padding, shadow } from '@/styles';
 import { CoinIconIndicator } from '@/components/coin-icon';
 import { Icon } from '@/components/icons';
+import { UniqueId } from '@/__swaps__/types/assets';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 
-const STABLE_OBJECT = {};
-
 export const CoinIcon = memo(function CoinIcon({
-  index,
+  uniqueId,
   size = 36,
   chainSize = size / 2,
 }: {
-  index: number;
+  uniqueId: UniqueId;
   size?: number;
   chainSize?: number;
 }) {
-  const { icon_url, chainId, colors, symbol } =
-    useUserAssetsStore(state => state.getUserAssetsWithPinnedFirstAndHiddenAssetsLast())?.[index] || STABLE_OBJECT;
+  const asset = useUserAssetsStore(state => state.getUserAsset(uniqueId));
+  if (!asset) return null;
 
   return (
-    <RainbowCoinIcon size={size} icon={icon_url} chainId={chainId} symbol={symbol || ''} color={colors?.primary} chainSize={chainSize} />
+    <RainbowCoinIcon
+      size={size}
+      icon={asset.icon_url}
+      chainId={asset.chainId}
+      symbol={asset.symbol || ''}
+      color={asset.colors?.primary}
+      chainSize={chainSize}
+    />
   );
 });
 
-const NativeBalance = ({ index }: { index: number }) => {
-  const { native } = useUserAssetsStore(state => state.getUserAssetsWithPinnedFirstAndHiddenAssetsLast())?.[index] || STABLE_OBJECT;
-  return <BalancePill showPriceChange balance={native?.balance.display ?? ''} />;
+const NativeBalance = ({ uniqueId }: { uniqueId: UniqueId }) => {
+  const asset = useUserAssetsStore(state => state.getUserAsset(uniqueId));
+  if (!asset?.native?.balance.display) return null;
+  return <BalancePill showPriceChange balance={asset.native?.balance.display ?? ''} />;
 };
 
-const Balance = ({ index }: { index: number }) => {
-  const { balance } = useUserAssetsStore(state => state.getUserAssetsWithPinnedFirstAndHiddenAssetsLast())?.[index] || STABLE_OBJECT;
-
-  if (!balance) return null;
+const Balance = ({ uniqueId }: { uniqueId: UniqueId }) => {
+  const asset = useUserAssetsStore(state => state.getUserAsset(uniqueId));
+  if (!asset?.balance?.display) return null;
   return (
     <Text color="labelTertiary" numberOfLines={1} size="13pt" weight="semibold">
-      {balance.display}
+      {asset.balance.display}
     </Text>
   );
 };
 
-const PriceChange = ({ index }: { index: number }) => {
-  const { native } = useUserAssetsStore(state => state.getUserAssetsWithPinnedFirstAndHiddenAssetsLast())?.[index] || STABLE_OBJECT;
-
+const PriceChange = ({ uniqueId }: { uniqueId: UniqueId }) => {
+  const asset = useUserAssetsStore(state => state.getUserAsset(uniqueId));
   const percentChange = useMemo(() => {
-    if (native?.price?.change) {
-      const rawChange = parseFloat(native.price?.change);
+    if (asset?.native?.price?.change) {
+      const rawChange = parseFloat(asset.native.price?.change);
       const isNegative = rawChange < 0;
       const prefix = isNegative ? '-' : '+';
       const color: TextColor = isNegative ? 'red' : 'green';
@@ -66,7 +71,7 @@ const PriceChange = ({ index }: { index: number }) => {
 
       return { change, color, prefix };
     }
-  }, [native?.price?.change]);
+  }, [asset?.native?.price?.change]);
 
   if (!percentChange) return null;
 
@@ -81,21 +86,19 @@ const PriceChange = ({ index }: { index: number }) => {
     </Inline>
   );
 };
-const AssetName = ({ index }: { index: number }) => {
-  const { name } = useUserAssetsStore(state => state.getUserAssetsWithPinnedFirstAndHiddenAssetsLast())?.[index] || STABLE_OBJECT;
+const AssetName = ({ uniqueId }: { uniqueId: UniqueId }) => {
+  const assetName = useUserAssetsStore(state => state.getUserAsset(uniqueId))?.name;
+  if (!assetName) return null;
   return (
     <Text color="label" size="17pt" weight="semibold" numberOfLines={1} ellipsizeMode="tail">
-      {name}
+      {assetName}
     </Text>
   );
 };
 
-const CoinCheckButton = memo(function CoinCheckButton({ index }: { index: number }) {
+const CoinCheckButton = memo(function CoinCheckButton({ uniqueId }: { uniqueId: UniqueId }) {
   const { isDarkMode } = useColorMode();
   const { selectedAssets, hiddenAssets, pinnedAssets } = useUserAssetsListContext();
-  const asset = userAssetsStore(state => state.getUserAssetsWithPinnedFirstAndHiddenAssetsLast())?.[index];
-
-  const uniqueId = asset.uniqueId;
 
   const outlineStyles = useAnimatedStyle(() => {
     const isHidden = hiddenAssets.value.includes(uniqueId);
@@ -140,8 +143,6 @@ const CoinCheckButton = memo(function CoinCheckButton({ index }: { index: number
     };
   });
 
-  if (!asset) return null;
-
   return (
     <View style={sx.checkboxContainer}>
       <View style={sx.iconAlignmentWrapper}>
@@ -163,11 +164,12 @@ const CoinCheckButton = memo(function CoinCheckButton({ index }: { index: number
   );
 });
 
-export function CoinRow({ index }: { index: number }) {
+export function CoinRow({ uniqueId }: { uniqueId: UniqueId }) {
   const { isEditing, toggleSelectedAsset } = useUserAssetsListContext();
-  const asset = userAssetsStore(state => state.getUserAssetsWithPinnedFirstAndHiddenAssetsLast())?.[index];
+  // const asset = useUserAssetsStore(state => state.getUserAsset(uniqueId));
 
   const handleNavigateToAsset = useCallback(() => {
+    const asset = useUserAssetsStore.getState().getUserAsset(uniqueId);
     if (!asset) return;
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, { asset, address: asset.address, chainId: asset.chainId });
   }, []);
@@ -182,17 +184,17 @@ export function CoinRow({ index }: { index: number }) {
   const onPress = useCallback(() => {
     'worklet';
     if (isEditing.value) {
-      toggleSelectedAsset(asset);
+      toggleSelectedAsset(uniqueId);
     } else {
       runOnJS(handleNavigateToAsset)();
     }
-  }, [index, handleNavigateToAsset, isEditing, toggleSelectedAsset]);
+  }, [handleNavigateToAsset, isEditing, toggleSelectedAsset]);
 
   return (
     <GestureHandlerButton disableHaptics onPressWorklet={onPress} scaleTo={0.95}>
       <Columns alignVertical="center">
         <Column width="content" style={checkmarkBackgroundDynamicStyle}>
-          <CoinCheckButton index={index} />
+          <CoinCheckButton uniqueId={uniqueId} />
         </Column>
         <Column>
           <HitSlop vertical="10px">
@@ -207,17 +209,17 @@ export function CoinRow({ index }: { index: number }) {
               gap={12}
             >
               <Box flexDirection="row" gap={10} flexShrink={1} justifyContent="center">
-                <CoinIcon index={index} />
+                <CoinIcon uniqueId={uniqueId} />
                 <Box gap={10} flexShrink={1} justifyContent="center">
-                  <AssetName index={index} />
+                  <AssetName uniqueId={uniqueId} />
                   <Inline alignVertical="center" space={{ custom: 5 }} wrap={false}>
-                    <Balance index={index} />
+                    <Balance uniqueId={uniqueId} />
                   </Inline>
                 </Box>
               </Box>
               <Box alignItems="flex-end">
-                <NativeBalance index={index} />
-                <PriceChange index={index} />
+                <NativeBalance uniqueId={uniqueId} />
+                <PriceChange uniqueId={uniqueId} />
               </Box>
             </Box>
           </HitSlop>

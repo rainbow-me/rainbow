@@ -17,7 +17,7 @@ import { ProfileBalance } from './ProfileBalance';
 import { ProfileActionButtons } from './ProfileActionButtons';
 import { RefreshControl } from 'react-native';
 import { UserAssetsList } from './UserAssets/UserAssetsList';
-import { SyncUserAssetsStoreWithContext, UserAssetsListProvider } from './UserAssets/UserAssetsListContext';
+import { UserAssetsListProvider } from './UserAssets/UserAssetsListContext';
 import { useWalletCohort } from './hooks/useWalletCohort';
 import { useAppIconIdentify } from './hooks/useAppIconIdentify';
 import { useRemoveFirstScreen } from './hooks/useRemoveFirstScreen';
@@ -72,7 +72,6 @@ function WalletPage() {
           <ProfileActionButtons />
           <UserAssetsListProvider>
             <UserAssetsList />
-            <SyncUserAssetsStoreWithContext />
           </UserAssetsListProvider>
 
           <ClaimablesProvider>

@@ -22,6 +22,7 @@ import {
 import { MMKV } from 'react-native-mmkv';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { makeMutable } from 'react-native-reanimated';
+import { EditAction } from '@/screens/WalletScreen/UserAssets/UserAssetsListContext';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
@@ -137,7 +138,8 @@ export const createUserAssetsStore = (address: Address | string) =>
         // Get pinned assets first
         const pinnedAssetsList = Array.from(pinnedAssets)
           .map(id => userAssets.get(id))
-          .filter((asset): asset is ParsedSearchAsset => asset !== undefined);
+          .filter((asset): asset is ParsedSearchAsset => asset !== undefined)
+          .sort((a, b) => +b.native.balance.amount - +a.native.balance.amount);
 
         // Get non-pinned and non-hidden assets
         const regularAssets = Array.from(userAssets.values()).filter(
@@ -147,8 +149,8 @@ export const createUserAssetsStore = (address: Address | string) =>
         // Get hidden assets last
         const hiddenAssetsList = Array.from(hiddenAssets)
           .map(id => userAssets.get(id))
-          .filter((asset): asset is ParsedSearchAsset => asset !== undefined);
-
+          .filter((asset): asset is ParsedSearchAsset => asset !== undefined)
+          .sort((a, b) => +b.native.balance.amount - +a.native.balance.amount);
         // Combine all three lists in order
         return [...pinnedAssetsList, ...regularAssets, ...hiddenAssetsList];
       },
@@ -240,34 +242,32 @@ export const createUserAssetsStore = (address: Address | string) =>
             }
           });
 
+          state.hiddenAssetsSharedvalue.value = Array.from(hiddenAssets);
+
           const hiddenAssetsBalance = calculateHiddenAssetsBalance({
             address,
             hiddenAssets,
             userAssets: state.userAssets,
           });
 
-          state.hiddenAssetsSharedvalue.value = Array.from(hiddenAssets);
-
           return { hiddenAssets, hiddenAssetsBalance };
         });
       },
 
-      setPinnedAssets: (uniqueIds: UniqueId[]) => {
+      setPinnedAssets: (selectedIds, action) => {
         set(state => {
           const pinnedAssets = new Set(state.pinnedAssets);
-          uniqueIds.forEach(uniqueId => {
-            if (pinnedAssets.has(uniqueId)) {
-              pinnedAssets.delete(uniqueId);
-            } else {
+
+          selectedIds.forEach(uniqueId => {
+            if (action === EditAction.pin) {
               pinnedAssets.add(uniqueId);
-              // we need to also check if the asset was hidden and unhide it
               if (state.hiddenAssets.has(uniqueId)) {
                 state.hiddenAssets.delete(uniqueId);
               }
+            } else if (action === EditAction.unpin) {
+              pinnedAssets.delete(uniqueId);
             }
           });
-
-          state.pinnedAssetsSharedvalue.value = Array.from(pinnedAssets);
 
           return { pinnedAssets };
         });

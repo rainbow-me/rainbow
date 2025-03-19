@@ -5,6 +5,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { SharedValue } from 'react-native-reanimated';
+import { EditAction } from '@/screens/WalletScreen/UserAssets/UserAssetsListContext';
 
 export type UserAssetsStoreType = ReturnType<
   typeof createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, TransformedUserAssetsData>
@@ -59,8 +60,8 @@ export interface UserAssetsState {
   getUserAssetsWithPinnedFirstAndHiddenAssetsLast: () => ParsedSearchAsset[];
   selectUserAssetIds: (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) => Generator<UniqueId, void, unknown>;
   selectUserAssets: (selector: (asset: ParsedSearchAsset) => boolean) => Generator<[UniqueId, ParsedSearchAsset], void, unknown>;
-  setHiddenAssets: (uniqueIds: UniqueId[]) => void;
-  setPinnedAssets: (uniqueIds: UniqueId[]) => void;
+  setHiddenAssets: (uniqueIds: UniqueId[], action: EditAction) => void;
+  setPinnedAssets: (uniqueIds: UniqueId[], action: EditAction) => void;
   setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
   setSearchQuery: (query: string) => void;
   setUserAssets: ({
