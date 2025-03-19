@@ -176,6 +176,8 @@ export const sentryTransport: Transport = (level: LogLevel, message, { type, tag
   }
 };
 
+const ERROR_MESSAGE_BLACKLIST = ['AbortError', 'Network request failed', 'There was an error with the request'];
+
 export class RainbowError extends Error {}
 
 /**
@@ -227,7 +229,7 @@ export class Logger {
 
   error(error: RainbowError, metadata: Metadata = {}) {
     if (error instanceof RainbowError) {
-      if (error.name === 'AbortError') return;
+      if (ERROR_MESSAGE_BLACKLIST.includes(error.message)) return;
       this.transport(LogLevel.Error, error, metadata);
     } else {
       this.transport(LogLevel.Error, new RainbowError(`logger.error was not provided a RainbowError`), metadata);
