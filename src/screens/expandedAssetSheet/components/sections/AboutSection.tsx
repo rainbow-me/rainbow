@@ -167,17 +167,18 @@ function Description({ text }: { text: string }) {
 }
 
 export function AboutSection() {
-  const { basicAsset: asset, assetMetadata: metadata } = useExpandedAssetSheetContext();
+  const { basicAsset: asset, assetMetadata: metadata, isRainbowToken } = useExpandedAssetSheetContext();
 
   const rowItems = useMemo(() => {
     const items: RowItem[] = [];
 
-    if (metadata?.links?.homepage?.url) {
+    const rainbowUrl = metadata?.links?.homepage?.url || metadata?.links?.rainbow?.url;
+    if (isRainbowToken && rainbowUrl) {
       items.push({
         icon: '􀎞',
         title: i18n.t(i18n.l.expanded_state.asset.social.website),
-        url: metadata.links.homepage.url,
-        value: formatUrl(metadata.links.homepage.url, false, true, true),
+        url: rainbowUrl,
+        value: formatUrl(rainbowUrl, false, true, true),
       });
     }
 

@@ -5,6 +5,7 @@ import { useAccountSettings } from '@/hooks';
 import { RainbowError, logger } from '@/logger';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
+import { staleBalancesStore } from '@/state/staleBalances';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -172,7 +173,7 @@ async function handleAndExecuteClaim({
           case TransactionStatus.SUCCEEDED:
             claimStatus.value = ClaimStatus.CONFIRMED;
             triggerHaptics('notificationSuccess');
-            useAirdropsStore.getState().markClaimed(claimable.uniqueId);
+            useAirdropsStore.getState().markClaimed({ accountAddress, uniqueId: claimable.uniqueId });
             logger.log('[useClaimAirdrop]: Claim transaction confirmed', { confirmations: receipt.confirmations });
             return;
           case TransactionStatus.FAILED:
@@ -187,6 +188,11 @@ async function handleAndExecuteClaim({
 
     if (result.success) {
       gasSettingsRef.current = 'disabled';
+      staleBalancesStore.getState().addStaleBalance({
+        address: accountAddress,
+        chainId: claimable.chainId,
+        info: { address: claimable.asset.address, transactionHash: result.txHash },
+      });
     } else {
       claimStatus.value = ClaimStatus.RECOVERABLE_ERROR;
       triggerHaptics('notificationError');

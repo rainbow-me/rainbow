@@ -8,14 +8,14 @@ import { AddysClaimable, BaseClaimable, Claimable, RainbowClaimable } from './ty
 export const parseClaimables = <C extends Claimable>(
   claimables: AddysClaimable[],
   currency: NativeCurrencyKey,
-  prune?: Map<string, number> | null
+  prune?: Record<string, number> | null
 ): C[] => {
   return claimables
     .map(claimable => {
       if (
         !(claimable.claim_action_type === 'transaction' || claimable.claim_action_type === 'sponsored') ||
         !claimable.claim_action?.length ||
-        prune?.has(claimable.unique_id)
+        prune?.[claimable.unique_id]
       ) {
         return undefined;
       }

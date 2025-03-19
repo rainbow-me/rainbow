@@ -47,6 +47,7 @@ type AirdropsQueryData = {
 
 type UniqueId = string;
 type Timestamp = number;
+type RecentlyClaimed = Record<Address | string, Record<UniqueId, Timestamp>>;
 
 type AirdropsState = {
   airdrops: {
@@ -56,7 +57,7 @@ type AirdropsState = {
     fetchedAt: { [pageNumber: number]: number };
     pagination: PaginationInfo | null;
   } | null;
-  recentlyClaimed: Map<UniqueId, Timestamp> | null;
+  recentlyClaimed: RecentlyClaimed | null;
   fetchNextPage: () => Promise<void>;
   getAirdrops: () => RainbowClaimable[] | null;
   getClaimable: (uniqueId: string) => RainbowClaimable | null;
@@ -66,7 +67,7 @@ type AirdropsState = {
   getNumberOfAirdrops: () => number | null;
   getPaginationInfo: () => PaginationInfo | null;
   hasNextPage: () => boolean;
-  markClaimed: (uniqueId: string) => void;
+  markClaimed: ({ accountAddress, uniqueId }: { accountAddress: Address | string; uniqueId: UniqueId }) => void;
 };
 
 export const INITIAL_PAGE_SIZE = 12;
@@ -81,7 +82,7 @@ let paginationPromise: { address: Address | string; currency: NativeCurrencyKey;
 export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsParams, AirdropsState>(
   {
     fetcher: fetchAirdrops,
-    onFetched: ({ data, params, set }) => pruneAirdropsData(data, params, set),
+    onFetched: ({ data, params, set }) => setOrPruneAirdropsData(data, params, set),
     cacheTime: time.days(1),
     params: {
       address: $ => $(userAssetsStoreManager).address,
@@ -205,7 +206,7 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
 
     hasNextPage: () => Boolean(get().getPaginationInfo()?.next),
 
-    markClaimed: uniqueId => {
+    markClaimed: ({ accountAddress, uniqueId }) => {
       set(state => {
         const { airdrops, queryCache, queryKey, recentlyClaimed } = state;
         const cacheEntry = queryCache[queryKey];
@@ -222,13 +223,13 @@ export const useAirdropsStore = createQueryStore<AirdropsQueryData, AirdropsPara
           if (result) newCacheEntry = { ...cacheEntry, data: result };
         }
 
-        if (!newAirdrops && !newCacheEntry) return state;
-
         return {
-          ...state,
           airdrops: newAirdrops,
           queryCache: newCacheEntry ? { ...queryCache, [queryKey]: newCacheEntry } : queryCache,
-          recentlyClaimed: new Map(recentlyClaimed).set(uniqueId, Date.now()),
+          recentlyClaimed: {
+            ...recentlyClaimed,
+            [accountAddress]: { ...recentlyClaimed?.[accountAddress], [uniqueId]: Date.now() },
+          },
         };
       });
     },
@@ -270,7 +271,7 @@ async function fetchAirdrops(
   }
 
   const recentlyClaimed = useAirdropsStore.getState().recentlyClaimed;
-  const claimables = parseClaimables<RainbowClaimable>(data.payload.claimables, currency, recentlyClaimed);
+  const claimables = parseClaimables<RainbowClaimable>(data.payload.claimables, currency, recentlyClaimed?.[address]);
   const prunedCount = recentlyClaimed ? data.payload.claimables.length - claimables.length : 0;
 
   return {
@@ -300,30 +301,17 @@ function isOnAirdropsRoute(): boolean {
   return activeRoute === Routes.AIRDROPS_SHEET || activeRoute === Routes.CLAIM_AIRDROP_SHEET;
 }
 
-function pruneAirdropsData(
+function setOrPruneAirdropsData(
   data: AirdropsQueryData,
   params: AirdropsParams,
   set: (partial: AirdropsState | Partial<AirdropsState> | ((state: AirdropsState) => AirdropsState | Partial<AirdropsState>)) => void
 ): void {
   // Prune expired optimistic updates
   const { airdrops, getNumberOfAirdrops, recentlyClaimed } = useAirdropsStore.getState();
-  let newRecentlyClaimed: Map<UniqueId, Timestamp> | null = null;
-  let didPruneRecentlyClaimed = false;
+  const { didPruneRecentlyClaimed, newRecentlyClaimed } = pruneRecentlyClaimed(params.address, recentlyClaimed);
 
-  if (recentlyClaimed?.size) {
-    const now = Date.now();
-    newRecentlyClaimed = new Map<UniqueId, Timestamp>();
-    for (const [uniqueId, timestamp] of recentlyClaimed.entries()) {
-      const isExpired = now - timestamp > OPTIMISTIC_UPDATE_EVICTION_TIME;
-      if (!isExpired) newRecentlyClaimed.set(uniqueId, timestamp);
-      else didPruneRecentlyClaimed = true;
-    }
-  }
-  if (!didPruneRecentlyClaimed) newRecentlyClaimed = recentlyClaimed;
-
-  // Handle airdrops sheet pull-to-refresh case
-  const isAirdropsSheetOpen = isOnAirdropsRoute();
-  if (isAirdropsSheetOpen && params.page === 1 && params.pageSize === FULL_PAGE_SIZE && params.address) {
+  // Handle discover and airdrops sheet pull-to-refresh cases
+  if (params.page === 1 && params.pageSize === FULL_PAGE_SIZE && params.address) {
     set({
       airdrops: {
         address: params.address,
@@ -337,7 +325,7 @@ function pruneAirdropsData(
     return;
   }
 
-  if (!airdrops || isAirdropsSheetOpen) {
+  if (!airdrops || isOnAirdropsRoute()) {
     if (didPruneRecentlyClaimed) set({ recentlyClaimed: newRecentlyClaimed });
     return;
   }
@@ -358,4 +346,34 @@ function pruneAirdropsData(
   const now = Date.now();
   const isStale = Object.values(airdrops.fetchedAt).some(fetchedAt => now - fetchedAt > STALE_TIME);
   if (isStale) set({ airdrops: null, recentlyClaimed: newRecentlyClaimed });
+}
+
+function pruneRecentlyClaimed(
+  currentAddress: Address | string | null,
+  recentlyClaimed: RecentlyClaimed | null
+): { didPruneRecentlyClaimed: boolean; newRecentlyClaimed: RecentlyClaimed | null } {
+  let didPruneRecentlyClaimed = false;
+
+  if (currentAddress && recentlyClaimed) {
+    const now = Date.now();
+    const newRecentlyClaimed: RecentlyClaimed = {};
+
+    for (const [address, claims] of Object.entries(recentlyClaimed)) {
+      const newClaims: Record<string, number> = {};
+      for (const [uniqueId, timestamp] of Object.entries(claims)) {
+        const isExpired = now - timestamp > OPTIMISTIC_UPDATE_EVICTION_TIME;
+        if (!isExpired) newClaims[uniqueId] = timestamp;
+        else didPruneRecentlyClaimed = true;
+      }
+      if (Object.keys(newClaims).length) newRecentlyClaimed[address] = newClaims;
+    }
+
+    if (didPruneRecentlyClaimed)
+      return {
+        didPruneRecentlyClaimed,
+        newRecentlyClaimed: Object.keys(newRecentlyClaimed).length ? newRecentlyClaimed : null,
+      };
+  }
+
+  return { didPruneRecentlyClaimed, newRecentlyClaimed: recentlyClaimed };
 }
