@@ -5,7 +5,6 @@ import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import * as lang from '@/languages';
 import { ActivityTypeIcon } from './FastTransactionCoinRow';
-import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 
 const sx = StyleSheet.create({
   icon: {
