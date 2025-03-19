@@ -57,6 +57,11 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
                 </Bleed>
               </IconContainer>
             )}
+            {iconName === 'farcaster' && (
+              <IconContainer height={10} width={20}>
+                <Icon name="warpcast" color={accentColors.color} width={14} />
+              </IconContainer>
+            )}
             <TextShadow blur={12} shadowOpacity={0.24}>
               <Text weight="semibold" size="17pt" color="accent">
                 {title}
@@ -188,6 +193,22 @@ export function AboutSection() {
         title: i18n.t(i18n.l.expanded_state.asset.social.twitter),
         url: metadata.links.twitter.url,
         value: `@${metadata.links.twitter.url.split('/').pop()}`,
+      });
+    }
+
+    if (metadata?.links?.farcaster?.url) {
+      items.push({
+        iconName: 'farcaster',
+        title: i18n.t(i18n.l.expanded_state.asset.social.farcaster),
+        url: metadata.links.farcaster.url,
+      });
+    }
+
+    if (metadata?.links?.other?.url) {
+      items.push({
+        icon: '􀊫',
+        title: i18n.t(i18n.l.expanded_state.asset.social.other),
+        url: metadata.links.other.url,
       });
     }
 
