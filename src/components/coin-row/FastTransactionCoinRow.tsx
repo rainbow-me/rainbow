@@ -177,6 +177,13 @@ const BottomRow = React.memo(function BottomRow({
   nativeCurrency: NativeCurrencyKey;
   theme: ThemeContextProps;
 }) {
+  const rainbowSuperToken = useMemo(() => {
+    if (transaction?.type === 'launch') {
+      return useSuperTokenStore.getState().getSuperTokenByTransactionHash(transaction.hash);
+    }
+    return undefined;
+  }, [transaction.hash, transaction.type]);
+
   const { type, to, asset } = transaction;
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
@@ -185,6 +192,10 @@ const BottomRow = React.memo(function BottomRow({
   if (type === 'contract_interaction' && to) {
     description = transaction.contract?.name || address(to, 6, 4);
     tag = transaction.description;
+  }
+
+  if (type === 'launch' && rainbowSuperToken) {
+    description = rainbowSuperToken?.name;
   }
 
   if (transaction?.type === 'mint') {
@@ -274,19 +285,19 @@ export const ActivityIcon = ({
       return <TwoCoinsIcon over={inAsset} under={outAsset} badge={badge && transaction.chainId !== ChainId.mainnet} />;
   }
 
-  let iconUrl = transaction?.contract?.iconUrl;
-
+  let contractIconUrl = transaction?.contract?.iconUrl;
+  let coinIconUrl = transaction?.asset?.icon_url;
   if (transaction?.type === 'launch') {
-    if (transaction.asset && rainbowSuperToken) {
-      transaction.asset.icon_url = rainbowSuperToken?.imageUrl;
-      if (transaction.asset.colors && rainbowSuperToken?.color) {
+    if (rainbowSuperToken) {
+      if (transaction.asset?.colors && rainbowSuperToken?.color) {
         transaction.asset.colors.primary = rainbowSuperToken?.color;
       }
+      coinIconUrl = rainbowSuperToken?.imageUrl;
     }
-    iconUrl = undefined;
+    contractIconUrl = undefined;
   }
 
-  if (iconUrl) {
+  if (contractIconUrl) {
     return (
       <View
         style={{
@@ -313,7 +324,7 @@ export const ActivityIcon = ({
               borderRadius: 10,
             }}
             source={{
-              uri: iconUrl,
+              uri: contractIconUrl,
             }}
           />
         </View>
@@ -398,7 +409,7 @@ export const ActivityIcon = ({
   return (
     <View style={sx.iconContainer}>
       <RainbowCoinIcon
-        icon={transaction?.asset?.icon_url}
+        icon={coinIconUrl}
         chainId={transaction?.asset?.chainId || ChainId.mainnet}
         symbol={transaction?.asset?.symbol || ''}
         color={transaction?.asset?.colors?.primary || transaction?.asset?.colors?.fallback || undefined}
