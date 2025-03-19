@@ -37,13 +37,14 @@ import { useBrowserStore } from '@/state/browser/browserStore';
 import { DndProvider, Draggable, DraggableGrid, DraggableGridProps, UniqueIdentifier } from '../drag-and-drop';
 import { EasingGradient } from '../easing-gradient/EasingGradient';
 import { useBrowserContext } from './BrowserContext';
-import { getNameFromFormattedUrl } from './utils';
+import { getNameFromFormattedUrl, normalizeUrlWorklet } from './utils';
 import { useTrendingDApps } from '@/resources/metadata/trendingDapps';
 import { DApp } from '@/graphql/__generated__/metadata';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, HTTP, HTTPS } from './constants';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { FEATURED_RESULTS, useExperimentalFlag } from '@/config';
 import { FeaturedResultStack, FeaturedResultStackProps } from '@/components/FeaturedResult/FeaturedResultStack';
+import { logger } from '@/logger';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -97,19 +98,12 @@ const DappBrowserFeaturedResults = ({ children }: { children: FeaturedResultStac
   const { featured_results } = useRemoteConfig();
   const featuredResultsEnabled = (useExperimentalFlag(FEATURED_RESULTS) || featured_results) && !IS_TEST;
 
-  const onNavigate = useCallback(
-    (href: string) => {
-      goToUrl(href);
-    },
-    [goToUrl]
-  );
-
   if (!featuredResultsEnabled) {
     return null;
   }
 
   return (
-    <FeaturedResultStack onNavigate={onNavigate} placementId="dapp_browser_card">
+    <FeaturedResultStack onNavigate={goToUrl} placementId="dapp_browser_card">
       {children}
     </FeaturedResultStack>
   );
@@ -379,18 +373,8 @@ const Card = memo(function Card({
   }, [isFavorite]);
 
   const dappIconUrl = useMemo(() => {
-    const dappUrl = site.url;
-    const iconUrl = site.image;
-    const url = dappUrl.startsWith('http') ? dappUrl : `https://${dappUrl}`;
-    const host = new URL(url).hostname;
-    const dappOverride = useBrowserDappsStore.getState().findDappByHostname(host);
-    // 👇 TODO: Remove this once the Uniswap logo in the dapps metadata is fixed
-    const isUniswap = host === 'uniswap.org' || host.endsWith('.uniswap.org');
-    if (dappOverride?.iconUrl && !isUniswap) {
-      return dappOverride.iconUrl;
-    }
-    return iconUrl;
-  }, [site.image, site.url]);
+    return site.image;
+  }, [site.image]);
 
   return (
     <Box>
