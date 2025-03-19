@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
@@ -178,16 +178,13 @@ const BottomRow = React.memo(function BottomRow({
   theme: ThemeContextProps;
 }) {
   const { type, to, asset } = transaction;
-  const rainbowSuperToken = useSuperTokenStore.getState().getSuperTokenByTransactionHash(transaction.hash);
   const separatorSecondary = useForegroundColor('separatorSecondary');
-
-  const isRainbowTokenLaunch = type === 'launch';
 
   let description = transaction.description;
   let tag: string | undefined;
   if (type === 'contract_interaction' && to) {
-    description = isRainbowTokenLaunch ? '' : transaction.contract?.name || address(to, 6, 4);
-    tag = rainbowSuperToken ? '' : transaction.description;
+    description = transaction.contract?.name || address(to, 6, 4);
+    tag = transaction.description;
   }
 
   if (transaction?.type === 'mint') {
@@ -262,6 +259,13 @@ export const ActivityIcon = ({
   size?: 40 | 20 | 14 | 16;
   theme: ThemeContextProps;
 }) => {
+  const rainbowSuperToken = useMemo(() => {
+    if (transaction?.type === 'launch') {
+      return useSuperTokenStore.getState().getSuperTokenByTransactionHash(transaction.hash);
+    }
+    return undefined;
+  }, [transaction.hash, transaction.type]);
+
   if (['wrap', 'unwrap', 'swap'].includes(transaction?.type)) {
     const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
     const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
@@ -273,7 +277,6 @@ export const ActivityIcon = ({
   let iconUrl = transaction?.contract?.iconUrl;
 
   if (transaction?.type === 'launch') {
-    const rainbowSuperToken = useSuperTokenStore.getState().getSuperTokenByTransactionHash(transaction.hash);
     if (transaction.asset && rainbowSuperToken) {
       transaction.asset.icon_url = rainbowSuperToken?.imageUrl;
       if (transaction.asset.colors && rainbowSuperToken?.color) {
