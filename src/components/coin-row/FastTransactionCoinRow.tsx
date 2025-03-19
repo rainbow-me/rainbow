@@ -262,7 +262,6 @@ export const ActivityIcon = ({
   size?: 40 | 20 | 14 | 16;
   theme: ThemeContextProps;
 }) => {
-  const rainbowSuperToken = useSuperTokenStore(state => state.getSuperTokenByTransactionHash(transaction.hash));
   if (['wrap', 'unwrap', 'swap'].includes(transaction?.type)) {
     const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
     const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
@@ -271,14 +270,17 @@ export const ActivityIcon = ({
       return <TwoCoinsIcon over={inAsset} under={outAsset} badge={badge && transaction.chainId !== ChainId.mainnet} />;
   }
 
-  const contractIconUrl = transaction?.contract?.iconUrl;
-  const rainbowSuperTokenIconUrl = rainbowSuperToken?.imageUrl;
-  const iconUrl = rainbowSuperTokenIconUrl || contractIconUrl;
-  let color;
-  if (rainbowSuperToken) {
-    color = rainbowSuperToken.color;
-  } else if (contractIconUrl) {
-    color = transaction.asset?.color;
+  let iconUrl = transaction?.contract?.iconUrl;
+
+  if (transaction?.type === 'launch') {
+    const rainbowSuperToken = useSuperTokenStore.getState().getSuperTokenByTransactionHash(transaction.hash);
+    if (transaction.asset && rainbowSuperToken) {
+      transaction.asset.icon_url = rainbowSuperToken?.imageUrl;
+      if (transaction.asset.colors && rainbowSuperToken?.color) {
+        transaction.asset.colors.primary = rainbowSuperToken?.color;
+      }
+    }
+    iconUrl = undefined;
   }
 
   if (iconUrl) {
@@ -294,7 +296,7 @@ export const ActivityIcon = ({
       >
         <View
           style={{
-            shadowColor: !color ? globalColors.grey100 : color,
+            shadowColor: !transaction?.asset?.color ? globalColors.grey100 : transaction.asset.color,
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.24,
             shadowRadius: 9,
