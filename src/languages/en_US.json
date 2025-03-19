@@ -2269,6 +2269,11 @@
           "confirmed": "Interacted",
           "failed": "Interaction Failed"
         },
+        "launch": {
+          "pending": "Launching",
+          "confirmed": "Launched",
+          "failed": "Launch Failed"
+        },
         "swap": {
           "pending": "Swapping",
           "confirmed": "Swapped",
@@ -3236,7 +3241,9 @@
         "too_big": "Too big.",
         "must_be_greater_than_0": "Must be greater than 0",
         "amount_is_greater_than_balance": "Amount is greater than balance",
-        "amount_is_greater_than_max_prebuy_amount": "Exceeds max pre-buy amount of %{maxPrebuyAmount} %{chainNativeAssetSymbol}"
+        "amount_is_greater_than_max_prebuy_amount": "Exceeds max pre-buy amount of %{maxPrebuyAmount} %{chainNativeAssetSymbol}",
+        "amount_is_less_than_min_prebuy_amount": "Must exceed min pre-buy amount of %{minPrebuyAmount} %{chainNativeAssetSymbol}",
+        "amount_too_small": "Amount too small! Try a little more!"
       },
       "titles": {
         "total_supply": "Total supply",

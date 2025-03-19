@@ -8,7 +8,7 @@ import { time } from '@/utils';
 // Types
 export type TokenMetadata = Pick<
   Token,
-  'description' | 'volume1d' | 'marketCap' | 'totalSupply' | 'circulatingSupply' | 'fullyDilutedValuation' | 'links'
+  'description' | 'volume1d' | 'marketCap' | 'totalSupply' | 'circulatingSupply' | 'fullyDilutedValuation' | 'links' | 'rainbow'
 >;
 
 // Types for the query arguments

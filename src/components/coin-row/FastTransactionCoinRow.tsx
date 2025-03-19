@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
@@ -25,6 +25,7 @@ import * as lang from '@/languages';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 import { ChainImage } from '../coin-icon/ChainImage';
+import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 
 export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;
@@ -176,6 +177,13 @@ const BottomRow = React.memo(function BottomRow({
   nativeCurrency: NativeCurrencyKey;
   theme: ThemeContextProps;
 }) {
+  const rainbowSuperToken = useMemo(() => {
+    if (transaction?.type === 'launch') {
+      return useSuperTokenStore.getState().getSuperTokenByTransactionHash(transaction.hash);
+    }
+    return undefined;
+  }, [transaction.hash, transaction.type]);
+
   const { type, to, asset } = transaction;
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
@@ -184,6 +192,10 @@ const BottomRow = React.memo(function BottomRow({
   if (type === 'contract_interaction' && to) {
     description = transaction.contract?.name || address(to, 6, 4);
     tag = transaction.description;
+  }
+
+  if (type === 'launch' && rainbowSuperToken) {
+    description = rainbowSuperToken?.name;
   }
 
   if (transaction?.type === 'mint') {
@@ -258,6 +270,13 @@ export const ActivityIcon = ({
   size?: 40 | 20 | 14 | 16;
   theme: ThemeContextProps;
 }) => {
+  const rainbowSuperToken = useMemo(() => {
+    if (transaction?.type === 'launch') {
+      return useSuperTokenStore.getState().getSuperTokenByTransactionHash(transaction.hash);
+    }
+    return undefined;
+  }, [transaction.hash, transaction.type]);
+
   if (['wrap', 'unwrap', 'swap'].includes(transaction?.type)) {
     const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
     const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
@@ -265,7 +284,20 @@ export const ActivityIcon = ({
     if (!!inAsset?.icon_url && !!outAsset?.icon_url)
       return <TwoCoinsIcon over={inAsset} under={outAsset} badge={badge && transaction.chainId !== ChainId.mainnet} />;
   }
-  if (transaction?.contract?.iconUrl) {
+
+  let contractIconUrl = transaction?.contract?.iconUrl;
+  let coinIconUrl = transaction?.asset?.icon_url;
+  if (transaction?.type === 'launch') {
+    if (rainbowSuperToken) {
+      if (transaction.asset?.colors && rainbowSuperToken?.color) {
+        transaction.asset.colors.primary = rainbowSuperToken?.color;
+      }
+      coinIconUrl = rainbowSuperToken?.imageUrl;
+    }
+    contractIconUrl = undefined;
+  }
+
+  if (contractIconUrl) {
     return (
       <View
         style={{
@@ -292,7 +324,7 @@ export const ActivityIcon = ({
               borderRadius: 10,
             }}
             source={{
-              uri: transaction?.contract?.iconUrl,
+              uri: contractIconUrl,
             }}
           />
         </View>
@@ -377,7 +409,7 @@ export const ActivityIcon = ({
   return (
     <View style={sx.iconContainer}>
       <RainbowCoinIcon
-        icon={transaction?.asset?.icon_url}
+        icon={coinIconUrl}
         chainId={transaction?.asset?.chainId || ChainId.mainnet}
         symbol={transaction?.asset?.symbol || ''}
         color={transaction?.asset?.colors?.primary || transaction?.asset?.colors?.fallback || undefined}
