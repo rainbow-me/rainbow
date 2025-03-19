@@ -45,6 +45,7 @@ export const getDirection = (type: TransactionType): TransactionDirection => {
 
 export const getAssetFromChanges = (changes: TransactionChanges, type: TransactionType) => {
   if (type === 'sale') return changes?.find(c => c?.direction === 'out')?.asset;
+  if (type === 'launch') return changes?.find(c => c?.asset && !c.asset.isNativeAsset)?.asset;
   return changes?.[0]?.asset;
 };
 
