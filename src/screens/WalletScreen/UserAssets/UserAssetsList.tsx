@@ -81,10 +81,11 @@ function UserAssetsListComponent() {
   }, []);
 
   const listStyle = useAnimatedStyle(() => {
-    const multiplier = isExpanded.value ? userAssets.length : MAX_CONDENSED_ASSETS + 1;
     return {
       height: withSpring(
-        isExpanded.value ? multiplier * COIN_ROW_WITH_PADDING_HEIGHT : multiplier * COIN_ROW_WITH_PADDING_HEIGHT,
+        isExpanded.value
+          ? userAssets.length * COIN_ROW_WITH_PADDING_HEIGHT + DIVIDER_HEIGHT
+          : MAX_CONDENSED_ASSETS * COIN_ROW_WITH_PADDING_HEIGHT + DIVIDER_HEIGHT,
         TIMING_CONFIGS.fastFadeConfig
       ),
     };
