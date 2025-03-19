@@ -113,7 +113,7 @@ export default function ChangeWalletSheet() {
   const walletsByAddress = useMemo(() => {
     return Object.values(wallets || {}).reduce(
       (acc, wallet) => {
-        wallet.addresses.forEach(account => {
+        wallet.addresses?.forEach(account => {
           acc[account.address] = wallet;
         });
         return acc;
@@ -127,10 +127,10 @@ export default function ChangeWalletSheet() {
     const bluetoothWallets: AddressItem[] = [];
     const readOnlyWallets: AddressItem[] = [];
 
-    Object.values(walletsWithBalancesAndNames).forEach(wallet => {
+    Object.values(walletsWithBalancesAndNames)?.forEach(wallet => {
       const visibleAccounts = (wallet.addresses || []).filter(account => account.visible);
 
-      visibleAccounts.forEach(account => {
+      visibleAccounts?.forEach(account => {
         const balanceText = account.balancesMinusHiddenBalances
           ? account.balancesMinusHiddenBalances
           : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
@@ -200,7 +200,7 @@ export default function ChangeWalletSheet() {
         const visibleAccounts = wallet.addresses.filter(account => account.visible);
         let walletTotalBalance: string | null = null;
 
-        visibleAccounts.forEach(account => {
+        visibleAccounts?.forEach(account => {
           if (!account.balancesMinusHiddenBalances) {
             isLoadingBalance = true;
             return;
