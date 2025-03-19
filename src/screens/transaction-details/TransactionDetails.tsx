@@ -1,5 +1,6 @@
-import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { LayoutChangeEvent } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SlackSheet } from '@/components/sheet';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RainbowTransaction } from '@/entities';
@@ -12,7 +13,6 @@ import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
 import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
 import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
-import { LayoutChangeEvent } from 'react-native';
 import { useDimensions } from '@/hooks';
 
 type RouteParams = {
@@ -32,17 +32,19 @@ export const TransactionDetails = () => {
   const [statusIconHidden, setStatusIconHidden] = useState(false);
   const { presentedToast, presentToastFor } = useTransactionDetailsToasts();
   const { height: deviceHeight } = useDimensions();
+  const { bottom } = useSafeAreaInsets();
 
   // Dynamic sheet height based on content height
   useEffect(() => setParams({ longFormHeight: sheetHeight }), [setParams, sheetHeight]);
 
-  const onSheetContentLayout = (event: LayoutChangeEvent) => {
-    const contentHeight = event.nativeEvent.layout.height;
-    if (contentHeight > deviceHeight) {
-      setStatusIconHidden(true);
-    }
-    setSheetHeight(contentHeight);
-  };
+  const onSheetContentLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      const contentHeight = event.nativeEvent.layout.height;
+      if (contentHeight > deviceHeight) setStatusIconHidden(true);
+      setSheetHeight(contentHeight + (IS_ANDROID ? bottom : 0));
+    },
+    [bottom, deviceHeight]
+  );
 
   const presentAddressToast = useCallback(() => {
     presentToastFor('address');

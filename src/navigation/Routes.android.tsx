@@ -139,11 +139,6 @@ function MainOuterNavigator() {
   return (
     <OuterStack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <OuterStack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR} />
-      <OuterStack.Screen
-        component={SendSheet}
-        name={Routes.SEND_SHEET_NAVIGATOR}
-        options={expandedPresetWithSmallGestureResponseDistance}
-      />
     </OuterStack.Navigator>
   );
 }
@@ -252,6 +247,7 @@ function BSNavigator() {
       <BSStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} />
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
       <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
+      <BSStack.Screen component={SendSheet} name={Routes.SEND_SHEET_NAVIGATOR} options={expandedPresetWithSmallGestureResponseDistance} />
       <BSStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} />
       <BSStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} />
       <BSStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} />

@@ -135,13 +135,21 @@ export function AssetContextMenu() {
         Clipboard.setString(asset.address);
         break;
       case ContextMenuActions.Share: {
-        const url = buildTokenDeeplink({
-          networkLabel: chainLabels[asset.chainId],
-          contractAddress: asset.address,
-        });
-        Share.share({
-          url,
-        });
+        const url =
+          assetMetadata?.links?.rainbow?.url ??
+          buildTokenDeeplink({
+            networkLabel: chainLabels[asset.chainId],
+            contractAddress: asset.address,
+          });
+        Share.share(
+          IS_ANDROID
+            ? {
+                message: url,
+              }
+            : {
+                url,
+              }
+        );
         break;
       }
       case ContextMenuActions.BlockExplorer:
