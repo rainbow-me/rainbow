@@ -4,6 +4,8 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 export interface SuperToken {
   address: string;
   chainId: number;
+  name: string;
+  symbol: string;
   description?: string;
   imageUrl?: string;
   links?: TokenLinks;

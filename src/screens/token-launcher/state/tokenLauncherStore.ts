@@ -37,7 +37,6 @@ import { calculateAndCacheDominantColor } from '@/hooks/usePersistentDominantCol
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { NewTransaction, TransactionStatus } from '@/entities/transactions/transaction';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { AssetContract } from '@/entities';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { ParsedAsset } from '@/resources/assets/types';
 // TODO: same as colors.alpha, move to a helper file
@@ -194,12 +193,12 @@ interface TokenLauncherStore {
 
 // For testing. Makes it easier to test the token creation flow without having to enter all the info.
 // const testTokenInfo = {
-// Gray image
+// // Gray image
 // imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1741722824/token-launcher/tokens/fjcou8ceqmxbg9ncoduy.jpg',
 // imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1741722824/token-launcher/tokens/fjcou8ceqmxbg9ncoduy.jpg',
-// bright image
-// imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
-// imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+// //bright image
+// //imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+// // imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
 // name: 'Test Token',
 // symbol: 'TEST',
 // description: 'This is a test token',
@@ -584,8 +583,10 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
     try {
       const initialTick = TokenLauncherSDK.getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
+      // @ts-ignore - TODO: fix this Swap SDK types isn't supporting legacy gasPrice
       const gasParams = transactionOptions.gasPrice
         ? {
+            // @ts-ignore - TODO: fix this Swap SDK types isn't supporting legacy gasPrice
             gasPrice: transactionOptions.gasPrice,
           }
         : {
@@ -627,6 +628,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
         // Add token to SuperTokenStore
         useSuperTokenStore.getState().addSuperToken({
+          name,
+          symbol,
           address: result.tokenAddress,
           chainId,
           description,
