@@ -21,7 +21,7 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
-import { time } from '@/utils';
+import { ethereumUtils, time } from '@/utils';
 
 export interface GasInfo {
   gasFeeDisplay: string | undefined;
@@ -217,7 +217,7 @@ export async function getGasInfo({
   const gasFeeNativeToken = formatUnits(safeBigInt(gasFeeWei), chainNativeAsset.decimals);
   const userNativeAsset = userAssetsStore.getState().getNativeAssetForChain(chainId);
   const nativeAssetBalance = userNativeAsset?.balance?.amount || '0';
-  const nativeAssetPrice = userNativeAsset?.price?.value?.toString();
+  const nativeAssetPrice = (userNativeAsset?.price?.value || ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId })).toString();
 
   let gasFeeDisplay;
 
