@@ -165,7 +165,7 @@ export function WalletConnectApprovalSheet() {
   const timedOut = params?.timedOut;
   const failureExplainSheetVariant = params?.failureExplainSheetVariant;
   const chainIds = meta?.chainIds; // WC v2 supports multi-chain
-  const chainId = meta?.proposedChainId || chainIds?.[0] || 1; // WC v1 only supports 1
+  const chainId = meta?.proposedChainId || chainIds?.[0] || ChainId.mainnet; // WC v1 only supports 1
   const currentChainId = params?.currentChainId;
   const [approvalChainId, setApprovalChainId] = useState<ChainId>(currentChainId || settingsChainId);
   const isWalletConnectV2 = meta.isWalletConnectV2;
@@ -211,11 +211,19 @@ export function WalletConnectApprovalSheet() {
    * v2.
    */
   const approvalNetworkInfo = useMemo(() => {
-    const chain = useBackendNetworksStore.getState().getDefaultChains()[approvalChainId || ChainId.mainnet];
+    const chain = useBackendNetworksStore.getState().getDefaultChains()[approvalChainId];
+    if (!chain) {
+      return {
+        chainId: approvalChainId,
+        color: colors.alpha(colors.blueGreyDark, 0.3),
+        name: useBackendNetworksStore.getState().getChainsLabel()[approvalChainId],
+      };
+    }
+
     const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chain.id];
     return {
       chainId: chain.id,
-      color: isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary,
+      color: isDarkMode ? nativeAsset?.colors.primary : nativeAsset?.colors.fallback || nativeAsset?.colors.primary,
       name: chain.name,
     };
   }, [approvalChainId, isDarkMode]);
