@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Text, useForegroundColor } from '@/design-system';
 import { RainbowTransaction, TransactionStatus } from '@/entities';

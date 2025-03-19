@@ -4,9 +4,14 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 export interface SuperToken {
   address: string;
   chainId: number;
+  name: string;
+  symbol: string;
   description?: string;
   imageUrl?: string;
   links?: TokenLinks;
+  transactionHash?: string;
+  color?: string;
+  cachedAt?: number; // Timestamp when token was cached
 }
 
 type AddSuperTokenParams = Omit<SuperToken, 'links'> & {
@@ -22,20 +27,29 @@ type AddSuperTokenParams = Omit<SuperToken, 'links'> & {
 
 export type SuperTokenStoreState = {
   tokens: Record<string, SuperToken>;
+  checkTokenExpiration: (token?: SuperToken) => SuperToken | undefined;
   getSuperToken: (address?: string, chainId?: number) => SuperToken | undefined;
+  getSuperTokenByTransactionHash: (transactionHash?: string) => SuperToken | undefined;
   addSuperToken: (token: AddSuperTokenParams) => void;
   removeSuperToken: (address: string, chainId: number) => void;
 };
 
 export const getSuperTokenKey = (address: string, chainId: number): string => `${address.toLowerCase()}_${chainId}`;
-
+// Cache expiration duration in milliseconds (30 minutes)
+const TOKEN_CACHE_DURATION = 30 * 60 * 1000;
 export const useSuperTokenStore = createRainbowStore<SuperTokenStoreState>(
   (set, get) => ({
     tokens: {},
     getSuperToken: (address?: string, chainId?: number) => {
       if (!address || !chainId) return undefined;
       const key = getSuperTokenKey(address, chainId);
-      return get().tokens[key];
+      const token = get().tokens[key];
+      return get().checkTokenExpiration(token);
+    },
+    getSuperTokenByTransactionHash: (transactionHash?: string) => {
+      if (!transactionHash) return undefined;
+      const token = Object.values(get().tokens).find(token => token.transactionHash === transactionHash);
+      return get().checkTokenExpiration(token);
     },
     addSuperToken: (token: AddSuperTokenParams) => {
       const key = getSuperTokenKey(token.address, token.chainId);
@@ -45,9 +59,19 @@ export const useSuperTokenStore = createRainbowStore<SuperTokenStoreState>(
           [key]: {
             ...token,
             links: token.links ? formatSuperTokenLinks(token.links) : undefined,
+            cachedAt: Date.now(), // Add timestamp when token is cached
           },
         },
       }));
+    },
+    checkTokenExpiration: (token?: SuperToken) => {
+      if (!token) return undefined;
+      const now = Date.now();
+      if (token.cachedAt && now - token.cachedAt > TOKEN_CACHE_DURATION) {
+        get().removeSuperToken(token.address, token.chainId);
+        return undefined;
+      }
+      return token;
     },
     removeSuperToken: (address: string, chainId: number) => {
       const key = getSuperTokenKey(address, chainId);

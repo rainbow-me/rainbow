@@ -8,7 +8,6 @@ import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperT
 export default function useAccountAsset(uniqueId: string, nativeCurrency: NativeCurrencyKey | undefined = undefined) {
   const accountAsset = useUserAssetsStore(state => state.getLegacyUserAsset(uniqueId));
   const rainbowSuperToken = useSuperTokenStore(state => state.getSuperToken(accountAsset?.address, accountAsset?.chainId));
-  const removeSuperToken = useSuperTokenStore(state => state.removeSuperToken);
   // this is temporary for FastBalanceCoinRow to make a tiny bit faster
   // we pass nativeCurrency only in that case
   // for all the other cases it will work as expected
@@ -20,15 +19,15 @@ export default function useAccountAsset(uniqueId: string, nativeCurrency: Native
     let asset = accountAsset;
     // supplements data for tokens launched in rainbow while we wait for ingestion
     if (rainbowSuperToken) {
-      if (asset.icon_url === '') {
-        asset = {
-          ...accountAsset,
-          icon_url: rainbowSuperToken.imageUrl,
-          type: 'rainbow',
-        };
-      } else {
-        removeSuperToken(accountAsset.address, accountAsset.chainId);
-      }
+      asset = {
+        ...accountAsset,
+        icon_url: rainbowSuperToken.imageUrl,
+        type: 'rainbow',
+        color: rainbowSuperToken.color,
+        colors: {
+          primary: rainbowSuperToken.color || '',
+        },
+      };
     }
     return parseAssetNative(asset, nativeCurrencyToUse);
   }

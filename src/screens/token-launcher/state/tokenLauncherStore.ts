@@ -14,6 +14,7 @@ import { memoFn } from '@/utils/memoFn';
 import { calculateTokenomics } from '../helpers/calculateTokenomics';
 import store from '@/redux/store';
 import { GasSpeed } from '@/__swaps__/types/gas';
+import { Network } from '@/state/backendNetworks/types';
 import { formatCurrency } from '@/helpers/strings';
 import {
   formatLinkInputToUrl,
@@ -32,6 +33,12 @@ import { logger, RainbowError } from '@/logger';
 import { analyticsV2 } from '@/analytics';
 import { Link, LinkType } from '../types';
 import { useSuperTokenStore } from './rainbowSuperTokenStore';
+import { calculateAndCacheDominantColor } from '@/hooks/usePersistentDominantColorFromImage';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { NewTransaction, TransactionStatus } from '@/entities/transactions/transaction';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { ParsedAsset } from '@/resources/assets/types';
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
 
@@ -186,15 +193,15 @@ interface TokenLauncherStore {
 
 // For testing. Makes it easier to test the token creation flow without having to enter all the info.
 // const testTokenInfo = {
-//   // Gray image
-//   // imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1741722824/token-launcher/tokens/fjcou8ceqmxbg9ncoduy.jpg',
-//   // imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1741722824/token-launcher/tokens/fjcou8ceqmxbg9ncoduy.jpg',
-//   // bright image
-//   imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
-//   imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
-//   name: 'Test Token',
-//   symbol: 'TEST',
-//   description: 'This is a test token',
+// // Gray image
+// imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1741722824/token-launcher/tokens/fjcou8ceqmxbg9ncoduy.jpg',
+// imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1741722824/token-launcher/tokens/fjcou8ceqmxbg9ncoduy.jpg',
+// //bright image
+// //imageUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+// // imageUri: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
+// name: 'Test Token',
+// symbol: 'TEST',
+// description: 'This is a test token',
 // };
 
 // Should always be INFO, but can be changed to any step to test the flow easier
@@ -410,7 +417,14 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     set({ links: get().links.filter((_, i) => i !== index) });
   },
   setExtraBuyAmount: (amount: number) => {
-    set({ extraBuyAmount: amount });
+    let processedAmount = amount;
+    const amountStr = amount.toString();
+    if (amountStr.includes('.')) {
+      const [intPart, decPart] = amountStr.split('.');
+      const truncatedDecPart = decPart.substring(0, 7);
+      processedAmount = parseFloat(`${intPart}.${truncatedDecPart}`);
+    }
+    set({ extraBuyAmount: processedAmount });
   },
   setStep: (step: NavigationSteps) => {
     const { stepSharedValue, stepAnimatedSharedValue } = get();
@@ -569,6 +583,16 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
 
     try {
       const initialTick = TokenLauncherSDK.getInitialTick(parseUnits(targetEth?.toFixed(18) ?? '0', 18));
+      // @ts-ignore - TODO: fix this Swap SDK types isn't supporting legacy gasPrice
+      const gasParams = transactionOptions.gasPrice
+        ? {
+            // @ts-ignore - TODO: fix this Swap SDK types isn't supporting legacy gasPrice
+            gasPrice: transactionOptions.gasPrice,
+          }
+        : {
+            maxFeePerGas: transactionOptions.maxFeePerGas,
+            maxPriorityFeePerGas: transactionOptions.maxPriorityFeePerGas,
+          };
       const params = {
         name,
         symbol,
@@ -581,12 +605,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         wallet,
         transactionOptions: {
           gasLimit: transactionOptions.gasLimit,
-          maxFeePerGas: transactionOptions.maxFeePerGas,
-          // In functioning cases this should always select maxPriorityFeePerGas's value
-          maxPriorityFeePerGas: Math.min(
-            Number(transactionOptions.maxPriorityFeePerGas ?? 0),
-            Number(transactionOptions.maxFeePerGas ?? 0)
-          ).toString(),
+          ...gasParams,
         },
         airdropMetadata: {
           cohortIds: airdropPredefinedCohortIds,
@@ -605,18 +624,61 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       if (result) {
         set({ launchedTokenAddress: result.tokenAddress });
 
+        const color = await calculateAndCacheDominantColor(imageUrl);
+
         // Add token to SuperTokenStore
         useSuperTokenStore.getState().addSuperToken({
+          name,
+          symbol,
           address: result.tokenAddress,
           chainId,
           description,
           imageUrl,
           links: linksByType,
+          color,
+          transactionHash: result.transaction.hash,
         });
 
         analyticsV2.track(analyticsV2.event.tokenLauncherTokenCreated, {
           address: result.tokenAddress,
           ...analyticsParams,
+        });
+
+        const chainsName = useBackendNetworksStore.getState().getChainsName();
+
+        const transaction: NewTransaction = {
+          status: TransactionStatus.pending,
+          chainId,
+          asset: {
+            address: result.tokenAddress,
+            decimals: 18,
+            name,
+            symbol,
+            chainId,
+            color,
+            icon_url: imageUrl,
+            uniqueId: getUniqueId(result.tokenAddress, chainId),
+            isNativeAsset: false,
+            network: chainsName[chainId],
+          } satisfies ParsedAsset,
+          data: result.transaction.data,
+          from: result.transaction.from,
+          gasLimit: result.transaction.gasLimit,
+          hash: result.transaction.hash,
+          network: chainsName[chainId] as Network,
+          nonce: result.transaction.nonce,
+          to: result.transaction.to ?? null,
+          value: result.transaction.value.toString(),
+          type: 'launch',
+          gasPrice: result.transaction.gasPrice,
+          maxFeePerGas: result.transaction.maxFeePerGas,
+          maxPriorityFeePerGas: result.transaction.maxPriorityFeePerGas,
+        };
+
+        addNewTransaction({
+          transaction,
+          address: wallet.address,
+          chainId: chainId,
         });
       }
       return result;

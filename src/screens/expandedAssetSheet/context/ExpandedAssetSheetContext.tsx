@@ -196,7 +196,10 @@ export function ExpandedAssetSheetContextProvider({
       return {
         ...basicAsset,
         ...externalAsset,
-        iconUrl,
+        iconUrl: rainbowSuperToken?.imageUrl || externalAsset.icon_url || basicAsset.iconUrl,
+        colors: {
+          primary: rainbowSuperToken?.color || externalAsset.colors?.primary || basicAsset.colors.primary,
+        },
       } satisfies ExpandedSheetAsset;
     }
     return {

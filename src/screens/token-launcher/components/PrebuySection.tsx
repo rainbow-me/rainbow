@@ -147,6 +147,7 @@ export function PrebuySection() {
     });
   }, [marketCapChainNativeAsset, chainNativeAssetSymbol]);
 
+  const minPrebuyAmount = prebuyOptions[0].amount;
   const maxPrebuyAmount = prebuyOptions[prebuyOptions.length - 1].amount;
 
   const customInputSubtitle = useDerivedValue(() => {
@@ -179,6 +180,12 @@ export function PrebuySection() {
 
       if (lessThanWorklet(chainNativeAssetAvailableBalance, amount)) {
         error.value = i18n.t(i18n.l.token_launcher.input_errors.amount_is_greater_than_balance);
+        return { error: true };
+      }
+
+      const MIN_SAFE_VALUE = 1e-7;
+      if (amount > 0 && amount < MIN_SAFE_VALUE) {
+        error.value = i18n.t(i18n.l.token_launcher.input_errors.amount_too_small);
         return { error: true };
       }
 
