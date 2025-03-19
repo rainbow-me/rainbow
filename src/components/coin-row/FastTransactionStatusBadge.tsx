@@ -38,13 +38,13 @@ export default React.memo(function FastTransactionStatusBadge({
   if (rainbowSuperToken) {
     switch (transaction?.status) {
       case TransactionStatus.pending:
-        actionTitle = lang.t(lang.l.transactions.type.token_launch.pending);
+        actionTitle = lang.t(lang.l.transactions.type.launch.pending);
         break;
       case TransactionStatus.confirmed:
-        actionTitle = lang.t(lang.l.transactions.type.token_launch.confirmed);
+        actionTitle = lang.t(lang.l.transactions.type.launch.confirmed);
         break;
       case TransactionStatus.failed:
-        actionTitle = lang.t(lang.l.transactions.type.token_launch.failed);
+        actionTitle = lang.t(lang.l.transactions.type.launch.failed);
         break;
     }
   }

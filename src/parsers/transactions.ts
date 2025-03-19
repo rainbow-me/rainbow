@@ -7,7 +7,6 @@ import {
   TransactionChanges,
   TransactionStatus,
   TransactionType,
-  TransactionWithChangesType,
 } from '@/entities';
 
 import {
@@ -75,7 +74,6 @@ export const parseTransaction = async (
   });
 
   const type = isValidTransactionType(meta.type) ? meta.type : 'contract_interaction';
-
   const asset: RainbowTransaction['asset'] = meta.asset?.asset_code
     ? parseAsset({ asset: meta.asset, address: meta.asset.asset_code })
     : getAssetFromChanges(changes, type);
@@ -194,6 +192,3 @@ export const isValidTransactionType = (type: string | undefined): type is Transa
   (TransactionType.withChanges.includes(type as TransactionType) ||
     TransactionType.withoutChanges.includes(type as TransactionType) ||
     type === ('sale' as TransactionType));
-
-export const transactionTypeShouldHaveChanges = (type: TransactionType): type is TransactionWithChangesType =>
-  TransactionType.withChanges.includes(type);

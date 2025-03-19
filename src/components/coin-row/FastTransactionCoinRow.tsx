@@ -181,10 +181,12 @@ const BottomRow = React.memo(function BottomRow({
   const rainbowSuperToken = useSuperTokenStore(state => state.getSuperTokenByTransactionHash(transaction.hash));
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
+  const isRainbowTokenLaunch = type === 'launch' || type === 'launchAndBuy';
+
   let description = transaction.description;
   let tag: string | undefined;
   if (type === 'contract_interaction' && to) {
-    description = transaction.contract?.name || address(to, 6, 4);
+    description = isRainbowTokenLaunch ? '' : transaction.contract?.name || address(to, 6, 4);
     tag = rainbowSuperToken ? '' : transaction.description;
   }
 

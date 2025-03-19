@@ -271,6 +271,7 @@ export const TransactionType = {
     'stake',
     'unstake',
     'purchase',
+    'launch',
   ] as readonly string[],
 } as const;
 
