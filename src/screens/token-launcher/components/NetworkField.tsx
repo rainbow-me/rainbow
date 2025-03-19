@@ -1,6 +1,6 @@
 import React from 'react';
 import * as i18n from '@/languages';
-import { Bleed, Box, Text, TextIcon } from '@/design-system';
+import { Bleed, Box, Inline, Text, TextIcon } from '@/design-system';
 import { FieldContainer } from './FieldContainer';
 import { FieldLabel } from './FieldLabel';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
@@ -43,7 +43,7 @@ export function NetworkField() {
       >
         <Box gap={10}>
           <FieldLabel>{i18n.t(i18n.l.token_launcher.titles.network)}</FieldLabel>
-          <Text color="labelSecondary" size="13pt" weight="bold">
+          <Text color="labelQuaternary" size="13pt" weight="bold">
             {i18n.t(i18n.l.token_launcher.network_field.balance, { balance: chainNativeAsset?.balance.display ?? '0.00' })}
           </Text>
         </Box>
@@ -73,19 +73,21 @@ export function NetworkField() {
               gap={8}
             >
               <ChainImage position="relative" chainId={chainId} size={24} />
-              <Text
-                color="label"
-                size="17pt"
-                weight="heavy"
-                ellipsizeMode="tail"
-                numberOfLines={1}
-                style={{ maxWidth: 100, textTransform: 'capitalize' }}
-              >
-                {networkLabel}
-              </Text>
-              <TextIcon color="label" size="17pt" weight="heavy">
-                {'􀆈'}
-              </TextIcon>
+              <Inline alignVertical="center" space="6px">
+                <Text
+                  color="label"
+                  size="17pt"
+                  weight="heavy"
+                  ellipsizeMode="tail"
+                  numberOfLines={1}
+                  style={{ maxWidth: 100, textTransform: 'capitalize' }}
+                >
+                  {networkLabel}
+                </Text>
+                <TextIcon color={{ custom: accentColors.opacity60 }} size="icon 15px" textStyle={{ top: 1 }} weight="heavy" width={16}>
+                  {'􀆈'}
+                </TextIcon>
+              </Inline>
             </Box>
           </ButtonPressAnimation>
         </Bleed>

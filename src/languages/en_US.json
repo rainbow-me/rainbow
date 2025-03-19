@@ -717,7 +717,7 @@
           "hide": "Hide",
           "unhide": "Unhide"
         },
-        "no_data_available": "No data available"
+        "no_data_available": "No Data Available"
       },
       "sections": {
         "market_stats": {
@@ -732,10 +732,15 @@
         },
         "buy": {
           "title": "Buy",
-          "pay_with": "Pay with",
+          "pay_with": "Buy with",
           "available_balance": "Available Balance",
           "open_swaps": "Open Swaps",
-          "low_balance": "Low balance"
+          "low_balance": "Low Balance"
+        },
+        "claim": {
+          "claim_button": "Claim Airdrop",
+          "created_by": "Created by %{creator}",
+          "title": "Claim"
         },
         "about": {
           "title": "About",
@@ -760,7 +765,8 @@
             "month_11": "Dec"
           }
         },
-        "no_price_data": "No price data",
+        "no_chart_data": "No Chart Data",
+        "no_price_data": "No Price Data",
         "past_timespan": "Past %{formattedTimespan}",
         "today": "Past Day",
         "token_pool": "%{tokenName} Pool"
@@ -2263,6 +2269,11 @@
           "confirmed": "Interacted",
           "failed": "Interaction Failed"
         },
+        "launch": {
+          "pending": "Launching",
+          "confirmed": "Launched",
+          "failed": "Launch Failed"
+        },
         "swap": {
           "pending": "Swapping",
           "confirmed": "Swapped",
@@ -3201,7 +3212,8 @@
         "not_enough_funds": "Not enough funds to launch a token"
       },
       "prebuy": {
-        "balance_after_gas_fee": "Balance After Gas Fee: %{balance}"
+        "balance_after_gas_fee": "Available Balance: %{balance}",
+        "title": "Pre-buy more tokens"
       },
       "review": {
         "token_allocation": "Token allocation",
@@ -3229,15 +3241,17 @@
         "too_big": "Too big.",
         "must_be_greater_than_0": "Must be greater than 0",
         "amount_is_greater_than_balance": "Amount is greater than balance",
-        "amount_is_greater_than_max_prebuy_amount": "Exceeds max pre-buy amount of %{maxPrebuyAmount} %{chainNativeAssetSymbol}"
+        "amount_is_greater_than_max_prebuy_amount": "Exceeds max pre-buy amount of %{maxPrebuyAmount} %{chainNativeAssetSymbol}",
+        "amount_is_less_than_min_prebuy_amount": "Must exceed min pre-buy amount of %{minPrebuyAmount} %{chainNativeAssetSymbol}",
+        "amount_too_small": "Amount too small! Try a little more!"
       },
       "titles": {
-        "total_supply": "Total Supply",
+        "total_supply": "Total supply",
         "ticker": "Ticker",
         "name": "Name",
         "network": "Network",
         "description": "Description",
-        "airdrop": "Airdrop",
+        "airdrop": "Airdrop to friends",
         "required_info": "REQUIRED INFO",
         "about": "ABOUT",
         "token_allocation": "TOKEN ALLOCATION",

@@ -7,7 +7,6 @@ import {
   TransactionChanges,
   TransactionStatus,
   TransactionType,
-  TransactionWithChangesType,
 } from '@/entities';
 
 import {
@@ -46,6 +45,7 @@ export const getDirection = (type: TransactionType): TransactionDirection => {
 
 export const getAssetFromChanges = (changes: TransactionChanges, type: TransactionType) => {
   if (type === 'sale') return changes?.find(c => c?.direction === 'out')?.asset;
+  if (type === 'launch') return changes?.find(c => c?.asset && !c.asset.isNativeAsset)?.asset;
   return changes?.[0]?.asset;
 };
 
@@ -194,6 +194,3 @@ export const isValidTransactionType = (type: string | undefined): type is Transa
   (TransactionType.withChanges.includes(type as TransactionType) ||
     TransactionType.withoutChanges.includes(type as TransactionType) ||
     type === ('sale' as TransactionType));
-
-export const transactionTypeShouldHaveChanges = (type: TransactionType): type is TransactionWithChangesType =>
-  TransactionType.withChanges.includes(type);

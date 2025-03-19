@@ -54,7 +54,7 @@ function DiscoverSearchContainer({ children }: { children: React.ReactNode }) {
             isLoading={isLoading}
             onChangeText={setSearchQuery}
             onFocus={onTapSearch}
-            placeholderText={isSearching ? placeholderText : `􀊫 ${placeholderText}`}
+            placeholderText={placeholderText}
             searchQuery={searchQuery}
             testID="discover-search"
           />

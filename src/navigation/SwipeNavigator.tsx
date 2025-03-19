@@ -47,10 +47,11 @@ import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
 import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 
+export const BASE_TAB_BAR_HEIGHT = 48;
 export const TAB_BAR_HEIGHT = getTabBarHeight();
 
 function getTabBarHeight() {
-  return 48 + (initialWindowMetrics?.insets.bottom ?? 0);
+  return BASE_TAB_BAR_HEIGHT + (initialWindowMetrics?.insets.bottom ?? 0);
 }
 
 const HORIZONTAL_TAB_BAR_INSET = 6;

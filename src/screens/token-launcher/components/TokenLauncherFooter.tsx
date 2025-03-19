@@ -39,9 +39,11 @@ import { analyticsV2 } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 import showWalletErrorAlert from '@/helpers/support';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 
 // height + top padding + bottom padding
-export const FOOTER_HEIGHT = 48 + 16 + 8;
+export const FOOTER_HEIGHT = 48 + 16 + 16;
 
 function HoldToCreateButton() {
   const { accentColors } = useTokenLauncherContext();
@@ -141,15 +143,19 @@ function ContinueButton() {
   return (
     <ButtonPressAnimation disabled={!canContinueToReview} onPress={goToReviewStep}>
       <Box
-        backgroundColor={colors.white}
+        backgroundColor={canContinueToReview ? colors.white : getColorForTheme('fillTertiary', 'dark')}
         justifyContent="center"
         alignItems="center"
         paddingHorizontal="24px"
         borderRadius={28}
         height={48}
-        style={{ opacity: canContinueToReview ? 1 : 0.2 }}
       >
-        <Text color={{ custom: colors.black }} size="20pt" weight="heavy" style={{ opacity: canContinueToReview ? 1 : 0.5 }}>
+        <Text
+          color={canContinueToReview ? { custom: colors.black } : 'labelQuaternary'}
+          size="20pt"
+          weight="heavy"
+          style={{ opacity: canContinueToReview ? 1 : 0.4 }}
+        >
           {i18n.t(i18n.l.button.continue)}
         </Text>
       </Box>
@@ -174,9 +180,15 @@ function ShareButton() {
           networkLabel: chainLabels[chainId],
           contractAddress: launchedTokenAddress,
         });
-        await Share.share({
-          url,
-        });
+        await Share.share(
+          IS_ANDROID
+            ? {
+                message: url,
+              }
+            : {
+                url,
+              }
+        );
         analyticsV2.track(analyticsV2.event.tokenLauncherSharePressed, {
           address: launchedTokenAddress,
           url,
@@ -218,22 +230,30 @@ function TokenPreview() {
             symbol={symbolLabel}
             icon={imageUri}
             chainSize={20}
-            chainBadgePosition={{ x: 48 / 2 + 20 / 2, y: -2 }}
+            chainBadgePosition={{ x: 48 / 2 + 20 / 2, y: -4 }}
           />
         ) : (
           <Box width={48} height={48} borderRadius={24} background="fillTertiary" justifyContent="center" alignItems="center">
-            <Text color="labelTertiary" size="20pt" weight="heavy">
-              {'􀣵'}
+            <Text align="center" color="labelQuaternary" size="icon 17px" style={{ opacity: 0.6 }} weight="heavy">
+              {'􂣳'}
             </Text>
           </Box>
         )}
-        <Box gap={8}>
-          <Text style={{ maxWidth: 125 }} numberOfLines={1} color="labelSecondary" size="11pt" weight="bold">
-            {symbolLabel}
-          </Text>
-          <Text numberOfLines={1} color="labelTertiary" size="15pt" weight="bold">
-            {tokenPrice}
-          </Text>
+        <Box gap={10}>
+          <Box gap={8}>
+            <Text
+              color={symbol ? 'labelSecondary' : 'labelQuaternary'}
+              numberOfLines={1}
+              size="11pt"
+              style={{ maxWidth: 125 }}
+              weight="heavy"
+            >
+              {symbolLabel}
+            </Text>
+            <Text numberOfLines={1} color={symbol ? 'labelSecondary' : 'labelTertiary'} size="15pt" weight="bold">
+              {tokenPrice}
+            </Text>
+          </Box>
           <Box flexDirection="row" alignItems="center" gap={4}>
             <Text color="labelQuaternary" size="11pt" weight="bold">
               {i18n.t(i18n.l.token_launcher.titles.mcap)}
@@ -268,7 +288,7 @@ export function TokenLauncherFooter() {
   const gasButtonWidth = useSharedValue(100);
 
   const createButtonWidth = useDerivedValue(() => {
-    return containerWidth.value - gasButtonWidth.value - 32;
+    return containerWidth.value - gasButtonWidth.value - 40;
   });
 
   const continueButtonAnimatedStyle = useAnimatedStyle(() => {
@@ -276,7 +296,7 @@ export function TokenLauncherFooter() {
     if (continueButtonWidth.value === 0) return {};
 
     const isInputStep = stepSharedValue.value === NavigationSteps.INFO;
-    const targetWidth = isInputStep ? continueButtonWidth.value : containerWidth.value - 32;
+    const targetWidth = isInputStep ? continueButtonWidth.value : containerWidth.value - 40;
     return {
       display: stepSharedValue.value === NavigationSteps.INFO ? 'flex' : 'none',
       width: interpolate(
@@ -290,7 +310,7 @@ export function TokenLauncherFooter() {
   });
 
   const createButtonAnimatedStyle = useAnimatedStyle(() => {
-    const fullWidth = containerWidth.value - 32;
+    const fullWidth = containerWidth.value - 40;
     // We use this animated value here because otherwise the button will disappear immediately when going back to input step
     const isVisible = stepAnimatedSharedValue.value > NavigationSteps.INFO && stepAnimatedSharedValue.value <= NavigationSteps.CREATING;
     return {
@@ -306,7 +326,7 @@ export function TokenLauncherFooter() {
   });
 
   const shareButtonAnimatedStyle = useAnimatedStyle(() => {
-    const fullWidth = containerWidth.value - 32;
+    const fullWidth = containerWidth.value - 40;
     const isVisible = stepSharedValue.value === NavigationSteps.SUCCESS;
     return {
       opacity: 1,
@@ -328,12 +348,10 @@ export function TokenLauncherFooter() {
   return (
     <Animated.View>
       <Box
-        paddingHorizontal="16px"
+        paddingHorizontal="20px"
         flexDirection="row"
         justifyContent="space-between"
         alignItems="center"
-        paddingTop="16px"
-        paddingBottom="8px"
         height={FOOTER_HEIGHT}
         onLayout={e => {
           containerWidth.value = e.nativeEvent.layout.width;
@@ -350,12 +368,12 @@ export function TokenLauncherFooter() {
           >
             <GasButton gasSpeed={gasSpeed} chainId={chainId} gasLimit={transactionOptions.gasLimit} onSelectGasSpeed={setGasSpeed} />
             <Box width={1} height={32} paddingHorizontal="12px">
-              <Separator thickness={1} direction="vertical" color="separator" />
+              <Separator thickness={1} direction="vertical" color={{ custom: SEPARATOR_COLOR }} />
             </Box>
           </Animated.View>
         )}
         <Animated.View
-          style={[continueButtonAnimatedStyle, { position: 'absolute', right: 16 }]}
+          style={[continueButtonAnimatedStyle, { position: 'absolute', right: 20, top: 16 }]}
           onLayout={e => {
             // We only want the original button width
             if (continueButtonWidth.value === 0) {
@@ -366,11 +384,11 @@ export function TokenLauncherFooter() {
           <ContinueButton />
         </Animated.View>
 
-        <Animated.View style={[createButtonAnimatedStyle, { position: 'absolute', right: 16 }]}>
+        <Animated.View style={[createButtonAnimatedStyle, { position: 'absolute', right: 20, top: 16 }]}>
           <HoldToCreateButton />
         </Animated.View>
 
-        <Animated.View style={[shareButtonAnimatedStyle, { position: 'absolute', right: 16 }]}>
+        <Animated.View style={[shareButtonAnimatedStyle, { position: 'absolute', right: 20, top: 16 }]}>
           <ShareButton />
         </Animated.View>
       </Box>

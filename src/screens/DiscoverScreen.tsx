@@ -10,11 +10,13 @@ import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
+import { IS_IOS } from '@/env';
 import { useAccountProfile } from '@/hooks';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { safeAreaInsetValues } from '@/utils';
+import { PullToRefresh } from './Airdrops/AirdropsSheet';
 
 export let discoverScrollToTopFnRef: () => number | null = () => null;
 
@@ -63,6 +65,7 @@ const Content = () => {
         onScroll={scrollHandler}
         scrollEnabled={!isSearching}
         bounces={!isSearching}
+        refreshControl={IS_IOS ? <PullToRefresh /> : undefined}
         removeClippedSubviews
         scrollIndicatorInsets={{ bottom: safeAreaInsetValues.bottom + 167 }}
         testID="discover-sheet"

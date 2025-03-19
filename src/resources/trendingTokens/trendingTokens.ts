@@ -43,6 +43,7 @@ export type TrendingToken = {
   marketCap: number;
   volume: number;
   highlightedFriends: FarcasterUser[];
+  remainingFriendsCount?: number;
   colors: {
     primary: string;
   };
@@ -205,11 +206,20 @@ async function fetchTrendingTokens({ queryKey }: { queryKey: TrendingTokensQuery
   for (const token of response.trendingTokens.data) {
     const { address, name, symbol, chainId, decimals, trending, market, icon_url, colors } = token;
     const { bought_stats } = trending.swap_data;
-    const highlightedFriends = (bought_stats.farcaster_users || []).reduce((friends, friend) => {
-      const { username, pfp_url } = friend;
-      if (username && pfp_url) friends.push({ username, pfp_url });
-      return friends;
-    }, [] as FarcasterUser[]);
+    const highlightedFriends: FarcasterUser[] = [];
+    const farcasterUsers = bought_stats.farcaster_users || [];
+    let remainingFriendsCount = 0;
+
+    for (let i = 0; i < farcasterUsers.length; i++) {
+      const { username, pfp_url } = farcasterUsers[i];
+      if (username && pfp_url) {
+        if (highlightedFriends.length < 2) {
+          highlightedFriends.push({ username, pfp_url });
+        } else {
+          remainingFriendsCount += 1;
+        }
+      }
+    }
 
     trendingTokens.push({
       uniqueId: `${token.address}_${token.chainId}`,
@@ -226,6 +236,7 @@ async function fetchTrendingTokens({ queryKey }: { queryKey: TrendingTokensQuery
       marketCap: market.market_cap?.value || 0,
       volume: market.volume_24h || 0,
       highlightedFriends,
+      remainingFriendsCount,
       icon_url,
       colors: {
         primary: colors.primary,

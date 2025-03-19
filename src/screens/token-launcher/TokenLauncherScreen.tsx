@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
-import { Box, ColorModeProvider } from '@/design-system';
+import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
+import { Border, Box, ColorModeProvider, globalColors } from '@/design-system';
 import { FOOTER_HEIGHT, TokenLauncherFooter } from './components/TokenLauncherFooter';
 import { TokenLauncherHeader } from './components/TokenLauncherHeader';
 import { InfoInputStep } from './components/InfoInputStep';
@@ -11,7 +12,7 @@ import { StepBlurredImageBackground } from './components/StepBlurredImageBackgro
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { TokenLauncherContextProvider } from './context/TokenLauncherContext';
 import { CreatingStep } from './components/CreatingStep';
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { SuccessStep } from './components/SuccessStep';
 import { ScreenBlurredImageBackground } from './components/ScreenBlurredImageBackground';
 import { IS_ANDROID } from '@/env';
@@ -90,66 +91,66 @@ function TokenLauncherScreenContent() {
 
   const keyboardVerticalOffset = IS_ANDROID ? FOOTER_HEIGHT + safeAreaBottom : FOOTER_HEIGHT;
 
+  const animatedBorderStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(stepAnimatedSharedValue.value, [NavigationSteps.INFO, NavigationSteps.REVIEW], [1, 0], 'clamp'),
+  }));
+
+  const styles = useMemo(
+    () =>
+      getTokenLauncherStyles({
+        animatedBorderStyle,
+        contentContainerHeight,
+        infoStepAnimatedStyle,
+        reviewStepAnimatedStyle,
+        safeAreaBottom,
+        safeAreaTop,
+        screenHeight,
+        screenWidth,
+      }),
+    [
+      animatedBorderStyle,
+      contentContainerHeight,
+      infoStepAnimatedStyle,
+      reviewStepAnimatedStyle,
+      safeAreaBottom,
+      safeAreaTop,
+      screenHeight,
+      screenWidth,
+    ]
+  );
+
   return (
-    <Box
-      width="full"
-      backgroundColor={'#000'}
-      style={{ flex: 1, height: screenHeight, paddingBottom: safeAreaBottom, paddingTop: safeAreaTop }}
-    >
-      <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2 }]}>
+    <Box width="full" style={styles.containerStyle}>
+      <Box borderRadius={42} style={styles.backgroundBlurStyle}>
         <ScreenBlurredImageBackground width={screenHeight} height={screenHeight} />
       </Box>
-      <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={keyboardVerticalOffset} style={{ flex: 1 }}>
-        <Box
-          borderWidth={THICK_BORDER_WIDTH}
-          borderColor={'separatorSecondary'}
-          background="surfacePrimary"
-          borderRadius={42}
-          style={{ maxHeight: contentContainerHeight }}
-        >
-          <TokenLauncherHeader contentContainerHeight={contentContainerHeight} />
-          <Box style={[StyleSheet.absoluteFill, { left: -screenWidth / 2, pointerEvents: 'none' }]}>
+      <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={keyboardVerticalOffset} style={styles.keyboardAvoidingViewStyle}>
+        <Box backgroundColor={PANEL_COLOR_DARK} borderRadius={42} style={styles.contentContainerStyle}>
+          <TokenLauncherHeader />
+          <Animated.View style={styles.borderStyle}>
+            <Border borderColor="separatorSecondary" borderRadius={42} borderWidth={THICK_BORDER_WIDTH} />
+          </Animated.View>
+          <Box style={styles.stepBlurredBackgroundStyle}>
             <StepBlurredImageBackground width={contentContainerHeight} height={contentContainerHeight} />
           </Box>
-          <Box style={[StyleSheet.absoluteFill, { zIndex: 3, pointerEvents: 'none' }]}>
+          <Box style={styles.borderEffectsStyle}>
             <StepBorderEffects width={screenWidth} height={contentContainerHeight} />
           </Box>
-          <Animated.View style={[infoStepAnimatedStyle, { width: screenWidth }]}>
+          <Animated.View style={styles.infoStepStyle}>
             <InfoInputStep />
           </Animated.View>
           {isReviewStepVisible && (
-            <Animated.View
-              exiting={reviewStepExitingAnimation}
-              style={[
-                reviewStepAnimatedStyle,
-                {
-                  // required to prevent the keyboard avoidance from breaking
-                  position: 'absolute',
-                  width: screenWidth,
-                  height: '100%',
-                  // required for exiting animation to work
-                  zIndex: 1,
-                },
-              ]}
-            >
+            <Animated.View exiting={reviewStepExitingAnimation} style={styles.reviewStepStyle}>
               <ReviewStep />
             </Animated.View>
           )}
           {step === NavigationSteps.CREATING && (
-            <Animated.View
-              entering={fadeInAnimation}
-              exiting={fadeOutAnimation}
-              style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}
-            >
+            <Animated.View entering={fadeInAnimation} exiting={fadeOutAnimation} style={styles.creatingStepStyle}>
               <CreatingStep />
             </Animated.View>
           )}
           {step === NavigationSteps.SUCCESS && (
-            <Animated.View
-              entering={fadeInAnimation}
-              exiting={fadeOutAnimation}
-              style={{ width: screenWidth, height: '100%', position: 'absolute', zIndex: 1 }}
-            >
+            <Animated.View entering={fadeInAnimation} exiting={fadeOutAnimation} style={styles.successStepStyle}>
               <SuccessStep />
             </Animated.View>
           )}
@@ -174,4 +175,66 @@ export function TokenLauncherScreen() {
       </TokenLauncherContextProvider>
     </ColorModeProvider>
   );
+}
+
+function getTokenLauncherStyles({
+  animatedBorderStyle,
+  contentContainerHeight,
+  infoStepAnimatedStyle,
+  reviewStepAnimatedStyle,
+  safeAreaBottom,
+  safeAreaTop,
+  screenHeight,
+  screenWidth,
+}: {
+  animatedBorderStyle: StyleProp<ViewStyle>;
+  contentContainerHeight: number;
+  infoStepAnimatedStyle: StyleProp<ViewStyle>;
+  reviewStepAnimatedStyle: StyleProp<ViewStyle>;
+  safeAreaBottom: number;
+  safeAreaTop: number;
+  screenHeight: number;
+  screenWidth: number;
+}): Record<string, StyleProp<ViewStyle>> {
+  return {
+    backgroundBlurStyle: [StyleSheet.absoluteFill, { left: -screenWidth / 2 }],
+    borderEffectsStyle: [StyleSheet.absoluteFill, { pointerEvents: 'none', zIndex: 3 }],
+    borderStyle: [StyleSheet.absoluteFill, { pointerEvents: 'none', zIndex: 100 }, animatedBorderStyle],
+    containerStyle: {
+      backgroundColor: IS_ANDROID ? globalColors.grey100 : undefined,
+      flex: 1,
+      height: screenHeight,
+      paddingBottom: safeAreaBottom,
+      paddingTop: safeAreaTop,
+    },
+    contentContainerStyle: {
+      maxHeight: contentContainerHeight,
+    },
+    creatingStepStyle: {
+      height: '100%',
+      position: 'absolute',
+      width: screenWidth,
+      zIndex: 1,
+    },
+    infoStepStyle: [infoStepAnimatedStyle, { width: screenWidth }],
+    keyboardAvoidingViewStyle: {
+      flex: 1,
+    },
+    reviewStepStyle: [
+      reviewStepAnimatedStyle,
+      {
+        height: '100%',
+        position: 'absolute',
+        width: screenWidth,
+        zIndex: 1,
+      },
+    ],
+    stepBlurredBackgroundStyle: [StyleSheet.absoluteFill, { left: -screenWidth / 2, pointerEvents: 'none' }],
+    successStepStyle: {
+      height: '100%',
+      position: 'absolute',
+      width: screenWidth,
+      zIndex: 1,
+    },
+  };
 }

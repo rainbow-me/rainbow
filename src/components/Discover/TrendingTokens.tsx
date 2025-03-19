@@ -1,5 +1,5 @@
 import { DropdownMenu } from '@/components/DropdownMenu';
-import { globalColors, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
+import { globalColors, IconContainer, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import RainbowTokenFilter from '@/assets/RainbowTokenFilter.png';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -226,7 +226,7 @@ function CategoryFilterButton({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          gap: 4,
+          gap: typeof icon === 'string' ? 4 : 10,
           height: 36,
           paddingHorizontal: 12,
           borderRadius: 18,
@@ -245,7 +245,9 @@ function CategoryFilterButton({
             {icon}
           </TextIcon>
         ) : (
-          icon
+          <IconContainer height={8} width={12}>
+            {icon}
+          </IconContainer>
         )}
         <View>
           {/* This first Text element sets the width of the container */}
@@ -286,9 +288,15 @@ function FriendPfp({ pfp_url }: { pfp_url: string }) {
     />
   );
 }
-function FriendHolders({ friends }: { friends: FarcasterUser[] }) {
+function FriendHolders({
+  friends,
+  remainingFriendsCount: remainingFriendsCountParam = 0,
+}: {
+  friends: FarcasterUser[];
+  remainingFriendsCount?: number;
+}) {
   if (friends.length === 0) return null;
-  const howManyOthers = Math.max(1, friends.length - 2);
+  const howManyOthers = Math.max(1, remainingFriendsCountParam);
   const separator = howManyOthers === 1 && friends.length === 2 ? ` ${i18n.t(t.and)} ` : ', ';
 
   return (
@@ -310,7 +318,7 @@ function FriendHolders({ friends }: { friends: FarcasterUser[] }) {
             </>
           )}
         </Text>
-        {friends.length > 2 && (
+        {howManyOthers > 1 && (
           <Text color="labelQuaternary" size="11pt" weight="bold">
             {' '}
             {i18n.t(t.and_others[howManyOthers === 1 ? 'one' : 'other'], { count: howManyOthers })}
@@ -374,12 +382,24 @@ function getTextWidths(symbol: string, price: string) {
 function TrendingTokenRow({ token }: { token: TrendingToken }) {
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const price = formatCurrency(token.price);
-  const { nameWidth, symbolWidth, minPriceWidth } = getTextWidths(token.symbol, price);
-  const marketCap = formatNumber(token.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' });
-  const volume = formatNumber(token.volume, { useOrderSuffix: true, decimals: 1, style: '$' });
+  const { marketCap, price, volume } = useMemo(
+    () => ({
+      marketCap: formatNumber(token.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' }),
+      price: formatCurrency(token.price),
+      volume: formatNumber(token.volume, { useOrderSuffix: true, decimals: 1, style: '$' }),
+    }),
+    [token.marketCap, token.price, token.volume]
+  );
+
+  const { minPriceWidth, nameWidth, symbolWidth } = useMemo(() => getTextWidths(token.symbol, price), [token.symbol, price]);
 
   const handleNavigateToToken = useCallback(() => {
+    Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
+      asset: token,
+      address: token.address,
+      chainId: token.chainId,
+    });
+
     analyticsV2.track(analyticsV2.event.viewTrendingToken, {
       address: token.address,
       chainId: token.chainId,
@@ -388,15 +408,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
       highlightedFriends: token.highlightedFriends.length,
     });
 
-    swapsStore.setState({
-      lastNavigatedTrendingToken: token.uniqueId,
-    });
-
-    Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
-      asset: token,
-      address: token.address,
-      chainId: token.chainId,
-    });
+    swapsStore.setState({ lastNavigatedTrendingToken: token.uniqueId });
   }, [token]);
 
   if (!token) return null;
@@ -415,7 +427,7 @@ function TrendingTokenRow({ token }: { token: TrendingToken }) {
         <RainbowCoinIcon icon={token.icon_url} color={token.colors.primary} chainId={token.chainId} symbol={token.symbol} />
 
         <View style={{ gap: 12, flex: 1 }}>
-          <FriendHolders friends={token.highlightedFriends} />
+          <FriendHolders friends={token.highlightedFriends} remainingFriendsCount={token.remainingFriendsCount} />
 
           <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
             <View style={{ gap: 12 }}>

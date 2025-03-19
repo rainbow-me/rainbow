@@ -1,15 +1,22 @@
 import React, { useCallback } from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
-import { AnimatedText, Box, Text, useForegroundColor } from '@/design-system';
-import Animated, { FadeIn, SharedValue, useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { FIELD_BACKGROUND_COLOR, FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, COLLAPSABLE_FIELD_ANIMATION } from '../constants';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import Animated, {
+  FadeIn,
+  interpolate,
+  SharedValue,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { Box, globalColors, Text, useForegroundColor } from '@/design-system';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { FIELD_BACKGROUND_COLOR, FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, COLLAPSABLE_FIELD_ANIMATION } from '../constants';
 
 const HIT_SLOP = 24;
 
 function AnimatedPlusMinusIcon({ collapsed }: { collapsed: SharedValue<boolean> }) {
-  const minusIcon = '􀅽';
   const rotation = useSharedValue(0);
 
   useAnimatedReaction(
@@ -21,18 +28,15 @@ function AnimatedPlusMinusIcon({ collapsed }: { collapsed: SharedValue<boolean> 
 
   const rotateStyle = useAnimatedStyle(() => {
     return {
+      opacity: interpolate(rotation.value, [270, 360, 360], [1, 1, 0], 'clamp'),
       transform: [{ rotateZ: `${rotation.value}deg` }],
     };
   });
 
   return (
     <Box backgroundColor="rgba(255,255,255,0.06)" borderRadius={16} width={32} height={32} justifyContent="center" alignItems="center">
-      <AnimatedText style={[rotateStyle, { position: 'absolute' }]} color="label" size="17pt" weight="heavy">
-        {minusIcon}
-      </AnimatedText>
-      <AnimatedText color="label" size="17pt" weight="heavy">
-        {minusIcon}
-      </AnimatedText>
+      <Animated.View style={[styles.plusMinusBar, rotateStyle]} />
+      <Animated.View style={styles.plusMinusBar} />
     </Box>
   );
 }
@@ -93,10 +97,18 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 20,
     borderRadius: FIELD_BORDER_RADIUS,
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  plusMinusBar: {
+    backgroundColor: globalColors.white100,
+    borderRadius: 1.5,
+    height: 3,
+    position: 'absolute',
+    width: 14,
   },
 });

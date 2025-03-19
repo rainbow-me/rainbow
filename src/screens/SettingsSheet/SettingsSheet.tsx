@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, StatusBar } from 'react-native';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
 import { BackgroundProvider } from '@/design-system';
@@ -58,6 +58,7 @@ export function SettingsSheet() {
           backgroundColor={backgroundColor as string}
           customHeight={IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset}
           scrollEnabled={false}
+          useAdditionalTopPadding={IS_ANDROID && !!StatusBar.currentHeight}
         >
           <Stack.Navigator
             screenOptions={{

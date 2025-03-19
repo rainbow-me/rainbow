@@ -65,6 +65,7 @@ function PrebuyAmountButton({
           borderColor: accentColors.opacity3,
           justifyContent: 'center',
           alignItems: 'center',
+          overflow: 'hidden',
         },
       ]}
       onPressWorklet={onPressWorklet}
@@ -146,6 +147,7 @@ export function PrebuySection() {
     });
   }, [marketCapChainNativeAsset, chainNativeAssetSymbol]);
 
+  const minPrebuyAmount = prebuyOptions[0].amount;
   const maxPrebuyAmount = prebuyOptions[prebuyOptions.length - 1].amount;
 
   const customInputSubtitle = useDerivedValue(() => {
@@ -181,6 +183,12 @@ export function PrebuySection() {
         return { error: true };
       }
 
+      const MIN_SAFE_VALUE = 1e-7;
+      if (amount > 0 && amount < MIN_SAFE_VALUE) {
+        error.value = i18n.t(i18n.l.token_launcher.input_errors.amount_too_small);
+        return { error: true };
+      }
+
       if (lessThanWorklet(maxPrebuyAmount, amount)) {
         error.value = i18n.t(i18n.l.token_launcher.input_errors.amount_is_greater_than_max_prebuy_amount, {
           maxPrebuyAmount: maxPrebuyAmount,
@@ -197,7 +205,7 @@ export function PrebuySection() {
   );
 
   return (
-    <CollapsableField title="Pre-buy more tokens">
+    <CollapsableField title={i18n.t(i18n.l.token_launcher.prebuy.title)}>
       <Box gap={16}>
         <Grid columns={2} spacing={8}>
           {prebuyOptions.map(option => (

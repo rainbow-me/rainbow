@@ -677,7 +677,12 @@ const ListHeader = memo(function ListHeader({
   return (
     <Box style={controlPanelStyles.listHeader}>
       <Box style={controlPanelStyles.listHeaderContent}>
-        <ButtonPressAnimation onPress={goBack} scaleTo={0.8} style={controlPanelStyles.listHeaderButtonWrapper}>
+        <ButtonPressAnimation
+          {...(IS_ANDROID && { wrapperStyle: controlPanelStyles.listHeaderButtonWrapper })}
+          onPress={goBack}
+          scaleTo={0.8}
+          style={controlPanelStyles.listHeaderButtonWrapper}
+        >
           <Box alignItems="center" height={{ custom: 20 }} justifyContent="center" width={{ custom: 20 }}>
             <AnimatedText align="center" size="icon 20px" style={backIconStyle} weight="bold">
               􀆉

@@ -8,7 +8,6 @@ import { CustomColor, getColorForTheme } from '@/design-system/color/useForegrou
 import { useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
-import { IS_IOS } from '@/env';
 import { SharedOrDerivedValueText } from '../Text/AnimatedText';
 
 export interface SkiaTextProps {
@@ -159,8 +158,6 @@ export const SkiaText = ({
     ];
   }, [children, color, getSegmentColor, weight]);
 
-  const segmentsDep = IS_IOS ? segments : undefined;
-
   const paragraph = useDerivedValue(() => {
     if (!buildParagraph) return null;
     const paragraph = buildParagraph(segments);
@@ -177,7 +174,7 @@ export const SkiaText = ({
       }
     }
     return paragraph;
-  }, [buildParagraph, onLayout, segmentsDep]);
+  }, [buildParagraph, onLayout, segments, width]);
 
   return <Paragraph paragraph={paragraph} transform={transform} width={width} x={x} y={y} />;
 };
