@@ -35,9 +35,9 @@ export interface UserAssetsState {
   currentAbortController: AbortController;
   filter: UserAssetFilter;
   hiddenAssets: Set<UniqueId>;
-  hiddenAssetsSharedvalue: SharedValue<Array<UniqueId>>;
+  hiddenAssetsSharedvalue: SharedValue<Record<UniqueId, boolean>>;
   pinnedAssets: Set<UniqueId>;
-  pinnedAssetsSharedvalue: SharedValue<Array<UniqueId>>;
+  pinnedAssetsSharedvalue: SharedValue<Record<UniqueId, boolean>>;
   hiddenAssetsBalance: string | null;
   idsByChain: Map<UserAssetFilter, UniqueId[]>;
   inputSearchQuery: string;

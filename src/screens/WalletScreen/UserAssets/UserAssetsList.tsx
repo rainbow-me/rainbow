@@ -85,7 +85,7 @@ function UserAssetsListComponent() {
   }, []);
 
   const listStyle = useAnimatedStyle(() => {
-    const assetLength = isEditing.value ? userAssets.length : userAssets.length - hiddenAssets.value.length;
+    const assetLength = isEditing.value ? userAssets.length : userAssets.length - Object.keys(hiddenAssets.value).length;
     return {
       height: withSpring(
         isExpanded.value
@@ -113,6 +113,11 @@ function UserAssetsListComponent() {
       removeClippedSubviews
       style={[listStyle, { flex: 1, width: deviceUtils.dimensions.width, paddingBottom: LIST_BOTTOM_PADDING }]}
       showsVerticalScrollIndicator={false}
+      getItemLayout={(data, index) => ({
+        length: COIN_ROW_WITH_PADDING_HEIGHT,
+        offset: COIN_ROW_WITH_PADDING_HEIGHT * index,
+        index,
+      })}
     />
   );
 }

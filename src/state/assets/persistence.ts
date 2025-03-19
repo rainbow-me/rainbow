@@ -15,8 +15,8 @@ type PersistedUserAssetsState = Pick<UserAssetsStateToPersist, 'filter' | 'legac
   idsByChain: Array<[UserAssetFilter, UniqueId[]]>; // Map
   userAssets: Array<[UniqueId, ParsedSearchAsset]>; // Map
   pinnedAssets: UniqueId[]; // Set
-  hiddenAssetsSharedvalue: SharedValue<UniqueId[]>; // Set
-  pinnedAssetsSharedvalue: SharedValue<UniqueId[]>; // Set
+  hiddenAssetsSharedvalue: SharedValue<Record<UniqueId, boolean>>; // Map
+  pinnedAssetsSharedvalue: SharedValue<Record<UniqueId, boolean>>; // Map
 };
 
 export function serializeUserAssetsState(state: UserAssetsStateToPersist, version?: number) {
@@ -92,8 +92,8 @@ export function deserializeUserAssetsState(serializedState: string) {
     logger.error(new RainbowError(`[userAssetsStore]: Failed to convert pinnedAssets from user assets storage`), { error });
   }
 
-  const hiddenAssetsSharedvalue = makeMutable(Array.from(hiddenAssets.values()));
-  const pinnedAssetsSharedvalue = makeMutable(Array.from(pinnedAssets.values()));
+  const hiddenAssetsSharedvalue = makeMutable(Object.fromEntries(hiddenAssets.values().map(id => [id, true])));
+  const pinnedAssetsSharedvalue = makeMutable(Object.fromEntries(pinnedAssets.values().map(id => [id, true])));
 
   return {
     state: {

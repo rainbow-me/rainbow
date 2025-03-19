@@ -4,7 +4,6 @@ import { noop } from 'lodash';
 
 import { UniqueId } from '@/__swaps__/types/assets';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { ViewToken } from 'react-native';
 
 export enum EditAction {
   none = 'NONE',
@@ -42,8 +41,8 @@ type UserAssetsListContextType = {
   isExpanded: SharedValue<boolean>;
   isEditing: SharedValue<boolean>;
   currentAction: SharedValue<EditAction>;
-  hiddenAssets: SharedValue<Array<UniqueId>>;
-  pinnedAssets: SharedValue<Array<UniqueId>>;
+  hiddenAssets: SharedValue<Record<UniqueId, boolean>>;
+  pinnedAssets: SharedValue<Record<UniqueId, boolean>>;
 } & UserAssetsListActions;
 
 export const UserAssetsListContext = createContext<UserAssetsListContextType>({
@@ -52,8 +51,8 @@ export const UserAssetsListContext = createContext<UserAssetsListContextType>({
   isExpanded: makeMutable<boolean>(false),
   isEditing: makeMutable<boolean>(false),
   currentAction: makeMutable<EditAction>(EditAction.none),
-  hiddenAssets: makeMutable<Array<UniqueId>>([]),
-  pinnedAssets: makeMutable<Array<UniqueId>>([]),
+  hiddenAssets: makeMutable<Record<UniqueId, boolean>>({}),
+  pinnedAssets: makeMutable<Record<UniqueId, boolean>>({}),
   toggleSelectedAsset: noop,
   toggleExpanded: noop,
   toggleEditing: noop,
@@ -110,26 +109,26 @@ export function UserAssetsListProvider({ children }: { children: React.ReactNode
 
     // if every selected asset is hidden, return unhide
     const allSelectedAssetIds = Array.from(selectedAssets.value);
-    const allSelectedAssetsHidden = allSelectedAssetIds.every(id => hiddenAssets.value.includes(id));
+    const allSelectedAssetsHidden = allSelectedAssetIds.every(id => hiddenAssets.value[id]);
 
     if (allSelectedAssetIds.length > 0 && allSelectedAssetsHidden) {
       return EditAction.unhide;
     }
 
     // if every selected asset is pinned, return unpin
-    const allSelectedAssetsPinned = allSelectedAssetIds.every(id => pinnedAssets.value.includes(id));
+    const allSelectedAssetsPinned = allSelectedAssetIds.every(id => pinnedAssets.value[id]);
     if (allSelectedAssetIds.length > 0 && allSelectedAssetsPinned) {
       return EditAction.unpin;
     }
 
     // if no assets are pinned, return pin
-    const anySelectedAssetsPinned = allSelectedAssetIds.some(id => pinnedAssets.value.includes(id));
+    const anySelectedAssetsPinned = allSelectedAssetIds.some(id => pinnedAssets.value[id]);
     if (!anySelectedAssetsPinned) {
       return EditAction.pin;
     }
 
     // if no assets are hidden, return hide
-    const anySelectedAssetsHidden = allSelectedAssetIds.some(id => hiddenAssets.value.includes(id));
+    const anySelectedAssetsHidden = allSelectedAssetIds.some(id => hiddenAssets.value[id]);
     if (!anySelectedAssetsHidden) {
       return EditAction.hide;
     }
@@ -140,7 +139,10 @@ export function UserAssetsListProvider({ children }: { children: React.ReactNode
   const unhideAssets = useCallback(
     (ids: string[]) => {
       'worklet';
-      hiddenAssets.value = hiddenAssets.value.filter(id => !ids.includes(id));
+      hiddenAssets.modify(map => {
+        ids.forEach(id => delete map[id]);
+        return map;
+      });
     },
     [hiddenAssets]
   );
@@ -148,7 +150,10 @@ export function UserAssetsListProvider({ children }: { children: React.ReactNode
   const unpinAssets = useCallback(
     (ids: string[]) => {
       'worklet';
-      pinnedAssets.value = pinnedAssets.value.filter(id => !ids.includes(id));
+      pinnedAssets.modify(map => {
+        ids.forEach(id => delete map[id]);
+        return map;
+      });
     },
     [pinnedAssets]
   );
@@ -161,26 +166,40 @@ export function UserAssetsListProvider({ children }: { children: React.ReactNode
 
       switch (action) {
         case EditAction.pin: {
-          const allIds = Array.from(new Set([...pinnedAssets.value, ...selectedIds]));
-          pinnedAssets.value = allIds;
-          unhideAssets(allIds);
+          pinnedAssets.modify(map => {
+            const newMap: Record<UniqueId, boolean> = { ...map };
+            selectedIds.forEach(id => (newMap[id] = true));
+            return newMap as typeof map;
+          });
+          unhideAssets(selectedIds);
           runOnJS(setPinnedAssets)(selectedIds, action);
           break;
         }
         case EditAction.unpin: {
-          pinnedAssets.value = pinnedAssets.value.filter(id => !selectedIds.includes(id));
+          pinnedAssets.modify(map => {
+            const newMap: Record<UniqueId, boolean> = { ...map };
+            selectedIds.forEach(id => delete newMap[id]);
+            return newMap as typeof map;
+          });
           runOnJS(setPinnedAssets)(selectedIds, action);
           break;
         }
         case EditAction.hide: {
-          const allIds = Array.from(new Set([...hiddenAssets.value, ...selectedIds]));
-          hiddenAssets.value = allIds;
-          unpinAssets(allIds);
+          hiddenAssets.modify(map => {
+            const newMap: Record<UniqueId, boolean> = { ...map };
+            selectedIds.forEach(id => (newMap[id] = true));
+            return newMap as typeof map;
+          });
+          unpinAssets(selectedIds);
           runOnJS(setHiddenAssets)(selectedIds, action);
           break;
         }
         case EditAction.unhide: {
-          hiddenAssets.value = hiddenAssets.value.filter(id => !selectedIds.includes(id));
+          hiddenAssets.modify(map => {
+            const newMap: Record<UniqueId, boolean> = { ...map };
+            selectedIds.forEach(id => delete newMap[id]);
+            return newMap as typeof map;
+          });
           runOnJS(setHiddenAssets)(selectedIds, action);
           break;
         }
@@ -191,7 +210,7 @@ export function UserAssetsListProvider({ children }: { children: React.ReactNode
       // Clear selected assets after any action
       selectedAssets.value = [];
     },
-    [hiddenAssets, pinnedAssets, selectedAssets, setHiddenAssets, setPinnedAssets]
+    [hiddenAssets, pinnedAssets, selectedAssets, setHiddenAssets, setPinnedAssets, unhideAssets, unpinAssets]
   );
 
   return (

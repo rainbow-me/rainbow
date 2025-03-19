@@ -72,9 +72,13 @@ export const createUserAssetsStore = (address: Address | string) =>
       currentAbortController: new AbortController(),
       filter: 'all',
       pinnedAssets: new Set<UniqueId>(Object.keys(getOldPinnedAssetsData(address) || {})),
-      pinnedAssetsSharedvalue: makeMutable<Array<UniqueId>>(Object.keys(getOldPinnedAssetsData(address) || {})),
+      pinnedAssetsSharedvalue: makeMutable<Record<UniqueId, boolean>>(
+        Object.fromEntries(Object.keys(getOldPinnedAssetsData(address) || {}).map(id => [id, true]))
+      ),
       hiddenAssets: new Set<UniqueId>(Object.keys(getOldHiddenAssetsData(address) || {})),
-      hiddenAssetsSharedvalue: makeMutable<Array<UniqueId>>(Object.keys(getOldHiddenAssetsData(address) || {})),
+      hiddenAssetsSharedvalue: makeMutable<Record<UniqueId, boolean>>(
+        Object.fromEntries(Object.keys(getOldHiddenAssetsData(address) || {}).map(id => [id, true]))
+      ),
       hiddenAssetsBalance: null,
       idsByChain: new Map<UserAssetFilter, UniqueId[]>(),
       inputSearchQuery: '',
@@ -307,8 +311,8 @@ export const createUserAssetsStore = (address: Address | string) =>
               ...oldState,
               pinnedAssets: new Set(oldPinnedAssets),
               hiddenAssets: new Set(oldHiddenAssets),
-              pinnedAssetsSharedvalue: makeMutable<Array<UniqueId>>(oldPinnedAssets),
-              hiddenAssetsSharedvalue: makeMutable<Array<UniqueId>>(oldHiddenAssets),
+              pinnedAssetsSharedvalue: makeMutable<Record<UniqueId, boolean>>(Object.fromEntries(oldPinnedAssets.map(id => [id, true]))),
+              hiddenAssetsSharedvalue: makeMutable<Record<UniqueId, boolean>>(Object.fromEntries(oldHiddenAssets.map(id => [id, true]))),
             };
           },
         }

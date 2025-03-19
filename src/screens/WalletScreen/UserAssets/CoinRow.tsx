@@ -101,8 +101,8 @@ const CoinCheckButton = memo(function CoinCheckButton({ uniqueId }: { uniqueId: 
   const { selectedAssets, hiddenAssets, pinnedAssets } = useUserAssetsListContext();
 
   const outlineStyles = useAnimatedStyle(() => {
-    const isHidden = hiddenAssets.value.includes(uniqueId);
-    const isPinned = pinnedAssets.value.includes(uniqueId);
+    const isHidden = hiddenAssets.value[uniqueId];
+    const isPinned = pinnedAssets.value[uniqueId];
     const showOutline = !(isHidden || isPinned);
 
     return {
@@ -113,7 +113,7 @@ const CoinCheckButton = memo(function CoinCheckButton({ uniqueId }: { uniqueId: 
 
   const pinnedPlaceholderStyles = useAnimatedStyle(() => {
     const selected = selectedAssets.value.includes(uniqueId);
-    const isPinned = pinnedAssets.value.includes(uniqueId);
+    const isPinned = pinnedAssets.value[uniqueId];
     const showPinnedIcon = !selected && isPinned;
 
     return {
@@ -124,8 +124,8 @@ const CoinCheckButton = memo(function CoinCheckButton({ uniqueId }: { uniqueId: 
 
   const hiddenPlaceholderStyles = useAnimatedStyle(() => {
     const selected = selectedAssets.value.includes(uniqueId);
-    const isHidden = hiddenAssets.value.includes(uniqueId);
-    const isPinned = pinnedAssets.value.includes(uniqueId);
+    const isHidden = hiddenAssets.value[uniqueId];
+    const isPinned = pinnedAssets.value[uniqueId];
     const showHiddenIcon = !selected && isHidden && !isPinned;
 
     return {
@@ -171,7 +171,7 @@ export const CoinRow = memo(function CoinRow({ uniqueId, index }: { uniqueId: Un
     const asset = useUserAssetsStore.getState().getUserAsset(uniqueId);
     if (!asset) return;
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, { asset, address: asset.address, chainId: asset.chainId });
-  }, []);
+  }, [uniqueId]);
 
   const checkmarkBackgroundDynamicStyle = useAnimatedStyle(() => {
     return {
@@ -187,10 +187,10 @@ export const CoinRow = memo(function CoinRow({ uniqueId, index }: { uniqueId: Un
     } else {
       runOnJS(handleNavigateToAsset)();
     }
-  }, [handleNavigateToAsset, isEditing, toggleSelectedAsset]);
+  }, [handleNavigateToAsset, isEditing, toggleSelectedAsset, uniqueId]);
 
   const rowStyle = useAnimatedStyle(() => {
-    const isHidden = hiddenAssets.value.includes(uniqueId);
+    const isHidden = hiddenAssets.value[uniqueId];
     const isSelected = selectedAssets.value.includes(uniqueId);
 
     // Determine if the row should be shown based on hidden status and edit mode
