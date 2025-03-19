@@ -164,7 +164,7 @@ export function UserAssetsListProvider({ children }: { children: React.ReactNode
           const allIds = Array.from(new Set([...pinnedAssets.value, ...selectedIds]));
           pinnedAssets.value = allIds;
           unhideAssets(allIds);
-          runOnJS(setPinnedAssets)(allIds, action);
+          runOnJS(setPinnedAssets)(selectedIds, action);
           break;
         }
         case EditAction.unpin: {
@@ -176,7 +176,7 @@ export function UserAssetsListProvider({ children }: { children: React.ReactNode
           const allIds = Array.from(new Set([...hiddenAssets.value, ...selectedIds]));
           hiddenAssets.value = allIds;
           unpinAssets(allIds);
-          runOnJS(setHiddenAssets)(allIds, action);
+          runOnJS(setHiddenAssets)(selectedIds, action);
           break;
         }
         case EditAction.unhide: {

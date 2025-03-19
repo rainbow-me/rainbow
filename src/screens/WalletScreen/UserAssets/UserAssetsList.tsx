@@ -7,15 +7,7 @@ import { convertAmountToNativeDisplay, isZero } from '@/helpers/utilities';
 import { deviceUtils } from '@/utils';
 import { useAccountSettings, withPerformanceTracking } from '@/hooks';
 import { BaseButton } from '@/components/DappBrowser/TabViewToolbar';
-import Animated, {
-  JumpingTransition,
-  useAnimatedStyle,
-  useDerivedValue,
-  withRepeat,
-  withSequence,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useDerivedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { useUserAssetsListContext, DIVIDER_HEIGHT, MAX_CONDENSED_ASSETS, EditAction, UserAssetListItem } from './UserAssetsListContext';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from './CoinRow';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -116,7 +108,6 @@ function UserAssetsListComponent() {
       scrollEnabled={false}
       style={[listStyle, { flex: 1, width: deviceUtils.dimensions.width, paddingBottom: LIST_BOTTOM_PADDING }]}
       showsVerticalScrollIndicator={false}
-      itemLayoutAnimation={JumpingTransition}
       windowSize={30}
     />
   );

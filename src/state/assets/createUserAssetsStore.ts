@@ -227,22 +227,20 @@ export const createUserAssetsStore = (address: Address | string) =>
         return total;
       },
 
-      setHiddenAssets: (uniqueIds: UniqueId[]) => {
+      setHiddenAssets: (selectedIds, action) => {
         set(state => {
           const hiddenAssets = new Set(state.hiddenAssets);
-          uniqueIds.forEach(uniqueId => {
-            if (hiddenAssets.has(uniqueId)) {
-              hiddenAssets.delete(uniqueId);
-            } else {
+
+          selectedIds.forEach(uniqueId => {
+            if (action === EditAction.hide) {
               hiddenAssets.add(uniqueId);
-              // we need to also check if the asset was pinned and unpin it
-              if (state.pinnedAssets.has(uniqueId)) {
-                state.pinnedAssets.delete(uniqueId);
+              if (state.hiddenAssets.has(uniqueId)) {
+                state.hiddenAssets.delete(uniqueId);
               }
+            } else if (action === EditAction.unhide) {
+              hiddenAssets.delete(uniqueId);
             }
           });
-
-          state.hiddenAssetsSharedvalue.value = Array.from(hiddenAssets);
 
           const hiddenAssetsBalance = calculateHiddenAssetsBalance({
             address,
