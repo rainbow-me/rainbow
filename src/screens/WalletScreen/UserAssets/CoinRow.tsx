@@ -164,7 +164,7 @@ const CoinCheckButton = memo(function CoinCheckButton({ uniqueId }: { uniqueId: 
   );
 });
 
-export function CoinRow({ uniqueId, index }: { uniqueId: UniqueId; index: number }) {
+export const CoinRow = memo(function CoinRow({ uniqueId, index }: { uniqueId: UniqueId; index: number }) {
   const { isEditing, isExpanded, toggleSelectedAsset, hiddenAssets, selectedAssets } = useUserAssetsListContext();
 
   const handleNavigateToAsset = useCallback(() => {
@@ -248,7 +248,7 @@ export function CoinRow({ uniqueId, index }: { uniqueId: UniqueId; index: number
       </Columns>
     </GestureHandlerButton>
   );
-}
+});
 
 const sx = StyleSheet.create({
   bottom: {

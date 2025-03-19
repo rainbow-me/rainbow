@@ -32,6 +32,11 @@ const getOldPinnedAssetsData = (address: Address | string): BooleanMap | null =>
   return pinnedAssets ? JSON.parse(pinnedAssets) : null;
 };
 
+const getOldHiddenAssetsData = (address: Address | string): BooleanMap | null => {
+  const hiddenAssets = new MMKV().getString('hidden-coins-obj-' + address);
+  return hiddenAssets ? JSON.parse(hiddenAssets) : null;
+};
+
 export const createUserAssetsStore = (address: Address | string) =>
   createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, TransformedUserAssetsData>(
     {
@@ -66,10 +71,10 @@ export const createUserAssetsStore = (address: Address | string) =>
       chainBalances: new Map(),
       currentAbortController: new AbortController(),
       filter: 'all',
-      pinnedAssets: new Set<UniqueId>(),
-      pinnedAssetsSharedvalue: makeMutable<Array<UniqueId>>([]),
-      hiddenAssets: new Set<UniqueId>(),
-      hiddenAssetsSharedvalue: makeMutable<Array<UniqueId>>([]),
+      pinnedAssets: new Set<UniqueId>(Object.keys(getOldPinnedAssetsData(address) || {})),
+      pinnedAssetsSharedvalue: makeMutable<Array<UniqueId>>(Object.keys(getOldPinnedAssetsData(address) || {})),
+      hiddenAssets: new Set<UniqueId>(Object.keys(getOldHiddenAssetsData(address) || {})),
+      hiddenAssetsSharedvalue: makeMutable<Array<UniqueId>>(Object.keys(getOldHiddenAssetsData(address) || {})),
       hiddenAssetsBalance: null,
       idsByChain: new Map<UserAssetFilter, UniqueId[]>(),
       inputSearchQuery: '',
@@ -234,8 +239,8 @@ export const createUserAssetsStore = (address: Address | string) =>
           selectedIds.forEach(uniqueId => {
             if (action === EditAction.hide) {
               hiddenAssets.add(uniqueId);
-              if (state.hiddenAssets.has(uniqueId)) {
-                state.hiddenAssets.delete(uniqueId);
+              if (state.pinnedAssets.has(uniqueId)) {
+                state.pinnedAssets.delete(uniqueId);
               }
             } else if (action === EditAction.unhide) {
               hiddenAssets.delete(uniqueId);
@@ -289,18 +294,22 @@ export const createUserAssetsStore = (address: Address | string) =>
           storageKey: `userAssets_${address}`,
           version: 2,
           migrate: (persistedState: unknown, version: number) => {
-            if (version === 1) {
-              // Migrates old pinned assets data from MMKV to Zustand
-              const oldState = persistedState as UserAssetsStateToPersist;
-              const oldPinnedAssets = getOldPinnedAssetsData(address);
-              if (oldPinnedAssets) {
-                return {
-                  ...oldState,
-                  pinnedAssets: new Set(Object.keys(oldPinnedAssets)),
-                };
-              }
+            if (version === 2) {
+              return persistedState as Partial<UserAssetsState>;
             }
-            return persistedState as Partial<UserAssetsState>;
+
+            // Migrates old pinned assets data from MMKV to Zustand
+            const oldState = persistedState as UserAssetsStateToPersist;
+            const oldPinnedAssets = Object.keys(getOldPinnedAssetsData(address) || {});
+            const oldHiddenAssets = Object.keys(getOldHiddenAssetsData(address) || {});
+
+            return {
+              ...oldState,
+              pinnedAssets: new Set(oldPinnedAssets),
+              hiddenAssets: new Set(oldHiddenAssets),
+              pinnedAssetsSharedvalue: makeMutable<Array<UniqueId>>(oldPinnedAssets),
+              hiddenAssetsSharedvalue: makeMutable<Array<UniqueId>>(oldHiddenAssets),
+            };
           },
         }
       : undefined

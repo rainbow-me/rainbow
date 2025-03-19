@@ -57,6 +57,8 @@ const ListEmptyComponent = memo(function ListEmptyComponent() {
   );
 });
 
+const MAX_TO_RENDER_PER_BATCH = Math.floor(deviceUtils.dimensions.height / COIN_ROW_WITH_PADDING_HEIGHT) * 2 + 1;
+
 function UserAssetsListComponent() {
   const { flatlistRef, isExpanded, isEditing, hiddenAssets } = useUserAssetsListContext();
 
@@ -104,11 +106,13 @@ function UserAssetsListComponent() {
       ref={flatlistRef}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
-      initialNumToRender={MAX_CONDENSED_ASSETS + 1}
       scrollEnabled={false}
+      initialNumToRender={MAX_CONDENSED_ASSETS + 1}
+      maxToRenderPerBatch={MAX_TO_RENDER_PER_BATCH}
+      updateCellsBatchingPeriod={100}
+      removeClippedSubviews
       style={[listStyle, { flex: 1, width: deviceUtils.dimensions.width, paddingBottom: LIST_BOTTOM_PADDING }]}
       showsVerticalScrollIndicator={false}
-      windowSize={30}
     />
   );
 }
