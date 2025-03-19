@@ -1,9 +1,10 @@
-import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { LayoutChangeEvent } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SlackSheet } from '@/components/sheet';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RainbowTransaction } from '@/entities';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID } from '@/env';
 import { BackgroundProvider, Box } from '@/design-system';
 import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
 import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
@@ -12,7 +13,6 @@ import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
 import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
 import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
-import { LayoutChangeEvent } from 'react-native';
 import { useDimensions } from '@/hooks';
 
 type RouteParams = {
@@ -32,17 +32,19 @@ export const TransactionDetails = () => {
   const [statusIconHidden, setStatusIconHidden] = useState(false);
   const { presentedToast, presentToastFor } = useTransactionDetailsToasts();
   const { height: deviceHeight } = useDimensions();
+  const { bottom } = useSafeAreaInsets();
 
   // Dynamic sheet height based on content height
   useEffect(() => setParams({ longFormHeight: sheetHeight }), [setParams, sheetHeight]);
 
-  const onSheetContentLayout = (event: LayoutChangeEvent) => {
-    const contentHeight = event.nativeEvent.layout.height;
-    if (contentHeight > deviceHeight) {
-      setStatusIconHidden(true);
-    }
-    setSheetHeight(contentHeight);
-  };
+  const onSheetContentLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      const contentHeight = event.nativeEvent.layout.height;
+      if (contentHeight > deviceHeight) setStatusIconHidden(true);
+      setSheetHeight(contentHeight + (IS_ANDROID ? bottom : 0));
+    },
+    [bottom, deviceHeight]
+  );
 
   const presentAddressToast = useCallback(() => {
     presentToastFor('address');
@@ -56,14 +58,10 @@ export const TransactionDetails = () => {
     <BackgroundProvider color="surfacePrimaryElevated">
       {({ backgroundColor }) => (
         <SlackSheet
+          contentHeight={sheetHeight}
           backgroundColor={backgroundColor}
-          {...(IS_IOS
-            ? { height: '100%' }
-            : {
-                additionalTopPadding: true,
-                contentHeight: sheetHeight,
-              })}
-          scrollEnabled
+          height={IS_ANDROID ? sheetHeight : '100%'}
+          deferredHeight={IS_ANDROID}
           showsVerticalScrollIndicator={false}
         >
           <Box paddingHorizontal="20px" paddingBottom="20px" onLayout={onSheetContentLayout}>
