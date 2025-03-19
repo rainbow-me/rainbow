@@ -180,9 +180,15 @@ function ShareButton() {
           networkLabel: chainLabels[chainId],
           contractAddress: launchedTokenAddress,
         });
-        await Share.share({
-          url,
-        });
+        await Share.share(
+          IS_ANDROID
+            ? {
+                message: url,
+              }
+            : {
+                url,
+              }
+        );
         analyticsV2.track(analyticsV2.event.tokenLauncherSharePressed, {
           address: launchedTokenAddress,
           url,

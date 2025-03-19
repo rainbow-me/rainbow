@@ -141,9 +141,15 @@ export function AssetContextMenu() {
             networkLabel: chainLabels[asset.chainId],
             contractAddress: asset.address,
           });
-        Share.share({
-          url,
-        });
+        Share.share(
+          IS_ANDROID
+            ? {
+                message: url,
+              }
+            : {
+                url,
+              }
+        );
         break;
       }
       case ContextMenuActions.BlockExplorer:
