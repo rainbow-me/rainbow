@@ -224,9 +224,8 @@ function CollectiblesListComponent() {
       scrollEnabled={false}
       style={styles.flatList}
       showsVerticalScrollIndicator={false}
-      windowSize={10}
       initialNumToRender={20}
-      removeClippedSubviews={false}
+      removeClippedSubviews
     />
   );
 }

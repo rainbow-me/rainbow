@@ -42,11 +42,15 @@ const ROW_WIDTH =
 
 function CollectionBalance({ collectionName, totalItems }: { collectionName: string; totalItems: number }) {
   const { openedCollections } = useCollectiblesContext();
+  const caretColor = useForegroundColor('label');
+  const hiddenColor = useForegroundColor('labelTertiary');
+  const isHidden = collectionName === i18n.t(i18n.l.button.hidden);
 
   const amountStyles = useAnimatedStyle(() => {
     const isOpen = openedCollections.value[collectionName];
 
     return {
+      color: isHidden ? hiddenColor : caretColor,
       opacity: withTiming(isOpen ? 0 : 1, TIMING_CONFIGS.fadeConfig),
     };
   });

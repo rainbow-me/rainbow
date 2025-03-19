@@ -97,7 +97,7 @@ export function useCoinListFinishEditingOptions() {
     ) {
       return EditAction.unpin;
     } else {
-      return EditAction.standard;
+      return EditAction.pin;
     }
   }, [hiddenAssets, pinnedCoins, selectedItems]);
 
@@ -117,7 +117,7 @@ export function useCoinListFinishEditingOptions() {
       } else {
         return [
           ...Object.keys(safePinnedCoins),
-          ...(currentActionNonReactive.current === EditAction.standard ? selectedItemsNonReactive.current || [] : []),
+          ...(currentActionNonReactive.current === EditAction.pin ? selectedItemsNonReactive.current || [] : []),
         ].reduce((acc, curr) => {
           acc[curr] = true;
           return acc;

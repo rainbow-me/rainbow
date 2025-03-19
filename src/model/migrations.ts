@@ -49,6 +49,7 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { selectorFilterByUserChains, selectUserAssetsList } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
 import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
+import { EditAction } from '@/screens/WalletScreen/UserAssets/UserAssetsListContext';
 
 export default async function runMigrations() {
   // get current version
@@ -694,7 +695,7 @@ export default async function runMigrations() {
           return acc;
         }, []);
 
-        userAssetsStore.getState(address).setHiddenAssets(hiddenAssets);
+        userAssetsStore.getState(address).setHiddenAssets(hiddenAssets, EditAction.hide);
 
         // remove the old hidden coins obj storage
         mmkv.delete('hidden-coins-obj-' + address);

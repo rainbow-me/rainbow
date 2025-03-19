@@ -1,12 +1,11 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import * as i18n from '@/languages';
 import { DropdownMenu, MenuConfig, MenuItem } from '@/components/DropdownMenu';
 import { SheetActionButton } from '@/components/sheet';
-import { useCoinListFinishEditingOptions, useCoinListEditOptions } from '@/hooks';
 import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ethereumUtils } from '@/utils';
-import EditAction from '@/helpers/EditAction';
+import { EditAction } from '@/screens/WalletScreen/UserAssets/UserAssetsListContext';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { IS_ANDROID } from '@/env';
 import { Box, TextIcon } from '@/design-system';
@@ -31,21 +30,14 @@ type ContextMenuAction = (typeof ContextMenuActions)[keyof typeof ContextMenuAct
 
 export function AssetContextMenu() {
   const { accentColors, basicAsset: asset, assetMetadata } = useExpandedAssetSheetContext();
-
-  const { clearSelectedCoins, pushSelectedCoin } = useCoinListEditOptions();
+  const { pinnedAssets, hiddenAssets } = useUserAssetsStore(state => ({
+    pinnedAssets: state.pinnedAssets,
+    hiddenAssets: state.hiddenAssets,
+  }));
   const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
+  const setPinnedAssets = useUserAssetsStore(state => state.setPinnedAssets);
 
-  const { currentAction, setPinnedCoins } = useCoinListFinishEditingOptions();
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
-
-  useEffect(() => {
-    // Ensure this expanded state's asset is always actively inside
-    // the CoinListEditOptions selection queue
-    pushSelectedCoin(asset.uniqueId);
-
-    // Clear CoinListEditOptions selection queue on unmount.
-    return () => clearSelectedCoins();
-  }, [asset, clearSelectedCoins, currentAction, pushSelectedCoin]);
 
   const menuConfig = useMemo<MenuConfig<ContextMenuAction>>(() => {
     const menuItems = [] as MenuItem<ContextMenuAction>[];
@@ -84,7 +76,7 @@ export function AssetContextMenu() {
       },
     });
 
-    if (currentAction === EditAction.unhide) {
+    if (hiddenAssets.has(asset.uniqueId)) {
       menuItems.push({
         actionKey: ContextMenuActions.Unhide,
         actionTitle: i18n.t('expanded_state.asset.menu.unhide'),
@@ -104,7 +96,7 @@ export function AssetContextMenu() {
       });
     }
 
-    if (currentAction === EditAction.unpin) {
+    if (pinnedAssets.has(asset.uniqueId)) {
       menuItems.push({
         actionKey: ContextMenuActions.Unpin,
         actionTitle: i18n.t('expanded_state.asset.menu.unpin'),
@@ -127,7 +119,7 @@ export function AssetContextMenu() {
     return {
       menuItems,
     };
-  }, [asset, currentAction]);
+  }, [asset, pinnedAssets, hiddenAssets]);
 
   const handlePressMenuItem = (actionKey: ContextMenuAction) => {
     switch (actionKey) {
@@ -150,16 +142,16 @@ export function AssetContextMenu() {
         ethereumUtils.openTokenEtherscanURL({ address: asset.address, chainId: asset.chainId });
         break;
       case ContextMenuActions.Pin:
-        setPinnedCoins();
+        setPinnedAssets([asset.uniqueId], EditAction.pin);
         break;
       case ContextMenuActions.Unpin:
-        setPinnedCoins();
+        setPinnedAssets([asset.uniqueId], EditAction.unpin);
         break;
       case ContextMenuActions.Hide:
-        setHiddenAssets([asset.uniqueId]);
+        setHiddenAssets([asset.uniqueId], EditAction.hide);
         break;
       case ContextMenuActions.Unhide:
-        setHiddenAssets([asset.uniqueId]);
+        setHiddenAssets([asset.uniqueId], EditAction.unhide);
         break;
     }
   };

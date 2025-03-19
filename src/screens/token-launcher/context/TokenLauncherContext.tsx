@@ -11,8 +11,10 @@ import { SkImage, useAnimatedImageValue, useImage } from '@shopify/react-native-
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { SharedValue } from 'react-native-reanimated';
 import { logger, RainbowError } from '@/logger';
-import { useCleanup, useCoinListEditOptions, useCoinListFinishEditingOptions } from '@/hooks';
+import { useCleanup } from '@/hooks';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { EditAction } from '@/screens/WalletScreen/UserAssets/UserAssetsListContext';
 
 type TokenLauncherContextType = {
   tokenBackgroundImage: SkImage | null;
@@ -54,16 +56,16 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   const chainId = useTokenLauncherStore(state => state.chainId);
   const chainNativeAsset = useBackendNetworksStore(state => state.getChainsNativeAsset()[chainId]);
   const launchedTokenAddress = useTokenLauncherStore(state => state.launchedTokenAddress);
+  const setPinnedAssets = useUserAssetsStore(state => state.setPinnedAssets);
 
   // Handle automatically pinning token when it is created
-  const { addPinnedCoin } = useCoinListEditOptions();
   useEffect(() => {
     // As soon as token is created, pin it
     if (launchedTokenAddress) {
       const launchedTokenUniqueId = getUniqueId(launchedTokenAddress, chainId);
-      addPinnedCoin(launchedTokenUniqueId);
+      setPinnedAssets([launchedTokenUniqueId], EditAction.pin);
     }
-  }, [launchedTokenAddress, chainId, addPinnedCoin]);
+  }, [launchedTokenAddress, chainId, setPinnedAssets]);
 
   const imageUri = useTokenLauncherStore(state => state.imageUri);
   const isImageGif = useMemo(() => imageUri?.endsWith('.gif'), [imageUri]);

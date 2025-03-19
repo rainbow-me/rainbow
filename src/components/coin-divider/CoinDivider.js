@@ -7,7 +7,7 @@ import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
-import EditAction from '@/helpers/EditAction';
+import { EditAction } from '@/screens/WalletScreen/UserAssets/UserAssetsListContext';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { useAccountSettings, useCoinListEditOptions, useCoinListFinishEditingOptions, useDimensions, useOpenSmallBalances } from '@/hooks';
 import styled from '@/styled-thing';
