@@ -59,7 +59,7 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
             )}
             {iconName === 'farcaster' && (
               <IconContainer height={10} width={20}>
-                <Icon name="warpcast" color={accentColors.color} width={14} />
+                <Icon name="warpcast" color={accentColors.color} width={17} />
               </IconContainer>
             )}
             <TextShadow blur={12} shadowOpacity={0.24}>
@@ -199,16 +199,9 @@ export function AboutSection() {
     if (metadata?.links?.farcaster?.url) {
       items.push({
         iconName: 'farcaster',
-        title: i18n.t(i18n.l.expanded_state.asset.social.farcaster),
+        title: i18n.t(i18n.l.expanded_state.asset.social.warpcast),
         url: metadata.links.farcaster.url,
-      });
-    }
-
-    if (metadata?.links?.other?.url) {
-      items.push({
-        icon: '􀊫',
-        title: i18n.t(i18n.l.expanded_state.asset.social.other),
-        url: metadata.links.other.url,
+        value: `@${metadata.links.farcaster.url.split('/').pop()}`,
       });
     }
 
@@ -221,6 +214,15 @@ export function AboutSection() {
       });
     }
 
+    if (metadata?.links?.other?.url) {
+      items.push({
+        icon: '􀆪',
+        title: i18n.t(i18n.l.expanded_state.asset.social.other),
+        url: metadata.links.other.url,
+        value: formatURLForDisplay(metadata.links.other.url),
+      });
+    }
+
     items.push({
       icon: '􀊫',
       title: i18n.t(i18n.l.expanded_state.asset.social.search_on_twitter),
@@ -228,7 +230,7 @@ export function AboutSection() {
     });
 
     return items;
-  }, [asset.symbol, metadata?.links]);
+  }, [asset.symbol, metadata?.links, isRainbowToken]);
 
   return (
     <Box gap={40}>

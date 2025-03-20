@@ -703,6 +703,7 @@
           "reddit": "Reddit",
           "telegram": "Telegram",
           "twitter": "Twitter",
+          "warpcast": "Warpcast",
           "farcaster": "Farcaster",
           "other": "Other",
           "search_on_twitter": "Search on Twitter"
