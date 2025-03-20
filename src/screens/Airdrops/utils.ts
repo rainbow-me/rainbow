@@ -85,7 +85,7 @@ export async function executeAirdropClaim({
     txPayload.maxFeePerGas = add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee);
     txPayload.maxPriorityFeePerGas = gasSettings.maxPriorityFee;
   } else {
-    txPayload.gasPrice = gasSettings.gasPrice;
+    txPayload.gasPrice = toHex(gasSettings.gasPrice);
   }
 
   const provider = getProvider({ chainId });
