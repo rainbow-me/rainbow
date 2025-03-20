@@ -71,11 +71,11 @@ type PlatformConfig = SocialPlatformConfig | UrlOnlyPlatformConfig;
 
 const PLATFORM_CONFIGS: Record<LinkType, PlatformConfig> = {
   x: {
-    usernameRegex: /^@?[a-zA-Z0-9_]{1,15}$/,
+    usernameRegex: /^[a-zA-Z0-9_]{1,15}$/,
     baseUrls: ['x.com/', 'twitter.com/'],
   },
   telegram: {
-    usernameRegex: /^@?[a-zA-Z0-9_]{5,32}$/,
+    usernameRegex: /^[a-zA-Z0-9_]{5,32}$/,
     baseUrls: ['t.me/', 'telegram.me/'],
   },
   farcaster: {
