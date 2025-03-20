@@ -213,6 +213,30 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     slippage,
   });
 
+  const getCommonAnalyticsParameters = () => {
+    const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
+    const inputAsset = internalSelectedInputAsset.value;
+    const outputAsset = internalSelectedOutputAsset.value;
+    const isDegenModeEnabled = swapsStore.getState().degenMode;
+    const isSwappingToPopularAsset = swapsStore.getState().outputAsset?.sectionId === 'popular';
+
+    return {
+      isBridge: isBridge,
+      inputAssetSymbol: inputAsset?.symbol || '',
+      inputAssetName: inputAsset?.name || '',
+      inputAssetAddress: inputAsset?.address as AddressOrEth,
+      inputAssetChainId: inputAsset?.chainId || ChainId.mainnet,
+      outputAssetSymbol: outputAsset?.symbol || '',
+      inputAssetType: inputAsset?.type || '',
+      outputAssetName: outputAsset?.name || '',
+      outputAssetAddress: outputAsset?.address as AddressOrEth,
+      outputAssetChainId: outputAsset?.chainId || ChainId.mainnet,
+      outputAssetType: outputAsset?.type || '',
+      degenMode: isDegenModeEnabled,
+      isSwappingToPopularAsset,
+    };
+  };
+
   const getNonceAndPerformSwap = async ({
     type,
     parameters,
@@ -227,9 +251,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const provider = getProvider({ chainId: parameters.chainId });
       const connectedToAnvil = useConnectedToAnvilStore.getState().connectedToAnvil;
 
-      const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
       const isDegenModeEnabled = swapsStore.getState().degenMode;
-      const isSwappingToPopularAsset = swapsStore.getState().outputAsset?.sectionId === 'popular';
       const lastNavigatedTrendingToken = swapsStore.getState().lastNavigatedTrendingToken;
       const isSwappingToTrendingAsset =
         lastNavigatedTrendingToken === parameters.assetToBuy.uniqueId || lastNavigatedTrendingToken === parameters.assetToSell.uniqueId;
@@ -310,24 +332,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         SwapInputController.quoteFetchingInterval.start();
 
         analyticsV2.track(analyticsV2.event.swapsFailed, {
+          ...getCommonAnalyticsParameters(),
           type,
-          isBridge: isBridge,
-          inputAssetSymbol: internalSelectedInputAsset.value?.symbol || '',
-          inputAssetName: internalSelectedInputAsset.value?.name || '',
-          inputAssetAddress: internalSelectedInputAsset.value?.address as AddressOrEth,
-          inputAssetChainId: internalSelectedInputAsset.value?.chainId || ChainId.mainnet,
           inputAssetAmount: parameters.quote.sellAmount as number,
-          outputAssetSymbol: internalSelectedOutputAsset.value?.symbol || '',
-          outputAssetName: internalSelectedOutputAsset.value?.name || '',
-          outputAssetAddress: internalSelectedOutputAsset.value?.address as AddressOrEth,
-          outputAssetChainId: internalSelectedOutputAsset.value?.chainId || ChainId.mainnet,
           outputAssetAmount: parameters.quote.buyAmount as number,
           mainnetAddress: (parameters.assetToBuy.chainId === ChainId.mainnet
             ? parameters.assetToBuy.address
             : parameters.assetToSell.mainnetAddress) as AddressOrEth,
           tradeAmountUSD: parameters.quote.tradeAmountUSD,
           degenMode: isDegenModeEnabled,
-          isSwappingToPopularAsset,
           isSwappingToTrendingAsset,
           errorMessage,
           isHardwareWallet,
@@ -375,24 +388,14 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       })();
 
       analyticsV2.track(analyticsV2.event.swapsSubmitted, {
+        ...getCommonAnalyticsParameters(),
         type,
-        isBridge: isBridge,
-        inputAssetSymbol: internalSelectedInputAsset.value?.symbol || '',
-        inputAssetName: internalSelectedInputAsset.value?.name || '',
-        inputAssetAddress: internalSelectedInputAsset.value?.address as AddressOrEth,
-        inputAssetChainId: internalSelectedInputAsset.value?.chainId || ChainId.mainnet,
         inputAssetAmount: parameters.quote.sellAmount as number,
-        outputAssetSymbol: internalSelectedOutputAsset.value?.symbol || '',
-        outputAssetName: internalSelectedOutputAsset.value?.name || '',
-        outputAssetAddress: internalSelectedOutputAsset.value?.address as AddressOrEth,
-        outputAssetChainId: internalSelectedOutputAsset.value?.chainId || ChainId.mainnet,
         outputAssetAmount: parameters.quote.buyAmount as number,
         mainnetAddress: (parameters.assetToBuy.chainId === ChainId.mainnet
           ? parameters.assetToBuy.address
           : parameters.assetToSell.mainnetAddress) as AddressOrEth,
         tradeAmountUSD: parameters.quote.tradeAmountUSD,
-        degenMode: isDegenModeEnabled,
-        isSwappingToPopularAsset,
         isSwappingToTrendingAsset,
         isHardwareWallet,
       });

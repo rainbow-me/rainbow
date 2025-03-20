@@ -200,11 +200,13 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   inputAssetName: string;
   inputAssetAddress: AddressOrEth;
   inputAssetChainId: ChainId;
+  inputAssetType: string;
   inputAssetAmount: number;
   outputAssetSymbol: string;
   outputAssetName: string;
   outputAssetAddress: AddressOrEth;
   outputAssetChainId: ChainId;
+  outputAssetType: string;
   outputAssetAmount: number;
   mainnetAddress: string;
   tradeAmountUSD: number;
