@@ -79,7 +79,7 @@ const PLATFORM_CONFIGS: Record<LinkType, PlatformConfig> = {
     baseUrls: ['t.me/', 'telegram.me/'],
   },
   farcaster: {
-    usernameRegex: /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,15}$/,
+    usernameRegex: /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,15}(\.eth)?$/,
     baseUrls: ['warpcast.com/'],
   },
   // TODO: if discord is added later
