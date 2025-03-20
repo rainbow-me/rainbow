@@ -82,10 +82,11 @@ const PLATFORM_CONFIGS: Record<LinkType, PlatformConfig> = {
     usernameRegex: /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,15}$/,
     baseUrls: ['warpcast.com/'],
   },
-  discord: {
-    usernameRegex: /^[a-z0-9_.]{2,32}$/i,
-    baseUrls: ['discord.gg/', 'discord.com/'],
-  },
+  // TODO: if discord is added later
+  // discord: {
+  //   usernameRegex: /^[a-z0-9_.]{2,32}$/i,
+  //   baseUrls: ['discord.gg/', 'discord.com/'],
+  // },
   website: {
     requiresValidUrl: true,
   },
