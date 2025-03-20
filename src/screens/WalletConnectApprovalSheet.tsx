@@ -211,19 +211,20 @@ export function WalletConnectApprovalSheet() {
    */
   const approvalNetworkInfo = useMemo(() => {
     const chain = useBackendNetworksStore.getState().getDefaultChains()[approvalChainId];
+    const label = useBackendNetworksStore.getState().getChainsLabel()[approvalChainId];
     if (!chain) {
       return {
         chainId: approvalChainId,
         color: colors.alpha(colors.blueGreyDark, 0.3),
-        name: useBackendNetworksStore.getState().getChainsLabel()[approvalChainId],
+        name: label || 'Unknown Network',
       };
     }
 
     const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chain.id];
     return {
-      chainId: chain.id,
+      chainId: chain.id || approvalChainId,
       color: isDarkMode ? nativeAsset?.colors.primary : nativeAsset?.colors.fallback || nativeAsset?.colors.primary,
-      name: chain.name,
+      name: label || chain.name,
     };
   }, [approvalChainId, isDarkMode]);
 
