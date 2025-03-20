@@ -106,17 +106,12 @@ function getScales({ data, width, height, yRange }: CallbackType): PathScales {
   return {
     scaleX,
     scaleY,
+    isFlat,
+    isNearlyFlat,
   };
 }
 
 function createPath({ data, width, height, yRange }: CallbackType): PathData {
-  const { scaleY, scaleX } = getScales({
-    data,
-    height,
-    width,
-    yRange,
-  });
-
   if (!data.points.length) {
     return {
       data: [],
@@ -125,6 +120,13 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
       points: [],
     };
   }
+
+  const { scaleY, scaleX, isFlat, isNearlyFlat } = getScales({
+    data,
+    height,
+    width,
+    yRange,
+  });
 
   const points: (Point & { originalX: number; originalY: number })[] = [];
 
@@ -144,9 +146,7 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
     });
   }
 
-  // Force linear curve for flat or nearly flat data to prevent spikes
-  const isFlatData = detectFlatData(data.points) || detectNearlyFlatData(data.points);
-  const curveFunction = isFlatData ? shape.curveLinear : getCurveType(data.curve);
+  const curveFunction = isFlat || isNearlyFlat ? shape.curveLinear : getCurveType(data.curve);
 
   const path = shape
     .line<Point>()
