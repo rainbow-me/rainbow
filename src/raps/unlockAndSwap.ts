@@ -1,4 +1,4 @@
-import { getRainbowRouterContractAddress } from '@rainbow-me/swaps';
+import { getTargetAddress, isAllowedTargetContract } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { assetNeedsUnlocking } from './actions';
 import { createNewAction, createNewRap } from './common';
@@ -8,6 +8,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
   let actions: RapAction<'swap' | 'unlock'>[] = [];
 
   const { sellAmount, quote, chainId, assetToSell, assetToBuy } = swapParameters;
+  const targetAddress = getTargetAddress(quote);
 
   const { from: accountAddress, allowanceNeeded } = quote as {
     from: Address;
@@ -22,18 +23,25 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
       owner: accountAddress,
       amount: sellAmount as string,
       assetToUnlock: assetToSell,
-      spender: getRainbowRouterContractAddress(chainId),
+      spender: targetAddress as Address,
       chainId,
     });
   }
 
   if (swapAssetNeedsUnlocking) {
+    if (!targetAddress) {
+      throw new Error('Target address not found');
+    }
+    const isAllowedTarget = isAllowedTargetContract(targetAddress, chainId as number);
+    if (!isAllowedTarget) {
+      throw new Error('Target address not allowed');
+    }
     const unlock = createNewAction('unlock', {
       fromAddress: accountAddress,
       amount: sellAmount,
       assetToUnlock: assetToSell,
       chainId,
-      contractAddress: getRainbowRouterContractAddress(chainId),
+      contractAddress: targetAddress,
     } as RapUnlockActionParameters);
     actions = actions.concat(unlock);
   }

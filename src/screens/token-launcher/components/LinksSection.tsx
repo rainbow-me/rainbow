@@ -90,9 +90,19 @@ export const LINK_SETTINGS = {
     primaryColor: '#000000',
     placeholder: i18n.t(i18n.l.token_launcher.links.other.placeholder),
     displayName: i18n.t(i18n.l.token_launcher.links.other.name),
-    type: 'other',
+    type: 'other' as const,
   },
-};
+} satisfies Record<
+  LinkType,
+  {
+    Icon: () => React.ReactNode;
+    iconBackgroundColor: string;
+    primaryColor: string;
+    placeholder: string;
+    displayName: string;
+    type: LinkType;
+  }
+>;
 
 // TODO: When RN version is updated to 0.79+, set the lineBreakModeIOS: https://github.com/facebook/react-native/issues/44107
 function LinkField({ link, index }: { link: Link; index: number }) {
@@ -191,7 +201,7 @@ export function LinksSection() {
   const links = useTokenLauncherStore(state => state.links);
   const addLink = useTokenLauncherStore(state => state.addLink);
 
-  const addMoreLinks = Object.keys(LINK_SETTINGS).filter(linkType => linkType !== 'website');
+  const addMoreLinks = Object.keys(LINK_SETTINGS).filter(linkType => linkType !== 'website') as LinkType[];
 
   return (
     <CollapsableField title="Links">
@@ -216,7 +226,7 @@ export function LinksSection() {
             const hasAddedLink = links.some(link => link.type === linkType);
 
             return (
-              <ButtonPressAnimation key={`${linkType}-${index}`} disabled={hasAddedLink} onPress={() => addLink(linkType as LinkType)}>
+              <ButtonPressAnimation key={`${linkType}-${index}`} disabled={hasAddedLink} onPress={() => addLink(linkType)}>
                 <Box
                   paddingLeft="10px"
                   paddingRight="16px"

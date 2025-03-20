@@ -312,7 +312,7 @@ const PanelFooter = ({
     if (claimStatus.value === ClaimStatus.READY || claimStatus.value === ClaimStatus.RECOVERABLE_ERROR) {
       claimAirdropWorklet();
     } else if (claimStatus.value === ClaimStatus.CONFIRMED) {
-      goBack();
+      runOnJS(goBack)();
     }
   }, [claimAirdropWorklet, claimStatus, goBack, isReadOnlyWallet]);
 

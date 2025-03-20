@@ -4,7 +4,7 @@ import { Address, formatUnits } from 'viem';
 import { analyticsV2 } from '@/analytics';
 import { NativeCurrencyKey, NewTransaction, TransactionStatus } from '@/entities';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
-import { getProvider } from '@/handlers/web3';
+import { getProvider, toHex } from '@/handlers/web3';
 import showWalletErrorAlert from '@/helpers/support';
 import { add, convertAmountToNativeDisplayWorklet, multiply, formatNumber } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
@@ -85,7 +85,7 @@ export async function executeAirdropClaim({
     txPayload.maxFeePerGas = add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee);
     txPayload.maxPriorityFeePerGas = gasSettings.maxPriorityFee;
   } else {
-    txPayload.gasPrice = gasSettings.gasPrice;
+    txPayload.gasPrice = toHex(gasSettings.gasPrice);
   }
 
   const provider = getProvider({ chainId });
@@ -233,27 +233,6 @@ export async function getGasInfo({
     gasLimit,
     sufficientFundsForGas: lessThanOrEqualToWorklet(gasFeeNativeToken, nativeAssetBalance),
   };
-}
-
-/**
- * Converts a decimal value to hexadecimal string with '0x' prefix.
- */
-function toHex(value: string | number): string {
-  try {
-    if (typeof value === 'string') {
-      // If it's already a hex string, return it
-      if (value.startsWith('0x')) return value;
-
-      // Convert decimal string to BigInt and then to hex
-      return '0x' + BigInt(value).toString(16);
-    }
-
-    // Convert number to hex
-    return '0x' + Math.floor(value).toString(16);
-  } catch (e) {
-    logger.warn('[AirdropClaim]: Failed to convert value to hex', { error: e, value });
-    return '0x0';
-  }
 }
 
 /**

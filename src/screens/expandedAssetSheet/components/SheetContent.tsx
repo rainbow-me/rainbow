@@ -53,6 +53,15 @@ export function SheetContent() {
                 <BalanceSection />
               </Animated.View>
             )}
+            {!isOwnedAsset && isBuySectionVisible && (
+              <CollapsibleSection
+                content={<BuySection />}
+                icon="􀡓"
+                id={SectionId.BUY}
+                primaryText={i18n.t(i18n.l.expanded_state.sections.buy.title)}
+                secondaryText={asset.symbol}
+              />
+            )}
             {claimable && (
               <CollapsibleSection
                 content={<ClaimSection claimable={claimable} />}
@@ -67,7 +76,7 @@ export function SheetContent() {
               id={SectionId.MARKET_STATS}
               primaryText={i18n.t(i18n.l.expanded_state.sections.market_stats.title)}
             />
-            {isBuySectionVisible && (
+            {isOwnedAsset && isBuySectionVisible && (
               <CollapsibleSection
                 content={<BuySection />}
                 icon="􀡓"

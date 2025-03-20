@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.61-1",
+  "version": "1.9.62-1",
   "private": true,
   "scripts": {
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn graphql-codegen && yarn fetch:networks",
@@ -109,7 +109,7 @@
     "@notifee/react-native": "7.8.2",
     "@rainbow-me/provider": "0.1.2",
     "@rainbow-me/react-native-animated-number": "0.0.2",
-    "@rainbow-me/swaps": "0.32.0",
+    "@rainbow-me/swaps": "0.34.0",
     "@rainbow-me/token-launcher": "file:src/vendor/rainbow-me-token-launcher-0.1.0.tgz",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-camera-roll/camera-roll": "7.7.0",
