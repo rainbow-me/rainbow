@@ -34,7 +34,6 @@ import { RootStackParamList } from '@/navigation/types';
 import { Address } from 'viem';
 import { RainbowWallet } from '@/model/wallet';
 import { WalletconnectMeta } from '@/walletConnect/types';
-import { DropdownMenu } from '@/components/DropdownMenu';
 
 type WithThemeProps = {
   theme: ThemeContextProps;
