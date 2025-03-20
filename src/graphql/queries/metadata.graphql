@@ -483,6 +483,12 @@ fragment TokenLinksFragment on TokenLinks {
   rainbow {
     ...TokenLinkFragment
   }
+  other {
+    ...TokenLinkFragment
+  }
+  farcaster {
+    ...TokenLinkFragment
+  }
   reddit {
     ...TokenLinkFragment
   }
