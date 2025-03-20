@@ -6,7 +6,7 @@ import {
   SwapType,
   fillQuote,
   getQuoteExecutionDetails,
-  getRainbowRouterContractAddress,
+  getTargetAddress,
   getWrappedAssetAddress,
   getWrappedAssetMethod,
   unwrapNativeAsset,
@@ -61,6 +61,8 @@ export const estimateUnlockAndSwap = async ({
     allowanceNeeded: boolean;
   };
 
+  const targetAddress = getTargetAddress(quote);
+
   let gasLimits: (string | number)[] = [];
   let swapAssetNeedsUnlocking = false;
 
@@ -69,7 +71,7 @@ export const estimateUnlockAndSwap = async ({
       owner: accountAddress,
       amount: sellAmount,
       assetToUnlock: assetToSell,
-      spender: getRainbowRouterContractAddress(chainId),
+      spender: targetAddress as Address,
       chainId,
     });
   }
@@ -88,7 +90,7 @@ export const estimateUnlockAndSwap = async ({
     const unlockGasLimit = await estimateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
-      spender: getRainbowRouterContractAddress(chainId),
+      spender: targetAddress as Address,
       chainId,
     });
     gasLimits = gasLimits.concat(unlockGasLimit);
@@ -197,10 +199,11 @@ export const estimateUnlockAndSwapFromMetadata = async ({
   quote: Quote | CrosschainQuote;
 }) => {
   try {
+    const targetAddress = getTargetAddress(quote);
     const approveTransaction = await populateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
-      spender: getRainbowRouterContractAddress(chainId as number),
+      spender: targetAddress as Address,
       chainId,
     });
 
@@ -397,7 +400,7 @@ export const swap = async ({
     chainId: parameters.chainId,
     data: parameters.quote.data,
     from: parameters.quote.from,
-    to: parameters.quote.to as Address,
+    to: getTargetAddress(parameters.quote) as Address,
     value: parameters.quote.value?.toString(),
     asset: assetToBuy,
     changes: [
