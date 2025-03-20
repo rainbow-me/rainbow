@@ -370,10 +370,6 @@ const Card = memo(function Card({
     };
   }, [isFavorite]);
 
-  const dappIconUrl = useMemo(() => {
-    return site.image;
-  }, [site.image]);
-
   return (
     <Box>
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.94}>
@@ -387,13 +383,13 @@ const Card = memo(function Card({
             padding="20px"
             style={[
               styles.cardContainer,
-              !dappIconUrl && !site.screenshot ? styles.cardContainerNoImage : {},
+              !site.image && !site.screenshot ? styles.cardContainerNoImage : {},
               isDarkMode ? styles.cardContainerDark : {},
             ]}
             width={{ custom: CARD_WIDTH }}
           >
             <ColorModeProvider value="dark">
-              <CardBackground imageUrl={dappIconUrl || site.screenshot} isDarkMode={isDarkMode} />
+              <CardBackground imageUrl={site.image || site.screenshot} isDarkMode={isDarkMode} />
               <Box
                 height={{ custom: CARD_LOGO_SIZE }}
                 left={{ custom: -8 }}
@@ -404,7 +400,7 @@ const Card = memo(function Card({
                 <ImgixImage
                   enableFasterImage
                   size={CARD_LOGO_SIZE}
-                  source={{ uri: dappIconUrl }}
+                  source={{ uri: site.image }}
                   style={{
                     backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100,
                     height: CARD_LOGO_SIZE,
