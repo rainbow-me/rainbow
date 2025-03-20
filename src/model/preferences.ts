@@ -99,7 +99,7 @@ export async function setPreference<K extends keyof PreferencesDataMap>(
       success: data?.success,
     });
 
-    if (!data.success) {
+    if (!data?.success) {
       throw new Error('Failed to set preference');
     }
 
@@ -125,7 +125,7 @@ export async function getPreference<K extends keyof PreferencesDataMap>(
       success: data?.success,
     });
 
-    if (!data.success) {
+    if (!data?.success) {
       return null;
     }
 
