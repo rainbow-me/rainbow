@@ -113,7 +113,7 @@ export default function ChangeWalletSheet() {
   const walletsByAddress = useMemo(() => {
     return Object.values(wallets || {}).reduce(
       (acc, wallet) => {
-        wallet.addresses.forEach(account => {
+        (wallet.addresses || []).forEach(account => {
           acc[account.address] = wallet;
         });
         return acc;
@@ -191,13 +191,13 @@ export default function ChangeWalletSheet() {
     let hasOwnedWallets = false;
 
     // We have to explicitly handle the null case because the addDisplay function expects the currency symbol, and we cannot assume the position of the currency symbol
-    const totalBalance: string | null = Object.values(walletsWithBalancesAndNames).reduce(
+    const totalBalance: string | null = Object.values(walletsWithBalancesAndNames || {}).reduce(
       (acc, wallet) => {
         // only include owned wallet balances
         if (wallet.type === WalletTypes.readOnly) return acc;
 
         hasOwnedWallets = true;
-        const visibleAccounts = wallet.addresses.filter(account => account.visible);
+        const visibleAccounts = (wallet.addresses || []).filter(account => account.visible);
         let walletTotalBalance: string | null = null;
 
         visibleAccounts.forEach(account => {
