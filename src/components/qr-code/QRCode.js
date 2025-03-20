@@ -5,12 +5,14 @@ import RainbowLogo from '../../assets/rainbow-og.png';
 import { magicMemo } from '../../utils';
 import useSafeImageUri from '@/hooks/useSafeImageUri';
 import { useTheme } from '@/theme';
+import { logger } from '@/logger';
 
 const generateMatrix = (value, errorCorrectionLevel) => {
+  let qrCodeData;
   try {
     if (!value) return [];
 
-    const qrCodeData = QRCodeUtil.create(value, { errorCorrectionLevel });
+    qrCodeData = QRCodeUtil.create(value, { errorCorrectionLevel });
     if (!qrCodeData?.modules?.data) return [];
 
     const arr = Array.prototype.slice.call(qrCodeData.modules.data, 0);
@@ -28,7 +30,11 @@ const generateMatrix = (value, errorCorrectionLevel) => {
       return rows;
     }, []);
   } catch (error) {
-    console.warn('Error generating QR code matrix:', error);
+    logger.warn('Error generating QR code matrix:', {
+      error,
+      value,
+      qrCodeData: qrCodeData?.modules?.data,
+    });
     return [];
   }
 };
