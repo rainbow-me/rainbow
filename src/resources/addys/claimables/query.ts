@@ -10,6 +10,7 @@ import { IS_TEST } from '@/env';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getAddysHttpClient } from '../client';
 import { Address } from 'viem';
+import { abort } from 'process';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -32,6 +33,12 @@ const STABLE_CLAIMABLES: ReturnType<typeof parseClaimables<Claimable>> = [];
 
 export async function getClaimables({ address, currency, abortController }: ClaimablesArgs) {
   try {
+    if (!address) {
+      abortController?.abort();
+      logger.warn('[getClaimables]: No address provided, returning stable claimables array');
+      return STABLE_CLAIMABLES;
+    }
+
     const url = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/claimables`;
     const { data } = await getAddysHttpClient().get<ConsolidatedClaimablesResponse>(url, {
       params: {
@@ -52,6 +59,7 @@ export async function getClaimables({ address, currency, abortController }: Clai
     logger.error(new RainbowError('[claimablesQueryFunction]: Failed to fetch claimables (client error)'), {
       message: (e as Error)?.message,
     });
+    return STABLE_CLAIMABLES;
   }
 }
 
