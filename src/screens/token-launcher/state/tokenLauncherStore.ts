@@ -23,11 +23,12 @@ import {
   validateSymbolWorklet,
   validateTotalSupplyWorklet,
 } from '../helpers/inputValidators';
+import lang from 'i18n-js';
 import { Wallet } from '@ethersproject/wallet';
 import { parseUnits } from '@ethersproject/units';
 import { TransactionOptions } from '@rainbow-me/swaps';
 import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
-import { LaunchTokenResponse, TokenLauncherSDKError } from '@rainbow-me/token-launcher';
+import { LaunchTokenResponse, TokenLauncherSDKError, TokenLauncherErrorCode } from '@rainbow-me/token-launcher';
 import { Alert } from 'react-native';
 import { logger, RainbowError } from '@/logger';
 import { analyticsV2 } from '@/analytics';
@@ -39,6 +40,7 @@ import { NewTransaction, TransactionStatus } from '@/entities/transactions/trans
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { ParsedAsset } from '@/resources/assets/types';
+import { tokenLaunchErrorToErrorMessage } from '../helpers/tokenLaunchErrorToErrorMessage';
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
 
@@ -687,9 +689,15 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       let metadata = {
         message: error.message,
       };
+
       if (error instanceof TokenLauncherSDKError) {
         metadata = { ...metadata, ...error.context };
+        const { header, body } = tokenLaunchErrorToErrorMessage(error as TokenLauncherSDKError);
+        Alert.alert(header, body);
+      } else {
+        Alert.alert(lang.t('token_launcher.errors.header'), lang.t('token_launcher.errors.unknown_error'));
       }
+
       analyticsV2.track(analyticsV2.event.tokenLauncherCreationFailed, {
         ...analyticsParams,
         error: error.message,
@@ -697,8 +705,8 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         source: 'source' in metadata ? (metadata.source as string) : undefined,
         transactionHash: 'transactionHash' in metadata ? (metadata.transactionHash as string) : undefined,
       });
+
       logger.error(new RainbowError('[TokenLauncher]: Error launching token'), metadata);
-      Alert.alert('Error launching token', error.message);
     }
   },
 }));
