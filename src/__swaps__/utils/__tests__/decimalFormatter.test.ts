@@ -150,4 +150,59 @@ describe('convertAmountToNativeDisplayWorklet', () => {
       ).toBe(expected);
     });
   });
+
+  // Tests for RangeError prevention
+  describe('error handling edge cases', () => {
+    test('handles very large precisionAdjustment values', () => {
+      // This might push maximumDecimalPlaces beyond 20
+      expect(() => {
+        valueBasedDecimalFormatter({
+          amount: 1.23,
+          nativePrice: 1,
+          precisionAdjustment: 100,
+        });
+      }).not.toThrow();
+    });
+
+    test('handles negative precisionAdjustment values', () => {
+      expect(() => {
+        valueBasedDecimalFormatter({
+          amount: 1.23,
+          nativePrice: 1,
+          precisionAdjustment: -10,
+        });
+      }).not.toThrow();
+    });
+
+    test('handles scientific notation in amount', () => {
+      expect(() => {
+        valueBasedDecimalFormatter({
+          amount: 1.23e-20,
+          nativePrice: 1,
+        });
+      }).not.toThrow();
+    });
+
+    test('handles extreme values for niceIncrementMinimumDecimals', () => {
+      expect(() => {
+        valueBasedDecimalFormatter({
+          amount: 1.23,
+          nativePrice: 1,
+          niceIncrementMinimumDecimals: 50,
+        });
+      }).not.toThrow();
+    });
+
+    test('handles extreme combination of parameters', () => {
+      expect(() => {
+        valueBasedDecimalFormatter({
+          amount: 1.23e-30,
+          nativePrice: 0.0000000001,
+          precisionAdjustment: 25,
+          niceIncrementMinimumDecimals: 30,
+          isStablecoin: true,
+        });
+      }).not.toThrow();
+    });
+  });
 });

@@ -97,7 +97,6 @@ export async function fetchUserAssets(
     }
     return null;
   } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') return null;
     logger.error(new RainbowError('[🔴 userAssetsStore - fetchUserAssets 🔴]: Failed to fetch user assets'), {
       message: error instanceof Error ? error.message : String(error),
     });

@@ -11,6 +11,7 @@ import {
 
 const MAXIMUM_SIGNIFICANT_DECIMALS = 6;
 const STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS = 2;
+const MAX_FRACTION_DIGITS = 20; // This is the maximum number of decimal places that can be displayed in Intl.NumberFormat
 
 export function valueBasedDecimalFormatter({
   amount,
@@ -53,13 +54,15 @@ export function valueBasedDecimalFormatter({
       maximumDecimalPlaces = Math.max(minBasedOnOrderOfMag, minDecimalsForOneCent - orderOfMagnitude);
     }
 
+    let adjustedMaximumDecimalPlaces = Math.max(
+      maximumDecimalPlaces + (precisionAdjustment ?? 0),
+      niceIncrementMinimumDecimals ? niceIncrementMinimumDecimals + 1 : 0,
+      minimumDecimalPlaces
+    );
+
     return {
-      minimumDecimalPlaces,
-      maximumDecimalPlaces: Math.max(
-        maximumDecimalPlaces + (precisionAdjustment ?? 0),
-        niceIncrementMinimumDecimals ? niceIncrementMinimumDecimals + 1 : 0,
-        minimumDecimalPlaces
-      ),
+      minimumDecimalPlaces: Math.max(0, Math.min(MAX_FRACTION_DIGITS, minimumDecimalPlaces)),
+      maximumDecimalPlaces: Math.max(0, Math.min(MAX_FRACTION_DIGITS, adjustedMaximumDecimalPlaces)),
     };
   }
 
@@ -82,7 +85,7 @@ export function valueBasedDecimalFormatter({
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: minimumDecimalPlaces,
-    maximumFractionDigits: maximumDecimalPlaces || 0,
+    maximumFractionDigits: maximumDecimalPlaces,
     useGrouping: !stripSeparators,
   });
 

@@ -43,7 +43,7 @@ const getInputMethod = (params: SwapsParams) => {
 
 export function getSwapsNavigationParams() {
   const { inputAsset: fallbackInputAsset, outputAsset: fallbackOutputAsset, setSlippage } = useSwapsStore.getState();
-  const params = (Navigation.getActiveRoute().params || {}) as SwapsParams;
+  const params = (Navigation.getActiveRoute()?.params || {}) as SwapsParams;
 
   const inputMethod = getInputMethod(params);
   const inputAsset = params.inputAsset || fallbackInputAsset;

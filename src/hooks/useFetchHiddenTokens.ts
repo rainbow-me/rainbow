@@ -13,7 +13,7 @@ export default function useFetchHiddenTokens({ address }: { address?: string }) 
     async () => {
       if (!address) return [];
       let hiddenTokens = await getHiddenTokens(address, network);
-      const hiddenTokensFromCloud = (await getPreference('hidden', address)) as any | undefined;
+      const hiddenTokensFromCloud = await getPreference('hidden', address);
       if (hiddenTokensFromCloud?.hidden?.ids && hiddenTokensFromCloud?.hidden?.ids.length > 0) {
         hiddenTokens = hiddenTokensFromCloud.hidden.ids;
       }

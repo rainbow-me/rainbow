@@ -285,7 +285,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     familyName,
     isSendable,
     marketplaceName,
-    traits,
+    traits = [],
     uniqueId,
     fullUniqueId,
   } = asset;

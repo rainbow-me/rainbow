@@ -502,7 +502,7 @@ export default async function runMigrations() {
       const { wallets } = store.getState().wallets;
       if (Object.keys(wallets!).length > 0) {
         for (const wallet of Object.values(wallets!)) {
-          for (const account of (wallet as RainbowWallet).addresses) {
+          for (const account of (wallet as RainbowWallet).addresses || []) {
             keysToMigrate.push(`signature_${account.address}`);
           }
         }
@@ -536,7 +536,7 @@ export default async function runMigrations() {
     const { wallets } = store.getState().wallets;
     if (!wallets) return;
     for (const wallet of Object.values(wallets)) {
-      for (const account of (wallet as RainbowWallet).addresses) {
+      for (const account of (wallet as RainbowWallet).addresses || []) {
         const hiddenCoins = await getHiddenCoins(account.address, network);
         const pinnedCoins = await getPinnedCoins(account.address, network);
 
@@ -588,7 +588,7 @@ export default async function runMigrations() {
     const { wallets } = store.getState().wallets;
     if (!wallets) return;
     for (const wallet of Object.values(wallets)) {
-      for (const account of (wallet as RainbowWallet).addresses) {
+      for (const account of (wallet as RainbowWallet).addresses || []) {
         const pinnedCoins = JSON.parse(mmkv.getString('pinned-coins-' + account.address) ?? '[]');
         const hiddenCoins = JSON.parse(mmkv.getString('hidden-coins-' + account.address) ?? '[]');
         mmkv.set(
@@ -682,7 +682,7 @@ export default async function runMigrations() {
     if (!wallets) return;
 
     for (const wallet of Object.values(wallets)) {
-      for (const { address } of (wallet as RainbowWallet).addresses) {
+      for (const { address } of (wallet as RainbowWallet).addresses || []) {
         const hiddenCoins = JSON.parse(mmkv.getString('hidden-coins-obj-' + address) ?? '{}');
         if (isEmpty(hiddenCoins)) continue;
 
@@ -730,7 +730,7 @@ export default async function runMigrations() {
     if (!wallets) return;
 
     for (const wallet of Object.values(wallets)) {
-      for (const { address } of (wallet as RainbowWallet).addresses) {
+      for (const { address } of (wallet as RainbowWallet).addresses || []) {
         const { connectedToAnvil } = useConnectedToAnvilStore.getState();
         const queryKey = userAssetsQueryKey({ address, currency: nativeCurrency, testnetMode: connectedToAnvil });
         const queryData: ParsedAssetsDictByChain | undefined = queryClient.getQueryData(queryKey);

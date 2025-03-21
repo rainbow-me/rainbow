@@ -461,7 +461,7 @@ export const fetchWalletNames = () => async (dispatch: Dispatch<WalletsUpdateNam
 
   // Fetch ENS names
   await Promise.all(
-    Object.values(wallets ?? {}).flatMap(wallet => {
+    Object.values(wallets || {}).flatMap(wallet => {
       const visibleAccounts = (wallet.addresses || []).filter(address => address.visible);
       return visibleAccounts.map(async account => {
         try {

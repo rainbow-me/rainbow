@@ -89,7 +89,7 @@ export const runFeatureUnlockChecks = async (): Promise<boolean> => {
 
   Object.values(wallets).forEach(wallet => {
     if (wallet.type !== WalletTypes.readOnly) {
-      wallet.addresses?.forEach((account: RainbowAccount) => account.visible && walletsToCheck.push(account.address));
+      (wallet?.addresses || []).forEach((account: RainbowAccount) => account.visible && walletsToCheck.push(account.address));
     }
   });
 

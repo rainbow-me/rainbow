@@ -136,7 +136,7 @@ export const showcaseTokensUpdateStateFromWeb =
       const pref = await getWebDataEnabled(accountAddress, network);
 
       if ((!isReadOnlyWallet && pref) || isReadOnlyWallet) {
-        const showcaseTokensFromCloud = (await getPreference('showcase', accountAddress)) as any | undefined;
+        const showcaseTokensFromCloud = await getPreference('showcase', accountAddress);
         if (showcaseTokensFromCloud?.showcase?.ids && showcaseTokensFromCloud?.showcase?.ids.length > 0) {
           dispatch({
             payload: {
