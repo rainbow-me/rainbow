@@ -1,0 +1,25 @@
+name: Setup an SSH key
+
+inputs:
+  name:
+    description: 'The name of the key'
+    required: true
+  key:
+    description: 'The private key to use'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup key
+      shell: bash
+      env:
+          PKEY: ${{ inputs.key }}
+          NAME: ${{ inputs.name }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent_${{ inputs.name }}.sock
+      run: |
+          mkdir -p /home/runner/.ssh
+          echo "$PKEY" > /home/runner/.ssh/$NAME
+          chmod 600 /home/runner/.ssh/$NAME
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add /home/runner/.ssh/$NAME

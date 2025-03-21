@@ -1,0 +1,57 @@
+name: Setup Android Emulator
+
+inputs:
+  api-level:
+    description: 'API level to use for the emulator'
+    required: true
+    default: '30'
+  profile:
+    description: 'The profile to use for the emulator'
+    required: false
+    default: 'pixel_5'
+  ram-size:
+    description: 'The RAM size to use for the emulator'
+    required: false
+    default: '2048M'
+  arch:
+    description: 'The architecture to use for the emulator'
+    required: false
+    default: 'x86_64'
+  emulators:
+    description: 'The number of emulators to run'
+    default: 1
+
+runs:
+  using: "composite"
+  steps:
+    - name: Enable KVM
+      shell: bash
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+
+    - name: AVD cache
+      uses: useblacksmith/cache@v5
+      id: avd-cache
+      with:
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
+        key: avd-${{ inputs.api-level }}-${{ inputs.emulators }}
+
+    - name: Create AVD and Generate Snapshot for Caching
+      if: steps.avd-cache.outputs.cache-hit != 'true'
+      uses: rainbow-me/android-emulator-runner@v2
+      with:
+        emulators: ${{ inputs.emulators }}
+        api-level: ${{ inputs.api-level }}
+        target: google_apis
+        arch: ${{ inputs.arch }}
+        force-avd-creation: false
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-metrics
+        disable-animations: false
+        profile: ${{ inputs.profile }}
+        ram-size: ${{ inputs.ram-size }}
+        script: |
+          echo "Generated AVD snapshot for caching."
