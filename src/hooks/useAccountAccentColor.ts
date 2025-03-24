@@ -8,7 +8,7 @@ import { useTheme } from '@/theme';
 const CONTRAST_THRESHOLD = 2.125;
 
 export const getHighContrastColor = (color: string, isDarkMode: boolean) => {
-  if (typeof color !== 'string') return color;
+  if (typeof color !== 'string' || !color) return color;
   const contrast = chroma.contrast(color, isDarkMode ? '#191A1C' : globalColors.white100);
 
   if (contrast < CONTRAST_THRESHOLD) {
@@ -17,7 +17,7 @@ export const getHighContrastColor = (color: string, isDarkMode: boolean) => {
       return brightenedColor;
     } else {
       const [l, c, h] = chroma(color).lch();
-      return chroma.lch(l - Math.min(28, Math.max(0, (CONTRAST_THRESHOLD - contrast) * 24)), c, h).css();
+      return chroma.lch(l - Math.min(28, Math.max(0, (CONTRAST_THRESHOLD - contrast) * (c < 8 ? 32 : 24))), c, h).css();
     }
   } else return color;
 };

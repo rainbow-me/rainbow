@@ -480,6 +480,15 @@ fragment TokenLinksFragment on TokenLinks {
   homepage {
     ...TokenLinkFragment
   }
+  rainbow {
+    ...TokenLinkFragment
+  }
+  other {
+    ...TokenLinkFragment
+  }
+  farcaster {
+    ...TokenLinkFragment
+  }
   reddit {
     ...TokenLinkFragment
   }
@@ -555,6 +564,7 @@ query tokenMetadata($address: String!, $chainId: Int!, $currency: String) {
       relativeChange24h
       value
     }
+    rainbow
     totalSupply
     volume1d
   }

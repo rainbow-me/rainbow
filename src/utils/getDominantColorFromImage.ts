@@ -4,7 +4,8 @@ import Palette, { IPalette } from 'react-native-palette-full';
 
 export default async function getDominantColorFromImage(imageUrl: string, colorToMeasureAgainst: string) {
   let colors: IPalette;
-  if (/^http/.test(imageUrl)) {
+  colors = await Palette.getNamedSwatchesFromUrl(imageUrl);
+  if (/^http/.test(imageUrl) || imageUrl.startsWith('file://')) {
     colors = await Palette.getNamedSwatchesFromUrl(imageUrl);
   } else {
     colors = await Palette.getNamedSwatches(imageUrl);

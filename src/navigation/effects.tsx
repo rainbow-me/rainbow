@@ -452,6 +452,10 @@ export const appIconUnlockSheetPreset = ({ route }: any) => ({
   height: (route?.params.longFormHeight || 0) + (initialWindowMetrics?.insets?.bottom || 0),
 });
 
+export const tokenLauncherSheetPreset = {
+  enablePanDownToClose: false,
+};
+
 export const hardwareWalletTxNavigatorPreset = {
   height: HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
   backdropOpacity: 1,

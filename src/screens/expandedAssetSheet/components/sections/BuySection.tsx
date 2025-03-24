@@ -228,9 +228,11 @@ export const BuySection = memo(function BuySection() {
             borderRadius={20}
             width={'full'}
           >
-            <Text weight="semibold" size="17pt" color="labelTertiary">
-              {i18n.t(i18n.l.expanded_state.sections.buy.open_swaps)}
-            </Text>
+            <TextShadow blur={12} shadowOpacity={0.24}>
+              <Text align="center" color={{ custom: accentColors.color }} size="17pt" weight="heavy">
+                {i18n.t(i18n.l.expanded_state.sections.buy.open_swaps)}
+              </Text>
+            </TextShadow>
           </Box>
         </ButtonPressAnimation>
       )}

@@ -1,10 +1,9 @@
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 import SafeAreaView from 'react-native-safe-area-view';
 import { IS_IOS } from '@/env';
-import { getAndroidBottomInset } from './deviceUtils';
 
 export default {
-  bottom: IS_IOS ? initialWindowMetrics?.insets.bottom : getAndroidBottomInset(),
+  bottom: initialWindowMetrics?.insets?.bottom ?? 0,
   left:
     (IS_IOS
       ? initialWindowMetrics?.insets.left

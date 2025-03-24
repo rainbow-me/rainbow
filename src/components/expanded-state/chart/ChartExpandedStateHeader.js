@@ -1,17 +1,20 @@
 import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { RainbowCoinEffect } from '@/components/rainbow-coin-effect/RainbowCoinEffect';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { RAINBOW_COIN_EFFECT, useExperimentalFlag } from '@/config';
 import { Stack, Text, TextShadow, Bleed, Box } from '@/design-system';
+import ChartTypes from '@/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
 import { useChartData } from '@/react-native-animated-charts/src';
+import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ColumnWithMargins } from '../../layout';
 import { ChartPercentChangeLabel, ChartPriceLabel, ChartDateLabel } from './chart-data-labels';
-import ChartTypes from '@/helpers/chartTypes';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -31,9 +34,25 @@ export default function ChartExpandedStateHeader({
   showChart,
   chartType,
 }) {
+  const shouldUseRainbowCoinEffect = useExperimentalFlag(RAINBOW_COIN_EFFECT);
   const theme = useTheme();
   const color = givenColors || theme.colors.dark;
   const { nativeCurrency } = useAccountSettings();
+
+  const { data } = useChartData();
+  const { isRainbowToken } = useExpandedAssetSheetContext();
+
+  const chartDataExists = useMemo(() => {
+    const firstValue = data?.points?.[0]?.y;
+    return firstValue === Number(firstValue) && !!firstValue;
+  }, [data]);
+
+  const price = useMemo(
+    () => convertAmountToNativeDisplay(latestPrice, nativeCurrency),
+    // we need to make sure we recreate this value only when chart's data change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, latestPrice, nativeCurrency]
+  );
 
   const isNoPriceData = latestPrice === noPriceData;
 
@@ -44,13 +63,6 @@ export default function ChartExpandedStateHeader({
     : asset?.name;
 
   const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
-
-  const { data } = useChartData();
-
-  const chartDataExists = useMemo(() => {
-    const firstValue = data?.points?.[0]?.y;
-    return firstValue === Number(firstValue) && !!firstValue;
-  }, [data]);
 
   const chartTimeDefaultValue = useMemo(() => {
     const invertedChartTypes = Object.entries(ChartTypes).reduce((acc, [key, value]) => {
@@ -73,13 +85,6 @@ export default function ChartExpandedStateHeader({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  const price = useMemo(
-    () => convertAmountToNativeDisplay(latestPrice, nativeCurrency),
-    // we need to make sure we recreate this value only when chart's data change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, latestPrice, nativeCurrency]
-  );
-
   const showPriceChangeStyle = useAnimatedStyle(() => {
     const showPriceChange = !isNoPriceData && chartDataExists && showChart && !isNaN(latestChange.value);
     return {
@@ -90,14 +95,18 @@ export default function ChartExpandedStateHeader({
   return (
     <Container testID={'expanded-state-header'} showChart={showChart}>
       <Stack space={'20px'}>
-        <RainbowCoinIcon
-          chainSize={20}
-          size={44}
-          icon={asset?.iconUrl}
-          chainId={asset?.chainId}
-          color={asset?.colors?.primary || asset?.colors?.fallback || undefined}
-          symbol={asset?.symbol}
-        />
+        {(isRainbowToken || shouldUseRainbowCoinEffect) && asset?.iconUrl ? (
+          <RainbowCoinEffect color={asset?.colors?.primary} imageUrl={asset?.iconUrl} size={44} />
+        ) : (
+          <RainbowCoinIcon
+            chainSize={20}
+            size={44}
+            icon={asset?.iconUrl}
+            chainId={asset?.chainId}
+            color={asset?.colors?.primary || asset?.colors?.fallback || undefined}
+            symbol={asset?.symbol}
+          />
+        )}
         <TextShadow blur={12} shadowOpacity={0.24}>
           <Text
             color={{ custom: isNoPriceData ? theme.colors.alpha(theme.colors.blueGreyDark, 0.8) : color }}

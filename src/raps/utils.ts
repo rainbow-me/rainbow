@@ -2,7 +2,7 @@ import { Block, Provider } from '@ethersproject/abstract-provider';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { CrosschainQuote, Quote, getQuoteExecutionDetails, getRainbowRouterContractAddress } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote, getQuoteExecutionDetails, getTargetAddress } from '@rainbow-me/swaps';
 import { mainnet } from 'viem/chains';
 import { Chain, erc20Abi } from 'viem';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
@@ -54,7 +54,7 @@ const getStateDiff = async (provider: Provider, quote: Quote | CrosschainQuote):
   const tokenAddress = quote.sellTokenAddress;
   const fromAddr = quote.from;
   const { chainId } = await provider.getNetwork();
-  const toAddr = quote.swapType === 'normal' ? getRainbowRouterContractAddress(chainId) : (quote as CrosschainQuote).allowanceTarget;
+  const toAddr = quote.swapType === 'normal' ? getTargetAddress(quote) : (quote as CrosschainQuote).allowanceTarget;
   const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
 
   const { number: blockNumber } = await (provider.getBlock as () => Promise<Block>)();
@@ -168,7 +168,7 @@ export const estimateSwapGasLimitWithFakeApproval = async (
           from: quote.from,
           gas: toHexNoLeadingZeros(String(gas)),
           gasPrice: toHexNoLeadingZeros(`100000000000`),
-          to: quote.swapType === 'normal' ? getRainbowRouterContractAddress : (quote as CrosschainQuote).allowanceTarget,
+          to: quote.swapType === 'normal' ? getTargetAddress(quote) : (quote as CrosschainQuote).allowanceTarget,
           value: '0x0', // 100 gwei
         },
         'latest',

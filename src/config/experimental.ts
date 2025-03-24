@@ -31,6 +31,10 @@ export const CLAIMABLES = 'Claimables';
 export const NFTS_ENABLED = 'Nfts Enabled';
 export const TRENDING_TOKENS = 'Trending Tokens';
 export const PERFORMANCE_TOAST = 'Performance Toast';
+export const RAINBOW_COIN_EFFECT = 'Rainbow Coin Effect';
+export const NEW_DISCOVER_CARDS = 'New Discover Cards';
+export const RAINBOW_TRENDING_TOKENS_LIST = 'Rainbow Trending Tokens List';
+
 /**
  * A developer setting that pushes log lines to an array in-memory so that
  * they can be "dumped" or copied out of the app and analyzed.
@@ -43,8 +47,9 @@ export type ExperimentalValue = {
   needsRestart?: boolean;
 };
 
-export const defaultConfig: Record<string, ExperimentalValue> = {
-  // this flag is not reactive. We use this in a static context
+export type ExperimentalConfigKey = keyof typeof config;
+
+const config = {
   [HARDWARE_WALLETS]: { settings: true, value: true },
   [L2_TXS]: { needsRestart: true, settings: true, value: true },
   [LANGUAGE_SETTINGS]: { settings: true, value: true },
@@ -69,10 +74,20 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [NFTS_ENABLED]: { settings: true, value: !!IS_TEST },
   [TRENDING_TOKENS]: { settings: true, value: false },
   [PERFORMANCE_TOAST]: { settings: true, value: false },
-};
+  [RAINBOW_COIN_EFFECT]: { settings: true, value: false },
+  [NEW_DISCOVER_CARDS]: { settings: true, value: false },
+  [RAINBOW_TRENDING_TOKENS_LIST]: { settings: true, value: false },
+} as const;
 
-export const defaultConfigValues: Record<string, boolean> = Object.fromEntries(
-  Object.entries(defaultConfig).map(([key, { value }]) => [key, value])
+/** This flag is not reactive. We use this in a static context. */
+export const defaultConfig: Record<ExperimentalConfigKey, ExperimentalValue> = config;
+
+export const defaultConfigValues = Object.entries(defaultConfig).reduce(
+  (acc, [key, { value }]) => {
+    acc[key as ExperimentalConfigKey] = value;
+    return acc;
+  },
+  {} as Record<ExperimentalConfigKey, boolean>
 );
 
 const storageKey = 'config';
@@ -81,11 +96,11 @@ const storage = new MMKV({
   id: STORAGE_IDS.EXPERIMENTAL_CONFIG,
 });
 
-export function getExperimetalFlag(key: keyof typeof defaultConfig): boolean {
+export function getExperimetalFlag(key: ExperimentalConfigKey): boolean {
   const config = storage.getString(storageKey);
   if (typeof config !== 'string') {
     return defaultConfig[key].value;
   }
-  const parsedConfig = JSON.parse(config);
-  return (parsedConfig[key] as boolean) ?? defaultConfig[key].value;
+  const parsedConfig: Record<ExperimentalConfigKey, boolean> = JSON.parse(config);
+  return parsedConfig[key] ?? defaultConfig[key].value;
 }

@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
+import React, { useCallback, useEffect, useReducer } from 'react';
 import { ImageSourcePropType, StatusBar, ImageBackground } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
 import { CampaignKey } from '@/components/remote-promo-sheet/localCampaignChecks';
 import { analyticsV2 } from '@/analytics';
-import { AccentColorProvider, Box, Stack, Text, Bleed, Column, Columns, useForegroundColor, useAccentColor } from '@/design-system';
+import { AccentColorProvider, Box, Stack, Text, Bleed, Column, Columns, useForegroundColor } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
@@ -105,7 +105,7 @@ export function PromoSheet({
                 source={headerImage}
                 width="full"
               >
-                <SheetHandle alignSelf="center" color={sheetHandleColor} style={{ marginTop: 5 }} />
+                <SheetHandle color={sheetHandleColor} style={{ alignSelf: 'center', marginTop: 5 }} />
               </Box>
             </Box>
             <Box paddingVertical="28px" height={{ custom: deviceHeight - deviceWidth / headerImageAspectRatio - 58 }} flexGrow={1}>

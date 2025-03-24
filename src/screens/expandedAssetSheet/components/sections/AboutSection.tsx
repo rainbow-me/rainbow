@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import * as i18n from '@/languages';
-import { Bleed, Box, IconContainer, Inline, Stack, Text, TextShadow } from '@/design-system';
+import { Bleed, Box, IconContainer, Inline, Stack, Text, TextIcon, TextShadow } from '@/design-system';
 import { Row } from '../shared/Row';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -9,6 +9,7 @@ import { XIcon } from '../../icons/XIcon';
 import { Icon } from '@/components/icons';
 import { formatUrl } from '@/components/DappBrowser/utils';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 interface RowItem {
   icon?: string;
@@ -56,6 +57,11 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
                 </Bleed>
               </IconContainer>
             )}
+            {iconName === 'farcaster' && (
+              <IconContainer height={10} width={20}>
+                <Icon name="warpcast" color={accentColors.color} width={17} />
+              </IconContainer>
+            )}
             <TextShadow blur={12} shadowOpacity={0.24}>
               <Text weight="semibold" size="17pt" color="accent">
                 {title}
@@ -78,7 +84,7 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
             )}
             <IconContainer height={9} width={16}>
               <TextShadow blur={12} shadowOpacity={0.24}>
-                <Text weight="bold" align="center" size="15pt" color="accent">
+                <Text align="center" color="accent" size="icon 13px" weight="bold">
                   {`􀄯`}
                 </Text>
               </TextShadow>
@@ -112,13 +118,14 @@ function truncate(text: string) {
 
 function Description({ text }: { text: string }) {
   const { accentColors } = useExpandedAssetSheetContext();
+
   const truncatedText = useMemo(() => truncate(text), [text]);
   const canExpand = text.length > truncatedText.length;
   const [showFullDescription, setShowFullDescription] = useState(!canExpand);
 
   return (
     <Box gap={16}>
-      <Text color="labelTertiary" size="17pt / 150%">
+      <Text color="labelTertiary" size="17pt / 150%" weight="medium">
         {showFullDescription ? text : truncatedText}
       </Text>
       {!showFullDescription && (
@@ -131,17 +138,27 @@ function Description({ text }: { text: string }) {
                   height={{ custom: 20 }}
                   borderRadius={40}
                   style={{ backgroundColor: accentColors.opacity6 }}
-                  borderWidth={1.33}
+                  borderWidth={THICK_BORDER_WIDTH}
                   borderColor={{ custom: accentColors.opacity2 }}
                   alignItems="center"
                   justifyContent="center"
                 >
-                  <Text weight="black" align="center" size="icon 10px" color="labelQuaternary">
-                    {`􀆈`}
-                  </Text>
+                  <IconContainer height={20} width={20}>
+                    <TextShadow blur={12} shadowOpacity={0.24}>
+                      <Text
+                        align="center"
+                        color={{ custom: accentColors.color }}
+                        size="icon 10px"
+                        style={{ paddingTop: 1.25 }}
+                        weight="black"
+                      >
+                        􀆈
+                      </Text>
+                    </TextShadow>
+                  </IconContainer>
                 </Box>
                 <TextShadow blur={12} shadowOpacity={0.24}>
-                  <Text weight="semibold" size="17pt" align="center" color="labelTertiary">
+                  <Text color={{ custom: accentColors.color }} size="17pt" weight="semibold">
                     {i18n.t(i18n.l.button.more)}
                   </Text>
                 </TextShadow>
@@ -155,17 +172,18 @@ function Description({ text }: { text: string }) {
 }
 
 export function AboutSection() {
-  const { basicAsset: asset, assetMetadata: metadata } = useExpandedAssetSheetContext();
+  const { basicAsset: asset, assetMetadata: metadata, isRainbowToken } = useExpandedAssetSheetContext();
 
   const rowItems = useMemo(() => {
     const items: RowItem[] = [];
 
-    if (metadata?.links?.homepage?.url) {
+    const rainbowUrl = metadata?.links?.homepage?.url || metadata?.links?.rainbow?.url;
+    if (isRainbowToken && rainbowUrl) {
       items.push({
         icon: '􀎞',
         title: i18n.t(i18n.l.expanded_state.asset.social.website),
-        url: metadata.links.homepage.url,
-        value: formatUrl(metadata.links.homepage.url, false, true, true),
+        url: rainbowUrl,
+        value: formatUrl(rainbowUrl, false, true, true),
       });
     }
 
@@ -178,12 +196,30 @@ export function AboutSection() {
       });
     }
 
+    if (metadata?.links?.farcaster?.url) {
+      items.push({
+        iconName: 'farcaster',
+        title: i18n.t(i18n.l.expanded_state.asset.social.warpcast),
+        url: metadata.links.farcaster.url,
+        value: `@${metadata.links.farcaster.url.split('/').pop()}`,
+      });
+    }
+
     if (metadata?.links?.telegram?.url) {
       items.push({
         iconName: 'telegram',
         title: i18n.t(i18n.l.expanded_state.asset.social.telegram),
         url: metadata.links.telegram.url,
         value: formatURLForDisplay(metadata.links.telegram.url),
+      });
+    }
+
+    if (metadata?.links?.other?.url) {
+      items.push({
+        icon: '􀆪',
+        title: i18n.t(i18n.l.expanded_state.asset.social.other),
+        url: metadata.links.other.url,
+        value: formatURLForDisplay(metadata.links.other.url),
       });
     }
 
@@ -194,11 +230,11 @@ export function AboutSection() {
     });
 
     return items;
-  }, [asset.symbol, metadata?.links]);
+  }, [asset.symbol, metadata?.links, isRainbowToken]);
 
   return (
     <Box gap={40}>
-      <Stack space="4px">
+      <Box gap={4} marginBottom={rowItems.length % 2 === 0 ? '-12px' : undefined}>
         {rowItems.map((item, index) => (
           <RowButton
             key={`${item.title}-${index}`}
@@ -210,7 +246,7 @@ export function AboutSection() {
             value={item.value}
           />
         ))}
-      </Stack>
+      </Box>
       {metadata?.description && (
         <Box gap={24}>
           <Text weight="bold" size="20pt" color="labelSecondary">

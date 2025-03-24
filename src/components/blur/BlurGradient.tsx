@@ -47,7 +47,7 @@ export const BlurGradient = memo(function BlurGradient({
   gradientPoints: gradientPointsProp,
   height,
   intensity = 8,
-  saturation = color === 'transparent' ? 1.5 : undefined,
+  saturation = color === 'transparent' ? 1 : undefined,
   style,
   width,
 }: BlurGradientParams) {

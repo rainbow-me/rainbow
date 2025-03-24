@@ -1,22 +1,21 @@
 import React from 'react';
-import { StyleProp, TextStyle } from 'react-native';
-import { SharedValue } from 'react-native-reanimated';
 import { Box, Bleed, AnimatedText } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { CustomColor } from '@/design-system/color/useForegroundColor';
+import { AnimatedTextProps } from '@/design-system/components/Text/AnimatedText';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 
 export type AnimatedTextIconProps = {
   align?: 'center' | 'left' | 'right';
-  children: string | SharedValue<string>;
+  children: AnimatedTextProps['children'];
   color?: TextColor | CustomColor;
   containerSize?: number;
   height?: number;
   hitSlop?: number;
   opacity?: number;
   size: TextSize;
-  textStyle?: StyleProp<TextStyle>;
+  textStyle?: AnimatedTextProps['style'];
   weight: TextWeight;
   width?: number;
 };

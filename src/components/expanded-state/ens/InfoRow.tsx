@@ -31,7 +31,6 @@ export function InfoRowSkeleton() {
           color={colors.alpha(colors.blueGreyDark, 0.06)}
           enabled
           gradientColor={colors.alpha(colors.blueGreyDark, 0.06) as any}
-          width={100}
         />
       </Box>
       <Box
@@ -47,7 +46,6 @@ export function InfoRowSkeleton() {
           color={colors.alpha(colors.blueGreyDark, 0.06)}
           enabled
           gradientColor={colors.alpha(colors.blueGreyDark, 0.06) as any}
-          width={150}
         />
       </Box>
     </Inline>

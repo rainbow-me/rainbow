@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import * as i18n from '@/languages';
-import { Box, Text, TextIcon, TextShadow, useColorMode, useBackgroundColor, Stack } from '@/design-system';
+import { Box, Text, TextIcon, TextShadow, useColorMode, useBackgroundColor } from '@/design-system';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { Row } from '../../shared/Row';
 import { abbreviateNumber } from '@/helpers/utilities';
@@ -29,7 +29,7 @@ const SkeletonRow = ({ width, height }: { width: number; height: number }) => {
       borderRadius={18}
       style={{ overflow: 'hidden' }}
     >
-      <ShimmerAnimation color={shimmerColor} width={width} gradientColor={shimmerColor} />
+      <ShimmerAnimation color={shimmerColor} gradientColor={shimmerColor} />
     </Box>
   );
 };
@@ -50,8 +50,8 @@ function AssetInfoItem({
   return (
     <Row highlighted={highlighted}>
       <Box width="full">
-        <Animated.View style={{ width: '100%', flexDirection: 'row', gap: 8, alignItems: 'center' }} entering={LAYOUT_ANIMATION}>
-          <TextIcon color="labelSecondary" size="15pt" weight="semibold">
+        <Animated.View style={{ width: '100%', flexDirection: 'row', gap: 12, alignItems: 'center' }} entering={LAYOUT_ANIMATION}>
+          <TextIcon color="labelSecondary" containerSize={20} size="icon 15px" weight="medium">
             {icon}
           </TextIcon>
           <Text style={{ flex: 1 }} numberOfLines={1} ellipsizeMode="tail" color="labelSecondary" weight="medium" size="17pt">
@@ -164,8 +164,8 @@ export function AssetInfoList() {
   return (
     <>
       {assetInfoItems.length === 0 && !isLoadingMetadata && (
-        <Box justifyContent="center" alignItems="center" paddingTop="12px">
-          <Text color="label" size="17pt" weight="medium">
+        <Box justifyContent="center" alignItems="center" paddingVertical="24px" style={{ opacity: 0.8 }}>
+          <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
             {i18n.t(i18n.l.expanded_state.asset.no_data_available)}
           </Text>
         </Box>
