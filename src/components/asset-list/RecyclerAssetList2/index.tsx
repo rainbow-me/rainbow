@@ -13,13 +13,31 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
-import AndroidContextMenu from '@/components/context-menu/ContextMenu.android';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { analytics } from '@/analytics';
-import lang from 'i18n-js';
+import * as lang from '@/languages';
 import { IS_ANDROID } from '@/env';
+import { useWalletSectionsData } from '@/hooks';
+import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
+
+const menuItems: MenuItem<(typeof Routes)[keyof typeof Routes]>[] = [
+  {
+    actionKey: Routes.SETTINGS_SHEET,
+    actionTitle: lang.t(lang.l.settings.label),
+    icon: { iconType: 'SYSTEM', iconValue: 'gear' },
+  },
+  {
+    actionKey: Routes.RECEIVE_MODAL,
+    actionTitle: lang.t(lang.l.button.my_qr_code),
+    icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
+  },
+  {
+    actionKey: Routes.CONNECTED_DAPPS,
+    actionTitle: lang.t(lang.l.wallet.connected_apps),
+    icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
+  },
+];
 
 function RecyclerAssetList({
   accentColor,
@@ -35,7 +53,7 @@ function RecyclerAssetList({
   externalAddress?: string;
   onPressUniqueToken?: (asset: UniqueAsset) => void;
   type?: AssetListType;
-  walletBriefSectionsData: any[];
+  walletBriefSectionsData: ReturnType<typeof useWalletSectionsData>['briefSectionsData'];
 }) {
   const { memoizedResult: briefSectionsData, additionalData } = useMemoBriefSectionData({
     briefSectionsData: walletBriefSectionsData,
@@ -80,24 +98,8 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
 
-  const handlePressQRCode = React.useCallback(() => {
-    analytics.track('Tapped "My QR Code"', {
-      category: 'home screen',
-    });
-
-    navigate(Routes.RECEIVE_MODAL);
-  }, [navigate]);
-
-  const handlePressConnectedApps = React.useCallback(() => {
-    navigate(Routes.CONNECTED_DAPPS);
-  }, [navigate]);
-
   const handlePressQRScanner = React.useCallback(() => {
     navigate(Routes.QR_SCANNER_SCREEN);
-  }, [navigate]);
-
-  const handlePressSettings = React.useCallback(() => {
-    navigate(Routes.SETTINGS_SHEET);
   }, [navigate]);
 
   const yOffset = IS_ANDROID ? 80 : 0;
@@ -146,46 +148,16 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
     [position, yOffset]
   );
 
-  // ////////////////////////////////////////////////////
-  // Context Menu
-  const menuConfig = React.useMemo(
-    () => ({
-      menuItems: [
-        {
-          actionKey: 'settings',
-          actionTitle: lang.t('settings.label'),
-          icon: { iconType: 'SYSTEM', iconValue: 'gear' },
-        },
-        {
-          actionKey: 'qrCode',
-          actionTitle: lang.t('button.my_qr_code'),
-          icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
-        },
-
-        {
-          actionKey: 'connectedApps',
-          actionTitle: lang.t('wallet.connected_apps'),
-          icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
-        },
-      ].filter(Boolean),
-      ...(ios ? { menuTitle: '' } : {}),
-    }),
-    []
-  );
-
   const handlePressMenuItem = React.useCallback(
-    (e: any) => {
-      if (e.nativeEvent.actionKey === 'settings') {
-        handlePressSettings();
+    (e: (typeof Routes)[keyof typeof Routes]) => {
+      if (e === 'ReceiveModal') {
+        analytics.track('Tapped "My QR Code"', {
+          category: 'home screen',
+        });
       }
-      if (e.nativeEvent.actionKey === 'qrCode') {
-        handlePressQRCode();
-      }
-      if (e.nativeEvent.actionKey === 'connectedApps') {
-        handlePressConnectedApps();
-      }
+      navigate(e);
     },
-    [handlePressConnectedApps, handlePressQRCode, handlePressSettings]
+    [navigate]
   );
 
   return (
@@ -195,7 +167,6 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
         {
           shadowColor: isDarkMode ? colors.shadowBlack : colors.rowDividerExtraLight,
           shadowOffset: { width: 0, height: isDarkMode ? 4 : 1 },
-          // shadowOpacity: isDarkMode ? 0.4 : 0.04,
           shadowRadius: isDarkMode ? 20 : 0,
           zIndex: 1,
         },
@@ -212,7 +183,6 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
             position: 'absolute',
             shadowColor: colors.shadowBlack,
             shadowOffset: { width: 0, height: 1 },
-            // shadowOpacity: isDarkMode ? 0.4 : 0.04,
             shadowRadius: 3,
             top: navbarHeight + insets.top - 24,
           },
@@ -238,28 +208,11 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
             </Navbar.Item>
           }
           rightComponent={
-            IS_ANDROID ? (
-              <AndroidContextMenu
-                dynamicOptions={undefined}
-                options={menuConfig.menuItems.map(item => item?.actionTitle)}
-                cancelButtonIndex={menuConfig.menuItems.length - 1}
-                onPressActionSheet={(buttonIndex: number) => {
-                  handlePressMenuItem({ nativeEvent: { actionKey: menuConfig.menuItems[buttonIndex]?.actionKey } });
-                }}
-              >
-                <View>
-                  <Navbar.Item>
-                    <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
-                  </Navbar.Item>
-                </View>
-              </AndroidContextMenu>
-            ) : (
-              <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
-                <Navbar.Item testID={'settings-menu'}>
-                  <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
-                </Navbar.Item>
-              </ContextMenuButton>
-            )
+            <DropdownMenu menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
+              <Navbar.Item testID={'settings-menu'}>
+                <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
+              </Navbar.Item>
+            </DropdownMenu>
           }
           titleComponent={
             <Box
