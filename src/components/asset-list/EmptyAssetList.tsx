@@ -18,20 +18,28 @@ const Container = styled(Column)({
   paddingTop: navbarHeight,
 });
 
-const EmptyAssetList = ({ descendingOpacity, isLoading, isWalletEthZero, network, skeletonCount = 5, title, ...props }) => {
-  const { bottom: bottomInset } = useSafeAreaInsets();
+interface EmptyAssetListProps {
+  descendingOpacity?: boolean;
+  isLoading?: boolean;
+  isWalletEthZero?: boolean;
+  network?: string;
+  skeletonCount?: number;
+  title?: string;
+  children?: React.ReactNode;
+}
 
-  const interstitialOffset = useMemo(() => {
-    let offset = bottomInset + FabWrapperBottomPosition;
-    if (title) {
-      offset += AssetListHeaderHeight;
-    }
-    return offset * -1;
-  }, [bottomInset, title]);
-
+const EmptyAssetList = ({
+  descendingOpacity,
+  isLoading,
+  isWalletEthZero,
+  network,
+  skeletonCount = 5,
+  title,
+  ...props
+}: EmptyAssetListProps) => {
   const { refresh, isRefreshing } = useRefreshAccountData();
 
-  const showAddFunds = !isLoading && isWalletEthZero;
+  const showAddFunds = (!isLoading && isWalletEthZero) ?? false;
 
   return (
     <ConditionalWrap
@@ -48,7 +56,7 @@ const EmptyAssetList = ({ descendingOpacity, isLoading, isWalletEthZero, network
       <Container {...props}>
         <Centered flex={1}>
           {showAddFunds ? (
-            <AddFundsInterstitial network={network} offsetY={interstitialOffset} />
+            <AddFundsInterstitial network={network} />
           ) : (
             <React.Fragment>
               {title && <AssetListHeader title={title} />}

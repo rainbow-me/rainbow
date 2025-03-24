@@ -4,22 +4,24 @@ import { convertRawAmountToBalance } from '@/helpers/utilities';
 import isEmpty from 'lodash/isEmpty';
 import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { queryClient } from '@/react-query';
-import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';
 import { AddysAddressAsset, AddysAsset, ParsedAsset, RainbowAddressAssets } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
+import { positionsStore } from '../defi/PositionsQuery';
 
 export const filterPositionsData = (
   address: string,
   currency: NativeCurrencyKey,
   assetsData: RainbowAddressAssets
 ): RainbowAddressAssets => {
-  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(positionsQueryKey({ address, currency }));
-  const positionTokens = positionsObj?.positionTokens || [];
+  const positionTokens = positionsStore.getState().getData({
+    address,
+    currency,
+  })?.positionTokens;
 
-  if (isEmpty(positionTokens)) {
+  if (!positionTokens?.length) {
     return assetsData;
   }
 

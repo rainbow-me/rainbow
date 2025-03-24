@@ -1,16 +1,43 @@
-import { useQuery } from '@tanstack/react-query';
-
-import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
-
 import { NativeCurrencyKey } from '@/entities';
-import { AddysPositionsResponse, PositionsArgs } from './types';
+import { AddysPositionsResponse, RainbowPositions } from './types';
 import { parsePositions } from './utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { DEFI_POSITIONS, useExperimentalFlag } from '@/config';
-import { IS_TEST } from '@/env';
 import { getAddysHttpClient } from '@/resources/addys/client';
+import { RainbowError, logger } from '@/logger';
+import { createQueryStore } from '@/state/internal/createQueryStore';
+import { Address } from 'viem';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { time } from '@/utils';
+import { noop } from 'lodash';
 
-const getPositions = async (address: string, currency: NativeCurrencyKey): Promise<AddysPositionsResponse> => {
+const STABLE_OBJECT: RainbowPositions = {
+  totals: {
+    totals: { amount: '0', display: '0' },
+    totalLocked: '0',
+    borrows: { amount: '0', display: '0' },
+    claimables: { amount: '0', display: '0' },
+    deposits: { amount: '0', display: '0' },
+    stakes: { amount: '0', display: '0' },
+    total: { amount: '0', display: '0' },
+  },
+  positionTokens: [],
+  positions: [],
+};
+
+type PositionsStoreParams = {
+  address: Address | string | null;
+  currency: NativeCurrencyKey;
+};
+
+const getPositions = async (
+  address: string,
+  currency: NativeCurrencyKey,
+  abortController: AbortController | null
+): Promise<RainbowPositions> => {
+  if (!address) {
+    abortController?.abort();
+    return STABLE_OBJECT;
+  }
   const networkString = useBackendNetworksStore.getState().getSupportedChainIds().join(',');
   const url = `/${networkString}/${address}/positions`;
   const response = await getAddysHttpClient().get<AddysPositionsResponse>(url, {
@@ -21,61 +48,39 @@ const getPositions = async (address: string, currency: NativeCurrencyKey): Promi
   });
 
   if (response.data) {
-    return response.data;
+    return parsePositions(response.data, currency);
   }
 
   // should pop a warn here
-  return {};
+  return STABLE_OBJECT;
 };
 
-// ///////////////////////////////////////////////
-// Query Key
-
-// Key used for loading the cache with data from storage
-export const POSITIONS_QUERY_KEY = 'positions';
-
-export const positionsQueryKey = ({ address, currency }: PositionsArgs) =>
-  createQueryKey(POSITIONS_QUERY_KEY, { address, currency }, { persisterVersion: 3 });
-
-type PositionsQueryKey = ReturnType<typeof positionsQueryKey>;
-
-// ///////////////////////////////////////////////
-// Query Function
-
-async function positionsQueryFunction({ queryKey: [{ address, currency }] }: QueryFunctionArgs<typeof positionsQueryKey>) {
-  const data = await getPositions(address, currency);
-  return parsePositions(data, currency);
-}
-
-type PositionsResult = QueryFunctionResult<typeof positionsQueryFunction>;
-
-// ///////////////////////////////////////////////
-// Query Prefetcher (Optional)
-
-export async function prefetchPositions(
-  { address, currency }: PositionsArgs,
-  config: QueryConfig<PositionsResult, Error, PositionsQueryKey> = {}
-) {
-  return await queryClient.prefetchQuery(positionsQueryKey({ address, currency }), positionsQueryFunction, config);
-}
-
-// ///////////////////////////////////////////////
-// Query Fetcher (Optional)
-
-export async function fetchPositions(
-  { address, currency }: PositionsArgs,
-  config: QueryConfig<PositionsResult, Error, PositionsQueryKey> = {}
-) {
-  return await queryClient.fetchQuery(positionsQueryKey({ address, currency }), positionsQueryFunction, config);
-}
-
-// ///////////////////////////////////////////////
-// Query Hook
-
-export function usePositions({ address, currency }: PositionsArgs, config: QueryConfig<PositionsResult, Error, PositionsQueryKey> = {}) {
-  const positionsEnabled = useExperimentalFlag(DEFI_POSITIONS);
-  return useQuery(positionsQueryKey({ address, currency }), positionsQueryFunction, {
-    ...config,
-    enabled: !!(address && positionsEnabled && !IS_TEST),
-  });
-}
+export const positionsStore = createQueryStore<RainbowPositions, PositionsStoreParams>(
+  {
+    fetcher: async ({ address, currency }, abortController) => {
+      try {
+        if (!address) {
+          abortController?.abort();
+          return STABLE_OBJECT;
+        }
+        return getPositions(address, currency, abortController);
+      } catch (e) {
+        if (e instanceof Error && e.name === 'AbortError') return STABLE_OBJECT;
+        logger.error(new RainbowError('[positionsStore]: Failed to fetch positions'), { e });
+        return STABLE_OBJECT;
+      }
+    },
+    params: {
+      address: $ => $(userAssetsStoreManager).address,
+      currency: $ => $(userAssetsStoreManager).currency,
+    },
+    keepPreviousData: true,
+    enabled: $ => $(userAssetsStoreManager, state => !!state.address),
+    staleTime: time.hours(1),
+  },
+  noop,
+  {
+    storageKey: 'positions',
+    version: 1,
+  }
+);

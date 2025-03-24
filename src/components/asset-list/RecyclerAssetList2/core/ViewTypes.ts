@@ -89,7 +89,7 @@ export type NFTFamilyExtraData = {
   type: CellType.FAMILY_HEADER;
   name: string;
   total?: number;
-  image?: string;
+  image: string | null;
 };
 
 export type CellExtraData =
