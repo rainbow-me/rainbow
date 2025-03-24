@@ -24,7 +24,7 @@ function logSectionPerf(label: string, time: number) {
   }
 }
 
-function withPerfMeasurement<T, Args extends any[]>(fn: (...args: Args) => T, label: string): (...args: Args) => T {
+function withPerfMeasurement<T, Args extends unknown[]>(fn: (...args: Args) => T, label: string): (...args: Args) => T {
   return (...args: Args) => {
     if (!ENABLE_SECTION_PERF_LOGGING) return fn(...args);
 
@@ -145,12 +145,11 @@ export interface NftSortItem extends BaseWalletSectionItem {
   sort: NftCollectionSortCriterion;
 }
 
-// Add a more generic interface to handle coin list items
 export interface CoinListItem extends BaseWalletSectionItem {
   type: string;
-  defaultToEditButton?: any;
-  value?: any;
-  uniqueId?: any;
+  defaultToEditButton?: unknown;
+  value?: unknown;
+  uniqueId?: unknown;
 }
 
 // Update the WalletSectionItem type union to include all possible types
@@ -181,7 +180,7 @@ export type WalletSectionItem =
   | ClaimableExtraData
   | CoinListItem
   | NftSortItem
-  | { type: string; uid: string; [key: string]: any }; // Fallback for any other items
+  | { type: string; uid: string; [key: string]: unknown };
 
 const CONTENT_PLACEHOLDER: LoadingAssetItem[] = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },

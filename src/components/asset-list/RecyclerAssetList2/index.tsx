@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Animated as RNAnimated, View } from 'react-native';
+import { Animated as RNAnimated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMemoOne } from 'use-memo-one';
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
@@ -105,7 +105,7 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
   const yOffset = IS_ANDROID ? 80 : 0;
   const shadowOpacityStyle = useMemo(
     () => ({
-      shadowOpacity: position!.interpolate({
+      shadowOpacity: position.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 19],
         outputRange: [0, 0, isDarkMode ? 0.2 : 1],
@@ -115,19 +115,19 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
   );
   const animatedStyle = useMemo(
     () => ({
-      opacity: position!.interpolate({
+      opacity: position.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 38],
         outputRange: [0, 1, 1],
       }),
-      shadowOpacity: position!.interpolate({
+      shadowOpacity: position.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 19],
         outputRange: [0, 0, isDarkMode ? 0.2 : 0],
       }),
       transform: [
         {
-          translateY: position!.interpolate({
+          translateY: position.interpolate({
             extrapolate: 'clamp',
             inputRange: [0, yOffset, yOffset + 38],
             outputRange: [0, 24, 0],
@@ -139,7 +139,7 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
   );
   const walletNameStyle = useMemo(
     () => ({
-      opacity: position!.interpolate({
+      opacity: position.interpolate({
         extrapolate: 'clamp',
         inputRange: [0, yOffset, yOffset + 38],
         outputRange: [0, 0, 1],
