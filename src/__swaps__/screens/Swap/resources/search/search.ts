@@ -12,17 +12,27 @@ import qs from 'qs';
 import { parseTokenSearchResults, parseTokenSearchAcrossNetworks } from './utils';
 import { getProvider } from '@/handlers/web3';
 import { erc20ABI } from '@/references';
-
+import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
+import { time } from '@/utils';
 const ALL_VERIFIED_TOKENS_PARAM = '/?list=verifiedAssets';
 
-const tokenSearchHttp = new RainbowFetchClient({
-  baseURL: 'https://token-search.rainbow.me/v3/tokens',
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  },
-  timeout: 30000,
-});
+let tokenSearchHttp: RainbowFetchClient | undefined;
+
+const getTokenSearchHttp = () => {
+  const clientUrl = tokenSearchHttp?.baseURL;
+  const baseUrl = `${TOKEN_SEARCH_URL}/v3/tokens`;
+  if (!tokenSearchHttp || clientUrl !== baseUrl) {
+    tokenSearchHttp = new RainbowFetchClient({
+      baseURL: baseUrl,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      timeout: time.seconds(30),
+    });
+  }
+  return tokenSearchHttp;
+};
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -131,14 +141,14 @@ async function tokenSearchQueryFunction({
 
   try {
     if (isAddressSearch && isSearchingVerifiedAssets) {
-      const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
+      const tokenSearch = await getTokenSearchHttp().get<{ data: SearchAsset[] }>(url);
 
       if (tokenSearch && tokenSearch.data.data.length > 0) {
         return parseTokenSearchResults(tokenSearch.data.data, chainId);
       }
 
       // search for address on other chains
-      const allVerifiedTokens = await tokenSearchHttp.get<{ data: SearchAsset[] }>(ALL_VERIFIED_TOKENS_PARAM);
+      const allVerifiedTokens = await getTokenSearchHttp().get<{ data: SearchAsset[] }>(ALL_VERIFIED_TOKENS_PARAM);
 
       const addressQuery = query.trim().toLowerCase();
       const addressMatchesOnOtherChains = allVerifiedTokens.data.data.filter(a =>
@@ -147,7 +157,7 @@ async function tokenSearchQueryFunction({
 
       return parseTokenSearchResults(addressMatchesOnOtherChains);
     } else {
-      const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
+      const tokenSearch = await getTokenSearchHttp().get<{ data: SearchAsset[] }>(url);
       return parseTokenSearchResults(tokenSearch.data.data, chainId);
     }
   } catch (e) {
@@ -175,7 +185,7 @@ async function tokenSearchQueryFunctionAllNetworks({ queryKey: [{ query }] }: Qu
 
   try {
     if (isAddressSearch) {
-      const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
+      const tokenSearch = await getTokenSearchHttp().get<{ data: SearchAsset[] }>(url);
 
       if (tokenSearch && tokenSearch.data.data.length > 0) {
         return parseTokenSearchResults(tokenSearch.data.data);
@@ -184,7 +194,7 @@ async function tokenSearchQueryFunctionAllNetworks({ queryKey: [{ query }] }: Qu
       const result = await getImportedAsset(query);
       return result;
     } else {
-      const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
+      const tokenSearch = await getTokenSearchHttp().get<{ data: SearchAsset[] }>(url);
       return parseTokenSearchAcrossNetworks(tokenSearch.data.data);
     }
   } catch (e) {

@@ -18,6 +18,7 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
   const {
     enableContentPanningGesture,
     enableHandlePanningGesture,
+    enablePanDownToClose = true,
     index = 0,
     snapPoints = ['100%'],
     backdropColor = DEFAULT_BACKDROP_COLOR,
@@ -74,6 +75,14 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
     []
   );
 
+  const handleSettingEnablePanDownToClose = useCallback(
+    (value: boolean) => {
+      navigation.setOptions({ enablePanDownToClose: value });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
   const handleSettingEnableHandlePanningGesture = useCallback(
     (value: boolean) => {
       navigation.setOptions({ enableHandlePanningGesture: value });
@@ -86,9 +95,15 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
     () => ({
       setEnableContentPanningGesture: handleSettingEnableContentPanningGesture,
       setEnableHandlePanningGesture: handleSettingEnableHandlePanningGesture,
+      setEnablePanDownToClose: handleSettingEnablePanDownToClose,
       setSnapPoints: handleSettingSnapPoints,
     }),
-    [handleSettingEnableContentPanningGesture, handleSettingEnableHandlePanningGesture, handleSettingSnapPoints]
+    [
+      handleSettingEnableContentPanningGesture,
+      handleSettingEnableHandlePanningGesture,
+      handleSettingEnablePanDownToClose,
+      handleSettingSnapPoints,
+    ]
   );
   // #endregion
 
@@ -139,7 +154,7 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
         containerHeight={CONTAINER_HEIGHT}
         enableContentPanningGesture={enableContentPanningGesture}
         enableHandlePanningGesture={enableHandlePanningGesture}
-        enablePanDownToClose
+        enablePanDownToClose={enablePanDownToClose}
         handleComponent={null}
         index={index}
         onClose={handleOnClose}

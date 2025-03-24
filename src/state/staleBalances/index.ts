@@ -76,7 +76,7 @@ export const staleBalancesStore = createRainbowStore<StaleBalancesState>(
       });
     },
     getStaleBalancesQueryParam: (address: string) => {
-      let queryStringFragment = '';
+      const tokens = [];
       const { staleBalances } = get();
       const staleBalancesForUser = staleBalances[address];
       for (const c of Object.keys(staleBalancesForUser)) {
@@ -84,11 +84,11 @@ export const staleBalancesStore = createRainbowStore<StaleBalancesState>(
         const staleBalancesForChain = staleBalancesForUser[chainId];
         for (const staleBalance of Object.values(staleBalancesForChain)) {
           if (typeof staleBalance.expirationTime === 'number') {
-            queryStringFragment += `&token=${chainId}.${staleBalance.address}`;
+            tokens.push(`${chainId}.${staleBalance.address}`);
           }
         }
       }
-      return queryStringFragment;
+      return tokens.length > 0 ? '&tokens=' + tokens.join(',') : '';
     },
     staleBalances: {},
   }),

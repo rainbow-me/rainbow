@@ -22,9 +22,18 @@ export function EstimatedSwapGasFeeSlot({
   const label = useDerivedValue(() => props.text);
   return <GasFeeText color={color} size={size} weight={weight} {...props} label={label} />;
 }
-export function EstimatedSwapGasFee({ gasSettings, ...props }: EstimatedSwapGasFeeProps) {
-  const { data: estimatedGasFee = '--' } = useSwapEstimatedGasFee(gasSettings);
-  return <EstimatedSwapGasFeeSlot {...props} text={estimatedGasFee} />;
+export function EstimatedSwapGasFee({ align, color, gasSettings, size, tabularNumbers, weight }: EstimatedSwapGasFeeProps) {
+  const estimatedGasFee = useSwapEstimatedGasFee(gasSettings) || '--';
+  return (
+    <EstimatedSwapGasFeeSlot
+      align={align}
+      color={color}
+      size={size}
+      tabularNumbers={tabularNumbers}
+      text={estimatedGasFee}
+      weight={weight}
+    />
+  );
 }
 
 const GasFeeText = memo(function GasFeeText({

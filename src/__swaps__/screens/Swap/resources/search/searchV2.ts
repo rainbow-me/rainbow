@@ -9,6 +9,7 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { time } from '@/utils';
 import { parseTokenSearchResults } from './utils';
+import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
 
 // ============ Constants & Types ============================================== //
 
@@ -91,21 +92,30 @@ export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], Tok
 
 // ============ Fetch Utils ==================================================== //
 
-const tokenSearchClient = new RainbowFetchClient({
-  baseURL: 'https://token-search.rainbow.me/v3/tokens',
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  },
-  timeout: time.seconds(15),
-});
+let tokenSearchClient: RainbowFetchClient | undefined;
+
+const getTokenSearchClient = () => {
+  const clientUrl = tokenSearchClient?.baseURL;
+  const baseUrl = `${TOKEN_SEARCH_URL}/v3/tokens`;
+  if (!tokenSearchClient || clientUrl !== baseUrl) {
+    tokenSearchClient = new RainbowFetchClient({
+      baseURL: baseUrl,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      timeout: time.seconds(15),
+    });
+  }
+  return tokenSearchClient;
+};
 
 /**
  * Executes a token search fetch with error handling.
  */
 async function performTokenSearch(url: string, abortController: AbortController | null, errorContext: string): Promise<SearchAsset[]> {
   try {
-    const response = await tokenSearchClient.get<{ data: SearchAsset[] }>(url, { abortController });
+    const response = await getTokenSearchClient().get<{ data: SearchAsset[] }>(url, { abortController });
     return response.data.data;
   } catch (e: unknown) {
     if (e instanceof Error && e.name === 'AbortError') return NO_RESULTS;

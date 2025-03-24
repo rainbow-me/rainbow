@@ -6,6 +6,7 @@ import ApplePayIcon from './svg/ApplePayIcon';
 import ArrowBackIcon from './svg/ArrowBack';
 import ArrowCircledIcon from './svg/ArrowCircledIcon';
 import ArrowIcon from './svg/ArrowIcon';
+import { Asterisk } from './svg/Asterisk';
 import AvatarIcon from './svg/AvatarIcon';
 import BTCIcon from './svg/BTCIcon';
 import BackspaceIcon from './svg/BackspaceIcon';
@@ -67,6 +68,7 @@ import SnapchatIcon from './svg/SnapchatIcon';
 import SpinnerIcon from './svg/SpinnerIcon';
 import StarIcon from './svg/StarIcon';
 import SwapIcon from './svg/SwapIcon';
+import { XIcon } from './svg/XIcon';
 import { TabActivity } from './svg/TabActivity';
 import { TabActivityInner } from './svg/TabActivityInner';
 import { TabActivityInnerFill } from './svg/TabActivityInnerFill';
@@ -90,6 +92,7 @@ import WalletConnectIcon from './svg/WalletConnectIcon';
 import WalletSwitcherCaret from './svg/WalletSwitcherCaret';
 import WarningCircledIcon from './svg/WarningCircledIcon';
 import WarningIcon from './svg/WarningIcon';
+import { WarpcastIcon } from './svg/WarpcastIcon';
 import BridgeIcon from './svg/BridgeIcon';
 import { DragHandlerIcon } from './svg/DragHandlerIcon';
 
@@ -98,6 +101,7 @@ const IconTypes = {
   arrow: ArrowIcon,
   arrowBack: ArrowBackIcon,
   arrowCircled: ArrowCircledIcon,
+  asterisk: Asterisk,
   avatar: AvatarIcon,
   backspace: BackspaceIcon,
   bridge: BridgeIcon,
@@ -188,10 +192,13 @@ const IconTypes = {
   walletSwitcherCaret: WalletSwitcherCaret,
   warning: WarningIcon,
   warningCircled: WarningCircledIcon,
+  warpcast: WarpcastIcon,
+  x: XIcon,
 };
 
 const Icon = ({ name, testID, ...props }, ref) => {
   const IconElement = IconTypes[name] || Flex;
+  // TODO: This should either be removed or add the useTheme hook import it currently does nothing
   const { colors } = useTheme();
   return <IconElement {...props} colors={colors} name={name} ref={ref} testID={testID} />;
 };

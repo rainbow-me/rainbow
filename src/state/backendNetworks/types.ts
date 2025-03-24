@@ -162,6 +162,12 @@ export interface BackendNetworkServices {
   nftProxy: {
     enabled: boolean;
   };
+  launcher: {
+    v1: {
+      enabled: boolean;
+      contractAddress: string;
+    };
+  };
 }
 
 export interface BackendNetwork {

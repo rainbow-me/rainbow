@@ -18,12 +18,14 @@ import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useTheme } from '@/theme';
 import { time } from '@/utils';
 import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
+import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 
 export enum SectionId {
   PROFIT = 'profit',
   MARKET_STATS = 'marketStats',
   BUY = 'buy',
   BRIDGE = 'bridge',
+  CLAIM = 'claim',
   HISTORY = 'history',
   HOLDERS = 'holders',
   ABOUT = 'about',
@@ -34,6 +36,7 @@ const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
   [SectionId.MARKET_STATS]: true,
   [SectionId.BUY]: true,
   [SectionId.BRIDGE]: true,
+  [SectionId.CLAIM]: true,
   [SectionId.HISTORY]: true,
   [SectionId.HOLDERS]: true,
   [SectionId.ABOUT]: true,
@@ -80,8 +83,10 @@ type ExpandedAssetSheetContextType = {
   accountAsset: ParsedAddressAsset | undefined;
   assetMetadata: TokenMetadata | null | undefined;
   expandedSections: SharedValue<Record<SectionId, boolean>>;
+  hideClaimSection: boolean;
   isOwnedAsset: boolean;
   isLoadingMetadata: boolean;
+  isRainbowToken: boolean;
 };
 
 type ExpandedAssetSheetContextProviderProps = {
@@ -89,6 +94,7 @@ type ExpandedAssetSheetContextProviderProps = {
   address: string;
   chainId: ChainId;
   children: React.ReactNode;
+  hideClaimSection: boolean;
 };
 
 const ExpandedAssetSheetContext = createContext<ExpandedAssetSheetContextType | undefined>(undefined);
@@ -101,7 +107,13 @@ export function useExpandedAssetSheetContext() {
   return context;
 }
 
-export function ExpandedAssetSheetContextProvider({ asset, address, chainId, children }: ExpandedAssetSheetContextProviderProps) {
+export function ExpandedAssetSheetContextProvider({
+  asset,
+  address,
+  chainId,
+  children,
+  hideClaimSection = false,
+}: ExpandedAssetSheetContextProviderProps) {
   const { nativeCurrency } = useAccountSettings();
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
@@ -130,8 +142,7 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
 
   // This is constructed so that rendering is not delayed by the external asset fetch
   const basicAsset = useMemo(() => {
-    const chainNameById = useBackendNetworksStore.getState().getChainsName();
-    const chainName = chainNameById[chainId];
+    const chainName = useBackendNetworksStore.getState().getChainsName()[chainId];
     const assetColors = 'color' in asset && asset.color ? { primary: asset.color } : asset.colors;
 
     const base: BasicAsset = {
@@ -177,14 +188,25 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
     return base;
   }, [address, asset, assetUniqueId, chainId, colors]);
 
+  const rainbowSuperToken = useSuperTokenStore(state => state.getSuperToken(address, chainId));
+
   const fullAsset = useMemo(() => {
-    if (externalAsset)
+    const iconUrl = rainbowSuperToken?.imageUrl ?? basicAsset.iconUrl;
+    if (externalAsset) {
       return {
         ...basicAsset,
         ...externalAsset,
+        iconUrl: rainbowSuperToken?.imageUrl || externalAsset.icon_url || basicAsset.iconUrl,
+        colors: {
+          primary: rainbowSuperToken?.color || externalAsset.colors?.primary || basicAsset.colors.primary,
+        },
       } satisfies ExpandedSheetAsset;
-    return basicAsset;
-  }, [externalAsset, basicAsset]);
+    }
+    return {
+      ...basicAsset,
+      iconUrl,
+    } satisfies ExpandedSheetAsset;
+  }, [externalAsset, basicAsset, rainbowSuperToken]);
 
   // @ts-expect-error: the field with a type difference is not used & irrelevant to the hook (price)
   const assetColor = useColorForAsset(fullAsset);
@@ -194,6 +216,21 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
     chainId,
     currency: nativeCurrency,
   });
+
+  const superMetadata = useMemo(() => {
+    if (rainbowSuperToken) {
+      return {
+        ...metadata,
+        rainbow: metadata?.rainbow ?? true,
+        icon_url: rainbowSuperToken.imageUrl,
+        description: rainbowSuperToken.description,
+        links: rainbowSuperToken.links || metadata?.links,
+      };
+    }
+    return metadata;
+  }, [rainbowSuperToken, metadata]);
+
+  const isRainbowToken = superMetadata?.rainbow ?? false;
 
   const accentColors: AccentColors = useMemo(() => {
     const background = isDarkMode
@@ -238,10 +275,12 @@ export function ExpandedAssetSheetContextProvider({ asset, address, chainId, chi
         accentColors,
         basicAsset: fullAsset,
         accountAsset,
-        assetMetadata: metadata,
+        assetMetadata: superMetadata,
         expandedSections,
+        hideClaimSection,
         isOwnedAsset,
         isLoadingMetadata,
+        isRainbowToken,
       }}
     >
       {children}

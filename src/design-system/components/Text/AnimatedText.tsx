@@ -27,6 +27,7 @@ export type AnimatedTextProps = {
    * Use `children` instead, which now accepts either a string or a shared value that holds a string.
    */
   staticText?: string;
+  style?: StyleProp<TextStyle>;
   tabularNumbers?: boolean;
   /**
    * @deprecated
@@ -50,8 +51,6 @@ export type AnimatedTextProps = {
   testID?: string;
   uppercase?: boolean;
   weight?: TextWeight;
-} & {
-  style?: StyleProp<TextStyle>;
 };
 
 export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, AnimatedTextProps>(function Text(

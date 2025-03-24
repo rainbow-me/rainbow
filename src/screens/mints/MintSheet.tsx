@@ -1,6 +1,6 @@
-import { BlurView } from '@react-native-community/blur';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Linking, StatusBar, View } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
 import { useSharedValue } from 'react-native-reanimated';
 import useWallets from '../../hooks/useWallets';
 import { GasSpeedButton } from '@/components/gas';
@@ -62,8 +62,8 @@ const NFT_IMAGE_HEIGHT = 250;
 const INSET_OFFSET = 56;
 
 const BackgroundBlur = styled(BlurView).attrs({
-  blurAmount: 100,
-  blurType: 'light',
+  blurIntensity: 100,
+  blurStyle: 'light',
 })({
   ...position.coverAsObject,
 });

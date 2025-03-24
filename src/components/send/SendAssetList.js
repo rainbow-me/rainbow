@@ -3,7 +3,7 @@ import { LayoutAnimation } from 'react-native';
 import { View } from 'react-primitives';
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 import { buildCoinsList } from '../../helpers/assets';
-import { deviceUtils } from '../../utils';
+import { deviceUtils, safeAreaInsetValues } from '../../utils';
 import Divider, { DividerSize } from '@/components/Divider';
 import { FlyInAnimation } from '../animations';
 import { CoinDividerOpenButton } from '../coin-divider';
@@ -30,6 +30,10 @@ const SendAssetListDivider = () => {
       <Divider color={colors.rowDividerExtraLight} />
     </Centered>
   );
+};
+
+const SendAssetListFooter = () => {
+  return <View style={{ height: safeAreaInsetValues.bottom, width: '100%' }} />;
 };
 
 export default class SendAssetList extends React.Component {
@@ -278,6 +282,7 @@ export default class SendAssetList extends React.Component {
           onScroll={this.handleScroll}
           ref={this.handleRef}
           rowRenderer={this.renderRow}
+          renderFooter={SendAssetListFooter}
           testID="send-asset-list"
         />
       </FlyInAnimation>

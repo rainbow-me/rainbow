@@ -49,6 +49,8 @@ export enum TransactionStatus {
   unknown = 'unknown status',
   withdrawing = 'withdrawing',
   withdrew = 'withdrew',
+  launching = 'launching',
+  launched = 'launched',
 }
 
 export interface RainbowTransaction {
@@ -271,6 +273,7 @@ export const TransactionType = {
     'stake',
     'unstake',
     'purchase',
+    'launch',
   ] as readonly string[],
 } as const;
 
