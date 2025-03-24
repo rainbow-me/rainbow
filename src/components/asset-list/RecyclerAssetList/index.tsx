@@ -10,7 +10,7 @@ import { withThemeContext } from '../../../theme/ThemeContext';
 import { CoinDivider, CoinDividerHeight } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
-import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
+import { firstCoinRowMarginTop, ViewTypes } from './ViewTypes';
 import LayoutItemAnimator from './LayoutItemAnimator';
 import { EthereumAddress } from '@/entities';
 import { useCoinListEdited, useOpenFamilies, useOpenSmallBalances, usePrevious, useRefreshAccountData } from '@/hooks';
@@ -127,17 +127,14 @@ export function useRecyclerListViewRef(): {
 
 export type RecyclerAssetListSection = {
   readonly name: string;
-  readonly balances: boolean;
+  readonly balances?: boolean;
   readonly data: any[];
-  readonly collectibles: {
-    readonly data: readonly any[];
-  };
   readonly header: {
-    readonly title: string;
-    readonly totalItems: number;
-    readonly totalValue: string;
+    readonly title?: string;
+    readonly totalItems?: number;
+    readonly totalValue?: string;
   };
-  readonly perData: any;
+  readonly perData?: any;
   readonly renderItem: (item: any) => JSX.Element | null;
   readonly type: string;
 };
@@ -191,7 +188,7 @@ function RecyclerAssetList({
           ...section.header,
         },
       ]);
-      if (section.collectibles) {
+      if (section.name === 'collectibles') {
         section.data.forEach((item, index) => {
           if (item.isHeader || openFamilyTabs[item.familyName + (showcase ? '-showcase' : '')]) {
             ctx.push({
@@ -212,7 +209,7 @@ function RecyclerAssetList({
       return ctx;
     }, []);
     items.push({ item: { isLastPlaceholder: true }, renderItem: () => null });
-    const areSmallCollectibles = (c => c && c?.type === 'small')(sections.find(e => e.collectibles));
+    const areSmallCollectibles = (c => c && c?.type === 'small')(sections.find(e => e.name === 'collectibles'));
     return {
       areSmallCollectibles,
       items,
@@ -490,10 +487,10 @@ function RecyclerAssetList({
 
     if (sections) {
       sections.forEach(section => {
-        if (section?.collectibles) {
+        if (section?.name === 'collectibles') {
           collectibles = section;
         }
-        if (section?.balances) {
+        if (section?.name === 'balances') {
           balances = section;
         }
       });
@@ -524,7 +521,7 @@ function RecyclerAssetList({
       const colleciblesStartHeight = balancesHeight + smallBalancesHeight;
 
       lastSections.forEach(section => {
-        if (section.collectibles) {
+        if (section.name === 'collectibles') {
           prevCollectibles = section;
         }
       });

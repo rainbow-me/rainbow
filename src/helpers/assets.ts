@@ -246,7 +246,6 @@ export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: 
 export const buildBriefUniqueTokenList = (
   uniqueTokens: UniqueAsset[],
   selectedShowcaseTokens: any,
-  sellingTokens: any[] = [],
   hiddenTokens: string[] = [],
   listType: AssetListType = 'wallet',
   isReadOnlyWallet = false,
@@ -300,27 +299,6 @@ export const buildBriefUniqueTokenList = (
       });
     }
 
-    result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
-  }
-  // i18n all names
-  if (sellingTokens.length > 0) {
-    result.push({
-      // @ts-expect-error "name" does not exist in type.
-      name: i18n.t(i18n.l.nfts.selling),
-      total: sellingTokens.length,
-      type: 'FAMILY_HEADER',
-      uid: 'selling',
-    });
-    for (let index = 0; index < sellingTokens.length; index++) {
-      const uniqueId = sellingTokens[index].uniqueId;
-      result.push({
-        // @ts-expect-error "index" does not exist in type.
-        index,
-        type: 'NFT',
-        uid: `selling-${uniqueId}`,
-        uniqueId,
-      });
-    }
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
 

@@ -82,7 +82,7 @@ function App({ walletReady }: AppProps) {
   );
 }
 
-const AppWithRedux = connect<AppProps, AppDispatch, AppProps, AppState>(
+const AppWithRedux = connect<AppProps, AppDispatch, unknown, AppState>(
   state => ({
     walletReady: state.appState.walletReady,
   }),
@@ -191,7 +191,7 @@ function Root() {
                   <RainbowContextWrapper>
                     <SharedValuesProvider>
                       <ErrorBoundary>
-                        <AppWithRedux walletReady={false} />
+                        <AppWithRedux />
                       </ErrorBoundary>
                     </SharedValuesProvider>
                   </RainbowContextWrapper>

@@ -1,73 +1,45 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
-import { useClaimables } from '@/resources/addys/claimables/query';
+import { claimablesStore } from '@/resources/addys/claimables/query';
 import { FasterImageView } from '@candlefinance/faster-image';
 import { ButtonPressAnimation } from '@/components/animations';
 import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { ExtendedState } from './core/RawRecyclerList';
-import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, convertRawAmountToBalance } from '@/helpers/utilities';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { analyticsV2 } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { useNativeAsset } from '@/utils/ethereumUtils';
 import { ChainId } from '@/state/backendNetworks/types';
-import { usePoints } from '@/resources/points';
 
 const RAINBOW_ICON_URL = 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png';
 
 export const Claimable = React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const { navigate } = extendedState;
 
   const isETHRewards = uniqueId === 'rainbow-eth-rewards';
 
-  const eth = useNativeAsset({ chainId: ChainId.mainnet });
+  const claimable = claimablesStore(state => state.getData())?.claimables.find(claimable => claimable.uniqueId === uniqueId);
 
-  const { data = [] } = useClaimables(
-    {
-      address: accountAddress,
-      currency: nativeCurrency,
-    },
-    {
-      select: data => data?.filter(claimable => claimable.uniqueId === uniqueId),
-      enabled: !isETHRewards,
-    }
-  );
-
-  const { data: points } = usePoints({
-    walletAddress: accountAddress,
-  });
-
-  const [claimable] = data;
-  const claimableETHRewardsRawAmount = points?.points?.user?.rewards?.claimable;
-
-  if (isETHRewards) {
-    if (!claimableETHRewardsRawAmount) return null;
-  } else {
+  const nativeCurrencyDisplay = useMemo(() => {
     if (!claimable) return null;
-  }
 
-  const { display: claimableETHRewardsDisplay, amount: claimableETHRewardsAmount } = isETHRewards
-    ? convertRawAmountToBalance(claimableETHRewardsRawAmount ?? '0', {
-        decimals: 18,
-        symbol: 'ETH',
-      })
-    : { display: undefined, amount: undefined };
+    // eth rewards are already in native currency format
+    if (isETHRewards) {
+      return claimable.value.nativeAsset.amount;
+    }
+    return convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true);
+  }, [claimable, isETHRewards, nativeCurrency]);
 
-  const nativeDisplay = convertAmountToNativeDisplayWorklet(
-    isETHRewards
-      ? convertAmountAndPriceToNativeDisplay(claimableETHRewardsAmount ?? '0', eth?.price?.value || 0, nativeCurrency)?.amount
-      : claimable?.value.nativeAsset.amount,
-    nativeCurrency,
-    true
-  );
+  const nativeDisplay = useMemo(() => {
+    if (isETHRewards) {
+      return claimable?.value.nativeAsset.amount;
+    }
+    return claimable?.value.claimAsset.display;
+  }, [claimable, isETHRewards]);
 
-  if (isETHRewards) {
-    if (!claimableETHRewardsDisplay) return null;
-  }
-
-  if (!nativeDisplay) return null;
+  if (!claimable || !nativeDisplay) return null;
 
   return (
     <Box
@@ -109,25 +81,29 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
           >
             {isETHRewards ? 'Rainbow ETH Rewards' : claimable?.name}
           </Text>
-          <Text weight="semibold" color="labelTertiary" size="13pt">
-            {isETHRewards ? claimableETHRewardsDisplay : claimable?.value.claimAsset.display}
-          </Text>
+          {nativeDisplay && (
+            <Text weight="semibold" color="labelTertiary" size="13pt">
+              {nativeDisplay}
+            </Text>
+          )}
         </Stack>
       </Inline>
-      <Box
-        alignItems="center"
-        justifyContent="center"
-        height={{ custom: 28 }}
-        paddingHorizontal="8px"
-        borderRadius={12}
-        borderWidth={1.333}
-        borderColor={{ custom: 'rgba(7, 17, 32, 0.02)' }}
-        style={{ backgroundColor: 'rgba(7, 17, 32, 0.02)' }}
-      >
-        <Text weight="semibold" color="label" align="center" size="17pt">
-          {nativeDisplay}
-        </Text>
-      </Box>
+      {nativeCurrencyDisplay && (
+        <Box
+          alignItems="center"
+          justifyContent="center"
+          height={{ custom: 28 }}
+          paddingHorizontal="8px"
+          borderRadius={12}
+          borderWidth={1.333}
+          borderColor={{ custom: 'rgba(7, 17, 32, 0.02)' }}
+          style={{ backgroundColor: 'rgba(7, 17, 32, 0.02)' }}
+        >
+          <Text weight="semibold" color="label" align="center" size="17pt">
+            {nativeCurrencyDisplay}
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 });

@@ -18,9 +18,9 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 const languageSelector = (state: AppState) => state.settings.language;
 
-const withLanguage = (language: string) => {
+const withLanguage = (language: Language) => {
   if (language !== lang.locale) {
-    updateLanguageLocale(language as Language);
+    updateLanguageLocale(language);
   }
   return { language };
 };
