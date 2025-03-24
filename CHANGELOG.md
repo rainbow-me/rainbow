@@ -15,6 +15,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.63] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.63)
+
+### Changed
+
+- Bumped iOS and Android to v1.9.63 (#6518)
+- Bumped Swaps SDK (#6517)
+
+### Fixed
+
+- Fix Warpcast icon clipping and input validation (#6516)
+
 ## [1.9.62] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.62)
 
 ### Added
