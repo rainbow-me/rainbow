@@ -1312,7 +1312,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-netinfo (9.0.0):
+  - react-native-netinfo (11.4.1):
     - React-Core
   - react-native-pager-view (5.4.24):
     - React-Core
@@ -2550,7 +2550,7 @@ SPEC CHECKSUMS:
   react-native-menu: c30eb7a85d7b04d51945f61ea8a8986ed366ac5c
   react-native-minimizer: b94809a769ac3825b46fd081d4f0ae2560791536
   react-native-mmkv: 8c9a677e64a1ac89b0c6cf240feea528318b3074
-  react-native-netinfo: 5b664b2945a8f02102b296f0f812bddd6827ed9c
+  react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: 95d0418c3c74279840abec6926653d32447bafb6
   react-native-palette-full: 99a6fd796d16fab6a2d3770649070e31c2602fad
   react-native-quick-md5: 9a4cb8201cd0b1866e374ac19d530da0964c0aed
