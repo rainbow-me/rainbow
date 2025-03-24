@@ -14,8 +14,8 @@ import {
 /**
  * Shows an alert if device's bluetooth is powered off
  */
-export const showBluetoothPoweredOffAlert = () => {
-  Alert.alert(i18n.t(i18n.l.bluetooth.powered_off_alert.title), i18n.t(i18n.l.bluetooth.powered_off_alert.message), [
+export const showBluetoothPoweredOffAlert = async () => {
+  await Alert.alert(i18n.t(i18n.l.bluetooth.powered_off_alert.title), i18n.t(i18n.l.bluetooth.powered_off_alert.message), [
     {
       onPress: () => {
         IS_IOS ? Linking.openURL('App-Prefs:Bluetooth') : Linking.sendIntent('android.settings.BLUETOOTH_SETTINGS');
@@ -33,8 +33,8 @@ export const showBluetoothPoweredOffAlert = () => {
 /**
  * Shows an alert w/ deeplink to settings to enable bluetooth permissions for iOS
  */
-export const showBluetoothPermissionsAlert = () => {
-  Alert.alert(i18n.t(i18n.l.bluetooth.permissions_alert.title), i18n.t(i18n.l.bluetooth.permissions_alert.message), [
+export const showBluetoothPermissionsAlert = async () => {
+  await Alert.alert(i18n.t(i18n.l.bluetooth.permissions_alert.title), i18n.t(i18n.l.bluetooth.permissions_alert.message), [
     {
       onPress: () => {
         Linking.openSettings();
