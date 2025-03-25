@@ -117,7 +117,11 @@ export function DropdownMenu<T extends string>({
       <DropdownMenuTrigger action={triggerAction}>
         <ConditionalWrap
           condition={triggerAction === 'press'}
-          wrap={children => <ButtonPressAnimation testID={testID}>{children}</ButtonPressAnimation>}
+          wrap={children => (
+            <ButtonPressAnimation disallowInterruption testID={testID}>
+              {children}
+            </ButtonPressAnimation>
+          )}
         >
           {children}
         </ConditionalWrap>

@@ -18,6 +18,7 @@ import * as lang from '@/languages';
 import { IS_ANDROID } from '@/env';
 import { useWalletSectionsData } from '@/hooks';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
+import { deviceUtils } from '@/utils';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -49,7 +50,6 @@ function RecyclerAssetList({
 }: {
   accentColor?: string;
   disablePullDownToRefresh?: boolean;
-  /** An "external address" is an address that is not the current account address. */
   externalAddress?: string;
   onPressUniqueToken?: (asset: UniqueAsset) => void;
   type?: AssetListType;
