@@ -17,6 +17,8 @@ import { analyticsV2 } from '@/analytics';
 import useUniqueTokens from './useUniqueTokens';
 import { useNftSort } from './useNFTsSortBy';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
+import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 
 function useCachedSelector<T, P>(selector: (params: P) => T, params: P, deps: unknown[]): T {
   const cacheRef = useRef<{
@@ -40,18 +42,18 @@ function useCachedSelector<T, P>(selector: (params: P) => T, params: P, deps: un
 }
 
 export interface WalletSectionsResult {
-  briefSectionsData: any[];
+  briefSectionsData: CellTypes[];
   isEmpty: boolean;
   isWalletEthZero: boolean;
   isLoadingUserAssets: boolean;
   isLoadingBalance: boolean;
-  hasNFTs?: boolean;
+  hasNFTs: boolean;
 }
 
 export default function useWalletSectionsData({
   type,
 }: {
-  type?: string;
+  type?: AssetListType;
 } = {}): WalletSectionsResult {
   const { nftSort } = useNftSort();
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();

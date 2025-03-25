@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { Box, Text } from '@/design-system';
+import { Box } from '@/design-system';
 import { useAccountAccentColor, useAccountSettings, useWalletSectionsData } from '@/hooks';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { useRecoilValue } from 'recoil';
@@ -47,7 +47,6 @@ function WalletScreen() {
   const isLoadingUserAssetsAndAddress = isLoadingUserAssets && !!accountAddress;
   const { highContrastAccentColor } = useAccountAccentColor();
 
-  // Memoize the refresh control disabled state to prevent needless re-renders
   const disableRefreshControl = useMemo(
     () => isLoadingUserAssetsAndAddress || isLoadingBalance,
     [isLoadingUserAssetsAndAddress, isLoadingBalance]

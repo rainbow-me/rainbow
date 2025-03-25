@@ -44,7 +44,7 @@ const sx = StyleSheet.create({
 type Props = {
   childrenAmount?: number;
   emoji?: string;
-  familyImage: string | null;
+  familyImage?: string;
   isOpen?: boolean;
   onPress?: () => void;
   testID?: string;

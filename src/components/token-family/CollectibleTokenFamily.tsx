@@ -6,7 +6,7 @@ import { ThemeContextProps } from '@/theme';
 
 type Props = {
   childrenAmount: number;
-  familyImage: string | null;
+  familyImage?: string;
   familyName: string;
   external: boolean;
   showcase: boolean;

@@ -1,7 +1,13 @@
 import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import { NativeCurrencyKey, ParsedAddressAsset, UniqueAsset } from '@/entities';
-import { ClaimableExtraData, PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import {
+  CellType,
+  CellTypes,
+  ClaimableExtraData,
+  LoadingAssetsSection,
+  PositionExtraData,
+} from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { DEFI_POSITIONS, CLAIMABLES } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
 import { RainbowConfig } from '@/model/remoteConfig';
@@ -13,175 +19,36 @@ import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
 import { ClaimablesStore } from '@/resources/addys/claimables/query';
+import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 
-export interface BaseWalletSectionItem {
-  type: string;
-  uid: string;
-}
-
-export interface LoadingAssetItem extends BaseWalletSectionItem {
-  type: 'LOADING_ASSETS';
-}
-
-export interface EmptyWalletSpacerItem extends BaseWalletSectionItem {
-  type: 'EMPTY_WALLET_SPACER';
-}
-
-export interface BigEmptyWalletSpacerItem extends BaseWalletSectionItem {
-  type: 'BIG_EMPTY_WALLET_SPACER';
-}
-
-export interface ReceiveCardItem extends BaseWalletSectionItem {
-  type: 'RECEIVE_CARD';
-}
-
-export interface EthCardItem extends BaseWalletSectionItem {
-  type: 'ETH_CARD';
-}
-
-export interface LearnCardItem extends BaseWalletSectionItem {
-  type: 'LEARN_CARD';
-}
-
-export interface DiscoverMoreButtonItem extends BaseWalletSectionItem {
-  type: 'DISCOVER_MORE_BUTTON';
-}
-
-export interface ProfileStickyHeaderItem extends BaseWalletSectionItem {
-  type: 'PROFILE_STICKY_HEADER';
-}
-
-export interface ProfileAvatarRowSpaceItem extends BaseWalletSectionItem {
-  type: 'PROFILE_AVATAR_ROW_SPACE_BEFORE' | 'PROFILE_AVATAR_ROW_SPACE_AFTER';
-}
-
-export interface ProfileAvatarRowItem extends BaseWalletSectionItem {
-  type: 'PROFILE_AVATAR_ROW';
-}
-
-export interface ProfileNameRowItem extends BaseWalletSectionItem {
-  type: 'PROFILE_NAME_ROW';
-}
-
-export interface ProfileNameRowSpaceAfterItem extends BaseWalletSectionItem {
-  type: 'PROFILE_NAME_ROW_SPACE_AFTER';
-}
-
-export interface ProfileBalanceRowItem extends BaseWalletSectionItem {
-  type: 'PROFILE_BALANCE_ROW';
-  value: string | undefined;
-  isLoadingBalance: boolean;
-}
-
-export interface ProfileBalanceRowSpaceAfterItem extends BaseWalletSectionItem {
-  type: 'PROFILE_BALANCE_ROW_SPACE_AFTER';
-}
-
-export interface ProfileActionButtonsRowItem extends BaseWalletSectionItem {
-  type: 'PROFILE_ACTION_BUTTONS_ROW';
-  value: string | undefined;
-}
-
-export interface ProfileActionButtonsRowSpaceAfterItem extends BaseWalletSectionItem {
-  type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER';
-  value: string | undefined;
-}
-
-export interface RemoteCardCarouselItem extends BaseWalletSectionItem {
-  type: 'REMOTE_CARD_CAROUSEL';
-}
-
-export interface PositionsSpaceBeforeItem extends BaseWalletSectionItem {
-  type: 'POSITIONS_SPACE_BEFORE';
-}
-
-export interface PositionsHeaderItem extends BaseWalletSectionItem {
-  type: 'POSITIONS_HEADER';
-  total: string | undefined;
-}
-
-export interface ClaimablesSpaceBeforeItem extends BaseWalletSectionItem {
-  type: 'CLAIMABLES_SPACE_BEFORE';
-}
-
-export interface ClaimablesHeaderItem extends BaseWalletSectionItem {
-  type: 'CLAIMABLES_HEADER';
-  total: string | undefined;
-}
-
-export interface ClaimablesSpaceAfterItem extends BaseWalletSectionItem {
-  type: 'CLAIMABLES_SPACE_AFTER';
-}
-
-export interface NftSortItem extends BaseWalletSectionItem {
-  type: 'NFT_SORT';
-  sort: NftCollectionSortCriterion;
-}
-
-export interface CoinListItem extends BaseWalletSectionItem {
-  type: string;
-  defaultToEditButton?: unknown;
-  value?: unknown;
-  uniqueId?: unknown;
-}
-
-export type WalletSectionItem =
-  | LoadingAssetItem
-  | EmptyWalletSpacerItem
-  | BigEmptyWalletSpacerItem
-  | ReceiveCardItem
-  | EthCardItem
-  | LearnCardItem
-  | DiscoverMoreButtonItem
-  | ProfileStickyHeaderItem
-  | ProfileAvatarRowSpaceItem
-  | ProfileAvatarRowItem
-  | ProfileNameRowItem
-  | ProfileNameRowSpaceAfterItem
-  | ProfileBalanceRowItem
-  | ProfileBalanceRowSpaceAfterItem
-  | ProfileActionButtonsRowItem
-  | ProfileActionButtonsRowSpaceAfterItem
-  | RemoteCardCarouselItem
-  | PositionsSpaceBeforeItem
-  | PositionsHeaderItem
-  | ClaimablesSpaceBeforeItem
-  | ClaimablesHeaderItem
-  | ClaimablesSpaceAfterItem
-  | PositionExtraData
-  | ClaimableExtraData
-  | CoinListItem
-  | NftSortItem
-  | { type: string; uid: string; [key: string]: unknown };
-
-const CONTENT_PLACEHOLDER: LoadingAssetItem[] = [
-  { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
-  { type: 'LOADING_ASSETS', uid: 'loadings-asset-2' },
-  { type: 'LOADING_ASSETS', uid: 'loadings-asset-3' },
-  { type: 'LOADING_ASSETS', uid: 'loadings-asset-4' },
-  { type: 'LOADING_ASSETS', uid: 'loadings-asset-5' },
+const CONTENT_PLACEHOLDER: CellTypes[] = [
+  { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },
+  { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-2' },
+  { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-3' },
+  { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-4' },
+  { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-5' },
 ];
 
-const EMPTY_WALLET_CONTENT: WalletSectionItem[] = [
+const EMPTY_WALLET_CONTENT: CellTypes[] = [
   {
-    type: 'RECEIVE_CARD',
+    type: CellType.RECEIVE_CARD,
     uid: 'receive_card',
   },
-  { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-1' },
-  { type: 'ETH_CARD', uid: 'eth-card' },
-  { type: 'EMPTY_WALLET_SPACER', uid: 'empty-wallet-spacer-2' },
+  { type: CellType.EMPTY_WALLET_SPACER, uid: 'empty-wallet-spacer-1' },
+  { type: CellType.ETH_CARD, uid: 'eth-card' },
+  { type: CellType.EMPTY_WALLET_SPACER, uid: 'empty-wallet-spacer-2' },
   {
-    type: 'LEARN_CARD',
+    type: CellType.LEARN_CARD,
     uid: 'learn-card',
   },
-  { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-2' },
+  { type: CellType.BIG_EMPTY_WALLET_SPACER, uid: 'big-empty-wallet-spacer-2' },
   {
-    type: 'DISCOVER_MORE_BUTTON',
+    type: CellType.DISCOVER_MORE_BUTTON,
     uid: 'discover-home-button',
   },
 ];
 
-const ONLY_NFTS_CONTENT: EthCardItem[] = [{ type: 'ETH_CARD', uid: 'eth-card' }];
+const ONLY_NFTS_CONTENT: CellTypes[] = [{ type: CellType.ETH_CARD, uid: 'eth-card' }];
 
 export type WalletSectionsState = {
   sortedAssets: ParsedAddressAsset[];
@@ -193,7 +60,7 @@ export type WalletSectionsState = {
   isReadOnlyWallet: boolean;
   isWalletEthZero: boolean;
   hiddenTokens: string[];
-  listType?: string;
+  listType?: AssetListType;
   language: Language;
   network: Network;
   nativeCurrency: NativeCurrencyKey;
@@ -232,30 +99,30 @@ const nftSortSelector = (state: WalletSectionsState) => state.nftSort;
 const remoteCardsSelector = (state: WalletSectionsState) => state.remoteCards;
 
 interface BalanceSectionData {
-  balanceSection: WalletSectionItem[];
+  balanceSection: CellTypes[];
   isEmpty: boolean;
   isLoadingUserAssets: boolean;
 }
 
 interface BriefWalletSectionsResult {
-  briefSectionsData: WalletSectionItem[];
+  briefSectionsData: CellTypes[];
   isEmpty: boolean;
 }
 
 interface BalanceSectionResult {
-  balanceSection: WalletSectionItem[];
+  balanceSection: CellTypes[];
   isLoadingUserAssets: boolean;
   isEmpty: boolean;
 }
 
 export interface BriefCoinsListResult {
-  briefAssets: WalletSectionItem[];
+  briefAssets: CellTypes[];
   totalBalancesValue: string | number;
 }
 
 const buildBriefWalletSections = (
   balanceSectionData: BalanceSectionData,
-  uniqueTokenFamiliesSection: WalletSectionItem[],
+  uniqueTokenFamiliesSection: CellTypes[],
   positions: RainbowPositions | null,
   claimables: ClaimablesStore | null
 ): BriefWalletSectionsResult => {
@@ -270,12 +137,12 @@ const buildBriefWalletSections = (
   };
 };
 
-const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserAssets: boolean): WalletSectionItem[] => {
+const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserAssets: boolean): CellTypes[] => {
   if (isLoadingUserAssets || !DEFI_POSITIONS || !positions?.positions || Object.keys(positions.positions).length === 0) return [];
 
   const positionSectionItems: PositionExtraData[] = Object.values(positions.positions).map((position, index) => {
     return {
-      type: 'POSITION',
+      type: CellType.POSITION,
       uniqueId: position.type,
       uid: `position-${position.type}`,
       index,
@@ -284,11 +151,11 @@ const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserA
 
   return [
     {
-      type: 'POSITIONS_SPACE_BEFORE',
+      type: CellType.POSITIONS_SPACE_BEFORE,
       uid: 'positions-spacer-before',
     },
     {
-      type: 'POSITIONS_HEADER',
+      type: CellType.POSITIONS_HEADER,
       uid: 'positions-header',
       total: positions.totals?.total?.display,
     },
@@ -296,12 +163,12 @@ const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserA
   ];
 };
 
-const withClaimablesSection = (claimables: ClaimablesStore | null, isLoadingUserAssets: boolean): WalletSectionItem[] => {
+const withClaimablesSection = (claimables: ClaimablesStore | null, isLoadingUserAssets: boolean): CellTypes[] => {
   if (isLoadingUserAssets || !CLAIMABLES || !claimables?.claimables?.length) return [];
 
-  const claimableSectionItems: ClaimableExtraData[] = claimables.claimables.map(claimable => {
+  const claimableSectionItems: CellTypes[] = claimables.claimables.map(claimable => {
     return {
-      type: 'CLAIMABLE',
+      type: CellType.CLAIMABLE,
       uniqueId: claimable.uniqueId,
       uid: `claimable-${claimable.uniqueId}`,
     };
@@ -309,16 +176,16 @@ const withClaimablesSection = (claimables: ClaimablesStore | null, isLoadingUser
 
   return [
     {
-      type: 'CLAIMABLES_SPACE_BEFORE',
+      type: CellType.CLAIMABLES_SPACE_BEFORE,
       uid: 'claimables-spacer-before',
     },
     {
-      type: 'CLAIMABLES_HEADER',
+      type: CellType.CLAIMABLES_HEADER,
       uid: 'claimables-header',
       total: claimables.totalValue,
     },
     {
-      type: 'CLAIMABLES_SPACE_AFTER',
+      type: CellType.CLAIMABLES_SPACE_AFTER,
       uid: 'claimables-spacer-after',
     },
     ...claimableSectionItems,
@@ -345,60 +212,75 @@ const withBriefBalanceSection = (
   const isEmpty = !hasTokens && !hasNFTs;
   const hasNFTsOnly = !hasTokens && hasNFTs;
 
-  const header: WalletSectionItem[] = [
+  let balanceSection: CellTypes[] = [];
+  if (hasTokens && !isLoadingBalance) {
+    balanceSection = [
+      {
+        type: CellType.PROFILE_BALANCE_ROW,
+        uid: 'profile-balance',
+        value: accountBalanceDisplay,
+        isLoadingBalance,
+      },
+      {
+        type: CellType.PROFILE_BALANCE_ROW_SPACE_AFTER,
+        uid: 'profile-balance-space-after',
+      },
+    ];
+  }
+
+  let spacer: CellTypes[] = [];
+  if (!hasTokens) {
+    spacer = [
+      {
+        type: CellType.BIG_EMPTY_WALLET_SPACER,
+        uid: 'big-empty-wallet-spacer-1',
+      },
+    ];
+  } else {
+    spacer = [
+      {
+        type: CellType.PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER,
+        uid: 'profile-action-buttons-space-after',
+        value: accountBalanceDisplay,
+      },
+    ];
+  }
+
+  const header: CellTypes[] = [
     {
-      type: 'PROFILE_STICKY_HEADER',
+      type: CellType.PROFILE_STICKY_HEADER,
       uid: 'assets-profile-header-compact',
     },
     {
-      type: 'PROFILE_AVATAR_ROW_SPACE_BEFORE',
+      type: CellType.PROFILE_AVATAR_ROW_SPACE_BEFORE,
       uid: 'profile-avatar-space-before',
     },
     {
-      type: 'PROFILE_AVATAR_ROW',
+      type: CellType.PROFILE_AVATAR_ROW,
       uid: 'profile-avatar',
     },
     {
-      type: 'PROFILE_AVATAR_ROW_SPACE_AFTER',
+      type: CellType.PROFILE_AVATAR_ROW_SPACE_AFTER,
       uid: 'profile-avatar-space-after',
     },
     {
-      type: 'PROFILE_NAME_ROW',
+      type: CellType.PROFILE_NAME_ROW,
       uid: 'profile-name',
     },
     {
-      type: 'PROFILE_NAME_ROW_SPACE_AFTER',
+      type: CellType.PROFILE_NAME_ROW_SPACE_AFTER,
       uid: 'profile-name-space-after',
     },
-    ...(!hasTokens && !isLoadingBalance
-      ? []
-      : [
-          {
-            type: 'PROFILE_BALANCE_ROW',
-            uid: 'profile-balance',
-            value: accountBalanceDisplay,
-            isLoadingBalance,
-          },
-          {
-            type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
-            uid: 'profile-balance-space-after',
-          },
-        ]),
+    ...balanceSection,
     {
-      type: 'PROFILE_ACTION_BUTTONS_ROW',
+      type: CellType.PROFILE_ACTION_BUTTONS_ROW,
       uid: 'profile-action-buttons',
       value: accountBalanceDisplay,
     },
-    hasTokens
-      ? {
-          type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
-          uid: 'profile-action-buttons-space-after',
-          value: accountBalanceDisplay,
-        }
-      : { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-1' },
+    ...spacer,
   ];
 
-  let content: WalletSectionItem[] = CONTENT_PLACEHOLDER;
+  let content: CellTypes[] = CONTENT_PLACEHOLDER;
 
   if (hasTokens) {
     content = briefAssets;
@@ -413,7 +295,7 @@ const withBriefBalanceSection = (
   if (remoteCards.length) {
     content = [
       {
-        type: 'REMOTE_CARD_CAROUSEL',
+        type: CellType.REMOTE_CARD_CAROUSEL,
         uid: 'remote-card-carousel',
       },
       ...content,
@@ -421,7 +303,7 @@ const withBriefBalanceSection = (
   } else {
     content = [
       {
-        type: 'EMPTY_REMOTE_CARD_CAROUSEL',
+        type: CellType.EMPTY_REMOTE_CARD_CAROUSEL,
         uid: 'empty-remote-card-carousel',
       },
       ...content,

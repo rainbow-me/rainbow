@@ -14,7 +14,7 @@ import * as i18n from '@/languages';
 type Props = {
   familyName: string;
   theme: ThemeContextProps;
-  familyImage: string | null;
+  familyImage?: string;
   style?: any;
 };
 
@@ -72,7 +72,7 @@ export default React.memo(function TokenFamilyHeaderIcon({ familyImage, familyNa
   }
 
   const source = {
-    uri: familyImage ?? '',
+    uri: familyImage,
   };
 
   const symbol = initials(familyName);

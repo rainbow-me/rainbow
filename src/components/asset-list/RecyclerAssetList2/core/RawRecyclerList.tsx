@@ -10,7 +10,7 @@ import { ExternalENSProfileScrollViewWithRef, ExternalSelectNFTScrollViewWithRef
 import ExternalScrollViewWithRef from './ExternalScrollView';
 import RefreshControl from './RefreshControl';
 import rowRenderer from './RowRenderer';
-import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
+import { CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { NativeCurrencyKey, UniqueAsset } from '@/entities';
@@ -24,7 +24,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { deviceUtils } from '@/utils';
 
-const dataProvider = new DataProvider((r1, r2) => {
+const dataProvider = new DataProvider((r1: CellTypes, r2: CellTypes) => {
   return r1.uid !== r2.uid;
 });
 
@@ -50,7 +50,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   extendedState,
   type,
 }: {
-  briefSectionsData: BaseCellType[];
+  briefSectionsData: CellTypes[];
   disablePullDownToRefresh: boolean;
   extendedState: Partial<ExtendedState> & Pick<ExtendedState, 'additionalData'>;
   scrollIndicatorInsets?: object;

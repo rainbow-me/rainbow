@@ -8,7 +8,7 @@ import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
 type Props = {
   name: string;
   total?: number;
-  image: string | null;
+  image?: string;
   theme: ThemeContextProps;
   testID?: string;
 };

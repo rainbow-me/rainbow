@@ -1,6 +1,6 @@
 import { Dimension, Layout, LayoutManager, LayoutProvider } from 'recyclerlistview';
 import ViewDimensions from './ViewDimensions';
-import { BaseCellType, CellType } from './ViewTypes';
+import { CellType, CellTypes } from './ViewTypes';
 import { deviceUtils } from '@/utils';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED } from '@/config';
@@ -50,7 +50,7 @@ const getLayoutProvider = ({
   experimentalConfig,
   remoteConfig,
 }: {
-  briefSectionsData: BaseCellType[];
+  briefSectionsData: CellTypes[];
   isCoinListEdited: boolean;
   experimentalConfig: ReturnType<typeof useContext<RainbowContextType>>['config'];
   remoteConfig: RainbowConfig;
@@ -74,15 +74,15 @@ const getLayoutProvider = ({
 
   return new BetterLayoutProvider(
     index => briefSectionsData[index].type,
-    // @ts-ignore
-    (type: CellType, dim) => {
+    (type: string | number, dim: Dimension) => {
+      const cellType = type as CellType;
       dim.width = deviceUtils.dimensions.width;
-      if (ViewDimensions[type]) {
-        dim.height = ViewDimensions[type].height;
-        dim.width = ViewDimensions[type].width || dim.width;
+      if (ViewDimensions[cellType]) {
+        dim.height = ViewDimensions[cellType].height;
+        dim.width = ViewDimensions[cellType].width || dim.width;
 
-        // NOTE: If NFTs are disabled, we don't want to render the sections, so adjust the height to 0
-        if (NFTS.includes(type) && !nftsEnabled) {
+        // If NFTs are disabled, we don't want to render the sections, so adjust the height to 0
+        if (NFTS.includes(cellType) && !nftsEnabled) {
           dim.height = 0;
         }
       }
