@@ -140,7 +140,7 @@ const buildBriefWalletSections = (
 const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserAssets: boolean): CellTypes[] => {
   if (isLoadingUserAssets || !DEFI_POSITIONS || !positions?.positions || Object.keys(positions.positions).length === 0) return [];
 
-  const positionSectionItems: PositionExtraData[] = Object.values(positions.positions).map((position, index) => {
+  const positionSectionItems: CellTypes[] = Object.values(positions.positions).map((position, index) => {
     return {
       type: CellType.POSITION,
       uniqueId: position.type,

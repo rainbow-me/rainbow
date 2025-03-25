@@ -12,13 +12,14 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { positionsStore } from '@/resources/defi/PositionsQuery';
 import { claimablesStore } from '@/resources/addys/claimables/query';
-import { REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
+import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analyticsV2 } from '@/analytics';
 import useUniqueTokens from './useUniqueTokens';
 import { useNftSort } from './useNFTsSortBy';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
+import { IS_TEST } from '@/env';
 
 function useCachedSelector<T, P>(selector: (params: P) => T, params: P, deps: unknown[]): T {
   const cacheRef = useRef<{
@@ -64,27 +65,39 @@ export default function useWalletSectionsData({
   const experimentalConfig = useExperimentalConfig();
   const isWalletEthZero = useIsWalletEthZero();
 
+  const remoteCardsEnabled = (remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS]) && !isReadOnlyWallet;
+  const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
+  const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
+
   const cardIds = remoteCardsStore(state => state.getCardIdsForScreen('WALLET_SCREEN'));
-  const remoteCards = useMemo(
-    () => ((remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS]) && !isReadOnlyWallet ? cardIds : []),
-    [cardIds, experimentalConfig[REMOTE_CARDS], isReadOnlyWallet, remoteConfig.remote_cards_enabled]
-  );
+  const remoteCards = useMemo(() => (remoteCardsEnabled ? cardIds : []), [cardIds, remoteCardsEnabled]);
 
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
-  const positions = positionsStore(state =>
+  const positionsData = positionsStore(state =>
     state.getData({
       address: accountAddress,
       currency: nativeCurrency,
     })
   );
-  const claimables = claimablesStore(state =>
+
+  const positions = useMemo(() => {
+    if (!positionsEnabled) return null;
+    return positionsData;
+  }, [positionsData, positionsEnabled]);
+
+  const claimablesData = claimablesStore(state =>
     state.getData({
       address: accountAddress,
       currency: nativeCurrency,
     })
   );
+
+  const claimables = useMemo(() => {
+    if (!claimablesEnabled) return null;
+    return claimablesData;
+  }, [claimablesData, claimablesEnabled]);
 
   const { sendableUniqueTokens, uniqueTokens, isFetchingNfts } = useUniqueTokens();
 

@@ -80,7 +80,7 @@ export const positionsStore = createQueryStore<RainbowPositions, PositionsStoreP
     enabled: $ => $(userAssetsStoreManager, state => !!state.address),
     staleTime: time.minutes(10),
   },
-  (set, get) => ({
+  (_, get) => ({
     getPosition: (uniqueId: string) => {
       return get().getData()?.positions[uniqueId];
     },

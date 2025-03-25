@@ -81,7 +81,6 @@ export type NFTExtraData = {
 export type PositionExtraData = {
   type: CellType.POSITION;
   uniqueId: string;
-  uid: string;
   index: number;
 };
 export type PositionHeaderExtraData = {
