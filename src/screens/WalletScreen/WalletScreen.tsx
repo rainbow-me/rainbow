@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useMemo } from 'react';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { Box } from '@/design-system';
+import { Box, Text } from '@/design-system';
 import { useAccountAccentColor, useAccountSettings, useWalletSectionsData } from '@/hooks';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { useRecoilValue } from 'recoil';
@@ -17,11 +17,6 @@ import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
 import { useInitializeWalletAndSetParams } from '@/hooks/useInitiailizeWalletAndSetParams';
 import { useLoadDeferredData } from '@/hooks/usLoadDeferredWalletData';
 import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
-import { ENABLE_WALLETSCREEN_PERFORMANCE_LOGS } from 'react-native-dotenv';
-
-const ENABLE_PERF_LOGGING = ENABLE_WALLETSCREEN_PERFORMANCE_LOGS === '1';
-
-const MemoizedAssetList = React.memo(AssetList);
 
 const UtilityComponents = React.memo(() => (
   <>
@@ -32,16 +27,8 @@ const UtilityComponents = React.memo(() => (
 ));
 
 function WalletScreen() {
-  const renderEndTimeRef = useRef<number | null>(null);
-  const isFirstRenderRef = useRef(true);
-
-  const renderStartTime = ENABLE_PERF_LOGGING ? performance.now() : 0;
-
   const { network: currentNetwork, accountAddress } = useAccountSettings();
   const insets = useSafeAreaInsets();
-
-  // Log time just before calling the expensive hook
-  const preHookTime = ENABLE_PERF_LOGGING ? performance.now() : 0;
 
   const {
     isWalletEthZero,
@@ -49,12 +36,6 @@ function WalletScreen() {
     isLoadingBalance,
     briefSectionsData: walletBriefSectionsData,
   } = useWalletSectionsData({ type: 'wallet' });
-
-  // Log time after hook completes
-  if (ENABLE_PERF_LOGGING) {
-    const postHookTime = performance.now();
-    console.log(`⏱️ [PERF] useWalletSectionsData total hook execution time: ${(postHookTime - preHookTime).toFixed(4)}ms`);
-  }
 
   useWalletCohort();
   useRemoveScreen(Routes.WELCOME_SCREEN);
@@ -72,27 +53,10 @@ function WalletScreen() {
     [isLoadingUserAssetsAndAddress, isLoadingBalance]
   );
 
-  // Log render completion time
-  useEffect(() => {
-    if (ENABLE_PERF_LOGGING) {
-      const renderEndTime = performance.now();
-      const actualRenderTime = renderEndTime - renderStartTime;
-
-      if (isFirstRenderRef.current) {
-        console.log(`⏱️ [PERF] WalletScreen first render: ${actualRenderTime.toFixed(4)}ms`);
-        isFirstRenderRef.current = false;
-      } else {
-        console.log(`⏱️ [PERF] WalletScreen re-render: ${actualRenderTime.toFixed(4)}ms`);
-      }
-
-      renderEndTimeRef.current = null;
-    }
-  });
-
   return (
     <Box as={Page} flex={1} testID="wallet-screen">
       <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
-        <MemoizedAssetList
+        <AssetList
           accentColor={highContrastAccentColor}
           disableRefreshControl={disableRefreshControl}
           isWalletEthZero={isWalletEthZero}

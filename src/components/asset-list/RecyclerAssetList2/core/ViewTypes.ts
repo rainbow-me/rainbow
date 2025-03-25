@@ -45,6 +45,7 @@ export enum CellType {
   EMPTY_ROW = 'EMPTY_ROW',
 
   REMOTE_CARD_CAROUSEL = 'REMOTE_CARD_CAROUSEL',
+  EMPTY_REMOTE_CARD_CAROUSEL = 'EMPTY_REMOTE_CARD_CAROUSEL',
 }
 export type RecyclerListViewRef = RecyclerListView<RecyclerListViewProps, RecyclerListViewState>;
 

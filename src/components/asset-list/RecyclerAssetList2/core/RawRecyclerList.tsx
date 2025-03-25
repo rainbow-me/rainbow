@@ -18,13 +18,11 @@ import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerList
 import { useAccountSettings, useCoinListEdited, useCoinListEditOptions, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
-import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import { useRoute } from '@react-navigation/native';
-import Routes from '@/navigation/routesNames';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { UniqueId } from '@/__swaps__/types/assets';
+import { deviceUtils } from '@/utils';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid !== r2.uid;
@@ -65,23 +63,15 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const y = useRecyclerAssetListPosition()!;
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
 
-  const { name } = useRoute();
-  const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
-  const { isReadOnlyWallet } = useWallets();
-
-  const cardIds = useMemo(() => getCardIdsForScreen(name as keyof typeof Routes), [getCardIdsForScreen, name]);
-
   const layoutProvider = useMemo(
     () =>
       getLayoutProvider({
         briefSectionsData,
         isCoinListEdited,
-        cardIds,
-        isReadOnlyWallet,
         remoteConfig,
         experimentalConfig,
       }),
-    [briefSectionsData, isCoinListEdited, cardIds, isReadOnlyWallet, remoteConfig, experimentalConfig]
+    [briefSectionsData, isCoinListEdited, remoteConfig, experimentalConfig]
   );
 
   const { accountAddress } = useAccountSettings();
@@ -182,6 +172,11 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
       renderAheadOffset={1000}
       rowRenderer={rowRenderer}
+      canChangeSize
+      layoutSize={{
+        height: deviceUtils.dimensions.height,
+        width: deviceUtils.dimensions.width,
+      }}
       scrollIndicatorInsets={scrollIndicatorInsets}
     />
   );

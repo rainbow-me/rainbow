@@ -13,33 +13,6 @@ import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
 import { ClaimablesStore } from '@/resources/addys/claimables/query';
-import { ENABLE_WALLETSCREEN_PERFORMANCE_LOGS } from 'react-native-dotenv';
-
-// Add performance profiling utilities
-const ENABLE_SECTION_PERF_LOGGING = ENABLE_WALLETSCREEN_PERFORMANCE_LOGS === '1';
-
-function logSectionPerf(label: string, time: number) {
-  if (ENABLE_SECTION_PERF_LOGGING) {
-    console.log(`🔍 [PERF-SECTION] ${label}: ${time.toFixed(4)}ms`);
-  }
-}
-
-function withPerfMeasurement<T, Args extends unknown[]>(fn: (...args: Args) => T, label: string): (...args: Args) => T {
-  return (...args: Args) => {
-    if (!ENABLE_SECTION_PERF_LOGGING) return fn(...args);
-
-    const start = performance.now();
-    const result = fn(...args);
-    const end = performance.now();
-
-    logSectionPerf(label, end - start);
-    return result;
-  };
-}
-
-// Profile the key functions involved in wallet sections building
-const buildBriefCoinsListWithPerf = withPerfMeasurement(buildBriefCoinsList, 'buildBriefCoinsList');
-const buildBriefUniqueTokenListWithPerf = withPerfMeasurement(buildBriefUniqueTokenList, 'buildBriefUniqueTokenList');
 
 export interface BaseWalletSectionItem {
   type: string;
@@ -235,6 +208,7 @@ export type WalletSectionsState = {
   positions: RainbowPositions | null;
   claimables: ClaimablesStore | null;
   nftSort: NftCollectionSortCriterion;
+  remoteCards: string[];
 };
 
 const sortedAssetsSelector = (state: WalletSectionsState): ParsedAddressAsset[] => state.sortedAssets;
@@ -256,6 +230,7 @@ const experimentalConfigSelector = (state: WalletSectionsState): ReturnType<type
 const positionsSelector = (state: WalletSectionsState): RainbowPositions | null => state.positions;
 const claimablesSelector = (state: WalletSectionsState): ClaimablesStore | null => state.claimables;
 const nftSortSelector = (state: WalletSectionsState): NftCollectionSortCriterion => state.nftSort;
+const remoteCardsSelector = (state: WalletSectionsState): string[] => state.remoteCards;
 interface BalanceSectionData {
   balanceSection: WalletSectionItem[];
   isEmpty: boolean;
@@ -279,111 +254,100 @@ export interface BriefCoinsListResult {
   totalBalancesValue: string | number; // Changed from totalBalanceChange to match actual return
 }
 
-const buildBriefWalletSections = withPerfMeasurement(
-  (
-    balanceSectionData: BalanceSectionData,
-    uniqueTokenFamiliesSection: WalletSectionItem[],
-    remoteConfig: RainbowConfig,
-    experimentalConfig: ReturnType<typeof useExperimentalConfig>,
-    positions: RainbowPositions | null,
-    claimables: ClaimablesStore | null
-  ): BriefWalletSectionsResult => {
-    const { isEmpty, balanceSection, isLoadingUserAssets } = balanceSectionData;
+const buildBriefWalletSections = (
+  balanceSectionData: BalanceSectionData,
+  uniqueTokenFamiliesSection: WalletSectionItem[],
+  positions: RainbowPositions | null,
+  claimables: ClaimablesStore | null
+): BriefWalletSectionsResult => {
+  const { isEmpty, balanceSection, isLoadingUserAssets } = balanceSectionData;
 
-    const positionsSection = withPositionsSection(positions, isLoadingUserAssets);
-    const claimablesSection = withClaimablesSection(claimables, isLoadingUserAssets);
+  const positionsSection = withPositionsSection(positions, isLoadingUserAssets);
+  const claimablesSection = withClaimablesSection(claimables, isLoadingUserAssets);
+
+  return {
+    briefSectionsData: [...balanceSection, ...positionsSection, ...claimablesSection, ...uniqueTokenFamiliesSection],
+    isEmpty,
+  };
+};
+
+const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserAssets: boolean): WalletSectionItem[] => {
+  if (isLoadingUserAssets) return [];
+  if (!DEFI_POSITIONS) return [];
+  if (!positions) return [];
+
+  const positionItems = positions.positions || [];
+  if (!positionItems.length) return [];
+
+  // Convert positions to wallet section items
+  const positionSectionItems: PositionExtraData[] = positionItems.map((position, index) => {
+    // Extract type from position to avoid duplicate property
+    const { type, ...rest } = position;
+    return {
+      type: 'POSITION',
+      uniqueId: type,
+      uid: `position-${type}`,
+      index,
+      positionType: type, // Save original type under different name
+      ...rest,
+    };
+  });
+
+  return [
+    {
+      type: 'POSITIONS_SPACE_BEFORE',
+      uid: 'positions-spacer-before',
+    },
+    {
+      type: 'POSITIONS_HEADER',
+      uid: 'positions-header',
+      total: positions.totals?.total?.display,
+    },
+    ...positionSectionItems,
+  ];
+};
+
+const withClaimablesSection = (claimables: ClaimablesStore | null, isLoadingUserAssets: boolean): WalletSectionItem[] => {
+  if (isLoadingUserAssets) return [];
+  if (!CLAIMABLES) return [];
+  if (!claimables) return [];
+
+  const claimableItems = claimables.claimables || [];
+  if (!claimableItems.length) return [];
+
+  // Convert claimables to wallet section items
+  const claimableSectionItems: ClaimableExtraData[] = claimableItems.map(claimable => {
+    // Extract type and uniqueId from claimable to avoid duplicate properties
+    const { type, uniqueId, ...rest } = claimable;
+    // Generate a fallback ID if uniqueId doesn't exist
+    const generatedId = uniqueId || `claimable-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
     return {
-      briefSectionsData: [...balanceSection, ...positionsSection, ...claimablesSection, ...uniqueTokenFamiliesSection],
-      isEmpty,
+      type: 'CLAIMABLE',
+      uniqueId: generatedId,
+      uid: `claimable-${generatedId}`,
+      claimableType: type, // Save original type under different name if needed
+      ...rest,
     };
-  },
-  'buildBriefWalletSections-function'
-);
+  });
 
-const withPositionsSection = withPerfMeasurement(
-  (positions: RainbowPositions | null, isLoadingUserAssets: boolean): WalletSectionItem[] => {
-    if (isLoadingUserAssets) return [];
-    if (!DEFI_POSITIONS) return [];
-    if (!positions) return [];
-
-    const positionItems = positions.positions || [];
-    if (!positionItems.length) return [];
-
-    // Convert positions to wallet section items
-    const positionSectionItems: PositionExtraData[] = positionItems.map((position, index) => {
-      // Extract type from position to avoid duplicate property
-      const { type, ...rest } = position;
-      return {
-        type: 'POSITION',
-        uniqueId: type,
-        uid: `position-${type}`,
-        index,
-        positionType: type, // Save original type under different name
-        ...rest,
-      };
-    });
-
-    return [
-      {
-        type: 'POSITIONS_SPACE_BEFORE',
-        uid: 'positions-spacer-before',
-      },
-      {
-        type: 'POSITIONS_HEADER',
-        uid: 'positions-header',
-        total: positions.totals?.total?.display,
-      },
-      ...positionSectionItems,
-    ];
-  },
-  'withPositionsSection'
-);
-
-const withClaimablesSection = withPerfMeasurement(
-  (claimables: ClaimablesStore | null, isLoadingUserAssets: boolean): WalletSectionItem[] => {
-    if (isLoadingUserAssets) return [];
-    if (!CLAIMABLES) return [];
-    if (!claimables) return [];
-
-    const claimableItems = claimables.claimables || [];
-    if (!claimableItems.length) return [];
-
-    // Convert claimables to wallet section items
-    const claimableSectionItems: ClaimableExtraData[] = claimableItems.map(claimable => {
-      // Extract type and uniqueId from claimable to avoid duplicate properties
-      const { type, uniqueId, ...rest } = claimable;
-      // Generate a fallback ID if uniqueId doesn't exist
-      const generatedId = uniqueId || `claimable-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-
-      return {
-        type: 'CLAIMABLE',
-        uniqueId: generatedId,
-        uid: `claimable-${generatedId}`,
-        claimableType: type, // Save original type under different name if needed
-        ...rest,
-      };
-    });
-
-    return [
-      {
-        type: 'CLAIMABLES_SPACE_BEFORE',
-        uid: 'claimables-spacer-before',
-      },
-      {
-        type: 'CLAIMABLES_HEADER',
-        uid: 'claimables-header',
-        total: claimables.totalValue,
-      },
-      ...claimableSectionItems,
-      {
-        type: 'CLAIMABLES_SPACE_AFTER',
-        uid: 'claimables-spacer-after',
-      },
-    ];
-  },
-  'withClaimablesSection'
-);
+  return [
+    {
+      type: 'CLAIMABLES_SPACE_BEFORE',
+      uid: 'claimables-spacer-before',
+    },
+    {
+      type: 'CLAIMABLES_HEADER',
+      uid: 'claimables-header',
+      total: claimables.totalValue,
+    },
+    ...claimableSectionItems,
+    {
+      type: 'CLAIMABLES_SPACE_AFTER',
+      uid: 'claimables-spacer-after',
+    },
+  ];
+};
 
 const withBriefBalanceSection = (
   sortedAssets: ParsedAddressAsset[],
@@ -394,31 +358,16 @@ const withBriefBalanceSection = (
   isCoinListEdited: boolean,
   pinnedCoins: BooleanMap,
   hiddenAssets: Set<UniqueId>,
-  collectibles: ReturnType<typeof useUniqueTokens>['uniqueTokens']
+  collectibles: ReturnType<typeof useUniqueTokens>['uniqueTokens'],
+  remoteCards: string[]
 ): BalanceSectionResult => {
-  const startTimeBuildBrief = ENABLE_SECTION_PERF_LOGGING ? performance.now() : 0;
-
-  // Use the instrumented version of buildBriefCoinsList
-  const { briefAssets } = buildBriefCoinsListWithPerf(
-    sortedAssets,
-    nativeCurrency,
-    isCoinListEdited,
-    pinnedCoins,
-    hiddenAssets
-  ) as BriefCoinsListResult;
-
-  if (ENABLE_SECTION_PERF_LOGGING) {
-    const endTimeBuildBrief = performance.now();
-    logSectionPerf('briefAssets-extraction-time', endTimeBuildBrief - startTimeBuildBrief);
-  }
+  const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);
 
   const hasTokens = briefAssets?.length;
   const hasNFTs = collectibles?.length;
 
   const isEmpty = !hasTokens && !hasNFTs;
   const hasNFTsOnly = !hasTokens && hasNFTs;
-
-  const startTimeHeaderCreation = ENABLE_SECTION_PERF_LOGGING ? performance.now() : 0;
 
   const header: WalletSectionItem[] = [
     {
@@ -473,11 +422,6 @@ const withBriefBalanceSection = (
       : { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-1' },
   ];
 
-  if (ENABLE_SECTION_PERF_LOGGING) {
-    const endTimeHeaderCreation = performance.now();
-    logSectionPerf('header-creation-time', endTimeHeaderCreation - startTimeHeaderCreation);
-  }
-
   let content: WalletSectionItem[] = CONTENT_PLACEHOLDER;
 
   if (hasTokens) {
@@ -490,25 +434,29 @@ const withBriefBalanceSection = (
     content = EMPTY_WALLET_CONTENT;
   }
 
-  const startTimeMerge = ENABLE_SECTION_PERF_LOGGING ? performance.now() : 0;
-
-  const result = {
-    balanceSection: [
-      ...header,
+  if (remoteCards.length) {
+    content = [
       {
         type: 'REMOTE_CARD_CAROUSEL',
         uid: 'remote-card-carousel',
-      } as RemoteCardCarouselItem,
+      },
       ...content,
-    ],
+    ];
+  } else {
+    content = [
+      {
+        type: 'EMPTY_REMOTE_CARD_CAROUSEL',
+        uid: 'empty-remote-card-carousel',
+      },
+      ...content,
+    ];
+  }
+
+  const result = {
+    balanceSection: [...header, ...content],
     isLoadingUserAssets,
     isEmpty,
   };
-
-  if (ENABLE_SECTION_PERF_LOGGING) {
-    const endTimeMerge = performance.now();
-    logSectionPerf('final-section-merge-time', endTimeMerge - startTimeMerge);
-  }
 
   return result;
 };
@@ -523,7 +471,7 @@ const briefUniqueTokenDataSelector = createSelector(
     nftSortSelector,
     isFetchingNftsSelector,
   ],
-  withPerfMeasurement(buildBriefUniqueTokenListWithPerf, 'briefUniqueTokenDataSelector')
+  buildBriefUniqueTokenList
 );
 
 const briefBalanceSectionSelector = createSelector(
@@ -537,18 +485,12 @@ const briefBalanceSectionSelector = createSelector(
     pinnedCoinsSelector,
     hiddenAssetsSelector,
     uniqueTokensSelector,
+    remoteCardsSelector,
   ],
-  withPerfMeasurement(withBriefBalanceSection, 'briefBalanceSectionSelector')
+  withBriefBalanceSection
 );
 
 export const buildBriefWalletSectionsSelector = createSelector(
-  [
-    briefBalanceSectionSelector,
-    briefUniqueTokenDataSelector,
-    remoteConfigSelector,
-    experimentalConfigSelector,
-    positionsSelector,
-    claimablesSelector,
-  ],
-  withPerfMeasurement(buildBriefWalletSections, 'buildBriefWalletSections')
+  [briefBalanceSectionSelector, briefUniqueTokenDataSelector, positionsSelector, claimablesSelector],
+  buildBriefWalletSections
 );
