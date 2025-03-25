@@ -19,7 +19,7 @@ export default function useExternalWalletSectionsData({ address, type }: { addre
 
   const briefSectionsData = useMemo(
     () => (uniqueTokens ? buildBriefUniqueTokenList(uniqueTokens, showcaseTokens, sellingTokens, hiddenTokens, type) : []),
-    [uniqueTokens, showcaseTokens, hiddenTokens, type]
+    [uniqueTokens, showcaseTokens, sellingTokens, hiddenTokens, type]
   );
 
   return {
