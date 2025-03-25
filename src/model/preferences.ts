@@ -113,7 +113,7 @@ export async function setPreference<K extends keyof Omit<PreferencesDataMap, 'ad
       success: data?.success,
     });
 
-    if (!data.data) {
+    if (!data?.success) {
       throw new Error('Failed to set preference');
     }
 
@@ -129,7 +129,7 @@ export async function setPreference<K extends keyof Omit<PreferencesDataMap, 'ad
 export async function getPreference<K extends keyof PreferencesDataMap>(
   key: K,
   address: EthereumAddress
-): Promise<PreferencesDataMap[K] | null> {
+): Promise<PreferencesDataMap[K] | null | undefined> {
   try {
     const { data } = await preferencesAPI.get<PreferencesResponse<K>>(`${PREFS_ENDPOINT}/${key}`, {
       params: { address },
@@ -139,7 +139,7 @@ export async function getPreference<K extends keyof PreferencesDataMap>(
       success: data?.success,
     });
 
-    if (!data.data) {
+    if (!data?.success) {
       return null;
     }
 

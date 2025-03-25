@@ -217,8 +217,8 @@ export const NotificationsHandler = () => {
     if (walletReady && !alreadyRanInitialization.current) {
       const addresses: AddressWithRelationship[] = [];
 
-      Object.values(wallets ?? {}).forEach(wallet =>
-        wallet?.addresses.forEach(
+      Object.values(wallets || {}).forEach(wallet =>
+        (wallet?.addresses || []).forEach(
           ({ address, visible }: { address: string; visible: boolean }) =>
             visible &&
             addresses.push({

@@ -1,6 +1,4 @@
 import { NativeCurrencyKey } from '@/entities';
-import { createQueryKey } from '@/react-query';
-import { QueryFunctionContext } from '@tanstack/react-query';
 import { Claimable, ConsolidatedClaimablesResponse } from './types';
 import { logger, RainbowError } from '@/logger';
 import { parseClaimables } from './utils';
@@ -30,18 +28,16 @@ export type ClaimablesArgs = {
   abortController?: AbortController | null;
 };
 
-// ///////////////////////////////////////////////
-// Query Key
-
-export const claimablesQueryKey = ({ address, currency, abortController }: ClaimablesArgs) =>
-  createQueryKey('claimables', { address, currency, abortController }, { persisterVersion: 4 });
-
-type ClaimablesQueryKey = ReturnType<typeof claimablesQueryKey>;
-
 const STABLE_CLAIMABLES: ReturnType<typeof parseClaimables<Claimable>> = [];
 
 export async function getClaimables({ address, currency, abortController }: ClaimablesArgs) {
   try {
+    if (!address) {
+      abortController?.abort();
+      logger.warn('[getClaimables]: No address provided, returning stable claimables array');
+      return STABLE_CLAIMABLES;
+    }
+
     const url = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/claimables`;
     const { data } = await getAddysHttpClient().get<ConsolidatedClaimablesResponse>(url, {
       params: {
@@ -52,7 +48,7 @@ export async function getClaimables({ address, currency, abortController }: Clai
     });
 
     if (data.metadata.status !== 'ok') {
-      logger.error(new RainbowError('[claimablesQueryFunction]: Failed to fetch claimables (API error)'), {
+      logger.error(new RainbowError('[getClaimables]: Failed to fetch claimables (API error)'), {
         message: data.metadata.errors,
       });
       if (!data.payload.claimables.length) {
@@ -63,25 +59,12 @@ export async function getClaimables({ address, currency, abortController }: Clai
     return parseClaimables(data.payload.claimables, currency);
   } catch (e) {
     if (e instanceof Error && e.name === 'AbortError') return STABLE_CLAIMABLES;
-    logger.error(new RainbowError('[claimablesQueryFunction]: Failed to fetch claimables (client error)'), {
+    logger.error(new RainbowError('[getClaimables]: Failed to fetch claimables (client error)'), {
       message: (e as Error)?.message,
     });
     return STABLE_CLAIMABLES;
   }
 }
-
-// ///////////////////////////////////////////////
-// Query Function
-
-export async function claimablesQueryFunction({ queryKey }: QueryFunctionContext<ClaimablesQueryKey>) {
-  const [{ address, currency, abortController }] = queryKey;
-  return getClaimables({ address, currency, abortController });
-}
-
-export type ClaimablesResult = Awaited<ReturnType<typeof claimablesQueryFunction>>;
-
-// ///////////////////////////////////////////////
-// Query Hook
 
 export type ClaimablesStore = {
   claimables: Claimable[];
@@ -143,7 +126,6 @@ export const claimablesStore = createQueryStore<ClaimablesStore, ClaimablesArgs>
             claimables.reduce((acc, claimable) => add(acc, claimable.value.nativeAsset.amount || '0'), '0'),
             currency
           ),
-          ethRewardsAmount: points?.points?.user?.rewards?.claimable || '0',
         };
       } catch (e) {
         if (e instanceof Error && e.name === 'AbortError') return STABLE_OBJECT;

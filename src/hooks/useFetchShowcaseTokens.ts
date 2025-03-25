@@ -14,7 +14,7 @@ export default function useFetchShowcaseTokens({ address }: { address?: string }
       if (!address) return [];
 
       let showcaseTokens = await getShowcaseTokens(address, network);
-      const showcaseTokensFromCloud = (await getPreference('showcase', address)) as any | undefined;
+      const showcaseTokensFromCloud = await getPreference('showcase', address);
       if (showcaseTokensFromCloud?.showcase?.ids && showcaseTokensFromCloud?.showcase?.ids.length > 0) {
         showcaseTokens = showcaseTokensFromCloud.showcase.ids;
       }

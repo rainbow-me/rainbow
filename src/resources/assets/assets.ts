@@ -1,10 +1,7 @@
 import lang from 'i18n-js';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
-import isEmpty from 'lodash/isEmpty';
 import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
-import { queryClient } from '@/react-query';
-import { RainbowPositions } from '@/resources/defi/types';
 import { AddysAddressAsset, AddysAsset, ParsedAsset, RainbowAddressAssets } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
