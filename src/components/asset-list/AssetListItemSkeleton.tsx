@@ -1,33 +1,28 @@
 import React, { useMemo } from 'react';
-import { withThemeContext } from '../../theme/ThemeContext';
-import { CoinRowHeight } from '../coin-row';
-import Skeleton, { FakeAvatar, FakeRow, FakeText } from '../skeleton/Skeleton';
-import { colors } from '@/styles';
-import { StyleSheet, View, ViewProps } from 'react-native';
-import { Box } from '@/design-system';
+import { ThemeContextProps, withThemeContext } from '@/theme/ThemeContext';
+import { CoinRowHeight } from '@/components/coin-row';
+import Skeleton, { FakeAvatar, FakeRow, FakeText } from '@/components/skeleton/Skeleton';
+import { padding } from '@/styles';
+import { View, ViewProps } from 'react-native';
+import styled from '@/styled-thing';
+import { ColumnWithMargins, RowWithMargins } from '@/components/layout';
 
 export const AssetListItemSkeletonHeight = CoinRowHeight;
 
-const sx = StyleSheet.create({
-  container: {
-    height: AssetListItemSkeletonHeight,
-    width: '100%',
-  },
-  wrapper: {
-    backgroundColor: colors.transparent,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    marginRight: 10,
-    paddingBottom: 10,
-    paddingTop: 9,
-  },
-  column: {
-    backgroundColor: colors.transparent,
-    marginBottom: 10,
-    flex: 1,
-  },
+const Container = styled(View)({
+  height: AssetListItemSkeletonHeight,
+  opacity: ({ descendingOpacity, index }: { descendingOpacity: boolean; index: number }) => 1 - 0.2 * (descendingOpacity ? index : 0),
+  width: '100%',
 });
+
+const Wrapper = styled(RowWithMargins).attrs({
+  align: 'flex-end',
+  justify: 'space-between',
+  margin: 10,
+})(({ ignorePaddingHorizontal }: { ignorePaddingHorizontal: boolean }) => ({
+  ...padding.object(9, ignorePaddingHorizontal ? 0 : 19, 10, ignorePaddingHorizontal ? 0 : 19),
+  backgroundColor: ({ theme: { colors } }: { theme: ThemeContextProps }) => colors.transparent,
+}));
 
 type AssetListItemSkeletonProps = {
   animated?: boolean;
@@ -43,16 +38,16 @@ function AssetListItemSkeleton({
   descendingOpacity = false,
   ignorePaddingHorizontal,
   colors,
-  ...rest
+  ...viewProps
 }: AssetListItemSkeletonProps) {
   const opacity = useMemo(() => 1 - 0.2 * (descendingOpacity ? index : 0), [descendingOpacity, index]);
 
   return (
-    <View style={[sx.container, { opacity }]} {...rest}>
+    <Container descendingOpacity={descendingOpacity} index={index} {...viewProps}>
       <Skeleton animated={animated}>
-        <Box paddingHorizontal={{ custom: ignorePaddingHorizontal ? 0 : 19 }} style={sx.wrapper}>
+        <Wrapper ignorePaddingHorizontal={ignorePaddingHorizontal} index={index}>
           <FakeAvatar />
-          <Box style={sx.column}>
+          <ColumnWithMargins backgroundColor={colors.transparent} flex={1} margin={10}>
             <FakeRow>
               <FakeText width={100} />
               <FakeText width={80} />
@@ -61,10 +56,10 @@ function AssetListItemSkeleton({
               <FakeText width={60} />
               <FakeText width={50} />
             </FakeRow>
-          </Box>
-        </Box>
+          </ColumnWithMargins>
+        </Wrapper>
       </Skeleton>
-    </View>
+    </Container>
   );
 }
 

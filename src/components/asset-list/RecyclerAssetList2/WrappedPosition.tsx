@@ -4,7 +4,7 @@ import { positionsStore } from '@/resources/defi/PositionsQuery';
 import { PositionCard } from '@/components/positions/PositionsCard';
 
 export default function WrappedPosition({ uniqueId, placement }: { uniqueId: string; placement: 'left' | 'right' }) {
-  const position = positionsStore(state => state.getData())?.positions.find(position => position.type === uniqueId);
+  const position = positionsStore(state => state.getPosition(uniqueId));
 
   const placementProps: BoxProps =
     placement === 'left'

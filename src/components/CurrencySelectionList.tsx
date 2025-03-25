@@ -66,9 +66,7 @@ const CurrencySelectionList: ForwardRefRenderFunction<SectionList, CurrencySelec
         </Centered>
       )}
       {(showSkeleton || !showList) && (
-        <Box width="full" height="full" style={{ pointerEvents: 'none' }}>
-          <EmptyAssetList />
-        </Box>
+        <Box as={EmptyAssetList} width="full" height="full" style={{ pointerEvents: 'none' }} skeletonCount={10} />
       )}
     </Box>
   );

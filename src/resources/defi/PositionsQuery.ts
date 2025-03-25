@@ -1,5 +1,5 @@
 import { NativeCurrencyKey } from '@/entities';
-import { AddysPositionsResponse, RainbowPositions } from './types';
+import { AddysPositionsResponse, RainbowPosition, RainbowPositions } from './types';
 import { parsePositions } from './utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getAddysHttpClient } from '@/resources/addys/client';
@@ -8,7 +8,6 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { Address } from 'viem';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { time } from '@/utils';
-import { noop } from 'lodash';
 
 const STABLE_OBJECT: RainbowPositions = {
   totals: {
@@ -21,7 +20,7 @@ const STABLE_OBJECT: RainbowPositions = {
     total: { amount: '0', display: '0' },
   },
   positionTokens: [],
-  positions: [],
+  positions: {},
 };
 
 type PositionsStoreParams = {
@@ -51,11 +50,15 @@ const getPositions = async (
     return parsePositions(response.data, currency);
   }
 
-  // should pop a warn here
+  logger.warn('[positionsStore]: Failed to fetch positions', { response });
   return STABLE_OBJECT;
 };
 
-export const positionsStore = createQueryStore<RainbowPositions, PositionsStoreParams>(
+type PositionStoreActions = {
+  getPosition: (uniqueId: string) => RainbowPosition | undefined;
+};
+
+export const positionsStore = createQueryStore<RainbowPositions, PositionsStoreParams, PositionStoreActions>(
   {
     fetcher: async ({ address, currency }, abortController) => {
       try {
@@ -65,7 +68,6 @@ export const positionsStore = createQueryStore<RainbowPositions, PositionsStoreP
         }
         return getPositions(address, currency, abortController);
       } catch (e) {
-        if (e instanceof Error && e.name === 'AbortError') return STABLE_OBJECT;
         logger.error(new RainbowError('[positionsStore]: Failed to fetch positions'), { e });
         return STABLE_OBJECT;
       }
@@ -76,9 +78,14 @@ export const positionsStore = createQueryStore<RainbowPositions, PositionsStoreP
     },
     keepPreviousData: true,
     enabled: $ => $(userAssetsStoreManager, state => !!state.address),
-    staleTime: time.hours(1),
+    staleTime: time.minutes(10),
   },
-  noop,
+  (set, get) => ({
+    getPosition: (uniqueId: string) => {
+      console.log('getPosition', uniqueId, get().getData()?.positions);
+      return get().getData()?.positions[uniqueId];
+    },
+  }),
   {
     storageKey: 'positions',
     version: 1,

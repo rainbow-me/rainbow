@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
-import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
+import { NativeCurrencyKey, ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { ClaimableExtraData, PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { DEFI_POSITIONS, CLAIMABLES } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
@@ -125,7 +125,6 @@ export interface CoinListItem extends BaseWalletSectionItem {
   uniqueId?: unknown;
 }
 
-// Update the WalletSectionItem type union to include all possible types
 export type WalletSectionItem =
   | LoadingAssetItem
   | EmptyWalletSpacerItem
@@ -199,6 +198,7 @@ export type WalletSectionsState = {
   network: Network;
   nativeCurrency: NativeCurrencyKey;
   pinnedCoins: BooleanMap;
+  sellingTokens?: UniqueAsset[];
   remoteConfig: RainbowConfig;
   experimentalConfig: ReturnType<typeof useExperimentalConfig>;
   showcaseTokens: string[];
@@ -211,26 +211,26 @@ export type WalletSectionsState = {
   remoteCards: string[];
 };
 
-const sortedAssetsSelector = (state: WalletSectionsState): ParsedAddressAsset[] => state.sortedAssets;
-const accountBalanceDisplaySelector = (state: WalletSectionsState): string | undefined => state.accountBalanceDisplay;
-const hiddenAssetsSelector = (state: WalletSectionsState): Set<UniqueId> => state.hiddenAssets;
-const isCoinListEditedSelector = (state: WalletSectionsState): boolean => state.isCoinListEdited;
-const isLoadingUserAssetsSelector = (state: WalletSectionsState): boolean => state.isLoadingUserAssets;
-const isLoadingBalanceSelector = (state: WalletSectionsState): boolean => state.isLoadingBalance;
-const isReadOnlyWalletSelector = (state: WalletSectionsState): boolean => state.isReadOnlyWallet;
-const nativeCurrencySelector = (state: WalletSectionsState): NativeCurrencyKey => state.nativeCurrency;
-const pinnedCoinsSelector = (state: WalletSectionsState): BooleanMap => state.pinnedCoins;
-const showcaseTokensSelector = (state: WalletSectionsState): string[] => state.showcaseTokens;
-const hiddenTokensSelector = (state: WalletSectionsState): string[] => state.hiddenTokens;
-const uniqueTokensSelector = (state: WalletSectionsState): ReturnType<typeof useUniqueTokens>['uniqueTokens'] => state.uniqueTokens;
-const isFetchingNftsSelector = (state: WalletSectionsState): boolean => state.isFetchingNfts;
-const listTypeSelector = (state: WalletSectionsState): string | undefined => state.listType;
-const remoteConfigSelector = (state: WalletSectionsState): RainbowConfig => state.remoteConfig;
-const experimentalConfigSelector = (state: WalletSectionsState): ReturnType<typeof useExperimentalConfig> => state.experimentalConfig;
-const positionsSelector = (state: WalletSectionsState): RainbowPositions | null => state.positions;
-const claimablesSelector = (state: WalletSectionsState): ClaimablesStore | null => state.claimables;
-const nftSortSelector = (state: WalletSectionsState): NftCollectionSortCriterion => state.nftSort;
-const remoteCardsSelector = (state: WalletSectionsState): string[] => state.remoteCards;
+const sortedAssetsSelector = (state: WalletSectionsState) => state.sortedAssets;
+const accountBalanceDisplaySelector = (state: WalletSectionsState) => state.accountBalanceDisplay;
+const hiddenAssetsSelector = (state: WalletSectionsState) => state.hiddenAssets;
+const isCoinListEditedSelector = (state: WalletSectionsState) => state.isCoinListEdited;
+const isLoadingUserAssetsSelector = (state: WalletSectionsState) => state.isLoadingUserAssets;
+const isLoadingBalanceSelector = (state: WalletSectionsState) => state.isLoadingBalance;
+const isReadOnlyWalletSelector = (state: WalletSectionsState) => state.isReadOnlyWallet;
+const nativeCurrencySelector = (state: WalletSectionsState) => state.nativeCurrency;
+const pinnedCoinsSelector = (state: WalletSectionsState) => state.pinnedCoins;
+const sellingTokensSelector = (state: WalletSectionsState) => state.sellingTokens;
+const showcaseTokensSelector = (state: WalletSectionsState) => state.showcaseTokens;
+const hiddenTokensSelector = (state: WalletSectionsState) => state.hiddenTokens;
+const uniqueTokensSelector = (state: WalletSectionsState) => state.uniqueTokens;
+const isFetchingNftsSelector = (state: WalletSectionsState) => state.isFetchingNfts;
+const listTypeSelector = (state: WalletSectionsState) => state.listType;
+const positionsSelector = (state: WalletSectionsState) => state.positions;
+const claimablesSelector = (state: WalletSectionsState) => state.claimables;
+const nftSortSelector = (state: WalletSectionsState) => state.nftSort;
+const remoteCardsSelector = (state: WalletSectionsState) => state.remoteCards;
+
 interface BalanceSectionData {
   balanceSection: WalletSectionItem[];
   isEmpty: boolean;
@@ -248,10 +248,9 @@ interface BalanceSectionResult {
   isEmpty: boolean;
 }
 
-// Update the BriefCoinsListResult interface to match the actual return type
 export interface BriefCoinsListResult {
   briefAssets: WalletSectionItem[];
-  totalBalancesValue: string | number; // Changed from totalBalanceChange to match actual return
+  totalBalancesValue: string | number;
 }
 
 const buildBriefWalletSections = (
@@ -272,24 +271,14 @@ const buildBriefWalletSections = (
 };
 
 const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserAssets: boolean): WalletSectionItem[] => {
-  if (isLoadingUserAssets) return [];
-  if (!DEFI_POSITIONS) return [];
-  if (!positions) return [];
+  if (isLoadingUserAssets || !DEFI_POSITIONS || !positions?.positions || Object.keys(positions.positions).length === 0) return [];
 
-  const positionItems = positions.positions || [];
-  if (!positionItems.length) return [];
-
-  // Convert positions to wallet section items
-  const positionSectionItems: PositionExtraData[] = positionItems.map((position, index) => {
-    // Extract type from position to avoid duplicate property
-    const { type, ...rest } = position;
+  const positionSectionItems: PositionExtraData[] = Object.values(positions.positions).map((position, index) => {
     return {
       type: 'POSITION',
-      uniqueId: type,
-      uid: `position-${type}`,
+      uniqueId: position.type,
+      uid: `position-${position.type}`,
       index,
-      positionType: type, // Save original type under different name
-      ...rest,
     };
   });
 
@@ -308,26 +297,13 @@ const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserA
 };
 
 const withClaimablesSection = (claimables: ClaimablesStore | null, isLoadingUserAssets: boolean): WalletSectionItem[] => {
-  if (isLoadingUserAssets) return [];
-  if (!CLAIMABLES) return [];
-  if (!claimables) return [];
+  if (isLoadingUserAssets || !CLAIMABLES || !claimables?.claimables?.length) return [];
 
-  const claimableItems = claimables.claimables || [];
-  if (!claimableItems.length) return [];
-
-  // Convert claimables to wallet section items
-  const claimableSectionItems: ClaimableExtraData[] = claimableItems.map(claimable => {
-    // Extract type and uniqueId from claimable to avoid duplicate properties
-    const { type, uniqueId, ...rest } = claimable;
-    // Generate a fallback ID if uniqueId doesn't exist
-    const generatedId = uniqueId || `claimable-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-
+  const claimableSectionItems: ClaimableExtraData[] = claimables.claimables.map(claimable => {
     return {
       type: 'CLAIMABLE',
-      uniqueId: generatedId,
-      uid: `claimable-${generatedId}`,
-      claimableType: type, // Save original type under different name if needed
-      ...rest,
+      uniqueId: claimable.uniqueId,
+      uid: `claimable-${claimable.uniqueId}`,
     };
   });
 
@@ -341,11 +317,11 @@ const withClaimablesSection = (claimables: ClaimablesStore | null, isLoadingUser
       uid: 'claimables-header',
       total: claimables.totalValue,
     },
-    ...claimableSectionItems,
     {
       type: 'CLAIMABLES_SPACE_AFTER',
       uid: 'claimables-spacer-after',
     },
+    ...claimableSectionItems,
   ];
 };
 
@@ -402,11 +378,11 @@ const withBriefBalanceSection = (
             uid: 'profile-balance',
             value: accountBalanceDisplay,
             isLoadingBalance,
-          } as ProfileBalanceRowItem,
+          },
           {
             type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
             uid: 'profile-balance-space-after',
-          } as ProfileBalanceRowSpaceAfterItem,
+          },
         ]),
     {
       type: 'PROFILE_ACTION_BUTTONS_ROW',
@@ -465,6 +441,7 @@ const briefUniqueTokenDataSelector = createSelector(
   [
     uniqueTokensSelector,
     showcaseTokensSelector,
+    sellingTokensSelector,
     hiddenTokensSelector,
     listTypeSelector,
     isReadOnlyWalletSelector,

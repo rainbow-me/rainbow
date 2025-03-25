@@ -1,11 +1,9 @@
 import ConditionalWrap from 'conditional-wrap';
-import React, { useMemo } from 'react';
-import { RefreshControl, ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React, { ComponentProps } from 'react';
+import { RefreshControl, ScrollView, View } from 'react-native';
 import AddFundsInterstitial from '../AddFundsInterstitial';
-import { FabWrapperBottomPosition } from '../fab';
 import { Centered, Column } from '../layout';
-import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
+import AssetListHeader from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
 import { times } from '@/helpers/utilities';
 import { useRefreshAccountData } from '@/hooks';
@@ -18,7 +16,7 @@ const Container = styled(Column)({
   paddingTop: navbarHeight,
 });
 
-interface EmptyAssetListProps {
+interface EmptyAssetListProps extends ComponentProps<typeof View> {
   descendingOpacity?: boolean;
   isLoading?: boolean;
   isWalletEthZero?: boolean;
