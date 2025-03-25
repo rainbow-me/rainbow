@@ -5,7 +5,8 @@ import { Address } from 'viem';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
-import { claimablesQueryKey } from '@/resources/addys/claimables/query';
+import { positionsStore } from '@/resources/defi/PositionsQuery';
+import { claimablesStore } from '@/resources/addys/claimables/query';
 import { addysSummaryQueryKey } from '@/resources/summary/summary';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -13,7 +14,6 @@ import { time } from '@/utils';
 import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
-import { positionsStore } from '@/resources/defi/PositionsQuery';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
@@ -31,12 +31,12 @@ export default function useRefreshAccountData() {
   const fetchAccountData = useCallback(async () => {
     userAssetsStore.getState().fetch(undefined, { staleTime: time.seconds(5) });
     useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) });
-    positionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) });
+    positionsStore.getState().fetch(undefined, { staleTime: time.seconds(10) });
+    claimablesStore.getState().fetch(undefined, { staleTime: time.seconds(10) });
 
     queryClient.invalidateQueries([
       addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }),
       createQueryKey('nfts', { address: accountAddress }),
-      claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }),
     ]);
 
     try {
