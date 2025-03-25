@@ -5,13 +5,10 @@ type OpacityTogglerProps = {
   endingOpacity?: number;
   isVisible: boolean;
   style?: ViewProps['style'];
-} & ViewProps;
+} & Omit<ViewProps, 'style'>;
 
 const OpacityToggler = ({ endingOpacity = 0, isVisible, style, ...props }: OpacityTogglerProps, ref: React.Ref<View>) => {
-  const startingOpacity = 1;
-
-  const opacity = isVisible ? endingOpacity : startingOpacity;
-
+  const opacity = isVisible ? endingOpacity : 1;
   return <View {...props} accessible ref={ref} style={[style, { opacity }]} />;
 };
 
