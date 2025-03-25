@@ -82,7 +82,6 @@ export const positionsStore = createQueryStore<RainbowPositions, PositionsStoreP
   },
   (set, get) => ({
     getPosition: (uniqueId: string) => {
-      console.log('getPosition', uniqueId, get().getData()?.positions);
       return get().getData()?.positions[uniqueId];
     },
   }),
