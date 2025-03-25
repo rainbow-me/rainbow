@@ -102,7 +102,6 @@ export const claimablesStore = createQueryStore<ClaimablesStore, ClaimablesArgs>
           return STABLE_OBJECT;
         }
 
-        // Since we expose ETH Rewards as a claimable, we also need to fetch the points data from metadata client
         const points = await metadataPOSTClient.getPointsDataForWallet({ address });
         const claimables = (await getClaimables({ address, currency, abortController })).sort((a, b) =>
           greaterThan(a.value.nativeAsset.amount || '0', b.value.nativeAsset.amount || '0') ? -1 : 1
@@ -115,12 +114,18 @@ export const claimablesStore = createQueryStore<ClaimablesStore, ClaimablesArgs>
               decimals: 18,
               symbol: 'ETH',
             });
-            const { amount } = convertAmountAndPriceToNativeDisplay(claimableETH.amount, ethNativeAsset.price?.value || 0, currency);
+            const { amount, display } = convertAmountAndPriceToNativeDisplay(
+              claimableETH.amount,
+              ethNativeAsset.price?.value || 0,
+              currency
+            );
             if (!isZero(amount)) {
               const ethRewardsClaimable = {
                 value: {
+                  claimAsset: claimableETH,
                   nativeAsset: {
                     amount,
+                    display,
                   },
                 },
                 uniqueId: 'rainbow-eth-rewards',
@@ -152,7 +157,7 @@ export const claimablesStore = createQueryStore<ClaimablesStore, ClaimablesArgs>
     },
     keepPreviousData: true,
     enabled: $ => $(userAssetsStoreManager, state => !!state.address),
-    staleTime: time.minutes(10),
+    staleTime: time.seconds(10),
   },
   noop,
   {

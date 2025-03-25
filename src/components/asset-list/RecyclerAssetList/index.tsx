@@ -6,7 +6,7 @@ import { LayoutChangeEvent, PixelRatio, RefreshControl, ScrollViewProps, StyleSh
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 import { RecyclerListViewProps, RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import { withThemeContext } from '../../../theme/ThemeContext';
+import { ThemeContextProps, withThemeContext } from '../../../theme/ThemeContext';
 import { CoinDivider, CoinDividerHeight } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
@@ -17,6 +17,7 @@ import { useCoinListEdited, useOpenFamilies, useOpenSmallBalances, usePrevious, 
 import styled from '@/styled-thing';
 import { deviceUtils } from '@/utils';
 import * as i18n from '@/languages';
+import { logger } from '@/logger';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {
@@ -31,8 +32,10 @@ const extractCollectiblesIdFromRow = (row: {
       });
     });
     return tokenAddresses;
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
+  } catch (e) {
+    logger.warn(`[RecyclerAssetList]: Failed to extract collectibles id from row`, { e, row });
+    return '';
+  }
 };
 
 const extractRelevantAssetInfo = (asset: {
@@ -56,8 +59,10 @@ const extractRelevantAssetInfo = (asset: {
       nativeBalanceDisplay,
       relativeChange24h,
     };
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
+  } catch (e) {
+    logger.warn(`[RecyclerAssetList]: Failed to extract relevant asset info`, { e, asset });
+    return null;
+  }
 };
 
 const defaultIndices = [0];
@@ -91,16 +96,14 @@ const isEqualDataProvider = new DataProvider((r1, r2) => {
 });
 
 const StyledRecyclerListView = styled(RecyclerListView)({
-  // @ts-expect-error
-  backgroundColor: ({ theme: { colors } }) => colors.white,
+  backgroundColor: ({ theme: { colors } }: { theme: ThemeContextProps }) => colors.white,
   display: 'flex',
   flex: 1,
   minHeight: 1,
 });
 
 const StyledContainer = styled(View)({
-  // @ts-expect-error
-  backgroundColor: ({ theme: { colors } }) => colors.white,
+  backgroundColor: ({ theme: { colors } }: { theme: ThemeContextProps }) => colors.white,
   display: 'flex',
   flex: 1,
   overflow: 'hidden',
@@ -142,11 +145,7 @@ export type RecyclerAssetListSection = {
 const NoStickyContainer = ({ children }: { children: JSX.Element }): JSX.Element => children;
 
 export type RecyclerAssetListProps = {
-  // TODO: This needs to be migrated into a global type.
-  readonly colors: {
-    readonly alpha: (color: string, alpha: number) => string;
-    readonly blueGreyDark: string;
-  };
+  readonly colors: ThemeContextProps['colors'];
   readonly sections: readonly RecyclerAssetListSection[];
   readonly paddingBottom?: number;
   readonly hideHeader: boolean;

@@ -24,20 +24,12 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
 
   const nativeCurrencyDisplay = useMemo(() => {
     if (!claimable) return null;
-
-    // eth rewards are already in native currency format
-    if (isETHRewards) {
-      return claimable.value.nativeAsset.amount;
-    }
-    return convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true);
-  }, [claimable, isETHRewards, nativeCurrency]);
+    return convertAmountToNativeDisplayWorklet(claimable.value?.nativeAsset?.amount, nativeCurrency, true);
+  }, [claimable, nativeCurrency]);
 
   const nativeDisplay = useMemo(() => {
-    if (isETHRewards) {
-      return claimable?.value.nativeAsset.amount;
-    }
-    return claimable?.value.claimAsset.display;
-  }, [claimable, isETHRewards]);
+    return claimable?.value?.claimAsset?.display;
+  }, [claimable]);
 
   if (!claimable || !nativeDisplay) return null;
 

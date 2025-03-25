@@ -4,10 +4,10 @@ import { CoinRowHeight } from '@/components/coin-row';
 import { FloatingActionButtonSize } from '@/components/fab';
 import { Header } from '@/components/showcase/ShowcaseHeader';
 import { TokenFamilyHeaderHeight } from '@/components/token-family';
-import { UniqueTokenRow } from '@/components/unique-token';
 import AssetListHeader, { AssetListHeaderHeight } from '@/components/asset-list/AssetListHeader';
 import { ListFooterHeight } from '@/components/list/ListFooter';
 import { RecyclerAssetListSection } from '.';
+import { CardSize, UniqueTokenCardMargin } from '@/components/unique-token/CardSize';
 
 export const firstCoinRowMarginTop = 6;
 const lastCoinRowAdditionalHeight = 1;
@@ -97,15 +97,6 @@ interface UnknownViewType extends ViewTypeBase {
   calculateHeight: () => number;
 }
 
-// Extend UniqueTokenRow type to include static properties
-interface UniqueTokenRowComponent extends React.FC<any> {
-  cardSize: number;
-  cardMargin: number;
-}
-
-// Cast UniqueTokenRow to include static properties
-const UniqueTokenRowTyped = UniqueTokenRow as unknown as UniqueTokenRowComponent;
-
 export const ViewTypes: {
   HEADER: HeaderViewType;
   SHOWCASE_HEADER: ShowcaseHeaderViewType;
@@ -193,8 +184,8 @@ export const ViewTypes: {
     calculateHeight: ({ amountOfRows, isFirst, isHeader, isOpen }) => {
       const SectionHeaderHeight = isHeader ? TokenFamilyHeaderHeight : 0;
       const firstRowExtraTopPadding = isFirst ? firstUniqueTokenMarginTop : 0;
-      const heightOfRows = amountOfRows * UniqueTokenRowTyped.cardSize;
-      const heightOfRowMargins = UniqueTokenRowTyped.cardMargin * (amountOfRows - 1);
+      const heightOfRows = amountOfRows * CardSize;
+      const heightOfRowMargins = UniqueTokenCardMargin * (amountOfRows - 1);
       const height =
         SectionHeaderHeight + firstRowExtraTopPadding + (isOpen ? heightOfRows + heightOfRowMargins + extraSpaceForDropShadow : 0);
       return height;
