@@ -13,7 +13,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --device)
-      DEVICE="$1 $2"
+      DEVICE="--device $2"
       shift
       ;;
     *)

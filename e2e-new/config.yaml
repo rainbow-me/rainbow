@@ -2,3 +2,5 @@ flows:
   - auth/*
   - backup/*
   - home/*
+  - wallet/*
+  - discover/*

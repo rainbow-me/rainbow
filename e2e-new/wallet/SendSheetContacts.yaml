@@ -1,0 +1,49 @@
+appId: ${APP_ID}
+tags:
+  - wallet
+  - parallel
+---
+- clearState
+- launchApp:
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/ImportWalletWithKey.yaml
+
+# Connect to Anvil (test network)
+- tapOn:
+    id: dev-button-anvil
+- assertVisible:
+    id: testnet-toast-Anvil
+
+# Open send sheet
+- swipe:
+    direction: DOWN
+- tapOn:
+    id: send-button
+- assertVisible:
+    id: send-asset-form-field
+
+# Test ENS address input
+- inputText: 'rainbowwallet.eth'
+- assertVisible:
+    id: send-asset-list
+- assertVisible:
+    id: add-contact-button
+
+# Test Add Contact functionality
+- tapOn:
+    id: add-contact-button
+- assertVisible:
+    id: wallet-info-input
+- tapOn: 'Cancel'
+- assertVisible:
+    id: add-contact-button
+
+# Test Add Contact again and cancel differently
+- tapOn:
+    id: add-contact-button
+- tapOn: 'Cancel'
+
+# Close send sheet
+- swipe:
+    direction: DOWN 

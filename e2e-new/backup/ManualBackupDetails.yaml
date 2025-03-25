@@ -1,0 +1,38 @@
+appId: ${APP_ID}
+tags:
+  - backup
+  - parallel
+---
+- clearState
+- launchApp:
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/ImportWalletWithKey.yaml
+- retry:
+    maxRetries: 3
+    commands:
+      - tapOn:
+          id: settings-menu
+      - tapOn: 'Settings'
+- tapOn:
+    id: backup-section
+- assertVisible: 'Wallets & Backup'
+- tapOn:
+    id: backup-now-button
+- assertVisible: 'iCloud Not Enabled'
+- tapOn: 'No thanks'
+- tapOn:
+    id: not-backed-up
+- wait: 3000
+- tapOn:
+    id: back-up-manually
+- wait: 1000
+- tapOn:
+    id: show-secret-button
+- wait: 1000
+# Note: In a real test, you'd need to verify the seed phrase words
+# but for security reasons, we're not including that in this example
+- tapOn:
+    id: saved-these-words
+- wait: 1000
+- assertVisible: 'Wallets & Backup' 

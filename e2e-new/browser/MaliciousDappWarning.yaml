@@ -1,0 +1,41 @@
+appId: ${APP_ID}
+tags:
+  - browser
+  - parallel
+---
+- clearState
+- launchApp:
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/ImportWalletWithKey.yaml
+
+# Navigate to browser
+- swipe:
+    direction: LEFT
+- swipe:
+    direction: LEFT
+- assertVisible:
+    id: browser-screen
+
+# Search for malicious dapp
+- tapOn:
+    id: browser-search-input
+- assertVisible: 'Find apps and more'
+- inputText: 'https://test-dap-welps.vercel.app/'
+- wait: 5000
+
+# Attempt to connect to dapp
+# Note: Since we can't directly interact with WebView content,
+# we use coordinates. These may need adjustment based on device.
+- tapAt:
+    x: 275
+    y: 80
+- wait: 2000
+- tapAt:
+    x: 50
+    y: 325
+- wait: 1000
+
+# Verify warning appears
+- assertVisible:
+    id: malicious-dapp-warning 
