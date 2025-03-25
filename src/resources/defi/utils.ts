@@ -396,9 +396,7 @@ export function parsePositions(data: AddysPositionsResponse, currency: NativeCur
   const tokensToExcludeFromTokenList: string[] = [];
   const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
 
-  const positionsArray = Object.values(positions);
-
-  positionsArray.forEach(({ deposits }) => {
+  parsedPositions.forEach(({ deposits }) => {
     deposits.forEach(({ asset }) => {
       if (asset.defi_position) {
         const uniqueId = ethereumUtils.getUniqueId(asset.asset_code.toLowerCase(), chainsIdByName[asset.network]);
@@ -407,7 +405,7 @@ export function parsePositions(data: AddysPositionsResponse, currency: NativeCur
     });
   });
 
-  const positionsTotals = positionsArray.reduce((acc, position) => addPositionTotals(acc, position.totals, currency), {
+  const positionsTotals = parsedPositions.reduce((acc, position) => addPositionTotals(acc, position.totals, currency), {
     totals: { amount: '0', display: '0' },
     totalLocked: '0',
     borrows: { amount: '0', display: '0' },
