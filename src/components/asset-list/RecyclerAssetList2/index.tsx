@@ -15,10 +15,9 @@ import { useTheme } from '@/theme';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
 import { analytics } from '@/analytics';
 import * as lang from '@/languages';
-import { IS_ANDROID } from '@/env';
 import { useWalletSectionsData } from '@/hooks';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
-import { deviceUtils } from '@/utils';
+import { IS_ANDROID } from '@/env';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -73,7 +72,7 @@ function RecyclerAssetList({
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
       {type === 'wallet' && <NavbarOverlay accentColor={accentColor} position={position} />}
-      <StickyHeaderManager yOffset={ios ? navbarHeight + insets.top - 8 : 100}>
+      <StickyHeaderManager yOffset={navbarHeight + insets.top - 8}>
         <RawMemoRecyclerAssetList
           briefSectionsData={briefSectionsData}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
@@ -161,45 +160,58 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
   );
 
   return (
-    <Box
-      as={RNAnimated.View}
-      style={[
-        {
-          shadowColor: isDarkMode ? colors.shadowBlack : colors.rowDividerExtraLight,
-          shadowOffset: { width: 0, height: isDarkMode ? 4 : 1 },
-          shadowRadius: isDarkMode ? 20 : 0,
-          zIndex: 1,
-        },
-        shadowOpacityStyle,
-      ]}
-    >
+    <>
       <Box
         as={RNAnimated.View}
-        background="surfacePrimary"
         style={[
           {
-            height: navbarHeight + insets.top + 24,
-            width: '100%',
-            position: 'absolute',
-            shadowColor: colors.shadowBlack,
-            shadowOffset: { width: 0, height: 1 },
-            shadowRadius: 3,
-            top: navbarHeight + insets.top - 24,
+            top: 0,
+            left: 0,
+            right: 0,
+            shadowColor: isDarkMode ? colors.shadowBlack : colors.rowDividerExtraLight,
+            shadowOffset: { width: 0, height: isDarkMode ? 4 : 1 },
+            shadowRadius: isDarkMode ? 20 : 0,
+            zIndex: 1,
           },
-          animatedStyle,
+          shadowOpacityStyle,
         ]}
       >
         <Box
+          as={RNAnimated.View}
           background="surfacePrimary"
-          style={{
-            alignItems: 'center',
-            height: navbarHeight,
-            justifyContent: 'center',
-            top: insets.top + 24,
-          }}
-        />
+          style={[
+            {
+              height: navbarHeight + insets.top + 24,
+              width: '100%',
+              position: 'absolute',
+              shadowColor: colors.shadowBlack,
+              shadowOffset: { width: 0, height: 1 },
+              shadowRadius: 3,
+              top: navbarHeight + insets.top - 24,
+            },
+            animatedStyle,
+          ]}
+        >
+          <Box
+            background="surfacePrimary"
+            style={{
+              alignItems: 'center',
+              height: navbarHeight,
+              justifyContent: 'center',
+              top: insets.top + 24,
+            }}
+          />
+        </Box>
       </Box>
-      <Box style={{ top: navbarHeight + insets.top, zIndex: 100 }}>
+
+      <Box
+        style={{
+          top: navbarHeight + insets.top,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+        }}
+      >
         <Navbar
           hasStatusBarInset
           leftComponent={
@@ -208,10 +220,8 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
             </Navbar.Item>
           }
           rightComponent={
-            <DropdownMenu menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
-              <Navbar.Item testID={'settings-menu'}>
-                <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
-              </Navbar.Item>
+            <DropdownMenu testID={'settings-menu'} menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
+              <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
             </DropdownMenu>
           }
           titleComponent={
@@ -227,6 +237,6 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
           }
         />
       </Box>
-    </Box>
+    </>
   );
 }
