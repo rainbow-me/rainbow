@@ -26,7 +26,7 @@ type RecyclerAssetList2ComponentProps = Omit<ComponentProps<typeof RecyclerAsset
 
 interface LoadingProps extends BaseAssetListProps, EmptyAssetListComponentProps {
   isLoading: boolean;
-  showcase?: boolean; // Allow but ignore
+  showcase?: boolean;
   disableRefreshControl?: boolean;
 }
 
@@ -36,7 +36,7 @@ interface ShowcaseProps extends Omit<BaseAssetListProps, 'walletBriefSectionsDat
   openFamilies?: boolean;
   showcase: true;
   sections: readonly RecyclerAssetListSection[];
-  colors?: RecyclerAssetListProps['colors']; // Make colors optional
+  colors?: RecyclerAssetListProps['colors'];
 }
 
 interface DefaultProps extends BaseAssetListProps, RecyclerAssetList2ComponentProps {
