@@ -85,11 +85,6 @@ const getLayoutProvider = ({
         if (NFTS.includes(type) && !nftsEnabled) {
           dim.height = 0;
         }
-
-        // NOTE: If remote cards are disabled, we don't want to render the remote cards section, so adjust the height to 0
-        if (type === CellType.EMPTY_REMOTE_CARD_CAROUSEL) {
-          dim.height = 0;
-        }
       }
     },
     indicesToOverride
