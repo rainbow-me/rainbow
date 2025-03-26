@@ -114,7 +114,7 @@
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-camera-roll/camera-roll": "7.7.0",
     "@react-native-clipboard/clipboard": "1.13.2",
-    "@react-native-community/netinfo": "9.0.0",
+    "@react-native-community/netinfo": "11.4.1",
     "@react-native-firebase/app": "20.1.0",
     "@react-native-firebase/messaging": "20.1.0",
     "@react-native-firebase/remote-config": "20.1.0",

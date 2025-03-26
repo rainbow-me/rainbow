@@ -5472,12 +5472,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/netinfo@npm:9.0.0":
-  version: 9.0.0
-  resolution: "@react-native-community/netinfo@npm:9.0.0"
+"@react-native-community/netinfo@npm:11.4.1":
+  version: 11.4.1
+  resolution: "@react-native-community/netinfo@npm:11.4.1"
   peerDependencies:
     react-native: ">=0.59"
-  checksum: 10c0/d665b12dc76a3216e3e1f93c76552d7066f0f6224df42f5321543e1471a6ee5eb98717c5be7101661927019348fa67ee9b368c58da70add8599c13f51c3b656b
+  checksum: 10c0/118ba6d495bd14c2dab3d228a0c1857620a293ae8592d170d70eaf88a6ac6a4e35c7f84527975a9054e36891a9694aacc8ec053326b5f05961459ed08a70dd35
   languageName: node
   linkType: hard
 
@@ -8764,7 +8764,7 @@ __metadata:
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-native-camera-roll/camera-roll": "npm:7.7.0"
     "@react-native-clipboard/clipboard": "npm:1.13.2"
-    "@react-native-community/netinfo": "npm:9.0.0"
+    "@react-native-community/netinfo": "npm:11.4.1"
     "@react-native-firebase/app": "npm:20.1.0"
     "@react-native-firebase/messaging": "npm:20.1.0"
     "@react-native-firebase/remote-config": "npm:20.1.0"

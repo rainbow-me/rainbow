@@ -49,7 +49,7 @@ export { default as useHideSplashScreen } from './useHideSplashScreen';
 export { default as useImageMetadata } from './useImageMetadata';
 export { default as useInitializeWallet } from './useInitializeWallet';
 export { default as useInteraction } from './useInteraction';
-export { default as useInternetStatus } from './useInternetStatus';
+export { default as useIsOffline } from './useIsOffline';
 export { default as useInterval } from './useInterval';
 export { default as useInvalidPaste } from './useInvalidPaste';
 export { default as useIsMounted } from './useIsMounted';
