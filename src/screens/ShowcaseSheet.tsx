@@ -40,7 +40,7 @@ export default function ShowcaseScreen() {
 
   const theme = useTheme();
 
-  const [userData, setUserData] = useState<AddressPreferencesData | null>(null);
+  const [userData, setUserData] = useState<AddressPreferencesData | null | undefined>();
   const [accountAddress, setAcccountAddress] = useState<string>();
   const { isReadOnlyWallet } = useWallets();
 
