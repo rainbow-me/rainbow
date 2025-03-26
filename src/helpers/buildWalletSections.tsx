@@ -123,8 +123,8 @@ export interface BriefCoinsListResult {
 const buildBriefWalletSections = (
   balanceSectionData: BalanceSectionData,
   uniqueTokenFamiliesSection: CellTypes[],
-  positions: RainbowPositions | null,
-  claimables: ClaimablesStore | null
+  claimables: ClaimablesStore | null,
+  positions: RainbowPositions | null
 ): BriefWalletSectionsResult => {
   const { isEmpty, balanceSection, isLoadingUserAssets } = balanceSectionData;
 
@@ -132,7 +132,7 @@ const buildBriefWalletSections = (
   const claimablesSection = withClaimablesSection(claimables, isLoadingUserAssets);
 
   return {
-    briefSectionsData: [...balanceSection, ...positionsSection, ...claimablesSection, ...uniqueTokenFamiliesSection],
+    briefSectionsData: [...balanceSection, ...claimablesSection, ...positionsSection, ...uniqueTokenFamiliesSection],
     isEmpty,
   };
 };
@@ -350,6 +350,6 @@ const briefBalanceSectionSelector = createSelector(
 );
 
 export const buildBriefWalletSectionsSelector = createSelector(
-  [briefBalanceSectionSelector, briefUniqueTokenDataSelector, positionsSelector, claimablesSelector],
+  [briefBalanceSectionSelector, briefUniqueTokenDataSelector, claimablesSelector, positionsSelector],
   buildBriefWalletSections
 );
