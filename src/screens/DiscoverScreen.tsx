@@ -82,14 +82,13 @@ const Content = () => {
 
 const KeyboardDismissHandler = memo(function KeyboardDismissHandler() {
   const isFocused = useIsFocused();
-  const { isSearching, setIsSearching } = useDiscoverScreenContext();
+  const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
 
   useEffect(() => {
     if (!isFocused && isSearching) {
-      setIsSearching(false);
       Keyboard.dismiss();
     }
-  }, [isFocused, isSearching, setIsSearching]);
+  }, [isFocused, isSearching]);
 
   return null;
 });
