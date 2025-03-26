@@ -59,6 +59,9 @@ export interface RainbowConfig extends Record<string, string | boolean | number>
   nfts_enabled: boolean;
 
   trending_tokens_limit: number;
+  trending_tokens_enabled: boolean;
+  new_discover_cards_enabled: boolean;
+  rainbow_trending_tokens_list_enabled: boolean;
 }
 
 export const DEFAULT_CONFIG: RainbowConfig = {
@@ -142,7 +145,7 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   remote_promo_enabled: false,
   points_notifications_toggle: true,
   dapp_browser: true,
-  idfa_check_enabled: true,
+  idfa_check_enabled: false,
   rewards_enabled: true,
 
   degen_mode: true,
@@ -152,6 +155,8 @@ export const DEFAULT_CONFIG: RainbowConfig = {
 
   trending_tokens_limit: 10,
   trending_tokens_enabled: false,
+  new_discover_cards_enabled: false,
+  rainbow_trending_tokens_list_enabled: false,
 };
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
@@ -208,7 +213,9 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'featured_results' ||
         key === 'claimables' ||
         key === 'nfts_enabled' ||
-        key === 'trending_tokens_enabled'
+        key === 'trending_tokens_enabled' ||
+        key === 'new_discover_cards_enabled' ||
+        key === 'rainbow_trending_tokens_list_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else if (key === 'trending_tokens_limit') {
@@ -222,7 +229,7 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
     logger.error(new RainbowError(`[remoteConfig]: Failed to fetch remote config`), {
       error: e,
     });
-    throw e;
+    return getRemoteConfig();
   } finally {
     logger.debug(`[remoteConfig]: Current remote config:\n${JSON.stringify(config, null, 2)}`);
   }

@@ -10,11 +10,12 @@ export const useTrackDiscoverScreenTime = () => {
   useEffect(() => {
     const data = currentlyTrackedMetrics.get(PerformanceMetrics.timeSpentOnDiscoverScreen);
 
-    if (!isOnDiscoverScreen && data?.startTimestamp) {
+    if (!isOnDiscoverScreen && data?.startTimestamp && useNavigationStore.getState().activeRoute !== Routes.NETWORK_SELECTOR) {
       PerformanceTracking.finishMeasuring(PerformanceMetrics.timeSpentOnDiscoverScreen);
+      return;
     }
 
-    if (isOnDiscoverScreen) {
+    if (isOnDiscoverScreen && !data?.startTimestamp) {
       PerformanceTracking.startMeasuring(PerformanceMetrics.timeSpentOnDiscoverScreen);
     }
   }, [isOnDiscoverScreen]);

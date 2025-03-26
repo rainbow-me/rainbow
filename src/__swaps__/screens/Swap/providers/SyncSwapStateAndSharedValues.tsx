@@ -16,7 +16,7 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ParsedAddressAsset } from '@/entities';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { deepEqualWorklet } from '@/worklets/comparisons';
+import { deepEqual } from '@/worklets/comparisons';
 import { debounce } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import { runOnJS, runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
@@ -71,7 +71,7 @@ export const SyncQuoteSharedValuesToState = () => {
       // needed and was previously resulting in errors in useEstimatedGasFee.
       if (isSwappingMoreThanAvailableBalance) return;
 
-      if (!deepEqualWorklet(current, prev)) {
+      if (!deepEqual(current, prev)) {
         runOnJS(setInternalSyncedSwapStore)({
           assetToBuy: assetToBuy.value ?? undefined,
           assetToSell: assetToSell.value,
@@ -158,7 +158,7 @@ export function SyncGasStateToSharedValues() {
   const isLoadingNativeNetworkAsset = useUserAssetsStore(state => state.getStatus().isInitialLoading);
   const userNativeNetworkAsset = useUserAssetsStore(state => state.getLegacyUserAsset(nativeCurrencyUniqueId));
 
-  const { data: estimatedGasLimit } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
+  const estimatedGasLimit = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
 
   const gasFeeRange = useSharedValue<[string, string] | null>(null);
 

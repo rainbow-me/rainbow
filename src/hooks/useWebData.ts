@@ -84,16 +84,14 @@ export default function useWebData() {
   );
 
   const getWebProfile = useCallback(async (address: string) => {
-    const response = address && (await getPreference('profile', address));
-    if (!response) {
-      return null;
-    }
-
-    return response?.profile;
+    if (!address) return null;
+    const response = await getPreference('profile', address);
+    return response?.profile ?? null;
   }, []);
 
   const updateWebShowcase = useCallback(
-    async (assetIds: any) => {
+    async (assetIds: string[]) => {
+      // uniqueId[]
       if (!webDataEnabled) return;
       const response = await getPreference('showcase', accountAddress);
       if (!response || !response.showcase.ids.length) {
@@ -108,7 +106,8 @@ export default function useWebData() {
   );
 
   const updateWebHidden = useCallback(
-    async (assetIds: any) => {
+    async (assetIds: string[]) => {
+      // fullUniqueId[]
       const response = await getPreference('hidden', accountAddress);
       if (!response || !response.hidden.ids.length) {
         await setPreference(PreferenceActionType.init, 'hidden', accountAddress, assetIds);

@@ -1,5 +1,5 @@
-import { BlurView } from '@react-native-community/blur';
 import React from 'react';
+import { BlurView } from 'react-native-blur-view';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { HapticType } from 'react-native-turbo-haptics';
 import { Bleed, Box, BoxProps, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
@@ -141,10 +141,9 @@ const BaseButton = ({
               </Text>
             )}
             {IS_IOS && (
-              <Box
-                as={BlurView}
-                blurAmount={20}
-                blurType={isDarkMode ? 'dark' : 'light'}
+              <BlurView
+                blurIntensity={20}
+                blurStyle={isDarkMode ? 'dark' : 'light'}
                 style={[
                   {
                     borderCurve: 'continuous',

@@ -1,4 +1,5 @@
 import ConditionalWrap from 'conditional-wrap';
+import { BlurView } from 'react-native-blur-view';
 import { LIGHT_SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { BrowserTabBarContextProvider, useBrowserTabBarContext } from '@/components/DappBrowser/BrowserContext';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -19,13 +20,12 @@ import { discoverOpenSearchFnRef } from '@/components/Discover/DiscoverSearchCon
 import { PointsScreen } from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen';
 import { useTheme } from '@/theme';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { BlurView } from '@react-native-community/blur';
+import { deviceUtils } from '@/utils';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import { MaterialTopTabDescriptorMap } from '@react-navigation/material-top-tabs/lib/typescript/src/types';
 import { NavigationHelpers, ParamListBase, RouteProp } from '@react-navigation/native';
 import React, { useCallback, useMemo, useRef } from 'react';
-import { InteractionManager, View } from 'react-native';
+import { InteractionManager, StyleSheet } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedReaction,
@@ -45,19 +45,13 @@ import SectionListScrollToTopProvider, { useSectionListScrollToTopContext } from
 import Routes from './routesNames';
 import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
 import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
-import { isUsingButtonNavigation, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
+import { initialWindowMetrics } from 'react-native-safe-area-context';
 
+export const BASE_TAB_BAR_HEIGHT = 48;
 export const TAB_BAR_HEIGHT = getTabBarHeight();
 
 function getTabBarHeight() {
-  if (IS_IOS) {
-    return 48 + safeAreaInsetValues.bottom;
-  }
-  if (!isUsingButtonNavigation()) {
-    return 48 + NAVIGATION_BAR_HEIGHT;
-  }
-  // If button navigation is enabled, bottom padding is applied at the root level
-  return 48;
+  return BASE_TAB_BAR_HEIGHT + (initialWindowMetrics?.insets.bottom ?? 0);
 }
 
 const HORIZONTAL_TAB_BAR_INSET = 6;
@@ -330,17 +324,8 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
     <Box bottom={{ custom: 0 }} height={{ custom: TAB_BAR_HEIGHT }} pointerEvents="box-none" position="absolute" width="full">
       <Box as={Animated.View} style={[shadowStyles.outer, IS_IOS ? dappBrowserTabBarShadowStyle : {}, hideForBrowserTabViewStyle]}>
         <Box as={Animated.View} style={[shadowStyles.inner, IS_IOS ? dappBrowserTabBarShadowStyle : {}]}>
-          {/* @ts-expect-error The conditional as={} is causing type errors */}
-          <Box
-            as={IS_IOS ? BlurView : View}
-            height={{ custom: TAB_BAR_HEIGHT }}
-            width="full"
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...(IS_IOS && {
-              blurAmount: 40,
-              blurType: isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight',
-            })}
-          >
+          <Box height={{ custom: TAB_BAR_HEIGHT }} width="full">
+            {IS_IOS && <BlurView blurStyle={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'} style={StyleSheet.absoluteFill} />}
             <Box
               height="full"
               position="absolute"

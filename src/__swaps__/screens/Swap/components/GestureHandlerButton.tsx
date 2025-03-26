@@ -1,15 +1,6 @@
 import React, { MutableRefObject, useMemo } from 'react';
-import { StyleProp, ViewProps, ViewStyle } from 'react-native';
-import {
-  Gesture,
-  GestureDetector,
-  GestureStateChangeEvent,
-  GestureType,
-  LongPressGesture,
-  LongPressGestureHandlerEventPayload,
-  TapGesture,
-  TapGestureHandlerEventPayload,
-} from 'react-native-gesture-handler';
+import { Insets, LayoutChangeEvent, StyleProp, ViewProps, ViewStyle } from 'react-native';
+import { Gesture, GestureDetector, GestureType, LongPressGesture, TapGesture } from 'react-native-gesture-handler';
 import Animated, { AnimatedStyle, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { HapticType, triggerHaptics } from 'react-native-turbo-haptics';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -23,20 +14,23 @@ export type GestureHandlerButtonProps = {
   disabled?: boolean;
   hapticTrigger?: 'tap-end' | 'tap-start';
   hapticType?: HapticType;
+  hitSlop?: number | Insets;
   longPressDuration?: number;
   longPressRef?: MutableRefObject<LongPressGesture>;
+  onLayout?: (e: LayoutChangeEvent) => void;
   onLongPressEndWorklet?: (success?: boolean) => void;
-  onLongPressJS?: (e?: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>) => void;
-  onLongPressWorklet?: (e?: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>) => void;
-  onPressJS?: (e?: GestureStateChangeEvent<TapGestureHandlerEventPayload>) => void;
-  onPressStartWorklet?: (e?: GestureStateChangeEvent<TapGestureHandlerEventPayload>) => void;
-  onPressWorklet?: (e?: GestureStateChangeEvent<TapGestureHandlerEventPayload>) => void;
+  onLongPressJS?: () => void;
+  onLongPressWorklet?: () => void;
+  onPressJS?: () => void;
+  onPressStartWorklet?: () => void;
+  onPressWorklet?: () => void;
   pointerEvents?: ViewProps['pointerEvents'];
   requireExternalGestureToFail?: MutableRefObject<GestureType>;
   scaleTo?: number;
   simultaneousWithExternalGesture?: MutableRefObject<GestureType>;
   style?: StyleProp<ViewStyle> | AnimatedStyle;
   tapRef?: MutableRefObject<TapGesture>;
+  testID?: string;
 };
 
 /**
@@ -64,8 +58,10 @@ export function GestureHandlerButton({
   disabled = false,
   hapticTrigger = 'tap-start',
   hapticType = 'selection',
+  hitSlop = 10,
   longPressDuration = LONG_PRESS_DURATION_IN_MS,
   longPressRef,
+  onLayout,
   onLongPressEndWorklet,
   onLongPressJS,
   onLongPressWorklet,
@@ -78,6 +74,7 @@ export function GestureHandlerButton({
   simultaneousWithExternalGesture,
   style,
   tapRef,
+  testID,
 }: GestureHandlerButtonProps) {
   const isPressed = useSharedValue(false);
 
@@ -91,16 +88,17 @@ export function GestureHandlerButton({
   const gesture = useMemo(() => {
     const tap = Gesture.Tap()
       .enabled(!disabled)
-      .onBegin(e => {
+      .maxDistance(20)
+      .onBegin(() => {
         if (!disableScale) isPressed.value = true;
         if (!disableHaptics && hapticTrigger === 'tap-start') triggerHaptics(hapticType);
-        onPressStartWorklet?.(e);
+        onPressStartWorklet?.();
       })
-      .onEnd(e => {
+      .onEnd(() => {
         if (!disableScale) isPressed.value = false;
         if (!disableHaptics && hapticTrigger === 'tap-end') triggerHaptics(hapticType);
-        onPressWorklet?.(e);
-        if (onPressJS) runOnJS(onPressJS)(e);
+        onPressWorklet?.();
+        if (onPressJS) runOnJS(onPressJS)();
       })
       .onFinalize(() => {
         if (!disableScale) isPressed.value = false;
@@ -117,12 +115,13 @@ export function GestureHandlerButton({
 
     const longPress = Gesture.LongPress()
       .enabled(!disabled)
+      .maxDistance(20)
       .minDuration(longPressDuration)
-      .onStart(e => {
+      .onStart(() => {
         if (!disableScale) isPressed.value = true;
         if (!disableHaptics) triggerHaptics(hapticType);
-        onLongPressWorklet?.(e);
-        if (onLongPressJS) runOnJS(onLongPressJS)(e);
+        onLongPressWorklet?.();
+        if (onLongPressJS) runOnJS(onLongPressJS)();
       })
       .onFinalize((_, success) => {
         if (!disableScale) isPressed.value = false;
@@ -133,10 +132,6 @@ export function GestureHandlerButton({
     if (blocksExternalGesture) longPress.blocksExternalGesture(blocksExternalGesture);
     if (requireExternalGestureToFail) longPress.requireExternalGestureToFail(requireExternalGestureToFail);
     if (simultaneousWithExternalGesture) longPress.simultaneousWithExternalGesture(simultaneousWithExternalGesture);
-
-    const tapEnabled = !!(onPressStartWorklet || onPressJS || onPressWorklet);
-
-    if (!tapEnabled) return longPress;
 
     return Gesture.Race(tap, longPress);
   }, [
@@ -162,7 +157,15 @@ export function GestureHandlerButton({
 
   return (
     <GestureDetector gesture={gesture}>
-      <Animated.View accessible accessibilityRole="button" pointerEvents={pointerEvents} style={[style, pressStyle]}>
+      <Animated.View
+        accessible
+        accessibilityRole="button"
+        hitSlop={hitSlop}
+        onLayout={onLayout}
+        pointerEvents={pointerEvents}
+        style={[style, pressStyle]}
+        testID={testID}
+      >
         {children}
       </Animated.View>
     </GestureDetector>

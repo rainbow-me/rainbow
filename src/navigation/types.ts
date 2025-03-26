@@ -1,12 +1,10 @@
 import { createStackNavigator } from '@react-navigation/stack';
-
 import Routes from '@/navigation/routesNames';
-
 import { PortalSheetProps } from '@/screens/Portal';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 import { ParsedAddressAsset, PendingTransaction, UniqueAsset } from '@/entities';
-import { Claimable } from '@/resources/addys/claimables/types';
+import { Claimable, RainbowClaimable } from '@/resources/addys/claimables/types';
 import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/walletConnect/types';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { RainbowWallet } from '@/model/wallet';
@@ -15,6 +13,7 @@ import { Address } from 'viem';
 import { SharedValue } from 'react-native-reanimated';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { TextProps } from '@/design-system';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -37,6 +36,7 @@ export type RootStackParamList = {
     watchOnly?: boolean;
     currentAccountAddress?: string;
     onChangeWallet?: (address: string | Address, wallet?: RainbowWallet) => void;
+    hideReadOnlyWallets?: boolean;
   };
   [Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET]: {
     accentColor?: string;
@@ -110,14 +110,33 @@ export type RootStackParamList = {
     address: string;
     chainId: ChainId;
     asset: ExpandedSheetParamAsset;
+    hideClaimSection?: boolean;
   };
   [Routes.POSITION_SHEET]: {
     position: RainbowPosition;
   };
   [Routes.NETWORK_SELECTOR]: {
-    onClose?: VoidFunction;
-    selected: SharedValue<ChainId | undefined>;
+    selected: SharedValue<ChainId | undefined> | ChainId | undefined;
     setSelected: (chainId: ChainId | undefined) => void;
+    onClose?: VoidFunction;
+    fillPinnedSection?: boolean;
+    canSelect?: boolean;
+    canEdit?: boolean;
+    canSelectAllNetworks?: boolean;
+    allowedNetworks?: ChainId[];
+    goBackOnSelect?: boolean;
+    title?: string;
+    actionButton?: {
+      color?: TextProps['color'];
+      icon?: string;
+      weight?: TextProps['weight'];
+      label: string;
+      onPress?: () => void;
+    };
+  };
+  [Routes.CLAIM_AIRDROP_SHEET]: {
+    claimable: RainbowClaimable;
+    hideViewTokenButton?: boolean;
   };
   [Routes.LOG_SHEET]: {
     data: {

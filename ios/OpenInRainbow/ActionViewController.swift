@@ -84,17 +84,25 @@ class ActionViewController: UIViewController {
       self.finish()
     }
 
-    private func handleUrl(_ url: NSURL) {
-        // From http://stackoverflow.com/questions/24297273/openurl-not-work-in-action-extension
-        var responder = self as UIResponder?
-        let selectorOpenURL = sel_registerName("openURL:")
+    @objc @discardableResult private func openURL(_ url: URL) -> Bool {
+        var responder: UIResponder? = self
         while responder != nil {
-            if responder!.responds(to: selectorOpenURL) {
-                responder!.callSelector(selector: selectorOpenURL, object: url, delay: 0)
+            if let application = responder as? UIApplication {
+                if #available(iOS 18.0, *) {
+                    application.open(url, options: [:], completionHandler: nil)
+                    return true
+                } else {
+                    return application.perform(#selector(openURL(_:)), with: url) != nil
+                }
             }
-
-            responder = responder!.next
+            responder = responder?.next
         }
+        return false
+    }
+    
+    private func handleUrl(_ url: NSURL) {
+        let swiftUrl = url as URL
+        _ = openURL(swiftUrl)
         finish()
     }
 

@@ -7,7 +7,7 @@ import Spinner from '../../assets/chartSpinner.png';
 import { nativeStackConfig } from '../../navigation/nativeStackConfig';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
-import { Text, Box, Bleed } from '@/design-system';
+import { Text, Box, Bleed, TextIcon } from '@/design-system';
 import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
 import { ChartDot, ChartPath, useChartData } from '@/react-native-animated-charts/src';
@@ -217,9 +217,20 @@ export default function Chart({
         )}
         {!showChart && (
           <Bleed bottom="24px">
-            <Box height={HEIGHT + 48} justifyContent="center" alignItems="center">
-              <Text color="label" size="17pt" weight="heavy">
-                {i18n.t(i18n.l.expanded_state.chart.no_price_data)}
+            <Box
+              height={HEIGHT + 48}
+              alignItems="center"
+              flexDirection="row"
+              gap={8}
+              justifyContent="center"
+              paddingBottom="32px"
+              style={{ opacity: 0.8 }}
+            >
+              <TextIcon color="labelQuaternary" containerSize={12} size="icon 15px" weight="heavy">
+                􀋪
+              </TextIcon>
+              <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
+                {i18n.t(i18n.l.expanded_state.chart.no_chart_data)}
               </Text>
             </Box>
           </Bleed>

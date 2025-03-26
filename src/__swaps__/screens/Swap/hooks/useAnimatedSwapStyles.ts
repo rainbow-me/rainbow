@@ -20,12 +20,11 @@ import { useColorMode } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { DerivedValue, SharedValue, interpolate, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { NavigationSteps } from './useSwapNavigation';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
-const INSET_BOTTOM = IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16;
+const INSET_BOTTOM = safeAreaInsetValues.bottom + 16;
 const HEIGHT_FOR_PANEL: { [key in NavigationSteps]: number } = {
   [NavigationSteps.INPUT_ELEMENT_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
   [NavigationSteps.SEARCH_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,

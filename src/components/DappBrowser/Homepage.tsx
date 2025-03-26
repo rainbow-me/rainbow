@@ -1,6 +1,6 @@
-import { BlurView } from '@react-native-community/blur';
 import React, { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
@@ -10,7 +10,6 @@ import {
   Border,
   Box,
   ColorModeProvider,
-  Cover,
   Inline,
   Inset,
   Stack,
@@ -31,7 +30,6 @@ import { getDappHost } from './handleProviderRequest';
 import { uniqBy } from 'lodash';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { EXTRA_WEBVIEW_HEIGHT, WEBVIEW_HEIGHT } from './Dimensions';
-import { useBrowserDappsStore } from '@/resources/metadata/dapps';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 import { useBrowserStore } from '@/state/browser/browserStore';
@@ -98,19 +96,12 @@ const DappBrowserFeaturedResults = ({ children }: { children: FeaturedResultStac
   const { featured_results } = useRemoteConfig();
   const featuredResultsEnabled = (useExperimentalFlag(FEATURED_RESULTS) || featured_results) && !IS_TEST;
 
-  const onNavigate = useCallback(
-    (href: string) => {
-      goToUrl(href);
-    },
-    [goToUrl]
-  );
-
   if (!featuredResultsEnabled) {
     return null;
   }
 
   return (
-    <FeaturedResultStack onNavigate={onNavigate} placementId="dapp_browser_card">
+    <FeaturedResultStack onNavigate={goToUrl} placementId="dapp_browser_card">
       {children}
     </FeaturedResultStack>
   );
@@ -379,20 +370,6 @@ const Card = memo(function Card({
     };
   }, [isFavorite]);
 
-  const dappIconUrl = useMemo(() => {
-    const dappUrl = site.url;
-    const iconUrl = site.image;
-    const url = dappUrl.startsWith('http') ? dappUrl : `https://${dappUrl}`;
-    const host = new URL(url).hostname;
-    const dappOverride = useBrowserDappsStore.getState().findDappByHostname(host);
-    // 👇 TODO: Remove this once the Uniswap logo in the dapps metadata is fixed
-    const isUniswap = host === 'uniswap.org' || host.endsWith('.uniswap.org');
-    if (dappOverride?.iconUrl && !isUniswap) {
-      return dappOverride.iconUrl;
-    }
-    return iconUrl;
-  }, [site.image, site.url]);
-
   return (
     <Box>
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.94}>
@@ -406,13 +383,13 @@ const Card = memo(function Card({
             padding="20px"
             style={[
               styles.cardContainer,
-              !dappIconUrl && !site.screenshot ? styles.cardContainerNoImage : {},
+              !site.image && !site.screenshot ? styles.cardContainerNoImage : {},
               isDarkMode ? styles.cardContainerDark : {},
             ]}
             width={{ custom: CARD_WIDTH }}
           >
             <ColorModeProvider value="dark">
-              <CardBackground imageUrl={dappIconUrl || site.screenshot} isDarkMode={isDarkMode} />
+              <CardBackground imageUrl={site.image || site.screenshot} isDarkMode={isDarkMode} />
               <Box
                 height={{ custom: CARD_LOGO_SIZE }}
                 left={{ custom: -8 }}
@@ -423,7 +400,7 @@ const Card = memo(function Card({
                 <ImgixImage
                   enableFasterImage
                   size={CARD_LOGO_SIZE}
-                  source={{ uri: dappIconUrl }}
+                  source={{ uri: site.image }}
                   style={{
                     backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100,
                     height: CARD_LOGO_SIZE,
@@ -447,17 +424,7 @@ const Card = memo(function Card({
         <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} style={styles.cardContextMenuButton}>
           <ButtonPressAnimation scaleTo={0.8} style={{ padding: 12 }}>
             <Box borderRadius={12} height={{ custom: 24 }} style={{ overflow: 'hidden' }} width={{ custom: 24 }}>
-              <Cover>
-                {IS_IOS ? (
-                  <BlurView
-                    blurAmount={10}
-                    blurType={isDarkMode ? 'chromeMaterialDark' : 'light'}
-                    style={[styles.contextMenuBlurBackground, { backgroundColor: isDarkMode ? undefined : 'rgba(244, 248, 255, 0.04)' }]}
-                  />
-                ) : (
-                  <Box background="fillQuaternary" height="full" width="full" />
-                )}
-              </Cover>
+              <Box background="fillQuaternary" height="full" position="absolute" width="full" />
               <TextIcon
                 color="labelSecondary"
                 containerSize={24}
@@ -487,7 +454,12 @@ const CardBackground = memo(function CardBackgroundOverlay({
       <ImgixImage enableFasterImage size={CARD_WIDTH} source={{ uri: imageUrl }} style={styles.cardBackgroundImage} />
       {IS_IOS ? (
         <>
-          <BlurView blurAmount={isDarkMode ? 36 : 64} blurType={isDarkMode ? undefined : 'light'} style={styles.absoluteFill} />
+          <BlurView
+            blurIntensity={isDarkMode ? 36 : 64}
+            blurStyle={isDarkMode ? 'regular' : 'light'}
+            saturationIntensity={2}
+            style={styles.absoluteFill}
+          />
           {!isDarkMode && (
             <EasingGradient
               endColor={globalColors.grey100}
@@ -671,6 +643,7 @@ const styles = StyleSheet.create({
   },
   contextMenuBlurBackground: {
     height: '100%',
+    position: 'absolute',
     width: '100%',
   },
   favoritesContainer: {

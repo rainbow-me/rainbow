@@ -57,6 +57,7 @@ import {
   consoleSheetPreset,
   appIconUnlockSheetPreset,
   swapSheetPreset,
+  tokenLauncherSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -69,6 +70,8 @@ import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
+import { ClaimAirdropSheet } from '@/screens/Airdrops/ClaimAirdropSheet';
+import { AirdropsSheet } from '@/screens/Airdrops/AirdropsSheet';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { SettingsSheet } from '@/screens/SettingsSheet/SettingsSheet';
 import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
@@ -94,7 +97,8 @@ import { RootStackParamList } from './types';
 import WalletLoadingListener from '@/components/WalletLoadingListener';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
 import { LogSheet } from '@/components/debugging/LogSheet';
-import { NetworkSelector } from '@/components/NetworkSwitcher';
+import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
+import { NetworkSelector } from '@/screens/NetworkSelector';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -135,11 +139,6 @@ function MainOuterNavigator() {
   return (
     <OuterStack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <OuterStack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR} />
-      <OuterStack.Screen
-        component={SendSheet}
-        name={Routes.SEND_SHEET_NAVIGATOR}
-        options={expandedPresetWithSmallGestureResponseDistance}
-      />
     </OuterStack.Navigator>
   );
 }
@@ -248,8 +247,12 @@ function BSNavigator() {
       <BSStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} />
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
       <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
+      <BSStack.Screen component={SendSheet} name={Routes.SEND_SHEET_NAVIGATOR} options={expandedPresetWithSmallGestureResponseDistance} />
       <BSStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} />
+      <BSStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} />
+      <BSStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} />
       <BSStack.Screen component={LogSheet} name={Routes.LOG_SHEET} />
+      <BSStack.Screen component={TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} options={tokenLauncherSheetPreset} />
     </BSStack.Navigator>
   );
 }

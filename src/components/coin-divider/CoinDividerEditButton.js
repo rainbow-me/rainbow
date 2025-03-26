@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { LayoutAnimation } from 'react-native';
+import { LayoutAnimation, StyleSheet } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
@@ -7,6 +7,7 @@ import { Row } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { padding, shadow } from '@/styles';
+import { IS_ANDROID } from '@/env';
 
 const ButtonContent = styled(Row).attrs({
   justify: 'center',
@@ -39,6 +40,7 @@ const CoinDividerEditButton = ({ isActive, isVisible, onPress, shouldReloadList,
             opacity={textOpacityAlwaysOn || isActive ? 1 : 0.3333333333}
             size="lmedium"
             weight="bold"
+            style={sx.text}
           >
             {text}
           </Text>
@@ -47,5 +49,11 @@ const CoinDividerEditButton = ({ isActive, isVisible, onPress, shouldReloadList,
     </OpacityToggler>
   );
 };
+
+const sx = StyleSheet.create({
+  text: {
+    marginTop: IS_ANDROID ? -4 : 0,
+  },
+});
 
 export default magicMemo(CoinDividerEditButton, ['isActive', 'isVisible', 'text']);

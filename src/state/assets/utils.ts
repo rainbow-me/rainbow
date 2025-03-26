@@ -3,7 +3,7 @@ import { ParsedAddressAsset } from '@/entities';
 import { add, greaterThan, multiply } from '@/helpers/utilities';
 import { RainbowError, logger } from '@/logger';
 import { SupportedCurrencyKey, supportedNativeCurrencies } from '@/references';
-import { addysHttp } from '@/resources/addys/claimables/query';
+import { getAddysHttpClient, isStaging } from '@/resources/addys/client';
 import { fetchAnvilBalancesByChainId } from '@/resources/assets/anvilAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -23,7 +23,7 @@ import { UserAssetsState, UserAssetsParams } from './types';
 import { userAssetsStore, useUserAssetsStore } from './userAssets';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 
-const USER_ASSETS_TIMEOUT_DURATION = time.seconds(10);
+const USER_ASSETS_TIMEOUT_DURATION = time.seconds(isStaging() ? 40 : 10);
 
 // ============ Fetch Utils ==================================================== //
 
@@ -61,10 +61,11 @@ export async function fetchUserAssets(
     if (staleBalanceParam) {
       url += staleBalanceParam;
     }
-    const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
+    const res = await getAddysHttpClient().get<AddressAssetsReceivedMessage>(url, {
       abortController,
       timeout: USER_ASSETS_TIMEOUT_DURATION,
     });
+
     const chainIdsInResponse = res?.data?.meta?.chain_ids || [];
     const chainIdsWithErrors = res?.data?.meta?.chain_ids_with_errors || [];
     const assets = res?.data?.payload?.assets?.filter(asset => !asset.asset.defi_position) || [];
@@ -96,7 +97,6 @@ export async function fetchUserAssets(
     }
     return null;
   } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') return null;
     logger.error(new RainbowError('[🔴 userAssetsStore - fetchUserAssets 🔴]: Failed to fetch user assets'), {
       message: error instanceof Error ? error.message : String(error),
     });
@@ -162,7 +162,7 @@ async function fetchUserAssetsForChain(params: {
 
   try {
     const url = `/${chainId}/${address}/assets`;
-    const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
+    const res = await getAddysHttpClient().get<AddressAssetsReceivedMessage>(url, {
       params: {
         currency: currency.toLowerCase(),
       },

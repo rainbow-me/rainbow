@@ -34,7 +34,6 @@ import { RootStackParamList } from '@/navigation/types';
 import { Address } from 'viem';
 import { RainbowWallet } from '@/model/wallet';
 import { WalletconnectMeta } from '@/walletConnect/types';
-import { DropdownMenu } from '@/components/DropdownMenu';
 
 type WithThemeProps = {
   theme: ThemeContextProps;
@@ -70,7 +69,7 @@ const SwitchText = ({ children, ...props }: Partial<TextProps>) => {
   );
 };
 
-const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
+const NetworkPill = ({ chainIds, onPress }: { chainIds: ChainId[]; onPress: () => void }) => {
   const { colors } = useTheme();
 
   const availableNetworkChainIds = useMemo(() => chainIds.sort(chainId => (chainId === ChainId.mainnet ? -1 : 1)), [chainIds]);
@@ -78,52 +77,50 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
   if (availableNetworkChainIds.length === 0) return null;
 
   return (
-    <DropdownMenu menuConfig={{ menuItems: networksMenuItems() }} onPressMenuItem={noop}>
-      <Box
-        as={ButtonPressAnimation}
-        scaleTo={0.96}
-        onPress={noop}
-        testID={'available-networks-v2'}
-        paddingTop="8px"
-        marginRight={{ custom: -2 }}
-      >
-        <Box flexDirection="row" justifyContent="flex-end" alignItems="center">
-          {availableNetworkChainIds.length > 1 ? (
-            <>
-              {availableNetworkChainIds.map((chainId, index) => {
-                return (
-                  <Box
-                    key={`availableNetwork-${chainId}`}
-                    marginTop={{ custom: -2 }}
-                    marginLeft={{ custom: index > 0 ? -6 : 0 }}
-                    style={{
-                      position: 'relative',
-                      backgroundColor: colors.transparent,
-                      zIndex: availableNetworkChainIds.length - index,
-                      borderRadius: 30,
-                      borderWidth: 2,
-                      borderColor: colors.white,
-                    }}
-                  >
-                    <ChainImage chainId={chainId} size={20} position="relative" />
-                  </Box>
-                );
-              })}
-            </>
-          ) : (
-            <Inline alignVertical="center" wrap={false}>
-              <ChainImage chainId={availableNetworkChainIds[0]} size={20} position="relative" />
+    <Box
+      as={ButtonPressAnimation}
+      scaleTo={0.96}
+      onPress={onPress}
+      testID={'available-networks-v2'}
+      paddingTop="8px"
+      marginRight={{ custom: -2 }}
+    >
+      <Box flexDirection="row" justifyContent="flex-end" alignItems="center">
+        {availableNetworkChainIds.length > 1 ? (
+          <>
+            {availableNetworkChainIds.map((chainId, index) => {
+              return (
+                <Box
+                  key={`availableNetwork-${chainId}`}
+                  marginTop={{ custom: -2 }}
+                  marginLeft={{ custom: index > 0 ? -6 : 0 }}
+                  style={{
+                    position: 'relative',
+                    backgroundColor: colors.transparent,
+                    zIndex: availableNetworkChainIds.length - index,
+                    borderRadius: 30,
+                    borderWidth: 2,
+                    borderColor: colors.white,
+                  }}
+                >
+                  <ChainImage chainId={chainId} size={20} position="relative" />
+                </Box>
+              );
+            })}
+          </>
+        ) : (
+          <Inline alignVertical="center" wrap={false}>
+            <ChainImage chainId={availableNetworkChainIds[0]} size={20} position="relative" />
 
-              <Box paddingLeft="6px">
-                <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold">
-                  {useBackendNetworksStore.getState().getChainsLabel()[availableNetworkChainIds[0]]}
-                </Text>
-              </Box>
-            </Inline>
-          )}
-        </Box>
+            <Box paddingLeft="6px">
+              <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold">
+                {useBackendNetworksStore.getState().getChainsLabel()[availableNetworkChainIds[0]]}
+              </Text>
+            </Box>
+          </Inline>
+        )}
       </Box>
-    </DropdownMenu>
+    </Box>
   );
 };
 
@@ -167,7 +164,7 @@ export function WalletConnectApprovalSheet() {
   const timedOut = params?.timedOut;
   const failureExplainSheetVariant = params?.failureExplainSheetVariant;
   const chainIds = meta?.chainIds; // WC v2 supports multi-chain
-  const chainId = meta?.proposedChainId || chainIds?.[0] || 1; // WC v1 only supports 1
+  const chainId = meta?.proposedChainId || chainIds?.[0] || ChainId.mainnet; // WC v1 only supports 1
   const currentChainId = params?.currentChainId;
   const [approvalChainId, setApprovalChainId] = useState<ChainId>(currentChainId || settingsChainId);
   const isWalletConnectV2 = meta.isWalletConnectV2;
@@ -213,12 +210,21 @@ export function WalletConnectApprovalSheet() {
    * v2.
    */
   const approvalNetworkInfo = useMemo(() => {
-    const chain = useBackendNetworksStore.getState().getDefaultChains()[approvalChainId || ChainId.mainnet];
+    const chain = useBackendNetworksStore.getState().getDefaultChains()[approvalChainId];
+    const label = useBackendNetworksStore.getState().getChainsLabel()[approvalChainId];
+    if (!chain) {
+      return {
+        chainId: approvalChainId,
+        color: colors.alpha(colors.blueGreyDark, 0.3),
+        name: label || 'Unknown Network',
+      };
+    }
+
     const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chain.id];
     return {
-      chainId: chain.id,
-      color: isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary,
-      name: chain.name,
+      chainId: chain.id || approvalChainId,
+      color: isDarkMode ? nativeAsset?.colors.primary : nativeAsset?.colors.fallback || nativeAsset?.colors.primary,
+      name: label || chain.name,
     };
   }, [approvalChainId, isDarkMode]);
 
@@ -303,9 +309,25 @@ export function WalletConnectApprovalSheet() {
   }, [failureExplainSheetVariant, goBack, navigate, timedOut]);
 
   const menuItems = useMemo(() => networksMenuItems(), []);
-  const NetworkSwitcherParent = type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? DropdownMenu : React.Fragment;
-
   const sheetHeight = type === WalletConnectApprovalSheetType.connect ? 408 : 438;
+
+  const navigateToNetworkSwitcher = useCallback(() => {
+    Navigation.handleAction(Routes.NETWORK_SELECTOR, {
+      selected: undefined,
+      canEdit: false,
+      canSelectAllNetworks: false,
+      canSelect: false,
+      fillPinnedSection: true,
+      allowedNetworks: chainIds,
+      setSelected: noop,
+      title:
+        chainIds.length > 1
+          ? lang.t(lang.l.walletconnect.approval_sheet_networks, {
+              length: chainIds.length,
+            })
+          : lang.t(lang.l.walletconnect.approval_sheet_network),
+    });
+  }, [chainIds]);
 
   const renderNetworks = useCallback(() => {
     if (isWalletConnectV2) {
@@ -316,43 +338,35 @@ export function WalletConnectApprovalSheet() {
           </Box>
         );
       } else {
-        return <NetworkPill chainIds={chainIds} />;
+        return <NetworkPill chainIds={chainIds} onPress={navigateToNetworkSwitcher} />;
       }
     } else {
       return (
-        <NetworkSwitcherParent
-          menuConfig={{
-            menuTitle: lang.t('walletconnect.available_networks'),
-            menuItems,
+        <ButtonPressAnimation
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+            gap: 6,
+            height: 38,
           }}
-          onPressMenuItem={handleOnPressNetworksMenuItem}
+          onPress={navigateToNetworkSwitcher}
         >
-          <ButtonPressAnimation
-            style={{
-              alignItems: 'center',
-              flexDirection: 'row',
-              gap: 6,
-              height: 38,
-            }}
-          >
-            <ChainImage
-              chainId={type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.chainId : Number(chainId)}
-              position="relative"
-              size={20}
-            />
-            <LabelText align="right" numberOfLines={1}>
-              {`${
-                type === WalletConnectApprovalSheetType.connect
-                  ? approvalNetworkInfo.name
-                  : useBackendNetworksStore.getState().getChainsLabel()[chainId]
-              } ${type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? '􀁰' : ''}`}
-            </LabelText>
-          </ButtonPressAnimation>
-        </NetworkSwitcherParent>
+          <ChainImage
+            chainId={type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.chainId : Number(chainId)}
+            position="relative"
+            size={20}
+          />
+          <LabelText align="right" numberOfLines={1}>
+            {`${
+              type === WalletConnectApprovalSheetType.connect
+                ? approvalNetworkInfo.name
+                : useBackendNetworksStore.getState().getChainsLabel()[chainId]
+            } ${type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? '􀁰' : ''}`}
+          </LabelText>
+        </ButtonPressAnimation>
       );
     }
   }, [
-    NetworkSwitcherParent,
     approvalNetworkInfo.chainId,
     approvalNetworkInfo.name,
     chainId,

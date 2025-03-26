@@ -53,18 +53,19 @@ export interface BackendNetworksState {
   getTokenSearchSupportedChainIds: () => ChainId[];
   getNftSupportedChainIds: () => ChainId[];
   getFlashbotsSupportedChainIds: () => ChainId[];
+  getTokenLauncherSupportedChainIds: () => ChainId[];
+  getTokenLauncherSupportedChainInfo: () => { chainId: ChainId; contractAddress: string }[];
   getShouldDefaultToFastGasChainIds: () => ChainId[];
 
   getChainGasUnits: (chainId?: ChainId) => BackendNetwork['gasUnits'];
   getChainDefaultRpc: (chainId: ChainId) => string;
 }
 
-let lastNetworks: BackendNetworksResponse | null = null;
-
 function createSelector<T>(selectorFn: (networks: BackendNetworksResponse, transformed: Chain[]) => T): () => T {
   const uninitialized = Symbol();
   let cachedResult: T | typeof uninitialized = uninitialized;
   let memoizedFn: ((networks: BackendNetworksResponse, transformed: Chain[]) => T) | null = null;
+  let lastNetworks: BackendNetworksResponse | null = null;
 
   return () => {
     const { backendChains, backendNetworks } = useBackendNetworksStore.getState();
@@ -88,6 +89,7 @@ function createParameterizedSelector<T, Args extends unknown[]>(
   let cachedResult: T | typeof uninitialized = uninitialized;
   let lastArgs: Args | null = null;
   let memoizedFn: ((...args: Args) => T) | null = null;
+  let lastNetworks: BackendNetworksResponse | null = null;
 
   return (...args: Args) => {
     const { backendChains, backendNetworks } = useBackendNetworksStore.getState();
@@ -108,7 +110,7 @@ function createParameterizedSelector<T, Args extends unknown[]>(
   };
 }
 
-export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse, never, BackendNetworksState>(
+export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse, never, BackendNetworksState, BackendNetworksResponse>(
   {
     fetcher: fetchBackendNetworks,
     setData: ({ data, set }) => {
@@ -316,6 +318,21 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
 
     getNftSupportedChainIds: createSelector(networks =>
       networks.networks.filter(network => network.enabledServices.nftProxy.enabled).map(network => toChainId(network.id))
+    ),
+
+    getTokenLauncherSupportedChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.launcher?.v1?.enabled).map(network => toChainId(network.id))
+    ),
+
+    getTokenLauncherSupportedChainInfo: createSelector(networks =>
+      networks.networks
+        .filter(network => network.enabledServices.launcher?.v1?.enabled)
+        .map(network => {
+          return {
+            chainId: toChainId(network.id),
+            contractAddress: network.enabledServices.launcher?.v1?.contractAddress || '',
+          };
+        })
     ),
 
     getFlashbotsSupportedChainIds: createSelector(() => [ChainId.mainnet]),

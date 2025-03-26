@@ -272,6 +272,34 @@ export const panelConfig = {
   }),
 };
 
+export const airdropsSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 0.7,
+      cornerRadius: 0,
+      headerHeight: safeAreaInsetValues.top + 70,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
+export const claimAirdropSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 0.8,
+      cornerRadius: 0,
+      headerHeight: safeAreaInsetValues.top + 70,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
 export const expandedAssetSheetV2Config = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -584,6 +612,21 @@ export const portalSheetConfig: PartialNavigatorConfigOptions = {
       // @ts-ignore
       longFormHeight: params.sheetHeight,
     }),
+  }),
+};
+
+export const tokenLauncherConfig: PartialNavigatorConfigOptions = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      cornerRadius: 0,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+    dismissable: false,
+    gestureEnabled: false,
   }),
 };
 

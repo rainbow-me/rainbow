@@ -16,7 +16,7 @@ query getEnsMarquee {
   }
 }
 
-fragment amount on RewardsAmount {
+fragment rewardsAmount on RewardsAmount {
   usd
   token
 }
@@ -50,7 +50,7 @@ query getRewardsDataForWallet($address: String!) {
     ...baseQuery
     earnings {
       total {
-        ...amount
+        ...rewardsAmount
       }
       multiplier {
         amount
@@ -60,7 +60,7 @@ query getRewardsDataForWallet($address: String!) {
         }
       }
       pending {
-        ...amount
+        ...rewardsAmount
       }
       daily {
         day
@@ -73,7 +73,7 @@ query getRewardsDataForWallet($address: String!) {
       actions {
         type
         amount {
-          ...amount
+          ...rewardsAmount
         }
         rewardPercent
       }
@@ -131,7 +131,7 @@ query getdApps {
   }
 }
 
-fragment asset on TransactionSimulationAsset {
+fragment transactionSimulationAsset on TransactionSimulationAsset {
   assetCode
   decimals
   iconURL
@@ -144,21 +144,9 @@ fragment asset on TransactionSimulationAsset {
   status
 }
 
-fragment asset on TransactionSimulationAsset {
-  assetCode
-  decimals
-  iconURL
-  name
-  network
-  symbol
-  type
-  interface
-  tokenId
-  status
-}
 fragment change on TransactionSimulationChange {
   asset {
-    ...asset
+    ...transactionSimulationAsset
   }
   price
   quantity
@@ -202,7 +190,7 @@ query simulateTransactions($chainId: Int!, $transactions: [Transaction!], $domai
       }
       approvals {
         asset {
-          ...asset
+          ...transactionSimulationAsset
         }
         spender {
           ...target
@@ -240,7 +228,7 @@ query simulateMessage($address: String!, $chainId: Int!, $message: Message!, $do
       }
       approvals {
         asset {
-          ...asset
+          ...transactionSimulationAsset
         }
         spender {
           ...target
@@ -492,6 +480,15 @@ fragment TokenLinksFragment on TokenLinks {
   homepage {
     ...TokenLinkFragment
   }
+  rainbow {
+    ...TokenLinkFragment
+  }
+  other {
+    ...TokenLinkFragment
+  }
+  farcaster {
+    ...TokenLinkFragment
+  }
   reddit {
     ...TokenLinkFragment
   }
@@ -567,6 +564,7 @@ query tokenMetadata($address: String!, $chainId: Int!, $currency: String) {
       relativeChange24h
       value
     }
+    rainbow
     totalSupply
     volume1d
   }

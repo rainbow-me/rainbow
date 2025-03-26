@@ -1,6 +1,6 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
-import { CrosschainQuote, getQuoteExecutionDetails, getRainbowRouterContractAddress, Quote } from '@rainbow-me/swaps';
+import { CrosschainQuote, getQuoteExecutionDetails, getTargetAddress, Quote } from '@rainbow-me/swaps';
 import { Contract } from '@ethersproject/contracts';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Token } from '../entities/tokens';
@@ -84,8 +84,7 @@ export const getDefaultGasLimitForTrade = (tradeDetails: Quote, chainId: ChainId
 export const getStateDiff = async (provider: StaticJsonRpcProvider, tradeDetails: Quote): Promise<any> => {
   const tokenAddress = tradeDetails.sellTokenAddress;
   const fromAddr = tradeDetails.from;
-  const chainId = (await provider.getNetwork()).chainId;
-  const toAddr = getRainbowRouterContractAddress(chainId);
+  const toAddr = getTargetAddress(tradeDetails);
   const tokenContract = new Contract(tokenAddress, erc20ABI, provider);
   const { number: blockNumber } = await (provider.getBlock as () => Promise<Block>)();
 
@@ -135,7 +134,13 @@ export const getSwapGasLimitWithFakeApproval = async (
     stateDiff = await getStateDiff(provider, tradeDetails);
     const { router, methodName, params, methodArgs } = getQuoteExecutionDetails(tradeDetails, { from: tradeDetails.from }, provider);
 
-    const { data } = await router.populateTransaction[methodName](...(methodArgs ?? []), params);
+    let data;
+    if (tradeDetails.fallback) {
+      data = tradeDetails.data;
+    } else {
+      const result = await router.populateTransaction[methodName](...(methodArgs ?? []), params);
+      data = result.data;
+    }
 
     const gasLimit = await getClosestGasEstimate(async (gas: number) => {
       const callParams = [
@@ -144,7 +149,7 @@ export const getSwapGasLimitWithFakeApproval = async (
           from: tradeDetails.from,
           gas: toHexNoLeadingZeros(gas),
           gasPrice: toHexNoLeadingZeros(`100000000000`),
-          to: (tradeDetails as CrosschainQuote)?.allowanceTarget || getRainbowRouterContractAddress(chainId),
+          to: getTargetAddress(tradeDetails),
           value: '0x0', // 100 gwei
         },
         'latest',

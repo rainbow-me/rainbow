@@ -33,10 +33,32 @@ function getCurveType(curveType: keyof typeof CurveType | undefined) {
       return shape.curveNatural;
     case CurveType.step:
       return shape.curveStep;
-
     default:
       return shape.curveBasis;
   }
+}
+
+function detectFlatData(points: Point[]): boolean {
+  if (!points.length) return false;
+
+  const firstY = points[0].y;
+  // Check if all y values are identical (flat line)
+  return points.every(point => Math.abs(point.y - firstY) < 0.000000001);
+}
+
+function detectNearlyFlatData(points: Point[]): boolean {
+  if (!points.length) return false;
+
+  const yValues = points.map(point => point.y);
+  const minY = Math.min(...yValues);
+  const maxY = Math.max(...yValues);
+
+  // If the range is extremely small relative to the value, consider it flat
+  const range = maxY - minY;
+  const avgY = yValues.reduce((sum, val) => sum + val, 0) / yValues.length;
+
+  // Consider data nearly flat if range is less than 0.01% of the average value
+  return avgY > 0 && range / avgY < 0.0001;
 }
 
 function getScales({ data, width, height, yRange }: CallbackType): PathScales {
@@ -44,28 +66,52 @@ function getScales({ data, width, height, yRange }: CallbackType): PathScales {
   const y = data.points.map(item => item.y);
 
   const smallestX = Math.min(...x);
-  const smallestY = Array.isArray(yRange) ? yRange[0] : Math.min(...y);
   const greatestX = Math.max(...x);
-  const greatestY = Array.isArray(yRange) ? yRange[1] : Math.max(...y);
+
+  // Check if data is flat or nearly flat
+  const isFlat = detectFlatData(data.points);
+  const isNearlyFlat = detectNearlyFlatData(data.points);
+
+  let smallestY, greatestY;
+
+  if (Array.isArray(yRange)) {
+    // Use provided yRange if available
+    smallestY = yRange[0];
+    greatestY = yRange[1];
+  } else if (isFlat || isNearlyFlat) {
+    // For flat or nearly flat data, add padding to prevent spikes
+    const avgY = y.reduce((sum, val) => sum + val, 0) / y.length;
+    // Add 0.5% padding above and below for flat data
+    const padding = avgY * 0.005;
+    smallestY = avgY - padding;
+    greatestY = avgY + padding;
+  } else {
+    // For non-flat data, use actual min/max with minimal padding
+    smallestY = Math.min(...y);
+    greatestY = Math.max(...y);
+
+    // Ensure minimum range to prevent scaling issues
+    const range = greatestY - smallestY;
+    if (range < 0.0001) {
+      const avgY = y.reduce((sum, val) => sum + val, 0) / y.length;
+      const minRange = Math.max(0.001, avgY * 0.01); // Minimum 1% range
+      smallestY = avgY - minRange / 2;
+      greatestY = avgY + minRange / 2;
+    }
+  }
 
   const scaleX = scaleLinear().domain([smallestX, greatestX]).range([0, width]);
-
   const scaleY = scaleLinear().domain([smallestY, greatestY]).range([height, 0]);
 
   return {
     scaleX,
     scaleY,
+    isFlat,
+    isNearlyFlat,
   };
 }
 
 function createPath({ data, width, height, yRange }: CallbackType): PathData {
-  const { scaleY, scaleX } = getScales({
-    data,
-    height,
-    width,
-    yRange,
-  });
-
   if (!data.points.length) {
     return {
       data: [],
@@ -74,6 +120,13 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
       points: [],
     };
   }
+
+  const { scaleY, scaleX, isFlat, isNearlyFlat } = getScales({
+    data,
+    height,
+    width,
+    yRange,
+  });
 
   const points: (Point & { originalX: number; originalY: number })[] = [];
 
@@ -93,11 +146,13 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
     });
   }
 
+  const curveFunction = isFlat || isNearlyFlat ? shape.curveLinear : getCurveType(data.curve);
+
   const path = shape
     .line<Point>()
     .x(item => scaleX(item.x))
     .y(item => scaleY(item.y))
-    .curve(getCurveType(data.curve))(data.points);
+    .curve(curveFunction)(data.points);
 
   if (path === null) {
     return {
@@ -149,7 +204,7 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(({ children,
 
   // used for memoization since useMemo with empty deps array
   // still can be re-run according to the docs
-  const [initialPath] = useState<PathData | null>(() => (data.points.length ? createPath({ data, height, width, yRange }) : null));
+  const [initialPath] = useState<PathData | null>(() => (data.points.length > 1 ? createPath({ data, height, width, yRange }) : null));
 
   const [paths, setPaths] = useState<[PathData | null, PathData | null]>(() => [initialPath, initialPath]);
 
@@ -161,7 +216,7 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(({ children,
     // because we do have initial data in the paths
     // we wait until we receive new stuff in deps
     if (initialized.current) {
-      setPaths(([, curr]) => [curr, data.points.length ? createPath({ data, height, width, yRange }) : null]);
+      setPaths(([, curr]) => [curr, data.points.length > 1 ? createPath({ data, height, width, yRange }) : null]);
     } else {
       // componentDidMount hack
       initialized.current = true;

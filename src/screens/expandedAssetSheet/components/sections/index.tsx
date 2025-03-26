@@ -4,3 +4,4 @@ export { BridgeSection } from './BridgeSection';
 export { BuySection } from './BuySection';
 export { MarketStatsSection } from './marketSection/MarketStatsSection';
 export { ChartSection } from './ChartSection';
+export { ClaimSection } from './ClaimSection';

@@ -1,16 +1,8 @@
 import { NativeCurrencyKey } from '@/entities';
-import { RainbowFetchClient } from '@/rainbow-fetch';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { Address } from 'viem';
-
-const addysHttp = new RainbowFetchClient({
-  baseURL: 'https://addys.p.rainbow.me/v3',
-  headers: {
-    Authorization: `Bearer ${ADDYS_API_KEY}`,
-  },
-});
+import { getAddysHttpClient } from '@/resources/addys/client';
 
 interface AddysSummary {
   data: {
@@ -96,7 +88,7 @@ type AddysSummaryQueryKey = ReturnType<typeof addysSummaryQueryKey>;
 // Query Function
 
 async function addysSummaryQueryFunction({ queryKey: [{ addresses, currency }] }: QueryFunctionArgs<typeof addysSummaryQueryKey>) {
-  const { data } = await addysHttp.post(
+  const { data } = await getAddysHttpClient().post(
     `/summary`,
     JSON.stringify({
       currency,
