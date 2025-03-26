@@ -3344,7 +3344,6 @@
         "transaction_simulation_failed": "Transaction simulation failed",
         "unknown_error": "Unknown error",
         "wallet_connection_error": "Wallet connection error",
-        "wallet_not_connected": "Wallet not connected",
         "invalid_params": "Invalid parameters",
         "missing_required_param": "Missing required parameters"
       }
