@@ -1,0 +1,32 @@
+appId: ${APP_ID}
+tags:
+  - wallet
+  - parallel
+---
+- clearState
+- launchApp:
+    arguments:
+      isE2ETest: true
+- tapOn: 'I already have one'
+- tapOn: 'Watch an Ethereum Address'
+- inputText: 'rainbowtestwallet.eth'
+- tapOn: 'Continue'
+- tapOn: 'Import Wallet'
+- runFlow: ../utils/MaybeSetupPin.yaml
+- assertVisible:
+    id: wallet-screen
+- wait: 15000
+- swipe:
+    direction: UP
+- tapOn:
+    id: token-family-header-ENS
+- swipe:
+    direction: UP
+- tapOn:
+    id: wrapped-nft-rainbowtestwallet.eth
+- assertNotVisible:
+    id: Showcase
+- tapOn:
+    id: unique-token-expanded-state-context-menu-button
+- assertNotVisible:
+    id: Unhide 

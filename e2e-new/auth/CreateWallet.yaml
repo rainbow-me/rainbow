@@ -7,7 +7,15 @@ tags:
 - launchApp:
     arguments:
       isE2ETest: true
+- assertVisible:
+    id: welcome-screen
 - tapOn: 'Get a new wallet'
 - runFlow: ../utils/MaybeSetupPin.yaml
 - assertVisible:
     id: wallet-screen
+- assertVisible:
+    id: receive-card
+- assertVisible:
+    id: copy-address-button
+- assertVisible:
+    id: eth-card 
