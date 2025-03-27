@@ -128,7 +128,7 @@ const DiscoverSearchInput = ({
 }: DiscoverSearchInputProps) => {
   const { isSearching, searchQuery } = useDiscoverSearchQueryStore(state => {
     return {
-      searchQuery: state.searchQuery.trim().toLowerCase(),
+      searchQuery: state.searchQuery,
       isSearching: state.isSearching,
     };
   });

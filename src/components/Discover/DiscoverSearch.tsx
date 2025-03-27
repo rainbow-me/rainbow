@@ -58,7 +58,7 @@ export default function DiscoverSearch() {
   const isLoading = useDiscoverSearchStore(state => state.getStatus().isFetching);
   const { isSearching, searchQuery } = useDiscoverSearchQueryStore(state => {
     return {
-      searchQuery: state.searchQuery.trim().toLowerCase(),
+      searchQuery: state.searchQuery,
       isSearching: state.isSearching,
     };
   });
