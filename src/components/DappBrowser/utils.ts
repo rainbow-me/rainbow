@@ -27,6 +27,10 @@ export function isValidAppStoreUrl(url: string): boolean {
 
 export function isValidURLWorklet(url: string): boolean {
   'worklet';
+  if (url.startsWith('blob:') || url.startsWith('data:')) {
+    return false;
+  }
+
   let urlForValidation = url.trim();
   if (isMissingValidProtocolWorklet(urlForValidation)) {
     urlForValidation = HTTPS + urlForValidation;
@@ -39,9 +43,11 @@ export const normalizeUrlWorklet = (url: string): string => {
   if (!url) {
     return '';
   }
-  if (url === RAINBOW_HOME) {
+
+  if (url === RAINBOW_HOME || url.startsWith('blob:') || url.startsWith('data:')) {
     return url;
   }
+
   let normalizedUrl = url;
   if (isMissingValidProtocolWorklet(normalizedUrl)) {
     normalizedUrl = HTTPS + normalizedUrl;

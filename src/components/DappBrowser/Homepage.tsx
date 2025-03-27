@@ -30,7 +30,6 @@ import { getDappHost } from './handleProviderRequest';
 import { uniqBy } from 'lodash';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { EXTRA_WEBVIEW_HEIGHT, WEBVIEW_HEIGHT } from './Dimensions';
-import { useBrowserDappsStore } from '@/resources/metadata/dapps';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 import { useBrowserStore } from '@/state/browser/browserStore';
@@ -97,19 +96,12 @@ const DappBrowserFeaturedResults = ({ children }: { children: FeaturedResultStac
   const { featured_results } = useRemoteConfig();
   const featuredResultsEnabled = (useExperimentalFlag(FEATURED_RESULTS) || featured_results) && !IS_TEST;
 
-  const onNavigate = useCallback(
-    (href: string) => {
-      goToUrl(href);
-    },
-    [goToUrl]
-  );
-
   if (!featuredResultsEnabled) {
     return null;
   }
 
   return (
-    <FeaturedResultStack onNavigate={onNavigate} placementId="dapp_browser_card">
+    <FeaturedResultStack onNavigate={goToUrl} placementId="dapp_browser_card">
       {children}
     </FeaturedResultStack>
   );
@@ -378,20 +370,6 @@ const Card = memo(function Card({
     };
   }, [isFavorite]);
 
-  const dappIconUrl = useMemo(() => {
-    const dappUrl = site.url;
-    const iconUrl = site.image;
-    const url = dappUrl.startsWith('http') ? dappUrl : `https://${dappUrl}`;
-    const host = new URL(url).hostname;
-    const dappOverride = useBrowserDappsStore.getState().findDappByHostname(host);
-    // 👇 TODO: Remove this once the Uniswap logo in the dapps metadata is fixed
-    const isUniswap = host === 'uniswap.org' || host.endsWith('.uniswap.org');
-    if (dappOverride?.iconUrl && !isUniswap) {
-      return dappOverride.iconUrl;
-    }
-    return iconUrl;
-  }, [site.image, site.url]);
-
   return (
     <Box>
       <ButtonPressAnimation onPress={handlePress} scaleTo={0.94}>
@@ -405,13 +383,13 @@ const Card = memo(function Card({
             padding="20px"
             style={[
               styles.cardContainer,
-              !dappIconUrl && !site.screenshot ? styles.cardContainerNoImage : {},
+              !site.image && !site.screenshot ? styles.cardContainerNoImage : {},
               isDarkMode ? styles.cardContainerDark : {},
             ]}
             width={{ custom: CARD_WIDTH }}
           >
             <ColorModeProvider value="dark">
-              <CardBackground imageUrl={dappIconUrl || site.screenshot} isDarkMode={isDarkMode} />
+              <CardBackground imageUrl={site.image || site.screenshot} isDarkMode={isDarkMode} />
               <Box
                 height={{ custom: CARD_LOGO_SIZE }}
                 left={{ custom: -8 }}
@@ -422,7 +400,7 @@ const Card = memo(function Card({
                 <ImgixImage
                   enableFasterImage
                   size={CARD_LOGO_SIZE}
-                  source={{ uri: dappIconUrl }}
+                  source={{ uri: site.image }}
                   style={{
                     backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100,
                     height: CARD_LOGO_SIZE,

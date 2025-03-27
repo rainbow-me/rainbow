@@ -13,7 +13,7 @@ import { AllRainbowWallets } from '@/model/wallet';
 type SummaryData = ReturnType<typeof useAddysSummary>['data'];
 
 const getWalletForAddress = (wallets: AllRainbowWallets | null, address: string) => {
-  return Object.values(wallets || {}).find(wallet => wallet.addresses.some(addr => isLowerCaseMatch(addr.address, address)));
+  return Object.values(wallets || {}).find(wallet => (wallet.addresses || []).some(addr => isLowerCaseMatch(addr.address, address)));
 };
 
 export const useFarcasterAccountForWallets = () => {

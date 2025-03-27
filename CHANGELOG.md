@@ -15,6 +15,45 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.63] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.63)
+
+### Changed
+
+- Bumped iOS and Android to v1.9.63 (#6518)
+- Bumped Swaps SDK (#6517)
+
+### Fixed
+
+- Fix Warpcast icon clipping and input validation (#6516)
+
+## [1.9.62] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.62)
+
+### Added
+
+- Add coin flip animation, Skia utils, color worklets (#6486)
+- Add Skia cards, new ftl sheets (#6487)
+- FTL claims section (#6497)
+- Main ftl flow (#6495)
+
+### Changed
+
+- Migrates from react-native-community/blur to react-native-blur-view, which supports iOS blur gradients (#6488)
+- Updated TL abi (#6500)
+- TL cleanup and expanded state claims (#6501)
+- Improved claim flow and adjusted coin icon animation display conditions (#6503)
+- Reset cache timing and activity tweaks (#6506)
+- Bumped swaps sdk to 0.33 (#6512)
+- Version bump to 1.9.62 (#6515)
+
+### Fixed
+
+- Resolves the conflict happening with react-native-dotenvs and xcconfigs (#6477)
+- Added missing subtitle prop to LabelContent and corrected optional types (#6509)
+- TL Android nit fixes (#6505)
+- Prevent expanded state crash (#6513)
+- Use target address from swap (#6514)
+- Ftl links fixes (#6511)
+
 ## [1.9.60] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.60)
 
 ### Added
