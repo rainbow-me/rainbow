@@ -567,7 +567,6 @@ function RecyclerAssetList({
 
   return (
     <StyledContainer onLayout={onLayout}>
-      {/* @ts-ignore */}
       <MaybeStickyContainer
         overrideRowRenderer={stickyRowRenderer}
         stickyHeaderIndices={disableStickyHeaders ? [] : isCoinListEdited ? defaultIndices : stickyComponentsIndices}

@@ -8,14 +8,7 @@ import * as i18n from '@/languages';
 import { NativeCurrencyKey, ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { UniqueId } from '@/__swaps__/types/assets';
-import {
-  CellType,
-  CellTypes,
-  NFTExtraData,
-  NFTFamilyExtraData,
-  NFTsHeaderExtraData,
-  NFTsOtherData,
-} from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 
 const COINS_TO_SHOW = 5;
@@ -253,9 +246,9 @@ export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: 
 
 export const buildBriefUniqueTokenList = (
   uniqueTokens: UniqueAsset[],
-  selectedShowcaseTokens: string[] = [],
-  sellingTokens: UniqueAsset[] = [],
-  hiddenTokens: string[] = [],
+  selectedShowcaseTokens: string[] | undefined = [],
+  sellingTokens: UniqueAsset[] | undefined = [],
+  hiddenTokens: string[] | undefined = [],
   listType: AssetListType = 'wallet',
   isReadOnlyWallet = false,
   nftSort = NftCollectionSortCriterion.MostRecent,
@@ -354,7 +347,7 @@ export const buildBriefUniqueTokenList = (
     }
   }
 
-  if (hiddenUniqueTokensIds.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {
+  if (hiddenUniqueTokensIds?.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {
     result.push({
       name: lang.t('button.hidden'),
       total: hiddenUniqueTokensIds.length,

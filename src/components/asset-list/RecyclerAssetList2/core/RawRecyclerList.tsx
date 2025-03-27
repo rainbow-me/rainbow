@@ -172,11 +172,15 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
       renderAheadOffset={1000}
       rowRenderer={rowRenderer}
-      canChangeSize
-      layoutSize={{
-        height: deviceUtils.dimensions.height,
-        width: deviceUtils.dimensions.width,
-      }}
+      canChangeSize={type === 'wallet'}
+      layoutSize={
+        type === 'wallet'
+          ? {
+              height: deviceUtils.dimensions.height,
+              width: deviceUtils.dimensions.width,
+            }
+          : undefined
+      }
       scrollIndicatorInsets={scrollIndicatorInsets}
     />
   );
