@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import URL from 'url-parse';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
@@ -22,6 +22,7 @@ import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simpleha
 import { ContextCircleButton } from '@/components/context-menu';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ChainId } from '@/state/backendNetworks/types';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -325,17 +326,27 @@ const UniqueTokenExpandedStateHeader = ({
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === FamilyActionsEnum.viewCollection && asset.marketplaceCollectionUrl) {
-        Linking.openURL(asset.marketplaceCollectionUrl);
+        openInBrowser(asset.marketplaceCollectionUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
-        // @ts-expect-error external_link and external_url could be null or undefined?
-        Linking.openURL(asset.external_link || asset.collection.external_url);
+        const websiteUrl = asset.external_link || asset.collection.external_url;
+        if (websiteUrl) {
+          openInBrowser(websiteUrl);
+        }
       } else if (actionKey === FamilyActionsEnum.twitter) {
-        Linking.openURL('https://twitter.com/' + asset.collection.twitter_username);
+        const twitterUrl = 'https://twitter.com/' + asset.collection.twitter_username;
+        openInBrowser(twitterUrl, false);
       } else if (actionKey === FamilyActionsEnum.discord && asset.collection.discord_url) {
-        Linking.openURL(asset.collection.discord_url);
+        const discordUrl = asset.collection.discord_url;
+        openInBrowser(discordUrl, false);
       }
     },
-    [asset]
+    [
+      asset.collection.discord_url,
+      asset.collection.external_url,
+      asset.collection.twitter_username,
+      asset.external_link,
+      asset.marketplaceCollectionUrl,
+    ]
   );
 
   const handlePressAssetMenuItem = useCallback(
@@ -349,11 +360,11 @@ const UniqueTokenExpandedStateHeader = ({
           chainId: asset.chainId,
         });
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
-        Linking.openURL(rainbowWebUrl);
+        openInBrowser(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.opensea) {
-        Linking.openURL(`https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`);
+        openInBrowser(`https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`);
       } else if (actionKey === AssetActionsEnum.looksrare) {
-        Linking.openURL(`https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`);
+        openInBrowser(`https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`);
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
@@ -420,16 +431,16 @@ const UniqueTokenExpandedStateHeader = ({
       },
       (idx: number) => {
         if (idx === collectionIndex && asset.marketplaceCollectionUrl) {
-          Linking.openURL(asset.marketplaceCollectionUrl);
+          openInBrowser(asset.marketplaceCollectionUrl);
         } else if (idx === websiteIndex) {
-          Linking.openURL(
+          openInBrowser(
             // @ts-expect-error external_link and external_url could be null or undefined?
             asset.external_link || asset.collection.external_url
           );
         } else if (idx === twitterIndex) {
-          Linking.openURL('https://twitter.com/' + asset.collection.twitter_username);
+          openInBrowser('https://twitter.com/' + asset.collection.twitter_username, false);
         } else if (idx === discordIndex && asset.collection.discord_url) {
-          Linking.openURL(asset.collection.discord_url);
+          openInBrowser(asset.collection.discord_url, false);
         }
       }
     );

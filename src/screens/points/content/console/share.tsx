@@ -11,8 +11,8 @@ import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 import { NeonButton } from '../../components/NeonButton';
 import { LineBreak } from '../../components/LineBreak';
 import { Bleed, Box, Inline, Stack } from '@/design-system';
-import { Linking } from 'react-native';
 import { analyticsV2 } from '@/analytics';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 export const Share = () => {
   const { intent, setAnimationKey, setStep } = usePointsProfileContext();
@@ -74,7 +74,7 @@ export const Share = () => {
                 analyticsV2.track(analyticsV2.event.pointsOnboardingScreenPressedShareToXButton);
                 const beginNextPhase = setTimeout(async () => {
                   if (intent) {
-                    Linking.openURL(intent);
+                    openInBrowser(intent, false);
                   }
                   setAnimationKey(prevKey => prevKey + 1);
                   setStep(RainbowPointsFlowSteps.Review);
