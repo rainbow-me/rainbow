@@ -96,7 +96,8 @@
         "generic": "尝试备份时出错。错误代码： %{errorCodes}",
         "no_keys_found": "未找到密钥。请再试一次。",
         "backup_not_found": "未找到备份。请再试一次。",
-        "no_account_found": "无法检索备份文件。请确保您已登录。"
+        "no_account_found": "无法检索备份文件。请确保您已登录。",
+        "damaged_wallet": "无法备份钱包。缺少钥匙链数据。"
       },
       "wrong_pin": "您输入的PIN码有误，我们无法进行备份。请使用正确的PIN码再试一次。",
       "already_backed_up": {
@@ -115,6 +116,8 @@
         "no_backups": "未找到备份",
         "failed_to_fetch_backups": "获取备份失败",
         "retry": "重试",
+        "refresh": "刷新",
+        "syncing_cloud_store": "正在同步到%{cloudPlatformName}",
         "fetching_backups": "正在从 %{cloudPlatformName} 检索备份",
         "back_up_to_platform": "备份到 %{cloudPlatformName}",
         "restore_from_platform": "从 %{cloudPlatformName} 恢复",
@@ -145,6 +148,12 @@
         "older_backups": "旧备份",
         "no_older_backups": "没有旧备份",
         "older_backups_title": "%{date} 在 %{time}",
+        "statuses": {
+          "not_enabled": "未启用",
+          "syncing": "正在同步",
+          "out_of_date": "过期",
+          "up_to_date": "最新"
+        },
         "password": {
           "a_password_youll_remember_part_one": "这个密码是",
           "not": "不可恢复的。请确保您选择一个您会记住的密码。",
@@ -336,6 +345,7 @@
       "receive": "接收",
       "remove": "删除",
       "save": "保存",
+      "skip": "跳过",
       "send": "发送",
       "send_another": "发送另一个",
       "share": "分享",
@@ -452,7 +462,13 @@
     },
     "claimables": {
       "panel": {
-        "calculating_gas_fee": "正在计算燃气费...",
+        "estimating_gas_fee": "正在估算Gas费用...",
+        "gas_error": "燃气错误",
+        "quote_error": "报价错误",
+        "no_route_found": "找不到路由",
+        "fetching_quote": "正在获取报价...",
+        "select_a_network": "选择一个网络",
+        "select_a_token": "选择一个代币",
         "amount_to_claim_on_network": "%{amount} 可在 %{network} 领取",
         "claim": "领取",
         "claiming": "认领中",
@@ -463,7 +479,13 @@
         "claim_amount": "领取 %{amount}",
         "done": "完成",
         "try_again": "再试一次",
-        "tokens_on_the_way": "代币正在路上！"
+        "tokens_on_the_way": "代币正在路上！",
+        "a_token": "一个代币",
+        "a_network": "一个网络",
+        "swap_failed": "交换失败",
+        "receive": "接收",
+        "on": "在",
+        "reset": "重置"
       }
     },
     "cloud": {
@@ -495,6 +517,8 @@
     },
     "developer_settings": {
       "alert": "警报",
+      "analyze_env_variables": "分析环境变量",
+      "analyze_react_query": "分析 React Query",
       "applied": "已应用",
       "backups_deleted_successfully": "备份成功删除",
       "clear_async_storage": "清除异步存储",
@@ -503,7 +527,11 @@
       "clear_image_metadata_cache": "清除图片内元数据缓存",
       "clear_local_storage": "清除本地存储",
       "clear_mmkv_storage": "清除MMKV存储",
+      "clear_react_query_cache": "清除 React Query 缓存",
       "connect_to_anvil": "连接到anvil",
+      "copy_fcm_token": "复制 FCM 令牌",
+      "copy_log_lines": "复制日志行",
+      "copy_signing_wallet_address": "复制签名钱包地址",
       "disconnect_to_anvil": "断开硬帽连接",
       "crash_app_render_error": "崩溃应用程序（渲染错误）",
       "enable_testnets": "启用Testnets",
@@ -642,7 +670,6 @@
       "high": "高",
       "slippage_tolerance": "最大滑点",
       "source_picker": "通过路线交换",
-      "use_flashbots": "使用Flashbots",
       "swapping_for_prefix": "交换用于",
       "view_details": "查看详情",
       "token_sections": {
@@ -671,13 +698,56 @@
         "social": {
           "facebook": "脸书",
           "homepage": "主页",
+          "website": "网站",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter"
+          "twitter": "Twitter",
+          "warpcast": "Warpcast",
+          "farcaster": "Farcaster",
+          "other": "其他",
+          "search_on_twitter": "在 Twitter 上搜索"
         },
         "uniswap_liquidity": "Uniswap 流动性",
         "value": "价值",
-        "volume_24_hours": "24小时交易量"
+        "volume_24_hours": "24小时交易量",
+        "menu": {
+          "view_on": "在 %{blockExplorerName}查看",
+          "share": "分享",
+          "copy_contract_address": "复制合约地址",
+          "pin": "固定",
+          "unpin": "取消置顶",
+          "hide": "隐藏",
+          "unhide": "取消隐藏"
+        },
+        "no_data_available": "无可用数据"
+      },
+      "sections": {
+        "market_stats": {
+          "title": "市场统计",
+          "circulating_supply": "流通供应",
+          "max_supply": "最大供给量",
+          "fully_diluted_valuation": "全面稀释估值",
+          "market_cap": "市值",
+          "created": "创建",
+          "volume_24_hours": "24小时交易量",
+          "rank": "排名"
+        },
+        "buy": {
+          "title": "购买",
+          "pay_with": "购买方式",
+          "available_balance": "可用余额",
+          "open_swaps": "打开的互换",
+          "low_balance": "余额不足"
+        },
+        "claim": {
+          "claim_button": "领取空投",
+          "created_by": "由 %{creator} 创建",
+          "title": "领取"
+        },
+        "about": {
+          "title": "关于",
+          "what_is": "%{assetName} 是什么？"
+        }
       },
       "chart": {
         "all_time": "全时间",
@@ -697,6 +767,7 @@
             "month_11": "十二月"
           }
         },
+        "no_chart_data": "无图表数据",
         "no_price_data": "无价格数据",
         "past_timespan": "过去 %{formattedTimespan}",
         "today": "今天",
@@ -723,7 +794,6 @@
       "swap": {
         "swap": "交换",
         "bridge": "桥接",
-        "flashbots_protect": "Flashbots保护",
         "losing": "正在损失",
         "on": "开",
         "off": "关闭",
@@ -857,6 +927,8 @@
       "adworld_title": "欢迎来到Rainbow世界！",
       "farcaster_description": "我们最无聊的应用图标，灵感来自Warpcast的极简风。",
       "farcaster_title": "你已解锁\nRainbowcast",
+      "redacted_description": "一个专属的 Rainbow 图标，供真正的 Gdupi 爱好者使用。",
+      "redacted_title": "您已解锁\n Redacted Rainbow",
       "button": "解锁图标"
     },
     "explain": {
@@ -927,41 +999,69 @@
         "text": "矿工小费直接支付给在网络上确认你的交易的矿工。\n\n较高的小费使你的交易更有可能被快速确认。",
         "title": "矿工小费"
       },
-      "optimism": {
-        "text": "Optimism是一个在以太坊之上运行的第二层网络，它能同时利用到以太坊的底层安全性，实现更便宜、更快的交易。\n\n它在发送到以太坊永久存储前将大量交易打包在一个\"滚动更新\"中。",
-        "title": "什么是Optimism？"
-      },
-      "base": {
-        "text": "Base是在以太坊之上运行的2层网络，使得交易更便宜更快速，同时仍然受益于以太坊的底层安全性。\n\n在将交易永久地发送到以太坊之前，它会将许多交易一起打包成一个“上卷”。",
-        "title": "什么是Base?"
+      "apechain": {
+        "text": "ApeChain是一个在Arbitrum Orbit和以太坊之上运行的Layer <b>3</b>网络。<br/><br/>它显著增强了ApeCoin的实用性，促进了由$APE驱动的强大而动态的经济。",
+        "title": "什么是ApeChain？"
       },
       "avalanche": {
         "text": "Avalanche 是一个侧链，它是一个与以太坊并行运行的独立网络，并且兼容以太坊。\n\n它支持更便宜和更快速的交易，但与Layer 2网络不同，Avalanche具有自己的安全性和共识机制，与以太坊不同。",
         "title": "Avalanche是什么？"
       },
-      "degen": {
-        "text": "Degen链是一个在Arbitrum Orbit和以太坊之上运行的Layer <b>3</b>网络。",
-        "title": "什么是Degen Chain?"
+      "base": {
+        "text": "Base是在以太坊之上运行的2层网络，使得交易更便宜更快速，同时仍然受益于以太坊的底层安全性。\n\n在将交易永久地发送到以太坊之前，它会将许多交易一起打包成一个“上卷”。",
+        "title": "什么是Base?"
       },
       "blast": {
         "text": "Blast 是一个运行在以太坊之上的第二层网络，可以实现更便宜和更快的交易，同时仍能从以太坊的底层安全性中受益。\n\n它将许多交易捆绑在一个“roll up”中，然后将其永久发送到以太坊。",
         "title": "什么是Blast?"
       },
-      "apechain": {
-        "text": "ApeChain是一个在Arbitrum Orbit和以太坊之上运行的Layer <b>3</b>网络。<br/><br/>它显著增强了ApeCoin的实用性，促进了由$APE驱动的强大而动态的经济。",
-        "title": "什么是ApeChain？"
+      "bsc": {
+        "text": "Binance Smart Chain（BSC）是交易平台Binance的区块链。 \n\nBSC提供了更便宜更快速的交易，但与2层网络不同，它有自己独特的安全和共识机制，这与以太坊不同。",
+        "title": "什么是Binance Smart Chain？"
       },
-      "zora": {
-        "text": "Zora是一个运行在以太坊之上的2层网络，它使得交易更加便宜且更快，同时仍然从以太坊的底层安全中受益。\n\n在将他们永久地发到以太坊之前，它会将许多交易一起打包成一个“上卷”。",
-        "title": "什么是Zora？"
+      "degen": {
+        "text": "Degen链是一个在Arbitrum Orbit和以太坊之上运行的Layer <b>3</b>网络。",
+        "title": "什么是Degen Chain?"
+      },
+      "gravity": {
+        "text": "Gravity 是一个由 Galxe 构建的高性能 Layer 1 区块链，实现了每秒超过一吉盖的吞吐量和亚秒级的确定性。\n\n它利用了管道化的 AptosBFT 共识引擎和并行 EVM 运行时，通过重置技术保持权益证明的安全性。",
+        "title": "什么是 Gravity？"
+      },
+      "gnosis": {
+        "text": "Gnosis Chain 是一个由多个全球验证者运营的社区拥有的 Ethereum 侧链。\n\n它专注于弹性和可靠的中立性，提供更便宜和更快的交易，同时维护其自身的安全和共识机制。",
+        "title": "什么是 Gnosis？"
+      },
+      "ink": {
+        "text": "Ink 是一个基于 OP Stack 构建的 Layer 2 网络，旨在通过提供亚秒级的区块时间和低交易费用来扩展 Ethereum。\n\n由 Kraken 推出，并作为 Superchain 的一部分，Ink 旨在提升去中心化金融 (DeFi) 应用的性能和可访问性。",
+        "title": "什么是 Ink？"
+      },
+      "linea": {
+        "text": "Linea是由ConsenSys开发的安全且低成本的等同于Ethereum的Layer 2区块链。\n\n它能实现更快且更实惠的交易，同时不影响安全性和去中心化，旨在将下一个十亿用户引入web3。",
+        "title": "什么是 Linea？"
+      },
+      "optimism": {
+        "text": "Optimism是一个在以太坊之上运行的第二层网络，它能同时利用到以太坊的底层安全性，实现更便宜、更快的交易。\n\n它在发送到以太坊永久存储前将大量交易打包在一个\"滚动更新\"中。",
+        "title": "什么是Optimism？"
       },
       "polygon": {
         "text": "Polygon是一个并行链，一个于以太坊并行运行且与之兼容的区别网络。\n\n它提供了更便宜更快速的交易，但和2层网络不同，Polygon有其自己的安全和共识机制，这与以太坊不同。",
         "title": "什么是Polygon?"
       },
-      "bsc": {
-        "text": "Binance Smart Chain（BSC）是交易平台Binance的区块链。 \n\nBSC提供了更便宜更快速的交易，但与2层网络不同，它有自己独特的安全和共识机制，这与以太坊不同。",
-        "title": "什么是Binance Smart Chain？"
+      "scroll": {
+        "text": "Scroll 是一个建立在 Ethereum 之上的 Layer 2 解决方案，旨在增强可扩展性和交易效率。\n\n它使用汇总技术来捆绑交易，然后将其提交给 Ethereum，从中受益于其安全基础设施。",
+        "title": "什么是 Scroll？"
+      },
+      "sanko": {
+        "text": "Sanko 是一个运行在 Arbitrum 和 Ethereum 之上的 Layer 3 网络，专注于 NFT 和游戏。\n\n它使用 AnyTrust 数据可用性和欺诈证明进行状态验证，允许更快和更便宜的交易，同时利用 Ethereum 的安全性。Sanko 具有一个原生代币叫 DMT，并雇用白名单验证者来提议和挑战状态根。",
+        "title": "什么是 Sanko？"
+      },
+      "zksync": {
+        "text": "ZKsync 是一个 Layer 2 协议，旨在通过使用高级零知识密码证明来扩展 Ethereum。\n\n它在维持去中心化和安全性的同时提高 Ethereum 的吞吐量，使交易更快更便宜。",
+        "title": "什么是 Zksync？"
+      },
+      "zora": {
+        "text": "Zora是一个运行在以太坊之上的2层网络，它使得交易更加便宜且更快，同时仍然从以太坊的底层安全中受益。\n\n在将他们永久地发到以太坊之前，它会将许多交易一起打包成一个“上卷”。",
+        "title": "什么是Zora？"
       },
       "read_more": "阅读更多",
       "learn_more": "了解详情",
@@ -1033,15 +1133,6 @@
           "fragment1": "还感到好奇吗？ ",
           "fragment2": "阅读更多",
           "fragment3": " 关于滑点和它如何影响交换。"
-        }
-      },
-      "flashbots": {
-        "text": "Flashbots保护您的交易免受前运行和夹击攻击，这可能导致您得到的价格更糟糕或者您的交易失败。",
-        "title": "Flashbots",
-        "still_curious": {
-          "fragment1": "还感到好奇吗？ ",
-          "fragment2": "阅读更多",
-          "fragment3": " 关于Flashbots和它提供的保护。"
         }
       },
       "swap_refuel": {
@@ -1189,6 +1280,12 @@
         "check_out_my_wallet": "在🌈 Rainbow上看看我的收藏品 %{showcaseUrl}",
         "check_out_this_wallet": "在🌈 Rainbow上查看这个钱包的收藏品 %{showcaseUrl}"
       }
+    },
+    "loading": {
+      "backing_up": "正在备份...",
+      "creating_wallet": "创建钱包...",
+      "importing_wallet": "正在导入...",
+      "restoring": "恢复中..."
     },
     "message": {
       "click_to_copy_to_clipboard": "点击复制到剪贴板",
@@ -2052,7 +2149,6 @@
       "find_a_token_to_buy": "找一个要购买的代币",
       "search_your_tokens": "搜索你的代币",
       "error_executing_swap": "执行交换时出错",
-      "flashbots_protection": "Flashbots 保护",
       "tokens_input": {
         "tokens": "代币",
         "sort": "排序",
@@ -2183,6 +2279,11 @@
           "pending": "交互待定",
           "confirmed": "已交互",
           "failed": "交互失败"
+        },
+        "launch": {
+          "pending": "正在启动",
+          "confirmed": "已启动",
+          "failed": "启动失败"
         },
         "swap": {
           "pending": "交换中",
@@ -2544,7 +2645,25 @@
         "loading_balance": "正在加载余额...",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "正在关注",
-        "ledger": "分类账"
+        "ledger": "分类账",
+        "wallets": "钱包",
+        "all_wallets": "所有钱包",
+        "total_balance": "总余额",
+        "edit_hint_tooltip": {
+          "title": "自定义您的钱包",
+          "subtitle": {
+            "prefix": "点击",
+            "action": "编辑",
+            "suffix": "按钮以设置"
+          }
+        },
+        "address_menu": {
+          "edit": "编辑钱包",
+          "copy": "复制地址",
+          "settings": "钱包设置",
+          "notifications": "通知设置",
+          "remove": "移除钱包"
+        }
       },
       "connected_apps": "已连接的应用程序",
       "copy": "复制",
@@ -2615,6 +2734,14 @@
       "my_account_address": "我的账户地址:",
       "network_title": "网络",
       "new": {
+        "choose_wallet_group": {
+          "title": "选择钱包组",
+          "description": "选择您希望在其中创建新钱包的钱包组，或创建一个新的。"
+        },
+        "new_wallet_group": {
+          "title": "新钱包组",
+          "description": "创建新钱包组"
+        },
         "add_wallet_sheet": {
           "options": {
             "cloud": {
@@ -2924,10 +3051,15 @@
         "buttons": {
           "cancel": "取消",
           "confirm": "􀎽 发送交易",
+          "confirming": "确认中",
           "get_native_token": "获取 %{symbol}",
           "buy_native_token": "购买 %{symbol}"
         },
         "formatted_dates": {
+          "minute_ago": "一分钟前",
+          "minutes_ago": "分钟前",
+          "hour_ago": "一小时前",
+          "hours_ago": "小时前",
           "today": "今天",
           "day_ago": "day ago",
           "days_ago": "days ago",
@@ -2984,12 +3116,233 @@
       },
       "menus": {
         "favorite": "收藏",
+        "home": "主页",
         "undo_favorite": "撤消收藏",
         "remove": "删除",
         "forward": "前进",
-        "back": "返回"
+        "back": "返回",
+        "share": "分享",
+        "close_all_tabs": "关闭全部%{numberOfClosableTabs}个标签页",
+        "close_both_tabs": "关闭两个标签页",
+        "close_this_tab": "关闭此标签页",
+        "close_tab": "关闭标签页",
+        "new_tab": "新标签页"
       }
     },
+    "trending_tokens": {
+      "all": "全部",
+      "no_results": {
+        "title": "没有结果",
+        "body": "尝试在更大的时间范围或不同的网络或类别中浏览。"
+      },
+      "and": "和",
+      "and_others": {
+        "one": "和%{count}个其他",
+        "other": "和%{count}个其他"
+      },
+      "filters": {
+        "categories": {
+          "TRENDING": "趋势",
+          "RAINBOW": "Rainbow",
+          "NEW": "新的",
+          "FARCASTER": "Farcaster"
+        },
+        "sort": {
+          "RECOMMENDED": {
+            "label": "排序",
+            "menuOption": "默认"
+          },
+          "VOLUME": "交易量",
+          "MARKET_CAP": "市值",
+          "TOP_GAINERS": "最高涨幅",
+          "TOP_LOSERS": "最大跌幅"
+        },
+        "time": {
+          "H12": "12小时",
+          "H12_ABBREVIATED": "12小时",
+          "H24": "24小时",
+          "H24_ABBREVIATED": "24小时",
+          "D7": "1周",
+          "D3": "3天"
+        }
+      }
+    },
+    "network_selector": {
+      "customize_networks_banner": {
+        "title": "自定义网络",
+        "tap_the": "点击",
+        "button_to_set_up": "按钮以设置"
+      },
+      "drop_here_to_unpin": "在此处拖动以解锁",
+      "edit": "编辑",
+      "network": "网络",
+      "networks": "网络",
+      "drag_to_rearrange": "拖动以重新排列",
+      "show_less": "显示较少",
+      "more": "更多",
+      "show_more": "更多网络",
+      "all_networks": "所有网络"
+    },
+    "token_launcher": {
+      "airdrop": {
+        "address_or_ens": "地址或 ENS",
+        "suggested_users": "建议用户",
+        "airdrop_lists": "空投列表",
+        "max_recipients_reached": "最大 %{maxRecipientCount} 收件人已达到"
+      },
+      "image_upload_error": {
+        "title": "抱歉，上传图片时出错。",
+        "subtitle": "请再试一次。"
+      },
+      "allocation_breakdown": {
+        "my_share": "我的份额",
+        "airdropping": "空投中",
+        "start_price": "起始价",
+        "sections": {
+          "my_share": {
+            "title": "创作者份额",
+            "description": "您在项目中的个人股份"
+          },
+          "airdropping": {
+            "title": "空投份额",
+            "description": "分发给朋友和支持者"
+          },
+          "liquidity_pool": {
+            "title": "流动性池份额",
+            "description": "确保交易顺畅和流动性"
+          },
+          "rainbow_share": {
+            "title": "彩虹之外",
+            "description": "未来社区分发"
+          }
+        }
+      },
+      "network_field": {
+        "balance": "余额: %{balance}",
+        "not_enough_funds": "资金不足，无法启动代币"
+      },
+      "prebuy": {
+        "balance_after_gas_fee": "可用余额: %{balance}",
+        "title": "预购更多代币"
+      },
+      "review": {
+        "token_allocation": "代币分配",
+        "your_share": "您的份额",
+        "airdropping": "空投中",
+        "about": "关于",
+        "total_cost": "总成本",
+        "initial_price": "初始价格",
+        "market_cap": "市值",
+        "total_supply": "总供应量",
+        "network": "网络"
+      },
+      "creating": {
+        "deploying": "部署 %{symbol}……"
+      },
+      "success": {
+        "title": "%{symbol} 已上线！",
+        "congrats": "恭喜，您刚刚将 %{name} 发布到世界！分享以传播美好氛围。"
+      },
+      "input_errors": {
+        "too_long": "太长了，朋友。",
+        "invalid_input": "输入无效",
+        "symbol_required": "需要 Ticker",
+        "name_required": "需要名称",
+        "too_big": "太大了。",
+        "must_be_greater_than_0": "必须大于 0",
+        "amount_is_greater_than_balance": "金额超过余额",
+        "amount_is_greater_than_max_prebuy_amount": "超过 %{maxPrebuyAmount} %{chainNativeAssetSymbol} 的最大预购金额",
+        "amount_is_less_than_min_prebuy_amount": "必须超过 %{minPrebuyAmount} %{chainNativeAssetSymbol} 的最小预购金额",
+        "amount_too_small": "金额太小！尝试多一点！"
+      },
+      "titles": {
+        "total_supply": "总供应量",
+        "ticker": "代码",
+        "name": "名称",
+        "network": "网络",
+        "description": "说明",
+        "airdrop": "空投给朋友",
+        "required_info": "必填信息",
+        "about": "关于",
+        "token_allocation": "代币分配",
+        "token_allocation_breakdown": "代币分配细节",
+        "mcap": "市值"
+      },
+      "placeholders": {
+        "ticker": "$NAME",
+        "enter_coin_name": "输入币名",
+        "describe_your_coin": "描述您的代币"
+      },
+      "buttons": {
+        "hold_to_create": "长按创建",
+        "creating": "创建中……",
+        "share_link": "分享链接",
+        "token_allocation_info": "更多信息",
+        "got_it": "我知道了",
+        "cancel": "取消"
+      },
+      "header": {
+        "new_coin": "新代币",
+        "review": "审阅",
+        "creating": "创建"
+      },
+      "links": {
+        "x": {
+          "name": "X/Twitter",
+          "placeholder": "用户名"
+        },
+        "telegram": {
+          "name": "Telegram",
+          "placeholder": "频道"
+        },
+        "farcaster": {
+          "name": "Farcaster",
+          "placeholder": "用户名"
+        },
+        "website": {
+          "name": "网站",
+          "placeholder": "https://homepage.com"
+        },
+        "other": {
+          "name": "其他",
+          "placeholder": "https://other.com"
+        },
+        "add_more": "添加更多"
+      },
+      "discard_and_exit": "放弃并退出",
+      "airdrops_sheet": {
+        "claim_button_text": "领取",
+        "empty_state_title": "尚无空投",
+        "title": "领取彩虹币"
+      },
+      "cards": {
+        "airdrops": {
+          "subtitle_loading": "载入中",
+          "subtitle_has_airdrops": "可领取",
+          "subtitle_no_airdrops": "尚无空投",
+          "title": "空投",
+          "title_singular": "空投"
+        },
+        "launch": {
+          "line_one": "推出\n",
+          "line_two": "您的代币"
+        }
+      },
+      "claim_airdrop_sheet": {
+        "by": "由",
+        "claiming": "认领中",
+        "created_by": "由 %{name} 创建",
+        "gifted_to": "赠送给",
+        "hold_to_claim": "长按领取",
+        "hold_to_retry": "长按重试",
+        "successfully_claimed": "领取成功",
+        "title": "领取 $%{symbol}",
+        "to_claim_on": "在 %{network} 上领取",
+        "view_coin": "查看代币",
+        "you": "你"
+      }
+    },
+    "done": "完成",
     "copy": "复制",
     "paste": "粘贴"
   }
