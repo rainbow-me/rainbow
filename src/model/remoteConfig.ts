@@ -229,7 +229,7 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
     logger.error(new RainbowError(`[remoteConfig]: Failed to fetch remote config`), {
       error: e,
     });
-    throw e;
+    return getRemoteConfig();
   } finally {
     logger.debug(`[remoteConfig]: Current remote config:\n${JSON.stringify(config, null, 2)}`);
   }

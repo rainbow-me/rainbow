@@ -11,7 +11,6 @@ import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 import { NeonButton } from '../../components/NeonButton';
 import { LineBreak } from '../../components/LineBreak';
 import { Bleed, Box, Inline, Stack } from '@/design-system';
-import { metadataPOSTClient } from '@/graphql';
 import { analyticsV2 } from '@/analytics';
 import { openInBrowser } from '@/utils/openInBrowser';
 
@@ -42,12 +41,6 @@ export const Share = () => {
         <AnimatedText
           color={textColors.account}
           delayStart={1000}
-          multiline
-          textContent={i18n.t(i18n.l.points.console.referral_link_bonus_text)}
-        />
-        <AnimatedText
-          color={textColors.account}
-          delayStart={1000}
           onComplete={() => {
             const complete = setTimeout(() => {
               setShowShareButtons(true);
@@ -55,7 +48,7 @@ export const Share = () => {
             return () => clearTimeout(complete);
           }}
           multiline
-          textContent={i18n.t(i18n.l.points.console.referral_link_bonus_text_extended)}
+          textContent={i18n.t(i18n.l.points.console.referral_link_bonus_text)}
         />
       </Stack>
       <AnimatePresence condition={showShareButtons && !!intent?.length} duration={300}>
@@ -82,10 +75,6 @@ export const Share = () => {
                 const beginNextPhase = setTimeout(async () => {
                   if (intent) {
                     openInBrowser(intent, false);
-                    await metadataPOSTClient.redeemCodeForPoints({
-                      address: accountAddress,
-                      redemptionCode: 'TWITTERSHARED',
-                    });
                   }
                   setAnimationKey(prevKey => prevKey + 1);
                   setStep(RainbowPointsFlowSteps.Review);

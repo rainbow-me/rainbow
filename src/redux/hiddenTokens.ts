@@ -113,7 +113,7 @@ export const hiddenTokensUpdateStateFromWeb =
       const pref = await getWebDataEnabled(accountAddress, network);
 
       if ((!isReadOnlyWallet && pref) || isReadOnlyWallet) {
-        const hiddenTokensFromCloud = (await getPreference('hidden', accountAddress)) as any | undefined;
+        const hiddenTokensFromCloud = await getPreference('hidden', accountAddress);
         if (hiddenTokensFromCloud?.hidden?.ids && hiddenTokensFromCloud?.hidden?.ids.length > 0) {
           dispatch({
             payload: {

@@ -10,6 +10,7 @@ import { Icon } from '@/components/icons';
 import { formatUrl } from '@/components/DappBrowser/utils';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { logger } from '@/logger';
 
 interface RowItem {
   icon?: string;
@@ -97,23 +98,29 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
 }
 
 function truncate(text: string) {
-  const minTruncatedLength = 100;
+  try {
+    const minTruncatedLength = 100;
 
-  const paragraphs = text.split('\n').filter(paragraph => paragraph.trim().length > 0);
+    const paragraphs = text.split('\n').filter(paragraph => paragraph.trim().length > 0);
+    if (!paragraphs.length) return text;
 
-  const firstParagraph = paragraphs[0];
-  const secondParagraph = paragraphs[1];
-  const first4Sentences = text.split('.').slice(0, 4).join('.') + '.';
+    const firstParagraph = paragraphs[0];
+    const secondParagraph = paragraphs[1];
+    const first4Sentences = text.split('.').slice(0, 4).join('.') + '.';
 
-  const firstSection = firstParagraph.length > minTruncatedLength ? firstParagraph : [firstParagraph, secondParagraph].join('\n\n');
-  const shorterOne = first4Sentences.length < firstSection.length ? first4Sentences : firstSection;
+    const firstSection = firstParagraph.length > minTruncatedLength ? firstParagraph : [firstParagraph, secondParagraph].join('\n\n');
+    const shorterOne = first4Sentences.length < firstSection.length ? first4Sentences : firstSection;
 
-  // If there is not much to expand, return the whole text
-  if (text.length < shorterOne.length * 1.5) {
+    // If there is not much to expand, return the whole text
+    if (text.length < shorterOne.length * 1.5) {
+      return text;
+    }
+
+    return shorterOne;
+  } catch (error) {
+    logger.warn('[AboutSection]: Error truncating text', { error, text });
     return text;
   }
-
-  return shorterOne;
 }
 
 function Description({ text }: { text: string }) {

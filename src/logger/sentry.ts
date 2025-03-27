@@ -6,6 +6,8 @@ import { IS_TEST } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import isTestFlight from '@/helpers/isTestFlight';
 
+const ERROR_MESSAGE_BLACKLIST = ['AbortError', 'Network request failed', 'There was an error with the request.'];
+
 export const defaultOptions: Sentry.ReactNativeOptions = {
   attachStacktrace: true,
   dsn: SENTRY_ENDPOINT,
@@ -14,7 +16,8 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
   enableAutoSessionTracking: false,
   enableTracing: false,
   environment: isTestFlight ? 'Testflight' : SENTRY_ENVIRONMENT,
-  integrations: [],
+  ignoreTransactions: ERROR_MESSAGE_BLACKLIST,
+  integrations: [Sentry.httpClientIntegration()], // http client integration will help us see payload / response from errored out requests to better understand the issue
   maxBreadcrumbs: 10,
   tracesSampleRate: 0,
 };

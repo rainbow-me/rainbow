@@ -62,7 +62,7 @@ export async function clearReactQueryCache({
       }
 
       const parsedCache: ReactQueryCache = JSON.parse(storedString);
-      const clientState = parsedCache.data.clientState;
+      const clientState = parsedCache?.data?.clientState;
       if (!clientState?.queries) {
         devLog('No queries found in clientState');
         return;
@@ -226,7 +226,7 @@ export function analyzeReactQueryStore({
     if (logQueryDataShapeParam) logQueryDataShape(parsedCache);
 
     // Extract queries or early exit if none
-    const clientState = parsedCache.data.clientState;
+    const clientState = parsedCache?.data?.clientState;
     if (!clientState?.queries) {
       devLog('No queries found in clientState');
       if (displayReport) {
