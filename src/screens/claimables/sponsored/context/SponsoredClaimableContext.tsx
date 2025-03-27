@@ -4,14 +4,13 @@ import { logger, RainbowError } from '@/logger';
 import { useAccountSettings } from '@/hooks';
 import { getProvider } from '@/handlers/web3';
 import { haptics, time } from '@/utils';
-import { queryClient } from '@/react-query';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
 import { ClaimStatus } from '../../shared/types';
 import { analyticsV2 } from '@/analytics';
 import { ADDYS_BASE_URL } from 'react-native-dotenv';
-import { claimablesStore } from '@/resources/addys/claimables/query';
+import { useClaimablesStore } from '@/state/claimables/claimables';
 
 enum ErrorMessages {
   CLAIM_API_CALL_FAILED = 'Failed to execute sponsored claim api call',
@@ -148,10 +147,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         });
 
         // Immediately remove the claimable from cached data
-        // TODO: Need to verify this does what we expect it to do
-        claimablesStore
-          .getState()
-          .queryCache[claimablesStore.getState().queryKey]?.data?.claimables.filter(c => c.uniqueId !== claimable.uniqueId);
+        useClaimablesStore.getState().markClaimed(claimable.uniqueId);
       }
     },
     onError: e => {
@@ -196,7 +192,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
     },
     onSettled: () => {
       // Clear and refresh claimables data 20s after claim button is pressed, regardless of success or failure
-      setTimeout(() => claimablesStore.getState().fetch(undefined, { staleTime: time.seconds(10) }), 20_000);
+      setTimeout(() => useClaimablesStore.getState().fetch(undefined, { staleTime: 0 }), 20_000);
     },
   });
 
@@ -205,9 +201,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
       value={{
         claimStatus,
         claimable,
-
         setClaimStatus,
-
         claim,
       }}
     >

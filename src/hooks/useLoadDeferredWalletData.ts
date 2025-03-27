@@ -3,7 +3,7 @@ import { AppState } from '@/redux/store';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-export const useLoadDeferredData = () => {
+export const useLoadDeferredWalletData = () => {
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
 

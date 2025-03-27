@@ -10,8 +10,8 @@ import { buildBriefWalletSectionsSelector, WalletSectionsState } from '@/helpers
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { positionsStore } from '@/resources/defi/PositionsQuery';
-import { claimablesStore } from '@/resources/addys/claimables/query';
+import { usePositionsStore } from '@/state/positions/positions';
+import { useClaimablesStore } from '@/state/claimables/claimables';
 import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analyticsV2 } from '@/analytics';
 import useUniqueTokens from './useUniqueTokens';
@@ -75,7 +75,7 @@ export default function useWalletSectionsData({
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
-  const positionsData = positionsStore(state =>
+  const positionsData = usePositionsStore(state =>
     state.getData({
       address: accountAddress,
       currency: nativeCurrency,
@@ -87,7 +87,7 @@ export default function useWalletSectionsData({
     return positionsData;
   }, [positionsData, positionsEnabled]);
 
-  const claimablesData = claimablesStore(state =>
+  const claimablesData = useClaimablesStore(state =>
     state.getData({
       address: accountAddress,
       currency: nativeCurrency,

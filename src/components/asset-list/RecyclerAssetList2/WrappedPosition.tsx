@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box, BoxProps } from '@/design-system';
-import { positionsStore } from '@/resources/defi/PositionsQuery';
+import { usePositionsStore } from '@/state/positions/positions';
 import { PositionCard } from '@/components/positions/PositionsCard';
 
 export default function WrappedPosition({ uniqueId, placement }: { uniqueId: string; placement: 'left' | 'right' }) {
-  const position = positionsStore(state => state.getPosition(uniqueId));
+  const position = usePositionsStore(state => state.getPosition(uniqueId));
 
   const placementProps: BoxProps =
     placement === 'left'

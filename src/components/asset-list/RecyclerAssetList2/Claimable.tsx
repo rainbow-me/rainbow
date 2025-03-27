@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
-import { claimablesStore } from '@/resources/addys/claimables/query';
+import { useClaimablesStore } from '@/state/claimables/claimables';
 import { FasterImageView } from '@candlefinance/faster-image';
 import { ButtonPressAnimation } from '@/components/animations';
 import { deviceUtils } from '@/utils';
@@ -20,7 +20,7 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
 
   const isETHRewards = uniqueId === 'rainbow-eth-rewards';
 
-  const claimable = claimablesStore(state => state.getData())?.claimables.find(claimable => claimable.uniqueId === uniqueId);
+  const claimable = useClaimablesStore(state => state.getData())?.claimables.find(claimable => claimable.uniqueId === uniqueId);
 
   const nativeCurrencyDisplay = useMemo(() => {
     if (!claimable) return null;
@@ -31,7 +31,7 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
     return claimable?.value?.claimAsset?.display;
   }, [claimable]);
 
-  if (!claimable || !nativeDisplay) return null;
+  if (!claimable || !nativeDisplay || !nativeCurrencyDisplay) return null;
 
   return (
     <Box
@@ -73,29 +73,25 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
           >
             {isETHRewards ? 'Rainbow ETH Rewards' : claimable?.name}
           </Text>
-          {nativeDisplay && (
-            <Text weight="semibold" color="labelTertiary" size="13pt">
-              {nativeDisplay}
-            </Text>
-          )}
+          <Text weight="semibold" color="labelTertiary" size="13pt">
+            {nativeDisplay}
+          </Text>
         </Stack>
       </Inline>
-      {nativeCurrencyDisplay && (
-        <Box
-          alignItems="center"
-          justifyContent="center"
-          height={{ custom: 28 }}
-          paddingHorizontal="8px"
-          borderRadius={12}
-          borderWidth={1.333}
-          borderColor={{ custom: 'rgba(7, 17, 32, 0.02)' }}
-          style={{ backgroundColor: 'rgba(7, 17, 32, 0.02)' }}
-        >
-          <Text weight="semibold" color="label" align="center" size="17pt">
-            {nativeCurrencyDisplay}
-          </Text>
-        </Box>
-      )}
+      <Box
+        alignItems="center"
+        justifyContent="center"
+        height={{ custom: 28 }}
+        paddingHorizontal="8px"
+        borderRadius={12}
+        borderWidth={1.333}
+        borderColor={{ custom: 'rgba(7, 17, 32, 0.02)' }}
+        style={{ backgroundColor: 'rgba(7, 17, 32, 0.02)' }}
+      >
+        <Text weight="semibold" color="label" align="center" size="17pt">
+          {nativeCurrencyDisplay}
+        </Text>
+      </Box>
     </Box>
   );
 });

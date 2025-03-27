@@ -3,6 +3,7 @@ import { useAccountSettings } from '.';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useNftSort } from './useNFTsSortBy';
 import { UniqueAsset } from '@/entities';
+import { useMemo } from 'react';
 
 type SendableUniqueToken = {
   data: UniqueAsset[];
@@ -26,18 +27,24 @@ export default function useUniqueTokens() {
     },
   });
 
-  const sendableUniqueTokens = uniqueTokens?.filter(uniqueToken => uniqueToken.isSendable);
-  const grouped = groupBy(sendableUniqueTokens, token => token.familyName);
-  const families = Object.keys(grouped).sort();
-  const sendableTokens: SendableUniqueToken[] = [];
-  for (let i = 0; i < families.length; i++) {
-    const newObject: SendableUniqueToken = {
-      data: grouped[families[i]],
-      familyId: i,
-      familyImage: grouped[families[i]][0].familyImage ?? null,
-      name: families[i],
-    };
-    sendableTokens.push(newObject);
-  }
-  return { sendableUniqueTokens: sendableTokens, uniqueTokens, isFetchingNfts };
+  const sendableUniqueTokens = useMemo(() => {
+    if (!uniqueTokens?.length) return [];
+
+    const sendableTokens = uniqueTokens.filter(uniqueToken => uniqueToken.isSendable);
+    const grouped = groupBy(sendableTokens, token => token.familyName);
+    const families = Object.keys(grouped).sort();
+
+    return families.map((family, index) => ({
+      data: grouped[family],
+      familyId: index,
+      familyImage: grouped[family][0].familyImage ?? null,
+      name: family,
+    }));
+  }, [uniqueTokens]);
+
+  return {
+    sendableUniqueTokens,
+    uniqueTokens,
+    isFetchingNfts,
+  };
 }

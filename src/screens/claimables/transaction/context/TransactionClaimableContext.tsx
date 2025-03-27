@@ -40,7 +40,7 @@ import { estimateClaimUnlockSwapGasLimit } from '../estimateGas';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import showWalletErrorAlert from '@/helpers/support';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { claimablesStore } from '@/resources/addys/claimables/query';
+import { useClaimablesStore } from '@/state/claimables/claimables';
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
@@ -498,10 +498,7 @@ export function TransactionClaimableContextProvider({
       });
 
       // Immediately remove the claimable from cached data
-      // TODO: Need to verify this does what we expect it to do
-      claimablesStore
-        .getState()
-        .queryCache[claimablesStore.getState().queryKey]?.data?.claimables.filter(c => c.uniqueId !== claimable.uniqueId);
+      useClaimablesStore.getState().markClaimed(claimable.uniqueId);
     },
     onError: e => {
       haptics.notificationError();
@@ -546,7 +543,7 @@ export function TransactionClaimableContextProvider({
     },
     onSettled: () => {
       // Clear and refresh claimables data 20s after claim button is pressed, regardless of success or failure
-      setTimeout(() => claimablesStore.getState().fetch(undefined, { staleTime: time.seconds(10) }), 20_000);
+      setTimeout(() => useClaimablesStore.getState().fetch(undefined, { staleTime: 0 }), 20_000);
     },
   });
 

@@ -15,7 +15,7 @@ import Routes from '@/navigation/Routes';
 import { useWalletCohort } from '@/hooks/useWalletCohort';
 import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
 import { useInitializeWalletAndSetParams } from '@/hooks/useInitiailizeWalletAndSetParams';
-import { useLoadDeferredData } from '@/hooks/usLoadDeferredWalletData';
+import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
 import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 
 const UtilityComponents = React.memo(() => (
@@ -25,6 +25,15 @@ const UtilityComponents = React.memo(() => (
     <MobileWalletProtocolListener />
   </>
 ));
+
+const ToastComponent = React.memo(() => {
+  const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);
+  return (
+    <ToastPositionContainer>
+      <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" testID="address-copied-toast" />
+    </ToastPositionContainer>
+  );
+});
 
 function WalletScreen() {
   const { network: currentNetwork, accountAddress } = useAccountSettings();
@@ -40,10 +49,9 @@ function WalletScreen() {
   useWalletCohort();
   useRemoveScreen(Routes.WELCOME_SCREEN);
   useInitializeWalletAndSetParams();
-  useLoadDeferredData();
+  useLoadDeferredWalletData();
   useAppIconIdentify();
 
-  const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);
   const isLoadingUserAssetsAndAddress = isLoadingUserAssets && !!accountAddress;
   const { highContrastAccentColor } = useAccountAccentColor();
 
@@ -63,10 +71,7 @@ function WalletScreen() {
           walletBriefSectionsData={walletBriefSectionsData}
         />
       </Box>
-      <ToastPositionContainer>
-        <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" testID="address-copied-toast" />
-      </ToastPositionContainer>
-
+      <ToastComponent />
       <UtilityComponents />
     </Box>
   );

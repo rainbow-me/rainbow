@@ -1,13 +1,7 @@
 import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import { NativeCurrencyKey, ParsedAddressAsset, UniqueAsset } from '@/entities';
-import {
-  CellType,
-  CellTypes,
-  ClaimableExtraData,
-  LoadingAssetsSection,
-  PositionExtraData,
-} from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { DEFI_POSITIONS, CLAIMABLES } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
 import { RainbowConfig } from '@/model/remoteConfig';
@@ -18,7 +12,7 @@ import useUniqueTokens from '@/hooks/useUniqueTokens';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
-import { ClaimablesStore } from '@/resources/addys/claimables/query';
+import { ClaimablesStore } from '@/state/claimables/claimables';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 
 const CONTENT_PLACEHOLDER: CellTypes[] = [
