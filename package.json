@@ -31,6 +31,7 @@
     "detox:ios:release": "detox build -c ios.sim.release && detox test -c ios.sim.release --maxWorkers 2 -- --bail 1",
     "ds:install": "cd src/design-system/docs && yarn install",
     "ds": "cd src/design-system/docs && yarn dev",
+    "e2e": "scripts/e2e.sh",
     "fast": "yarn install && yarn setup && yarn install-pods-fast",
     "gradle": "cd android && ./gradlew",
     "anvil": "sh ./scripts/anvil.sh",
