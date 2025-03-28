@@ -164,6 +164,7 @@ function AirdropGroups({
                     imageUrl: item.icons.iconURL,
                     addresses: 'addresses' in item ? item.addresses.map(address => address.address) : undefined,
                   });
+                  // Hacky, but scrollview's size won't grow until the next render
                   setTimeout(() => {
                     infoInputScrollRef.current?.scrollTo({ y: infoInputScrollY.current + SMALL_INPUT_HEIGHT + 8, animated: true });
                   }, 1);
