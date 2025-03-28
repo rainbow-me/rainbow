@@ -137,7 +137,15 @@ function TokenLauncherScreenContent() {
             <StepBorderEffects width={screenWidth} height={contentContainerHeight} />
           </Box>
           <Animated.View style={styles.infoStepStyle}>
+            {/* TODO: This makes the start of the interactive keyboard dismissal start at the top of the sticky footer instead of the top of the keyboard, but there is some layout bug */}
+            {/* <KeyboardGestureArea
+              textInputNativeID={GHOST_INPUT_ACCESSORY_NATIVE_ID}
+              style={{ flexGrow: 1 }}
+              interpolator="ios"
+              offset={keyboardVerticalOffset}
+            > */}
             <InfoInputStep />
+            {/* </KeyboardGestureArea> */}
           </Animated.View>
           {isReviewStepVisible && (
             <Animated.View exiting={reviewStepExitingAnimation} style={styles.reviewStepStyle}>

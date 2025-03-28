@@ -16,7 +16,13 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { FieldContainer } from './FieldContainer';
 import { FieldLabel } from './FieldLabel';
-import { UNFOCUSED_FIELD_BORDER_COLOR, FOCUSED_FIELD_BORDER_COLOR, INPUT_HEIGHT, ERROR_RED } from '../constants';
+import {
+  UNFOCUSED_FIELD_BORDER_COLOR,
+  FOCUSED_FIELD_BORDER_COLOR,
+  INPUT_HEIGHT,
+  ERROR_RED,
+  GHOST_INPUT_ACCESSORY_NATIVE_ID,
+} from '../constants';
 import { ButtonPressAnimation } from '@/components/animations';
 
 const TITLE_GAP = 10;
@@ -56,6 +62,7 @@ const FieldInput = React.memo(
 
     return (
       <AnimatedInput
+        nativeID={GHOST_INPUT_ACCESSORY_NATIVE_ID}
         ref={ref}
         numberOfLines={1}
         style={[
