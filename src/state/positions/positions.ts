@@ -18,7 +18,7 @@ type PositionStoreActions = {
 export const usePositionsStore = createQueryStore<RainbowPositions, PositionsStoreParams, PositionStoreActions>(
   {
     fetcher: async ({ address, currency }, abortController) => {
-      return getPositions(address, currency, abortController);
+      return await getPositions(address, currency, abortController);
     },
     params: {
       address: $ => $(userAssetsStoreManager).address,

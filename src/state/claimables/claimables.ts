@@ -18,7 +18,7 @@ export type ClaimablesActions = {
 export const useClaimablesStore = createQueryStore<ClaimablesStore, ClaimablesArgs, ClaimablesActions>(
   {
     fetcher: async ({ address, currency }, abortController) => {
-      return getClaimables({ address, currency, abortController });
+      return await getClaimables({ address, currency, abortController });
     },
     params: {
       address: $ => $(userAssetsStoreManager).address,
