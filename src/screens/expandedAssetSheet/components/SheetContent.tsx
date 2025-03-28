@@ -4,7 +4,7 @@ import { SectionId, useExpandedAssetSheetContext } from '../context/ExpandedAsse
 import { AccentColorProvider, Bleed, Box, ColorModeProvider, Separator, Stack, useColorMode } from '@/design-system';
 import { CollapsibleSection, LAYOUT_ANIMATION } from './shared/CollapsibleSection';
 import Animated from 'react-native-reanimated';
-import { AboutSection, BalanceSection, BuySection, MarketStatsSection, ChartSection, ClaimSection } from './sections';
+import { AboutSection, BalanceSection, BuySection, MarketStatsSection, ChartSection, ClaimSection, HistorySection } from './sections';
 import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
@@ -89,6 +89,7 @@ export function SheetContent() {
             {/* {isOwnedAsset && (
               <CollapsibleSection content={<BridgeSection />} icon="􁾫" id={SectionId.BRIDGE} primaryText="Bridge" secondaryText={'to'} />
             )} */}
+            <CollapsibleSection content={<HistorySection />} icon="􀐫" id={SectionId.HISTORY} primaryText="History" />
             <CollapsibleSection content={<AboutSection />} icon="􁜾" id={SectionId.ABOUT} primaryText="About" />
           </Stack>
         </Box>

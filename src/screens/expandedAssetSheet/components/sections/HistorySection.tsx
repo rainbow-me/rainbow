@@ -1,0 +1,240 @@
+import React, { memo, useCallback, useMemo, useState } from 'react';
+import { AnimatedText, Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
+import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
+import { useAccountSettings } from '@/hooks';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { Tabs } from '../shared/Tabs/Tabs';
+import { useTokenInteractions } from '@/resources/metadata/tokenInteractions';
+import { TokenInteraction, TokenInteractionDirection } from '@/graphql/__generated__/metadata';
+import { useTabContext } from '../shared/Tabs/TabContext';
+import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { format } from 'date-fns';
+import { convertRawAmountToBalanceWorklet, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
+import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { openInBrowser } from '@/utils/openInBrowser';
+
+const DEFAULT_VISIBLE_ITEM_COUNT = 4;
+const TABS = ['All', 'Buys', 'Sells'];
+
+const ROW_HEIGHT = 32;
+const ROW_HEIGHT_WITH_PADDING = 56;
+
+function MoreButton({ tokenInteractions }: { tokenInteractions: TokenInteraction[] }) {
+  const { accentColors } = useExpandedAssetSheetContext();
+  const { isExpanded } = useTabContext();
+
+  const buttonLabel = useDerivedValue<string>(() => {
+    return isExpanded.value ? 'Less' : 'More';
+  });
+
+  if (tokenInteractions.length <= DEFAULT_VISIBLE_ITEM_COUNT) {
+    return null;
+  }
+
+  return (
+    <GestureHandlerButton
+      scaleTo={0.9}
+      onPressWorklet={() => {
+        'worklet';
+        isExpanded.value = !isExpanded.value;
+      }}
+    >
+      <Box
+        style={[
+          {
+            backgroundColor: accentColors.opacity3,
+            borderColor: accentColors.opacity2,
+            borderWidth: THICK_BORDER_WIDTH,
+            borderRadius: 20,
+            height: 36,
+            paddingHorizontal: 12,
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+        ]}
+      >
+        <TextShadow blur={12} shadowOpacity={0.24}>
+          <AnimatedText size="17pt" weight="heavy" color="accent">
+            {buttonLabel}
+          </AnimatedText>
+        </TextShadow>
+      </Box>
+    </GestureHandlerButton>
+  );
+}
+
+const SkeletonRow = ({ width, height }: { width: number; height: number }) => {
+  const { isDarkMode } = useColorMode();
+  const { accentColors } = useExpandedAssetSheetContext();
+  const fillTertiary = useBackgroundColor('fillTertiary');
+  const shimmerColor = opacity(fillTertiary, isDarkMode ? 0.025 : 0.06);
+
+  return (
+    <Box
+      backgroundColor={accentColors.surfaceSecondary}
+      height={{ custom: height }}
+      width={{ custom: width }}
+      borderRadius={18}
+      style={{ overflow: 'hidden' }}
+    >
+      <ShimmerAnimation color={shimmerColor} gradientColor={shimmerColor} />
+    </Box>
+  );
+};
+
+export const ListItem = memo(function ListItem({ item, nativeCurrency }: { item: TokenInteraction; nativeCurrency: NativeCurrencyKey }) {
+  const { accentColors, basicAsset: asset } = useExpandedAssetSheetContext();
+  const labelTertiary = useForegroundColor('labelTertiary');
+
+  const icon = useMemo(() => {
+    return item.direction === TokenInteractionDirection.In ? '􁾯' : '􁾫';
+  }, [item.direction]);
+
+  const symbol = useMemo(() => {
+    return item.direction === TokenInteractionDirection.In ? '+' : '-';
+  }, [item.direction]);
+
+  const iconColor = useMemo(() => {
+    return item.direction === TokenInteractionDirection.In ? accentColors.color : labelTertiary;
+  }, [item.direction, accentColors.color, labelTertiary]);
+
+  const direction = useMemo(() => {
+    // TODO: i18n these
+    return item.direction === TokenInteractionDirection.In ? 'Bought' : 'Sold';
+  }, [item.direction]);
+
+  const shortenedMonth = useMemo(() => {
+    return format(new Date(item.interactedAt), 'MMM d');
+  }, [item.interactedAt]);
+
+  const nativeAmount = useMemo(() => {
+    return convertRawAmountToNativeDisplay(item.amount, asset.decimals, asset.price?.value ?? 0, nativeCurrency);
+  }, [item.amount, asset.decimals, asset.price, nativeCurrency]);
+
+  const currencyAmount = useMemo(() => {
+    return convertRawAmountToBalanceWorklet(item.amount, asset).display.replace(asset.symbol, '');
+  }, [item.amount, asset]);
+
+  const navigateToTransaction = useCallback(() => {
+    openInBrowser(item.explorerURL);
+  }, [item.explorerURL]);
+
+  return (
+    <Box as={ButtonPressAnimation} scaleTo={0.94} onPress={navigateToTransaction} gap={11} width="full">
+      <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+        <Box flexDirection="row" alignItems="center" gap={5}>
+          <Text size="icon 11px" color={{ custom: iconColor }} weight="bold">
+            {icon}
+          </Text>
+          <Text size="13pt" color={{ custom: iconColor }} weight="semibold">
+            {direction}
+          </Text>
+        </Box>
+        <Text size="13pt" color="labelQuaternary" weight="medium">
+          {shortenedMonth}
+        </Text>
+      </Box>
+      <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+        <Box flexDirection="row" alignItems="center" gap={5}>
+          <Text size="17pt" color="labelSecondary" weight="bold">
+            {symbol} {currencyAmount}
+          </Text>
+          <Text size="17pt" color="labelQuaternary" weight="semibold">
+            {asset.symbol}
+          </Text>
+        </Box>
+        <Text size="17pt" color="labelSecondary" weight="medium">
+          {nativeAmount.display}
+        </Text>
+      </Box>
+    </Box>
+  );
+});
+
+export const ListData = memo(function ListData() {
+  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { basicAsset: asset } = useExpandedAssetSheetContext();
+  const { activeTabIndex, isExpanded } = useTabContext();
+
+  const [tabIndex, setTabIndex] = useState<number>(activeTabIndex.value);
+
+  useSyncSharedValue({
+    state: tabIndex,
+    setState: setTabIndex,
+    sharedValue: activeTabIndex,
+    syncDirection: 'sharedValueToState',
+  });
+
+  const { data: tokenInteractions = [], isLoading } = useTokenInteractions({
+    chainID: asset.chainId,
+    address: accountAddress,
+    tokenAddress: asset.address,
+    currency: nativeCurrency,
+  });
+
+  const buys = useMemo(() => {
+    return tokenInteractions?.filter(interaction => interaction.direction === TokenInteractionDirection.In);
+  }, [tokenInteractions]);
+
+  const sells = useMemo(() => {
+    return tokenInteractions?.filter(interaction => interaction.direction === TokenInteractionDirection.Out);
+  }, [tokenInteractions]);
+
+  const filteredTokenInteractions = useMemo(() => {
+    if (tabIndex === 1) return buys;
+    if (tabIndex === 2) return sells;
+
+    return tokenInteractions;
+  }, [tabIndex, tokenInteractions, buys, sells]);
+
+  const listStyle = useAnimatedStyle(() => {
+    const minOfTwoOptions = Math.min(filteredTokenInteractions.length, DEFAULT_VISIBLE_ITEM_COUNT);
+    const amount = isExpanded.value
+      ? filteredTokenInteractions.length * ROW_HEIGHT_WITH_PADDING
+      : minOfTwoOptions * ROW_HEIGHT_WITH_PADDING;
+    return {
+      height: withSpring(amount, SPRING_CONFIGS.springConfig),
+    };
+  });
+
+  if (isLoading && filteredTokenInteractions.length === 0) {
+    return (
+      <Box gap={24}>
+        {Array.from({ length: DEFAULT_VISIBLE_ITEM_COUNT }).map((_, index) => (
+          <SkeletonRow key={index} width={DEVICE_WIDTH - 48} height={ROW_HEIGHT} />
+        ))}
+      </Box>
+    );
+  }
+
+  return (
+    <Box gap={12}>
+      <Animated.FlatList
+        data={filteredTokenInteractions}
+        style={[listStyle, { paddingTop: 4 }]}
+        contentContainerStyle={{ gap: 24 }}
+        scrollEnabled={false}
+        renderItem={({ item }) => {
+          return <ListItem item={item} nativeCurrency={nativeCurrency} />;
+        }}
+      />
+      <MoreButton tokenInteractions={tokenInteractions} />
+    </Box>
+  );
+});
+
+export const HistorySection = memo(function HistorySection() {
+  const { accentColors } = useExpandedAssetSheetContext();
+
+  return (
+    <Tabs tabs={TABS} useViewController={false} accentColor={accentColors.color}>
+      <ListData />
+    </Tabs>
+  );
+});
