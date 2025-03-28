@@ -146,7 +146,12 @@ export const ExchangeRateBubble = () => {
   });
 
   return (
-    <GestureHandlerButton onPressWorklet={onChangeIndex} scaleTo={0.9} hitSlop={{ left: 24, right: 24 }} style={pointerEventsStyle}>
+    <GestureHandlerButton
+      onPressWorklet={onChangeIndex}
+      scaleTo={0.9}
+      hitSlop={{ left: 24, right: 24, top: 12, bottom: 12 }}
+      style={pointerEventsStyle}
+    >
       <Box as={Animated.View} alignItems="center" justifyContent="center" style={AnimatedSwapStyles.hideWhenInputsExpandedOrPriceImpact}>
         <Box
           alignItems="center"
