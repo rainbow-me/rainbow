@@ -18,9 +18,12 @@ import { format } from 'date-fns';
 import { convertRawAmountToBalanceWorklet, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
 import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { openInBrowser } from '@/utils/openInBrowser';
+import * as i18n from '@/languages';
+
+const l = i18n.l.expanded_state.sections.history;
 
 const DEFAULT_VISIBLE_ITEM_COUNT = 4;
-const TABS = ['All', 'Buys', 'Sells'];
+const TABS = [i18n.t(l.tabs.all), i18n.t(l.tabs.buys), i18n.t(l.tabs.sells)];
 
 const ROW_HEIGHT = 32;
 const ROW_HEIGHT_WITH_PADDING = 56;
@@ -29,8 +32,11 @@ function MoreButton({ tokenInteractions }: { tokenInteractions: TokenInteraction
   const { accentColors } = useExpandedAssetSheetContext();
   const { isExpanded } = useTabContext();
 
+  const less = i18n.t(l.less);
+  const more = i18n.t(l.more);
+
   const buttonLabel = useDerivedValue<string>(() => {
-    return isExpanded.value ? 'Less' : 'More';
+    return isExpanded.value ? less : more;
   });
 
   if (tokenInteractions.length <= DEFAULT_VISIBLE_ITEM_COUNT) {
@@ -105,8 +111,7 @@ export const ListItem = memo(function ListItem({ item, nativeCurrency }: { item:
   }, [item.direction, accentColors.color, labelTertiary]);
 
   const direction = useMemo(() => {
-    // TODO: i18n these
-    return item.direction === TokenInteractionDirection.In ? 'Bought' : 'Sold';
+    return item.direction === TokenInteractionDirection.In ? i18n.t(l.bought) : i18n.t(l.sold);
   }, [item.direction]);
 
   const shortenedMonth = useMemo(() => {
