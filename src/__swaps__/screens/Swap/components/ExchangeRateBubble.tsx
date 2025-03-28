@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Inline, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
@@ -9,7 +8,6 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { GestureHandlerButton } from './GestureHandlerButton';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
@@ -148,13 +146,8 @@ export const ExchangeRateBubble = () => {
   });
 
   return (
-    <GestureHandlerButton onPressWorklet={onChangeIndex} scaleTo={0.9} style={[styles.buttonPosition, pointerEventsStyle]}>
-      <Box
-        as={Animated.View}
-        alignItems="center"
-        justifyContent="center"
-        style={[AnimatedSwapStyles.hideWhenInputsExpandedOrPriceImpact, styles.buttonPadding]}
-      >
+    <GestureHandlerButton onPressWorklet={onChangeIndex} scaleTo={0.9} hitSlop={{ left: 24, right: 24 }} style={pointerEventsStyle}>
+      <Box as={Animated.View} alignItems="center" justifyContent="center" style={AnimatedSwapStyles.hideWhenInputsExpandedOrPriceImpact}>
         <Box
           alignItems="center"
           as={Animated.View}
@@ -191,16 +184,3 @@ export const ExchangeRateBubble = () => {
     </GestureHandlerButton>
   );
 };
-
-const styles = StyleSheet.create({
-  buttonPadding: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-  },
-  buttonPosition: {
-    alignSelf: 'center',
-    minWidth: DEVICE_WIDTH * 0.6,
-    position: 'absolute',
-    top: 4,
-  },
-});

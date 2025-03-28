@@ -31,6 +31,7 @@ import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
 import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
 import { useSwapsSearchStore } from './resources/search/searchV2';
+import { ReviewButton } from './components/ReviewButton';
 
 /** README
  * This screen is largely driven by Reanimated and Gesture Handler, which
@@ -196,6 +197,8 @@ const SliderAndKeyboardAndBottomControls = () => {
 
 const ExchangeRateBubbleAndWarning = () => {
   const { AnimatedSwapStyles } = useSwapContext();
+  const isDegenModeEnabled = useSwapsStore(s => s.degenMode);
+
   return (
     <Box
       as={Animated.View}
@@ -203,7 +206,17 @@ const ExchangeRateBubbleAndWarning = () => {
       justifyContent="center"
       style={[styles.swapWarningAndExchangeWrapper, AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas]}
     >
-      <ExchangeRateBubble />
+      <Box
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between"
+        width="full"
+        paddingHorizontal={'24px'}
+        paddingVertical={'12px'}
+      >
+        <ExchangeRateBubble />
+        {isDegenModeEnabled && <ReviewButton />}
+      </Box>
       <SwapWarning />
     </Box>
   );
