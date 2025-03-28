@@ -204,20 +204,19 @@ const ExchangeRateBubbleAndWarning = () => {
       as={Animated.View}
       alignItems="center"
       justifyContent="center"
+      paddingVertical={'20px'}
+      paddingHorizontal={'24px'}
       style={[styles.swapWarningAndExchangeWrapper, AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas]}
     >
-      <Box
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="space-between"
-        width="full"
-        paddingHorizontal={'24px'}
-        paddingVertical={'12px'}
-      >
-        <ExchangeRateBubble />
+      <Box flexDirection="row" justifyContent="space-between" width="full">
+        <Box as={Animated.View} style={AnimatedSwapStyles.removeWhenNoPriceImpact}>
+          <SwapWarning />
+        </Box>
+        <Box as={Animated.View} style={AnimatedSwapStyles.removeWhenPriceImpact}>
+          <ExchangeRateBubble />
+        </Box>
         {isDegenModeEnabled && <ReviewButton />}
       </Box>
-      <SwapWarning />
     </Box>
   );
 };

@@ -26,7 +26,7 @@ export function ReviewButton() {
         }}
         scaleTo={0.9}
       >
-        <Box as={Animated.View} alignItems="center" justifyContent="center" style={AnimatedSwapStyles.hideWhenInputsExpandedOrPriceImpact}>
+        <Box as={Animated.View} alignItems="center" justifyContent="center" style={AnimatedSwapStyles.hideWhenInputsExpanded}>
           <Box
             alignItems="center"
             justifyContent="center"
