@@ -229,7 +229,7 @@ export const ListData = memo(function ListData() {
           return <ListItem item={item} nativeCurrency={nativeCurrency} />;
         }}
       />
-      <MoreButton tokenInteractions={tokenInteractions} />
+      <MoreButton tokenInteractions={filteredTokenInteractions} />
     </Box>
   );
 });
