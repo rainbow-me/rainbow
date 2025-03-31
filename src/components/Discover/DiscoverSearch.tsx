@@ -220,12 +220,10 @@ export default function DiscoverSearch() {
   );
 
   useEffect(() => {
-    if (searchQueryForSearch && !isLoading) {
-      if (lastSearchQuery !== searchQueryForSearch) {
-        fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns, profilesEnabled);
-      }
+    if (searchQueryForSearch && lastSearchQuery !== searchQueryForSearch) {
+      fetchSuggestions(searchQueryForSearch, addEnsResults, setIsFetchingEns, profilesEnabled);
     }
-  }, [addEnsResults, isSearching, lastSearchQuery, searchQuery, setIsFetchingEns, profilesEnabled, isLoading, searchQueryForSearch]);
+  }, [addEnsResults, lastSearchQuery, setIsFetchingEns, profilesEnabled, searchQueryForSearch]);
 
   useEffect(() => {
     if (!sectionListRef.current?.props.data?.length) {
