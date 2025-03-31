@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { useSharedValue } from 'react-native-reanimated';
 
@@ -32,6 +32,7 @@ import * as i18n from '@/languages';
 import { PoapMintError } from '@/utils/poaps';
 import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -71,7 +72,7 @@ type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 const PoapSheet = () => {
   const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate, goBack } = useNavigation();
+  const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
   const { isReadOnlyWallet } = useWallets();
   const params = useRoute();
@@ -297,7 +298,7 @@ const PoapSheet = () => {
                     analyticsV2.track(event.poapsViewedOnPoap, {
                       eventId: poapEvent.id,
                     });
-                    Linking.openURL(poapGalleryUrl);
+                    openInBrowser(poapGalleryUrl);
                   }}
                 >
                   <Text size="15pt" color="labelSecondary" weight="bold">

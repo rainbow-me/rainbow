@@ -38,7 +38,7 @@ function BuyButton({ currencyAmount, numberOfButtons, onPress }: { currencyAmoun
   const { nativeCurrency } = useAccountSettings();
 
   const currencyAmountDisplay = useMemo(
-    () => convertAmountToNativeDisplay(currencyAmount, nativeCurrency, 2, true),
+    () => convertAmountToNativeDisplay(currencyAmount, nativeCurrency, 2, true, currencyAmount >= 100_000),
     [currencyAmount, nativeCurrency]
   );
 

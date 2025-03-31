@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { Linking } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { formatURLForDisplay, magicMemo } from '../utils';
 import { ButtonPressAnimation } from './animations';
@@ -7,6 +6,7 @@ import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';
 import styled from '@/styled-thing';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const Container = styled(RowWithMargins).attrs({
   align: 'center',
@@ -26,7 +26,7 @@ const Link = ({
   weight = 'semibold',
   ...props
 }) => {
-  const handlePress = useCallback(() => Linking.openURL(url), [url]);
+  const handlePress = useCallback(() => openInBrowser(url), [url]);
   const { colors } = useTheme();
 
   return (
