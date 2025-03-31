@@ -758,7 +758,10 @@
           "more": "More",
           "less": "Less",
           "bought": "Bought",
-          "sold": "Sold"
+          "sold": "Sold",
+          "received": "Received",
+          "sent": "Sent",
+          "unknown": "Unknown"
         }
       },
       "chart": {

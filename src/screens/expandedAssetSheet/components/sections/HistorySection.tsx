@@ -7,7 +7,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { Tabs } from '../shared/Tabs/Tabs';
 import { useTokenInteractions } from '@/resources/metadata/tokenInteractions';
-import { TokenInteraction, TokenInteractionDirection } from '@/graphql/__generated__/metadata';
+import { TokenInteraction, TokenInteractionDirection, TokenInteractionType } from '@/graphql/__generated__/metadata';
 import { useTabContext } from '../shared/Tabs/TabContext';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { opacity } from '@/__swaps__/utils/swaps';
@@ -120,15 +120,26 @@ export const ListItem = memo(function ListItem({ item, nativeCurrency }: { item:
   }, [item.direction, accentColors.color, labelTertiary]);
 
   const direction = useMemo(() => {
-    return item.direction === TokenInteractionDirection.In ? i18n.t(l.bought) : i18n.t(l.sold);
-  }, [item.direction]);
+    switch (item.type) {
+      case TokenInteractionType.Bought:
+        return i18n.t(l.bought);
+      case TokenInteractionType.Sold:
+        return i18n.t(l.sold);
+      case TokenInteractionType.Received:
+        return i18n.t(l.received);
+      case TokenInteractionType.Sent:
+        return i18n.t(l.sent);
+      default:
+        return i18n.t(l.unknown);
+    }
+  }, [item.type]);
 
   const shortenedMonth = useMemo(() => {
     return format(new Date(item.interactedAt), 'MMM d');
   }, [item.interactedAt]);
 
   const nativeAmount = useMemo(() => {
-    return convertRawAmountToNativeDisplay(item.amount, asset.decimals, asset.price?.value ?? 0, nativeCurrency);
+    return convertRawAmountToNativeDisplay(item.amount, asset.decimals, item.price ?? 0, nativeCurrency);
   }, [item.amount, asset.decimals, asset.price, nativeCurrency]);
 
   const currencyAmount = useMemo(() => {
