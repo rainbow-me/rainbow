@@ -366,10 +366,7 @@ const querySwapAsset = async (uniqueId: string | undefined): Promise<ParsedSearc
 
   const userAsset = userAssetsStore.getState().getUserAsset(uniqueId) || undefined;
 
-  const searchResults = await searchVerifiedTokens(
-    { query: address.toLowerCase(), chainId: ChainId.mainnet, list: TokenLists.Verified },
-    null
-  );
+  const searchResults = await searchVerifiedTokens({ query: address.toLowerCase(), chainId, list: TokenLists.Verified }, null);
 
   const searchAsset = searchResults.results.filter(x => !!x)?.[0];
 
