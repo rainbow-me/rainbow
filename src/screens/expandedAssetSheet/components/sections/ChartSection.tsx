@@ -59,7 +59,7 @@ export function ChartSection() {
   );
 
   return (
-    <ChartPathProvider currentPrice={asset.price.value ?? undefined} data={throttledData}>
+    <ChartPathProvider data={throttledData}>
       <Chart
         latestChange={latestChange}
         latestPrice={asset.price.value}
