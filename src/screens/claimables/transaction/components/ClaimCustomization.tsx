@@ -228,7 +228,7 @@ export function ClaimCustomization() {
       setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'none' });
       setIsInitialState(false);
     },
-    [resetState, setOutputConfig, setQuoteState, setGasState]
+    [setOutputConfig, setQuoteState, setGasState]
   );
 
   const isDisabled =

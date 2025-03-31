@@ -34,6 +34,7 @@ export const parseClaimables = <C extends Claimable>(
         uniqueId: claimable.unique_id,
         analyticsId: claimable.type,
         iconUrl: claimable.dapp.icon_url,
+        type: claimable.type,
         value: {
           claimAsset: convertRawAmountToBalance(claimable.amount, claimable.asset),
           nativeAsset: convertRawAmountToNativeDisplay(claimable.amount, claimable.asset.decimals, claimable.asset.price.value, currency),
@@ -47,7 +48,7 @@ export const parseClaimables = <C extends Claimable>(
         }
         return {
           ...baseClaimable,
-          type: 'transaction',
+          actionType: 'transaction',
           action: {
             to: claimable.claim_action[0].address_to,
             data: claimable.claim_action[0].calldata,
@@ -56,7 +57,7 @@ export const parseClaimables = <C extends Claimable>(
       } else if (claimable.claim_action_type === 'sponsored') {
         return {
           ...baseClaimable,
-          type: 'sponsored',
+          actionType: 'sponsored',
           action: { method: claimable.claim_action[0].method, url: claimable.claim_action[0].url },
         };
       }
