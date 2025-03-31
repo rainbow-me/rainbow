@@ -12,8 +12,18 @@ import { useTabContext } from '../shared/Tabs/TabContext';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import Animated, {
+  clamp,
+  FadeIn,
+  interpolate,
+  SequencedTransition,
+  SharedTransition,
+  useAnimatedStyle,
+  useDerivedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { format } from 'date-fns';
 import { convertRawAmountToBalanceWorklet, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
 import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
@@ -25,8 +35,18 @@ const l = i18n.l.expanded_state.sections.history;
 const DEFAULT_VISIBLE_ITEM_COUNT = 4;
 const TABS = [i18n.t(l.tabs.all), i18n.t(l.tabs.buys), i18n.t(l.tabs.sells)];
 
+const LIST_BUTTON_GAP = 20;
 const ROW_HEIGHT = 32;
-const ROW_HEIGHT_WITH_PADDING = 56;
+const ROW_PADDING = 24;
+const LIST_PADDING = 4;
+const MORE_BUTTON_HEIGHT = 36;
+
+const historyTransition = SharedTransition.custom(values => {
+  'worklet';
+  return {
+    height: withSpring(values.targetHeight, SPRING_CONFIGS.springConfig),
+  };
+});
 
 function MoreButton({ tokenInteractions }: { tokenInteractions: TokenInteraction[] }) {
   const { accentColors } = useExpandedAssetSheetContext();
@@ -58,7 +78,7 @@ function MoreButton({ tokenInteractions }: { tokenInteractions: TokenInteraction
             borderColor: accentColors.opacity2,
             borderWidth: THICK_BORDER_WIDTH,
             borderRadius: 20,
-            height: 36,
+            height: MORE_BUTTON_HEIGHT,
             paddingHorizontal: 12,
             alignItems: 'center',
             justifyContent: 'center',
@@ -198,31 +218,59 @@ export const ListData = memo(function ListData() {
     return tokenInteractions;
   }, [tabIndex, tokenInteractions, buys, sells]);
 
-  const listStyle = useAnimatedStyle(() => {
+  const containerStyles = useAnimatedStyle(() => {
     const minOfTwoOptions = Math.min(filteredTokenInteractions.length, DEFAULT_VISIBLE_ITEM_COUNT);
-    const amount = isExpanded.value
-      ? filteredTokenInteractions.length * ROW_HEIGHT_WITH_PADDING
-      : minOfTwoOptions * ROW_HEIGHT_WITH_PADDING;
+    const shouldShowMoreButton = filteredTokenInteractions.length > DEFAULT_VISIBLE_ITEM_COUNT;
+    const moreButtonHeight = shouldShowMoreButton ? MORE_BUTTON_HEIGHT + LIST_BUTTON_GAP : 0;
+
+    const amount = Math.ceil(
+      isExpanded.value
+        ? filteredTokenInteractions.length * ROW_HEIGHT +
+            (filteredTokenInteractions.length - 1) * ROW_PADDING +
+            LIST_PADDING * 2 +
+            moreButtonHeight
+        : minOfTwoOptions * ROW_HEIGHT + (minOfTwoOptions - 1) * ROW_PADDING + LIST_PADDING * 2 + moreButtonHeight
+    );
+
     return {
-      height: withSpring(amount, SPRING_CONFIGS.springConfig),
+      height: withSpring(clamp(amount, 0, amount), SPRING_CONFIGS.springConfig),
     };
   });
 
-  if (isLoading && filteredTokenInteractions.length === 0) {
-    return (
-      <Box gap={24}>
+  const loaderStyles = useAnimatedStyle(() => {
+    const shouldShowMoreButton = filteredTokenInteractions.length > DEFAULT_VISIBLE_ITEM_COUNT;
+    const moreButtonHeight = shouldShowMoreButton ? MORE_BUTTON_HEIGHT + LIST_BUTTON_GAP : 0;
+
+    return {
+      height: withTiming(
+        isLoading && filteredTokenInteractions.length === 0
+          ? DEFAULT_VISIBLE_ITEM_COUNT * ROW_HEIGHT + (DEFAULT_VISIBLE_ITEM_COUNT - 1) * ROW_PADDING + LIST_PADDING * 2 + moreButtonHeight
+          : 0,
+        TIMING_CONFIGS.fastFadeConfig
+      ),
+      opacity: withTiming(isLoading && filteredTokenInteractions.length === 0 ? 1 : 0, TIMING_CONFIGS.fastFadeConfig),
+    };
+  });
+
+  const listStyles = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(filteredTokenInteractions.length !== 0 ? 1 : 0, TIMING_CONFIGS.fastFadeConfig),
+    };
+  });
+
+  return (
+    <Box as={Animated.View} style={[containerStyles, { position: 'relative' }]}>
+      <Box as={Animated.View} style={loaderStyles} sharedTransitionTag="history-section" sharedTransitionStyle={historyTransition} gap={24}>
         {Array.from({ length: DEFAULT_VISIBLE_ITEM_COUNT }).map((_, index) => (
           <SkeletonRow key={index} width={DEVICE_WIDTH - 48} height={ROW_HEIGHT} />
         ))}
       </Box>
-    );
-  }
 
-  return (
-    <Box gap={12}>
       <Animated.FlatList
+        sharedTransitionTag="history-section"
+        sharedTransitionStyle={historyTransition}
         data={filteredTokenInteractions}
-        style={[listStyle, { paddingTop: 4 }]}
+        style={[listStyles, { paddingVertical: LIST_PADDING }]}
         contentContainerStyle={{ gap: 24 }}
         scrollEnabled={false}
         renderItem={({ item }) => {

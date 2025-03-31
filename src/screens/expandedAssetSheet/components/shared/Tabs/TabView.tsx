@@ -16,11 +16,7 @@ const TabViewChild = ({ child, index }: { child: React.ReactNode; index: number 
     };
   });
 
-  return (
-    <Animated.View key={index} style={[activeChildStyle, sx.container]}>
-      {child}
-    </Animated.View>
-  );
+  return <Animated.View style={[activeChildStyle, sx.container]}>{child}</Animated.View>;
 };
 
 export const TabView = memo(function TabView({ children }: { children: React.ReactNode[] }) {
