@@ -150,8 +150,6 @@ export function ExpandedAssetSheetContextProvider({
     currency: nativeCurrency,
   });
 
-  console.log('tokenInteractions', tokenInteractions);
-
   // This is constructed so that rendering is not delayed by the external asset fetch
   const basicAsset = useMemo(() => {
     const chainName = useBackendNetworksStore.getState().getChainsName()[chainId];
