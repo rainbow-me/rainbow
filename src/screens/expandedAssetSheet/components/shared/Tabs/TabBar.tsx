@@ -57,10 +57,10 @@ export const TabBar = () => {
       {tabs.map((tab, index) => {
         if (index < tabs.length - 1) {
           return (
-            <>
-              <TabPill tab={tab} key={tab} index={index} />
+            <React.Fragment key={tab}>
+              <TabPill tab={tab} index={index} />
               <View style={[styles.divider, { backgroundColor: separatorTertiary }]} />
-            </>
+            </React.Fragment>
           );
         }
         return <TabPill tab={tab} key={tab} index={index} />;
