@@ -33,8 +33,6 @@ export function ClaimCustomization() {
   const [isInitialState, setIsInitialState] = useState(true);
   const [usdc, setUsdc] = useState<SearchAsset | null>(null);
 
-  const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
-
   useEffect(() => {
     const fetchUsdcAsset = async () => {
       const searchResults = await searchVerifiedTokens({ query: USDC_ADDRESS, chainId: ChainId.mainnet, list: TokenLists.Verified }, null);
