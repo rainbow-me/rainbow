@@ -19,17 +19,36 @@ import { convertRawAmountToBalanceWorklet, convertRawAmountToNativeDisplay } fro
 import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { openInBrowser } from '@/utils/openInBrowser';
 import * as i18n from '@/languages';
+import { ceilWorklet, minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/safe-math/SafeMath';
 
 const l = i18n.l.expanded_state.sections.history;
 
+// Layout constants
 const DEFAULT_VISIBLE_ITEM_COUNT = 4;
-
 const LIST_BUTTON_GAP = 20;
 const ROW_HEIGHT = 32;
 const ROW_PADDING = 24;
 const LIST_PADDING = 4;
 const MORE_BUTTON_HEIGHT = 36;
 
+// Button styling constants
+const MORE_BUTTON_BORDER_RADIUS = 20;
+const MORE_BUTTON_PADDING_HORIZONTAL = 12;
+const LIST_ITEM_BORDER_RADIUS = 18;
+const LIST_ITEM_GAP = 11;
+const ICON_TEXT_GAP = 5;
+
+// Date format constants
+const DATE_FORMAT = 'MMM d';
+
+const moreButtonStyles = {
+  borderWidth: THICK_BORDER_WIDTH,
+  borderRadius: MORE_BUTTON_BORDER_RADIUS,
+  height: MORE_BUTTON_HEIGHT,
+  paddingHorizontal: MORE_BUTTON_PADDING_HORIZONTAL,
+  alignItems: 'center' as const,
+  justifyContent: 'center' as const,
+};
 const historyTransition = SharedTransition.custom(values => {
   'worklet';
   return {
@@ -37,7 +56,11 @@ const historyTransition = SharedTransition.custom(values => {
   };
 });
 
-function MoreButton({ tokenInteractions }: { tokenInteractions: TokenInteraction[] }) {
+interface MoreButtonProps {
+  tokenInteractions: TokenInteraction[];
+}
+
+function MoreButton({ tokenInteractions }: MoreButtonProps) {
   const { accentColors } = useExpandedAssetSheetContext();
   const { isExpanded } = useTabContext();
 
@@ -62,15 +85,10 @@ function MoreButton({ tokenInteractions }: { tokenInteractions: TokenInteraction
     >
       <Box
         style={[
+          moreButtonStyles,
           {
             backgroundColor: accentColors.opacity3,
             borderColor: accentColors.opacity2,
-            borderWidth: THICK_BORDER_WIDTH,
-            borderRadius: 20,
-            height: MORE_BUTTON_HEIGHT,
-            paddingHorizontal: 12,
-            alignItems: 'center',
-            justifyContent: 'center',
           },
         ]}
       >
@@ -84,7 +102,12 @@ function MoreButton({ tokenInteractions }: { tokenInteractions: TokenInteraction
   );
 }
 
-const SkeletonRow = ({ width, height }: { width: number; height: number }) => {
+interface SkeletonRowProps {
+  width: number;
+  height: number;
+}
+
+const SkeletonRow = ({ width, height }: SkeletonRowProps) => {
   const { isDarkMode } = useColorMode();
   const { accentColors } = useExpandedAssetSheetContext();
   const fillTertiary = useBackgroundColor('fillTertiary');
@@ -95,7 +118,7 @@ const SkeletonRow = ({ width, height }: { width: number; height: number }) => {
       backgroundColor={accentColors.surfaceSecondary}
       height={{ custom: height }}
       width={{ custom: width }}
-      borderRadius={18}
+      borderRadius={LIST_ITEM_BORDER_RADIUS}
       style={{ overflow: 'hidden' }}
     >
       <ShimmerAnimation color={shimmerColor} gradientColor={shimmerColor} />
@@ -103,7 +126,12 @@ const SkeletonRow = ({ width, height }: { width: number; height: number }) => {
   );
 };
 
-export const ListItem = memo(function ListItem({ item, nativeCurrency }: { item: TokenInteraction; nativeCurrency: NativeCurrencyKey }) {
+interface ListItemProps {
+  item: TokenInteraction;
+  nativeCurrency: NativeCurrencyKey;
+}
+
+export const ListItem = memo(function ListItem({ item, nativeCurrency }: ListItemProps) {
   const { accentColors, basicAsset: asset } = useExpandedAssetSheetContext();
   const labelTertiary = useForegroundColor('labelTertiary');
 
@@ -135,12 +163,12 @@ export const ListItem = memo(function ListItem({ item, nativeCurrency }: { item:
   }, [item.type]);
 
   const shortenedMonth = useMemo(() => {
-    return format(new Date(item.interactedAt), 'MMM d');
+    return format(new Date(item.interactedAt), DATE_FORMAT);
   }, [item.interactedAt]);
 
   const nativeAmount = useMemo(() => {
     return convertRawAmountToNativeDisplay(item.amount, asset.decimals, item.price ?? 0, nativeCurrency);
-  }, [item.amount, asset.decimals, asset.price, nativeCurrency]);
+  }, [item.amount, asset.decimals, item.price, nativeCurrency]);
 
   const currencyAmount = useMemo(() => {
     return convertRawAmountToBalanceWorklet(item.amount, asset).display.replace(asset.symbol, '');
@@ -151,9 +179,9 @@ export const ListItem = memo(function ListItem({ item, nativeCurrency }: { item:
   }, [item.explorerURL]);
 
   return (
-    <Box as={ButtonPressAnimation} scaleTo={0.94} onPress={navigateToTransaction} gap={11} width="full">
+    <Box as={ButtonPressAnimation} scaleTo={0.94} onPress={navigateToTransaction} height={ROW_HEIGHT} gap={LIST_ITEM_GAP} width="full">
       <Box flexDirection="row" justifyContent="space-between" alignItems="center">
-        <Box flexDirection="row" alignItems="center" gap={5}>
+        <Box flexDirection="row" alignItems="center" gap={ICON_TEXT_GAP}>
           <Text size="icon 11px" color={{ custom: iconColor }} weight="bold">
             {icon}
           </Text>
@@ -166,7 +194,7 @@ export const ListItem = memo(function ListItem({ item, nativeCurrency }: { item:
         </Text>
       </Box>
       <Box flexDirection="row" justifyContent="space-between" alignItems="center">
-        <Box flexDirection="row" alignItems="center" gap={5}>
+        <Box flexDirection="row" alignItems="center" gap={ICON_TEXT_GAP}>
           <Text size="17pt" color="labelSecondary" weight="bold">
             {symbol} {currencyAmount}
           </Text>
@@ -182,17 +210,14 @@ export const ListItem = memo(function ListItem({ item, nativeCurrency }: { item:
   );
 });
 
-export const ListData = memo(function ListData({
-  data,
-  buys,
-  sells,
-  isLoading,
-}: {
+interface ListDataProps {
   data: TokenInteraction[];
   buys: TokenInteraction[];
   sells: TokenInteraction[];
   isLoading: boolean;
-}) {
+}
+
+export const ListData = memo(function ListData({ data, buys, sells, isLoading }: ListDataProps) {
   const { nativeCurrency } = useAccountSettings();
   const { activeTabIndex, isExpanded } = useTabContext();
 
@@ -212,36 +237,34 @@ export const ListData = memo(function ListData({
     return data;
   }, [tabIndex, data, buys, sells]);
 
+  const calculateContainerHeight = useCallback((interactions: TokenInteraction[], isExpanded: boolean) => {
+    'worklet';
+
+    const minOfTwoOptions = minWorklet(interactions.length, DEFAULT_VISIBLE_ITEM_COUNT);
+    const shouldShowMoreButton = interactions.length > DEFAULT_VISIBLE_ITEM_COUNT;
+    const moreButtonHeight = shouldShowMoreButton ? MORE_BUTTON_HEIGHT : -16;
+    const rowHeightWithPadding = ROW_HEIGHT + ROW_PADDING;
+    const amount = isExpanded ? interactions.length : minOfTwoOptions;
+
+    const rowHeight = mulWorklet(amount, rowHeightWithPadding);
+    return Number(ceilWorklet(sumWorklet(rowHeight, moreButtonHeight)));
+  }, []);
+
   const containerStyles = useAnimatedStyle(() => {
-    const minOfTwoOptions = Math.min(filteredTokenInteractions.length, DEFAULT_VISIBLE_ITEM_COUNT);
-    const shouldShowMoreButton = filteredTokenInteractions.length > DEFAULT_VISIBLE_ITEM_COUNT;
-    const moreButtonHeight = shouldShowMoreButton ? MORE_BUTTON_HEIGHT + LIST_BUTTON_GAP : 0;
-
-    const amount = Math.ceil(
-      isExpanded.value
-        ? filteredTokenInteractions.length * ROW_HEIGHT +
-            (filteredTokenInteractions.length - 1) * ROW_PADDING +
-            LIST_PADDING * 2 +
-            moreButtonHeight
-        : minOfTwoOptions * ROW_HEIGHT + (minOfTwoOptions - 1) * ROW_PADDING + LIST_PADDING * 2 + moreButtonHeight
-    );
-
+    const height = calculateContainerHeight(filteredTokenInteractions, isExpanded.value);
     return {
-      height: withSpring(clamp(amount, 0, amount), SPRING_CONFIGS.springConfig),
+      height: withSpring(clamp(height, 0, height), SPRING_CONFIGS.springConfig),
     };
   });
 
   const loaderStyles = useAnimatedStyle(() => {
     const shouldShowMoreButton = filteredTokenInteractions.length > DEFAULT_VISIBLE_ITEM_COUNT;
     const moreButtonHeight = shouldShowMoreButton ? MORE_BUTTON_HEIGHT + LIST_BUTTON_GAP : 0;
+    const loaderHeight =
+      DEFAULT_VISIBLE_ITEM_COUNT * ROW_HEIGHT + (DEFAULT_VISIBLE_ITEM_COUNT - 1) * ROW_PADDING + LIST_PADDING * 2 + moreButtonHeight;
 
     return {
-      height: withTiming(
-        isLoading && filteredTokenInteractions.length === 0
-          ? DEFAULT_VISIBLE_ITEM_COUNT * ROW_HEIGHT + (DEFAULT_VISIBLE_ITEM_COUNT - 1) * ROW_PADDING + LIST_PADDING * 2 + moreButtonHeight
-          : 0,
-        TIMING_CONFIGS.fastFadeConfig
-      ),
+      height: withTiming(isLoading && filteredTokenInteractions.length === 0 ? loaderHeight : 0, TIMING_CONFIGS.fastFadeConfig),
       opacity: withTiming(isLoading && filteredTokenInteractions.length === 0 ? 1 : 0, TIMING_CONFIGS.fastFadeConfig),
     };
   });

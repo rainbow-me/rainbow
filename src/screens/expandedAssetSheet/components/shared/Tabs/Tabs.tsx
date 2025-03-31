@@ -67,7 +67,7 @@ export const TabContent = ({
   }
 
   return (
-    <View style={{ flex: 1, position: 'relative', paddingTop: 24 }}>
+    <View style={{ flex: 1, position: 'relative' }}>
       <TabView>{childrenArray}</TabView>
     </View>
   );
