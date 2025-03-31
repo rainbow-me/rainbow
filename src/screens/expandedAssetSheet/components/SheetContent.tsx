@@ -17,7 +17,7 @@ const LIGHT_SEPARATOR_COLOR = 'rgba(9, 17, 31, 0.025)';
 export function SheetContent() {
   const { nativeCurrency } = useAccountSettings();
   const { colorMode, isDarkMode } = useColorMode();
-  const { accentColors, basicAsset: asset, hideClaimSection, isOwnedAsset } = useExpandedAssetSheetContext();
+  const { accentColors, basicAsset: asset, hideClaimSection, isOwnedAsset, tokenInteractions } = useExpandedAssetSheetContext();
   const safeAreaInsets = useSafeAreaInsets();
 
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(asset.chainId));
@@ -89,7 +89,9 @@ export function SheetContent() {
             {/* {isOwnedAsset && (
               <CollapsibleSection content={<BridgeSection />} icon="􁾫" id={SectionId.BRIDGE} primaryText="Bridge" secondaryText={'to'} />
             )} */}
-            <CollapsibleSection content={<HistorySection />} icon="􀐫" id={SectionId.HISTORY} primaryText="History" />
+            {tokenInteractions.length > 0 && (
+              <CollapsibleSection content={<HistorySection />} icon="􀐫" id={SectionId.HISTORY} primaryText="History" />
+            )}
             <CollapsibleSection content={<AboutSection />} icon="􁜾" id={SectionId.ABOUT} primaryText="About" />
           </Stack>
         </Box>

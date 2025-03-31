@@ -22,7 +22,6 @@ import * as i18n from '@/languages';
 
 const l = i18n.l.expanded_state.sections.history;
 
-const DEFAULT_TABS = [i18n.t(l.tabs.all)];
 const DEFAULT_VISIBLE_ITEM_COUNT = 4;
 
 const LIST_BUTTON_GAP = 20;
@@ -272,15 +271,7 @@ export const ListData = memo(function ListData({
 });
 
 export const HistorySection = memo(function HistorySection() {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
-  const { accentColors, basicAsset: asset } = useExpandedAssetSheetContext();
-
-  const { data: tokenInteractions = [], isLoading } = useTokenInteractions({
-    chainID: asset.chainId,
-    address: accountAddress,
-    tokenAddress: asset.address,
-    currency: nativeCurrency,
-  });
+  const { accentColors, tokenInteractions, isLoadingTokenInteractions } = useExpandedAssetSheetContext();
 
   const buys = useMemo(() => {
     return tokenInteractions?.filter(interaction => interaction.direction === TokenInteractionDirection.In);
@@ -291,20 +282,20 @@ export const HistorySection = memo(function HistorySection() {
   }, [tokenInteractions]);
 
   const TABS = useMemo(() => {
-    const tabs = DEFAULT_TABS;
+    const tabs = [i18n.t(l.tabs.all)];
     if (buys.length > 0) tabs.push(i18n.t(l.tabs.buys));
     if (sells.length > 0) tabs.push(i18n.t(l.tabs.sells));
     return tabs;
   }, [buys, sells]);
 
   if (TABS.length < 3) {
-    return <ListData data={tokenInteractions} buys={buys} sells={sells} isLoading={isLoading} />;
+    return <ListData data={tokenInteractions} buys={buys} sells={sells} isLoading={isLoadingTokenInteractions} />;
   }
 
   // NOTE: Only show tabs if we have more than one type of transaction
   return (
     <Tabs tabs={TABS} useViewController={false} accentColor={accentColors.color}>
-      <ListData data={tokenInteractions} buys={buys} sells={sells} isLoading={isLoading} />
+      <ListData data={tokenInteractions} buys={buys} sells={sells} isLoading={isLoadingTokenInteractions} />
     </Tabs>
   );
 });
