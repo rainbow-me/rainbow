@@ -7,18 +7,23 @@ import {
   Image,
   LinearGradient,
   Paint,
+  RoundedRect,
   Shadow,
   SkParagraph,
   SkPath,
+  SkRRect,
   point,
+  rect,
+  rrect,
   useImage,
   vec,
 } from '@shopify/react-native-skia';
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SkiaText } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
+import { abbreviateNumber } from '@/helpers/utilities';
 import { useCleanup } from '@/hooks/useCleanup';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
@@ -30,7 +35,6 @@ import { getCirclePath } from '@/worklets/skia';
 import { DEFAULT_CARD_SIZE, SkiaCard, SkiaCardProps } from './SkiaCard';
 
 const BADGE_SIZE = 28;
-const BADGE_X_OFFSET = (BADGE_SIZE + 8) / 2 - 0.5;
 const CARD_HEIGHT = 175;
 const COIN_ICON_SIZE = 64;
 const COIN_ICON_TOP_INSET = 56;
@@ -55,15 +59,14 @@ const CARD_CONFIG = {
   },
   dimensions: {
     badge: {
-      lineHeight: (numberOfAirdrops: number | null) => (!numberOfAirdrops || numberOfAirdrops < 10 ? 26 : numberOfAirdrops < 100 ? 24 : 22),
-      size: BADGE_SIZE,
-      textSize: (numberOfAirdrops: number | null) =>
-        !numberOfAirdrops || numberOfAirdrops < 10 ? '20pt' : numberOfAirdrops < 100 ? '13pt' : '11pt',
-      translateX: [{ translateX: BADGE_X_OFFSET - 95 }],
-      x: DEFAULT_CARD_SIZE / 2 + COIN_ICON_SIZE / 2 - BADGE_SIZE / 2 + BADGE_SIZE / 3,
+      lineHeight: (numberOfAirdrops: string | null) =>
+        !numberOfAirdrops || numberOfAirdrops.length < 2 ? 26 : numberOfAirdrops.length < 3 ? 24 : 22,
+      textSize: (numberOfAirdrops: string | null) => {
+        if (!numberOfAirdrops) return '20pt';
+        return numberOfAirdrops.length < 2 ? '20pt' : numberOfAirdrops.length < 3 ? '13pt' : '11pt';
+      },
       y: CARD_HEIGHT - 58.5,
     },
-    textXOffset: BADGE_X_OFFSET,
   },
   gradient: {
     colors: ['#1F6480', '#2288AD', '#2399C3', '#399EC6', '#518EAB', '#4E697B'],
@@ -98,6 +101,11 @@ export const AirdropsCard = memo(function AirdropsCard() {
     { scaleY: enterAnimation.value > 0 ? 1 - enterAnimation.value / 150 : 1 },
   ]);
 
+  const { badgeRect, badgeWidth, badgeXOffset, formattedAirdropsCount } = useMemo(
+    () => getBadgeConfig(numberOfAirdrops),
+    [numberOfAirdrops]
+  );
+
   const onPress = useCallback(() => {
     const { getAirdrops, getNumberOfAirdrops } = useAirdropsStore.getState();
     if (getNumberOfAirdrops() === 1) navigate(Routes.CLAIM_AIRDROP_SHEET, { claimable: getAirdrops()?.[0] });
@@ -108,9 +116,9 @@ export const AirdropsCard = memo(function AirdropsCard() {
     (paragraph: SkParagraph) => {
       'worklet';
       const [{ x }] = paragraph.getLineMetrics();
-      badgeOffset.value = [{ translateX: x - BADGE_X_OFFSET }];
+      badgeOffset.value = [{ translateX: x - badgeXOffset }];
     },
-    [badgeOffset]
+    [badgeOffset, badgeXOffset]
   );
 
   useAnimatedReaction(
@@ -196,40 +204,29 @@ export const AirdropsCard = memo(function AirdropsCard() {
 
           {/* Number of airdrops bubble */}
           <Group transform={badgeOffset}>
-            <Circle
-              blendMode="softLight"
-              color={CARD_CONFIG.colors.white80}
-              cx={CARD_CONFIG.dimensions.badge.size / 2}
-              cy={CARD_CONFIG.dimensions.badge.y}
-              r={BADGE_SIZE / 2}
-            >
+            <RoundedRect blendMode="softLight" color={CARD_CONFIG.colors.white80} rect={badgeRect}>
               <BackdropBlur blur={20} />
-            </Circle>
+            </RoundedRect>
 
-            <Circle
-              color={CARD_CONFIG.colors.white15}
-              cx={CARD_CONFIG.dimensions.badge.size / 2}
-              cy={CARD_CONFIG.dimensions.badge.y}
-              r={BADGE_SIZE / 2}
-            >
+            <RoundedRect color={CARD_CONFIG.colors.white15} rect={badgeRect}>
               <Shadow blur={6} color={globalColors.grey100} dx={0} dy={8} shadowOnly />
               <Paint antiAlias dither>
                 <Shadow blur={4} color={CARD_CONFIG.colors.white60} dx={0} dy={3} inner shadowOnly />
                 <Shadow blur={1.25} color={CARD_CONFIG.colors.white80} dx={0} dy={1.5} inner shadowOnly />
               </Paint>
-            </Circle>
+            </RoundedRect>
 
             <SkiaText
               align="center"
               color={CARD_CONFIG.colors.whiteTextColor}
-              lineHeight={CARD_CONFIG.dimensions.badge.lineHeight(numberOfAirdrops)}
-              size={CARD_CONFIG.dimensions.badge.textSize(numberOfAirdrops)}
+              lineHeight={CARD_CONFIG.dimensions.badge.lineHeight(formattedAirdropsCount)}
+              size={CARD_CONFIG.dimensions.badge.textSize(formattedAirdropsCount)}
               weight="heavy"
-              width={BADGE_SIZE}
+              width={badgeWidth}
               x={0}
-              y={CARD_CONFIG.dimensions.badge.y - CARD_CONFIG.dimensions.badge.size / 2}
+              y={CARD_CONFIG.dimensions.badge.y - BADGE_SIZE / 2}
             >
-              {numberOfAirdrops === null ? '?' : numberOfAirdrops}
+              {formattedAirdropsCount}
             </SkiaText>
           </Group>
 
@@ -241,7 +238,7 @@ export const AirdropsCard = memo(function AirdropsCard() {
             size="22pt"
             weight="heavy"
             width={DEFAULT_CARD_SIZE}
-            x={CARD_CONFIG.dimensions.textXOffset}
+            x={badgeXOffset}
             y={CARD_HEIGHT - 73}
           >
             {numberOfAirdrops === 1
@@ -274,4 +271,25 @@ export const AirdropsCard = memo(function AirdropsCard() {
 
 function getCoinIconPath(): SkPath {
   return getCirclePath(point(DEFAULT_CARD_SIZE / 2, COIN_ICON_TOP_INSET), COIN_ICON_SIZE / 2 - 4);
+}
+
+function getBadgeConfig(numberOfAirdrops: number | null): {
+  badgeHeight: number;
+  badgeRect: SkRRect;
+  badgeWidth: number;
+  badgeXOffset: number;
+  badgeYOffset: number;
+  formattedAirdropsCount: string;
+} {
+  let formattedAirdropsCount = numberOfAirdrops === null ? '?' : numberOfAirdrops.toString();
+  if (numberOfAirdrops && numberOfAirdrops >= 1_000)
+    formattedAirdropsCount = abbreviateNumber(numberOfAirdrops, numberOfAirdrops >= 10_000 ? 0 : 1, 'short', true);
+
+  const badgeHeight = numberOfAirdrops && numberOfAirdrops > 10 ? BADGE_SIZE - 4 : BADGE_SIZE;
+  const badgeWidth = BADGE_SIZE + (formattedAirdropsCount.length < 3 ? 0 : Math.min(formattedAirdropsCount.length * 2, 12));
+  const badgeXOffset = (badgeWidth + 7) / 2;
+  const badgeYOffset = CARD_CONFIG.dimensions.badge.y - badgeHeight / 2;
+  const badgeRect = rrect(rect(0, badgeYOffset, badgeWidth, badgeHeight), badgeHeight / 2, badgeHeight / 2);
+
+  return { badgeHeight, badgeRect, badgeWidth, badgeXOffset, badgeYOffset, formattedAirdropsCount };
 }
