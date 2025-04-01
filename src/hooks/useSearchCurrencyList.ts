@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import { rankings } from 'match-sorter';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTheme } from '../theme/ThemeContext';
 import { addHexPrefix } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
@@ -77,17 +77,18 @@ const useSearchCurrencyList = () => {
     };
   });
 
+  const removeFavoritesAndEnforceResultsLimit = useCallback(
+    (assets: SearchAsset[] | undefined, maxResults: number) => {
+      return (assets || []).filter(asset => !favoriteAssets.some(fav => fav.uniqueId === asset.uniqueId)).slice(0, maxResults);
+    },
+    [favoriteAssets]
+  );
+
   const currencyList = useMemo(() => {
     const list = [];
-    const verifiedAssets = (searchResultAssets?.verifiedAssets || [])
-      .filter(asset => !favoriteAssets.some(fav => fav.uniqueId === asset.uniqueId))
-      .slice(0, MAX_VERIFIED_RESULTS);
-    const highLiquidityAssets = (searchResultAssets?.highLiquidityAssets || [])
-      .filter(asset => !favoriteAssets.some(fav => fav.uniqueId === asset.uniqueId))
-      .slice(0, MAX_HIGH_LIQUIDITY_RESULTS);
-    const lowLiquidityAssets = (searchResultAssets?.lowLiquidityAssets || [])
-      .filter(asset => !favoriteAssets.some(fav => fav.uniqueId === asset.uniqueId))
-      .slice(0, MAX_LOW_LIQUIDITY_RESULTS);
+    const verifiedAssets = removeFavoritesAndEnforceResultsLimit(searchResultAssets?.verifiedAssets, MAX_VERIFIED_RESULTS);
+    const highLiquidityAssets = removeFavoritesAndEnforceResultsLimit(searchResultAssets?.highLiquidityAssets, MAX_HIGH_LIQUIDITY_RESULTS);
+    const lowLiquidityAssets = removeFavoritesAndEnforceResultsLimit(searchResultAssets?.lowLiquidityAssets, MAX_LOW_LIQUIDITY_RESULTS);
 
     if (searching) {
       if (favoriteAssets?.length) {
