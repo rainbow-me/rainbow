@@ -33,6 +33,7 @@ import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { Box } from '@/design-system';
 import { capitalize } from 'lodash';
 import { backupsStore } from '@/state/backups/backups';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
@@ -83,13 +84,11 @@ const SettingsSection = ({
     });
   }, []);
 
-  const onPressTwitter = useCallback(async () => {
-    Linking.canOpenURL(SettingsExternalURLs.twitterDeepLink).then(supported =>
-      supported ? Linking.openURL(SettingsExternalURLs.twitterDeepLink) : Linking.openURL(SettingsExternalURLs.twitterWebUrl)
-    );
+  const onPressTwitter = useCallback(() => {
+    openInBrowser(SettingsExternalURLs.twitterWebUrl, false);
   }, []);
 
-  const onPressLearn = useCallback(() => Linking.openURL(SettingsExternalURLs.rainbowLearn), []);
+  const onPressLearn = useCallback(() => openInBrowser(SettingsExternalURLs.rainbowLearn), []);
 
   const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets, backups), [wallets, backups]);
 

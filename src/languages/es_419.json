@@ -96,7 +96,8 @@
         "generic": "Error al intentar respaldar. Código de error: %{errorCodes}",
         "no_keys_found": "No se encontraron claves. Por favor intenta de nuevo.",
         "backup_not_found": "Respaldo no encontrado. Por favor intenta de nuevo.",
-        "no_account_found": "No se pueden recuperar los archivos de respaldo. Asegúrate de haber iniciado sesión."
+        "no_account_found": "No se pueden recuperar los archivos de respaldo. Asegúrate de haber iniciado sesión.",
+        "damaged_wallet": "No se puede respaldar la billetera. Faltan datos de la llave de seguridad."
       },
       "wrong_pin": "El código PIN que ingresaste es incorrecto y no podemos hacer una copia de seguridad. Por favor, intenta de nuevo con el código correcto.",
       "already_backed_up": {
@@ -115,6 +116,8 @@
         "no_backups": "No se encontraron copias de seguridad",
         "failed_to_fetch_backups": "No se pudo obtener los respaldos",
         "retry": "Reintentar",
+        "refresh": "Actualizar",
+        "syncing_cloud_store": "Sincronizando con %{cloudPlatformName}",
         "fetching_backups": "Recuperando respaldos desde %{cloudPlatformName}",
         "back_up_to_platform": "Resguardar en %{cloudPlatformName}",
         "restore_from_platform": "Restaurar desde %{cloudPlatformName}",
@@ -145,6 +148,12 @@
         "older_backups": "Respaldos Antiguos",
         "no_older_backups": "No hay respaldos antiguos",
         "older_backups_title": "%{date} a las %{time}",
+        "statuses": {
+          "not_enabled": "No habilitado",
+          "syncing": "Sincronizando",
+          "out_of_date": "Desactualizado",
+          "up_to_date": "Actualizado"
+        },
         "password": {
           "a_password_youll_remember_part_one": "Esta contraseña es",
           "not": "no",
@@ -336,6 +345,7 @@
       "receive": "Recibir",
       "remove": "Eliminar",
       "save": "Guardar",
+      "skip": "Omitir",
       "send": "Enviar",
       "send_another": "Enviar otro",
       "share": "Compartir",
@@ -452,7 +462,13 @@
     },
     "claimables": {
       "panel": {
-        "calculating_gas_fee": "Calculando la tarifa de gas...",
+        "estimating_gas_fee": "Estimando tarifa de gas...",
+        "gas_error": "Error de gas",
+        "quote_error": "Error en la cotización",
+        "no_route_found": "No se encontró ruta",
+        "fetching_quote": "Buscando cotización...",
+        "select_a_network": "Seleccione una red",
+        "select_a_token": "Seleccione un token",
         "amount_to_claim_on_network": "%{amount} para reclamar en %{network}",
         "claim": "Reclamar",
         "claiming": "Reclamando",
@@ -463,7 +479,13 @@
         "claim_amount": "Reclamar %{amount}",
         "done": "Listo",
         "try_again": "Intenta de Nuevo",
-        "tokens_on_the_way": "¡Tokens en camino!"
+        "tokens_on_the_way": "¡Tokens en camino!",
+        "a_token": "un token",
+        "a_network": "una red",
+        "swap_failed": "Intercambio fallido",
+        "receive": "Recibir",
+        "on": "encendido",
+        "reset": "Reiniciar"
       }
     },
     "cloud": {
@@ -495,6 +517,8 @@
     },
     "developer_settings": {
       "alert": "Alerta",
+      "analyze_env_variables": "Analizar Variables del Entorno",
+      "analyze_react_query": "Analizar React Query",
       "applied": "APLICADO",
       "backups_deleted_successfully": "Los respaldos se eliminaron exitosamente",
       "clear_async_storage": "Borrar almacenamiento asíncrono",
@@ -503,7 +527,11 @@
       "clear_image_metadata_cache": "Borrar Cache de Metadatos de Imagen",
       "clear_local_storage": "Borrar almacenamiento local",
       "clear_mmkv_storage": "Borrar almacenamiento de MMKV",
+      "clear_react_query_cache": "Borrar Caché de React Query",
       "connect_to_anvil": "Conectar a Anvil",
+      "copy_fcm_token": "Copiar Token FCM",
+      "copy_log_lines": "Copiar Líneas de Registro",
+      "copy_signing_wallet_address": "Copiar Dirección de Firma de Billetera",
       "disconnect_to_anvil": "Desconectar de anvil",
       "crash_app_render_error": "Crash de la aplicación (error de renderización)",
       "enable_testnets": "Habilitar Testnets",
@@ -642,7 +670,6 @@
       "high": "Alto",
       "slippage_tolerance": "Deslizamiento máximo",
       "source_picker": "Rutas de intercambio vía",
-      "use_flashbots": "Usar Flashbots",
       "swapping_for_prefix": "Intercambiando por",
       "view_details": "Ver Detalles",
       "token_sections": {
@@ -671,13 +698,56 @@
         "social": {
           "facebook": "Facebook",
           "homepage": "Página de inicio",
+          "website": "Sitio web",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter"
+          "twitter": "Twitter",
+          "warpcast": "Warpcast",
+          "farcaster": "Farcaster",
+          "other": "Otro",
+          "search_on_twitter": "Buscar en Twitter"
         },
         "uniswap_liquidity": "Liquidez de Uniswap",
         "value": "Valor",
-        "volume_24_hours": "Volumen en 24 horas"
+        "volume_24_hours": "Volumen en 24 horas",
+        "menu": {
+          "view_on": "Ver en %{blockExplorerName}",
+          "share": "Compartir",
+          "copy_contract_address": "Copiar dirección del contrato",
+          "pin": "PIN",
+          "unpin": "Desanclar",
+          "hide": "Ocultar",
+          "unhide": "Mostrar"
+        },
+        "no_data_available": "No hay datos disponibles"
+      },
+      "sections": {
+        "market_stats": {
+          "title": "Estadísticas de Mercado",
+          "circulating_supply": "Suministro en circulación",
+          "max_supply": "Suministro Máximo",
+          "fully_diluted_valuation": "Valoración totalmente diluida",
+          "market_cap": "Capitalización de mercado",
+          "created": "Creado",
+          "volume_24_hours": "Volumen de 24h",
+          "rank": "Rango"
+        },
+        "buy": {
+          "title": "Comprar",
+          "pay_with": "Comprar con",
+          "available_balance": "Saldo Disponible",
+          "open_swaps": "Intercambios Abiertos",
+          "low_balance": "Saldo Bajo"
+        },
+        "claim": {
+          "claim_button": "Reclamar Airdrop",
+          "created_by": "Creado por %{creator}",
+          "title": "Reclamar"
+        },
+        "about": {
+          "title": "Acerca de",
+          "what_is": "¿Qué es %{assetName}?"
+        }
       },
       "chart": {
         "all_time": "Todo el tiempo",
@@ -697,6 +767,7 @@
             "month_11": "Dec"
           }
         },
+        "no_chart_data": "No hay datos del gráfico",
         "no_price_data": "No hay datos de precio",
         "past_timespan": "Pasado %{formattedTimespan}",
         "today": "Hoy",
@@ -723,7 +794,6 @@
       "swap": {
         "swap": "Intercambiar",
         "bridge": "Puente",
-        "flashbots_protect": "Protección de Flashbots",
         "losing": "Perdiendo",
         "on": "Encendido",
         "off": "Desactivado",
@@ -857,6 +927,8 @@
       "adworld_title": "¡Bienvenido al Mundo Rainbow!",
       "farcaster_description": "Nuestro ícono de aplicación más aburrido de todos los tiempos, inspirado en el minimalismo insípido de Warpcast.",
       "farcaster_title": "Has desbloqueado\nRainbowcast",
+      "redacted_description": "Un ícono de Rainbow exclusivo para los verdaderos fanáticos de Gdupi.",
+      "redacted_title": "Has desbloqueado\n Redacted Rainbow",
       "button": "Consigue el ícono"
     },
     "explain": {
@@ -927,41 +999,69 @@
         "text": "La propina del minero va directamente al minero que confirma su transacción en la red.\n\nUna propina más alta hace que su transacción sea más probable que se confirme rápidamente.",
         "title": "Propina al minero"
       },
-      "optimism": {
-        "text": "Optimism es una red de Capa 2 que se ejecuta en Ethereum, lo que permite transacciones más baratas y rápidas al tiempo que se beneficia de la seguridad subyacente de Ethereum.\n\nAgrupa muchas transacciones juntas en un \"roll up\" antes de enviarlas para vivir permanentemente en Ethereum.",
-        "title": "¿Qué es Optimism?"
-      },
-      "base": {
-        "text": "Base es una red de capa 2 que se ejecuta sobre Ethereum, lo que permite transacciones más baratas y rápidas y aún así beneficia de la seguridad subyacente de Ethereum.\n\nAgrupa muchas transacciones juntas en un \"roll up\" antes de enviarlas permanentemente a Ethereum.",
-        "title": "¿Qué es Base?"
+      "apechain": {
+        "text": "ApeChain es una red de capa <b>3</b> que se ejecuta sobre Arbitrum Orbit y Ethereum.\n\nMejora significativamente la utilidad de ApeCoin, fomentando una economía robusta y dinámica impulsada por $APE.",
+        "title": "¿Qué es ApeChain?"
       },
       "avalanche": {
         "text": "Avalanche es una sidechain, una red distinta que funciona junto a Ethereum y es compatible con ella.\n\nPermite transacciones más baratas y rápidas, pero a diferencia de las redes de Layer 2, Avalanche tiene sus propios mecanismos de seguridad y consenso que difieren de Ethereum.",
         "title": "¿Qué es Avalanche?"
       },
-      "degen": {
-        "text": "Degen Chain es una red de capa 3 que funciona sobre Arbitrum Orbit y Ethereum.",
-        "title": "¿Qué es Degen Chain?"
+      "base": {
+        "text": "Base es una red de capa 2 que se ejecuta sobre Ethereum, lo que permite transacciones más baratas y rápidas y aún así beneficia de la seguridad subyacente de Ethereum.\n\nAgrupa muchas transacciones juntas en un \"roll up\" antes de enviarlas permanentemente a Ethereum.",
+        "title": "¿Qué es Base?"
       },
       "blast": {
         "text": "Blast es una red de Layer 2 que se ejecuta sobre Ethereum, permitiendo transacciones más baratas y rápidas mientras se beneficia de la seguridad subyacente de Ethereum.\n\nAgrupa muchas transacciones en un \"roll up\" antes de enviarlas a vivir permanentemente en Ethereum.",
         "title": "¿Qué es Blast?"
       },
-      "apechain": {
-        "text": "ApeChain es una red de capa <b>3</b> que se ejecuta sobre Arbitrum Orbit y Ethereum.\n\nMejora significativamente la utilidad de ApeCoin, fomentando una economía robusta y dinámica impulsada por $APE.",
-        "title": "¿Qué es ApeChain?"
+      "bsc": {
+        "text": "Binance Smart Chain (BSC) es la cadena de bloques para la plataforma de trading Binance. \n\nBSC permite transacciones más baratas y rápidas, pero a diferencia de una red de capa 2, tiene sus propios mecanismos de seguridad y consenso que difieren de Ethereum.",
+        "title": "¿Qué es Binance Smart Chain?"
       },
-      "zora": {
-        "text": "Zora es una red de capa 2 que se ejecuta sobre Ethereum, lo que permite transacciones más baratas y rápidas y aún así beneficia de la seguridad subyacente de Ethereum.\n\nAgrupa muchas transacciones juntas en un \"roll up\" antes de enviarlas permanentemente a Ethereum.",
-        "title": "¿Qué es Zora?"
+      "degen": {
+        "text": "Degen Chain es una red de capa 3 que funciona sobre Arbitrum Orbit y Ethereum.",
+        "title": "¿Qué es Degen Chain?"
+      },
+      "gravity": {
+        "text": "Gravity es una blockchain de Capa 1 de alto rendimiento construida por Galxe, alcanzando más de un gigagas por segundo de rendimiento y finalización en menos de un segundo.\n\nUtiliza un motor de consenso AptosBFT canalizado y un tiempo de ejecución paralelo EVM, manteniendo la seguridad de Prueba de Participación a través de tecnología de restaking.",
+        "title": "¿Qué es Gravity?"
+      },
+      "gnosis": {
+        "text": "Gnosis Chain es una cadena lateral de Ethereum propiedad de la comunidad y operada por un conjunto diverso de validadores en todo el mundo.\n\nSe enfoca en la resiliencia y la neutralidad creíble, ofreciendo transacciones más baratas y rápidas mientras mantiene sus propios mecanismos de seguridad y consenso.",
+        "title": "¿Qué es Gnosis?"
+      },
+      "ink": {
+        "text": "Ink es una red de Capa 2 construida sobre la OP Stack, diseñada para escalar Ethereum al proporcionar tiempos de bloque inferiores a un segundo y tarifas de transacción bajas.\n\nLanzada por Kraken, y parte de la Superchain, Ink pretende mejorar el rendimiento y la accesibilidad para aplicaciones de finanzas descentralizadas (DeFi).",
+        "title": "¿Qué es Ink?"
+      },
+      "linea": {
+        "text": "Linea es una blockchain de Capa 2 segura y de bajo costo, equivalente a Ethereum, desarrollada por ConsenSys.\n\nPermite transacciones más rápidas y asequibles sin comprometer la seguridad y la descentralización, con el objetivo de incorporar a mil millones de usuarios a web3.",
+        "title": "¿Qué es Linea?"
+      },
+      "optimism": {
+        "text": "Optimism es una red de Capa 2 que se ejecuta en Ethereum, lo que permite transacciones más baratas y rápidas al tiempo que se beneficia de la seguridad subyacente de Ethereum.\n\nAgrupa muchas transacciones juntas en un \"roll up\" antes de enviarlas para vivir permanentemente en Ethereum.",
+        "title": "¿Qué es Optimism?"
       },
       "polygon": {
         "text": "Polygon es una cadena lateral, una red distinta que se ejecuta junto a Ethereum y es compatible con ella.\n\nPermite transacciones más baratas y rápidas, pero a diferencia de las redes de capa 2, Polygon tiene sus propios mecanismos de seguridad y consenso que difieren de Ethereum.",
         "title": "¿Qué es Polygon?"
       },
-      "bsc": {
-        "text": "Binance Smart Chain (BSC) es la cadena de bloques para la plataforma de trading Binance. \n\nBSC permite transacciones más baratas y rápidas, pero a diferencia de una red de capa 2, tiene sus propios mecanismos de seguridad y consenso que difieren de Ethereum.",
-        "title": "¿Qué es Binance Smart Chain?"
+      "scroll": {
+        "text": "Scroll es una solución de Capa 2 construida sobre Ethereum, que tiene como objetivo mejorar la escalabilidad y la eficiencia de las transacciones.\n\nEmplea tecnología roll-up para agrupar transacciones, que luego se envían a Ethereum, beneficiándose de su infraestructura de seguridad.",
+        "title": "¿Qué es Scroll?"
+      },
+      "sanko": {
+        "text": "Sanko es una red de Capa 3 que opera sobre Arbitrum y Ethereum, enfocándose en NFTs y juegos.\n\nUtiliza la disponibilidad de datos AnyTrust y pruebas de fraude para la validación del estado, lo que permite transacciones más rápidas y baratas mientras aprovecha la seguridad de Ethereum. Sanko cuenta con un token nativo llamado DMT y emplea validadores en lista blanca para proponer y desafiar raíces de estado.",
+        "title": "¿Qué es Sanko?"
+      },
+      "zksync": {
+        "text": "ZKsync es un protocolo de Capa 2 diseñado para escalar Ethereum usando pruebas criptográficas avanzadas de conocimiento cero.\n\nMejora el rendimiento de Ethereum mientras mantiene la descentralización y la seguridad, permitiendo transacciones más rápidas y económicas.",
+        "title": "¿Qué es Zksync?"
+      },
+      "zora": {
+        "text": "Zora es una red de capa 2 que se ejecuta sobre Ethereum, lo que permite transacciones más baratas y rápidas y aún así beneficia de la seguridad subyacente de Ethereum.\n\nAgrupa muchas transacciones juntas en un \"roll up\" antes de enviarlas permanentemente a Ethereum.",
+        "title": "¿Qué es Zora?"
       },
       "read_more": "Leer más",
       "learn_more": "Saber más",
@@ -1033,15 +1133,6 @@
           "fragment1": "¿Aún tienes curiosidad? ",
           "fragment2": "Leer más",
           "fragment3": " sobre el deslizamiento y cómo afecta a los intercambios."
-        }
-      },
-      "flashbots": {
-        "text": "Flashbots protege tus transacciones de ataques de front-running y sandwich que podrían resultar en que obtengas un precio peor o que tu transacción falle.",
-        "title": "Flashbots",
-        "still_curious": {
-          "fragment1": "¿Aún tienes curiosidad? ",
-          "fragment2": "Leer más",
-          "fragment3": " sobre Flashbots y la protección que ofrece."
         }
       },
       "swap_refuel": {
@@ -1189,6 +1280,12 @@
         "check_out_my_wallet": "Consulta mis coleccionables en 🌈 Rainbow en %{showcaseUrl}",
         "check_out_this_wallet": "Consulta los coleccionables de esta billetera en 🌈 Rainbow en %{showcaseUrl}"
       }
+    },
+    "loading": {
+      "backing_up": "Resguardando...",
+      "creating_wallet": "Creando billetera...",
+      "importing_wallet": "Importando...",
+      "restoring": "Restaurando..."
     },
     "message": {
       "click_to_copy_to_clipboard": "Haz clic para copiar al portapapeles",
@@ -2052,7 +2149,6 @@
       "find_a_token_to_buy": "Encuentra un token para comprar",
       "search_your_tokens": "Busca tus tokens",
       "error_executing_swap": "Error ejecutando intercambio",
-      "flashbots_protection": "Protección Flashbots",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Ordenar",
@@ -2183,6 +2279,11 @@
           "pending": "Interacción pendiente",
           "confirmed": "Interactuado",
           "failed": "Interacción fallida"
+        },
+        "launch": {
+          "pending": "Lanzando",
+          "confirmed": "Lanzado",
+          "failed": "Lanzamiento Fallido"
         },
         "swap": {
           "pending": "Intercambiando",
@@ -2544,7 +2645,25 @@
         "loading_balance": "Cargando saldo...",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Observando",
-        "ledger": "Ledger"
+        "ledger": "Ledger",
+        "wallets": "Billeteras",
+        "all_wallets": "Todas las Billeteras",
+        "total_balance": "Saldo Total",
+        "edit_hint_tooltip": {
+          "title": "Personaliza Tus Billeteras",
+          "subtitle": {
+            "prefix": "Toque el",
+            "action": "Editar",
+            "suffix": "botón arriba para configurar"
+          }
+        },
+        "address_menu": {
+          "edit": "Editar billetera",
+          "copy": "Copiar dirección",
+          "settings": "Configuración de la Billetera",
+          "notifications": "Configuración de notificación",
+          "remove": "Eliminar billetera"
+        }
       },
       "connected_apps": "Aplicaciones conectadas",
       "copy": "Copiar",
@@ -2615,6 +2734,14 @@
       "my_account_address": "Mi dirección de cuenta:",
       "network_title": "Red",
       "new": {
+        "choose_wallet_group": {
+          "title": "Elegir Grupo de Billetera",
+          "description": "Elija el grupo de billetera en el que le gustaría crear una nueva billetera, o cree una nueva."
+        },
+        "new_wallet_group": {
+          "title": "Nuevo Grupo de Billetera",
+          "description": "Crear un grupo de billetera nuevo"
+        },
         "add_wallet_sheet": {
           "options": {
             "cloud": {
@@ -2924,10 +3051,15 @@
         "buttons": {
           "cancel": "Cancelar",
           "confirm": "􀎽 Enviar transacción",
+          "confirming": "Confirmando",
           "get_native_token": "Obtener %{symbol}",
           "buy_native_token": "Comprar %{symbol}"
         },
         "formatted_dates": {
+          "minute_ago": "hace un minuto",
+          "minutes_ago": "hace minutos",
+          "hour_ago": "hace una hora",
+          "hours_ago": "hace horas",
           "today": "Hoy",
           "day_ago": "hace un día",
           "days_ago": "hace unos días",
@@ -2984,12 +3116,233 @@
       },
       "menus": {
         "favorite": "Favorito",
+        "home": "Inicio",
         "undo_favorite": "Deshacer Favorito",
         "remove": "Eliminar",
         "forward": "Adelante",
-        "back": "Atrás"
+        "back": "Atrás",
+        "share": "Compartir",
+        "close_all_tabs": "Cerrar todas las %{numberOfClosableTabs} pestañas",
+        "close_both_tabs": "Cerrar ambas pestañas",
+        "close_this_tab": "Cerrar esta pestaña",
+        "close_tab": "Cerrar pestaña",
+        "new_tab": "Nueva pestaña"
       }
     },
+    "trending_tokens": {
+      "all": "Todos",
+      "no_results": {
+        "title": "No hay resultados",
+        "body": "Intenta buscar en un periodo de tiempo más largo o una red o categoría diferente."
+      },
+      "and": "y",
+      "and_others": {
+        "one": "y %{count} otro",
+        "other": "y %{count} otros"
+      },
+      "filters": {
+        "categories": {
+          "TRENDING": "Tendencia",
+          "RAINBOW": "Rainbow",
+          "NEW": "Nuevo",
+          "FARCASTER": "Farcaster"
+        },
+        "sort": {
+          "RECOMMENDED": {
+            "label": "Ordenar",
+            "menuOption": "Predeterminado"
+          },
+          "VOLUME": "Volumen",
+          "MARKET_CAP": "Capitalización de mercado",
+          "TOP_GAINERS": "Principales ganadores",
+          "TOP_LOSERS": "Principales perdedores"
+        },
+        "time": {
+          "H12": "12 Horas",
+          "H12_ABBREVIATED": "12h",
+          "H24": "24 Horas",
+          "H24_ABBREVIATED": "24h",
+          "D7": "1 Semana",
+          "D3": "3 Días"
+        }
+      }
+    },
+    "network_selector": {
+      "customize_networks_banner": {
+        "title": "Personalizar Redes",
+        "tap_the": "Toque el",
+        "button_to_set_up": "botón abajo para configurar"
+      },
+      "drop_here_to_unpin": "Suelte Aquí para Desfijar",
+      "edit": "Editar",
+      "network": "Red",
+      "networks": "Redes",
+      "drag_to_rearrange": "Arrastre para Reorganizar",
+      "show_less": "Mostrar Menos",
+      "more": "Más",
+      "show_more": "Más Redes",
+      "all_networks": "Todas las Redes"
+    },
+    "token_launcher": {
+      "airdrop": {
+        "address_or_ens": "Dirección o ENS",
+        "suggested_users": "USUARIOS SUGERIDOS",
+        "airdrop_lists": "LISTAS DE AIRDROP",
+        "max_recipients_reached": "Alcanzado el máximo de %{maxRecipientCount} destinatarios"
+      },
+      "image_upload_error": {
+        "title": "Lo sentimos, hubo un error al cargar su imagen.",
+        "subtitle": "Por favor inténtelo de nuevo."
+      },
+      "allocation_breakdown": {
+        "my_share": "MI PARTE",
+        "airdropping": "AIRDROPPING",
+        "start_price": "PRECIO INICIAL",
+        "sections": {
+          "my_share": {
+            "title": "Cuota del Creador",
+            "description": "Tu participación personal en el proyecto"
+          },
+          "airdropping": {
+            "title": "Cuota de Airdrop",
+            "description": "Distribuido a amigos y seguidores"
+          },
+          "liquidity_pool": {
+            "title": "Cuota de Pool de Liquidez",
+            "description": "Asegura el comercio fluido y la liquidez"
+          },
+          "rainbow_share": {
+            "title": "Sobre el Arcoíris",
+            "description": "Distribuciones futuras para la comunidad"
+          }
+        }
+      },
+      "network_field": {
+        "balance": "Balance: %{balance}",
+        "not_enough_funds": "Fondos insuficientes para lanzar un token"
+      },
+      "prebuy": {
+        "balance_after_gas_fee": "Saldo Disponible: %{balance}",
+        "title": "Pre-comprar más tokens"
+      },
+      "review": {
+        "token_allocation": "Asignación de tokens",
+        "your_share": "Tu participación",
+        "airdropping": "Airdropping",
+        "about": "Acerca de",
+        "total_cost": "Costo total",
+        "initial_price": "Precio inicial",
+        "market_cap": "Capitalización de mercado",
+        "total_supply": "Suministro total",
+        "network": "Red"
+      },
+      "creating": {
+        "deploying": "Desplegando %{symbol}..."
+      },
+      "success": {
+        "title": "¡%{symbol} está en vivo!",
+        "congrats": "¡Felicidades, acabas de lanzar %{name} al mundo! Compártelo para esparcir el ánimo."
+      },
+      "input_errors": {
+        "too_long": "Demasiado largo, amigo.",
+        "invalid_input": "Entrada inválida",
+        "symbol_required": "El símbolo es necesario",
+        "name_required": "Se requiere el nombre",
+        "too_big": "Demasiado grande.",
+        "must_be_greater_than_0": "Debe ser mayor que 0",
+        "amount_is_greater_than_balance": "La cantidad es mayor que el balance",
+        "amount_is_greater_than_max_prebuy_amount": "Excede la cantidad máxima de pre-compra de %{maxPrebuyAmount} %{chainNativeAssetSymbol}",
+        "amount_is_less_than_min_prebuy_amount": "Debe exceder la cantidad mínima de pre-compra de %{minPrebuyAmount} %{chainNativeAssetSymbol}",
+        "amount_too_small": "¡Cantidad demasiado pequeña! ¡Prueba con un poco más!"
+      },
+      "titles": {
+        "total_supply": "Suministro total",
+        "ticker": "Símbolo",
+        "name": "Nombre",
+        "network": "Red",
+        "description": "Descripción",
+        "airdrop": "Airdrop a amigos",
+        "required_info": "INFORMACIÓN REQUERIDA",
+        "about": "ACERCA DE",
+        "token_allocation": "ASIGNACIÓN DE TOKENS",
+        "token_allocation_breakdown": "Desglose de Asignación de Tokens",
+        "mcap": "MCAP"
+      },
+      "placeholders": {
+        "ticker": "$NAME",
+        "enter_coin_name": "Ingrese el nombre de la moneda",
+        "describe_your_coin": "Describe tu moneda"
+      },
+      "buttons": {
+        "hold_to_create": "Mantener para Crear",
+        "creating": "Creando...",
+        "share_link": "Compartir enlace",
+        "token_allocation_info": "Más Información",
+        "got_it": "Entendido",
+        "cancel": "Cancelar"
+      },
+      "header": {
+        "new_coin": "Nueva Moneda",
+        "review": "Revisar",
+        "creating": "Creando"
+      },
+      "links": {
+        "x": {
+          "name": "X/Twitter",
+          "placeholder": "Nombre de Usuario"
+        },
+        "telegram": {
+          "name": "Telegram",
+          "placeholder": "Canal"
+        },
+        "farcaster": {
+          "name": "Farcaster",
+          "placeholder": "Nombre de Usuario"
+        },
+        "website": {
+          "name": "Sitio web",
+          "placeholder": "https://pagina-inicio.com"
+        },
+        "other": {
+          "name": "Otro",
+          "placeholder": "https://otro.com"
+        },
+        "add_more": "Agregar Más"
+      },
+      "discard_and_exit": "Descartar y Salir",
+      "airdrops_sheet": {
+        "claim_button_text": "Reclamar",
+        "empty_state_title": "Aún No Hay Airdrops",
+        "title": "Reclamar Monedas Arcoíris"
+      },
+      "cards": {
+        "airdrops": {
+          "subtitle_loading": "CARGANDO",
+          "subtitle_has_airdrops": "DISPONIBLE PARA RECLAMAR",
+          "subtitle_no_airdrops": "AÚN NO HAY AIRDROPS",
+          "title": "Airdrops",
+          "title_singular": "Airdrop"
+        },
+        "launch": {
+          "line_one": "Lanzar\n",
+          "line_two": "tu Moneda"
+        }
+      },
+      "claim_airdrop_sheet": {
+        "by": "por",
+        "claiming": "Reclamando",
+        "created_by": "Creado por %{name}",
+        "gifted_to": "Regalado a",
+        "hold_to_claim": "Mantener para Reclamar",
+        "hold_to_retry": "Mantener para Reintentar",
+        "successfully_claimed": "Reclamado Exitosamente",
+        "title": "Reclamar $%{symbol}",
+        "to_claim_on": "para reclamar en %{network}",
+        "view_coin": "Ver Moneda",
+        "you": "Tú"
+      }
+    },
+    "done": "Listo",
     "copy": "Copiar",
     "paste": "Pegar"
   }

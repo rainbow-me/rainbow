@@ -2,7 +2,6 @@
 import { useRoute } from '@react-navigation/native';
 import * as lang from '@/languages';
 import React, { useCallback, useMemo } from 'react';
-import { Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Centered, Column, ColumnWithMargins, Row, RowWithMargins } from '../components/layout';
@@ -22,6 +21,7 @@ import { IS_ANDROID } from '@/env';
 
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -435,7 +435,7 @@ export const explainers = (params, theme) => {
           <Text
             color={colors?.appleBlue}
             onPress={() =>
-              Linking.openURL(
+              openInBrowser(
                 buildRainbowLearnUrl({
                   url: 'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing',
                   query: {
@@ -475,7 +475,7 @@ export const explainers = (params, theme) => {
           <Text
             color={colors?.appleBlue}
             onPress={() =>
-              Linking.openURL(
+              openInBrowser(
                 buildRainbowLearnUrl({
                   url: 'https://support.rainbow.me/en/articles/8324868-fee-on-transfer-tokens',
                   query: {
@@ -609,7 +609,7 @@ export const explainers = (params, theme) => {
           <Text
             color={colors?.appleBlue}
             onPress={() =>
-              Linking.openURL(
+              openInBrowser(
                 buildRainbowLearnUrl({
                   url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
                   query: {
@@ -643,7 +643,7 @@ export const explainers = (params, theme) => {
           <Text
             color={colors?.appleBlue}
             onPress={() =>
-              Linking.openURL(
+              openInBrowser(
                 buildRainbowLearnUrl({
                   url: 'https://learn.rainbow.me/swap-with-confidence-with-rainbow',
                   query: {
@@ -672,7 +672,7 @@ export const explainers = (params, theme) => {
           {lang.t('explain.slippage.still_curious.fragment1')}
           <Text
             color={colors?.appleBlue}
-            onPress={() => Linking.openURL('https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges')}
+            onPress={() => openInBrowser('https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges')}
             size="large"
             suppressHighlighting
             weight="semibold"
@@ -760,7 +760,7 @@ const ExplainSheet = () => {
   }, [goBack, params]);
 
   const handleReadMore = useCallback(() => {
-    explainSheetConfig?.readMoreLink && Linking.openURL(explainSheetConfig.readMoreLink);
+    explainSheetConfig?.readMoreLink && openInBrowser(explainSheetConfig.readMoreLink);
   }, [explainSheetConfig?.readMoreLink]);
 
   const EmojiText = type === 'verified' ? Gradient : Emoji;

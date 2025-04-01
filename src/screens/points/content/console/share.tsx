@@ -11,9 +11,8 @@ import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 import { NeonButton } from '../../components/NeonButton';
 import { LineBreak } from '../../components/LineBreak';
 import { Bleed, Box, Inline, Stack } from '@/design-system';
-import { Linking } from 'react-native';
-import { metadataPOSTClient } from '@/graphql';
 import { analyticsV2 } from '@/analytics';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 export const Share = () => {
   const { intent, setAnimationKey, setStep } = usePointsProfileContext();
@@ -42,12 +41,6 @@ export const Share = () => {
         <AnimatedText
           color={textColors.account}
           delayStart={1000}
-          multiline
-          textContent={i18n.t(i18n.l.points.console.referral_link_bonus_text)}
-        />
-        <AnimatedText
-          color={textColors.account}
-          delayStart={1000}
           onComplete={() => {
             const complete = setTimeout(() => {
               setShowShareButtons(true);
@@ -55,7 +48,7 @@ export const Share = () => {
             return () => clearTimeout(complete);
           }}
           multiline
-          textContent={i18n.t(i18n.l.points.console.referral_link_bonus_text_extended)}
+          textContent={i18n.t(i18n.l.points.console.referral_link_bonus_text)}
         />
       </Stack>
       <AnimatePresence condition={showShareButtons && !!intent?.length} duration={300}>
@@ -81,11 +74,7 @@ export const Share = () => {
                 analyticsV2.track(analyticsV2.event.pointsOnboardingScreenPressedShareToXButton);
                 const beginNextPhase = setTimeout(async () => {
                   if (intent) {
-                    Linking.openURL(intent);
-                    await metadataPOSTClient.redeemCodeForPoints({
-                      address: accountAddress,
-                      redemptionCode: 'TWITTERSHARED',
-                    });
+                    openInBrowser(intent, false);
                   }
                   setAnimationKey(prevKey => prevKey + 1);
                   setStep(RainbowPointsFlowSteps.Review);

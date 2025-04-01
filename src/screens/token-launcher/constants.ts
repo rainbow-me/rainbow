@@ -19,6 +19,7 @@ export const STEP_TRANSITION_DURATION = 200;
 export const INPUT_HEIGHT = 66;
 export const SMALL_INPUT_HEIGHT = 50;
 export const LINK_ICON_SIZE = 20;
+export const GHOST_INPUT_ACCESSORY_NATIVE_ID = 'input-accessory';
 
 export const MAX_SYMBOL_BYTES = 32;
 export const MAX_DESCRIPTION_BYTES = 2_000;

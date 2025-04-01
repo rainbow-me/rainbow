@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import { SlackSheet } from '@/components/sheet';
 import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { Linking } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { analyticsV2 } from '@/analytics';
 import { RequestVendorLogoIcon } from '@/components/coin-icon';
@@ -16,6 +15,7 @@ import { capitalize } from 'lodash';
 import { RainbowPosition } from '@/resources/defi/types';
 import { LpPositionListItem } from './LpPositionListItem';
 import { RootStackParamList } from '@/navigation/types';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -59,7 +59,7 @@ export const PositionSheet: React.FC = () => {
       dapp: position.type,
       url: position.dapp.url,
     });
-    Linking.openURL(position.dapp.url);
+    openInBrowser(position.dapp.url);
   }, [position.dapp.url, position.type]);
 
   return (

@@ -93,24 +93,15 @@ const formatSuperTokenLinks = (links: AddSuperTokenParams['links']): TokenLinks 
     (acc, [key, value]) => {
       if (value) {
         let standardizedKey = key;
-        let url;
+        const url = value;
         switch (key) {
           case 'x':
-            url = xUsernameToUrl(value);
             standardizedKey = 'twitter';
             break;
-          case 'telegram':
-            url = telegramChannelToUrl(value);
-            break;
-          case 'farcaster':
-            url = farcasterNameToUrl(value);
-            break;
           case 'website':
-            url = value;
             standardizedKey = 'homepage';
             break;
           default:
-            url = value;
             break;
         }
         acc[standardizedKey as keyof TokenLinks] = {
@@ -121,16 +112,4 @@ const formatSuperTokenLinks = (links: AddSuperTokenParams['links']): TokenLinks 
     },
     {} as Record<string, TokenLink>
   );
-};
-
-const xUsernameToUrl = (username: string) => {
-  return `https://x.com/${username}`;
-};
-
-const telegramChannelToUrl = (channel: string) => {
-  return `https://t.me/${channel}`;
-};
-
-const farcasterNameToUrl = (name: string) => {
-  return `https://warpcast.com/${name}`;
 };

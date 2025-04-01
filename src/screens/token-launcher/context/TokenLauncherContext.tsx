@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react';
 import { getAlphaColor, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { getHighContrastColor } from '@/hooks/useAccountAccentColor';
@@ -13,11 +13,14 @@ import { SharedValue } from 'react-native-reanimated';
 import { logger, RainbowError } from '@/logger';
 import { useCleanup, useCoinListEditOptions } from '@/hooks';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { ScrollView } from 'react-native';
 
 type TokenLauncherContextType = {
   tokenBackgroundImage: SkImage | null;
   tokenImage: SkImage | null | SharedValue<SkImage | null>;
   chainNativeAsset: BackendNetwork['nativeAsset'];
+  infoInputScrollRef: React.RefObject<ScrollView>;
+  infoInputScrollY: React.MutableRefObject<number>;
   accentColors: {
     opacity100: string;
     opacity90: string;
@@ -55,6 +58,8 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   const chainId = useTokenLauncherStore(state => state.chainId);
   const chainNativeAsset = useBackendNetworksStore(state => state.getChainsNativeAsset()[chainId]);
   const launchedTokenAddress = useTokenLauncherStore(state => state.launchedTokenAddress);
+  const infoInputScrollRef = useRef<ScrollView>(null);
+  const infoInputScrollY = useRef(0);
 
   // Handle automatically pinning token when it is created
   const { addPinnedCoin } = useCoinListEditOptions();
@@ -62,7 +67,7 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
     // As soon as token is created, pin it
     if (launchedTokenAddress) {
       const launchedTokenUniqueId = getUniqueId(launchedTokenAddress, chainId);
-      addPinnedCoin(launchedTokenUniqueId);
+      addPinnedCoin(launchedTokenUniqueId.toLowerCase());
     }
   }, [launchedTokenAddress, chainId, addPinnedCoin]);
 
@@ -128,7 +133,9 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
   }, [colors, imageDerivedColor, isDarkMode]);
 
   return (
-    <TokenLauncherContext.Provider value={{ accentColors, tokenImage, tokenBackgroundImage, chainNativeAsset }}>
+    <TokenLauncherContext.Provider
+      value={{ accentColors, tokenImage, tokenBackgroundImage, chainNativeAsset, infoInputScrollRef, infoInputScrollY }}
+    >
       {children}
     </TokenLauncherContext.Provider>
   );

@@ -191,6 +191,10 @@ export const event = {
   tokenLauncherCreationFailed: 'token_launcher.creation_failed',
   tokenLauncherImageUploadFailed: 'token_launcher.image_upload_failed',
   tokenLauncherWalletLoadFailed: 'token_launcher.wallet_load_failed',
+
+  // network status
+  networkStatusOffline: 'network_status.offline',
+  networkStatusReconnected: 'network_status.reconnected',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -200,11 +204,13 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   inputAssetName: string;
   inputAssetAddress: AddressOrEth;
   inputAssetChainId: ChainId;
+  inputAssetType: string;
   inputAssetAmount: number;
   outputAssetSymbol: string;
   outputAssetName: string;
   outputAssetAddress: AddressOrEth;
   outputAssetChainId: ChainId;
+  outputAssetType: string;
   outputAssetAmount: number;
   mainnetAddress: string;
   tradeAmountUSD: number;
@@ -802,4 +808,8 @@ export type EventProperties = {
   [event.tokenLauncherSharePressed]: TokenLauncherAnalyticsParams & {
     url: string;
   };
+
+  // network status
+  [event.networkStatusOffline]: undefined;
+  [event.networkStatusReconnected]: undefined;
 };
