@@ -162,6 +162,9 @@ const getTokenRelevance = ({
 }) => {
   // High relevance: Leading word in token name starts with query or exact match on symbol
   if (normalizedTokenName.startsWith(normalizedQuery) || (normalizedTokenSymbol && normalizedTokenSymbol === normalizedQuery)) {
+    if (token.icon_url) {
+      return 5.1;
+    }
     return 5;
   }
 
