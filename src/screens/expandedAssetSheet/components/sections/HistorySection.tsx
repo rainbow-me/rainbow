@@ -13,7 +13,6 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import Animated, {
   clamp,
-  SharedTransition,
   SharedValue,
   useAnimatedStyle,
   useDerivedValue,
@@ -59,12 +58,6 @@ const moreButtonStyles = {
   alignItems: 'center' as const,
   justifyContent: 'center' as const,
 };
-const historyTransition = SharedTransition.custom(values => {
-  'worklet';
-  return {
-    height: withSpring(values.targetHeight, SPRING_CONFIGS.springConfig),
-  };
-});
 
 interface MoreButtonProps {
   tokenInteractions: TokenInteraction[];
@@ -337,13 +330,7 @@ export const ListData = memo(function ListData({ data, buys, sells, isLoading }:
   return (
     <Box style={[{ position: 'relative', overflow: 'hidden' }]}>
       {isLoading && filteredTokenInteractions.length === 0 && (
-        <Box
-          as={Animated.View}
-          style={loaderStyles}
-          sharedTransitionTag="history-section"
-          sharedTransitionStyle={historyTransition}
-          gap={24}
-        >
+        <Box as={Animated.View} style={loaderStyles} gap={24}>
           {Array.from({ length: DEFAULT_VISIBLE_ITEM_COUNT }).map((_, index) => (
             <SkeletonRow key={index} width={DEVICE_WIDTH - 48} height={ROW_HEIGHT} />
           ))}
