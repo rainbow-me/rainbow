@@ -173,7 +173,8 @@ export type ProtocolType =
   | 'sushiswap'
   | 'native'
   | 'wrappedNative'
-  | 'stablecoin';
+  | 'stablecoin'
+  | 'rainbow';
 
 export type AssetMetadata = {
   circulatingSupply: number;

@@ -96,7 +96,8 @@
         "generic": "Kesalahan saat mencoba untuk cadangan. kode kesalahan: %{errorCodes}",
         "no_keys_found": "Tidak ada kunci ditemukan. Silakan coba lagi.",
         "backup_not_found": "Backup tidak ditemukan. Silakan coba lagi.",
-        "no_account_found": "Tidak dapat mengambil file backup. Pastikan Anda sudah masuk."
+        "no_account_found": "Tidak dapat mengambil file backup. Pastikan Anda sudah masuk.",
+        "damaged_wallet": "Tidak dapat mencadangkan dompet. Data keychain hilang."
       },
       "wrong_pin": "Kode PIN yang anda masukkan salah dan kami tidak bisa membuat cadangan. Silahkan coba lagi dengan kode yang benar.",
       "already_backed_up": {
@@ -115,6 +116,8 @@
         "no_backups": "Tidak ada cadangan yang ditemukan",
         "failed_to_fetch_backups": "Gagal mengambil backup",
         "retry": "Coba Lagi",
+        "refresh": "Segarkan",
+        "syncing_cloud_store": "Sinkronisasi ke %{cloudPlatformName}",
         "fetching_backups": "Mengambil cadangan dari %{cloudPlatformName}",
         "back_up_to_platform": "Backup ke %{cloudPlatformName}",
         "restore_from_platform": "Pulihkan dari %{cloudPlatformName}",
@@ -145,6 +148,12 @@
         "older_backups": "Backup Lama",
         "no_older_backups": "Tidak Ada Backup Lama",
         "older_backups_title": "%{date} pada %{time}",
+        "statuses": {
+          "not_enabled": "Tidak Diaktifkan",
+          "syncing": "Sinkronisasi",
+          "out_of_date": "Kedaluwarsa",
+          "up_to_date": "Terkini"
+        },
         "password": {
           "a_password_youll_remember_part_one": "Kata sandi ini",
           "not": "tidak",
@@ -336,6 +345,7 @@
       "receive": "Terima",
       "remove": "Hapus",
       "save": "Simpan",
+      "skip": "Lewat",
       "send": "Kirim",
       "send_another": "Kirim Lagi",
       "share": "Bagikan",
@@ -452,7 +462,13 @@
     },
     "claimables": {
       "panel": {
-        "calculating_gas_fee": "Menghitung biaya gas...",
+        "estimating_gas_fee": "Mengestimasi Biaya Gas...",
+        "gas_error": "Kesalahan Gas",
+        "quote_error": "Kesalahan Kutipan",
+        "no_route_found": "Tidak ada rute yang ditemukan",
+        "fetching_quote": "Mengambil Kutipan...",
+        "select_a_network": "Pilih Jaringan",
+        "select_a_token": "Pilih Token",
         "amount_to_claim_on_network": "%{amount} untuk diklaim di %{network}",
         "claim": "Klaim",
         "claiming": "Mengklaim",
@@ -463,7 +479,13 @@
         "claim_amount": "Klaim %{amount}",
         "done": "Selesai",
         "try_again": "Coba Lagi",
-        "tokens_on_the_way": "Token dalam perjalanan!"
+        "tokens_on_the_way": "Token dalam perjalanan!",
+        "a_token": "sebuah token",
+        "a_network": "sebuah jaringan",
+        "swap_failed": "Penukaran Gagal",
+        "receive": "Terima",
+        "on": "aktif",
+        "reset": "Atur Ulang"
       }
     },
     "cloud": {
@@ -495,6 +517,8 @@
     },
     "developer_settings": {
       "alert": "Peringatan",
+      "analyze_env_variables": "Analisis Variabel ENV",
+      "analyze_react_query": "Analisis React Query",
       "applied": "DITERAPKAN",
       "backups_deleted_successfully": "Backup berhasil dihapus",
       "clear_async_storage": "Hapus penyimpanan async",
@@ -503,7 +527,11 @@
       "clear_image_metadata_cache": "Hapus Cache Metadata Gambar",
       "clear_local_storage": "Hapus penyimpanan lokal",
       "clear_mmkv_storage": "Hapus penyimpanan MMKV",
+      "clear_react_query_cache": "Bersihkan Cache React Query",
       "connect_to_anvil": "Hubungkan ke anvil",
+      "copy_fcm_token": "Salin Token FCM",
+      "copy_log_lines": "Salin Baris Log",
+      "copy_signing_wallet_address": "Salin Alamat Dompet Penandatangan",
       "disconnect_to_anvil": "Putuskan hubungan dari anvil",
       "crash_app_render_error": "Aplikasi crash (kesalahan render)",
       "enable_testnets": "Aktifkan Testnets",
@@ -642,7 +670,6 @@
       "high": "Tinggi",
       "slippage_tolerance": "Slippage Maksimum",
       "source_picker": "Rute Pertukaran melalui",
-      "use_flashbots": "Gunakan Flashbots",
       "swapping_for_prefix": "Menukar untuk",
       "view_details": "Lihat Detail",
       "token_sections": {
@@ -671,13 +698,56 @@
         "social": {
           "facebook": "Facebook",
           "homepage": "Halaman Utama",
+          "website": "Situs Web",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter"
+          "twitter": "Twitter",
+          "warpcast": "Warpcast",
+          "farcaster": "Farcaster",
+          "other": "Lainnya",
+          "search_on_twitter": "Cari di Twitter"
         },
         "uniswap_liquidity": "Likuiditas Uniswap",
         "value": "Nilai",
-        "volume_24_hours": "Volume 24h"
+        "volume_24_hours": "Volume 24h",
+        "menu": {
+          "view_on": "Tampilkan di %{blockExplorerName}",
+          "share": "Bagikan",
+          "copy_contract_address": "Salin Alamat Kontrak",
+          "pin": "Pin",
+          "unpin": "Lepaskan Pin",
+          "hide": "Sembunyikan",
+          "unhide": "Batal Sembunyikan"
+        },
+        "no_data_available": "Tidak Ada Data Tersedia"
+      },
+      "sections": {
+        "market_stats": {
+          "title": "Statistik Pasar",
+          "circulating_supply": "Pasokan Beredar",
+          "max_supply": "Persediaan Maks",
+          "fully_diluted_valuation": "Penilaian Sepenuhnya Terdilusi",
+          "market_cap": "Kap Pasar",
+          "created": "Dibuat",
+          "volume_24_hours": "Volume 24h",
+          "rank": "Peringkat"
+        },
+        "buy": {
+          "title": "Beli",
+          "pay_with": "Beli dengan",
+          "available_balance": "Saldo Tersedia",
+          "open_swaps": "Swaps Terbuka",
+          "low_balance": "Saldo Rendah"
+        },
+        "claim": {
+          "claim_button": "Klaim Airdrop",
+          "created_by": "Dibuat oleh %{creator}",
+          "title": "Klaim"
+        },
+        "about": {
+          "title": "Tentang",
+          "what_is": "Apa itu %{assetName}?"
+        }
       },
       "chart": {
         "all_time": "Sepanjang Waktu",
@@ -697,6 +767,7 @@
             "month_11": "Des"
           }
         },
+        "no_chart_data": "Tidak Ada Data Grafik",
         "no_price_data": "Tidak ada data harga",
         "past_timespan": "Masa Lalu %{formattedTimespan}",
         "today": "Hari Ini",
@@ -723,7 +794,6 @@
       "swap": {
         "swap": "Tukar",
         "bridge": "Jembatan",
-        "flashbots_protect": "Pelindung Flashbots",
         "losing": "Kalah",
         "on": "On",
         "off": "Mati",
@@ -857,6 +927,8 @@
       "adworld_title": "Selamat datang di Dunia Rainbow!",
       "farcaster_description": "Ikon aplikasi kami yang paling membosankan, terinspirasi oleh minimalisme Warpcast yang hambar.",
       "farcaster_title": "Anda telah membuka\nRainbowcast",
+      "redacted_description": "Ikon Rainbow eksklusif untuk para penikmat sejati Gdupi.",
+      "redacted_title": "Anda telah membuka\n Rainbow yang Dihilangkan",
       "button": "Ambil ikon"
     },
     "explain": {
@@ -927,41 +999,69 @@
         "text": "Tip penambang langsung menuju ke penambang yang mengonfirmasi transaksi Anda di jaringan.\n\nTip yang lebih tinggi membuat transaksi Anda lebih mungkin untuk dikonfirmasi dengan cepat.",
         "title": "Tip penambang"
       },
-      "optimism": {
-        "text": "Optimisme adalah jaringan Layer 2 yang berjalan di atas Ethereum, memungkinkan transaksi yang lebih murah dan lebih cepat sambil masih mendapat manfaat dari keamanan dasar Ethereum.\n\nPenggabungan banyak transaksi bersama dalam \"roll up\" sebelum mengirimkannya ke Ethereum untuk ditetapkan secara permanen.",
-        "title": "Apa itu Optimisme?"
-      },
-      "base": {
-        "text": "Base adalah Jaringan Layer 2 yang berjalan di atas Ethereum, memungkinkan transaksi yang lebih murah dan cepat sambil tetap mendapatkan keuntungan dari keamanan bawah Ethereum.\n\nIt mengemas banyak transaksi bersama dalam \"roll up\" sebelum mengirimkan mereka turun untuk hidup secara permanen di Ethereum.",
-        "title": "Apa itu Base?"
+      "apechain": {
+        "text": "ApeChain adalah jaringan Layer 3 yang berjalan di atas Arbitrum Orbit dan Ethereum.\n\nIni secara signifikan meningkatkan utilitas ApeCoin, memfasilitasi ekonomi yang kuat dan dinamis yang didorong oleh $APE.",
+        "title": "Apa itu ApeChain?"
       },
       "avalanche": {
         "text": "Avalanche adalah sidechain, jaringan terpisah yang berjalan di samping Ethereum dan kompatibel dengannya.\n\nIni memungkinkan transaksi yang lebih murah dan cepat, tetapi tidak seperti jaringan Layer 2, Avalanche memiliki mekanisme keamanan dan konsensus sendiri yang berbeda dari Ethereum.",
         "title": "Apa itu Avalanche?"
       },
-      "degen": {
-        "text": "Degen Chain adalah jaringan Layer 3 yang berjalan di atas Arbitrum Orbit dan Ethereum.",
-        "title": "Apa itu Degen Chain?"
+      "base": {
+        "text": "Base adalah Jaringan Layer 2 yang berjalan di atas Ethereum, memungkinkan transaksi yang lebih murah dan cepat sambil tetap mendapatkan keuntungan dari keamanan bawah Ethereum.\n\nIt mengemas banyak transaksi bersama dalam \"roll up\" sebelum mengirimkan mereka turun untuk hidup secara permanen di Ethereum.",
+        "title": "Apa itu Base?"
       },
       "blast": {
         "text": "Blast adalah jaringan Layer 2 yang berjalan di atas Ethereum, memungkinkan transaksi yang lebih murah dan cepat sambil tetap mendapatkan manfaat dari keamanan dasar Ethereum.\n\nIni menggabungkan banyak transaksi bersama dalam \"roll up\" sebelum mengirimkannya untuk hidup secara permanen di Ethereum.",
         "title": "Apa itu Blast?"
       },
-      "apechain": {
-        "text": "ApeChain adalah jaringan Layer 3 yang berjalan di atas Arbitrum Orbit dan Ethereum.\n\nIni secara signifikan meningkatkan utilitas ApeCoin, memfasilitasi ekonomi yang kuat dan dinamis yang didorong oleh $APE.",
-        "title": "Apa itu ApeChain?"
+      "bsc": {
+        "text": "Binance Smart Chain (BSC) adalah blockchain untuk platform perdagangan Binance. \n\nBSC memungkinkan untuk transaksi yang lebih murah dan cepat, tetapi tidak seperti Jaringan Layer 2, ia memiliki mekanisme keamanan dan konsensusnya sendiri yang berbeda dari Ethereum.",
+        "title": "Apa itu Binance Smart Chain?"
       },
-      "zora": {
-        "text": "Zora adalah Jaringan Layer 2 yang berjalan di atas Ethereum, memungkinkan transaksi yang lebih murah dan cepat sambil tetap mendapatkan keuntungan dari keamanan bawah Ethereum.\n\nIt mengemas banyak transaksi bersama dalam \"roll up\" sebelum mengirimkan mereka turun untuk hidup secara permanen di Ethereum.",
-        "title": "Apa itu Zora?"
+      "degen": {
+        "text": "Degen Chain adalah jaringan Layer 3 yang berjalan di atas Arbitrum Orbit dan Ethereum.",
+        "title": "Apa itu Degen Chain?"
+      },
+      "gravity": {
+        "text": "Gravity adalah blockchain Layer 1 berkinerja tinggi yang dibangun oleh Galxe, mencapai lebih dari satu gigagas per detik throughput dan finalitas sub-detik.\n\nIni memanfaatkan mesin konsensus AptosBFT yang di-pipeline dan waktu jalankan EVM paralel, menjaga keamanan Proof-of-Stake melalui teknologi restaking.",
+        "title": "Apa itu Gravity?"
+      },
+      "gnosis": {
+        "text": "Gnosis Chain adalah sidechain Ethereum milik komunitas yang dioperasikan oleh berbagai validator global.\n\nIni berfokus pada ketahanan dan netralitas yang dapat dipercaya, menyediakan transaksi yang lebih murah dan lebih cepat sambil mempertahankan mekanisme keamanan dan konsensusnya sendiri.",
+        "title": "Apa itu Gnosis?"
+      },
+      "ink": {
+        "text": "Ink adalah jaringan Layer 2 yang dibangun di atas OP Stack, dirancang untuk meningkatkan skala Ethereum dengan menyediakan waktu blok sub-detik dan biaya transaksi rendah.\n\nDiluncurkan oleh Kraken, dan bagian dari Superchain, Ink bertujuan untuk meningkatkan kinerja dan aksesibilitas untuk aplikasi keuangan terdesentralisasi (DeFi).",
+        "title": "Apa itu Ink?"
+      },
+      "linea": {
+        "text": "Linea adalah blockchain Layer 2 yang setara dengan Ethereum yang aman dan berbiaya rendah yang dikembangkan oleh ConsenSys.\n\nIni memungkinkan transaksi yang lebih cepat dan lebih terjangkau tanpa mengorbankan keamanan dan desentralisasi, bertujuan untuk membawa satu miliar pengguna berikutnya ke web3.",
+        "title": "Apa itu Linea?"
+      },
+      "optimism": {
+        "text": "Optimisme adalah jaringan Layer 2 yang berjalan di atas Ethereum, memungkinkan transaksi yang lebih murah dan lebih cepat sambil masih mendapat manfaat dari keamanan dasar Ethereum.\n\nPenggabungan banyak transaksi bersama dalam \"roll up\" sebelum mengirimkannya ke Ethereum untuk ditetapkan secara permanen.",
+        "title": "Apa itu Optimisme?"
       },
       "polygon": {
         "text": "Polygon adalah sidechain, jaringan berbeda yang berjalan sejajar dengan Ethereum dan kompatibel dengannya.\n\nIt memungkinkan untuk transaksi yang lebih murah dan cepat, tetapi tidak seperti Jaringan Layer 2, Polygon memiliki mekanisme keamanan dan konsensus sendiri yang berbeda dari Ethereum.",
         "title": "Apa itu Polygon?"
       },
-      "bsc": {
-        "text": "Binance Smart Chain (BSC) adalah blockchain untuk platform perdagangan Binance. \n\nBSC memungkinkan untuk transaksi yang lebih murah dan cepat, tetapi tidak seperti Jaringan Layer 2, ia memiliki mekanisme keamanan dan konsensusnya sendiri yang berbeda dari Ethereum.",
-        "title": "Apa itu Binance Smart Chain?"
+      "scroll": {
+        "text": "Scroll adalah solusi Layer 2 yang dibangun di atas Ethereum, bertujuan untuk meningkatkan skalabilitas dan efisiensi transaksi.\n\nIni memanfaatkan teknologi roll-up untuk mengikat transaksi, yang kemudian diserahkan ke Ethereum, memanfaatkan infrastruktur keamanannya.",
+        "title": "Apa itu Scroll?"
+      },
+      "sanko": {
+        "text": "Sanko adalah jaringan Layer 3 yang berjalan di atas Arbitrum dan Ethereum, berfokus pada NFT dan permainan.\n\nIni menggunakan ketersediaan data AnyTrust dan bukti penipuan untuk validasi status, memungkinkan transaksi yang lebih cepat dan lebih murah sambil memanfaatkan keamanan Ethereum. Sanko menampilkan token asli bernama DMT dan menggunakan validator daftar putih untuk mengusulkan dan menantang akar status.",
+        "title": "Apa itu Sanko?"
+      },
+      "zksync": {
+        "text": "ZKsync adalah protokol Layer 2 yang dirancang untuk meningkatkan skala Ethereum menggunakan bukti kriptografi pengetahuan nol canggih.\n\nIni meningkatkan throughput Ethereum sambil mempertahankan desentralisasi dan keamanan, memungkinkan transaksi yang lebih cepat dan lebih murah.",
+        "title": "Apa itu Zksync?"
+      },
+      "zora": {
+        "text": "Zora adalah Jaringan Layer 2 yang berjalan di atas Ethereum, memungkinkan transaksi yang lebih murah dan cepat sambil tetap mendapatkan keuntungan dari keamanan bawah Ethereum.\n\nIt mengemas banyak transaksi bersama dalam \"roll up\" sebelum mengirimkan mereka turun untuk hidup secara permanen di Ethereum.",
+        "title": "Apa itu Zora?"
       },
       "read_more": "Baca Lebih Lanjut",
       "learn_more": "Pelajari Lebih Lanjut",
@@ -1033,15 +1133,6 @@
           "fragment1": "Masih penasaran? ",
           "fragment2": "Baca lebih lanjut",
           "fragment3": " tentang slippage dan bagaimana dampaknya pada swap."
-        }
-      },
-      "flashbots": {
-        "text": "Flashbots melindungi transaksi Anda dari frontrunning dan serangan sandwich yang mungkin mengakibatkan Anda mendapatkan harga yang lebih buruk atau transaksi Anda gagal.",
-        "title": "Flashbots",
-        "still_curious": {
-          "fragment1": "Masih penasaran? ",
-          "fragment2": "Baca lebih lanjut",
-          "fragment3": " tentang Flashbots dan perlindungan yang ditawarkannya."
         }
       },
       "swap_refuel": {
@@ -1189,6 +1280,12 @@
         "check_out_my_wallet": "Lihat kolektibel saya di 🌈 Rainbow di %{showcaseUrl}",
         "check_out_this_wallet": "Lihat kolektibel dompet ini di 🌈 Rainbow di %{showcaseUrl}"
       }
+    },
+    "loading": {
+      "backing_up": "Mencadangkan...",
+      "creating_wallet": "Membuat dompet...",
+      "importing_wallet": "Impor...",
+      "restoring": "Memulihkan..."
     },
     "message": {
       "click_to_copy_to_clipboard": "Klik untuk menyalin ke clipboard",
@@ -2052,7 +2149,6 @@
       "find_a_token_to_buy": "Cari token untuk beli",
       "search_your_tokens": "Cari token Anda",
       "error_executing_swap": "Kesalahan saat melakukan swap",
-      "flashbots_protection": "Perlindungan Flashbots",
       "tokens_input": {
         "tokens": "Token",
         "sort": "Urutkan",
@@ -2183,6 +2279,11 @@
           "pending": "Interaksi Tertunda",
           "confirmed": "Berinteraksi",
           "failed": "Interaksi Gagal"
+        },
+        "launch": {
+          "pending": "Meluncur",
+          "confirmed": "Diluncurkan",
+          "failed": "Peluncuran Gagal"
         },
         "swap": {
           "pending": "Menukar",
@@ -2544,7 +2645,25 @@
         "loading_balance": "Memuat Saldo...",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Menonton",
-        "ledger": "Ledger"
+        "ledger": "Ledger",
+        "wallets": "Dompet",
+        "all_wallets": "Semua Dompet",
+        "total_balance": "Total Saldo",
+        "edit_hint_tooltip": {
+          "title": "Sesuaikan Dompet Anda",
+          "subtitle": {
+            "prefix": "Ketuk",
+            "action": "Edit",
+            "suffix": "tombol di atas untuk mengatur"
+          }
+        },
+        "address_menu": {
+          "edit": "Edit Dompet",
+          "copy": "Salin Alamat",
+          "settings": "Pengaturan Dompet",
+          "notifications": "Pengaturan Notifikasi",
+          "remove": "Hapus Dompet"
+        }
       },
       "connected_apps": "Aplikasi Terhubung",
       "copy": "Salin",
@@ -2615,6 +2734,14 @@
       "my_account_address": "Alamat akun saya:",
       "network_title": "Jaringan",
       "new": {
+        "choose_wallet_group": {
+          "title": "Pilih Grup Dompet",
+          "description": "Pilih grup dompet yang ingin Anda buat dompet baru di dalamnya, atau buat yang baru."
+        },
+        "new_wallet_group": {
+          "title": "Grup Dompet Baru",
+          "description": "Buat grup dompet baru"
+        },
         "add_wallet_sheet": {
           "options": {
             "cloud": {
@@ -2924,10 +3051,15 @@
         "buttons": {
           "cancel": "Batal",
           "confirm": "􀎽 Kirim Transaksi",
+          "confirming": "Konfirmasi",
           "get_native_token": "Dapatkan %{symbol}",
           "buy_native_token": "Beli %{symbol}"
         },
         "formatted_dates": {
+          "minute_ago": "minit yang lalu",
+          "minutes_ago": "minit yang lalu",
+          "hour_ago": "jam yang lalu",
+          "hours_ago": "jam yang lalu",
           "today": "Hari Ini",
           "day_ago": "hari yang lalu",
           "days_ago": "hari yang lalu",
@@ -2984,12 +3116,233 @@
       },
       "menus": {
         "favorite": "Favorit",
+        "home": "Beranda",
         "undo_favorite": "Urungkan Favorit",
         "remove": "Hapus",
         "forward": "Maju",
-        "back": "Kembali"
+        "back": "Kembali",
+        "share": "Bagikan",
+        "close_all_tabs": "Tutup Semua %{numberOfClosableTabs} Tab",
+        "close_both_tabs": "Tutup Kedua Tab",
+        "close_this_tab": "Tutup Tab Ini",
+        "close_tab": "Tutup Tab",
+        "new_tab": "Tab Baru"
       }
     },
+    "trending_tokens": {
+      "all": "Semua",
+      "no_results": {
+        "title": "Tidak ada hasil",
+        "body": "Cobalah menjelajah dalam rentang waktu yang lebih besar atau jaringan atau kategori yang berbeda."
+      },
+      "and": "dan",
+      "and_others": {
+        "one": "dan %{count} lainnya",
+        "other": "dan %{count} lainnya"
+      },
+      "filters": {
+        "categories": {
+          "TRENDING": "Tren",
+          "RAINBOW": "Rainbow",
+          "NEW": "Baru",
+          "FARCASTER": "Farcaster"
+        },
+        "sort": {
+          "RECOMMENDED": {
+            "label": "Urutkan",
+            "menuOption": "Standar"
+          },
+          "VOLUME": "Volume",
+          "MARKET_CAP": "Kap Pasar",
+          "TOP_GAINERS": "Pemenang Tertinggi",
+          "TOP_LOSERS": "Pecundang Tertinggi"
+        },
+        "time": {
+          "H12": "12 Jam",
+          "H12_ABBREVIATED": "12h",
+          "H24": "24 Jam",
+          "H24_ABBREVIATED": "24h",
+          "D7": "1 Minggu",
+          "D3": "3 Hari"
+        }
+      }
+    },
+    "network_selector": {
+      "customize_networks_banner": {
+        "title": "Sesuaikan Jaringan",
+        "tap_the": "Ketuk",
+        "button_to_set_up": "tombol di bawah untuk mengatur"
+      },
+      "drop_here_to_unpin": "Jatuhkan Di Sini untuk Membatalkan Pinned",
+      "edit": "Edit",
+      "network": "Jaringan",
+      "networks": "Jaringan",
+      "drag_to_rearrange": "Seret untuk Menyusun Ulang",
+      "show_less": "Tampilkan Lebih Sedikit",
+      "more": "Lebih",
+      "show_more": "Lebih Banyak Jaringan",
+      "all_networks": "Semua Jaringan"
+    },
+    "token_launcher": {
+      "airdrop": {
+        "address_or_ens": "Alamat atau ENS",
+        "suggested_users": "PENGGUNA YANG DIUSULKAN",
+        "airdrop_lists": "DAFTAR AIRDROP",
+        "max_recipients_reached": "Maksimum %{maxRecipientCount} penerima tercapai"
+      },
+      "image_upload_error": {
+        "title": "Maaf, terjadi kesalahan saat mengunggah gambar Anda.",
+        "subtitle": "Silakan coba lagi."
+      },
+      "allocation_breakdown": {
+        "my_share": "BAGIKU",
+        "airdropping": "AIR TERDROP",
+        "start_price": "HARGA AWAL",
+        "sections": {
+          "my_share": {
+            "title": "Bagikan Pencipta",
+            "description": "Pertaruhan pribadi Anda di proyek ini"
+          },
+          "airdropping": {
+            "title": "Bagikan Airdrop",
+            "description": "Didistribusikan kepada teman dan pendukung"
+          },
+          "liquidity_pool": {
+            "title": "Bagikan Pool Likuiditas",
+            "description": "Memastikan perdagangan dan likuiditas yang mulus"
+          },
+          "rainbow_share": {
+            "title": "Di Atas Pelangi",
+            "description": "Distribusi Komunitas Masa Depan"
+          }
+        }
+      },
+      "network_field": {
+        "balance": "Saldo: %{balance}",
+        "not_enough_funds": "Dana tidak cukup untuk meluncurkan token"
+      },
+      "prebuy": {
+        "balance_after_gas_fee": "Saldo Tersedia: %{balance}",
+        "title": "Pra-beli lebih banyak token"
+      },
+      "review": {
+        "token_allocation": "Pembagian token",
+        "your_share": "Bagian Anda",
+        "airdropping": "Air Dropping",
+        "about": "Tentang",
+        "total_cost": "Total biaya",
+        "initial_price": "Harga Awal",
+        "market_cap": "Kap pasar",
+        "total_supply": "Total pasokan",
+        "network": "Jaringan"
+      },
+      "creating": {
+        "deploying": "Memilih %{symbol}..."
+      },
+      "success": {
+        "title": "%{symbol} sudah aktif!",
+        "congrats": "Selamat, Anda baru saja meluncurkan %{name} ke dunia! Bagikan untuk menyebarkan suasana."
+      },
+      "input_errors": {
+        "too_long": "Terlalu lama, teman.",
+        "invalid_input": "Masukan tidak valid",
+        "symbol_required": "Kode diperlukan",
+        "name_required": "Nama diperlukan",
+        "too_big": "Terlalu besar.",
+        "must_be_greater_than_0": "Harus lebih besar dari 0",
+        "amount_is_greater_than_balance": "Jumlah lebih besar dari saldo",
+        "amount_is_greater_than_max_prebuy_amount": "Melebihi jumlah pra-beli maksimum %{maxPrebuyAmount} %{chainNativeAssetSymbol}",
+        "amount_is_less_than_min_prebuy_amount": "Harus melebihi jumlah pra-beli minimum %{minPrebuyAmount} %{chainNativeAssetSymbol}",
+        "amount_too_small": "Jumlah terlalu kecil! Cobalah sedikit lebih banyak!"
+      },
+      "titles": {
+        "total_supply": "Total pasokan",
+        "ticker": "Kode saham",
+        "name": "Nama",
+        "network": "Jaringan",
+        "description": "Deskripsi",
+        "airdrop": "Airdrop ke teman",
+        "required_info": "INFO YANG DIPERLUKAN",
+        "about": "TENTANG",
+        "token_allocation": "ALOKASI TOKEN",
+        "token_allocation_breakdown": "Pemecahan Alokasi Token",
+        "mcap": "MCAP"
+      },
+      "placeholders": {
+        "ticker": "$NAME",
+        "enter_coin_name": "Masukkan nama koin",
+        "describe_your_coin": "Jelaskan koin Anda"
+      },
+      "buttons": {
+        "hold_to_create": "Tekan dan Tahan untuk Membuat",
+        "creating": "Membuat...",
+        "share_link": "Bagikan Tautan",
+        "token_allocation_info": "Info lebih lanjut",
+        "got_it": "Mengerti",
+        "cancel": "Batal"
+      },
+      "header": {
+        "new_coin": "Koin Baru",
+        "review": "Tinjau",
+        "creating": "Membuat"
+      },
+      "links": {
+        "x": {
+          "name": "X/Twitter",
+          "placeholder": "Nama pengguna"
+        },
+        "telegram": {
+          "name": "Telegram",
+          "placeholder": "Saluran"
+        },
+        "farcaster": {
+          "name": "Farcaster",
+          "placeholder": "Nama pengguna"
+        },
+        "website": {
+          "name": "Situs Web",
+          "placeholder": "https://homepage.com"
+        },
+        "other": {
+          "name": "Lainnya",
+          "placeholder": "https://other.com"
+        },
+        "add_more": "Tambahkan Lebih Banyak"
+      },
+      "discard_and_exit": "Buang & Keluar",
+      "airdrops_sheet": {
+        "claim_button_text": "Klaim",
+        "empty_state_title": "Belum Ada Airdrop",
+        "title": "Klaim Koin Pelangi"
+      },
+      "cards": {
+        "airdrops": {
+          "subtitle_loading": "MEMUAT",
+          "subtitle_has_airdrops": "TERSEDIA UNTUK DIKLAIM",
+          "subtitle_no_airdrops": "BELUM ADA AIRDROP",
+          "title": "Airdrop",
+          "title_singular": "Airdrop"
+        },
+        "launch": {
+          "line_one": "Luncurkan\n",
+          "line_two": "koin Anda"
+        }
+      },
+      "claim_airdrop_sheet": {
+        "by": "oleh",
+        "claiming": "Mengklaim",
+        "created_by": "Dibuat oleh %{name}",
+        "gifted_to": "Diberikan kepada",
+        "hold_to_claim": "Tahan untuk Mengklaim",
+        "hold_to_retry": "Tahan untuk Mencoba Lagi",
+        "successfully_claimed": "Berhasil Diklaim",
+        "title": "Klaim $%{symbol}",
+        "to_claim_on": "untuk diklaim di %{network}",
+        "view_coin": "Lihat Koin",
+        "you": "Anda"
+      }
+    },
+    "done": "Selesai",
     "copy": "Salin",
     "paste": "Tempel"
   }

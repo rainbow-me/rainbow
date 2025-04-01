@@ -41,9 +41,9 @@ export function NetworkField() {
           gap: 8,
         }}
       >
-        <Box gap={10}>
+        <Box gap={10} style={{ flex: 1 }}>
           <FieldLabel>{i18n.t(i18n.l.token_launcher.titles.network)}</FieldLabel>
-          <Text color="labelQuaternary" size="13pt" weight="bold">
+          <Text color="labelQuaternary" size="13pt" weight="bold" numberOfLines={1}>
             {i18n.t(i18n.l.token_launcher.network_field.balance, { balance: chainNativeAsset?.balance.display ?? '0.00' })}
           </Text>
         </Box>
