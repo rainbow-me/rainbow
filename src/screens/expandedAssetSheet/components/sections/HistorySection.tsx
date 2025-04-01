@@ -6,20 +6,28 @@ import { useAccountSettings } from '@/hooks';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { Tabs } from '../shared/Tabs/Tabs';
-import { useTokenInteractions } from '@/resources/metadata/tokenInteractions';
 import { TokenInteraction, TokenInteractionDirection, TokenInteractionType } from '@/graphql/__generated__/metadata';
 import { useTabContext } from '../shared/Tabs/TabContext';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import Animated, { clamp, SharedTransition, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  clamp,
+  SharedTransition,
+  SharedValue,
+  useAnimatedStyle,
+  useDerivedValue,
+  withSpring,
+  withTiming,
+  withDelay,
+} from 'react-native-reanimated';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { format } from 'date-fns';
 import { convertRawAmountToBalanceWorklet, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
 import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { openInBrowser } from '@/utils/openInBrowser';
 import * as i18n from '@/languages';
-import { ceilWorklet, minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/safe-math/SafeMath';
+import { minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/safe-math/SafeMath';
 
 const l = i18n.l.expanded_state.sections.history;
 
@@ -28,7 +36,6 @@ const DEFAULT_VISIBLE_ITEM_COUNT = 4;
 const LIST_BUTTON_GAP = 20;
 const ROW_HEIGHT = 32;
 const ROW_PADDING = 24;
-const LIST_PADDING = 4;
 const MORE_BUTTON_HEIGHT = 36;
 
 // Button styling constants
@@ -37,6 +44,9 @@ const MORE_BUTTON_PADDING_HORIZONTAL = 12;
 const LIST_ITEM_BORDER_RADIUS = 18;
 const LIST_ITEM_GAP = 11;
 const ICON_TEXT_GAP = 5;
+
+// Animation constants
+const ITEM_DELAY = 10;
 
 // Date format constants
 const DATE_FORMAT = 'MMM d';
@@ -127,11 +137,29 @@ const SkeletonRow = ({ width, height }: SkeletonRowProps) => {
 };
 
 interface ListItemProps {
+  index: number;
   item: TokenInteraction;
   nativeCurrency: NativeCurrencyKey;
+  listHeight: SharedValue<number>;
+  isExpanded: SharedValue<boolean>;
+  totalItemCount: number;
 }
 
-export const ListItem = memo(function ListItem({ item, nativeCurrency }: ListItemProps) {
+const calculateContainerHeight = (interactions: TokenInteraction[], isExpanded: boolean) => {
+  'worklet';
+
+  const hasMoreButton = interactions.length > DEFAULT_VISIBLE_ITEM_COUNT;
+  const moreButtonPadding = hasMoreButton ? LIST_BUTTON_GAP : 0;
+
+  const visibleItemCount = isExpanded ? interactions.length : minWorklet(interactions.length, DEFAULT_VISIBLE_ITEM_COUNT);
+  const totalRowHeight = mulWorklet(visibleItemCount, ROW_HEIGHT);
+  const totalGapHeight = Number(visibleItemCount) > 1 ? mulWorklet(subWorklet(visibleItemCount, 1), ROW_PADDING) : 0;
+  const totalHeight = sumWorklet(sumWorklet(totalRowHeight, totalGapHeight), moreButtonPadding);
+
+  return Math.max(0, Number(totalHeight));
+};
+
+export const ListItem = memo(function ListItem({ index, item, nativeCurrency, listHeight, isExpanded, totalItemCount }: ListItemProps) {
   const { accentColors, basicAsset: asset } = useExpandedAssetSheetContext();
   const labelTertiary = useForegroundColor('labelTertiary');
 
@@ -189,38 +217,53 @@ export const ListItem = memo(function ListItem({ item, nativeCurrency }: ListIte
     openInBrowser(item.explorerURL);
   }, [item.explorerURL]);
 
+  const isVisibleStyles = useAnimatedStyle(() => {
+    const occupyingSpace = index * (ROW_HEIGHT + ROW_PADDING);
+    const isVisible = occupyingSpace <= listHeight.value;
+
+    const forwardDelay = index * ITEM_DELAY;
+    const reverseDelay = Math.max(0, totalItemCount - 1 - index) * ITEM_DELAY;
+    const delay = isExpanded.value ? forwardDelay : reverseDelay;
+
+    return {
+      opacity: withDelay(delay, withTiming(isVisible ? 1 : 0, TIMING_CONFIGS.fadeConfig)),
+    };
+  });
+
   return (
-    <Box as={ButtonPressAnimation} scaleTo={0.94} onPress={navigateToTransaction} height={ROW_HEIGHT} gap={LIST_ITEM_GAP} width="full">
-      <Box flexDirection="row" justifyContent="space-between" alignItems="center">
-        <Box flexDirection="row" alignItems="center" gap={ICON_TEXT_GAP}>
-          <Text size="icon 11px" color={{ custom: iconColor }} weight="bold">
-            {icon}
-          </Text>
-          <Text size="13pt" color={{ custom: iconColor }} weight="semibold">
-            {direction}
-          </Text>
-        </Box>
-        <Text size="13pt" color="labelQuaternary" weight="medium">
-          {shortenedMonth}
-        </Text>
-      </Box>
-      <Box flexDirection="row" justifyContent="space-between" alignItems="center">
-        <Box flexDirection="row" alignItems="center" gap={ICON_TEXT_GAP}>
-          <Text size={item.direction === TokenInteractionDirection.Out ? 'icon 17px' : 'icon 11px'} color="labelSecondary" weight="bold">
-            {symbol}
-          </Text>
-          <Box flexDirection="row" alignItems="center">
-            <Text size="17pt" color="labelSecondary" weight="medium">
-              {currencyAmount}
+    <Box as={Animated.View} style={isVisibleStyles}>
+      <Box as={ButtonPressAnimation} scaleTo={0.94} onPress={navigateToTransaction} height={ROW_HEIGHT} gap={LIST_ITEM_GAP} width="full">
+        <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+          <Box flexDirection="row" alignItems="center" gap={ICON_TEXT_GAP}>
+            <Text size="icon 11px" color={{ custom: iconColor }} weight="bold">
+              {icon}
             </Text>
-            <Text size="17pt" color="labelQuaternary" weight="medium">
-              {asset.symbol}
+            <Text size="13pt" color={{ custom: iconColor }} weight="semibold">
+              {direction}
             </Text>
           </Box>
+          <Text size="13pt" color="labelQuaternary" weight="medium">
+            {shortenedMonth}
+          </Text>
         </Box>
-        <Text size="17pt" color="labelSecondary" weight="medium">
-          {nativeAmount.display}
-        </Text>
+        <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+          <Box flexDirection="row" alignItems="center" gap={ICON_TEXT_GAP}>
+            <Text size={item.direction === TokenInteractionDirection.Out ? 'icon 17px' : 'icon 11px'} color="labelSecondary" weight="bold">
+              {symbol}
+            </Text>
+            <Box flexDirection="row" alignItems="center">
+              <Text size="17pt" color="labelSecondary" weight="medium">
+                {currencyAmount}
+              </Text>
+              <Text size="17pt" color="labelQuaternary" weight="medium">
+                {asset.symbol}
+              </Text>
+            </Box>
+          </Box>
+          <Text size="17pt" color="labelSecondary" weight="medium">
+            {nativeAmount.display}
+          </Text>
+        </Box>
       </Box>
     </Box>
   );
@@ -253,31 +296,10 @@ export const ListData = memo(function ListData({ data, buys, sells, isLoading }:
     return data;
   }, [tabIndex, data, buys, sells]);
 
-  const calculateContainerHeight = useCallback((interactions: TokenInteraction[], isExpanded: boolean) => {
-    'worklet';
-
-    const minOfTwoOptions = minWorklet(interactions.length, DEFAULT_VISIBLE_ITEM_COUNT);
-    const shouldShowMoreButton = interactions.length > DEFAULT_VISIBLE_ITEM_COUNT;
-    const moreButtonHeight = shouldShowMoreButton ? MORE_BUTTON_HEIGHT : -16;
-    const rowHeightWithPadding = ROW_HEIGHT + ROW_PADDING;
-    const amount = isExpanded ? interactions.length : minOfTwoOptions;
-
-    const rowHeight = mulWorklet(amount, rowHeightWithPadding);
-    return Number(ceilWorklet(sumWorklet(rowHeight, moreButtonHeight)));
-  }, []);
-
-  const containerStyles = useAnimatedStyle(() => {
-    const height = calculateContainerHeight(filteredTokenInteractions, isExpanded.value);
-    return {
-      height: withSpring(clamp(height, 0, height), SPRING_CONFIGS.springConfig),
-    };
-  });
+  const listHeight = useDerivedValue(() => calculateContainerHeight(filteredTokenInteractions, isExpanded.value));
 
   const loaderStyles = useAnimatedStyle(() => {
-    const shouldShowMoreButton = filteredTokenInteractions.length > DEFAULT_VISIBLE_ITEM_COUNT;
-    const moreButtonHeight = shouldShowMoreButton ? MORE_BUTTON_HEIGHT + LIST_BUTTON_GAP : 0;
-    const loaderHeight =
-      DEFAULT_VISIBLE_ITEM_COUNT * ROW_HEIGHT + (DEFAULT_VISIBLE_ITEM_COUNT - 1) * ROW_PADDING + LIST_PADDING * 2 + moreButtonHeight;
+    const loaderHeight = DEFAULT_VISIBLE_ITEM_COUNT * ROW_HEIGHT + (DEFAULT_VISIBLE_ITEM_COUNT - 1) * ROW_PADDING;
 
     return {
       height: withTiming(isLoading && filteredTokenInteractions.length === 0 ? loaderHeight : 0, TIMING_CONFIGS.fastFadeConfig),
@@ -286,35 +308,64 @@ export const ListData = memo(function ListData({ data, buys, sells, isLoading }:
   });
 
   const listStyles = useAnimatedStyle(() => {
+    const clampedListHeight = clamp(listHeight.value, 0, listHeight.value);
+
+    let heightAnimation: number | ReturnType<typeof withTiming> | ReturnType<typeof withSpring>;
+
+    if (isExpanded.value) {
+      heightAnimation = withDelay(ITEM_DELAY, withSpring(clampedListHeight, SPRING_CONFIGS.springConfig));
+    } else {
+      // NOTE: We can assume here that filteredTokenInteractions.length is greater than DEFAULT_VISIBLE_ITEM_COUNT
+      // since the user is coming back from the isExpanded state
+      heightAnimation = withDelay(
+        ITEM_DELAY,
+        withSpring(clampedListHeight, {
+          dampingRatio: 0.9,
+          stiffness: 150,
+          overshootClamping: true,
+          duration: Math.max(filteredTokenInteractions.length - DEFAULT_VISIBLE_ITEM_COUNT, 1) * ITEM_DELAY,
+        })
+      );
+    }
+
     return {
+      height: heightAnimation,
       opacity: withTiming(filteredTokenInteractions.length !== 0 ? 1 : 0, TIMING_CONFIGS.fastFadeConfig),
     };
   });
 
-  const renderItem = useCallback(
-    ({ item }: { item: TokenInteraction }) => {
-      return <ListItem item={item} nativeCurrency={nativeCurrency} />;
-    },
-    [nativeCurrency]
-  );
-
   return (
-    <Box as={Animated.View} style={[containerStyles, { position: 'relative' }]}>
-      <Box as={Animated.View} style={loaderStyles} sharedTransitionTag="history-section" sharedTransitionStyle={historyTransition} gap={24}>
-        {Array.from({ length: DEFAULT_VISIBLE_ITEM_COUNT }).map((_, index) => (
-          <SkeletonRow key={index} width={DEVICE_WIDTH - 48} height={ROW_HEIGHT} />
-        ))}
-      </Box>
+    <Box style={[{ position: 'relative', overflow: 'hidden' }]}>
+      {isLoading && filteredTokenInteractions.length === 0 && (
+        <Box
+          as={Animated.View}
+          style={loaderStyles}
+          sharedTransitionTag="history-section"
+          sharedTransitionStyle={historyTransition}
+          gap={24}
+        >
+          {Array.from({ length: DEFAULT_VISIBLE_ITEM_COUNT }).map((_, index) => (
+            <SkeletonRow key={index} width={DEVICE_WIDTH - 48} height={ROW_HEIGHT} />
+          ))}
+        </Box>
+      )}
 
-      <Animated.FlatList
-        sharedTransitionTag="history-section"
-        sharedTransitionStyle={historyTransition}
-        data={filteredTokenInteractions}
-        style={[listStyles, { paddingVertical: LIST_PADDING }]}
-        contentContainerStyle={{ gap: 24 }}
-        scrollEnabled={false}
-        renderItem={renderItem}
-      />
+      {!isLoading && (
+        <Box as={Animated.View} style={[listStyles, { gap: ROW_PADDING, overflow: 'hidden' }]}>
+          {filteredTokenInteractions.map((tokenInteraction, index) => (
+            <ListItem
+              key={index}
+              index={index}
+              item={tokenInteraction}
+              nativeCurrency={nativeCurrency}
+              listHeight={listHeight}
+              isExpanded={isExpanded}
+              totalItemCount={filteredTokenInteractions.length}
+            />
+          ))}
+        </Box>
+      )}
+
       <MoreButton tokenInteractions={filteredTokenInteractions} />
     </Box>
   );
