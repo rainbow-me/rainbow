@@ -15,7 +15,6 @@ export const TabPill = ({ tab, index }: { tab: string; index: number }) => {
 
   const activeTabStyle = useAnimatedStyle(() => {
     return {
-      borderWidth: withTiming(activeTabIndex.value === index ? THICK_BORDER_WIDTH : 0, TIMING_CONFIGS.tabPressConfig),
       borderColor: withTiming(
         activeTabIndex.value === index ? opacityWorklet(accentColor, 0.06) : colors.transparent,
         TIMING_CONFIGS.tabPressConfig
@@ -74,7 +73,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     display: 'flex',
     alignItems: 'center',
-    padding: 3,
+    padding: 3 - THICK_BORDER_WIDTH,
     gap: 3,
     borderRadius: 22,
     borderWidth: THICK_BORDER_WIDTH,

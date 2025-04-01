@@ -136,11 +136,22 @@ export const ListItem = memo(function ListItem({ item, nativeCurrency }: ListIte
   const labelTertiary = useForegroundColor('labelTertiary');
 
   const icon = useMemo(() => {
-    return item.direction === TokenInteractionDirection.In ? '􁾯' : '􁾫';
-  }, [item.direction]);
+    switch (item.type) {
+      case TokenInteractionType.Bought:
+        return '􁾯';
+      case TokenInteractionType.Sold:
+        return '􁾫';
+      case TokenInteractionType.Received:
+        return '􀄩';
+      case TokenInteractionType.Sent:
+        return '􀈟';
+      default:
+        return '';
+    }
+  }, [item.type]);
 
   const symbol = useMemo(() => {
-    return item.direction === TokenInteractionDirection.In ? '+' : '-';
+    return item.direction === TokenInteractionDirection.In ? '􀅼' : '-';
   }, [item.direction]);
 
   const iconColor = useMemo(() => {
@@ -163,7 +174,7 @@ export const ListItem = memo(function ListItem({ item, nativeCurrency }: ListIte
   }, [item.type]);
 
   const shortenedMonth = useMemo(() => {
-    return format(new Date(item.interactedAt), DATE_FORMAT);
+    return format(new Date(item.interactedAt * 1000), DATE_FORMAT);
   }, [item.interactedAt]);
 
   const nativeAmount = useMemo(() => {
@@ -195,11 +206,11 @@ export const ListItem = memo(function ListItem({ item, nativeCurrency }: ListIte
       </Box>
       <Box flexDirection="row" justifyContent="space-between" alignItems="center">
         <Box flexDirection="row" alignItems="center" gap={ICON_TEXT_GAP}>
-          <Text size="17pt" color="labelSecondary" weight="bold">
-            {symbol} {currencyAmount}
+          <Text size={item.direction === TokenInteractionDirection.Out ? 'icon 17px' : 'icon 11px'} color="labelSecondary" weight="bold">
+            {symbol}
           </Text>
-          <Text size="17pt" color="labelQuaternary" weight="semibold">
-            {asset.symbol}
+          <Text size="17pt" color="labelSecondary" weight="medium">
+            {currencyAmount} {asset.symbol}
           </Text>
         </Box>
         <Text size="17pt" color="labelSecondary" weight="medium">
