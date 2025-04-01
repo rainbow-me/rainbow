@@ -27,7 +27,7 @@ const useSearchCurrencyList = () => {
   const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery.trim().toLowerCase());
   const searching = useMemo(() => searchQuery !== '', [searchQuery]);
 
-  const { favorites: favoriteAddresses, favoritesMetadata: favoriteMap } = useFavorites();
+  const { favoritesMetadata: favoriteMap } = useFavorites();
   const unfilteredFavorites = useMemo(() => {
     return Object.values(favoriteMap)
       .filter(token => token.networks[ChainId.mainnet])
