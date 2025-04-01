@@ -104,14 +104,8 @@ export default React.memo(function FastCurrencySelectionRow({
   const isInfoButtonVisible = !isNativeAsset(address, chainId) && !showBalance;
 
   return (
-    <View style={sx.row}>
-      <ButtonPressAnimation
-        onPress={onPress}
-        style={[sx.flex, disabled && { opacity: 0.5 }]}
-        testID={rowTestID}
-        wrapperStyle={sx.flex}
-        disabled={disabled}
-      >
+    <View style={sx.row} testID={rowTestID}>
+      <ButtonPressAnimation onPress={onPress} style={[sx.flex, disabled && { opacity: 0.5 }]} wrapperStyle={sx.flex} disabled={disabled}>
         <View style={sx.rootContainer}>
           <View style={sx.iconContainer}>
             <RainbowCoinIcon

@@ -96,7 +96,8 @@
         "generic": "バックアップを試みる際にエラーが発生しました。エラーコード： %{errorCodes}",
         "no_keys_found": "キーが見つかりませんでした。もう一度お試しください。",
         "backup_not_found": "バックアップが見つかりませんでした。もう一度お試しください。",
-        "no_account_found": "バックアップファイルを取得できません。ログインしていることを確認してください。"
+        "no_account_found": "バックアップファイルを取得できません。ログインしていることを確認してください。",
+        "damaged_wallet": "ウォレットをバックアップできません。キーチェーンデータが欠落しています。"
       },
       "wrong_pin": "入力したPINコードが正しくないため、バックアップを作成できません。正しいコードで再試行してください。",
       "already_backed_up": {
@@ -115,6 +116,8 @@
         "no_backups": "バックアップが見つかりません",
         "failed_to_fetch_backups": "バックアップの取得に失敗しました",
         "retry": "再試行",
+        "refresh": "更新",
+        "syncing_cloud_store": "%{cloudPlatformName}に同期中",
         "fetching_backups": "%{cloudPlatformName}からバックアップを取得中",
         "back_up_to_platform": "%{cloudPlatformName}にバックアップ",
         "restore_from_platform": "%{cloudPlatformName}から復元する",
@@ -145,6 +148,12 @@
         "older_backups": "以前のバックアップ",
         "no_older_backups": "以前のバックアップがありません",
         "older_backups_title": "%{date} %{time}時",
+        "statuses": {
+          "not_enabled": "無効",
+          "syncing": "同期中",
+          "out_of_date": "最新ではありません",
+          "up_to_date": "最新です"
+        },
         "password": {
           "a_password_youll_remember_part_one": "このパスワードは",
           "not": "復元できません",
@@ -336,6 +345,7 @@
       "receive": "受け取る",
       "remove": "削除",
       "save": "保存する",
+      "skip": "スキップ",
       "send": "送信する",
       "send_another": "別の送信",
       "share": "共有する",
@@ -452,7 +462,13 @@
     },
     "claimables": {
       "panel": {
-        "calculating_gas_fee": "ガス料金を計算中...",
+        "estimating_gas_fee": "ガス料金を推定中...",
+        "gas_error": "ガスエラー",
+        "quote_error": "見積りエラー",
+        "no_route_found": "ルートが見つかりません",
+        "fetching_quote": "見積もりを取得中...",
+        "select_a_network": "ネットワークを選択",
+        "select_a_token": "トークンを選択",
         "amount_to_claim_on_network": "%{amount}を%{network}で請求する",
         "claim": "請求",
         "claiming": "主張",
@@ -463,7 +479,13 @@
         "claim_amount": "%{amount}を請求",
         "done": "完了",
         "try_again": "再試行",
-        "tokens_on_the_way": "トークンが届きます！"
+        "tokens_on_the_way": "トークンが届きます！",
+        "a_token": "トークン",
+        "a_network": "ネットワーク",
+        "swap_failed": "交換失敗",
+        "receive": "受け取る",
+        "on": "オン",
+        "reset": "リセット"
       }
     },
     "cloud": {
@@ -495,6 +517,8 @@
     },
     "developer_settings": {
       "alert": "アラート",
+      "analyze_env_variables": "環境変数を解析",
+      "analyze_react_query": "React Queryを解析",
       "applied": "適用済み",
       "backups_deleted_successfully": "バックアップが正常に削除されました",
       "clear_async_storage": "非同期ストレージをクリア",
@@ -503,7 +527,11 @@
       "clear_image_metadata_cache": "クリアイメージメタデータキャッシュ",
       "clear_local_storage": "ローカルストレージをクリア",
       "clear_mmkv_storage": "MMKVストレージをクリア",
+      "clear_react_query_cache": "React Queryキャッシュをクリア",
       "connect_to_anvil": "Anvilに接続する",
+      "copy_fcm_token": "FCMトークンをコピー",
+      "copy_log_lines": "ログラインをコピー",
+      "copy_signing_wallet_address": "署名ウォレットアドレスをコピー",
       "disconnect_to_anvil": "anvilから切断する",
       "crash_app_render_error": "アプリをクラッシュさせる（レンダーエラー）",
       "enable_testnets": "テストネットを有効にする",
@@ -642,7 +670,6 @@
       "high": "高い",
       "slippage_tolerance": "最大スリッページ",
       "source_picker": "経路スワップ経由",
-      "use_flashbots": "Flashbotsを使用する",
       "swapping_for_prefix": "次のものとスワップ",
       "view_details": "詳細を表示",
       "token_sections": {
@@ -671,13 +698,56 @@
         "social": {
           "facebook": "Facebook",
           "homepage": "ホームページ",
+          "website": "ウェブサイト",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter"
+          "twitter": "Twitter",
+          "warpcast": "Warpcast",
+          "farcaster": "Farcaster",
+          "other": "その他",
+          "search_on_twitter": "Twitterで検索"
         },
         "uniswap_liquidity": "ユニスワップ流動性",
         "value": "価値",
-        "volume_24_hours": "24時間のボリューム"
+        "volume_24_hours": "24時間のボリューム",
+        "menu": {
+          "view_on": "%{blockExplorerName}で表示する",
+          "share": "共有する",
+          "copy_contract_address": "契約アドレスをコピー",
+          "pin": "ピン",
+          "unpin": "固定を解除する",
+          "hide": "非表示",
+          "unhide": "表示する"
+        },
+        "no_data_available": "利用可能なデータがありません"
+      },
+      "sections": {
+        "market_stats": {
+          "title": "マーケット統計",
+          "circulating_supply": "流通供給量",
+          "max_supply": "最大供給量",
+          "fully_diluted_valuation": "完全に希釈された時価総額",
+          "market_cap": "時価総額",
+          "created": "作成日",
+          "volume_24_hours": "24時間のボリューム",
+          "rank": "ランキング"
+        },
+        "buy": {
+          "title": "購入",
+          "pay_with": "で購入",
+          "available_balance": "利用可能残高",
+          "open_swaps": "オープンスワップ",
+          "low_balance": "残高不足"
+        },
+        "claim": {
+          "claim_button": "エアドロップを請求する",
+          "created_by": "%{creator}によって作成",
+          "title": "請求"
+        },
+        "about": {
+          "title": "概要",
+          "what_is": "%{assetName}とは何ですか？"
+        }
       },
       "chart": {
         "all_time": "すべての時間",
@@ -697,6 +767,7 @@
             "month_11": "12月"
           }
         },
+        "no_chart_data": "チャートデータがありません",
         "no_price_data": "価格データがありません",
         "past_timespan": "過去 %{formattedTimespan}",
         "today": "今日",
@@ -723,7 +794,6 @@
       "swap": {
         "swap": "交換する",
         "bridge": "ブリッジ",
-        "flashbots_protect": "Flashbots Protect",
         "losing": "損失中",
         "on": "オン",
         "off": "オフ",
@@ -857,6 +927,8 @@
       "adworld_title": "ウェルカムトゥレインボーワールド！",
       "farcaster_description": "Warpcastのシンプルなミニマリズムに触発された、最も退屈なアプリアイコン。",
       "farcaster_title": "アンロック\nRainbowcast",
+      "redacted_description": "真のGdupi愛好者のための独占的なRainbowアイコン。",
+      "redacted_title": "ロック解除されました\nRedacted Rainbow",
       "button": "アイコンをキャッチ"
     },
     "explain": {
@@ -927,41 +999,69 @@
         "text": "マイナーチップは、ネットワーク上でトランザクションを確認するマイナーに直接支払われます。\n\nより高いチップを設定すると、トランザクションが迅速に確認される可能性が高くなります。",
         "title": "マイナーチップ"
       },
-      "optimism": {
-        "text": "Optimismは、Ethereumの基盤のセキュリティを利用しつつ、より安価かつ高速なトランザクションを実現するLayer 2ネットワークです。\n\nEthereum上で永久的に生き残る前に、多くのトランザクションをまとめて\"roll up\"して送信します。",
-        "title": "Optimismとは？"
-      },
-      "base": {
-        "text": "ベースはEthereumの上で動作するLayer 2ネットワークであり、より安価で高速なトランザクションを実現しながら、Ethereumの基礎的なセキュリティの恩恵も受けます。\n\nロールアップでトランザクションをまとめてから、それらを永久的にEthereum上に送信します。",
-        "title": "ベースとは？"
+      "apechain": {
+        "text": "ApeChainはArbitrum OrbitとEthereumの上で動作するLayer <b>3</b>ネットワークです。\n\nそれはApeCoinの実用性を著しく向上させ、$APEによって駆動される強力かつ動的な経済を促進します。",
+        "title": "ApeChainとは何ですか？"
       },
       "avalanche": {
         "text": "AvalancheはEthereumと共に動作する別個のネットワークであるサイドチェーンです。\n\nより安価かつ高速なトランザクションが可能ですが、Layer 2ネットワークとは異なり、Avalancheには独自のセキュリティとコンセンサスメカニズムがあります。",
         "title": "Avalancheとは何ですか？"
       },
-      "degen": {
-        "text": "ディージェンチェーンは、アービトラムとイーサリアムの上で動作するレイヤー<b>3</b>ネットワークです。",
-        "title": "Degen Chainとは？"
+      "base": {
+        "text": "ベースはEthereumの上で動作するLayer 2ネットワークであり、より安価で高速なトランザクションを実現しながら、Ethereumの基礎的なセキュリティの恩恵も受けます。\n\nロールアップでトランザクションをまとめてから、それらを永久的にEthereum上に送信します。",
+        "title": "ベースとは？"
       },
       "blast": {
         "text": "BlastはEthereum上で動作するLayer 2ネットワークであり、Ethereumの基盤のセキュリティを活用しながら、より安価かつ高速なトランザクションを可能にします。\n\n多くのトランザクションを「ロールアップ」としてまとめた後、それをEthereumに永続転送します。",
         "title": "Blastとは？"
       },
-      "apechain": {
-        "text": "ApeChainはArbitrum OrbitとEthereumの上で動作するLayer <b>3</b>ネットワークです。\n\nそれはApeCoinの実用性を著しく向上させ、$APEによって駆動される強力かつ動的な経済を促進します。",
-        "title": "ApeChainとは何ですか？"
+      "bsc": {
+        "text": "Binance Smart Chain（BSC）は取引所Binanceのブロックチェーンです。 \n\nBSCは安価で高速なトランザクションが可能ですが、Layer 2ネットワークとは異なり、独自のセキュリティとコンセンサスメカニズムを持っています。",
+        "title": "Binance Smart Chainとは"
       },
-      "zora": {
-        "text": "ZoraはEthereumの上で動作するLayer 2ネットワークであり、より安価で高速なトランザクションを実現しながら、Ethereumの基礎的なセキュリティの恩恵も受けます。\n\nロールアップでトランザクションをまとめてから、それらを永久的にEthereum上に送信します。",
-        "title": "Zoraとは"
+      "degen": {
+        "text": "ディージェンチェーンは、アービトラムとイーサリアムの上で動作するレイヤー<b>3</b>ネットワークです。",
+        "title": "Degen Chainとは？"
+      },
+      "gravity": {
+        "text": "GravityはGalxeによって構築された高性能のレイヤー1ブロックチェーンであり、1秒あたり1ギガガスを超えるスループットと秒未満の確定性を達成しています。\n\nこれはパイプライン化されたAptosBFTコンセンサスエンジンと並列EVMランタイムを利用し、再ステーキング技術を介してプルーフ・オブ・ステークのセキュリティを維持します。",
+        "title": "Gravityとは？"
+      },
+      "gnosis": {
+        "text": "Gnosisチェーンは、世界中の多様なバリデーターによって運営されているコミュニティ所有のEthereumサイドチェーンです。\n\nそれは回復力と信頼できる中立性に焦点を当て、より安価で迅速な取引を提供しながら、自身のセキュリティとコンセンサスメカニズムを維持しています。",
+        "title": "Gnosisとは？"
+      },
+      "ink": {
+        "text": "Inkは、OPスタックに基づいて構築されたレイヤー2ネットワークであり、Ethereumをスケールアップするために設計されており、秒未満のブロック時間と低い取引手数料を提供します。\n\nKrakenによって解放され、Superchainの一部として、Inkは分散型金融（DeFi）アプリケーションのパフォーマンスとアクセシビリティを向上させることを目指しています。",
+        "title": "Inkとは？"
+      },
+      "linea": {
+        "text": "LineaはConsenSysによって開発された安全で低コストのEthereumに相当するレイヤー2ブロックチェーンです。\n\nそれはセキュリティと分散化を犠牲にすることなく、より迅速で手頃な取引を可能にし、次の10億のWeb3ユーザーをオンボードすることを目指しています。",
+        "title": "Lineaとは？"
+      },
+      "optimism": {
+        "text": "Optimismは、Ethereumの基盤のセキュリティを利用しつつ、より安価かつ高速なトランザクションを実現するLayer 2ネットワークです。\n\nEthereum上で永久的に生き残る前に、多くのトランザクションをまとめて\"roll up\"して送信します。",
+        "title": "Optimismとは？"
       },
       "polygon": {
         "text": "PolygonはEthereumと並行して実行され、互換性も持つサイドチェーンです。\n\n安価で高速なトランザクションが可能ですが、Layer 2ネットワークとは異なり、Polygonには独自のセキュリティとコンセンサスメカニズムがあります。",
         "title": "Polygonとは"
       },
-      "bsc": {
-        "text": "Binance Smart Chain（BSC）は取引所Binanceのブロックチェーンです。 \n\nBSCは安価で高速なトランザクションが可能ですが、Layer 2ネットワークとは異なり、独自のセキュリティとコンセンサスメカニズムを持っています。",
-        "title": "Binance Smart Chainとは"
+      "scroll": {
+        "text": "ScrollはEthereumの上に構築されたレイヤー2ソリューションで、スケーラビリティとトランザクションの効率を向上させることを目的としています。\n\nそれはトランザクションをバンドルしてからEthereumに提出するロールアップ技術を利用しており、そのセキュリティインフラストラクチャの恩恵を受けています。",
+        "title": "Scrollとは？"
+      },
+      "sanko": {
+        "text": "SankoはArbitrumとEthereumの上で動作するレイヤー3ネットワークで、NFTおよびゲームに焦点を当てています。\n\nこれはAnyTrust Data Availabilityと不正証明を状態検証に使用し、Ethereumのセキュリティを活用しながら高速で安価なトランザクションを可能にします。Sankoは、DMTと呼ばれるネイティブトークンを特徴とし、状態ルートの提案と挑戦にホワイトリストバリデーターを雇用しています。",
+        "title": "Sankoとは？"
+      },
+      "zksync": {
+        "text": "ZKsyncは、高度なゼロ知識暗号化証明を使用してEthereumをスケールするために設計されたレイヤー2プロトコルです。\n\nそれは分散化とセキュリティを維持しながらEthereumのスループットを向上させ、より速く、より安価なトランザクションを可能にします。",
+        "title": "Zksyncとは？"
+      },
+      "zora": {
+        "text": "ZoraはEthereumの上で動作するLayer 2ネットワークであり、より安価で高速なトランザクションを実現しながら、Ethereumの基礎的なセキュリティの恩恵も受けます。\n\nロールアップでトランザクションをまとめてから、それらを永久的にEthereum上に送信します。",
+        "title": "Zoraとは"
       },
       "read_more": "さらに読む",
       "learn_more": "詳細を学ぶ",
@@ -1033,15 +1133,6 @@
           "fragment1": "まだ気になりますか？ ",
           "fragment2": "続きを読む",
           "fragment3": " スリッページとスワップに与える影響について"
-        }
-      },
-      "flashbots": {
-        "text": "フロントランニングやサンドイッチ攻撃からトランザクションを保護します。これにより、より不利な価格での取引やトランザクションの失敗を防ぎます。",
-        "title": "Flashbots",
-        "still_curious": {
-          "fragment1": "まだ気になりますか？ ",
-          "fragment2": "続きを読む",
-          "fragment3": " Flashbotsとその提供する保護について"
         }
       },
       "swap_refuel": {
@@ -1189,6 +1280,12 @@
         "check_out_my_wallet": "🌈 Rainbowで私のコレクションをチェックしてください %{showcaseUrl}",
         "check_out_this_wallet": "🌈 Rainbowでこのウォレットのコレクションをチェックしてください %{showcaseUrl}"
       }
+    },
+    "loading": {
+      "backing_up": "バックアップ中...",
+      "creating_wallet": "ウォレットを作成中...",
+      "importing_wallet": "インポート中...",
+      "restoring": "復元中..."
     },
     "message": {
       "click_to_copy_to_clipboard": "クリップボードにコピーするにはクリックしてください",
@@ -2052,7 +2149,6 @@
       "find_a_token_to_buy": "購入するトークンを探す",
       "search_your_tokens": "トークンを検索",
       "error_executing_swap": "スワップの実行エラー",
-      "flashbots_protection": "Flashbots保護",
       "tokens_input": {
         "tokens": "トークン",
         "sort": "ソート",
@@ -2183,6 +2279,11 @@
           "pending": "操作待ち",
           "confirmed": "操作完了",
           "failed": "操作失敗"
+        },
+        "launch": {
+          "pending": "起動中",
+          "confirmed": "起動済み",
+          "failed": "起動失敗"
         },
         "swap": {
           "pending": "スワップ中",
@@ -2544,7 +2645,25 @@
         "loading_balance": "残高を読み込み中...",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "ウォッチ中",
-        "ledger": "Ledger"
+        "ledger": "Ledger",
+        "wallets": "財布",
+        "all_wallets": "すべてのウォレット",
+        "total_balance": "合計残高",
+        "edit_hint_tooltip": {
+          "title": "ウォレットをカスタマイズする",
+          "subtitle": {
+            "prefix": "をタップ",
+            "action": "編集",
+            "suffix": "ボタンを押して設定する"
+          }
+        },
+        "address_menu": {
+          "edit": "ウォレットを編集する",
+          "copy": "アドレスをコピー",
+          "settings": "ウォレット設定",
+          "notifications": "通知設定",
+          "remove": "ウォレットを削除する"
+        }
       },
       "connected_apps": "接続されたアプリ",
       "copy": "Copy",
@@ -2615,6 +2734,14 @@
       "my_account_address": "私のアカウントのアドレス:",
       "network_title": "Network",
       "new": {
+        "choose_wallet_group": {
+          "title": "ウォレットグループを選択",
+          "description": "新しいウォレットを作成するウォレットグループを選択するか、新しいグループを作成してください。"
+        },
+        "new_wallet_group": {
+          "title": "新しいウォレットグループ",
+          "description": "新しいウォレットグループを作成する"
+        },
         "add_wallet_sheet": {
           "options": {
             "cloud": {
@@ -2924,10 +3051,15 @@
         "buttons": {
           "cancel": "キャンセル",
           "confirm": "􀎽 トランザクションを送信する",
+          "confirming": "確認",
           "get_native_token": "取得します %{symbol}",
           "buy_native_token": "購入します %{symbol}"
         },
         "formatted_dates": {
+          "minute_ago": "1分前",
+          "minutes_ago": "数分前",
+          "hour_ago": "1時間前",
+          "hours_ago": "数時間前",
           "today": "今日",
           "day_ago": "1日前",
           "days_ago": "%s日前",
@@ -2984,12 +3116,233 @@
       },
       "menus": {
         "favorite": "お気に入り",
+        "home": "ホーム",
         "undo_favorite": "お気に入りを元に戻す",
         "remove": "削除",
         "forward": "進む",
-        "back": "戻る"
+        "back": "戻る",
+        "share": "共有する",
+        "close_all_tabs": "すべての%{numberOfClosableTabs}タブを閉じる",
+        "close_both_tabs": "両方のタブを閉じる",
+        "close_this_tab": "このタブを閉じる",
+        "close_tab": "タブを閉じる",
+        "new_tab": "新しいタブ"
       }
     },
+    "trending_tokens": {
+      "all": "全て",
+      "no_results": {
+        "title": "結果がありません",
+        "body": "より大きな時間枠、または異なるネットワークやカテゴリでブラウズしてみてください。"
+      },
+      "and": "と",
+      "and_others": {
+        "one": "と%{count}その他",
+        "other": "と%{count}その他"
+      },
+      "filters": {
+        "categories": {
+          "TRENDING": "トレンド",
+          "RAINBOW": "Rainbow",
+          "NEW": "新しい",
+          "FARCASTER": "Farcaster"
+        },
+        "sort": {
+          "RECOMMENDED": {
+            "label": "ソート",
+            "menuOption": "デフォルト"
+          },
+          "VOLUME": "出来高",
+          "MARKET_CAP": "時価総額",
+          "TOP_GAINERS": "トップ上昇者",
+          "TOP_LOSERS": "トップ減少者"
+        },
+        "time": {
+          "H12": "12時間",
+          "H12_ABBREVIATED": "12時間",
+          "H24": "24時間",
+          "H24_ABBREVIATED": "24時間",
+          "D7": "1週間",
+          "D3": "3日間"
+        }
+      }
+    },
+    "network_selector": {
+      "customize_networks_banner": {
+        "title": "ネットワークをカスタマイズする",
+        "tap_the": "をタップ",
+        "button_to_set_up": "ボタンを押して設定する"
+      },
+      "drop_here_to_unpin": "ここにドロップして固定を解除",
+      "edit": "編集",
+      "network": "Network",
+      "networks": "ネットワーク",
+      "drag_to_rearrange": "ドラッグして並べ替え",
+      "show_less": "表示を減らす",
+      "more": "もっと",
+      "show_more": "もっとネットワークを見る",
+      "all_networks": "全てのネットワーク"
+    },
+    "token_launcher": {
+      "airdrop": {
+        "address_or_ens": "アドレスまたはENS",
+        "suggested_users": "おすすめユーザー",
+        "airdrop_lists": "エアドロップリスト",
+        "max_recipients_reached": "最大の%{maxRecipientCount}件の受信者に到達しました"
+      },
+      "image_upload_error": {
+        "title": "画像のアップロード中にエラーが発生しました。申し訳ありません。",
+        "subtitle": "もう一度やり直してください。"
+      },
+      "allocation_breakdown": {
+        "my_share": "私のシェア",
+        "airdropping": "エアドロップ中",
+        "start_price": "開始価格",
+        "sections": {
+          "my_share": {
+            "title": "クリエイターシェア",
+            "description": "プロジェクトでのあなたの個人的なステーク"
+          },
+          "airdropping": {
+            "title": "エアドロップシェア",
+            "description": "友人やサポーターに配布"
+          },
+          "liquidity_pool": {
+            "title": "流動性プールシェア",
+            "description": "円滑な取引と流動性を確保"
+          },
+          "rainbow_share": {
+            "title": "オーバーザレインボー",
+            "description": "将来のコミュニティ配布"
+          }
+        }
+      },
+      "network_field": {
+        "balance": "残高: %{balance}",
+        "not_enough_funds": "トークンを起動するのに十分な資金がありません"
+      },
+      "prebuy": {
+        "balance_after_gas_fee": "利用可能残高: %{balance}",
+        "title": "プリバイでトークンをさらに購入"
+      },
+      "review": {
+        "token_allocation": "トークン配分",
+        "your_share": "あなたのシェア",
+        "airdropping": "エアドロップ",
+        "about": "概要",
+        "total_cost": "総費用",
+        "initial_price": "初期価格",
+        "market_cap": "時価総額",
+        "total_supply": "総供給",
+        "network": "Network"
+      },
+      "creating": {
+        "deploying": "%{symbol}をデプロイ中…"
+      },
+      "success": {
+        "title": "%{symbol}が稼働中！",
+        "congrats": "おめでとう、%{name}を世界にリリースしました！シェアして雰囲気を広げましょう。"
+      },
+      "input_errors": {
+        "too_long": "あまりにも長すぎましたね。",
+        "invalid_input": "無効な入力",
+        "symbol_required": "ティッカーは必須です",
+        "name_required": "名前は必須です",
+        "too_big": "大きすぎます。",
+        "must_be_greater_than_0": "0より大きくなければなりません",
+        "amount_is_greater_than_balance": "金額が残高を超えています",
+        "amount_is_greater_than_max_prebuy_amount": "%{maxPrebuyAmount}%{chainNativeAssetSymbol}の最大プリバイ金額を超えています",
+        "amount_is_less_than_min_prebuy_amount": "%{minPrebuyAmount}%{chainNativeAssetSymbol}の最小プリバイ金額を超過する必要があります",
+        "amount_too_small": "金額が小さすぎます！もう少し試してみてください！"
+      },
+      "titles": {
+        "total_supply": "総供給",
+        "ticker": "ティッカー",
+        "name": "名前",
+        "network": "Network",
+        "description": "Description",
+        "airdrop": "友人にエアドロップ",
+        "required_info": "必要な情報",
+        "about": "事について",
+        "token_allocation": "トークン配分",
+        "token_allocation_breakdown": "トークン配分の内訳",
+        "mcap": "時価総額"
+      },
+      "placeholders": {
+        "ticker": "$NAME",
+        "enter_coin_name": "コイン名を入力",
+        "describe_your_coin": "コインの説明を入力"
+      },
+      "buttons": {
+        "hold_to_create": "作成するまで保持",
+        "creating": "作成中…",
+        "share_link": "リンクを共有する",
+        "token_allocation_info": "詳細情報",
+        "got_it": "理解しました",
+        "cancel": "キャンセル"
+      },
+      "header": {
+        "new_coin": "新しいコイン",
+        "review": "レビュー",
+        "creating": "作成中"
+      },
+      "links": {
+        "x": {
+          "name": "X/Twitter",
+          "placeholder": "ユーザー名"
+        },
+        "telegram": {
+          "name": "Telegram",
+          "placeholder": "チャンネル"
+        },
+        "farcaster": {
+          "name": "Farcaster",
+          "placeholder": "ユーザー名"
+        },
+        "website": {
+          "name": "ウェブサイト",
+          "placeholder": "https://homepage.com"
+        },
+        "other": {
+          "name": "その他",
+          "placeholder": "https://other.com"
+        },
+        "add_more": "もっと追加"
+      },
+      "discard_and_exit": "破棄して終了",
+      "airdrops_sheet": {
+        "claim_button_text": "請求",
+        "empty_state_title": "まだエアドロップがありません",
+        "title": "レインボーコインを主張する"
+      },
+      "cards": {
+        "airdrops": {
+          "subtitle_loading": "読み込み中",
+          "subtitle_has_airdrops": "主張可能",
+          "subtitle_no_airdrops": "まだエアドロップがありません",
+          "title": "エアドロップ",
+          "title_singular": "エアドロップ"
+        },
+        "launch": {
+          "line_one": "ローンチ\n",
+          "line_two": "コイン"
+        }
+      },
+      "claim_airdrop_sheet": {
+        "by": "によって",
+        "claiming": "主張",
+        "created_by": "%{name}によって作成",
+        "gifted_to": "に贈呈",
+        "hold_to_claim": "主張するまでホールド",
+        "hold_to_retry": "再試行するまでホールド",
+        "successfully_claimed": "成功裏に主張されました",
+        "title": "$%{symbol}を請求する",
+        "to_claim_on": "%{network}で請求",
+        "view_coin": "コインを見る",
+        "you": "あなた"
+      }
+    },
+    "done": "完了",
     "copy": "Copy",
     "paste": "貼り付け"
   }

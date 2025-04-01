@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import * as i18n from '@/languages';
 import { Bleed, Box, Text, Separator } from '@/design-system';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -18,7 +18,8 @@ import { Icon } from '@/components/icons';
 import { IS_ANDROID } from '@/env';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { StyleSheet } from 'react-native';
+import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet } from 'react-native';
+import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 
 const LABEL_QUINARY = { custom: opacity(getColorForTheme('labelQuaternary', 'dark'), 0.3) };
 
@@ -123,8 +124,21 @@ function SectionSeparator() {
 }
 
 export function InfoInputStep() {
+  const { infoInputScrollRef, infoInputScrollY } = useTokenLauncherContext();
+
+  const onScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const scrollY = e.nativeEvent.contentOffset.y;
+      infoInputScrollY.current = scrollY;
+    },
+    [infoInputScrollY]
+  );
+
   return (
     <KeyboardAwareScrollView
+      ref={infoInputScrollRef}
+      onScroll={onScroll}
+      scrollEventThrottle={64}
       bottomOffset={FOOTER_HEIGHT + (IS_ANDROID ? 56 : 36)}
       contentContainerStyle={styles.contentContainerStyle}
       extraKeyboardSpace={FOOTER_HEIGHT}
@@ -133,7 +147,7 @@ export function InfoInputStep() {
       scrollIndicatorInsets={TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS}
       showsVerticalScrollIndicator={false}
     >
-      <Box width="full" alignItems="center" paddingBottom={'20px'} paddingHorizontal="20px">
+      <Box width="full" alignItems="center" paddingHorizontal="20px">
         <Box paddingBottom={'16px'}>
           <TokenLogo />
         </Box>
