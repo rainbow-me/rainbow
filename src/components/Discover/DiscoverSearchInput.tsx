@@ -126,12 +126,8 @@ const DiscoverSearchInput = ({
   clearTextOnFocus = true,
   currentChainId,
 }: DiscoverSearchInputProps) => {
-  const { isSearching, searchQuery } = useDiscoverSearchQueryStore(state => {
-    return {
-      searchQuery: state.searchQuery,
-      isSearching: state.isSearching,
-    };
-  });
+  const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
+  const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery);
   const isLoading = useDiscoverSearchStore(state => state.getStatus().isFetching);
   const onChangeText = useCallback((updatedQuery: string) => {
     useDiscoverSearchQueryStore.setState({ searchQuery: updatedQuery });
