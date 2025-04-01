@@ -204,7 +204,7 @@ const selectTopDiscoverSearchResults = ({
   const { verifiedAssets, highLiquidityAssets, lowLiquidityAssets } = groupBy(topResults, searchResult => {
     if (searchResult.isVerified) {
       return 'verifiedAssets';
-    } else if (!searchResult.isVerified && searchResult.highLiquidity) {
+    } else if (searchResult.highLiquidity) {
       return 'highLiquidityAssets';
     } else {
       return 'lowLiquidityAssets';
