@@ -70,12 +70,8 @@ const useSearchCurrencyList = () => {
 
   const { colors } = useTheme();
 
-  const { searchResultAssets, loading } = useDiscoverSearchStore(state => {
-    return {
-      loading: state.getStatus().isFetching,
-      searchResultAssets: state.getData(),
-    };
-  });
+  const searchResultAssets = useDiscoverSearchStore(state => state.getData());
+  const loading = useDiscoverSearchStore(state => state.getStatus().isFetching);
 
   const removeFavoritesAndEnforceResultsLimit = useCallback(
     (assets: SearchAsset[] | undefined, maxResults: number) => {
