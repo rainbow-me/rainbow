@@ -371,7 +371,6 @@ const querySwapAsset = async (uniqueId: string | undefined): Promise<ParsedSearc
   const searchAsset = searchResults.results.filter(x => !!x)?.[0];
 
   if (!searchAsset) return userAsset;
-
   return parseSearchAsset({ searchAsset, userAsset });
 };
 
@@ -405,8 +404,8 @@ async function handleSwapsDeeplink(url: string) {
 
   const params: SwapsParams = {};
 
-  const inputAsset = querySwapAsset(query.inputAsset);
-  const outputAsset = querySwapAsset(query.outputAsset);
+  const inputAsset = querySwapAsset(query.inputAsset?.toLowerCase());
+  const outputAsset = querySwapAsset(query.outputAsset?.toLowerCase());
 
   if ('slippage' in query && isNumericString(query.slippage)) {
     params.slippage = query.slippage;
@@ -427,7 +426,6 @@ async function handleSwapsDeeplink(url: string) {
 
   params.inputAsset = await inputAsset;
   params.outputAsset = await outputAsset;
-
   navigateToSwaps(params);
 }
 
