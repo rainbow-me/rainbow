@@ -38,8 +38,7 @@ export function ClaimCustomization() {
       const searchResults = await searchVerifiedTokens({ query: USDC_ADDRESS, chainId: ChainId.mainnet, list: TokenLists.Verified }, null);
 
       const possibleResults = searchResults.results;
-      const usdcPoss = possibleResults.filter(asset => asset?.address === USDC_ADDRESS && asset?.symbol === 'USDC');
-      const usdc = usdcPoss?.[0];
+      const usdc = possibleResults.find(asset => asset?.address === USDC_ADDRESS && asset?.symbol === 'USDC');
       if (usdc) {
         setUsdc(usdc);
       }
