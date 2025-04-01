@@ -274,11 +274,9 @@ function getCoinIconPath(): SkPath {
 }
 
 function getBadgeConfig(numberOfAirdrops: number | null): {
-  badgeHeight: number;
   badgeRect: SkRRect;
   badgeWidth: number;
   badgeXOffset: number;
-  badgeYOffset: number;
   formattedAirdropsCount: string;
 } {
   let formattedAirdropsCount = numberOfAirdrops === null ? '?' : numberOfAirdrops.toString();
@@ -291,5 +289,5 @@ function getBadgeConfig(numberOfAirdrops: number | null): {
   const badgeYOffset = CARD_CONFIG.dimensions.badge.y - badgeHeight / 2;
   const badgeRect = rrect(rect(0, badgeYOffset, badgeWidth, badgeHeight), badgeHeight / 2, badgeHeight / 2);
 
-  return { badgeHeight, badgeRect, badgeWidth, badgeXOffset, badgeYOffset, formattedAirdropsCount };
+  return { badgeRect, badgeWidth, badgeXOffset, formattedAirdropsCount };
 }
