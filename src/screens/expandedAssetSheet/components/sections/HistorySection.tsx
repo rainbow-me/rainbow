@@ -209,9 +209,14 @@ export const ListItem = memo(function ListItem({ item, nativeCurrency }: ListIte
           <Text size={item.direction === TokenInteractionDirection.Out ? 'icon 17px' : 'icon 11px'} color="labelSecondary" weight="bold">
             {symbol}
           </Text>
-          <Text size="17pt" color="labelSecondary" weight="medium">
-            {currencyAmount} {asset.symbol}
-          </Text>
+          <Box flexDirection="row" alignItems="center">
+            <Text size="17pt" color="labelSecondary" weight="medium">
+              {currencyAmount}
+            </Text>
+            <Text size="17pt" color="labelQuaternary" weight="medium">
+              {asset.symbol}
+            </Text>
+          </Box>
         </Box>
         <Text size="17pt" color="labelSecondary" weight="medium">
           {nativeAmount.display}
