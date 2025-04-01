@@ -38,6 +38,7 @@ import { IS_DEV } from '@/env';
 import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
+import { RenderPassReport, PerformanceProfiler } from '@shopify/react-native-performance';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -179,29 +180,35 @@ function Root() {
     initializeReservoirClient();
   }, [setInitializing]);
 
+  const onReportPrepared = useCallback((report: RenderPassReport) => {
+    console.log('PERFORMANCE REPORT', report);
+  }, []);
+
   return initializing ? null : (
-    // @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>'
-    <ReduxProvider store={store}>
-      <RecoilRoot>
-        <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
-          <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
-            <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-              <MainThemeProvider>
-                <GestureHandlerRootView style={sx.container}>
-                  <RainbowContextWrapper>
-                    <SharedValuesProvider>
-                      <ErrorBoundary>
-                        <AppWithRedux walletReady={false} />
-                      </ErrorBoundary>
-                    </SharedValuesProvider>
-                  </RainbowContextWrapper>
-                </GestureHandlerRootView>
-              </MainThemeProvider>
-            </SafeAreaProvider>
-          </MobileWalletProtocolProvider>
-        </PersistQueryClientProvider>
-      </RecoilRoot>
-    </ReduxProvider>
+    <PerformanceProfiler onReportPrepared={onReportPrepared}>
+      {/* @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>' */}
+      <ReduxProvider store={store}>
+        <RecoilRoot>
+          <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
+            <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
+              <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+                <MainThemeProvider>
+                  <GestureHandlerRootView style={sx.container}>
+                    <RainbowContextWrapper>
+                      <SharedValuesProvider>
+                        <ErrorBoundary>
+                          <AppWithRedux walletReady={false} />
+                        </ErrorBoundary>
+                      </SharedValuesProvider>
+                    </RainbowContextWrapper>
+                  </GestureHandlerRootView>
+                </MainThemeProvider>
+              </SafeAreaProvider>
+            </MobileWalletProtocolProvider>
+          </PersistQueryClientProvider>
+        </RecoilRoot>
+      </ReduxProvider>
+    </PerformanceProfiler>
   );
 }
 

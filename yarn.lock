@@ -6502,6 +6502,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@shopify/react-native-performance@npm:4.1.2":
+  version: 4.1.2
+  resolution: "@shopify/react-native-performance@npm:4.1.2"
+  peerDependencies:
+    "@babel/runtime": "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/b11fad3e735e13621bd94faf38fdef5ef8540df1e21f95dad834b70334f61549c667271dc654d846591f72f3bf57996e82b1875625c9576cac71c3acf32b4e3c
+  languageName: node
+  linkType: hard
+
 "@shopify/react-native-skia@npm:1.9.0":
   version: 1.9.0
   resolution: "@shopify/react-native-skia@npm:1.9.0"
@@ -8783,6 +8794,7 @@ __metadata:
     "@rudderstack/rudder-sdk-react-native": "npm:2.0.0"
     "@sentry/react-native": "npm:5.35.0"
     "@shopify/flash-list": "npm:1.7.2"
+    "@shopify/react-native-performance": "npm:4.1.2"
     "@shopify/react-native-skia": "npm:1.9.0"
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
