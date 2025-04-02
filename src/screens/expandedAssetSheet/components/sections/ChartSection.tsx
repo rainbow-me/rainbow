@@ -38,7 +38,7 @@ export function ChartSection() {
   }, [points, asset, chartType]);
 
   const selectedColor = useMemo(() => {
-    return getSolidColorEquivalent({ foreground: color, background: accentColors.background, opacity: 0.8 });
+    return getSolidColorEquivalent({ foreground: color, background: accentColors.background, opacity: 0.7 });
   }, [color, accentColors.background]);
 
   // This is here instead of the root screen because we need to know if the chart is available

@@ -6,7 +6,8 @@ import { useSharedValue } from 'react-native-reanimated';
 import { parse as parseSvg } from 'react-native-redash';
 import { CallbackType, ChartContext, CurveType, DataType, PathData, PathScales, Point } from '../../helpers/ChartContext';
 import { findYExtremes } from '../../helpers/extremesHelpers';
-import { usePrevious } from '../../helpers/usePrevious';
+// @ts-ignore this library is no longer maintained independently of the app, so this is fine
+import { usePrevious } from '@/hooks';
 
 const { width: WIDTH } = Dimensions.get('window');
 
