@@ -10,7 +10,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { isNativeAsset } from '@/handlers/assets';
-import { Token, TokenInteraction } from '@/graphql/__generated__/metadata';
+import { Token } from '@/graphql/__generated__/metadata';
 import { useColorMode } from '@/design-system';
 import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -19,7 +19,6 @@ import { useTheme } from '@/theme';
 import { time } from '@/utils';
 import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
-import { useTokenInteractions } from '@/resources/metadata/tokenInteractions';
 
 export enum SectionId {
   PROFIT = 'profit',
@@ -83,8 +82,6 @@ type ExpandedAssetSheetContextType = {
   basicAsset: ExpandedSheetAsset;
   accountAsset: ParsedAddressAsset | undefined;
   assetMetadata: TokenMetadata | null | undefined;
-  tokenInteractions: TokenInteraction[];
-  isLoadingTokenInteractions: boolean;
   expandedSections: SharedValue<Record<SectionId, boolean>>;
   hideClaimSection: boolean;
   isOwnedAsset: boolean;
@@ -142,13 +139,6 @@ export function ExpandedAssetSheetContextProvider({
       refetchInterval: time.seconds(30),
     }
   );
-
-  const { data: tokenInteractions = [], isLoading: isLoadingTokenInteractions } = useTokenInteractions({
-    chainID: chainId,
-    address: accountAddress,
-    tokenAddress: address,
-    currency: nativeCurrency,
-  });
 
   // This is constructed so that rendering is not delayed by the external asset fetch
   const basicAsset = useMemo(() => {
@@ -286,8 +276,6 @@ export function ExpandedAssetSheetContextProvider({
         basicAsset: fullAsset,
         accountAsset,
         assetMetadata: superMetadata,
-        tokenInteractions,
-        isLoadingTokenInteractions,
         expandedSections,
         hideClaimSection,
         isOwnedAsset,

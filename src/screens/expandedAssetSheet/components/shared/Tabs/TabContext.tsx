@@ -1,43 +1,36 @@
-import { Box, BoxProps } from '@/design-system';
-import React, { createContext, useContext } from 'react';
-import { clamp, makeMutable, SharedValue, useSharedValue } from 'react-native-reanimated';
+import React, { createContext, PropsWithChildren, useContext } from 'react';
+import { makeMutable, SharedValue } from 'react-native-reanimated';
 
-export const TabContext = createContext<{
-  tabs: string[];
-  activeTabIndex: SharedValue<number>;
+export type BaseTabContext<T extends ReadonlyArray<string>> = {
+  tabs: T;
   accentColor: string;
   isExpanded: SharedValue<boolean>;
-}>({
+};
+
+export type AnimatedTabContext = {
+  activeTabIndex: SharedValue<number>;
+  setActiveTabIndex?: undefined;
+};
+
+export type StatefulTabContext = {
+  activeTabIndex: number;
+  setActiveTabIndex: (index: number) => void;
+};
+
+export type TabViewController = React.ReactElement;
+
+export type TabContextType<T extends ReadonlyArray<string>> = BaseTabContext<T> & (AnimatedTabContext | StatefulTabContext);
+
+export const TabContext = createContext<TabContextType<ReadonlyArray<string>>>({
   tabs: [],
-  activeTabIndex: makeMutable(0),
   accentColor: 'blue',
   isExpanded: makeMutable(false),
+  activeTabIndex: makeMutable(0),
+  setActiveTabIndex: undefined,
 });
 
-export const TabProvider = ({
-  tabs,
-  accentColor,
-  initialActiveTabIndex = 0,
-  wrapperStyles,
-  children,
-}: {
-  tabs: string[];
-  accentColor: string;
-  initialActiveTabIndex?: number;
-  wrapperStyles?: BoxProps;
-  children: React.ReactNode;
-}) => {
-  const activeTabIndex = useSharedValue(clamp(initialActiveTabIndex, 0, tabs.length - 1));
-
-  const isExpanded = useSharedValue(false);
-
-  return (
-    <TabContext.Provider value={{ tabs, activeTabIndex, accentColor, isExpanded }}>
-      <Box gap={24} {...wrapperStyles}>
-        {children}
-      </Box>
-    </TabContext.Provider>
-  );
+export const TabProvider = ({ children, ...props }: PropsWithChildren<TabContextType<ReadonlyArray<string>>>) => {
+  return <TabContext.Provider value={props}>{children}</TabContext.Provider>;
 };
 
 export const useTabContext = () => useContext(TabContext);

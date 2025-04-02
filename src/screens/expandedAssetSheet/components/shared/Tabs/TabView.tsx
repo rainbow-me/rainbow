@@ -8,7 +8,8 @@ const TabViewChild = ({ child, index }: { child: React.ReactNode; index: number 
   const { activeTabIndex } = useContext(TabContext);
 
   const activeChildStyle = useAnimatedStyle(() => {
-    const isActive = activeTabIndex.value === index;
+    const activeValue = typeof activeTabIndex === 'number' ? activeTabIndex : activeTabIndex.value;
+    const isActive = activeValue === index;
     return {
       opacity: withTiming(isActive ? 1 : 0, TIMING_CONFIGS.fastFadeConfig),
       pointerEvents: isActive ? 'auto' : 'none',

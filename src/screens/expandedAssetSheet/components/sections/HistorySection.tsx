@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { AnimatedText, Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
-import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { useAccountSettings } from '@/hooks';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -8,7 +8,6 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { Tabs } from '../shared/Tabs/Tabs';
 import { TokenInteraction, TokenInteractionDirection, TokenInteractionType } from '@/graphql/__generated__/metadata';
 import { useTabContext } from '../shared/Tabs/TabContext';
-import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import Animated, {
@@ -19,6 +18,7 @@ import Animated, {
   withSpring,
   withTiming,
   withDelay,
+  useSharedValue,
 } from 'react-native-reanimated';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { format } from 'date-fns';
@@ -27,6 +27,8 @@ import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { openInBrowser } from '@/utils/openInBrowser';
 import * as i18n from '@/languages';
 import { minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/safe-math/SafeMath';
+import { useTokenInteractions } from '@/resources/metadata/tokenInteractions';
+import { CollapsibleSection } from '../shared/CollapsibleSection';
 
 const l = i18n.l.expanded_state.sections.history;
 
@@ -273,21 +275,12 @@ export const ListData = memo(function ListData({ data, buys, sells, isLoading }:
   const { nativeCurrency } = useAccountSettings();
   const { activeTabIndex, isExpanded } = useTabContext();
 
-  const [tabIndex, setTabIndex] = useState<number>(activeTabIndex.value);
-
-  useSyncSharedValue({
-    state: tabIndex,
-    setState: setTabIndex,
-    sharedValue: activeTabIndex,
-    syncDirection: 'sharedValueToState',
-  });
-
   const filteredTokenInteractions = useMemo(() => {
-    if (tabIndex === 1) return buys;
-    if (tabIndex === 2) return sells;
+    if (activeTabIndex === 1) return buys;
+    if (activeTabIndex === 2) return sells;
 
     return data;
-  }, [tabIndex, data, buys, sells]);
+  }, [activeTabIndex, data, buys, sells]);
 
   const listHeight = useDerivedValue(
     () => calculateContainerHeight(filteredTokenInteractions, isExpanded.value),
@@ -341,7 +334,7 @@ export const ListData = memo(function ListData({ data, buys, sells, isLoading }:
       )}
 
       {!isLoading && (
-        <Box as={Animated.View} style={[listStyles, { gap: ROW_PADDING }]}>
+        <Box as={Animated.View} style={[listStyles, { gap: ROW_PADDING, overflow: 'hidden' }]}>
           {filteredTokenInteractions.map((tokenInteraction, index) => (
             <ListItem
               key={index}
@@ -361,8 +354,17 @@ export const ListData = memo(function ListData({ data, buys, sells, isLoading }:
   );
 });
 
-export const HistorySection = memo(function HistorySection() {
-  const { accentColors, tokenInteractions, isLoadingTokenInteractions } = useExpandedAssetSheetContext();
+const HistoryContent = memo(function HistoryContent({
+  tokenInteractions,
+  isLoadingTokenInteractions,
+}: {
+  tokenInteractions: TokenInteraction[];
+  isLoadingTokenInteractions: boolean;
+}) {
+  const { accentColors } = useExpandedAssetSheetContext();
+
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const isExpanded = useSharedValue(false);
 
   const buys = useMemo(() => {
     return tokenInteractions?.filter(interaction => interaction.direction === TokenInteractionDirection.In);
@@ -383,10 +385,40 @@ export const HistorySection = memo(function HistorySection() {
     return <ListData data={tokenInteractions} buys={buys} sells={sells} isLoading={isLoadingTokenInteractions} />;
   }
 
-  // NOTE: Only show tabs if we have more than one type of transaction
   return (
-    <Tabs tabs={TABS} useViewController={false} accentColor={accentColors.color}>
+    <Tabs
+      tabs={TABS}
+      accentColor={accentColors.color}
+      isExpanded={isExpanded}
+      activeTabIndex={activeTabIndex}
+      setActiveTabIndex={setActiveTabIndex}
+    >
       <ListData data={tokenInteractions} buys={buys} sells={sells} isLoading={isLoadingTokenInteractions} />
     </Tabs>
+  );
+});
+
+export const HistorySection = memo(function HistorySection() {
+  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { basicAsset: asset } = useExpandedAssetSheetContext();
+
+  const { data: tokenInteractions = [], isLoading: isLoadingTokenInteractions } = useTokenInteractions({
+    chainID: asset.chainId,
+    address: accountAddress,
+    tokenAddress: asset.address,
+    currency: nativeCurrency,
+  });
+
+  if (tokenInteractions.length === 0) {
+    return null;
+  }
+
+  return (
+    <CollapsibleSection
+      content={<HistoryContent tokenInteractions={tokenInteractions} isLoadingTokenInteractions={isLoadingTokenInteractions} />}
+      icon="􀐫"
+      id={SectionId.HISTORY}
+      primaryText="History"
+    />
   );
 });

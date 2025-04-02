@@ -1,74 +1,61 @@
 import { TabBar } from './TabBar';
 import { TabView } from './TabView';
-import { TabProvider } from './TabContext';
+import { TabProvider, useTabContext, type TabContextType } from './TabContext';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 
-type TabsChildren<T extends string[], U extends boolean | undefined> = U extends false
-  ? React.ReactNode
-  : readonly [...{ [K in keyof T]: React.ReactNode }];
-
-interface TabsProps<T extends string[], U extends boolean | undefined = undefined> {
-  tabs: T;
-  accentColor: string;
-  initialActiveTabIndex?: number;
-  useViewController?: U;
-  children: TabsChildren<T, U>;
-}
-
-/**
- * Reanimated powered tabs component
- * @param tabs - Array of tab names
- * @param accentColor - Color of the active tab
- * @param initialActiveTabIndex - Index of the initial active tab
- * @param children - Array of tab content
- *
- * IMPORTANT TO NOTE:
- * The children array must be of the same length as the tabs array.
- * The order of the children corresponds to the order of the tabs.
- *
- * @returns Tabs component
- */
-export const Tabs = <T extends string[], U extends boolean | undefined = undefined>({
-  tabs,
-  accentColor,
-  initialActiveTabIndex,
-  children,
-  useViewController,
-}: TabsProps<T, U>) => {
-  return (
-    <TabProvider tabs={tabs} accentColor={accentColor} initialActiveTabIndex={initialActiveTabIndex}>
-      <TabBar />
-      <TabContent tabs={tabs} useViewController={useViewController}>
-        {children}
-      </TabContent>
-    </TabProvider>
-  );
+type TabsProps<T extends ReadonlyArray<string>> = TabContextType<T> & {
+  children: readonly [...{ [K in keyof T]: React.ReactNode }] | React.ReactNode;
 };
 
-export const TabContent = ({
-  tabs,
-  children,
-  useViewController,
-}: {
-  tabs: string[];
-  children: React.ReactNode;
-  useViewController?: boolean;
-}) => {
-  if (!useViewController) {
+/**
+ * Reanimated powered tabs component that adapts its children based on ViewController presence.
+ *
+ * If `ViewController` is provided:
+ * - Expects no children.
+ * - Renders ViewController directly.
+ *
+ * If `ViewController` is NOT provided:
+ * - Expects a readonly array of `React.ReactNode` as children, matching the length of `tabs`.
+ * - Renders the active child directly based on `activeTabIndex`.
+ *
+ * @param tabs - Array of tab names.
+ * @param accentColor - Color of the active tab indicator.
+ * @param isExpanded - SharedValue indicating if the container is expanded.
+ * @param ViewController - Optional component to wrap and manage the TabView layout.
+ * @param activeTabIndex - Either a SharedValue<number> or number, controlling the active tab.
+ * @param setActiveTabIndex - Function to set active tab index (only for stateful context).
+ * @param children - Content for the tabs, type depends on `ViewController` presence.
+ */
+export function Tabs<T extends ReadonlyArray<string>>({ children, ...props }: TabsProps<T>) {
+  return (
+    <TabProvider {...props}>
+      <TabBar />
+      <TabContent>{children}</TabContent>
+    </TabProvider>
+  );
+}
+
+export function TabContent({ children }: Pick<TabsProps<ReadonlyArray<string>>, 'children'>) {
+  const { tabs } = useTabContext();
+
+  const childrenCount = useMemo(() => React.Children.count(children), [children]);
+  if (childrenCount === 1) {
     return children;
   }
 
-  // This is always in the same order if useViewController is true, so ignoring it
+  // If there are multiple children, proceed with TabView logic
+  // This should only run when childrenCount !== 1
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const childrenArray = useMemo(() => React.Children.toArray(children), [children]);
   if (childrenArray.length !== tabs.length) {
-    throw new Error(`Tabs component requires children length (${childrenArray.length}) to match tabs length (${tabs.length})`);
+    throw new Error(
+      `Tabs component requires children length (${childrenArray.length}) to match tabs length (${tabs.length}) when multiple children are provided.`
+    );
   }
-
   return (
     <View style={{ flex: 1, position: 'relative' }}>
       <TabView>{childrenArray}</TabView>
     </View>
   );
-};
+}
