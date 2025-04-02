@@ -38,27 +38,32 @@ function getCurveType(curveType: keyof typeof CurveType | undefined) {
   }
 }
 
-function detectFlatData(points: Point[]): boolean {
-  if (!points.length) return false;
+function detectFlatData(yValues: number[]): boolean {
+  if (!yValues.length) return false;
 
-  const firstY = points[0].y;
-  // Check if all y values are identical (flat line)
-  return points.every(point => Math.abs(point.y - firstY) < 0.000000001);
+  const firstY = yValues[0];
+  return yValues.every(y => Math.abs(y - firstY) < 0.000000001);
 }
 
-function detectNearlyFlatData(points: Point[]): boolean {
-  if (!points.length) return false;
+function detectStablecoin(yValues: number[]): boolean {
+  if (!yValues.length) return false;
 
-  const yValues = points.map(point => point.y);
+  const threshold = 0.01;
+  const closeToOneCount = yValues.filter(y => Math.abs(y - 1.0) < threshold).length;
+
+  // If at least 95% of points are close to 1.0, consider it a stablecoin
+  // this handles cases where there are random deviations from the 1.0 line
+  return closeToOneCount / yValues.length > 0.95;
+}
+
+function detectNearlyFlatData(yValues: number[]): boolean {
+  if (!yValues.length) return false;
+
   const minY = Math.min(...yValues);
   const maxY = Math.max(...yValues);
 
-  // If the range is extremely small relative to the value, consider it flat
-  const range = maxY - minY;
-  const avgY = yValues.reduce((sum, val) => sum + val, 0) / yValues.length;
-
-  // Consider data nearly flat if range is less than 0.01% of the average value
-  return avgY > 0 && range / avgY < 0.0001;
+  const percentChange = minY > 0 ? ((maxY - minY) / minY) * 100 : 0;
+  return percentChange < 0.1;
 }
 
 function getScales({ data, width, height, yRange }: CallbackType): PathScales {
@@ -68,9 +73,9 @@ function getScales({ data, width, height, yRange }: CallbackType): PathScales {
   const smallestX = Math.min(...x);
   const greatestX = Math.max(...x);
 
-  // Check if data is flat or nearly flat
-  const isFlat = detectFlatData(data.points);
-  const isNearlyFlat = detectNearlyFlatData(data.points);
+  const isFlat = detectFlatData(y);
+  const isNearlyFlat = detectNearlyFlatData(y);
+  const isStablecoin = detectStablecoin(y);
 
   let smallestY, greatestY;
 
@@ -85,19 +90,19 @@ function getScales({ data, width, height, yRange }: CallbackType): PathScales {
     const padding = avgY * 0.005;
     smallestY = avgY - padding;
     greatestY = avgY + padding;
+  } else if (isStablecoin) {
+    smallestY = Math.round(Math.min(...y));
+    greatestY = Math.round(Math.max(...y));
   } else {
     // For non-flat data, use actual min/max with minimal padding
     smallestY = Math.min(...y);
     greatestY = Math.max(...y);
 
-    // Ensure minimum range to prevent scaling issues
+    // Add a small padding (0.5%) to prevent data from touching edges
     const range = greatestY - smallestY;
-    if (range < 0.0001) {
-      const avgY = y.reduce((sum, val) => sum + val, 0) / y.length;
-      const minRange = Math.max(0.001, avgY * 0.01); // Minimum 1% range
-      smallestY = avgY - minRange / 2;
-      greatestY = avgY + minRange / 2;
-    }
+    const padding = Math.max(range * 0.005, smallestY * 0.005);
+    smallestY = smallestY - padding;
+    greatestY = greatestY + padding;
   }
 
   const scaleX = scaleLinear().domain([smallestX, greatestX]).range([0, width]);
@@ -121,7 +126,7 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
     };
   }
 
-  const { scaleY, scaleX, isFlat, isNearlyFlat } = getScales({
+  const { scaleY, scaleX } = getScales({
     data,
     height,
     width,
@@ -146,7 +151,7 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
     });
   }
 
-  const curveFunction = isFlat || isNearlyFlat ? shape.curveLinear : getCurveType(data.curve);
+  const curveFunction = getCurveType(data.curve);
 
   const path = shape
     .line<Point>()

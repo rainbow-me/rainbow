@@ -1,13 +1,13 @@
 import { Box, Text, useColorMode } from '@/design-system';
 import { haptics } from '@/utils';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ETH_SYMBOL, USDC_ADDRESS } from '@/references';
 import { ClaimableMenu } from '../../shared/components/ClaimableMenu';
 import { TokenToReceive } from '../types';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
-import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
+import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { SearchAsset } from '@/__swaps__/types/search';
 import * as i18n from '@/languages';
 import { IS_ANDROID } from '@/env';
@@ -31,22 +31,20 @@ export function ClaimCustomization() {
   } = useTransactionClaimableContext();
 
   const [isInitialState, setIsInitialState] = useState(true);
+  const [usdc, setUsdc] = useState<SearchAsset | null>(null);
 
-  const { data: usdcSearchData } = useTokenSearch(
-    {
-      keys: ['address'],
-      list: 'verifiedAssets',
-      threshold: 'CASE_SENSITIVE_EQUAL',
-      query: USDC_ADDRESS,
-    },
-    {
-      select: data => {
-        return data.filter((asset: SearchAsset) => asset.address === USDC_ADDRESS && asset.symbol === 'USDC');
-      },
-    }
-  );
+  useEffect(() => {
+    const fetchUsdcAsset = async () => {
+      const searchResults = await searchVerifiedTokens({ query: USDC_ADDRESS, chainId: ChainId.mainnet, list: TokenLists.Verified }, null);
 
-  const usdc = usdcSearchData?.[0];
+      const possibleResults = searchResults.results;
+      const usdc = possibleResults.find(asset => asset?.address === USDC_ADDRESS && asset?.symbol === 'USDC');
+      if (usdc) {
+        setUsdc(usdc);
+      }
+    };
+    fetchUsdcAsset();
+  }, []);
 
   // populate `networks` attribute for native tokens
   const nativeTokens: TokenMap = useMemo(

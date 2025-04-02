@@ -15,6 +15,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.64] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.64)
+
+### Added
+
+- Readable TL Error Alerts (#6510)
+- chore: i18n updates (#6531)
+
+### Changed
+
+- Bumped iOS and Android to v1.9.64 (#6519)
+- Published token-launcher v0.1.0 on npm (#6522)
+- Rework query store enabled handling (#6483)
+- Remove twitter post bonus points (#6527)
+- In app linking (#6444)
+
+### Fixed
+
+- runtime errors fixes and improvements (#6504)
+- Fix offline detection and logging (#6523)
+- Token Launcher fixes (#6524)
+
 ## [1.9.63] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.63)
 
 ### Changed

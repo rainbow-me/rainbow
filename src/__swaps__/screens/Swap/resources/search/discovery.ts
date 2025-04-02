@@ -7,6 +7,7 @@ import { SearchAsset } from '@/__swaps__/types/search';
 import { time } from '@/utils';
 import { parseTokenSearchResults } from './utils';
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
+
 let tokenSearchHttp: RainbowFetchClient | undefined;
 
 const getTokenSearchHttp = () => {
