@@ -3,6 +3,20 @@ import { memoFn } from '../utils/memoFn';
 import { supportedNativeCurrencies } from '@/references';
 import { NativeCurrencyKey } from '@/entities';
 import { convertAmountToNativeDisplayWorklet } from './utilities';
+import {
+  equalWorklet as safeEqualWorklet,
+  divWorklet as safeDivWorklet,
+  greaterThanOrEqualToWorklet as safeGreaterThanOrEqualToWorklet,
+  isNumberStringWorklet as safeIsNumberStringWorklet,
+  lessThanWorklet as safeLessThanWorklet,
+  mulWorklet as safeMulWorklet,
+  orderOfMagnitudeWorklet as safeOrderOfMagnitudeWorklet,
+  powWorklet as safePowWorklet,
+  removeDecimalWorklet as safeRemoveDecimalWorklet,
+  scaleUpWorklet as safeScaleUpWorklet,
+  toFixedWorklet as safeToFixedWorklet,
+  toStringWorklet as safeToStringWorklet,
+} from '../safe-math/SafeMath';
 /**
  * @desc subtracts two numbers
  * @param  {String}   str
@@ -77,7 +91,44 @@ type CurrencyFormatterOptions = {
   currency?: NativeCurrencyKey;
 };
 
-const toSubscript = (str: string | number) => str.toString().replace(/[0-9]/g, num => String.fromCharCode(0x2080 + +num));
+const toSubscript = (digit: string): string => {
+  'worklet';
+  if (digit.length !== 1 || !/^[0-9]$/.test(digit)) {
+    return digit;
+  }
+  const subscriptDigits: { [key: string]: string } = {
+    '0': '₀',
+    '1': '₁',
+    '2': '₂',
+    '3': '₃',
+    '4': '₄',
+    '5': '₅',
+    '6': '₆',
+    '7': '₇',
+    '8': '₈',
+    '9': '₉',
+  };
+  return subscriptDigits[digit] || digit;
+};
+
+const toSuperscript = (str: string | number): string => {
+  'worklet';
+  const char = String(str);
+  const superscriptDigits: { [key: string]: string } = {
+    '0': '⁰',
+    '1': '¹',
+    '2': '²',
+    '3': '³',
+    '4': '⁴',
+    '5': '⁵',
+    '6': '⁶',
+    '7': '⁷',
+    '8': '⁸',
+    '9': '⁹',
+    '-': '⁻',
+  };
+  return superscriptDigits[char] || char;
+};
 
 /*
   converts 6.9e-7 to 0.00000069
@@ -96,7 +147,10 @@ export function formatFraction(fraction: string) {
   const significantDigits = fraction.slice(leadingZeros, leadingZeros + 2);
   if (+significantDigits === 0) return '00';
 
-  if (leadingZeros >= 4) return `0${toSubscript(leadingZeros)}${significantDigits}`;
+  if (leadingZeros >= 4) {
+    const subscript = leadingZeros.toString().split('').map(toSubscript).join('');
+    return `0${subscript}${significantDigits}`;
+  }
   return `${'0'.repeat(leadingZeros)}${significantDigits}`;
 }
 
@@ -129,4 +183,72 @@ export function formatCurrency(
   if (isNaN(+formattedWhole[formattedWhole.length - 1])) return `${currencySymbol}${formattedWhole}`;
 
   return `${currencySymbol}${formattedWhole}.${formattedFraction}`;
+}
+
+export function formatFractionWorklet(fraction: string): string {
+  'worklet';
+  let leadingZeros = 0;
+  for (let i = 0; i < fraction.length; i++) {
+    if (fraction[i] === '0') {
+      leadingZeros++;
+    } else {
+      break;
+    }
+  }
+
+  const significantPart = fraction.slice(leadingZeros);
+  if (significantPart.length === 0 || /^[0]+$/.test(significantPart)) {
+    return '00';
+  }
+
+  const significantDigits = significantPart.slice(0, 2).padEnd(2, '0');
+
+  if (leadingZeros >= 4) {
+    const leadingZerosStr = leadingZeros.toString();
+    let subscriptZeros = '';
+    for (let i = 0; i < leadingZerosStr.length; i++) {
+      subscriptZeros += toSubscript(String(leadingZerosStr[i]));
+    }
+    return `0${subscriptZeros}${significantDigits}`;
+  }
+  return `${'0'.repeat(leadingZeros)}${significantDigits}`;
+}
+
+export function formatCurrencyWorklet(value: string | number, currencyKey?: NativeCurrencyKey): string {
+  'worklet';
+
+  const symbol = currencyKey ? supportedNativeCurrencies[currencyKey].symbol : undefined;
+  const numericString = safeToStringWorklet(value);
+  const isNegative = safeLessThanWorklet(numericString, '0');
+  const absNumericString = isNegative ? safeMulWorklet(numericString, '-1') : numericString;
+
+  if (safeEqualWorklet(absNumericString, '0')) {
+    return symbol ? `${symbol}0` : `0`;
+  }
+
+  if (safeGreaterThanOrEqualToWorklet(absNumericString, '1')) {
+    const magnitude = safeOrderOfMagnitudeWorklet(absNumericString);
+
+    if (magnitude >= 6) {
+      const divisor = safePowWorklet('10', magnitude.toString());
+      const mantissa = safeDivWorklet(absNumericString, divisor);
+      const formattedMantissa = safeToFixedWorklet(mantissa, 2);
+      const superscriptExponent = `${magnitude
+        .toString()
+        .split('')
+        .map(char => toSuperscript(char))
+        .join('')}`;
+      return `${formattedMantissa}×10${superscriptExponent}`;
+    }
+
+    const formattedValue = safeToFixedWorklet(absNumericString, 0);
+    return symbol ? `${symbol}${formattedValue}` : `${formattedValue}`;
+  }
+
+  const [bigIntNum, fractionDecimalPlaces] = safeRemoveDecimalWorklet(absNumericString);
+  const scaledBigInt = safeScaleUpWorklet(bigIntNum, fractionDecimalPlaces);
+  const fullFraction = scaledBigInt.toString().padStart(fractionDecimalPlaces, '0');
+
+  const formattedFraction = formatFractionWorklet(fullFraction);
+  return symbol ? `${symbol}0.${formattedFraction}` : `0.${formattedFraction}`;
 }

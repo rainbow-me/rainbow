@@ -2,7 +2,15 @@ import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
 import { isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@/references';
-import { divWorklet, lessThanWorklet, orderOfMagnitudeWorklet, powWorklet } from '@/safe-math/SafeMath';
+import {
+  divWorklet,
+  floorWorklet,
+  greaterThanOrEqualToWorklet,
+  lessThanWorklet,
+  orderOfMagnitudeWorklet,
+  powWorklet,
+  toFixedWorklet,
+} from '@/safe-math/SafeMath';
 
 type BigNumberish = number | string | BigNumber;
 
@@ -229,8 +237,14 @@ export const abbreviateNumber = (
 
   return prefix.toFixed(decimals).replace(/\.0$/, '') + suffix;
 };
+
+const oneTrillion = 1_000_000_000_000;
+const oneBillion = 1_000_000_000;
+const oneMillion = 1_000_000;
+const oneThousand = 1_000;
+
 export const abbreviateNumberWorklet = (
-  number: number,
+  number: number | string,
   decimals = 1,
   style: 'short' | 'long' = 'short',
   onlyShowDecimalsIfNeeded = false
@@ -238,25 +252,25 @@ export const abbreviateNumberWorklet = (
   'worklet';
   let prefix = number;
   let suffix = '';
-  if (number >= 1_000_000_000_000) {
-    prefix = number / 1_000_000_000_000;
+  if (greaterThanOrEqualToWorklet(number, oneTrillion)) {
+    prefix = divWorklet(number, oneTrillion);
     suffix = style === 'short' ? 't' : ' trillion';
-  } else if (number >= 1_000_000_000) {
-    prefix = number / 1_000_000_000;
+  } else if (greaterThanOrEqualToWorklet(number, oneBillion)) {
+    prefix = divWorklet(number, oneBillion);
     suffix = style === 'short' ? 'b' : ' billion';
-  } else if (number >= 1_000_000) {
-    prefix = number / 1_000_000;
+  } else if (greaterThanOrEqualToWorklet(number, oneMillion)) {
+    prefix = divWorklet(number, oneMillion);
     suffix = style === 'short' ? 'm' : ' million';
-  } else if (number >= 1000) {
-    prefix = number / 1000;
+  } else if (greaterThanOrEqualToWorklet(number, oneThousand)) {
+    prefix = divWorklet(number, oneThousand);
     suffix = style === 'short' ? 'k' : ' thousand';
   }
 
   if (onlyShowDecimalsIfNeeded && Number.isInteger(prefix)) {
-    return Math.floor(prefix) + suffix;
+    return floorWorklet(prefix) + suffix; // string concatination
   }
 
-  return prefix.toFixed(decimals).replace(/\.0$/, '') + suffix;
+  return toFixedWorklet(prefix, decimals).replace(/\.0$/, '') + suffix;
 };
 
 export const handleSignificantDecimalsWorklet = (value: number | string, decimals: number, buffer = 3): string => {

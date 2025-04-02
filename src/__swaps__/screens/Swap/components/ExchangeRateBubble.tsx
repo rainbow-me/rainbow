@@ -4,7 +4,6 @@ import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDe
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Inline, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { AddressZero } from '@ethersproject/constants';
@@ -13,6 +12,8 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { GestureHandlerButton } from './GestureHandlerButton';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
+import { divWorklet } from '@/safe-math/SafeMath';
+import { formatCurrencyWorklet } from '@/helpers/strings';
 
 export const ExchangeRateBubble = () => {
   const { isDarkMode } = useColorMode();
@@ -93,39 +94,26 @@ export const ExchangeRateBubble = () => {
 
       switch (rotatingIndex.value) {
         case 0: {
-          const formattedRate = valueBasedDecimalFormatter({
-            amount: inputAssetPrice / outputAssetPrice,
-            nativePrice: outputAssetPrice,
-            roundingMode: 'up',
-            precisionAdjustment: -1,
-            isStablecoin: isOutputAssetStablecoin,
-            stripSeparators: false,
-          });
+          const amount = divWorklet(inputAssetPrice, outputAssetPrice);
           fromAssetText.value = `1 ${inputAssetSymbol}`;
-          toAssetText.value = `${formattedRate} ${outputAssetSymbol}`;
+          toAssetText.value = `${formatCurrencyWorklet(amount)} ${outputAssetSymbol}`;
           break;
         }
         case 1: {
-          const formattedRate = valueBasedDecimalFormatter({
-            amount: outputAssetPrice / inputAssetPrice,
-            nativePrice: inputAssetPrice,
-            roundingMode: 'up',
-            precisionAdjustment: -1,
-            isStablecoin: isInputAssetStablecoin,
-            stripSeparators: false,
-          });
+          const amount = divWorklet(outputAssetPrice, inputAssetPrice);
+          console.log('amount', amount);
           fromAssetText.value = `1 ${outputAssetSymbol}`;
-          toAssetText.value = `${formattedRate} ${inputAssetSymbol}`;
+          toAssetText.value = `${formatCurrencyWorklet(amount)} ${inputAssetSymbol}`;
           break;
         }
         case 2: {
           fromAssetText.value = `1 ${inputAssetSymbol}`;
-          toAssetText.value = convertAmountToNativeDisplayWorklet(inputAssetPrice, currentCurrency);
+          toAssetText.value = convertAmountToNativeDisplayWorklet(formatCurrencyWorklet(inputAssetPrice), currentCurrency);
           break;
         }
         case 3: {
           fromAssetText.value = `1 ${outputAssetSymbol}`;
-          toAssetText.value = convertAmountToNativeDisplayWorklet(outputAssetPrice, currentCurrency);
+          toAssetText.value = convertAmountToNativeDisplayWorklet(formatCurrencyWorklet(outputAssetPrice), currentCurrency);
           break;
         }
       }
