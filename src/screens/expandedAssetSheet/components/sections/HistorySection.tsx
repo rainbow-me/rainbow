@@ -224,8 +224,8 @@ export const ListItem = memo(function ListItem({ index, item, nativeCurrency, li
   });
 
   return (
-    <Box as={Animated.View} style={isVisibleStyles}>
-      <Box as={ButtonPressAnimation} scaleTo={0.94} onPress={navigateToTransaction} height={ROW_HEIGHT} gap={LIST_ITEM_GAP} width="full">
+    <Box as={Animated.View} style={isVisibleStyles} height={ROW_HEIGHT}>
+      <Box as={ButtonPressAnimation} scaleTo={0.94} onPress={navigateToTransaction} gap={LIST_ITEM_GAP}>
         <Box flexDirection="row" justifyContent="space-between" alignItems="center">
           <Box flexDirection="row" alignItems="center" gap={ICON_TEXT_GAP}>
             <Text size="icon 11px" color={{ custom: iconColor }} weight="bold">
@@ -289,7 +289,10 @@ export const ListData = memo(function ListData({ data, buys, sells, isLoading }:
     return data;
   }, [tabIndex, data, buys, sells]);
 
-  const listHeight = useDerivedValue(() => calculateContainerHeight(filteredTokenInteractions, isExpanded.value));
+  const listHeight = useDerivedValue(
+    () => calculateContainerHeight(filteredTokenInteractions, isExpanded.value),
+    [filteredTokenInteractions, isExpanded]
+  );
 
   const loaderStyles = useAnimatedStyle(() => {
     const loaderHeight = DEFAULT_VISIBLE_ITEM_COUNT * ROW_HEIGHT + (DEFAULT_VISIBLE_ITEM_COUNT - 1) * ROW_PADDING;
@@ -328,7 +331,7 @@ export const ListData = memo(function ListData({ data, buys, sells, isLoading }:
   });
 
   return (
-    <Box style={[{ position: 'relative', overflow: 'hidden' }]}>
+    <Box style={[{ position: 'relative' }]}>
       {isLoading && filteredTokenInteractions.length === 0 && (
         <Box as={Animated.View} style={loaderStyles} gap={24}>
           {Array.from({ length: DEFAULT_VISIBLE_ITEM_COUNT }).map((_, index) => (
@@ -338,7 +341,7 @@ export const ListData = memo(function ListData({ data, buys, sells, isLoading }:
       )}
 
       {!isLoading && (
-        <Box as={Animated.View} style={[listStyles, { gap: ROW_PADDING, overflow: 'hidden' }]}>
+        <Box as={Animated.View} style={[listStyles, { gap: ROW_PADDING }]}>
           {filteredTokenInteractions.map((tokenInteraction, index) => (
             <ListItem
               key={index}
