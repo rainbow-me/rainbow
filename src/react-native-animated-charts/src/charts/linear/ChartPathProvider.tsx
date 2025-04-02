@@ -38,13 +38,6 @@ function getCurveType(curveType: keyof typeof CurveType | undefined) {
   }
 }
 
-function detectFlatData(yValues: number[]): boolean {
-  if (!yValues.length) return false;
-
-  const firstY = yValues[0];
-  return yValues.every(y => Math.abs(y - firstY) < 0.000000001);
-}
-
 function detectStablecoin(yValues: number[]): boolean {
   if (!yValues.length) return false;
 
@@ -73,7 +66,6 @@ function getScales({ data, width, height, yRange }: CallbackType): PathScales {
   const smallestX = Math.min(...x);
   const greatestX = Math.max(...x);
 
-  const isFlat = detectFlatData(y);
   const isNearlyFlat = detectNearlyFlatData(y);
   const isStablecoin = detectStablecoin(y);
 
@@ -83,7 +75,7 @@ function getScales({ data, width, height, yRange }: CallbackType): PathScales {
     // Use provided yRange if available
     smallestY = yRange[0];
     greatestY = yRange[1];
-  } else if (isFlat || isNearlyFlat) {
+  } else if (isNearlyFlat) {
     // For flat or nearly flat data, add padding to prevent spikes
     const avgY = y.reduce((sum, val) => sum + val, 0) / y.length;
     // Add 0.5% padding above and below for flat data
@@ -111,8 +103,6 @@ function getScales({ data, width, height, yRange }: CallbackType): PathScales {
   return {
     scaleX,
     scaleY,
-    isFlat,
-    isNearlyFlat,
   };
 }
 
