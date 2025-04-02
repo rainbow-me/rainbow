@@ -10,7 +10,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
 import { ETH_ADDRESS } from '@/references';
-import { ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
+import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
 import Labels from '../value-chart/ExtremeLabels';
 import showWalletErrorAlert from '@/helpers/support';
 import { IS_IOS } from '@/env';
@@ -210,7 +210,13 @@ export const EthCard = () => {
               )}
             </Box>
           ) : (
-            <ChartPathProvider data={throttledData} width={CHART_WIDTH} height={CHART_HEIGHT}>
+            <ChartPathProvider
+              data={throttledData}
+              width={CHART_WIDTH}
+              height={CHART_HEIGHT}
+              color={colorForAsset}
+              selectedColor={colorForAsset}
+            >
               <ChartPath
                 fill="none"
                 gestureEnabled={false}
@@ -231,6 +237,17 @@ export const EthCard = () => {
                 // @ts-ignore - prop is accepted via prop spreading
                 chartXOffset={0}
                 isCard
+              />
+              <ChartDot
+                size={10}
+                color={colorForAsset}
+                isCard
+                dotStyle={{
+                  shadowColor: isDarkMode ? colors.shadow : colorForAsset,
+                  shadowOffset: { height: 3, width: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 4.5,
+                }}
               />
               <Labels color={colorForAsset} width={CHART_WIDTH} isCard />
             </ChartPathProvider>
