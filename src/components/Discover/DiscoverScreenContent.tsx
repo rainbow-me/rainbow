@@ -6,10 +6,11 @@ import DiscoverSearch from '@/components/Discover/DiscoverSearch';
 import DiscoverSearchContainer from '@/components/Discover/DiscoverSearchContainer';
 import { Box, Inset } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 
 function Switcher({ children }: { children: React.ReactNode[] }) {
-  const { isSearching } = useDiscoverScreenContext();
+  const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
+
   return (
     <>
       <View style={{ display: isSearching ? 'flex' : 'none' }}>{isSearching ? children[0] : <FlexItem />}</View>

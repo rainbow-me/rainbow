@@ -1,32 +1,21 @@
 import lang from 'i18n-js';
 import { rankings } from 'match-sorter';
-import { groupBy } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useTheme } from '../theme/ThemeContext';
 import { addHexPrefix } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
-import { isLowerCaseMatch, filterList } from '@/utils';
+import { filterList } from '@/utils';
 import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { TokenSearchResult, useTokenSearchAllNetworks } from '@/__swaps__/screens/Swap/resources/search/search';
+import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { isAddress } from '@ethersproject/address';
 
-const MAX_VERIFIED_RESULTS = 48;
-
-const getExactMatches = (data: TokenSearchResult, query: string) => {
-  const isQueryAddress = isAddress(query.trim());
-  return data.filter(asset => {
-    if (isQueryAddress) {
-      return !!(asset.address?.toLowerCase() === query.trim().toLowerCase());
-    }
-    const symbolMatch = isLowerCaseMatch(asset.symbol, query);
-    const nameMatch = isLowerCaseMatch(asset.name, query);
-    return symbolMatch || nameMatch;
-  });
-};
+const MAX_VERIFIED_RESULTS = 24;
+const MAX_HIGH_LIQUIDITY_RESULTS = 6;
+const MAX_LOW_LIQUIDITY_RESULTS = 6;
 
 const abcSort = (list: any[], key?: string) => {
   return list.sort((a, b) => {
@@ -34,71 +23,11 @@ const abcSort = (list: any[], key?: string) => {
   });
 };
 
-type SearchItemWithRelevance = SearchAsset & {
-  relevance: number;
-};
-
-const sortForDefaultList = (tokens: SearchAsset[]) => {
-  const curated = tokens.filter(asset => asset.highLiquidity && asset.isRainbowCurated && asset.icon_url);
-  return curated.sort((a, b) => (b.market?.market_cap?.value || 0) - (a.market?.market_cap?.value || 0));
-};
-
-const sortTokensByRelevance = (tokens: SearchAsset[], query: string): SearchItemWithRelevance[] => {
-  const normalizedQuery = query.toLowerCase().trim();
-  const tokenWithRelevance: SearchItemWithRelevance[] = tokens.map(token => {
-    const normalizedTokenName = token.name.toLowerCase();
-
-    const normalizedTokenSymbol = token.symbol.toLowerCase();
-    const tokenNameWords = normalizedTokenName.split(' ');
-    const relevance = getTokenRelevance({
-      token,
-      normalizedTokenName,
-      normalizedQuery,
-      normalizedTokenSymbol,
-      tokenNameWords,
-    });
-    return { ...token, relevance };
-  });
-
-  return tokenWithRelevance.sort((a, b) => b.relevance - a.relevance);
-};
-
-// higher number indicates higher relevance
-const getTokenRelevance = ({
-  token,
-  normalizedTokenName,
-  normalizedQuery,
-  normalizedTokenSymbol,
-  tokenNameWords,
-}: {
-  token: SearchAsset;
-  normalizedTokenName: string;
-  normalizedQuery: string;
-  normalizedTokenSymbol?: string;
-  tokenNameWords: string[];
-}) => {
-  // High relevance: Leading word in token name starts with query or exact match on symbol
-  if (normalizedTokenName.startsWith(normalizedQuery) || (normalizedTokenSymbol && normalizedTokenSymbol === normalizedQuery)) {
-    return 5;
-  }
-
-  // Medium relevance: Non-leading word in token name starts with query
-  if (tokenNameWords.some((word, index) => index !== 0 && word.startsWith(normalizedQuery))) {
-    return 4;
-  }
-
-  // Low relevance: Token name contains query
-  if (tokenNameWords.some(word => word.includes(normalizedQuery))) {
-    return 3;
-  }
-
-  return 0;
-};
-
-const useSearchCurrencyList = (searchQuery: string) => {
+const useSearchCurrencyList = () => {
+  const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery.trim().toLowerCase());
   const searching = useMemo(() => searchQuery !== '', [searchQuery]);
 
-  const { favorites: favoriteAddresses, favoritesMetadata: favoriteMap } = useFavorites();
+  const { favoritesMetadata: favoriteMap } = useFavorites();
   const unfilteredFavorites = useMemo(() => {
     return Object.values(favoriteMap)
       .filter(token => token.networks[ChainId.mainnet])
@@ -141,49 +70,21 @@ const useSearchCurrencyList = (searchQuery: string) => {
 
   const { colors } = useTheme();
 
-  const selectTopSearchResults = useCallback(
-    (data: TokenSearchResult) => {
-      const results = data.filter(asset => {
-        const isFavorite = favoriteAddresses.map(a => a?.toLowerCase()).includes(asset.uniqueId?.toLowerCase());
-        if (isFavorite) return false;
+  const searchResultAssets = useDiscoverSearchStore(state => state.getData());
+  const loading = useDiscoverSearchStore(state => state.getStatus().isFetching);
 
-        const hasIcon = asset.icon_url;
-        const isMatch = hasIcon || searchQuery.length > 2;
-
-        if (!isMatch) {
-          const crosschainMatch = getExactMatches([asset], searchQuery);
-          return crosschainMatch.length > 0;
-        }
-
-        return isMatch;
-      });
-      const topResults = searchQuery === '' ? sortForDefaultList(results) : sortTokensByRelevance(results, searchQuery);
-      return topResults.slice(0, MAX_VERIFIED_RESULTS);
+  const removeFavoritesAndEnforceResultsLimit = useCallback(
+    (assets: SearchAsset[] | undefined, maxResults: number) => {
+      return (assets || []).filter(asset => !favoriteAssets.some(fav => fav.uniqueId === asset.uniqueId)).slice(0, maxResults);
     },
-    [searchQuery, favoriteAddresses]
-  );
-
-  const { data: searchResultAssets, isFetching: loading } = useTokenSearchAllNetworks(
-    {
-      query: searchQuery,
-    },
-    {
-      select: selectTopSearchResults,
-      staleTime: 10 * 60 * 1_000, // 10 min
-    }
+    [favoriteAssets]
   );
 
   const currencyList = useMemo(() => {
     const list = [];
-    const { verifiedAssets, highLiquidityAssets, lowLiquidityAssets } = groupBy(searchResultAssets, searchResult => {
-      if (searchResult.isVerified) {
-        return 'verifiedAssets';
-      } else if (!searchResult.isVerified && searchResult.highLiquidity) {
-        return 'highLiquidityAssets';
-      } else {
-        return 'lowLiquidityAssets';
-      }
-    });
+    const verifiedAssets = removeFavoritesAndEnforceResultsLimit(searchResultAssets?.verifiedAssets, MAX_VERIFIED_RESULTS);
+    const highLiquidityAssets = removeFavoritesAndEnforceResultsLimit(searchResultAssets?.highLiquidityAssets, MAX_HIGH_LIQUIDITY_RESULTS);
+    const lowLiquidityAssets = removeFavoritesAndEnforceResultsLimit(searchResultAssets?.lowLiquidityAssets, MAX_LOW_LIQUIDITY_RESULTS);
 
     if (searching) {
       if (favoriteAssets?.length) {
