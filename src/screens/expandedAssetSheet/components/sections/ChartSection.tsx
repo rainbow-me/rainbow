@@ -1,4 +1,5 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
+import { useWindowDimensions } from 'react-native';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ChartPathProvider } from '@/react-native-animated-charts/src/charts/linear/ChartPathProvider';
 import { Chart } from '@/components/value-chart';
@@ -8,6 +9,7 @@ import { useDerivedValue } from 'react-native-reanimated';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analyticsV2 } from '@/analytics';
 import { Bleed } from '@/design-system';
+import { getSolidColorEquivalent } from '@/worklets/colors';
 
 const ANALYTICS_ROUTE_LOG_DELAY = 5 * 1000;
 
@@ -19,7 +21,8 @@ const calculatePercentChangeWorklet = (start: number, end: number) => {
 };
 
 export const ChartSection = memo(function ChartSection() {
-  const { basicAsset: asset, assetMetadata } = useExpandedAssetSheetContext();
+  const { width } = useWindowDimensions();
+  const { basicAsset: asset, assetMetadata, accentColors } = useExpandedAssetSheetContext();
   const { chartType, color, fetchingCharts, updateChartType, showChart, throttledData } = useChartThrottledPoints({
     asset,
   });
@@ -34,6 +37,10 @@ export const ChartSection = memo(function ChartSection() {
     }
     return change;
   }, [points, asset, chartType]);
+
+  const selectedColor = useMemo(() => {
+    return getSolidColorEquivalent({ foreground: color, background: accentColors.background, opacity: 0.7 });
+  }, [color, accentColors.background]);
 
   // This is here instead of the root screen because we need to know if the chart is available
   useTimeoutEffect(
@@ -61,14 +68,13 @@ export const ChartSection = memo(function ChartSection() {
 
   return (
     <Bleed horizontal="24px">
-      <ChartPathProvider data={throttledData}>
+      <ChartPathProvider data={throttledData} color={color} selectedColor={selectedColor} width={width} endPadding={32}>
         <Chart
           latestChange={latestChange}
-          latestPrice={asset.price.value}
+          latestPrice={asset.price.value ?? 0}
           updateChartType={updateChartType}
           asset={asset}
           chartType={chartType}
-          color={color}
           fetchingCharts={fetchingCharts}
           showChart={showChart}
           throttledData={throttledData}

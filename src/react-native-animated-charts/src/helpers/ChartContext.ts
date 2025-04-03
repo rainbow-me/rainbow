@@ -58,13 +58,15 @@ export type ChartData = {
   dotScale: SharedValue<number>;
   originalX: SharedValue<string>;
   originalY: SharedValue<string>;
-  pathOpacity: SharedValue<number>;
   state: SharedValue<number>;
   isActive: SharedValue<boolean>;
   positionX: SharedValue<number>;
   positionY: SharedValue<number>;
   previousPath: PathData | null;
   currentPath: PathData | null;
+  stroke: string;
+  selectedStroke: string;
+  color: string;
 } & WithPathData;
 
 export const ChartContext = React.createContext<ChartData | null>(null);

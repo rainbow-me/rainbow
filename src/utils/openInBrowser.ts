@@ -4,6 +4,11 @@ import Routes from '@/navigation/routesNames';
 import { Linking } from 'react-native';
 
 export const openInBrowser = (url: string, internal = true) => {
+  if (!url) {
+    logger.warn(`[openInBrowser] No url provided, returning early...`);
+    return;
+  }
+
   const isDeeplink = !url.startsWith('http');
 
   if (isDeeplink) {
