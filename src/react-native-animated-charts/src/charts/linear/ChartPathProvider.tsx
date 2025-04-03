@@ -38,6 +38,13 @@ function getCurveType(curveType: keyof typeof CurveType | undefined) {
   }
 }
 
+/**
+ * Determines if the data is a stablecoin. We can't rely on the asset type because
+ * the different entry points into charts can not have that field.
+ *
+ * @param yValues - The y values of the data
+ * @returns true if 95% of the data points are within 1% of the base price, false otherwise
+ */
 function detectStablecoin(yValues: number[]): boolean {
   if (!yValues.length) return false;
 
@@ -49,6 +56,13 @@ function detectStablecoin(yValues: number[]): boolean {
   return closeToOneCount / yValues.length > 0.95;
 }
 
+/**
+ * Detects if the data is nearly flat. This is used to prevent spikes in the chart
+ * when the price is hardly deviating.
+ *
+ * @param yValues - The y values of the data
+ * @returns true if the data is nearly flat, false otherwise
+ */
 function detectNearlyFlatData(yValues: number[]): boolean {
   if (!yValues.length) return false;
 
@@ -83,6 +97,7 @@ function getScales({ data, width, height, yRange }: CallbackType): PathScales {
     smallestY = avgY - padding;
     greatestY = avgY + padding;
   } else if (isStablecoin) {
+    // For stablecoin data, use the actual min/max with minimal padding rounded to the nearest whole number
     smallestY = Math.round(Math.min(...y));
     greatestY = Math.round(Math.max(...y));
   } else {
