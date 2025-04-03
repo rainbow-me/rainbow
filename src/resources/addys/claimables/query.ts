@@ -10,7 +10,6 @@ import { IS_TEST } from '@/env';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getAddysHttpClient } from '../client';
 import { Address } from 'viem';
-import { abort } from 'process';
 
 // ///////////////////////////////////////////////
 // Query Types
