@@ -3,11 +3,11 @@ import { Box, Inline, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
 import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
-import { NftSort, parseNftSort, useNftSort } from '@/hooks/useNFTsSortBy';
+import { useNftSort } from '@/hooks/useNFTsSortBy';
 import { colors } from '@/styles';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_IOS } from '@/env';
 
 const TokenFamilyHeaderHeight = 48;
 

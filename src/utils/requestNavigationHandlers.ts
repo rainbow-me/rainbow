@@ -145,7 +145,7 @@ export const handleMobileWalletProtocolRequest = async ({
             } else {
               logger.debug(`Handshake rejected for ${action.appId}`);
               await rejectHandshake(MobileWalletProtocolUserErrors.USER_REJECTED_HANDSHAKE);
-              reject(MobileWalletProtocolUserErrors.USER_REJECTED_HANDSHAKE);
+              reject(new Error(MobileWalletProtocolUserErrors.USER_REJECTED_HANDSHAKE));
             }
           },
         };
@@ -238,14 +238,14 @@ export const handleMobileWalletProtocolRequest = async ({
               message: error.message,
               code: 4001,
             });
-            reject(error.message);
+            reject(error);
           } else {
             logger.debug(`Ethereum action rejected: [${action.method}]: User rejected request`);
             await rejectAction(action, {
               message: MobileWalletProtocolUserErrors.USER_REJECTED_REQUEST,
               code: 4001,
             });
-            reject(MobileWalletProtocolUserErrors.USER_REJECTED_REQUEST);
+            reject(new Error(MobileWalletProtocolUserErrors.USER_REJECTED_REQUEST));
           }
         };
 
