@@ -22,8 +22,8 @@ const springDefaultConfig = {
   stiffness: 600,
 };
 
-const PULSE_DURATION = 1500;
-const PULSE_DELAY = 1000;
+const PULSE_DURATION = 1250;
+const PULSE_DELAY = 750;
 const PULSE_START_OPACITY = 0.5;
 const PULSE_END_SCALE = 4;
 
@@ -48,7 +48,7 @@ const ChartDot = React.memo(
     pulseDuration = PULSE_DURATION,
     pulseStartOpacity = PULSE_START_OPACITY,
     pulseEndScale = PULSE_END_SCALE,
-    springConfig,
+    springConfig = springDefaultConfig,
     timingAnimationConfig = timingAnimationDefaultConfig,
     dotStyle,
     isCard,
@@ -99,7 +99,7 @@ const ChartDot = React.memo(
     const touchPointStyle = useAnimatedStyle(() => {
       const translateX = positionX.value;
       const translateY = positionY.value + magicNudgeNumber / 2;
-      const scale = withSpring(isActive.value ? 1 : 0, springConfig || springDefaultConfig);
+      const scale = withSpring(isActive.value ? 1 : 0, springConfig);
       return {
         opacity: isActive.value ? 1 : 0,
         transform: [{ translateX }, { translateY }, { scale }],

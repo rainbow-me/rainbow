@@ -66,7 +66,7 @@ export function ChartSection() {
   );
 
   return (
-    <ChartPathProvider data={throttledData} color={color} selectedColor={selectedColor} width={width}>
+    <ChartPathProvider data={throttledData} color={color} selectedColor={selectedColor} width={width} endPadding={32}>
       <Chart
         latestChange={latestChange}
         latestPrice={asset.price.value ?? 0}

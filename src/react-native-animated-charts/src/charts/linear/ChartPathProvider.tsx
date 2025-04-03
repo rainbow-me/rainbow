@@ -12,7 +12,6 @@ import { usePrevious } from '@/hooks';
 const { width: WIDTH } = Dimensions.get('window');
 
 const HEIGHT = 146.5;
-export const CHART_END_PADDING = 32;
 interface ChartPathProviderProps {
   data: DataType;
   color: string;
@@ -21,6 +20,7 @@ interface ChartPathProviderProps {
   height?: number;
   yRange?: [number, number];
   children: React.ReactNode;
+  endPadding?: number;
 }
 
 function getCurveType(curveType: keyof typeof CurveType | undefined) {
@@ -187,8 +187,8 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
 }
 
 export const ChartPathProvider = React.memo<ChartPathProviderProps>(
-  ({ children, data, color, selectedColor = color, width = WIDTH, height = HEIGHT, yRange }) => {
-    const chartPathWidth = width - CHART_END_PADDING;
+  ({ children, data, color, selectedColor = color, width = WIDTH, height = HEIGHT, yRange, endPadding = 0 }) => {
+    const chartPathWidth = width - endPadding;
     // path interpolation animation progress
     const progress = useSharedValue(1);
 

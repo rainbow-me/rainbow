@@ -29,7 +29,6 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { ChartData, PathData } from '../../helpers/ChartContext';
 import { requireOnWorklet, useWorkletValue } from '../../helpers/requireOnWorklet';
 import { useChartData } from '../../helpers/useChartData';
-import { CHART_END_PADDING } from './ChartPathProvider';
 
 export const FIX_CLIPPED_PATH_MAGIC_NUMBER = 22;
 export const FIX_CLIPPED_PATH_FOR_CARD_MAGIC_NUMBER = 3;
@@ -374,9 +373,20 @@ export const ChartPath = React.memo(
     isCard = false,
     ...props
   }: ChartPathProps) => {
-    const { positionX, positionY, originalX, originalY, state, isActive, progress, currentPath, previousPath, stroke, selectedStroke } =
-      useChartData();
-    const chartPathWidth = width - CHART_END_PADDING;
+    const {
+      positionX,
+      positionY,
+      originalX,
+      originalY,
+      state,
+      isActive,
+      progress,
+      currentPath,
+      previousPath,
+      stroke,
+      width: chartPathWidth,
+      selectedStroke,
+    } = useChartData();
 
     return (
       <View style={{ height, width }}>

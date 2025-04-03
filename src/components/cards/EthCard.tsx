@@ -216,6 +216,7 @@ export const EthCard = () => {
               height={CHART_HEIGHT}
               color={colorForAsset}
               selectedColor={colorForAsset}
+              endPadding={32}
             >
               <ChartPath
                 fill="none"
