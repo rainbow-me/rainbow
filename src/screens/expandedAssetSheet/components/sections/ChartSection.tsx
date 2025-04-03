@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ChartPathProvider } from '@/react-native-animated-charts/src/charts/linear/ChartPathProvider';
 import { Chart } from '@/components/value-chart';
@@ -7,6 +7,7 @@ import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analyticsV2 } from '@/analytics';
+import { Bleed } from '@/design-system';
 
 const ANALYTICS_ROUTE_LOG_DELAY = 5 * 1000;
 
@@ -17,7 +18,7 @@ const calculatePercentChangeWorklet = (start: number, end: number) => {
   return toFixedWorklet(percent, 2);
 };
 
-export function ChartSection() {
+export const ChartSection = memo(function ChartSection() {
   const { basicAsset: asset, assetMetadata } = useExpandedAssetSheetContext();
   const { chartType, color, fetchingCharts, updateChartType, showChart, throttledData } = useChartThrottledPoints({
     asset,
@@ -59,19 +60,21 @@ export function ChartSection() {
   );
 
   return (
-    <ChartPathProvider data={throttledData}>
-      <Chart
-        latestChange={latestChange}
-        latestPrice={asset.price.value}
-        updateChartType={updateChartType}
-        asset={asset}
-        chartType={chartType}
-        color={color}
-        fetchingCharts={fetchingCharts}
-        showChart={showChart}
-        throttledData={throttledData}
-        isPool={false}
-      />
-    </ChartPathProvider>
+    <Bleed horizontal="24px">
+      <ChartPathProvider data={throttledData}>
+        <Chart
+          latestChange={latestChange}
+          latestPrice={asset.price.value}
+          updateChartType={updateChartType}
+          asset={asset}
+          chartType={chartType}
+          color={color}
+          fetchingCharts={fetchingCharts}
+          showChart={showChart}
+          throttledData={throttledData}
+          isPool={false}
+        />
+      </ChartPathProvider>
+    </Bleed>
   );
-}
+});

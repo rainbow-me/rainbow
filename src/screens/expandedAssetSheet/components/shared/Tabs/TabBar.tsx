@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     display: 'flex',
     borderRadius: 17,
+    borderWidth: THICK_BORDER_WIDTH,
     height: 30,
   },
 });

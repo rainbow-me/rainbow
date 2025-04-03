@@ -29,6 +29,7 @@ import * as i18n from '@/languages';
 import { minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/safe-math/SafeMath';
 import { useTokenInteractions } from '@/resources/metadata/tokenInteractions';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
+import { SheetSeparator } from '../shared/Separator';
 
 const l = i18n.l.expanded_state.sections.history;
 
@@ -418,11 +419,14 @@ export const HistorySection = memo(function HistorySection() {
   }
 
   return (
-    <CollapsibleSection
-      content={<HistoryContent tokenInteractions={tokenInteractions} isLoadingTokenInteractions={isLoadingTokenInteractions} />}
-      icon="􀐫"
-      id={SectionId.HISTORY}
-      primaryText="History"
-    />
+    <Box gap={28}>
+      <CollapsibleSection
+        content={<HistoryContent tokenInteractions={tokenInteractions} isLoadingTokenInteractions={isLoadingTokenInteractions} />}
+        icon="􀐫"
+        id={SectionId.HISTORY}
+        primaryText="History"
+      />
+      <SheetSeparator />
+    </Box>
   );
 });
