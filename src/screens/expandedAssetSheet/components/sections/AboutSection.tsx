@@ -98,7 +98,7 @@ const RowButton = memo(function RowButton({ highlighted, icon, iconName, title, 
   );
 });
 
-const truncate = (text: string) => {
+function truncate(text: string) {
   try {
     const minTruncatedLength = 100;
 
@@ -122,7 +122,7 @@ const truncate = (text: string) => {
     logger.warn('[AboutSection]: Error truncating text', { error, text });
     return text;
   }
-};
+}
 
 const Description = memo(function Description({ text }: { text: string }) {
   const { accentColors } = useExpandedAssetSheetContext();

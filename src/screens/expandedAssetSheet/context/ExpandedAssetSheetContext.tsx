@@ -114,7 +114,7 @@ export function ExpandedAssetSheetContextProvider({
   children,
   hideClaimSection = false,
 }: ExpandedAssetSheetContextProviderProps) {
-  const { nativeCurrency, accountAddress } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
 
