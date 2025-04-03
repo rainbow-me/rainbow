@@ -38,6 +38,7 @@ const LIST_BUTTON_GAP = 20;
 const ROW_HEIGHT = 32;
 const ROW_PADDING = 24;
 const MORE_BUTTON_HEIGHT = 36;
+const LIST_PADDING = 4;
 
 // Button styling constants
 const MORE_BUTTON_BORDER_RADIUS = 20;
@@ -144,7 +145,7 @@ const calculateContainerHeight = (interactions: TokenInteraction[], isExpanded: 
   'worklet';
 
   const hasMoreButton = interactions.length > DEFAULT_VISIBLE_ITEM_COUNT;
-  const moreButtonPadding = hasMoreButton ? LIST_BUTTON_GAP : 0;
+  const moreButtonPadding = hasMoreButton ? LIST_BUTTON_GAP + LIST_PADDING * 2 - 1 : LIST_PADDING * 2;
 
   const visibleItemCount = isExpanded ? interactions.length : minWorklet(interactions.length, DEFAULT_VISIBLE_ITEM_COUNT);
   const totalRowHeight = mulWorklet(visibleItemCount, ROW_HEIGHT);
@@ -312,7 +313,7 @@ export const ListData = memo(function ListData({ data, buys, sells, isLoading }:
           dampingRatio: 0.9,
           stiffness: 150,
           overshootClamping: true,
-          duration: Math.max(filteredTokenInteractions.length - DEFAULT_VISIBLE_ITEM_COUNT, 1) * ITEM_DELAY,
+          duration: Math.min(200, Math.max(filteredTokenInteractions.length - DEFAULT_VISIBLE_ITEM_COUNT, 1) * ITEM_DELAY),
         })
       );
     }
@@ -334,7 +335,10 @@ export const ListData = memo(function ListData({ data, buys, sells, isLoading }:
       )}
 
       {!isLoading && (
-        <Box as={Animated.View} style={[listStyles, { gap: ROW_PADDING, overflow: 'hidden' }]}>
+        <Box
+          as={Animated.View}
+          style={[listStyles, { gap: ROW_PADDING, overflow: 'hidden', paddingVertical: LIST_PADDING, marginVertical: -LIST_PADDING }]}
+        >
           {filteredTokenInteractions.map((tokenInteraction, index) => (
             <ListItem
               key={index}
