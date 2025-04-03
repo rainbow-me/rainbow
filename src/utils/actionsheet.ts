@@ -1,12 +1,11 @@
-import { ActionSheetIOS } from 'react-native';
+import { IS_IOS } from '@/env';
+import { ActionSheetIOS, ActionSheetIOSOptions } from 'react-native';
 import ActionSheet from 'react-native-action-sheet';
 
-export default function showActionSheetWithOptions(...args: any[]) {
-  if (ios) {
-    // @ts-ignore
-    ActionSheetIOS.showActionSheetWithOptions(...args);
+export default function showActionSheetWithOptions(options: ActionSheetIOSOptions, callback: (buttonIndex: number | undefined) => void) {
+  if (IS_IOS) {
+    ActionSheetIOS.showActionSheetWithOptions(options, callback);
   } else {
-    // @ts-ignore
-    ActionSheet.showActionSheetWithOptions(...args);
+    ActionSheet.showActionSheetWithOptions(options, callback);
   }
 }

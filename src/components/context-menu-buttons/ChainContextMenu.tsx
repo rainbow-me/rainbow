@@ -100,7 +100,6 @@ export const ChainContextMenu = ({
     showActionSheetWithOptions(
       {
         options,
-        showSeparators: true,
       },
       (selectedIndex: number | undefined) => {
         if (selectedIndex !== undefined) {

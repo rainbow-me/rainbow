@@ -133,7 +133,6 @@ const Tag = ({
     showActionSheetWithOptions(
       {
         options: androidContractActions,
-        showSeparators: true,
         title: '',
       },
       idx => {
