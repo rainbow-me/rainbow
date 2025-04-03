@@ -1,23 +1,30 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as i18n from '@/languages';
-import { Dimensions } from 'react-native';
-import dogSunglasses from '@/assets/partnerships/dogSunglasses.png';
-import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import { Dimensions, View } from 'react-native';
+import Animated, {
+  cancelAnimation,
+  Easing,
+  SharedValue,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 import Spinner from '../../assets/chartSpinner.png';
 import { nativeStackConfig } from '../../navigation/nativeStackConfig';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
-import { Text, Box, Bleed, TextIcon } from '@/design-system';
+import { Text, Box, Bleed, TextIcon, useColorMode } from '@/design-system';
 import Labels from './ExtremeLabels';
 import TimespanSelector from './TimespanSelector';
 import { ChartDot, ChartPath, useChartData } from '@/react-native-animated-charts/src';
-import ChartTypes from '@/helpers/chartTypes';
+import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { DOG_ADDRESS } from '@/references';
 import { IS_IOS } from '@/env';
+import { useTheme } from '@/theme';
 
 export const { width: WIDTH } = Dimensions.get('window');
 
@@ -30,11 +37,13 @@ const ChartTimespans = [
   // ChartTypes.max, todo restore after receiving proper data from zerion
 ];
 
-const ChartContainer = styled.View({
-  marginVertical: ({ showChart }) => (showChart ? 17 : 0),
+const ChartContainer = styled(View)({
+  marginVertical: ({ showChart }: { showChart: boolean }) => (showChart ? 17 : 0),
 });
 
-const ChartSpinner = styled(ImgixImage).attrs(({ color }) => ({
+const CHART_DOT_SIZE = 10;
+
+const ChartSpinner = styled(ImgixImage).attrs(({ color }: { color: string }) => ({
   resizeMode: ImgixImage.resizeMode.contain,
   source: Spinner,
   tintColor: color,
@@ -48,31 +57,6 @@ const Container = styled(Column)({
   paddingBottom: 32,
   paddingTop: IS_IOS ? 0 : 4,
   width: '100%',
-});
-
-const InnerDot = styled.View({
-  backgroundColor: ({ color }) => color,
-  borderRadius: 5,
-  height: 10,
-  shadowColor: ({ color, theme: { colors, isDarkMode } }) => (isDarkMode ? colors.shadow : color),
-  shadowOffset: { height: 3, width: 0 },
-  shadowOpacity: 0.6,
-  shadowRadius: 4.5,
-  width: 10,
-});
-
-const DogeDot = styled(ImgixImage).attrs({
-  resizeMode: ImgixImage.resizeMode.contain,
-  source: dogSunglasses,
-  size: 30,
-})({
-  ...position.sizeAsObject(35),
-});
-
-const Dot = styled(ChartDot)({
-  alignItems: 'center',
-  backgroundColor: ({ color }) => color,
-  justifyContent: 'center',
 });
 
 const HEIGHT = 146.5;
@@ -94,14 +78,17 @@ const timingConfig = {
   duration: 300,
 };
 
-function useShowLoadingState(isFetching) {
+function useShowLoadingState(isFetching: boolean) {
   const [isShow, setIsShow] = useState(false);
-  const timeout = useRef();
+  const timeout = useRef<NodeJS.Timeout | undefined>(undefined);
   useEffect(() => {
     if (isFetching) {
       timeout.current = setTimeout(() => setIsShow(isFetching), 500);
     } else {
-      clearTimeout(timeout.current);
+      if (timeout.current) {
+        clearTimeout(timeout.current);
+        timeout.current = undefined;
+      }
       setIsShow(isFetching);
     }
   }, [isFetching]);
@@ -112,9 +99,20 @@ const longPressGestureHandlerProps = {
   minDurationMs: 60,
 };
 
+type ChartProps = {
+  chartType: ChartType;
+  fetchingCharts: boolean;
+  isPool: boolean;
+  latestChange: SharedValue<string | undefined>;
+  updateChartType: (chartType: ChartType) => void;
+  showChart: boolean;
+  throttledData: any;
+  latestPrice: number;
+  asset: any;
+};
+
 export default function Chart({
   chartType,
-  color,
   fetchingCharts,
   isPool,
   latestChange,
@@ -123,13 +121,14 @@ export default function Chart({
   throttledData,
   latestPrice,
   asset,
-}) {
+}: ChartProps) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [chartType]);
 
-  const { progress } = useChartData();
+  const { progress, color } = useChartData();
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
 
+  const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
 
   const { setOptions } = useNavigation();
@@ -148,10 +147,13 @@ export default function Chart({
 
   const showLoadingState = useShowLoadingState(fetchingCharts);
 
-  const spinnerTimeout = useRef();
+  const spinnerTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
   useEffect(() => {
     if (showLoadingState) {
-      clearTimeout(spinnerTimeout.current);
+      if (spinnerTimeout.current) {
+        clearTimeout(spinnerTimeout.current);
+        spinnerTimeout.current = undefined;
+      }
       spinnerRotation.value = 0;
       spinnerRotation.value = withRepeat(withTiming(360, rotationConfig), -1, false);
       spinnerScale.value = withTiming(1, timingConfig);
@@ -174,7 +176,6 @@ export default function Chart({
       transform: [{ rotate: `${spinnerRotation.value}deg` }, { scale: spinnerScale.value }],
     };
   });
-  const isDOG = asset.address === DOG_ADDRESS;
 
   return (
     <Container>
@@ -184,13 +185,13 @@ export default function Chart({
         color={color}
         isPool={isPool}
         latestChange={latestChange}
-        latestPrice={latestPrice}
+        latestPrice={latestPrice.toString()}
         showChart={showChart}
       />
       <ChartContainer showChart={showChart}>
         {showChart && (
           <>
-            <Labels color={color} width={WIDTH} />
+            <Labels color={color} width={WIDTH} isCard={false} />
             <ChartPath
               fill="none"
               gestureEnabled={!fetchingCharts && !!throttledData}
@@ -205,9 +206,16 @@ export default function Chart({
               strokeWidth={3.5}
               width={WIDTH}
             />
-            <Dot color={colors.alpha(color, 0.03)} size={65}>
-              {isDOG ? <DogeDot /> : <InnerDot color={color} />}
-            </Dot>
+            <ChartDot
+              size={CHART_DOT_SIZE}
+              color={color}
+              dotStyle={{
+                shadowColor: isDarkMode ? colors.shadow : color,
+                shadowOffset: { height: 3, width: 0 },
+                shadowOpacity: 0.6,
+                shadowRadius: 4.5,
+              }}
+            />
             <Overlay style={overlayStyle}>
               <Animated.View style={spinnerStyle}>
                 <ChartSpinner color={color} />
