@@ -3,9 +3,10 @@ import * as i18n from '@/languages';
 import { Box } from '@/design-system';
 // import { MarketStatsCard } from './MarketStatsCard';
 import { AssetInfoList } from './AssetInfoList';
-import { CollapsibleSection } from '../../shared/CollapsibleSection';
+import { CollapsibleSection, LAYOUT_ANIMATION } from '../../shared/CollapsibleSection';
 import { SheetSeparator } from '../../shared/Separator';
 import { SectionId } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import Animated from 'react-native-reanimated';
 
 export const MarketStatsSection = memo(function MarketStatsSection() {
   {
@@ -15,7 +16,7 @@ export const MarketStatsSection = memo(function MarketStatsSection() {
     /*content={<MarketStatsCard />} */
   }
   return (
-    <Box gap={28}>
+    <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>
       <CollapsibleSection
         content={<AssetInfoList />}
         icon="􀑃"

@@ -12,8 +12,9 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
-import { CollapsibleSection } from '../shared/CollapsibleSection';
+import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
+import Animated from 'react-native-reanimated';
 
 const COIN_ROW_HEIGHT = 40;
 
@@ -96,7 +97,7 @@ export const ClaimSection = memo(function ClaimSection() {
   if (!claimable) return null;
 
   return (
-    <Box gap={28}>
+    <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>
       <CollapsibleSection
         content={<ClaimContent claimable={claimable} />}
         icon="􀑉"
