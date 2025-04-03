@@ -247,7 +247,7 @@ const shouldShowBuySection = (placement: Placement, isOwnedAsset: boolean, isBuy
   if (!isBuySectionVisible) {
     return false;
   }
-  return (placement === Placement.AFTER_BALANCE && isOwnedAsset) || (placement === Placement.AFTER_MARKET_STATS && !isOwnedAsset);
+  return (placement === Placement.AFTER_BALANCE && !isOwnedAsset) || (placement === Placement.AFTER_MARKET_STATS && isOwnedAsset);
 };
 
 export enum Placement {
