@@ -1,4 +1,4 @@
-import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';
@@ -197,6 +197,15 @@ export const event = {
   networkStatusReconnected: 'network_status.reconnected',
 } as const;
 
+export type QuickBuyAnalyticalData =
+  | {
+      assetUniqueId: UniqueId;
+      buyWithAssetUniqueId: UniqueId;
+      currencyAmount: number;
+      assetAmount: number;
+    }
+  | undefined;
+
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   type: T;
   isBridge: boolean;
@@ -218,6 +227,7 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   isSwappingToPopularAsset: boolean;
   isSwappingToTrendingAsset: boolean;
   isHardwareWallet: boolean;
+  quickBuyData?: QuickBuyAnalyticalData;
 };
 
 type SwapsEventFailedParameters<T extends 'swap' | 'crosschainSwap'> = {
