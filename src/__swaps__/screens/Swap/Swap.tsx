@@ -128,6 +128,7 @@ const useCleanupOnUnmount = () => {
         outputAsset: null,
         quote: null,
         selectedOutputChainId: parsedAsset?.chainId ?? preferredNetwork ?? ChainId.mainnet,
+        lastNavigatedTrendingToken: undefined,
       });
 
       useSwapsSearchStore.setState({ searchQuery: '' });

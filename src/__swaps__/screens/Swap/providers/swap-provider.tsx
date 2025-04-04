@@ -222,6 +222,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     return {
       isBridge: isBridge,
+      sectionId: outputAsset?.sectionId,
       inputAssetSymbol: inputAsset?.symbol || '',
       inputAssetName: inputAsset?.name || '',
       inputAssetAddress: inputAsset?.address as AddressOrEth,
@@ -411,11 +412,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         },
       });
     }
-
-    // reset the last navigated trending token after a swap has taken place
-    swapsStore.setState({
-      lastNavigatedTrendingToken: undefined,
-    });
   };
 
   const executeSwap = performanceTracking.getState().executeFn({
