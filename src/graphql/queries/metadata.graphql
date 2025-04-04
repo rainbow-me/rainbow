@@ -632,3 +632,17 @@ query trendingDApps($period: DAppRankingPeriod) {
     trending
   }
 }
+
+query interactionsWithToken($chainID: Int!, $address: String!, $tokenAddress: String!, $currency: String) {
+  tokenInteractions(chainID: $chainID, address: $address, tokenAddress: $tokenAddress, currency: $currency) {
+    interactedAt
+    chainID
+    direction
+    type
+    amount
+    price
+    transactionHash
+    explorerLabel
+    explorerURL
+  }
+}

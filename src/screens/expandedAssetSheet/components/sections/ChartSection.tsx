@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
+import { useWindowDimensions } from 'react-native';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ChartPathProvider } from '@/react-native-animated-charts/src/charts/linear/ChartPathProvider';
 import { Chart } from '@/components/value-chart';
@@ -7,7 +8,7 @@ import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analyticsV2 } from '@/analytics';
-import { useWindowDimensions } from 'react-native';
+import { Bleed } from '@/design-system';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
 const ANALYTICS_ROUTE_LOG_DELAY = 5 * 1000;
@@ -19,7 +20,7 @@ const calculatePercentChangeWorklet = (start: number, end: number) => {
   return toFixedWorklet(percent, 2);
 };
 
-export function ChartSection() {
+export const ChartSection = memo(function ChartSection() {
   const { width } = useWindowDimensions();
   const { basicAsset: asset, assetMetadata, accentColors } = useExpandedAssetSheetContext();
   const { chartType, color, fetchingCharts, updateChartType, showChart, throttledData } = useChartThrottledPoints({
@@ -66,18 +67,20 @@ export function ChartSection() {
   );
 
   return (
-    <ChartPathProvider data={throttledData} color={color} selectedColor={selectedColor} width={width} endPadding={32}>
-      <Chart
-        latestChange={latestChange}
-        latestPrice={asset.price.value ?? 0}
-        updateChartType={updateChartType}
-        asset={asset}
-        chartType={chartType}
-        fetchingCharts={fetchingCharts}
-        showChart={showChart}
-        throttledData={throttledData}
-        isPool={false}
-      />
-    </ChartPathProvider>
+    <Bleed horizontal="24px">
+      <ChartPathProvider data={throttledData} color={color} selectedColor={selectedColor} width={width} endPadding={32}>
+        <Chart
+          latestChange={latestChange}
+          latestPrice={asset.price.value ?? 0}
+          updateChartType={updateChartType}
+          asset={asset}
+          chartType={chartType}
+          fetchingCharts={fetchingCharts}
+          showChart={showChart}
+          throttledData={throttledData}
+          isPool={false}
+        />
+      </ChartPathProvider>
+    </Bleed>
   );
-}
+});

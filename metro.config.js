@@ -3,6 +3,7 @@ const blacklist = require('metro-config/src/defaults/exclusionList');
 const { getDefaultConfig } = require('expo/metro-config');
 const { mergeConfig } = require('@react-native/metro-config');
 const { withSentryConfig } = require('@sentry/react-native/metro');
+const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
 
 // Deny list is a function that takes an array of regexes and combines
 // them with the default blacklist to return a single regex.
@@ -80,6 +81,8 @@ const rainbowConfig = {
   transformer,
 };
 const config = mergeConfig(getDefaultConfig(__dirname), rainbowConfig);
-module.exports = withSentryConfig(config, {
+const sentryConfig = withSentryConfig(config, {
   annotateReactComponents: true,
 });
+
+module.exports = wrapWithReanimatedMetroConfig(sentryConfig);
