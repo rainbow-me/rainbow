@@ -372,11 +372,11 @@ const HistoryContent = memo(function HistoryContent({
   const isExpanded = useSharedValue(false);
 
   const buys = useMemo(() => {
-    return tokenInteractions?.filter(interaction => interaction.direction === TokenInteractionDirection.In);
+    return tokenInteractions?.filter(interaction => interaction.type === TokenInteractionType.Bought);
   }, [tokenInteractions]);
 
   const sells = useMemo(() => {
-    return tokenInteractions?.filter(interaction => interaction.direction === TokenInteractionDirection.Out);
+    return tokenInteractions?.filter(interaction => interaction.type === TokenInteractionType.Sold);
   }, [tokenInteractions]);
 
   const TABS = useMemo(() => {
