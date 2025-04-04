@@ -6072,15 +6072,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rnx-kit/align-deps@npm:2.2.4":
-  version: 2.2.4
-  resolution: "@rnx-kit/align-deps@npm:2.2.4"
-  bin:
-    rnx-align-deps: lib/index.js
-  checksum: 10c0/12dcd9a231c62e5fd7b3500d7c3081963818b6ef25eaafd5eced6ba105b69ffb43d9c76f932a96dee8f666c7d4a084c35ff778678fdee8c9bba34c86fcc75b6d
-  languageName: node
-  linkType: hard
-
 "@rnx-kit/chromium-edge-launcher@npm:^1.0.0":
   version: 1.0.0
   resolution: "@rnx-kit/chromium-edge-launcher@npm:1.0.0"
@@ -8772,7 +8763,6 @@ __metadata:
     "@react-navigation/stack": "npm:6.3.29"
     "@reown/walletkit": "npm:1.1.2"
     "@reservoir0x/reservoir-sdk": "npm:2.3.0"
-    "@rnx-kit/align-deps": "npm:2.2.4"
     "@rudderstack/rudder-sdk-react-native": "npm:2.0.0"
     "@sentry/react-native": "npm:5.35.0"
     "@shopify/flash-list": "npm:1.7.2"
@@ -8865,7 +8855,6 @@ __metadata:
     husky: "npm:8.0.1"
     i18n-js: "npm:3.8.0"
     idna-uts46-hx: "npm:3.4.0"
-    image-size: "npm:1.0.0"
     imgix-core-js: "npm:2.3.2"
     immer: "npm:9.0.6"
     inherits: "npm:2.0.4"
@@ -8891,7 +8880,7 @@ __metadata:
     punycode: "npm:1.4.1"
     qrcode: "npm:1.4.4"
     qs: "npm:6.9.7"
-    querystring-es3: "npm:~0.2.0"
+    querystring-es3: "npm:0.2.1"
     react: "npm:18.2.0"
     react-coin-icon: "rainbow-me/react-coin-icon#06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b"
     react-fast-compare: "npm:3.2.2"
@@ -16277,17 +16266,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"image-size@npm:1.0.0":
-  version: 1.0.0
-  resolution: "image-size@npm:1.0.0"
-  dependencies:
-    queue: "npm:6.0.2"
-  bin:
-    image-size: bin/image-size.js
-  checksum: 10c0/71b531ced2abef11e2a5ba77a533b9229aa10585d252154b039458265978172f890e82a210f5f4467bc7d8a5fe0a501251984a1a9caa66a1f65a6e8dcb136289
-  languageName: node
-  linkType: hard
-
 "image-size@npm:^1.0.2":
   version: 1.1.1
   resolution: "image-size@npm:1.1.1"
@@ -22001,7 +21979,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"querystring-es3@npm:~0.2.0":
+"querystring-es3@npm:0.2.1":
   version: 0.2.1
   resolution: "querystring-es3@npm:0.2.1"
   checksum: 10c0/476938c1adb45c141f024fccd2ffd919a3746e79ed444d00e670aad68532977b793889648980e7ca7ff5ffc7bfece623118d0fbadcaf217495eeb7059ae51580

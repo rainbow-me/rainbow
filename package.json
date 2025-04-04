@@ -208,7 +208,7 @@
     "punycode": "1.4.1",
     "qrcode": "1.4.4",
     "qs": "6.9.7",
-    "querystring-es3": "~0.2.0",
+    "querystring-es3": "0.2.1",
     "react": "18.2.0",
     "react-coin-icon": "rainbow-me/react-coin-icon#06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b",
     "react-fast-compare": "3.2.2",
