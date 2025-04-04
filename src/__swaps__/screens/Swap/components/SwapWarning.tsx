@@ -1,12 +1,14 @@
 import React from 'react';
 import Animated, { useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
-import { AnimatedText, Box, Inline } from '@/design-system';
+import { AnimatedText, Box } from '@/design-system';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SwapWarningType } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
 
 export const SwapWarning = () => {
   const { AnimatedSwapStyles, SwapWarning, isFetching } = useSwapContext();
+  const isDegenModeEnabled = useSwapsStore(s => s.degenMode);
 
   const warningTitle = useDerivedValue(() => {
     if (SwapWarning.swapWarning.value.type === SwapWarningType.none) {
@@ -49,22 +51,24 @@ export const SwapWarning = () => {
   return (
     <Box
       as={Animated.View}
-      alignItems="center"
+      alignItems={isDegenModeEnabled ? 'flex-start' : 'center'}
+      height={{ custom: 33 }}
+      gap={12}
       justifyContent="center"
-      paddingHorizontal="24px"
-      paddingVertical="16px"
-      style={[AnimatedSwapStyles.hideWhenInputsExpandedOrNoPriceImpact, { alignSelf: 'center', position: 'absolute', top: 8 }]}
+      style={AnimatedSwapStyles.hideWhenInputsExpanded}
     >
-      <Box as={Animated.View} alignItems="center" height={{ custom: 33 }} gap={12} justifyContent="center" paddingHorizontal="10px">
-        <Inline alignHorizontal="center" alignVertical="center" horizontalSpace="4px" wrap={false}>
-          <AnimatedText style={warningTitleStyles} align="center" size="15pt" weight="heavy">
-            {warningTitle}
-          </AnimatedText>
-        </Inline>
-        <AnimatedText style={warningSubtitleStyles} color="labelQuaternary" align="center" size="13pt" weight="bold">
-          {warningSubtitle}
-        </AnimatedText>
-      </Box>
+      <AnimatedText style={warningTitleStyles} align={isDegenModeEnabled ? 'left' : 'center'} size="15pt" weight="heavy">
+        {warningTitle}
+      </AnimatedText>
+      <AnimatedText
+        style={warningSubtitleStyles}
+        color="labelQuaternary"
+        align={isDegenModeEnabled ? 'left' : 'center'}
+        size="13pt"
+        weight="bold"
+      >
+        {warningSubtitle}
+      </AnimatedText>
     </Box>
   );
 };

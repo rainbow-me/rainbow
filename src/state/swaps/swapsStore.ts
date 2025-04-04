@@ -126,7 +126,7 @@ export const swapsStore = createRainbowStore<SwapsState>(
     source: 'auto',
     setSource: (source: Source | 'auto') => set({ source }),
 
-    degenMode: false,
+    degenMode: true,
     setDegenMode: (degenMode: boolean) => set({ degenMode }),
     preferredNetwork: undefined,
     setPreferredNetwork: (preferredNetwork: ChainId | undefined) => set({ preferredNetwork }),

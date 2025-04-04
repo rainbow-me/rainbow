@@ -137,3 +137,6 @@ src/references/networks.json
 .expo
 dist/
 web-build/
+
+# Sentry
+.sentry/
