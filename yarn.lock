@@ -6571,13 +6571,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@socket.io/component-emitter@npm:~3.1.0":
-  version: 3.1.2
-  resolution: "@socket.io/component-emitter@npm:3.1.2"
-  checksum: 10c0/c4242bad66f67e6f7b712733d25b43cbb9e19a595c8701c3ad99cbeb5901555f78b095e24852f862fffb43e96f1d8552e62def885ca82ae1bb05da3668fd87d7
-  languageName: node
-  linkType: hard
-
 "@stablelib/aead@npm:^1.0.1":
   version: 1.0.1
   resolution: "@stablelib/aead@npm:1.0.1"
@@ -8832,7 +8825,6 @@ __metadata:
     browserify-zlib: "npm:0.1.4"
     buffer: "npm:4.9.2"
     chai: "npm:4.2.0"
-    check-password-strength: "npm:2.0.7"
     chroma-js: "npm:2.1.0"
     cloudinary: "npm:1.27.1"
     conditional-wrap: "npm:1.0.2"
@@ -8877,7 +8869,6 @@ __metadata:
     imgix-core-js: "npm:2.3.2"
     immer: "npm:9.0.6"
     inherits: "npm:2.0.4"
-    is-valid-domain: "npm:0.1.2"
     jest: "npm:29.7.0"
     lint-staged: "npm:10.4.0"
     lodash: "npm:4.17.21"
@@ -8900,11 +8891,10 @@ __metadata:
     punycode: "npm:1.4.1"
     qrcode: "npm:1.4.4"
     qs: "npm:6.9.7"
-    querystring-es3: "npm:0.2.1"
+    querystring-es3: "npm:~0.2.0"
     react: "npm:18.2.0"
     react-coin-icon: "rainbow-me/react-coin-icon#06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b"
     react-fast-compare: "npm:3.2.2"
-    react-fast-memo: "npm:2.0.1"
     react-flatten-children: "npm:1.1.2"
     react-freeze: "npm:1.0.4"
     react-native: "npm:0.74.3"
@@ -8917,7 +8907,6 @@ __metadata:
     react-native-bootsplash: "npm:5.5.3"
     react-native-branch: "npm:5.3.1"
     react-native-change-icon: "npm:4.0.0"
-    react-native-circular-progress: "npm:1.3.8"
     react-native-cloud-fs: "rainbow-me/react-native-cloud-fs#d73f055c441566e5a57eebd621da8df3cf2499bb"
     react-native-crypto: "npm:2.2.0"
     react-native-dark-mode: "npm:0.2.2"
@@ -8993,7 +8982,6 @@ __metadata:
     rn-nodeify: "npm:10.2.0"
     schedule: "npm:0.5.0"
     smitter: "npm:1.1.1"
-    socket.io-client: "npm:4.5.3"
     sonner-native: "npm:0.16.0"
     stream-browserify: "npm:1.0.0"
     string.fromcodepoint: "npm:0.2.1"
@@ -9012,7 +9000,6 @@ __metadata:
     use-debounce: "npm:10.0.0"
     use-deep-compare: "npm:1.3.0"
     use-memo-one: "npm:1.1.1"
-    util: "npm:0.10.4"
     viem: "npm:2.21.54"
     vm-browserify: "npm:0.0.4"
     w2t: "npm:3.0.2"
@@ -11085,13 +11072,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"check-password-strength@npm:2.0.7":
-  version: 2.0.7
-  resolution: "check-password-strength@npm:2.0.7"
-  checksum: 10c0/32eb46d970b50a24c959fe041f3eb3c3d6e474bbab99d9d910f64442a60dbb5e91c7bdd165db1fd2cebb6d2e291f6e3b66af8c6066e30c913ab1f8e0cd3b971a
-  languageName: node
-  linkType: hard
-
 "child-process-promise@npm:^2.2.0":
   version: 2.2.1
   resolution: "child-process-promise@npm:2.2.1"
@@ -12302,7 +12282,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.0.0, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.2.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4, debug@npm:~4.3.1, debug@npm:~4.3.2":
+"debug@npm:4, debug@npm:^4.0.0, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.2.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4":
   version: 4.3.5
   resolution: "debug@npm:4.3.5"
   dependencies:
@@ -13275,26 +13255,6 @@ __metadata:
   dependencies:
     once: "npm:^1.4.0"
   checksum: 10c0/870b423afb2d54bb8d243c63e07c170409d41e20b47eeef0727547aea5740bd6717aca45597a9f2745525667a6b804c1e7bede41f856818faee5806dd9ff3975
-  languageName: node
-  linkType: hard
-
-"engine.io-client@npm:~6.2.3":
-  version: 6.2.3
-  resolution: "engine.io-client@npm:6.2.3"
-  dependencies:
-    "@socket.io/component-emitter": "npm:~3.1.0"
-    debug: "npm:~4.3.1"
-    engine.io-parser: "npm:~5.0.3"
-    ws: "npm:~8.2.3"
-    xmlhttprequest-ssl: "npm:~2.0.0"
-  checksum: 10c0/f0f336627c26ba2712480f247e50273c717b13969970c6abc633c26ef993f9aa69584636605f18c4ca1e853408ab7add430d73053193e41af451665cf615f7da
-  languageName: node
-  linkType: hard
-
-"engine.io-parser@npm:~5.0.3":
-  version: 5.0.7
-  resolution: "engine.io-parser@npm:5.0.7"
-  checksum: 10c0/5fa2c900f4c20c938698d72edde3596562365cb19db4b63a9888f884fdc571b67c04b8d6351bbcb031b4d02b44a4353be13d40a35b1a9050cc12ae75e95ae542
   languageName: node
   linkType: hard
 
@@ -17045,15 +17005,6 @@ __metadata:
   version: 1.2.4
   resolution: "is-url@npm:1.2.4"
   checksum: 10c0/0157a79874f8f95fdd63540e3f38c8583c2ef572661cd0693cda80ae3e42dfe8e9a4a972ec1b827f861d9a9acf75b37f7d58a37f94a8a053259642912c252bc3
-  languageName: node
-  linkType: hard
-
-"is-valid-domain@npm:0.1.2":
-  version: 0.1.2
-  resolution: "is-valid-domain@npm:0.1.2"
-  dependencies:
-    punycode: "npm:^2.1.1"
-  checksum: 10c0/b1aa84226f9e9e56f28b59edc473ce3a7578569ed4d79148b5b156829841156246fd30eb5139273962a232e673ad30f34e11b306fef3f01ce1ede643415b9a8f
   languageName: node
   linkType: hard
 
@@ -22050,7 +22001,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"querystring-es3@npm:0.2.1":
+"querystring-es3@npm:~0.2.0":
   version: 0.2.1
   resolution: "querystring-es3@npm:0.2.1"
   checksum: 10c0/476938c1adb45c141f024fccd2ffd919a3746e79ed444d00e670aad68532977b793889648980e7ca7ff5ffc7bfece623118d0fbadcaf217495eeb7059ae51580
@@ -22215,15 +22166,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-fast-memo@npm:2.0.1":
-  version: 2.0.1
-  resolution: "react-fast-memo@npm:2.0.1"
-  peerDependencies:
-    react: ^16 || ^17 || ^18
-  checksum: 10c0/9d9ffbe87862a8602e1c4003cdee69246417374f7bd2be6f765b04ebeae58119b64bfdcaf167eac0ca6f76ca66f033edc940f1a693620a5c9ec9d3f59ef6ff36
-  languageName: node
-  linkType: hard
-
 "react-flatten-children@npm:1.1.2":
   version: 1.1.2
   resolution: "react-flatten-children@npm:1.1.2"
@@ -22377,19 +22319,6 @@ __metadata:
   peerDependencies:
     react-native: "*"
   checksum: 10c0/385f87b4c7c3a2b0bda90b2e565938de49ebe8cd6510910bc789e82d55232ca33ac37c0eeb173bccb785dc71bcdf307ad698b17bdc360600ef7117e744c8ae7f
-  languageName: node
-  linkType: hard
-
-"react-native-circular-progress@npm:1.3.8":
-  version: 1.3.8
-  resolution: "react-native-circular-progress@npm:1.3.8"
-  dependencies:
-    prop-types: "npm:^15.8.1"
-  peerDependencies:
-    react: ">=16.0.0"
-    react-native: ">=0.50.0"
-    react-native-svg: ">=7.0.0"
-  checksum: 10c0/9b6b7ff6b2617d6f1dd59d38d767609404fb8530e2706696e1725ff4ceb1e260e788ebb3b13d180f62cca23fcce068f2ed1780d2e956439d0f52c27cb58c2f05
   languageName: node
   linkType: hard
 
@@ -24809,28 +24738,6 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"socket.io-client@npm:4.5.3":
-  version: 4.5.3
-  resolution: "socket.io-client@npm:4.5.3"
-  dependencies:
-    "@socket.io/component-emitter": "npm:~3.1.0"
-    debug: "npm:~4.3.2"
-    engine.io-client: "npm:~6.2.3"
-    socket.io-parser: "npm:~4.2.0"
-  checksum: 10c0/14d154f15c76dc4a2fd4e3853c04bd26ad250600ee94a4cd18d3d02dbfb3cb3412c0261897f4b0ced04216f66cb1c546e6f87b533df7c61f5bb071d62e2a1fbd
-  languageName: node
-  linkType: hard
-
-"socket.io-parser@npm:~4.2.0":
-  version: 4.2.4
-  resolution: "socket.io-parser@npm:4.2.4"
-  dependencies:
-    "@socket.io/component-emitter": "npm:~3.1.0"
-    debug: "npm:~4.3.1"
-  checksum: 10c0/9383b30358fde4a801ea4ec5e6860915c0389a091321f1c1f41506618b5cf7cd685d0a31c587467a0c4ee99ef98c2b99fb87911f9dfb329716c43b587f29ca48
-  languageName: node
-  linkType: hard
-
 "socks-proxy-agent@npm:^7.0.0":
   version: 7.0.0
   resolution: "socks-proxy-agent@npm:7.0.0"
@@ -27139,7 +27046,7 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"util@npm:0.10.4, util@npm:^0.10.3":
+"util@npm:^0.10.3":
   version: 0.10.4
   resolution: "util@npm:0.10.4"
   dependencies:
@@ -27823,21 +27730,6 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"ws@npm:~8.2.3":
-  version: 8.2.3
-  resolution: "ws@npm:8.2.3"
-  peerDependencies:
-    bufferutil: ^4.0.1
-    utf-8-validate: ^5.0.2
-  peerDependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  checksum: 10c0/5ef0f81cc5b8776fb5dd5504c83b4f49be5aa610f9319ff774158bba7db495127e69763d73085288223061e7a5d104d022e2e264346b36b046322f50057e7945
-  languageName: node
-  linkType: hard
-
 "xcode@npm:^3.0.1":
   version: 3.0.1
   resolution: "xcode@npm:3.0.1"
@@ -27921,13 +27813,6 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   version: 11.0.1
   resolution: "xmlbuilder@npm:11.0.1"
   checksum: 10c0/74b979f89a0a129926bc786b913459bdbcefa809afaa551c5ab83f89b1915bdaea14c11c759284bb9b931e3b53004dbc2181e21d3ca9553eeb0b2a7b4e40c35b
-  languageName: node
-  linkType: hard
-
-"xmlhttprequest-ssl@npm:~2.0.0":
-  version: 2.0.0
-  resolution: "xmlhttprequest-ssl@npm:2.0.0"
-  checksum: 10c0/b64ab371459bd5e3a4827e3c7535759047d285fd310aea6fd028973d547133f3be0d473c1fdae9f14d89bf509267759198ae1fbe89802079a7e217ddd990d734
   languageName: node
   linkType: hard
 
