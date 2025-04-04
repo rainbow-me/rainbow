@@ -268,13 +268,16 @@ const InfoButton = ({
     }
   };
 
-  const onPressAndroid = () =>
+  const onPressAndroid = () => {
+    const androidOptions = [
+      options.copy.title,
+      ...(isSupportedChain && options.blockExplorer?.title ? [options.blockExplorer?.title] : []),
+    ];
     showActionSheetWithOptions(
       {
-        options: [options.copy.title, ...(isSupportedChain ? [options.blockExplorer?.title] : [])],
-        showSeparators: true,
+        options: androidOptions,
       },
-      (idx: number) => {
+      idx => {
         if (idx === 0) {
           options.copy.action();
         }
@@ -283,6 +286,7 @@ const InfoButton = ({
         }
       }
     );
+  };
 
   return (
     <ContextMenuButton

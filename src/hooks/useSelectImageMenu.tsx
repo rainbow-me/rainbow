@@ -166,7 +166,7 @@ export default function useSelectImageMenu({
       {
         options: actionSheetOptions,
       },
-      async (buttonIndex: number) => {
+      async buttonIndex => {
         if (buttonIndex === 0) {
           isRemoved.current = false;
           handleSelectImage();

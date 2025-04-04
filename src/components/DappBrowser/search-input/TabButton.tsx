@@ -168,7 +168,8 @@ export const TabButton = React.memo(function TabButton({
         ...{ cancelButtonIndex: longPressMenuConfig.menuItems.length - 1 },
         options: longPressMenuConfig.menuItems.map(item => item?.actionTitle),
       },
-      (buttonIndex: number) => {
+      buttonIndex => {
+        if (buttonIndex === undefined) return;
         onPressMenuItem({ nativeEvent: { actionKey: longPressMenuConfig.menuItems[buttonIndex]?.actionKey as MenuActionKey } });
       }
     );

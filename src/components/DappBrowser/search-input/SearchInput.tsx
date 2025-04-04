@@ -187,7 +187,8 @@ const ThreeDotMenu = function ThreeDotMenu({ formattedUrlValue }: { formattedUrl
         ...{ cancelButtonIndex: menuConfig.menuItems.length - 1 },
         options: menuConfig.menuItems.map(item => item?.actionTitle),
       },
-      (buttonIndex: number) => {
+      buttonIndex => {
+        if (buttonIndex === undefined) return;
         onPressMenuItem({ nativeEvent: { actionKey: menuConfig.menuItems[buttonIndex]?.actionKey as MenuActionKey } });
       }
     );

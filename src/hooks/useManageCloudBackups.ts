@@ -87,8 +87,8 @@ export default function useManageCloudBackups() {
         options: buttons,
         title: getTitleForPlatform(),
       },
-      async (_buttonIndex: number) => {
-        if (_buttonIndex === 0) {
+      async buttonIndex => {
+        if (buttonIndex === 0) {
           showActionSheetWithOptions(
             {
               cancelButtonIndex: 1,
@@ -96,8 +96,8 @@ export default function useManageCloudBackups() {
               message: i18n.t(i18n.l.settings.confirm_delete_backups_description, { cloudPlatform }),
               options: [i18n.t(i18n.l.settings.confirm_delete_backups), i18n.t(i18n.l.button.cancel)],
             },
-            async (buttonIndex: any) => {
-              if (buttonIndex === 0) {
+            async nextButtonIndex => {
+              if (nextButtonIndex === 0) {
                 try {
                   let userPIN: string | undefined;
                   const hasBiometricsEnabled = await keychain.getSupportedBiometryType();
@@ -133,7 +133,7 @@ export default function useManageCloudBackups() {
           );
         }
 
-        if (_buttonIndex === 1 && IS_ANDROID) {
+        if (buttonIndex === 1 && IS_ANDROID) {
           logoutFromGoogleDrive();
           setAccountDetails(undefined);
           loginToGoogleDrive();

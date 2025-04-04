@@ -37,7 +37,7 @@ export const GoogleAccountSection: React.FC = () => {
           i18n.t(i18n.l.button.cancel),
         ],
       },
-      (buttonIndex: number) => {
+      buttonIndex => {
         if (buttonIndex === 0) {
           logoutFromGoogleDrive();
           setAccountDetails(undefined);

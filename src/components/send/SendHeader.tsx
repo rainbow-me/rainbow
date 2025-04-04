@@ -185,7 +185,7 @@ export default function SendHeader({
           lang.t('contacts.options.cancel'), // <-- cancelButtonIndex
         ],
       },
-      async (buttonIndex: number) => {
+      async buttonIndex => {
         if (buttonIndex === 0) {
           showDeleteContactActionSheet({
             address: hexAddress,
