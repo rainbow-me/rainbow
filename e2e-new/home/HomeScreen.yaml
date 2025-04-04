@@ -1,0 +1,20 @@
+appId: ${APP_ID}
+tags:
+  - home
+  - parallel
+---
+- clearState
+- launchApp:
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/ImportWalletWithKey.yaml
+- assertVisible:
+    id: 'avatar-button'
+- assertVisible:
+    id: 'buy-button'
+- assertVisible:
+    id: 'swap-button'
+- assertVisible:
+    id: 'send-button'
+- assertVisible:
+    id: 'receive-button'
