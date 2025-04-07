@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
-import { useWallets } from '@/hooks';
+import { useAccountProfile, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
@@ -211,6 +211,7 @@ function SendButton() {
 
 export function CopyButton() {
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
+  const { accountAddress } = useAccountProfile();
   const { isDamaged } = useWallets();
 
   const handlePressCopy = React.useCallback(() => {
