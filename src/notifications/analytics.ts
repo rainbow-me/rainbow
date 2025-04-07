@@ -1,4 +1,5 @@
-import { analytics, analyticsV2 } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
+import { event } from '@/analytics/event';
 import { MinimalNotification } from '@/notifications/types';
 import { getPermissionStatus } from '@/notifications/permissions';
 import messaging from '@react-native-firebase/messaging';
@@ -7,23 +8,19 @@ import {
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
   GroupSettings,
-  WalletNotificationRelationshipType,
   GlobalNotificationTopicType,
   WalletNotificationSettings,
   notificationSettingsStorage,
 } from '@/notifications/settings';
 
 export const trackTappedPushNotification = (notification: MinimalNotification | undefined) => {
-  analytics.track('Tapped Push Notification', {
-    campaign: {
-      name: notification?.data?.type ?? 'default',
-      medium: 'Push',
-    },
+  analyticsV2.track(event.notificationsPromoTapped, {
+    campaign: `${notification?.data?.type ?? 'default'}`,
   });
 };
 
 export const trackChangedGlobalNotificationSettings = (topic: GlobalNotificationTopicType, enableTopic: boolean) => {
-  analytics.track('Changed Global Notification Settings', {
+  analyticsV2.track(event.notificationsPromoNotificationSettingsChanged, {
     topic,
     action: enableTopic ? 'subscribe' : 'unsubscribe',
   });

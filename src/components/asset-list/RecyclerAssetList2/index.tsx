@@ -15,9 +15,10 @@ import { useTheme } from '@/theme';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
 import AndroidContextMenu from '@/components/context-menu/ContextMenu.android';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import lang from 'i18n-js';
 import { IS_ANDROID } from '@/env';
+import { event } from '@/analytics/event';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -81,9 +82,7 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
   const insets = useSafeAreaInsets();
 
   const handlePressQRCode = React.useCallback(() => {
-    analytics.track('Tapped "My QR Code"', {
-      category: 'home screen',
-    });
+    analyticsV2.track(event.navigationMyQrCode, { category: 'home screen' });
 
     navigate(Routes.RECEIVE_MODAL);
   }, [navigate]);

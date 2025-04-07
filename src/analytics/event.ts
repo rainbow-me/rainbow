@@ -11,6 +11,7 @@ import { AnyPerformanceLog, Screen } from '../state/performance/operations';
 import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
 import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { TokenLauncherAnalyticsParams } from '@/screens/token-launcher/state/tokenLauncherStore';
+import { ENSRegistrationTransactionType } from '../helpers/ens';
 
 /**
  * All events, used by `analytics.track()`
@@ -25,6 +26,14 @@ export const event = {
   promoSheetShown: 'promo_sheet.shown',
   promoSheetDismissed: 'promo_sheet.dismissed',
   swapSubmitted: 'Submitted Swap',
+  cardPressed: 'card.pressed',
+  learnArticleOpened: 'learn_article.opened',
+  learnArticleShared: 'learn_article.shared',
+  qrCodeViewed: 'qr_code.viewed',
+  buyButtonPressed: 'buy_button.pressed',
+  addWalletFlowStarted: 'add_wallet_flow.started',
+  sendMaxPressed: 'send.max_pressed',
+
   // notification promo sheet was shown
   notificationsPromoShown: 'notifications_promo.shown',
   // only for iOS — initial prompt is not allowed — Android is enabled by default
@@ -37,12 +46,9 @@ export const event = {
   notificationsPromoNotificationSettingsOpened: 'notifications_promo.notification_settings_opened',
   // user either swiped the sheet away, or clicked "Not Now"
   notificationsPromoDismissed: 'notifications_promo.dismissed',
-  cardPressed: 'card.pressed',
-  learnArticleOpened: 'learn_article.opened',
-  learnArticleShared: 'learn_article.shared',
-  qrCodeViewed: 'qr_code.viewed',
-  buyButtonPressed: 'buy_button.pressed',
-  addWalletFlowStarted: 'add_wallet_flow.started',
+  notificationsPromoNotificationSettingsChanged: 'notifications_promo.notification_settings_changed',
+  notificationsPromoTapped: 'notifications_promot.tapped',
+
   /**
    * Called either on click or during an open event callback. We want this as
    * early in the flow as possible.
@@ -146,6 +152,7 @@ export const event = {
   swapsFailed: 'swaps.failed',
   swapsSucceeded: 'swaps.succeeded',
   swapsQuoteFailed: 'swaps.quote_failed',
+  swapsGasUpdatedPrice: 'swaps.gas_updated_price',
 
   // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
@@ -195,6 +202,38 @@ export const event = {
   // network status
   networkStatusOffline: 'network_status.offline',
   networkStatusReconnected: 'network_status.reconnected',
+
+  // ens
+  ensInitiatedRegistration: 'ens.initiated_registration',
+  ensEditedRecords: 'ens.edited_records',
+  ensCompletedRegistration: 'ens.completed_registration',
+  ensExtended: 'ens.extended',
+  ensTransferredControl: 'ens.transferred_control',
+  ensSetPrimary: 'ens.set_primary',
+  ensRapFailed: 'ens.rap_failed',
+  ensRapStarted: 'ens.rap_started',
+  ensRapCompleted: 'ens.rap_completed',
+
+  // backup
+  backupError: 'backup.error',
+  backupSavedPassword: 'backup.saved_password',
+  backupSkippedPassword: 'backup.skipped_password',
+  backupComplete: 'backup.complete',
+  backupConfirmed: 'backup.confirmed',
+  backupSheetShown: 'backup.sheet_shown',
+  backupChoosePassword: 'backup.choose_password',
+
+  // QR code 
+  qrCodeScannedAddress: 'qr_code.scanned_address',
+  qrCodeScannedProfile: 'qr_code.scanned_profile',
+  qrCodeScannedWalletConnect: 'qr_code.scanned_wallet_connect',
+  qrCodeScannedInvalid: 'qr_code.scanned_invalid',
+
+  // navigation events
+  navigationAddCash: 'navigation.add_cash',
+  navigationSwap: 'navigation.swap',
+  navigationSend: 'navigation.send',
+  navigationMyQrCode: 'navigation.my_qr_code',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -263,6 +302,13 @@ export type EventProperties = {
   [event.notificationsPromoSystemSettingsOpened]: undefined;
   [event.notificationsPromoNotificationSettingsOpened]: undefined;
   [event.notificationsPromoDismissed]: undefined;
+  [event.notificationsPromoNotificationSettingsChanged]: {
+    topic: string;
+    action: string;
+  };
+  [event.notificationsPromoTapped]: {
+    campaign: string;
+  };
   [event.cardPressed]: {
     cardName: string;
     routeName: string;
@@ -580,7 +626,7 @@ export type EventProperties = {
     name: string;
   };
 
-  // swaps related events
+  // swaps 
   [event.swapsSelectedAsset]: {
     asset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
     otherAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
@@ -613,6 +659,8 @@ export type EventProperties = {
     outputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
     quote: Quote | CrosschainQuote | QuoteError | null;
   };
+
+  [event.swapsGasUpdatedPrice]: { gasPriceOption: string };
 
   [event.swapsSubmitted]: SwapEventParameters<'swap' | 'crosschainSwap'>;
   [event.swapsFailed]: SwapsEventFailedParameters<'swap' | 'crosschainSwap'>;
@@ -809,7 +857,38 @@ export type EventProperties = {
     url: string;
   };
 
-  // network status
   [event.networkStatusOffline]: undefined;
   [event.networkStatusReconnected]: undefined;
+
+  [event.sendMaxPressed]: undefined;
+
+  [event.ensInitiatedRegistration]: { category: string };
+  [event.ensEditedRecords]: { category: string };
+  [event.ensCompletedRegistration]: { category: string };
+  [event.ensExtended]: { category: string };
+  [event.ensTransferredControl]: { category: string };
+  [event.ensSetPrimary]: { category: string };
+  [event.ensRapFailed]: { category: string; failed_action: ENSRegistrationTransactionType; label: string };
+  [event.ensRapStarted]: { category: string; label: string };
+  [event.ensRapCompleted]: { category: string; label: string };
+
+  [event.backupError]: { category: string; error: string; label: string };
+  [event.backupSavedPassword]: undefined;
+  [event.backupSkippedPassword]: undefined;
+  [event.backupComplete]: { category: string; label: string };
+  [event.backupConfirmed]: undefined;
+  [event.backupSheetShown]: { category: string; label: string };
+  [event.backupChoosePassword]: { category: string; label: string };
+
+  [event.qrCodeScannedAddress]: undefined;
+  [event.qrCodeScannedProfile]: undefined;
+  [event.qrCodeScannedWalletConnect]: undefined;
+  [event.qrCodeScannedInvalid]: { qrCodeData: string };
+
+  [event.navigationAddCash]: { category: string };
+  [event.navigationSwap]: { category: string };
+  [event.navigationSend]: { category: string };
+  [event.navigationMyQrCode]: { category: string };
+} & {
+  // ... existing properties ...
 };

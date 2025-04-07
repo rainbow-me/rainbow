@@ -4,7 +4,8 @@ import { RainbowButton } from '../buttons';
 import { Column, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
-import { analytics } from '@/analytics';
+import { analytics, analyticsV2 } from '@/analytics';
+import { event } from '@/analytics/event';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { Bleed, Separator } from '@/design-system';
@@ -51,10 +52,7 @@ export default function BackupSheetSection({
 }: BackupSheetSectionProps) {
   const { colors } = useTheme();
   useEffect(() => {
-    analytics.track('BackupSheet shown', {
-      category: 'backup',
-      label: type,
-    });
+    analyticsV2.track(event.backupSheetShown, { category: 'backup', label: type });
   }, [type]);
 
   return (

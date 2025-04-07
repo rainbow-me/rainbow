@@ -2,7 +2,7 @@ import { Mutex } from 'async-mutex';
 import BigNumber from 'bignumber.js';
 import { isEmpty } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 import {
   BlocksToConfirmation,
@@ -41,6 +41,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { addBuffer } from '@/helpers/utilities';
 import { IS_TEST } from '@/env';
+import { event } from '@/analytics/event';
 
 const { CUSTOM, NORMAL, URGENT } = gasUtils;
 
@@ -492,7 +493,7 @@ export const gasUpdateGasFeeOption = (newGasPriceOption: string) => (dispatch: A
       payload: selectedGasFee,
       type: GAS_UPDATE_GAS_PRICE_OPTION,
     });
-    analytics.track('Updated Gas Price', { gasPriceOption: gasPriceOption });
+    analyticsV2.track(event.swapsGasUpdatedPrice, { gasPriceOption });
   });
 
 export const gasUpdateDefaultGasLimit =

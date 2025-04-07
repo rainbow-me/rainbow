@@ -6,7 +6,8 @@ import { ButtonPressAnimation } from '../animations';
 import { BubbleField } from '../fields';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
+import { event } from '@/analytics/event';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 
@@ -62,9 +63,9 @@ const SendAssetFormField = (
   const { isTinyPhone, isSmallPhone, width } = useDimensions();
   const { colors } = useTheme();
   const handlePressMax = useCallback(
-    event => {
-      analytics.track('Clicked "Max" in Send flow input');
-      onPressButton?.(event);
+    e => {
+      analyticsV2.track(event.sendMaxPressed);
+      onPressButton?.(e);
     },
     [onPressButton]
   );

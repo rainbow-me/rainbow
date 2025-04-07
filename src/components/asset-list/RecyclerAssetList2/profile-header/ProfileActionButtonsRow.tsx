@@ -12,13 +12,14 @@ import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import { useRecoilState } from 'recoil';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { event } from '@/analytics/event';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -149,9 +150,7 @@ function BuyButton() {
       return;
     }
 
-    analytics.track('Tapped "Add Cash"', {
-      category: 'home screen',
-    });
+    analyticsV2.track(event.navigationAddCash, { category: 'home screen' });
 
     navigate(Routes.ADD_CASH_SHEET);
   }, [isDamaged, navigate]);
@@ -171,9 +170,7 @@ function SwapButton() {
 
   const handlePress = React.useCallback(async () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      analytics.track('Tapped "Swap"', {
-        category: 'home screen',
-      });
+      analyticsV2.track(event.navigationSwap, { category: 'home screen' });
       swapsStore.setState({
         inputAsset: userAssetsStore.getState().getHighestValueNativeAsset(),
       });
@@ -194,14 +191,11 @@ function SwapButton() {
 
 function SendButton() {
   const { isReadOnlyWallet } = useWallets();
-
   const { navigate } = useNavigation();
 
   const handlePress = React.useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      analytics.track('Tapped "Send"', {
-        category: 'home screen',
-      });
+      analyticsV2.track(event.navigationSend, { category: 'home screen' });
 
       navigate(Routes.SEND_FLOW);
     } else {
@@ -218,7 +212,6 @@ function SendButton() {
 
 export function CopyButton() {
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
-  const { accountAddress } = useAccountProfile();
   const { isDamaged } = useWallets();
 
   const handlePressCopy = React.useCallback(() => {

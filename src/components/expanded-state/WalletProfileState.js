@@ -2,7 +2,8 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
-import { analytics } from '@/analytics';
+import { analytics, analyticsV2 } from '@/analytics';
+import { event } from '@/analytics/event';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { getWalletProfileMeta } from '@/helpers/walletProfileHandler';
 import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@/model/wallet';
@@ -38,14 +39,14 @@ export default function WalletProfileState({
   const handleCancel = useCallback(() => {
     onCancel?.();
     goBack();
-    analytics.track('Tapped "Cancel" on Wallet Profile modal');
+    analyticsV2.track(event.walletProfileCancelled);
     if (actionType === 'Create' && !isFromSettings) {
       navigate(Routes.CHANGE_WALLET_SHEET);
     }
   }, [actionType, goBack, navigate, onCancel, isFromSettings]);
 
   const handleSubmit = useCallback(async () => {
-    analytics.track('Tapped "Submit" on Wallet Profile modal');
+    analyticsV2.track(event.walletProfileSubmitted);
     onCloseModal({
       color: typeof nameColor === 'string' ? profileUtils.colorHexToIndex(nameColor) : nameColor,
       image: profileImage,

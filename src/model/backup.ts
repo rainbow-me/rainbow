@@ -18,7 +18,7 @@ import { allWalletsKey, pinKey, privateKeyKey, seedPhraseKey, selectedWalletKey,
 import * as keychain from '@/model/keychain';
 import * as kc from '@/keychain';
 import { AllRainbowWallets, createWallet, RainbowWallet } from './wallet';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_DEV } from '@/env';
 import AesEncryptor from '../handlers/aesEncryption';
@@ -36,6 +36,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { AppDispatch } from '@/redux/store';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { event } from '@/analytics/event';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
@@ -280,7 +281,7 @@ export async function backupAllWalletsToCloud({
       const userError = getUserError(error);
       onError?.(userError);
       captureException(error);
-      analytics.track(`Error backing up all wallets to ${cloudPlatform}`, {
+      analyticsV2.track(event.backupError, {
         category: 'backup',
         error: userError,
         label: cloudPlatform,
@@ -594,10 +595,10 @@ export async function saveBackupPassword(password: BackupPassword): Promise<void
   try {
     if (!IS_ANDROID) {
       await kc.setSharedWebCredentials('Backup Password', password);
-      analytics.track('Saved backup password on iCloud');
+      analyticsV2.track(event.backupSavedPassword);
     }
   } catch (e) {
-    analytics.track("Didn't save backup password on iCloud");
+    analyticsV2.track(event.backupSkippedPassword);
   }
 }
 
