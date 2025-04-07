@@ -140,29 +140,3 @@ export class Analytics {
  * review this directory's files for more information.
  */
 export const analyticsV2 = new Analytics();
-
-// Wrapper around the rudderClient to prevent CI from logging analytics
-class AnalyticsDeprecated {
-  client: typeof rudderClient;
-  disabled: boolean;
-
-  constructor() {
-    this.client = rudderClient;
-    this.disabled = IS_TEST || !!device.get(['doNotTrack']);
-  }
-
-  track(event: string, properties?: Record<string, unknown> | null, options?: Record<string, unknown> | null) {
-    if (this.disabled) return;
-    this.client.track(event, properties, options);
-  }
-
-  screen(name: string, properties?: Record<string, unknown> | null, options?: Record<string, unknown> | null): void {
-    if (this.disabled) return;
-    this.client.screen(name, properties, options);
-  }
-}
-
-/**
- * @deprecated Use the `analyticsV2` export from this same file
- */
-export const analytics = new AnalyticsDeprecated();
