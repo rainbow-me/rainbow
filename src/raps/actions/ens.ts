@@ -1,6 +1,6 @@
 import { Signer } from '@ethersproject/abstract-signer';
 import { ENSActionParameters, ENSRap, ENSRapActionType, RapENSAction, RapENSActionParameters } from '@/raps/common';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { ENSRegistrationRecords, NewTransaction, TransactionGasParamAmounts, TransactionStatus } from '@/entities';
 import { estimateENSTransactionGasLimit, formatRecordsForTransaction } from '@/handlers/ens';
@@ -387,13 +387,13 @@ const ensAction = async (
             salt,
           })
         );
-        analyticsV2.track(event.ensInitiatedRegistration, {
+        analytics.track(event.ensInitiatedRegistration, {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.MULTICALL:
         tx = await executeMulticall(name, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
-        analyticsV2.track(event.ensEditedRecords, {
+        analytics.track(event.ensEditedRecords, {
           category: 'profiles',
         });
         break;
@@ -415,43 +415,43 @@ const ensAction = async (
             registerTransactionHash: tx?.hash,
           })
         );
-        analyticsV2.track(event.ensCompletedRegistration, {
+        analytics.track(event.ensCompletedRegistration, {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.RENEW:
         tx = await executeRenew(name, duration, ownerAddress, rentPrice, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
-        analyticsV2.track(event.ensExtended, {
+        analytics.track(event.ensExtended, {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.SET_TEXT:
         tx = await executeSetText(name, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
-        analyticsV2.track(event.ensEditedRecords, {
+        analytics.track(event.ensEditedRecords, {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.SET_CONTENTHASH:
         tx = await executeSetContenthash(name, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
-        analyticsV2.track(event.ensEditedRecords, {
+        analytics.track(event.ensEditedRecords, {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.SET_ADDR:
         tx = await executeSetAddr(name, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
-        analyticsV2.track(event.ensEditedRecords, {
+        analytics.track(event.ensEditedRecords, {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.RECLAIM:
         tx = await executeReclaim(name, toAddress, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
-        analyticsV2.track(event.ensTransferredControl, {
+        analytics.track(event.ensTransferredControl, {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.SET_NAME:
         tx = await executeSetName(name, ownerAddress, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
-        analyticsV2.track(event.ensSetPrimary, {
+        analytics.track(event.ensSetPrimary, {
           category: 'profiles',
         });
     }
@@ -683,7 +683,7 @@ const executeAction = async (
     return { baseNonce: nonce, errorMessage: null };
   } catch (error: any) {
     logger.error(new RainbowError(`[raps/ens]: [${rapName}] Error executing action: ${action} ${error}`));
-    analyticsV2.track(event.ensRapFailed, {
+    analytics.track(event.ensRapFailed, {
       category: 'raps',
       failed_action: type,
       label: rapName,
@@ -712,7 +712,7 @@ export const executeENSRap = async (
   const { actions } = rap;
   const rapName = getRapFullName(actions);
 
-  analyticsV2.track(event.ensRapStarted, {
+  analytics.track(event.ensRapStarted, {
     category: 'raps',
     label: rapName,
   });
@@ -737,7 +737,7 @@ export const executeENSRap = async (
     }
   }
 
-  analyticsV2.track(event.ensRapCompleted, {
+  analytics.track(event.ensRapCompleted, {
     category: 'raps',
     label: rapName,
   });

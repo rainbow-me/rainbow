@@ -13,7 +13,7 @@ import usePrevious from './usePrevious';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics, analyticsV2 } from '@/analytics';
+import { analytics, analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
@@ -157,7 +157,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           setBusy(false);
 
           if (type === 'watch') {
-            analyticsV2.track(analyticsV2.event.watchWallet, {
+            analytics.track(analytics.event.watchWallet, {
               addressOrEnsName: input, // ENS name
               address,
             });
@@ -187,7 +187,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           setBusy(false);
 
           if (type === 'watch') {
-            analyticsV2.track(analyticsV2.event.watchWallet, {
+            analytics.track(analytics.event.watchWallet, {
               addressOrEnsName: input, // unstoppable domain name
               address,
             });
@@ -227,7 +227,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         setBusy(false);
 
         if (type === 'watch') {
-          analyticsV2.track(analyticsV2.event.watchWallet, {
+          analytics.track(analytics.event.watchWallet, {
             addressOrEnsName: ens,
             address: input,
           });
@@ -257,7 +257,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             setBusy(false);
 
             if (type === 'watch') {
-              analyticsV2.track(analyticsV2.event.watchWallet, {
+              analytics.track(analytics.event.watchWallet, {
                 addressOrEnsName: ens,
                 address: input,
               });

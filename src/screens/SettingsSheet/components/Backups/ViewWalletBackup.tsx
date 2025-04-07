@@ -28,7 +28,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { createAccountForWallet } from '@/redux/wallets';
@@ -169,7 +169,7 @@ const ViewWalletBackup = () => {
 
   const onCreateNewWallet = useCallback(async () => {
     try {
-      analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+      analytics.track(analytics.event.addWalletFlowStarted, {
         isFirstWallet: false,
         type: 'new',
       });

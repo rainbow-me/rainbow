@@ -9,7 +9,7 @@ import { Alert } from '../components/alerts';
 import useExperimentalFlag, { PROFILES } from '../config/experimentalHooks';
 import { useNavigation } from '../navigation/Navigation';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
 import { Navigation } from '@/navigation';
@@ -53,7 +53,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const handleScanAddress = useCallback(
     async (address: string) => {
       haptics.notificationSuccess();
-      analyticsV2.track(event.qrCodeScannedAddress);
+      analytics.track(event.qrCodeScannedAddress);
       const ensName = isENSAddressFormat(address) ? address : await fetchReverseRecordWithRetry(address);
       // First navigate to wallet screen
       navigate(Routes.WALLET_SCREEN);
@@ -74,7 +74,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const handleScanRainbowProfile = useCallback(
     async (url: string) => {
       haptics.notificationSuccess();
-      analyticsV2.track(event.qrCodeScannedProfile);
+      analytics.track(event.qrCodeScannedProfile);
 
       const urlObj = new URL(url);
       const addressOrENS = urlObj.pathname?.split('/profile/')?.[1] || '';
@@ -101,7 +101,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const handleScanWalletConnect = useCallback(
     async (uri: string, connector?: string) => {
       haptics.notificationSuccess();
-      analyticsV2.track(event.qrCodeScannedWalletConnect);
+      analytics.track(event.qrCodeScannedWalletConnect);
       await checkPushNotificationPermissions();
       goBack();
       onSuccess();
@@ -120,7 +120,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const handleScanInvalid = useCallback(
     (qrCodeData: string) => {
       haptics.notificationError();
-      analyticsV2.track(event.qrCodeScannedInvalid, { qrCodeData });
+      analytics.track(event.qrCodeScannedInvalid, { qrCodeData });
 
       Alert({
         buttons: [{ onPress: enableScanning, text: lang.t('button.okay') }],

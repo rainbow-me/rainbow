@@ -9,7 +9,7 @@ import { useTheme } from '@/theme';
 import { Colors } from '../styles/colors';
 import { Box } from '@/design-system';
 import { useRoute } from '@react-navigation/native';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: { colors: Colors } }) => ({
   align: 'center',
@@ -27,7 +27,7 @@ const WalletConnectRedirectSheet = () => {
   const { params } = useRoute();
 
   useEffect(() => {
-    analyticsV2.track(analyticsV2.event.wcRequestFailed, {
+    analytics.track(analytics.event.wcRequestFailed, {
       type: 'dapp browser',
       reason: 'tried to connect with WalletConnect in the dapp browser',
     });

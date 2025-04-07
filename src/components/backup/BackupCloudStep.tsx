@@ -9,7 +9,7 @@ import { cloudPlatform } from '@/utils/platform';
 import { PasswordField } from '@/components/fields';
 import { Text } from '@/components/text';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid } from '@/handlers/cloudBackup';
 import { useDimensions, useMagicAutofocus } from '@/hooks';
@@ -60,7 +60,7 @@ export function BackupCloudStep() {
     setTimeout(() => {
       passwordRef.current?.focus();
     }, 1);
-    analyticsV2.track(event.backupChoosePassword, { category: 'backup', label: cloudPlatform });
+    analytics.track(event.backupChoosePassword, { category: 'backup', label: cloudPlatform });
   }, []);
 
   const { handleFocus } = useMagicAutofocus(passwordRef);

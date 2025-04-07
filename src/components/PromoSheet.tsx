@@ -4,7 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
 import { CampaignKey } from '@/components/remote-promo-sheet/localCampaignChecks';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Stack, Text, Bleed, Column, Columns, useForegroundColor } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
@@ -62,7 +62,7 @@ export function PromoSheet({
     () => () => {
       if (!activated) {
         const timeElapsed = (Date.now() - renderedAt) / 1000;
-        analyticsV2.track(analyticsV2.event.promoSheetDismissed, {
+        analytics.track(analytics.event.promoSheetDismissed, {
           campaign: campaignKey,
           time_viewed: timeElapsed,
         });
@@ -74,7 +74,7 @@ export function PromoSheet({
   const primaryButtonOnPress = useCallback(() => {
     activate();
     const timeElapsed = (Date.now() - renderedAt) / 1000;
-    analyticsV2.track(analyticsV2.event.promoSheetShown, {
+    analytics.track(analytics.event.promoSheetShown, {
       campaign: campaignKey,
       time_viewed: timeElapsed,
     });

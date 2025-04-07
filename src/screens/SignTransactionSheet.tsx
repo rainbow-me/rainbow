@@ -39,7 +39,7 @@ import {
 
 import { loadWallet, sendTransaction, signPersonalMessage, signTransaction, signTypedDataMessage } from '@/model/wallet';
 
-import { analyticsV2 as analytics } from '@/analytics';
+import { analytics as analytics } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
 import { isAddress } from '@ethersproject/address';
 import { addNewTransaction } from '@/state/pendingTransactions';

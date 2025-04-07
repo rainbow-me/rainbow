@@ -27,7 +27,7 @@ import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from
 import { ChainId } from '@/state/backendNetworks/types';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { clamp, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -331,7 +331,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       if (errorMessage) {
         SwapInputController.quoteFetchingInterval.start();
 
-        analyticsV2.track(analyticsV2.event.swapsFailed, {
+        analytics.track(analytics.event.swapsFailed, {
           ...getCommonAnalyticsParameters(),
           type,
           inputAssetAmount: parameters.quote.sellAmount as number,
@@ -387,7 +387,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         },
       })();
 
-      analyticsV2.track(analyticsV2.event.swapsSubmitted, {
+      analytics.track(analytics.event.swapsSubmitted, {
         ...getCommonAnalyticsParameters(),
         type,
         inputAssetAmount: parameters.quote.sellAmount as number,
@@ -682,7 +682,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       logger.debug(`[setAsset]: Setting ${type} asset to ${extendedAsset?.name} on ${extendedAsset?.chainId}`);
 
-      analyticsV2.track(analyticsV2.event.swapsSelectedAsset, {
+      analytics.track(analytics.event.swapsSelectedAsset, {
         asset,
         otherAsset: otherSelectedAsset,
         type,

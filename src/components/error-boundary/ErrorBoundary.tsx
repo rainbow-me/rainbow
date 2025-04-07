@@ -3,15 +3,15 @@ import * as Sentry from '@sentry/react-native';
 import Fallback from './Fallback';
 import { IS_TEST } from '@/env';
 import { useTheme } from '@/theme';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 const NoErrorBoundary = ({ children }: { children: React.ReactNode }) => children;
 
 function onReset(error: Error | null) {
-  analyticsV2.track(analyticsV2.event.errorBoundaryReset, { error });
+  analytics.track(analytics.event.errorBoundaryReset, { error });
 }
 function onError(error: Error | null) {
-  analyticsV2.track(analyticsV2.event.errorBoundary, { error });
+  analytics.track(analytics.event.errorBoundary, { error });
 }
 
 const ErrorBoundaryWithSentry = ({ children }: { children: React.ReactNode }) => {

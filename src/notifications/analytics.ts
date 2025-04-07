@@ -1,4 +1,4 @@
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { MinimalNotification } from '@/notifications/types';
 import { getPermissionStatus } from '@/notifications/permissions';
@@ -14,20 +14,20 @@ import {
 } from '@/notifications/settings';
 
 export const trackTappedPushNotification = (notification: MinimalNotification | undefined) => {
-  analyticsV2.track(event.notificationsPromoTapped, {
+  analytics.track(event.notificationsPromoTapped, {
     campaign: `${notification?.data?.type ?? 'default'}`,
   });
 };
 
 export const trackChangedGlobalNotificationSettings = (topic: GlobalNotificationTopicType, enableTopic: boolean) => {
-  analyticsV2.track(event.notificationsPromoNotificationSettingsChanged, {
+  analytics.track(event.notificationsPromoNotificationSettingsChanged, {
     topic,
     action: enableTopic ? 'subscribe' : 'unsubscribe',
   });
 };
 
 export const trackPushNotificationPermissionStatus = async (status: PushNotificationPermissionStatus) => {
-  analyticsV2.identify({ notificationsPermissionStatus: status });
+  analytics.identify({ notificationsPermissionStatus: status });
 };
 
 type PushNotificationPermissionStatus = 'enabled' | 'disabled' | 'never asked';
@@ -121,7 +121,7 @@ const countWalletsWithNotificationsTurnedOn = (wallets: WalletNotificationSettin
 };
 
 const trackNumberOfWalletsWithNotificationsTurnedOn = async (imported: number, watched: number) => {
-  analyticsV2.identify({
+  analytics.identify({
     numberOfImportedWalletsWithNotificationsTurnedOn: imported,
     numberOfWatchedWalletsWithNotificationsTurnedOn: watched,
   });

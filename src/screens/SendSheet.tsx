@@ -10,7 +10,7 @@ import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../co
 import { SheetActionButton } from '../components/sheet';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics, analyticsV2 } from '@/analytics';
+import { analytics, analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetTypes, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
@@ -902,7 +902,7 @@ export default function SendSheet() {
       if (!asset.icon_url) params.no_icon += 1;
       if (!asset.price?.relative_change_24h) params.no_price += 1;
     }
-    analyticsV2.track(analyticsV2.event.tokenList, params);
+    analytics.track(analytics.event.tokenList, params);
   }, [isLoadingUserAssets, sortedAssets]);
 
   const sendContactListDataKey = useMemo(() => `${ensSuggestions?.[0]?.address || '_'}`, [ensSuggestions]);

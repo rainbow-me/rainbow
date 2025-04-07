@@ -8,7 +8,7 @@ import { convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpe
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { View } from 'react-native';
@@ -128,7 +128,7 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   return (
     <ButtonPressAnimation
       onPress={() => {
-        analyticsV2.track(analyticsV2.event.nftOffersOpenedSingleOfferSheet, {
+        analytics.track(analytics.event.nftOffersOpenedSingleOfferSheet, {
           entryPoint: 'NFTOffersSheet',
           offerValueUSD: offer.grossAmount.usd,
           offerValue: offer.grossAmount.decimal,

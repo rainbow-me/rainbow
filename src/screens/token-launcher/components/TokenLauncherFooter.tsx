@@ -35,7 +35,7 @@ import { useTokenLauncher } from '@/hooks/useTokenLauncher';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 import showWalletErrorAlert from '@/helpers/support';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
@@ -80,7 +80,7 @@ function HoldToCreateButton() {
       logger.error(new RainbowError('[TokenLauncher]: Error Loading Wallet'), {
         message: error.message,
       });
-      analyticsV2.track(analyticsV2.event.tokenLauncherWalletLoadFailed, {
+      analytics.track(analytics.event.tokenLauncherWalletLoadFailed, {
         error: error.message,
       });
       setIsProcessing(false);
@@ -189,7 +189,7 @@ function ShareButton() {
                 url,
               }
         );
-        analyticsV2.track(analyticsV2.event.tokenLauncherSharePressed, {
+        analytics.track(analytics.event.tokenLauncherSharePressed, {
           address: launchedTokenAddress,
           url,
           ...getAnalyticsParams(),

@@ -139,4 +139,4 @@ export class Analytics {
  * Our core analytics tracking client. See individual methods for docs, and
  * review this directory's files for more information.
  */
-export const analyticsV2 = new Analytics();
+export const analytics = new Analytics();

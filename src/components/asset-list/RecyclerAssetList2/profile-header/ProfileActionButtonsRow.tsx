@@ -12,7 +12,7 @@ import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useRecoilState } from 'recoil';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
@@ -150,7 +150,7 @@ function BuyButton() {
       return;
     }
 
-    analyticsV2.track(event.navigationAddCash, { category: 'home screen' });
+    analytics.track(event.navigationAddCash, { category: 'home screen' });
 
     navigate(Routes.ADD_CASH_SHEET);
   }, [isDamaged, navigate]);
@@ -170,7 +170,7 @@ function SwapButton() {
 
   const handlePress = React.useCallback(async () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      analyticsV2.track(event.navigationSwap, { category: 'home screen' });
+      analytics.track(event.navigationSwap, { category: 'home screen' });
       swapsStore.setState({
         inputAsset: userAssetsStore.getState().getHighestValueNativeAsset(),
       });
@@ -195,7 +195,7 @@ function SendButton() {
 
   const handlePress = React.useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      analyticsV2.track(event.navigationSend, { category: 'home screen' });
+      analytics.track(event.navigationSend, { category: 'home screen' });
 
       navigate(Routes.SEND_FLOW);
     } else {

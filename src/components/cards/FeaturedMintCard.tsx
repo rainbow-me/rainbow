@@ -24,7 +24,7 @@ import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/ut
 import { View } from 'react-native';
 import { IS_IOS } from '@/env';
 import { Media } from '../Media';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 
@@ -66,7 +66,7 @@ export function FeaturedMintCard() {
 
   const handlePress = useCallback(() => {
     if (featuredMint) {
-      analyticsV2.track(analyticsV2.event.mintsPressedFeaturedMintCard, {
+      analytics.track(analytics.event.mintsPressedFeaturedMintCard, {
         contractAddress: featuredMint.contractAddress,
         chainId: featuredMint.chainId,
         totalMints: featuredMint.totalMints,

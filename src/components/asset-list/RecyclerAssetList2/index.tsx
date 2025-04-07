@@ -15,7 +15,7 @@ import { useTheme } from '@/theme';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
 import AndroidContextMenu from '@/components/context-menu/ContextMenu.android';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import lang from 'i18n-js';
 import { IS_ANDROID } from '@/env';
 import { event } from '@/analytics/event';
@@ -82,7 +82,7 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
   const insets = useSafeAreaInsets();
 
   const handlePressQRCode = React.useCallback(() => {
-    analyticsV2.track(event.navigationMyQrCode, { category: 'home screen' });
+    analytics.track(event.navigationMyQrCode, { category: 'home screen' });
 
     navigate(Routes.RECEIVE_MODAL);
   }, [navigate]);

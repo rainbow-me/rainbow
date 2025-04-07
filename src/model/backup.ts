@@ -18,7 +18,7 @@ import { allWalletsKey, pinKey, privateKeyKey, seedPhraseKey, selectedWalletKey,
 import * as keychain from '@/model/keychain';
 import * as kc from '@/keychain';
 import { AllRainbowWallets, createWallet, RainbowWallet } from './wallet';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_DEV } from '@/env';
 import AesEncryptor from '../handlers/aesEncryption';
@@ -281,7 +281,7 @@ export async function backupAllWalletsToCloud({
       const userError = getUserError(error);
       onError?.(userError);
       captureException(error);
-      analyticsV2.track(event.backupError, {
+      analytics.track(event.backupError, {
         category: 'backup',
         error: userError,
         label: cloudPlatform,
@@ -595,10 +595,10 @@ export async function saveBackupPassword(password: BackupPassword): Promise<void
   try {
     if (!IS_ANDROID) {
       await kc.setSharedWebCredentials('Backup Password', password);
-      analyticsV2.track(event.backupSavedPassword);
+      analytics.track(event.backupSavedPassword);
     }
   } catch (e) {
-    analyticsV2.track(event.backupSkippedPassword);
+    analytics.track(event.backupSkippedPassword);
   }
 }
 

@@ -11,7 +11,7 @@ import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 import { NeonButton } from '../../components/NeonButton';
 import { LineBreak } from '../../components/LineBreak';
 import { Bleed, Box, Inline, Stack } from '@/design-system';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 export const Share = () => {
@@ -58,7 +58,7 @@ export const Share = () => {
               color="#F5F8FF8F"
               label={i18n.t(i18n.l.points.console.skip_referral)}
               onPress={() => {
-                analyticsV2.track(analyticsV2.event.pointsOnboardingScreenPressedSkipShareToXButton);
+                analytics.track(analytics.event.pointsOnboardingScreenPressedSkipShareToXButton);
                 const beginNextPhase = setTimeout(() => {
                   setAnimationKey(prevKey => prevKey + 1);
                   setStep(RainbowPointsFlowSteps.Review);
@@ -71,7 +71,7 @@ export const Share = () => {
               color="#FEC101"
               label={i18n.t(i18n.l.points.console.share_to_x)}
               onPress={() => {
-                analyticsV2.track(analyticsV2.event.pointsOnboardingScreenPressedShareToXButton);
+                analytics.track(analytics.event.pointsOnboardingScreenPressedShareToXButton);
                 const beginNextPhase = setTimeout(async () => {
                   if (intent) {
                     openInBrowser(intent, false);

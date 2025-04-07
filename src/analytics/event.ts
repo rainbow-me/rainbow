@@ -223,7 +223,7 @@ export const event = {
   backupSheetShown: 'backup.sheet_shown',
   backupChoosePassword: 'backup.choose_password',
 
-  // QR code 
+  // QR code
   qrCodeScannedAddress: 'qr_code.scanned_address',
   qrCodeScannedProfile: 'qr_code.scanned_profile',
   qrCodeScannedWalletConnect: 'qr_code.scanned_wallet_connect',
@@ -626,7 +626,7 @@ export type EventProperties = {
     name: string;
   };
 
-  // swaps 
+  // swaps
   [event.swapsSelectedAsset]: {
     asset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
     otherAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;

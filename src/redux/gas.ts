@@ -2,7 +2,7 @@ import { Mutex } from 'async-mutex';
 import BigNumber from 'bignumber.js';
 import { isEmpty } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 import {
   BlocksToConfirmation,
@@ -493,7 +493,7 @@ export const gasUpdateGasFeeOption = (newGasPriceOption: string) => (dispatch: A
       payload: selectedGasFee,
       type: GAS_UPDATE_GAS_PRICE_OPTION,
     });
-    analyticsV2.track(event.swapsGasUpdatedPrice, { gasPriceOption });
+    analytics.track(event.swapsGasUpdatedPrice, { gasPriceOption });
   });
 
 export const gasUpdateDefaultGasLimit =
