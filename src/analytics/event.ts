@@ -626,7 +626,8 @@ export type EventProperties = {
     name: string;
   };
 
-  // swaps
+  // swaps related events
+  [event.swapsGasUpdatedPrice]: { gasPriceOption: string };
   [event.swapsSelectedAsset]: {
     asset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
     otherAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
@@ -659,8 +660,6 @@ export type EventProperties = {
     outputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
     quote: Quote | CrosschainQuote | QuoteError | null;
   };
-
-  [event.swapsGasUpdatedPrice]: { gasPriceOption: string };
 
   [event.swapsSubmitted]: SwapEventParameters<'swap' | 'crosschainSwap'>;
   [event.swapsFailed]: SwapsEventFailedParameters<'swap' | 'crosschainSwap'>;
