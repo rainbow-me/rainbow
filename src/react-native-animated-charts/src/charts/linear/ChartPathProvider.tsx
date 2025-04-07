@@ -42,13 +42,6 @@ function getCurveType(curveType: keyof typeof CurveType | undefined) {
   }
 }
 
-function detectFlatData(yValues: number[]): boolean {
-  if (!yValues.length) return false;
-
-  const firstY = yValues[0];
-  return yValues.every(y => Math.abs(y - firstY) < 0.000000001);
-}
-
 function detectStablecoin(yValues: number[]): boolean {
   if (!yValues.length) return false;
 
@@ -60,16 +53,6 @@ function detectStablecoin(yValues: number[]): boolean {
   return closeToOneCount / yValues.length > 0.95;
 }
 
-function detectNearlyFlatData(yValues: number[]): boolean {
-  if (!yValues.length) return false;
-
-  const minY = Math.min(...yValues);
-  const maxY = Math.max(...yValues);
-
-  const percentChange = minY > 0 ? ((maxY - minY) / minY) * 100 : 0;
-  return percentChange < 0.1;
-}
-
 function getScales({ data, width, height, yRange }: CallbackType): PathScales {
   const x = data.points.map(item => item.x);
   const y = data.points.map(item => item.y);
@@ -77,32 +60,20 @@ function getScales({ data, width, height, yRange }: CallbackType): PathScales {
   const smallestX = Math.min(...x);
   const greatestX = Math.max(...x);
 
-  const isFlat = detectFlatData(y);
-  const isNearlyFlat = detectNearlyFlatData(y);
   const isStablecoin = detectStablecoin(y);
 
   let smallestY, greatestY;
 
   if (Array.isArray(yRange)) {
-    // Use provided yRange if available
     smallestY = yRange[0];
     greatestY = yRange[1];
-  } else if (isFlat || isNearlyFlat) {
-    // For flat or nearly flat data, add padding to prevent spikes
-    const avgY = y.reduce((sum, val) => sum + val, 0) / y.length;
-    // Add 0.5% padding above and below for flat data
-    const padding = avgY * 0.005;
-    smallestY = avgY - padding;
-    greatestY = avgY + padding;
   } else if (isStablecoin) {
     smallestY = Math.round(Math.min(...y));
     greatestY = Math.round(Math.max(...y));
   } else {
-    // For non-flat data, use actual min/max with minimal padding
     smallestY = Math.min(...y);
     greatestY = Math.max(...y);
 
-    // Add a small padding (0.5%) to prevent data from touching edges
     const range = greatestY - smallestY;
     const padding = Math.max(range * 0.005, smallestY * 0.005);
     smallestY = smallestY - padding;
@@ -115,8 +86,6 @@ function getScales({ data, width, height, yRange }: CallbackType): PathScales {
   return {
     scaleX,
     scaleY,
-    isFlat,
-    isNearlyFlat,
   };
 }
 
@@ -143,6 +112,7 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
     greatestY: Point;
     smallestY: Point;
   };
+
   const smallestX = data.points[0];
   const greatestX = data.points[data.points.length - 1];
 
