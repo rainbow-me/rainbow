@@ -29,7 +29,6 @@ import { format } from 'date-fns';
 import { NewTransaction, TransactionStatus } from '@/entities';
 import * as i18n from '@/languages';
 import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { ContactAvatar } from '@/components/contacts';
@@ -194,7 +193,7 @@ const MintSheet = () => {
 
   useFocusEffect(() => {
     if (mintCollection.name && mintCollection.id) {
-      analytics.track(event.mintsOpenedSheet, {
+      analytics.track(analytics.event.mintsOpenedSheet, {
         collectionName: mintCollection?.name,
         contract: mintCollection.id,
         chainId: mintCollection.chainId,
@@ -339,7 +338,7 @@ const MintSheet = () => {
 
     // link to mint.fun if reservoir not supporting
     if (!isMintingAvailable) {
-      analytics.track(event.mintsOpeningMintDotFun, {
+      analytics.track(analytics.event.mintsOpeningMintDotFun, {
         collectionName: mintCollection.name || '',
         contract: mintCollection.id || '',
         chainId: mintCollection.chainId,
@@ -349,7 +348,7 @@ const MintSheet = () => {
     }
 
     logger.debug('[MintSheet]: Minting NFT', { name: mintCollection.name });
-    analytics.track(event.mintsMintingNFT, {
+    analytics.track(analytics.event.mintsMintingNFT, {
       collectionName: mintCollection.name || '',
       contract: mintCollection.id || '',
       chainId: mintCollection.chainId,
@@ -444,7 +443,7 @@ const MintSheet = () => {
                   address: accountAddress,
                   chainId,
                 });
-                analytics.track(event.mintsMintedNFT, {
+                analytics.track(analytics.event.mintsMintedNFT, {
                   collectionName: mintCollection.name || '',
                   contract: mintCollection.id || '',
                   chainId: mintCollection.chainId,
@@ -460,7 +459,7 @@ const MintSheet = () => {
       });
     } catch (e) {
       setMintStatus('error');
-      analytics.track(event.mintsErrorMintingNFT, {
+      analytics.track(analytics.event.mintsErrorMintingNFT, {
         collectionName: mintCollection.name || '',
         contract: mintCollection.id || '',
         chainId: mintCollection.chainId,

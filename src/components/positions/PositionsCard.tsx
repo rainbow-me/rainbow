@@ -9,7 +9,6 @@ import { EthereumAddress } from '@/entities';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
 import { RainbowBorrow, RainbowClaimable, RainbowDeposit, RainbowPosition, RainbowStake } from '@/resources/defi/types';
@@ -81,7 +80,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
   const { navigate } = useNavigation();
 
   const onPressHandler = useCallback(() => {
-    analytics.track(event.positionsOpenedSheet, { dapp: position.type });
+    analytics.track(analytics.event.positionsOpenedSheet, { dapp: position.type });
     navigate(Routes.POSITION_SHEET, { position });
   }, [navigate, position]);
 

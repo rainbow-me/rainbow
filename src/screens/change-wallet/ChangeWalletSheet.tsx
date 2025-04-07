@@ -11,7 +11,7 @@ import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { addressSetSelected, walletsSetSelected, walletsUpdate } from '@/redux/wallets';
 import WalletTypes from '@/helpers/walletTypes';
-import { analytics, analytics } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';

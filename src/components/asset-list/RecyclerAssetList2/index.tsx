@@ -18,7 +18,6 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { analytics } from '@/analytics';
 import lang from 'i18n-js';
 import { IS_ANDROID } from '@/env';
-import { event } from '@/analytics/event';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -82,7 +81,7 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
   const insets = useSafeAreaInsets();
 
   const handlePressQRCode = React.useCallback(() => {
-    analytics.track(event.navigationMyQrCode, { category: 'home screen' });
+    analytics.track(analytics.event.navigationMyQrCode, { category: 'home screen' });
 
     navigate(Routes.RECEIVE_MODAL);
   }, [navigate]);

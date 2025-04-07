@@ -1,7 +1,6 @@
-import { analytics, analytics } from '@/analytics';
-import { event } from '@/analytics/event';
+import { analytics } from '@/analytics';
 
 const handlePress = useCallback(() => {
-  analytics.track(event.contactPressed, { address });
+  analytics.track(analytics.event.contactPressed, { address });
   onPress?.(address);
 }, [address, onPress]);

@@ -7,7 +7,7 @@ import deviceUtils from '@/utils/deviceUtils';
 import CurrencySelectionList from '@/components/CurrencySelectionList';
 import { Row } from '@/components/layout';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
-import { analytics, analytics } from '@/analytics';
+import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { useAccountSettings, useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';
 import { useNavigation } from '@/navigation';

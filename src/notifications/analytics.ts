@@ -1,5 +1,4 @@
 import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 import { MinimalNotification } from '@/notifications/types';
 import { getPermissionStatus } from '@/notifications/permissions';
 import messaging from '@react-native-firebase/messaging';
@@ -14,13 +13,13 @@ import {
 } from '@/notifications/settings';
 
 export const trackTappedPushNotification = (notification: MinimalNotification | undefined) => {
-  analytics.track(event.notificationsPromoTapped, {
+  analytics.track(analytics.event.notificationsPromoTapped, {
     campaign: `${notification?.data?.type ?? 'default'}`,
   });
 };
 
 export const trackChangedGlobalNotificationSettings = (topic: GlobalNotificationTopicType, enableTopic: boolean) => {
-  analytics.track(event.notificationsPromoNotificationSettingsChanged, {
+  analytics.track(analytics.event.notificationsPromoNotificationSettingsChanged, {
     topic,
     action: enableTopic ? 'subscribe' : 'unsubscribe',
   });

@@ -16,7 +16,7 @@ import { toUtf8String } from '@ethersproject/strings';
 import { logger, RainbowError } from '@/logger';
 import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { analytics as analytics, analytics } from '@/analytics';
+import { analytics } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
 import Alert from '@/components/alerts/Alert';
 import * as lang from '@/languages';

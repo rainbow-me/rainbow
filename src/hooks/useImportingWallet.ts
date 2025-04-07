@@ -13,7 +13,7 @@ import usePrevious from './usePrevious';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics, analytics } from '@/analytics';
+import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';

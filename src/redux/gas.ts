@@ -41,7 +41,6 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { addBuffer } from '@/helpers/utilities';
 import { IS_TEST } from '@/env';
-import { event } from '@/analytics/event';
 
 const { CUSTOM, NORMAL, URGENT } = gasUtils;
 
@@ -493,7 +492,7 @@ export const gasUpdateGasFeeOption = (newGasPriceOption: string) => (dispatch: A
       payload: selectedGasFee,
       type: GAS_UPDATE_GAS_PRICE_OPTION,
     });
-    analytics.track(event.swapsGasUpdatedPrice, { gasPriceOption });
+    analytics.track(analytics.event.swapsGasUpdatedPrice, { gasPriceOption });
   });
 
 export const gasUpdateDefaultGasLimit =

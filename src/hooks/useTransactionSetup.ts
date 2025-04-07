@@ -4,7 +4,6 @@ import { InteractionManager } from 'react-native';
 import useGas from '@/hooks/useGas';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { ChainId } from '@/state/backendNetworks/types';
 
@@ -51,7 +50,7 @@ export const useTransactionSetup = ({
         } else {
           setMethodName(i18n.t(i18n.l.wallet.message_signing.request));
         }
-        analytics.track(event.txRequestShownSheet, { source });
+        analytics.track(analytics.event.txRequestShownSheet, { source });
       }
     });
 

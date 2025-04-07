@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
-import { useAccountProfile, useWallets } from '@/hooks';
+import { useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
@@ -19,7 +19,6 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { event } from '@/analytics/event';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -150,7 +149,7 @@ function BuyButton() {
       return;
     }
 
-    analytics.track(event.navigationAddCash, { category: 'home screen' });
+    analytics.track(analytics.event.navigationAddCash, { category: 'home screen' });
 
     navigate(Routes.ADD_CASH_SHEET);
   }, [isDamaged, navigate]);
@@ -170,7 +169,7 @@ function SwapButton() {
 
   const handlePress = React.useCallback(async () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      analytics.track(event.navigationSwap, { category: 'home screen' });
+      analytics.track(analytics.event.navigationSwap, { category: 'home screen' });
       swapsStore.setState({
         inputAsset: userAssetsStore.getState().getHighestValueNativeAsset(),
       });
@@ -195,7 +194,7 @@ function SendButton() {
 
   const handlePress = React.useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      analytics.track(event.navigationSend, { category: 'home screen' });
+      analytics.track(analytics.event.navigationSend, { category: 'home screen' });
 
       navigate(Routes.SEND_FLOW);
     } else {

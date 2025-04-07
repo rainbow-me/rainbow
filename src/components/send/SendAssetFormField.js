@@ -7,7 +7,6 @@ import { BubbleField } from '../fields';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 
@@ -64,7 +63,7 @@ const SendAssetFormField = (
   const { colors } = useTheme();
   const handlePressMax = useCallback(
     e => {
-      analytics.track(event.sendMaxPressed);
+      analytics.track(analytics.event.sendMaxPressed);
       onPressButton?.(e);
     },
     [onPressButton]

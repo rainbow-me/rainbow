@@ -31,7 +31,6 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { PoapMintError } from '@/utils/poaps';
 import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 const BackgroundBlur = styled(BlurView).attrs({
@@ -121,7 +120,7 @@ const PoapSheet = () => {
     const errorCode = response.claimPoapByQrHash?.error;
 
     if (isSuccess) {
-      analytics.track(event.poapsMintedPoap, {
+      analytics.track(analytics.event.poapsMintedPoap, {
         eventId: poapEvent.id,
         type: poapMintType,
       });
@@ -153,7 +152,7 @@ const PoapSheet = () => {
     const errorCode = response.claimPoapBySecretWord?.error;
 
     if (isSuccess) {
-      analytics.track(event.poapsMintedPoap, {
+      analytics.track(analytics.event.poapsMintedPoap, {
         eventId: poapEvent.id,
         type: poapMintType,
       });
@@ -209,7 +208,7 @@ const PoapSheet = () => {
   };
 
   useFocusEffect(() => {
-    analytics.track(event.poapsOpenedMintSheet, {
+    analytics.track(analytics.event.poapsOpenedMintSheet, {
       eventId: poapEvent.id,
       type: poapMintType,
     });
@@ -295,7 +294,7 @@ const PoapSheet = () => {
                 </SheetActionButtonRow>
                 <ButtonPressAnimation
                   onPress={() => {
-                    analytics.track(event.poapsViewedOnPoap, {
+                    analytics.track(analytics.event.poapsViewedOnPoap, {
                       eventId: poapEvent.id,
                     });
                     openInBrowser(poapGalleryUrl);

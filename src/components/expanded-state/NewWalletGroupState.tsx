@@ -1,8 +1,7 @@
 import * as lang from '@/languages';
 import React, { useCallback, useState } from 'react';
 import ProfileModal from './profile/ProfileModal';
-import { analytics, analytics } from '@/analytics';
-import { event } from '@/analytics/event';
+import { analytics } from '@/analytics';
 import { useNavigation } from '@/navigation';
 
 type NewWalletGroupStateProps = {
@@ -16,7 +15,7 @@ export default function NewWalletGroupState({ onCloseModal, numWalletGroups }: N
   const [value, setValue] = useState('');
 
   const handleSubmit = useCallback(() => {
-    analytics.track(event.addNewWalletGroupName, {
+    analytics.track(analytics.event.addNewWalletGroupName, {
       name: value.trim(),
     });
     onCloseModal({

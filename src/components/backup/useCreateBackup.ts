@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { cloudPlatform } from '@/utils/platform';
-import { analytics, analytics } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useWalletCloudBackup, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
@@ -13,7 +13,6 @@ import { DelayedAlert } from '@/components/alerts';
 import { useDispatch } from 'react-redux';
 import * as i18n from '@/languages';
 import showWalletErrorAlert from '@/helpers/support';
-import { event } from '@/analytics/event';
 
 type UseCreateBackupProps = {
   walletId?: string;
@@ -59,7 +58,7 @@ export const useCreateBackup = () => {
       }
       // Reset the storedPassword state for next backup
       backupsStore.getState().setStoredPassword('');
-      analytics.track(event.backupComplete, { category: 'backup', label: cloudPlatform });
+      analytics.track(analytics.event.backupComplete, { category: 'backup', label: cloudPlatform });
       setLoadingStateWithTimeout({
         state: CloudBackupState.Success,
         outOfSync: true,
@@ -85,7 +84,7 @@ export const useCreateBackup = () => {
 
   const onConfirmBackup = useCallback(
     async ({ password, walletId, navigateToRoute }: ConfirmBackupProps) => {
-      analytics.track(event.backupConfirmed);
+      analytics.track(analytics.event.backupConfirmed);
       backupsStore.getState().setStatus(CloudBackupState.InProgress);
 
       if (typeof walletId === 'undefined') {

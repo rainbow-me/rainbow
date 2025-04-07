@@ -36,7 +36,6 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { AppDispatch } from '@/redux/store';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { event } from '@/analytics/event';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
@@ -281,7 +280,7 @@ export async function backupAllWalletsToCloud({
       const userError = getUserError(error);
       onError?.(userError);
       captureException(error);
-      analytics.track(event.backupError, {
+      analytics.track(analytics.event.backupError, {
         category: 'backup',
         error: userError,
         label: cloudPlatform,
@@ -595,10 +594,10 @@ export async function saveBackupPassword(password: BackupPassword): Promise<void
   try {
     if (!IS_ANDROID) {
       await kc.setSharedWebCredentials('Backup Password', password);
-      analytics.track(event.backupSavedPassword);
+      analytics.track(analytics.event.backupSavedPassword);
     }
   } catch (e) {
-    analytics.track(event.backupSkippedPassword);
+    analytics.track(analytics.event.backupSkippedPassword);
   }
 }
 

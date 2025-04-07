@@ -45,7 +45,6 @@ import { isAddress } from '@ethersproject/address';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RequestData } from '@/walletConnect/types';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
-import { event } from '@/analytics/event';
 import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
 import { useSimulation } from '@/resources/transactions/transactionSimulation';
 import { TransactionSimulationCard } from '@/components/Transactions/TransactionSimulationCard';
@@ -251,7 +250,7 @@ export const SignTransactionSheet = () => {
           onCancelCallback?.(error);
           const rejectionType = transactionDetails?.payload?.method === SEND_TRANSACTION ? 'transaction' : 'signature';
 
-          analytics.track(event.txRequestReject, {
+          analytics.track(analytics.event.txRequestReject, {
             source,
             requestType: rejectionType,
             isHardwareWallet: accountInfo.isHardwareWallet,
@@ -365,7 +364,7 @@ export const SignTransactionSheet = () => {
           txSavedInCurrentWallet = true;
         }
       }
-      analytics.track(event.txRequestApprove, {
+      analytics.track(analytics.event.txRequestApprove, {
         source,
         requestType: 'transaction',
         dappName: transactionDetails.dappName,
@@ -474,7 +473,7 @@ export const SignTransactionSheet = () => {
     }
 
     if (response?.result) {
-      analytics.track(event.txRequestApprove, {
+      analytics.track(analytics.event.txRequestApprove, {
         source,
         requestType: 'signature',
         dappName: transactionDetails?.dappName,
