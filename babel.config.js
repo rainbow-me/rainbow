@@ -21,6 +21,7 @@ module.exports = function (api) {
   api.cache(true);
 
   const plugins = [
+    ['babel-plugin-react-compiler', { target: '18' }], // must run first
     ...(data ? [data] : []),
     [
       'module-resolver',

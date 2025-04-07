@@ -9,6 +9,8 @@ const NativePortal = IS_IOS ? requireNativeComponent('WindowPortal') : View;
 const Wrapper = IS_IOS ? ({ children }: { children: React.ReactNode }) => children : View;
 
 export function Portal() {
+  "use no memo";
+  
   const activeRoute = useActiveRoute();
 
   const { blockTouches, Component } = walletLoadingStore(state => ({

@@ -12,6 +12,8 @@ function getIsOnline(state: NetInfoState) {
 }
 
 export default function useIsOffline({ debounceMs = 0 }: { debounceMs?: number } = {}) {
+  "use no memo";
+
   const [isOnline, setIsOnline] = useState<boolean | null>(null);
   const isOnlineRef = useRef<boolean | null>(null);
   const netInfoSubscriptionRef = useRef<NetInfoSubscription | null>(null);

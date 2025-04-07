@@ -5,6 +5,8 @@ import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import useAccountSettings from './useAccountSettings';
 
 export default function usePendingTransactions() {
+  "use no memo";
+  
   const { accountAddress } = useAccountSettings();
   const storePendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions);
 

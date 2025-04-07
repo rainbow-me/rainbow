@@ -7,6 +7,8 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { time } from '@/utils';
 
 const OfflineToast = () => {
+  "use no memo";
+  
   const isOffline = useIsOffline({ debounceMs: time.seconds(0.5) });
   const { chainId } = useAccountSettings();
   const connectedToAnvil = useConnectedToAnvilStore(state => state.connectedToAnvil);

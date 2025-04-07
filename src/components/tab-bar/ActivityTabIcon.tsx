@@ -13,6 +13,8 @@ export const ActivityTabIcon = memo(function ActivityTabIcon({
   reanimatedPosition,
   tabBarIcon,
 }: {
+  "use no memo";
+  
   accentColor: string;
   index: number;
   reanimatedPosition: SharedValue<number>;
