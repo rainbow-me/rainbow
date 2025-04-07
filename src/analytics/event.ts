@@ -271,6 +271,7 @@ type SwapsEventSucceededParameters<T extends 'swap' | 'crosschainSwap'> = {
  * Properties corresponding to each event
  */
 export type EventProperties = {
+  [event.sendMaxPressed]: undefined;
   [event.firstAppOpen]: undefined;
   [event.applicationDidMount]: undefined;
   [event.appStateChange]: {
@@ -858,8 +859,6 @@ export type EventProperties = {
 
   [event.networkStatusOffline]: undefined;
   [event.networkStatusReconnected]: undefined;
-
-  [event.sendMaxPressed]: undefined;
 
   [event.ensInitiatedRegistration]: { category: string };
   [event.ensEditedRecords]: { category: string };
