@@ -197,7 +197,7 @@ export const event = {
 
   // performance
   performanceReport: 'performance.report',
-  performanceInitializeWallet: 'performance.initialize_wallet',
+  performanceInitializeWallet: 'Performance Wallet Initialize Time',
 
   // discover screen
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
