@@ -93,11 +93,9 @@ export class Analytics {
 
   async initializeRudderstack() {
     try {
-      PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRudderstack);
       await rudderClient.setup(REACT_NATIVE_RUDDERSTACK_WRITE_KEY, {
         dataPlaneUrl: RUDDERSTACK_DATA_PLANE_URL,
       });
-      PerformanceTracking.finishReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRudderstack);
     } catch (error) {
       logger.error(new RainbowError('[Analytics]: Unable to initialize Rudderstack'), { error });
     }

@@ -23,7 +23,6 @@ export const PerformanceReportSegments = {
     loadMainModule: 'load_main_module',
     mountNavigation: 'mount_navigation',
     initSentry: 'init_sentry',
-    initRudderstack: 'init_rudderstack',
     initWalletConnect: 'init_walletconnect',
     initRootComponent: 'init_root_component',
     hideSplashScreen: 'hide_splash_screen',
