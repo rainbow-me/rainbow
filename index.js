@@ -12,17 +12,13 @@ PerformanceTracking.startReport(PerformanceReports.appStartup, StartTime.START_T
 PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.loadJSBundle);
 PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.loadMainModule);
 
-PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initSentry);
 initSentry();
-PerformanceTracking.finishReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initSentry);
 /*
 We need to use require calls in order to stop babel from moving imports
 to the top of the file above all other calls. We want Performance tracking
 to start before all of the imports.
  */
 require('react-native-gesture-handler');
-PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.runShim);
 require('./shim');
-PerformanceTracking.finishReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.runShim);
 require('./src/App');
 PerformanceTracking.finishReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.loadMainModule);
