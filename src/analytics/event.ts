@@ -32,7 +32,7 @@ export const event = {
   qrCodeViewed: 'qr_code.viewed',
   buyButtonPressed: 'buy_button.pressed',
   addWalletFlowStarted: 'add_wallet_flow.started',
-  sendMaxPressed: 'send.max_pressed',
+  sendMaxPressed: 'Clicked "Max" in Send flow input',
 
   // notification promo sheet was shown
   notificationsPromoShown: 'notifications_promo.shown',
@@ -46,8 +46,8 @@ export const event = {
   notificationsPromoNotificationSettingsOpened: 'notifications_promo.notification_settings_opened',
   // user either swiped the sheet away, or clicked "Not Now"
   notificationsPromoDismissed: 'notifications_promo.dismissed',
-  notificationsPromoNotificationSettingsChanged: 'notifications_promo.notification_settings_changed',
-  notificationsPromoTapped: 'notifications_promot.tapped',
+  notificationsPromoNotificationSettingsChanged: 'Changed Global Notification Settings',
+  notificationsPromoTapped: 'Tapped Push Notification',
 
   /**
    * Called either on click or during an open event callback. We want this as
@@ -152,7 +152,7 @@ export const event = {
   swapsFailed: 'swaps.failed',
   swapsSucceeded: 'swaps.succeeded',
   swapsQuoteFailed: 'swaps.quote_failed',
-  swapsGasUpdatedPrice: 'swaps.gas_updated_price',
+  swapsGasUpdatedPrice: 'Updated Gas Price',
 
   // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
@@ -204,36 +204,40 @@ export const event = {
   networkStatusReconnected: 'network_status.reconnected',
 
   // ens
-  ensInitiatedRegistration: 'ens.initiated_registration',
-  ensEditedRecords: 'ens.edited_records',
-  ensCompletedRegistration: 'ens.completed_registration',
-  ensExtended: 'ens.extended',
-  ensTransferredControl: 'ens.transferred_control',
-  ensSetPrimary: 'ens.set_primary',
-  ensRapFailed: 'ens.rap_failed',
-  ensRapStarted: 'ens.rap_started',
-  ensRapCompleted: 'ens.rap_completed',
+  ensInitiatedRegistration: 'Initiated ENS registration',
+  ensEditedRecords: 'Edited ENS records',
+  ensCompletedRegistration: 'Completed ENS registration',
+  ensExtended: 'Extended ENS',
+  ensTransferredControl: 'Transferred ENS control',
+  ensSetPrimary: 'Set ENS to primary ',
+  ensRapFailed: 'Rap failed',
+  ensRapStarted: 'Rap started',
+  ensRapCompleted: 'Rap completed',
 
   // backup
   backupError: 'backup.error',
-  backupSavedPassword: 'backup.saved_password',
-  backupSkippedPassword: 'backup.skipped_password',
-  backupComplete: 'backup.complete',
-  backupConfirmed: 'backup.confirmed',
-  backupSheetShown: 'backup.sheet_shown',
-  backupChoosePassword: 'backup.choose_password',
+  backupSavedPassword: 'Saved backup password on iCloud',
+  backupSkippedPassword: "Didn't save backup password on iCloud",
+  backupComplete: 'Backup Complete',
+  backupConfirmed: 'Tapped "Confirm Backup"',
+  backupSheetShown: 'BackupSheet shown',
+  backupChoosePassword: 'Choose Password Step',
 
   // QR code
-  qrCodeScannedAddress: 'qr_code.scanned_address',
-  qrCodeScannedProfile: 'qr_code.scanned_profile',
-  qrCodeScannedWalletConnect: 'qr_code.scanned_wallet_connect',
-  qrCodeScannedInvalid: 'qr_code.scanned_invalid',
+  qrCodeScannedAddress: 'Scanned address QR code',
+  qrCodeScannedProfile: 'Scanned Rainbow profile url',
+  qrCodeScannedWalletConnect: 'Scanned WalletConnect QR code',
+  qrCodeScannedInvalid: 'Scanned broken or unsupported QR code',
 
   // navigation events
-  navigationAddCash: 'navigation.add_cash',
-  navigationSwap: 'navigation.swap',
-  navigationSend: 'navigation.send',
-  navigationMyQrCode: 'navigation.my_qr_code',
+  navigationAddCash: 'Tapped "Add Cash"',
+  navigationSwap: 'Tapped "Swap"',
+  navigationSend: 'Tapped "Send"',
+  navigationMyQrCode: 'Tapped "My QR Code"',
+
+  // Wallet Profile Modal Events
+  walletProfileCancelled: 'Tapped "Cancel" on Wallet Profile modal',
+  walletProfileSubmitted: 'Tapped "Submit" on Wallet Profile modal',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
