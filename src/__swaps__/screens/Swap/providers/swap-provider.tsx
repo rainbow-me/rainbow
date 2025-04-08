@@ -147,8 +147,7 @@ const determineIfUserQuickBought = (
   }
 
   const { assetUniqueId } = quickBuyAnalyticalData;
-
-  if (assetUniqueId !== inputAsset.uniqueId && assetUniqueId !== outputAsset.uniqueId) {
+  if (assetUniqueId !== outputAsset.uniqueId) {
     return undefined;
   }
 
