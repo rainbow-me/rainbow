@@ -27,7 +27,7 @@ export default function useIsOffline({ debounceMs = 0 }: { debounceMs?: number }
       const newIsOnline = getIsOnline(state);
       const oldIsOnline = isOnlineRef.current;
 
-      if (newIsOnline === oldIsOnline && oldIsOnline !== null) return;
+      if (newIsOnline === oldIsOnline || oldIsOnline === null) return;
 
       if (newIsOnline) {
         // We came back online within the debounce window, clear any pending offline update
