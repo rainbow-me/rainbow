@@ -20,6 +20,7 @@ import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
+import { UniqueAsset } from '@/entities';
 
 function useCachedSelector<T, P>(selector: (params: P) => T, params: P, deps: unknown[]): T {
   const cacheRef = useRef<{
@@ -99,7 +100,8 @@ export default function useWalletSectionsData({
     return claimablesData;
   }, [claimablesData, claimablesEnabled]);
 
-  const { sendableUniqueTokens, uniqueTokens, isFetchingNfts } = useUniqueTokens();
+  const { sendableUniqueTokens, isFetchingNfts, uniqueTokenFamilies } = useUniqueTokens();
+  const uniqueTokens = [] as UniqueAsset[];
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -148,6 +150,7 @@ export default function useWalletSectionsData({
       positions,
       claimables,
       nftSort,
+      uniqueTokenFamilies,
       remoteCards,
     }),
     [
@@ -209,7 +212,7 @@ export default function useWalletSectionsData({
     isWalletEthZero,
     isLoadingUserAssets,
     isLoadingBalance: !accountWithBalance?.balances,
-    hasNFTs: uniqueTokens.length > 0,
+    hasNFTs: !!uniqueTokens && uniqueTokens.length > 0,
   };
 
   return result;
