@@ -887,6 +887,4 @@ export type EventProperties = {
   [event.navigationSwap]: { category: string };
   [event.navigationSend]: { category: string };
   [event.navigationMyQrCode]: { category: string };
-} & {
-  // ... existing properties ...
 };
