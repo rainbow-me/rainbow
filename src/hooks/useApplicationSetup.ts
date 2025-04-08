@@ -9,7 +9,8 @@ import Routes from '@/navigation/routesNames';
 import { checkIdentifierOnLaunch } from '@/model/backup';
 import { saveFCMToken } from '@/notifications/tokens';
 import { initListeners as initWalletConnectListeners, initWalletConnectPushNotifications } from '@/walletConnect';
-import { IS_DEV, IS_TESTFLIGHT } from '@/env';
+import { IS_DEV } from '@/env';
+import isTestFlight from '@/helpers/isTestFlight';
 import { PerformanceReports, PerformanceTracking } from '@/performance/tracking';
 
 export function useApplicationSetup() {
@@ -38,8 +39,8 @@ export function useApplicationSetup() {
   }, []);
 
   useEffect(() => {
-    if (!IS_DEV && IS_TESTFLIGHT) {
-      logger.debug(`[App]: Test flight usage - ${IS_TESTFLIGHT}`);
+    if (!IS_DEV && isTestFlight) {
+      logger.debug(`[App]: Test flight usage - ${isTestFlight}`);
     }
     setup();
   }, [setup]);
