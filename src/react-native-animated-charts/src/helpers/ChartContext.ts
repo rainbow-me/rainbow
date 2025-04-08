@@ -44,8 +44,6 @@ export interface PathData {
 export interface PathScales {
   scaleX: (value: number) => number;
   scaleY: (value: number) => number;
-  isFlat: boolean;
-  isNearlyFlat: boolean;
 }
 
 type WithPathData = Pick<PathData, 'smallestX' | 'smallestY' | 'greatestX' | 'greatestY'>;
