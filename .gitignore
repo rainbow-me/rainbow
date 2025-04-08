@@ -115,9 +115,6 @@ src/graphql/config.js
 # Test Coverage
 coverage
 
-# VSCode
-.vscode/
-
 # Zed
 .zed/
 
