@@ -10,6 +10,7 @@ import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
+import { UniqueAssetFamily } from '@/entities/uniqueAssets';
 
 const COINS_TO_SHOW = 5;
 
@@ -246,28 +247,23 @@ export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: 
 
 export const buildBriefUniqueTokenList = (
   uniqueTokens: UniqueAsset[],
+  uniqueTokenFamilies: UniqueAssetFamily[],
   selectedShowcaseTokens: string[] | undefined = [],
   sellingTokens: UniqueAsset[] | undefined = [],
   hiddenTokens: string[] | undefined = [],
   listType: AssetListType = 'wallet',
   isReadOnlyWallet = false,
-  nftSort = NftCollectionSortCriterion.MostRecent,
+  nftSort: NftCollectionSortCriterion = NftCollectionSortCriterion.MostRecent,
   isFetchingNfts = false
 ) => {
-  const hiddenUniqueTokensIds: string[] = [];
-  const uniqueTokensInShowcaseIds: string[] = [];
-  const filteredUniqueTokens: UniqueAsset[] = [];
-
-  for (const token of uniqueTokens) {
-    if (hiddenTokens.includes(token.fullUniqueId)) {
-      hiddenUniqueTokensIds.push(token.uniqueId);
-      continue;
-    }
-
-    if (selectedShowcaseTokens.includes(token.uniqueId)) {
-      uniqueTokensInShowcaseIds.push(token.uniqueId);
-    }
-
+  const hiddenUniqueTokensIds = uniqueTokens
+    .filter(({ fullUniqueId }) => hiddenTokens.includes(fullUniqueId))
+    .map(({ uniqueId }) => uniqueId);
+  const nonHiddenUniqueTokens = uniqueTokens.filter(({ fullUniqueId }) => !hiddenTokens.includes(fullUniqueId));
+  const uniqueTokensInShowcaseIds = nonHiddenUniqueTokens
+    .filter(({ uniqueId }) => selectedShowcaseTokens.includes(uniqueId))
+    .map(({ uniqueId }) => uniqueId);
+  const filteredUniqueTokens = nonHiddenUniqueTokens.filter((token: UniqueAsset) => {
     if (listType === 'select-nft') {
       const format = getUniqueTokenFormat(token);
       const type = getUniqueTokenType(token);
@@ -277,11 +273,9 @@ export const buildBriefUniqueTokenList = (
     } else {
       filteredUniqueTokens.push(token);
     }
-  }
+  });
 
-  const assetsByName = groupBy<UniqueAsset>(filteredUniqueTokens, token => token.familyName);
-
-  const result: CellTypes[] = [
+  const result = [
     {
       type: CellType.NFTS_HEADER,
       nftSort,
@@ -329,29 +323,29 @@ export const buildBriefUniqueTokenList = (
     result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
   }
 
-  if (!Object.keys(assetsByName).length) {
+  if (uniqueTokenFamilies?.length === 0) {
     if (!isFetchingNfts) {
       result.push({ type: CellType.NFTS_EMPTY, uid: `nft-empty` });
     } else {
       result.push({ type: CellType.NFTS_LOADING, uid: `nft-loading-${nftSort}` });
     }
   } else {
-    for (const family of Object.keys(assetsByName)) {
+    uniqueTokenFamilies?.forEach?.(collection => {
       result.push({
-        image: assetsByName[family][0].familyImage ?? undefined,
-        name: family,
-        total: assetsByName[family].length,
+        image: collection.familyImage,
+        name: collection.familyName,
+        total: collection.distinctNftsOwned,
         type: CellType.FAMILY_HEADER,
-        uid: family,
+        uid: collection.familyName,
       });
-      const tokens = assetsByName[family].map(({ uniqueId }) => uniqueId);
-      for (let index = 0; index < tokens.length; index++) {
-        const uniqueId = tokens[index];
+      const uniqueIds = collection.nftIds;
+      for (let index = 0; index < uniqueIds.length; index++) {
+        const uniqueId = uniqueIds[index];
+
         result.push({ index, type: CellType.NFT, uid: uniqueId, uniqueId });
       }
-
-      result.push({ type: CellType.NFT_SPACE_AFTER, uid: `${family}-space-after` });
-    }
+      result.push({ type: CellType.NFT_SPACE_AFTER, uid: `${collection.familyName}-space-after` });
+    });
   }
 
   if (hiddenUniqueTokensIds?.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {

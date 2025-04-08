@@ -1,8 +1,7 @@
 import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
-import { useMMKVString } from 'react-native-mmkv';
 import useAccountSettings from './useAccountSettings';
-
-const getStorageKey = (accountAddress: string) => `nfts-sort-${accountAddress}`;
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export const parseNftSort = (s: string | undefined) => {
   const [sortBy = NftCollectionSortCriterion.MostRecent, sortDirection = SortDirection.Desc] = (s?.split('|') || []) as [
@@ -12,16 +11,56 @@ export const parseNftSort = (s: string | undefined) => {
   return [sortBy, sortDirection] as const;
 };
 
-export type NftSort = `${NftCollectionSortCriterion}|${SortDirection}`;
-
 export function useNftSort() {
   const { accountAddress } = useAccountSettings();
-  const [nftSortData, setNftSortData] = useMMKVString(getStorageKey(accountAddress));
-  const [sortBy, sortDirection] = parseNftSort(nftSortData);
+  const { sortBy, sortDirection } = useNftSortStore(s => s.getNftSort(accountAddress));
+  const updateNftSort = useNftSortStore(s => s.updateNftSort);
 
   return {
-    updateNFTSort: (nftSort: NftSort) => setNftSortData(nftSort),
+    updateNFTSort: (nftSort: NftSortAction) => updateNftSort(accountAddress, nftSort),
     nftSort: sortBy,
     nftSortDirection: sortDirection,
   };
 }
+
+export type NftSortAction = `${NftCollectionSortCriterion}|${SortDirection}`;
+type NftSortByAddress = Record<string, NftSortAction>;
+interface NftSortStore {
+  nftSort: NftSortByAddress;
+  getNftSort: (address?: string) => { sortBy: NftCollectionSortCriterion; sortDirection: SortDirection };
+  updateNftSort: (address: string, params: NftSortAction) => void;
+}
+
+const DEFAULT_NFT_SORT = { sortBy: NftCollectionSortCriterion.MostRecent, sortDirection: SortDirection.Desc };
+
+export const useNftSortStore = createRainbowStore<NftSortStore>(
+  (set, get) => ({
+    nftSort: {},
+    getNftSort: () => {
+      const addressFromUserAssets = userAssetsStoreManager.getState().address;
+      if (!addressFromUserAssets) {
+        return DEFAULT_NFT_SORT;
+      }
+      const currentSort = get().nftSort?.[addressFromUserAssets];
+      const [sortBy, sortDirection] = parseNftSort(currentSort);
+      return {
+        sortBy,
+        sortDirection,
+      };
+    },
+    updateNftSort: (address, sortAction) => {
+      const state = get();
+      set({
+        ...state,
+        nftSort: {
+          ...state.nftSort,
+          [address]: sortAction,
+        },
+      });
+    },
+  }),
+  {
+    storageKey: 'nftSort',
+    version: 0,
+  }
+);

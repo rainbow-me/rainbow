@@ -13,6 +13,7 @@ import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
 import { ClaimablesStore } from '@/state/claimables/claimables';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
+import { UniqueAssetFamily } from '@/entities/uniqueAssets';
 
 const CONTENT_PLACEHOLDER: CellTypes[] = [
   { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },
@@ -68,6 +69,7 @@ export type WalletSectionsState = {
   claimables: ClaimablesStore | null;
   nftSort: NftCollectionSortCriterion;
   remoteCards: string[];
+  uniqueTokenFamilies: UniqueAssetFamily[];
 };
 
 const sortedAssetsSelector = (state: WalletSectionsState) => state.sortedAssets;
@@ -89,6 +91,7 @@ const positionsSelector = (state: WalletSectionsState) => state.positions;
 const claimablesSelector = (state: WalletSectionsState) => state.claimables;
 const nftSortSelector = (state: WalletSectionsState) => state.nftSort;
 const remoteCardsSelector = (state: WalletSectionsState) => state.remoteCards;
+const uniqueTokenFamiliesSelector = (state: WalletSectionsState) => state.uniqueTokenFamilies;
 
 interface BalanceSectionData {
   balanceSection: CellTypes[];
@@ -314,6 +317,7 @@ const withBriefBalanceSection = (
 const briefUniqueTokenDataSelector = createSelector(
   [
     uniqueTokensSelector,
+    uniqueTokenFamiliesSelector,
     showcaseTokensSelector,
     sellingTokensSelector,
     hiddenTokensSelector,

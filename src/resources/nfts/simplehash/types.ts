@@ -185,3 +185,15 @@ export type ValidatedSimpleHashNFT = Omit<SimpleHashNFT, 'name' | 'chain' | 'col
   contract_address: string;
   token_id: string;
 };
+
+export type SimpleHashCollectionDetailsFragment = {
+  collection_id: string;
+  distinct_nfts_owned?: string | null;
+  total_copies_owned?: string | null;
+  last_acquired_date?: string | null;
+  nft_ids: string[];
+  collection_details: {
+    name?: string | null;
+    image_url?: string | null;
+  };
+};
