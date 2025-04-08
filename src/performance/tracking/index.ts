@@ -49,7 +49,8 @@ type Params = Record<string, unknown>;
 
 class PerformanceTracker {
   analyticsTrackingEnabled = !IS_TEST && !IS_DEV && SENTRY_ENVIRONMENT !== 'LocalRelease';
-  debug = IS_DEV || SENTRY_ENVIRONMENT === 'LocalRelease';
+  // Toggle if you want console logs
+  debug = false;
   appStartTime = StartTime.START_TIME;
   timer = new Timer();
   reports = new Map<string, Report>();
@@ -59,7 +60,7 @@ class PerformanceTracker {
   }
 
   logFromAppStartTime(metric: PerformanceEvent, params?: Params) {
-    const durationInMs = performance.now() - this.appStartTime;
+    const durationInMs = Date.now() - this.appStartTime;
     this.trackMetric(metric, durationInMs, params);
   }
 
@@ -97,12 +98,13 @@ class PerformanceTracker {
     this.timer.stop(metric);
   }
 
-  // Allows for a custom start time in the cases like app startup where you want the start to be the time the native app launched
   startReport(reportName: PerformanceReport, startTime?: number) {
     if (this.reports.has(reportName)) {
       logger.debug(`[PERFORMANCE]: Report ${reportName} already started`);
       return;
     }
+    // Reports need to be anchored to Date.now() rather than performance.now()
+    // to allow comparison across different contexts (native vs. JS)
     this.reports.set(reportName, {
       startTime: startTime ?? Date.now(),
       segments: [],
@@ -179,7 +181,7 @@ class PerformanceTracker {
     );
 
     // This is strictly for debugging purposes
-    if (reportName === PerformanceReports.appStartup) {
+    if (reportName === PerformanceReports.appStartup && !IS_TEST) {
       showPerformanceToast(segments);
     }
 
