@@ -38,7 +38,7 @@ import { IS_DEV } from '@/env';
 import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
-import { RenderPassReport, PerformanceProfiler } from '@shopify/react-native-performance';
+import { PerformanceProfiler } from '@shopify/react-native-performance';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
 
 if (IS_DEV) {
@@ -67,6 +67,10 @@ function App({ walletReady }: AppProps) {
 
   const onNavigationReady = useCallback(() => {
     PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.mountNavigation);
+    PerformanceTracking.startReportSegment(
+      PerformanceReports.appStartup,
+      PerformanceReportSegments.appStartup.initialScreenInteractiveRender
+    );
   }, []);
 
   return (

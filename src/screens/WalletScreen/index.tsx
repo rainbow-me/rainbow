@@ -8,6 +8,7 @@ import { Box } from '@/design-system';
 import {
   useAccountAccentColor,
   useAccountSettings,
+  useHideSplashScreen,
   useInitializeWallet,
   useLoadAccountLateData,
   useLoadGlobalLateData,
@@ -48,6 +49,7 @@ function WalletScreen() {
   const loadGlobalLateData = useLoadGlobalLateData();
   const insets = useSafeAreaInsets();
   const { wallets } = useWallets();
+  const hideSplashScreen = useHideSplashScreen();
 
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
   const {
@@ -168,7 +170,7 @@ function WalletScreen() {
 
   return (
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
-      <Box as={Page} flex={1} testID="wallet-screen">
+      <Box as={Page} flex={1} testID="wallet-screen" onLayout={hideSplashScreen}>
         <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
           {/* @ts-expect-error JavaScript component */}
           <AssetList

@@ -16,46 +16,48 @@ export default function useHideSplashScreen() {
   const didSetStatusBar = useRef(false);
 
   return useCallback(async () => {
-    if (RainbowSplashScreen?.hideAnimated) {
-      RainbowSplashScreen.hideAnimated();
-    } else if (IS_ANDROID) {
-      handleAndroidStatusBar(didSetStatusBar);
-      const RNBootSplash = require('react-native-bootsplash');
-      await RNBootSplash.hide({ fade: true });
-    } else {
-      SplashScreen.hide();
-    }
-
-    if (IS_ANDROID && !didSetStatusBar.current) handleAndroidStatusBar(didSetStatusBar);
-
-    onHandleStatusBar();
-    (IS_IOS && StatusBarHelper.setHidden(false, 'fade')) ||
-      InteractionManager.runAfterInteractions(() => {
-        StatusBarHelper.setHidden(false, 'fade');
-      });
-
-    if (!alreadyLoggedPerformance.current) {
-      alreadyLoggedPerformance.current = true;
-      PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.hideSplashScreen);
-      PerformanceTracking.startReportSegment(
-        PerformanceReports.appStartup,
-        PerformanceReportSegments.appStartup.initialScreenInteractiveRender
-      );
-
-      // need to load setting straight from storage, redux isnt ready yet
-      const appIcon = (await getAppIcon()) as AppIconKey;
-      if (appIcon === 'poolboy') {
-        const Sound = require('react-native-sound');
-
-        const sound = new Sound(require('../assets/sounds/RainbowSega.mp3'), (error: unknown) => {
-          if (error) {
-            logger.error(new RainbowError('[useHideSplashScreen]: Error playing poolboy sound'));
-            return;
-          }
-
-          sound.play(() => logger.debug('[useHideSplashScreen]: playing poolboy sound'));
-        });
+    try {
+      if (RainbowSplashScreen?.hideAnimated) {
+        RainbowSplashScreen.hideAnimated();
+      } else if (IS_ANDROID) {
+        handleAndroidStatusBar(didSetStatusBar);
+        const RNBootSplash = require('react-native-bootsplash');
+        await RNBootSplash.hide({ fade: true });
+      } else {
+        SplashScreen.hide();
       }
+
+      if (IS_ANDROID && !didSetStatusBar.current) handleAndroidStatusBar(didSetStatusBar);
+
+      onHandleStatusBar();
+      (IS_IOS && StatusBarHelper.setHidden(false, 'fade')) ||
+        InteractionManager.runAfterInteractions(() => {
+          StatusBarHelper.setHidden(false, 'fade');
+        });
+
+      if (!alreadyLoggedPerformance.current) {
+        alreadyLoggedPerformance.current = true;
+        PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.hideSplashScreen);
+
+        // need to load setting straight from storage, redux isnt ready yet
+        const appIcon = (await getAppIcon()) as AppIconKey;
+        if (appIcon === 'poolboy') {
+          const Sound = require('react-native-sound');
+
+          const sound = new Sound(require('../assets/sounds/RainbowSega.mp3'), (error: unknown) => {
+            if (error) {
+              logger.error(new RainbowError('[useHideSplashScreen]: Error playing poolboy sound'));
+              return;
+            }
+
+            sound.play(() => logger.debug('[useHideSplashScreen]: playing poolboy sound'));
+          });
+        }
+      }
+    } catch (e) {
+      logger.error(new RainbowError('[useHideSplashScreen]: Error hiding splash screen'), {
+        error: e,
+      });
     }
   }, []);
 }

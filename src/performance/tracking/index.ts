@@ -28,7 +28,7 @@ export const PerformanceReportSegments = {
     initRootComponent: 'init_root_component',
     hideSplashScreen: 'hide_splash_screen',
     tti: 'tti',
-    // The time it takes for from the splash screen to be hidden until the initial screen is interactive
+    // The time it takes for from the root navigation being ready until the initial screen is interactive
     initialScreenInteractiveRender: 'initial_screen_interactive_render',
   },
 } as const;

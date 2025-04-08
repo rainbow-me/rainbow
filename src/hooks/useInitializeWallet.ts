@@ -138,14 +138,6 @@ export default function useInitializeWallet() {
           });
         }
 
-        try {
-          hideSplashScreen();
-        } catch (err) {
-          logger.error(new RainbowError('[useInitializeWallet]: Error while hiding splash screen'), {
-            error: err,
-          });
-        }
-
         dispatch(appStateUpdate({ walletReady: true }));
         logger.debug('[useInitializeWallet]: 💰 Wallet initialized');
 
