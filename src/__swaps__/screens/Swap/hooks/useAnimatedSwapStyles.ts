@@ -80,6 +80,18 @@ export function useAnimatedSwapStyles({
     };
   });
 
+  const removeWhenNoPriceImpact = useAnimatedStyle(() => {
+    return {
+      display: SwapWarning.swapWarning.value.type === SwapWarningType.none ? 'none' : 'flex',
+    };
+  });
+
+  const removeWhenPriceImpact = useAnimatedStyle(() => {
+    return {
+      display: SwapWarning.swapWarning.value.type !== SwapWarningType.none ? 'none' : 'flex',
+    };
+  });
+
   const hideWhenInputsExpandedOrNoPriceImpact = useAnimatedStyle(() => {
     return {
       opacity:
@@ -298,5 +310,7 @@ export function useAnimatedSwapStyles({
     searchOutputAssetButtonStyle,
     searchInputAssetButtonWrapperStyle,
     searchOutputAssetButtonWrapperStyle,
+    removeWhenNoPriceImpact,
+    removeWhenPriceImpact,
   };
 }
