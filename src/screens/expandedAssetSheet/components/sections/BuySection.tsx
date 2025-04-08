@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import * as i18n from '@/languages';
 import { Bleed, Box, IconContainer, Stack, Text, TextShadow } from '@/design-system';
-import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ScrollView } from 'react-native-gesture-handler';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Row } from '../shared/Row';
@@ -19,6 +19,9 @@ import { isL2Chain } from '@/handlers/web3';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
+import { SheetSeparator } from '../shared/Separator';
+import Animated from 'react-native-reanimated';
 
 const GRADIENT_FADE_WIDTH = 24;
 const DEFAULT_PERCENTAGES_OF_BALANCE = [0.05, 0.1, 0.25, 0.5, 0.75];
@@ -72,7 +75,7 @@ function BuyButton({ currencyAmount, numberOfButtons, onPress }: { currencyAmoun
   );
 }
 
-export const BuySection = memo(function BuySection() {
+export const BuyContent = memo(function BuySection() {
   const { accentColors, basicAsset: asset } = useExpandedAssetSheetContext();
   const { nativeCurrency } = useAccountSettings();
 
@@ -249,3 +252,43 @@ export const BuySection = memo(function BuySection() {
     </Box>
   );
 });
+
+const shouldShowBuySection = (placement: Placement, isOwnedAsset: boolean, isBuySectionVisible: boolean) => {
+  if (!isBuySectionVisible) {
+    return false;
+  }
+  return (placement === Placement.AFTER_BALANCE && !isOwnedAsset) || (placement === Placement.AFTER_MARKET_STATS && isOwnedAsset);
+};
+
+export enum Placement {
+  AFTER_BALANCE = 'after_balance',
+  AFTER_MARKET_STATS = 'after_market_stats',
+}
+
+type BuySectionProps = {
+  placement: Placement;
+};
+
+export function BuySection({ placement }: BuySectionProps) {
+  const { basicAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
+  const { nativeCurrency } = useAccountSettings();
+  const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(asset.chainId));
+  const buyWithAsset = useAccountAsset(nativeAssetForChain?.uniqueId ?? '', nativeCurrency);
+  const assetIsBuyWithAsset = asset.uniqueId === buyWithAsset?.uniqueId;
+  const isBuySectionVisible = !assetIsBuyWithAsset && !!buyWithAsset;
+
+  if (!shouldShowBuySection(placement, isOwnedAsset, isBuySectionVisible)) return null;
+
+  return (
+    <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>
+      <CollapsibleSection
+        content={<BuyContent />}
+        icon="􀡓"
+        id={SectionId.BUY}
+        primaryText={i18n.t(i18n.l.expanded_state.sections.buy.title)}
+        secondaryText={asset.symbol}
+      />
+      <SheetSeparator />
+    </Box>
+  );
+}
