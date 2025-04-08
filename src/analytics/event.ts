@@ -157,7 +157,6 @@ export const event = {
 
   addFavoriteToken: 'add_favorite_token',
   watchWallet: 'watch_wallet',
-  watchedWalletCohort: 'watched_wallet_cohort',
 
   // claimables
   claimClaimableSucceeded: 'claim_claimable.succeeded',
@@ -661,11 +660,6 @@ export type EventProperties = {
   [event.watchWallet]: {
     addressOrEnsName: string;
     address: string;
-  };
-
-  [event.watchedWalletCohort]: {
-    numWatchedWallets: number;
-    watchedWalletsAddresses: string[];
   };
 
   [event.claimClaimableSucceeded]: {
