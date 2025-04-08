@@ -96,6 +96,16 @@ export interface UniqueAssetTrait {
   max_value: string | number | null | undefined;
 }
 
+export type UniqueAssetFamily = {
+  collectionId: string;
+  familyImage: string;
+  familyName: string;
+  distinctNftsOwned: string;
+  totalCopiesOwned: string;
+  lastAcquiredDate?: string | null;
+  nftIds: string[];
+};
+
 export interface SeaportOrder {
   created_date: string;
   closing_date: string | null;
