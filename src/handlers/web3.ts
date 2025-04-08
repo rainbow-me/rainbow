@@ -7,7 +7,7 @@ import { Block, JsonRpcBatchProvider, StaticJsonRpcProvider, TransactionRequest 
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
-import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
+import { AssetType, NewTransaction, ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { isUnstoppableAddressFormat } from '@/helpers/validators';
 import { ethUnits, smartContractMethods, CRYPTO_KITTIES_NFT_ADDRESS, CRYPTO_PUNKS_NFT_ADDRESS } from '@/references';
@@ -236,6 +236,14 @@ export const estimateGas = async (estimateGasData: TransactionRequest, provider:
     return null;
   }
 };
+
+export function assetIsUniqueAsset(asset: ParsedAddressAsset | UniqueAsset): asset is UniqueAsset {
+  return 'collection' in asset;
+}
+
+export function assetIsParsedAddressAsset(asset: ParsedAddressAsset | UniqueAsset): asset is ParsedAddressAsset {
+  return 'address' in asset;
+}
 
 /**
  * @desc Estimates gas for a transaction with a padding multiple.
@@ -510,8 +518,8 @@ export const createSignableTransaction = async (transaction: NewTransactionNonNu
  * @param asset The asset to check.
  * @return The estimated portion.
  */
-const estimateAssetBalancePortion = (asset: ParsedAddressAsset): string => {
-  if (asset.type !== AssetType.nft && asset.balance?.amount) {
+const estimateAssetBalancePortion = (asset: ParsedAddressAsset | UniqueAsset): string => {
+  if (assetIsParsedAddressAsset(asset) && asset.type !== AssetType.nft && asset.balance?.amount) {
     const assetBalance = asset.balance?.amount;
     const decimals = asset.decimals;
     const portion = multiply(assetBalance, 0.1);
@@ -540,7 +548,11 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
  * @param asset The asset to transfer.
  * @return The data string if the transfer can be attempted, otherwise undefined.
  */
-export const getDataForNftTransfer = (from: string, to: string, asset: ParsedAddressAsset): string | undefined => {
+export const getDataForNftTransfer = (
+  from: string,
+  to: string,
+  asset: Pick<UniqueAsset, 'id' | 'asset_contract' | 'chainId'>
+): string | undefined => {
   if (!asset.id || !asset.asset_contract?.address) return;
   const lowercasedContractAddress = asset.asset_contract.address.toLowerCase();
   const standard = asset.asset_contract?.schema_name;
@@ -588,7 +600,7 @@ export const buildTransaction = async (
     gasLimit,
     recipient,
   }: {
-    asset: ParsedAddressAsset;
+    asset: ParsedAddressAsset | UniqueAsset;
     address: string;
     recipient: string;
     amount: number;
@@ -597,7 +609,10 @@ export const buildTransaction = async (
   provider: StaticJsonRpcProvider | undefined,
   chainId: ChainId
 ): Promise<TransactionRequest> => {
-  const _amount = amount && Number(amount) ? convertAmountToRawAmount(amount, asset.decimals) : estimateAssetBalancePortion(asset);
+  const _amount =
+    amount && Number(amount) && assetIsParsedAddressAsset(asset)
+      ? convertAmountToRawAmount(amount, asset.decimals)
+      : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
   const _recipient = (await resolveNameOrAddress(recipient)) as string;
   let txData: TransactionRequest = {
@@ -606,7 +621,7 @@ export const buildTransaction = async (
     to: _recipient,
     value,
   };
-  if (asset.type === AssetType.nft) {
+  if (assetIsUniqueAsset(asset) && asset.type === AssetType.nft) {
     const contractAddress = asset.asset_contract?.address;
     const data = getDataForNftTransfer(address, _recipient, asset);
     txData = {
@@ -614,7 +629,7 @@ export const buildTransaction = async (
       from: address,
       to: contractAddress,
     };
-  } else if (!isNativeAsset(asset.address, chainId)) {
+  } else if (assetIsParsedAddressAsset(asset) && !isNativeAsset(asset.address, chainId)) {
     const transferData = getDataForTokenTransfer(value, _recipient);
     txData = {
       data: transferData,
@@ -643,7 +658,7 @@ export const estimateGasLimit = async (
     recipient,
     amount,
   }: {
-    asset: ParsedAddressAsset;
+    asset: ParsedAddressAsset | UniqueAsset;
     address: string;
     recipient: string;
     amount: number;
