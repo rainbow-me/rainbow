@@ -5,8 +5,7 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
-import { PerformanceTracking } from '../performance/tracking';
-import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
+import { PerformanceTracking } from '@/performance/tracking';
 import { appStateUpdate } from '../redux/appState';
 import { settingsLoadNetwork, settingsUpdateAccountAddress } from '../redux/settings';
 import { walletsLoadState } from '../redux/wallets';
@@ -22,6 +21,7 @@ import { getOrCreateDeviceId, getWalletContext } from '@/analytics/utils';
 import * as Sentry from '@sentry/react-native';
 import { analyticsV2 } from '@/analytics';
 import { Address } from 'viem';
+import { event } from '@/analytics/event';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -58,7 +58,7 @@ export default function useInitializeWallet() {
       silent = false
     ) => {
       try {
-        PerformanceTracking.startMeasuring(PerformanceMetrics.useInitializeWallet);
+        PerformanceTracking.startMeasuring(event.performanceInitializeWallet);
         logger.debug('[useInitializeWallet]: Start wallet setup');
 
         const isImporting = !!seedPhrase;
@@ -149,13 +149,13 @@ export default function useInitializeWallet() {
         dispatch(appStateUpdate({ walletReady: true }));
         logger.debug('[useInitializeWallet]: 💰 Wallet initialized');
 
-        PerformanceTracking.finishMeasuring(PerformanceMetrics.useInitializeWallet, {
+        PerformanceTracking.finishMeasuring(event.performanceInitializeWallet, {
           walletStatus: getWalletStatusForPerformanceMetrics(isNew, isImporting),
         });
 
         return walletAddress;
       } catch (error) {
-        PerformanceTracking.clearMeasure(PerformanceMetrics.useInitializeWallet);
+        PerformanceTracking.clearMeasure(event.performanceInitializeWallet);
         logger.error(new RainbowError('[useInitializeWallet]: Error while initializing wallet'), {
           error,
         });

@@ -195,6 +195,13 @@ export const event = {
   // network status
   networkStatusOffline: 'network_status.offline',
   networkStatusReconnected: 'network_status.reconnected',
+
+  // performance
+  performanceReport: 'performance.report',
+  performanceInitializeWallet: 'performance.initialize_wallet',
+
+  // discover screen
+  timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -812,4 +819,23 @@ export type EventProperties = {
   // network status
   [event.networkStatusOffline]: undefined;
   [event.networkStatusReconnected]: undefined;
+
+  // performance
+  [event.performanceInitializeWallet]: {
+    walletStatus: string;
+    durationInMs: number;
+    performanceTrackingVersion: number;
+  };
+  [event.performanceReport]: {
+    reportName: string;
+    segments: Record<string, number>;
+    durationInMs: number;
+    performanceTrackingVersion: number;
+    data: Record<string, unknown>;
+  };
+
+  // discover screen
+  [event.timeSpentOnDiscoverScreen]: {
+    durationInMs: number;
+  };
 };

@@ -39,6 +39,7 @@ import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
 import { RenderPassReport, PerformanceProfiler } from '@shopify/react-native-performance';
+import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -64,12 +65,16 @@ function App({ walletReady }: AppProps) {
     Navigation.setTopLevelNavigator(ref);
   }, []);
 
+  const onNavigationReady = useCallback(() => {
+    PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.mountNavigation);
+  }, []);
+
   return (
     <>
       <View style={sx.container}>
         {initialRoute && (
           <InitialRouteContext.Provider value={initialRoute}>
-            <Routes ref={handleNavigatorRef} />
+            <Routes onReady={onNavigationReady} ref={handleNavigatorRef} />
           </InitialRouteContext.Provider>
         )}
         <OfflineToast />
@@ -103,8 +108,8 @@ function Root() {
 
   useEffect(() => {
     async function initializeApplication() {
-      await initializeRemoteConfig();
-      await migrate();
+      PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);
+      await Promise.all([initializeRemoteConfig(), migrate(), analyticsV2.initializeRudderstack()]);
 
       const isReturningUser = ls.device.get(['isReturningUser']);
       const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
@@ -145,6 +150,7 @@ function Root() {
         const { width: screenWidth, height: screenHeight, scale: screenScale } = Dimensions.get('screen');
 
         analyticsV2.identify({ screenHeight, screenWidth, screenScale });
+        // TODO: deprecated in amplitude, can I remove?
         analyticsV2.track(analyticsV2.event.firstAppOpen);
       }
 
@@ -158,14 +164,13 @@ function Root() {
        * `true`.
        */
       ls.device.set(['isReturningUser'], true);
+
+      PerformanceTracking.finishReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);
     }
 
     initializeApplication()
       .then(() => {
         logger.debug(`[App]: Application initialized with Sentry and analytics`);
-
-        // init complete, load the rest of the app
-        setInitializing(false);
       })
       .catch(error => {
         logger.error(new RainbowError(`[App]: initializeApplication failed`), {
@@ -173,19 +178,26 @@ function Root() {
             error,
           },
         });
-
-        // for failure, continue to rest of the app for now
+      })
+      .finally(() => {
         setInitializing(false);
       });
+
     initializeReservoirClient();
   }, [setInitializing]);
 
-  const onReportPrepared = useCallback((report: RenderPassReport) => {
-    console.log('PERFORMANCE REPORT', report);
+  // The report param is not currently used as we have our own time tracking, but it is available at the time we want to finish the app startup report
+  const onReportPrepared = useCallback(() => {
+    PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.tti);
+    PerformanceTracking.finishReportSegment(
+      PerformanceReports.appStartup,
+      PerformanceReportSegments.appStartup.initialScreenInteractiveRender
+    );
+    PerformanceTracking.finishReport(PerformanceReports.appStartup);
   }, []);
 
   return initializing ? null : (
-    <PerformanceProfiler onReportPrepared={onReportPrepared}>
+    <PerformanceProfiler useRenderTimeouts={false} onReportPrepared={onReportPrepared}>
       {/* @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>' */}
       <ReduxProvider store={store}>
         <RecoilRoot>

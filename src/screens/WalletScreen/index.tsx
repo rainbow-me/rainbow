@@ -167,7 +167,7 @@ function WalletScreen() {
   const { highContrastAccentColor } = useAccountAccentColor();
 
   return (
-    <PerformanceMeasureView interactive={walletReady} screenName="WalletScreen">
+    <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
       <Box as={Page} flex={1} testID="wallet-screen">
         <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
           {/* @ts-expect-error JavaScript component */}

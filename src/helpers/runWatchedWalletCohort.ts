@@ -6,6 +6,7 @@ import * as ls from '@/storage';
 
 const WATCHED_WALLET_COHORT_INTERVAL = 1000 * 60 * 60 * 24; // 1 day between cohort reports
 
+// TODO: This should be removed, it's redundant with the identity metrics recorded on the wallet screen.
 export function useRunWatchedWalletCohort() {
   const { wallets } = useWallets();
 

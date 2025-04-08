@@ -8,7 +8,7 @@ import { logger, RainbowError } from '@/logger';
 import { device } from '@/storage';
 import { WalletContext } from './utils';
 import { IS_ANDROID, IS_TEST } from '@/env';
-
+import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '@/performance/tracking';
 export class Analytics {
   client: typeof rudderClient;
   deviceId?: string;
@@ -93,9 +93,11 @@ export class Analytics {
 
   async initializeRudderstack() {
     try {
+      PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRudderstack);
       await rudderClient.setup(REACT_NATIVE_RUDDERSTACK_WRITE_KEY, {
         dataPlaneUrl: RUDDERSTACK_DATA_PLANE_URL,
       });
+      PerformanceTracking.finishReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRudderstack);
     } catch (error) {
       logger.error(new RainbowError('[Analytics]: Unable to initialize Rudderstack'), { error });
     }

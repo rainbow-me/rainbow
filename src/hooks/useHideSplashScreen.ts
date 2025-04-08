@@ -2,13 +2,9 @@
 import { MutableRefObject, useCallback, useRef } from 'react';
 import { InteractionManager, NativeModules } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
-import { PerformanceContextMap } from '../performance/PerformanceContextMap';
-import { StartTime } from '../performance/start-time';
-import { PerformanceTracking } from '../performance/tracking';
-import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
+import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '../performance/tracking';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { StatusBarHelper } from '@/helpers';
-import { analytics } from '@/analytics';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 import { getAppIcon } from '@/handlers/localstorage/globalSettings';
 import { RainbowError, logger } from '@/logger';
@@ -20,7 +16,7 @@ export default function useHideSplashScreen() {
   const didSetStatusBar = useRef(false);
 
   return useCallback(async () => {
-    if (!!RainbowSplashScreen && RainbowSplashScreen.hideAnimated) {
+    if (RainbowSplashScreen?.hideAnimated) {
       RainbowSplashScreen.hideAnimated();
     } else if (IS_ANDROID) {
       handleAndroidStatusBar(didSetStatusBar);
@@ -39,12 +35,12 @@ export default function useHideSplashScreen() {
       });
 
     if (!alreadyLoggedPerformance.current) {
-      const initialRoute = PerformanceContextMap.get('initialRoute');
-      const additionalParams = initialRoute !== undefined ? { initialRoute } : undefined;
-      PerformanceTracking.finishMeasuring(PerformanceMetrics.timeToInteractive, additionalParams);
-      PerformanceTracking.logDirectly(PerformanceMetrics.completeStartupTime, performance.now() - StartTime.START_TIME, additionalParams);
-      analytics.track('Application became interactive');
       alreadyLoggedPerformance.current = true;
+      PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.hideSplashScreen);
+      PerformanceTracking.startReportSegment(
+        PerformanceReports.appStartup,
+        PerformanceReportSegments.appStartup.initialScreenInteractiveRender
+      );
 
       // need to load setting straight from storage, redux isnt ready yet
       const appIcon = (await getAppIcon()) as AppIconKey;
