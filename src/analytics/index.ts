@@ -8,7 +8,6 @@ import { logger, RainbowError } from '@/logger';
 import { device } from '@/storage';
 import { WalletContext } from './utils';
 import { IS_ANDROID, IS_TEST } from '@/env';
-import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '@/performance/tracking';
 export class Analytics {
   client: typeof rudderClient;
   deviceId?: string;

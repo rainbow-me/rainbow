@@ -19,10 +19,8 @@ type PerformanceReport = (typeof PerformanceReports)[keyof typeof PerformanceRep
 export const PerformanceReportSegments = {
   appStartup: {
     loadJSBundle: 'load_js_bundle',
-    runShim: 'run_shim',
     loadMainModule: 'load_main_module',
     mountNavigation: 'mount_navigation',
-    initSentry: 'init_sentry',
     initWalletConnect: 'init_walletconnect',
     initRootComponent: 'init_root_component',
     hideSplashScreen: 'hide_splash_screen',
