@@ -30,7 +30,6 @@ export default function ChartExpandedStateHeader({
   isPool,
   latestChange,
   latestPrice = noPriceData,
-  priceRef,
   showChart,
   chartType,
 }) {
@@ -118,7 +117,7 @@ export default function ChartExpandedStateHeader({
             {titleOrNoPriceData}
           </Text>
         </TextShadow>
-        <ChartPriceLabel defaultValue={title} isNoPriceData={isNoPriceData} isPool={isPool} priceRef={priceRef} priceValue={price} />
+        <ChartPriceLabel defaultValue={title} isNoPriceData={isNoPriceData} isPool={isPool} priceValue={price} />
         <Animated.View style={showPriceChangeStyle}>
           <Bleed top={'6px'}>
             <Box gap={8} flexDirection="row" alignItems="center">

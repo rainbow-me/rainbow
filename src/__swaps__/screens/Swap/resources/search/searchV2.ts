@@ -1,15 +1,24 @@
-import { isAddress } from '@ethersproject/address';
 import qs from 'qs';
+import { getAddress, isAddress } from '@ethersproject/address';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { groupBy } from 'lodash';
+import { getProvider } from '@/handlers/web3';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
+import { Contract } from '@ethersproject/contracts';
+import { erc20ABI } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { time } from '@/utils';
-import { parseTokenSearchResults } from './utils';
+import { parseTokenSearchResults, parseTokenSearchAcrossNetworks } from './utils';
 import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
+
+type SearchItemWithRelevance = SearchAsset & {
+  relevance: number;
+};
 
 // ============ Constants & Types ============================================== //
 
@@ -18,13 +27,14 @@ const MAX_UNVERIFIED_RESULTS = 6;
 
 const NO_RESULTS: SearchAsset[] = [];
 const NO_VERIFIED_RESULTS: VerifiedResults = { crosschainResults: [], results: [] };
+const NO_DISCOVER_RESULTS: DiscoverSearchResults = { verifiedAssets: [], highLiquidityAssets: [], lowLiquidityAssets: [] };
 
 enum SearchMode {
   CurrentNetwork = 'currentNetwork',
   Crosschain = 'crosschain',
 }
 
-enum TokenLists {
+export enum TokenLists {
   HighLiquidity = 'highLiquidityAssets',
   LowLiquidity = 'lowLiquidityAssets',
   Verified = 'verifiedAssets',
@@ -32,11 +42,18 @@ enum TokenLists {
 
 type TokenSearchParams<List extends TokenLists = TokenLists> = {
   chainId: ChainId;
-  fromChainId?: ChainId;
-  keys: TokenSearchAssetKey[];
   list: List;
   query: string | undefined;
-  threshold: TokenSearchThreshold;
+};
+
+type DiscoverSearchParams = {
+  list?: string;
+  query: string;
+};
+
+type DiscoverSearchQueryState = {
+  isSearching: boolean;
+  searchQuery: string;
 };
 
 export type VerifiedResults = {
@@ -44,27 +61,31 @@ export type VerifiedResults = {
   results: SearchAsset[];
 };
 
+type DiscoverSearchResults = {
+  verifiedAssets: SearchAsset[];
+  highLiquidityAssets: SearchAsset[];
+  lowLiquidityAssets: SearchAsset[];
+};
+
 // ============ Store Definitions ============================================== //
 
 export const useSwapsSearchStore = createRainbowStore<{ searchQuery: string }>(() => ({ searchQuery: '' }));
+
+export const useDiscoverSearchQueryStore = createRainbowStore<DiscoverSearchQueryState>(() => ({ isSearching: false, searchQuery: '' }));
 
 export const useTokenSearchStore = createQueryStore<VerifiedResults, TokenSearchParams<TokenLists.Verified>>(
   {
     cacheTime: params => (params.query?.length ? time.seconds(15) : time.hours(1)),
     fetcher: searchVerifiedTokens,
-
     disableAutoRefetching: true,
     keepPreviousData: true,
     params: {
       list: TokenLists.Verified,
       chainId: $ => $(useSwapsStore).selectedOutputChainId,
-      keys: $ => $(useSwapsSearchStore, state => getSearchKeys(state.searchQuery.trim())),
       query: $ => $(useSwapsSearchStore, state => (state.searchQuery.trim().length ? state.searchQuery.trim() : undefined)),
-      threshold: $ => $(useSwapsSearchStore, state => getSearchThreshold(state.searchQuery.trim())),
     },
     staleTime: time.minutes(2),
   },
-
   { persistThrottleMs: time.seconds(8), storageKey: 'verifiedTokenSearch' }
 );
 
@@ -74,21 +95,131 @@ export const useUnverifiedTokenSearchStore = createQueryStore<SearchAsset[], Tok
     fetcher: (params, abortController) => ((params.query?.length ?? 0) > 2 ? searchUnverifiedTokens(params, abortController) : NO_RESULTS),
     transform: (data, { query }) =>
       query && isAddress(query) ? getExactMatches(data, query, true, MAX_UNVERIFIED_RESULTS) : data.slice(0, MAX_UNVERIFIED_RESULTS),
-
     disableAutoRefetching: true,
     keepPreviousData: true,
     params: {
       list: TokenLists.HighLiquidity,
       chainId: $ => $(useSwapsStore).selectedOutputChainId,
-      keys: $ => $(useSwapsSearchStore, state => getSearchKeys(state.searchQuery.trim())),
       query: $ => $(useSwapsSearchStore, state => state.searchQuery.trim()),
-      threshold: $ => $(useSwapsSearchStore, state => getSearchThreshold(state.searchQuery.trim())),
     },
     staleTime: time.minutes(2),
   },
-
   { persistThrottleMs: time.seconds(12), storageKey: 'unverifiedTokenSearch' }
 );
+
+export const useDiscoverSearchStore = createQueryStore<DiscoverSearchResults, DiscoverSearchParams>(
+  {
+    fetcher: (params, abortController) => discoverSearchQueryFunction(params, abortController),
+    cacheTime: params => (params.query?.length ? time.seconds(15) : time.hours(1)),
+    disableAutoRefetching: true,
+    keepPreviousData: true,
+    params: {
+      query: $ => $(useDiscoverSearchQueryStore, state => (state.searchQuery.trim().length ? state.searchQuery.trim() : '')),
+    },
+    staleTime: time.minutes(2),
+  },
+  { persistThrottleMs: time.seconds(8), storageKey: 'discoverTokenSearch' }
+);
+
+const sortForDefaultList = (tokens: SearchAsset[]) => {
+  const curated = tokens.filter(asset => asset.highLiquidity && asset.isRainbowCurated && asset.icon_url);
+  return curated.sort((a, b) => (b.market?.market_cap?.value || 0) - (a.market?.market_cap?.value || 0));
+};
+
+const sortTokensByRelevance = (tokens: SearchAsset[], query: string): SearchItemWithRelevance[] => {
+  const normalizedQuery = query.toLowerCase().trim();
+  const tokenWithRelevance: SearchItemWithRelevance[] = tokens.map(token => {
+    const normalizedTokenName = token.name.toLowerCase();
+
+    const normalizedTokenSymbol = token.symbol.toLowerCase();
+    const tokenNameWords = normalizedTokenName.split(' ');
+    const relevance = getTokenRelevance({
+      token,
+      normalizedTokenName,
+      normalizedQuery,
+      normalizedTokenSymbol,
+      tokenNameWords,
+    });
+    return { ...token, relevance };
+  });
+
+  return tokenWithRelevance.sort((a, b) => b.relevance - a.relevance);
+};
+
+// higher number indicates higher relevance
+const getTokenRelevance = ({
+  token,
+  normalizedTokenName,
+  normalizedQuery,
+  normalizedTokenSymbol,
+  tokenNameWords,
+}: {
+  token: SearchAsset;
+  normalizedTokenName: string;
+  normalizedQuery: string;
+  normalizedTokenSymbol?: string;
+  tokenNameWords: string[];
+}) => {
+  // High relevance: Leading word in token name starts with query or exact match on symbol
+  if (normalizedTokenName.startsWith(normalizedQuery) || (normalizedTokenSymbol && normalizedTokenSymbol === normalizedQuery)) {
+    if (token.icon_url) {
+      return 5.1;
+    }
+    return 5;
+  }
+
+  // Medium relevance: Non-leading word in token name starts with query
+  if (tokenNameWords.some((word, index) => index !== 0 && word.startsWith(normalizedQuery))) {
+    return 4;
+  }
+
+  // Low relevance: Token name contains query
+  if (tokenNameWords.some(word => word.includes(normalizedQuery))) {
+    return 3;
+  }
+
+  return 0;
+};
+
+const selectTopDiscoverSearchResults = ({
+  abortController,
+  searchQuery,
+  data,
+}: {
+  abortController: AbortController | null;
+  searchQuery: string;
+  data: SearchAsset[];
+}): DiscoverSearchResults => {
+  if (abortController?.signal.aborted) return NO_DISCOVER_RESULTS;
+  const results = data.filter(asset => {
+    const hasIcon = asset.icon_url;
+    const isMatch = hasIcon || searchQuery.length > 2;
+
+    if (!isMatch) {
+      const crosschainMatch = getExactMatches([asset], searchQuery, isAddress(searchQuery));
+      return crosschainMatch.length > 0;
+    }
+
+    return isMatch;
+  });
+  if (abortController?.signal.aborted) return NO_DISCOVER_RESULTS;
+  const topResults = searchQuery === '' ? sortForDefaultList(results) : sortTokensByRelevance(results, searchQuery);
+  const { verifiedAssets, highLiquidityAssets, lowLiquidityAssets } = groupBy(topResults, searchResult => {
+    if (searchResult.isVerified) {
+      return 'verifiedAssets';
+    } else if (searchResult.highLiquidity) {
+      return 'highLiquidityAssets';
+    } else {
+      return 'lowLiquidityAssets';
+    }
+  });
+
+  return {
+    verifiedAssets,
+    highLiquidityAssets,
+    lowLiquidityAssets,
+  };
+};
 
 // ============ Fetch Utils ==================================================== //
 
@@ -132,26 +263,18 @@ async function performTokenSearch(url: string, abortController: AbortController 
  */
 function buildTokenSearchUrlParams<T extends TokenLists>({
   chainId,
-  fromChainId,
-  keys,
   list,
   query,
-  threshold,
 }: TokenSearchParams<T>): {
-  queryParams: Omit<TokenSearchParams<T>, 'chainId' | 'keys'> & { keys: string };
+  queryParams: Omit<TokenSearchParams<T>, 'chainId'>;
   isAddressSearch: boolean;
   url: string;
 } {
   const queryParams = {
-    fromChainId,
-    keys: keys?.join(','),
     list,
     query,
-    threshold,
   };
-
   const isAddressSearch = !!query && isAddress(query);
-  if (isAddressSearch) queryParams.keys = `networks.${chainId}.address`;
 
   const url = `${chainId ? `/${chainId}` : ''}/?${qs.stringify(queryParams)}`;
   return { isAddressSearch, queryParams, url };
@@ -259,21 +382,84 @@ function getExactMatches(data: SearchAsset[], query: string, isAddress: boolean,
 export const ADDRESS_SEARCH_KEY: TokenSearchAssetKey[] = ['address'];
 export const NAME_SYMBOL_SEARCH_KEYS: TokenSearchAssetKey[] = ['name', 'symbol'];
 
-/**
- * Determines the appropriate search keys based on the query.
- */
-function getSearchKeys(query: string): TokenSearchAssetKey[] {
-  return isAddress(query) ? ADDRESS_SEARCH_KEY : NAME_SYMBOL_SEARCH_KEYS;
-}
+const getImportedAsset = async (searchQuery: string, chainId: number = ChainId.mainnet): Promise<SearchAsset[]> => {
+  if (isAddress(searchQuery)) {
+    const provider = getProvider({ chainId });
+    const tokenContract = new Contract(searchQuery, erc20ABI, provider);
+    try {
+      const [name, symbol, decimals, address] = await Promise.all([
+        tokenContract.name(),
+        tokenContract.symbol(),
+        tokenContract.decimals(),
+        getAddress(searchQuery),
+      ]);
+      const uniqueId = getUniqueId(address, chainId);
 
-const CASE_SENSITIVE_EQUAL_THRESHOLD: TokenSearchThreshold = 'CASE_SENSITIVE_EQUAL';
-const CONTAINS_THRESHOLD: TokenSearchThreshold = 'CONTAINS';
+      return [
+        {
+          chainId,
+          address,
+          decimals,
+          highLiquidity: false,
+          isRainbowCurated: false,
+          isVerified: false,
+          mainnetAddress: address,
+          name,
+          networks: {
+            [chainId]: {
+              address,
+              decimals,
+            },
+          },
+          symbol,
+          uniqueId,
+        } as SearchAsset,
+      ];
+    } catch (e) {
+      logger.warn('[getImportedAsset]: error getting imported token data', { error: (e as Error).message });
+      return [];
+    }
+  }
+  return [];
+};
 
-/**
- * Determines the search threshold based on the query.
- */
-function getSearchThreshold(query: string): TokenSearchThreshold {
-  return isAddress(query) ? CASE_SENSITIVE_EQUAL_THRESHOLD : CONTAINS_THRESHOLD;
+export async function discoverSearchQueryFunction(
+  { query }: DiscoverSearchParams,
+  abortController: AbortController | null
+): Promise<DiscoverSearchResults> {
+  const queryParams: DiscoverSearchParams = {
+    query,
+  };
+
+  const isAddressSearch = query && isAddress(query);
+
+  const searchDefaultVerifiedList = query === '';
+  if (searchDefaultVerifiedList) {
+    queryParams.list = 'verifiedAssets';
+  }
+
+  const url = `${searchDefaultVerifiedList ? `/${ChainId.mainnet}` : ''}/?${qs.stringify(queryParams)}`;
+
+  try {
+    const tokenSearchData = await performTokenSearch(url, abortController, 'searchVerifiedTokens');
+
+    if (isAddressSearch && (tokenSearchData.length || 0) === 0) {
+      const result = await getImportedAsset(query);
+      return {
+        verifiedAssets: [],
+        highLiquidityAssets: [],
+        lowLiquidityAssets: result,
+      };
+    }
+    return selectTopDiscoverSearchResults({
+      abortController,
+      data: parseTokenSearchAcrossNetworks(tokenSearchData),
+      searchQuery: query,
+    });
+  } catch (e) {
+    logger.error(new RainbowError('[discoverSearchQueryFunction]: Discover search failed'), { url });
+    return NO_DISCOVER_RESULTS;
+  }
 }
 
 // ============ API Functions ================================================== //
@@ -281,7 +467,7 @@ function getSearchThreshold(query: string): TokenSearchThreshold {
 /**
  * Searches for verified tokens.
  */
-async function searchVerifiedTokens(
+export async function searchVerifiedTokens(
   params: TokenSearchParams<TokenLists.Verified>,
   abortController: AbortController | null
 ): Promise<VerifiedResults> {

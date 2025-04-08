@@ -75,7 +75,7 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
       onPress={() => {
         if (!isETHRewards) {
           analyticsV2.track(analyticsV2.event.claimablePanelOpened, {
-            claimableType: claimable?.type,
+            claimableType: claimable?.actionType,
             claimableId: claimable?.analyticsId,
             chainId: claimable?.chainId,
             asset: { symbol: claimable?.asset.symbol, address: claimable?.asset.address },

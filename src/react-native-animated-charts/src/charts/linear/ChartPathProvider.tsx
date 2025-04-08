@@ -1,22 +1,26 @@
 import { scaleLinear } from 'd3-scale';
 import * as shape from 'd3-shape';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Dimensions } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import { parse as parseSvg } from 'react-native-redash';
 import { CallbackType, ChartContext, CurveType, DataType, PathData, PathScales, Point } from '../../helpers/ChartContext';
 import { findYExtremes } from '../../helpers/extremesHelpers';
+// @ts-ignore this library is no longer maintained independently of the app, so this is fine
+import { usePrevious } from '@/hooks';
 
 const { width: WIDTH } = Dimensions.get('window');
 
 const HEIGHT = 146.5;
-
 interface ChartPathProviderProps {
   data: DataType;
+  color: string;
+  selectedColor?: string;
   width?: number;
   height?: number;
   yRange?: [number, number];
   children: React.ReactNode;
+  endPadding?: number;
 }
 
 function getCurveType(curveType: keyof typeof CurveType | undefined) {
@@ -38,13 +42,6 @@ function getCurveType(curveType: keyof typeof CurveType | undefined) {
   }
 }
 
-function detectFlatData(yValues: number[]): boolean {
-  if (!yValues.length) return false;
-
-  const firstY = yValues[0];
-  return yValues.every(y => Math.abs(y - firstY) < 0.000000001);
-}
-
 function detectStablecoin(yValues: number[]): boolean {
   if (!yValues.length) return false;
 
@@ -56,16 +53,6 @@ function detectStablecoin(yValues: number[]): boolean {
   return closeToOneCount / yValues.length > 0.95;
 }
 
-function detectNearlyFlatData(yValues: number[]): boolean {
-  if (!yValues.length) return false;
-
-  const minY = Math.min(...yValues);
-  const maxY = Math.max(...yValues);
-
-  const percentChange = minY > 0 ? ((maxY - minY) / minY) * 100 : 0;
-  return percentChange < 0.1;
-}
-
 function getScales({ data, width, height, yRange }: CallbackType): PathScales {
   const x = data.points.map(item => item.x);
   const y = data.points.map(item => item.y);
@@ -73,32 +60,20 @@ function getScales({ data, width, height, yRange }: CallbackType): PathScales {
   const smallestX = Math.min(...x);
   const greatestX = Math.max(...x);
 
-  const isFlat = detectFlatData(y);
-  const isNearlyFlat = detectNearlyFlatData(y);
   const isStablecoin = detectStablecoin(y);
 
   let smallestY, greatestY;
 
   if (Array.isArray(yRange)) {
-    // Use provided yRange if available
     smallestY = yRange[0];
     greatestY = yRange[1];
-  } else if (isFlat || isNearlyFlat) {
-    // For flat or nearly flat data, add padding to prevent spikes
-    const avgY = y.reduce((sum, val) => sum + val, 0) / y.length;
-    // Add 0.5% padding above and below for flat data
-    const padding = avgY * 0.005;
-    smallestY = avgY - padding;
-    greatestY = avgY + padding;
   } else if (isStablecoin) {
     smallestY = Math.round(Math.min(...y));
     greatestY = Math.round(Math.max(...y));
   } else {
-    // For non-flat data, use actual min/max with minimal padding
     smallestY = Math.min(...y);
     greatestY = Math.max(...y);
 
-    // Add a small padding (0.5%) to prevent data from touching edges
     const range = greatestY - smallestY;
     const padding = Math.max(range * 0.005, smallestY * 0.005);
     smallestY = smallestY - padding;
@@ -111,8 +86,6 @@ function getScales({ data, width, height, yRange }: CallbackType): PathScales {
   return {
     scaleX,
     scaleY,
-    isFlat,
-    isNearlyFlat,
   };
 }
 
@@ -139,6 +112,7 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
     greatestY: Point;
     smallestY: Point;
   };
+
   const smallestX = data.points[0];
   const greatestX = data.points[data.points.length - 1];
 
@@ -182,105 +156,88 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
   };
 }
 
-export const ChartPathProvider = React.memo<ChartPathProviderProps>(({ children, data, width = WIDTH, height = HEIGHT, yRange }) => {
-  // path interpolation animation progress
-  const progress = useSharedValue(1);
+export const ChartPathProvider = React.memo<ChartPathProviderProps>(
+  ({ children, data, color, selectedColor = color, width = WIDTH, height = HEIGHT, yRange, endPadding = 0 }) => {
+    const chartPathWidth = width - endPadding;
+    // path interpolation animation progress
+    const progress = useSharedValue(1);
 
-  // animated scale of the dot
-  const dotScale = useSharedValue(0);
+    // animated scale of the dot
+    const dotScale = useSharedValue(1);
 
-  // gesture state
-  const isActive = useSharedValue(false);
+    // gesture state
+    const isActive = useSharedValue(false);
 
-  // current (according to finger position) item of data fields
-  const originalX = useSharedValue('');
-  const originalY = useSharedValue('');
+    // current (according to finger position) item of data fields
+    const originalX = useSharedValue('');
+    const originalY = useSharedValue('');
 
-  const pathOpacity = useSharedValue(1);
-  // gesture event state
-  const state = useSharedValue(0);
+    // gesture event state
+    const state = useSharedValue(0);
 
-  // position of the dot
-  const positionX = useSharedValue(0);
-  const positionY = useSharedValue(-1);
+    // position of the dot
+    const positionX = useSharedValue(0);
+    const positionY = useSharedValue(-1);
 
-  // componentDidMount hack
-  const initialized = useRef(false);
+    const currentPath = useMemo(() => {
+      return data.points.length > 1 ? createPath({ data, height, width: chartPathWidth, yRange }) : null;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data.points, data.curve, height, chartPathWidth, yRange]);
+    const previousPath = usePrevious(currentPath) ?? null;
 
-  // used for memoization since useMemo with empty deps array
-  // still can be re-run according to the docs
-  const [initialPath] = useState<PathData | null>(() => (data.points.length > 1 ? createPath({ data, height, width, yRange }) : null));
+    const value = useMemo(() => {
+      const ctx = {
+        currentPath,
+        data,
+        dotScale,
+        height,
+        isActive,
+        originalX,
+        originalY,
+        positionX,
+        positionY,
+        previousPath,
+        progress,
+        state,
+        width: chartPathWidth,
+        stroke: color,
+        selectedStroke: selectedColor,
+        color,
+      };
 
-  const [paths, setPaths] = useState<[PathData | null, PathData | null]>(() => [initialPath, initialPath]);
+      if (currentPath) {
+        const { smallestX, smallestY, greatestX, greatestY } = currentPath;
 
-  const previousPath = paths[0];
-  const currentPath = paths[1];
+        return {
+          ...ctx,
+          greatestX,
+          greatestY,
+          smallestX,
+          smallestY,
+        };
+      }
 
-  useEffect(() => {
-    // we run it only after the first render
-    // because we do have initial data in the paths
-    // we wait until we receive new stuff in deps
-    if (initialized.current) {
-      setPaths(([, curr]) => [curr, data.points.length > 1 ? createPath({ data, height, width, yRange }) : null]);
-    } else {
-      // componentDidMount hack
-      initialized.current = true;
-    }
-
-    // i don't want to react to data changes, because it can be object
-    // curve and points only mattery for us
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.points, data.curve, width, height, yRange]);
-
-  const value = useMemo(() => {
-    const ctx = {
-      currentPath,
+      return ctx;
+    }, [
       data,
-      dotScale,
+      currentPath,
+      previousPath,
+      chartPathWidth,
       height,
+      dotScale,
       isActive,
+      state,
       originalX,
       originalY,
-      pathOpacity,
       positionX,
       positionY,
-      previousPath,
       progress,
-      state,
-      width,
-    };
+      color,
+      selectedColor,
+    ]);
 
-    if (currentPath) {
-      const { smallestX, smallestY, greatestX, greatestY } = currentPath;
-
-      return {
-        ...ctx,
-        greatestX,
-        greatestY,
-        smallestX,
-        smallestY,
-      };
-    }
-
-    return ctx;
-  }, [
-    data,
-    currentPath,
-    previousPath,
-    width,
-    height,
-    dotScale,
-    isActive,
-    state,
-    originalX,
-    originalY,
-    pathOpacity,
-    positionX,
-    positionY,
-    progress,
-  ]);
-
-  return <ChartContext.Provider value={value}>{children}</ChartContext.Provider>;
-});
+    return <ChartContext.Provider value={value}>{children}</ChartContext.Provider>;
+  }
+);
 
 ChartPathProvider.displayName = 'ChartPathProvider';

@@ -16,7 +16,7 @@ import { ThemeContextProps } from '@/theme';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-
+import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 const SearchHeight = 40;
 const SearchWidth = deviceUtils.dimensions.width - 30;
 
@@ -109,11 +109,8 @@ const timingConfig = {
 
 type DiscoverSearchInputProps = {
   isDiscover: boolean;
-  isLoading?: boolean;
-  onChangeText: (text: string) => void;
   onFocus: ({ target }: { target: any }) => void;
   onBlur?: () => void;
-  searchQuery: string;
   testID: string;
   placeholderText?: string;
   clearTextOnFocus: boolean;
@@ -122,17 +119,21 @@ type DiscoverSearchInputProps = {
 
 const DiscoverSearchInput = ({
   isDiscover,
-  isLoading = false,
-  onChangeText,
   onFocus,
   onBlur,
-  searchQuery,
   testID,
   placeholderText = lang.t('button.exchange_search_placeholder'),
   clearTextOnFocus = true,
   currentChainId,
 }: DiscoverSearchInputProps) => {
-  const { searchInputRef, isSearching } = useDiscoverScreenContext();
+  const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
+  const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery);
+  const isLoading = useDiscoverSearchStore(state => state.getStatus().isFetching);
+  const onChangeText = useCallback((updatedQuery: string) => {
+    useDiscoverSearchQueryStore.setState({ searchQuery: updatedQuery });
+  }, []);
+
+  const { searchInputRef } = useDiscoverScreenContext();
   const handleClearInput = useCallback(() => {
     if (isDiscover && searchQuery.length > 1) {
       analytics.track('Search Query', {

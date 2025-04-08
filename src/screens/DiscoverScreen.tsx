@@ -13,6 +13,7 @@ import { Box } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useAccountProfile } from '@/hooks';
 import * as i18n from '@/languages';
+import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { safeAreaInsetValues } from '@/utils';
@@ -24,7 +25,8 @@ const Content = () => {
   const { navigate } = useNavigation();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
 
-  const { isSearching, scrollToTop, scrollViewRef } = useDiscoverScreenContext();
+  const { scrollToTop, scrollViewRef } = useDiscoverScreenContext();
+  const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
   const scrollY = useSharedValue(0);
 
   const onChangeWallet = React.useCallback(() => {
@@ -80,14 +82,13 @@ const Content = () => {
 
 const KeyboardDismissHandler = memo(function KeyboardDismissHandler() {
   const isFocused = useIsFocused();
-  const { isSearching, setIsSearching } = useDiscoverScreenContext();
+  const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
 
   useEffect(() => {
     if (!isFocused && isSearching) {
-      setIsSearching(false);
       Keyboard.dismiss();
     }
-  }, [isFocused, isSearching, setIsSearching]);
+  }, [isFocused, isSearching]);
 
   return null;
 });
