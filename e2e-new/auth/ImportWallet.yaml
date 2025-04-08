@@ -3,12 +3,13 @@ tags:
   - auth
   - parallel
 ---
-- clearState
 - launchApp:
+    clearState: true
+    clearKeychain: true
     arguments:
       isE2ETest: true
-- tapOn: 'I already have one'
-- tapOn: 'Import a Secret Phrase or Private Key'
+- tapOn: '.*I already have one'
+- tapOn: 'Import a Secret Phrase or Private Key.*'
 - tapOn: 'Enter a recovery phrase or private key'
 - inputText: ${DEV_PKEY}
 - tapOn: 'Continue'

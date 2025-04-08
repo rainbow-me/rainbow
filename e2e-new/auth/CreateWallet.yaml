@@ -3,11 +3,12 @@ tags:
   - auth
   - parallel
 ---
-- clearState
 - launchApp:
+    clearState: true
+    clearKeychain: true
     arguments:
       isE2ETest: true
-- tapOn: 'Get a new wallet'
+- tapOn: '.*Get a new wallet'
 - runFlow: ../utils/MaybeSetupPin.yaml
 - assertVisible:
     id: wallet-screen

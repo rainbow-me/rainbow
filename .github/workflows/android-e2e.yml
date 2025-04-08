@@ -102,7 +102,7 @@ jobs:
         run: yarn audit-ci --config audit-ci.jsonc
 
       - name: Build the app in Release mode
-        run: ./scripts/e2e-build.sh
+        run: ./scripts/e2e-android-build.sh
 
       - name: Install Maestro
         run: curl -fsSL "https://get.maestro.mobile.dev" | bash
@@ -131,7 +131,7 @@ jobs:
           emulator-port: 5560
           profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
           ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
-          script: ./scripts/e2e-ci.sh
+          script: ./scripts/e2e-android-ci.sh
 
       - name: Upload artifacts
         if: ${{ always() }}

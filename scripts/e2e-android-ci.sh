@@ -31,7 +31,7 @@ for DEVICE in $DEVICES; do
   fi
 done
 
-./scripts/e2e.sh --device $DEVICES_LIST --debug-output $ARTIFACTS_FOLDER --flatten-debug-output $SHARDS_FLAG
+./scripts/e2e-android.sh --device $DEVICES_LIST --debug-output $ARTIFACTS_FOLDER --flatten-debug-output $SHARDS_FLAG
 TEST_STATUS=$?
 
 for DEVICE in $DEVICES; do

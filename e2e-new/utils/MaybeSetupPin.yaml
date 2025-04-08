@@ -3,6 +3,7 @@ appId: ${APP_ID}
 - runFlow:
     when:
       visible: 'Choose your PIN'
+      platform: Android
     commands:
       - tapOn:
           text: '1'

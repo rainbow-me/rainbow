@@ -265,8 +265,8 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
                 </View>
               </AndroidContextMenu>
             ) : (
-              <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
-                <Navbar.Item testID={'settings-menu'}>
+              <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem} testID={'settings-menu'}>
+                <Navbar.Item>
                   <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
                 </Navbar.Item>
               </ContextMenuButton>

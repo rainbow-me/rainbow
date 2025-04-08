@@ -9,7 +9,7 @@ jobs:
   # Job to install dependencies
   install-deps:
     runs-on: ["self-hosted"]
-    concurrency: 
+    concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     permissions:
@@ -74,7 +74,7 @@ jobs:
 
       - name: Set up github keys
         run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
-        
+
       - name: Set sanitized branch name
         id: sanitize
         run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
@@ -90,7 +90,7 @@ jobs:
           source ~/.zshrc
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
-          eval $CI_SCRIPTS      
+          eval $CI_SCRIPTS
       - name: Install dependencies
         run: |
           yarn install && yarn setup
@@ -113,7 +113,7 @@ jobs:
   # iOS build and e2e tests
   e2e-ios:
     runs-on: ["self-hosted"]
-    concurrency: 
+    concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     permissions:
@@ -126,7 +126,7 @@ jobs:
 
       - name: Set up github keys
         run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
-      
+
       - name: Set sanitized branch name
         id: sanitize
         run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
@@ -158,15 +158,15 @@ jobs:
         run: |
           rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
           yarn install-bundle && yarn install-pods
-      
+
       - uses: irgaly/xcode-cache@v1
         with:
           key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
           restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
-      
+
       - name: Modify env and build app in release mode
         run: |
-          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
           yarn detox build --configuration ios.sim.release
       - name: Detox iOS e2e tests serial
         run: |
@@ -175,5 +175,61 @@ jobs:
       - name: Detox iOS e2e tests parallel
         run: |
           ./scripts/run-parallel-e2e.sh
+  # iOS build and e2e tests
+  e2e-new-ios:
+    runs-on: ["self-hosted"]
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+    timeout-minutes: 90
+    needs: install-deps
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-     
+      - name: Set up github keys
+        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+
+      - name: Set sanitized branch name
+        id: sanitize
+        run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
+      - name: Download Yarn cache
+        uses: actions/download-artifact@v4
+        with:
+          name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
+          path: .yarn
+      - name: Set up ENV vars & scripts
+        env:
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+        run: |
+          source ~/.zshrc
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env && rm -rf rainbow-env
+          eval $CI_SCRIPTS
+      - name: Install dependencies
+        run: |
+          yarn install && yarn setup
+
+      - name: Version debug
+        run: |
+          npx react-native info
+
+      - name: Install pods
+        run: |
+          rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
+          yarn install-bundle && yarn install-pods
+
+      - uses: irgaly/xcode-cache@v1
+        with:
+          key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
+          restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
+
+      - name: Modify env and build app in release mode
+        run: |
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+          ./scripts/e2e-ios-build.sh
+      - name: Detox iOS e2e tests serial
+        run: |
+          ./scripts/run-serial-e2e.sh 3
