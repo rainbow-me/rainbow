@@ -132,7 +132,7 @@ async function getFavorites() {
 
     return newFavorites;
   } catch (error) {
-    logger.error(new RainbowError('Failed to refresh favorites:', { cause: error }));
+    logger.error(new RainbowError('Failed to refresh favorites:', error));
     return favorites;
   }
 }

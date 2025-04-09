@@ -195,6 +195,9 @@ export const event = {
   // network status
   networkStatusOffline: 'network_status.offline',
   networkStatusReconnected: 'network_status.reconnected',
+
+  // wallet initialization
+  walletInitializationFailed: 'wallet_initialization.failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -812,4 +815,10 @@ export type EventProperties = {
   // network status
   [event.networkStatusOffline]: undefined;
   [event.networkStatusReconnected]: undefined;
+
+  // wallet initialization
+  [event.walletInitializationFailed]: {
+    error: string;
+    walletStatus: string;
+  };
 };
