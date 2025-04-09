@@ -70,10 +70,7 @@ interface InteractionsResponse {
   payload: InteractionsResponsePayload;
 }
 
-export type InteractionsCountResult = {
-  totalCount: number;
-  specificChainCount: number;
-};
+export type InteractionsCountResult = Record<number, number>;
 
 export type InteractionsCountArgs = {
   fromAddress?: string;
@@ -90,26 +87,22 @@ export function interactionsCountQueryKey({
   fromAddress,
   toAddress,
   currency,
-  chainId,
-}: Required<InteractionsCountArgs & { currency: NativeCurrencyKey }>) {
+}: Required<Omit<InteractionsCountArgs, 'chainId'> & { currency: NativeCurrencyKey }>) {
   return createQueryKey(
     'interactionsCount',
-    { fromAddress: fromAddress.toLowerCase(), toAddress: toAddress.toLowerCase(), currency, chainId },
+    { fromAddress: fromAddress.toLowerCase(), toAddress: toAddress.toLowerCase(), currency },
     { persisterVersion: 1 }
   );
 }
 
 type InteractionsCountQueryKey = ReturnType<typeof interactionsCountQueryKey>;
 
-const stableInteractionsCountResult: InteractionsCountResult = {
-  totalCount: 0,
-  specificChainCount: 0,
-};
+const stableInteractionsCountResult: InteractionsCountResult = {};
 
 export async function interactionsCountQueryFunction({
   queryKey,
 }: QueryFunctionContext<InteractionsCountQueryKey>): Promise<InteractionsCountResult> {
-  const [{ fromAddress, toAddress, currency, chainId }] = queryKey;
+  const [{ fromAddress, toAddress, currency }] = queryKey;
   const supportedChainIds = useBackendNetworksStore.getState().getInteractionsWithSupportedChainIds();
 
   if (!fromAddress || !toAddress || supportedChainIds.length === 0) {
@@ -137,10 +130,11 @@ export async function interactionsCountQueryFunction({
       });
     }
 
-    return {
-      totalCount: data.payload.transactions.length,
-      specificChainCount: data.payload.transactions.filter(tx => tx.chain_id === chainId).length,
-    };
+    return data.payload.transactions.reduce<InteractionsCountResult>((acc, tx) => {
+      acc[tx.chain_id] = acc[tx.chain_id] || 0;
+      acc[tx.chain_id]++;
+      return acc;
+    }, {});
   } catch (error) {
     logger.error(new RainbowError('[interactionsCountQueryFunction]: Failed to fetch interactions count'), {
       message: (error as Error)?.message,
@@ -169,17 +163,22 @@ export function useInteractionsCount(
   const resolvedFromAddress = (inputFromAddress || accountAddress)?.toLowerCase();
   const resolvedCurrency = inputCurrency || nativeCurrency;
 
-  const queryKey = interactionsCountQueryKey({
-    fromAddress: resolvedFromAddress as Address,
-    toAddress,
-    currency: resolvedCurrency,
-    chainId,
-  });
-
-  return useQuery(queryKey, interactionsCountQueryFunction, {
-    ...config,
-    enabled: !!toAddress && !!resolvedFromAddress && (config.enabled ?? true),
-    staleTime: time.minutes(15),
-    cacheTime: time.hours(1),
-  });
+  return useQuery(
+    interactionsCountQueryKey({
+      fromAddress: resolvedFromAddress as Address,
+      toAddress,
+      currency: resolvedCurrency,
+    }),
+    interactionsCountQueryFunction,
+    {
+      ...config,
+      enabled: !!toAddress && !!resolvedFromAddress && (config.enabled ?? true),
+      staleTime: time.minutes(15),
+      cacheTime: time.hours(1),
+      select: data => ({
+        totalCount: Object.values(data).reduce((acc, count) => acc + count, 0),
+        specificChainCount: data[chainId] || 0,
+      }),
+    }
+  );
 }
