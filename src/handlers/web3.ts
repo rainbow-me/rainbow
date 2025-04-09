@@ -551,7 +551,7 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
 export const getDataForNftTransfer = (
   from: string,
   to: string,
-  asset: Pick<UniqueAsset, 'id' | 'asset_contract' | 'chainId'>
+  asset: Partial<Pick<UniqueAsset, 'id' | 'asset_contract' | 'chainId'>>
 ): string | undefined => {
   if (!asset.id || !asset.asset_contract?.address) return;
   const lowercasedContractAddress = asset.asset_contract.address.toLowerCase();

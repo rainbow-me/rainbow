@@ -59,14 +59,12 @@ export interface RainbowTransaction {
     | (ParsedAsset &
         (
           | {
-              id: string;
+              id?: string;
               asset_contract: never;
             }
           | {
-              id: never;
-              asset_contract: {
-                address?: string;
-              };
+              id?: string;
+              asset_contract?: UniqueAsset['asset_contract'];
             }
         ))
     | null;

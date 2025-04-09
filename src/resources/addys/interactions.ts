@@ -6,6 +6,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { getAddysHttpClient } from './client';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import { Address } from 'viem';
+import { time } from '@/utils';
 
 // ///////////////////////////////////////////////
 // Types
@@ -69,12 +70,17 @@ interface InteractionsResponse {
   payload: InteractionsResponsePayload;
 }
 
-export interface InteractionsCountArgs {
+export type InteractionsCountResult = {
+  totalCount: number;
+  specificChainCount: number;
+};
+
+export type InteractionsCountArgs = {
   fromAddress?: string;
   toAddress: string;
   currency?: NativeCurrencyKey;
-  chainId?: number; // Optional chainId for specific count
-}
+  chainId: number;
+};
 
 // ///////////////////////////////////////////////
 // Query Key
@@ -84,29 +90,31 @@ export function interactionsCountQueryKey({
   fromAddress,
   toAddress,
   currency,
-}: Required<Omit<InteractionsCountArgs, 'chainId'> & { currency: NativeCurrencyKey }>) {
+  chainId,
+}: Required<InteractionsCountArgs & { currency: NativeCurrencyKey }>) {
   return createQueryKey(
     'interactionsCount',
-    { fromAddress: fromAddress.toLowerCase(), toAddress: toAddress.toLowerCase(), currency },
+    { fromAddress: fromAddress.toLowerCase(), toAddress: toAddress.toLowerCase(), currency, chainId },
     { persisterVersion: 1 }
   );
 }
 
 type InteractionsCountQueryKey = ReturnType<typeof interactionsCountQueryKey>;
 
-// ///////////////////////////////////////////////
-// Query Function
+const stableInteractionsCountResult: InteractionsCountResult = {
+  totalCount: 0,
+  specificChainCount: 0,
+};
 
-// Function now returns the list of transactions
 export async function interactionsCountQueryFunction({
   queryKey,
-}: QueryFunctionContext<InteractionsCountQueryKey>): Promise<InteractionTransaction[]> {
-  const [{ fromAddress, toAddress, currency }] = queryKey;
+}: QueryFunctionContext<InteractionsCountQueryKey>): Promise<InteractionsCountResult> {
+  const [{ fromAddress, toAddress, currency, chainId }] = queryKey;
   const supportedChainIds = useBackendNetworksStore.getState().getInteractionsWithSupportedChainIds();
 
   if (!fromAddress || !toAddress || supportedChainIds.length === 0) {
     logger.warn('[interactionsCountQueryFunction]: Missing address or supported chains, returning empty array.');
-    return []; // Return empty array if params missing
+    return stableInteractionsCountResult;
   }
 
   const url = `/${supportedChainIds.join(',')}/${fromAddress}/transactions`;
@@ -129,8 +137,10 @@ export async function interactionsCountQueryFunction({
       });
     }
 
-    // Return the full transaction list, or empty array if none
-    return data.payload?.transactions ?? [];
+    return {
+      totalCount: data.payload.transactions.length,
+      specificChainCount: data.payload.transactions.filter(tx => tx.chain_id === chainId).length,
+    };
   } catch (error) {
     logger.error(new RainbowError('[interactionsCountQueryFunction]: Failed to fetch interactions count'), {
       message: (error as Error)?.message,
@@ -139,17 +149,13 @@ export async function interactionsCountQueryFunction({
       currency,
       chainIds: supportedChainIds,
     });
-    return []; // Return empty array on error
+    return stableInteractionsCountResult;
   }
 }
 
-// Result type is now the array of transactions
-export type InteractionsCountResult = InteractionTransaction[];
-
-// Define the structure returned by the hook's select function
 export interface SelectedInteractionsCount {
   totalCount: number;
-  specificChainCount: number | undefined;
+  specificChainCount: number;
 }
 
 // ///////////////////////////////////////////////
@@ -167,18 +173,13 @@ export function useInteractionsCount(
     fromAddress: resolvedFromAddress as Address,
     toAddress,
     currency: resolvedCurrency,
+    chainId,
   });
 
   return useQuery(queryKey, interactionsCountQueryFunction, {
     ...config,
     enabled: !!toAddress && !!resolvedFromAddress && (config.enabled ?? true),
-    staleTime: 1000 * 60 * 5,
-    cacheTime: 1000 * 60 * 60,
-    // Select function processes the raw transaction list
-    select: (transactions: InteractionsCountResult): SelectedInteractionsCount => {
-      const totalCount = transactions.length;
-      const specificChainCount = chainId !== undefined ? transactions.filter(tx => tx.chain_id === chainId).length : undefined;
-      return { totalCount, specificChainCount };
-    },
+    staleTime: time.minutes(15),
+    cacheTime: time.hours(1),
   });
 }
