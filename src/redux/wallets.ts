@@ -33,13 +33,13 @@ import { createRainbowStore } from '../state/internal/createRainbowStore';
 
 interface WalletsState {
   selected: RainbowWallet | undefined;
-  setSelectedWallet: (wallet: RainbowWallet | undefined) => void;
+  setSelectedWallet: (wallet: RainbowWallet) => Promise<void>;
 
   walletNames: { [address: string]: string };
   updateWalletNames: (names: { [address: string]: string }) => void;
 
   wallets: { [id: string]: RainbowWallet } | null;
-  updateWallets: (wallets: { [id: string]: RainbowWallet } | null) => void;
+  updateWallets: (wallets: { [id: string]: RainbowWallet }) => Promise<void>;
 
   loadWallets: (data: Pick<WalletsState, 'selected' | 'walletNames' | 'wallets'>) => void;
 
@@ -58,28 +58,28 @@ interface WalletsState {
   addressSetSelected: (address: string) => void;
 }
 
-const walletsStore = createRainbowStore<WalletsState>((get, set) => ({
+const walletsStore = createRainbowStore<WalletsState>((set, get) => ({
   selected: undefined,
-  setSelectedWallet() {
-    //   await setSelectedWallet(wallet);
-    // dispatch({
-    //   payload: wallet,
-    //   type: WALLETS_SET_SELECTED,
-    // });
+  async setSelectedWallet(wallet) {
+    await setSelectedWallet(wallet);
+    set({
+      selected: wallet,
+    });
   },
 
   walletNames: {},
-  updateWalletNames(names) {
-    // TODO
+  updateWalletNames(walletNames) {
+    set({
+      walletNames,
+    });
   },
 
   wallets: null,
-  updateWallets() {
-    // await saveAllWallets(wallets);
-    // dispatch({
-    //   payload: wallets,
-    //   type: WALLETS_UPDATE,
-    // });
+  async updateWallets(wallets) {
+    await saveAllWallets(wallets);
+    set({
+      wallets,
+    });
   },
 
   loadWallets() {
