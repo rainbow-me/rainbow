@@ -1,0 +1,50 @@
+appId: ${APP_ID}
+tags:
+  - discover
+  - parallel
+---
+- clearState
+- launchApp:
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/ImportWalletWithKey.yaml
+- swipe:
+    direction: LEFT
+- assertVisible:
+    id: discover-header
+- tapOn:
+    id: tab-bar-icon-ProfileScreen
+- assertVisible:
+    id: profile-screen
+- swipe:
+    direction: LEFT
+- assertVisible:
+    id: points-screen
+- tapOn:
+    id: tab-bar-icon-DiscoverScreen
+- assertVisible:
+    id: discover-header
+- tapOn:
+    id: discover-search-input
+- assertVisible:
+    id: done-button
+- inputText: 'SOCKS'
+- wait: 5000
+- assertVisible:
+    id: discover-currency-select-list-exchange-coin-row-SOCKS-1
+- tapOn:
+    id: discover-currency-select-list-exchange-coin-row-SOCKS-1
+- assertVisible:
+    id: chart-header-Unisocks
+- swipe:
+    direction: DOWN
+- tapOn:
+    id: discover-search-clear-input
+- inputText: 'bitcoin'
+- wait: 3000
+- assertVisible:
+    id: favorites-0
+- assertVisible:
+    id: verified-1
+- tapOn:
+    id: done-button 

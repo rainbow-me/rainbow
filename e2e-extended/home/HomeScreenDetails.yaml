@@ -1,0 +1,42 @@
+appId: ${APP_ID}
+tags:
+  - home
+  - parallel
+---
+- clearState
+- launchApp:
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/ImportWalletWithKey.yaml
+- assertVisible:
+    id: avatar-button
+- assertVisible:
+    id: balance-text
+- assertVisible:
+    id: buy-button
+- assertVisible:
+    id: swap-button
+- assertVisible:
+    id: send-button
+- assertVisible:
+    id: receive-button
+- swipe:
+    direction: UP
+- swipe:
+    direction: DOWN
+- tapOn:
+    id: swap-button
+- assertVisible:
+    id: swap-screen
+- swipe:
+    direction: DOWN
+- tapOn:
+    id: send-button
+- assertVisible:
+    id: send-asset-form-field
+- swipe:
+    direction: DOWN
+- tapOn:
+    id: receive-button
+- assertVisible:
+    id: address-copied-toast 

@@ -1,0 +1,28 @@
+appId: ${APP_ID}
+tags:
+  - wallet
+  - parallel
+---
+- clearState
+- launchApp:
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/ImportWalletWithKey.yaml
+- tapOn:
+    id: send-button
+- assertVisible:
+    id: send-asset-form-field
+- inputText: 'rainbowwallet.eth'
+- assertVisible:
+    id: send-asset-list
+- assertVisible:
+    id: add-contact-button
+- tapOn:
+    id: add-contact-button
+- assertVisible:
+    id: wallet-info-input
+- tapOn: 'Cancel'
+- assertVisible:
+    id: add-contact-button
+- swipe:
+    direction: DOWN 
