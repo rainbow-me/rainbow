@@ -15,7 +15,6 @@ tags:
 - runFlow: ../utils/MaybeSetupPin.yaml
 - assertVisible:
     id: wallet-screen
-- wait: 15000
 - swipe:
     direction: UP
 - tapOn:

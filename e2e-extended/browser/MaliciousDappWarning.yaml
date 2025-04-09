@@ -28,10 +28,8 @@ tags:
 # we use coordinates. These may need adjustment based on device.
 - tapOn:
     point: 275, 80
-    waitToSettleTimeoutMs: 5000
 - tapOn:
     point: 50, 325
-    waitToSettleTimeoutMs: 5000
 
 # Verify warning appears
 - assertVisible:

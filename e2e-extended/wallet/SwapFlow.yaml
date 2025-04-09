@@ -14,7 +14,6 @@ tags:
     id: dev-button-anvil
 - assertVisible:
     id: testnet-toast-Anvil
-- wait: 2000
 
 # Open swap screen
 - tapOn:
@@ -33,26 +32,20 @@ tags:
 # Select input token (if needed)
 - tapOn:
     id: swap-input-field
-- wait: 1000
 - tapOn:
     id: ETH-token-item
-- wait: 1000
 
 # Select output token
 - tapOn:
     id: swap-output-field
-- wait: 1000
 - inputText: 'DAI'
-- wait: 2000
 - tapOn:
     id: DAI-token-item
-- wait: 2000
 
 # Enter swap amount
 - tapOn:
     id: swap-input-field
 - inputText: '0.01'
-- wait: 3000
 
 # Check swap details
 - assertVisible:
@@ -65,12 +58,10 @@ tags:
 # Flip tokens (optional)
 - tapOn:
     id: swap-flip-button
-- wait: 2000
 
 # Flip back
 - tapOn:
     id: swap-flip-button
-- wait: 2000
 
 # Close swap sheet without executing
 - swipe:

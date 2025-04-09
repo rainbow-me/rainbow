@@ -29,7 +29,6 @@ tags:
 - assertVisible:
     id: done-button
 - inputText: 'SOCKS'
-- wait: 5000
 - assertVisible:
     id: discover-currency-select-list-exchange-coin-row-SOCKS-1
 - tapOn:
@@ -41,7 +40,6 @@ tags:
 - tapOn:
     id: discover-search-clear-input
 - inputText: 'bitcoin'
-- wait: 3000
 - assertVisible:
     id: favorites-0
 - assertVisible:
