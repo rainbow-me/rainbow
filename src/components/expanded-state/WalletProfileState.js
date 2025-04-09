@@ -38,14 +38,14 @@ export default function WalletProfileState({
   const handleCancel = useCallback(() => {
     onCancel?.();
     goBack();
-    analytics.track('Tapped "Cancel" on Wallet Profile modal');
+    analytics.track(analytics.event.walletProfileCancelled);
     if (actionType === 'Create' && !isFromSettings) {
       navigate(Routes.CHANGE_WALLET_SHEET);
     }
   }, [actionType, goBack, navigate, onCancel, isFromSettings]);
 
   const handleSubmit = useCallback(async () => {
-    analytics.track('Tapped "Submit" on Wallet Profile modal');
+    analytics.track(analytics.event.walletProfileSubmitted);
     onCloseModal({
       color: typeof nameColor === 'string' ? profileUtils.colorHexToIndex(nameColor) : nameColor,
       image: profileImage,

@@ -16,7 +16,7 @@ import { toUtf8String } from '@ethersproject/strings';
 import { logger, RainbowError } from '@/logger';
 import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { analyticsV2 as analytics, analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
 import Alert from '@/components/alerts/Alert';
 import * as lang from '@/languages';
@@ -541,7 +541,7 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
                 reason: 'INVALID_SESSION_SETTLE_REQUEST',
               });
 
-              analyticsV2.track(analyticsV2.event.wcRequestFailed, { type: `invalid namespaces`, reason: namespaces.error.message });
+              analytics.track(analytics.event.wcRequestFailed, { type: `invalid namespaces`, reason: namespaces.error.message });
 
               showErrorSheet({
                 title: lang.t(T.errors.generic_title),
@@ -652,7 +652,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
           message,
         });
 
-        analyticsV2.track(analyticsV2.event.wcRequestFailed, {
+        analytics.track(analytics.event.wcRequestFailed, {
           type: 'session_request',
           reason: 'session_request exited, signing request had no address and/or messsage',
         });
@@ -687,7 +687,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
 
         const errorMessageBody = isReadOnly ? lang.t(T.errors.read_only_wallet_on_signing_method) : lang.t(T.errors.generic_error);
 
-        analyticsV2.track(analyticsV2.event.wcRequestFailed, {
+        analytics.track(analytics.event.wcRequestFailed, {
           type: 'read only wallet',
           reason: 'session_request exited, selectedWallet was falsy or read only',
         });
@@ -715,7 +715,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
     if (!session) {
       logger.error(new RainbowError(`[walletConnect]: session_request topic was not found`));
 
-      analyticsV2.track(analyticsV2.event.wcRequestFailed, { type: 'session_request', reason: 'session_request topic was not found' });
+      analytics.track(analytics.event.wcRequestFailed, { type: 'session_request', reason: 'session_request topic was not found' });
 
       await client.respondSessionRequest({
         topic,
@@ -782,7 +782,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
       method,
     });
 
-    analyticsV2.track(analyticsV2.event.wcRequestFailed, {
+    analytics.track(analytics.event.wcRequestFailed, {
       type: `method not supported`,
       reason: 'received unsupported session_request RPC method',
       method: method,

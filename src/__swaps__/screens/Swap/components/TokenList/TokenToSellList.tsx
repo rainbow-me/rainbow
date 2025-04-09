@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Insets, InteractionManager, StyleSheet } from 'react-native';
 import Animated, { runOnUI, useAnimatedRef, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import * as i18n from '@/languages';
 import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
@@ -82,7 +82,7 @@ const TokenToSellListComponent = () => {
         InteractionManager.runAfterInteractions(() => {
           // track what search query the user had prior to selecting an asset
           if (inputSearchQuery.length) {
-            analyticsV2.track(analyticsV2.event.swapsSearchedForToken, {
+            analytics.track(analytics.event.swapsSearchedForToken, {
               query: inputSearchQuery,
               type: 'input',
             });

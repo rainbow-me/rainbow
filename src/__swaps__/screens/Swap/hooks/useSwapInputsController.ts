@@ -18,7 +18,7 @@ import {
   getDefaultSlippageWorklet,
   trimTrailingZeros,
 } from '@/__swaps__/utils/swaps';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useAccountSettings } from '@/hooks';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
@@ -506,7 +506,7 @@ export function useSwapInputsController({
       const inputAsset = internalSelectedInputAsset.value;
       const outputAsset = internalSelectedOutputAsset.value;
 
-      analyticsV2.track(analyticsV2.event.swapsReceivedQuote, {
+      analytics.track(analytics.event.swapsReceivedQuote, {
         inputAsset,
         outputAsset,
         quote: quoteResponse,

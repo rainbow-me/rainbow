@@ -39,7 +39,7 @@ import { greaterThanOrEqualTo } from '@/helpers/utilities';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { IS_ANDROID, IS_IOS } from '@/env';
 
 const defaultCarouselHeight = 60;
@@ -252,7 +252,7 @@ export default function ChartExpandedState({ asset }) {
   useTimeoutEffect(
     ({ elapsedTime }) => {
       const { address, chainId, symbol, name, icon_url, price } = assetWithPrice;
-      analyticsV2.track(analyticsV2.event.tokenDetailsErc20, {
+      analytics.track(analytics.event.tokenDetailsErc20, {
         eventSentAfterMs: elapsedTime,
         token: { address, chainId, symbol, name, icon_url, price },
         available_data: { chart: showChart, description: !!data?.description, iconUrl: !!icon_url },

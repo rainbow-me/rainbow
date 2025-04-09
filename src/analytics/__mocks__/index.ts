@@ -4,7 +4,7 @@
  */
 import { event } from '../event';
 
-export const analyticsV2 = {
+export const analytics = {
   identify: jest.fn(),
   screen: jest.fn(),
   track: jest.fn(),

@@ -266,18 +266,18 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
             const imageUrl = avatar?.imageUrl ?? null;
 
             if (!ensAddress) {
-              setIsValidAddress(false);
               throw new Error('No address found for ENS name');
             }
 
             setAddressImage(imageUrl);
-
             addOrEditAirdropAddress({ id, address: ensAddress, label: text, isValid, imageUrl });
-          } catch (e: unknown) {
+          } catch (e) {
             const error = e as Error;
             logger.error(new RainbowError('[TokenLauncher]: Error fetching ENS data'), {
               message: error.message,
             });
+            setIsValidAddress(false);
+            addOrEditAirdropAddress({ id, address: text, isValid: false });
           } finally {
             setIsFetchingEnsData(false);
           }
