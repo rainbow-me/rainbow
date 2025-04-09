@@ -1,8 +1,13 @@
+# Passing !
 appId: ${APP_ID}
-env:
-  PKEY: ${DEV_PKEY}
-  NAME: 'Test Wallet'
+tags:
+  - auth
+  - parallel
 ---
+- clearState
+- launchApp:
+    arguments:
+      isE2ETest: true
 - tapOn: 'I already have one'
 - tapOn: 'Import a Secret Phrase or Private Key'
 - tapOn: 'Enter a recovery phrase or private key'
@@ -12,6 +17,6 @@ env:
     id: wallet-info-input
 - inputText: 'Test Wallet'
 - tapOn: 'Import Wallet'
-- runFlow: MaybeSetupPin.yaml
+- runFlow: ../utils/MaybeSetupPin.yaml
 - assertVisible:
     id: wallet-screen

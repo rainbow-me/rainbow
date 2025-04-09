@@ -1,4 +1,5 @@
 flows:
-  - auth/*
-  - backup/*
-  - home/*
+  - onboarding/*
+  - screens/*
+  - settings/*
+  - transactions/*

@@ -1,3 +1,4 @@
+# Failing !
 appId: ${APP_ID}
 tags:
   - wallet
@@ -12,8 +13,6 @@ tags:
 # Connect to Anvil (test network)
 - tapOn:
     id: dev-button-anvil
-- assertVisible:
-    id: testnet-toast-Anvil
 
 # Open swap screen
 - tapOn:

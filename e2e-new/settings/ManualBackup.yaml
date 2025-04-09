@@ -1,0 +1,39 @@
+# Passing !
+appId: ${APP_ID}
+tags:
+  - backup
+  - parallel
+---
+- clearState
+- launchApp:
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/ImportWalletWithKey.yaml
+
+# Navigate to settings and backup section
+- tapOn:
+    id: settings-menu
+- tapOn: 'Settings'
+- tapOn:
+    id: backup-section
+- assertVisible: 'Wallets & Backup'
+- assertVisible: 'Enable Cloud Backups'
+
+# Navigate to manual backup screen
+- tapOn: 'Private Key 1'
+- assertVisible: 'Not backed up'
+- tapOn:
+    id: back-up-manually
+- tapOn:
+    id: show-secret-button
+- runFlow:
+    when:
+      platform: android
+      visible: 'Type your PIN' 
+    commands:
+      - tapOn:
+          text: '1'
+          repeat: 4
+- tapOn:
+    id: saved-these-words
+- assertVisible: 'Wallets & Backup' 

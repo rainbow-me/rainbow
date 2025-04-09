@@ -1,3 +1,4 @@
+# Passing !
 appId: ${APP_ID}
 tags:
   - discover
@@ -8,6 +9,8 @@ tags:
     arguments:
       isE2ETest: true
 - runFlow: ../utils/ImportWalletWithKey.yaml
+
+# Check various screens exist and can be navigated to
 - swipe:
     direction: LEFT
 - assertVisible:
@@ -24,6 +27,8 @@ tags:
     id: tab-bar-icon-DiscoverScreen
 - assertVisible:
     id: discover-header
+
+# Discover screen search for SOCKS and open expanded state
 - tapOn:
     id: discover-search-input
 - assertVisible:
@@ -39,10 +44,43 @@ tags:
     direction: DOWN
 - tapOn:
     id: discover-search-clear-input
+- hideKeyboard
+- tapOn:
+    id: discover-search-input
+
+# Bitcoin search and section verification
 - inputText: 'bitcoin'
 - assertVisible:
     id: favorites-0
 - assertVisible:
     id: verified-1
 - tapOn:
-    id: done-button 
+    id: discover-search-clear-input
+- hideKeyboard
+
+# Check ENS resolution and profile sheet
+- tapOn:
+    id: discover-search-input
+- inputText: 'rainbowwallet.eth'
+- assertVisible:
+    id: discover-currency-select-list-contact-row-rainbowwallet.eth
+- tapOn:
+    id: discover-currency-select-list-contact-row-rainbowwallet.eth
+- assertVisible:
+    id: profile-sheet
+- tapOn:
+    id: profile-sheet-watch-button
+- runFlow:
+    when:
+      platform: android
+      visible: 'Type your PIN' 
+    commands:
+      - tapOn:
+          text: '1'
+          repeat: 4
+- swipe:
+    direction: DOWN
+- tapOn:
+    id: done-button
+- assertVisible:
+    id: discover-header

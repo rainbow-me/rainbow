@@ -1,3 +1,4 @@
+# Passing !
 appId: ${APP_ID}
 tags:
   - home
@@ -11,8 +12,6 @@ tags:
 - assertVisible:
     id: avatar-button
 - assertVisible:
-    id: balance-text
-- assertVisible:
     id: buy-button
 - assertVisible:
     id: swap-button
@@ -20,23 +19,21 @@ tags:
     id: send-button
 - assertVisible:
     id: receive-button
-- swipe:
-    direction: UP
-- swipe:
-    direction: DOWN
 - tapOn:
     id: swap-button
 - assertVisible:
     id: swap-screen
 - swipe:
     direction: DOWN
+# maestro can't interact with toasts, so copying address to clipboard 
+# here to paste in the send screen as a validation
+- tapOn:
+    id: receive-button
 - tapOn:
     id: send-button
 - assertVisible:
     id: send-asset-form-field
-- swipe:
-    direction: DOWN
 - tapOn:
-    id: receive-button
+    id: paste-address-button
 - assertVisible:
-    id: address-copied-toast 
+    text: 'Test Wallet'

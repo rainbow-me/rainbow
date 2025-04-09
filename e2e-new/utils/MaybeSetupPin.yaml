@@ -1,9 +1,9 @@
+# Passing !
 appId: ${APP_ID}
 ---
 - runFlow:
     when:
-      visible: 'Choose your PIN'
-      platform: Android
+      visible: 'Choose your PIN' 
     commands:
       - tapOn:
           text: '1'
