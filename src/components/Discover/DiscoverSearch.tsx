@@ -7,7 +7,7 @@ import deviceUtils from '@/utils/deviceUtils';
 import CurrencySelectionList from '@/components/CurrencySelectionList';
 import { Row } from '@/components/layout';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
-import { analytics, analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { useAccountSettings, useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -255,7 +255,7 @@ export default function DiscoverSearch() {
         if (!asset.icon_url) params.no_icon += 1;
         if (!isNaN(asset.price?.value)) params.no_price += 1;
       }
-      analyticsV2.track(analyticsV2.event.tokenList, params);
+      analytics.track(analytics.event.tokenList, params);
     },
     { timeout: 3000, enabled: !isLoading }
   );

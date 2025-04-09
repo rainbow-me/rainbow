@@ -12,7 +12,7 @@ import { BackgroundColor, ForegroundColor, TextColor } from '@/design-system/col
 import { maybeSignUri } from '@/handlers/imgix';
 import { colors } from '@/styles';
 import LinearGradient from 'react-native-linear-gradient';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { FlashList } from '@shopify/flash-list';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
@@ -71,7 +71,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
   const accent = useForegroundColor(getColorFromString(card?.accentColor || undefined));
 
   const onPress = useCallback(() => {
-    analyticsV2.track(analyticsV2.event.remoteCardPrimaryButtonPressed, {
+    analytics.track(analytics.event.remoteCardPrimaryButtonPressed, {
       cardKey: card?.cardKey ?? 'unknown-backend-driven-card',
       action: card?.primaryButton.url || card?.primaryButton.route,
       props: JSON.stringify(card?.primaryButton.props),
@@ -84,7 +84,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
   }, [card?.cardKey, card?.primaryButton, navigate]);
 
   const onDismiss = useCallback(() => {
-    analyticsV2.track(analyticsV2.event.remoteCardDismissed, {
+    analytics.track(analytics.event.remoteCardDismissed, {
       cardKey: card?.cardKey ?? card?.sys.id ?? 'unknown-backend-driven-card',
     });
 

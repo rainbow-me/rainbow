@@ -12,7 +12,7 @@ import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { showActionSheetWithOptions } from '@/utils';
 import { BlurGradient } from '@/components/blur/BlurGradient';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 const EXIT_BUTTON_SIZE = 36;
 // padding top + exit button + inner padding + padding bottom + blur padding
@@ -52,7 +52,7 @@ export function TokenLauncherHeader() {
       (buttonIndex: number) => {
         if (buttonIndex === 0) {
           navigation.goBack();
-          analyticsV2.track(analyticsV2.event.tokenLauncherAbandoned, {
+          analytics.track(analytics.event.tokenLauncherAbandoned, {
             ...getAnalyticsParams(),
           });
         }

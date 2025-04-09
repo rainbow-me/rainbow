@@ -11,7 +11,7 @@ import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { addressSetSelected, walletsSetSelected, walletsUpdate } from '@/redux/wallets';
 import WalletTypes from '@/helpers/walletTypes';
-import { analytics, analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
@@ -480,7 +480,7 @@ export default function ChangeWalletSheet() {
   );
 
   const onPressAddAnotherWallet = useCallback(() => {
-    analyticsV2.track(analyticsV2.event.pressedButton, {
+    analytics.track(analytics.event.pressedButton, {
       buttonName: 'AddAnotherWalletButton',
       action: 'Navigates from WalletList to AddWalletSheet',
     });

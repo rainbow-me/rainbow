@@ -14,7 +14,7 @@ import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
 import { logger, RainbowError } from '@/logger';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 const HEADER_HEIGHT = 255;
 const HEADER_WIDTH = 390;
@@ -35,9 +35,9 @@ export function NotificationsPromoSheetInner({
   const notificationsBlocked = status === perms.RESULTS.BLOCKED;
 
   React.useEffect(() => {
-    analyticsV2.track(analyticsV2.event.notificationsPromoShown);
+    analytics.track(analytics.event.notificationsPromoShown);
     return () => {
-      analyticsV2.track(analyticsV2.event.notificationsPromoDismissed);
+      analytics.track(analytics.event.notificationsPromoDismissed);
     };
   }, []);
 
@@ -58,18 +58,18 @@ export function NotificationsPromoSheetInner({
       logger.debug(`[NotificationsPromoSheet]: notifications permissions denied (could be default state)`);
       const status = await requestNotificationPermissions();
       if (status === perms.RESULTS.BLOCKED) {
-        analyticsV2.track(analyticsV2.event.notificationsPromoPermissionsBlocked);
+        analytics.track(analytics.event.notificationsPromoPermissionsBlocked);
         goBack();
       } else if (isNotificationPermissionGranted(status)) {
-        analyticsV2.track(analyticsV2.event.notificationsPromoPermissionsGranted);
+        analytics.track(analytics.event.notificationsPromoPermissionsGranted);
       }
     } else if (notificationsBlocked) {
       logger.debug(`[NotificationsPromoSheet]: notifications permissions blocked`);
-      analyticsV2.track(analyticsV2.event.notificationsPromoSystemSettingsOpened);
+      analytics.track(analytics.event.notificationsPromoSystemSettingsOpened);
       await perms.openSettings();
     } else if (notificationsEnabled) {
       logger.debug(`[NotificationsPromoSheet]: notifications permissions enabled`);
-      analyticsV2.track(analyticsV2.event.notificationsPromoNotificationSettingsOpened);
+      analytics.track(analytics.event.notificationsPromoNotificationSettingsOpened);
       navigateToNotifications();
     } else {
       logger.error(new RainbowError(`NotificationsPromoSheet: reached invalid state`), {
