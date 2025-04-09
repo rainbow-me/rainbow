@@ -57,6 +57,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.POSITIONS_SPACE_BEFORE:
     case CellType.CLAIMABLES_SPACE_AFTER:
     case CellType.CLAIMABLES_SPACE_BEFORE:
+    case CellType.EMPTY_REMOTE_CARD_CAROUSEL:
       return null;
     case CellType.COIN_DIVIDER:
       return (

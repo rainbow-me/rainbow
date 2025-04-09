@@ -37,7 +37,7 @@ import {
   useGas,
   useMaxInputBalance,
   usePrevious,
-  useSendableUniqueTokens,
+  useUniqueTokens,
   useSendSheetInputRefs,
   useUserAccounts,
   useWallets,
@@ -147,7 +147,7 @@ export default function SendSheet() {
 
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
-  const { sendableUniqueTokens } = useSendableUniqueTokens();
+  const { sendableUniqueTokens } = useUniqueTokens();
   const { accountAddress, nativeCurrency, chainId } = useAccountSettings();
   const { isHardwareWallet } = useWallets();
 

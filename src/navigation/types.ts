@@ -144,4 +144,7 @@ export type RootStackParamList = {
       message: string;
     }[];
   };
+  [Routes.SHOWCASE_SHEET]: {
+    address: string;
+  };
 };

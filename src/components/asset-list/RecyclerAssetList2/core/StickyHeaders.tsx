@@ -64,12 +64,11 @@ function StickyHeaderInternal({
   );
   const ref = useRef<Animated.View>() as MutableRefObject<Animated.View>;
   const onLayout = useCallback(() => {
-    // @ts-ignore
+    // @ts-expect-error - getNativeScrollRef is not defined on BaseScrollView
     const nativeScrollRef = scrollViewRef?.current?.getNativeScrollRef();
     if (!nativeScrollRef) {
       return;
     }
-    // @ts-ignore
     ref.current?.measureLayout?.(
       nativeScrollRef,
       (_left: number, top: number, _width: number, height: number) => {
@@ -144,5 +143,4 @@ export function StickyHeaderManager({ children, yOffset = 0 }: { children: React
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
 
-// @ts-ignore
 export const StickyHeader = React.memo(StickyHeaderInternal);
