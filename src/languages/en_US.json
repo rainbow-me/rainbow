@@ -748,6 +748,20 @@
         "about": {
           "title": "About",
           "what_is": "What is %{assetName}?"
+        },
+        "history": {
+          "tabs": {
+            "all": "All",
+            "buys": "Buys",
+            "sells": "Sells"
+          },
+          "more": "More",
+          "less": "Less",
+          "bought": "Bought",
+          "sold": "Sold",
+          "received": "Received",
+          "sent": "Sent",
+          "unknown": "Unknown"
         }
       },
       "chart": {

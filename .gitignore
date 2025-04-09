@@ -115,9 +115,6 @@ src/graphql/config.js
 # Test Coverage
 coverage
 
-# VSCode
-.vscode/
-
 # Zed
 .zed/
 
@@ -137,6 +134,9 @@ src/references/networks.json
 .expo
 dist/
 web-build/
+
+# Sentry
+.sentry/
 
 # E2E CI
 e2e-artifacts/

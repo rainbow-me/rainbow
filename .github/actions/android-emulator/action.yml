@@ -38,8 +38,8 @@ runs:
         path: |
           ~/.android/avd/*
           ~/.android/adb*
-        key: avd-${{ inputs.api-level }}-${{ inputs.emulators }}
-
+        key: avd-${{ inputs.api-level }}-${{ inputs.emulators }}-${{ inputs.profile }}-${{ inputs.ram-size }}-${{ inputs.arch }}
+        
     - name: Create AVD and Generate Snapshot for Caching
       if: steps.avd-cache.outputs.cache-hit != 'true'
       uses: rainbow-me/android-emulator-runner@v2

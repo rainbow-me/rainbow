@@ -23,4 +23,4 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-maestro $DEVICE test -e DEV_PKEY="$DEV_PKEY" -e APP_ID="me.rainbow" "${ARGS[@]}" "$FLOW"
+maestro $DEVICE -p Android test -e DEV_PKEY="$DEV_PKEY" -e APP_ID="me.rainbow" "${ARGS[@]}" "$FLOW"

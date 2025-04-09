@@ -39,7 +39,6 @@ import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
 import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
-import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -79,7 +78,6 @@ function App({ walletReady }: AppProps) {
       <NotificationsHandler walletReady={walletReady} />
       <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
       {IS_TEST && <TestDeeplinkHandler />}
-      {IS_TEST && <ReducedMotionConfig mode={ReduceMotion.Always} />}
       <BackupsSync />
       <AbsolutePortalRoot />
     </>

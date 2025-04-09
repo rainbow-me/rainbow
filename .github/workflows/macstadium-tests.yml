@@ -179,12 +179,14 @@ jobs:
   e2e-new-ios:
     runs-on: ["self-hosted"]
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: e2enew-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     permissions:
       contents: read
     timeout-minutes: 90
     needs: install-deps
+    env:
+      ARTIFACTS_FOLDER: e2e-artifacts
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -226,10 +228,26 @@ jobs:
           key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
           restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
 
+      - name: Install Maestro
+        run: curl -fsSL "https://get.maestro.mobile.dev" | bash
+
       - name: Modify env and build app in release mode
         run: |
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
           ./scripts/e2e-ios-build.sh
-      - name: Detox iOS e2e tests serial
-        run: |
-          ./scripts/run-serial-e2e.sh 3
+      - uses: futureware-tech/simulator-action@v4
+        id: simulator
+        with:
+          model: 'iPhone 16'
+          wait_for_boot: true
+      - name: Run Tests
+        run: ./scripts/e2e-ios-ci.sh
+        env:
+          DEVICE_UDID: ${{ steps.simulator.outputs.udid }}
+
+      - name: Upload artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts
+          path: ${{ env.ARTIFACTS_FOLDER }}

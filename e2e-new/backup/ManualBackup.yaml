@@ -10,7 +10,7 @@ tags:
       isE2ETest: true
 - runFlow: ../utils/ImportWalletWithKey.yaml
 # There is some flakeyness here sometimes and the menu doesn't
-# open so allow retries.s
+# open so allow retries.
 - retry:
     maxRetries: 3
     commands:
