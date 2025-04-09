@@ -10,6 +10,7 @@ import { fetchENSAvatar } from '../hooks/useENSAvatar';
 import { hasKey } from '../model/keychain';
 import { PreferenceActionType, setPreference } from '../model/preferences';
 import {
+  AllRainbowWallets,
   generateAccount,
   getAllWallets,
   getSelectedWallet,
@@ -32,7 +33,7 @@ import { parseTimestampFromBackupFile } from '@/model/backup';
 import { createRainbowStore } from '../state/internal/createRainbowStore';
 
 interface WalletsState {
-  selected: RainbowWallet | undefined;
+  selected: RainbowWallet | null;
   setSelectedWallet: (wallet: RainbowWallet) => Promise<void>;
 
   walletNames: { [address: string]: string };
@@ -41,7 +42,7 @@ interface WalletsState {
   wallets: { [id: string]: RainbowWallet } | null;
   updateWallets: (wallets: { [id: string]: RainbowWallet }) => Promise<void>;
 
-  loadWallets: (data: Pick<WalletsState, 'selected' | 'walletNames' | 'wallets'>) => void;
+  loadWallets: (data: Pick<WalletsState, 'selected' | 'walletNames' | 'wallets'>) => Promise<AllRainbowWallets | void>;
 
   createAccount: (data: Pick<RainbowWallet, 'id' | 'name' | 'color'>) => void;
 
@@ -56,10 +57,13 @@ interface WalletsState {
   clearAllWalletsBackupStatus: () => void;
 
   addressSetSelected: (address: string) => void;
+
+  accountAddress: string | null;
+  updateAccountAddress: (address: string) => void;
 }
 
-const walletsStore = createRainbowStore<WalletsState>((set, get) => ({
-  selected: undefined,
+export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
+  selected: null,
   async setSelectedWallet(wallet) {
     await setSelectedWallet(wallet);
     set({
@@ -82,81 +86,96 @@ const walletsStore = createRainbowStore<WalletsState>((set, get) => ({
     });
   },
 
-  loadWallets() {
-    // try {
-    //   const { accountAddress } = getState().settings;
-    //   let addressFromKeychain: string | null = accountAddress;
-    //   const allWalletsResult = await getAllWallets();
-    //   const wallets = allWalletsResult?.wallets || {};
-    //   if (isEmpty(wallets)) return;
-    //   const selected = await getSelectedWallet();
-    //   // Prevent irrecoverable state (no selected wallet)
-    //   let selectedWallet = selected?.wallet;
-    //   // Check if the selected wallet is among all the wallets
-    //   if (selectedWallet && !wallets[selectedWallet.id]) {
-    //     // If not then we should clear it and default to the first one
-    //     const firstWalletKey = Object.keys(wallets)[0];
-    //     selectedWallet = wallets[firstWalletKey];
-    //     await setSelectedWallet(selectedWallet);
-    //   }
-    //   if (!selectedWallet) {
-    //     const address = await loadAddress();
-    //     if (!address) {
-    //       selectedWallet = wallets[Object.keys(wallets)[0]];
-    //     } else {
-    //       keys(wallets).some(key => {
-    //         const someWallet = wallets[key];
-    //         const found = (someWallet.addresses || []).some(account => {
-    //           return toChecksumAddress(account.address) === toChecksumAddress(address!);
-    //         });
-    //         if (found) {
-    //           selectedWallet = someWallet;
-    //           logger.debug('[redux/wallets]: Found selected wallet based on loadAddress result');
-    //         }
-    //         return found;
-    //       });
-    //     }
-    //   }
-    //   // Recover from broken state (account address not in selected wallet)
-    //   if (!addressFromKeychain) {
-    //     addressFromKeychain = await loadAddress();
-    //     logger.debug("[redux/wallets]: addressFromKeychain wasn't set on settings so it is being loaded from loadAddress");
-    //   }
-    //   const selectedAddress = selectedWallet?.addresses.find(a => {
-    //     return a.visible && a.address === addressFromKeychain;
-    //   });
-    //   // Let's select the first visible account if we don't have a selected address
-    //   if (!selectedAddress) {
-    //     const allWallets = Object.values(allWalletsResult?.wallets || {});
-    //     let account = null;
-    //     for (const wallet of allWallets) {
-    //       for (const rainbowAccount of wallet.addresses || []) {
-    //         if (rainbowAccount.visible) {
-    //           account = rainbowAccount;
-    //           break;
-    //         }
-    //       }
-    //     }
-    //     if (!account) return;
-    //     await dispatch(settingsUpdateAccountAddress(account.address));
-    //     await saveAddress(account.address);
-    //     logger.debug('[redux/wallets]: Selected the first visible address because there was not selected one');
-    //   }
-    //   const walletNames = await getWalletNames();
-    //   dispatch({
-    //     payload: {
-    //       selected: selectedWallet,
-    //       walletNames,
-    //       wallets,
-    //     },
-    //     type: WALLETS_LOAD,
-    //   });
-    //   return wallets;
-    // } catch (error) {
-    //   logger.error(new RainbowError('[redux/wallets]: Exception during walletsLoadState'), {
-    //     message: (error as Error)?.message,
-    //   });
-    // }
+  accountAddress: null,
+  updateAccountAddress: (accountAddress: string) => {
+    set({
+      accountAddress,
+    });
+  },
+
+  async loadWallets() {
+    try {
+      const { accountAddress } = get();
+      let addressFromKeychain: string | null = accountAddress;
+      const allWalletsResult = await getAllWallets();
+      const wallets = allWalletsResult?.wallets || {};
+      if (isEmpty(wallets)) return;
+      const selected = await getSelectedWallet();
+
+      // Prevent irrecoverable state (no selected wallet)
+      let selectedWallet = selected?.wallet;
+
+      // Check if the selected wallet is among all the wallets
+      if (selectedWallet && !wallets[selectedWallet.id]) {
+        // If not then we should clear it and default to the first one
+        const firstWalletKey = Object.keys(wallets)[0];
+        selectedWallet = wallets[firstWalletKey];
+        await setSelectedWallet(selectedWallet);
+      }
+
+      if (!selectedWallet) {
+        const address = await loadAddress();
+        if (!address) {
+          selectedWallet = wallets[Object.keys(wallets)[0]];
+        } else {
+          keys(wallets).some(key => {
+            const someWallet = wallets[key];
+            const found = (someWallet.addresses || []).some(account => {
+              return toChecksumAddress(account.address) === toChecksumAddress(address!);
+            });
+            if (found) {
+              selectedWallet = someWallet;
+              logger.debug('[redux/wallets]: Found selected wallet based on loadAddress result');
+            }
+            return found;
+          });
+        }
+      }
+
+      // Recover from broken state (account address not in selected wallet)
+      if (!addressFromKeychain) {
+        addressFromKeychain = await loadAddress();
+        logger.debug("[redux/wallets]: addressFromKeychain wasn't set on settings so it is being loaded from loadAddress");
+      }
+
+      const selectedAddress = selectedWallet?.addresses.find(a => {
+        return a.visible && a.address === addressFromKeychain;
+      });
+
+      // Let's select the first visible account if we don't have a selected address
+      if (!selectedAddress) {
+        const allWallets = Object.values(allWalletsResult?.wallets || {});
+        let account = null;
+        for (const wallet of allWallets) {
+          for (const rainbowAccount of wallet.addresses || []) {
+            if (rainbowAccount.visible) {
+              account = rainbowAccount;
+              break;
+            }
+          }
+        }
+
+        if (!account) return;
+        set({
+          accountAddress: account.address,
+        });
+        await saveAddress(account.address);
+        logger.debug('[redux/wallets]: Selected the first visible address because there was not selected one');
+      }
+
+      const walletNames = await getWalletNames();
+      set({
+        selected: selectedWallet,
+        walletNames,
+        wallets,
+      });
+
+      return wallets;
+    } catch (error) {
+      logger.error(new RainbowError('[redux/wallets]: Exception during walletsLoadState'), {
+        message: (error as Error)?.message,
+      });
+    }
   },
 
   createAccount: data => {

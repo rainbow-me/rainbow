@@ -9,7 +9,7 @@ import { PerformanceTracking } from '../performance/tracking';
 import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
 import { appStateUpdate } from '../redux/appState';
 import { settingsLoadNetwork, settingsUpdateAccountAddress } from '../redux/settings';
-import { walletsLoadState } from '../redux/wallets';
+import { useWalletsStore, walletsLoadState } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useLoadAccountData from './useLoadAccountData';
@@ -41,6 +41,8 @@ export default function useInitializeWallet() {
       return 'old';
     }
   };
+
+  const walletsStore = useWalletsStore();
 
   const initializeWallet = useCallback(
     async (
@@ -125,8 +127,8 @@ export default function useInitializeWallet() {
           logger.debug('[useInitializeWallet]: loaded global data...');
         }
 
-        await dispatch(settingsUpdateAccountAddress(walletAddress));
-        logger.debug('[useInitializeWallet]: updated settings address', {
+        walletsStore.updateAccountAddress(walletAddress);
+        logger.debug('[useInitializeWallet]: updated wallet address', {
           walletAddress,
         });
 
