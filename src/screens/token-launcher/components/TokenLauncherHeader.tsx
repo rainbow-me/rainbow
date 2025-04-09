@@ -49,7 +49,7 @@ export function TokenLauncherHeader() {
         destructiveButtonIndex: 0,
         options: [i18n.t(i18n.l.token_launcher.discard_and_exit), i18n.t(i18n.l.button.cancel)],
       },
-      (buttonIndex: number) => {
+      buttonIndex => {
         if (buttonIndex === 0) {
           navigation.goBack();
           analytics.track(analytics.event.tokenLauncherAbandoned, {

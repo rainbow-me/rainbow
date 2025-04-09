@@ -421,7 +421,7 @@ export default function ChangeWalletSheet() {
           message: i18n.t(i18n.l.wallet.action.remove_confirm),
           options: [i18n.t(i18n.l.wallet.action.remove), i18n.t(i18n.l.button.cancel)],
         },
-        async (buttonIndex: number) => {
+        async buttonIndex => {
           if (buttonIndex === 0) {
             analytics.track('Tapped "Delete Wallet" (final confirm)');
             await deleteWallet(walletId, address);

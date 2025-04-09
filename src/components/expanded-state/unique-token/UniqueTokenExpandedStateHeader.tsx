@@ -426,10 +426,9 @@ const UniqueTokenExpandedStateHeader = ({
     showActionSheetWithOptions(
       {
         options: baseActions,
-        showSeparators: true,
         title: '',
       },
-      (idx: number) => {
+      idx => {
         if (idx === collectionIndex && asset.marketplaceCollectionUrl) {
           openInBrowser(asset.marketplaceCollectionUrl);
         } else if (idx === websiteIndex) {
