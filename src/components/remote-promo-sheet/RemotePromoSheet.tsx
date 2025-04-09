@@ -9,7 +9,6 @@ import { useTheme } from '@/theme';
 import { usePromoSheetQuery } from '@/resources/promoSheet/promoSheetQuery';
 import { maybeSignUri } from '@/handlers/imgix';
 import { delay } from '@/utils/delay';
-import { Linking } from 'react-native';
 import Routes from '@/navigation/routesNames';
 import { Language } from '@/languages';
 import { useAccountSettings } from '@/hooks';
@@ -17,6 +16,7 @@ import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoShe
 import { RootStackParamList } from '@/navigation/types';
 import { Colors } from '@/styles';
 import { getHighContrastColor } from '@/__swaps__/utils/swaps';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const DEFAULT_HEADER_HEIGHT = 285;
 const DEFAULT_HEADER_WIDTH = 390;
@@ -97,7 +97,7 @@ export function RemotePromoSheet() {
   };
 
   const externalNavigation = useCallback(() => {
-    Linking.openURL(data?.promoSheet?.primaryButtonProps.props.url);
+    openInBrowser(data?.promoSheet?.primaryButtonProps.props.url);
   }, [data?.promoSheet?.primaryButtonProps.props.url]);
 
   const internalNavigation = useCallback(() => {

@@ -10,6 +10,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { useWallets } from '@/hooks';
 import { watchingAlert } from '@/utils';
+import { ClaimableType } from '@/resources/addys/claimables/types';
 
 export function TransactionClaimableFlow() {
   const {
@@ -102,7 +103,7 @@ export function TransactionClaimableFlow() {
           tokenSymbol={outputToken?.symbol}
           chainId={outputChainId}
         />
-        <ClaimCustomization />
+        {claimable.type !== ClaimableType.RainbowSuperTokenCreatorFees && <ClaimCustomization />}
       </Box>
       <Box alignItems="center" width="full">
         <ClaimButton onPress={onPress} disabled={disabled} shimmer={shimmer} biometricIcon={shouldShowClaimText} label={buttonLabel} />

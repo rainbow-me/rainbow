@@ -10,7 +10,8 @@ import {
   greaterThan,
   convertAmountAndPriceToNativeDisplay,
   isZero,
-  convertAmountToNativeDisplayWorklet,
+  convertAmountToNativeDisplay,
+  add,
 } from '@/helpers/utilities';
 import { metadataPOSTClient } from '@/graphql';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
@@ -19,7 +20,6 @@ import { time } from '@/utils';
 import { throttle } from 'lodash';
 import { analyticsV2 } from '@/analytics';
 import { ClaimablesStore } from '@/state/claimables/claimables';
-import { sumWorklet } from '@/safe-math/SafeMath';
 
 export type ClaimablesArgs = {
   address: Address | string | null;
@@ -94,8 +94,8 @@ export async function getClaimables({ address, currency, abortController }: Clai
 
     return {
       claimables: sortedClaimables,
-      totalValue: convertAmountToNativeDisplayWorklet(
-        sortedClaimables.reduce((acc, claimable) => sumWorklet(acc, claimable.value.nativeAsset.amount || '0'), '0'),
+      totalValue: convertAmountToNativeDisplay(
+        sortedClaimables.reduce((acc, claimable) => add(acc, claimable.value.nativeAsset.amount || '0'), '0'),
         currency
       ),
     };

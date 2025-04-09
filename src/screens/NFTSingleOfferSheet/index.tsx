@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import lang from 'i18n-js';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
@@ -53,6 +53,7 @@ import { metadataPOSTClient } from '@/graphql';
 import { ethUnits } from '@/references';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -678,6 +679,7 @@ export function NFTSingleOfferSheet() {
                     alignItems="center"
                     style={{ overflow: 'hidden' }}
                     onPress={() => {
+                      openInBrowser(offer.url);
                       analyticsV2.track(analyticsV2.event.nftOffersViewedExternalOffer, {
                         marketplace: offer.marketplace.name,
                         offerValueUSD: offer.grossAmount.usd,
@@ -693,7 +695,6 @@ export function NFTSingleOfferSheet() {
                           network: offer.network,
                         },
                       });
-                      Linking.openURL(offer.url);
                     }}
                   >
                     <Text color="label" align="center" size="17pt" weight="heavy">

@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
-import { Linking } from 'react-native';
 import URL from 'url-parse';
 import { useNavigation } from './Navigation';
 import Routes from './routesNames';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 // External link warnings will be skipped for these domains
 const trustedDomains = [
@@ -31,7 +31,7 @@ export default function useUntrustedUrlOpener(): (url: string) => void {
       const { hostname } = new URL(url);
 
       if (trustedDomains.some(trustedDomain => hostname === trustedDomain || hostname.endsWith(`.${trustedDomain}`))) {
-        Linking.openURL(url);
+        openInBrowser(url);
       } else {
         navigate(Routes.EXTERNAL_LINK_WARNING_SHEET, { url });
       }

@@ -1,5 +1,6 @@
 import { ParsedColorArray, convertToRGBA, processColor } from 'react-native-reanimated';
 import { globalColors } from '@/design-system';
+import chroma from 'chroma-js';
 
 export interface HSV {
   h: number;
@@ -429,4 +430,27 @@ export function oklchToHex({ L, C, H }: { L: number; C: number; H: number }): st
 
   // Return hex color
   return colorToHex(r, g, bRgb);
+}
+
+/**
+ * Calculates a solid color that looks the same as applying a semi-transparent foreground
+ * color over a background color
+ *
+ * @param {string} foreground - The foreground color
+ * @param {string} background - The background color
+ * @param {number} opacity - The opacity of the foreground color
+ * @returns {string} A hex color string that visually matches the blended result
+ */
+export function getSolidColorEquivalent({ foreground, background, opacity }: { foreground: string; background: string; opacity: number }) {
+  'worklet';
+  const fgColor = chroma(foreground).rgb();
+  const bgColor = chroma(background).rgb();
+
+  const blendedRGB = [
+    Math.round(fgColor[0] * opacity + bgColor[0] * (1 - opacity)),
+    Math.round(fgColor[1] * opacity + bgColor[1] * (1 - opacity)),
+    Math.round(fgColor[2] * opacity + bgColor[2] * (1 - opacity)),
+  ];
+
+  return chroma(blendedRGB).hex();
 }

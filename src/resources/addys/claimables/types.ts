@@ -29,10 +29,31 @@ interface DApp {
   colors: Colors;
 }
 
+export enum ClaimableType {
+  MoxieDaily = 'moxie-daily',
+  MoxieVested = 'moxie-vested',
+  ZoraRewards = 'zora-rewards',
+  DegenAirdrop = 'degen-airdrop',
+  merklClaimable = 'merkl-claimable',
+  MorphoClaimable = 'morpho-claimable',
+  Blur = 'blur',
+  Aerodrome = 'aerodrome-finance',
+  Velodrome = 'velodrome-finance',
+  HypersubV1 = 'hypersub-v1',
+  HypersubV2 = 'hypersub-v2',
+  Clanker = 'clanker',
+  Rainbow = 'rainbow',
+  RainbowSuperTokenCreatorFees = 'rainbow-super-token-creator-fees',
+
+  // test claims
+  Testing = 'frontend-testing',
+  TestingSponsored = 'frontend-testing-sponsored',
+}
+
 interface AddysBaseClaimable {
   name: string;
   unique_id: string;
-  type: string;
+  type: ClaimableType;
   network: ChainId;
   asset: AddysAsset;
   amount: string;
@@ -87,6 +108,7 @@ export interface BaseClaimable {
   uniqueId: string;
   analyticsId: string;
   iconUrl: string;
+  type: ClaimableType;
   value: {
     claimAsset: { amount: string; display: string };
     nativeAsset: { amount: string; display: string };
@@ -95,7 +117,7 @@ export interface BaseClaimable {
 }
 
 export interface TransactionClaimable extends BaseClaimable {
-  type: 'transaction';
+  actionType: 'transaction';
   action: { to: Address; data: string };
 }
 
@@ -104,7 +126,7 @@ export interface RainbowClaimable extends TransactionClaimable {
 }
 
 export interface SponsoredClaimable extends BaseClaimable {
-  type: 'sponsored';
+  actionType: 'sponsored';
   action: { url: string; method: string };
 }
 

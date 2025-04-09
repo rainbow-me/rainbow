@@ -22,7 +22,7 @@
       "tab_interactions_tooltip": "Interactions de contrat intelligent",
       "tab_investments": "Piscines",
       "tab_savings": "Économies",
-      "tab_showcase": "Showcase",
+      "tab_showcase": "Vitrine",
       "tab_points": "Points",
       "tab_positions": "Positions",
       "tab_rewards": "Récompenses",
@@ -96,7 +96,8 @@
         "generic": "Erreur lors de la tentative de sauvegarde. Code d'erreur: %{errorCodes}",
         "no_keys_found": "Aucune clé trouvée. Veuillez réessayer.",
         "backup_not_found": "Sauvegarde non trouvée. Veuillez réessayer.",
-        "no_account_found": "Impossible de récupérer les fichiers de sauvegarde. Assurez-vous d'être connecté."
+        "no_account_found": "Impossible de récupérer les fichiers de sauvegarde. Assurez-vous d'être connecté.",
+        "damaged_wallet": "Impossible de sauvegarder le portefeuille. Données de la trousseau manquantes."
       },
       "wrong_pin": "Le code PIN que vous avez entré était incorrect et nous ne pouvons pas faire de sauvegarde. Veuillez réessayer avec le bon code.",
       "already_backed_up": {
@@ -115,6 +116,8 @@
         "no_backups": "Aucune sauvegarde trouvée",
         "failed_to_fetch_backups": "Échec de récupération des sauvegardes",
         "retry": "Réessayer",
+        "refresh": "Rafraîchir",
+        "syncing_cloud_store": "Synchronisation avec %{cloudPlatformName}",
         "fetching_backups": "Récupération des sauvegardes de %{cloudPlatformName}",
         "back_up_to_platform": "Sauvegarder sur %{cloudPlatformName}",
         "restore_from_platform": "Restaurer à partir de %{cloudPlatformName}",
@@ -145,6 +148,12 @@
         "older_backups": "Anciennes sauvegardes",
         "no_older_backups": "Aucune ancienne sauvegarde",
         "older_backups_title": "%{date} à %{time}",
+        "statuses": {
+          "not_enabled": "Non activé",
+          "syncing": "Synchronisation",
+          "out_of_date": "Non à jour",
+          "up_to_date": "À jour"
+        },
         "password": {
           "a_password_youll_remember_part_one": "Ce mot de passe est",
           "not": "non",
@@ -336,6 +345,7 @@
       "receive": "Recevoir",
       "remove": "Retirer",
       "save": "Sauvegarder",
+      "skip": "Passer",
       "send": "Envoyer",
       "send_another": "Envoyer un autre",
       "share": "Partager",
@@ -452,7 +462,13 @@
     },
     "claimables": {
       "panel": {
-        "calculating_gas_fee": "Calcul des frais de gaz...",
+        "estimating_gas_fee": "Estimation des frais de gaz...",
+        "gas_error": "Erreur de gaz",
+        "quote_error": "Erreur de Devis",
+        "no_route_found": "Aucun itinéraire trouvé",
+        "fetching_quote": "Récupération du devis...",
+        "select_a_network": "Sélectionnez un réseau",
+        "select_a_token": "Sélectionner un token",
         "amount_to_claim_on_network": "%{amount} à réclamer sur %{network}",
         "claim": "Réclamer",
         "claiming": "Réclamer",
@@ -463,7 +479,13 @@
         "claim_amount": "Réclamer %{amount}",
         "done": "Terminé",
         "try_again": "Réessayer",
-        "tokens_on_the_way": "Jetons en route!"
+        "tokens_on_the_way": "Jetons en route!",
+        "a_token": "un token",
+        "a_network": "un réseau",
+        "swap_failed": "Échec de l'échange",
+        "receive": "Recevoir",
+        "on": "sur",
+        "reset": "Réinitialiser"
       }
     },
     "cloud": {
@@ -495,6 +517,8 @@
     },
     "developer_settings": {
       "alert": "Alerte",
+      "analyze_env_variables": "Analyser les Variables ENV",
+      "analyze_react_query": "Analyser la Requête React",
       "applied": "APPLIQUÉ",
       "backups_deleted_successfully": "Sauvegardes supprimées avec succès",
       "clear_async_storage": "Effacer le stockage asynchrone",
@@ -503,7 +527,11 @@
       "clear_image_metadata_cache": "Effacer le cache des métadonnées d'image",
       "clear_local_storage": "Effacer le stockage local",
       "clear_mmkv_storage": "Effacer le stockage MMKV",
+      "clear_react_query_cache": "Effacer le Cache de Requête React",
       "connect_to_anvil": "Se connecter à anvil",
+      "copy_fcm_token": "Copier le Jeton FCM",
+      "copy_log_lines": "Copier les Lignes de Log",
+      "copy_signing_wallet_address": "Copier l'Adresse du Portefeuille de Signature",
       "disconnect_to_anvil": "Déconnecter de anvil",
       "crash_app_render_error": "Crash app (render error) :)",
       "enable_testnets": "Activer Testnets",
@@ -642,7 +670,6 @@
       "high": "Haute",
       "slippage_tolerance": "Glissement maximal",
       "source_picker": "Itinéraire des swaps via",
-      "use_flashbots": "Utilisez Flashbots",
       "swapping_for_prefix": "Échange pour",
       "view_details": "Voir les détails",
       "token_sections": {
@@ -671,13 +698,56 @@
         "social": {
           "facebook": "Facebook",
           "homepage": "Page d'accueil",
+          "website": "Site Internet",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter"
+          "twitter": "Twitter",
+          "warpcast": "Warpcast",
+          "farcaster": "Farcaster",
+          "other": "Autre",
+          "search_on_twitter": "Rechercher sur Twitter"
         },
         "uniswap_liquidity": "Liquidité Uniswap",
         "value": "Valeur",
-        "volume_24_hours": "Volume sur 24 heures"
+        "volume_24_hours": "Volume sur 24 heures",
+        "menu": {
+          "view_on": "Voir sur %{blockExplorerName}",
+          "share": "Partager",
+          "copy_contract_address": "Copier l'adresse du contrat",
+          "pin": "Épingler",
+          "unpin": "Détacher",
+          "hide": "Cacher",
+          "unhide": "Afficher"
+        },
+        "no_data_available": "Aucune Donnée Disponible"
+      },
+      "sections": {
+        "market_stats": {
+          "title": "Statistiques du marché",
+          "circulating_supply": "Offre en circulation",
+          "max_supply": "Approvisionnement maximum",
+          "fully_diluted_valuation": "Valorisation entièrement diluée",
+          "market_cap": "Capitalisation boursière",
+          "created": "Créé",
+          "volume_24_hours": "Volume sur 24 heures",
+          "rank": "Rang"
+        },
+        "buy": {
+          "title": "Acheter",
+          "pay_with": "Acheter avec",
+          "available_balance": "Solde disponible",
+          "open_swaps": "Échanges ouverts",
+          "low_balance": "Solde Bas"
+        },
+        "claim": {
+          "claim_button": "Réclamer Airdrop",
+          "created_by": "Créé par %{creator}",
+          "title": "Réclamer"
+        },
+        "about": {
+          "title": "À propos",
+          "what_is": "Qu'est-ce que %{assetName}?"
+        }
       },
       "chart": {
         "all_time": "Tout Temps",
@@ -697,6 +767,7 @@
             "month_11": "Déc"
           }
         },
+        "no_chart_data": "Pas de Données de Graphiques",
         "no_price_data": "Pas de données de prix",
         "past_timespan": "Passé %{formattedTimespan}",
         "today": "Aujourd'hui :)",
@@ -723,7 +794,6 @@
       "swap": {
         "swap": "Échanger",
         "bridge": "Pont",
-        "flashbots_protect": "Flashbots protègent",
         "losing": "Perdre",
         "on": "Sur",
         "off": "Arrêt",
@@ -857,6 +927,8 @@
       "adworld_title": "Bienvenue dans le monde Rainbow!",
       "farcaster_description": "Notre icône d'application la plus ennuyeuse jamais créée, inspirée par le minimalisme fade de Warpcast.",
       "farcaster_title": "Vous avez débloqué\nRainbowcast",
+      "redacted_description": "Une icône Rainbow exclusive pour les véritables amateurs de Gdupi.",
+      "redacted_title": "Vous avez débloqué\nRedacted Rainbow",
       "button": "Snag the icon :)"
     },
     "explain": {
@@ -927,41 +999,69 @@
         "text": "Le pourboire aux mineurs va directement au mineur qui confirme votre transaction sur le réseau.\n\nUn pourboire plus élevé rend votre transaction plus susceptible d'être confirmée rapidement.",
         "title": "Pourboire aux mineurs"
       },
-      "optimism": {
-        "text": "L'optimisme est un réseau de couche 2 qui fonctionne sur Ethereum, permettant des transactions moins coûteuses et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe de nombreuses transactions ensemble dans un \"roll up\" avant de les envoyer vivre de manière permanente sur Ethereum.",
-        "title": "Qu'est-ce qu'Optimism ?"
-      },
-      "base": {
-        "text": "Base est un réseau Layer 2 qui fonctionne sur Ethereum, permettant des transactions moins chères et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe beaucoup de transactions ensemble dans un \"roll up\" avant de les envoyer pour demeurer de manière permanente sur Ethereum.",
-        "title": "Qu'est-ce que Base?"
+      "apechain": {
+        "text": "ApeChain est un réseau de couche 3 qui fonctionne au-dessus d'Arbitrum Orbit et d'Ethereum.\n\nIl améliore considérablement l'utilité de l'ApeCoin, favorisant une économie robuste et dynamique alimentée par $APE.",
+        "title": "Qu'est-ce que l'ApeChain?"
       },
       "avalanche": {
         "text": "Avalanche est une sidechain, un réseau distinct qui fonctionne parallèlement à Ethereum et qui est compatible avec celui-ci.\n\nElle permet des transactions moins chères et plus rapides, mais contrairement aux réseaux de couche 2, Avalanche possède ses propres mécanismes de sécurité et de consensus qui diffèrent d'Ethereum.",
         "title": "Qu'est-ce que l'Avalanche?"
       },
-      "degen": {
-        "text": "Degen Chain est un réseau de couche 3 qui fonctionne au-dessus d'Arbitrum et d'Ethereum.",
-        "title": "Qu'est-ce que Degen Chain?"
+      "base": {
+        "text": "Base est un réseau Layer 2 qui fonctionne sur Ethereum, permettant des transactions moins chères et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe beaucoup de transactions ensemble dans un \"roll up\" avant de les envoyer pour demeurer de manière permanente sur Ethereum.",
+        "title": "Qu'est-ce que Base?"
       },
       "blast": {
         "text": "Blast est un réseau de couche 2 qui fonctionne sur Ethereum, permettant des transactions moins chères et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe de nombreuses transactions ensemble dans un \"roll up\" avant de les envoyer vivre de manière permanente sur Ethereum.",
         "title": "Qu'est-ce que Blast?"
       },
-      "apechain": {
-        "text": "ApeChain est un réseau de couche 3 qui fonctionne au-dessus d'Arbitrum Orbit et d'Ethereum.\n\nIl améliore considérablement l'utilité de l'ApeCoin, favorisant une économie robuste et dynamique alimentée par $APE.",
-        "title": "Qu'est-ce que l'ApeChain?"
+      "bsc": {
+        "text": "Binance Smart Chain (BSC) est la blockchain pour la plateforme de trading Binance. \n\nBSC permet des transactions moins chères et plus rapides, mais contrairement à un réseau Layer 2, elle possède ses propres mécanismes de sécurité et de consensus qui diffèrent d'Ethereum.",
+        "title": "Qu'est-ce que Binance Smart Chain ?"
       },
-      "zora": {
-        "text": "Zora est un réseau Layer 2 qui fonctionne sur Ethereum, permettant des transactions moins chères et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe beaucoup de transactions ensemble dans un \"roll up\" avant de les envoyer pour demeurer de manière permanente sur Ethereum.",
-        "title": "Qu'est-ce que Zora?"
+      "degen": {
+        "text": "Degen Chain est un réseau de couche 3 qui fonctionne au-dessus d'Arbitrum et d'Ethereum.",
+        "title": "Qu'est-ce que Degen Chain?"
+      },
+      "gravity": {
+        "text": "Gravity est une blockchain de haute performance de couche 1 construite par Galxe, atteignant un débit de plus d'un gigagas par seconde et une finalité sous-seconde.\n\nElle utilise un moteur de consensus AptosBFT en pipeline et un runtime EVM parallèle, maintenant la sécurité de la preuve d'enjeu grâce à la technologie de restaking.",
+        "title": "Qu'est-ce que Gravity ?"
+      },
+      "gnosis": {
+        "text": "Gnosis Chain est une sidechain Ethereum appartenant à la communauté et opérée par un ensemble diversifié de validateurs à travers le monde.\n\nElle se concentre sur la résilience et la neutralité crédible, offrant des transactions moins chères et plus rapides tout en maintenant ses propres mécanismes de sécurité et de consensus.",
+        "title": "Qu'est-ce que Gnosis ?"
+      },
+      "ink": {
+        "text": "Ink est un réseau Layer 2 construit sur le OP Stack, conçu pour étendre Ethereum en fournissant des temps de blocs sous-seconde et des frais de transaction faibles.\n\nLancé par Kraken, et faisant partie du Superchain, Ink vise à améliorer la performance et l'accessibilité des applications de finance décentralisée (DeFi).",
+        "title": "Qu'est-ce que Ink ?"
+      },
+      "linea": {
+        "text": "Linea est une blockchain sécurisée, équivalente à Ethereum, et de faible coût de couche 2 développée par ConsenSys.\n\nElle permet des transactions plus rapides et plus abordables sans compromettre la sécurité et la décentralisation, visant à intégrer le prochain milliard d'utilisateurs à Web3.",
+        "title": "Qu'est-ce que Linea ?"
+      },
+      "optimism": {
+        "text": "L'optimisme est un réseau de couche 2 qui fonctionne sur Ethereum, permettant des transactions moins coûteuses et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe de nombreuses transactions ensemble dans un \"roll up\" avant de les envoyer vivre de manière permanente sur Ethereum.",
+        "title": "Qu'est-ce qu'Optimism ?"
       },
       "polygon": {
         "text": "Polygon est une sidechain, un réseau distinct qui fonctionne en parallèle avec Ethereum et qui est compatible avec lui.\n\nIl permet des transactions moins chères et plus rapides, mais contrairement aux réseaux Layer 2, Polygon a ses propres mécanismes de sécurité et de consensus qui diffèrent d'Ethereum.",
         "title": "Qu'est-ce que Polygon?"
       },
-      "bsc": {
-        "text": "Binance Smart Chain (BSC) est la blockchain pour la plateforme de trading Binance. \n\nBSC permet des transactions moins chères et plus rapides, mais contrairement à un réseau Layer 2, elle possède ses propres mécanismes de sécurité et de consensus qui diffèrent d'Ethereum.",
-        "title": "Qu'est-ce que Binance Smart Chain ?"
+      "scroll": {
+        "text": "Scroll est une solution Layer 2 construite sur Ethereum, visant à améliorer la scalabilité et l'efficacité des transactions.\n\nElle utilise la technologie roll-up pour regrouper les transactions, qui sont ensuite soumises à Ethereum, bénéficiant de son infrastructure de sécurité.",
+        "title": "Qu'est-ce que Scroll ?"
+      },
+      "sanko": {
+        "text": "Sanko est un réseau Layer 3 qui fonctionne sur Arbitrum et Ethereum, se concentrant sur les NFTs et le gaming.\n\nIl utilise la disponibilité de données AnyTrust et des preuves de fraude pour la validation de l'état, permettant des transactions plus rapides et moins chères tout en exploitant la sécurité d'Ethereum. Sanko dispose d'un jeton natif appelé DMT et emploie des validateurs en liste blanche pour proposer et contester les racines d'état.",
+        "title": "Qu'est-ce que Sanko ?"
+      },
+      "zksync": {
+        "text": "ZKsync est un protocole Layer 2 conçu pour étendre Ethereum en utilisant des preuves cryptographiques à connaissance zéro avancées.\n\nIl améliore le débit d'Ethereum tout en maintenant la décentralisation et la sécurité, permettant des transactions plus rapides et moins chères.",
+        "title": "Qu'est-ce que Zksync ?"
+      },
+      "zora": {
+        "text": "Zora est un réseau Layer 2 qui fonctionne sur Ethereum, permettant des transactions moins chères et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe beaucoup de transactions ensemble dans un \"roll up\" avant de les envoyer pour demeurer de manière permanente sur Ethereum.",
+        "title": "Qu'est-ce que Zora?"
       },
       "read_more": "Lire la suite",
       "learn_more": "En savoir plus",
@@ -1033,15 +1133,6 @@
           "fragment1": "Toujours curieux? ",
           "fragment2": "Lire plus",
           "fragment3": " à propos du glissement et comment il affecte les swaps."
-        }
-      },
-      "flashbots": {
-        "text": "Flashbots protège vos transactions contre le frontrunning et les attaques en sandwich qui pourraient vous amener à obtenir un prix plus mauvais ou à l'échec de votre transaction.",
-        "title": "Flashbots",
-        "still_curious": {
-          "fragment1": "Toujours curieux? ",
-          "fragment2": "Lire plus",
-          "fragment3": " à propos de Flashbots et de la protection qu'elle offre."
         }
       },
       "swap_refuel": {
@@ -1189,6 +1280,12 @@
         "check_out_my_wallet": "Découvrez mes objets de collection sur 🌈 Rainbow à %{showcaseUrl}",
         "check_out_this_wallet": "Découvrez les objets de collection de ce portefeuille sur 🌈 Rainbow à %{showcaseUrl}"
       }
+    },
+    "loading": {
+      "backing_up": "Sauvegarde en cours...",
+      "creating_wallet": "Création du portefeuille...",
+      "importing_wallet": "Importation...",
+      "restoring": "Restauration..."
     },
     "message": {
       "click_to_copy_to_clipboard": "Cliquez pour copier dans le presse-papiers",
@@ -2052,7 +2149,6 @@
       "find_a_token_to_buy": "Trouvez un jeton à acheter",
       "search_your_tokens": "Recherchez vos jetons",
       "error_executing_swap": "Erreur lors de l'exécution de l'échange",
-      "flashbots_protection": "Protection Flashbots",
       "tokens_input": {
         "tokens": "Jetons",
         "sort": "Trier",
@@ -2183,6 +2279,11 @@
           "pending": "Interaction en attente",
           "confirmed": "Interagi",
           "failed": "Échec de l'interaction"
+        },
+        "launch": {
+          "pending": "Lancement",
+          "confirmed": "Lancé",
+          "failed": "Échec du Lancement"
         },
         "swap": {
           "pending": "Échange en cours",
@@ -2544,7 +2645,25 @@
         "loading_balance": "Chargement du solde...",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Regarder",
-        "ledger": "Ledger"
+        "ledger": "Ledger",
+        "wallets": "Portefeuilles",
+        "all_wallets": "Tous les portefeuilles",
+        "total_balance": "Solde total",
+        "edit_hint_tooltip": {
+          "title": "Personnalisez vos portefeuilles",
+          "subtitle": {
+            "prefix": "Appuyez sur",
+            "action": "Modifier",
+            "suffix": "bouton ci-dessus pour configurer"
+          }
+        },
+        "address_menu": {
+          "edit": "Modifier le portefeuille",
+          "copy": "Copier l'adresse",
+          "settings": "Paramètres du portefeuille",
+          "notifications": "Paramètres de notification",
+          "remove": "Retirer le portefeuille"
+        }
       },
       "connected_apps": "Applications connectées",
       "copy": "Copier",
@@ -2615,6 +2734,14 @@
       "my_account_address": "Mon adresse de compte est :",
       "network_title": "Réseau",
       "new": {
+        "choose_wallet_group": {
+          "title": "Choisir Groupe de Portefeuille",
+          "description": "Choisissez le groupe de portefeuilles dans lequel vous souhaitez créer un nouveau portefeuille, ou créez-en un nouveau."
+        },
+        "new_wallet_group": {
+          "title": "Nouveau Groupe de Portefeuille",
+          "description": "Créer un nouveau groupe de portefeuilles"
+        },
         "add_wallet_sheet": {
           "options": {
             "cloud": {
@@ -2924,10 +3051,15 @@
         "buttons": {
           "cancel": "Annuler",
           "confirm": "􀎽 Confirmer",
+          "confirming": "Confirmation",
           "get_native_token": "Obtenir %{symbol}",
           "buy_native_token": "Acheter %{symbol}"
         },
         "formatted_dates": {
+          "minute_ago": "il y a une minute",
+          "minutes_ago": "il y a des minutes",
+          "hour_ago": "il y a une heure",
+          "hours_ago": "il y a des heures",
           "today": "Aujourd'hui :)",
           "day_ago": "il y a un jour",
           "days_ago": "il y a quelques jours",
@@ -2984,12 +3116,233 @@
       },
       "menus": {
         "favorite": "Favori",
+        "home": "Accueil",
         "undo_favorite": "Annuler le favori",
         "remove": "Retirer",
         "forward": "Avancer",
-        "back": "Retour"
+        "back": "Retour",
+        "share": "Partager",
+        "close_all_tabs": "Fermer toutes les %{numberOfClosableTabs} onglets",
+        "close_both_tabs": "Fermer les deux onglets",
+        "close_this_tab": "Fermer cet onglet",
+        "close_tab": "Fermer l'onglet",
+        "new_tab": "Nouvel onglet"
       }
     },
+    "trending_tokens": {
+      "all": "Tout",
+      "no_results": {
+        "title": "Aucun résultat",
+        "body": "Essayez de parcourir une période plus longue ou un réseau ou une catégorie différente."
+      },
+      "and": "et",
+      "and_others": {
+        "one": "et %{count} autre",
+        "other": "et %{count} autres"
+      },
+      "filters": {
+        "categories": {
+          "TRENDING": "Tendances",
+          "RAINBOW": "Rainbow",
+          "NEW": "Nouveau",
+          "FARCASTER": "Farcaster"
+        },
+        "sort": {
+          "RECOMMENDED": {
+            "label": "Trier",
+            "menuOption": "Par défaut"
+          },
+          "VOLUME": "Volume",
+          "MARKET_CAP": "Capitalisation boursière",
+          "TOP_GAINERS": "Principaux gagnants",
+          "TOP_LOSERS": "Principaux perdants"
+        },
+        "time": {
+          "H12": "12 heures",
+          "H12_ABBREVIATED": "12h",
+          "H24": "24 heures",
+          "H24_ABBREVIATED": "24h",
+          "D7": "1 semaine",
+          "D3": "3 jours"
+        }
+      }
+    },
+    "network_selector": {
+      "customize_networks_banner": {
+        "title": "Personnaliser les Réseaux",
+        "tap_the": "Appuyez sur",
+        "button_to_set_up": "bouton ci-dessous pour configurer"
+      },
+      "drop_here_to_unpin": "Déposer ici pour détacher",
+      "edit": "Modifier",
+      "network": "Réseau",
+      "networks": "Réseaux",
+      "drag_to_rearrange": "Glisser pour Réorganiser",
+      "show_less": "Afficher moins",
+      "more": "Plus",
+      "show_more": "Plus de Réseaux",
+      "all_networks": "Tous les réseaux"
+    },
+    "token_launcher": {
+      "airdrop": {
+        "address_or_ens": "Adresse ou ENS",
+        "suggested_users": "UTILISATEURS SUGGÉRÉS",
+        "airdrop_lists": "LISTES D'AIRDROP",
+        "max_recipients_reached": "Max %{maxRecipientCount} bénéficiaires atteints"
+      },
+      "image_upload_error": {
+        "title": "Désolé, il y a eu une erreur lors du téléchargement de votre image.",
+        "subtitle": "Veuillez réessayer."
+      },
+      "allocation_breakdown": {
+        "my_share": "MA PART",
+        "airdropping": "AIRDROPPING",
+        "start_price": "PRIX DE DÉPART",
+        "sections": {
+          "my_share": {
+            "title": "Part du Créateur",
+            "description": "Votre part personnelle dans le projet"
+          },
+          "airdropping": {
+            "title": "Part d'Airdrop",
+            "description": "Distribué à des amis et supporters"
+          },
+          "liquidity_pool": {
+            "title": "Part de la Piscine de Liquidité",
+            "description": "Assure un trading fluide et la liquidité"
+          },
+          "rainbow_share": {
+            "title": "Au-delà de l'Arc-en-Ciel",
+            "description": "Futures Distributions Communautaires"
+          }
+        }
+      },
+      "network_field": {
+        "balance": "Solde : %{balance}",
+        "not_enough_funds": "Fonds insuffisants pour lancer un jeton"
+      },
+      "prebuy": {
+        "balance_after_gas_fee": "Solde Disponible : %{balance}",
+        "title": "Pré-acheter plus de jetons"
+      },
+      "review": {
+        "token_allocation": "Allocation de jetons",
+        "your_share": "Votre part",
+        "airdropping": "Airdropping",
+        "about": "À propos",
+        "total_cost": "Coût total",
+        "initial_price": "Prix initial",
+        "market_cap": "Capitalisation boursière",
+        "total_supply": "Offre totale",
+        "network": "Réseau"
+      },
+      "creating": {
+        "deploying": "Déploiement de %{symbol}..."
+      },
+      "success": {
+        "title": "%{symbol} est actif!",
+        "congrats": "Félicitations, vous venez de lancer %{name} dans le monde! Partagez pour diffuser les vibes."
+      },
+      "input_errors": {
+        "too_long": "Trop long, ami.",
+        "invalid_input": "Entrée invalide",
+        "symbol_required": "Symbole requis",
+        "name_required": "Nom requis",
+        "too_big": "Trop gros.",
+        "must_be_greater_than_0": "Doit être supérieur à 0",
+        "amount_is_greater_than_balance": "Montant supérieur au solde",
+        "amount_is_greater_than_max_prebuy_amount": "Dépasse le montant maximal de pré-achat de %{maxPrebuyAmount} %{chainNativeAssetSymbol}",
+        "amount_is_less_than_min_prebuy_amount": "Doit dépasser le montant minimal de pré-achat de %{minPrebuyAmount} %{chainNativeAssetSymbol}",
+        "amount_too_small": "Montant trop petit! Essayez un peu plus!"
+      },
+      "titles": {
+        "total_supply": "Offre totale",
+        "ticker": "Symbole",
+        "name": "Nom",
+        "network": "Réseau",
+        "description": "Description",
+        "airdrop": "Airdrop à des amis",
+        "required_info": "INFO REQUISE",
+        "about": "À PROPOS",
+        "token_allocation": "ALLOCATION DE JETONS",
+        "token_allocation_breakdown": "Répartition de l'Allocation de Jetons",
+        "mcap": "CAPITALISATION"
+      },
+      "placeholders": {
+        "ticker": "$NAME",
+        "enter_coin_name": "Entrez le nom de la pièce",
+        "describe_your_coin": "Décrivez votre pièce"
+      },
+      "buttons": {
+        "hold_to_create": "Tenir pour Créer",
+        "creating": "Création en cours...",
+        "share_link": "Partager le lien",
+        "token_allocation_info": "Plus d'infos",
+        "got_it": "Compris",
+        "cancel": "Annuler"
+      },
+      "header": {
+        "new_coin": "Nouvelle Pièce",
+        "review": "Revoir",
+        "creating": "Création en cours"
+      },
+      "links": {
+        "x": {
+          "name": "X/Twitter",
+          "placeholder": "Nom d'utilisateur"
+        },
+        "telegram": {
+          "name": "Telegram",
+          "placeholder": "Chaîne"
+        },
+        "farcaster": {
+          "name": "Farcaster",
+          "placeholder": "Nom d'utilisateur"
+        },
+        "website": {
+          "name": "Site Internet",
+          "placeholder": "https://homepage.com"
+        },
+        "other": {
+          "name": "Autre",
+          "placeholder": "https://other.com"
+        },
+        "add_more": "Ajouter Plus"
+      },
+      "discard_and_exit": "Jeter & Quitter",
+      "airdrops_sheet": {
+        "claim_button_text": "Réclamer",
+        "empty_state_title": "Pas Encore d'Airdrops",
+        "title": "Réclamer des Pièces Arc-en-Ciel"
+      },
+      "cards": {
+        "airdrops": {
+          "subtitle_loading": "CHARGEMENT",
+          "subtitle_has_airdrops": "DISPONIBLE POUR RÉCLAMER",
+          "subtitle_no_airdrops": "PAS ENCORE D'AIRDROPS",
+          "title": "Airdrops",
+          "title_singular": "Airdrop"
+        },
+        "launch": {
+          "line_one": "Lancer\n",
+          "line_two": "votre Pièce"
+        }
+      },
+      "claim_airdrop_sheet": {
+        "by": "par",
+        "claiming": "Réclamer",
+        "created_by": "Créé par %{name}",
+        "gifted_to": "Offert à",
+        "hold_to_claim": "Tenir pour Réclamer",
+        "hold_to_retry": "Tenir pour Réessayer",
+        "successfully_claimed": "Réclamé avec Succès",
+        "title": "Réclamer $%{symbol}",
+        "to_claim_on": "à réclamer sur %{network}",
+        "view_coin": "Voir Pièce",
+        "you": "Vous"
+      }
+    },
+    "done": "Terminé",
     "copy": "Copier",
     "paste": "Coller"
   }

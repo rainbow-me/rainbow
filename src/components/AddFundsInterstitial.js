@@ -1,7 +1,7 @@
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback } from 'react';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import networkInfo from '../helpers/networkInfo';
 import showWalletErrorAlert from '../helpers/support';
 import { useNavigation } from '../navigation/Navigation';
@@ -20,6 +20,7 @@ import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { useRoute } from '@react-navigation/native';
 import { Network } from '@/state/backendNetworks/types';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const ContainerWidth = 261;
 
@@ -122,8 +123,6 @@ const AmountButtonWrapper = styled(Row).attrs({
   ...(android && { width: isVeryNarrowPhone ? 95 : 100 }),
 });
 
-const onAddFromFaucet = accountAddress => Linking.openURL(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
-
 const InnerBPA = android ? ButtonPressAnimation : ({ children }) => children;
 
 const Wrapper = android ? ScaleButtonZoomableAndroid : AmountBPA;
@@ -172,6 +171,7 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 };
 
 const AddFundsInterstitial = ({ network }) => {
+  const onAddFromFaucet = accountAddress => openInBrowser(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
   const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
@@ -198,7 +198,7 @@ const AddFundsInterstitial = ({ network }) => {
         routeName,
       });
     },
-    [isDamaged, navigate, routeName, accountAddress]
+    [isDamaged, navigate, routeName]
   );
 
   const addFundsToAccountAddress = useCallback(() => onAddFromFaucet(accountAddress), [accountAddress]);

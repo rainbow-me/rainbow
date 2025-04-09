@@ -4,7 +4,6 @@ const chartTypes = {
   week: 'week',
   month: 'month',
   year: 'year',
-  max: 'all',
 } as const;
 
 export default chartTypes;

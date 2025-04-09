@@ -1,16 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 import * as i18n from '@/languages';
-import { Bleed, Box, IconContainer, Inline, Stack, Text, TextIcon, TextShadow } from '@/design-system';
+import { Bleed, Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
 import { Row } from '../shared/Row';
-import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
+import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Linking } from 'react-native';
 import { formatURLForDisplay } from '@/utils';
 import { XIcon } from '../../icons/XIcon';
 import { Icon } from '@/components/icons';
 import { formatUrl } from '@/components/DappBrowser/utils';
+import { openInBrowser } from '@/utils/openInBrowser';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { logger } from '@/logger';
+import { CollapsibleSection } from '../shared/CollapsibleSection';
 
 interface RowItem {
   icon?: string;
@@ -29,11 +30,11 @@ interface RowButtonProps {
   value?: string;
 }
 
-function RowButton({ highlighted, icon, iconName, title, url, value }: RowButtonProps) {
+const RowButton = memo(function RowButton({ highlighted, icon, iconName, title, url, value }: RowButtonProps) {
   const { accentColors } = useExpandedAssetSheetContext();
 
   return (
-    <ButtonPressAnimation onPress={() => Linking.openURL(url)} scaleTo={0.96}>
+    <ButtonPressAnimation onPress={() => openInBrowser(url)} scaleTo={0.96}>
       <Row highlighted={highlighted}>
         <Box width="full" flexDirection="row" alignItems="center">
           <Inline space="12px" alignVertical="center">
@@ -95,7 +96,7 @@ function RowButton({ highlighted, icon, iconName, title, url, value }: RowButton
       </Row>
     </ButtonPressAnimation>
   );
-}
+});
 
 function truncate(text: string) {
   try {
@@ -123,7 +124,7 @@ function truncate(text: string) {
   }
 }
 
-function Description({ text }: { text: string }) {
+const Description = memo(function Description({ text }: { text: string }) {
   const { accentColors } = useExpandedAssetSheetContext();
 
   const truncatedText = useMemo(() => truncate(text), [text]);
@@ -176,9 +177,9 @@ function Description({ text }: { text: string }) {
       )}
     </Box>
   );
-}
+});
 
-export function AboutSection() {
+export const AboutContent = memo(function AboutContent() {
   const { basicAsset: asset, assetMetadata: metadata, isRainbowToken } = useExpandedAssetSheetContext();
 
   const rowItems = useMemo(() => {
@@ -264,4 +265,8 @@ export function AboutSection() {
       )}
     </Box>
   );
-}
+});
+
+export const AboutSection = memo(function AboutSection() {
+  return <CollapsibleSection content={<AboutContent />} icon="􁜾" id={SectionId.ABOUT} primaryText="About" />;
+});

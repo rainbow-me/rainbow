@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as i18n from '@/languages';
 import { Bleed, Box, Separator, Text, TextIcon, TextShadow, useForegroundColor } from '@/design-system';
 import { CollapsableField } from './CollapsableField';
@@ -14,7 +14,7 @@ import {
 } from '../constants';
 import { AirdropRecipient, useTokenLauncherStore } from '../state/tokenLauncherStore';
 import FastImage from 'react-native-fast-image';
-import Animated from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { FieldContainer } from './FieldContainer';
 import { abbreviateNumber } from '@/helpers/utilities';
@@ -34,7 +34,7 @@ import { ContactAvatar } from '@/components/contacts';
 import { colors } from '@/styles';
 
 function SuggestedUsers({ users }: { users: SuggestedUser[] }) {
-  const { accentColors } = useTokenLauncherContext();
+  const { accentColors, infoInputScrollRef, infoInputScrollY } = useTokenLauncherContext();
   const addOrEditAirdropAddress = useTokenLauncherStore(state => state.addOrEditAirdropAddress);
   const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
   const rowOneUsers = useMemo(() => users.slice(0, Math.ceil(users.length / 2)), [users]);
@@ -47,7 +47,7 @@ function SuggestedUsers({ users }: { users: SuggestedUser[] }) {
       <ButtonPressAnimation
         key={user.address}
         disabled={isExistingRecipient}
-        onPress={() =>
+        onPress={() => {
           addOrEditAirdropAddress({
             id: user.address,
             address: user.address,
@@ -55,8 +55,12 @@ function SuggestedUsers({ users }: { users: SuggestedUser[] }) {
             isValid: true,
             isSuggested: true,
             label: user.username,
-          })
-        }
+          });
+          // Hacky, but scrollview's size won't grow until the next render
+          setTimeout(() => {
+            infoInputScrollRef.current?.scrollTo({ y: infoInputScrollY.current + SMALL_INPUT_HEIGHT + 8, animated: true });
+          }, 1);
+        }}
       >
         <Box
           backgroundColor={accentColors.opacity6}
@@ -122,7 +126,7 @@ function AirdropGroups({
   predefinedCohorts: PredefinedCohort[];
   personalizedCohorts: PersonalizedCohort[];
 }) {
-  const { accentColors } = useTokenLauncherContext();
+  const { accentColors, infoInputScrollRef, infoInputScrollY } = useTokenLauncherContext();
 
   const addAirdropGroup = useTokenLauncherStore(state => state.addAirdropGroup);
   const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
@@ -152,15 +156,19 @@ function AirdropGroups({
               <ButtonPressAnimation
                 key={groupId}
                 disabled={isSelected}
-                onPress={() =>
+                onPress={() => {
                   addAirdropGroup({
                     groupId,
                     label: item.name,
                     count: item.totalUsers,
                     imageUrl: item.icons.iconURL,
                     addresses: 'addresses' in item ? item.addresses.map(address => address.address) : undefined,
-                  })
-                }
+                  });
+                  // Hacky, but scrollview's size won't grow until the next render
+                  setTimeout(() => {
+                    infoInputScrollRef.current?.scrollTo({ y: infoInputScrollY.current + SMALL_INPUT_HEIGHT + 8, animated: true });
+                  }, 1);
+                }}
               >
                 <Box
                   width={154.5}
@@ -258,18 +266,18 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
             const imageUrl = avatar?.imageUrl ?? null;
 
             if (!ensAddress) {
-              setIsValidAddress(false);
               throw new Error('No address found for ENS name');
             }
 
             setAddressImage(imageUrl);
-
             addOrEditAirdropAddress({ id, address: ensAddress, label: text, isValid, imageUrl });
-          } catch (e: unknown) {
+          } catch (e) {
             const error = e as Error;
             logger.error(new RainbowError('[TokenLauncher]: Error fetching ENS data'), {
               message: error.message,
             });
+            setIsValidAddress(false);
+            addOrEditAirdropAddress({ id, address: text, isValid: false });
           } finally {
             setIsFetchingEnsData(false);
           }
@@ -406,13 +414,19 @@ function SuggestedUserField({ recipient }: { recipient: AirdropRecipient }) {
 
 function AirdropRecipients() {
   const airdropRecipients = useTokenLauncherStore(state => state.airdropRecipients);
+  const placeholderId = useRef(Math.random().toString());
 
   const recipientsWithPlaceholder = useMemo(() => {
+    // We need to keep placeholder id stable in cases of deletions for the layout animation to behave correctly.
+    const placeholderBecameReal = airdropRecipients.some(recipient => recipient.id === placeholderId.current);
+    if (placeholderBecameReal) {
+      placeholderId.current = Math.random().toString();
+    }
     return [
       ...airdropRecipients,
       {
         type: 'address' as const,
-        id: Math.random().toString(),
+        id: placeholderId.current,
         label: '',
         count: 1,
         value: '',
@@ -430,8 +444,14 @@ function AirdropRecipients() {
     <Box gap={8}>
       {recipientsWithPlaceholder.map((recipient, index) => {
         return (
-          <Animated.View key={recipient.id} layout={COLLAPSABLE_FIELD_ANIMATION} style={{ width: '100%' }}>
-            <Box flexDirection="row" alignItems="center" gap={16} key={recipient.id}>
+          <Animated.View
+            key={recipient.id}
+            entering={FadeIn.duration(150)}
+            exiting={FadeOut.duration(100)}
+            layout={COLLAPSABLE_FIELD_ANIMATION}
+            style={{ width: '100%' }}
+          >
+            <Box flexDirection="row" alignItems="center" gap={16}>
               {recipient.type === 'address' && recipient.isSuggested && <SuggestedUserField recipient={recipient} />}
               {recipient.type === 'address' && !recipient.isSuggested && <AddressInput id={recipient.id} />}
               {recipient.type === 'group' && <AirdropGroupField recipient={recipient} />}
@@ -491,7 +511,11 @@ export function AirdropSection() {
           )}
         </Animated.View>
 
-        {airdropSuggestions && <SuggestedUsers users={airdropSuggestions.data.suggestedUsers} />}
+        {airdropSuggestions && (
+          <Animated.View layout={COLLAPSABLE_FIELD_ANIMATION}>
+            <SuggestedUsers users={airdropSuggestions.data.suggestedUsers} />
+          </Animated.View>
+        )}
       </Box>
     </CollapsableField>
   );
