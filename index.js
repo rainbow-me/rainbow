@@ -7,8 +7,9 @@ likely because of typescript.
 import '@walletconnect/react-native-compat';
 import { initSentry } from '@/logger/sentry';
 import { PerformanceTracking, PerformanceReports, PerformanceReportSegments } from '@/performance/tracking';
-import { StartTime } from '@/performance/start-time';
-PerformanceTracking.startReport(PerformanceReports.appStartup, StartTime.START_TIME);
+import { APP_START_TIME } from '@/performance/start-time';
+
+PerformanceTracking.startReport(PerformanceReports.appStartup, APP_START_TIME);
 PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.loadJSBundle);
 PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.loadMainModule);
 

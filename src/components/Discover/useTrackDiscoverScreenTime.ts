@@ -2,7 +2,7 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useEffect, useRef } from 'react';
 import Routes from '@/navigation/routesNames';
 import { usePrevious } from '@/hooks';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 
 export const useTrackDiscoverScreenTime = () => {
@@ -18,7 +18,7 @@ export const useTrackDiscoverScreenTime = () => {
       startTime.current = performance.now();
     } else if (!isOnDiscoverScreen && previousIsOnDiscoverScreen && startTime.current && !isOnNetworkSelector) {
       const duration = performance.now() - startTime.current;
-      analyticsV2.track(event.timeSpentOnDiscoverScreen, {
+      analytics.track(event.timeSpentOnDiscoverScreen, {
         durationInMs: duration,
       });
       startTime.current = null;

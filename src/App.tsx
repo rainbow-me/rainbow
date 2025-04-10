@@ -113,7 +113,7 @@ function Root() {
   useEffect(() => {
     async function initializeApplication() {
       PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);
-      await Promise.all([initializeRemoteConfig(), migrate(), analyticsV2.initializeRudderstack()]);
+      await Promise.all([initializeRemoteConfig(), migrate(), analytics.initializeRudderstack()]);
 
       const isReturningUser = ls.device.get(['isReturningUser']);
       const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();

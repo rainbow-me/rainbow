@@ -1,7 +1,7 @@
 import { SENTRY_ENVIRONMENT } from 'react-native-dotenv';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { IS_DEV, IS_TEST } from '@/env';
-import { StartTime } from '../start-time';
+import { APP_START_TIME } from '../start-time';
 import { event, EventProperties } from '@/analytics/event';
 import { logger } from '@/logger';
 import { Timer } from '@/performance/timer';
@@ -48,7 +48,6 @@ class PerformanceTracker {
   analyticsTrackingEnabled = !IS_TEST && !IS_DEV && SENTRY_ENVIRONMENT !== 'LocalRelease';
   // Toggle if you want console logs
   debug = false;
-  appStartTime = StartTime.START_TIME;
   timer = new Timer();
   reports = new Map<string, Report>();
 
@@ -57,7 +56,7 @@ class PerformanceTracker {
   }
 
   logFromAppStartTime(metric: PerformanceEvent, params?: Params) {
-    const durationInMs = Date.now() - this.appStartTime;
+    const durationInMs = Date.now() - APP_START_TIME;
     this.trackMetric(metric, durationInMs, params);
   }
 
@@ -84,7 +83,7 @@ class PerformanceTracker {
     } as EventProperties[PerformanceEvent];
 
     if (this.analyticsTrackingEnabled) {
-      analyticsV2.track(metric, paramsToTrack);
+      analytics.track(metric, paramsToTrack);
     }
     if (this.debug) {
       console.log(`[PERFORMANCE]: ${metric}`, JSON.stringify(paramsToTrack, null, 2));
