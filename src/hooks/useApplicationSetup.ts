@@ -17,6 +17,8 @@ import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetr
 import { useRunWatchedWalletCohort } from '@/helpers/runWatchedWalletCohort';
 
 export function useApplicationSetup() {
+  "use no memo";
+  
   const [initialRoute, setInitialRoute] = useState<InitialRoute>(null);
 
   useRunWatchedWalletCohort();

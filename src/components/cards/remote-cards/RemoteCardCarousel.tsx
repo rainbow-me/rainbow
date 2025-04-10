@@ -25,6 +25,8 @@ export const getGutterSizeForCardAmount = (amount: number) => {
 };
 
 export const RemoteCardCarousel = () => {
+  "use no memo";
+  
   const carouselRef = useRef<FlashList<string>>(null);
   const { name } = useRoute();
   const config = useRemoteConfig();

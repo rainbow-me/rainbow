@@ -29,6 +29,8 @@ const FALLBACK_ADDRESS = userAssetsStoreManager.getState().address;
 const createLanguageSelector = createSelector([languageSelector], withLanguage);
 
 export default function useAccountSettings() {
+  "use no memo";
+  
   const { language } = useSelector(createLanguageSelector);
   const dispatch = useDispatch();
 
