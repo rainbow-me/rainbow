@@ -128,6 +128,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    androidResources {
+        noCompress += ["bundle"]
+    }
+
     defaultConfig {
         applicationId "com.example"
         minSdkVersion rootProject.ext.minSdkVersion
