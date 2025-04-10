@@ -14,6 +14,8 @@ import { SharedValue } from 'react-native-reanimated';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { TextProps } from '@/design-system';
+import { Checkbox } from '@/screens/SendConfirmationSheet';
+import { ENSProfile } from '@/entities/ens';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -62,7 +64,22 @@ export type RootStackParamList = {
   };
   [Routes.SETTINGS_BACKUP_VIEW]: any;
   [Routes.SEND_CONFIRMATION_SHEET]: {
-    shouldShowChecks: boolean;
+    amountDetails: {
+      assetAmount: string;
+      isSufficientBalance: boolean;
+      nativeAmount: string;
+    };
+    asset: ParsedAddressAsset | UniqueAsset;
+    callback: (...args: unknown[]) => Promise<boolean>;
+    checkboxes: Checkbox[];
+    ensProfile: ENSProfile;
+    isENS: boolean;
+    isL2: boolean;
+    isNft: boolean;
+    chainId: ChainId;
+    profilesEnabled: boolean;
+    to: string;
+    toAddress: string;
   };
   [Routes.EXPLAIN_SHEET]: {
     type: string;

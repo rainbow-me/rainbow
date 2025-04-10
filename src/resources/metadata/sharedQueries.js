@@ -80,6 +80,7 @@ const BACKEND_NETWORKS_QUERY = `
           transactions
           assets
           positions
+          interactionsWith
         }
         tokenSearch {
           enabled
