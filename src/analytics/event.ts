@@ -10,6 +10,7 @@ import { ChainId, Network } from '@/state/backendNetworks/types';
 import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import { ENSRapActionType } from '../raps/common';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
 
 /**
@@ -927,7 +928,7 @@ export type EventProperties = {
   [event.ensExtended]: { category: string };
   [event.ensTransferredControl]: { category: string };
   [event.ensSetPrimary]: { category: string };
-  [event.ensRapFailed]: { category: string; failed_action: string; label: string };
+  [event.ensRapFailed]: { category: string; failed_action: ENSRapActionType; label: string };
   [event.ensRapStarted]: { category: string; label: string };
   [event.ensRapCompleted]: { category: string; label: string };
 
