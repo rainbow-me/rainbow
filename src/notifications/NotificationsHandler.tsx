@@ -1,5 +1,6 @@
 import { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
-import { usePrevious, useSwitchWallet, useWallets } from '@/hooks';
+import { usePrevious, useSwitchWallet } from '@/hooks';
+import { useWalletsStore, selectWallets } from '@/redux/wallets';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import {
@@ -39,7 +40,7 @@ type Callback = () => void;
 type Props = PropsWithChildren<{ walletReady: boolean }>;
 
 export const NotificationsHandler = ({ walletReady }: Props) => {
-  const { wallets } = useWallets();
+  const wallets = useWalletsStore(selectWallets);
   const walletSwitcher = useSwitchWallet();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
   const walletSwitcherRef = useRef(walletSwitcher);

@@ -8,7 +8,7 @@ import { cloudPlatform } from '@/utils/platform';
 import { ButtonPressAnimation } from '../animations';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
-import { useWallets } from '@/hooks';
+import { useWalletsStore, selectSelectedWallet } from '@/redux/wallets';
 import { format } from 'date-fns';
 import { useCreateBackup } from './useCreateBackup';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
@@ -21,10 +21,12 @@ export default function CloudBackupPrompt() {
   const { mostRecentBackup } = backupsStore(state => ({
     mostRecentBackup: state.mostRecentBackup,
   }));
-  const { selectedWallet } = useWallets();
+  const selectedWallet = useWalletsStore(selectSelectedWallet);
   const createBackup = useCreateBackup();
 
   const onCloudBackup = useCallback(() => {
+    if (!selectedWallet) return;
+
     // pop the bottom sheet, and navigate to the backup section inside settings sheet
     goBack();
     navigate(Routes.SETTINGS_SHEET, {
@@ -39,7 +41,7 @@ export default function CloudBackupPrompt() {
         }),
       logout: true,
     });
-  }, [createBackup, goBack, navigate, selectedWallet.id]);
+  }, [createBackup, goBack, navigate, selectedWallet]);
 
   const onMaybeLater = useCallback(() => goBack(), [goBack]);
 

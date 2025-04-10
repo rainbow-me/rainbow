@@ -1,30 +1,27 @@
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
 import WalletTypes from '@/helpers/walletTypes';
-import { RainbowWallet } from '@/model/wallet';
-import { AppState } from '@/redux/store';
+import {
+  useWalletsStore,
+  selectIsDamaged,
+  selectIsReadOnlyWallet,
+  selectIsHardwareWallet,
+  selectSelectedWallet,
+  selectWalletNames,
+  selectWallets,
+} from '../redux/wallets';
 
-const walletSelector = createSelector(
-  ({ wallets: { selected = {} as RainbowWallet, walletNames, wallets } }: AppState) => ({
-    selectedWallet: selected,
-    walletNames,
-    wallets,
-  }),
-  ({ selectedWallet, walletNames, wallets }) => ({
-    selectedWallet,
-    walletNames,
-    wallets,
-  })
-);
-
+/**
+ * @deprecated Use useWalletsStore with selectors directly instead.
+ * Example: const [isDamaged, isReadOnlyWallet] = useWalletsStore(state => [selectIsDamaged(state), selectIsReadOnlyWallet(state)]);
+ * Or for a single value: const isDamaged = useWalletsStore(selectIsDamaged);
+ */
 export default function useWallets() {
-  const { selectedWallet, walletNames, wallets } = useSelector(walletSelector);
+  const { selected, walletNames, wallets } = useWalletsStore();
 
   return {
-    isDamaged: selectedWallet?.damaged,
-    isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
-    isHardwareWallet: !!selectedWallet.deviceId,
-    selectedWallet,
+    isDamaged: selected?.damaged,
+    isReadOnlyWallet: selected?.type === WalletTypes.readOnly,
+    isHardwareWallet: !!selected?.deviceId,
+    selectedWallet: selected,
     walletNames,
     wallets,
   };

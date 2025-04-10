@@ -5,11 +5,11 @@ import { convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import useAccountSettings from './useAccountSettings';
 import useWalletBalances from './useWalletBalances';
-import useWallets from './useWallets';
+import { useWalletsStore, selectWalletNames, selectWallets } from '@/redux/wallets';
 
 export default function useWalletsWithBalancesAndNames() {
   const { nativeCurrency } = useAccountSettings();
-  const { walletNames, wallets } = useWallets();
+  const [walletNames, wallets] = useWalletsStore(state => [selectWalletNames(state), selectWallets(state)]);
   const { balances } = useWalletBalances(wallets || {});
   const hiddenBalances = userAssetsStoreManager(state => state.hiddenAssetBalances);
 
