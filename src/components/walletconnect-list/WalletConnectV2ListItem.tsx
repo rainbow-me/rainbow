@@ -116,7 +116,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
         } else if (index === 1) {
           await disconnectSession(session);
           reload();
-          analytics.track('Manually disconnected from WalletConnect connection', {
+          analytics.track(analytics.event.manuallyDisconnectedFromWalletConnectConnection, {
             dappName,
             dappUrl,
           });
@@ -131,7 +131,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
       if (actionKey === 'disconnect') {
         await disconnectSession(session);
         reload();
-        analytics.track('Manually disconnected from WalletConnect connection', {
+        analytics.track(analytics.event.manuallyDisconnectedFromWalletConnectConnection, {
           dappName,
           dappUrl,
         });

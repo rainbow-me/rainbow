@@ -118,7 +118,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   }, [accountAddress, accountENS]);
 
   const onAvatarViewProfile = useCallback(() => {
-    analytics.track('Viewed ENS profile', {
+    analytics.track(analytics.event.viewedEnsProfile, {
       category: 'profiles',
       ens: accountENS,
       from: 'Transaction list',
