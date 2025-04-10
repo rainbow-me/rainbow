@@ -42,7 +42,7 @@ export default function useInitializeWallet() {
     }
   };
 
-  const walletsStore = useWalletsStore();
+  const updateAccountAddress = useWalletsStore(state => state.updateAccountAddress);
 
   const initializeWallet = useCallback(
     async (
