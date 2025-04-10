@@ -351,8 +351,8 @@ export const SendConfirmationSheet = () => {
     color = theme.colors.appleBlue;
   }
 
-  const shouldShowChecks =
-    isL2 && !isSendingToUserAccount && (typeof interactions?.specificChainCount === 'undefined' || interactions.specificChainCount < 3);
+  const lessThanThreeInteractions = typeof interactions?.specificChainCount === 'undefined' || interactions.specificChainCount < 3;
+  const shouldShowChecks = isL2 && !isSendingToUserAccount && lessThanThreeInteractions;
 
   useEffect(() => {
     setParams({ shouldShowChecks });

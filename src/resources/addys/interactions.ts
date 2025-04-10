@@ -82,12 +82,7 @@ export type InteractionsCountArgs = {
 // ///////////////////////////////////////////////
 // Query Key
 
-// Query key remains the same, fetching all transactions for the given addresses
-export function interactionsCountQueryKey({
-  fromAddress,
-  toAddress,
-  currency,
-}: Required<Omit<InteractionsCountArgs, 'chainId'> & { currency: NativeCurrencyKey }>) {
+export function interactionsCountQueryKey({ fromAddress, toAddress, currency }: Required<Omit<InteractionsCountArgs, 'chainId'>>) {
   return createQueryKey(
     'interactionsCount',
     { fromAddress: fromAddress.toLowerCase(), toAddress: toAddress.toLowerCase(), currency },
@@ -156,23 +151,22 @@ export interface SelectedInteractionsCount {
 // Query Hook
 
 export function useInteractionsCount(
-  { fromAddress: inputFromAddress, toAddress, currency: inputCurrency, chainId }: InteractionsCountArgs,
+  { fromAddress: inputFromAddress, toAddress, chainId }: Omit<InteractionsCountArgs, 'currency'>,
   config: QueryConfigWithSelect<InteractionsCountResult, Error, SelectedInteractionsCount, InteractionsCountQueryKey> = {}
 ) {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
-  const resolvedFromAddress = (inputFromAddress || accountAddress)?.toLowerCase();
-  const resolvedCurrency = inputCurrency || nativeCurrency;
+  const { accountAddress, nativeCurrency: currency } = useAccountSettings();
+  const fromAddress = (inputFromAddress || accountAddress)?.toLowerCase() as Address;
 
   return useQuery(
     interactionsCountQueryKey({
-      fromAddress: resolvedFromAddress as Address,
+      fromAddress,
       toAddress,
-      currency: resolvedCurrency,
+      currency,
     }),
     interactionsCountQueryFunction,
     {
       ...config,
-      enabled: !!toAddress && !!resolvedFromAddress && (config.enabled ?? true),
+      enabled: !!toAddress && !!fromAddress && (config.enabled ?? true),
       staleTime: time.minutes(15),
       cacheTime: time.hours(1),
       select: data => ({
