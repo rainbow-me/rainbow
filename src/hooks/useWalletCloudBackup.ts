@@ -72,7 +72,7 @@ export default function useWalletCloudBackup() {
       } else {
         const isAvailable = await isCloudBackupAvailable();
         if (!isAvailable) {
-          analytics.track('iCloud not enabled', {
+          analytics.track(analytics.event.iCloudNotEnabled, {
             category: 'backup',
           });
           Alert.alert(
@@ -82,7 +82,7 @@ export default function useWalletCloudBackup() {
               {
                 onPress: () => {
                   openInBrowser('https://support.apple.com/en-us/HT204025');
-                  analytics.track('View how to Enable iCloud', {
+                  analytics.track(analytics.event.viewHowToEnableICloud, {
                     category: 'backup',
                   });
                 },
@@ -90,7 +90,7 @@ export default function useWalletCloudBackup() {
               },
               {
                 onPress: () => {
-                  analytics.track('Ignore how to enable iCloud', {
+                  analytics.track(analytics.event.ignoreHowToEnableICloud, {
                     category: 'backup',
                   });
                 },
@@ -137,11 +137,14 @@ export default function useWalletCloudBackup() {
         const userError = getUserError(e);
         !!onError && onError(userError);
         logger.error(new RainbowError(`[useWalletCloudBackup]: error while trying to backup wallet to ${cloudPlatform}: ${e}`));
-        analytics.track(`Error during ${cloudPlatform} Backup`, {
-          category: 'backup',
-          error: userError,
-          label: cloudPlatform,
-        });
+        analytics.track(
+          cloudPlatform === 'Google Drive' ? analytics.event.errorDuringGoogleDriveBackup : analytics.event.errorDuringICloudBackup,
+          {
+            category: 'backup',
+            error: userError,
+            label: cloudPlatform,
+          }
+        );
         return false;
       }
 
@@ -155,13 +158,13 @@ export default function useWalletCloudBackup() {
         logger.error(new RainbowError(`[useWalletCloudBackup]: error while trying to save wallet backup state: ${e}`));
         const userError = getUserError(new Error(CLOUD_BACKUP_ERRORS.WALLET_BACKUP_STATUS_UPDATE_FAILED));
         !!onError && onError(userError);
-        analytics.track('Error updating Backup status', {
+        analytics.track(analytics.event.errorUpdatingBackupStatus, {
           category: 'backup',
           label: cloudPlatform,
         });
-      }
 
-      return false;
+        return false;
+      }
     },
     [dispatch, wallets]
   );

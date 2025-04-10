@@ -43,7 +43,7 @@ export default function useHideSplashScreen() {
       const additionalParams = initialRoute !== undefined ? { initialRoute } : undefined;
       PerformanceTracking.finishMeasuring(PerformanceMetrics.timeToInteractive, additionalParams);
       PerformanceTracking.logDirectly(PerformanceMetrics.completeStartupTime, performance.now() - StartTime.START_TIME, additionalParams);
-      analytics.track('Application became interactive');
+      analytics.track(analytics.event.applicationBecameInteractive);
       alreadyLoggedPerformance.current = true;
 
       // need to load setting straight from storage, redux isnt ready yet

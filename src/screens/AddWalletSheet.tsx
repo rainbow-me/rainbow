@@ -43,7 +43,7 @@ export const AddWalletSheet = () => {
         isFirstWallet,
         type: 'new',
       });
-      analytics.track('Tapped "Create a new wallet"');
+      analytics.track(analytics.event.tappedCreateNewWallet);
 
       navigate(Routes.CHOOSE_WALLET_GROUP, {});
     } catch (e) {
@@ -54,7 +54,7 @@ export const AddWalletSheet = () => {
   };
 
   const onPressRestoreFromSeed = () => {
-    analytics.track('Tapped "Add an existing wallet"');
+    analytics.track(analytics.event.tappedAddExistingWallet);
     analytics.track(analytics.event.addWalletFlowStarted, {
       isFirstWallet,
       type: 'seed',
@@ -66,7 +66,7 @@ export const AddWalletSheet = () => {
   };
 
   const onPressWatch = () => {
-    analytics.track('Tapped "Watch an Ethereum Address"');
+    analytics.track(analytics.event.tappedWatchAddress);
     analytics.track(analytics.event.addWalletFlowStarted, {
       isFirstWallet,
       type: 'watch',
