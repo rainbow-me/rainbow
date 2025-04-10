@@ -7,6 +7,7 @@ import { RainbowError, logger } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { CrosschainQuote, Quote, QuoteError, Source } from '@rainbow-me/swaps';
+import { QuickBuyAnalyticalData } from '@/analytics/event';
 
 export interface SwapsState {
   isSwapsOpen: boolean;
@@ -43,6 +44,8 @@ export interface SwapsState {
   setPreferredNetwork: (preferredNetwork: ChainId | undefined) => void;
 
   lastNavigatedTrendingToken: UniqueId | undefined;
+
+  quickBuyAnalyticalData: QuickBuyAnalyticalData | undefined;
 }
 
 type StateWithTransforms = Omit<Partial<SwapsState>, 'latestSwapAt' | 'recentSwaps'> & {
@@ -126,7 +129,7 @@ export const swapsStore = createRainbowStore<SwapsState>(
     source: 'auto',
     setSource: (source: Source | 'auto') => set({ source }),
 
-    degenMode: false,
+    degenMode: true,
     setDegenMode: (degenMode: boolean) => set({ degenMode }),
     preferredNetwork: undefined,
     setPreferredNetwork: (preferredNetwork: ChainId | undefined) => set({ preferredNetwork }),
@@ -155,6 +158,7 @@ export const swapsStore = createRainbowStore<SwapsState>(
     },
 
     lastNavigatedTrendingToken: undefined,
+    quickBuyAnalyticalData: undefined,
   }),
   {
     storageKey: 'swapsStore',

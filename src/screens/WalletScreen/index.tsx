@@ -18,7 +18,7 @@ import {
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { AppState } from '@/redux/store';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { IS_ANDROID } from '@/env';
@@ -105,7 +105,7 @@ function WalletScreen() {
       }
     );
 
-    analyticsV2.identify({
+    analytics.identify({
       ownedAccounts: identify.ownedAccounts,
       hardwareAccounts: identify.hardwareAccounts,
       watchedAccounts: identify.watchedAccounts,
@@ -159,7 +159,7 @@ function WalletScreen() {
 
   // track current app icon
   useEffect(() => {
-    analyticsV2.identify({ appIcon });
+    analytics.identify({ appIcon });
   }, [appIcon]);
 
   const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);

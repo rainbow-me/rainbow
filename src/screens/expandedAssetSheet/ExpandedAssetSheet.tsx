@@ -27,6 +27,7 @@ function ExpandedAssetSheetContent() {
         scrollEnabled
         removeTopPadding
         hideHandle
+        showsVerticalScrollIndicator={false}
         additionalTopPadding={false}
         scrollIndicatorInsets={{
           bottom: safeAreaInsets.bottom,

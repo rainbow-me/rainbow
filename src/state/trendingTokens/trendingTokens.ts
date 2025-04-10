@@ -1,4 +1,4 @@
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
 import {
@@ -40,15 +40,15 @@ export const useTrendingTokensStore = createRainbowStore<TrendingTokensState>(
     sort: ArcTrendingSort.Recommended,
     setCategory: category => set({ category }),
     setChainId: chainId => {
-      analyticsV2.track(analyticsV2.event.changeNetworkFilter, { chainId });
+      analytics.track(analytics.event.changeNetworkFilter, { chainId });
       set({ chainId });
     },
     setTimeframe: timeframe => {
-      analyticsV2.track(analyticsV2.event.changeTimeframeFilter, { timeframe });
+      analytics.track(analytics.event.changeTimeframeFilter, { timeframe });
       set({ timeframe });
     },
     setSort: sort => {
-      analyticsV2.track(analyticsV2.event.changeSortFilter, { sort });
+      analytics.track(analytics.event.changeSortFilter, { sort });
       set({ sort });
     },
   }),

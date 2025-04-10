@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Insets, StyleSheet } from 'react-native';
 import Animated, { runOnUI, useAnimatedRef, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Inline, Text, TextIcon, useColorMode } from '@/design-system';
@@ -152,7 +152,7 @@ export const TokenToBuyList = () => {
 
       // track what search query the user had prior to selecting an asset
       if (searchQuery.trim().length) {
-        analyticsV2.track(analyticsV2.event.swapsSearchedForToken, {
+        analytics.track(analytics.event.swapsSearchedForToken, {
           query: searchQuery,
           type: 'output',
         });

@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Placeholder, RecentMintCell } from './RecentMintCell';
 import { View } from 'react-native';
 import { useTheme } from '@/theme';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
@@ -92,7 +92,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
         </Inline>
         <ButtonPressAnimation
           onPress={() => {
-            analyticsV2.track(analyticsV2.event.mintsPressedMintButton, {
+            analytics.track(analytics.event.mintsPressedMintButton, {
               contractAddress: collection.contractAddress,
               chainId: collection.chainId,
               priceInEth: price,

@@ -1,4 +1,4 @@
-import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';
@@ -11,6 +11,7 @@ import { AnyPerformanceLog, Screen } from '../state/performance/operations';
 import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
 import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { TokenLauncherAnalyticsParams } from '@/screens/token-launcher/state/tokenLauncherStore';
+import { ENSRegistrationTransactionType } from '../helpers/ens';
 
 /**
  * All events, used by `analytics.track()`
@@ -25,6 +26,14 @@ export const event = {
   promoSheetShown: 'promo_sheet.shown',
   promoSheetDismissed: 'promo_sheet.dismissed',
   swapSubmitted: 'Submitted Swap',
+  cardPressed: 'card.pressed',
+  learnArticleOpened: 'learn_article.opened',
+  learnArticleShared: 'learn_article.shared',
+  qrCodeViewed: 'qr_code.viewed',
+  buyButtonPressed: 'buy_button.pressed',
+  addWalletFlowStarted: 'add_wallet_flow.started',
+  sendMaxPressed: 'Clicked "Max" in Send flow input',
+
   // notification promo sheet was shown
   notificationsPromoShown: 'notifications_promo.shown',
   // only for iOS — initial prompt is not allowed — Android is enabled by default
@@ -37,12 +46,9 @@ export const event = {
   notificationsPromoNotificationSettingsOpened: 'notifications_promo.notification_settings_opened',
   // user either swiped the sheet away, or clicked "Not Now"
   notificationsPromoDismissed: 'notifications_promo.dismissed',
-  cardPressed: 'card.pressed',
-  learnArticleOpened: 'learn_article.opened',
-  learnArticleShared: 'learn_article.shared',
-  qrCodeViewed: 'qr_code.viewed',
-  buyButtonPressed: 'buy_button.pressed',
-  addWalletFlowStarted: 'add_wallet_flow.started',
+  notificationsPromoNotificationSettingsChanged: 'Changed Global Notification Settings',
+  notificationsPromoTapped: 'Tapped Push Notification',
+
   /**
    * Called either on click or during an open event callback. We want this as
    * early in the flow as possible.
@@ -146,6 +152,7 @@ export const event = {
   swapsFailed: 'swaps.failed',
   swapsSucceeded: 'swaps.succeeded',
   swapsQuoteFailed: 'swaps.quote_failed',
+  swapsGasUpdatedPrice: 'Updated Gas Price',
 
   // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
@@ -201,7 +208,52 @@ export const event = {
 
   // discover screen
   timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
+
+  // ens
+  ensInitiatedRegistration: 'Initiated ENS registration',
+  ensEditedRecords: 'Edited ENS records',
+  ensCompletedRegistration: 'Completed ENS registration',
+  ensExtended: 'Extended ENS',
+  ensTransferredControl: 'Transferred ENS control',
+  ensSetPrimary: 'Set ENS to primary ',
+  ensRapFailed: 'Rap failed',
+  ensRapStarted: 'Rap started',
+  ensRapCompleted: 'Rap completed',
+
+  // backup
+  backupError: 'backup.error',
+  backupSavedPassword: 'Saved backup password on iCloud',
+  backupSkippedPassword: "Didn't save backup password on iCloud",
+  backupComplete: 'Backup Complete',
+  backupConfirmed: 'Tapped "Confirm Backup"',
+  backupSheetShown: 'BackupSheet shown',
+  backupChoosePassword: 'Choose Password Step',
+
+  // QR code
+  qrCodeScannedAddress: 'Scanned address QR code',
+  qrCodeScannedProfile: 'Scanned Rainbow profile url',
+  qrCodeScannedWalletConnect: 'Scanned WalletConnect QR code',
+  qrCodeScannedInvalid: 'Scanned broken or unsupported QR code',
+
+  // navigation events
+  navigationAddCash: 'Tapped "Add Cash"',
+  navigationSwap: 'Tapped "Swap"',
+  navigationSend: 'Tapped "Send"',
+  navigationMyQrCode: 'Tapped "My QR Code"',
+
+  // Wallet Profile Modal Events
+  walletProfileCancelled: 'Tapped "Cancel" on Wallet Profile modal',
+  walletProfileSubmitted: 'Tapped "Submit" on Wallet Profile modal',
 } as const;
+
+export type QuickBuyAnalyticalData =
+  | {
+      assetUniqueId: UniqueId;
+      buyWithAssetUniqueId: UniqueId;
+      currencyAmount: number;
+      assetAmount: number;
+    }
+  | undefined;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   type: T;
@@ -224,6 +276,7 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   isSwappingToPopularAsset: boolean;
   isSwappingToTrendingAsset: boolean;
   isHardwareWallet: boolean;
+  quickBuyData?: QuickBuyAnalyticalData;
 };
 
 type SwapsEventFailedParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -238,6 +291,7 @@ type SwapsEventSucceededParameters<T extends 'swap' | 'crosschainSwap'> = {
  * Properties corresponding to each event
  */
 export type EventProperties = {
+  [event.sendMaxPressed]: undefined;
   [event.firstAppOpen]: undefined;
   [event.applicationDidMount]: undefined;
   [event.appStateChange]: {
@@ -269,6 +323,13 @@ export type EventProperties = {
   [event.notificationsPromoSystemSettingsOpened]: undefined;
   [event.notificationsPromoNotificationSettingsOpened]: undefined;
   [event.notificationsPromoDismissed]: undefined;
+  [event.notificationsPromoNotificationSettingsChanged]: {
+    topic: string;
+    action: string;
+  };
+  [event.notificationsPromoTapped]: {
+    campaign: string;
+  };
   [event.cardPressed]: {
     cardName: string;
     routeName: string;
@@ -587,6 +648,7 @@ export type EventProperties = {
   };
 
   // swaps related events
+  [event.swapsGasUpdatedPrice]: { gasPriceOption: string };
   [event.swapsSelectedAsset]: {
     asset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
     otherAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
@@ -810,7 +872,6 @@ export type EventProperties = {
     url: string;
   };
 
-  // network status
   [event.networkStatusOffline]: undefined;
   [event.networkStatusReconnected]: undefined;
 
@@ -832,4 +893,32 @@ export type EventProperties = {
   [event.timeSpentOnDiscoverScreen]: {
     durationInMs: number;
   };
+
+  [event.ensInitiatedRegistration]: { category: string };
+  [event.ensEditedRecords]: { category: string };
+  [event.ensCompletedRegistration]: { category: string };
+  [event.ensExtended]: { category: string };
+  [event.ensTransferredControl]: { category: string };
+  [event.ensSetPrimary]: { category: string };
+  [event.ensRapFailed]: { category: string; failed_action: ENSRegistrationTransactionType; label: string };
+  [event.ensRapStarted]: { category: string; label: string };
+  [event.ensRapCompleted]: { category: string; label: string };
+
+  [event.backupError]: { category: string; error: string; label: string };
+  [event.backupSavedPassword]: undefined;
+  [event.backupSkippedPassword]: undefined;
+  [event.backupComplete]: { category: string; label: string };
+  [event.backupConfirmed]: undefined;
+  [event.backupSheetShown]: { category: string; label: string };
+  [event.backupChoosePassword]: { category: string; label: string };
+
+  [event.qrCodeScannedAddress]: undefined;
+  [event.qrCodeScannedProfile]: undefined;
+  [event.qrCodeScannedWalletConnect]: undefined;
+  [event.qrCodeScannedInvalid]: { qrCodeData: string };
+
+  [event.navigationAddCash]: { category: string };
+  [event.navigationSwap]: { category: string };
+  [event.navigationSend]: { category: string };
+  [event.navigationMyQrCode]: { category: string };
 };

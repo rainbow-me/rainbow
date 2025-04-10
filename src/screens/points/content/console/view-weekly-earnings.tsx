@@ -12,7 +12,7 @@ import { NeonButton } from '../../components/NeonButton';
 import { LineBreak } from '../../components/LineBreak';
 import { Bleed, Box, Stack } from '@/design-system';
 import { useNavigation } from '@/navigation';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { usePoints } from '@/resources/points';
 
 export const ViewWeeklyEarnings = () => {
@@ -258,7 +258,7 @@ export const ViewWeeklyEarnings = () => {
             color="#FEC101"
             label={i18n.t(i18n.l.points.console.view_weekly_earnings_close_button)}
             onPress={() => {
-              analyticsV2.track(analyticsV2.event.pointsViewedWeeklyEarningsScreenPressedCloseButton);
+              analytics.track(analytics.event.pointsViewedWeeklyEarningsScreenPressedCloseButton);
               goBack();
             }}
           />

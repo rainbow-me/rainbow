@@ -386,13 +386,13 @@ const ensAction = async (
             salt,
           })
         );
-        analytics.track('Initiated ENS registration', {
+        analytics.track(analytics.event.ensInitiatedRegistration, {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.MULTICALL:
         tx = await executeMulticall(name, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
-        analytics.track('Edited ENS records', {
+        analytics.track(analytics.event.ensEditedRecords, {
           category: 'profiles',
         });
         break;
@@ -414,43 +414,43 @@ const ensAction = async (
             registerTransactionHash: tx?.hash,
           })
         );
-        analytics.track('Completed ENS registration', {
+        analytics.track(analytics.event.ensCompletedRegistration, {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.RENEW:
         tx = await executeRenew(name, duration, ownerAddress, rentPrice, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
-        analytics.track('Extended ENS', {
+        analytics.track(analytics.event.ensExtended, {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.SET_TEXT:
         tx = await executeSetText(name, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
-        analytics.track('Edited ENS records', {
+        analytics.track(analytics.event.ensEditedRecords, {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.SET_CONTENTHASH:
         tx = await executeSetContenthash(name, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
-        analytics.track('Edited ENS records', {
+        analytics.track(analytics.event.ensEditedRecords, {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.SET_ADDR:
         tx = await executeSetAddr(name, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
-        analytics.track('Edited ENS records', {
+        analytics.track(analytics.event.ensEditedRecords, {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.RECLAIM:
         tx = await executeReclaim(name, toAddress, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
-        analytics.track('Transferred ENS control', {
+        analytics.track(analytics.event.ensTransferredControl, {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.SET_NAME:
         tx = await executeSetName(name, ownerAddress, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
-        analytics.track('Set ENS to primary ', {
+        analytics.track(analytics.event.ensSetPrimary, {
           category: 'profiles',
         });
     }
@@ -682,7 +682,7 @@ const executeAction = async (
     return { baseNonce: nonce, errorMessage: null };
   } catch (error: any) {
     logger.error(new RainbowError(`[raps/ens]: [${rapName}] Error executing action: ${action} ${error}`));
-    analytics.track('Rap failed', {
+    analytics.track(analytics.event.ensRapFailed, {
       category: 'raps',
       failed_action: type,
       label: rapName,
@@ -711,7 +711,7 @@ export const executeENSRap = async (
   const { actions } = rap;
   const rapName = getRapFullName(actions);
 
-  analytics.track('Rap started', {
+  analytics.track(analytics.event.ensRapStarted, {
     category: 'raps',
     label: rapName,
   });
@@ -736,7 +736,7 @@ export const executeENSRap = async (
     }
   }
 
-  analytics.track('Rap completed', {
+  analytics.track(analytics.event.ensRapCompleted, {
     category: 'raps',
     label: rapName,
   });

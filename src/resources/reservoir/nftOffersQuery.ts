@@ -1,4 +1,4 @@
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { nftOffersSortAtom } from '@/components/nft-offers/SortMenu';
 import { NFT_OFFERS, useExperimentalFlag } from '@/config';
 import { arcClient } from '@/graphql';
@@ -114,7 +114,7 @@ export function useNFTOffers({ walletAddress }: { walletAddress: string }) {
       ? offerVarianceArray.reduce((acc, cur) => acc + cur, 0) / offerVarianceArray.length
       : undefined;
 
-    analyticsV2.identify({
+    analytics.identify({
       nftOffersAmount: nftOffers.length,
       nftOffersUSDValue: totalUSDValue,
       nftOffersMedianOfferVariance: medianFloorDifferencePercentage,
