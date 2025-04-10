@@ -14,12 +14,12 @@ import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from 
 import { analytics } from '@/analytics';
 import { useNftSortStore } from './useNFTsSortBy';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
 import useShowcaseTokens from './useShowcaseTokens';
 import useWallets from './useWallets';
 import { useUserNftCollectionsStore, useUserNftsStore } from '@/state/nfts';
+import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
+import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -134,7 +134,7 @@ export default function useWalletSectionsData({
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(sections);
-    const hasNFTs = !!(uniqueTokens && uniqueTokens.length > 0);
+    const hasNFTs = !!(uniqueTokens && uniqueTokens.size > 0);
 
     return {
       hasNFTs,
@@ -167,7 +167,7 @@ export default function useWalletSectionsData({
     claimables,
     remoteCards,
     uniqueTokenFamilies,
-    accountWithBalance?.balances,
     sortBy,
+    accountWithBalance?.balances,
   ]);
 }

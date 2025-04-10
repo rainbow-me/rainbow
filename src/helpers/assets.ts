@@ -337,6 +337,7 @@ export const buildBriefUniqueTokenList = (
         total: collection.distinctNftsOwned,
         type: CellType.FAMILY_HEADER,
         uid: collection.familyName,
+        external: listType === 'ens-profile',
       });
       const uniqueIds = collection.nftIds;
       for (let index = 0; index < uniqueIds.length; index++) {

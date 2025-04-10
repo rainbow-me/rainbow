@@ -10,8 +10,8 @@ import { resolveNameOrAddress } from '@/handlers/web3';
 import { buildUniqueTokenList } from '@/helpers/assets';
 import { useAccountSettings, useWallets } from '@/hooks';
 import styled from '@/styled-thing';
-import { ThemeContextProps, useTheme } from '@/theme';
-import { useLegacyNFTs } from '@/resources/nfts';
+import { ThemeContextProps } from '@/theme';
+import { useUserNftsStore } from '@/state/nfts';
 import { View } from 'react-native';
 import { RootStackParamList } from '@/navigation/types';
 import { RecyclerAssetListSection } from '@/components/asset-list/RecyclerAssetList';
@@ -38,8 +38,6 @@ export default function ShowcaseScreen() {
     params: { address: addressOrDomain },
   } = useRoute<RouteProp<RootStackParamList, 'ShowcaseSheet'>>();
 
-  const theme = useTheme();
-
   const [userData, setUserData] = useState<AddressPreferencesData | null | undefined>();
   const [accountAddress, setAcccountAddress] = useState<string>();
   const { isReadOnlyWallet } = useWallets();
@@ -65,15 +63,8 @@ export default function ShowcaseScreen() {
 
   const { network } = useAccountSettings();
 
-  const {
-    data: { nfts: uniqueTokens },
-    isInitialLoading,
-  } = useLegacyNFTs({
-    config: {
-      enabled: !!accountAddress,
-    },
-    address: accountAddress ?? '',
-  });
+  const uniqueTokens = useUserNftsStore.getState().getNfts();
+  const isInitialLoading = useUserNftsStore.getState().getStatus().isInitialLoading;
 
   const { layout } = useContext(ModalContext) || {};
 
@@ -86,11 +77,11 @@ export default function ShowcaseScreen() {
           totalItems: uniqueTokens?.length,
         },
         renderItem: (item: ComponentProps<typeof CollectibleTokenFamily>) =>
-          tokenFamilyItem({ ...item, external: true, showcase: true, theme }),
+          tokenFamilyItem({ ...item, external: true, showcase: true }),
         type: 'big',
       },
     ],
-    [uniqueTokens, userData?.showcase?.ids, theme]
+    [uniqueTokens, userData?.showcase?.ids]
   );
 
   const contextValue = useMemo(

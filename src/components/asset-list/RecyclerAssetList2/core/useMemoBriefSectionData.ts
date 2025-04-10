@@ -44,7 +44,7 @@ export default function useMemoBriefSectionData({
   const { isClaimablesOpen } = useOpenClaimables();
   const { isCoinListEdited } = useCoinListEdited();
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
-  const { openFamilies } = useOpenFamilies();
+  const { openFamilies } = useOpenFamilies(type === 'ens-profile');
 
   const result = useMemo(() => {
     let afterDivider = false;

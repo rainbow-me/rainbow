@@ -100,6 +100,7 @@ export type NFTFamilyExtraData = {
   name: string;
   total?: number;
   image?: string;
+  external?: boolean;
 };
 
 export type ProfileActionButtonsRowExtraData = {

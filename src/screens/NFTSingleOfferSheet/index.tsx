@@ -25,7 +25,6 @@ import { useNavigation } from '@/navigation';
 import { IS_ANDROID } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
-import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings, useGas, useWallets } from '@/hooks';
 import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities';
 import { analytics } from '@/analytics';
@@ -53,7 +52,11 @@ import { metadataPOSTClient } from '@/graphql';
 import { ethUnits } from '@/references';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+<<<<<<< HEAD
 import { openInBrowser } from '@/utils/openInBrowser';
+=======
+import { useUserNftsStore } from '@/state/nfts';
+>>>>>>> be57cfb73 (chore: self code review tweaks / clean up)
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -90,9 +93,6 @@ export function NFTSingleOfferSheet() {
   const { isReadOnlyWallet } = useWallets();
   const theme = useTheme();
   const { updateTxFee, startPollingGasFees, stopPollingGasFees, isSufficientGas, isValidGas } = useGas();
-  const {
-    data: { nftsMap },
-  } = useLegacyNFTs({ address: accountAddress });
 
   const { offer } = params as { offer: NftOffer };
   const offerChainId = useBackendNetworksStore.getState().getChainsIdByName()[offer.network as Network];
@@ -107,8 +107,7 @@ export function NFTSingleOfferSheet() {
   const [isAccepting, setIsAccepting] = useState(false);
   const txsRef = useRef<string[]>([]);
 
-  const nft = nftsMap[offer.nft.uniqueId];
-
+  const nft = useUserNftsStore.getState().nftsMap.get(offer.nft.uniqueId);
   const insufficientEth = isSufficientGas === false && isValidGas;
 
   const rainbowFeeAddress = getRainbowFeeAddress(offerChainId);
@@ -257,6 +256,10 @@ export function NFTSingleOfferSheet() {
 
   const acceptOffer = useCallback(async () => {
     logger.debug(`[NFTSingleOfferSheet]: Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`);
+    if (!nft) {
+      logger.error(new RainbowError(`[NFTSingleOfferSheet]: NFT ${offer.nft.contractAddress}:${offer.nft.tokenId} not found`));
+      return;
+    }
     const analyticsEventObject = {
       nft: {
         contractAddress: offer.nft.contractAddress,
