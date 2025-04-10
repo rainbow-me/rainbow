@@ -1,8 +1,11 @@
+import { fetchReverseRecord } from '@/handlers/ens';
+import { logger, RainbowError } from '@/logger';
+import { parseTimestampFromBackupFile } from '@/model/backup';
+import store from '@/redux/store';
+import { lightModeThemeColors } from '@/styles';
 import { captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty, keys } from 'lodash';
-import { Dispatch } from 'redux';
-import { ThunkDispatch } from 'redux-thunk';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import { getWalletNames, saveWalletNames } from '../handlers/localstorage/walletNames';
 import WalletTypes from '../helpers/walletTypes';
@@ -21,16 +24,10 @@ import {
   saveAllWallets,
   setSelectedWallet,
 } from '../model/wallet';
+import { createRainbowStore } from '../state/internal/createRainbowStore';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry } from '../utils/profileUtils';
-import { settingsUpdateAccountAddress } from './settings';
 import { updateWebDataEnabled } from './showcaseTokens';
-import { AppGetState, AppState } from './store';
-import { fetchReverseRecord } from '@/handlers/ens';
-import { lightModeThemeColors } from '@/styles';
-import { RainbowError, logger } from '@/logger';
-import { parseTimestampFromBackupFile } from '@/model/backup';
-import { createRainbowStore } from '../state/internal/createRainbowStore';
 
 interface WalletsState {
   selected: RainbowWallet | null;
@@ -60,6 +57,10 @@ interface WalletsState {
 
   accountAddress: string | null;
   updateAccountAddress: (address: string) => void;
+
+  refreshWalletENSAvatars: () => Promise<void>;
+  refreshWalletNames: () => Promise<void>;
+  checkKeychainIntegrity: () => Promise<void>;
 }
 
 export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
@@ -178,313 +179,345 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
     }
   },
 
-  createAccount: data => {
-    // const { wallets } = getState().wallets;
-    // const newWallets = { ...wallets };
-    // let index = 0;
-    // newWallets[id].addresses.forEach(account => (index = Math.max(index, account.index)));
-    // const newIndex = index + 1;
-    // const account = (await generateAccount(id, newIndex))!;
-    // const walletColorIndex = color !== null ? color : addressHashedColorIndex(account!.address)!;
-    // newWallets[id].addresses.push({
-    //   address: account.address,
-    //   avatar: null,
-    //   color: walletColorIndex,
-    //   index: newIndex,
-    //   label: name,
-    //   visible: true,
-    // });
-    // await dispatch(updateWebDataEnabled(true, account.address));
-    // setPreference(PreferenceActionType.init, 'profile', account.address, {
-    //   accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
-    //   accountSymbol: addressHashedEmoji(account.address),
-    // });
-    // // Save all the wallets
-    // saveAllWallets(newWallets);
-    // // Set the address selected (KEYCHAIN)
-    // await saveAddress(account.address);
-    // // Set the wallet selected (KEYCHAIN)
-    // await setSelectedWallet(newWallets[id]);
-    // dispatch({
-    //   payload: { selected: newWallets[id], wallets: newWallets },
-    //   type: WALLETS_ADDED_ACCOUNT,
-    // });
-    // return newWallets;
+  createAccount: async ({ id, name, color }) => {
+    const { wallets } = get();
+    const newWallets = { ...wallets };
+
+    let index = 0;
+    for (const account of newWallets[id].addresses) {
+      index = Math.max(index, account.index);
+    }
+
+    const newIndex = index + 1;
+    const account = await generateAccount(id, newIndex);
+    if (!account) {
+      throw new Error(`No account generated`);
+    }
+
+    const walletColorIndex = color !== null ? color : addressHashedColorIndex(account.address);
+    if (walletColorIndex == null) {
+      throw new Error(`No wallet color index`);
+    }
+
+    newWallets[id].addresses.push({
+      address: account.address,
+      avatar: null,
+      color: walletColorIndex,
+      index: newIndex,
+      label: name,
+      visible: true,
+    });
+
+    store.dispatch(updateWebDataEnabled(true, account.address));
+
+    setPreference(PreferenceActionType.init, 'profile', account.address, {
+      accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
+      accountSymbol: addressHashedEmoji(account.address),
+    });
+
+    // Save all the wallets
+    saveAllWallets(newWallets);
+
+    // Set the address selected (KEYCHAIN)
+    await saveAddress(account.address);
+
+    // Set the wallet selected (KEYCHAIN)
+    await setSelectedWallet(newWallets[id]);
+
+    set({ selected: newWallets[id], wallets: newWallets });
+
+    return newWallets;
   },
 
-  setAllWalletsWithIdsAsBackedUp: (ids, method, backupFile) => {
-    // const { wallets, selected } = getState().wallets;
-    // const newWallets = { ...wallets };
-    // let backupDate = Date.now();
-    // if (backupFile) {
-    //   backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
-    // }
-    // walletIds.forEach(walletId => {
-    //   newWallets[walletId] = {
-    //     ...newWallets[walletId],
-    //     backedUp: true,
-    //     backupDate,
-    //     backupFile,
-    //     backupType: method,
-    //   };
-    // });
-    // await dispatch(walletsUpdate(newWallets));
-    // if (selected?.id && walletIds.includes(selected?.id)) {
-    //   await dispatch(walletsSetSelected(newWallets[selected.id]));
-    // }
+  setAllWalletsWithIdsAsBackedUp: (walletIds, method, backupFile) => {
+    const { wallets, selected, updateWallets, setSelectedWallet } = get();
+
+    const newWallets = { ...wallets };
+
+    let backupDate = Date.now();
+    if (backupFile) {
+      backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
+    }
+
+    walletIds.forEach(walletId => {
+      newWallets[walletId] = {
+        ...newWallets[walletId],
+        backedUp: true,
+        backupDate,
+        backupFile,
+        backupType: method,
+      };
+    });
+
+    updateWallets(newWallets);
+
+    if (selected?.id && walletIds.includes(selected?.id)) {
+      setSelectedWallet(newWallets[selected.id]);
+    }
   },
 
-  setWalletBackedUp: (id, method, backupFile) => {
-    // const { wallets, selected } = getState().wallets;
-    // const newWallets = { ...wallets };
-    // let backupDate = Date.now();
-    // if (backupFile) {
-    //   backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
-    // }
-    // newWallets[walletId] = {
-    //   ...newWallets[walletId],
-    //   backedUp: true,
-    //   backupDate,
-    //   backupFile,
-    //   backupType: method,
-    // };
-    // await dispatch(walletsUpdate(newWallets));
-    // if (selected?.id === walletId) {
-    //   await dispatch(walletsSetSelected(newWallets[walletId]));
-    // }
+  setWalletBackedUp: (walletId, method, backupFile) => {
+    const { wallets, selected } = get();
+    const newWallets = { ...wallets };
+
+    let backupDate = Date.now();
+    if (backupFile) {
+      backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
+    }
+
+    newWallets[walletId] = {
+      ...newWallets[walletId],
+      backedUp: true,
+      backupDate,
+      backupFile,
+      backupType: method,
+    };
+
+    set({
+      wallets: newWallets,
+    });
+    if (selected?.id === walletId) {
+      set({
+        selected: newWallets[walletId],
+      });
+    }
   },
 
   clearAllWalletsBackupStatus: () => {
-    //   const { wallets } = getState().wallets;
-    // const newWallets = { ...wallets };
-    // Object.keys(newWallets).forEach(key => {
-    //   newWallets[key].backedUp = undefined;
-    //   newWallets[key].backupDate = undefined;
-    //   newWallets[key].backupFile = undefined;
-    //   newWallets[key].backupType = undefined;
-    // });
-    // await dispatch(walletsUpdate(newWallets));
+    const { wallets } = get();
+    const newWallets = { ...wallets };
+
+    Object.keys(newWallets).forEach(key => {
+      newWallets[key].backedUp = undefined;
+      newWallets[key].backupDate = undefined;
+      newWallets[key].backupFile = undefined;
+      newWallets[key].backupType = undefined;
+    });
+
+    set({
+      wallets: newWallets,
+    });
   },
 
   addressSetSelected: (address: string) => {
     saveAddress(address);
   },
-}));
 
-/**
- * Fetches ENS avatars for the given `walletsState` and updates state
- * accordingly.
- *
- * @param walletsState The wallets to use for fetching avatars.
- * @param dispatch The dispatch.
- */
-export const getWalletENSAvatars = async (
-  walletsState: Pick<WalletsState, 'wallets' | 'walletNames' | 'selected'>,
-  dispatch: ThunkDispatch<AppState, unknown, never>
-) => {
-  // const { wallets, walletNames, selected } = walletsState;
-  // const walletKeys = Object.keys(wallets!);
-  // let updatedWallets:
-  //   | {
-  //       [key: string]: RainbowWallet;
-  //     }
-  //   | undefined;
-  // let promises: Promise<{
-  //   account: RainbowAccount;
-  //   ensChanged: boolean;
-  //   key: string;
-  // }>[] = [];
-  // walletKeys.forEach(key => {
-  //   const wallet = wallets![key];
-  //   const innerPromises = wallet?.addresses?.map(async account => {
-  //     const ens = await fetchReverseRecord(account.address);
-  //     const currentENSName = walletNames[account.address];
-  //     if (ens) {
-  //       const isNewEnsName = currentENSName !== ens;
-  //       const avatar = await fetchENSAvatar(ens);
-  //       const newImage = avatar?.imageUrl || null;
-  //       return {
-  //         account: {
-  //           ...account,
-  //           image: newImage,
-  //           label: isNewEnsName ? ens : account.label,
-  //         },
-  //         ensChanged: newImage !== account.image || isNewEnsName,
-  //         key,
-  //       };
-  //     } else if (currentENSName) {
-  //       // if user had an ENS but now is gone
-  //       return {
-  //         account: {
-  //           ...account,
-  //           image: account.image?.startsWith('~') || account.image?.startsWith('file') ? account.image : null, // if the user had an ens but the image it was a local image
-  //           label: '',
-  //         },
-  //         ensChanged: true,
-  //         key,
-  //       };
-  //     } else {
-  //       return {
-  //         account,
-  //         ensChanged: false,
-  //         key,
-  //       };
-  //     }
-  //   });
-  //   promises = promises.concat(innerPromises);
-  // });
-  // const newAccounts = await Promise.all(promises);
-  // newAccounts.forEach(({ account, key, ensChanged }) => {
-  //   if (!ensChanged) return;
-  //   const addresses = wallets?.[key]?.addresses;
-  //   const index = addresses?.findIndex(({ address }) => address === account.address);
-  //   addresses!.splice(index!, 1, account);
-  //   updatedWallets = {
-  //     ...(updatedWallets ?? wallets),
-  //     [key]: {
-  //       ...wallets![key],
-  //       addresses: addresses!,
-  //     },
-  //   };
-  // });
-  // if (updatedWallets) {
-  //   dispatch(walletsUpdate(updatedWallets));
-  // }
-};
+  refreshWalletENSAvatars: async () => {
+    const { wallets, walletNames } = get();
 
-/**
- * Fetches wallet ENS avatars using `getWalletENSAvatars` with the current
- * wallets in state.
- */
-export const fetchWalletENSAvatars = () => async (dispatch: ThunkDispatch<AppState, unknown, never>, getState: AppGetState) =>
-  getWalletENSAvatars(getState().wallets, dispatch);
-
-/**
- * Fetches wallet names and updates storage and state.
- */
-export const fetchWalletNames = () => async (dispatch: Dispatch<WalletsUpdateNamesAction>, getState: AppGetState) => {
-  const { wallets } = getState().wallets;
-  const updatedWalletNames: { [address: string]: string } = {};
-
-  // Fetch ENS names
-  await Promise.all(
-    Object.values(wallets || {}).flatMap(wallet => {
-      const visibleAccounts = (wallet.addresses || []).filter(address => address.visible);
-      return visibleAccounts.map(async account => {
-        try {
-          const ens = await fetchReverseRecordWithRetry(account.address);
-          if (ens && ens !== account.address) {
-            updatedWalletNames[account.address] = ens;
-          }
-          // eslint-disable-next-line no-empty
-        } catch (error) {}
-        return account;
-      });
-    })
-  );
-
-  dispatch({
-    payload: updatedWalletNames,
-    type: WALLETS_UPDATE_NAMES,
-  });
-  saveWalletNames(updatedWalletNames);
-};
-
-/**
- * Checks the validity of the keychain and updates storage and state
- * accordingly if the keychain is unhealthy.
- */
-export const checkKeychainIntegrity = () => async (dispatch: ThunkDispatch<AppState, unknown, never>, getState: AppGetState) => {
-  try {
-    let healthyKeychain = true;
-    logger.debug('[redux/wallets]: Starting keychain integrity checks');
-
-    const hasAddress = await hasKey(addressKey);
-    if (hasAddress) {
-      logger.debug('[redux/wallets]: address is ok');
-    } else {
-      healthyKeychain = false;
-      logger.debug(`[redux/wallets]: address is missing: ${hasAddress}`);
-    }
-
-    const hasOldSeedPhraseMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
-    if (hasOldSeedPhraseMigratedFlag) {
-      logger.debug('[redux/wallets]: migrated flag is OK');
-    } else {
-      logger.debug(`[redux/wallets]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`);
-    }
-
-    const hasOldSeedphrase = await hasKey(seedPhraseKey);
-    if (hasOldSeedphrase) {
-      logger.debug('[redux/wallets]: old seed is still present!');
-    } else {
-      logger.debug(`[redux/wallets]: old seed is present: ${hasOldSeedphrase}`);
-    }
-
-    const { wallets, selected } = getState().wallets;
     if (!wallets) {
-      logger.warn('[redux/wallets]: wallets are missing from redux');
+      throw new Error(`No wallets`);
     }
 
-    if (!selected) {
-      logger.warn('[redux/wallets]: selectedWallet is missing from redux');
-    }
+    const walletKeys = Object.keys(wallets);
 
-    const nonReadOnlyWalletKeys = keys(wallets).filter(key => wallets![key].type !== WalletTypes.readOnly);
+    let updatedWallets:
+      | {
+          [key: string]: RainbowWallet;
+        }
+      | undefined;
 
-    for (const key of nonReadOnlyWalletKeys) {
-      let healthyWallet = true;
-      const wallet = wallets![key];
+    let promises: Promise<{
+      account: RainbowAccount;
+      ensChanged: boolean;
+      key: string;
+    }>[] = [];
 
-      const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
-      if (!seedKeyFound) {
-        healthyWallet = false;
-        logger.warn('[redux/wallets]: seed key is missing');
-      } else {
-        logger.debug('[redux/wallets]: seed key is present');
-      }
-
-      for (const account of wallet.addresses || []) {
-        const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
-        if (!pkeyFound) {
-          healthyWallet = false;
-          logger.warn(`[redux/wallets]: pkey is missing`);
+    walletKeys.forEach(key => {
+      const wallet = wallets[key];
+      const innerPromises = wallet?.addresses?.map(async account => {
+        const ens = await fetchReverseRecord(account.address);
+        const currentENSName = walletNames[account.address];
+        if (ens) {
+          const isNewEnsName = currentENSName !== ens;
+          const avatar = await fetchENSAvatar(ens);
+          const newImage = avatar?.imageUrl || null;
+          return {
+            account: {
+              ...account,
+              image: newImage,
+              label: isNewEnsName ? ens : account.label,
+            },
+            ensChanged: newImage !== account.image || isNewEnsName,
+            key,
+          };
+        } else if (currentENSName) {
+          // if user had an ENS but now is gone
+          return {
+            account: {
+              ...account,
+              image: account.image?.startsWith('~') || account.image?.startsWith('file') ? account.image : null, // if the user had an ens but the image it was a local image
+              label: '',
+            },
+            ensChanged: true,
+            key,
+          };
         } else {
-          logger.debug(`[redux/wallets]: pkey is present`);
+          return {
+            account,
+            ensChanged: false,
+            key,
+          };
         }
-      }
+      });
 
-      // Handle race condition:
-      // A wallet is NOT damaged if:
-      // - it's not imported
-      // - and hasn't been migrated yet
-      // - and the old seedphrase is still there
-      if (!wallet.imported && !hasOldSeedPhraseMigratedFlag && hasOldSeedphrase) {
-        healthyWallet = true;
-      }
-
-      if (!healthyWallet) {
-        logger.warn('[redux/wallets]: declaring wallet unhealthy...');
-        healthyKeychain = false;
-        wallet.damaged = true;
-        await dispatch(walletsUpdate(wallets!));
-        // Update selected wallet if needed
-        if (wallet.id === selected!.id) {
-          logger.warn('[redux/wallets]: declaring selected wallet unhealthy...');
-          await dispatch(walletsSetSelected(wallets![wallet.id]));
-        }
-        logger.debug('[redux/wallets]: done updating wallets');
-      }
-    }
-    if (!healthyKeychain) {
-      captureMessage('Keychain Integrity is not OK');
-    }
-    logger.debug('[redux/wallets]: check completed');
-    await saveKeychainIntegrityState('done');
-  } catch (e) {
-    logger.error(new RainbowError("[redux/wallets]: error thrown'"), {
-      message: (e as Error)?.message,
+      promises = promises.concat(innerPromises);
     });
-    captureMessage('Error running keychain integrity checks');
-  }
-};
+
+    const newAccounts = await Promise.all(promises);
+
+    newAccounts.forEach(({ account, key, ensChanged }) => {
+      if (!ensChanged) return;
+      const addresses = wallets[key]?.addresses;
+      if (!addresses) return;
+
+      const index = addresses.findIndex(({ address }) => address === account.address);
+      addresses.splice(index, 1, account);
+
+      updatedWallets = {
+        ...(updatedWallets ?? wallets),
+        [key]: {
+          ...wallets[key],
+          addresses,
+        },
+      };
+    });
+
+    if (updatedWallets) {
+      set({
+        wallets: updatedWallets,
+      });
+    }
+  },
+
+  refreshWalletNames: async () => {
+    const { wallets } = get();
+    const updatedWalletNames: { [address: string]: string } = {};
+
+    // Fetch ENS names
+    await Promise.all(
+      Object.values(wallets || {}).flatMap(wallet => {
+        const visibleAccounts = (wallet.addresses || []).filter(address => address.visible);
+        return visibleAccounts.map(async account => {
+          try {
+            const ens = await fetchReverseRecordWithRetry(account.address);
+            if (ens && ens !== account.address) {
+              updatedWalletNames[account.address] = ens;
+            }
+            // eslint-disable-next-line no-empty
+          } catch (error) {}
+          return account;
+        });
+      })
+    );
+
+    set({
+      walletNames: updatedWalletNames,
+    });
+    saveWalletNames(updatedWalletNames);
+  },
+
+  checkKeychainIntegrity: async () => {
+    try {
+      let healthyKeychain = true;
+      logger.debug('[redux/wallets]: Starting keychain integrity checks');
+
+      const hasAddress = await hasKey(addressKey);
+      if (hasAddress) {
+        logger.debug('[redux/wallets]: address is ok');
+      } else {
+        healthyKeychain = false;
+        logger.debug(`[redux/wallets]: address is missing: ${hasAddress}`);
+      }
+
+      const hasOldSeedPhraseMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
+      if (hasOldSeedPhraseMigratedFlag) {
+        logger.debug('[redux/wallets]: migrated flag is OK');
+      } else {
+        logger.debug(`[redux/wallets]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`);
+      }
+
+      const hasOldSeedphrase = await hasKey(seedPhraseKey);
+      if (hasOldSeedphrase) {
+        logger.debug('[redux/wallets]: old seed is still present!');
+      } else {
+        logger.debug(`[redux/wallets]: old seed is present: ${hasOldSeedphrase}`);
+      }
+
+      const { wallets, selected } = get();
+      if (!wallets) {
+        logger.warn('[redux/wallets]: wallets are missing from redux');
+        return;
+      }
+
+      if (!selected) {
+        logger.warn('[redux/wallets]: selectedWallet is missing from redux');
+      }
+
+      const nonReadOnlyWalletKeys = keys(wallets).filter(key => wallets[key].type !== WalletTypes.readOnly);
+
+      for (const key of nonReadOnlyWalletKeys) {
+        let healthyWallet = true;
+        const wallet = wallets[key];
+
+        const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
+        if (!seedKeyFound) {
+          healthyWallet = false;
+          logger.warn('[redux/wallets]: seed key is missing');
+        } else {
+          logger.debug('[redux/wallets]: seed key is present');
+        }
+
+        for (const account of wallet.addresses || []) {
+          const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
+          if (!pkeyFound) {
+            healthyWallet = false;
+            logger.warn(`[redux/wallets]: pkey is missing`);
+          } else {
+            logger.debug(`[redux/wallets]: pkey is present`);
+          }
+        }
+
+        // Handle race condition:
+        // A wallet is NOT damaged if:
+        // - it's not imported
+        // - and hasn't been migrated yet
+        // - and the old seedphrase is still there
+        if (!wallet.imported && !hasOldSeedPhraseMigratedFlag && hasOldSeedphrase) {
+          healthyWallet = true;
+        }
+
+        if (!healthyWallet) {
+          logger.warn('[redux/wallets]: declaring wallet unhealthy...');
+          healthyKeychain = false;
+          wallet.damaged = true;
+          set({
+            wallets,
+          });
+
+          // Update selected wallet if needed
+          if (wallets && selected && wallet.id === selected.id) {
+            logger.warn('[redux/wallets]: declaring selected wallet unhealthy...');
+            set({
+              selected: wallets[wallet.id],
+            });
+          }
+          logger.debug('[redux/wallets]: done updating wallets');
+        }
+      }
+
+      if (!healthyKeychain) {
+        captureMessage('Keychain Integrity is not OK');
+      }
+
+      logger.debug('[redux/wallets]: check completed');
+      saveKeychainIntegrityState('done');
+    } catch (e) {
+      logger.error(new RainbowError("[redux/wallets]: error thrown'"), {
+        message: (e as Error)?.message,
+      });
+      captureMessage('Error running keychain integrity checks');
+    }
+  },
+}));

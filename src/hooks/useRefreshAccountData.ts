@@ -11,7 +11,7 @@ import { addysSummaryQueryKey } from '@/resources/summary/summary';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { time } from '@/utils';
-import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
+import { fetchWalletNames, useWalletsStore } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
 
@@ -20,6 +20,7 @@ export default function useRefreshAccountData() {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const walletsStore = useWalletsStore();
 
   const { wallets } = useWallets();
 
@@ -41,7 +42,8 @@ export default function useRefreshAccountData() {
 
     try {
       const getWalletNames = dispatch(fetchWalletNames());
-      const getWalletENSAvatars = profilesEnabled ? dispatch(fetchWalletENSAvatars()) : null;
+      const getWalletENSAvatars = profilesEnabled ? walletsStore.refreshWalletENSAvatars() : null;
+
       return Promise.all([
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
         getWalletNames,
