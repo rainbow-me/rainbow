@@ -162,9 +162,9 @@ export default function useWalletCloudBackup() {
           category: 'backup',
           label: cloudPlatform,
         });
-
-        return false;
       }
+
+      return false;
     },
     [dispatch, wallets]
   );
