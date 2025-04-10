@@ -169,7 +169,7 @@ export default function DiscoverSearch() {
             fromRoute: 'DiscoverSearch',
           });
           if (profilesEnabled) {
-            analytics.track('Viewed ENS profile', {
+            analytics.track(analytics.event.viewedEnsProfile, {
               category: 'profiles',
               ens: item.nickname,
               from: 'Discover search',

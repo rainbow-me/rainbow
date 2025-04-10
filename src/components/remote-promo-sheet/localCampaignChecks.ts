@@ -36,13 +36,13 @@ export const runLocalCampaignChecks = async (): Promise<boolean> => {
     InteractionManager.runAfterInteractions(async () => {
       const response = await campaign.check();
       if (response === GenericCampaignCheckResponse.activated) {
-        analytics.track('Viewed Feature Promo', {
+        analytics.track(analytics.event.viewedFeaturePromo, {
           campaign: campaign.campaignKey,
         });
         return true;
       }
       if (response !== GenericCampaignCheckResponse.nonstarter) {
-        analytics.track('Excluded from Feature Promo', {
+        analytics.track(analytics.event.excludedFromFeaturePromo, {
           campaign: campaign.campaignKey,
           exclusion: response,
           type: campaign.checkType,

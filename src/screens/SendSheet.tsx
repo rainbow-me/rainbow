@@ -348,7 +348,7 @@ export default function SendSheet() {
         isSufficientBalance: _isSufficientBalance,
         nativeAmount: _nativeAmount,
       });
-      analytics.track('Changed native currency input in Send flow');
+      analytics.track(analytics.event.changedNativeCurrencyInputSend);
     },
     [maxEnabled, maxInputBalance, isUniqueAsset, selected]
   );
@@ -369,7 +369,7 @@ export default function SendSheet() {
           setMaxEnabled(false);
         }
         sendUpdateAssetAmount(newAssetAmount);
-        analytics.track('Changed token input in Send flow');
+        analytics.track(analytics.event.changedTokenInputSend);
       }
     },
     [maxEnabled, sendUpdateAssetAmount]
@@ -644,7 +644,7 @@ export default function SendSheet() {
         return false;
       }
       const submitSuccessful = await onSubmit(args);
-      analytics.track('Sent transaction', {
+      analytics.track(analytics.event.sentTransaction, {
         assetName: selected?.name || '',
         network: selected?.network || '',
         isRecepientENS: recipient.slice(-4).toLowerCase() === '.eth',
@@ -788,7 +788,7 @@ export default function SendSheet() {
   ]);
 
   const onResetAssetSelection = useCallback(() => {
-    analytics.track('Reset asset selection in Send flow');
+    analytics.track(analytics.event.resetAssetSelectionSend);
     sendUpdateSelected(undefined);
     setMaxEnabled(false);
   }, [sendUpdateSelected]);

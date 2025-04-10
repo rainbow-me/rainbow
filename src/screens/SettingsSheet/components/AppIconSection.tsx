@@ -19,7 +19,7 @@ const AppIconSection = () => {
   const onSelectIcon = useCallback(
     (icon: string) => {
       logger.debug(`[AppIconSection]: onSelectIcon: ${icon}`);
-      analytics.track('Set App Icon', { appIcon: icon });
+      analytics.track(analytics.event.setAppIcon, { appIcon: icon });
       settingsChangeAppIcon(icon);
     },
     [settingsChangeAppIcon]
