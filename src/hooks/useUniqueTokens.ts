@@ -11,7 +11,7 @@ type SendableUniqueToken = {
 };
 
 export default function useUniqueTokens() {
-  const uniqueTokens = useUserNftsStore(s => s.getData()?.nfts);
+  const uniqueTokens = useUserNftsStore(s => s.getNfts());
   const sendableUniqueTokens: SendableUniqueToken[] = useMemo(() => {
     if (!uniqueTokens?.length) return [];
 
