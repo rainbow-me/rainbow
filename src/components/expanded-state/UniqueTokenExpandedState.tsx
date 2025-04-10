@@ -68,7 +68,7 @@ import { useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { openInBrowser } from '@/utils/openInBrowser';
 
@@ -423,7 +423,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     ({ elapsedTime }) => {
       const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
       const { name, description, image_url } = asset;
-      analyticsV2.track(analyticsV2.event.tokenDetailsNFT, {
+      analytics.track(analytics.event.tokenDetailsNFT, {
         eventSentAfterMs: elapsedTime,
         token: { isPoap, isParty: !!isParty, isENS, address, chainId, name, image_url },
         available_data: { description: !!description, image_url: !!image_url, floorPrice: !!offer?.floorPrice },

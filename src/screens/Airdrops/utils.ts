@@ -1,7 +1,7 @@
 import { TransactionReceipt, TransactionRequest } from '@ethersproject/abstract-provider';
 import { Wallet } from '@ethersproject/wallet';
 import { Address, formatUnits } from 'viem';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { NativeCurrencyKey, NewTransaction, TransactionStatus } from '@/entities';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider, toHex } from '@/handlers/web3';
@@ -119,7 +119,7 @@ export async function executeAirdropClaim({
 
     logger.log('[claimAirdrop]: Transaction successfully submitted', { chainId, hash: receipt.hash });
 
-    analyticsV2.track(analyticsV2.event.claimClaimableSucceeded, {
+    analytics.track(analytics.event.claimClaimableSucceeded, {
       amount,
       asset: { address: to, symbol },
       chainId,
@@ -149,7 +149,7 @@ export async function executeAirdropClaim({
       message: errorMessage,
     });
 
-    analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+    analytics.track(analytics.event.claimClaimableFailed, {
       amount,
       asset: { address: to, symbol },
       chainId,

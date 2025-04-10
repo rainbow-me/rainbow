@@ -1,7 +1,7 @@
 import * as i18n from '@/languages';
 import React from 'react';
 import { useNavigation } from '../../navigation/Navigation';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
 import Routes from '@/navigation/routesNames';
 import { GenericCard, Gradient } from './GenericCard';
@@ -28,7 +28,7 @@ export const LedgerCard = () => {
   const cardType = 'stretch';
 
   const handlePress = () => {
-    analyticsV2.track(analyticsV2.event.cardPressed, {
+    analytics.track(analytics.event.cardPressed, {
       cardName: 'LedgerCard',
       routeName,
       cardType,

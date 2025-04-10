@@ -3,7 +3,7 @@ import { rankings } from 'match-sorter';
 import { useEffect, useMemo, useRef } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
 import { Address } from 'viem';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { isNativeAsset } from '@/handlers/assets';
 import { addHexPrefix } from '@/handlers/web3';
 import { useFavorites } from '@/resources/favorites';
@@ -149,7 +149,7 @@ export function useSearchCurrencyLists() {
       if (!assetOrHeader.icon_url) params.no_icon += 1;
       params.total_tokens += 1;
     }
-    analyticsV2.track(analyticsV2.event.tokenList, params);
+    analytics.track(analytics.event.tokenList, params);
   }, [data.results]);
 
   return data;

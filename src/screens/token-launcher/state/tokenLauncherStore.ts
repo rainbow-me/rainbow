@@ -31,7 +31,7 @@ import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
 import { LaunchTokenResponse, TokenLauncherSDKError, TokenLauncherErrorCode } from '@rainbow-me/token-launcher';
 import { Alert } from 'react-native';
 import { logger, RainbowError } from '@/logger';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { Link, LinkType } from '../types';
 import { useSuperTokenStore } from './rainbowSuperTokenStore';
 import { calculateAndCacheDominantColor } from '@/hooks/usePersistentDominantColorFromImage';
@@ -435,7 +435,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
       stepSharedValue.value = step;
     })();
     set({ step });
-    analyticsV2.track(analyticsV2.event.tokenLauncherStepChanged, {
+    analytics.track(analytics.event.tokenLauncherStepChanged, {
       step: NavigationStepsNames[step],
     });
   },
@@ -641,7 +641,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
           transactionHash: result.transaction.hash,
         });
 
-        analyticsV2.track(analyticsV2.event.tokenLauncherTokenCreated, {
+        analytics.track(analytics.event.tokenLauncherTokenCreated, {
           address: result.tokenAddress,
           ...analyticsParams,
         });
@@ -698,7 +698,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         Alert.alert(lang.t('token_launcher.errors.header'), lang.t('token_launcher.errors.unknown_error'));
       }
 
-      analyticsV2.track(analyticsV2.event.tokenLauncherCreationFailed, {
+      analytics.track(analytics.event.tokenLauncherCreationFailed, {
         ...analyticsParams,
         error: error.message,
         operation: 'operation' in metadata ? (metadata.operation as string) : undefined,

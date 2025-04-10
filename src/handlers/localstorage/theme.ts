@@ -18,7 +18,7 @@ export const getColorForThemeAndNavigationStyle = (theme: ThemesType) => {
  * @desc get theme
  * @return {String}
  */
-export const getTheme = () => getGlobal(THEME, 'system');
+export const getTheme = (): Promise<ThemesType> => getGlobal(THEME, 'system');
 
 /**
  * @desc save theme

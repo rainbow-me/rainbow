@@ -51,10 +51,7 @@ export default function BackupSheetSection({
 }: BackupSheetSectionProps) {
   const { colors } = useTheme();
   useEffect(() => {
-    analytics.track('BackupSheet shown', {
-      category: 'backup',
-      label: type,
-    });
+    analytics.track(analytics.event.backupSheetShown, { category: 'backup', label: type });
   }, [type]);
 
   return (

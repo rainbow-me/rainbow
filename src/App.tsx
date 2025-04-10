@@ -24,7 +24,7 @@ import { MainThemeProvider } from '@/theme/ThemeContext';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { getOrCreateDeviceId } from '@/analytics/utils';
 import { logger, RainbowError } from '@/logger';
 import * as ls from '@/storage';
@@ -110,8 +110,8 @@ function Root() {
 
       // Initial telemetry; amended with wallet context later in `useInitializeWallet`
       Sentry.setUser({ id: deviceId });
-      analyticsV2.setDeviceId(deviceId);
-      analyticsV2.identify();
+      analytics.setDeviceId(deviceId);
+      analytics.identify();
 
       const isReviewInitialized = ls.review.get(['initialized']);
       if (!isReviewInitialized) {
@@ -143,8 +143,8 @@ function Root() {
 
         const { width: screenWidth, height: screenHeight, scale: screenScale } = Dimensions.get('screen');
 
-        analyticsV2.identify({ screenHeight, screenWidth, screenScale });
-        analyticsV2.track(analyticsV2.event.firstAppOpen);
+        analytics.identify({ screenHeight, screenWidth, screenScale });
+        analytics.track(analytics.event.firstAppOpen);
       }
 
       /**

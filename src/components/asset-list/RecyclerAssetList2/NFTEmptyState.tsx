@@ -10,7 +10,7 @@ import { useAccountSettings } from '@/hooks';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { StyleSheet } from 'react-native';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 
@@ -23,7 +23,7 @@ const LaunchFeaturedMintButton = ({ featuredMint }: LaunchFeaturedMintButtonProp
 
   const handlePress = useCallback(() => {
     if (featuredMint) {
-      analyticsV2.track(analyticsV2.event.mintsPressedFeaturedMintCard, {
+      analytics.track(analytics.event.mintsPressedFeaturedMintCard, {
         contractAddress: featuredMint.contractAddress,
         chainId: featuredMint.chainId,
         totalMints: featuredMint.totalMints,

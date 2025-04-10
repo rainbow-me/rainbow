@@ -7,7 +7,7 @@ import { useChartThrottledPoints } from '@/hooks/charts';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { Bleed } from '@/design-system';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
@@ -46,7 +46,7 @@ export const ChartSection = memo(function ChartSection() {
   useTimeoutEffect(
     ({ elapsedTime }) => {
       const { address, chainId, symbol, name, iconUrl, price } = asset;
-      analyticsV2.track(analyticsV2.event.tokenDetailsErc20, {
+      analytics.track(analytics.event.tokenDetailsErc20, {
         eventSentAfterMs: elapsedTime,
         token: {
           address,

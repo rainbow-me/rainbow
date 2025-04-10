@@ -8,7 +8,7 @@ import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { ExtendedState } from './core/RawRecyclerList';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, convertRawAmountToBalance } from '@/helpers/utilities';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -74,7 +74,7 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
       as={ButtonPressAnimation}
       onPress={() => {
         if (!isETHRewards) {
-          analyticsV2.track(analyticsV2.event.claimablePanelOpened, {
+          analytics.track(analytics.event.claimablePanelOpened, {
             claimableType: claimable?.actionType,
             claimableId: claimable?.analyticsId,
             chainId: claimable?.chainId,

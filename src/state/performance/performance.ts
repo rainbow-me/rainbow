@@ -1,6 +1,6 @@
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { OperationForScreen, PerformanceLog, Screen } from '@/state/performance/operations';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 import { runOnJS } from 'react-native-reanimated';
 import store from '@/redux/store';
@@ -58,10 +58,10 @@ function logPerformance<S extends Screen>({
 
     logger.debug('[performance]: Time to complete operation', { log });
 
-    analyticsV2.track(analyticsV2.event.performanceTimeToSignOperation, log);
+    analytics.track(analytics.event.performanceTimeToSignOperation, log);
 
     if (endOfOperation) {
-      analyticsV2.track(analyticsV2.event.performanceTimeToSign, {
+      analytics.track(analytics.event.performanceTimeToSign, {
         screen,
         completedAt: Date.now(),
         elapsedTime: state.elapsedTime + timeToCompletion,

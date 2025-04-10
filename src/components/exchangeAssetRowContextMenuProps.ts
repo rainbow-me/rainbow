@@ -51,10 +51,9 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
       {
         cancelButtonIndex: 2,
         options: androidContractActions,
-        showSeparators: true,
         title: `${item?.name} (${item?.symbol})`,
       },
-      (idx: number) => {
+      idx => {
         if (idx === 0) {
           handleCopyContractAddress(item?.address);
         }

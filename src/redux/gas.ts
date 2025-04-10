@@ -492,7 +492,7 @@ export const gasUpdateGasFeeOption = (newGasPriceOption: string) => (dispatch: A
       payload: selectedGasFee,
       type: GAS_UPDATE_GAS_PRICE_OPTION,
     });
-    analytics.track('Updated Gas Price', { gasPriceOption: gasPriceOption });
+    analytics.track(analytics.event.swapsGasUpdatedPrice, { gasPriceOption });
   });
 
 export const gasUpdateDefaultGasLimit =
