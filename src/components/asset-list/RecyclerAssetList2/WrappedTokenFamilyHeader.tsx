@@ -11,13 +11,14 @@ type Props = {
   image?: string;
   theme: ThemeContextProps;
   testID?: string;
+  external?: boolean;
 };
 
-export default React.memo(function WrappedTokenFamilyHeader({ name, total, image, theme, testID }: Props) {
+export default React.memo(function WrappedTokenFamilyHeader({ name, total, image, theme, testID, external }: Props) {
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
-  const { openFamilies, updateOpenFamilies } = useOpenFamilies();
+  const { openFamilies, updateOpenFamilies } = useOpenFamilies(external);
   const isFamilyOpen = openFamilies[name];
 
   const handleToggle = useLatestCallback(() =>

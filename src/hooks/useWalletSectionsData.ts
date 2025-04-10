@@ -65,6 +65,7 @@ export default function useWalletSectionsData({
   const remoteConfig = useRemoteConfig();
   const experimentalConfig = useExperimentalConfig();
   const isWalletEthZero = useIsWalletEthZero();
+  const { uniqueTokens } = useUniqueTokens();
 
   const remoteCardsEnabled = (remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS]) && !isReadOnlyWallet;
   const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
@@ -101,7 +102,6 @@ export default function useWalletSectionsData({
   }, [claimablesData, claimablesEnabled]);
 
   const { sendableUniqueTokens, isFetchingNfts, uniqueTokenFamilies } = useUniqueTokens();
-  const uniqueTokens = [] as UniqueAsset[];
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -177,6 +177,7 @@ export default function useWalletSectionsData({
       claimables,
       nftSort,
       remoteCards,
+      uniqueTokenFamilies,
     ]
   );
 

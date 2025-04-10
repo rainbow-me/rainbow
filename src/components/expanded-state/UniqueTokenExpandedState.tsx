@@ -232,7 +232,6 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   const { isReadOnlyWallet } = useWallets();
   const collectible = useCollectible(passedAsset?.uniqueId);
   const asset = external ? passedAsset : collectible;
-  console.log('ASSET', passedAsset);
   const {
     data: { nftOffers },
   } = useNFTOffers({
@@ -255,6 +254,9 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
         : undefined,
     [offer]
   );
+
+  console.log('asset', asset);
+  return <Box></Box>;
 
   const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.chainId);
 

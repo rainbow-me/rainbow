@@ -15,14 +15,15 @@ type Props = {
 };
 
 const CollectibleTokenFamily = ({ childrenAmount, external, familyImage, familyName, showcase, item, theme }: Props) => {
-  const { openFamilies, updateOpenFamilies } = useOpenFamilies();
+  const { openFamilies, updateOpenFamilies } = useOpenFamilies(external);
   const isFamilyOpen = openFamilies[familyName + (showcase ? '-showcase' : '')];
 
   const handleToggle = useCallback(
     () =>
       updateOpenFamilies({
         [familyName + (showcase ? '-showcase' : '')]: !isFamilyOpen,
-      }),
+      })
+    ,
     [familyName, isFamilyOpen, showcase, updateOpenFamilies]
   );
 

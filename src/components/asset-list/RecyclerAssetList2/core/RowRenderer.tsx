@@ -136,10 +136,11 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.NFTS_EMPTY:
       return <NFTEmptyState />;
     case CellType.FAMILY_HEADER: {
-      const { name, image, total } = data as NFTFamilyExtraData;
+      const { name, image, total, external } = data as NFTFamilyExtraData;
 
       return (
         <WrappedTokenFamilyHeader
+          external={external}
           image={image}
           name={name}
           testID={`token-family-header-${name}`}

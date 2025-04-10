@@ -25,13 +25,13 @@ import { format } from 'date-fns';
 import { arcClient } from '@/graphql';
 import Spinner from '@/components/Spinner';
 import { delay } from '@/utils/delay';
-import { useLegacyNFTs } from '@/resources/nfts';
 import { UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { PoapMintError } from '@/utils/poaps';
 import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
+import { useUserNftsStore } from '@/state/nfts';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -71,15 +71,11 @@ type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 const PoapSheet = () => {
   const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate, goBack } = useNavigation();
+  const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
   const { isReadOnlyWallet } = useWallets();
   const params = useRoute();
-  const {
-    data: { nfts },
-  } = useLegacyNFTs({
-    address: accountAddress,
-  });
+  const nfts = useUserNftsStore.getState().getNfts();
 
   const [claimStatus, setClaimStatus] = useState<PoapClaimStatus>('none');
   const [errorCode, setErrorCode] = useState<PoapMintError | undefined>(undefined);
