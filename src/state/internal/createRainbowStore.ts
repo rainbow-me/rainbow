@@ -10,17 +10,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 const rainbowStorage = new MMKV({ id: 'rainbow-storage' });
 
-type SelectorsType<S> = null | Record<string, (s: S) => unknown>;
-
-/**
- * Configuration options for creating a persistable Rainbow store.
- */
-export interface RainbowStoreConfig<S, Selectors extends SelectorsType<S>, PersistedState = Partial<S>> {
-  /**
-   * Allows adding selectors available to anyone that uses the store
-   */
-  selectors?: Selectors;
-
+interface PersistConfig<S, PersistedState = Partial<S>> {
   /**
    * A function to convert the serialized string back into the state object.
    * If not provided, the default deserializer is used.
@@ -64,6 +54,32 @@ export interface RainbowStoreConfig<S, Selectors extends SelectorsType<S>, Persi
   version?: number;
 }
 
+type SelectorsType<S> = {
+  [key: string]: (s: S) => unknown;
+};
+
+const useTestStore = createRainbowStore<{ testing: number }>(
+  () => ({
+    testing: 123,
+  }),
+  {
+    selectors: {
+      isTested: state => state.testing === 10,
+    },
+  }
+);
+const testStore = useTestStore();
+const testStore2 = useTestStore(x => x.testing);
+const testStore3 = useTestStore();
+
+type GetSelected<State, Selector, Selectors> = Selector extends void
+  ? State
+  : Selector extends (state: any) => infer Res
+    ? Res
+    : Selector extends string[]
+      ? any
+      : State;
+
 /**
  * Creates a Rainbow store with optional persistence functionality and selectors.
  *
@@ -73,36 +89,76 @@ export interface RainbowStoreConfig<S, Selectors extends SelectorsType<S>, Persi
  * @param persistConfig - The configuration options for the persistable Rainbow store.
  * @returns A Zustand store with the specified state and optional persistence.
  */
-export function createRainbowStore<S, Selectors extends SelectorsType<S> = null, PersistedState extends Partial<S> = Partial<S>>(
+export function createRainbowStore<
+  S,
+  Selectors extends SelectorsType<S> = SelectorsType<S>,
+  PersistedState extends Partial<S> = Partial<S>,
+>(
   createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]>,
-  persistConfig?: RainbowStoreConfig<S, Selectors, PersistedState>
+  config?: {
+    /**
+     * Allows adding selectors available to anyone that uses the store
+     */
+    selectors?: Selectors;
+
+    /**
+     * Allows adding configuration to persist the store
+     */
+    persist?: PersistConfig<S, PersistedState>;
+  }
 ) {
-  if (!persistConfig) return createWithEqualityFn<S>()(subscribeWithSelector(createState), Object.is);
+  const { persist: persistConfig, selectors } = config || {};
 
-  const { persistStorage, version } = createPersistStorage<S, Selectors, PersistedState>(persistConfig);
+  const baseUseStore = (() => {
+    if (persistConfig) {
+      const { persistStorage, version } = createPersistStorage<S, PersistedState>(persistConfig);
 
-  const baseUseStore = createWithEqualityFn<S>()(
-    subscribeWithSelector(
-      persist(createState, {
-        migrate: persistConfig.migrate,
-        name: persistConfig.storageKey,
-        onRehydrateStorage: persistConfig.onRehydrateStorage,
-        storage: persistStorage,
-        version,
-      })
-    ),
-    Object.is
-  );
+      return createWithEqualityFn<S>()(
+        subscribeWithSelector(
+          persist(createState, {
+            migrate: persistConfig.migrate,
+            name: persistConfig.storageKey,
+            onRehydrateStorage: persistConfig.onRehydrateStorage,
+            storage: persistStorage,
+            version,
+          })
+        ),
+        Object.is
+      );
+    }
 
-  return (selector?: (s: S, pick: (s: S, keys: (keyof S)[]) => unknown) => unknown) => {
+    return createWithEqualityFn<S>()(subscribeWithSelector(createState), Object.is);
+  })();
+
+  return createSelectableStore<S, Selectors>(baseUseStore, selectors);
+}
+
+function createSelectableStore<
+  S,
+  Selectors,
+  Selector extends ((s: S) => unknown) | (keyof Selectors | keyof S)[] | undefined | void = void,
+  Selected extends GetSelected<S, Selector extends void ? undefined : Selector, Selectors> = GetSelected<
+    S,
+    Selector extends void ? undefined : Selector,
+    Selectors
+  >,
+>(baseUseStore: any, selectors: any) {
+  (selector?: Selector): Selected => {
     return baseUseStore(
       useShallow(state => {
         if (!selector) return state;
-        return selector(state, (state, keys) => {
-          return Object.fromEntries(keys.map(key => [key, state[key]]));
-        });
+        if (Array.isArray(selector)) {
+          return Object.fromEntries(
+            selector.map(key => {
+              // @ts-expect-error types are too crazy
+              const value = selectors && key in selectors ? selectors[key](state) : state[key];
+              return [key, value];
+            })
+          );
+        }
+        return selector(state);
       })
-    );
+    ) as Selected;
   };
 }
 
@@ -123,10 +179,10 @@ export function omitStoreMethods<S, PersistedState extends Partial<S>>(state: S)
   return state as unknown as PersistedState;
 }
 
-interface LazyPersistParams<S, Selectors extends SelectorsType<S>, PersistedState extends Partial<S>> {
+interface LazyPersistParams<S, PersistedState extends Partial<S>> {
   name: string;
-  partialize: NonNullable<RainbowStoreConfig<S, Selectors, PersistedState>['partialize']>;
-  serializer: NonNullable<RainbowStoreConfig<S, Selectors, PersistedState>['serializer']>;
+  partialize: NonNullable<PersistConfig<S, PersistedState>['partialize']>;
+  serializer: NonNullable<PersistConfig<S, PersistedState>['serializer']>;
   storageKey: string;
   value: StorageValue<S> | StorageValue<PersistedState>;
 }
@@ -138,9 +194,7 @@ const DEFAULT_PERSIST_THROTTLE_MS = IS_TEST ? 0 : IS_IOS ? time.seconds(3) : tim
  * @param config - The configuration options for the persistable Rainbow store.
  * @returns An object containing the persist storage and version.
  */
-function createPersistStorage<S, Selectors extends SelectorsType<S>, PersistedState extends Partial<S>>(
-  config: RainbowStoreConfig<S, Selectors, PersistedState>
-) {
+function createPersistStorage<S, PersistedState extends Partial<S>>(config: PersistConfig<S, PersistedState>) {
   const enableMapSetHandling = !config.deserializer && !config.serializer;
   const {
     deserializer = serializedState => defaultDeserializeState<PersistedState>(serializedState, enableMapSetHandling),
@@ -151,7 +205,7 @@ function createPersistStorage<S, Selectors extends SelectorsType<S>, PersistedSt
   } = config;
 
   const lazyPersist = debounce(
-    function persist(params: LazyPersistParams<S, Selectors, PersistedState>): void {
+    function persist(params: LazyPersistParams<S, PersistedState>): void {
       try {
         const key = `${params.storageKey}:${params.name}`;
         const serializedValue = params.serializer(params.partialize(params.value.state as S), params.value.version ?? 0);

@@ -21,7 +21,7 @@ export default function CloudBackupPrompt() {
   const { mostRecentBackup } = backupsStore(state => ({
     mostRecentBackup: state.mostRecentBackup,
   }));
-  const selectedWallet = useWalletsStore(selectSelectedWallet);
+  const selectedWallet = useWalletsStore(['']);
   const createBackup = useCreateBackup();
 
   const onCloudBackup = useCallback(() => {
