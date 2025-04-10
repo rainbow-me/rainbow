@@ -20,7 +20,7 @@ export default function useRefreshAccountData() {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const walletsStore = useWalletsStore();
+  const refreshWalletENSAvatars = useWalletsStore(state => state.refreshWalletENSAvatars);
 
   const { wallets } = useWallets();
 
