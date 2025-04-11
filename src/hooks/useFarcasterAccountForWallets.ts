@@ -1,14 +1,14 @@
-import { queryClient } from '@/react-query';
-import useWallets from './useWallets';
-import { useEffect, useMemo, useState } from 'react';
-import { addysSummaryQueryKey, useAddysSummary } from '@/resources/summary/summary';
-import { Address } from 'viem';
-import useAccountSettings from './useAccountSettings';
-import store from '@/redux/store';
-import { isEmpty } from 'lodash';
 import walletTypes from '@/helpers/walletTypes';
-import { isLowerCaseMatch } from '@/utils';
 import { AllRainbowWallets } from '@/model/wallet';
+import { queryClient } from '@/react-query';
+import store from '@/redux/store';
+import { addysSummaryQueryKey, useAddysSummary } from '@/resources/summary/summary';
+import { isLowerCaseMatch } from '@/utils';
+import { isEmpty } from 'lodash';
+import { useEffect, useMemo, useState } from 'react';
+import { Address } from 'viem';
+import { useWalletsStore } from '../redux/wallets';
+import useAccountSettings from './useAccountSettings';
 
 type SummaryData = ReturnType<typeof useAddysSummary>['data'];
 
@@ -19,7 +19,7 @@ const getWalletForAddress = (wallets: AllRainbowWallets | null, address: string)
 export const useFarcasterAccountForWallets = () => {
   const [farcasterWalletAddress, setFarcasterWalletAddress] = useState<Address | undefined>();
   const { accountAddress } = useAccountSettings();
-  const { wallets } = useWallets();
+  const wallets = useWalletsStore(state => state.wallets);
 
   const allAddresses = useMemo(
     () => Object.values(wallets || {}).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address)),

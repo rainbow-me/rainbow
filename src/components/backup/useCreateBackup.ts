@@ -1,18 +1,19 @@
 /* eslint-disable no-promise-executor-return */
-import { useCallback } from 'react';
+import { analytics } from '@/analytics';
+import { DelayedAlert } from '@/components/alerts';
+import showWalletErrorAlert from '@/helpers/support';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { useWalletCloudBackup } from '@/hooks';
+import * as i18n from '@/languages';
 import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
+import { Navigation, useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { cloudPlatform } from '@/utils/platform';
-import { analytics } from '@/analytics';
-import { useWalletCloudBackup, useWallets } from '@/hooks';
-import Routes from '@/navigation/routesNames';
-import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { Navigation, useNavigation } from '@/navigation';
+import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
-import { DelayedAlert } from '@/components/alerts';
 import { useDispatch } from 'react-redux';
-import * as i18n from '@/languages';
-import showWalletErrorAlert from '@/helpers/support';
+import { useWalletsStore } from '../../redux/wallets';
 
 type UseCreateBackupProps = {
   walletId?: string;
@@ -31,7 +32,7 @@ export const useCreateBackup = () => {
   const { navigate } = useNavigation();
 
   const walletCloudBackup = useWalletCloudBackup();
-  const { wallets } = useWallets();
+  const wallets = useWalletsStore(state => state.wallets);
 
   const setLoadingStateWithTimeout = useCallback(
     ({ state, outOfSync = false, failInMs = 10_000 }: { state: CloudBackupState; outOfSync?: boolean; failInMs?: number }) => {

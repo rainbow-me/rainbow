@@ -1,20 +1,20 @@
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useCallback, useEffect } from 'react';
-import Routes from '@/navigation/routesNames';
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
-import { useDimensions, useWallets } from '@/hooks';
+import { useDimensions } from '@/hooks';
+import { useLedgerConnect } from '@/hooks/useLedgerConnect';
+import { logger } from '@/logger';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { PairHardwareWalletAgainSheet } from '@/screens/hardware-wallets/PairHardwareWalletAgainSheet';
 import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHardwareWalletErrorSheet';
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
-import { useNavigation } from '@/navigation';
-import { logger } from '@/logger';
-import { DebugContext } from '@/logger/debugContext';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import React, { useCallback, useEffect } from 'react';
 // eslint-disable-next-line no-restricted-imports
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { atom, useRecoilState } from 'recoil';
 import { MMKV } from 'react-native-mmkv';
+import { atom, useRecoilState } from 'recoil';
+import { useWalletsStore } from '../redux/wallets';
 
 export const ledgerStorage = new MMKV({
   id: 'ledgerStorage',
@@ -56,14 +56,14 @@ export const triggerPollerCleanupAtom = atom({
 
 export const HardwareWalletTxNavigator = () => {
   const { width, height } = useDimensions();
-  const { selectedWallet } = useWallets();
+  const selectedWallet = useWalletsStore(state => state.selected);
   const {
     params: { submit },
   } = useRoute<RouteProp<RouteParams, 'HardwareWalletTxParams'>>();
 
   const { navigate } = useNavigation();
 
-  const deviceId = selectedWallet.deviceId ?? '';
+  const deviceId = selectedWallet?.deviceId ?? '';
   const [isReady, setIsReady] = useRecoilState(LedgerIsReadyAtom);
   const [readyForPolling, setReadyForPolling] = useRecoilState(readyForPollingAtom);
   const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(triggerPollerCleanupAtom);

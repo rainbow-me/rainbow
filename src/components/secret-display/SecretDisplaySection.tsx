@@ -1,30 +1,31 @@
+import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
+import { Bleed, Box, Inline, Inset, Stack, Text } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import { useDimensions, useWalletManualBackup } from '@/hooks';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { createdWithBiometricError, identifyWalletType, loadPrivateKey, loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
+import { useTheme } from '@/theme';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-import { createdWithBiometricError, identifyWalletType, loadPrivateKey, loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { CopyFloatingEmojis } from '../floating-emojis';
-import * as i18n from '@/languages';
 import SecretDisplayCard from './SecretDisplayCard';
-import { Bleed, Box, Inline, Inset, Stack, Text } from '@/design-system';
-import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import { useDimensions, useWalletManualBackup, useWallets } from '@/hooks';
-import { useTheme } from '@/theme';
-import { logger, RainbowError } from '@/logger';
-import { IS_ANDROID } from '@/env';
-import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 
-import { SecretDisplayStates, SecretDisplayStatesType } from '@/components/secret-display/states';
 import { SecretDisplayError } from '@/components/secret-display/SecretDisplayError';
-import { InteractionManager } from 'react-native';
+import { SecretDisplayStates, SecretDisplayStatesType } from '@/components/secret-display/states';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { SheetActionButton } from '../sheet';
-import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useNavigation } from '@/navigation';
-import { ImgixImage } from '../images';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
 import RoutesWithPlatformDifferences from '@/navigation/routesNames';
-import { Source } from 'react-native-fast-image';
 import { backupsStore } from '@/state/backups/backups';
+import { InteractionManager } from 'react-native';
+import { Source } from 'react-native-fast-image';
+import { useWalletsStore } from '../../redux/wallets';
+import { ImgixImage } from '../images';
+import { SheetActionButton } from '../sheet';
 
 const MIN_HEIGHT = 740;
 
@@ -62,7 +63,9 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
   const { height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<RouteProp<SecretDisplaySectionParams, 'SecretDisplaySection'>>();
-  const { selectedWallet, wallets } = useWallets();
+  const selectedWallet = useWalletsStore(state => state.selected);
+  const wallets = useWalletsStore(state => state.wallets);
+
   const { backupProvider } = backupsStore(state => ({
     backupProvider: state.backupProvider,
   }));

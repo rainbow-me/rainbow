@@ -1,6 +1,6 @@
-import { useWallets } from '@/hooks';
 import lang from 'i18n-js';
 import React from 'react';
+import { useWalletsStore } from '../../redux/wallets';
 import { HoldToAuthorizeButton } from '../buttons';
 
 export default function SendButton({
@@ -15,7 +15,7 @@ export default function SendButton({
   ...props
 }) {
   const { colors, isDarkMode } = useTheme();
-  const { isHardwareWallet } = useWallets();
+  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
   const colorForAsset = isNft ? colors.appleBlue : backgroundColor;
 
   const shadows = {

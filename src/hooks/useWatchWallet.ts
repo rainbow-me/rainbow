@@ -1,13 +1,13 @@
+import { useAccountProfile, useDeleteWallet, useImportingWallet, useInitializeWallet } from '@/hooks';
+import { logger, RainbowError } from '@/logger';
+import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
+import Routes from '@/navigation/routesNames';
+import { setSelectedAddress, useWalletsStore, walletsSetSelected } from '@/redux/wallets';
+import { doesWalletsContainAddress } from '@/utils';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
-import { useAccountProfile, useDeleteWallet, useImportingWallet, useInitializeWallet, useWallets } from '@/hooks';
-import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
-import { setSelectedAddress, walletsSetSelected } from '@/redux/wallets';
-import Routes from '@/navigation/routesNames';
-import { doesWalletsContainAddress } from '@/utils';
-import { RainbowError, logger } from '@/logger';
 
 export default function useWatchWallet({
   address: primaryAddress,
@@ -22,7 +22,7 @@ export default function useWatchWallet({
 }) {
   const dispatch = useDispatch();
   const { goBack, navigate } = useNavigation();
-  const { wallets } = useWallets();
+  const wallets = useWalletsStore(state => state.wallets);
 
   const watchingWallet = useMemo(() => {
     return Object.values<RainbowWallet>(wallets || {}).find(wallet =>

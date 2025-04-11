@@ -1,17 +1,17 @@
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import { containsEmoji } from '@/helpers/strings';
+import WalletTypes from '@/helpers/walletTypes';
+import { logger, RainbowError } from '@/logger';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import { AppState } from '@/redux/store';
+import { useTheme } from '@/theme';
 import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPreference, PreferenceActionType, setPreference } from '../model/preferences';
+import { useWalletsStore } from '../redux/wallets';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
-import useWallets from './useWallets';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { containsEmoji } from '@/helpers/strings';
-import WalletTypes from '@/helpers/walletTypes';
-import { updateWebDataEnabled } from '@/redux/showcaseTokens';
-import { AppState } from '@/redux/store';
-import { logger, RainbowError } from '@/logger';
-import { useTheme } from '@/theme';
 
 const getAccountSymbol = (name: string) => {
   if (!name) {
@@ -32,7 +32,7 @@ const wipeNotEmoji = (text: string) => {
 export default function useWebData() {
   const { accountAddress } = useAccountSettings();
   const dispatch = useDispatch();
-  const { wallets } = useWallets();
+  const wallets = useWalletsStore(state => state.wallets);
 
   const { showcaseTokens, webDataEnabled, hiddenTokens } = useSelector(
     ({ hiddenTokens: { hiddenTokens }, showcaseTokens: { webDataEnabled, showcaseTokens } }: AppState) => ({
