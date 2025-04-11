@@ -9,6 +9,7 @@ import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty, keys } from 'lodash';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import { getWalletNames, saveWalletNames } from '../handlers/localstorage/walletNames';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '../helpers/emojiHandler';
 import { fetchENSAvatar } from '../hooks/useENSAvatar';
 import { hasKey } from '../model/keychain';
 import { PreferenceActionType, setPreference } from '../model/preferences';
@@ -25,8 +26,9 @@ import {
   setSelectedWallet,
 } from '../model/wallet';
 import { createRainbowStore } from '../state/internal/createRainbowStore';
+import { address } from '../utils/abbreviations';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
-import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry } from '../utils/profileUtils';
+import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
 
 interface WalletsState {
@@ -65,6 +67,15 @@ interface WalletsState {
   getIsDamaged: () => boolean;
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
+  getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
+  getAccountProfileInfo: () => {
+    accountAddress?: string;
+    accountColor?: number;
+    accountENS?: string;
+    accountImage?: string | null;
+    accountName?: string;
+    accountSymbol?: string | false;
+  };
 }
 
 export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
@@ -527,5 +538,64 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
       });
       captureMessage('Error running keychain integrity checks');
     }
+  },
+
+  getWalletWithAccount(accountAddress: string): RainbowWallet | undefined {
+    const { wallets } = get();
+    if (!wallets) {
+      return;
+    }
+    const sortedKeys = Object.keys(wallets).sort();
+    let walletWithAccount: RainbowWallet | undefined;
+    const lowerCaseAccountAddress = accountAddress.toLowerCase();
+    sortedKeys.forEach(key => {
+      const wallet = wallets[key];
+      const found = wallet.addresses?.find((account: RainbowAccount) => account.address?.toLowerCase() === lowerCaseAccountAddress);
+      if (found) {
+        walletWithAccount = wallet;
+      }
+    });
+    return walletWithAccount;
+  },
+
+  getAccountProfileInfo() {
+    const { selected, walletNames, accountAddress } = get();
+
+    if (!selected) {
+      return {};
+    }
+    if (!accountAddress) {
+      return {};
+    }
+    if (!selected?.addresses?.length) {
+      return {};
+    }
+
+    const accountENS = walletNames?.[accountAddress];
+    const lowerCaseAccountAddress = accountAddress.toLowerCase();
+    const selectedAccount = selected.addresses?.find(
+      (account: RainbowAccount) => account.address?.toLowerCase() === lowerCaseAccountAddress
+    );
+
+    if (!selectedAccount) {
+      return {};
+    }
+
+    const { label, color, image } = selectedAccount;
+    const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
+    const accountName = labelWithoutEmoji || accountENS || address(accountAddress, 4, 4);
+    const emojiAvatar = returnStringFirstEmoji(label);
+    const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(accountAddress));
+    const accountColor = color;
+    const accountImage = image && isValidImagePath(image) ? image : null;
+
+    return {
+      accountAddress,
+      accountColor,
+      accountENS,
+      accountImage,
+      accountName,
+      accountSymbol,
+    };
   },
 }));
