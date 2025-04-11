@@ -1,17 +1,41 @@
-import path from 'path';
+import { selectorFilterByUserChains, selectUserAssetsList } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
+import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
+import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
+import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
+import { EthereumAddress, RainbowToken } from '@/entities';
+import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
+import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
+import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
+import { resolveNameOrAddress } from '@/handlers/web3';
+import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { logger, RainbowError } from '@/logger';
+import { queryClient } from '@/react-query';
+import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import { favoritesQueryKey } from '@/resources/favorites';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { review } from '@/storage';
+import { ethereumUtils, profileUtils } from '@/utils';
+import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import { captureException } from '@sentry/react-native';
 import { findKey, isEmpty, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';
+import path from 'path';
+import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
-import FastImage from 'react-native-fast-image';
 import { deprecatedRemoveLocal, getGlobal } from '../handlers/localstorage/common';
-import { IMAGE_METADATA, getNativeCurrency } from '../handlers/localstorage/globalSettings';
+import { getNativeCurrency, IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import { getMigrationVersion, setMigrationVersion } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import store from '../redux/store';
-import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
+import { getSelectedWallet, getWallets, updateWallets } from '../redux/wallets';
 import { RB_TOKEN_LIST_CACHE, RB_TOKEN_LIST_ETAG } from '../references/rainbow-token-list';
 import colors, { getRandomColor } from '../styles/colors';
 import {
@@ -25,31 +49,7 @@ import {
   signingWalletAddress,
 } from '../utils/keychainConstants';
 import { hasKey, loadString, publicAccessControlOptions, saveString } from './keychain';
-import { DEFAULT_WALLET_NAME, loadAddress, RainbowAccount, RainbowWallet, saveAddress } from './wallet';
-import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
-import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
-import { resolveNameOrAddress } from '@/handlers/web3';
-import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { updateWebDataEnabled } from '@/redux/showcaseTokens';
-import { ethereumUtils, profileUtils } from '@/utils';
-import { review } from '@/storage';
-import { logger, RainbowError } from '@/logger';
-import { queryClient } from '@/react-query';
-import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
-import { favoritesQueryKey } from '@/resources/favorites';
-import { EthereumAddress, RainbowToken } from '@/entities';
-import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
-import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
-import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
-import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { selectorFilterByUserChains, selectUserAssetsList } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
-import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
-import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
-import { swapsStore } from '@/state/swaps/swapsStore';
+import { DEFAULT_WALLET_NAME, loadAddress, RainbowAccount, RainbowWallet, saveAddress, setSelectedWallet } from './wallet';
 
 export default async function runMigrations() {
   // get current version
@@ -79,7 +79,7 @@ export default async function runMigrations() {
    * that were created / imported before we launched this feature
    */
   const v1 = async () => {
-    const { selected } = store.getState().wallets;
+    const selected = getSelectedWallet();
 
     if (!selected) {
       // Read from the old wallet data
@@ -109,8 +109,8 @@ export default async function runMigrations() {
         const wallets = { [id]: currentWallet };
 
         logger.debug('[runMigrations]: v1 migration - update wallets and selected wallet');
-        await store.dispatch(walletsUpdate(wallets));
-        await store.dispatch(walletsSetSelected(currentWallet));
+        updateWallets(wallets);
+        setSelectedWallet(currentWallet);
       }
     }
   };
@@ -123,7 +123,8 @@ export default async function runMigrations() {
    * which are the only wallets allowed to create new accounts under it
    */
   const v2 = async () => {
-    const { wallets, selected } = store.getState().wallets;
+    const wallets = getWallets();
+    const selected = getSelectedWallet();
 
     if (!wallets) {
       logger.debug('[runMigrations]: Complete migration v2 early');
@@ -168,12 +169,12 @@ export default async function runMigrations() {
           primary: true,
         };
         logger.debug('[runMigrations]: v2 migration - update wallets');
-        await store.dispatch(walletsUpdate(updatedWallets));
+        updateWallets(updatedWallets);
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
-        if (selected!.id === primaryWalletKey) {
+        if (selected?.id === primaryWalletKey) {
           const updatedSelectedWallet = updatedWallets[primaryWalletKey];
-          await store.dispatch(walletsSetSelected(updatedSelectedWallet));
+          setSelectedWallet(updatedSelectedWallet);
         }
       }
     }

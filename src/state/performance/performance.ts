@@ -1,9 +1,9 @@
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { OperationForScreen, PerformanceLog, Screen } from '@/state/performance/operations';
 import { analytics } from '@/analytics';
 import { logger } from '@/logger';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { OperationForScreen, PerformanceLog, Screen } from '@/state/performance/operations';
 import { runOnJS } from 'react-native-reanimated';
-import store from '@/redux/store';
+import { getSelectedWallet } from '../../redux/wallets';
 
 type AnyFunction = (...args: any[]) => any;
 
@@ -25,8 +25,7 @@ interface PerformanceTrackingState {
 }
 
 export function isEnabled() {
-  const isHardwareWallet = store.getState().wallets.selected?.deviceId;
-
+  const isHardwareWallet = getSelectedWallet()?.deviceId;
   return !isHardwareWallet;
 }
 

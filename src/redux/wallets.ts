@@ -17,7 +17,7 @@ import {
   AllRainbowWallets,
   generateAccount,
   getAllWallets,
-  getSelectedWallet,
+  getSelectedWallet as getKeychainSelectedWallet,
   loadAddress,
   RainbowAccount,
   RainbowWallet,
@@ -120,7 +120,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
       const allWalletsResult = await getAllWallets();
       const wallets = allWalletsResult?.wallets || {};
       if (isEmpty(wallets)) return;
-      const selected = await getSelectedWallet();
+      const selected = await getKeychainSelectedWallet();
 
       // Prevent irrecoverable state (no selected wallet)
       let selectedWallet = selected?.wallet;
@@ -602,6 +602,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
 
 export const getAccountAddress = () => useWalletsStore.getState().accountAddress;
 export const getWallets = () => useWalletsStore.getState().wallets;
+export const getSelectedWallet = () => useWalletsStore.getState().selected;
 
 // export static functions
 export const {

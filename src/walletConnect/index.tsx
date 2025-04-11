@@ -850,8 +850,7 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
 
   const authenticate: AuthRequestAuthenticateSignature = async ({ address }) => {
     try {
-      const { wallets } = store.getState().wallets;
-      const selectedWallet = findWalletWithAccount(wallets || {}, address);
+      const selectedWallet = getWalletWithAccount(address);
       const isHardwareWallet = selectedWallet?.type === WalletTypes.bluetooth;
       const iss = `did:pkh:eip155:1:${address}`;
 
