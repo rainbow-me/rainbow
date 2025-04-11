@@ -69,12 +69,12 @@ interface WalletsState {
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
   getAccountProfileInfo: (props?: { address: string; wallet: RainbowWallet }) => {
-    accountAddress?: string;
-    accountColor?: number;
-    accountENS?: string;
-    accountImage?: string | null;
-    accountName?: string;
-    accountSymbol?: string | false;
+    accountAddress: string;
+    accountColor: number;
+    accountENS: string;
+    accountImage: string | null;
+    accountName: string;
+    accountSymbol: string | false;
   };
 }
 
@@ -564,13 +564,13 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
     const accountAddress = props?.address || get().accountAddress;
 
     if (!wallet) {
-      return {};
+      throw new Error(`No wallet`);
     }
     if (!accountAddress) {
-      return {};
+      throw new Error(`No accountAddress`);
     }
     if (!wallet?.addresses?.length) {
-      return {};
+      throw new Error(`No addresses`);
     }
 
     const accountENS = walletNames?.[accountAddress];
@@ -578,7 +578,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
     const selectedAccount = wallet.addresses?.find((account: RainbowAccount) => account.address?.toLowerCase() === lowerCaseAccountAddress);
 
     if (!selectedAccount) {
-      return {};
+      throw new Error(`No selectedAccount`);
     }
 
     const { label, color, image } = selectedAccount;
