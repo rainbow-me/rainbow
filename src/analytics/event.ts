@@ -206,7 +206,6 @@ export const event = {
 
   addFavoriteToken: 'add_favorite_token',
   watchWallet: 'watch_wallet',
-  watchedWalletCohort: 'watched_wallet_cohort',
 
   // claimables
   claimClaimableSucceeded: 'claim_claimable.succeeded',
@@ -244,6 +243,13 @@ export const event = {
   // network status
   networkStatusOffline: 'network_status.offline',
   networkStatusReconnected: 'network_status.reconnected',
+
+  // performance
+  performanceReport: 'performance.report',
+  performanceInitializeWallet: 'Performance Wallet Initialize Time',
+
+  // discover screen
+  timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
 
   // ens
   ensInitiatedRegistration: 'Initiated ENS registration',
@@ -766,11 +772,6 @@ export type EventProperties = {
     address: string;
   };
 
-  [event.watchedWalletCohort]: {
-    numWatchedWallets: number;
-    watchedWalletsAddresses: string[];
-  };
-
   [event.claimClaimableSucceeded]: {
     claimableId: string;
     claimableType: 'transaction' | 'sponsored' | 'rainbowCoin';
@@ -921,6 +922,25 @@ export type EventProperties = {
 
   [event.networkStatusOffline]: undefined;
   [event.networkStatusReconnected]: undefined;
+
+  // performance
+  [event.performanceInitializeWallet]: {
+    walletStatus: string;
+    durationInMs: number;
+    performanceTrackingVersion: number;
+  };
+  [event.performanceReport]: {
+    reportName: string;
+    segments: Record<string, number>;
+    durationInMs: number;
+    performanceTrackingVersion: number;
+    data: Record<string, unknown>;
+  };
+
+  // discover screen
+  [event.timeSpentOnDiscoverScreen]: {
+    durationInMs: number;
+  };
 
   [event.ensInitiatedRegistration]: { category: string };
   [event.ensEditedRecords]: { category: string };

@@ -8,6 +8,7 @@ import { Box } from '@/design-system';
 import {
   useAccountAccentColor,
   useAccountSettings,
+  useHideSplashScreen,
   useInitializeWallet,
   useLoadAccountLateData,
   useLoadGlobalLateData,
@@ -29,6 +30,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
 import walletTypes from '@/helpers/walletTypes';
+import { PerformanceMeasureView } from '@shopify/react-native-performance';
 
 enum WalletLoadingStates {
   IDLE = 0,
@@ -47,6 +49,7 @@ function WalletScreen() {
   const loadGlobalLateData = useLoadGlobalLateData();
   const insets = useSafeAreaInsets();
   const { wallets } = useWallets();
+  const hideSplashScreen = useHideSplashScreen();
 
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
   const {
@@ -166,29 +169,31 @@ function WalletScreen() {
   const { highContrastAccentColor } = useAccountAccentColor();
 
   return (
-    <Box as={Page} flex={1} testID="wallet-screen">
-      <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
-        {/* @ts-expect-error JavaScript component */}
-        <AssetList
-          accentColor={highContrastAccentColor}
-          disableRefreshControl={isLoadingUserAssetsAndAddress || isLoadingBalance}
-          isLoading={IS_ANDROID && (isLoadingUserAssetsAndAddress || isLoadingBalance)}
-          isWalletEthZero={isWalletEthZero}
-          network={currentNetwork}
-          walletBriefSectionsData={walletBriefSectionsData}
-        />
+    <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
+      <Box as={Page} flex={1} testID="wallet-screen" onLayout={hideSplashScreen}>
+        <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
+          {/* @ts-expect-error JavaScript component */}
+          <AssetList
+            accentColor={highContrastAccentColor}
+            disableRefreshControl={isLoadingUserAssetsAndAddress || isLoadingBalance}
+            isLoading={IS_ANDROID && (isLoadingUserAssetsAndAddress || isLoadingBalance)}
+            isWalletEthZero={isWalletEthZero}
+            network={currentNetwork}
+            walletBriefSectionsData={walletBriefSectionsData}
+          />
+        </Box>
+        <ToastPositionContainer>
+          <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" testID="address-copied-toast" />
+        </ToastPositionContainer>
+
+        {/* NOTE: The components below render null and are solely for keeping react-query and Zustand in sync */}
+        <RemoteCardsSync />
+        <RemotePromoSheetSync />
+
+        {/* NOTE: This component listens for Mobile Wallet Protocol requests and handles them */}
+        <MobileWalletProtocolListener />
       </Box>
-      <ToastPositionContainer>
-        <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" testID="address-copied-toast" />
-      </ToastPositionContainer>
-
-      {/* NOTE: The components below render null and are solely for keeping react-query and Zustand in sync */}
-      <RemoteCardsSync />
-      <RemotePromoSheetSync />
-
-      {/* NOTE: This component listens for Mobile Wallet Protocol requests and handles them */}
-      <MobileWalletProtocolListener />
-    </Box>
+    </PerformanceMeasureView>
   );
 }
 
