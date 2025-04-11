@@ -1,20 +1,16 @@
-import React, { useCallback } from 'react';
-
-import { useDimensions, useWallets } from '@/hooks';
-import { useNavigation } from '@/navigation';
-
-import * as i18n from '@/languages';
+import { SheetActionButton } from '@/components/sheet';
+import { Bleed, Box, Column, Columns, Inset, Stack, Text } from '@/design-system';
+import { TextColor } from '@/design-system/color/palettes';
+import { IS_ANDROID } from '@/env';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
-
-import { SheetActionButton } from '@/components/sheet';
-import { Box, Inset, Stack, Text, Bleed, Column, Columns } from '@/design-system';
-
+import { useDimensions } from '@/hooks';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
-
-import { IS_ANDROID } from '@/env';
-import { TextColor } from '@/design-system/color/palettes';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import React, { useCallback } from 'react';
+import { useWalletsStore } from '../../../../redux/wallets';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
 
 const MIN_HEIGHT = 740;
@@ -31,7 +27,7 @@ type SecretWarningPageParams = {
 
 const SecretWarningPage = () => {
   const { height: deviceHeight } = useDimensions();
-  const { wallets } = useWallets();
+  const wallets = useWalletsStore(state => state.wallets);
   const { navigate } = useNavigation();
   const { params } = useRoute<RouteProp<SecretWarningPageParams, 'SecretWarningPage'>>();
 

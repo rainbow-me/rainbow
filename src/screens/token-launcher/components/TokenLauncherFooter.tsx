@@ -1,9 +1,28 @@
-import React, { useCallback, useState } from 'react';
-import * as i18n from '@/languages';
-import { Box, Inline, Separator, Text } from '@/design-system';
+import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations';
-import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { Box, Inline, Separator, Text } from '@/design-system';
+import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { IS_ANDROID } from '@/env';
+import { buildTokenDeeplink } from '@/handlers/deeplinks';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { getProvider } from '@/handlers/web3';
+import { BiometryTypes } from '@/helpers';
+import showWalletErrorAlert from '@/helpers/support';
+import { useAccountSettings, useBiometryType } from '@/hooks';
+import { useTokenLauncher } from '@/hooks/useTokenLauncher';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { loadWallet } from '@/model/wallet';
+import { useNavigation } from '@/navigation';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { staleBalancesStore } from '@/state/staleBalances';
+import { colors } from '@/styles';
+import { Wallet } from '@ethersproject/wallet';
+import React, { useCallback, useState } from 'react';
+import { Keyboard, Share } from 'react-native';
 import Animated, {
   Extrapolation,
   FadeIn,
@@ -14,33 +33,13 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { useWalletsStore } from '../../../redux/wallets';
 import { STEP_TRANSITION_DURATION } from '../constants';
-import { Keyboard, Share } from 'react-native';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
-import { GasButton } from './gas/GasButton';
-import { useAccountSettings, useBiometryType, useWallets } from '@/hooks';
-import { BiometryTypes } from '@/helpers';
-import { HoldToActivateButton } from './HoldToActivateButton';
-import { IS_ANDROID } from '@/env';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useNavigation } from '@/navigation';
-
-import { loadWallet } from '@/model/wallet';
-import { Wallet } from '@ethersproject/wallet';
-import { getProvider } from '@/handlers/web3';
 import { useTokenLaunchGasOptions } from '../hooks/useTokenLaunchGasOptions';
-import { colors } from '@/styles';
-
-import { useTokenLauncher } from '@/hooks/useTokenLauncher';
-import { staleBalancesStore } from '@/state/staleBalances';
-import { buildTokenDeeplink } from '@/handlers/deeplinks';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { analytics } from '@/analytics';
-import { logger, RainbowError } from '@/logger';
-import showWalletErrorAlert from '@/helpers/support';
-import { LedgerSigner } from '@/handlers/LedgerSigner';
-import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
-import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { GasButton } from './gas/GasButton';
+import { HoldToActivateButton } from './HoldToActivateButton';
 
 // height + top padding + bottom padding
 export const FOOTER_HEIGHT = 48 + 16 + 16;
@@ -51,7 +50,7 @@ function HoldToCreateButton() {
   const setStep = useTokenLauncherStore(state => state.setStep);
   const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
   const chainId = useTokenLauncherStore(state => state.chainId);
-  const { isHardwareWallet } = useWallets();
+  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
   const biometryType = useBiometryType();
   const { accountAddress } = useAccountSettings();
   const { transactionOptions } = useTokenLaunchGasOptions({

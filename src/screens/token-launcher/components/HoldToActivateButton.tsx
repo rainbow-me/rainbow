@@ -1,17 +1,17 @@
-import React, { PropsWithChildren, useCallback } from 'react';
-import { StyleProp, TextStyle, ViewStyle } from 'react-native';
-import { triggerHaptics } from 'react-native-turbo-haptics';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ShimmerAnimation } from '@/components/animations';
 import { useBiometryIconString } from '@/components/buttons/BiometricButtonContent';
 import HoldToAuthorizeButtonIcon from '@/components/buttons/hold-to-authorize/HoldToAuthorizeButtonIcon';
-import { useTheme } from '@/theme';
-import { IS_ANDROID } from '@/env';
-import { Box, Text, TextProps } from '@/design-system';
-import { colors } from '@/styles';
-import { useWallets } from '@/hooks';
 import { LedgerIcon } from '@/components/icons/svg/LedgerIcon';
+import { Box, Text, TextProps } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import { colors } from '@/styles';
+import { useTheme } from '@/theme';
+import React, { PropsWithChildren, useCallback } from 'react';
+import { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
+import { useWalletsStore } from '../../../redux/wallets';
 
 const BUTTON_HEIGHT = 56;
 
@@ -26,7 +26,7 @@ type LabelProps = Omit<TextProps, 'children'> & {
 };
 
 function LabelWithBiometryIcon({ label, showIcon = true, testID, color, ...textProps }: LabelProps) {
-  const { isHardwareWallet } = useWallets();
+  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
   const biometryIcon = useBiometryIconString({ showIcon: !IS_ANDROID && showIcon, isHardwareWallet });
   const { colors } = useTheme();
 

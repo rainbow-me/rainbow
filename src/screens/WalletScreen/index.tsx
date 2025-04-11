@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { AssetList } from '../../components/asset-list';
-import { Page } from '../../components/layout';
-import { useRemoveFirst } from '@/navigation/useRemoveFirst';
+import { analytics } from '@/analytics';
+import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
 import { navbarHeight } from '@/components/navbar/Navbar';
+import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { Box } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import walletTypes from '@/helpers/walletTypes';
 import {
   useAccountAccentColor,
   useAccountSettings,
@@ -12,25 +12,25 @@ import {
   useInitializeWallet,
   useLoadAccountLateData,
   useLoadGlobalLateData,
-  useWallets,
   useWalletSectionsData,
 } from '@/hooks';
-import { Toast, ToastPositionContainer } from '@/components/toasts';
-import { useRecoilValue } from 'recoil';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { analytics } from '@/analytics';
-import { AppState } from '@/redux/store';
-import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { IS_ANDROID } from '@/env';
-import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
-import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
-import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
-import walletTypes from '@/helpers/walletTypes';
+import { RootStackParamList } from '@/navigation/types';
+import { useRemoveFirst } from '@/navigation/useRemoveFirst';
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { AppState } from '@/redux/store';
+import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
+import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
+import React, { useEffect, useRef } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSelector } from 'react-redux';
+import { useRecoilValue } from 'recoil';
+import { AssetList } from '../../components/asset-list';
+import { Page } from '../../components/layout';
+import { useWalletsStore } from '../../redux/wallets';
 
 enum WalletLoadingStates {
   IDLE = 0,
@@ -48,7 +48,7 @@ function WalletScreen() {
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const insets = useSafeAreaInsets();
-  const { wallets } = useWallets();
+  const wallets = useWalletsStore(state => state.wallets);
   const hideSplashScreen = useHideSplashScreen();
 
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
