@@ -65,7 +65,6 @@ export type WalletSectionsState = {
   showcaseTokens: string[];
   uniqueTokens: ReturnType<typeof useUniqueTokens>['uniqueTokens'];
   isFetchingNfts: boolean;
-  sendableUniqueTokens: ReturnType<typeof useUniqueTokens>['sendableUniqueTokens'];
   positions: RainbowPositions | null;
   claimables: ClaimablesStore | null;
   nftSort: NftCollectionSortCriterion;

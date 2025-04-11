@@ -20,27 +20,7 @@ import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
-
-function useCachedSelector<T, P>(selector: (params: P) => T, params: P, deps: unknown[]): T {
-  const cacheRef = useRef<{
-    lastParams: P | null;
-    lastResult: T | null;
-  }>({
-    lastParams: null,
-    lastResult: null,
-  });
-
-  return useMemo(() => {
-    const result = selector(params);
-
-    cacheRef.current = {
-      lastParams: params,
-      lastResult: result,
-    };
-
-    return result;
-  }, [...deps, params, selector]);
-}
+import { useLegacyNFTs } from '@/resources/nfts';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -56,7 +36,7 @@ export default function useWalletSectionsData({
 }: {
   type?: AssetListType;
 } = {}): WalletSectionsResult {
-  const { nftSort } = useNftSort();
+  const { nftSort, nftSortDirection } = useNftSort();
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { selectedWallet, isReadOnlyWallet } = useWallets();
   const { showcaseTokens } = useShowcaseTokens();
@@ -99,7 +79,17 @@ export default function useWalletSectionsData({
     return claimablesData;
   }, [claimablesData, claimablesEnabled]);
 
-  const { sendableUniqueTokens, uniqueTokens, isFetchingNfts } = useUniqueTokens();
+  const {
+    data: { nfts: uniqueTokens },
+    isLoading: isFetchingNfts,
+  } = useLegacyNFTs({
+    address: accountAddress,
+    sortBy: nftSort,
+    sortDirection: nftSortDirection,
+    config: {
+      enabled: !!accountAddress,
+    },
+  });
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -132,7 +122,6 @@ export default function useWalletSectionsData({
       nativeCurrency,
       network,
       pinnedCoins,
-      sendableUniqueTokens,
       sortedAssets,
       accountBalanceDisplay: accountWithBalance?.balancesMinusHiddenBalances,
       isLoadingBalance: !accountWithBalance?.balancesMinusHiddenBalances,
@@ -158,7 +147,6 @@ export default function useWalletSectionsData({
       nativeCurrency,
       network,
       pinnedCoins,
-      sendableUniqueTokens,
       sortedAssets,
       accountWithBalance?.balancesMinusHiddenBalances,
       isWalletEthZero,
@@ -177,31 +165,7 @@ export default function useWalletSectionsData({
     ]
   );
 
-  const { briefSectionsData, isEmpty } = useCachedSelector(buildBriefWalletSectionsSelector, walletSectionsState, [
-    hiddenAssets,
-    isCoinListEdited,
-    isLoadingUserAssets,
-    language,
-    nativeCurrency,
-    network,
-    pinnedCoins,
-    sendableUniqueTokens,
-    sortedAssets,
-    accountWithBalance?.balancesMinusHiddenBalances,
-    accountWithBalance?.balances,
-    isWalletEthZero,
-    hiddenTokens,
-    isReadOnlyWallet,
-    type,
-    showcaseTokens,
-    uniqueTokens,
-    isFetchingNfts,
-    remoteConfig,
-    experimentalConfig,
-    positions,
-    claimables,
-    nftSort,
-  ]);
+  const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(walletSectionsState);
 
   const result: WalletSectionsResult = {
     briefSectionsData,
