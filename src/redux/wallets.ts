@@ -68,7 +68,7 @@ interface WalletsState {
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
-  getAccountProfileInfo: (props?: { address: string; wallet: RainbowWallet }) => {
+  getAccountProfileInfo: (props?: { address: string; wallet?: RainbowWallet }) => {
     accountAddress: string;
     accountColor: number;
     accountENS: string;

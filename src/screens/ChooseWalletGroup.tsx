@@ -10,7 +10,7 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createWallet, RainbowAccount, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
-import { createAccountForWallet, useWalletsStore, walletsLoadState } from '@/redux/wallets';
+import { useWalletsStore } from '@/redux/wallets';
 import { useTheme } from '@/theme';
 import { profileUtils } from '@/utils';
 import { abbreviateEnsForDisplay, formatAddressForDisplay } from '@/utils/abbreviations';
@@ -18,14 +18,11 @@ import chroma from 'chroma-js';
 import React from 'react';
 import { Text as NativeText, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { useDispatch } from 'react-redux';
 import { useNavigation } from '../navigation/Navigation';
 
 function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
   const blue = useForegroundColor('blue');
-
   const { navigate } = useNavigation();
-  const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
 
   const onNewWalletGroup = () => {
@@ -37,7 +34,7 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
         try {
           const { name, color } = args;
           await createWallet({ color, name });
-          await dispatch(walletsLoadState());
+          await useWalletsStore.getState().loadWallets();
           // @ts-expect-error - needs refactor to object params
           await initializeWallet();
           navigate(Routes.WALLET_SCREEN, {}, true);
@@ -105,11 +102,8 @@ function AccountAvatar({ account, size }: { account: RainbowAccount; size: numbe
 
 function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
   const separatorSecondary = useForegroundColor('separatorSecondary');
-
   const accounts = wallet.addresses;
-
   const { navigate } = useNavigation();
-  const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
 
   const onAddToGroup = () => {
@@ -122,7 +116,11 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
         try {
           const { name, color } = args;
           if (wallet.damaged) throw new Error('Wallet is damaged');
-          await dispatch(createAccountForWallet(wallet.id, color, name));
+          useWalletsStore.getState().createAccount({
+            id: wallet.id,
+            color,
+            name,
+          });
           // @ts-expect-error - needs refactor to object params
           await initializeWallet();
           navigate(Routes.WALLET_SCREEN, {}, true);

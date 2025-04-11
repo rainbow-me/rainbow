@@ -7,8 +7,6 @@ import { ImgixImage } from '@/components/images';
 import { InfoAlert } from '@/components/info-alert/info-alert';
 import { AccentColorProvider, BackgroundProvider, Box, Separator, Text } from '@/design-system';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
-import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import * as lang from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { useDappMetadata } from '@/resources/metadata/dapp';
@@ -30,8 +28,7 @@ export function AuthRequest({
   verifiedData?: Verify.Context['verified'];
 }) {
   const accountAddress = useWalletsStore(state => state.accountAddress);
-  const wallets = useWalletsStore(state => state.wallets);
-  const walletNames = useWalletsStore(state => state.walletNames);
+  const selectedWallet = useWalletsStore(state => state.selected);
 
   const { navigate, goBack } = useNavigation();
   const { colors } = useTheme();
@@ -39,13 +36,14 @@ export function AuthRequest({
   const [address, setAddress] = React.useState(accountAddress);
 
   const { accountSymbol, accountColor, accountImage, accountName, isHardwareWallet } = React.useMemo(() => {
-    const selectedWallet = findWalletWithAccount(wallets!, address);
-    const profileInfo = getAccountProfileInfo(selectedWallet, walletNames, address);
+    const profileInfo = useWalletsStore.getState().getAccountProfileInfo({
+      address,
+    });
     return {
       ...profileInfo,
       isHardwareWallet: !!selectedWallet?.deviceId,
     };
-  }, [walletNames, wallets, address]);
+  }, [address, selectedWallet?.deviceId]);
 
   const auth = React.useCallback(async () => {
     const { success, reason } = await authenticate({ address });
