@@ -47,6 +47,8 @@ export enum ReviewPromptAction {
   EnsNameRegistration = 'EnsNameRegistration',
   WatchWallet = 'WatchWallet',
   NftFloorPriceVisit = 'NftFloorPriceVisit',
+  ImportWallet = 'ImportWallet',
+  CreateWallet = 'CreateWallet',
 }
 
 export type Action = {
@@ -61,10 +63,13 @@ export type Action = {
  * NOTE: if a user has already reviewed, we don't want to prompt them again
  */
 export type Review = {
-  initialized: boolean;
-  hasReviewed: boolean;
-  timeOfLastPrompt: number;
+  // TODO: don't need these anymore, do I have to run a migration to remove them?
+  // initialized: boolean;
+  // hasReviewed: boolean;
+  // timeOfLastPrompt: number;
+  // numberOfTimesPrompted: number;
   actions: Action[];
+  promptTimestamps: number[];
 };
 
 type CampaignKeys = {
