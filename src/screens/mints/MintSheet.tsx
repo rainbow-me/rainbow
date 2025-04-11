@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } 
 import { Linking, StatusBar, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { useSharedValue } from 'react-native-reanimated';
-import useWallets from '../../hooks/useWallets';
 import { GasSpeedButton } from '@/components/gas';
 import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
 import { privateKeyToAccount } from 'viem/accounts';
@@ -56,6 +55,7 @@ import { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { useWalletsStore } from '@/redux/wallets';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -132,7 +132,8 @@ const MintSheet = () => {
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
-  const { isReadOnlyWallet, isHardwareWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
   const [insufficientEth, setInsufficientEth] = useState(false);
   const [showNativePrice, setShowNativePrice] = useState(false);
   const [gasError, setGasError] = useState(false);

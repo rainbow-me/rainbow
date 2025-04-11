@@ -38,8 +38,9 @@ export default function useUpdateEmoji() {
         },
       };
 
-      await useWalletsStore.getState().setSelectedWallet(newWallets[walletId]);
-      await useWalletsStore.getState().updateWallets(newWallets);
+      const { setSelectedWallet, updateWallets } = useWalletsStore.getState();
+      setSelectedWallet(newWallets[walletId]);
+      updateWallets(newWallets);
       updateWebProfile(accountAddress, name, (color !== undefined && colors.avatarBackgrounds[color]) || accountColor);
     },
     [accountAddress, accountColor, colors.avatarBackgrounds, selectedWallet, updateWebProfile, wallets]

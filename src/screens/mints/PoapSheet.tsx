@@ -1,37 +1,35 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
-import { BlurView } from 'react-native-blur-view';
-import { useSharedValue } from 'react-native-reanimated';
-
-import useWallets from '../../hooks/useWallets';
-import Routes from '@/navigation/routesNames';
-
-import ImgixImage from '../../components/images/ImgixImage';
-import { SheetActionButton, SheetActionButtonRow, SlackSheet } from '../../components/sheet';
-import { CardSize } from '../../components/unique-token/CardSize';
+import { analytics } from '@/analytics';
+import { ButtonPressAnimation } from '@/components/animations';
+import Spinner from '@/components/Spinner';
 import { Box, ColorModeProvider, Row, Rows, Stack, Text } from '@/design-system';
+import { UniqueAsset } from '@/entities';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { arcClient } from '@/graphql';
+import { PoapEvent } from '@/graphql/__generated__/arcDev';
+import { maybeSignUri } from '@/handlers/imgix';
 import { useAccountProfile, useDimensions } from '@/hooks';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { useWalletsStore } from '@/redux/wallets';
+import { useLegacyNFTs } from '@/resources/nfts';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import { watchingAlert } from '@/utils';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { maybeSignUri } from '@/handlers/imgix';
-import { ButtonPressAnimation } from '@/components/animations';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { PoapEvent } from '@/graphql/__generated__/arcDev';
-import { format } from 'date-fns';
-import { arcClient } from '@/graphql';
-import Spinner from '@/components/Spinner';
 import { delay } from '@/utils/delay';
-import { useLegacyNFTs } from '@/resources/nfts';
-import { UniqueAsset } from '@/entities';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import * as i18n from '@/languages';
-import { PoapMintError } from '@/utils/poaps';
-import { analytics } from '@/analytics';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { PoapMintError } from '@/utils/poaps';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { format } from 'date-fns';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
+import { useSharedValue } from 'react-native-reanimated';
+import ImgixImage from '../../components/images/ImgixImage';
+import { SheetActionButton, SheetActionButtonRow, SlackSheet } from '../../components/sheet';
+import { CardSize } from '../../components/unique-token/CardSize';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -73,7 +71,7 @@ const PoapSheet = () => {
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const params = useRoute();
   const {
     data: { nfts },

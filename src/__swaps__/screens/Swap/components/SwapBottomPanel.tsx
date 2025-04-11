@@ -22,7 +22,7 @@ import { ReviewPanel } from './ReviewPanel';
 import { SwapActionButton } from './SwapActionButton';
 import { SettingsPanel } from './SettingsPanel';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useWallets } from '@/hooks';
+import { useWalletsStore } from '@/redux/wallets';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
@@ -68,7 +68,7 @@ export function SwapBottomPanel() {
   const opacity = useDerivedValue(() => confirmButtonProps.value.opacity);
   const type = useDerivedValue(() => confirmButtonProps.value.type);
 
-  const { isHardwareWallet } = useWallets();
+  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
   const { navigate } = useNavigation();
   const handleHwConnectionAndSwap = useCallback(() => {
     try {

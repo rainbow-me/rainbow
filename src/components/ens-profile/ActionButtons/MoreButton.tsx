@@ -2,10 +2,12 @@ import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
-import { showDeleteContactActionSheet } from '../../contacts';
+import { IS_ANDROID as android, IS_IOS as ios } from '@/env';
+import { showDeleteContactActionSheet } from '@/components/contacts';
 import More from '../MoreButton/MoreButton';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { useClipboard, useContacts, useSwitchWallet, useWallets, useWatchWallet } from '@/hooks';
+import { useClipboard, useContacts, useSwitchWallet, useWatchWallet } from '@/hooks';
+import { useWalletsStore } from '@/redux/wallets';
 import { useNavigation } from '@/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
@@ -23,17 +25,18 @@ const ACTIONS = {
 };
 
 export default function MoreButton({ address, ensName }: { address?: string; ensName?: string }) {
-  const { selectedWallet } = useWallets();
+  const selectedWallet = useWalletsStore(state => state.selected);
   const { switchToWalletWithAddress } = useSwitchWallet();
   const { isWatching } = useWatchWallet({ address });
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
   const isSelectedWallet = useMemo(() => {
-    const visibleWallet = selectedWallet.addresses?.find((wallet: { visible: boolean }) => wallet.visible);
+    if (!selectedWallet || !selectedWallet.addresses) return false;
 
+    const visibleWallet = selectedWallet.addresses.find((wallet: { visible: boolean }) => wallet.visible);
     return visibleWallet?.address.toLowerCase() === address?.toLowerCase();
-  }, [selectedWallet.addresses, address]);
+  }, [selectedWallet, address]);
 
   const contact = address ? contacts[address.toLowerCase()] : undefined;
 

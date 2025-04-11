@@ -31,12 +31,15 @@ export default function useDeleteWallet({ address: primaryAddress }: { address?:
     // If there are no visible wallets
     // then delete the wallet
     const visibleAddresses = newWallets[watchingWalletId].addresses.filter((account: { visible: boolean }) => account.visible);
+
+    const { updateWallets } = useWalletsStore.getState();
+
     if (visibleAddresses.length === 0) {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete newWallets[watchingWalletId];
-      useWalletsStore.getState().updateWallets(newWallets);
+      updateWallets(newWallets);
     } else {
-      useWalletsStore.getState().updateWallets(newWallets);
+      updateWallets(newWallets);
     }
     removeWalletData(primaryAddress);
   }, [primaryAddress, wallets, watchingWalletId]);

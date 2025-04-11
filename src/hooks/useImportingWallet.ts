@@ -11,7 +11,6 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 import useWalletENSAvatar from './useWalletENSAvatar';
-import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
@@ -34,10 +33,12 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { useWalletsStore } from '@/redux/wallets';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
-  const { selectedWallet, wallets } = useWallets();
+  const selectedWallet = useWalletsStore(state => state.selected);
+  const wallets = useWalletsStore(state => state.wallets);
 
   const { getParent: dangerouslyGetParent, navigate, replace, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();

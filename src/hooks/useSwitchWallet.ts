@@ -14,8 +14,11 @@ export default function useSwitchWallet() {
     });
 
     if (!walletKey) return null;
-    useWalletsStore.getState().setSelectedWallet(wallets![walletKey]);
-    useWalletsStore.getState().setSelectedAddress(toChecksumAddress(address)!);
+
+    const { setSelectedWallet, setSelectedAddress } = useWalletsStore.getState();
+    setSelectedWallet(wallets![walletKey]);
+    setSelectedAddress(toChecksumAddress(address)!);
+
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 7.
     return initializeWallet(null, null, null, false, false, null, true);
   };

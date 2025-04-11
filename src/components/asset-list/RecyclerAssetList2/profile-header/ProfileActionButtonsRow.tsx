@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
-import { useAccountProfile, useWallets } from '@/hooks';
+import { useAccountProfile } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
@@ -19,6 +19,8 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { useWalletsStore } from '@/redux/wallets';
+import { pressableJumpScaleAnimation } from '@/design-system/utils';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -141,7 +143,7 @@ function ActionButton({
 
 function BuyButton() {
   const { navigate } = useNavigation();
-  const { isDamaged } = useWallets();
+  const isDamaged = useWalletsStore(state => state.getIsDamaged());
 
   const handlePress = React.useCallback(() => {
     if (isDamaged) {
@@ -164,7 +166,7 @@ function BuyButton() {
 }
 
 function SwapButton() {
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const { navigate } = useNavigation();
 
   const handlePress = React.useCallback(async () => {
@@ -189,7 +191,7 @@ function SwapButton() {
 }
 
 function SendButton() {
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const { navigate } = useNavigation();
 
   const handlePress = React.useCallback(() => {
@@ -212,7 +214,7 @@ function SendButton() {
 export function CopyButton() {
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
   const { accountAddress } = useAccountProfile();
-  const { isDamaged } = useWallets();
+  const isDamaged = useWalletsStore(state => state.getIsDamaged());
 
   const handlePressCopy = React.useCallback(() => {
     if (isDamaged) {

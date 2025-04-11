@@ -7,7 +7,8 @@ import { avatarMetadataAtom } from '../components/ens-registration/RegistrationA
 import { coverMetadataAtom } from '../components/ens-registration/RegistrationCover/RegistrationCover';
 import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import usePendingTransactions from './usePendingTransactions';
-import { useAccountSettings, useENSRegistration, useWalletENSAvatar, useWallets } from '.';
+import { useAccountSettings, useENSRegistration, useWalletENSAvatar } from '.';
+import { useWalletsStore } from '@/redux/wallets';
 import { PendingTransaction, Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@/handlers/ens';
 import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';
@@ -97,7 +98,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
   const { navigate, goBack } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
   const { updateWalletENSAvatars } = useWalletENSAvatar();
-  const { isHardwareWallet } = useWallets();
+  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
 
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);

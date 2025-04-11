@@ -6,7 +6,6 @@ import { InteractionManager, Share, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import URL from 'url-parse';
-import useWallets from '../../hooks/useWallets';
 import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
@@ -71,6 +70,7 @@ import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analytics } from '@/analytics';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { useWalletsStore } from '../../redux/wallets';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -230,7 +230,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const collectible = useCollectible(passedAsset?.uniqueId);
   const asset = external ? passedAsset : collectible;
   const {
