@@ -38,7 +38,7 @@ function logDirectly(metric: PerformanceMetricsType, durationInMs: number, addit
   logDurationIfAppropriate(metric, durationInMs);
   collectResultForPerformanceToast(metric, durationInMs);
   if (shouldReportMeasurement) {
-    analytics.track(metric, {
+    analytics.trackPerformance(metric, {
       durationInMs,
       performanceTrackingVersion,
       ...additionalParams, // wondering if we need to protect ourselves here
@@ -89,7 +89,7 @@ function finishMeasuring(metric: PerformanceMetricsType, additionalParams?: Addi
   collectResultForPerformanceToast(metric, durationInMs);
 
   if (shouldReportMeasurement) {
-    analytics.track(metric, {
+    analytics.trackPerformance(metric, {
       durationInMs,
       performanceTrackingVersion,
       ...savedEntry.additionalParams,
@@ -130,7 +130,7 @@ export function withPerformanceTracking<Fn extends (...args: Parameters<Fn>) => 
     const durationInMs = performance.now() - startTime;
     logDurationIfAppropriate(metric, durationInMs);
     if (shouldReportMeasurement) {
-      analytics.track(metric, {
+      analytics.trackPerformance(metric, {
         durationInMs,
         performanceTrackingVersion,
         ...additionalParams,

@@ -56,11 +56,17 @@ export enum TransactionStatus {
 export interface RainbowTransaction {
   address?: string;
   asset?:
-    | (ParsedAsset & {
-        asset_contract?: {
-          address?: string;
-        };
-      })
+    | (ParsedAsset &
+        (
+          | {
+              id?: string;
+              asset_contract: never;
+            }
+          | {
+              id?: string;
+              asset_contract?: UniqueAsset['asset_contract'];
+            }
+        ))
     | null;
   balance?: {
     amount: string;

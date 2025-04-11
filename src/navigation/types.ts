@@ -17,6 +17,8 @@ import { TextProps } from '@/design-system';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { GasTrend } from '@/__swaps__/utils/meteorology';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
+import { Checkbox } from '@/screens/SendConfirmationSheet';
+import { ENSProfile } from '@/entities/ens';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -215,7 +217,22 @@ export type RootStackParamList = {
   };
   [Routes.SETTINGS_BACKUP_VIEW]: undefined;
   [Routes.SEND_CONFIRMATION_SHEET]: {
-    shouldShowChecks: boolean;
+    amountDetails: {
+      assetAmount: string;
+      isSufficientBalance: boolean;
+      nativeAmount: string;
+    };
+    asset: ParsedAddressAsset | UniqueAsset;
+    callback: (...args: unknown[]) => Promise<boolean>;
+    checkboxes: Checkbox[];
+    ensProfile: ENSProfile;
+    isENS: boolean;
+    isL2: boolean;
+    isNft: boolean;
+    chainId: ChainId;
+    profilesEnabled: boolean;
+    to: string;
+    toAddress: string;
   };
   [Routes.EXPLAIN_SHEET]: ExplainSheetRouteParams;
   [Routes.PORTAL]: PortalSheetProps;
