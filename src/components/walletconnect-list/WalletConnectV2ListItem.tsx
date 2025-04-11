@@ -108,16 +108,15 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
     showActionSheetWithOptions(
       {
         options: androidContextMenuActions,
-        showSeparators: true,
         title: dappName,
       },
-      async (index: number) => {
+      async index => {
         if (index === 0) {
           handlePressChangeWallet();
         } else if (index === 1) {
           await disconnectSession(session);
           reload();
-          analytics.track('Manually disconnected from WalletConnect connection', {
+          analytics.track(analytics.event.manuallyDisconnectedFromWalletConnectConnection, {
             dappName,
             dappUrl,
           });
@@ -132,7 +131,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
       if (actionKey === 'disconnect') {
         await disconnectSession(session);
         reload();
-        analytics.track('Manually disconnected from WalletConnect connection', {
+        analytics.track(analytics.event.manuallyDisconnectedFromWalletConnectConnection, {
           dappName,
           dappUrl,
         });

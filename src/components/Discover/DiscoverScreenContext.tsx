@@ -47,7 +47,7 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
       searchInputRef.current?.focus();
     } else {
       useDiscoverSearchQueryStore.setState({ isSearching: true });
-      analytics.track('Tapped Search', {
+      analytics.track(analytics.event.discoverTapSearch, {
         category: 'discover',
       });
     }

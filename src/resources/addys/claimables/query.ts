@@ -18,7 +18,7 @@ import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils';
 import { throttle } from 'lodash';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { ClaimablesStore } from '@/state/claimables/claimables';
 
 export type ClaimablesArgs = {
@@ -126,7 +126,7 @@ const throttledClaimablesAnalytics = throttle(
       }
     });
 
-    analyticsV2.identify({ claimablesAmount: claimables.length, claimablesUSDValue: totalUSDValue, ...claimablesUSDValues });
+    analytics.identify({ claimablesAmount: claimables.length, claimablesUSDValue: totalUSDValue, ...claimablesUSDValues });
   },
   time.hours(1),
   { trailing: false }

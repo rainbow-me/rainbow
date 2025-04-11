@@ -9,7 +9,7 @@ const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;
   return Object.values(useBackendNetworksStore.getState().getDefaultChains())
     .filter(chain => testnetsEnabled || !chain.testnet)
-    .map(chain => chain.id);
+    .map(chain => `${chain.id}`);
 };
 
 export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
@@ -74,14 +74,14 @@ export const androidShowNetworksActionSheet = (callback: any) => {
   showActionSheetWithOptions(
     {
       options: androidNetworkActions(),
-      showSeparators: true,
       title: i18n.t(i18n.l.walletconnect.menu_options.available_networks),
     },
-    (idx: number) => {
+    idx => {
       if (idx !== undefined) {
         const defaultChains = useBackendNetworksStore.getState().getDefaultChains();
         const networkActions = androidNetworkActions();
-        const chain = defaultChains[networkActions[idx]] || defaultChains[ChainId.mainnet];
+        const chainId = parseInt(networkActions[idx]);
+        const chain = defaultChains[chainId] || defaultChains[ChainId.mainnet];
         callback({ chainId: chain.id });
       }
     }

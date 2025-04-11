@@ -6,18 +6,14 @@ likely because of typescript.
 */
 import '@walletconnect/react-native-compat';
 import { initSentry } from '@/logger/sentry';
-import { analytics } from './src/analytics';
-import { StartTime } from './src/performance/start-time';
-import { PerformanceTracking } from './src/performance/tracking';
-import { PerformanceMetrics } from './src/performance/tracking/types/PerformanceMetrics';
+import { PerformanceTracking, PerformanceReports, PerformanceReportSegments } from '@/performance/tracking';
+import { APP_START_TIME } from '@/performance/start-time';
+
+PerformanceTracking.startReport(PerformanceReports.appStartup, APP_START_TIME);
+PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.loadJSBundle);
+PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.loadMainModule);
 
 initSentry();
-
-analytics.track('Started executing JavaScript bundle');
-PerformanceTracking.logDirectly(PerformanceMetrics.loadJSBundle, performance.now() - StartTime.START_TIME);
-PerformanceTracking.startMeasuring(PerformanceMetrics.loadRootAppComponent);
-PerformanceTracking.startMeasuring(PerformanceMetrics.timeToInteractive);
-
 /*
 We need to use require calls in order to stop babel from moving imports
 to the top of the file above all other calls. We want Performance tracking
@@ -26,3 +22,4 @@ to start before all of the imports.
 require('react-native-gesture-handler');
 require('./shim');
 require('./src/App');
+PerformanceTracking.finishReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.loadMainModule);

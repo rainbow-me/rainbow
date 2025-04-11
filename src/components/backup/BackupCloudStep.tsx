@@ -59,10 +59,7 @@ export function BackupCloudStep() {
     setTimeout(() => {
       passwordRef.current?.focus();
     }, 1);
-    analytics.track('Choose Password Step', {
-      category: 'backup',
-      label: cloudPlatform,
-    });
+    analytics.track(analytics.event.backupChoosePassword, { category: 'backup', label: cloudPlatform });
   }, []);
 
   const { handleFocus } = useMagicAutofocus(passwordRef);

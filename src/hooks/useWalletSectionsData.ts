@@ -13,7 +13,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositionsStore } from '@/state/positions/positions';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useNftSort } from './useNFTsSortBy';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
@@ -109,7 +109,7 @@ export default function useWalletSectionsData({
       if (!asset.icon_url) params.no_icon += 1;
       if (!asset.price?.relative_change_24h) params.no_price += 1;
     }
-    analyticsV2.track(analyticsV2.event.tokenList, params);
+    analytics.track(analytics.event.tokenList, params);
   }, [isLoadingUserAssets, sortedAssets, type]);
 
   return useMemo(() => {

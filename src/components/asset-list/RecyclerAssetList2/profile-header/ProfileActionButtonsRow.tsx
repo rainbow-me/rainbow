@@ -149,9 +149,7 @@ function BuyButton() {
       return;
     }
 
-    analytics.track('Tapped "Add Cash"', {
-      category: 'home screen',
-    });
+    analytics.track(analytics.event.navigationAddCash, { category: 'home screen' });
 
     navigate(Routes.ADD_CASH_SHEET);
   }, [isDamaged, navigate]);
@@ -171,9 +169,7 @@ function SwapButton() {
 
   const handlePress = React.useCallback(async () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      analytics.track('Tapped "Swap"', {
-        category: 'home screen',
-      });
+      analytics.track(analytics.event.navigationSwap, { category: 'home screen' });
       swapsStore.setState({
         inputAsset: userAssetsStore.getState().getHighestValueNativeAsset(),
       });
@@ -194,14 +190,11 @@ function SwapButton() {
 
 function SendButton() {
   const { isReadOnlyWallet } = useWallets();
-
   const { navigate } = useNavigation();
 
   const handlePress = React.useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      analytics.track('Tapped "Send"', {
-        category: 'home screen',
-      });
+      analytics.track(analytics.event.navigationSend, { category: 'home screen' });
 
       navigate(Routes.SEND_FLOW);
     } else {

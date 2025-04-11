@@ -15,6 +15,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.65] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.65)
+
+### Added
+
+- Rainbow Creator LP Fee Claimables V1 (#6534)
+
+### Changed
+
+- Update testID placement for fast currency selection row (#6532)
+- Prevent analytics from logging in CI (#6536)
+- Bump iOS and Android to version 1.9.65 (#6538)
+- Remove old search resource in favor of searchV2 resource (#6464)
+- Add pulsing dot to end of price charts (#6542)
+
+### Fixed
+
+- Fix chart pathing for low cap coins and stablecoins (#6533)
+- Fix airdrops card number formatting (#6537)
+- Fixed Invariant Violation, Invalid URL: should be a string (#6541)
+- Fix chart Y overflow caused by isFlatDetection (#6549)
+
 ## [1.9.64] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.64)
 
 ### Added

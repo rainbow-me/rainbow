@@ -29,8 +29,19 @@ export default function useCoinListEditOptions() {
       setPinnedCoinsObject((prev: BooleanMap | undefined) => {
         return {
           ...(prev ?? {}),
-          [uniqueId]: true,
+          [uniqueId.toLowerCase()]: true,
         };
+      });
+    },
+    [setPinnedCoinsObject]
+  );
+
+  const removePinnedCoin = useCallback(
+    (uniqueId: string) => {
+      setPinnedCoinsObject((prev: BooleanMap | undefined) => {
+        const newPinnedCoins = { ...(prev ?? {}) };
+        delete newPinnedCoins[uniqueId.toLowerCase()];
+        return newPinnedCoins;
       });
     },
     [setPinnedCoinsObject]
@@ -62,6 +73,7 @@ export default function useCoinListEditOptions() {
 
   return {
     addPinnedCoin,
+    removePinnedCoin,
     clearSelectedCoins,
     pinnedCoinsObj: pinnedCoins,
     pushSelectedCoin,

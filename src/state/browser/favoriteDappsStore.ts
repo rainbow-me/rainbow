@@ -1,4 +1,4 @@
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 export interface FavoritedSite {
@@ -46,7 +46,7 @@ export const useFavoriteDappsStore = createRainbowStore<FavoriteDappsStore>(
       const standardizedUrl = standardizeUrl(site.url);
 
       if (!favoriteDapps.some(dapp => dapp.url === standardizedUrl)) {
-        analyticsV2.track(analyticsV2.event.browserAddFavorite, { url: standardizedUrl, image: site.image, name: site.name });
+        analytics.track(analytics.event.browserAddFavorite, { url: standardizedUrl, image: site.image, name: site.name });
 
         set({ favoriteDapps: [...favoriteDapps, { ...site, url: standardizedUrl }] });
       }

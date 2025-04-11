@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import walletTypes from '@/helpers/walletTypes';
 import { useWallets } from '@/hooks';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { isEmpty } from 'lodash';
 
 export const useWalletCohort = () => {
@@ -54,7 +54,7 @@ export const useWalletCohort = () => {
       }
     );
 
-    analyticsV2.identify({
+    analytics.identify({
       ownedAccounts: identify.ownedAccounts,
       hardwareAccounts: identify.hardwareAccounts,
       watchedAccounts: identify.watchedAccounts,

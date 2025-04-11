@@ -150,10 +150,8 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
 
   const handlePressMenuItem = React.useCallback(
     (e: (typeof Routes)[keyof typeof Routes]) => {
-      if (e === 'ReceiveModal') {
-        analytics.track('Tapped "My QR Code"', {
-          category: 'home screen',
-        });
+      if (e === Routes.RECEIVE_MODAL) {
+        analytics.track(analytics.event.navigationMyQrCode, { category: 'home screen' });
       }
       navigate(e);
     },

@@ -3,13 +3,12 @@ import { SlackSheet } from '@/components/sheet';
 import { BackgroundProvider, Box, globalColors, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { RequestVendorLogoIcon } from '@/components/coin-icon';
 import startCase from 'lodash/startCase';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SubPositionListItem } from './SubPositionListItem';
-import { event } from '@/analytics/event';
 import * as i18n from '@/languages';
 import { capitalize } from 'lodash';
 import { RainbowPosition } from '@/resources/defi/types';
@@ -55,7 +54,7 @@ export const PositionSheet: React.FC = () => {
   const lpDeposits = position.deposits.filter(deposit => deposit.isLp);
 
   const openDapp = useCallback(() => {
-    analyticsV2.track(event.positionsOpenedExternalDapp, {
+    analytics.track(analytics.event.positionsOpenedExternalDapp, {
       dapp: position.type,
       url: position.dapp.url,
     });

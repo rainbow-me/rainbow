@@ -155,6 +155,7 @@ export interface BackendNetworkServices {
     transactions: boolean;
     assets: boolean;
     positions: boolean;
+    interactionsWith: boolean;
   };
   tokenSearch: {
     enabled: boolean;

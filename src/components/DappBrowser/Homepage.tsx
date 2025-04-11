@@ -30,7 +30,7 @@ import { getDappHost } from './handleProviderRequest';
 import { uniqBy } from 'lodash';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { EXTRA_WEBVIEW_HEIGHT, WEBVIEW_HEIGHT } from './Dimensions';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { DndProvider, Draggable, DraggableGrid, DraggableGridProps, UniqueIdentifier } from '../drag-and-drop';
@@ -215,7 +215,7 @@ const Favorites = ({ goToUrl, tabId }: { goToUrl: (url: string) => void; tabId: 
 
   const onPressFavorite = useCallback(
     (dapp: FavoritedSite) => {
-      analyticsV2.track(analyticsV2.event.browserTapFavorite, dapp);
+      analytics.track(analytics.event.browserTapFavorite, dapp);
       goToUrl(dapp.url);
     },
     [goToUrl]
@@ -323,7 +323,7 @@ const Card = memo(function Card({
   const handlePress = useCallback(() => {
     {
       index &&
-        analyticsV2.track(analyticsV2.event.browserTrendingDappClicked, {
+        analytics.track(analytics.event.browserTrendingDappClicked, {
           name: site.name,
           url: site.url,
           hasClickedBefore: dappClickedBefore,

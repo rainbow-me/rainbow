@@ -8,7 +8,7 @@ import { getAddysHttpClient } from '@/resources/addys/client';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
 import { ClaimStatus } from '../../shared/types';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { ADDYS_BASE_URL } from 'react-native-dotenv';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 
@@ -69,7 +69,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
           haptics.notificationError();
           setClaimStatus('recoverableError');
           logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_CALL_FAILED}`));
-          analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+          analytics.track(analytics.event.claimClaimableFailed, {
             claimableType: 'sponsored',
             claimableId: claimable.analyticsId,
             chainId: claimable.chainId,
@@ -91,7 +91,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
           haptics.notificationError();
           setClaimStatus('recoverableError');
           logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_CALL_FAILED}`));
-          analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+          analytics.track(analytics.event.claimClaimableFailed, {
             claimableType: 'sponsored',
             claimableId: claimable.analyticsId,
             chainId: claimable.chainId,
@@ -112,7 +112,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         haptics.notificationError();
         setClaimStatus('recoverableError');
         logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_UNSUCCESSFUL_RESPONSE}`));
-        analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+        analytics.track(analytics.event.claimClaimableFailed, {
           claimableType: 'sponsored',
           claimableId: claimable.analyticsId,
           chainId: claimable.chainId,
@@ -134,7 +134,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
           setClaimStatus('pending');
         }
 
-        analyticsV2.track(analyticsV2.event.claimClaimableSucceeded, {
+        analytics.track(analytics.event.claimClaimableSucceeded, {
           claimableType: 'sponsored',
           claimableId: claimable.analyticsId,
           chainId: claimable.chainId,
@@ -156,7 +156,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
       logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.UNHANDLED_ERROR}`), {
         message: (e as Error)?.message,
       });
-      analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+      analytics.track(analytics.event.claimClaimableFailed, {
         claimableType: 'sponsored',
         claimableId: claimable.analyticsId,
         chainId: claimable.chainId,
@@ -175,7 +175,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         haptics.notificationError();
         setClaimStatus('recoverableError');
         logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.UNRESOLVED_CLAIM_STATUS}`));
-        analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+        analytics.track(analytics.event.claimClaimableFailed, {
           claimableType: 'sponsored',
           claimableId: claimable.analyticsId,
           chainId: claimable.chainId,

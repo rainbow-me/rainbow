@@ -41,8 +41,8 @@ export const isDarkTheme = async () => {
   let currentTheme: ThemesType = await getTheme();
 
   if (currentTheme === Themes.SYSTEM) {
-    const isSystemDarkMode = Appearance.getColorScheme() === 'dark';
-    currentTheme = isSystemDarkMode ? 'dark' : 'light';
+    const isSystemDarkMode = Appearance.getColorScheme() === Themes.DARK;
+    currentTheme = isSystemDarkMode ? Themes.DARK : Themes.LIGHT;
   }
 
   return currentTheme === Themes.DARK;

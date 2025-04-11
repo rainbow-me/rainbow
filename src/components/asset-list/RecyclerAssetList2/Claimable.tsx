@@ -1,13 +1,12 @@
 import React, { useMemo } from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
-import { useAccountSettings } from '@/hooks';
 import { FasterImageView } from '@candlefinance/faster-image';
 import { ButtonPressAnimation } from '@/components/animations';
 import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { ExtendedState } from './core/RawRecyclerList';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@/state/backendNetworks/types';
 import { Claimable as ClaimableType } from '@/resources/addys/claimables/types';
@@ -41,7 +40,7 @@ export const Claimable = React.memo(function Claimable({
       as={ButtonPressAnimation}
       onPress={() => {
         if (!isETHRewards) {
-          analyticsV2.track(analyticsV2.event.claimablePanelOpened, {
+          analytics.track(analytics.event.claimablePanelOpened, {
             claimableType: claimable?.actionType,
             claimableId: claimable?.analyticsId,
             chainId: claimable?.chainId,

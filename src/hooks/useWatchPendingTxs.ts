@@ -93,7 +93,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       minedTransactions.forEach(tx => {
         if (tx.changes?.length) {
           tx.changes?.forEach(change => {
-            processStaleAsset({ asset: change?.asset, address, transactionHash: tx?.hash });
+            change?.asset && processStaleAsset({ asset: change.asset, address, transactionHash: tx?.hash });
           });
         } else if (tx.asset) {
           processStaleAsset({ address, asset: tx.asset, transactionHash: tx?.hash });

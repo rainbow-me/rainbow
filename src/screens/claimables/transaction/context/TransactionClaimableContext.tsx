@@ -33,7 +33,7 @@ import { executeClaim } from '../claim';
 import { weiToGwei } from '@/parsers';
 import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 import { ClaimStatus } from '../../shared/types';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { estimateClaimUnlockSwapGasLimit } from '../estimateGas';
@@ -417,7 +417,7 @@ export function TransactionClaimableContextProvider({
               message: errorMessage,
               recoverable: true,
             });
-            analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+            analytics.track(analytics.event.claimClaimableFailed, {
               claimableType: 'transaction',
               claimableId: claimable.analyticsId,
               chainId: claimable.chainId,
@@ -437,7 +437,7 @@ export function TransactionClaimableContextProvider({
               message: errorMessage,
               recoverable: false,
             });
-            analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+            analytics.track(analytics.event.claimClaimableFailed, {
               claimableType: 'transaction',
               claimableId: claimable.analyticsId,
               chainId: claimable.chainId,
@@ -466,7 +466,7 @@ export function TransactionClaimableContextProvider({
           logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.CLAIM_ERROR}`), {
             message: (e as Error)?.message,
           });
-          analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+          analytics.track(analytics.event.claimClaimableFailed, {
             claimableType: 'transaction',
             claimableId: claimable.analyticsId,
             chainId: claimable.chainId,
@@ -485,7 +485,7 @@ export function TransactionClaimableContextProvider({
       haptics.notificationSuccess();
       setClaimStatus('success');
 
-      analyticsV2.track(analyticsV2.event.claimClaimableSucceeded, {
+      analytics.track(analytics.event.claimClaimableSucceeded, {
         claimableType: 'transaction',
         claimableId: claimable.analyticsId,
         chainId: claimable.chainId,
@@ -506,7 +506,7 @@ export function TransactionClaimableContextProvider({
       logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.UNHANDLED_ERROR}`), {
         message: (e as Error)?.message,
       });
-      analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+      analytics.track(analytics.event.claimClaimableFailed, {
         claimableType: 'transaction',
         claimableId: claimable.analyticsId,
         chainId: claimable.chainId,
@@ -526,7 +526,7 @@ export function TransactionClaimableContextProvider({
         haptics.notificationError();
         setClaimStatus('recoverableError');
         logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.UNRESOLVED_CLAIM_STATUS}`));
-        analyticsV2.track(analyticsV2.event.claimClaimableFailed, {
+        analytics.track(analytics.event.claimClaimableFailed, {
           claimableType: 'transaction',
           claimableId: claimable.analyticsId,
           chainId: claimable.chainId,

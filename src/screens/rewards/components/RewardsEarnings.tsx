@@ -13,7 +13,7 @@ import Routes from '@/navigation/routesNames';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 type Props = {
   assetPrice?: number;
@@ -66,7 +66,7 @@ export const RewardsEarnings: React.FC<Props> = ({
   }, [pendingEarningsToken, tokenSymbol, totalEarnings.token, totalEarnings.usd, assetPrice, nativeCurrency, nextAirdropTimestamp]);
 
   const navigateToTimingExplainer = () => {
-    analyticsV2.track(analyticsV2.event.rewardsPressedPendingEarningsCard);
+    analytics.track(analytics.event.rewardsPressedPendingEarningsCard);
     navigate(Routes.EXPLAIN_SHEET, {
       type: 'op_rewards_airdrop_timing',
     });

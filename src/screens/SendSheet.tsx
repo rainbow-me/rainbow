@@ -10,7 +10,7 @@ import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../co
 import { SheetActionButton } from '../components/sheet';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics, analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetTypes, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
@@ -348,7 +348,7 @@ export default function SendSheet() {
         isSufficientBalance: _isSufficientBalance,
         nativeAmount: _nativeAmount,
       });
-      analytics.track('Changed native currency input in Send flow');
+      analytics.track(analytics.event.changedNativeCurrencyInputSend);
     },
     [maxEnabled, maxInputBalance, isUniqueAsset, selected]
   );
@@ -369,7 +369,7 @@ export default function SendSheet() {
           setMaxEnabled(false);
         }
         sendUpdateAssetAmount(newAssetAmount);
-        analytics.track('Changed token input in Send flow');
+        analytics.track(analytics.event.changedTokenInputSend);
       }
     },
     [maxEnabled, sendUpdateAssetAmount]
@@ -644,7 +644,7 @@ export default function SendSheet() {
         return false;
       }
       const submitSuccessful = await onSubmit(args);
-      analytics.track('Sent transaction', {
+      analytics.track(analytics.event.sentTransaction, {
         assetName: selected?.name || '',
         network: selected?.network || '',
         isRecepientENS: recipient.slice(-4).toLowerCase() === '.eth',
@@ -788,7 +788,7 @@ export default function SendSheet() {
   ]);
 
   const onResetAssetSelection = useCallback(() => {
-    analytics.track('Reset asset selection in Send flow');
+    analytics.track(analytics.event.resetAssetSelectionSend);
     sendUpdateSelected(undefined);
     setMaxEnabled(false);
   }, [sendUpdateSelected]);
@@ -902,7 +902,7 @@ export default function SendSheet() {
       if (!asset.icon_url) params.no_icon += 1;
       if (!asset.price?.relative_change_24h) params.no_price += 1;
     }
-    analyticsV2.track(analyticsV2.event.tokenList, params);
+    analytics.track(analytics.event.tokenList, params);
   }, [isLoadingUserAssets, sortedAssets]);
 
   const sendContactListDataKey = useMemo(() => `${ensSuggestions?.[0]?.address || '_'}`, [ensSuggestions]);

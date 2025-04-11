@@ -1,6 +1,6 @@
 import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { nonceStore } from '@/state/nonces';
 import { logger } from '@/logger';
 
@@ -38,7 +38,7 @@ export const networkSwitcherStore = createRainbowStore<{
     if (state.pinnedNetworks.length === 0) {
       const mostUsedNetworks = getMostUsedChains();
       state.pinnedNetworks = mostUsedNetworks.slice(0, 5);
-      analyticsV2.identify({ mostUsedNetworks: mostUsedNetworks.filter(Boolean) });
+      analytics.identify({ mostUsedNetworks: mostUsedNetworks.filter(Boolean) });
     }
   },
 });

@@ -1,5 +1,5 @@
 import { slippageStep } from '@/__swaps__/screens/Swap/constants';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { runOnJS, SharedValue, useSharedValue } from 'react-native-reanimated';
 
@@ -10,7 +10,7 @@ export const useSwapSettings = ({ debouncedFetchQuote, slippage }: { debouncedFe
 
   const setDegenMode = (value: boolean) => {
     swapsStore.getState().setDegenMode(value);
-    analyticsV2.track(analyticsV2.event.swapsToggledDegenMode, { enabled: value });
+    analytics.track(analytics.event.swapsToggledDegenMode, { enabled: value });
   };
 
   const onUpdateSlippage = (operation: 'plus' | 'minus') => {

@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import NetInfo, { NetInfoState, NetInfoSubscription } from '@react-native-community/netinfo';
 import { AppState } from 'react-native';
-import { analyticsV2 } from '@/analytics';
-import { event } from '@/analytics/event';
+import { analytics } from '@/analytics';
 
 function getIsOnline(state: NetInfoState) {
   if (typeof state.isConnected !== 'boolean' || typeof state.isInternetReachable !== 'boolean') {
@@ -27,7 +26,7 @@ export default function useIsOffline({ debounceMs = 0 }: { debounceMs?: number }
       const newIsOnline = getIsOnline(state);
       const oldIsOnline = isOnlineRef.current;
 
-      if (newIsOnline === oldIsOnline && oldIsOnline !== null) return;
+      if (newIsOnline === oldIsOnline || oldIsOnline === null) return;
 
       if (newIsOnline) {
         // We came back online within the debounce window, clear any pending offline update
@@ -35,7 +34,7 @@ export default function useIsOffline({ debounceMs = 0 }: { debounceMs?: number }
           clearTimeout(offlineTimerRef.current);
           offlineTimerRef.current = null;
         } else {
-          analyticsV2.track(event.networkStatusReconnected);
+          analytics.track(analytics.event.networkStatusReconnected);
         }
         updateIsOnline(true);
       } else {
@@ -43,12 +42,12 @@ export default function useIsOffline({ debounceMs = 0 }: { debounceMs?: number }
           if (!offlineTimerRef.current) {
             offlineTimerRef.current = setTimeout(() => {
               offlineTimerRef.current = null;
-              analyticsV2.track(event.networkStatusOffline);
+              analytics.track(analytics.event.networkStatusOffline);
               updateIsOnline(false);
             }, debounceMs);
           }
         } else {
-          analyticsV2.track(event.networkStatusOffline);
+          analytics.track(analytics.event.networkStatusOffline);
           updateIsOnline(false);
         }
       }

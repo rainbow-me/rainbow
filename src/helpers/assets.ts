@@ -48,15 +48,6 @@ export const buildCoinsList = (
     smallAssets: any = [],
     hiddenAssets: any = [];
 
-  // Assets uniqueIds here are always lowercased, but not all pinned uniqueIds are
-  const pinnedCoinsLowercase = Object.keys(pinnedCoins || {}).reduce(
-    (acc, key) => {
-      acc[key.toLowerCase()] = pinnedCoins[key];
-      return acc;
-    },
-    {} as Record<string, boolean>
-  );
-
   // separate into standard, pinned, small balances, hidden assets
   sortedAssets?.forEach((asset: any) => {
     if (hiddenCoins.has(asset.uniqueId)) {
@@ -66,7 +57,7 @@ export const buildCoinsList = (
         isSmall: true,
         ...asset,
       });
-    } else if (pinnedCoinsLowercase[asset.uniqueId.toLowerCase()]) {
+    } else if (pinnedCoins[asset.uniqueId]) {
       pinnedAssets.push({
         isCoin: true,
         isPinned: true,

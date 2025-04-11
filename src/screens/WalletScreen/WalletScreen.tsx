@@ -3,7 +3,7 @@ import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
-import { useAccountAccentColor, useAccountSettings, useWalletSectionsData } from '@/hooks';
+import { useAccountAccentColor, useAccountSettings, useHideSplashScreen, useWalletSectionsData } from '@/hooks';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,6 +17,7 @@ import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
 import { useInitializeWalletAndSetParams } from '@/hooks/useInitiailizeWalletAndSetParams';
 import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
 import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
+import { PerformanceMeasureView } from '@shopify/react-native-performance';
 
 const UtilityComponents = React.memo(() => (
   <>
@@ -38,6 +39,7 @@ const ToastComponent = React.memo(() => {
 function WalletScreen() {
   const { network: currentNetwork, accountAddress } = useAccountSettings();
   const insets = useSafeAreaInsets();
+  const hideSplashScreen = useHideSplashScreen();
 
   const {
     isWalletEthZero,
@@ -61,19 +63,21 @@ function WalletScreen() {
   );
 
   return (
-    <Box as={Page} flex={1} testID="wallet-screen">
-      <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
-        <AssetList
-          accentColor={highContrastAccentColor}
-          disableRefreshControl={disableRefreshControl}
-          isWalletEthZero={isWalletEthZero}
-          network={currentNetwork}
-          walletBriefSectionsData={walletBriefSectionsData}
-        />
+    <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
+      <Box as={Page} flex={1} testID="wallet-screen" onLayout={hideSplashScreen}>
+        <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
+          <AssetList
+            accentColor={highContrastAccentColor}
+            disableRefreshControl={disableRefreshControl}
+            isWalletEthZero={isWalletEthZero}
+            network={currentNetwork}
+            walletBriefSectionsData={walletBriefSectionsData}
+          />
+        </Box>
+        <ToastComponent />
+        <UtilityComponents />
       </Box>
-      <ToastComponent />
-      <UtilityComponents />
-    </Box>
+    </PerformanceMeasureView>
   );
 }
 

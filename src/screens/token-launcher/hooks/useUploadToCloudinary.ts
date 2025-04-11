@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { uploadImageToCloudinary } from '../helpers/uploadToCloudinary';
 import { logger, RainbowError } from '@/logger';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 export function useUploadToCloudinary() {
   const [isUploading, setIsUploading] = useState(false);
@@ -24,7 +24,7 @@ export function useUploadToCloudinary() {
       logger.error(new RainbowError('[useUploadToCloudinary]: Failed to upload image to Cloudinary'), {
         message: error.message,
       });
-      analyticsV2.track(analyticsV2.event.tokenLauncherImageUploadFailed, {
+      analytics.track(analytics.event.tokenLauncherImageUploadFailed, {
         error: error.message,
         url,
         isModerated,
