@@ -1,25 +1,27 @@
-import React, { useCallback, useEffect } from 'react';
-import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
-import * as lang from '@/languages';
-import { ImgixImage } from '../images';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
-import { Source } from 'react-native-fast-image';
-import { ButtonPressAnimation } from '../animations';
+import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
+import walletTypes from '@/helpers/walletTypes';
+import * as lang from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useWallets } from '@/hooks';
-import walletTypes from '@/helpers/walletTypes';
+import { useWalletsStore } from '@/redux/wallets';
 import { SETTINGS_BACKUP_ROUTES } from '@/screens/SettingsSheet/components/Backups/routes';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { backupsStore } from '@/state/backups/backups';
+import React, { useCallback } from 'react';
+import { Source } from 'react-native-fast-image';
+import { ButtonPressAnimation } from '../animations';
+import { ImgixImage } from '../images';
 
 const imageSize = 72;
 
 export default function ManualBackupPrompt() {
   const { navigate, goBack } = useNavigation();
-  const { selectedWallet } = useWallets();
+  const selectedWallet = useWalletsStore(state => state.selected);
 
   const onManualBackup = async () => {
+    if (!selectedWallet) {
+      return;
+    }
     const title =
       selectedWallet?.imported && selectedWallet.type === walletTypes.privateKey
         ? (selectedWallet.addresses || [])[0].label

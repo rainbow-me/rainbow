@@ -8,7 +8,6 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors, position } from '@/styles';
 import { watchingAlert } from '@/utils';
-import { useWallets } from '@/hooks';
 import { RainbowToken } from '@/entities';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
@@ -22,6 +21,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useWalletsStore } from '../../redux/wallets';
 
 const NOOP = () => null;
 
@@ -49,7 +49,7 @@ const AvailableNetworksv2 = ({
   };
 
   const { goBack, navigate } = useNavigation();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
 
   const convertAssetAndNavigate = useCallback(
     (chainId: ChainId) => {

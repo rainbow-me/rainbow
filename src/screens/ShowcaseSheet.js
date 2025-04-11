@@ -1,3 +1,9 @@
+import { resolveNameOrAddress } from '@/handlers/web3';
+import { buildUniqueTokenList } from '@/helpers/assets';
+import { useAccountSettings } from '@/hooks';
+import { useLegacyNFTs } from '@/resources/nfts';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
 import { useRoute } from '@react-navigation/native';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ActivityIndicator from '../components/ActivityIndicator';
@@ -7,12 +13,7 @@ import { CollectibleTokenFamily } from '../components/token-family';
 import { PREFS_ENDPOINT } from '../model/preferences';
 import { rainbowFetch } from '../rainbow-fetch';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
-import { resolveNameOrAddress } from '@/handlers/web3';
-import { buildUniqueTokenList } from '@/helpers/assets';
-import { useAccountSettings, useWallets } from '@/hooks';
-import styled from '@/styled-thing';
-import { useTheme } from '@/theme';
-import { useLegacyNFTs } from '@/resources/nfts';
+import { useWalletsStore } from '../redux/wallets';
 
 const tokenFamilyItem = item => <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />;
 
@@ -50,7 +51,7 @@ export default function ShowcaseScreen() {
 
   const [userData, setUserData] = useState(null);
   const [accountAddress, setAcccountAddress] = useState(null);
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
 
   useEffect(() => {
     const init = async () => {

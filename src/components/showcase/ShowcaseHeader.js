@@ -1,18 +1,19 @@
-import lang from 'i18n-js';
-import React, { createContext, useCallback, useContext, useMemo } from 'react';
-import { ColumnWithMargins } from '../layout';
-import AvatarCircle from '../profile/AvatarCircle';
-import SheetHandle from '../sheet/SheetHandle';
-import { SheetActionButton, SheetActionButtonRow } from '../sheet/sheet-action-buttons';
-import { Text, TruncatedAddress } from '../text';
 import { getContacts } from '@/handlers/localstorage/contacts';
 import { isHexString } from '@/handlers/web3';
-import { useImportingWallet, useWallets } from '@/hooks';
+import { useImportingWallet } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { colors, padding } from '@/styles';
 import { abbreviations, profileUtils } from '@/utils';
+import lang from 'i18n-js';
+import React, { createContext, useCallback, useContext, useMemo } from 'react';
+import { useWalletsStore } from '../../redux/wallets';
+import { ColumnWithMargins } from '../layout';
+import AvatarCircle from '../profile/AvatarCircle';
+import SheetHandle from '../sheet/SheetHandle';
+import { SheetActionButton, SheetActionButtonRow } from '../sheet/sheet-action-buttons';
+import { Text, TruncatedAddress } from '../text';
 
 export const ShowcaseContext = createContext();
 
@@ -79,7 +80,7 @@ function hashCode(text) {
 export function Header() {
   const { goBack, navigate } = useNavigation();
   const contextValue = useContext(ShowcaseContext);
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
 
   const { colors } = useTheme();
 

@@ -1,39 +1,40 @@
-import React, { useCallback } from 'react';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import { TrendingTokens } from '@/components/Discover/TrendingTokens';
+import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultStack';
+import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
+import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
+import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
+import { GasCard } from '@/components/cards/GasCard';
+import { LearnCard } from '@/components/cards/LearnCard';
+import { LedgerCard } from '@/components/cards/LedgerCard';
+import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
+import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
+import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
+import { RemoteCardCarousel } from '@/components/cards/remote-cards';
+import { AirdropsCard } from '@/components/cards/skia-cards/AirdropsCard';
+import { LaunchCard } from '@/components/cards/skia-cards/LaunchCard';
+import { avoidScamsCard, backupsCard, cryptoAndWalletsCard } from '@/components/cards/utils/constants';
+import { Box, Inline, Inset, Separator, Stack, useColorMode } from '@/design-system';
+import { IS_TEST } from '@/env';
+import { isTestnetChain } from '@/handlers/web3';
+import walletTypes from '@/helpers/walletTypes';
+import { useAccountSettings } from '@/hooks';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import useExperimentalFlag, {
-  OP_REWARDS,
-  PROFILES,
+  FEATURED_RESULTS,
   HARDWARE_WALLETS,
   MINTS,
   NEW_DISCOVER_CARDS,
   NFT_OFFERS,
-  FEATURED_RESULTS,
+  OP_REWARDS,
+  PROFILES,
   TRENDING_TOKENS,
 } from '@rainbow-me/config/experimentalHooks';
-import { Inline, Inset, Stack, Box, Separator, useColorMode } from '@/design-system';
-import { useAccountSettings, useWallets } from '@/hooks';
-import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
-import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
-import { GasCard } from '@/components/cards/GasCard';
-import { LearnCard } from '@/components/cards/LearnCard';
-import { avoidScamsCard, backupsCard, cryptoAndWalletsCard } from '@/components/cards/utils/constants';
-import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
-import { LedgerCard } from '@/components/cards/LedgerCard';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import walletTypes from '@/helpers/walletTypes';
-import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
-import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
-import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
-import { IS_TEST } from '@/env';
-import { TrendingTokens } from '@/components/Discover/TrendingTokens';
-import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultStack';
-import { RemoteCardCarousel } from '@/components/cards/remote-cards';
-import { AirdropsCard } from '@/components/cards/skia-cards/AirdropsCard';
-import { LaunchCard } from '@/components/cards/skia-cards/LaunchCard';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import React, { useCallback } from 'react';
+import { useWalletsStore } from '../../redux/wallets';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
-import { isTestnetChain } from '@/handlers/web3';
 
 export const HORIZONTAL_PADDING = 20;
 
@@ -56,7 +57,7 @@ export default function DiscoverHome() {
   const { navigate } = useNavigation();
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
-  const { wallets } = useWallets();
+  const wallets = useWalletsStore(state => state.wallets);
 
   const hasHardwareWallets = Object.keys(wallets || {}).filter(key => (wallets || {})[key].type === walletTypes.bluetooth).length > 0;
 

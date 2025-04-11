@@ -68,6 +68,7 @@ import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { buildTransaction } from '@/helpers/buildTransaction';
+import { useWalletsStore } from '../redux/wallets';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -87,7 +88,8 @@ export const SignTransactionSheet = () => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
   const { params: routeParams } = useRoute<SignTransactionSheetRouteProp>();
-  const { wallets, walletNames } = useWallets();
+  const wallets = useWalletsStore(state => state.wallets);
+  const walletNames = useWalletsStore(state => state.walletNames);
   const { switchToWalletWithAddress } = useSwitchWallet();
   const {
     transactionDetails,

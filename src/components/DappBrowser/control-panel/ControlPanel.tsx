@@ -60,6 +60,7 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useWalletsStore } from '@/state/wallets/wallets';
 
 const PAGES = {
   HOME: 'home',
