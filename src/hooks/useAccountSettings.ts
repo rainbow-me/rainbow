@@ -1,20 +1,21 @@
-import { Address } from 'viem';
+import { NativeCurrencyKey } from '@/entities';
+import { AppState } from '@/redux/store';
+import { supportedNativeCurrencies } from '@/references';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { updateLanguageLocale, Language } from '../languages';
+import { Address } from 'viem';
+import { Language, updateLanguageLocale } from '../languages';
 import {
   settingsChangeAppIcon as changeAppIcon,
   settingsChangeLanguage as changeLanguage,
   settingsChangeNativeCurrency as changeNativeCurrency,
   settingsChangeTestnetsEnabled as changeTestnetsEnabled,
 } from '../redux/settings';
-import { AppState } from '@/redux/store';
-import { supportedNativeCurrencies } from '@/references';
-import { NativeCurrencyKey } from '@/entities';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { useWalletsStore } from '../redux/wallets';
 
 const languageSelector = (state: AppState) => state.settings.language;
 
@@ -34,9 +35,11 @@ export default function useAccountSettings() {
 
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const testnetsEnabled = useConnectedToAnvilStore(state => state.connectedToAnvil);
+  const accountAddress = useWalletsStore(({ accountAddress }) => {
+    return (accountAddress.length ? accountAddress : FALLBACK_ADDRESS ?? accountAddress) as Address;
+  });
 
-  const settingsData = useSelector(({ settings: { accountAddress, appIcon, chainId, network } }: AppState) => ({
-    accountAddress: (accountAddress.length ? accountAddress : FALLBACK_ADDRESS ?? accountAddress) as Address,
+  const settingsData = useSelector(({ settings: { appIcon, chainId, network } }: AppState) => ({
     appIcon,
     chainId,
     language,
@@ -62,6 +65,7 @@ export default function useAccountSettings() {
     settingsChangeLanguage,
     settingsChangeNativeCurrency,
     settingsChangeTestnetsEnabled,
+    accountAddress,
     ...settingsData,
   };
 }
