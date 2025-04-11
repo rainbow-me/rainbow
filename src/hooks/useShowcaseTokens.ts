@@ -1,15 +1,15 @@
+import { AppState } from '@/redux/store';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addShowcaseToken as rawAddShowcaseToken, removeShowcaseToken as rawRemoveShowcaseToken } from '../redux/showcaseTokens';
+import { useWalletsStore } from '../redux/wallets';
 import useOpenFamilies from './useOpenFamilies';
-import useWallets from './useWallets';
 import useWebData from './useWebData';
-import { AppState } from '@/redux/store';
 
 export default function useShowcaseTokens() {
   const dispatch = useDispatch();
   const { updateWebShowcase } = useWebData();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const { updateOpenFamilies } = useOpenFamilies();
 
   const showcaseTokens = useSelector((state: AppState) => state.showcaseTokens.showcaseTokens);

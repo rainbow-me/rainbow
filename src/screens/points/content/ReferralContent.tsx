@@ -1,3 +1,4 @@
+import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations';
 import {
   Bleed,
@@ -16,25 +17,25 @@ import {
 } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { metadataPOSTClient } from '@/graphql';
-import { useAccountAccentColor, useDimensions, useKeyboardHeight, useWallets } from '@/hooks';
+import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { useAccountAccentColor, useDimensions, useKeyboardHeight } from '@/hooks';
+import * as i18n from '@/languages';
+import { RainbowError, logger } from '@/logger';
 import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { usePointsReferralCode } from '@/resources/points';
+import { ActionButton } from '@/screens/points/components/ActionButton';
 import { haptics, watchingAlert } from '@/utils';
 import { delay } from '@/utils/delay';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Keyboard, TextInput } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import * as i18n from '@/languages';
-import Routes from '@/navigation/routesNames';
-import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
-import { RainbowError, logger } from '@/logger';
-import { ActionButton } from '@/screens/points/components/ActionButton';
+import { useWalletsStore } from '../../../redux/wallets';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
-import { usePointsReferralCode } from '@/resources/points';
-import { analytics } from '@/analytics';
-import Clipboard from '@react-native-clipboard/clipboard';
 
 const keyboardSpringConfig = {
   damping: 500,
@@ -59,7 +60,7 @@ export function ReferralContent() {
   const { accentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
   const { goBack, navigate } = useNavigation();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
 
   const label = useForegroundColor('label');
   const labelQuaternary = useForegroundColor('labelQuaternary');

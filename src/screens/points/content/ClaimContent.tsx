@@ -1,24 +1,25 @@
-import React, { useCallback } from 'react';
+import { analytics } from '@/analytics';
+import { ETH_REWARDS, useExperimentalFlag } from '@/config';
 import { Box, Row, Rows, Stack, Text, globalColors, useColorMode } from '@/design-system';
-import { useAccountAccentColor, useWallets } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { useAccountAccentColor } from '@/hooks';
 import * as i18n from '@/languages';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ActionButton } from '@/screens/points/components/ActionButton';
-import { PointsIconAnimation } from '../components/PointsIconAnimation';
 import { watchingAlert } from '@/utils';
-import { POINTS_ROUTES } from '../PointsScreen';
-import { analytics } from '@/analytics';
 import { useFocusEffect } from '@react-navigation/native';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { ETH_REWARDS, useExperimentalFlag } from '@/config';
+import React, { useCallback } from 'react';
+import { useWalletsStore } from '../../../redux/wallets';
+import { PointsIconAnimation } from '../components/PointsIconAnimation';
+import { POINTS_ROUTES } from '../PointsScreen';
 
 export function ClaimContent() {
   const { accentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
   const { rewards_enabled } = useRemoteConfig();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
 
   const rewardsEnabled = useExperimentalFlag(ETH_REWARDS) || rewards_enabled;
 

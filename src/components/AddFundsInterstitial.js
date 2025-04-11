@@ -1,3 +1,15 @@
+import { analytics } from '@/analytics';
+import Divider from '@/components/Divider';
+import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from '@/components/animations';
+import { Icon } from '@/components/icons';
+import { useAccountSettings, useDimensions } from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import ShadowStack from '@/react-native-shadow-stack';
+import { Network } from '@/state/backendNetworks/types';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
+import { openInBrowser } from '@/utils/openInBrowser';
+import { useRoute } from '@react-navigation/native';
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback } from 'react';
@@ -5,22 +17,11 @@ import { View } from 'react-native';
 import networkInfo from '../helpers/networkInfo';
 import showWalletErrorAlert from '../helpers/support';
 import { useNavigation } from '../navigation/Navigation';
+import { useWalletsStore } from '../redux/wallets';
 import { useTheme } from '../theme/ThemeContext';
 import { deviceUtils, magicMemo } from '../utils';
-import Divider from '@/components/Divider';
-import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from '@/components/animations';
-import { Icon } from '@/components/icons';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
-import { analytics } from '@/analytics';
-import { useAccountSettings, useDimensions, useWallets } from '@/hooks';
-import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { padding, position } from '@/styles';
-import ShadowStack from '@/react-native-shadow-stack';
-import { useRoute } from '@react-navigation/native';
-import { Network } from '@/state/backendNetworks/types';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 const ContainerWidth = 261;
 
@@ -174,7 +175,7 @@ const AddFundsInterstitial = ({ network }) => {
   const onAddFromFaucet = accountAddress => openInBrowser(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
   const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
-  const { isDamaged } = useWallets();
+  const isDamaged = useWalletsStore(state => state.getIsDamaged());
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
   const { name: routeName } = useRoute();

@@ -1,10 +1,23 @@
+import { UniqueId } from '@/__swaps__/types/assets';
+import { useExperimentalConfig } from '@/config/experimentalHooks';
+import { NativeCurrencyKey, UniqueAsset } from '@/entities';
+import { useAccountSettings, useCoinListEdited, useCoinListEditOptions } from '@/hooks';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { useNavigation } from '@/navigation';
+import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
+import Routes from '@/navigation/routesNames';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
+import { useTheme } from '@/theme';
+import { useRoute } from '@react-navigation/native';
 import React, { LegacyRef, useCallback, useEffect, useMemo, useRef } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { SetterOrUpdater } from 'recoil';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
-import { BooleanMap } from '../../../../hooks/useCoinListEditOptions';
 import { AssetListType } from '..';
+import { BooleanMap } from '../../../../hooks/useCoinListEditOptions';
+import { useWalletsStore } from '../../../../redux/wallets';
 import { useRecyclerAssetListPosition } from './Contexts';
 import { ExternalENSProfileScrollViewWithRef, ExternalSelectNFTScrollViewWithRef } from './ExternalENSProfileScrollView';
 import ExternalScrollViewWithRef from './ExternalScrollView';
@@ -13,18 +26,6 @@ import rowRenderer from './RowRenderer';
 import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
-import { NativeCurrencyKey, UniqueAsset } from '@/entities';
-import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
-import { useAccountSettings, useCoinListEdited, useCoinListEditOptions, useWallets } from '@/hooks';
-import { useNavigation } from '@/navigation';
-import { useTheme } from '@/theme';
-import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import { useRoute } from '@react-navigation/native';
-import Routes from '@/navigation/routesNames';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { useExperimentalConfig } from '@/config/experimentalHooks';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { UniqueId } from '@/__swaps__/types/assets';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid !== r2.uid;
@@ -67,7 +68,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   const { name } = useRoute();
   const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
 
   const cardIds = useMemo(() => getCardIdsForScreen(name as keyof typeof Routes), [getCardIdsForScreen, name]);
 

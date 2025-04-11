@@ -1,10 +1,10 @@
+import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
+import { enableActionsOnReadOnlyWallet } from '@/config';
 import { AccentColorProvider, Box, Inline, Text, TextShadow } from '@/design-system';
 import { deviceUtils, watchingAlert } from '@/utils';
-import React from 'react';
-import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { debounce } from 'lodash';
-import { useWallets } from '@/hooks';
-import { enableActionsOnReadOnlyWallet } from '@/config';
+import React from 'react';
+import { useWalletsStore } from '../../../../redux/wallets';
 
 const BUTTON_WIDTH = deviceUtils.dimensions.width - 52;
 
@@ -21,7 +21,7 @@ export function ClaimButton({
   biometricIcon: boolean;
   label: string;
 }) {
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
 
   return (
     <ButtonPressAnimation
