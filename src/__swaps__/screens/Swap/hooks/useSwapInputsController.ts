@@ -41,6 +41,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { NavigationSteps } from './useSwapNavigation';
 import { deepEqual } from '@/worklets/comparisons';
 import { analyticsTrackQuoteFailed } from './analyticsTrackQuoteFailed';
+import { useWalletsStore } from '../../../../redux/wallets';
 
 const REMOTE_CONFIG = getRemoteConfig();
 
@@ -466,8 +467,14 @@ export function useSwapInputsController({
     const maxAdjustedInputAmount =
       (isSwappingMaxBalance && internalSelectedInputAsset.value?.maxSwappableAmount) || inputValues.value.inputAmount;
 
+    const currentAddress = useWalletsStore.getState().accountAddress;
+
+    if (!currentAddress) {
+      throw new Error(`No currentAddress`);
+    }
+
     const params = buildQuoteParams({
-      currentAddress: store.getState().settings.accountAddress,
+      currentAddress,
       inputAmount: maxAdjustedInputAmount,
       inputAsset: internalSelectedInputAsset.value,
       lastTypedInput: lastTypedInputParam,
