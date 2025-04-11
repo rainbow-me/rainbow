@@ -1,27 +1,27 @@
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
+import { getOrCreateDeviceId, getWalletContext } from '@/analytics/utils';
+import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { RainbowError, logger } from '@/logger';
+import { PerformanceTracking } from '@/performance/tracking';
+import * as Sentry from '@sentry/react-native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import { Address } from 'viem';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
-import { PerformanceTracking } from '@/performance/tracking';
 import { appStateUpdate } from '../redux/appState';
-import { settingsLoadNetwork, settingsUpdateAccountAddress } from '../redux/settings';
-import { useWalletsStore, walletsLoadState } from '../redux/wallets';
+import { settingsLoadNetwork } from '../redux/settings';
+import { useWalletsStore } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useOpenSmallBalances from './useOpenSmallBalances';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
-import { RainbowError, logger } from '@/logger';
-import { getOrCreateDeviceId, getWalletContext } from '@/analytics/utils';
-import * as Sentry from '@sentry/react-native';
-import { analytics } from '@/analytics';
-import { Address } from 'viem';
-import { event } from '@/analytics/event';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -41,8 +41,6 @@ export default function useInitializeWallet() {
       return 'old';
     }
   };
-
-  const updateAccountAddress = useWalletsStore(state => state.updateAccountAddress);
 
   const initializeWallet = useCallback(
     async (
@@ -68,7 +66,7 @@ export default function useInitializeWallet() {
 
         if (shouldRunMigrations && !seedPhrase) {
           logger.debug('[useInitializeWallet]: shouldRunMigrations && !seedPhrase? => true');
-          await dispatch(walletsLoadState());
+          useWalletsStore.getState().loadWallets();
           logger.debug('[useInitializeWallet]: walletsLoadState call #1');
           await runMigrations();
           logger.debug('[useInitializeWallet]: done with migrations');
@@ -127,7 +125,7 @@ export default function useInitializeWallet() {
           logger.debug('[useInitializeWallet]: loaded global data...');
         }
 
-        walletsStore.updateAccountAddress(walletAddress);
+        useWalletsStore.getState().updateAccountAddress(walletAddress);
         logger.debug('[useInitializeWallet]: updated wallet address', {
           walletAddress,
         });

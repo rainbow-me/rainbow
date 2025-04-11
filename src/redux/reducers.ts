@@ -13,7 +13,6 @@ import keyboardHeight from './keyboardHeight';
 import settings from './settings';
 import showcaseTokens from './showcaseTokens';
 import transactionSignatures from './transactionSignatures';
-import wallets from './wallets';
 
 export default combineReducers({
   appState,
@@ -28,5 +27,4 @@ export default combineReducers({
   settings,
   showcaseTokens,
   transactionSignatures,
-  wallets,
 });

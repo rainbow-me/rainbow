@@ -39,7 +39,7 @@ interface WalletsState {
   wallets: { [id: string]: RainbowWallet } | null;
   updateWallets: (wallets: { [id: string]: RainbowWallet }) => Promise<void>;
 
-  loadWallets: (data: Pick<WalletsState, 'selected' | 'walletNames' | 'wallets'>) => Promise<AllRainbowWallets | void>;
+  loadWallets: () => Promise<AllRainbowWallets | void>;
 
   createAccount: (data: Pick<RainbowWallet, 'id' | 'name' | 'color'>) => void;
 
@@ -55,7 +55,7 @@ interface WalletsState {
 
   setSelectedAddress: (address: string) => void;
 
-  accountAddress: string | null;
+  accountAddress: string;
   updateAccountAddress: (address: string) => void;
 
   refreshWalletENSAvatars: () => Promise<void>;
@@ -95,7 +95,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
     });
   },
 
-  accountAddress: null,
+  accountAddress: '',
   updateAccountAddress: (accountAddress: string) => {
     set({
       accountAddress,

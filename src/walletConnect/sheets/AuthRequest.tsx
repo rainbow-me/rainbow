@@ -1,25 +1,24 @@
-import React from 'react';
 import { useNavigation } from '@react-navigation/native';
+import React from 'react';
 
-import { Box, Text, Separator, BackgroundProvider, AccentColorProvider } from '@/design-system';
+import { Alert } from '@/components/alerts';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
-import { initials } from '@/utils/formatters';
-import { useTheme } from '@/theme';
-import Routes from '@/navigation/routesNames';
-import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from '@/walletConnect/types';
-import { Alert } from '@/components/alerts';
-import * as lang from '@/languages';
+import { InfoAlert } from '@/components/info-alert/info-alert';
+import { AccentColorProvider, BackgroundProvider, Box, Separator, Text } from '@/design-system';
+import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
-import { Verify } from '@walletconnect/types';
+import * as lang from '@/languages';
+import Routes from '@/navigation/routesNames';
 import { useDappMetadata } from '@/resources/metadata/dapp';
-import { DAppStatus } from '@/graphql/__generated__/metadata';
-import { InfoAlert } from '@/components/info-alert/info-alert';
+import { useTheme } from '@/theme';
+import { initials } from '@/utils/formatters';
+import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from '@/walletConnect/types';
 import { WalletKitTypes } from '@reown/walletkit';
+import { Verify } from '@walletconnect/types';
 import { Address } from 'viem';
+import { useWalletsStore } from '../../redux/wallets';
 
 export function AuthRequest({
   requesterMeta,
@@ -30,13 +29,9 @@ export function AuthRequest({
   authenticate: AuthRequestAuthenticateSignature;
   verifiedData?: Verify.Context['verified'];
 }) {
-  const { accountAddress } = useSelector((state: AppState) => ({
-    accountAddress: state.settings.accountAddress,
-  }));
-  const { wallets, walletNames } = useSelector((state: AppState) => ({
-    wallets: state.wallets.wallets,
-    walletNames: state.wallets.walletNames,
-  }));
+  const accountAddress = useWalletsStore(state => state.accountAddress);
+  const wallets = useWalletsStore(state => state.wallets);
+  const walletNames = useWalletsStore(state => state.walletNames);
 
   const { navigate, goBack } = useNavigation();
   const { colors } = useTheme();
