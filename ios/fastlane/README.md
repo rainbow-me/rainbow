@@ -16,11 +16,6 @@ or alternatively using `brew install fastlane`
 
 # Available Actions
 ## iOS
-### ios refresh_dsyms
-```
-fastlane ios refresh_dsyms
-```
-Refresh dSYMs
 ### ios beta
 ```
 fastlane ios beta
