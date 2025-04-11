@@ -18,7 +18,7 @@ import {
 import { Navigation, useNavigation } from '@/navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
-import { setAllWalletsWithIdsAsBackedUp, useWalletsStore } from '@/redux/wallets';
+import { loadWallets, setAllWalletsWithIdsAsBackedUp, useWalletsStore } from '@/redux/wallets';
 import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
@@ -141,7 +141,7 @@ export default function RestoreCloudStep() {
     const pwd = password.trim();
     let filename = selectedBackup.name;
 
-    const prevWalletsState = await useWalletsStore.getState().loadWallets();
+    const prevWalletsState = await loadWallets();
 
     try {
       if (!selectedBackup.name) {
@@ -167,7 +167,7 @@ export default function RestoreCloudStep() {
         }
 
         InteractionManager.runAfterInteractions(async () => {
-          const newWalletsState = await useWalletsStore.getState().loadWallets();
+          const newWalletsState = await loadWallets();
           if (IS_ANDROID && filename) {
             filename = normalizeAndroidBackupFilename(filename);
           }

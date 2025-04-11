@@ -16,7 +16,7 @@ import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
 import { appStateUpdate } from '../redux/appState';
 import { settingsLoadNetwork } from '../redux/settings';
-import { useWalletsStore } from '../redux/wallets';
+import { loadWallets, useWalletsStore } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useLoadAccountData from './useLoadAccountData';
@@ -66,7 +66,7 @@ export default function useInitializeWallet() {
 
         if (shouldRunMigrations && !seedPhrase) {
           logger.debug('[useInitializeWallet]: shouldRunMigrations && !seedPhrase? => true');
-          useWalletsStore.getState().loadWallets();
+          loadWallets();
           logger.debug('[useInitializeWallet]: walletsLoadState call #1');
           await runMigrations();
           logger.debug('[useInitializeWallet]: done with migrations');

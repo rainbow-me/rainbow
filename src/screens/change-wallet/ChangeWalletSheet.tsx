@@ -1,40 +1,40 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { analytics } from '@/analytics';
+import { MenuConfig, MenuItem } from '@/components/DropdownMenu';
+import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
+import { ButtonPressAnimation } from '@/components/animations';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { SheetHandleFixedToTop } from '@/components/sheet';
+import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHintTooltip';
+import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
+import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
+import { EthereumAddress } from '@/entities';
+import { IS_IOS } from '@/env';
+import { removeWalletData } from '@/handlers/localstorage/removeWallet';
+import { addDisplay } from '@/helpers/utilities';
+import WalletTypes from '@/helpers/walletTypes';
+import { useAccountSettings, useInitializeWallet, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
+import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { cleanUpWalletKeys, RainbowWallet, setSelectedWallet } from '@/model/wallet';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
+import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
+import { setSelectedAddress, useWalletsStore } from '@/redux/wallets';
+import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
+import { WalletList } from '@/screens/change-wallet/components/WalletList';
+import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
+import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
+import { useTheme } from '@/theme';
+import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import ConditionalWrap from 'conditional-wrap';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { ButtonPressAnimation } from '@/components/animations';
-import { WalletList } from '@/screens/change-wallet/components/WalletList';
-import { removeWalletData } from '@/handlers/localstorage/removeWallet';
-import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
-import { useNavigation } from '@/navigation/Navigation';
-import WalletTypes from '@/helpers/walletTypes';
-import { analytics } from '@/analytics';
-import { useAccountSettings, useInitializeWallet, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
-import Routes from '@/navigation/routesNames';
-import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
-import { logger, RainbowError } from '@/logger';
-import { useTheme } from '@/theme';
-import { EthereumAddress } from '@/entities';
-import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
-import { IS_IOS } from '@/env';
-import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
-import { RootStackParamList } from '@/navigation/types';
-import { Box, globalColors, HitSlop, Inline, Stack, Text } from '@/design-system';
-import { addDisplay } from '@/helpers/utilities';
-import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-import { SheetHandleFixedToTop } from '@/components/sheet';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { MenuConfig, MenuItem } from '@/components/DropdownMenu';
-import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
-import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHintTooltip';
-import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
-import ConditionalWrap from 'conditional-wrap';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
-import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import { useWalletsStore } from '@/redux/wallets';
 
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 
@@ -249,11 +249,8 @@ export default function ChangeWalletSheet() {
       try {
         setCurrentAddress(address);
         setCurrentSelectedWallet(wallet);
-
-        const { setSelectedWallet, setSelectedAddress } = useWalletsStore.getState();
         setSelectedWallet(wallet);
         setSelectedAddress(address);
-
         remotePromoSheetsStore.setState({ isShown: false });
         // @ts-expect-error initializeWallet is not typed correctly
         initializeWallet(null, null, null, false, false, null, true);
