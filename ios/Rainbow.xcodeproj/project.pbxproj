@@ -849,6 +849,8 @@
 				814FB0AF3D8143D640801344 /* [CP] Embed Pods Frameworks */,
 				494F25E933A363769841462C /* [CP] Copy Pods Resources */,
 				D82F9EF543B5A9AD6D9F7FDC /* [CP-User] [RNFB] Core Configuration */,
+				3CE6B58F2DA8F3EC005C5570 /* 
+Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
@@ -1105,6 +1107,8 @@
 				"$(SRCROOT)/.xcode.env",
 			);
 			name = "Bundle React Native code and images";
+			outputFileListPaths = (
+			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1207,6 +1211,25 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ImageNotification/Pods-ImageNotification-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		3CE6B58F2DA8F3EC005C5570 /* 
+Upload Debug Symbols to Sentry */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "\nUpload Debug Symbols to Sentry";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/sh ../node_modules/@sentry/react-native/scripts/sentry-xcode-debug-files.sh\n";
 		};
 		4869B0361119ED20B818AC14 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
