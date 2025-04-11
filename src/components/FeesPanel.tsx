@@ -16,7 +16,7 @@ import { gasUtils } from '@/utils';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
-import { CurrentBaseFeeTypes, ExplainSheetRouteParams, ExplainSheetType, RootStackParamList } from '@/navigation/types';
+import { ExplainSheetRouteParams, CurrentBaseFeeTypeKey, RootStackParamList } from '@/navigation/types';
 
 const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
@@ -46,8 +46,6 @@ type AlertInfo = {
   type: typeof LOW_ALERT | typeof HIGH_ALERT;
   message: string;
 } | null;
-
-type CurrentBaseFeeTypeKey = keyof CurrentBaseFeeTypes;
 
 export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack, validateGasParams, openCustomOptions }: FeesPanelProps) {
   const { selectedGasFee, currentBlockParams, customGasFeeModifiedByUser, gasFeeParamsBySpeed, updateToCustomGasFee, chainId } = useGas();

@@ -32,7 +32,13 @@ import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasSt
 import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { ExplainSheetParameterMap, ExplainSheetRouteParams, ExplainSheetType } from '@/navigation/types';
+import {
+  CurrentBaseFeeTypeKey,
+  ExplainSheetParameterMap,
+  ExplainSheetParams,
+  ExplainSheetRouteParams,
+  ExplainSheetType,
+} from '@/navigation/types';
 
 const { GAS_TRENDS } = gasUtils;
 
@@ -177,13 +183,13 @@ function CurrentBaseFeeSlot({ baseFee, gasTrend = 'notrend' }: { baseFee?: strin
   const onPressLabel = () => {
     if (!baseFee || !gasTrend) return;
 
-    const specificType = ('currentBaseFee' + upperFirst(gasTrend)) as keyof ExplainSheetParameterMap;
-    const params = {
-      type: specificType,
+    const trendType = ('currentBaseFee' + upperFirst(gasTrend)) as CurrentBaseFeeTypeKey;
+    const params: ExplainSheetParams<typeof trendType> = {
+      type: trendType,
       currentBaseFee: baseFee,
       currentGasTrend: gasTrend,
     };
-    navigate(Routes.EXPLAIN_SHEET, params as ExplainSheetRouteParams);
+    navigate(Routes.EXPLAIN_SHEET, params);
   };
 
   return (

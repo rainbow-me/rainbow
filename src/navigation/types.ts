@@ -105,6 +105,8 @@ export interface CurrentBaseFeeTypes {
   currentBaseFeeNotrend: CurrentBaseFeeParams;
 }
 
+export type CurrentBaseFeeTypeKey = keyof CurrentBaseFeeTypes;
+
 export interface ExplainSheetParameterMap extends CurrentBaseFeeTypes {
   network: { chainId: ChainId };
   op_rewards_airdrop_timing: Record<string, never>;
@@ -168,7 +170,7 @@ export interface ExplainSheetParameterMap extends CurrentBaseFeeTypes {
   token_allocation: { sections: ExplainSheetTokenAllocationSection[] };
 }
 
-type ExplainSheetParams<T extends ExplainSheetType> = ExplainSheetBaseParams & {
+export type ExplainSheetParams<T extends ExplainSheetType> = ExplainSheetBaseParams & {
   type: T;
 } & (ExplainSheetParameterMap[T] extends Record<string, never> ? object : ExplainSheetParameterMap[T]);
 
