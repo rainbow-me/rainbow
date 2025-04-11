@@ -13,25 +13,40 @@ export const numberOfTimesBeforePrompt: {
   [key in ReviewPromptAction]: number;
 } = {
   UserPrompt: 0, // this should never increment
-  TimesLaunchedSinceInstall: 2,
-  SuccessfulFiatToCryptoPurchase: 1,
-  DappConnections: 1,
-  Swap: 1,
-  BridgeToL2: 1,
+  ViewedWalletScreen: 1,
   AddingContact: 1,
   EnsNameSearch: 1,
   EnsNameRegistration: 1,
-  WatchWallet: 1,
-  ImportWallet: 1,
-  CreateWallet: 1,
-  NftFloorPriceVisit: 3,
+  NftFloorPriceVisit: 1,
 };
 
-function createReviewActions() {
-  return Object.values(ReviewPromptAction).map(action => ({
-    id: action,
-    numOfTimesDispatched: 0,
-  }));
+function getReviewActions() {
+  const actions = ls.review.get(['actions']);
+
+  if (!actions) {
+    return Object.values(ReviewPromptAction).map(action => ({
+      id: action,
+      numOfTimesDispatched: 0,
+    }));
+  }
+
+  // Check if we need to add any new actions that weren't previously tracked
+  const existingActionIds = actions.map(action => action.id);
+  const allActionIds = Object.values(ReviewPromptAction);
+
+  // If we have all actions already, return the existing actions
+  if (allActionIds.every(id => existingActionIds.includes(id))) {
+    return actions;
+  }
+
+  const newActions = allActionIds
+    .filter(id => !existingActionIds.includes(id))
+    .map(id => ({
+      id,
+      numOfTimesDispatched: 0,
+    }));
+
+  return [...actions, ...newActions];
 }
 
 export async function handleReviewPromptAction(action: ReviewPromptAction) {
@@ -46,7 +61,7 @@ export async function handleReviewPromptAction(action: ReviewPromptAction) {
     return;
   }
 
-  const actions = ls.review.get(['actions']) || createReviewActions();
+  const actions = getReviewActions();
   const actionToDispatch = actions.find(a => a.id === action);
   if (!actionToDispatch) {
     logger.warn(`[reviewAlert]: actionToDispatch not found: ${action}`);

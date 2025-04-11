@@ -37,18 +37,11 @@ export type Account = {
 
 export enum ReviewPromptAction {
   UserPrompt = 'UserPrompt', // this is a special action that we use if the user manually prompts for review
-  TimesLaunchedSinceInstall = 'TimesLaunchedSinceInstall',
-  SuccessfulFiatToCryptoPurchase = 'SuccessfulFiatToCryptoPurchase',
-  DappConnections = 'DappConnections',
-  Swap = 'Swap',
-  BridgeToL2 = 'BridgeToL2',
   AddingContact = 'AddingContact',
   EnsNameSearch = 'EnsNameSearch',
   EnsNameRegistration = 'EnsNameRegistration',
-  WatchWallet = 'WatchWallet',
   NftFloorPriceVisit = 'NftFloorPriceVisit',
-  ImportWallet = 'ImportWallet',
-  CreateWallet = 'CreateWallet',
+  ViewedWalletScreen = 'ViewedWalletScreen',
 }
 
 export type Action = {
@@ -63,11 +56,6 @@ export type Action = {
  * NOTE: if a user has already reviewed, we don't want to prompt them again
  */
 export type Review = {
-  // TODO: don't need these anymore, do I have to run a migration to remove them?
-  // initialized: boolean;
-  // hasReviewed: boolean;
-  // timeOfLastPrompt: number;
-  // numberOfTimesPrompted: number;
   actions: Action[];
   promptTimestamps: number[];
 };
