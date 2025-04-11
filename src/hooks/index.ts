@@ -86,7 +86,6 @@ export { default as useUserAccounts } from './useUserAccounts';
 export { default as useWalletBalances } from './useWalletBalances';
 export { default as useWalletCloudBackup } from './useWalletCloudBackup';
 export { default as useWalletManualBackup } from './useWalletManualBackup';
-export { default as useWallets } from './useWallets';
 export { default as useWalletSectionsData } from './useWalletSectionsData';
 export { default as useWalletsWithBalancesAndNames } from './useWalletsWithBalancesAndNames';
 export { default as useWatchWallet } from './useWatchWallet';

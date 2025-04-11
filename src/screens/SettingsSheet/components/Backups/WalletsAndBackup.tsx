@@ -152,7 +152,7 @@ export const WalletsAndBackup = () => {
         // need to check if we have any wallets to back up first.
         if (IS_ANDROID) {
           const currentBackups = backupsStore.getState().backups;
-          if (checkLocalWalletsForBackupStatus(wallets, currentBackups).allBackedUp) {
+          if (checkLocalWalletsForBackupStatus(currentBackups).allBackedUp) {
             return;
           }
         }

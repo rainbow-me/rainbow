@@ -1,15 +1,15 @@
-import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import WalletTypes from '@/helpers/walletTypes';
-import { useWallets } from '@/hooks';
-import { isEmpty } from 'lodash';
-import { BackupFile, CloudBackups, parseTimestampFromFilename } from '@/model/backup';
-import * as i18n from '@/languages';
-import { cloudPlatform } from '@/utils/platform';
-import { backupsStore, CloudBackupState } from '@/state/backups/backups';
-import { RainbowWallet } from '@/model/wallet';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import WalletTypes from '@/helpers/walletTypes';
+import * as i18n from '@/languages';
+import { BackupFile, CloudBackups, parseTimestampFromFilename } from '@/model/backup';
+import { RainbowWallet } from '@/model/wallet';
+import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+import { cloudPlatform } from '@/utils/platform';
 import { format } from 'date-fns';
+import { isEmpty } from 'lodash';
+import { getWallets } from '../../redux/wallets';
 
 type WalletBackupStatus = {
   allBackedUp: boolean;
@@ -17,15 +17,14 @@ type WalletBackupStatus = {
   canBeBackedUp: boolean;
 };
 
-export const hasManuallyBackedUpWallet = (wallets: ReturnType<typeof useWallets>['wallets']) => {
+export const hasManuallyBackedUpWallet = () => {
+  const wallets = getWallets();
   if (!wallets) return false;
   return Object.values(wallets).some(wallet => wallet.backupType === WalletBackupTypes.manual);
 };
 
-export const checkLocalWalletsForBackupStatus = (
-  wallets: ReturnType<typeof useWallets>['wallets'],
-  backups: CloudBackups
-): WalletBackupStatus => {
+export const checkLocalWalletsForBackupStatus = (backups: CloudBackups): WalletBackupStatus => {
+  const wallets = getWallets();
   if (!wallets || isEmpty(wallets)) {
     return {
       allBackedUp: false,
