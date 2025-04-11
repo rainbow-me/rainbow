@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import lang from 'i18n-js';
 import * as React from 'react';
@@ -19,6 +20,7 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { logger, RainbowError } from '@/logger';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -193,6 +195,7 @@ function SendButton() {
   const { navigate } = useNavigation();
 
   const handlePress = React.useCallback(() => {
+    Sentry.nativeCrash();
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       analytics.track(analytics.event.navigationSend, { category: 'home screen' });
 
@@ -215,6 +218,7 @@ export function CopyButton() {
   const { isDamaged } = useWallets();
 
   const handlePressCopy = React.useCallback(() => {
+    logger.error(new RainbowError(`[test error] test test test`));
     if (isDamaged) {
       showWalletErrorAlert();
       return;
