@@ -23,6 +23,7 @@ import { Coinbase } from '@/screens/AddCash/providers/Coinbase';
 import { Moonpay } from '@/screens/AddCash/providers/Moonpay';
 import { FiatProviderName } from '@/entities/f2c';
 import * as lang from '@/languages';
+import { useWalletsStore } from '../../redux/wallets';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = StatusBar.currentHeight || 0;
@@ -36,9 +37,7 @@ const providerComponents = {
 export function AddCashSheet() {
   const { isNarrowPhone } = useDimensions();
   const insets = useSafeAreaInsets();
-  const { accountAddress } = useSelector(({ settings }: AppState) => ({
-    accountAddress: settings.accountAddress,
-  }));
+  const accountAddress = useWalletsStore(state => state.accountAddress);
   const borderColor = useForegroundColor('separatorTertiary');
   const skeletonColor = useBackgroundColor('surfaceSecondaryElevated');
   const sheetHeight = IS_IOS ? deviceHeight - insets.top : deviceHeight + statusBarHeight;

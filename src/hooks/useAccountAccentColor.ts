@@ -44,7 +44,7 @@ export function useAccountAccentColor() {
     return getHighContrastColor(accentColor, isDarkMode);
   }, [accentColor, isDarkMode]);
 
-  const hasLoaded = accountImage || accountSymbol;
+  const hasLoaded = Boolean(accountImage || accountSymbol);
 
   return {
     accentColor,

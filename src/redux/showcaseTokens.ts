@@ -1,11 +1,12 @@
+import { getShowcaseTokens, getWebDataEnabled, saveShowcaseTokens, saveWebDataEnabled } from '@/handlers/localstorage/accountLocal';
+import WalletTypes from '@/helpers/walletTypes';
+import { Network } from '@/state/backendNetworks/types';
 import produce from 'immer';
 import without from 'lodash/without';
 import { Dispatch } from 'redux';
 import { getPreference } from '../model/preferences';
 import { AppGetState } from './store';
-import { getShowcaseTokens, getWebDataEnabled, saveShowcaseTokens, saveWebDataEnabled } from '@/handlers/localstorage/accountLocal';
-import WalletTypes from '@/helpers/walletTypes';
-import { Network } from '@/state/backendNetworks/types';
+import { getAccountAddress, getIsReadOnlyWallet, getSelectedWallet } from './wallets';
 
 // -- Constants --------------------------------------- //
 
@@ -105,7 +106,8 @@ interface ShowcaseTokensUpdateAction {
 export const showcaseTokensLoadState =
   () => async (dispatch: Dispatch<ShowcaseTokensLoadSuccessAction | ShowcaseTokensLoadFailureAction>, getState: AppGetState) => {
     try {
-      const { accountAddress, network } = getState().settings;
+      const accountAddress = getAccountAddress();
+      const { network } = getState().settings;
 
       const showcaseTokens = await getShowcaseTokens(accountAddress, network);
       const pref = await getWebDataEnabled(accountAddress, network);
@@ -129,8 +131,9 @@ export const showcaseTokensLoadState =
 export const showcaseTokensUpdateStateFromWeb =
   () => async (dispatch: Dispatch<ShowcaseTokensFetchSuccessAction | ShowcaseTokensFetchFailureAction>, getState: AppGetState) => {
     try {
-      const isReadOnlyWallet = getState().wallets.selected?.type === WalletTypes.readOnly;
-      const { accountAddress, network } = getState().settings;
+      const isReadOnlyWallet = getIsReadOnlyWallet();
+      const accountAddress = getAccountAddress();
+      const { network } = getState().settings;
 
       // if web data is enabled, fetch values from cloud
       const pref = await getWebDataEnabled(accountAddress, network);
@@ -158,11 +161,12 @@ export const showcaseTokensUpdateStateFromWeb =
  * @param tokenId The new token ID.
  */
 export const addShowcaseToken = (tokenId: string) => (dispatch: Dispatch<ShowcaseTokensUpdateAction>, getState: AppGetState) => {
-  const account = getState().wallets.selected!;
+  const account = getSelectedWallet();
 
-  if (account.type === WalletTypes.readOnly) return;
+  if (!account || account.type === WalletTypes.readOnly) return;
 
-  const { accountAddress, network } = getState().settings;
+  const accountAddress = getAccountAddress();
+  const { network } = getState().settings;
   const { showcaseTokens = [] } = getState().showcaseTokens;
   const updatedShowcaseTokens = showcaseTokens.concat(tokenId);
   dispatch({
@@ -178,11 +182,12 @@ export const addShowcaseToken = (tokenId: string) => (dispatch: Dispatch<Showcas
  * @param tokenId The token ID to remove.
  */
 export const removeShowcaseToken = (tokenId: string) => (dispatch: Dispatch<ShowcaseTokensUpdateAction>, getState: AppGetState) => {
-  const account = getState().wallets.selected!;
+  const account = getSelectedWallet();
 
-  if (account.type === WalletTypes.readOnly) return;
+  if (!account || account.type === WalletTypes.readOnly) return;
 
-  const { accountAddress, network } = getState().settings;
+  const accountAddress = getAccountAddress();
+  const { network } = getState().settings;
   const { showcaseTokens } = getState().showcaseTokens;
 
   const updatedShowcaseTokens = without(showcaseTokens, tokenId);

@@ -1,38 +1,38 @@
-import URL from 'url-parse';
 import { parseUri } from '@walletconnect/utils';
+import URL from 'url-parse';
 
-import store from '@/redux/store';
-import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { GasSpeed } from '@/__swaps__/types/gas';
+import { analytics } from '@/analytics';
 import { showWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { defaultConfig } from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
-import { delay } from '@/utils/delay';
-import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
-import { Navigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueId } from '@/utils/ethereumUtils';
-import { logger } from '@/logger';
-import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
-import { analytics } from '@/analytics';
 import { FiatProviderName } from '@/entities/f2c';
-import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
-import { queryClient } from '@/react-query';
-import { pointsReferralCodeQueryKey } from '@/resources/points';
-import { useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
+import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
+import { logger } from '@/logger';
+import { Navigation } from '@/navigation';
 import { InitialRoute } from '@/navigation/initialRoute';
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { GasSpeed } from '@/__swaps__/types/gas';
+import Routes from '@/navigation/routesNames';
+import { queryClient } from '@/react-query';
+import store from '@/redux/store';
+import { pointsReferralCodeQueryKey } from '@/resources/points';
+import { delay } from '@/utils/delay';
+import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueId } from '@/utils/ethereumUtils';
+import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
+import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
+import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
+import { useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 
-import { parseSearchAsset } from '@/__swaps__/utils/assets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import { clamp } from '@/__swaps__/utils/swaps';
-import { isAddress } from 'viem';
 import { navigateToSwaps, SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { setSelectedAddress, walletsSetSelected } from '@/redux/wallets';
+import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { parseSearchAsset } from '@/__swaps__/utils/assets';
+import { clamp } from '@/__swaps__/utils/swaps';
 import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { ChainId } from '@/state/backendNetworks/types';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { isAddress } from 'viem';
+import { setSelectedWallet } from '../model/wallet';
+import { getWallets, setSelectedAddress } from '../redux/wallets';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
   url: string;
@@ -382,12 +382,13 @@ function isValidGasSpeed(s: string | undefined): s is GasSpeed {
 async function setFromWallet(address: string | undefined) {
   if (!address || !isAddress(address)) return;
 
-  const userWallets = store.getState().wallets.wallets!;
+  const userWallets = getWallets()!;
   const wallet = Object.values(userWallets).find(w => w.addresses.some(a => a.address === address));
 
   if (!wallet) return;
 
-  await Promise.all([store.dispatch(walletsSetSelected(wallet)), store.dispatch(setSelectedAddress(address))]);
+  setSelectedWallet(wallet);
+  setSelectedAddress(address);
 }
 
 function isNumericString(value: string | undefined): value is string {

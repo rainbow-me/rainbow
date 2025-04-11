@@ -41,7 +41,10 @@ export default function useUpdateEmoji() {
 
       setSelectedWallet(newWallets[walletId]);
       updateWallets(newWallets);
-      updateWebProfile(accountAddress, name, color !== undefined && colors.avatarBackgrounds[color || accountColor]);
+      const nextColor = color !== undefined ? colors.avatarBackgrounds[color || accountColor] : undefined;
+      if (nextColor) {
+        updateWebProfile(accountAddress, name, nextColor);
+      }
     },
     [accountAddress, accountColor, colors.avatarBackgrounds, selectedWallet, updateWebProfile, wallets]
   );
