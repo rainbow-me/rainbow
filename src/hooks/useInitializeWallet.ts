@@ -16,7 +16,7 @@ import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
 import { appStateUpdate } from '../redux/appState';
 import { settingsLoadNetwork } from '../redux/settings';
-import { loadWallets, useWalletsStore } from '../redux/wallets';
+import { loadWallets, updateAccountAddress } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useLoadAccountData from './useLoadAccountData';
@@ -108,7 +108,7 @@ export default function useInitializeWallet() {
 
         if (seedPhrase || isNew) {
           logger.debug('[useInitializeWallet]: walletsLoadState call #2');
-          await dispatch(walletsLoadState());
+          await loadWallets();
         }
 
         if (isNil(walletAddress)) {
@@ -125,7 +125,7 @@ export default function useInitializeWallet() {
           logger.debug('[useInitializeWallet]: loaded global data...');
         }
 
-        useWalletsStore.getState().updateAccountAddress(walletAddress);
+        updateAccountAddress(walletAddress);
         logger.debug('[useInitializeWallet]: updated wallet address', {
           walletAddress,
         });

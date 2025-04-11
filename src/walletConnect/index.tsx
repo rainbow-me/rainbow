@@ -1,36 +1,30 @@
-import { addNewWalletConnectRequest, removeWalletConnectRequest } from '@/state/walletConnectRequests';
-import React from 'react';
-import { InteractionManager } from 'react-native';
-import { SignClientTypes, SessionTypes } from '@walletconnect/types';
-import { getSdkError, parseUri, buildApprovedNamespaces } from '@walletconnect/utils';
-import { WC_PROJECT_ID } from 'react-native-dotenv';
-import Minimizer from 'react-native-minimizer';
-import { isAddress, getAddress } from '@ethersproject/address';
-import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
-import { gretch } from 'gretchen';
-import messaging from '@react-native-firebase/messaging';
-import WalletConnectCore, { Core } from '@walletconnect/core';
-import { WalletKit, WalletKitTypes, IWalletKit } from '@reown/walletkit';
-import { isHexString } from '@ethersproject/bytes';
-import { toUtf8String } from '@ethersproject/strings';
+import { analytics } from '@/analytics';
+import Alert from '@/components/alerts/Alert';
+import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
+import { Box } from '@/design-system';
+import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
+import { DAppStatus } from '@/graphql/__generated__/metadata';
+import { events } from '@/handlers/appEvents';
+import { maybeSignUri } from '@/handlers/imgix';
+import { getProvider } from '@/handlers/web3';
+import WalletTypes from '@/helpers/walletTypes';
+import * as lang from '@/languages';
 import { logger, RainbowError } from '@/logger';
+import { loadWallet } from '@/model/wallet';
 import Navigation, { getActiveRoute } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { analytics } from '@/analytics';
-import { maybeSignUri } from '@/handlers/imgix';
-import Alert from '@/components/alerts/Alert';
-import * as lang from '@/languages';
-import store from '@/redux/store';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import WalletTypes from '@/helpers/walletTypes';
-import { getRequestDisplayDetails } from '@/parsers/requests';
-import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
-import { IS_DEV, IS_ANDROID, IS_IOS } from '@/env';
-import { loadWallet } from '@/model/wallet';
-import * as portal from '@/screens/Portal';
+import { getRequestDisplayDetails } from '@/parsers/requests';
+import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '@/performance/tracking';
+import store from '@/redux/store';
+import { fetchDappMetadata } from '@/resources/metadata/dapp';
 import * as explain from '@/screens/Explain';
-import { Box } from '@/design-system';
+import * as portal from '@/screens/Portal';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { addNewWalletConnectRequest, removeWalletConnectRequest } from '@/state/walletConnectRequests';
+import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
+import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import {
   AuthRequestAuthenticateSignature,
   AuthRequestResponseErrorReason,
@@ -39,16 +33,22 @@ import {
   WalletconnectApprovalSheetRouteParams,
   WalletconnectRequestData,
 } from '@/walletConnect/types';
-import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
-import { getProvider } from '@/handlers/web3';
+import { getAddress, isAddress } from '@ethersproject/address';
+import { isHexString } from '@ethersproject/bytes';
+import { toUtf8String } from '@ethersproject/strings';
+import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
+import messaging from '@react-native-firebase/messaging';
+import { IWalletKit, WalletKit, WalletKitTypes } from '@reown/walletkit';
+import WalletConnectCore, { Core } from '@walletconnect/core';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
+import { buildApprovedNamespaces, getSdkError, parseUri } from '@walletconnect/utils';
+import { gretch } from 'gretchen';
 import { uniq } from 'lodash';
-import { fetchDappMetadata } from '@/resources/metadata/dapp';
-import { DAppStatus } from '@/graphql/__generated__/metadata';
-import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
-import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '@/performance/tracking';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
+import React from 'react';
+import { InteractionManager } from 'react-native';
+import { WC_PROJECT_ID } from 'react-native-dotenv';
+import Minimizer from 'react-native-minimizer';
+import { getWallets, getWalletWithAccount } from '../redux/wallets';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
@@ -633,7 +633,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
       return;
     }
 
-    const allWallets = store.getState().wallets.wallets;
+    const allWallets = getWallets();
 
     logger.debug(
       `[walletConnect]: session_request method is supported`,
@@ -675,7 +675,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
         return;
       }
 
-      const selectedWallet = findWalletWithAccount(allWallets, address);
+      const selectedWallet = getWalletWithAccount(address);
 
       const isReadOnly = selectedWallet?.type === WalletTypes.readOnly;
       if (!selectedWallet || isReadOnly) {

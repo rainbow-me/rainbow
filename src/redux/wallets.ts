@@ -601,6 +601,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
 }));
 
 export const getAccountAddress = () => useWalletsStore.getState().accountAddress;
+export const getWallets = () => useWalletsStore.getState().wallets;
 
 // export static functions
 export const {
