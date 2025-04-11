@@ -1,17 +1,17 @@
-import React, { useCallback, useMemo } from 'react';
-import { ClaimPanel } from '../../shared/components/ClaimPanel';
-import { ClaimValueDisplay } from '../../shared/components/ClaimValueDisplay';
-import { ClaimButton } from '../../shared/components/ClaimButton';
-import { useSponsoredClaimableContext } from '../context/SponsoredClaimableContext';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
-import { useWallets } from '@/hooks';
 import { watchingAlert } from '@/utils';
+import React, { useCallback, useMemo } from 'react';
+import { useWalletsStore } from '../../../../redux/wallets';
+import { ClaimButton } from '../../shared/components/ClaimButton';
+import { ClaimPanel } from '../../shared/components/ClaimPanel';
+import { ClaimValueDisplay } from '../../shared/components/ClaimValueDisplay';
+import { useSponsoredClaimableContext } from '../context/SponsoredClaimableContext';
 
 export function SponsoredClaimableFlow() {
   const { goBack } = useNavigation();
   const { claim, claimable, claimStatus, setClaimStatus } = useSponsoredClaimableContext();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
 
   const shouldShowClaimText = claimStatus === 'ready';
   const buttonLabel = useMemo(() => {
