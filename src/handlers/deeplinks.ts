@@ -30,7 +30,7 @@ import { clamp } from '@/__swaps__/utils/swaps';
 import { isAddress } from 'viem';
 import { navigateToSwaps, SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
+import { setSelectedAddress, walletsSetSelected } from '@/redux/wallets';
 import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { ChainId } from '@/state/backendNetworks/types';
 
@@ -387,7 +387,7 @@ async function setFromWallet(address: string | undefined) {
 
   if (!wallet) return;
 
-  await Promise.all([store.dispatch(walletsSetSelected(wallet)), store.dispatch(addressSetSelected(address))]);
+  await Promise.all([store.dispatch(walletsSetSelected(wallet)), store.dispatch(setSelectedAddress(address))]);
 }
 
 function isNumericString(value: string | undefined): value is string {

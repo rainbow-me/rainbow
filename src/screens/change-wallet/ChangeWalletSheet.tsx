@@ -9,7 +9,7 @@ import { WalletList } from '@/screens/change-wallet/components/WalletList';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
-import { addressSetSelected, walletsSetSelected, walletsUpdate } from '@/redux/wallets';
+import { setSelectedAddress, walletsSetSelected, walletsUpdate } from '@/redux/wallets';
 import WalletTypes from '@/helpers/walletTypes';
 import { analytics } from '@/analytics';
 import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
@@ -251,7 +251,7 @@ export default function ChangeWalletSheet() {
         setCurrentAddress(address);
         setCurrentSelectedWallet(wallet);
         const p1 = dispatch(walletsSetSelected(wallet));
-        const p2 = dispatch(addressSetSelected(address));
+        const p2 = dispatch(setSelectedAddress(address));
         await Promise.all([p1, p2]);
         remotePromoSheetsStore.setState({ isShown: false });
         // @ts-expect-error initializeWallet is not typed correctly

@@ -53,7 +53,7 @@ interface WalletsState {
 
   clearAllWalletsBackupStatus: () => void;
 
-  addressSetSelected: (address: string) => void;
+  setSelectedAddress: (address: string) => void;
 
   accountAddress: string | null;
   updateAccountAddress: (address: string) => void;
@@ -307,7 +307,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
     });
   },
 
-  addressSetSelected: (address: string) => {
+  setSelectedAddress: (address: string) => {
     saveAddress(address);
   },
 
