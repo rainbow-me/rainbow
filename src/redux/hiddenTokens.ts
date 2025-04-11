@@ -1,9 +1,9 @@
+import { getHiddenTokens, getWebDataEnabled, saveHiddenTokens } from '@/handlers/localstorage/accountLocal';
 import { concat, without } from 'lodash';
 import { Dispatch } from 'redux';
 import { getPreference } from '../model/preferences';
 import { AppGetState } from './store';
-import { getHiddenTokens, getWebDataEnabled, saveHiddenTokens } from '@/handlers/localstorage/accountLocal';
-import WalletTypes from '@/helpers/walletTypes';
+import { useWalletsStore } from './wallets';
 
 const HIDDEN_TOKENS_LOAD_SUCCESS = 'hiddenTokens/HIDDEN_TOKENS_LOAD_SUCCESS';
 const HIDDEN_TOKENS_FETCH_SUCCESS = 'hiddenTokens/HIDDEN_TOKENS_FETCH_SUCCESS';
@@ -84,7 +84,8 @@ interface HiddenTokensUpdateAction {
 export const hiddenTokensLoadState =
   () => async (dispatch: Dispatch<HiddenTokensLoadSuccessAction | HiddenTokensLoadFailureAction>, getState: AppGetState) => {
     try {
-      const { accountAddress, network } = getState().settings;
+      const { network } = getState().settings;
+      const { accountAddress } = useWalletsStore.getState();
 
       const hiddenTokens = await getHiddenTokens(accountAddress, network);
 
@@ -106,8 +107,9 @@ export const hiddenTokensLoadState =
 export const hiddenTokensUpdateStateFromWeb =
   () => async (dispatch: Dispatch<HiddenTokensFetchSuccessAction | HiddenTokensFetchFailureAction>, getState: AppGetState) => {
     try {
-      const isReadOnlyWallet = getState().wallets.selected?.type === WalletTypes.readOnly;
-      const { accountAddress, network } = getState().settings;
+      const { accountAddress, getIsReadOnlyWallet } = useWalletsStore.getState();
+      const isReadOnlyWallet = getIsReadOnlyWallet();
+      const { network } = getState().settings;
 
       // if web data is enabled, fetch values from cloud
       const pref = await getWebDataEnabled(accountAddress, network);
@@ -134,11 +136,11 @@ export const hiddenTokensUpdateStateFromWeb =
  * @param tokenId The new token ID.
  */
 export const addHiddenToken = (tokenId: string) => (dispatch: Dispatch<HiddenTokensUpdateAction>, getState: AppGetState) => {
-  const account = getState().wallets.selected!;
+  const { getIsReadOnlyWallet, accountAddress } = useWalletsStore.getState();
 
-  if (account.type === WalletTypes.readOnly) return;
+  if (getIsReadOnlyWallet()) return;
 
-  const { accountAddress, network } = getState().settings;
+  const { network } = getState().settings;
   const { hiddenTokens } = getState().hiddenTokens;
   const updatedHiddenTokens = concat(hiddenTokens, tokenId);
   dispatch({
@@ -156,11 +158,11 @@ export const addHiddenToken = (tokenId: string) => (dispatch: Dispatch<HiddenTok
  * @param tokenId The token ID to remove.
  */
 export const removeHiddenToken = (tokenId: string) => (dispatch: Dispatch<HiddenTokensUpdateAction>, getState: AppGetState) => {
-  const account = getState().wallets.selected!;
+  const { getIsReadOnlyWallet, accountAddress } = useWalletsStore.getState();
 
-  if (account.type === WalletTypes.readOnly) return;
+  if (getIsReadOnlyWallet()) return;
 
-  const { accountAddress, network } = getState().settings;
+  const { network } = getState().settings;
   const { hiddenTokens } = getState().hiddenTokens;
 
   const updatedHiddenTokens = without(hiddenTokens, tokenId);
