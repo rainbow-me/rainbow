@@ -10,14 +10,13 @@ import { time } from '@/utils';
 import delay from 'delay';
 import { useCallback, useMemo, useState } from 'react';
 import { Address } from 'viem';
-import { refreshWalletNames, useWalletsStore } from '../redux/wallets';
+import { refreshWalletENSAvatars, refreshWalletNames, useWalletsStore } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 
 export default function useRefreshAccountData() {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const refreshWalletENSAvatars = useWalletsStore(state => state.refreshWalletENSAvatars);
   const wallets = useWalletsStore(state => state.wallets);
 
   const allAddresses = useMemo(
@@ -49,7 +48,7 @@ export default function useRefreshAccountData() {
       logger.error(new RainbowError(`[useRefreshAccountData]: Error refreshing data: ${error}`));
       throw error;
     }
-  }, [accountAddress, allAddresses, nativeCurrency, profilesEnabled, refreshWalletENSAvatars]);
+  }, [accountAddress, allAddresses, nativeCurrency, profilesEnabled]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;
