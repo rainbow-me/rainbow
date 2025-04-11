@@ -293,6 +293,9 @@ export const event = {
 
   // discover screen
   discoverTapSearch: 'Tapped Search',
+
+  // app store review
+  appStoreReviewPrompted: 'app_store_review.prompted',
 } as const;
 
 export type QuickBuyAnalyticalData =
@@ -1076,4 +1079,8 @@ export type EventProperties = {
     appIcon: string;
   };
   [event.tappedImportButton]: undefined;
+  [event.appStoreReviewPrompted]: {
+    action: string;
+    promptCount: number;
+  };
 };
