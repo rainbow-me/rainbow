@@ -1,10 +1,11 @@
-import { useCallback } from 'react';
-import useAccountProfile from './useAccountProfile';
-import useAccountSettings from './useAccountSettings';
-import { useWebData } from './index';
-import { useWalletsStore } from '@/redux/wallets';
+import { updateWallets, useWalletsStore } from '@/redux/wallets';
 import { useTheme } from '@/theme';
 import { getNextEmojiWithColor } from '@/utils/profileUtils';
+import { useCallback } from 'react';
+import { setSelectedWallet } from '../model/wallet';
+import { useWebData } from './index';
+import useAccountProfile from './useAccountProfile';
+import useAccountSettings from './useAccountSettings';
 
 export default function useUpdateEmoji() {
   const { accountColor, accountName } = useAccountProfile();
@@ -38,10 +39,9 @@ export default function useUpdateEmoji() {
         },
       };
 
-      const { setSelectedWallet, updateWallets } = useWalletsStore.getState();
       setSelectedWallet(newWallets[walletId]);
       updateWallets(newWallets);
-      updateWebProfile(accountAddress, name, (color !== undefined && colors.avatarBackgrounds[color]) || accountColor);
+      updateWebProfile(accountAddress, name, color !== undefined && colors.avatarBackgrounds[color || accountColor]);
     },
     [accountAddress, accountColor, colors.avatarBackgrounds, selectedWallet, updateWebProfile, wallets]
   );

@@ -1,7 +1,7 @@
-import { useCallback, useMemo } from 'react';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
-import { useWalletsStore } from '@/redux/wallets';
 import { RainbowAccount, RainbowWallet } from '@/model/wallet';
+import { updateWallets, useWalletsStore } from '@/redux/wallets';
+import { useCallback, useMemo } from 'react';
 
 export default function useDeleteWallet({ address: primaryAddress }: { address?: string }) {
   const wallets = useWalletsStore(state => state.wallets);
@@ -31,8 +31,6 @@ export default function useDeleteWallet({ address: primaryAddress }: { address?:
     // If there are no visible wallets
     // then delete the wallet
     const visibleAddresses = newWallets[watchingWalletId].addresses.filter((account: { visible: boolean }) => account.visible);
-
-    const { updateWallets } = useWalletsStore.getState();
 
     if (visibleAddresses.length === 0) {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete

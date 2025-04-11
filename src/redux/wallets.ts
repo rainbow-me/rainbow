@@ -620,6 +620,5 @@ export const {
   setSelectedWallet,
   setWalletBackedUp,
   updateAccountAddress,
-  updateWalletNames,
   updateWallets,
 } = useWalletsStore.getState();
