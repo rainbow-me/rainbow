@@ -19,6 +19,10 @@ import { GasTrend } from '@/__swaps__/utils/meteorology';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { Checkbox } from '@/screens/SendConfirmationSheet';
 import { ENSProfile } from '@/entities/ens';
+import { SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { BackupFile } from '@/model/backup';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { UserAssetFilter } from '@/__swaps__/types/assets';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -109,8 +113,8 @@ export interface ExplainSheetParameterMap extends CurrentBaseFeeTypes {
   op_rewards_swap: { percent?: number };
   op_rewards_position: Record<string, never>;
   output_disabled: {
-    inputToken: string;
-    outputToken: string;
+    inputToken: string | undefined;
+    outputToken: string | undefined;
     isCrosschainSwap?: boolean;
     isBridgeSwap?: boolean;
     fromChainId?: ChainId;
@@ -190,7 +194,7 @@ export type RootStackParamList = {
   [Routes.CHANGE_WALLET_SHEET]: {
     watchOnly?: boolean;
     currentAccountAddress?: string;
-    onChangeWallet?: (address: string | Address, wallet?: RainbowWallet) => void;
+    onChangeWallet?: (address: Address, wallet: RainbowWallet) => void;
     hideReadOnlyWallets?: boolean;
   };
   [Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET]: {
@@ -204,11 +208,12 @@ export type RootStackParamList = {
     type: 'speed_up' | 'cancel';
   };
   [Routes.BACKUP_SHEET]: {
-    nativeScreen: boolean;
+    nativeScreen?: boolean;
+    selectedBackup?: BackupFile;
     step: string;
-    walletId: string;
-    onSuccess: (password: string) => Promise<void>;
-    onCancel: () => Promise<void>;
+    walletId?: string;
+    onSuccess?: (password: string) => Promise<void>;
+    onCancel?: () => Promise<void>;
   };
   [Routes.BACKUP_SCREEN]: {
     nativeScreen: boolean;
@@ -223,7 +228,7 @@ export type RootStackParamList = {
       nativeAmount: string;
     };
     asset: ParsedAddressAsset | UniqueAsset;
-    callback: (...args: unknown[]) => Promise<boolean>;
+    callback: (...args: any[]) => Promise<boolean | undefined>;
     checkboxes: Checkbox[];
     ensProfile: ENSProfile;
     isENS: boolean;
@@ -242,21 +247,30 @@ export type RootStackParamList = {
   };
   [Routes.PROFILE_SCREEN]: undefined;
   [Routes.WELCOME_SCREEN]: undefined;
-  [Routes.ENS_CONFIRM_REGISTER_SHEET]: undefined;
+  [Routes.ENS_CONFIRM_REGISTER_SHEET]: {
+    externalAvatarUrl?: string | null;
+    longFormHeight?: number;
+    mode?: REGISTRATION_MODES;
+    name?: string;
+    ensName?: string;
+  };
   [Routes.PROFILE_SHEET]: {
     address: string;
     fromRoute: string;
   };
   [Routes.REGISTER_ENS_NAVIGATOR]: {
-    ensName: string;
+    ensName?: string;
     mode: REGISTRATION_MODES;
+    autoFocusKey?: string;
+    externalAvatarUrl?: string | null;
   };
   [Routes.REMOTE_PROMO_SHEET]: CampaignCheckResult;
   [Routes.CHECK_IDENTIFIER_SCREEN]: {
+    step: (typeof walletBackupStepTypes)[keyof typeof walletBackupStepTypes];
     onSuccess: () => Promise<void>;
     onFailure: () => Promise<void>;
   };
-  [Routes.SWAP]: {
+  [Routes.SWAP]: SwapsParams & {
     action?: 'open_swap_settings';
   };
   [Routes.CLAIM_CLAIMABLE_PANEL]: {
@@ -269,9 +283,15 @@ export type RootStackParamList = {
     type: WalletconnectResultType;
   };
   [Routes.EXPANDED_ASSET_SHEET]: {
-    longFormHeight: number;
-    type: 'token' | 'unique_token';
+    longFormHeight?: number;
+    type: 'unique_token';
     asset: ParsedAddressAsset | UniqueAsset;
+    backgroundOpacity?: number;
+    cornerRadius?: 'device' | 'small' | 'medium' | 'large';
+    external?: boolean;
+    springDamping?: number;
+    topOffset?: number;
+    transitionDuration?: number;
   };
   [Routes.EXPANDED_ASSET_SHEET_V2]: {
     address: string;
@@ -283,7 +303,13 @@ export type RootStackParamList = {
     position: RainbowPosition;
   };
   [Routes.NETWORK_SELECTOR]: {
-    selected: SharedValue<ChainId | undefined> | ChainId | undefined;
+    selected:
+      | SharedValue<ChainId>
+      | SharedValue<ChainId | undefined>
+      | SharedValue<UserAssetFilter | undefined>
+      | ChainId
+      | UserAssetFilter
+      | undefined;
     setSelected: (chainId: ChainId | undefined) => void;
     onClose?: VoidFunction;
     fillPinnedSection?: boolean;
@@ -319,7 +345,7 @@ export type RootStackParamList = {
     fromProfile?: boolean;
   };
   [Routes.HARDWARE_WALLET_TX_NAVIGATOR]: {
-    submit: () => Promise<void>;
+    submit: () => Promise<void> | void;
   };
   [Routes.CONFIRM_REQUEST]: {
     transactionDetails: RequestData;

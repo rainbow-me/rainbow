@@ -37,40 +37,28 @@ export function onDidPop() {
   }
 }
 
-// --- Type Overloads for Navigation Functions ---
-
-// Overloads for navigate/replace functions (used in useNavigation and handleAction)
 type NavigateFunction = {
-  // Overload 1: Direct navigation with params
-  <RouteName extends keyof RootStackParamList>(routeName: RouteName, params: RootStackParamList[RouteName]): void;
-  // Overload 2a: Nested navigation where INNER route takes UNDEFINED params
+  <RouteName extends keyof RootStackParamList>(routeName: RouteName, params: RootStackParamList[RouteName], replace?: boolean): void;
   <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
     routeName: RouteName,
     params: RootStackParamList[InnerRouteName] extends undefined
       ? { screen: InnerRouteName; params?: undefined } // params optional and must be undefined
       : never
   ): void;
-  // Overload 2b: Nested navigation where INNER route takes NON-UNDEFINED params
   <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
     routeName: RouteName,
     params: RootStackParamList[InnerRouteName] extends undefined
       ? never
       : { screen: InnerRouteName; params: RootStackParamList[InnerRouteName] } // params REQUIRED
   ): void;
-  // Overload 3: Navigation without params (handles undefined/empty params)
   <RouteName extends keyof RootStackParamList>(
-    // Requires params argument to be optional only if RootStackParamList[RouteName] can be undefined
-    // This check is complex, so we simplify by allowing 'undefined' if no params provided.
     routeName: RouteName,
     params?: RootStackParamList[RouteName] extends undefined ? undefined : RootStackParamList[RouteName]
   ): void;
 };
 
-// Overloads for the global handleAction
 type HandleActionFunction = {
-  // Overload 1: Direct navigation with params
   <RouteName extends keyof RootStackParamList>(name: RouteName, params: RootStackParamList[RouteName], replace?: boolean): void;
-  // Overload 2a: Nested navigation where INNER route takes UNDEFINED params
   <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
     name: RouteName,
     params: RootStackParamList[InnerRouteName] extends undefined
@@ -78,7 +66,6 @@ type HandleActionFunction = {
       : never,
     replace?: boolean
   ): void;
-  // Overload 2b: Nested navigation where INNER route takes NON-UNDEFINED params
   <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
     name: RouteName,
     params: RootStackParamList[InnerRouteName] extends undefined
@@ -86,7 +73,6 @@ type HandleActionFunction = {
       : { screen: InnerRouteName; params: RootStackParamList[InnerRouteName] }, // params REQUIRED
     replace?: boolean
   ): void;
-  // Overload 3: Direct navigation without params
   <RouteName extends keyof RootStackParamList>(
     name: RouteName,
     params?: RootStackParamList[RouteName] extends undefined ? undefined : RootStackParamList[RouteName],
@@ -97,46 +83,24 @@ type HandleActionFunction = {
 export function useNavigation() {
   const navigation = oldUseNavigation<StackNavigationProp<RootStackParamList>>();
 
-  // Use the overloaded NavigateFunction type
   const handleNavigate: NavigateFunction = useCallbackOne(
-    (routeName: keyof RootStackParamList, params?: any) => {
-      // Implementation uses 'any', overloads provide external type safety
-      navigate(navigation.navigate, routeName, params);
+    (routeName: keyof RootStackParamList, params?: any, replace?: boolean) => {
+      navigate(navigation.navigate, routeName, params, replace);
     },
     [navigation.navigate]
   );
 
-  // Use the overloaded NavigateFunction type
   const handleReplace: NavigateFunction = useCallbackOne(
     (routeName: keyof RootStackParamList, params?: any) => {
-      // Implementation uses 'any', overloads provide external type safety
-      navigation.replace(routeName as string, params);
+      navigation.replace(routeName, params);
     },
     [navigation.replace]
   );
 
-  // Return an object explicitly listing the methods, excluding the spread
   return {
-    // --- Custom Handlers ---
+    ...navigation,
     navigate: handleNavigate,
     replace: handleReplace,
-    // --- Passthrough Methods ---
-    // Add any other methods from StackNavigationProp you rely on
-    dispatch: navigation.dispatch,
-    goBack: navigation.goBack,
-    isFocused: navigation.isFocused,
-    setParams: navigation.setParams,
-    getId: navigation.getId,
-    getParent: navigation.getParent,
-    getState: navigation.getState,
-    setOptions: navigation.setOptions,
-    addListener: navigation.addListener,
-    removeListener: navigation.removeListener,
-    canGoBack: navigation.canGoBack,
-    reset: navigation.reset,
-    pop: navigation.pop,
-    popToTop: navigation.popToTop,
-    push: navigation.push,
   };
 }
 

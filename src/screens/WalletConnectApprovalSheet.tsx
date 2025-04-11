@@ -280,7 +280,7 @@ export function WalletConnectApprovalSheet() {
     type === WalletConnectApprovalSheetType.connect &&
       Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
         currentAccountAddress: approvalAccount.address,
-        onChangeWallet: (address: Address, wallet: RainbowWallet) => {
+        onChangeWallet: (address, wallet) => {
           setApprovalAccount({ address, wallet });
           goBack();
         },

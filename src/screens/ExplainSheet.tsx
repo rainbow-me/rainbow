@@ -259,15 +259,15 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
           : lang.t('explain.output_disabled.title_empty'),
         text: params.isCrosschainSwap
           ? lang.t(`explain.output_disabled.${params.isBridgeSwap ? 'text_bridge' : 'text_crosschain'}`, {
-              inputToken: params.inputToken,
-              outputToken: params.outputToken,
-              fromNetwork: fromNetwork,
-              toNetwork: toNetwork,
+              inputToken: params.inputToken ?? '',
+              outputToken: params.outputToken ?? '',
+              fromNetwork: fromNetwork ?? '',
+              toNetwork: toNetwork ?? '',
             })
           : lang.t('explain.output_disabled.text', {
-              fromNetwork: fromNetwork,
-              inputToken: params.inputToken,
-              outputToken: params.outputToken,
+              fromNetwork: fromNetwork ?? '',
+              inputToken: params.inputToken ?? '',
+              outputToken: params.outputToken ?? '',
             }),
         logo: params.fromChainId ? <ChainImage chainId={params.fromChainId} size={40} position="relative" /> : undefined,
       };
