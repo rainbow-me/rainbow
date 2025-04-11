@@ -1,24 +1,25 @@
-import * as i18n from '@/languages';
-import React, { memo, useCallback, useMemo } from 'react';
-import { Keyboard, Share } from 'react-native';
+import { ButtonPressAnimation } from '@/components/animations';
+import { ContactAvatar, showDeleteContactActionSheet } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { useClipboard, useContacts, useSwitchWallet, useWallets, useWatchWallet } from '@/hooks';
+import { Bleed, Box, Inline, Stack, Text } from '@/design-system';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { useClipboard, useContacts, useSwitchWallet, useWatchWallet } from '@/hooks';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
-import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
+import { RAINBOW_PROFILES_BASE_URL } from '@/references';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useTheme } from '@/theme';
 import { ethereumUtils, isENSNFTRecord } from '@/utils';
 import { address as formatAddress } from '@/utils/abbreviations';
-import { ContactAvatar, showDeleteContactActionSheet } from '@/components/contacts';
-import { Bleed, Box, Inline, Stack, Text } from '@/design-system';
-import MaskedView from '@react-native-masked-view/masked-view';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { useTheme } from '@/theme';
-import LinearGradient from 'react-native-linear-gradient';
-import { ButtonPressAnimation } from '@/components/animations';
+import MaskedView from '@react-native-masked-view/masked-view';
 import { noop } from 'lodash';
-import { ChainId } from '@/state/backendNetworks/types';
+import React, { memo, useCallback, useMemo } from 'react';
+import { Keyboard, Share } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { useWalletsStore } from '../../../redux/wallets';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -42,7 +43,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
   points: number;
   rank: number;
 }) {
-  const { selectedWallet } = useWallets();
+  const selectedWallet = useWalletsStore(state => state.selected);
   const { switchToWalletWithAddress } = useSwitchWallet();
   const { isWatching } = useWatchWallet({ address });
   const { colors } = useTheme();
@@ -50,9 +51,9 @@ export const LeaderboardRow = memo(function LeaderboardRow({
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
   const isSelectedWallet = useMemo(() => {
-    const visibleWallet = selectedWallet.addresses?.find((wallet: { visible: boolean }) => wallet.visible);
+    const visibleWallet = selectedWallet?.addresses?.find((wallet: { visible: boolean }) => wallet.visible);
     return visibleWallet?.address.toLowerCase() === address?.toLowerCase();
-  }, [selectedWallet.addresses, address]);
+  }, [selectedWallet?.addresses, address]);
 
   const contact = address ? contacts[address.toLowerCase()] : undefined;
 

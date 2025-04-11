@@ -2,48 +2,46 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useContext, useState } from 'react';
 // @ts-expect-error - react-native-restart is not typed
-import Restart from 'react-native-restart';
-import { useDispatch } from 'react-redux';
-import Clipboard from '@react-native-clipboard/clipboard';
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { ImgixImage } from '@/components/images';
+import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
+import { IS_DEV } from '@/env';
 import { deleteAllBackups } from '@/handlers/cloudBackup';
 import { RainbowContext } from '@/helpers/RainbowContext';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import isTestFlight from '@/helpers/isTestFlight';
-import { useWallets } from '@/hooks';
-import { ImgixImage } from '@/components/images';
+import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
+import { logger, RainbowError } from '@/logger';
+import { serialize } from '@/logger/logDump';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
 import { Navigation } from '@/navigation';
 import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import store from '@/redux/store';
-import { walletsUpdate } from '@/redux/wallets';
-import Routes from '@/navigation/routesNames';
-import { logger, RainbowError } from '@/logger';
-import { IS_DEV } from '@/env';
-import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
+import { useWalletsStore } from '@/redux/wallets';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
-import { serialize } from '@/logger/logDump';
 import { isAuthenticated } from '@/utils/authentication';
+import Clipboard from '@react-native-clipboard/clipboard';
+import Restart from 'react-native-restart';
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 
-import { getFCMToken } from '@/notifications/tokens';
-import { nonceStore } from '@/state/nonces';
-import { pendingTransactionsStore } from '@/state/pendingTransactions';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { addDefaultNotificationGroupSettings } from '@/notifications/settings/initialization';
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
-import FastImage from 'react-native-fast-image';
+import { getFCMToken } from '@/notifications/tokens';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { nonceStore } from '@/state/nonces';
+import { pendingTransactionsStore } from '@/state/pendingTransactions';
 import { analyzeEnvVariables } from '@/utils/analyzeEnvVariables';
+import FastImage from 'react-native-fast-image';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
-  const { wallets } = useWallets();
+  const wallets = useWalletsStore(state => state.wallets);
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
 
   const [loadingStates, setLoadingStates] = useState({
@@ -95,7 +93,7 @@ const DevSection = () => {
       delete newWallets[key].backupType;
     });
 
-    await store.dispatch(walletsUpdate(newWallets) as any);
+    useWalletsStore.getState().updateWallets(newWallets);
 
     // Delete all backups (debugging)
     await deleteAllBackups();

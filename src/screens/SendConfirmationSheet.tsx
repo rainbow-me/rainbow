@@ -1,14 +1,45 @@
+import { opacity } from '@/__swaps__/utils/swaps';
+import Divider from '@/components/Divider';
+import { ShimmerAnimation } from '@/components/animations';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
+import { UniqueAsset } from '@/entities';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import {
+  estimateENSReclaimGasLimit,
+  estimateENSSetAddressGasLimit,
+  estimateENSSetRecordsGasLimit,
+  formatRecordsForTransaction,
+} from '@/handlers/ens';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { assetIsParsedAddressAsset, assetIsUniqueAsset, estimateGasLimit, getProvider } from '@/handlers/web3';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
+import { useAccountSettings, useColorForAsset, useContacts, useDimensions, useENSAvatar, useGas, useUserAccounts } from '@/hooks';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
+import { useInteractionsCount } from '@/resources/addys/interactions';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { useTheme } from '@/theme';
+import { getUniqueTokenType, promiseUtils } from '@/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
-import * as i18n from '@/languages';
 import { isEmpty } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
-import Divider from '@/components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
 import Pill from '../components/Pill';
 import TouchableBackdrop from '../components/TouchableBackdrop';
@@ -25,48 +56,9 @@ import { SendButton } from '../components/send';
 import { SheetTitle, SlackSheet } from '../components/sheet';
 import { Text as OldText } from '../components/text';
 import { ENSProfile } from '../entities/ens';
+import { useWalletsStore } from '../redux/wallets';
 import { address } from '../utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
-import {
-  estimateENSReclaimGasLimit,
-  estimateENSSetAddressGasLimit,
-  estimateENSSetRecordsGasLimit,
-  formatRecordsForTransaction,
-} from '@/handlers/ens';
-import svgToPngIfNeeded from '@/handlers/svgs';
-import { estimateGasLimit, getProvider, assetIsParsedAddressAsset, assetIsUniqueAsset } from '@/handlers/web3';
-import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
-import {
-  useAccountSettings,
-  useColorForAsset,
-  useContacts,
-  useDimensions,
-  useENSAvatar,
-  useGas,
-  useUserAccounts,
-  useWallets,
-} from '@/hooks';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { position } from '@/styles';
-import { useTheme } from '@/theme';
-import { getUniqueTokenType, promiseUtils } from '@/utils';
-import { logger, RainbowError } from '@/logger';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { performanceTracking, TimeToSignOperation, Screens } from '@/state/performance/performance';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { RootStackParamList } from '@/navigation/types';
-import { ParsedAddressAsset, UniqueAsset } from '@/entities';
-import { useInteractionsCount } from '@/resources/addys/interactions';
-import { ShimmerAnimation } from '@/components/animations';
-import { opacity } from '@/__swaps__/utils/swaps';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -207,7 +199,7 @@ export const SendConfirmationSheet = () => {
   } = useRoute<RouteProp<RootStackParamList, 'SendConfirmationSheet'>>();
 
   const { userAccounts, watchedAccounts } = useUserAccounts();
-  const { walletNames } = useWallets();
+  const walletNames = useWalletsStore(state => state.walletNames);
   const isSendingToUserAccount = useMemo(() => {
     const found = userAccounts?.find(account => {
       return account.address.toLowerCase() === toAddress?.toLowerCase();
