@@ -1,0 +1,36 @@
+appId: ${APP_ID}
+tags:
+  - backup
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/ImportWalletWithKey.yaml
+# There is some flakeyness here sometimes and the menu doesn't
+# open so allow retries.
+- retry:
+    maxRetries: 3
+    commands:
+      - tapOn:
+          id: settings-menu
+      - tapOn: 'Settings'
+- tapOn:
+    id: backup-section
+- tapOn:
+    id: backup-now-button
+# This part of the test is different for iOS and Android.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible: '(Sign in|Choose an account)'
+      - back
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible: 'iCloud Not Enabled'
+      - tapOn: 'No thanks'

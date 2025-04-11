@@ -15,6 +15,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useChartData } from '../../helpers/useChartData';
 import { FIX_CLIPPED_PATH_FOR_CARD_MAGIC_NUMBER, FIX_CLIPPED_PATH_MAGIC_NUMBER, timingAnimationDefaultConfig } from './ChartPath';
+import { IS_TEST } from '@/env';
 
 const springDefaultConfig = {
   damping: 15,
@@ -178,7 +179,7 @@ const ChartDot = React.memo(
     return (
       <>
         <Animated.View pointerEvents="none" style={[styles.pointContainerStyle, lastPointDotStyle]}>
-          <Animated.View style={[styles.dotPulseStyle, dotPulseAnimatedStyle]} />
+          {!IS_TEST && <Animated.View style={[styles.dotPulseStyle, dotPulseAnimatedStyle]} />}
           <Animated.View
             style={[
               lastPointDotAnimatedStyle,

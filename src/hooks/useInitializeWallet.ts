@@ -47,7 +47,7 @@ export default function useInitializeWallet() {
       // @ts-expect-error This callback will be refactored to use a single object param with full TS typings
       seedPhrase,
       color = null,
-      name = null,
+      name: string | null = null,
       shouldRunMigrations = false,
       overwrite = false,
       checkedWallet = null,
@@ -55,7 +55,8 @@ export default function useInitializeWallet() {
       switching,
       // @ts-expect-error This callback will be refactored to use a single object param with full TS typings
       image,
-      silent = false
+      silent = false,
+      userPin?: string
     ) => {
       try {
         PerformanceTracking.startMeasuring(PerformanceMetrics.useInitializeWallet);
@@ -77,7 +78,17 @@ export default function useInitializeWallet() {
         // Load the network first
         await dispatch(settingsLoadNetwork());
 
-        const { isNew, walletAddress } = await walletInit(seedPhrase, color, name, overwrite, checkedWallet, network, image, silent);
+        const { isNew, walletAddress } = await walletInit(
+          seedPhrase,
+          color,
+          name,
+          overwrite,
+          checkedWallet,
+          network,
+          image,
+          silent,
+          userPin
+        );
 
         logger.debug('[useInitializeWallet]: walletInit returned', {
           isNew,
