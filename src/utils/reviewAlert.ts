@@ -2,7 +2,7 @@ import * as ls from '@/storage';
 import { ReviewPromptAction } from '@/storage/schema';
 import { logger, RainbowError } from '@/logger';
 import * as StoreReview from 'expo-store-review';
-import { IS_TEST } from '@/env';
+import { IS_DEV, IS_TEST } from '@/env';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 
@@ -50,7 +50,8 @@ function getReviewActions() {
 }
 
 export async function handleReviewPromptAction(action: ReviewPromptAction) {
-  if (IS_TEST) return;
+  if (IS_TEST || (IS_DEV && action !== ReviewPromptAction.UserPrompt)) return;
+
   logger.debug(`[reviewAlert]: handleReviewPromptAction: ${action}`);
 
   const promptTimestamps = ls.review.get(['promptTimestamps']) || [];
