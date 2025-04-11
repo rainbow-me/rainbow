@@ -68,7 +68,7 @@ export interface WalletconnectRequestData extends RequestData {
     sessionRequestEvent: SignClientTypes.EventArguments['session_request'];
     address: string;
     chainId: number;
-    onComplete?: (type: string) => void;
+    onComplete?: (type: WalletconnectResultType) => void;
   };
 }
 

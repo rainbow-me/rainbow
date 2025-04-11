@@ -168,17 +168,20 @@ function SwapButton() {
   const { navigate } = useNavigation();
 
   const handlePress = React.useCallback(async () => {
-    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      analytics.track(analytics.event.navigationSwap, { category: 'home screen' });
-      swapsStore.setState({
-        inputAsset: userAssetsStore.getState().getHighestValueNativeAsset(),
-      });
-      InteractionManager.runAfterInteractions(() => {
-        navigate(Routes.SWAP);
-      });
-    } else {
-      watchingAlert();
-    }
+    // if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+    //   analytics.track(analytics.event.navigationSwap, { category: 'home screen' });
+    //   swapsStore.setState({
+    //     inputAsset: userAssetsStore.getState().getHighestValueNativeAsset(),
+    //   });
+    //   InteractionManager.runAfterInteractions(() => {
+    //     navigate(Routes.SWAP);
+    //   });
+    // } else {
+    //   watchingAlert();
+    // }
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'failed_wc_connection',
+    });
   }, [isReadOnlyWallet, navigate]);
 
   return (

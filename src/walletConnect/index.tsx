@@ -38,6 +38,7 @@ import {
   RPCPayload,
   WalletconnectApprovalSheetRouteParams,
   WalletconnectRequestData,
+  WalletconnectResultType,
 } from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProvider } from '@/handlers/web3';
@@ -755,7 +756,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
         sessionRequestEvent: event,
         address,
         chainId,
-        onComplete(type: string) {
+        onComplete(type: WalletconnectResultType) {
           if (IS_IOS) {
             Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
               type,
@@ -1082,9 +1083,9 @@ export async function changeAccount(session: SessionTypes.Struct, { address }: {
 
     logger.debug(`[walletConnect]: changeAccount complete`);
     return true;
-  } catch (e: any) {
+  } catch (e) {
     logger.error(new RainbowError(`[walletConnect]: error changing account`), {
-      message: e.message,
+      message: (e as Error).message,
     });
   }
   return false;

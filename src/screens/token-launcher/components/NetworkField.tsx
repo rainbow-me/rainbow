@@ -12,6 +12,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export function NetworkField() {
   const { accentColors } = useTokenLauncherContext();
@@ -25,8 +26,10 @@ export function NetworkField() {
   const chainNativeAsset = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
   const allowedNetworks = useBackendNetworksStore.getState().getTokenLauncherSupportedChainIds();
 
-  const onChainSelected = (chainId: number) => {
-    setChainId(chainId);
+  const onChainSelected = (chainId: ChainId | undefined) => {
+    if (chainId) {
+      setChainId(chainId);
+    }
   };
 
   return (
