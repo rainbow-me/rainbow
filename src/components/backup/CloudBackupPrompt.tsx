@@ -1,18 +1,18 @@
-import React, { useCallback } from 'react';
+import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import * as lang from '@/languages';
-import { ImgixImage } from '../images';
-import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
-import { Source } from 'react-native-fast-image';
-import { cloudPlatform } from '@/utils/platform';
-import { ButtonPressAnimation } from '../animations';
-import Routes from '@/navigation/routesNames';
-import { useNavigation } from '@/navigation';
-import { useWalletsStore, selectSelectedWallet } from '@/redux/wallets';
-import { format } from 'date-fns';
-import { useCreateBackup } from './useCreateBackup';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { useWalletsStore } from '@/redux/wallets';
 import { backupsStore } from '@/state/backups/backups';
+import { cloudPlatform } from '@/utils/platform';
+import { format } from 'date-fns';
+import React, { useCallback } from 'react';
+import { Source } from 'react-native-fast-image';
+import { ButtonPressAnimation } from '../animations';
+import { ImgixImage } from '../images';
+import { useCreateBackup } from './useCreateBackup';
 
 const imageSize = 72;
 
@@ -21,7 +21,7 @@ export default function CloudBackupPrompt() {
   const { mostRecentBackup } = backupsStore(state => ({
     mostRecentBackup: state.mostRecentBackup,
   }));
-  const selectedWallet = useWalletsStore(['']);
+  const selectedWallet = useWalletsStore(state => state.selected);
   const createBackup = useCreateBackup();
 
   const onCloudBackup = useCallback(() => {

@@ -16,7 +16,7 @@ import BackupWarningIcon from '@/assets/BackupWarning.png';
 import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 import { useENSAvatar, useInitializeWallet } from '@/hooks';
-import { useWalletsStore, selectIsDamaged, selectWallets } from '@/redux/wallets';
+import { useWalletsStore } from '@/redux/wallets';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import MenuHeader from '../MenuHeader';
@@ -127,7 +127,8 @@ const ViewWalletBackup = () => {
   }));
   const { walletId, title: incomingTitle } = params;
   const creatingWallet = useRef<boolean>();
-  const [isDamaged, wallets] = useWalletsStore(state => [selectIsDamaged(state), selectWallets(state)]);
+  const isDamaged = useWalletsStore(state => state.getIsDamaged());
+  const wallets = useWalletsStore(state => state.wallets);
   const wallet = wallets?.[walletId];
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();

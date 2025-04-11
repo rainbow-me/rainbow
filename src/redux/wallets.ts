@@ -29,14 +29,6 @@ import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } fr
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
 
-// Selector functions
-export const selectIsDamaged = (state: WalletsState) => state.selected?.damaged;
-export const selectIsReadOnlyWallet = (state: WalletsState) => state.selected?.type === WalletTypes.readOnly;
-export const selectIsHardwareWallet = (state: WalletsState) => !!state.selected?.deviceId;
-export const selectSelectedWallet = (state: WalletsState) => state.selected;
-export const selectWalletNames = (state: WalletsState) => state.walletNames;
-export const selectWallets = (state: WalletsState) => state.wallets;
-
 interface WalletsState {
   selected: RainbowWallet | null;
   setSelectedWallet: (wallet: RainbowWallet) => Promise<void>;
