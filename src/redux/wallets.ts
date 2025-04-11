@@ -68,7 +68,7 @@ interface WalletsState {
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
-  getAccountProfileInfo: () => {
+  getAccountProfileInfo: (props?: { address: string; wallet: RainbowWallet }) => {
     accountAddress?: string;
     accountColor?: number;
     accountENS?: string;
@@ -558,24 +558,24 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
     return walletWithAccount;
   },
 
-  getAccountProfileInfo() {
-    const { selected, walletNames, accountAddress } = get();
+  getAccountProfileInfo(props) {
+    const { walletNames } = get();
+    const wallet = props?.wallet || get().selected;
+    const accountAddress = props?.address || get().accountAddress;
 
-    if (!selected) {
+    if (!wallet) {
       return {};
     }
     if (!accountAddress) {
       return {};
     }
-    if (!selected?.addresses?.length) {
+    if (!wallet?.addresses?.length) {
       return {};
     }
 
     const accountENS = walletNames?.[accountAddress];
     const lowerCaseAccountAddress = accountAddress.toLowerCase();
-    const selectedAccount = selected.addresses?.find(
-      (account: RainbowAccount) => account.address?.toLowerCase() === lowerCaseAccountAddress
-    );
+    const selectedAccount = wallet.addresses?.find((account: RainbowAccount) => account.address?.toLowerCase() === lowerCaseAccountAddress);
 
     if (!selectedAccount) {
       return {};

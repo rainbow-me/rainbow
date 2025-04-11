@@ -1,40 +1,38 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, InteractionManager } from 'react-native';
+import { analytics } from '@/analytics';
 import Divider from '@/components/Divider';
 import Spinner from '@/components/Spinner';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { RequestVendorLogoIcon } from '@/components/coin-icon';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { InfoAlert } from '@/components/info-alert/info-alert';
 import { Centered, Column, Flex, Row } from '@/components/layout';
 import { Sheet, SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
-import { analytics } from '@/analytics';
-import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import { Box, Columns, Inline, Column as RDSColumn, Text, TextProps } from '@/design-system';
+import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { getDappHostname } from '@/helpers/dappNameHandler';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 import { NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems } from '@/helpers/walletConnectNetworks';
-import { useAccountSettings, useWallets } from '@/hooks';
+import { useAccountSettings } from '@/hooks';
+import * as lang from '@/languages';
+import { RainbowWallet } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { Box, Columns, Column as RDSColumn, Inline, Text, TextProps } from '@/design-system';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import * as lang from '@/languages';
-import { useDappMetadata } from '@/resources/metadata/dapp';
-import { DAppStatus } from '@/graphql/__generated__/metadata';
-import { InfoAlert } from '@/components/info-alert/info-alert';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ThemeContextProps, useTheme } from '@/theme';
-import { noop } from 'lodash';
 import { RootStackParamList } from '@/navigation/types';
-import { Address } from 'viem';
-import { RainbowWallet } from '@/model/wallet';
-import { WalletconnectMeta } from '@/walletConnect/types';
 import { useWalletsStore } from '@/redux/wallets';
+import { useDappMetadata } from '@/resources/metadata/dapp';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import styled from '@/styled-thing';
+import { ThemeContextProps, useTheme } from '@/theme';
+import { WalletconnectMeta } from '@/walletConnect/types';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { noop } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, InteractionManager } from 'react-native';
+import { Address } from 'viem';
 
 type WithThemeProps = {
   theme: ThemeContextProps;
@@ -132,7 +130,6 @@ export function WalletConnectApprovalSheet() {
   const { chainId: settingsChainId, accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
   const selectedWallet = useWalletsStore(state => state.selected);
-  const walletNames = useWalletsStore(state => state.walletNames);
   const wallets = useWalletsStore(state => state.wallets);
   const handled = useRef(false);
   const initialApprovalAccount = useMemo<{ address: Address; wallet: RainbowWallet }>(() => {
@@ -142,7 +139,7 @@ export function WalletConnectApprovalSheet() {
       return { address: accountAddressAsAddress, wallet: selectedWallet };
     }
 
-    const wallet = findWalletWithAccount(wallets || {}, params?.meta?.proposedAddress);
+    const wallet = useWalletsStore.getState().getWalletWithAccount(params?.meta?.proposedAddress);
     if (!wallet) {
       return { address: accountAddressAsAddress, wallet: selectedWallet };
     }
@@ -199,12 +196,15 @@ export function WalletConnectApprovalSheet() {
   }, [dappUrl]);
 
   const approvalAccountInfo = useMemo(() => {
-    const approvalAccountInfo = getAccountProfileInfo(approvalAccount.wallet, walletNames, approvalAccount.address);
+    const approvalAccountInfo = useWalletsStore.getState().getAccountProfileInfo({
+      wallet: approvalAccount.wallet,
+      address: approvalAccount.address,
+    });
     return {
       ...approvalAccountInfo,
       accountLabel: approvalAccountInfo.accountENS || approvalAccountInfo.accountName || approvalAccount.address,
     };
-  }, [walletNames, approvalAccount.wallet, approvalAccount.address]);
+  }, [approvalAccount.wallet, approvalAccount.address]);
 
   /**
    * In WC v1 this was the network the dapp was requesting, which was editable
