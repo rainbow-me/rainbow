@@ -8,7 +8,7 @@ import {
 import { StackNavigationOptions, type StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import { useCallbackOne } from 'use-memo-one';
-import Routes, { NATIVE_ROUTES } from '@/navigation/routesNames';
+import { NATIVE_ROUTES } from '@/navigation/routesNames';
 import type { RootStackParamList } from './types';
 
 let TopLevelNavigationRef: NavigationContainerRef<RootStackParamList> | null = null;
@@ -70,7 +70,7 @@ type HandleActionFunction = {
     name: RouteName,
     params: RootStackParamList[InnerRouteName] extends undefined
       ? never
-      : { screen: InnerRouteName; params: RootStackParamList[InnerRouteName] }, // params REQUIRED
+      : { screen: InnerRouteName; params: RootStackParamList[InnerRouteName] },
     replace?: boolean
   ): void;
   <RouteName extends keyof RootStackParamList>(
@@ -86,6 +86,10 @@ type ExtendedSetOptionsFunction = Partial<StackNavigationOptions> & {
   shortFormHeight?: number;
   onWillDismiss?: () => void;
 };
+
+type SetParamsFunction<T extends keyof RootStackParamList> = RootStackParamList[T] extends undefined
+  ? () => void
+  : (params: Partial<RootStackParamList[T]>) => void;
 
 export function useNavigation<RouteName extends keyof RootStackParamList>() {
   const navigation = oldUseNavigation<StackNavigationProp<RootStackParamList>>();
@@ -104,8 +108,21 @@ export function useNavigation<RouteName extends keyof RootStackParamList>() {
     [navigation.replace]
   );
 
-  const handleSetParams = useCallbackOne((params: RootStackParamList[RouteName]) => navigation.setParams(params), [navigation.setParams]);
-  const handleSetOptions = useCallbackOne((params: ExtendedSetOptionsFunction) => navigation.setOptions(params), [navigation.setOptions]);
+  const handleSetParams = useCallbackOne(
+    (...args: any[]) => {
+      if (args.length === 0) {
+        navigation.setParams(undefined);
+      } else {
+        navigation.setParams(args[0]);
+      }
+    },
+    [navigation.setParams]
+  ) as SetParamsFunction<RouteName>;
+
+  const handleSetOptions = useCallbackOne(
+    (params: Partial<ExtendedSetOptionsFunction>) => navigation.setOptions(params),
+    [navigation.setOptions]
+  );
 
   return {
     ...navigation,

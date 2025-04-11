@@ -8,17 +8,14 @@ import { ImportOrWatchWalletSheet, ImportOrWatchWalletSheetParams } from '@/scre
 import { BackgroundProvider } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { RootStackParamList } from './types';
 
 const Swipe = createMaterialTopTabNavigator();
-
-type RouteParams = {
-  AddWalletNavigatorParams: AddWalletSheetParams & ImportOrWatchWalletSheetParams;
-};
 
 export const AddWalletNavigator = () => {
   const {
     params: { isFirstWallet, type },
-  } = useRoute<RouteProp<RouteParams, 'AddWalletNavigatorParams'>>();
+  } = useRoute<RouteProp<RootStackParamList, 'AddWalletNavigator'>>();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
 

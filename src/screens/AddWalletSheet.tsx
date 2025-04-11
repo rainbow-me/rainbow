@@ -17,6 +17,7 @@ import WatchWalletIcon from '@/assets/watchWallet.png';
 import { cloudPlatform } from '@/utils/platform';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
+import { RootStackParamList } from '@/navigation/types';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
@@ -31,7 +32,7 @@ type RouteParams = {
 export const AddWalletSheet = () => {
   const {
     params: { isFirstWallet },
-  } = useRoute<RouteProp<RouteParams, 'AddWalletSheetParams'>>();
+  } = useRoute<RouteProp<RootStackParamList, 'AddWalletNavigator'>>();
 
   const { goBack, navigate } = useNavigation();
 
@@ -45,7 +46,7 @@ export const AddWalletSheet = () => {
       });
       analytics.track(analytics.event.tappedCreateNewWallet);
 
-      navigate(Routes.CHOOSE_WALLET_GROUP, {});
+      navigate(Routes.CHOOSE_WALLET_GROUP);
     } catch (e) {
       logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), {
         error: e,
