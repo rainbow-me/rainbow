@@ -33,7 +33,6 @@ const BottomSheetNavigator = ({ initialRouteName, children, screenOptions, ...re
   >(router, {
     children,
     initialRouteName,
-    // @ts-expect-error doesn't like the typing of RootStackParamList
     screenOptions,
   });
 

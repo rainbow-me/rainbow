@@ -1,5 +1,6 @@
 import React from 'react';
 import { Keyboard } from 'react-native';
+import { RouteProp } from '@react-navigation/native';
 
 import { useTheme } from '@/theme/ThemeContext';
 import colors from '@/theme/currentColors';
@@ -15,21 +16,19 @@ import { Text } from '@/components/text';
 
 import { getENSAdditionalRecordsSheetHeight } from '@/screens/ENSAdditionalRecordsSheet';
 import { ENSConfirmRegisterSheetHeight } from '@/screens/ENSConfirmRegisterSheet';
-import { explainers, ExplainSheetHeight } from '@/screens/ExplainSheet';
+import { ExplainSheetHeight, getExplainSheetConfig } from '@/screens/ExplainSheet';
 import { ExternalLinkWarningSheetHeight } from '@/screens/ExternalLinkWarningSheet';
 import { getSheetHeight as getSendConfirmationSheetHeight } from '@/screens/SendConfirmationSheet';
 
 import { onWillPop } from '@/navigation/Navigation';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/HardwareWalletTxNavigator';
 import { StackNavigationOptions } from '@react-navigation/stack';
-import { PartialNavigatorConfigOptions } from '@/navigation/types';
+import { ExplainSheetRouteParams, ExplainSheetType, PartialNavigatorConfigOptions, RootStackParamList } from '@/navigation/types';
 import { BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
 import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { SignTransactionSheetRouteProp } from '@/screens/SignTransactionSheet';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -56,7 +55,28 @@ export type CoolModalConfigOptions = StackNavigationOptions & {
   transitionDuration?: number;
 };
 
-const buildCoolModalConfig = (params: any): CoolModalConfigOptions => ({
+type CoolModalConfigParams = {
+  type?: ExplainSheetType;
+  backgroundColor?: string;
+  backgroundOpacity?: number;
+  blocksBackgroundTouches?: boolean;
+  cornerRadius?: string | number;
+  disableShortFormAfterTransitionToLongForm?: boolean;
+  gestureEnabled?: boolean;
+  headerHeight?: number;
+  isShortFormEnabled?: boolean;
+  longFormHeight?: number;
+  height?: number;
+  onAppear?: () => void;
+  scrollEnabled?: boolean;
+  single?: boolean;
+  springDamping?: number;
+  startFromShortForm?: boolean;
+  topOffset?: number;
+  transitionDuration?: number;
+};
+
+const buildCoolModalConfig = (params: CoolModalConfigParams): CoolModalConfigOptions => ({
   allowsDragToDismiss: true,
   allowsTapToDismiss: true,
   backgroundColor: params.backgroundColor || colors.themedColors?.shadowBlack,
@@ -69,20 +89,21 @@ const buildCoolModalConfig = (params: any): CoolModalConfigOptions => ({
         : 0.666 // 0.666 gets the screen corner radius internally
       : params.cornerRadius === 0
         ? 0
-        : params.cornerRadius || 39,
+        : typeof params.cornerRadius === 'number'
+          ? params.cornerRadius
+          : 39,
   customStack: true,
-  disableShortFormAfterTransitionToLongForm:
-    params.disableShortFormAfterTransitionToLongForm || params?.type === 'token' || params?.type === 'uniswap',
+  disableShortFormAfterTransitionToLongForm: params.disableShortFormAfterTransitionToLongForm,
   gestureEnabled: true,
   headerHeight: params.headerHeight || 25,
   ignoreBottomOffset: true,
-  isShortFormEnabled: params.isShortFormEnabled || params?.type === 'token',
+  isShortFormEnabled: params.isShortFormEnabled,
   longFormHeight: params.longFormHeight,
-  onAppear: params.onAppear || null,
+  onAppear: params.onAppear || undefined,
   scrollEnabled: params.scrollEnabled,
   single: params.single,
   springDamping: params.springDamping || 0.8,
-  startFromShortForm: params.startFromShortForm || params?.type === 'token' || false,
+  startFromShortForm: params.startFromShortForm || false,
   topOffset: params.topOffset === 0 ? 0 : params.topOffset || sharedCoolModalTopOffset,
   transitionDuration: params.transitionDuration || 0.35,
 });
@@ -543,9 +564,9 @@ export const ensAdditionalRecordsSheetConfig: PartialNavigatorConfigOptions = {
 };
 
 export const explainSheetConfig: PartialNavigatorConfigOptions = {
-  options: ({ route: { params = { network: useBackendNetworksStore.getState().getChainsName()[ChainId.mainnet] } } }) => {
-    // @ts-ignore
-    const explainerConfig = explainers(params.network)[params?.type];
+  options: ({ route }) => {
+    const params = route.params as ExplainSheetRouteParams;
+    const explainerConfig = getExplainSheetConfig(params);
     return buildCoolModalConfig({
       ...params,
       longFormHeight: ExplainSheetHeight + (explainerConfig?.extraHeight ? explainerConfig?.extraHeight : 0),

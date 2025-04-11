@@ -52,6 +52,8 @@ export function InfoRowSkeleton() {
   );
 }
 
+type InfoRowExplainSheetType = 'ens_manager' | 'ens_owner' | 'ens_resolver' | 'ens_configuration' | 'ens_primary_name';
+
 export default function InfoRow({
   ensName,
   explainSheetType,
@@ -67,7 +69,7 @@ export default function InfoRow({
   onSwitchChange,
 }: {
   ensName?: string;
-  explainSheetType?: string;
+  explainSheetType?: InfoRowExplainSheetType;
   icon?: string;
   isImage?: boolean;
   label: string;
@@ -88,7 +90,9 @@ export default function InfoRow({
 
   const { navigate } = useNavigation();
   const handlePressExplain = useCallback(() => {
-    navigate(Routes.EXPLAIN_SHEET, { type: explainSheetType });
+    if (explainSheetType) {
+      navigate(Routes.EXPLAIN_SHEET, { type: explainSheetType });
+    }
   }, [explainSheetType, navigate]);
 
   const explainer = explainSheetType ? (

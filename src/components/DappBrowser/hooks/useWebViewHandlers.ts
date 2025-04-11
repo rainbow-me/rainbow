@@ -142,7 +142,7 @@ export function useWebViewHandlers({
   const handleShouldStartLoadWithRequest = useCallback(
     (request: ShouldStartLoadRequest) => {
       if (request.url.startsWith('rainbow://wc') || request.url.startsWith('https://rnbwappdotcom.app.link/')) {
-        Navigation.handleAction(Routes.NO_NEED_WC_SHEET, {});
+        Navigation.handleAction(Routes.NO_NEED_WC_SHEET);
         activeTabRef.current?.reload();
         return false;
       }

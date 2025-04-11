@@ -35,6 +35,8 @@ import {
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { RootStackParamList } from '@/navigation/types';
+import { ENSRoutes } from '@/navigation/RegisterENSNavigator';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
@@ -198,7 +200,7 @@ export function ENSAssignRecordsBottomActions({
   currentRouteName,
 }: {
   visible: boolean;
-  previousRouteName?: string;
+  previousRouteName?: ENSRoutes;
   currentRouteName: string;
 }) {
   const { navigate, goBack } = useNavigation();
@@ -208,7 +210,7 @@ export function ENSAssignRecordsBottomActions({
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { mode, name } = useENSRegistration();
-  const [fromRoute, setFromRoute] = useState(previousRouteName);
+  const [fromRoute, setFromRoute] = useState<ENSRoutes | undefined>(previousRouteName);
   const {
     disabled,
     errors,
@@ -223,7 +225,9 @@ export function ENSAssignRecordsBottomActions({
   const { isSuccess } = useENSModifiedRegistration();
   const handlePressBack = useCallback(() => {
     delayNext();
-    navigate(fromRoute);
+    if (fromRoute) {
+      navigate(fromRoute);
+    }
     setAccentColor(colors.purple);
   }, [colors.purple, fromRoute, navigate, setAccentColor]);
 

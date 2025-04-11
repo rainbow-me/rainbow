@@ -36,6 +36,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import { Address } from 'viem';
 
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 
@@ -236,7 +237,7 @@ export default function ChangeWalletSheet() {
   }, [walletsWithBalancesAndNames]);
 
   const onChangeAccount = useCallback(
-    async (walletId: string, address: string, fromDeletion = false) => {
+    async (walletId: string, address: Address, fromDeletion = false) => {
       if (editMode && !fromDeletion) return;
       const wallet = wallets?.[walletId];
       if (!wallet) return;
@@ -438,7 +439,7 @@ export default function ChangeWalletSheet() {
                     wallets,
                   }) || {};
                 if (foundWallet && key) {
-                  await onChangeAccount(key, foundWallet.address, true);
+                  await onChangeAccount(key, foundWallet.address as Address, true);
                 }
               }
             }
@@ -507,7 +508,7 @@ export default function ChangeWalletSheet() {
         });
         return;
       }
-      onChangeAccount(wallet.id, address);
+      onChangeAccount(wallet.id, address as Address);
     },
     [onChangeAccount, walletsByAddress]
   );

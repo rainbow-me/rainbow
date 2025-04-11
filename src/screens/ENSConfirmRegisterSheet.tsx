@@ -1,4 +1,4 @@
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -40,6 +40,7 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { ActionTypes } from '@/hooks/useENSRegistrationActionHandler';
 import { ChainId } from '@/state/backendNetworks/types';
+import { RootStackParamList } from '@/navigation/types';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 560;
@@ -66,7 +67,6 @@ function TransactionActionRow({
     <>
       <Box>
         <SheetActionButtonRow paddingBottom={5}>
-          {/* @ts-expect-error JavaScript component */}
           <HoldToAuthorizeButton
             backgroundColor={accentColor ?? ''}
             disabled={!isSufficientGas || !isValidGas}
@@ -92,7 +92,7 @@ function TransactionActionRow({
 }
 
 export default function ENSConfirmRegisterSheet() {
-  const { params } = useRoute<any>();
+  const { params } = useRoute<RouteProp<RootStackParamList, 'ENSConfirmRegisterSheet'>>();
   const { name: ensName, mode } = useENSRegistration();
   const {
     changedRecords,

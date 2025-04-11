@@ -108,8 +108,14 @@ export const AirdropsCard = memo(function AirdropsCard() {
 
   const onPress = useCallback(() => {
     const { getAirdrops, getNumberOfAirdrops } = useAirdropsStore.getState();
-    if (getNumberOfAirdrops() === 1) navigate(Routes.CLAIM_AIRDROP_SHEET, { claimable: getAirdrops()?.[0] });
-    else navigate(Routes.AIRDROPS_SHEET);
+    if (getNumberOfAirdrops() === 1) {
+      const claimable = getAirdrops()?.[0];
+      if (claimable) {
+        navigate(Routes.CLAIM_AIRDROP_SHEET, { claimable });
+      }
+    } else {
+      navigate(Routes.AIRDROPS_SHEET);
+    }
   }, [navigate]);
 
   const setBadgePosition = useCallback(

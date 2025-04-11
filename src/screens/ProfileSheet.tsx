@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { createContext, useEffect, useMemo } from 'react';
 import { Dimensions } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
@@ -14,6 +14,7 @@ import { addressHashedColorIndex } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { RootStackParamList } from '@/navigation/types';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
@@ -22,7 +23,7 @@ export const ProfileSheetConfigContext = createContext<{
 });
 
 export default function ProfileSheet() {
-  const { params, name } = useRoute<any>();
+  const { params, name } = useRoute<RouteProp<RootStackParamList, 'ProfileSheet' | 'ProfilePreviewSheet'>>();
   const { colors } = useTheme();
   const { accountAddress } = useAccountSettings();
 
@@ -64,7 +65,7 @@ export default function ProfileSheet() {
     if (profileAddress && accountAddress) {
       analytics.track(analytics.event.viewedProfile, {
         category: 'profiles',
-        fromRoute: params.fromRoute,
+        fromRoute: params?.fromRoute,
         name: profileAddress !== accountAddress ? ensName : '',
       });
     }

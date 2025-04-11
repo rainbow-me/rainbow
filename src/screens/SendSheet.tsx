@@ -720,7 +720,7 @@ export default function SendSheet() {
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
-    if (buttonDisabled) return;
+    if (buttonDisabled || !selected) return;
     let toAddress = recipient;
     const isValid = await checkIsValidAddressOrDomain(recipient);
     if (isValid) {

@@ -223,7 +223,7 @@ export default function RestoreCloudStep() {
             true
           );
         } else {
-          Navigation.handleAction(Routes.WALLET_SCREEN, {});
+          Navigation.handleAction(Routes.WALLET_SCREEN);
         }
       } else {
         switch (status) {
