@@ -4,7 +4,10 @@ env:
   PKEY: ${DEV_PKEY}
   NAME: 'Test Wallet'
 ---
-- tapOn: 'I already have one'
+- retry:
+    maxRetries: 3
+    commands:
+      - tapOn: 'I already have one'
 - tapOn: 'Import a Secret Phrase or Private Key'
 - tapOn: 'Enter a recovery phrase or private key'
 - inputText: ${DEV_PKEY}

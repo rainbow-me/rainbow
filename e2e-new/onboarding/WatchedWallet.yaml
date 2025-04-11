@@ -1,4 +1,4 @@
-# Failing !
+# Passing !
 appId: ${APP_ID}
 tags:
   - wallet
@@ -11,7 +11,8 @@ tags:
 - tapOn: 'I already have one'
 
 # (Element not found: Text matching regex: Watch an Ethereum Address)
-- tapOn: 'Watch an Ethereum Address'
+- tapOn: 'Watch a wallet'
+- tapOn: 'Enter an Ethereum address or ENS name'
 - inputText: 'rainbowtestwallet.eth'
 - tapOn: 'Continue'
 - tapOn: 'Import Wallet'

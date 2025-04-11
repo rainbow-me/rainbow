@@ -11,9 +11,12 @@ tags:
 - runFlow: ../utils/ImportWalletWithKey.yaml
 
 # Navigate to settings and backup section
-- tapOn:
-    id: settings-menu
-- tapOn: 'Settings'
+- retry:
+    maxRetries: 3
+    commands:
+      - tapOn:
+          id: settings-menu
+      - tapOn: 'Settings'
 - tapOn:
     id: backup-section
 - assertVisible: 'Wallets & Backup'
@@ -29,7 +32,7 @@ tags:
 - runFlow:
     when:
       platform: android
-      visible: 'Type your PIN' 
+      visible: 'Type your PIN'
     commands:
       - tapOn:
           text: '1'
