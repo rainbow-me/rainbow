@@ -23,7 +23,7 @@ import {
   RainbowWallet,
   saveAddress,
   saveAllWallets,
-  setSelectedWallet,
+  setSelectedWallet as setWalletSelectedWallet,
 } from '../model/wallet';
 import { createRainbowStore } from '../state/internal/createRainbowStore';
 import { address } from '../utils/abbreviations';
@@ -85,7 +85,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
 
   selected: null,
   async setSelectedWallet(wallet) {
-    await setSelectedWallet(wallet);
+    await setWalletSelectedWallet(wallet);
     set({
       selected: wallet,
     });
@@ -599,3 +599,27 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
     };
   },
 }));
+
+export const getAccountAddress = () => useWalletsStore.getState().accountAddress;
+
+// export static functions
+export const {
+  checkKeychainIntegrity,
+  clearAllWalletsBackupStatus,
+  createAccount,
+  getAccountProfileInfo,
+  getIsDamaged,
+  getIsHardwareWallet,
+  getIsReadOnlyWallet,
+  getWalletWithAccount,
+  loadWallets,
+  refreshWalletENSAvatars,
+  refreshWalletNames,
+  setAllWalletsWithIdsAsBackedUp,
+  setSelectedAddress,
+  setSelectedWallet,
+  setWalletBackedUp,
+  updateAccountAddress,
+  updateWalletNames,
+  updateWallets,
+} = useWalletsStore.getState();

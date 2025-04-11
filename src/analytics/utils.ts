@@ -2,14 +2,13 @@ import { nanoid } from 'nanoid/non-secure';
 import { SECURE_WALLET_HASH_KEY } from 'react-native-dotenv';
 import type { Address } from 'viem';
 
-import * as ls from '@/storage';
-import * as keychain from '@/model/keychain';
-import { analyticsUserIdentifier } from '@/utils/keychainConstants';
-import { logger, RainbowError } from '@/logger';
-import { computeHmac, SupportedAlgorithm } from '@ethersproject/sha2';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import store from '@/redux/store';
 import { EthereumWalletType } from '@/helpers/walletTypes';
+import { logger, RainbowError } from '@/logger';
+import * as keychain from '@/model/keychain';
+import * as ls from '@/storage';
+import { analyticsUserIdentifier } from '@/utils/keychainConstants';
+import { computeHmac, SupportedAlgorithm } from '@ethersproject/sha2';
+import { useWalletsStore } from '../redux/wallets';
 
 /**
  * Returns the device id in a type-safe manner. It will throw if no device ID
@@ -95,8 +94,7 @@ export async function getWalletContext(address: Address): Promise<WalletContext>
   if (!address || address === ('' as Address)) return {};
 
   // walletType maybe undefined after initial wallet creation
-  const { wallets } = store.getState();
-  const wallet = findWalletWithAccount(wallets.wallets || {}, address);
+  const wallet = useWalletsStore.getState().getWalletWithAccount(address);
 
   const walletType = (
     {
@@ -107,6 +105,7 @@ export async function getWalletContext(address: Address): Promise<WalletContext>
       [EthereumWalletType.bluetooth]: 'hardware',
     } as const
   )[wallet?.type!];
+
   const walletAddressHash = securelyHashWalletAddress(address);
 
   return {

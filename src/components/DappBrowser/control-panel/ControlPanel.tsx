@@ -24,7 +24,6 @@ import {
 import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { greaterThan } from '@/helpers/utilities';
 import WalletTypes from '@/helpers/walletTypes';
 import { useAccountSettings, useInitializeWallet, useWalletsWithBalancesAndNames } from '@/hooks';
@@ -34,7 +33,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
-import { setSelectedAddress, useWalletsStore, walletsSetSelected } from '@/redux/wallets';
+import { setSelectedAddress, setSelectedWallet, useWalletsStore } from '@/redux/wallets';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -55,7 +54,6 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import WebView from 'react-native-webview';
-import { useDispatch } from 'react-redux';
 import { toHex } from 'viem';
 import { TOP_INSET } from '../Dimensions';
 import { RAINBOW_HOME } from '../constants';
@@ -378,7 +376,6 @@ const HomePanel = memo(function HomePanel({
   const { accountAddress } = useAccountSettings();
   const wallets = useWalletsStore(state => state.wallets);
   const initializeWallet = useInitializeWallet();
-  const dispatch = useDispatch();
   const { navigate } = useNavigation();
 
   const actionButtonList = useMemo(() => {
@@ -418,7 +415,7 @@ const HomePanel = memo(function HomePanel({
   const runWalletChecksBeforeSwapOrBridge = useCallback(async () => {
     if (!selectedWallet || !wallets) return false;
     // check if read only
-    const walletInPanel = findWalletWithAccount(wallets, selectedWallet.uniqueId);
+    const walletInPanel = useWalletsStore.getState().getWalletWithAccount(selectedWallet.uniqueId);
     if (!walletInPanel) return false;
     if (walletInPanel?.type === WalletTypes.readOnly) {
       // show alert
@@ -429,13 +426,12 @@ const HomePanel = memo(function HomePanel({
     // Check if it's different to the globally selected wallet
     if (selectedWallet.uniqueId !== accountAddress) {
       // switch to selected wallet
-      const p1 = dispatch(walletsSetSelected(walletInPanel));
-      const p2 = dispatch(setSelectedAddress(selectedWallet.uniqueId));
-      await Promise.all([p1, p2]);
+      setSelectedWallet(walletInPanel);
+      setSelectedAddress(selectedWallet.uniqueId);
       initializeWallet(null, null, null, false, false, null, true, null);
     }
     return true;
-  }, [accountAddress, dispatch, initializeWallet, selectedWallet, wallets]);
+  }, [accountAddress, initializeWallet, selectedWallet, wallets]);
 
   const handleOnPressSwap = useCallback(async () => {
     const valid = await runWalletChecksBeforeSwapOrBridge();

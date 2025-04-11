@@ -3,7 +3,7 @@ import { concat, without } from 'lodash';
 import { Dispatch } from 'redux';
 import { getPreference } from '../model/preferences';
 import { AppGetState } from './store';
-import { useWalletsStore } from './wallets';
+import { getAccountAddress, getIsReadOnlyWallet, useWalletsStore } from './wallets';
 
 const HIDDEN_TOKENS_LOAD_SUCCESS = 'hiddenTokens/HIDDEN_TOKENS_LOAD_SUCCESS';
 const HIDDEN_TOKENS_FETCH_SUCCESS = 'hiddenTokens/HIDDEN_TOKENS_FETCH_SUCCESS';
@@ -107,7 +107,7 @@ export const hiddenTokensLoadState =
 export const hiddenTokensUpdateStateFromWeb =
   () => async (dispatch: Dispatch<HiddenTokensFetchSuccessAction | HiddenTokensFetchFailureAction>, getState: AppGetState) => {
     try {
-      const { accountAddress, getIsReadOnlyWallet } = useWalletsStore.getState();
+      const accountAddress = getAccountAddress();
       const isReadOnlyWallet = getIsReadOnlyWallet();
       const { network } = getState().settings;
 
@@ -136,8 +136,6 @@ export const hiddenTokensUpdateStateFromWeb =
  * @param tokenId The new token ID.
  */
 export const addHiddenToken = (tokenId: string) => (dispatch: Dispatch<HiddenTokensUpdateAction>, getState: AppGetState) => {
-  const { getIsReadOnlyWallet, accountAddress } = useWalletsStore.getState();
-
   if (getIsReadOnlyWallet()) return;
 
   const { network } = getState().settings;
@@ -149,7 +147,7 @@ export const addHiddenToken = (tokenId: string) => (dispatch: Dispatch<HiddenTok
     },
     type: HIDDEN_TOKENS_UPDATE,
   });
-  saveHiddenTokens(updatedHiddenTokens, accountAddress, network);
+  saveHiddenTokens(updatedHiddenTokens, getAccountAddress(), network);
 };
 
 /**
