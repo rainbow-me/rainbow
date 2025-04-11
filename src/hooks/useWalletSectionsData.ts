@@ -7,7 +7,7 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import { useNftSort } from './useNFTsSortBy';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
-import useWallets from './useWallets';
+import { useWalletsStore } from '@/redux/wallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
 import { useLegacyNFTs } from '@/resources/nfts';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
@@ -55,7 +55,8 @@ export default function useWalletSectionsData({
   type?: string;
 } = {}) {
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
-  const { selectedWallet, isReadOnlyWallet } = useWallets();
+  const selectedWallet = useWalletsStore(state => state.selected);
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const isWalletEthZero = useIsWalletEthZero();
@@ -105,9 +106,11 @@ export default function useWalletSectionsData({
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
-  const accountWithBalance = walletsWithBalancesAndNames[selectedWallet.id]?.addresses.find(
-    address => address.address.toLowerCase() === accountAddress.toLowerCase()
-  );
+  const accountWithBalance = selectedWallet
+    ? walletsWithBalancesAndNames[selectedWallet.id]?.addresses.find(
+        address => address.address.toLowerCase() === accountAddress.toLowerCase()
+      )
+    : undefined;
 
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();

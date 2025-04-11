@@ -12,11 +12,10 @@ import { prefetchENSRecords } from './useENSRecords';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useUpdateEmoji from './useUpdateEmoji';
-import useWallets from './useWallets';
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet, PROFILES, useExperimentalFlag } from '@/config';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { walletsSetSelected, walletsUpdate } from '@/redux/wallets';
+import { useWalletsStore } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { showActionSheetWithOptions } from '@/utils';
 import useAccountAsset from './useAccountAsset';
@@ -33,7 +32,9 @@ type UseOnAvatarPressProps = {
 };
 
 export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
-  const { wallets, selectedWallet, isReadOnlyWallet } = useWallets();
+  const wallets = useWalletsStore(state => state.wallets);
+  const selectedWallet = useWalletsStore(state => state.selected);
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
   const { accountAddress, accountColor, accountName, accountImage, accountENS } = useAccountProfile();
@@ -56,38 +57,45 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const { setNextEmoji } = useUpdateEmoji();
 
   const onAvatarRemovePhoto = useCallback(async () => {
+    if (!selectedWallet || !wallets) return;
+
     const newWallets: typeof wallets = {
       ...wallets,
       [selectedWallet.id]: {
-        ...wallets![selectedWallet.id],
-        addresses: wallets![selectedWallet.id].addresses.map((account: RainbowAccount) =>
+        ...wallets[selectedWallet.id],
+        addresses: wallets[selectedWallet.id].addresses.map((account: RainbowAccount) =>
           account.address.toLowerCase() === accountAddress?.toLowerCase() ? { ...account, image: null } : account
         ),
       },
     };
 
-    dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
-    await dispatch(walletsUpdate(newWallets));
-  }, [dispatch, selectedWallet, accountAddress, wallets]);
+    const { setSelectedWallet, updateWallets } = useWalletsStore.getState();
+
+    setSelectedWallet(newWallets[selectedWallet.id]);
+    updateWallets(newWallets);
+  }, [selectedWallet, accountAddress, wallets]);
 
   const processPhoto = useCallback(
     (image: ImageOrVideo | null) => {
+      if (!selectedWallet || !wallets) return;
+
       const stringIndex = image?.path.indexOf('/tmp');
       const imagePath = ios ? `~${image?.path.slice(stringIndex)}` : image?.path;
       const newWallets: typeof wallets = {
         ...wallets,
         [selectedWallet.id]: {
-          ...wallets![selectedWallet.id],
-          addresses: wallets![selectedWallet.id].addresses.map((account: RainbowAccount) =>
+          ...wallets[selectedWallet.id],
+          addresses: wallets[selectedWallet.id].addresses.map((account: RainbowAccount) =>
             account.address.toLowerCase() === accountAddress?.toLowerCase() ? { ...account, image: imagePath } : account
           ),
         },
       };
 
-      dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
-      dispatch(walletsUpdate(newWallets));
+      const { setSelectedWallet, updateWallets } = useWalletsStore.getState();
+      setSelectedWallet(newWallets[selectedWallet.id]);
+      updateWallets(newWallets);
     },
-    [accountAddress, dispatch, selectedWallet.id, wallets]
+    [accountAddress, selectedWallet, wallets]
   );
 
   const onAvatarPickEmoji = useCallback(() => {
