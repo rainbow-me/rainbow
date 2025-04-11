@@ -4,7 +4,7 @@ import SheetActionButton, { SheetActionButtonProps } from './SheetActionButton';
 import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
 import showWalletErrorAlert from '@/helpers/support';
-import { useWallets } from '@/hooks';
+import { useWalletsStore } from '@/redux/wallets';
 
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
@@ -16,7 +16,7 @@ type BuyActionButtonProps = SheetActionButtonProps;
 function BuyActionButton({ color: givenColor, ...props }: BuyActionButtonProps) {
   const color = givenColor || colors.paleBlue;
   const navigate = useNavigationForNonReadOnlyWallets();
-  const { isDamaged } = useWallets();
+  const isDamaged = useWalletsStore(state => state.getIsDamaged());
   const { name: routeName } = useRoute();
 
   const handlePress = useCallback(() => {

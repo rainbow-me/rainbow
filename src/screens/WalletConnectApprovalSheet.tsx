@@ -34,6 +34,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { Address } from 'viem';
 import { RainbowWallet } from '@/model/wallet';
 import { WalletconnectMeta } from '@/walletConnect/types';
+import { useWalletsStore } from '@/redux/wallets';
 
 type WithThemeProps = {
   theme: ThemeContextProps;
@@ -130,7 +131,9 @@ export function WalletConnectApprovalSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, 'WalletConnectApprovalSheet'>>();
   const { chainId: settingsChainId, accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
-  const { selectedWallet, walletNames, wallets } = useWallets();
+  const selectedWallet = useWalletsStore(state => state.selected);
+  const walletNames = useWalletsStore(state => state.walletNames);
+  const wallets = useWalletsStore(state => state.wallets);
   const handled = useRef(false);
   const initialApprovalAccount = useMemo<{ address: Address; wallet: RainbowWallet }>(() => {
     const accountAddressAsAddress = accountAddress as Address;
