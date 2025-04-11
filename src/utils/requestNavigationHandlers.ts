@@ -34,7 +34,8 @@ import { toUtf8String } from '@ethersproject/strings';
 import { noop } from 'lodash';
 import { InteractionManager } from 'react-native';
 import { Address } from 'viem';
-import { getWalletWithAccount } from '../redux/wallets';
+import { getSelectedWallet } from '../model/wallet';
+import { getAccountAddress, getIsReadOnlyWallet, getWalletWithAccount } from '../redux/wallets';
 import { SEND_TRANSACTION } from './signingMethods';
 import watchingAlert from './watchingAlert';
 
@@ -86,13 +87,12 @@ export const handleMobileWalletProtocolRequest = async ({
 }: HandleMobileWalletProtocolRequestProps): Promise<boolean> => {
   logger.debug(`Handling Mobile Wallet Protocol request: ${request.uuid}`);
 
-  const { selected } = store.getState().wallets;
-  const { accountAddress } = store.getState().settings;
+  const accountAddress = getAccountAddress();
 
   let addressToUse = accountAddress;
   let chainIdToUse = ChainId.mainnet;
 
-  const isReadOnlyWallet = selected?.type === walletTypes.readOnly;
+  const isReadOnlyWallet = getIsReadOnlyWallet();
   if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
     logger.debug('Rejecting request due to read-only wallet');
     watchingAlert();
