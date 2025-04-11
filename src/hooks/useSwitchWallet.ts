@@ -1,14 +1,11 @@
-import { useDispatch } from 'react-redux';
-import { addressSetSelected, walletsSetSelected } from '../redux/wallets';
-import useInitializeWallet from './useInitializeWallet';
 import { toChecksumAddress } from '@/handlers/web3';
 import { RainbowAccount } from '@/model/wallet';
-import useWallets from './useWallets';
+import { useWalletsStore } from '../redux/wallets';
+import useInitializeWallet from './useInitializeWallet';
 
 export default function useSwitchWallet() {
   const initializeWallet = useInitializeWallet();
-  const dispatch = useDispatch();
-  const { wallets } = useWallets();
+  const wallets = useWalletsStore(state => state.wallets);
 
   const switchToWalletWithAddress = async (address: string): Promise<string | null> => {
     const walletKey = Object.keys(wallets!).find(key => {
@@ -17,9 +14,8 @@ export default function useSwitchWallet() {
     });
 
     if (!walletKey) return null;
-    const p1 = dispatch(walletsSetSelected(wallets![walletKey]));
-    const p2 = dispatch(addressSetSelected(toChecksumAddress(address)!));
-    await Promise.all([p1, p2]);
+    useWalletsStore.getState().setSelectedWallet(wallets![walletKey]);
+    useWalletsStore.getState().setSelectedAddress(toChecksumAddress(address)!);
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 7.
     return initializeWallet(null, null, null, false, false, null, true);
   };

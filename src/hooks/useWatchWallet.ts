@@ -4,7 +4,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import { useAccountProfile, useDeleteWallet, useImportingWallet, useInitializeWallet, useWallets } from '@/hooks';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
-import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
+import { setSelectedAddress, walletsSetSelected } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { doesWalletsContainAddress } from '@/utils';
 import { RainbowError, logger } from '@/logger';
@@ -39,7 +39,7 @@ export default function useWatchWallet({
       const wallet = (wallets || {})[walletId];
       try {
         const p1 = dispatch(walletsSetSelected(wallet));
-        const p2 = dispatch(addressSetSelected(address));
+        const p2 = dispatch(setSelectedAddress(address));
         await Promise.all([p1, p2]);
 
         // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 7.

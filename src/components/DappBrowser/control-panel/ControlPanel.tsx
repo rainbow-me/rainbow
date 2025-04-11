@@ -54,7 +54,7 @@ import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDa
 import WalletTypes from '@/helpers/walletTypes';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
+import { setSelectedAddress, walletsSetSelected } from '@/redux/wallets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
@@ -430,7 +430,7 @@ const HomePanel = memo(function HomePanel({
     if (selectedWallet.uniqueId !== accountAddress) {
       // switch to selected wallet
       const p1 = dispatch(walletsSetSelected(walletInPanel));
-      const p2 = dispatch(addressSetSelected(selectedWallet.uniqueId));
+      const p2 = dispatch(setSelectedAddress(selectedWallet.uniqueId));
       await Promise.all([p1, p2]);
       initializeWallet(null, null, null, false, false, null, true, null);
     }

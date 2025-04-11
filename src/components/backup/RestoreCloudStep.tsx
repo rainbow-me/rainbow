@@ -20,7 +20,7 @@ import { isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/ha
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { useDimensions, useInitializeWallet } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
-import { addressSetSelected, setAllWalletsWithIdsAsBackedUp, walletsLoadState, walletsSetSelected } from '@/redux/wallets';
+import { setSelectedAddress, setAllWalletsWithIdsAsBackedUp, walletsLoadState, walletsSetSelected } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
@@ -207,7 +207,7 @@ export default function RestoreCloudStep() {
           const firstWallet = walletKeys.length > 0 ? (newWalletsState || {})[walletKeys[0]] : undefined;
           const firstAddress = firstWallet ? (firstWallet.addresses || [])[0].address : undefined;
           const p1 = dispatch(walletsSetSelected(firstWallet));
-          const p2 = dispatch(addressSetSelected(firstAddress));
+          const p2 = dispatch(setSelectedAddress(firstAddress));
           await Promise.all([p1, p2]);
           await initializeWallet(null, null, null, false, false, null, true, null);
         });
