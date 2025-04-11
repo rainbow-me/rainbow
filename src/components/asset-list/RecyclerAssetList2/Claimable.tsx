@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
-import { useClaimablesStore } from '@/state/claimables/claimables';
 import { FasterImageView } from '@candlefinance/faster-image';
 import { ButtonPressAnimation } from '@/components/animations';
 import { deviceUtils } from '@/utils';
@@ -11,16 +10,20 @@ import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { analyticsV2 } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@/state/backendNetworks/types';
+import { Claimable as ClaimableType } from '@/resources/addys/claimables/types';
 
 const RAINBOW_ICON_URL = 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png';
 
-export const Claimable = React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
-  const { nativeCurrency } = useAccountSettings();
-  const { navigate } = extendedState;
+export const Claimable = React.memo(function Claimable({
+  claimable,
+  extendedState,
+}: {
+  claimable: ClaimableType;
+  extendedState: ExtendedState;
+}) {
+  const { navigate, nativeCurrency } = extendedState;
 
-  const isETHRewards = uniqueId === 'rainbow-eth-rewards';
-
-  const claimable = useClaimablesStore(state => state.getData())?.claimables.find(claimable => claimable.uniqueId === uniqueId);
+  const isETHRewards = claimable.uniqueId === 'rainbow-eth-rewards';
 
   const nativeCurrencyDisplay = useMemo(() => {
     if (!claimable) return null;

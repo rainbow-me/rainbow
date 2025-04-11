@@ -2,6 +2,8 @@ import { RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
 import { RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 import { UniqueAsset } from '@/entities';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
+import { Claimable } from '@/resources/addys/claimables/types';
+import { RainbowPosition } from '@/resources/defi/types';
 export enum CellType {
   ASSETS_HEADER_SPACE_AFTER = 'ASSETS_HEADER_SPACE_AFTER',
   COIN = 'COIN',
@@ -80,7 +82,7 @@ export type NFTExtraData = {
 };
 export type PositionExtraData = {
   type: CellType.POSITION;
-  uniqueId: string;
+  position: RainbowPosition;
   index: number;
 };
 export type PositionHeaderExtraData = {
@@ -88,7 +90,7 @@ export type PositionHeaderExtraData = {
 };
 export type ClaimableExtraData = {
   type: CellType.CLAIMABLE;
-  uniqueId: string;
+  claimable: Claimable;
 };
 export type ClaimablesHeaderExtraData = {
   total: string;

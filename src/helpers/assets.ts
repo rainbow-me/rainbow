@@ -263,24 +263,31 @@ export const buildBriefUniqueTokenList = (
   nftSort = NftCollectionSortCriterion.MostRecent,
   isFetchingNfts = false
 ) => {
-  const hiddenUniqueTokensIds = uniqueTokens
-    .filter(({ fullUniqueId }) => hiddenTokens.includes(fullUniqueId))
-    .map(({ uniqueId }) => uniqueId);
-  const nonHiddenUniqueTokens = uniqueTokens.filter(({ fullUniqueId }) => !hiddenTokens.includes(fullUniqueId));
-  const uniqueTokensInShowcaseIds = nonHiddenUniqueTokens
-    .filter(({ uniqueId }) => selectedShowcaseTokens.includes(uniqueId))
-    .map(({ uniqueId }) => uniqueId);
+  const hiddenUniqueTokensIds: string[] = [];
+  const uniqueTokensInShowcaseIds: string[] = [];
+  const filteredUniqueTokens: UniqueAsset[] = [];
 
-  const filteredUniqueTokens = nonHiddenUniqueTokens.filter((token: UniqueAsset) => {
+  for (const token of uniqueTokens) {
+    if (hiddenTokens.includes(token.fullUniqueId)) {
+      hiddenUniqueTokensIds.push(token.uniqueId);
+      continue;
+    }
+
+    if (selectedShowcaseTokens.includes(token.uniqueId)) {
+      uniqueTokensInShowcaseIds.push(token.uniqueId);
+    }
+
     if (listType === 'select-nft') {
       const format = getUniqueTokenFormat(token);
       const type = getUniqueTokenType(token);
-      return format === 'image' && type === 'NFT';
+      if (format === 'image' && type === 'NFT') {
+        filteredUniqueTokens.push(token);
+      }
+    } else {
+      filteredUniqueTokens.push(token);
     }
-    return true;
-  });
+  }
 
-  // group the assets by collection name
   const assetsByName = groupBy<UniqueAsset>(filteredUniqueTokens, token => token.familyName);
 
   const result: CellTypes[] = [

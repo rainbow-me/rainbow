@@ -1,4 +1,4 @@
-import React, { ComponentProps } from 'react';
+import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../fab';
 import RecyclerAssetList, { RecyclerAssetListProps, RecyclerAssetListSection } from './RecyclerAssetList';

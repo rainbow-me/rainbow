@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
@@ -14,7 +14,6 @@ import { usePositionsStore } from '@/state/positions/positions';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analyticsV2 } from '@/analytics';
-import useUniqueTokens from './useUniqueTokens';
 import { useNftSort } from './useNFTsSortBy';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
@@ -113,8 +112,8 @@ export default function useWalletSectionsData({
     analyticsV2.track(analyticsV2.event.tokenList, params);
   }, [isLoadingUserAssets, sortedAssets, type]);
 
-  const walletSectionsState: WalletSectionsState = useMemo(
-    () => ({
+  return useMemo(() => {
+    const sections: WalletSectionsState = {
       hiddenAssets,
       isCoinListEdited,
       isLoadingUserAssets,
@@ -138,43 +137,41 @@ export default function useWalletSectionsData({
       claimables,
       nftSort,
       remoteCards,
-    }),
-    [
-      hiddenAssets,
-      isCoinListEdited,
+    };
+
+    const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(sections);
+    const hasNFTs = uniqueTokens.length > 0;
+
+    return {
+      hasNFTs,
+      isEmpty,
+      isLoadingBalance: !accountWithBalance?.balances,
       isLoadingUserAssets,
-      language,
-      nativeCurrency,
-      network,
-      pinnedCoins,
-      sortedAssets,
-      accountWithBalance?.balancesMinusHiddenBalances,
       isWalletEthZero,
-      hiddenTokens,
-      isReadOnlyWallet,
-      type,
-      showcaseTokens,
-      uniqueTokens,
-      isFetchingNfts,
-      remoteConfig,
-      experimentalConfig,
-      positions,
-      claimables,
-      nftSort,
-      remoteCards,
-    ]
-  );
-
-  const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(walletSectionsState);
-
-  const result: WalletSectionsResult = {
-    briefSectionsData,
-    isEmpty,
-    isWalletEthZero,
+      briefSectionsData,
+    };
+  }, [
+    hiddenAssets,
+    isCoinListEdited,
     isLoadingUserAssets,
-    isLoadingBalance: !accountWithBalance?.balances,
-    hasNFTs: uniqueTokens.length > 0,
-  };
-
-  return result;
+    language,
+    nativeCurrency,
+    network,
+    pinnedCoins,
+    sortedAssets,
+    accountWithBalance?.balancesMinusHiddenBalances,
+    isWalletEthZero,
+    hiddenTokens,
+    isReadOnlyWallet,
+    type,
+    showcaseTokens,
+    uniqueTokens,
+    isFetchingNfts,
+    remoteConfig,
+    experimentalConfig,
+    positions,
+    claimables,
+    nftSort,
+    remoteCards,
+  ]);
 }

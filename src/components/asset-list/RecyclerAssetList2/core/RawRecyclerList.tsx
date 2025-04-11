@@ -24,6 +24,11 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { deviceUtils } from '@/utils';
 
+const dimensions = {
+  height: deviceUtils.dimensions.height,
+  width: deviceUtils.dimensions.width,
+};
+
 const dataProvider = new DataProvider((r1: CellTypes, r2: CellTypes) => {
   return r1.uid !== r2.uid;
 });
@@ -173,14 +178,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       renderAheadOffset={1000}
       rowRenderer={rowRenderer}
       canChangeSize={type === 'wallet'}
-      layoutSize={
-        type === 'wallet'
-          ? {
-              height: deviceUtils.dimensions.height,
-              width: deviceUtils.dimensions.width,
-            }
-          : undefined
-      }
+      layoutSize={type === 'wallet' ? dimensions : undefined}
       scrollIndicatorInsets={scrollIndicatorInsets}
     />
   );

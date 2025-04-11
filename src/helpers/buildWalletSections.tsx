@@ -136,7 +136,7 @@ const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserA
   const positionSectionItems: CellTypes[] = Object.values(positions.positions).map((position, index) => {
     return {
       type: CellType.POSITION,
-      uniqueId: position.type,
+      position,
       uid: `position-${position.type}`,
       index,
     };
@@ -162,7 +162,7 @@ const withClaimablesSection = (claimables: ClaimablesStore | null, isLoadingUser
   const claimableSectionItems: CellTypes[] = claimables.claimables.map(claimable => {
     return {
       type: CellType.CLAIMABLE,
-      uniqueId: claimable.uniqueId,
+      claimable,
       uid: `claimable-${claimable.uniqueId}`,
     };
   });
