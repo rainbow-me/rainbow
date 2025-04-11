@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { ThemeContextProps, withThemeContext } from '@/theme/ThemeContext';
 import { CoinRowHeight } from '@/components/coin-row';
 import Skeleton, { FakeAvatar, FakeRow, FakeText } from '@/components/skeleton/Skeleton';
-import { padding } from '@/styles';
+import { padding, colors } from '@/styles';
 import { View, ViewProps } from 'react-native';
 import styled from '@/styled-thing';
 import { ColumnWithMargins, RowWithMargins } from '@/components/layout';
@@ -29,7 +29,6 @@ type AssetListItemSkeletonProps = {
   index?: number;
   descendingOpacity?: boolean;
   ignorePaddingHorizontal?: boolean;
-  colors?: any;
 } & Omit<ViewProps, 'children'>;
 
 function AssetListItemSkeleton({
@@ -37,11 +36,8 @@ function AssetListItemSkeleton({
   index = 0,
   descendingOpacity = false,
   ignorePaddingHorizontal,
-  colors,
   ...viewProps
 }: AssetListItemSkeletonProps) {
-  const opacity = useMemo(() => 1 - 0.2 * (descendingOpacity ? index : 0), [descendingOpacity, index]);
-
   return (
     <Container descendingOpacity={descendingOpacity} index={index} {...viewProps}>
       <Skeleton animated={animated}>

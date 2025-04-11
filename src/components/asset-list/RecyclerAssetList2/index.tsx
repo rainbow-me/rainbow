@@ -39,6 +39,14 @@ const menuItems: MenuItem<(typeof Routes)[keyof typeof Routes]>[] = [
   },
 ];
 
+export interface RecyclerAssetList2Props {
+  accentColor?: string;
+  disablePullDownToRefresh?: boolean;
+  externalAddress?: string;
+  onPressUniqueToken?: (asset: UniqueAsset) => void;
+  type?: AssetListType;
+  walletBriefSectionsData: ReturnType<typeof useWalletSectionsData>['briefSectionsData'];
+}
 function RecyclerAssetList({
   accentColor,
   disablePullDownToRefresh,
@@ -46,14 +54,7 @@ function RecyclerAssetList({
   onPressUniqueToken,
   type = 'wallet',
   walletBriefSectionsData,
-}: {
-  accentColor?: string;
-  disablePullDownToRefresh?: boolean;
-  externalAddress?: string;
-  onPressUniqueToken?: (asset: UniqueAsset) => void;
-  type?: AssetListType;
-  walletBriefSectionsData: ReturnType<typeof useWalletSectionsData>['briefSectionsData'];
-}) {
+}: RecyclerAssetList2Props) {
   const { memoizedResult: briefSectionsData, additionalData } = useMemoBriefSectionData({
     briefSectionsData: walletBriefSectionsData,
     externalAddress,

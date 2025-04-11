@@ -82,7 +82,7 @@ function App() {
   );
 }
 
-const AppWithRedux = connect<AppProps, AppDispatch, unknown, AppState>(
+const AppWithRedux = connect<AppProps, AppDispatch, Record<string, never>, AppState>(
   state => ({
     walletReady: state.appState.walletReady,
   }),

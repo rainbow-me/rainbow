@@ -13,6 +13,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
+import { time } from '@/utils';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
@@ -28,10 +29,10 @@ export default function useRefreshAccountData() {
   );
 
   const fetchAccountData = useCallback(async () => {
-    userAssetsStore.getState().fetch(undefined, { staleTime: 0 });
-    useBackendNetworksStore.getState().fetch(undefined, { staleTime: 0 });
-    usePositionsStore.getState().fetch(undefined, { staleTime: 0 });
-    useClaimablesStore.getState().fetch(undefined, { staleTime: 0 });
+    userAssetsStore.getState().fetch(undefined, { staleTime: time.seconds(5) });
+    useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) });
+    usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) });
+    useClaimablesStore.getState().fetch(undefined, { staleTime: time.seconds(5) });
 
     queryClient.invalidateQueries([
       addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }),

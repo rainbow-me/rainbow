@@ -1,6 +1,6 @@
 import ConditionalWrap from 'conditional-wrap';
-import React, { ComponentProps } from 'react';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import React from 'react';
+import { RefreshControl, ScrollView, ViewProps } from 'react-native';
 import AddFundsInterstitial from '../AddFundsInterstitial';
 import { Centered, Column } from '../layout';
 import AssetListHeader from './AssetListHeader';
@@ -16,7 +16,7 @@ const Container = styled(Column)({
   paddingTop: navbarHeight,
 });
 
-interface EmptyAssetListProps extends ComponentProps<typeof View> {
+export interface EmptyAssetListProps extends ViewProps {
   descendingOpacity?: boolean;
   isLoading?: boolean;
   isWalletEthZero?: boolean;

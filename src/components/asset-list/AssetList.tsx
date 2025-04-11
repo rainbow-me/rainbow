@@ -2,8 +2,8 @@ import React, { ComponentProps } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../fab';
 import RecyclerAssetList, { RecyclerAssetListProps, RecyclerAssetListSection } from './RecyclerAssetList';
-import RecyclerAssetList2, { AssetListType } from './RecyclerAssetList2';
-import EmptyAssetList from './EmptyAssetList';
+import RecyclerAssetList2, { AssetListType, RecyclerAssetList2Props } from './RecyclerAssetList2';
+import EmptyAssetList, { EmptyAssetListProps } from './EmptyAssetList';
 import * as i18n from '@/languages';
 import { UniqueAsset } from '@/entities';
 import { ListFooterHeight } from '../list/ListFooter';
@@ -20,17 +20,17 @@ interface BaseAssetListProps {
   scrollViewTracker?: any;
 }
 
-type EmptyAssetListComponentProps = Omit<ComponentProps<typeof EmptyAssetList>, 'isLoading' | 'network' | 'isWalletEthZero'>;
-type RecyclerAssetListComponentProps = Omit<RecyclerAssetListProps, 'hideHeader' | 'sections'>;
-type RecyclerAssetList2ComponentProps = Omit<ComponentProps<typeof RecyclerAssetList2>, 'accentColor' | 'walletBriefSectionsData'>;
+type AssetListEmpty = Omit<EmptyAssetListProps, 'isLoading' | 'network' | 'isWalletEthZero'>;
+type RecyclerList = Omit<RecyclerAssetListProps, 'hideHeader' | 'sections'>;
+type RecyclerList2 = Omit<RecyclerAssetList2Props, 'accentColor' | 'walletBriefSectionsData'>;
 
-interface LoadingProps extends BaseAssetListProps, EmptyAssetListComponentProps {
+interface LoadingProps extends BaseAssetListProps, AssetListEmpty {
   isLoading: boolean;
   showcase?: boolean;
   disableRefreshControl?: boolean;
 }
 
-interface ShowcaseProps extends Omit<BaseAssetListProps, 'walletBriefSectionsData'>, Omit<RecyclerAssetListComponentProps, 'colors'> {
+interface ShowcaseProps extends Omit<BaseAssetListProps, 'walletBriefSectionsData'>, Omit<RecyclerList, 'colors'> {
   isLoading?: false;
   isReadOnlyWallet?: boolean;
   openFamilies?: boolean;
@@ -39,7 +39,7 @@ interface ShowcaseProps extends Omit<BaseAssetListProps, 'walletBriefSectionsDat
   colors?: RecyclerAssetListProps['colors'];
 }
 
-interface DefaultProps extends BaseAssetListProps, RecyclerAssetList2ComponentProps {
+interface DefaultProps extends BaseAssetListProps, RecyclerList2 {
   isLoading?: false;
   showcase?: false;
   disablePullDownToRefresh?: boolean;
