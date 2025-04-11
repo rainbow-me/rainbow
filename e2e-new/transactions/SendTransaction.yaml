@@ -1,4 +1,3 @@
-# Failing !
 appId: ${APP_ID}
 tags:
   - wallet

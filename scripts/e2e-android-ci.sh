@@ -50,10 +50,10 @@ echo "Waiting 5 seconds for Anvil to start..."
 sleep 5
 
 # Run the tests
-./scripts/e2e-android.sh --device $DEVICES_LIST --debug-output $ARTIFACTS_FOLDER --flatten-debug-output $SHARDS_FLAG
+./scripts/e2e-android.sh --device $DEVICES_LIST --debug-output $ARTIFACTS_FOLDER --flatten-debug-output "$SHARDS_FLAG" --bail-on-failure
 TEST_STATUS=$?
 
-# Clean up recordings
+# Clean up
 for DEVICE in $DEVICES; do
   if [ $DEBUG = "true" ]; then
     adb -s $DEVICE shell "kill -2 \$(cat /data/local/tmp/recording_pid_$DEVICE.txt)"
@@ -62,7 +62,6 @@ for DEVICE in $DEVICES; do
   fi
 done
 
-# Always clean up Anvil
 ANVIL_PID=$(lsof -t -i:8545 -c anvil 2>/dev/null)
 if [ -n "$ANVIL_PID" ]; then
   kill $ANVIL_PID
