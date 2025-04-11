@@ -5,7 +5,7 @@ import {
   useIsFocused,
   type NavigationContainerRef,
 } from '@react-navigation/native';
-import { type StackNavigationProp } from '@react-navigation/stack';
+import { StackNavigationOptions, type StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import { useCallbackOne } from 'use-memo-one';
 import Routes, { NATIVE_ROUTES } from '@/navigation/routesNames';
@@ -80,7 +80,14 @@ type HandleActionFunction = {
   ): void;
 };
 
-export function useNavigation() {
+type ExtendedSetOptionsFunction = Partial<StackNavigationOptions> & {
+  limitActiveModals?: boolean;
+  longFormHeight?: number;
+  shortFormHeight?: number;
+  onWillDismiss?: () => void;
+};
+
+export function useNavigation<RouteName extends keyof RootStackParamList>() {
   const navigation = oldUseNavigation<StackNavigationProp<RootStackParamList>>();
 
   const handleNavigate: NavigateFunction = useCallbackOne(
@@ -97,10 +104,15 @@ export function useNavigation() {
     [navigation.replace]
   );
 
+  const handleSetParams = useCallbackOne((params: RootStackParamList[RouteName]) => navigation.setParams(params), [navigation.setParams]);
+  const handleSetOptions = useCallbackOne((params: ExtendedSetOptionsFunction) => navigation.setOptions(params), [navigation.setOptions]);
+
   return {
     ...navigation,
     navigate: handleNavigate,
     replace: handleReplace,
+    setOptions: handleSetOptions,
+    setParams: handleSetParams,
   };
 }
 

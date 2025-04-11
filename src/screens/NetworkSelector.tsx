@@ -64,12 +64,13 @@ import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/Gestur
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { useNavigation } from '@/navigation';
+import { UserAssetFilter } from '@/__swaps__/types/assets';
 
 type RouteParams = RouteProp<RootStackParamList, 'NetworkSelector'>['params'];
 
 type NetworkSwitcherProps = RouteParams & {
   editing: SharedValue<boolean>;
-  selected: SharedValue<ChainId | undefined>;
+  selected: SharedValue<ChainId | UserAssetFilter | undefined>;
 };
 
 const enum Section {

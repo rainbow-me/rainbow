@@ -98,7 +98,7 @@ function BridgeButton({ chainId }: { chainId: ChainId }) {
   const { accentColors } = useExpandedAssetSheetContext();
   const chainsLabels = useBackendNetworksStore.getState().getChainsLabel();
 
-  const assetToBridge = useAsset({ address: asset.address as Address, chainId: chainId });
+  const assetToBridge = useAsset({ address: asset.address as Address, chainId });
 
   return (
     // TODO: Add nav params after user assets pr is merged in

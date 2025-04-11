@@ -108,7 +108,6 @@ export interface WalletconnectApprovalSheetRouteParams {
   meta?: WalletconnectMeta;
   timeout?: ReturnType<typeof setTimeout> | null;
   timedOut?: boolean;
-  failureExplainSheetVariant?: string;
   verifiedData?: Verify.Context['verified'];
   source?: RequestSource;
 }

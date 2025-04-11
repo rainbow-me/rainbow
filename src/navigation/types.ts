@@ -292,6 +292,7 @@ export type RootStackParamList = {
     springDamping?: number;
     topOffset?: number;
     transitionDuration?: number;
+    focusTo?: 'focusToMinerTip';
   };
   [Routes.EXPANDED_ASSET_SHEET_V2]: {
     address: string;
@@ -303,13 +304,7 @@ export type RootStackParamList = {
     position: RainbowPosition;
   };
   [Routes.NETWORK_SELECTOR]: {
-    selected:
-      | SharedValue<ChainId>
-      | SharedValue<ChainId | undefined>
-      | SharedValue<UserAssetFilter | undefined>
-      | ChainId
-      | UserAssetFilter
-      | undefined;
+    selected: SharedValue<ChainId> | SharedValue<ChainId | undefined> | SharedValue<UserAssetFilter | undefined> | ChainId | undefined;
     setSelected: (chainId: ChainId | undefined) => void;
     onClose?: VoidFunction;
     fillPinnedSection?: boolean;

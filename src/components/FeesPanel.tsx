@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import { RouteProp, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard, KeyboardAvoidingView } from 'react-native';
@@ -16,6 +16,7 @@ import { gasUtils } from '@/utils';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
+import { CurrentBaseFeeTypes, ExplainSheetRouteParams, ExplainSheetType, RootStackParamList } from '@/navigation/types';
 
 const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
@@ -46,6 +47,8 @@ type AlertInfo = {
   message: string;
 } | null;
 
+type CurrentBaseFeeTypeKey = keyof CurrentBaseFeeTypes;
+
 export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack, validateGasParams, openCustomOptions }: FeesPanelProps) {
   const { selectedGasFee, currentBlockParams, customGasFeeModifiedByUser, gasFeeParamsBySpeed, updateToCustomGasFee, chainId } = useGas();
 
@@ -53,9 +56,8 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
   const { colors } = useTheme();
 
   const {
-    // @ts-expect-error ts-migrate(2339)
     params: { type, focusTo },
-  } = useRoute();
+  } = useRoute<RouteProp<RootStackParamList, 'ExpandedAssetSheet'>>();
 
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
@@ -84,7 +86,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
   const [userProceededOnWarnings, setUserProcededOnWarnings] = useState(false);
 
   const { customMaxBaseFee, customMaxPriorityFee } = customFees;
-  const trendType = 'currentBaseFee' + upperFirst(currentGasTrend);
+  const trendType = ('currentBaseFee' + upperFirst(currentGasTrend)) as CurrentBaseFeeTypeKey;
 
   const updatedCustomMaxBaseFee = gasFeeParamsBySpeed?.[CUSTOM]?.maxBaseFee?.gwei;
   const updatedCustomMaxPriorityFee = gasFeeParamsBySpeed?.[CUSTOM]?.maxPriorityFeePerGas?.gwei;
@@ -122,19 +124,20 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
   ]);
 
   const openGasHelper = useCallback(
-    (type: string) => {
+    (type: CurrentBaseFeeTypeKey | 'minerTip' | 'maxBaseFee') => {
       Keyboard.dismiss();
-      navigate(Routes.EXPLAIN_SHEET, {
+      const params: ExplainSheetRouteParams = {
         currentBaseFee: toFixedDecimals(currentBaseFee, isL2 ? 3 : 0),
         currentGasTrend,
         type,
-      });
+      };
+      navigate(Routes.EXPLAIN_SHEET, params);
     },
     [currentBaseFee, currentGasTrend, isL2, navigate]
   );
 
   const renderRowLabel = useCallback(
-    (label: string, type: string, error?: AlertInfo, warning?: AlertInfo) => {
+    (label: string, type: CurrentBaseFeeTypeKey | 'minerTip' | 'maxBaseFee', error?: AlertInfo, warning?: AlertInfo) => {
       let color;
       let text;
       if ((!error && !warning) || !selectedOptionIsCustom) {
