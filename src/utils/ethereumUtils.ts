@@ -1,17 +1,9 @@
+import { queryClient } from '@/react-query';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { queryClient } from '@/react-query';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
-import { parse } from 'eth-url-parser';
-import { addHexPrefix, isValidAddress, toChecksumAddress } from 'ethereumjs-util';
-import { Contract } from '@ethersproject/contracts';
-import lang from 'i18n-js';
-import { cloneDeep, isEmpty, isString, replace } from 'lodash';
-import { InteractionManager } from 'react-native';
-import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { AddressOrEth } from '@/__swaps__/types/assets';
 import {
   EthereumAddress,
   GasFee,
@@ -21,26 +13,35 @@ import {
   RainbowTransaction,
   SelectedGasFee,
 } from '@/entities';
+import { IS_IOS } from '@/env';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getProvider, isTestnetChain, toHex } from '@/handlers/web3';
-import { convertRawAmountToDecimalFormat, fromWei, greaterThan, isZero, subtract, add } from '@/helpers/utilities';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { add, convertRawAmountToDecimalFormat, fromWei, greaterThan, isZero, subtract } from '@/helpers/utilities';
+import { logger, RainbowError } from '@/logger';
 import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { parseAssetNative } from '@/parsers';
 import store from '@/redux/store';
 import { ETH_ADDRESS, ethUnits, optimismGasOracleAbi, OVM_GAS_PRICE_ORACLE } from '@/references';
-import Routes from '@/navigation/routesNames';
-import { logger, RainbowError } from '@/logger';
-import { IS_IOS } from '@/env';
 import {
   externalTokenQueryKey,
-  FormattedExternalAsset,
   fetchExternalToken,
+  FormattedExternalAsset,
   useExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
-import { ChainId, Network } from '@/state/backendNetworks/types';
-import { AddressOrEth } from '@/__swaps__/types/assets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId, Network } from '@/state/backendNetworks/types';
+import { Contract } from '@ethersproject/contracts';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
+import { parse } from 'eth-url-parser';
+import { addHexPrefix, isValidAddress, toChecksumAddress } from 'ethereumjs-util';
+import lang from 'i18n-js';
+import { cloneDeep, isEmpty, isString, replace } from 'lodash';
+import { InteractionManager } from 'react-native';
+import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
+import { getAccountAddress } from '../redux/wallets';
 import { openInBrowser } from './openInBrowser';
 
 /**
@@ -95,7 +96,8 @@ export const getNativeAssetForNetwork = async ({
   address?: EthereumAddress;
 }): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset({ chainId });
-  const { accountAddress, nativeCurrency } = store.getState().settings;
+  const accountAddress = getAccountAddress();
+  const { nativeCurrency } = store.getState().settings;
   const differentWallet = address?.toLowerCase() !== accountAddress?.toLowerCase();
   let nativeAsset = differentWallet ? undefined : networkNativeAsset;
 
