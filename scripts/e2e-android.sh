@@ -50,7 +50,6 @@ maestro $DEVICE -p Android test -e DEV_PKEY="$DEV_PKEY" -e APP_ID="me.rainbow" "
 EXIT_CODE=$?
 
 # Clean up
-echo "Shutting down Anvil..."
 ANVIL_PID=$(lsof -t -i:8545 -c anvil 2>/dev/null)
 if [ -n "$ANVIL_PID" ]; then
   kill $ANVIL_PID

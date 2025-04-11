@@ -37,8 +37,6 @@ tags:
     commands:
         - assertVisible:
             id: send-asset-list
-        - assertVisible:
-            id: add-contact-button
 
 # Test Add Contact functionality
 - tapOn:
@@ -46,14 +44,23 @@ tags:
 - assertVisible:
     id: wallet-info-input
 - tapOn: 'Cancel'
-- assertVisible:
-    id: add-contact-button
-
-# Test Add Contact again and cancel differently
 - tapOn:
     id: add-contact-button
-- tapOn: 'Cancel'
+- tapOn: 'Add Contact'
 
-# Close send sheet
-- swipe:
-    direction: DOWN 
+# Test updating contact name after edit
+- tapOn:
+    id: edit-contact-button
+- tapOn: 'Edit Contact'
+- inputText: '123'
+- tapOn:
+    id: wallet-info-submit-button
+- assertVisible: 'rainbowwallet.eth123'
+
+# Test showing Add Contact Button after deleting contact
+- tapOn:
+    id: edit-contact-button
+- tapOn: 'Delete Contact'
+- tapOn: 'Delete Contact'
+- assertVisible:
+    id: add-contact-button

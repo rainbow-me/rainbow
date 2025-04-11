@@ -33,26 +33,5 @@ tags:
 - assertVisible: 'DAI'
 - assertVisible: 'No Balance'
 
-# Hold to swap
-# Failing on swap-bottom-action-button. I know it's in view 
-# and I can tap on it on my sim tho. need to debug further.
-
-# - retry:
-#     maxRetries: 3
-#     commands:
-#         - longPressOn:
-#             id: swap-bottom-action-button
-# - runFlow:
-#     when:
-#       platform: android
-#       visible: 'Type your PIN' 
-#     commands:
-#       - tapOn:
-#           text: '1'
-#           repeat: 4
-# - tapOn:
-#     id: tab-bar-icon-ProfileScreen
-# - assertVisible:
-#     id: profile-screen
-# - assertVisible: 'Pending'
-# - assertVisible: 'Swapping'
+# Add swap execution and validation. 
+# Currenlty on detox we don't do either.

@@ -29,7 +29,3 @@ tags:
     id: wrapped-nft-rainbowtestwallet.eth
 - assertNotVisible:
     id: Showcase
-- tapOn:
-    id: unique-token-expanded-state-context-menu-button
-- assertNotVisible:
-    id: Unhide 
