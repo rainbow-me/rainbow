@@ -1,14 +1,10 @@
 import { useCallback, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
-import { useWallets } from '@/hooks';
+import { useWalletsStore } from '@/redux/wallets';
 import { RainbowAccount, RainbowWallet } from '@/model/wallet';
-import { walletsUpdate } from '@/redux/wallets';
 
 export default function useDeleteWallet({ address: primaryAddress }: { address?: string }) {
-  const dispatch = useDispatch();
-
-  const { wallets } = useWallets();
+  const wallets = useWalletsStore(state => state.wallets);
 
   const [watchingWalletId] = useMemo(() => {
     return (
@@ -19,11 +15,13 @@ export default function useDeleteWallet({ address: primaryAddress }: { address?:
   }, [primaryAddress, wallets]);
 
   const deleteWallet = useCallback(() => {
+    if (!wallets) return;
+
     const newWallets = {
       ...wallets,
       [watchingWalletId]: {
-        ...wallets![watchingWalletId],
-        addresses: wallets![watchingWalletId].addresses.map((account: { address: string }) =>
+        ...wallets[watchingWalletId],
+        addresses: wallets[watchingWalletId].addresses.map((account: { address: string }) =>
           account.address.toLowerCase() === primaryAddress?.toLowerCase()
             ? { ...(account as RainbowAccount), visible: false }
             : (account as RainbowAccount)
@@ -36,12 +34,12 @@ export default function useDeleteWallet({ address: primaryAddress }: { address?:
     if (visibleAddresses.length === 0) {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete newWallets[watchingWalletId];
-      dispatch(walletsUpdate(newWallets));
+      useWalletsStore.getState().updateWallets(newWallets);
     } else {
-      dispatch(walletsUpdate(newWallets));
+      useWalletsStore.getState().updateWallets(newWallets);
     }
     removeWalletData(primaryAddress);
-  }, [dispatch, primaryAddress, wallets, watchingWalletId]);
+  }, [primaryAddress, wallets, watchingWalletId]);
 
   return deleteWallet;
 }

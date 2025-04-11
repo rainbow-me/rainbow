@@ -6,7 +6,7 @@ import { ensOwnerQueryKey, fetchENSOwner } from './useENSOwner';
 import { ensRecordsQueryKey, fetchENSRecords } from './useENSRecords';
 import { ensRegistrantQueryKey, fetchENSRegistrant } from './useENSRegistrant';
 import { ensResolverQueryKey, fetchENSResolver } from './useENSResolver';
-import useWallets from './useWallets';
+import { useWalletsStore } from '@/redux/wallets';
 import { getENSProfile, saveENSProfile } from '@/handlers/localstorage/ens';
 import { queryClient, QueryConfigDeprecated, UseQueryData } from '@/react-query';
 import { fetchENSAddress } from '@/resources/ens/ensAddressQuery';
@@ -77,7 +77,7 @@ export default function useENSProfile(
   } = {}
 ) {
   const { accountAddress } = useAccountSettings();
-  const { walletNames } = useWallets();
+  const walletNames = useWalletsStore(state => state.walletNames);
   const { data, isLoading, isSuccess } = useQuery<UseQueryData<typeof fetchENSProfile>>(
     queryKey(name, { supportedRecordsOnly }),
     async () => fetchENSProfile(name, { supportedRecordsOnly }),
