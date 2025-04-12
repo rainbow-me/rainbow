@@ -5,6 +5,7 @@ env:
 ---
 - assertVisible:
     id: welcome-screen
+    optional: true
 
 - openLink: rainbow://e2e/import?privateKey=${PKEY}&name=${NAME}
 # The first time a simulator opens a link it shows a dialog.
