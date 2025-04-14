@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import Routes from '@/navigation/routesNames';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { TintButton } from '@/components/cards/reusables/TintButton';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import lang from 'i18n-js';
 
 export const DISCOVER_MORE_BUTTON_HEIGHT = 40;
@@ -15,7 +15,7 @@ export const DiscoverMoreButton = () => {
 
   const handlePressDiscover = useCallback(() => {
     navigate(Routes.DISCOVER_SCREEN);
-    analyticsV2.track(analyticsV2.event.pressedButton, {
+    analytics.track(analytics.event.pressedButton, {
       buttonName: 'DiscoverMoreButton',
       action: 'Navigates from WalletScreen to DiscoverHome',
     });

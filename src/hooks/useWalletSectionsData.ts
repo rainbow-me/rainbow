@@ -16,7 +16,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import { useClaimables } from '@/resources/addys/claimables/query';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { throttle } from 'lodash';
 import { usePoints } from '@/resources/points';
@@ -43,7 +43,7 @@ const throttledClaimablesAnalytics = throttle(
       }
     });
 
-    analyticsV2.identify({ claimablesAmount: claimables.length, claimablesUSDValue: totalUSDValue, ...claimablesUSDValues });
+    analytics.identify({ claimablesAmount: claimables.length, claimablesUSDValue: totalUSDValue, ...claimablesUSDValues });
   },
   2 * 60 * 1000,
   { trailing: false }
@@ -128,7 +128,7 @@ export default function useWalletSectionsData({
       if (!asset.icon_url) params.no_icon += 1;
       if (!asset.price?.relative_change_24h) params.no_price += 1;
     }
-    analyticsV2.track(analyticsV2.event.tokenList, params);
+    analytics.track(analytics.event.tokenList, params);
   }, [isLoadingUserAssets, sortedAssets, type]);
 
   const walletSections = useMemo(() => {

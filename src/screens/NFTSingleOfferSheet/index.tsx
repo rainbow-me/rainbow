@@ -28,7 +28,7 @@ import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings, useGas, useWallets } from '@/hooks';
 import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { BigNumber } from '@ethersproject/bignumber';
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import { GasSpeedButton } from '@/components/gas';
@@ -273,7 +273,7 @@ export function NFTSingleOfferSheet() {
         contractAddress: offer.paymentToken.address,
       },
     };
-    analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {
+    analytics.track(analytics.event.nftOffersAcceptedOffer, {
       status: 'in progress',
       ...analyticsEventObject,
     });
@@ -396,7 +396,7 @@ export function NFTSingleOfferSheet() {
       );
 
       logger.debug(`[NFTSingleOfferSheet]: Completed sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`);
-      analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {
+      analytics.track(analytics.event.nftOffersAcceptedOffer, {
         status: 'completed',
         ...analyticsEventObject,
       });
@@ -408,7 +408,7 @@ export function NFTSingleOfferSheet() {
           `[NFTSingleOfferSheet]: Error selling NFT ${offer.nft.contractAddress} #${offer.nft.tokenId} on marketplace ${offer.marketplace.name}: ${e}`
         )
       );
-      analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {
+      analytics.track(analytics.event.nftOffersAcceptedOffer, {
         status: 'failed',
         ...analyticsEventObject,
       });
@@ -680,7 +680,7 @@ export function NFTSingleOfferSheet() {
                     style={{ overflow: 'hidden' }}
                     onPress={() => {
                       openInBrowser(offer.url);
-                      analyticsV2.track(analyticsV2.event.nftOffersViewedExternalOffer, {
+                      analytics.track(analytics.event.nftOffersViewedExternalOffer, {
                         marketplace: offer.marketplace.name,
                         offerValueUSD: offer.grossAmount.usd,
                         offerValue: offer.grossAmount.decimal,

@@ -13,7 +13,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ButtonPressAnimation } from '@/components/animations';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 const MaskedGradientText: React.FC<{
   text: string;
@@ -76,7 +76,7 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
   const additionalRewardText = `+${formattedBonusEarned}`;
 
   const navigateToProfile = () => {
-    analyticsV2.track(analyticsV2.event.rewardsPressedLeaderboardItem, {
+    analytics.track(analytics.event.rewardsPressedLeaderboardItem, {
       ens,
     });
     navigate(Routes.PROFILE_SHEET, {

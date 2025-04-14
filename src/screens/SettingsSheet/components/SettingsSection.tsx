@@ -47,6 +47,12 @@ interface SettingsSectionProps {
   onPressNotifications: () => void;
 }
 
+const androidActions = [
+  lang.t('settings.theme_section.system'),
+  lang.t('settings.theme_section.light'),
+  lang.t('settings.theme_section.dark'),
+];
+
 const SettingsSection = ({
   onCloseModal,
   onPressAppIcon,
@@ -128,19 +134,12 @@ const SettingsSection = ({
   }, [colorScheme]);
 
   const onPressThemeAndroidActions = useCallback(() => {
-    const androidActions = [
-      lang.t('settings.theme_section.system'),
-      lang.t('settings.theme_section.light'),
-      lang.t('settings.theme_section.dark'),
-    ] as const;
-
     showActionSheetWithOptions(
       {
         options: androidActions,
-        showSeparators: true,
         title: '',
       },
-      (idx: number) => {
+      idx => {
         if (idx === 0) {
           setTheme(Themes.SYSTEM);
         } else if (idx === 1) {

@@ -280,7 +280,7 @@ export async function backupAllWalletsToCloud({
       const userError = getUserError(error);
       onError?.(userError);
       captureException(error);
-      analytics.track(`Error backing up all wallets to ${cloudPlatform}`, {
+      analytics.track(analytics.event.backupError, {
         category: 'backup',
         error: userError,
         label: cloudPlatform,
@@ -594,10 +594,10 @@ export async function saveBackupPassword(password: BackupPassword): Promise<void
   try {
     if (!IS_ANDROID) {
       await kc.setSharedWebCredentials('Backup Password', password);
-      analytics.track('Saved backup password on iCloud');
+      analytics.track(analytics.event.backupSavedPassword);
     }
   } catch (e) {
-    analytics.track("Didn't save backup password on iCloud");
+    analytics.track(analytics.event.backupSkippedPassword);
   }
 }
 

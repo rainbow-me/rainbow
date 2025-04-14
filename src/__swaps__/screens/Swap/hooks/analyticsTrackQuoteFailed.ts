@@ -1,11 +1,11 @@
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { EventProperties } from '@/analytics/event';
 import { QuoteError } from '@rainbow-me/swaps';
 import { runOnJS } from 'react-native-reanimated';
 
-const analyticsTrack: typeof analyticsV2.track = (...args) => analyticsV2.track(...args);
-let lastParams: EventProperties[typeof analyticsV2.event.swapsQuoteFailed];
+const analyticsTrack: typeof analytics.track = (...args) => analytics.track(...args);
+let lastParams: EventProperties[typeof analytics.event.swapsQuoteFailed];
 export function analyticsTrackQuoteFailed(
   quote: QuoteError | null,
   {
@@ -43,5 +43,5 @@ export function analyticsTrackQuoteFailed(
     outputAmount,
   };
   lastParams = params;
-  runOnJS(analyticsTrack)(analyticsV2.event.swapsQuoteFailed, params);
+  runOnJS(analyticsTrack)(analytics.event.swapsQuoteFailed, params);
 }

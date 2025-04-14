@@ -14,7 +14,7 @@ import { RainbowError, logger } from '@/logger';
 import { queryClient } from '@/react-query';
 import { useNavigation } from '@/navigation';
 import { getProvider } from '@/handlers/web3';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { delay } from '@/utils/delay';
 import { ChainId } from '@/state/backendNetworks/types';
 
@@ -118,7 +118,7 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
     historicBalance?.earnings?.total;
 
   const signIn = useCallback(async () => {
-    analyticsV2.track(analyticsV2.event.pointsOnboardingScreenPressedSignInButton, {
+    analytics.track(analytics.event.pointsOnboardingScreenPressedSignInButton, {
       deeplinked,
       referralCode: !!referralCode,
       hardwareWallet: isHardwareWallet,
@@ -177,7 +177,7 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
             break;
         }
         logger.error(new RainbowError('[PointsProfileContext]: Failed to onboard user'), { errorType });
-        analyticsV2.track(analyticsV2.event.pointsOnboardingScreenFailedToSignIn, {
+        analytics.track(analytics.event.pointsOnboardingScreenFailedToSignIn, {
           deeplinked,
           referralCode: !!referralCode,
           hardwareWallet: isHardwareWallet,
@@ -185,7 +185,7 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
         });
         return;
       }
-      analyticsV2.track(analyticsV2.event.pointsOnboardingScreenSuccessfullySignedIn, {
+      analytics.track(analytics.event.pointsOnboardingScreenSuccessfullySignedIn, {
         deeplinked,
         referralCode: !!referralCode,
         hardwareWallet: isHardwareWallet,
@@ -195,7 +195,7 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
       queryClient.setQueryData(queryKey, points);
       delay(5000).then(() => queryClient.refetchQueries(queryKey));
     } catch (error) {
-      analyticsV2.track(analyticsV2.event.pointsOnboardingScreenFailedToSignIn, {
+      analytics.track(analytics.event.pointsOnboardingScreenFailedToSignIn, {
         deeplinked,
         referralCode: !!referralCode,
         hardwareWallet: isHardwareWallet,

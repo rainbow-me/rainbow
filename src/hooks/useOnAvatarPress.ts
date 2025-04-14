@@ -118,7 +118,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   }, [accountAddress, accountENS]);
 
   const onAvatarViewProfile = useCallback(() => {
-    analytics.track('Viewed ENS profile', {
+    analytics.track(analytics.event.viewedEnsProfile, {
       category: 'profiles',
       ens: accountENS,
       from: 'Transaction list',
@@ -227,7 +227,10 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     ].filter(Boolean),
   };
 
-  const avatarActionSheetOptions = avatarContextMenuConfig.menuItems.map(item => item && item.actionTitle).concat(ios ? ['Cancel'] : []);
+  const avatarActionSheetOptions = avatarContextMenuConfig.menuItems
+    .map(item => item && item.actionTitle)
+    .concat(ios ? ['Cancel'] : [])
+    .filter(Boolean) as string[];
 
   const onAvatarPressProfile = useCallback(() => {
     navigate(Routes.PROFILE_SHEET, {
@@ -252,7 +255,10 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
           destructiveButtonIndex: !hasENSAvatar && accountImage ? avatarActionSheetOptions.length - 2 : undefined,
           options: avatarActionSheetOptions,
         },
-        (buttonIndex: number) => callback(buttonIndex)
+        buttonIndex => {
+          if (buttonIndex === undefined) return;
+          callback(buttonIndex);
+        }
       );
     }
   }, [hasENSAvatar, accountENS, onAvatarPressProfile, avatarActionSheetOptions, accountImage, callback]);

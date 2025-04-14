@@ -52,7 +52,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const handleScanAddress = useCallback(
     async (address: string) => {
       haptics.notificationSuccess();
-      analytics.track('Scanned address QR code');
+      analytics.track(analytics.event.qrCodeScannedAddress);
       const ensName = isENSAddressFormat(address) ? address : await fetchReverseRecordWithRetry(address);
       // First navigate to wallet screen
       navigate(Routes.WALLET_SCREEN);
@@ -73,7 +73,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const handleScanRainbowProfile = useCallback(
     async (url: string) => {
       haptics.notificationSuccess();
-      analytics.track('Scanned Rainbow profile url');
+      analytics.track(analytics.event.qrCodeScannedProfile);
 
       const urlObj = new URL(url);
       const addressOrENS = urlObj.pathname?.split('/profile/')?.[1] || '';
@@ -100,7 +100,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const handleScanWalletConnect = useCallback(
     async (uri: string, connector?: string) => {
       haptics.notificationSuccess();
-      analytics.track('Scanned WalletConnect QR code');
+      analytics.track(analytics.event.qrCodeScannedWalletConnect);
       await checkPushNotificationPermissions();
       goBack();
       onSuccess();
@@ -119,7 +119,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const handleScanInvalid = useCallback(
     (qrCodeData: string) => {
       haptics.notificationError();
-      analytics.track('Scanned broken or unsupported QR code', { qrCodeData });
+      analytics.track(analytics.event.qrCodeScannedInvalid, { qrCodeData });
 
       Alert({
         buttons: [{ onPress: enableScanning, text: lang.t('button.okay') }],

@@ -98,7 +98,6 @@ const ContactRowInfoButton = ({ children, item, chainId, scaleTo }) => {
       {
         cancelButtonIndex: 2,
         options: androidContractActions,
-        showSeparators: true,
         title: `${item?.name}`,
       },
       idx => {

@@ -33,7 +33,7 @@ import { RainbowError, logger } from '@/logger';
 import { ActionButton } from '@/screens/points/components/ActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 import { usePointsReferralCode } from '@/resources/points';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 const keyboardSpringConfig = {
@@ -94,7 +94,7 @@ export function ReferralContent() {
         }
       } else {
         setStatus('valid');
-        analyticsV2.track(analyticsV2.event.pointsReferralScreenValidatedReferralCode, { deeplinked });
+        analytics.track(analytics.event.pointsReferralScreenValidatedReferralCode, { deeplinked });
         setReferralCode(code);
         textInputRef.current?.blur();
         haptics.notificationSuccess();
@@ -122,7 +122,7 @@ export function ReferralContent() {
 
   useFocusEffect(
     useCallback(() => {
-      analyticsV2.track(analyticsV2.event.pointsViewedReferralScreen);
+      analytics.track(analytics.event.pointsViewedReferralScreen);
       setGoingBack(false);
       if (status !== 'valid') {
         delay(600).then(() => textInputRef.current?.focus());

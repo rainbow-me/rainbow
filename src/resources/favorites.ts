@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import isEqual from 'react-fast-compare';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { NativeCurrencyKeys, RainbowToken } from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
@@ -153,7 +153,7 @@ export async function toggleFavorite(address: string, chainId = ChainId.mainnet)
     useFavoritesStore.setState({ favorites: omit(favorites, uniqueId) });
   } else {
     const metadata = await fetchMetadata([lowercasedAddress], chainId);
-    analyticsV2.track(analyticsV2.event.addFavoriteToken, {
+    analytics.track(analytics.event.addFavoriteToken, {
       address: lowercasedAddress,
       chainId,
       name: metadata[uniqueId].name,

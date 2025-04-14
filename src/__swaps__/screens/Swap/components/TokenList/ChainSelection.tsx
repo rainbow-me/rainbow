@@ -8,7 +8,7 @@ import Animated, { AnimatedRef, useDerivedValue, useSharedValue } from 'react-na
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AnimatedText, Bleed, Box, Inline, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks';
@@ -71,7 +71,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
         });
       }
 
-      analyticsV2.track(analyticsV2.event.swapsChangedChainId, {
+      analytics.track(analytics.event.swapsChangedChainId, {
         inputAsset: swapsStore.getState().inputAsset,
         type: output ? 'output' : 'input',
         chainId,

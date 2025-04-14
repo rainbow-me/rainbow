@@ -8,7 +8,6 @@ import { logger, RainbowError } from '@/logger';
 import { device } from '@/storage';
 import { WalletContext } from './utils';
 import { IS_ANDROID, IS_TEST } from '@/env';
-
 export class Analytics {
   client: typeof rudderClient;
   deviceId?: string;
@@ -139,30 +138,4 @@ export class Analytics {
  * Our core analytics tracking client. See individual methods for docs, and
  * review this directory's files for more information.
  */
-export const analyticsV2 = new Analytics();
-
-// Wrapper around the rudderClient to prevent CI from logging analytics
-class AnalyticsDeprecated {
-  client: typeof rudderClient;
-  disabled: boolean;
-
-  constructor() {
-    this.client = rudderClient;
-    this.disabled = IS_TEST || !!device.get(['doNotTrack']);
-  }
-
-  track(event: string, properties?: Record<string, unknown> | null, options?: Record<string, unknown> | null) {
-    if (this.disabled) return;
-    this.client.track(event, properties, options);
-  }
-
-  screen(name: string, properties?: Record<string, unknown> | null, options?: Record<string, unknown> | null): void {
-    if (this.disabled) return;
-    this.client.screen(name, properties, options);
-  }
-}
-
-/**
- * @deprecated Use the `analyticsV2` export from this same file
- */
-export const analytics = new AnalyticsDeprecated();
+export const analytics = new Analytics();

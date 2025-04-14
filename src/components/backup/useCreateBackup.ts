@@ -58,10 +58,7 @@ export const useCreateBackup = () => {
       }
       // Reset the storedPassword state for next backup
       backupsStore.getState().setStoredPassword('');
-      analytics.track('Backup Complete', {
-        category: 'backup',
-        label: cloudPlatform,
-      });
+      analytics.track(analytics.event.backupComplete, { category: 'backup', label: cloudPlatform });
       setLoadingStateWithTimeout({
         state: CloudBackupState.Success,
         outOfSync: true,
@@ -87,7 +84,7 @@ export const useCreateBackup = () => {
 
   const onConfirmBackup = useCallback(
     async ({ password, walletId, navigateToRoute }: ConfirmBackupProps) => {
-      analytics.track('Tapped "Confirm Backup"');
+      analytics.track(analytics.event.backupConfirmed);
       backupsStore.getState().setStatus(CloudBackupState.InProgress);
 
       if (typeof walletId === 'undefined') {
