@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useContext, useState } from 'react';
-// @ts-expect-error - react-native-restart is not typed
 import { ImgixImage } from '@/components/images';
 import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
 import { IS_DEV } from '@/env';
@@ -22,6 +21,7 @@ import { useWalletsStore } from '@/redux/wallets';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { isAuthenticated } from '@/utils/authentication';
 import Clipboard from '@react-native-clipboard/clipboard';
+// @ts-expect-error - react-native-restart is not typed
 import Restart from 'react-native-restart';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';

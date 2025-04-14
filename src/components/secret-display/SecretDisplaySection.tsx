@@ -74,7 +74,7 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
 
   const { isBackingUp, backupType, privateKeyAddress } = params;
 
-  const walletId = params.walletId || selectedWallet.id;
+  const walletId = params.walletId || selectedWallet?.id || '';
   const currentWallet = wallets?.[walletId];
 
   const isSecretPhrase = WalletTypes.mnemonic === currentWallet?.type && !privateKeyAddress;
