@@ -22,9 +22,12 @@ import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { AppState } from '@/redux/store';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
+import { ReviewPromptAction } from '@/storage/schema';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import React, { useEffect, useRef } from 'react';
+import { InteractionManager } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { useRecoilValue } from 'recoil';
@@ -138,6 +141,12 @@ function WalletScreen() {
       await initializeWallet(null, null, null, !params?.emptyWallet);
       walletState.current = WalletLoadingStates.INITIALIZED;
       setParams({ emptyWallet: false });
+
+      setTimeout(() => {
+        InteractionManager.runAfterInteractions(() => {
+          handleReviewPromptAction(ReviewPromptAction.ViewedWalletScreen);
+        });
+      }, 3_000);
     };
 
     if (

@@ -24,8 +24,6 @@ import Routes from '@/navigation/routesNames';
 import { sanitizeSeedPhrase } from '@/utils';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger, RainbowError } from '@/logger';
-import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { ReviewPromptAction } from '@/storage/schema';
 import { ChainId } from '@/state/backendNetworks/types';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
@@ -347,12 +345,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                       step: WalletBackupStepTypes.backup_prompt_cloud,
                     });
                   }
-
-                  setTimeout(() => {
-                    InteractionManager.runAfterInteractions(() => {
-                      handleReviewPromptAction(ReviewPromptAction.WatchWallet);
-                    });
-                  }, 1_000);
 
                   analytics.track(analytics.event.importedSeedPhrase, {
                     isWalletEthZero,
