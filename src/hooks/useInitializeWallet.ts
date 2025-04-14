@@ -14,7 +14,7 @@ import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
 import { appStateUpdate } from '../redux/appState';
 import { settingsLoadNetwork } from '../redux/settings';
-import { loadWallets, updateAccountAddress } from '@/state/wallets/wallets';
+import { loadWallets, updateAccountAddress } from '@/state/wallets/walletsStore';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useLoadAccountData from './useLoadAccountData';

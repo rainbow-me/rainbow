@@ -29,7 +29,7 @@ import { capitalize } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
 import { ContextMenuButton, MenuActionConfig } from 'react-native-ios-context-menu';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { SettingsExternalURLs } from '../constants';
 import { checkLocalWalletsForBackupStatus } from '../utils';
 import Menu from './Menu';

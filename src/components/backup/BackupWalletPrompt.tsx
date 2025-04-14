@@ -17,7 +17,7 @@ import { useTheme } from '@/theme';
 import { cloudPlatform } from '@/utils/platform';
 import React, { useCallback, useMemo } from 'react';
 import { Source } from 'react-native-fast-image';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ButtonPressAnimation } from '../animations';
 import { ImgixImage } from '../images';
 

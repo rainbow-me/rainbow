@@ -33,7 +33,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
-import { setSelectedAddress, setSelectedWallet, useWalletsStore } from '@/state/wallets/wallets';
+import { setSelectedAddress, setSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

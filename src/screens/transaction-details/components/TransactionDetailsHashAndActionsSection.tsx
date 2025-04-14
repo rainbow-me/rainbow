@@ -16,7 +16,7 @@ import { openInBrowser } from '@/utils/openInBrowser';
 import Clipboard from '@react-native-clipboard/clipboard';
 import startCase from 'lodash/startCase';
 import React, { useCallback, useMemo } from 'react';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type Props = {
   transaction: RainbowTransaction;

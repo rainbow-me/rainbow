@@ -12,7 +12,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { useLegacyNFTs } from '@/resources/nfts';
 import styled from '@/styled-thing';
 import { position } from '@/styles';

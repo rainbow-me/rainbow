@@ -5,7 +5,7 @@ import walletTypes from '@/helpers/walletTypes';
 import * as lang from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { SETTINGS_BACKUP_ROUTES } from '@/screens/SettingsSheet/components/Backups/routes';
 import React, { useCallback } from 'react';
 import { Source } from 'react-native-fast-image';

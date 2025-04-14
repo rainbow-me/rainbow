@@ -15,7 +15,7 @@ import useUpdateEmoji from './useUpdateEmoji';
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet, PROFILES, useExperimentalFlag } from '@/config';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import Routes from '@/navigation/routesNames';
 import { showActionSheetWithOptions } from '@/utils';
 import useAccountAsset from './useAccountAsset';

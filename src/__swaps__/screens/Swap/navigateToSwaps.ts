@@ -7,7 +7,7 @@ import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
 import { ChainId } from '@/state/backendNetworks/types';
 import { SwapsState, useSwapsStore } from '@/state/swaps/swapsStore';
-import { getIsReadOnlyWallet } from '@/state/wallets/wallets';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { watchingAlert } from '@/utils';
 import { setSelectedGasSpeed } from './hooks/useSele∏tedGas';
 

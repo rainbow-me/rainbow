@@ -12,7 +12,7 @@ import { values } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { backupWalletToCloud } from '../model/backup';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { cloudPlatform } from '../utils/platform';
 
 export function getUserError(e: Error) {

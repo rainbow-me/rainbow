@@ -1,4 +1,4 @@
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '../theme';
 
 export default function useAccountProfile() {

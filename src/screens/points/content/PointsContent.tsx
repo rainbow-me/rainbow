@@ -59,7 +59,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { useRecoilState } from 'recoil';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { InfoCard } from '../components/InfoCard';
 import { LeaderboardRow } from '../components/LeaderboardRow';
 import { RewardsActionButton } from '../components/RewardsActionButton';

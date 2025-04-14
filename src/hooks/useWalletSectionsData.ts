@@ -7,7 +7,7 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import { useNftSort } from './useNFTsSortBy';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
 import { useLegacyNFTs } from '@/resources/nfts';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';

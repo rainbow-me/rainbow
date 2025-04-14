@@ -1,5 +1,5 @@
 import { convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import mapValues from 'lodash/mapValues';
 import { useMemo } from 'react';

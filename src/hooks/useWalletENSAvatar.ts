@@ -1,5 +1,5 @@
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { refreshWalletENSAvatars } from '@/state/wallets/wallets';
+import { refreshWalletENSAvatars } from '@/state/wallets/walletsStore';
 import { useCallback } from 'react';
 
 export default function useWalletENSAvatar() {

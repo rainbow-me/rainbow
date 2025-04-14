@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React from 'react';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { HoldToAuthorizeButton } from '../buttons';
 
 export default function SendButton({

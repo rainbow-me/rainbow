@@ -10,7 +10,7 @@ import { useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useNavigation } from '../../navigation/Navigation';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { GenericCard, Gradient } from './GenericCard';
 import { IconOrb } from './reusables/IconOrb';
 

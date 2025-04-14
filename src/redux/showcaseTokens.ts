@@ -6,7 +6,7 @@ import without from 'lodash/without';
 import { Dispatch } from 'redux';
 import { getPreference } from '../model/preferences';
 import { AppGetState } from './store';
-import { getAccountAddress, getIsReadOnlyWallet, getSelectedWallet } from '@/state/wallets/wallets';
+import { getAccountAddress, getIsReadOnlyWallet, getSelectedWallet } from '@/state/wallets/walletsStore';
 
 // -- Constants --------------------------------------- //
 

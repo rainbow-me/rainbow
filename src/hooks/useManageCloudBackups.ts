@@ -11,7 +11,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as keychain from '@/keychain';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
-import { clearAllWalletsBackupStatus } from '@/state/wallets/wallets';
+import { clearAllWalletsBackupStatus } from '@/state/wallets/walletsStore';
 import { CloudBackupState, backupsStore } from '@/state/backups/backups';
 import { showActionSheetWithOptions } from '@/utils';
 import lang from 'i18n-js';

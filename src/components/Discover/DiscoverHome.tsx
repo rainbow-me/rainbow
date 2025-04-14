@@ -33,7 +33,7 @@ import useExperimentalFlag, {
   TRENDING_TOKENS,
 } from '@rainbow-me/config/experimentalHooks';
 import React, { useCallback } from 'react';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
 
 export const HORIZONTAL_PADDING = 20;

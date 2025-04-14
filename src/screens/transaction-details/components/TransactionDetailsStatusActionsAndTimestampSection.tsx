@@ -12,7 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 const SIZE = 40;
 

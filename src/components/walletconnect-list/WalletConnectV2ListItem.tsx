@@ -15,7 +15,7 @@ import { changeAccount, disconnectSession } from '@/walletConnect';
 import { SessionTypes } from '@walletconnect/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import { getAccountProfileInfo, getWalletWithAccount, useWalletsStore } from '@/state/wallets/wallets';
+import { getAccountProfileInfo, getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';

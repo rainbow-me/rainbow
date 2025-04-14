@@ -14,7 +14,7 @@ import React, { useCallback, useEffect } from 'react';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { MMKV } from 'react-native-mmkv';
 import { atom, useRecoilState } from 'recoil';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 export const ledgerStorage = new MMKV({
   id: 'ledgerStorage',

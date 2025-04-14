@@ -29,7 +29,7 @@ import { RainbowAccount } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { createAccount, useWalletsStore } from '@/state/wallets/wallets';
+import { createAccount, useWalletsStore } from '@/state/wallets/walletsStore';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { abbreviations } from '@/utils';

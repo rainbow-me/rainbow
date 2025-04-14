@@ -1,4 +1,4 @@
-import { getAccountAddress, useWalletsStore } from '@/state/wallets/wallets';
+import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { Address } from 'viem';
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { QueryEnabledUserAssetsState } from './types';

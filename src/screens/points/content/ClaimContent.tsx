@@ -10,7 +10,7 @@ import { ActionButton } from '@/screens/points/components/ActionButton';
 import { watchingAlert } from '@/utils';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 import { POINTS_ROUTES } from '../PointsScreen';
 

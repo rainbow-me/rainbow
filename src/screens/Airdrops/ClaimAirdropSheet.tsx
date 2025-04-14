@@ -51,7 +51,7 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Address } from 'viem';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { AirdropGasInfo, ClaimStatus, useClaimAirdrop } from './useClaimAirdrop';
 import { GasInfo } from './utils';
 

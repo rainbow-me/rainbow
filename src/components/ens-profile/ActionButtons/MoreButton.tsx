@@ -7,7 +7,7 @@ import { showDeleteContactActionSheet } from '@/components/contacts';
 import More from '../MoreButton/MoreButton';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useClipboard, useContacts, useSwitchWallet, useWatchWallet } from '@/hooks';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { useNavigation } from '@/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';

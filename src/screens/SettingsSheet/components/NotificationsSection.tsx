@@ -32,7 +32,7 @@ import { Alert, Linking, Switch } from 'react-native';
 import { checkNotifications, RESULTS } from 'react-native-permissions';
 import { ContactAvatar } from '../../../components/contacts';
 import ImageAvatar from '../../../components/contacts/ImageAvatar';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';

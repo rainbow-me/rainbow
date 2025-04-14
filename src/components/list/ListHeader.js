@@ -7,7 +7,7 @@ import { padding } from '@/styles';
 import lang from 'i18n-js';
 import React, { Fragment } from 'react';
 import { Share } from 'react-native';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ButtonPressAnimation } from '../animations';
 import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
 import { ContextMenu } from '../context-menu';

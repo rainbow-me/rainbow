@@ -30,7 +30,7 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { loadWallets, useWalletsStore } from '@/state/wallets/wallets';
+import { loadWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();

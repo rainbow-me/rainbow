@@ -10,7 +10,7 @@ import { time } from '@/utils';
 import delay from 'delay';
 import { useCallback, useMemo, useState } from 'react';
 import { Address } from 'viem';
-import { refreshWalletENSAvatars, refreshWalletNames, useWalletsStore } from '@/state/wallets/wallets';
+import { refreshWalletENSAvatars, refreshWalletNames, useWalletsStore } from '@/state/wallets/walletsStore';
 import useAccountSettings from './useAccountSettings';
 
 export default function useRefreshAccountData() {

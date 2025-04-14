@@ -17,7 +17,7 @@ import { Navigation } from '@/navigation';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { isAuthenticated } from '@/utils/authentication';
 import Clipboard from '@react-native-clipboard/clipboard';

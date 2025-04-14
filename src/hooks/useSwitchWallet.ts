@@ -1,6 +1,6 @@
 import { toChecksumAddress } from '@/handlers/web3';
 import { RainbowAccount } from '@/model/wallet';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import useInitializeWallet from './useInitializeWallet';
 
 export default function useSwitchWallet() {

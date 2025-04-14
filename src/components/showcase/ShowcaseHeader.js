@@ -8,7 +8,7 @@ import { colors, padding } from '@/styles';
 import { abbreviations, profileUtils } from '@/utils';
 import lang from 'i18n-js';
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
 import SheetHandle from '../sheet/SheetHandle';

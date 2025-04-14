@@ -21,7 +21,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 const NOOP = () => null;
 

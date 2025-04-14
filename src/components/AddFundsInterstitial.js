@@ -17,7 +17,7 @@ import { View } from 'react-native';
 import networkInfo from '../helpers/networkInfo';
 import showWalletErrorAlert from '../helpers/support';
 import { useNavigation } from '../navigation/Navigation';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '../theme/ThemeContext';
 import { deviceUtils, magicMemo } from '../utils';
 import { Centered, Row, RowWithMargins } from './layout';

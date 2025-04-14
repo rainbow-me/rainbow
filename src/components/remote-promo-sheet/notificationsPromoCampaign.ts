@@ -3,7 +3,7 @@ import { STORAGE_IDS } from '@/model/mmkv';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { MMKV } from 'react-native-mmkv';
-import { getSelectedWallet } from '@/state/wallets/wallets';
+import { getSelectedWallet } from '@/state/wallets/walletsStore';
 import { Campaign, CampaignCheckType, CampaignKey, GenericCampaignCheckResponse } from './localCampaignChecks';
 
 const mmkv = new MMKV();

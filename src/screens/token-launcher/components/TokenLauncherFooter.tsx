@@ -33,7 +33,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { STEP_TRANSITION_DURATION } from '../constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { useTokenLaunchGasOptions } from '../hooks/useTokenLaunchGasOptions';

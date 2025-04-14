@@ -4,7 +4,7 @@ import SheetActionButton, { SheetActionButtonProps } from './SheetActionButton';
 import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
 import showWalletErrorAlert from '@/helpers/support';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';

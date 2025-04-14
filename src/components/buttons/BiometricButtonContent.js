@@ -2,7 +2,7 @@ import React from 'react';
 import { Text } from '../text';
 import { BiometryTypes } from '@/helpers';
 import { useBiometryType } from '@/hooks';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import { LedgerIcon } from '@/components/icons';

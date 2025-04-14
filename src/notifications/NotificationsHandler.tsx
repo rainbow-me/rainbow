@@ -23,7 +23,7 @@ import {
   TransactionNotificationData,
 } from '@/notifications/types';
 import store, { AppState } from '@/redux/store';
-import { getAccountAddress, useWalletsStore } from '@/state/wallets/wallets';
+import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { isLowerCaseMatch } from '@/utils';
 import notifee, { EventType, Event as NotifeeEvent } from '@notifee/react-native';

@@ -21,7 +21,7 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
-import { setSelectedAddress, useWalletsStore } from '@/state/wallets/wallets';
+import { setSelectedAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { WalletList } from '@/screens/change-wallet/components/WalletList';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';

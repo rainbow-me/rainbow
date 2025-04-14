@@ -38,7 +38,7 @@ import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import { hdkey as EthereumHDKey, default as LibWallet } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
 import { findKey, isEmpty } from 'lodash';
-import { getWalletWithAccount } from '@/state/wallets/wallets';
+import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,

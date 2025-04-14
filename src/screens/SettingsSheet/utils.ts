@@ -9,7 +9,7 @@ import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { cloudPlatform } from '@/utils/platform';
 import { format } from 'date-fns';
 import { isEmpty } from 'lodash';
-import { getWallets } from '@/state/wallets/wallets';
+import { getWallets } from '@/state/wallets/walletsStore';
 
 type WalletBackupStatus = {
   allBackedUp: boolean;

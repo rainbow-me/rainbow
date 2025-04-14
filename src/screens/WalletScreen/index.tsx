@@ -33,7 +33,7 @@ import { useSelector } from 'react-redux';
 import { useRecoilValue } from 'recoil';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 enum WalletLoadingStates {
   IDLE = 0,

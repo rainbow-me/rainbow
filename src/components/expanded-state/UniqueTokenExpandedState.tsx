@@ -70,7 +70,7 @@ import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analytics } from '@/analytics';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { openInBrowser } from '@/utils/openInBrowser';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,

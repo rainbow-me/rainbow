@@ -33,7 +33,7 @@ import {
 import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { ChainId } from '@/state/backendNetworks/types';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { deepEqual } from '@/worklets/comparisons';
 import { CrosschainQuote, Quote, QuoteError, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
 import { useCallback } from 'react';

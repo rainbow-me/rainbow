@@ -4,7 +4,7 @@ import * as lang from '@/languages';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { backupsStore } from '@/state/backups/backups';
 import { cloudPlatform } from '@/utils/platform';
 import { format } from 'date-fns';

@@ -10,7 +10,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 import { ClaimableType } from '@/resources/addys/claimables/types';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 export function TransactionClaimableFlow() {
   const {

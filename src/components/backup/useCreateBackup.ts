@@ -13,7 +13,7 @@ import { cloudPlatform } from '@/utils/platform';
 import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type UseCreateBackupProps = {
   walletId?: string;

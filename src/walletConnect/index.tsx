@@ -48,7 +48,7 @@ import React from 'react';
 import { InteractionManager } from 'react-native';
 import { WC_PROJECT_ID } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
-import { getWallets, getWalletWithAccount } from '@/state/wallets/wallets';
+import { getWallets, getWalletWithAccount } from '@/state/wallets/walletsStore';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 

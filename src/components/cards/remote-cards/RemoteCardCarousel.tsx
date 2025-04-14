@@ -10,7 +10,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import Routes from '@/navigation/routesNames';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { FlashList } from '@shopify/flash-list';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type RenderItemProps = {
   item: string;

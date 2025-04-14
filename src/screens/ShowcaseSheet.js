@@ -13,7 +13,7 @@ import { CollectibleTokenFamily } from '../components/token-family';
 import { PREFS_ENDPOINT } from '../model/preferences';
 import { rainbowFetch } from '../rainbow-fetch';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 const tokenFamilyItem = item => <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />;
 

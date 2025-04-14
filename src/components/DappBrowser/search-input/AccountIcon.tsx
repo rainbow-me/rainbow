@@ -8,7 +8,7 @@ import Routes from '@/navigation/routesNames';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { getAccountProfileInfo } from '@/state/wallets/wallets';
+import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useBrowserContext } from '../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
 import { getDappHost } from '../handleProviderRequest';

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { analytics } from '@/analytics';
 import { UniqueAsset } from '@/entities';
 import { addHiddenToken as rawAddHiddenToken, removeHiddenToken as rawRemoveHiddenToken } from '../redux/hiddenTokens';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import useWebData from './useWebData';
 
 export default function useHiddenTokens() {

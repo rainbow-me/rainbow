@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { OperationForScreen, PerformanceLog, Screen } from '@/state/performance/operations';
-import { getSelectedWallet } from '@/state/wallets/wallets';
+import { getSelectedWallet } from '@/state/wallets/walletsStore';
 import { runOnJS } from 'react-native-reanimated';
 
 type AnyFunction = (...args: any[]) => any;

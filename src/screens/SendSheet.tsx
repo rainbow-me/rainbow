@@ -68,7 +68,7 @@ import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
-import { getWallets, useWalletsStore } from '@/state/wallets/wallets';
+import { getWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);

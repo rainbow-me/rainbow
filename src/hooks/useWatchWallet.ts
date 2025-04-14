@@ -2,7 +2,7 @@ import { useAccountProfile, useDeleteWallet, useImportingWallet, useInitializeWa
 import { logger, RainbowError } from '@/logger';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
-import { setSelectedAddress, setSelectedWallet, useWalletsStore } from '@/state/wallets/wallets';
+import { setSelectedAddress, setSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 import { doesWalletsContainAddress } from '@/utils';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';

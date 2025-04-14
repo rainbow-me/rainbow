@@ -2,7 +2,7 @@ import { AppState } from '@/redux/store';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addShowcaseToken as rawAddShowcaseToken, removeShowcaseToken as rawRemoveShowcaseToken } from '../redux/showcaseTokens';
-import { useWalletsStore } from '@/state/wallets/wallets';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import useOpenFamilies from './useOpenFamilies';
 import useWebData from './useWebData';
 
