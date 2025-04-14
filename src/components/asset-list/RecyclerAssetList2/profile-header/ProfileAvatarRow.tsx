@@ -25,8 +25,6 @@ export function ProfileAvatarRow({ size = ProfileAvatarSize }: { size?: number }
   // Account
 
   const { accountAddress, accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
-  console.info('accountColor', accountColor);
-  console.info('accountImage', accountImage);
 
   const { avatarContextMenuConfig, onAvatarPressProfile, onSelectionCallback } = useOnAvatarPress({ screenType: 'wallet' });
 
@@ -123,8 +121,6 @@ export function ProfileAvatarRow({ size = ProfileAvatarSize }: { size?: number }
         <Animated.View style={expandStyle}>
           <ContextMenuButton menuConfig={avatarContextMenuConfig} onPressMenuItem={handlePressMenuItem}>
             <ButtonPressAnimation onPress={onAvatarPressProfile} scale={0.8} testID="avatar-button" overflowMargin={20}>
-              <Animated.Text>{accountAddress || 'None?'}</Animated.Text>
-
               <Box
                 alignItems="center"
                 background="accent"
