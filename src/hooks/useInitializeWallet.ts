@@ -1,5 +1,4 @@
-import { captureException } from '@sentry/react-native';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
@@ -16,7 +15,7 @@ import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useOpenSmallBalances from './useOpenSmallBalances';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
-import { RainbowError, logger } from '@/logger';
+import { RainbowError, ensureError, logger } from '@/logger';
 import { getOrCreateDeviceId, getWalletContext } from '@/analytics/utils';
 import * as Sentry from '@sentry/react-native';
 import { analytics } from '@/analytics';
@@ -32,7 +31,9 @@ export default function useInitializeWallet() {
   const hideSplashScreen = useHideSplashScreen();
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
 
-  const getWalletStatusForPerformanceMetrics = (isNew: boolean, isImporting: boolean): string => {
+  type WalletStatus = 'unknown' | 'new' | 'imported' | 'old';
+
+  function getWalletStatus(isNew: boolean, isImporting: boolean): WalletStatus {
     if (isNew) {
       return 'new';
     } else if (isImporting) {
@@ -40,7 +41,7 @@ export default function useInitializeWallet() {
     } else {
       return 'old';
     }
-  };
+  }
 
   const initializeWallet = useCallback(
     async (
@@ -58,6 +59,7 @@ export default function useInitializeWallet() {
       silent = false,
       userPin?: string
     ) => {
+      let walletStatus: WalletStatus = 'unknown';
       try {
         PerformanceTracking.startMeasuring(event.performanceInitializeWallet);
         logger.debug('[useInitializeWallet]: Start wallet setup');
@@ -78,17 +80,8 @@ export default function useInitializeWallet() {
         // Load the network first
         await dispatch(settingsLoadNetwork());
 
-        const { isNew, walletAddress } = await walletInit(
-          seedPhrase,
-          color,
-          name,
-          overwrite,
-          checkedWallet,
-          network,
-          image,
-          silent,
-          userPin
-        );
+        const { isNew, walletAddress } = await walletInit(seedPhrase, color, name, overwrite, checkedWallet, network, image, silent);
+        walletStatus = getWalletStatus(isNew, isImporting);
 
         logger.debug('[useInitializeWallet]: walletInit returned', {
           isNew,
@@ -124,7 +117,7 @@ export default function useInitializeWallet() {
 
         if (isNil(walletAddress)) {
           logger.debug('[useInitializeWallet]: walletAddress is nil');
-          Alert.alert(lang.t('wallet.import_failed_invalid_private_key'));
+          Alert.alert(i18n.t(i18n.l.wallet.import_failed_invalid_private_key));
           if (!isImporting) {
             dispatch(appStateUpdate({ walletReady: true }));
           }
@@ -153,14 +146,19 @@ export default function useInitializeWallet() {
         logger.debug('[useInitializeWallet]: 💰 Wallet initialized');
 
         PerformanceTracking.finishMeasuring(event.performanceInitializeWallet, {
-          walletStatus: getWalletStatusForPerformanceMetrics(isNew, isImporting),
+          walletStatus,
         });
 
         return walletAddress;
-      } catch (error) {
+      } catch (e) {
+        const error = ensureError(e);
         PerformanceTracking.clearMeasure(event.performanceInitializeWallet);
-        logger.error(new RainbowError('[useInitializeWallet]: Error while initializing wallet'), {
-          error,
+        logger.error(new RainbowError('[useInitializeWallet]: Error while initializing wallet', error), {
+          walletStatus,
+        });
+        analytics.track(event.walletInitializationFailed, {
+          error: error.message,
+          walletStatus,
         });
         // TODO specify error states more granular
         if (!switching) {
@@ -175,8 +173,7 @@ export default function useInitializeWallet() {
           });
         }
 
-        captureException(error);
-        Alert.alert(lang.t('wallet.something_went_wrong_importing'));
+        Alert.alert(i18n.t(i18n.l.wallet.something_went_wrong_importing));
         dispatch(appStateUpdate({ walletReady: true }));
         return null;
       }
