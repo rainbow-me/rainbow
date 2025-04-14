@@ -3,18 +3,17 @@ env:
   PKEY: ${DEV_PKEY}
   NAME: 'Test Wallet'
 ---
-- retry:
-    maxRetries: 3
-    commands:
-      - tapOn: 'I already have one'
-- tapOn: 'Import a Secret Phrase or Private Key'
-- tapOn: 'Enter a recovery phrase or private key'
-- inputText: ${DEV_PKEY}
-- tapOn: 'Continue'
 - assertVisible:
-    id: wallet-info-input
-- inputText: 'Test Wallet'
-- tapOn: 'Import Wallet'
-- runFlow: MaybeSetupPin.yaml
+    id: welcome-screen
+    optional: true
+
+- openLink: rainbow://e2e/import?privateKey=${PKEY}&name=${NAME}
+# The first time a simulator opens a link it shows a dialog.
+- runFlow:
+    when:
+      visible: 'Open in .*'
+      platform: iOS
+    commands:
+      - tapOn: 'Open'
 - assertVisible:
     id: wallet-screen

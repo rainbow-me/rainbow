@@ -26,7 +26,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
       dispatch(settingsUpdateNetwork(chainId));
       InteractionManager.runAfterInteractions(async () => {
         await loadAccountData();
-        analytics.track('Changed network', { chainId });
+        analytics.track(analytics.event.changedNetwork, { chainId });
       });
     },
     [dispatch, loadAccountData]

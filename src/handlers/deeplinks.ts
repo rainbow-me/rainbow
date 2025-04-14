@@ -13,7 +13,7 @@ import Routes from '@/navigation/routesNames';
 import ethereumUtils, { getAddressAndChainIdFromUniqueId, getUniqueId } from '@/utils/ethereumUtils';
 import { logger } from '@/logger';
 import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { FiatProviderName } from '@/entities/f2c';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { queryClient } from '@/react-query';
@@ -174,13 +174,13 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
            * `success: true` here. Eventually we may need to revisit this so
            * that we can add more properties as they become available.
            */
-          analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
+          analytics.track(analytics.event.f2cProviderFlowCompleted, {
             provider: provider as FiatProviderName,
             sessionId: sessionId as string,
             success: true,
           });
         } else {
-          analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
+          analytics.track(analytics.event.f2cProviderFlowCompleted, {
             provider: provider as FiatProviderName,
             sessionId: sessionId as string,
             // success is unknown
@@ -211,7 +211,7 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
         logger.debug(`[handleDeeplink]: handling points`, { url });
         const referralCode = query?.ref;
         if (referralCode) {
-          analyticsV2.track(analyticsV2.event.pointsReferralCodeDeeplinkOpened);
+          analytics.track(analytics.event.pointsReferralCodeDeeplinkOpened);
           queryClient.setQueryData(
             pointsReferralCodeQueryKey,
             (referralCode.slice(0, 3) + '-' + referralCode.slice(3, 7)).toLocaleUpperCase()

@@ -81,9 +81,7 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
   const insets = useSafeAreaInsets();
 
   const handlePressQRCode = React.useCallback(() => {
-    analytics.track('Tapped "My QR Code"', {
-      category: 'home screen',
-    });
+    analytics.track(analytics.event.navigationMyQrCode, { category: 'home screen' });
 
     navigate(Routes.RECEIVE_MODAL);
   }, [navigate]);

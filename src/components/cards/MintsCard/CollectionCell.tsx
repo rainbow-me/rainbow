@@ -7,7 +7,7 @@ import { useTheme } from '@/theme';
 import { View } from 'react-native';
 import { MintableCollection } from '@/graphql/__generated__/arc';
 import { useNativeAsset } from '@/utils/ethereumUtils';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
 import { ImgixImage } from '@/components/images';
@@ -52,7 +52,7 @@ export function CollectionCell({ collection }: { collection: MintableCollection 
   useEffect(() => setMediaRendered(false), [imageUrl]);
 
   const handlePress = useCallback(() => {
-    analyticsV2.track(analyticsV2.event.mintsPressedCollectionCell, {
+    analytics.track(analytics.event.mintsPressedCollectionCell, {
       contractAddress: collection.contractAddress,
       chainId: collection.chainId,
       priceInEth: amount,

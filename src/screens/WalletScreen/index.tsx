@@ -8,6 +8,7 @@ import { Box } from '@/design-system';
 import {
   useAccountAccentColor,
   useAccountSettings,
+  useHideSplashScreen,
   useInitializeWallet,
   useLoadAccountLateData,
   useLoadGlobalLateData,
@@ -17,7 +18,7 @@ import {
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { AppState } from '@/redux/store';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { IS_ANDROID } from '@/env';
@@ -29,6 +30,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
 import walletTypes from '@/helpers/walletTypes';
+import { PerformanceMeasureView } from '@shopify/react-native-performance';
 
 enum WalletLoadingStates {
   IDLE = 0,
@@ -47,6 +49,7 @@ function WalletScreen() {
   const loadGlobalLateData = useLoadGlobalLateData();
   const insets = useSafeAreaInsets();
   const { wallets } = useWallets();
+  const hideSplashScreen = useHideSplashScreen();
 
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
   const {
@@ -102,7 +105,7 @@ function WalletScreen() {
       }
     );
 
-    analyticsV2.identify({
+    analytics.identify({
       ownedAccounts: identify.ownedAccounts,
       hardwareAccounts: identify.hardwareAccounts,
       watchedAccounts: identify.watchedAccounts,
@@ -156,7 +159,7 @@ function WalletScreen() {
 
   // track current app icon
   useEffect(() => {
-    analyticsV2.identify({ appIcon });
+    analytics.identify({ appIcon });
   }, [appIcon]);
 
   const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);
@@ -166,29 +169,31 @@ function WalletScreen() {
   const { highContrastAccentColor } = useAccountAccentColor();
 
   return (
-    <Box as={Page} flex={1} testID="wallet-screen">
-      <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
-        {/* @ts-expect-error JavaScript component */}
-        <AssetList
-          accentColor={highContrastAccentColor}
-          disableRefreshControl={isLoadingUserAssetsAndAddress || isLoadingBalance}
-          isLoading={IS_ANDROID && (isLoadingUserAssetsAndAddress || isLoadingBalance)}
-          isWalletEthZero={isWalletEthZero}
-          network={currentNetwork}
-          walletBriefSectionsData={walletBriefSectionsData}
-        />
+    <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
+      <Box as={Page} flex={1} testID="wallet-screen" onLayout={hideSplashScreen}>
+        <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
+          {/* @ts-expect-error JavaScript component */}
+          <AssetList
+            accentColor={highContrastAccentColor}
+            disableRefreshControl={isLoadingUserAssetsAndAddress || isLoadingBalance}
+            isLoading={IS_ANDROID && (isLoadingUserAssetsAndAddress || isLoadingBalance)}
+            isWalletEthZero={isWalletEthZero}
+            network={currentNetwork}
+            walletBriefSectionsData={walletBriefSectionsData}
+          />
+        </Box>
+        <ToastPositionContainer>
+          <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" testID="address-copied-toast" />
+        </ToastPositionContainer>
+
+        {/* NOTE: The components below render null and are solely for keeping react-query and Zustand in sync */}
+        <RemoteCardsSync />
+        <RemotePromoSheetSync />
+
+        {/* NOTE: This component listens for Mobile Wallet Protocol requests and handles them */}
+        <MobileWalletProtocolListener />
       </Box>
-      <ToastPositionContainer>
-        <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" testID="address-copied-toast" />
-      </ToastPositionContainer>
-
-      {/* NOTE: The components below render null and are solely for keeping react-query and Zustand in sync */}
-      <RemoteCardsSync />
-      <RemotePromoSheetSync />
-
-      {/* NOTE: This component listens for Mobile Wallet Protocol requests and handles them */}
-      <MobileWalletProtocolListener />
-    </Box>
+    </PerformanceMeasureView>
   );
 }
 

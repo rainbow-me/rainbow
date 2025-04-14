@@ -11,7 +11,7 @@ import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { addressSetSelected, walletsSetSelected, walletsUpdate } from '@/redux/wallets';
 import WalletTypes from '@/helpers/walletTypes';
-import { analytics, analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
@@ -316,9 +316,7 @@ export default function ChangeWalletSheet() {
             onCloseModal: async (args: any) => {
               if (args) {
                 if ('name' in args) {
-                  analytics.track('Tapped "Done" after editing wallet', {
-                    wallet_label: args.name,
-                  });
+                  analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: args.name });
 
                   const walletAddresses = wallets[walletId].addresses;
                   const walletAddressIndex = walletAddresses.findIndex(account => account.address === address);
@@ -350,7 +348,7 @@ export default function ChangeWalletSheet() {
 
                   dispatch(walletsUpdate(updatedWallets));
                 } else {
-                  analytics.track('Tapped "Cancel" after editing wallet');
+                  analytics.track(analytics.event.tappedCancelEditingWallet);
                 }
               }
             },
@@ -369,7 +367,7 @@ export default function ChangeWalletSheet() {
 
   const onPressEdit = useCallback(
     (walletId: string, address: string) => {
-      analytics.track('Tapped "Edit Wallet"');
+      analytics.track(analytics.event.tappedEditWallet);
       renameWallet(walletId, address);
     },
     [renameWallet]
@@ -377,7 +375,7 @@ export default function ChangeWalletSheet() {
 
   const onPressNotifications = useCallback(
     (walletName: string, address: string) => {
-      analytics.track('Tapped "Notification Settings"');
+      analytics.track(analytics.event.tappedNotificationSettings);
       const walletNotificationSettings = getNotificationSettingsForWalletWithAddress(address);
       if (walletNotificationSettings) {
         navigate(Routes.SETTINGS_SHEET, {
@@ -399,7 +397,7 @@ export default function ChangeWalletSheet() {
 
   const onPressRemove = useCallback(
     (walletId: string, address: string) => {
-      analytics.track('Tapped "Delete Wallet"');
+      analytics.track(analytics.event.tappedDeleteWallet);
       // If there's more than 1 account
       // it's deletable
       let isLastAvailableWallet = false;
@@ -421,9 +419,9 @@ export default function ChangeWalletSheet() {
           message: i18n.t(i18n.l.wallet.action.remove_confirm),
           options: [i18n.t(i18n.l.wallet.action.remove), i18n.t(i18n.l.button.cancel)],
         },
-        async (buttonIndex: number) => {
+        async buttonIndex => {
           if (buttonIndex === 0) {
-            analytics.track('Tapped "Delete Wallet" (final confirm)');
+            analytics.track(analytics.event.tappedDeleteWalletConfirm);
             await deleteWallet(walletId, address);
             ReactNativeHapticFeedback.trigger('notificationSuccess');
             if (!isLastAvailableWallet) {
@@ -480,7 +478,7 @@ export default function ChangeWalletSheet() {
   );
 
   const onPressAddAnotherWallet = useCallback(() => {
-    analyticsV2.track(analyticsV2.event.pressedButton, {
+    analytics.track(analytics.event.pressedButton, {
       buttonName: 'AddAnotherWalletButton',
       action: 'Navigates from WalletList to AddWalletSheet',
     });
@@ -493,7 +491,7 @@ export default function ChangeWalletSheet() {
   }, [goBack, navigate]);
 
   const onPressEditMode = useCallback(() => {
-    analytics.track('Tapped "Edit"');
+    analytics.track(analytics.event.tappedEdit);
     if (featureHintTooltipRef.current) {
       featureHintTooltipRef.current.dismiss();
     }

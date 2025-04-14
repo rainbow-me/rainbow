@@ -1,150 +1,201 @@
 import { SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import { analytics } from '@/analytics';
-import { IS_TEST } from '@/env';
-import { collectResultForPerformanceToast } from './PerformanceToast';
-import { PerformanceMetricData } from './types/PerformanceMetricData';
-import { PerformanceMetricsType } from './types/PerformanceMetrics';
-import { PerformanceTagsType } from './types/PerformanceTags';
-/*
-This will be a version for all performance tracking events.
-If we make breaking changes we will be able to take it into consideration when doing analytics
- */
-const performanceTrackingVersion = 2;
-const shouldLogToConsole = __DEV__ || SENTRY_ENVIRONMENT === 'LocalRelease';
-const shouldReportMeasurement = !IS_TEST && !__DEV__ && SENTRY_ENVIRONMENT !== 'LocalRelease';
-const logTag = '[PERFORMANCE]: ';
+import { IS_DEV, IS_TEST } from '@/env';
+import { APP_START_TIME } from '../start-time';
+import { event, EventProperties } from '@/analytics/event';
+import { logger } from '@/logger';
+import { Timer } from '@/performance/timer';
+import { showPerformanceToast } from './PerformanceToast';
 
-function logDurationIfAppropriate(metric: PerformanceMetricsType, durationInMs: number, ...additionalArgs: unknown[]) {
-  if (shouldLogToConsole) {
-    global.console.log(`${logTag}${metric}, duration: ${durationInMs.toFixed(2)}ms`, ...additionalArgs);
+const TRACKING_VERSION = 3;
+
+type PerformanceEvent = typeof event.performanceReport | typeof event.performanceInitializeWallet;
+
+export const PerformanceReports = {
+  appStartup: 'app_startup',
+} as const;
+type PerformanceReport = (typeof PerformanceReports)[keyof typeof PerformanceReports];
+
+export const PerformanceReportSegments = {
+  appStartup: {
+    loadJSBundle: 'load_js_bundle',
+    loadMainModule: 'load_main_module',
+    mountNavigation: 'mount_navigation',
+    initWalletConnect: 'init_walletconnect',
+    initRootComponent: 'init_root_component',
+    hideSplashScreen: 'hide_splash_screen',
+    tti: 'tti',
+    // The time it takes for from the root navigation being ready until the initial screen is interactive
+    initialScreenInteractiveRender: 'initial_screen_interactive_render',
+  },
+} as const;
+
+interface ReportSegment {
+  name: string;
+  duration: number;
+}
+
+interface Report {
+  startTime: number;
+  segments: ReportSegment[];
+  totalDuration?: number;
+  params?: Params;
+}
+
+type Params = Record<string, unknown>;
+
+class PerformanceTracker {
+  analyticsTrackingEnabled = !IS_TEST && !IS_DEV && SENTRY_ENVIRONMENT !== 'LocalRelease';
+  // Toggle if you want console logs
+  debug = false;
+  timer = new Timer();
+  reports = new Map<string, Report>();
+
+  logDirectly(metric: PerformanceEvent, durationInMs: number, params?: Params) {
+    this.trackMetric(metric, durationInMs, params);
   }
-}
 
-export const currentlyTrackedMetrics = new Map<PerformanceMetricsType, PerformanceMetricData>();
-
-interface AdditionalParams extends Record<string, unknown> {
-  tag?: PerformanceTagsType;
-}
-
-/**
- * Function that allows directly commiting performance events.
- * Useful when we already have duration of something and just want to log it.
- *
- * @param metric What you're measuring
- * @param durationInMs How long did it take
- * @param additionalParams Any additional context you want to add to your log
- */
-function logDirectly(metric: PerformanceMetricsType, durationInMs: number, additionalParams?: AdditionalParams) {
-  logDurationIfAppropriate(metric, durationInMs);
-  collectResultForPerformanceToast(metric, durationInMs);
-  if (shouldReportMeasurement) {
-    analytics.track(metric, {
-      durationInMs,
-      performanceTrackingVersion,
-      ...additionalParams, // wondering if we need to protect ourselves here
-    });
+  logFromAppStartTime(metric: PerformanceEvent, params?: Params) {
+    const durationInMs = Date.now() - APP_START_TIME;
+    this.trackMetric(metric, durationInMs, params);
   }
-}
 
-/**
- * Function that starts a performance measurement.
- * It uses performance.now() to get a start timestamp.
- *
- * @param metric What you're measuring
- * @param additionalParams Any additional context you want to add to your log
- */
-function startMeasuring(metric: PerformanceMetricsType, additionalParams?: AdditionalParams) {
-  const startTime = performance.now();
-
-  currentlyTrackedMetrics.set(metric, {
-    additionalParams,
-    startTimestamp: startTime,
-  });
-}
-
-/**
- * Function that finishes and commits a performance measurement.
- * It uses performance.now() to get a finish timestamp.
- *
- * CAUTION: For the same metric, finishMeasuring must always be called after calling startMeasuring first.
- * The reverse order will result in the measurement not being saved and finishMeasuring returning false.
- *
- * @param metric What you're measuring
- * @param additionalParams Any additional context you want to add to your log
- * @returns True if the measurement was collected and commited properly, false otherwise
- */
-function finishMeasuring(metric: PerformanceMetricsType, additionalParams?: AdditionalParams): boolean {
-  const savedEntry = currentlyTrackedMetrics.get(metric);
-  if (savedEntry === undefined || savedEntry.startTimestamp === undefined) {
-    return false;
+  startMeasuring(metric: PerformanceEvent, params?: Params) {
+    this.timer.start(metric, params);
   }
-  const finishTime = performance.now();
 
-  const durationInMs = finishTime - savedEntry.startTimestamp;
-  currentlyTrackedMetrics.set(metric, {
-    ...savedEntry,
-    finishTimestamp: finishTime,
-  });
+  finishMeasuring(metric: PerformanceEvent, params?: Params) {
+    const result = this.timer.stop(metric);
+    if (!result) return;
 
-  collectResultForPerformanceToast(metric, durationInMs);
-
-  if (shouldReportMeasurement) {
-    analytics.track(metric, {
-      durationInMs,
-      performanceTrackingVersion,
-      ...savedEntry.additionalParams,
-      ...additionalParams,
+    const { duration, params: startParams } = result;
+    this.trackMetric(metric, duration, {
+      ...startParams,
+      ...params,
     });
   }
 
-  logDurationIfAppropriate(metric, durationInMs);
-  currentlyTrackedMetrics.delete(metric);
-  return true;
-}
+  trackMetric(metric: PerformanceEvent, durationInMs: number, params?: Params) {
+    const paramsToTrack = {
+      durationInMs,
+      performanceTrackingVersion: TRACKING_VERSION,
+      ...params,
+    } as EventProperties[PerformanceEvent];
 
-/**
- * Function used to remove started measurement in case of error in the measured procedure
- * @param metric What you're clearing
- */
-function clearMeasure(metric: PerformanceMetricsType) {
-  currentlyTrackedMetrics.delete(metric);
-}
+    if (this.analyticsTrackingEnabled) {
+      analytics.track(metric, paramsToTrack);
+    }
+    if (this.debug) {
+      console.log(`[PERFORMANCE]: ${metric}`, JSON.stringify(paramsToTrack, null, 2));
+    }
+  }
 
-/**
- * Function decorator, that tracks performance of a function using performance.now() calls
- * and logs the result with analytics.
- * @param fn Function which performance will be measured
- * @param metric What you're measuring, the name of the metric
- * @param additionalParams Any additional context you want to add to your log
- */
-export function withPerformanceTracking<Fn extends (...args: Parameters<Fn>) => ReturnType<Fn>>(
-  fn: Fn,
-  metric: PerformanceMetricsType,
-  additionalParams?: AdditionalParams
-): (...args: Parameters<Fn>) => ReturnType<Fn> {
-  return function wrapper(this: unknown, ...args: Parameters<Fn>): ReturnType<Fn> {
-    const startTime = performance.now();
+  clearMeasure(metric: PerformanceEvent) {
+    this.timer.stop(metric);
+  }
 
-    const res = fn.apply(this, args);
+  startReport(reportName: PerformanceReport, startTime?: number) {
+    if (this.reports.has(reportName)) {
+      logger.debug(`[PERFORMANCE]: Report ${reportName} already started`);
+      return;
+    }
+    // Reports need to be anchored to Date.now() rather than performance.now()
+    // to allow comparison across different contexts (native vs. JS)
+    this.reports.set(reportName, {
+      startTime: startTime ?? Date.now(),
+      segments: [],
+    });
+  }
 
-    const durationInMs = performance.now() - startTime;
-    logDurationIfAppropriate(metric, durationInMs);
-    if (shouldReportMeasurement) {
-      analytics.track(metric, {
-        durationInMs,
-        performanceTrackingVersion,
-        ...additionalParams,
-      });
+  getReport(reportName: PerformanceReport) {
+    const report = this.reports.get(reportName);
+    if (!report) {
+      logger.debug(`[PERFORMANCE]: Report ${reportName} not found`);
+    }
+    return report;
+  }
+
+  startReportSegment(reportName: PerformanceReport, segmentName: string) {
+    const report = this.getReport(reportName);
+    if (!report) return;
+    this.timer.start(`${reportName}:${segmentName}`);
+  }
+
+  finishReportSegment(reportName: PerformanceReport, segmentName: string) {
+    const report = this.getReport(reportName);
+    if (!report) return;
+
+    const result = this.timer.stop(`${reportName}:${segmentName}`);
+    if (!result) return;
+    const { duration } = result;
+
+    report.segments.push({
+      name: segmentName,
+      duration,
+    });
+  }
+
+  /**
+   * Logs a report segment with duration relative to the report's start time
+   */
+  logReportSegmentRelative(reportName: PerformanceReport, segmentName: string) {
+    const report = this.getReport(reportName);
+    if (!report) return;
+
+    report.segments.push({
+      name: segmentName,
+      duration: Date.now() - report.startTime,
+    });
+  }
+
+  /**
+   * Adds parameters to be included in the final report
+   */
+  addReportParams(reportName: PerformanceReport, params: Params) {
+    const report = this.getReport(reportName);
+    if (!report) return;
+
+    report.params = {
+      ...report.params,
+      ...params,
+    };
+  }
+
+  finishReport(reportName: PerformanceReport, extraParams?: Params) {
+    const report = this.getReport(reportName);
+    if (!report) return;
+
+    const totalDuration = Date.now() - report.startTime;
+    report.totalDuration = totalDuration;
+
+    const segments = report.segments.reduce(
+      (acc, segment) => {
+        acc[segment.name] = segment.duration;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
+    // This is strictly for debugging purposes
+    if (reportName === PerformanceReports.appStartup && !IS_TEST) {
+      showPerformanceToast(segments);
     }
 
-    return res;
-  };
+    this.trackMetric(event.performanceReport, totalDuration, {
+      segments,
+      reportName,
+      data: {
+        ...report.params,
+        ...extraParams,
+      },
+    });
+
+    this.reports.delete(reportName);
+  }
+
+  clearReport(reportName: PerformanceReport) {
+    this.reports.delete(reportName);
+  }
 }
 
-export const PerformanceTracking = {
-  clearMeasure,
-  finishMeasuring,
-  logDirectly,
-  startMeasuring,
-  withPerformanceTracking,
-};
+export const PerformanceTracking = new PerformanceTracker();

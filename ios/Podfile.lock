@@ -1680,6 +1680,8 @@ PODS:
     - React-utils (= 0.74.3)
   - ReactNativeDarkMode (0.2.2):
     - React
+  - ReactNativePerformance (4.1.2):
+    - React-Core
   - rn-fetch-blob (0.12.0):
     - React-Core
   - RNBootSplash (5.5.3):
@@ -2094,6 +2096,7 @@ DEPENDENCIES:
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeDarkMode (from `../node_modules/react-native-dark-mode`)
+  - "ReactNativePerformance (from `../node_modules/@shopify/react-native-performance`)"
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - RNBootSplash (from `../node_modules/react-native-bootsplash`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
@@ -2384,6 +2387,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeDarkMode:
     :path: "../node_modules/react-native-dark-mode"
+  ReactNativePerformance:
+    :path: "../node_modules/@shopify/react-native-performance"
   rn-fetch-blob:
     :path: "../node_modules/rn-fetch-blob"
   RNBootSplash:
@@ -2591,6 +2596,7 @@ SPEC CHECKSUMS:
   React-utils: 595335727912553f56aad7f580254ce4ca95a09c
   ReactCommon: 57d127dbf2ca045a07604e13f51c8e97ba176e56
   ReactNativeDarkMode: 24151d23f70a51eea4b8db0166e79d28b6f2ae57
+  ReactNativePerformance: fa4952a58739e1a1f6b90a4e9777657d463499a3
   rn-fetch-blob: 25612b6d6f6e980c6f17ed98ba2f58f5696a51ca
   RNBootSplash: 2fc215ec70ab24408745e9452fa3e6595fb9ce76
   RNCAsyncStorage: aa75595c1aefa18f868452091fa0c411a516ce11

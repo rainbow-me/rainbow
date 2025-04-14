@@ -3,19 +3,19 @@
 Our analytics wrapper.
 
 ```typescript
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
-analyticsV2.identify({
+analytics.identify({
   ...userProperties,
 });
 
-analyticsV2.track(analyticsV2.event.applicationDidMount);
-analyticsV2.track(analyticsV2.event.appStateChange, {
+analytics.track(analytics.event.applicationDidMount);
+analytics.track(analytics.event.appStateChange, {
   category: 'app state',
   label: 'foo',
 });
 
-analyticsV2.screen(Routes.SWAPS_PROMO_SHEET, {
+analytics.screen(Routes.SWAPS_PROMO_SHEET, {
   ...metadata,
 });
 ```

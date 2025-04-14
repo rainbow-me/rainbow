@@ -6,7 +6,7 @@ import { FiatProviderName } from '@/entities/f2c';
 import { ProviderConfig } from '@/screens/AddCash/types';
 import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
 import { ButtonPressAnimation } from '@/components/animations';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { rampGetWidgetURL } from '@/resources/f2c';
 import { WrappedAlert } from '@/helpers/alert';
 import * as lang from '@/languages';
@@ -30,7 +30,7 @@ export function Ramp({ accountAddress, config }: { accountAddress: string; confi
 
           const { url } = data;
 
-          analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
+          analytics.track(analytics.event.f2cProviderFlowStarted, {
             provider: FiatProviderName.Ramp,
             sessionId,
           });

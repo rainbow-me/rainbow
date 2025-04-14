@@ -6,7 +6,7 @@ import { FiatProviderName } from '@/entities/f2c';
 import { ProviderConfig } from '@/screens/AddCash/types';
 import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
 import { ButtonPressAnimation } from '@/components/animations';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { coinbaseGetWidgetURL } from '@/resources/f2c';
 import { WrappedAlert } from '@/helpers/alert';
 import * as lang from '@/languages';
@@ -29,7 +29,7 @@ export function Coinbase({ accountAddress, config }: { accountAddress: string; c
 
           const { url } = data;
 
-          analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
+          analytics.track(analytics.event.f2cProviderFlowStarted, {
             provider: FiatProviderName.Coinbase,
             sessionId,
           });

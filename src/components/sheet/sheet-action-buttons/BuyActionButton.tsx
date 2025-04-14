@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton, { SheetActionButtonProps } from './SheetActionButton';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
 import showWalletErrorAlert from '@/helpers/support';
 import { useWallets } from '@/hooks';
@@ -27,7 +27,7 @@ function BuyActionButton({ color: givenColor, ...props }: BuyActionButtonProps) 
 
     navigate(Routes.ADD_CASH_SHEET);
 
-    analyticsV2.track(analyticsV2.event.buyButtonPressed, {
+    analytics.track(analytics.event.buyButtonPressed, {
       componentName: 'BuyActionButton',
       routeName,
     });

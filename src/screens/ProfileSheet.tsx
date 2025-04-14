@@ -62,7 +62,7 @@ export default function ProfileSheet() {
 
   useEffect(() => {
     if (profileAddress && accountAddress) {
-      analytics.track('Viewed profile', {
+      analytics.track(analytics.event.viewedProfile, {
         category: 'profiles',
         fromRoute: params.fromRoute,
         name: profileAddress !== accountAddress ? ensName : '',

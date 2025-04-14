@@ -1,7 +1,7 @@
 import * as lang from '@/languages';
 import React, { useCallback, useState } from 'react';
 import ProfileModal from './profile/ProfileModal';
-import { analyticsV2 as analytics } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useNavigation } from '@/navigation';
 
 type NewWalletGroupStateProps = {

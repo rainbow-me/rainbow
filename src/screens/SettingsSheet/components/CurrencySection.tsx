@@ -36,7 +36,7 @@ const CurrencySection = () => {
       if (IS_IOS && parseInt(Platform.Version as string) >= 14) {
         reloadTimelines('PriceWidget');
       }
-      analytics.track('Changed native currency', { currency });
+      analytics.track(analytics.event.changedNativeCurrency, { currency });
     },
     [settingsChangeNativeCurrency]
   );

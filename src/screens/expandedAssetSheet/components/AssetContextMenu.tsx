@@ -32,10 +32,10 @@ type ContextMenuAction = (typeof ContextMenuActions)[keyof typeof ContextMenuAct
 export function AssetContextMenu() {
   const { accentColors, basicAsset: asset, assetMetadata } = useExpandedAssetSheetContext();
 
-  const { clearSelectedCoins, pushSelectedCoin } = useCoinListEditOptions();
+  const { clearSelectedCoins, pushSelectedCoin, removePinnedCoin, addPinnedCoin } = useCoinListEditOptions();
   const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
 
-  const { currentAction, setPinnedCoins } = useCoinListFinishEditingOptions();
+  const { currentAction } = useCoinListFinishEditingOptions();
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export function AssetContextMenu() {
     if (asset.address && !asset.isNativeAsset) {
       menuItems.push({
         actionKey: ContextMenuActions.BlockExplorer,
-        actionTitle: i18n.t('expanded_state.asset.menu.view_on', {
+        actionTitle: i18n.t(i18n.l.expanded_state.asset.menu.view_on, {
           blockExplorerName: ethereumUtils.getBlockExplorer({ chainId: asset.chainId }),
         }),
         icon: {
@@ -66,7 +66,7 @@ export function AssetContextMenu() {
     if (asset.address && !asset.isNativeAsset) {
       menuItems.push({
         actionKey: ContextMenuActions.Copy,
-        actionTitle: i18n.t('expanded_state.asset.menu.copy_contract_address'),
+        actionTitle: i18n.t(i18n.l.expanded_state.asset.menu.copy_contract_address),
         actionSubtitle: asset.address.slice(0, 6) + '...' + asset.address.slice(-4),
         icon: {
           iconType: 'SYSTEM',
@@ -77,7 +77,7 @@ export function AssetContextMenu() {
 
     menuItems.push({
       actionKey: ContextMenuActions.Share,
-      actionTitle: i18n.t('expanded_state.asset.menu.share'),
+      actionTitle: i18n.t(i18n.l.expanded_state.asset.menu.share),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'square.and.arrow.up',
@@ -87,7 +87,7 @@ export function AssetContextMenu() {
     if (currentAction === EditAction.unhide) {
       menuItems.push({
         actionKey: ContextMenuActions.Unhide,
-        actionTitle: i18n.t('expanded_state.asset.menu.unhide'),
+        actionTitle: i18n.t(i18n.l.expanded_state.asset.menu.unhide),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'eye.slash',
@@ -96,7 +96,7 @@ export function AssetContextMenu() {
     } else {
       menuItems.push({
         actionKey: ContextMenuActions.Hide,
-        actionTitle: i18n.t('expanded_state.asset.menu.hide'),
+        actionTitle: i18n.t(i18n.l.expanded_state.asset.menu.hide),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'eye.slash',
@@ -107,7 +107,7 @@ export function AssetContextMenu() {
     if (currentAction === EditAction.unpin) {
       menuItems.push({
         actionKey: ContextMenuActions.Unpin,
-        actionTitle: i18n.t('expanded_state.asset.menu.unpin'),
+        actionTitle: i18n.t(i18n.l.expanded_state.asset.menu.unpin),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'pin',
@@ -116,7 +116,7 @@ export function AssetContextMenu() {
     } else {
       menuItems.push({
         actionKey: ContextMenuActions.Pin,
-        actionTitle: i18n.t('expanded_state.asset.menu.pin'),
+        actionTitle: i18n.t(i18n.l.expanded_state.asset.menu.pin),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'pin',
@@ -156,10 +156,10 @@ export function AssetContextMenu() {
         ethereumUtils.openTokenEtherscanURL({ address: asset.address, chainId: asset.chainId });
         break;
       case ContextMenuActions.Pin:
-        setPinnedCoins();
+        addPinnedCoin(asset.uniqueId);
         break;
       case ContextMenuActions.Unpin:
-        setPinnedCoins();
+        removePinnedCoin(asset.uniqueId);
         break;
       case ContextMenuActions.Hide:
         setHiddenAssets([asset.uniqueId]);

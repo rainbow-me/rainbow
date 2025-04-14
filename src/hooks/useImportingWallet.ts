@@ -13,7 +13,7 @@ import usePrevious from './usePrevious';
 import useWalletENSAvatar from './useWalletENSAvatar';
 import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics, analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
@@ -130,7 +130,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       type?: 'import' | 'watch';
     } = {}) => {
       setBusy(true);
-      analytics.track('Tapped "Import" button');
+      analytics.track(analytics.event.tappedImportButton);
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
       const guardedForceColor = typeof forceColor === 'string' || typeof forceColor === 'number' ? forceColor : null;
@@ -157,14 +157,14 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           setBusy(false);
 
           if (type === 'watch') {
-            analyticsV2.track(analyticsV2.event.watchWallet, {
+            analytics.track(analytics.event.watchWallet, {
               addressOrEnsName: input, // ENS name
               address,
             });
           }
 
           startImportProfile(name, guardedForceColor, address, finalAvatarUrl);
-          analytics.track('Show wallet profile modal for ENS address', {
+          analytics.track(analytics.event.showWalletProfileModalForENSAddress, {
             address,
             input,
           });
@@ -187,7 +187,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           setBusy(false);
 
           if (type === 'watch') {
-            analyticsV2.track(analyticsV2.event.watchWallet, {
+            analytics.track(analytics.event.watchWallet, {
               addressOrEnsName: input, // unstoppable domain name
               address,
             });
@@ -195,7 +195,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
           // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
           startImportProfile(name, guardedForceColor, address);
-          analytics.track('Show wallet profile modal for Unstoppable address', {
+          analytics.track(analytics.event.showWalletProfileModalForUnstoppableAddress, {
             address,
             input,
           });
@@ -217,7 +217,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             }
           }
 
-          analytics.track('Show wallet profile modal for read only wallet', {
+          analytics.track(analytics.event.showWalletProfileModalForReadOnlyWallet, {
             ens,
             input,
           });
@@ -227,7 +227,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         setBusy(false);
 
         if (type === 'watch') {
-          analyticsV2.track(analyticsV2.event.watchWallet, {
+          analytics.track(analytics.event.watchWallet, {
             addressOrEnsName: ens,
             address: input,
           });
@@ -257,14 +257,14 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             setBusy(false);
 
             if (type === 'watch') {
-              analyticsV2.track(analyticsV2.event.watchWallet, {
+              analytics.track(analytics.event.watchWallet, {
                 addressOrEnsName: ens,
                 address: input,
               });
             }
 
             startImportProfile(name, guardedForceColor, walletResult.address, finalAvatarUrl);
-            analytics.track('Show wallet profile modal for imported wallet', {
+            analytics.track(analytics.event.showWalletProfileModalForImportedWallet, {
               address: walletResult.address,
               type: walletResult.type,
             });
@@ -353,7 +353,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                     });
                   }, 1_000);
 
-                  analytics.track('Imported seed phrase', {
+                  analytics.track(analytics.event.importedSeedPhrase, {
                     isWalletEthZero,
                   });
 

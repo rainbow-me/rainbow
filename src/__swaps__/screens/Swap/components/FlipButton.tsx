@@ -2,7 +2,7 @@
 import React, { useCallback, useRef } from 'react';
 import { InteractionManager, StyleSheet } from 'react-native';
 import Animated, { runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
 import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
@@ -62,7 +62,7 @@ export const FlipButton = () => {
       }, 750);
     }
 
-    analyticsV2.track(analyticsV2.event.swapsFlippedAssets, {
+    analytics.track(analytics.event.swapsFlippedAssets, {
       inputAmount: SwapInputController.inputValues.value.inputAmount,
       previousInputAsset: internalSelectedInputAsset.value,
       previousOutputAsset: internalSelectedOutputAsset.value,
