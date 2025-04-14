@@ -560,12 +560,14 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
   },
 
   getAccountProfileInfo(props) {
-    const { walletNames, getWalletWithAccount } = get();
-    const wallet = props?.wallet || (props ? getWalletWithAccount(props.address) : null) || get().selected;
+    const { selected, walletNames, getWalletWithAccount } = get();
+    const wallet = props?.wallet || (props ? getWalletWithAccount(props.address) : null) || selected;
     const accountAddress = props?.address || get().accountAddress;
 
     if (!wallet) {
-      throw new Error(`No wallet`);
+      // TODO the type here was bad pre-refactor, so need to fix it
+      return {} as any;
+      // throw new Error(`No wallet`);
     }
     if (!accountAddress) {
       throw new Error(`No accountAddress`);
@@ -579,7 +581,9 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
     const selectedAccount = wallet.addresses?.find((account: RainbowAccount) => account.address?.toLowerCase() === lowerCaseAccountAddress);
 
     if (!selectedAccount) {
-      throw new Error(`No selectedAccount`);
+      // TODO the type here was bad pre-refactor, so need to fix it
+      return {} as any;
+      // throw new Error(`No selectedAccount`);
     }
 
     const { label, color, image } = selectedAccount;
