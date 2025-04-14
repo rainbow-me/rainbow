@@ -39,12 +39,12 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, wallets } = useWallets();
 
-  const { getParent: dangerouslyGetParent, navigate, replace, setParams } = useNavigation();
+  const { getParent: dangerouslyGetParent, navigate, replace, setOptions } = useNavigation<typeof Routes.MODAL_SCREEN>();
   const initializeWallet = useInitializeWallet();
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
-  const [color, setColor] = useState<string | null>(null);
+  const [color, setColor] = useState<number | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -69,9 +69,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const handleSetImporting = useCallback(
     (newImportingState: boolean) => {
       setImporting(newImportingState);
-      setParams({ gesturesEnabled: !newImportingState });
+      setOptions({ gestureEnabled: !newImportingState });
     },
-    [setParams]
+    [setOptions]
   );
 
   const handleSetSeedPhrase = useCallback(
@@ -84,7 +84,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   const startImportProfile = useCallback(
     (name: any, forceColor: any, address: any = null, avatarUrl: any) => {
-      const importWallet = (color: string, name: string, image: string) =>
+      const importWallet = (color: number, name: string, image?: string) =>
         InteractionManager.runAfterInteractions(() => {
           if (color !== null) setColor(color);
           if (name) setName(name);
@@ -101,7 +101,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           asset: [],
           forceColor,
           isNewProfile: true,
-          onCloseModal: ({ color, name, image }: { color: string; name: string; image: string }) => {
+          onCloseModal: ({ color, name, image }) => {
             importWallet(color, name, image);
           },
           profile: { image: avatarUrl, name },

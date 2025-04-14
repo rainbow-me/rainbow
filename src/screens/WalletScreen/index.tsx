@@ -38,7 +38,7 @@ enum WalletLoadingStates {
 
 function WalletScreen() {
   const { params } = useRoute<RouteProp<RootStackParamList, 'WalletScreen'>>();
-  const { setParams, getState: dangerouslyGetState, getParent: dangerouslyGetParent } = useNavigation();
+  const { setParams, getState: dangerouslyGetState, getParent: dangerouslyGetParent } = useNavigation<'WalletScreen'>();
   const removeFirst = useRemoveFirst();
   const walletState = useRef(WalletLoadingStates.IDLE);
   const initializeWallet = useInitializeWallet();

@@ -3,7 +3,7 @@ import Routes from '@/navigation/routesNames';
 import { PortalSheetProps } from '@/screens/Portal';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
-import { ParsedAddressAsset, PendingTransaction, UniqueAsset } from '@/entities';
+import { ParsedAddressAsset, PendingTransaction, RainbowTransaction, UniqueAsset } from '@/entities';
 import { Claimable, RainbowClaimable } from '@/resources/addys/claimables/types';
 import { RequestData, WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/walletConnect/types';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
@@ -23,6 +23,8 @@ import { SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { BackupFile } from '@/model/backup';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
+import { GetPoapEventBySecretWordQuery } from '@/graphql/__generated__/arc';
+import { Contact } from '@/redux/contacts';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -186,6 +188,15 @@ declare global {
   }
 }
 
+type AddWalletNavigatorParams = {
+  type?: 'import' | 'watch';
+  isFirstWallet: boolean;
+};
+
+type UntypedRoutes = {
+  [key: string]: undefined;
+};
+
 export type RootStackParamList = {
   [Routes.SEND_SHEET]: {
     asset?: ParsedAddressAsset | UniqueAsset;
@@ -209,7 +220,13 @@ export type RootStackParamList = {
     tx: PendingTransaction;
     type: 'speed_up' | 'cancel';
   };
+  [Routes.SWIPE_LAYOUT]: undefined;
+  [Routes.SETTINGS_SECTION_BACKUP]: {
+    walletId?: string;
+    initialRoute?: string;
+  };
   [Routes.BACKUP_SHEET]: {
+    isFromWalletReadyPrompt?: boolean;
     nativeScreen?: boolean;
     selectedBackup?: BackupFile;
     step: string;
@@ -259,6 +276,10 @@ export type RootStackParamList = {
   [Routes.PROFILE_SHEET]: {
     address: string;
     fromRoute: string;
+  };
+  [Routes.TRANSACTION_DETAILS]: {
+    transaction: RainbowTransaction;
+    longFormHeight: number;
   };
   [Routes.REGISTER_ENS_NAVIGATOR]: {
     ensName?: string;
@@ -354,6 +375,41 @@ export type RootStackParamList = {
     source: RequestSource;
   };
 
-  // Catch-all for any other route not explicitly defined
-  [key: string]: Record<string, any> | undefined;
-};
+  [Routes.RESTORE_SHEET]: {
+    fromSettings?: boolean;
+  };
+  [Routes.PAIR_HARDWARE_WALLET_NAVIGATOR]: {
+    entryPoint?: typeof Routes.ADD_WALLET_SHEET | typeof Routes.IMPORT_OR_WATCH_WALLET_SHEET;
+    isFirstWallet?: boolean;
+  };
+  [Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET]: undefined;
+  [Routes.ADD_WALLET_NAVIGATOR]: AddWalletNavigatorParams;
+  [Routes.IMPORT_OR_WATCH_WALLET_SHEET]: AddWalletNavigatorParams;
+  [Routes.DAPP_BROWSER_SCREEN]: {
+    url?: string;
+  };
+  [Routes.CHOOSE_WALLET_GROUP]: undefined;
+  [Routes.POAP_SHEET]: {
+    event?: GetPoapEventBySecretWordQuery['getPoapEventBySecretWord'];
+  };
+  [Routes.MODAL_SCREEN]: {
+    actionType?: 'Import' | 'Create';
+    additionalPadding?: boolean;
+    address?: string | undefined;
+    asset?: any[]; // TODO: Fix this
+    color?: number | null;
+    forceColor?: string | number | null;
+    isNewProfile?: boolean;
+    contact?: Contact | undefined;
+    ens?: string | undefined;
+    numWalletGroups?: number;
+    nickname?: string | undefined;
+    type: 'contact_profile' | 'wallet_profile' | 'send' | 'request' | 'new_wallet_group';
+    onRefocusInput?: () => void;
+    onCloseModal?: ({ color, name, image }: { color: number; name: string; image?: string }) => void;
+    profile?: { image?: string; name: string; color?: string | number | null };
+    withoutStatusBar?: boolean;
+    isFromSettings?: boolean;
+    onCancel?: () => void;
+  };
+} & UntypedRoutes;

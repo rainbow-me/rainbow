@@ -32,13 +32,13 @@ import { ImgixImage } from '../images';
 import { RainbowButton } from '../buttons';
 import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { Source } from 'react-native-fast-image';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { isEmpty } from 'lodash';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+import { RootStackParamList } from '@/navigation/types';
 
 type ComponentProps = {
   theme: ThemeContextProps;
@@ -81,14 +81,8 @@ const KeyboardSizeView = styled(KeyboardArea)({
   backgroundColor: ({ theme: { colors } }: ComponentProps) => colors.transparent,
 });
 
-type RestoreCloudStepParams = {
-  RestoreSheet: {
-    selectedBackup: BackupFile;
-  };
-};
-
 export default function RestoreCloudStep() {
-  const { params } = useRoute<RouteProp<RestoreCloudStepParams & RestoreSheetParams, 'RestoreSheet'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.BACKUP_SHEET>>();
   const { password } = backupsStore(state => ({
     password: state.password,
   }));
@@ -140,12 +134,12 @@ export default function RestoreCloudStep() {
   const onSubmit = useCallback(async () => {
     // NOTE: Localizing password to prevent an empty string from being saved if we re-render
     const pwd = password.trim();
-    let filename = selectedBackup.name;
+    let filename = selectedBackup?.name;
 
     const prevWalletsState = await dispatch(walletsLoadState());
 
     try {
-      if (!selectedBackup.name) {
+      if (!filename) {
         throw new Error('No backup file selected');
       }
 
@@ -181,9 +175,7 @@ export default function RestoreCloudStep() {
           logger.debug('[RestoreCloudStep]: Updating backup state of wallets with ids', {
             walletIds: JSON.stringify(walletIdsToUpdate),
           });
-          logger.debug('[RestoreCloudStep]: Selected backup name', {
-            fileName: selectedBackup.name,
-          });
+          logger.debug(`[RestoreCloudStep]: Selected backup name: ${filename}`);
 
           await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, walletBackupTypes.cloud, filename));
 
@@ -219,6 +211,7 @@ export default function RestoreCloudStep() {
             Routes.SWIPE_LAYOUT,
             {
               screen: Routes.WALLET_SCREEN,
+              params: {},
             },
             true
           );
@@ -245,7 +238,7 @@ export default function RestoreCloudStep() {
         loadingState: null,
       });
     }
-  }, [password, selectedBackup.name, dispatch, onRestoreSuccess, initializeWallet]);
+  }, [password, selectedBackup?.name, dispatch, onRestoreSuccess, initializeWallet]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();

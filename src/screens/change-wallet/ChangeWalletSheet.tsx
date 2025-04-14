@@ -314,43 +314,41 @@ export default function ChangeWalletSheet() {
           navigate(Routes.MODAL_SCREEN, {
             address,
             asset: [],
-            onCloseModal: async (args: any) => {
-              if (args) {
-                if ('name' in args) {
-                  analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: args.name });
+            onCloseModal: async ({ name, color }) => {
+              if (name) {
+                analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: name });
 
-                  const walletAddresses = wallets[walletId].addresses;
-                  const walletAddressIndex = walletAddresses.findIndex(account => account.address === address);
-                  const walletAddress = walletAddresses[walletAddressIndex];
+                const walletAddresses = wallets[walletId].addresses;
+                const walletAddressIndex = walletAddresses.findIndex(account => account.address === address);
+                const walletAddress = walletAddresses[walletAddressIndex];
 
-                  const updatedWalletAddress = {
-                    ...walletAddress,
-                    color: args.color,
-                    label: args.name,
-                  };
-                  const updatedWalletAddresses = [...walletAddresses];
-                  updatedWalletAddresses[walletAddressIndex] = updatedWalletAddress;
+                const updatedWalletAddress = {
+                  ...walletAddress,
+                  color,
+                  label: name,
+                };
+                const updatedWalletAddresses = [...walletAddresses];
+                updatedWalletAddresses[walletAddressIndex] = updatedWalletAddress;
 
-                  const updatedWallet = {
-                    ...wallets[walletId],
-                    addresses: updatedWalletAddresses,
-                  };
-                  const updatedWallets = {
-                    ...wallets,
-                    [walletId]: updatedWallet,
-                  };
+                const updatedWallet = {
+                  ...wallets[walletId],
+                  addresses: updatedWalletAddresses,
+                };
+                const updatedWallets = {
+                  ...wallets,
+                  [walletId]: updatedWallet,
+                };
 
-                  if (currentSelectedWallet.id === walletId) {
-                    setCurrentSelectedWallet(updatedWallet);
-                    dispatch(walletsSetSelected(updatedWallet));
-                  }
-
-                  updateWebProfile(address, args.name, colors.avatarBackgrounds[args.color]);
-
-                  dispatch(walletsUpdate(updatedWallets));
-                } else {
-                  analytics.track(analytics.event.tappedCancelEditingWallet);
+                if (currentSelectedWallet.id === walletId) {
+                  setCurrentSelectedWallet(updatedWallet);
+                  dispatch(walletsSetSelected(updatedWallet));
                 }
+
+                updateWebProfile(address, name, colors.avatarBackgrounds[color]);
+
+                dispatch(walletsUpdate(updatedWallets));
+              } else {
+                analytics.track(analytics.event.tappedCancelEditingWallet);
               }
             },
             profile: {
