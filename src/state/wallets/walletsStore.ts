@@ -26,11 +26,11 @@ import {
   saveAllWallets,
   setSelectedWallet as setWalletSelectedWallet,
 } from '../../model/wallet';
-import { createRainbowStore } from '../internal/createRainbowStore';
+import { updateWebDataEnabled } from '../../redux/showcaseTokens';
 import { address } from '../../utils/abbreviations';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '../../utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '../../utils/profileUtils';
-import { updateWebDataEnabled } from '../../redux/showcaseTokens';
+import { createRainbowStore } from '../internal/createRainbowStore';
 
 interface WalletsState {
   selected: RainbowWallet | null;
@@ -146,7 +146,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
             });
             if (found) {
               selectedWallet = someWallet;
-              logger.debug('[redux/wallets]: Found selected wallet based on loadAddress result');
+              logger.debug('[walletsStore]: Found selected wallet based on loadAddress result');
             }
             return found;
           });
@@ -156,7 +156,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
       // Recover from broken state (account address not in selected wallet)
       if (!addressFromKeychain) {
         addressFromKeychain = await loadAddress();
-        logger.debug("[redux/wallets]: addressFromKeychain wasn't set on settings so it is being loaded from loadAddress");
+        logger.debug("[walletsStore]: addressFromKeychain wasn't set on settings so it is being loaded from loadAddress");
       }
 
       const selectedAddress = selectedWallet?.addresses.find(a => {
@@ -181,7 +181,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
           accountAddress: ensureValidHex(account.address),
         });
         await saveAddress(account.address);
-        logger.debug('[redux/wallets]: Selected the first visible address because there was not selected one');
+        logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
       }
 
       const walletNames = await getWalletNames();
@@ -193,7 +193,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
 
       return wallets;
     } catch (error) {
-      logger.error(new RainbowError('[redux/wallets]: Exception during walletsLoadState'), {
+      logger.error(new RainbowError('[walletsStore]: Exception during walletsLoadState'), {
         message: (error as Error)?.message,
       });
     }
@@ -441,38 +441,38 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
   checkKeychainIntegrity: async () => {
     try {
       let healthyKeychain = true;
-      logger.debug('[redux/wallets]: Starting keychain integrity checks');
+      logger.debug('[walletsStore]: Starting keychain integrity checks');
 
       const hasAddress = await hasKey(addressKey);
       if (hasAddress) {
-        logger.debug('[redux/wallets]: address is ok');
+        logger.debug('[walletsStore]: address is ok');
       } else {
         healthyKeychain = false;
-        logger.debug(`[redux/wallets]: address is missing: ${hasAddress}`);
+        logger.debug(`[walletsStore]: address is missing: ${hasAddress}`);
       }
 
       const hasOldSeedPhraseMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
       if (hasOldSeedPhraseMigratedFlag) {
-        logger.debug('[redux/wallets]: migrated flag is OK');
+        logger.debug('[walletsStore]: migrated flag is OK');
       } else {
-        logger.debug(`[redux/wallets]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`);
+        logger.debug(`[walletsStore]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`);
       }
 
       const hasOldSeedphrase = await hasKey(seedPhraseKey);
       if (hasOldSeedphrase) {
-        logger.debug('[redux/wallets]: old seed is still present!');
+        logger.debug('[walletsStore]: old seed is still present!');
       } else {
-        logger.debug(`[redux/wallets]: old seed is present: ${hasOldSeedphrase}`);
+        logger.debug(`[walletsStore]: old seed is present: ${hasOldSeedphrase}`);
       }
 
       const { wallets, selected } = get();
       if (!wallets) {
-        logger.warn('[redux/wallets]: wallets are missing from redux');
+        logger.warn('[walletsStore]: wallets are missing from redux');
         return;
       }
 
       if (!selected) {
-        logger.warn('[redux/wallets]: selectedWallet is missing from redux');
+        logger.warn('[walletsStore]: selectedWallet is missing from redux');
       }
 
       const nonReadOnlyWalletKeys = keys(wallets).filter(key => wallets[key].type !== WalletTypes.readOnly);
@@ -484,18 +484,18 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
         const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
         if (!seedKeyFound) {
           healthyWallet = false;
-          logger.warn('[redux/wallets]: seed key is missing');
+          logger.warn('[walletsStore]: seed key is missing');
         } else {
-          logger.debug('[redux/wallets]: seed key is present');
+          logger.debug('[walletsStore]: seed key is present');
         }
 
         for (const account of wallet.addresses || []) {
           const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
           if (!pkeyFound) {
             healthyWallet = false;
-            logger.warn(`[redux/wallets]: pkey is missing`);
+            logger.warn(`[walletsStore]: pkey is missing`);
           } else {
-            logger.debug(`[redux/wallets]: pkey is present`);
+            logger.debug(`[walletsStore]: pkey is present`);
           }
         }
 
@@ -509,7 +509,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
         }
 
         if (!healthyWallet) {
-          logger.warn('[redux/wallets]: declaring wallet unhealthy...');
+          logger.warn('[walletsStore]: declaring wallet unhealthy...');
           healthyKeychain = false;
           wallet.damaged = true;
           set({
@@ -518,12 +518,12 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
 
           // Update selected wallet if needed
           if (wallets && selected && wallet.id === selected.id) {
-            logger.warn('[redux/wallets]: declaring selected wallet unhealthy...');
+            logger.warn('[walletsStore]: declaring selected wallet unhealthy...');
             set({
               selected: wallets[wallet.id],
             });
           }
-          logger.debug('[redux/wallets]: done updating wallets');
+          logger.debug('[walletsStore]: done updating wallets');
         }
       }
 
@@ -531,10 +531,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
         captureMessage('Keychain Integrity is not OK');
       }
 
-      logger.debug('[redux/wallets]: check completed');
+      logger.debug('[walletsStore]: check completed');
       saveKeychainIntegrityState('done');
     } catch (e) {
-      logger.error(new RainbowError("[redux/wallets]: error thrown'"), {
+      logger.error(new RainbowError("[walletsStore]: error thrown'"), {
         message: (e as Error)?.message,
       });
       captureMessage('Error running keychain integrity checks');
