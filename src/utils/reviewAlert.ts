@@ -5,9 +5,7 @@ import * as StoreReview from 'expo-store-review';
 import { IS_DEV, IS_TEST } from '@/env';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
-
-const ONE_WEEK = 60 * 60 * 24 * 7 * 1000;
-const ONE_YEAR = 60 * 60 * 24 * 365 * 1000;
+import { time } from '@/utils/time';
 
 export const numberOfTimesBeforePrompt: {
   [key in ReviewPromptAction]: number;
@@ -33,14 +31,15 @@ function getReviewActions() {
   // Check if we need to add any new actions that weren't previously tracked
   const existingActionIds = actions.map(action => action.id);
   const allActionIds = Object.values(ReviewPromptAction);
+  const existingActionIdsSet = new Set(existingActionIds);
 
   // If we have all actions already, return the existing actions
-  if (allActionIds.every(id => existingActionIds.includes(id))) {
+  if (allActionIds.every(id => existingActionIdsSet.has(id))) {
     return actions;
   }
 
   const newActions = allActionIds
-    .filter(id => !existingActionIds.includes(id))
+    .filter(id => !existingActionIdsSet.has(id))
     .map(id => ({
       id,
       numOfTimesDispatched: 0,
@@ -79,12 +78,12 @@ export async function handleReviewPromptAction(action: ReviewPromptAction) {
   const now = Date.now();
 
   // iOS limits the number of prompts to 3 in a year. Android has something similar but does not say exactly what the limit is.
-  const promptsWithinLastYear = promptTimestamps.filter((timestamp: number) => now - timestamp < ONE_YEAR);
+  const promptsWithinLastYear = promptTimestamps.filter((timestamp: number) => now - timestamp < time.weeks(52));
   const hasReachedPromptLimit = promptsWithinLastYear.length >= 3;
 
   // Wait at least 1 week between prompts.
   const timeOfLastPrompt = promptTimestamps[promptTimestamps.length - 1] || 0;
-  const hasPassedTimeSinceLastPrompt = now - timeOfLastPrompt > ONE_WEEK;
+  const hasPassedTimeSinceLastPrompt = now - timeOfLastPrompt > time.weeks(1);
 
   if (hasReachedActionThreshold && hasPassedTimeSinceLastPrompt && !hasReachedPromptLimit) {
     logger.debug(`[reviewAlert]: Prompting for review`);
