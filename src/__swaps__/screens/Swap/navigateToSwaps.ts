@@ -1,15 +1,15 @@
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { Navigation } from '@/navigation';
-import store from '@/redux/store';
-import { SwapsState, useSwapsStore } from '@/state/swaps/swapsStore';
-import { setSelectedGasSpeed } from './hooks/useSelectedGas';
-import { enableActionsOnReadOnlyWallet } from '@/config';
-import walletTypes from '@/helpers/walletTypes';
-import { watchingAlert } from '@/utils';
-import Routes from '@/navigation/routesNames';
 import { getDefaultSlippage, slippageInBipsToString } from '@/__swaps__/utils/swaps';
-import { ChainId } from '@/state/backendNetworks/types';
+import { enableActionsOnReadOnlyWallet } from '@/config';
 import { getRemoteConfig } from '@/model/remoteConfig';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import store from '@/redux/store';
+import { ChainId } from '@/state/backendNetworks/types';
+import { SwapsState, useSwapsStore } from '@/state/swaps/swapsStore';
+import { watchingAlert } from '@/utils';
+import { getIsReadOnlyWallet } from '../../../redux/wallets';
+import { setSelectedGasSpeed } from './hooks/useSelectedGas';
 
 export type SwapsParams = Partial<
   Pick<SwapsState, 'inputAsset' | 'outputAsset' | 'percentageToSell' | 'slippage'> & {
@@ -19,10 +19,8 @@ export type SwapsParams = Partial<
   }
 >;
 
-const isCurrentWalletReadOnly = () => store.getState().wallets.selected?.type === walletTypes.readOnly;
-
 export async function navigateToSwaps({ gasSpeed, ...params }: SwapsParams) {
-  if (!enableActionsOnReadOnlyWallet && isCurrentWalletReadOnly()) {
+  if (!enableActionsOnReadOnlyWallet && getIsReadOnlyWallet()) {
     return watchingAlert();
   }
 

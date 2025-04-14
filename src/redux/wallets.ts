@@ -57,8 +57,8 @@ interface WalletsState {
 
   setSelectedAddress: (address: string) => void;
 
-  accountAddress: string;
-  updateAccountAddress: (address: string) => void;
+  accountAddress: `0x${string}`;
+  updateAccountAddress: (address: `0x${string}`) => void;
 
   refreshWalletENSAvatars: () => Promise<void>;
   refreshWalletNames: () => Promise<void>;
@@ -106,8 +106,8 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
     });
   },
 
-  accountAddress: '',
-  updateAccountAddress: (accountAddress: string) => {
+  accountAddress: `0x`,
+  updateAccountAddress: (accountAddress: `0x${string}`) => {
     set({
       accountAddress,
     });

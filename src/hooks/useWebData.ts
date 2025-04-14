@@ -1,4 +1,3 @@
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { containsEmoji } from '@/helpers/strings';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
@@ -9,7 +8,7 @@ import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPreference, PreferenceActionType, setPreference } from '../model/preferences';
-import { useWalletsStore } from '../redux/wallets';
+import { getWalletWithAccount, useWalletsStore } from '../redux/wallets';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 
@@ -32,7 +31,6 @@ const wipeNotEmoji = (text: string) => {
 export default function useWebData() {
   const { accountAddress } = useAccountSettings();
   const dispatch = useDispatch();
-  const wallets = useWalletsStore(state => state.wallets);
 
   const { showcaseTokens, webDataEnabled, hiddenTokens } = useSelector(
     ({ hiddenTokens: { hiddenTokens }, showcaseTokens: { webDataEnabled, showcaseTokens } }: AppState) => ({
@@ -71,15 +69,15 @@ export default function useWebData() {
   const updateWebProfile = useCallback(
     async (address: string, name: string, color: string) => {
       if (!webDataEnabled) return;
-      const wallet = findWalletWithAccount(wallets!, address);
-      if (wallet.type === WalletTypes.readOnly) return;
+      const wallet = getWalletWithAccount(address);
+      if (!wallet || wallet.type === WalletTypes.readOnly) return;
       const data = {
         accountColor: color || accountColor,
         accountSymbol: wipeNotEmoji(name ? getAccountSymbol(name)! : (accountSymbol as string)),
       };
       await setPreference(PreferenceActionType.update, 'profile', address, data);
     },
-    [accountColor, accountSymbol, wallets, webDataEnabled]
+    [accountColor, accountSymbol, webDataEnabled]
   );
 
   const getWebProfile = useCallback(async (address: string) => {

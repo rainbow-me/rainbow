@@ -23,7 +23,7 @@ import {
   TransactionNotificationData,
 } from '@/notifications/types';
 import store, { AppState } from '@/redux/store';
-import { useWalletsStore } from '@/redux/wallets';
+import { getAccountAddress, useWalletsStore } from '@/redux/wallets';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { isLowerCaseMatch } from '@/utils';
 import notifee, { EventType, Event as NotifeeEvent } from '@notifee/react-native';
@@ -129,7 +129,8 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
       const data = notification.data as unknown as TransactionNotificationData;
 
       const walletSwitcher = walletSwitcherRef.current;
-      const { accountAddress, nativeCurrency } = store.getState().settings;
+      const { nativeCurrency } = store.getState().settings;
+      const accountAddress = getAccountAddress();
 
       let walletAddress: string | null | undefined = accountAddress;
       if (!isLowerCaseMatch(accountAddress, data.address)) {
