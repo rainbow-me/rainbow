@@ -30,7 +30,7 @@ const PROFILE_AVATAR_SIZE = 36;
 
 export const NFTOffersSheet = () => {
   const separatorSecondary = useForegroundColor('separatorSecondary');
-  const { accountColor, accountImage, accountSymbol, accountAddress } = useAccountProfile();
+  const { accountColorString, accountImage, accountSymbol, accountAddress } = useAccountProfile();
   const { isDarkMode } = useTheme();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
 
@@ -56,7 +56,7 @@ export const NFTOffersSheet = () => {
             <Inset bottom="24px">
               <Stack space={{ custom: 30 }}>
                 <Inline alignHorizontal="justify" alignVertical="center">
-                  <AccentColorProvider color={accountColor}>
+                  <AccentColorProvider color={accountColorString}>
                     {accountImage ? (
                       <Box
                         as={ImgixImage}

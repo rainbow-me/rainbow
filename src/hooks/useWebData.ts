@@ -40,8 +40,7 @@ export default function useWebData() {
     })
   );
 
-  const { colors } = useTheme();
-  const { accountSymbol, accountColor } = useAccountProfile();
+  const { accountSymbol, accountColorString } = useAccountProfile();
 
   const initWebData = useCallback(
     async (showcaseTokens: any) => {
@@ -50,13 +49,13 @@ export default function useWebData() {
       await setPreference(PreferenceActionType.init, 'hidden', accountAddress, hiddenTokens);
 
       await setPreference(PreferenceActionType.init, 'profile', accountAddress, {
-        accountColor: colors.avatarBackgrounds[accountColor],
+        accountColor: accountColorString,
         accountSymbol: wipeNotEmoji(accountSymbol as string),
       });
 
       dispatch(updateWebDataEnabled(true, accountAddress));
     },
-    [accountAddress, accountColor, accountSymbol, colors.avatarBackgrounds, dispatch, hiddenTokens]
+    [accountAddress, accountColorString, accountSymbol, dispatch, hiddenTokens]
   );
 
   const wipeWebData = useCallback(async () => {
@@ -71,13 +70,12 @@ export default function useWebData() {
       if (!webDataEnabled) return;
       const wallet = getWalletWithAccount(address);
       if (!wallet || wallet.type === WalletTypes.readOnly) return;
-      const data = {
-        accountColor: color || accountColor,
-        accountSymbol: wipeNotEmoji(name ? getAccountSymbol(name)! : (accountSymbol as string)),
-      };
-      await setPreference(PreferenceActionType.update, 'profile', address, data);
+      await setPreference(PreferenceActionType.update, 'profile', address, {
+        accountColor: accountColorString,
+        accountSymbol: accountSymbol || null,
+      });
     },
-    [accountColor, accountSymbol, webDataEnabled]
+    [accountColorString, accountSymbol, webDataEnabled]
   );
 
   const getWebProfile = useCallback(async (address: string) => {

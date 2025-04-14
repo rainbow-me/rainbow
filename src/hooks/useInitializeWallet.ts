@@ -21,6 +21,7 @@ import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useOpenSmallBalances from './useOpenSmallBalances';
 import { PerformanceTracking } from '../performance/tracking';
+import { ensureValidHex } from '../handlers/web3';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -128,7 +129,7 @@ export default function useInitializeWallet() {
           logger.debug('[useInitializeWallet]: loaded global data...');
         }
 
-        updateAccountAddress(walletAddress);
+        updateAccountAddress(ensureValidHex(walletAddress));
         logger.debug('[useInitializeWallet]: updated wallet address', {
           walletAddress,
         });
