@@ -9,6 +9,7 @@ import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty, keys } from 'lodash';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
 import { getWalletNames, saveWalletNames } from '../handlers/localstorage/walletNames';
+import { ensureValidHex } from '../handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '../helpers/emojiHandler';
 import { fetchENSAvatar } from '../hooks/useENSAvatar';
 import { hasKey } from '../model/keychain';
@@ -177,7 +178,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
 
         if (!account) return;
         set({
-          accountAddress: account.address,
+          accountAddress: ensureValidHex(account.address),
         });
         await saveAddress(account.address);
         logger.debug('[redux/wallets]: Selected the first visible address because there was not selected one');

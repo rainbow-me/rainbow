@@ -191,6 +191,27 @@ export const isHexStringIgnorePrefix = (value: string): boolean => {
  */
 export const addHexPrefix = (value: string): string => (startsWith(value, '0x') ? value : `0x${value}`);
 
+export type HexAddress = `0x${string}`;
+
+/**
+ * @desc Asserts "0x" prefix on a string.
+ * @param value The potential address string.
+ * @return The same string.
+ */
+export const assertValidHex: (value: string) => asserts value is HexAddress = value => {
+  if (!value.startsWith(`0x`)) throw new Error(`Non address-like string`);
+};
+
+/**
+ * @desc Ensures "0x" prefix on a string.
+ * @param value The potential address string.
+ * @return The same string.
+ */
+export const ensureValidHex = (value: string): HexAddress => {
+  assertValidHex(value);
+  return value;
+};
+
 /**
  * @desc is valid mnemonic
  * @param value The string to check.
