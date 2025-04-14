@@ -212,7 +212,8 @@ export default async function runMigrations() {
    * incorrectly by the keychain integrity checks
    */
   const v5 = async () => {
-    const { wallets, selected } = store.getState().wallets;
+    const wallets = getWallets();
+    const selected = getSelectedWallet();
 
     if (!wallets) {
       logger.debug('[runMigrations]: Complete migration v5 early');
@@ -235,14 +236,14 @@ export default async function runMigrations() {
           }
         });
         logger.debug('[runMigrations]: updating all wallets');
-        await store.dispatch(walletsUpdate(updatedWallets));
+        await updateWallets(updatedWallets);
         logger.debug('[runMigrations]: done updating all wallets');
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
         if (selected!.id === incorrectDamagedWalletId) {
           logger.debug('[runMigrations]: need to update the selected wallet');
           const updatedSelectedWallet = updatedWallets[incorrectDamagedWalletId];
-          await store.dispatch(walletsSetSelected(updatedSelectedWallet));
+          await setSelectedWallet(updatedSelectedWallet);
           logger.debug('[runMigrations]: selected wallet updated');
         }
       }
@@ -277,7 +278,7 @@ export default async function runMigrations() {
 
   /* Turning ON web data for all accounts */
   const v7 = async () => {
-    const { wallets } = store.getState().wallets;
+    const wallets = getWallets();
     if (!wallets) return;
     const walletKeys = Object.keys(wallets);
     // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -313,7 +314,8 @@ export default async function runMigrations() {
     // map from old color index to closest new color's index
     const newColorIndexes = [0, 4, 12, 21, 1, 20, 4, 9, 10];
     try {
-      const { selected, wallets } = store.getState().wallets;
+      const wallets = getWallets();
+      const selected = getSelectedWallet();
       if (!wallets) return;
       const walletKeys = Object.keys(wallets);
       const updatedWallets = { ...wallets };
@@ -334,12 +336,12 @@ export default async function runMigrations() {
         updatedWallets[walletKeys[i]] = newWallet;
       }
       logger.debug('[runMigrations]: update wallets in store to index new colors');
-      await store.dispatch(walletsUpdate(updatedWallets));
+      await updateWallets(updatedWallets);
 
       const selectedWalletId = selected?.id;
       if (selectedWalletId) {
         logger.debug('[runMigrations]: update selected wallet to index new color');
-        await store.dispatch(walletsSetSelected(updatedWallets[selectedWalletId]));
+        await setSelectedWallet(updatedWallets[selectedWalletId]);
       }
 
       // migrate contacts to new color index
@@ -429,7 +431,7 @@ export default async function runMigrations() {
    */
   const v12 = async () => {
     const { network } = store.getState().settings;
-    const { wallets } = store.getState().wallets;
+    const wallets = getWallets();
     if (!wallets) return;
     const walletKeys = Object.keys(wallets);
     // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -485,7 +487,7 @@ export default async function runMigrations() {
 
       // Add existing signatures
       // which look like'signature_0x...'
-      const { wallets } = store.getState().wallets;
+      const wallets = getWallets();
       if (Object.keys(wallets!).length > 0) {
         for (const wallet of Object.values(wallets!)) {
           for (const account of (wallet as RainbowWallet).addresses || []) {
@@ -519,7 +521,7 @@ export default async function runMigrations() {
    */
   const v14 = async () => {
     const { network } = store.getState().settings;
-    const { wallets } = store.getState().wallets;
+    const wallets = getWallets();
     if (!wallets) return;
     for (const wallet of Object.values(wallets)) {
       for (const account of (wallet as RainbowWallet).addresses || []) {
@@ -571,7 +573,7 @@ export default async function runMigrations() {
   Pinned coins: list -> obj
   */
   const v17 = async () => {
-    const { wallets } = store.getState().wallets;
+    const wallets = getWallets();
     if (!wallets) return;
     for (const wallet of Object.values(wallets)) {
       for (const account of (wallet as RainbowWallet).addresses || []) {
@@ -664,7 +666,7 @@ export default async function runMigrations() {
    * Migrate hidden coins from MMKV to Zustand
    */
   const v21 = async () => {
-    const { wallets } = store.getState().wallets;
+    const wallets = getWallets();
     if (!wallets) return;
 
     for (const wallet of Object.values(wallets)) {
@@ -710,7 +712,7 @@ export default async function runMigrations() {
    */
   const v23 = async () => {
     const state = store.getState();
-    const { wallets } = state.wallets;
+    const wallets = getWallets();
     const { nativeCurrency } = state.settings;
 
     if (!wallets) return;

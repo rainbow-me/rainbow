@@ -64,7 +64,6 @@ const SettingsSection = ({
   onPressPrivacy,
   onPressNotifications,
 }: SettingsSectionProps) => {
-  const wallets = useWalletsStore(state => state.wallets);
   const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const { language, nativeCurrency } = useAccountSettings();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
@@ -98,7 +97,7 @@ const SettingsSection = ({
 
   const onPressLearn = useCallback(() => openInBrowser(SettingsExternalURLs.rainbowLearn), []);
 
-  const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets, backups), [wallets, backups]);
+  const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(backups), [backups]);
 
   const themeMenuConfig = useMemo(() => {
     return {

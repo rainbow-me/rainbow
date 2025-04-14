@@ -559,8 +559,8 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
   },
 
   getAccountProfileInfo(props) {
-    const { walletNames } = get();
-    const wallet = props?.wallet || get().selected;
+    const { walletNames, getWalletWithAccount } = get();
+    const wallet = props?.wallet || (props ? getWalletWithAccount(props.address) : null) || get().selected;
     const accountAddress = props?.address || get().accountAddress;
 
     if (!wallet) {
