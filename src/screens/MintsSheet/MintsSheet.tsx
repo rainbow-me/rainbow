@@ -32,7 +32,7 @@ import * as i18n from '@/languages';
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
 export function MintsSheet() {
-  const { accountAddress, accountImage, accountColor, accountSymbol } = useAccountProfile();
+  const { accountAddress, accountImage, accountColorString, accountSymbol } = useAccountProfile();
   const {
     data: { mints },
     isFetching,
@@ -58,7 +58,7 @@ export function MintsSheet() {
                 <Stack space="10px">
                   <Columns alignVertical="center">
                     <Column width="content">
-                      <AccentColorProvider color={accountColor ?? globalColors.grey100}>
+                      <AccentColorProvider color={accountColorString ?? globalColors.grey100}>
                         <ButtonPressAnimation onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)} disabled={IS_ANDROID}>
                           {accountImage ? (
                             <Box
@@ -76,7 +76,7 @@ export function MintsSheet() {
                               as={ContactAvatar}
                               background="surfacePrimary"
                               shadow="12px accent"
-                              color={accountColor}
+                              color={accountColorString}
                               size="smedium"
                               borderRadius={36}
                               value={accountSymbol}

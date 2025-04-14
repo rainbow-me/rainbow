@@ -1,5 +1,7 @@
-import React from 'react';
-import { FlashList } from '@shopify/flash-list';
+import { ButtonPressAnimation } from '@/components/animations';
+import { ContactAvatar } from '@/components/contacts';
+import { ImgixImage } from '@/components/images';
+import { SortMenu } from '@/components/nft-offers/SortMenu';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import {
   AccentColorProvider,
@@ -13,18 +15,16 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { FakeOfferRow, OfferRow } from './OfferRow';
-import { useAccountProfile, useDimensions } from '@/hooks';
-import { ImgixImage } from '@/components/images';
-import { ContactAvatar } from '@/components/contacts';
-import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { SortMenu } from '@/components/nft-offers/SortMenu';
-import * as i18n from '@/languages';
 import { NftOffer } from '@/graphql/__generated__/arc';
-import { ButtonPressAnimation } from '@/components/animations';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { useAccountProfile, useDimensions } from '@/hooks';
+import * as i18n from '@/languages';
 import { queryClient } from '@/react-query';
+import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { useTheme } from '@/theme';
+import { FlashList } from '@shopify/flash-list';
+import React from 'react';
+import { FakeOfferRow, OfferRow } from './OfferRow';
 
 const PROFILE_AVATAR_SIZE = 36;
 
@@ -73,7 +73,7 @@ export const NFTOffersSheet = () => {
                         as={ContactAvatar}
                         background="surfaceSecondary"
                         shadow="12px accent"
-                        color={accountColor}
+                        color={accountColorString}
                         size="small_shadowless"
                         value={accountSymbol}
                       />

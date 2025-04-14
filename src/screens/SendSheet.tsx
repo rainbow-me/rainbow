@@ -68,7 +68,7 @@ import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
-import { useWalletsStore } from '../redux/wallets';
+import { getWallets, useWalletsStore } from '../redux/wallets';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
@@ -96,7 +96,7 @@ const SheetContainer = styled(Column).attrs({
 });
 
 const validateRecipient = (toAddress?: string, tokenAddress?: string) => {
-  const { wallets } = store.getState().wallets;
+  const wallets = getWallets();
   // check for if the recipient is in a damaged wallet state and prevent
   if (wallets) {
     const internalWallet = Object.values(wallets).find(wallet =>

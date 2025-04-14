@@ -6,11 +6,10 @@ import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger } from '@/logger';
-import { AllRainbowWallets, RainbowAccount } from '@/model/wallet';
+import { RainbowAccount } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import store from '@/redux/store';
-import { checkKeychainIntegrity } from '@/redux/wallets';
+import { checkKeychainIntegrity, getSelectedWallet, getWallets } from '@/redux/wallets';
 import { backupsStore, LoadingStates, oneWeekInMs } from '@/state/backups/backups';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
@@ -59,7 +58,7 @@ const promptForBackupOnceReadyOrNotAvailable = async (): Promise<boolean> => {
 };
 
 export const runWalletBackupStatusChecks = async (): Promise<boolean> => {
-  const { selected } = store.getState().wallets;
+  const selected = getSelectedWallet();
   if (!selected || IS_TEST) return false;
 
   if (
@@ -76,11 +75,7 @@ export const runWalletBackupStatusChecks = async (): Promise<boolean> => {
 };
 
 export const runFeatureUnlockChecks = async (): Promise<boolean> => {
-  const {
-    wallets,
-  }: {
-    wallets: AllRainbowWallets | null;
-  } = store.getState().wallets;
+  const wallets = getWallets();
 
   // count how many visible, non-imported and non-readonly wallets are not backed up
   if (!wallets) return false;
