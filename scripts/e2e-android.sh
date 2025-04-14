@@ -2,7 +2,7 @@
 
 source .env
 
-FLOW=e2e-new
+FLOW=e2e
 ARGS=()
 
 # Extract the flow flag to allow running only one suite of test and passthrough the rest of the arguments.

@@ -50,7 +50,7 @@ echo "Waiting 5 seconds for Anvil to start..."
 sleep 5
 
 # Run the tests
-./scripts/e2e-android.sh --device $DEVICES_LIST --debug-output $ARTIFACTS_FOLDER --flatten-debug-output "$SHARDS_FLAG" --bail-on-failure
+./scripts/e2e-android.sh --device $DEVICES_LIST --debug-output $ARTIFACTS_FOLDER --flatten-debug-output $SHARDS_FLAG
 TEST_STATUS=$?
 
 # Clean up
