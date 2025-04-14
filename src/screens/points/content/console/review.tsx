@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-import { AnimatePresence } from '@/components/animations/AnimatePresence';
-import { Paragraph } from '../../components/Paragraph';
-import { Line } from '../../components/Line';
-import { AnimatedText } from '../../components/AnimatedText';
-import { textColors } from '../../constants';
-import * as i18n from '@/languages';
-import { useAccountProfile } from '@/hooks';
-import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
-import { NeonButton } from '../../components/NeonButton';
-import { LineBreak } from '../../components/LineBreak';
-import { Bleed, Box, Stack } from '@/design-system';
-import { useNavigation } from '@/navigation';
 import { analytics } from '@/analytics';
+import { AnimatePresence } from '@/components/animations/AnimatePresence';
+import { Bleed, Box, Stack } from '@/design-system';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
+import React, { useState } from 'react';
+import { AnimatedText } from '../../components/AnimatedText';
+import { Line } from '../../components/Line';
+import { LineBreak } from '../../components/LineBreak';
+import { NeonButton } from '../../components/NeonButton';
+import { Paragraph } from '../../components/Paragraph';
+import { textColors } from '../../constants';
 
 export const Review = () => {
-  const { accountENS, accountAddress } = useAccountProfile();
+  const { accountENS, accountAddress } = useAccountProfileInfo();
   const { goBack } = useNavigation();
 
   const [showDoneButton, setShowDoneButton] = useState(false);

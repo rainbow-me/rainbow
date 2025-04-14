@@ -1,29 +1,29 @@
-import React, { useEffect } from 'react';
-import { Page } from '@/components/layout';
-import { Navbar } from '@/components/navbar/Navbar';
-import Routes from '@/navigation/routesNames';
-import { useNavigation } from '@/navigation';
-import { Box, globalColors, useColorMode } from '@/design-system';
-import { useAccountProfile } from '@/hooks';
-import { ETH_REWARDS, POINTS, POINTS_NOTIFICATIONS_TOGGLE, useExperimentalFlag } from '@/config';
+import { ButtonPressAnimation } from '@/components/animations';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { ButtonPressAnimation } from '@/components/animations';
-import * as i18n from '@/languages';
-import { usePoints, usePointsReferralCode } from '@/resources/points';
-import { PointsContent } from './content/PointsContent';
-import { PlaceholderContent } from './content/PlaceholderContent';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { deviceUtils } from '@/utils';
-import { ClaimContent } from './content/ClaimContent';
-import { ReferralContent } from './content/ReferralContent';
-import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
-import { delay } from '@/utils/delay';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { useRemoteConfig } from '@/model/remoteConfig';
+import { Page } from '@/components/layout';
+import { Navbar } from '@/components/navbar/Navbar';
+import { ETH_REWARDS, POINTS, POINTS_NOTIFICATIONS_TOGGLE, useExperimentalFlag } from '@/config';
+import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_TEST } from '@/env';
-import { NotificationToggleContextMenu } from './components/NotificationToggleContextMenu';
+import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import * as i18n from '@/languages';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { usePoints, usePointsReferralCode } from '@/resources/points';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { deviceUtils } from '@/utils';
+import { delay } from '@/utils/delay';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import React, { useEffect } from 'react';
+import { NotificationToggleContextMenu } from './components/NotificationToggleContextMenu';
+import { ClaimContent } from './content/ClaimContent';
+import { PlaceholderContent } from './content/PlaceholderContent';
+import { PointsContent } from './content/PointsContent';
+import { ReferralContent } from './content/ReferralContent';
 
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',
@@ -35,7 +35,7 @@ const EmptyTabBar = () => <></>;
 
 export function PointsScreen() {
   const { isDarkMode } = useColorMode();
-  const { accountAddress, accountImage, accountColor, accountSymbol } = useAccountProfile();
+  const { accountAddress, accountImage, accountColor, accountSymbol } = useAccountProfileInfo();
   const { points_enabled, points_notifications_toggle, rewards_enabled } = useRemoteConfig();
   const pointsEnabled = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
   const pointsNotificationsToggleEnabled = useExperimentalFlag(POINTS_NOTIFICATIONS_TOGGLE) || points_notifications_toggle;

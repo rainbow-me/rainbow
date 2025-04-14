@@ -3,13 +3,11 @@ import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { AppState } from '@/redux/store';
-import { useTheme } from '@/theme';
+import { getWalletWithAccount, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPreference, PreferenceActionType, setPreference } from '../model/preferences';
-import { getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
-import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 
 const getAccountSymbol = (name: string) => {
@@ -40,7 +38,7 @@ export default function useWebData() {
     })
   );
 
-  const { accountSymbol, accountColorString } = useAccountProfile();
+  const { accountSymbol, accountColorString } = useAccountProfileInfo();
 
   const initWebData = useCallback(
     async (showcaseTokens: any) => {

@@ -1,19 +1,20 @@
-import * as React from 'react';
-import { Animated as RNAnimated, Text as NativeText } from 'react-native';
-import Animated, { Easing, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ImgixImage } from '@/components/images';
+import ContextMenu from '@/components/native-context-menu/contextMenu';
+import { navbarHeight } from '@/components/navbar/Navbar';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { AccentColorProvider, Box, Cover, useColorMode } from '@/design-system';
-import { useAccountProfile, useLatestCallback, useOnAvatarPress } from '@/hooks';
+import { IS_ANDROID } from '@/env';
+import { useLatestCallback, useOnAvatarPress } from '@/hooks';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { getFirstGrapheme } from '@/utils';
-import ContextMenu from '@/components/native-context-menu/contextMenu';
-import { useRecyclerAssetListPosition } from '../core/Contexts';
+import * as React from 'react';
+import { Text as NativeText, Animated as RNAnimated } from 'react-native';
+import Animated, { Easing, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { navbarHeight } from '@/components/navbar/Navbar';
-import { IS_ANDROID } from '@/env';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { useRecyclerAssetListPosition } from '../core/Contexts';
 
 export const ProfileAvatarRowHeight = 80;
 export const ProfileAvatarRowTopInset = 24;
@@ -23,7 +24,9 @@ export function ProfileAvatarRow({ size = ProfileAvatarSize }: { size?: number }
   // ////////////////////////////////////////////////////
   // Account
 
-  const { accountSymbol, accountColor, accountImage } = useAccountProfile();
+  const { accountAddress, accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
+  console.info('accountColor', accountColor);
+  console.info('accountImage', accountImage);
 
   const { avatarContextMenuConfig, onAvatarPressProfile, onSelectionCallback } = useOnAvatarPress({ screenType: 'wallet' });
 
@@ -120,6 +123,8 @@ export function ProfileAvatarRow({ size = ProfileAvatarSize }: { size?: number }
         <Animated.View style={expandStyle}>
           <ContextMenuButton menuConfig={avatarContextMenuConfig} onPressMenuItem={handlePressMenuItem}>
             <ButtonPressAnimation onPress={onAvatarPressProfile} scale={0.8} testID="avatar-button" overflowMargin={20}>
+              <Animated.Text>{accountAddress || 'None?'}</Animated.Text>
+
               <Box
                 alignItems="center"
                 background="accent"
@@ -196,7 +201,7 @@ export function ProfileAvatarRow({ size = ProfileAvatarSize }: { size?: number }
 
 export function EmojiAvatar({ size }: { size: number }) {
   const { colors } = useTheme();
-  const { accountColor, accountSymbol } = useAccountProfile();
+  const { accountColor, accountSymbol } = useAccountProfileInfo();
 
   const accentColor = accountColor !== undefined ? colors.avatarBackgrounds[accountColor] : colors.skeleton;
 

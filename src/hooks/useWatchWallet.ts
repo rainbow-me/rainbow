@@ -1,8 +1,8 @@
-import { useAccountProfile, useDeleteWallet, useImportingWallet, useInitializeWallet } from '@/hooks';
+import { useDeleteWallet, useImportingWallet, useInitializeWallet } from '@/hooks';
 import { logger, RainbowError } from '@/logger';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
-import { setSelectedAddress, setSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
+import { setSelectedAddress, setSelectedWallet, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import { doesWalletsContainAddress } from '@/utils';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
@@ -50,7 +50,7 @@ export default function useWatchWallet({
     [initializeWallet, wallets]
   );
 
-  const { accountAddress } = useAccountProfile();
+  const { accountAddress } = useAccountProfileInfo();
   const { isImporting, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({
     showImportModal,
   });

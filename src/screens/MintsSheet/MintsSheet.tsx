@@ -1,4 +1,8 @@
-import React from 'react';
+import ActivityIndicator from '@/components/ActivityIndicator';
+import Spinner from '@/components/Spinner';
+import { ButtonPressAnimation } from '@/components/animations';
+import { ContactAvatar } from '@/components/contacts';
+import { ImgixImage } from '@/components/images';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import {
   AccentColorProvider,
@@ -13,26 +17,23 @@ import {
   globalColors,
   useColorMode,
 } from '@/design-system';
-import { useAccountProfile, useDimensions } from '@/hooks';
-import { mintsQueryKey, useMints } from '@/resources/mints';
-import { ButtonPressAnimation } from '@/components/animations';
-import { ImgixImage } from '@/components/images';
-import { TabBar } from './TabBar';
-import { Card } from './card/Card';
-import { FlashList } from '@shopify/flash-list';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { useDimensions } from '@/hooks';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { ContactAvatar } from '@/components/contacts';
 import { queryClient } from '@/react-query';
-import ActivityIndicator from '@/components/ActivityIndicator';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import Spinner from '@/components/Spinner';
-import * as i18n from '@/languages';
+import { mintsQueryKey, useMints } from '@/resources/mints';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { FlashList } from '@shopify/flash-list';
+import React from 'react';
+import { TabBar } from './TabBar';
+import { Card } from './card/Card';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
 export function MintsSheet() {
-  const { accountAddress, accountImage, accountColorString, accountSymbol } = useAccountProfile();
+  const { accountAddress, accountImage, accountColorString, accountSymbol } = useAccountProfileInfo();
   const {
     data: { mints },
     isFetching,

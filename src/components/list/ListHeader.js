@@ -1,13 +1,13 @@
 import Divider from '@/components/Divider';
-import { useAccountProfile, useAccountSettings, useDimensions, useWebData } from '@/hooks';
+import { useAccountSettings, useDimensions, useWebData } from '@/hooks';
 import * as i18n from '@/languages';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
+import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import lang from 'i18n-js';
 import React, { Fragment } from 'react';
 import { Share } from 'react-native';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ButtonPressAnimation } from '../animations';
 import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
 import { ContextMenu } from '../context-menu';
@@ -55,7 +55,7 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
   const { colors, isDarkMode } = useTheme();
   const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const { accountAddress } = useAccountSettings();
-  const { accountENS } = useAccountProfile();
+  const { accountENS } = useAccountProfileInfo();
   const { initializeShowcaseIfNeeded } = useWebData();
 
   const handleShare = useCallback(() => {

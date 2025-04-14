@@ -7,6 +7,7 @@ import { lightModeThemeColors } from '@/styles';
 import { captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty, keys } from 'lodash';
+import { useMemo } from 'react';
 import { saveKeychainIntegrityState } from '../../handlers/localstorage/globalSettings';
 import { getWalletNames, saveWalletNames } from '../../handlers/localstorage/walletNames';
 import { ensureValidHex } from '../../handlers/web3';
@@ -27,6 +28,7 @@ import {
   setSelectedWallet as setWalletSelectedWallet,
 } from '../../model/wallet';
 import { updateWebDataEnabled } from '../../redux/showcaseTokens';
+import { useTheme } from '../../theme';
 import { address } from '../../utils/abbreviations';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '../../utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '../../utils/profileUtils';
@@ -620,6 +622,23 @@ export const isImportedWallet = (address: string): boolean => {
     }
   }
   return false;
+};
+
+export const useAccountProfileInfo = () => {
+  const { colors } = useTheme();
+  const accountAddress = useWalletsStore(state => state.accountAddress);
+
+  const info = useMemo(() => {
+    return getAccountProfileInfo({
+      address: accountAddress,
+    });
+  }, [accountAddress]);
+
+  return {
+    ...info,
+    accountAddress: ensureValidHex(accountAddress),
+    accountColorString: colors.avatarBackgrounds[info.accountColor],
+  };
 };
 
 // export static functions

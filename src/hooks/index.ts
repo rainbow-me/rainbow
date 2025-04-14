@@ -4,7 +4,6 @@ export { default as useAccountAsset } from './useAccountAsset';
 export { default as useFrameDelayedValue } from './useFrameDelayedValue';
 export { default as useAccountENSDomains, prefetchAccountENSDomains } from './useAccountENSDomains';
 export { default as useAndroidScrollViewGestureHandler } from './useAndroidScrollViewGestureHandler';
-export { default as useAccountProfile } from './useAccountProfile';
 export { default as useAccountSettings } from './useAccountSettings';
 export { default as useAccountTransactions } from './useAccountTransactions';
 export { default as useAppState } from './useAppState';

@@ -1,16 +1,17 @@
+import { ButtonPressAnimation } from '@/components/animations';
+import { ContactAvatar } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { Navbar } from '@/components/navbar/Navbar';
+import { useAccountSettings } from '@/hooks';
+import { usePendingTransactionWatcher } from '@/hooks/usePendingTransactionWatcher';
+import Routes from '@/navigation/routesNames';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 import React, { useCallback } from 'react';
 import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
 import { useNavigation } from '../navigation/Navigation';
-import { ButtonPressAnimation } from '@/components/animations';
-import { useAccountProfile, useAccountSettings } from '@/hooks';
-import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { position } from '@/styles';
-import { Navbar } from '@/components/navbar/Navbar';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { ContactAvatar } from '@/components/contacts';
-import { usePendingTransactionWatcher } from '@/hooks/usePendingTransactionWatcher';
 
 const ProfileScreenPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -21,7 +22,7 @@ export default function ProfileScreen() {
   const { navigate } = useNavigation();
 
   const { accountAddress } = useAccountSettings();
-  const { accountSymbol, accountColor, accountImage } = useAccountProfile();
+  const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
   usePendingTransactionWatcher({ address: accountAddress });
 
   const onChangeWallet = useCallback(() => {

@@ -15,7 +15,7 @@ import { IS_IOS } from '@/env';
 import { PointsErrorType } from '@/graphql/__generated__/metadata';
 import { getProvider } from '@/handlers/web3';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
-import { useAccountAccentColor, useAccountProfile, useAccountSettings } from '@/hooks';
+import { useAccountAccentColor, useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
@@ -26,6 +26,7 @@ import { invalidatePointsQuery, usePoints } from '@/resources/points';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import { safeAreaInsetValues, watchingAlert } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
@@ -33,7 +34,6 @@ import { useMutation } from '@tanstack/react-query';
 import React, { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { RewardsActionButton } from '../components/RewardsActionButton';
 import { EthRewardsCoinIcon } from '../content/PointsContent';
 
@@ -168,7 +168,7 @@ const ClaimingRewards = ({
   goBack: () => void;
   setClaimStatus: React.Dispatch<React.SetStateAction<ClaimStatus>>;
 }) => {
-  const { accountAddress: address, accountImage, accountColor, accountSymbol } = useAccountProfile();
+  const { accountAddress: address, accountImage, accountColor, accountSymbol } = useAccountProfileInfo();
   const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const { nativeCurrency: currency } = useAccountSettings();
   const { highContrastAccentColor } = useAccountAccentColor();

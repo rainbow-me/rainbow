@@ -17,10 +17,11 @@ import {
 } from '@/design-system';
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useAccountProfile, useDimensions } from '@/hooks';
+import { useDimensions } from '@/hooks';
 import * as i18n from '@/languages';
 import { queryClient } from '@/react-query';
 import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
@@ -30,7 +31,7 @@ const PROFILE_AVATAR_SIZE = 36;
 
 export const NFTOffersSheet = () => {
   const separatorSecondary = useForegroundColor('separatorSecondary');
-  const { accountColorString, accountImage, accountSymbol, accountAddress } = useAccountProfile();
+  const { accountColorString, accountImage, accountSymbol, accountAddress } = useAccountProfileInfo();
   const { isDarkMode } = useTheme();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
 

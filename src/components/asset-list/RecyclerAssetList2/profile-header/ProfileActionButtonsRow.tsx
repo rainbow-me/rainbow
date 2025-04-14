@@ -4,14 +4,13 @@ import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
 import showWalletErrorAlert from '@/helpers/support';
-import { useAccountProfile } from '@/hooks';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -212,7 +211,7 @@ function SendButton() {
 
 export function CopyButton() {
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
-  const { accountAddress } = useAccountProfile();
+  const { accountAddress } = useAccountProfileInfo();
   const isDamaged = useWalletsStore(state => state.getIsDamaged());
 
   const handlePressCopy = React.useCallback(() => {

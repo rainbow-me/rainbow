@@ -22,20 +22,20 @@ import {
   isZero,
   multiply,
 } from '@/helpers/utilities';
-import { useAccountProfile, useAccountSettings, useDimensions, useENSAvatar, useGas, usePersistentAspectRatio } from '@/hooks';
+import { useAccountSettings, useDimensions, useENSAvatar, useGas, usePersistentAspectRatio } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { loadPrivateKey } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
+import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
@@ -127,7 +127,7 @@ const MintSheet = () => {
   const params = useRoute();
   const { collection: mintCollection, pricePerMint } = params.params as MintSheetProps;
   const chainId = mintCollection.chainId;
-  const { accountAddress } = useAccountProfile();
+  const { accountAddress } = useAccountProfileInfo();
   const { nativeCurrency } = useAccountSettings();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();

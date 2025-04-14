@@ -7,13 +7,13 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { arcClient } from '@/graphql';
 import { PoapEvent } from '@/graphql/__generated__/arcDev';
 import { maybeSignUri } from '@/handlers/imgix';
-import { useAccountProfile, useDimensions } from '@/hooks';
+import { useDimensions } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { useLegacyNFTs } from '@/resources/nfts';
+import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
@@ -67,7 +67,7 @@ interface PoapSheetProps {
 type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 
 const PoapSheet = () => {
-  const { accountAddress } = useAccountProfile();
+  const { accountAddress } = useAccountProfileInfo();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();

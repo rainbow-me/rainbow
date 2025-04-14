@@ -1,10 +1,22 @@
+import { analytics } from '@/analytics';
+import { MenuConfig } from '@/components/native-context-menu/contextMenu';
+import { enableActionsOnReadOnlyWallet, PROFILES, useExperimentalFlag } from '@/config';
+import { IS_IOS } from '@/env';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import { isZero } from '@/helpers/utilities';
+import Routes from '@/navigation/routesNames';
+import { ETH_ADDRESS } from '@/references';
+import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { showActionSheetWithOptions } from '@/utils';
+import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
+import { openInBrowser } from '@/utils/openInBrowser';
 import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { ImageOrVideo } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
-import useAccountProfile from './useAccountProfile';
+import useAccountAsset from './useAccountAsset';
 import useENSAvatar, { prefetchENSAvatar } from './useENSAvatar';
 import { prefetchENSCover } from './useENSCover';
 import useENSOwner from './useENSOwner';
@@ -12,19 +24,6 @@ import { prefetchENSRecords } from './useENSRecords';
 import useENSRegistration from './useENSRegistration';
 import useImagePicker from './useImagePicker';
 import useUpdateEmoji from './useUpdateEmoji';
-import { analytics } from '@/analytics';
-import { enableActionsOnReadOnlyWallet, PROFILES, useExperimentalFlag } from '@/config';
-import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
-import Routes from '@/navigation/routesNames';
-import { showActionSheetWithOptions } from '@/utils';
-import useAccountAsset from './useAccountAsset';
-import { ETH_ADDRESS } from '@/references';
-import { isZero } from '@/helpers/utilities';
-import { IS_IOS } from '@/env';
-import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
-import { MenuConfig } from '@/components/native-context-menu/contextMenu';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 type UseOnAvatarPressProps = {
   /** Is the avatar selection being used on the wallet or transaction screen? */
@@ -37,7 +36,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
-  const { accountAddress, accountColor, accountName, accountImage, accountENS } = useAccountProfile();
+  const { accountAddress, accountColor, accountName, accountImage, accountENS } = useAccountProfileInfo();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const accountAsset = useAccountAsset(ETH_ADDRESS);
 

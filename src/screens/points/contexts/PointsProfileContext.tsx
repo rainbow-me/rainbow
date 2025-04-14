@@ -3,7 +3,6 @@ import { metadataPOSTClient } from '@/graphql';
 import { OnboardPointsMutation, PointsErrorType, PointsOnboardingCategory } from '@/graphql/__generated__/metadataPOST';
 import { getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { useAccountProfile } from '@/hooks';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { loadWallet, signPersonalMessage } from '@/model/wallet';
@@ -12,10 +11,10 @@ import Routes from '@/navigation/routesNames';
 import { queryClient } from '@/react-query';
 import { pointsQueryKey } from '@/resources/points';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import { delay } from '@/utils/delay';
 import { noop } from 'lodash';
 import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { RainbowPointsFlowSteps, buildTwitterIntentMessage } from '../constants';
 
 type PointsProfileContext = {
@@ -82,7 +81,7 @@ const PointsProfileContext = createContext<PointsProfileContext>({
 export const usePointsProfileContext = () => useContext(PointsProfileContext);
 
 export const PointsProfileProvider = ({ children }: { children: React.ReactNode }) => {
-  const { accountAddress } = useAccountProfile();
+  const { accountAddress } = useAccountProfileInfo();
   const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
   const { navigate, goBack } = useNavigation();
 

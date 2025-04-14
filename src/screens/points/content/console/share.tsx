@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
-import { AnimatePresence } from '@/components/animations/AnimatePresence';
-import { Paragraph } from '../../components/Paragraph';
-import { Line } from '../../components/Line';
-import { AnimatedText } from '../../components/AnimatedText';
-import { RainbowPointsFlowSteps, textColors } from '../../constants';
-import * as i18n from '@/languages';
-import { useAccountProfile, useDimensions } from '@/hooks';
-import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
-import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
-import { NeonButton } from '../../components/NeonButton';
-import { LineBreak } from '../../components/LineBreak';
-import { Bleed, Box, Inline, Stack } from '@/design-system';
 import { analytics } from '@/analytics';
+import { AnimatePresence } from '@/components/animations/AnimatePresence';
+import { Bleed, Box, Inline, Stack } from '@/design-system';
+import { useDimensions } from '@/hooks';
+import * as i18n from '@/languages';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
 import { openInBrowser } from '@/utils/openInBrowser';
+import React, { useState } from 'react';
+import { AnimatedText } from '../../components/AnimatedText';
+import { Line } from '../../components/Line';
+import { LineBreak } from '../../components/LineBreak';
+import { NeonButton } from '../../components/NeonButton';
+import { Paragraph } from '../../components/Paragraph';
+import { RainbowPointsFlowSteps, textColors } from '../../constants';
+import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 
 export const Share = () => {
   const { intent, setAnimationKey, setStep } = usePointsProfileContext();
-  const { accountENS, accountAddress } = useAccountProfile();
+  const { accountENS, accountAddress } = useAccountProfileInfo();
   const { width: deviceWidth } = useDimensions();
 
   const [showShareButtons, setShowShareButtons] = useState(false);
