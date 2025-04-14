@@ -18,7 +18,6 @@ import { Navigation } from '@/navigation';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
-import store from '@/redux/store';
 import { useWalletsStore } from '@/redux/wallets';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { isAuthenticated } from '@/utils/authentication';

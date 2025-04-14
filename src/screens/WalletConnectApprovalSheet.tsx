@@ -130,9 +130,8 @@ export function WalletConnectApprovalSheet() {
   const { chainId: settingsChainId, accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
   const selectedWallet = useWalletsStore(state => state.selected);
-  const wallets = useWalletsStore(state => state.wallets);
   const handled = useRef(false);
-  const initialApprovalAccount = useMemo<{ address: Address; wallet: RainbowWallet }>(() => {
+  const initialApprovalAccount = useMemo<{ address: Address; wallet: RainbowWallet | null }>(() => {
     const accountAddressAsAddress = accountAddress as Address;
 
     if (!params?.meta?.proposedAddress) {
@@ -147,7 +146,7 @@ export function WalletConnectApprovalSheet() {
     const proposedAddressAsAddress = params?.meta?.proposedAddress as Address;
 
     return { address: proposedAddressAsAddress, wallet };
-  }, [accountAddress, params?.meta?.proposedAddress, selectedWallet, wallets]);
+  }, [accountAddress, params?.meta?.proposedAddress, selectedWallet]);
   const [approvalAccount, setApprovalAccount] = useState(initialApprovalAccount);
 
   const type = params?.type || WalletConnectApprovalSheetType.connect;
@@ -196,6 +195,8 @@ export function WalletConnectApprovalSheet() {
   }, [dappUrl]);
 
   const approvalAccountInfo = useMemo(() => {
+    if (!approvalAccount.wallet) return;
+
     const approvalAccountInfo = useWalletsStore.getState().getAccountProfileInfo({
       wallet: approvalAccount.wallet,
       address: approvalAccount.address,
@@ -229,7 +230,7 @@ export function WalletConnectApprovalSheet() {
       color: isDarkMode ? nativeAsset?.colors.primary : nativeAsset?.colors.fallback || nativeAsset?.colors.primary,
       name: label || chain.name,
     };
-  }, [approvalChainId, isDarkMode]);
+  }, [approvalChainId, colors, isDarkMode]);
 
   const handleOnPressNetworksMenuItem = useCallback(
     (chainId: string) => setApprovalChainId(Number(chainId?.replace(NETWORK_MENU_ACTION_KEY_FILTER, ''))),
@@ -374,9 +375,9 @@ export function WalletConnectApprovalSheet() {
     approvalNetworkInfo.name,
     chainId,
     chainIds,
-    handleOnPressNetworksMenuItem,
     isWalletConnectV2,
-    menuItems,
+    menuItems.length,
+    navigateToNetworkSwitcher,
     type,
   ]);
 
@@ -461,14 +462,18 @@ export function WalletConnectApprovalSheet() {
                     height: 38,
                   }}
                 >
-                  {approvalAccountInfo.accountImage ? (
-                    <ImageAvatar image={approvalAccountInfo.accountImage} size="smaller" />
-                  ) : (
-                    <ContactAvatar
-                      color={isNaN(approvalAccountInfo.accountColor) ? colors.skeleton : approvalAccountInfo.accountColor}
-                      size="smaller"
-                      value={approvalAccountInfo.accountSymbol}
-                    />
+                  {approvalAccountInfo && (
+                    <>
+                      {approvalAccountInfo?.accountImage ? (
+                        <ImageAvatar image={approvalAccountInfo.accountImage} size="smaller" />
+                      ) : (
+                        <ContactAvatar
+                          color={!isNaN(approvalAccountInfo.accountColor) ? colors.skeleton : approvalAccountInfo.accountColor}
+                          size="smaller"
+                          value={approvalAccountInfo.accountSymbol}
+                        />
+                      )}
+                    </>
                   )}
                   <Box
                     // avatar width (22) + avatar right margin (5)
@@ -476,7 +481,7 @@ export function WalletConnectApprovalSheet() {
                     width="full"
                     flexDirection="row"
                   >
-                    <LabelText style={{ maxWidth: '80%' }}>{`${approvalAccountInfo.accountLabel}`}</LabelText>
+                    {approvalAccountInfo && <LabelText style={{ maxWidth: '80%' }}>{`${approvalAccountInfo.accountLabel}`}</LabelText>}
                     <LabelText>{type === WalletConnectApprovalSheetType.connect ? '􀁰' : ''}</LabelText>
                   </Box>
                 </ButtonPressAnimation>

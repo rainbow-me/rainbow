@@ -19,7 +19,6 @@ import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from 
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
 import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
-import { walletsLoadState } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { sanitizeSeedPhrase } from '@/utils';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
@@ -31,7 +30,7 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { useWalletsStore } from '@/redux/wallets';
+import { loadWallets, useWalletsStore } from '@/redux/wallets';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -299,7 +298,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             image,
             true
           );
-          await dispatch(walletsLoadState());
+          loadWallets();
           handleSetImporting(false);
         } else {
           const previousWalletCount = keys(wallets).length;
@@ -393,8 +392,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     replace,
     resolvedAddress,
     seedPhrase,
-    selectedWallet.id,
-    selectedWallet.type,
+    selectedWallet?.id,
+    selectedWallet?.type,
     wallets,
     wasImporting,
     updateWalletENSAvatars,

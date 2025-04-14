@@ -1,21 +1,20 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { DynamicHeightSheet } from '@/components/sheet';
-import { useDimensions } from '@/hooks';
-import { BackgroundProvider, Box } from '@/design-system';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { RewardsContent } from '@/screens/rewards/components/RewardsContent';
-import { IS_ANDROID } from '@/env';
-import { StatusBar } from 'react-native';
-import { useRewards } from '@/resources/rewards/rewardsQuery';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
-import { useFocusEffect } from '@react-navigation/native';
 import { analytics } from '@/analytics';
+import { DynamicHeightSheet } from '@/components/sheet';
+import { BackgroundProvider, Box } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import { useDimensions } from '@/hooks';
+import { useRewards } from '@/resources/rewards/rewardsQuery';
+import { RewardsContent } from '@/screens/rewards/components/RewardsContent';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useWalletsStore } from '../../redux/wallets';
 
 export const RewardsSheet: React.FC = () => {
   const { height } = useDimensions();
   const { top } = useSafeAreaInsets();
-  const accountAddress = useSelector((state: AppState) => state.settings.accountAddress);
+  const accountAddress = useWalletsStore(state => state.accountAddress);
   const [isLoading, setIsLoading] = useState(true);
   const {
     data,

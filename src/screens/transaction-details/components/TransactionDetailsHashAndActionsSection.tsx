@@ -1,24 +1,22 @@
-import React, { useCallback, useMemo } from 'react';
+import { ButtonPressAnimation } from '@/components/animations';
+import { SheetActionButton } from '@/components/sheet';
+import { Box, Stack } from '@/design-system';
+import { RainbowTransaction, TransactionStatus } from '@/entities';
+import * as i18n from '@/languages';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { swapMetadataStorage } from '@/raps/common';
+import { SwapMetadata } from '@/raps/references';
 import { SingleLineTransactionDetailsRow } from '@/screens/transaction-details/components/SingleLineTransactionDetailsRow';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import { shortenTxHashString } from '@/screens/transaction-details/helpers/shortenTxHashString';
-import { SheetActionButton } from '@/components/sheet';
-import { ethereumUtils, haptics } from '@/utils';
-import startCase from 'lodash/startCase';
-import { Box, Stack } from '@/design-system';
 import { useTheme } from '@/theme';
-import * as i18n from '@/languages';
-import { ButtonPressAnimation } from '@/components/animations';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { RainbowTransaction, TransactionStatus } from '@/entities';
-import { swapMetadataStorage } from '@/raps/common';
-import { SwapMetadata } from '@/raps/references';
-import { Navigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
-import WalletTypes from '@/helpers/walletTypes';
+import { ethereumUtils, haptics } from '@/utils';
 import { openInBrowser } from '@/utils/openInBrowser';
+import Clipboard from '@react-native-clipboard/clipboard';
+import startCase from 'lodash/startCase';
+import React, { useCallback, useMemo } from 'react';
+import { useWalletsStore } from '../../../redux/wallets';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -29,7 +27,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
   const { colors } = useTheme();
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
   const { network, status, chainId } = transaction;
-  const isReadOnly = useSelector((state: AppState) => state.wallets.selected?.type === WalletTypes.readOnly);
+  const isReadOnly = useWalletsStore(state => state.getIsReadOnlyWallet());
   // Retry swap related data
   const retrySwapMetadata = useMemo(() => {
     const data = swapMetadataStorage.getString(hash ?? '');
@@ -47,7 +45,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
 
     // TODO: Add retry swap logic back for swaps
     Navigation.handleAction(Routes.SWAP, {});
-  }, [retrySwapMetadata]);
+  }, []);
 
   if (!hash || !network) {
     return null;

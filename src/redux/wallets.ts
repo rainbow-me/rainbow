@@ -604,6 +604,19 @@ export const getAccountAddress = () => useWalletsStore.getState().accountAddress
 export const getWallets = () => useWalletsStore.getState().wallets;
 export const getSelectedWallet = () => useWalletsStore.getState().selected;
 
+export const isImportedWallet = (address: string): boolean => {
+  const wallets = getWallets();
+  if (!wallets) {
+    return false;
+  }
+  for (const wallet of Object.values(wallets)) {
+    if ((wallet.addresses || []).some(account => account.address === address)) {
+      return true;
+    }
+  }
+  return false;
+};
+
 // export static functions
 export const {
   checkKeychainIntegrity,

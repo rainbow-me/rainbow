@@ -20,7 +20,7 @@ import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { RainbowAccount, createWallet } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useWalletsStore, walletsLoadState } from '@/redux/wallets';
+import { loadWallets, useWalletsStore } from '@/redux/wallets';
 import { CloudBackupState, backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { useTheme } from '@/theme';
@@ -30,7 +30,6 @@ import { addressHashedEmoji } from '@/utils/profileUtils';
 import { format } from 'date-fns';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { FlatList, ScrollView } from 'react-native';
-import { useDispatch } from 'react-redux';
 import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
 import { checkLocalWalletsForBackupStatus, isWalletBackedUpForCurrentAccount } from '../../utils';
 import Menu from '../Menu';
@@ -100,7 +99,6 @@ const WalletPill = ({ account }: WalletPillProps) => {
 export const WalletsAndBackup = () => {
   const { navigate } = useNavigation();
   const wallets = useWalletsStore(state => state.wallets);
-  const dispatch = useDispatch();
 
   const scrollviewRef = useRef<ScrollView>(null);
 
@@ -121,7 +119,7 @@ export const WalletsAndBackup = () => {
     privateKey: 0,
   };
 
-  const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets, backups), [wallets, backups]);
+  const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(backups), [backups]);
 
   const visibleWallets = useVisibleWallets({ wallets, walletTypeCount });
 
@@ -186,7 +184,7 @@ export const WalletsAndBackup = () => {
             clearCallbackOnStartCreation: true,
           });
 
-          await dispatch(walletsLoadState());
+          await loadWallets();
 
           // @ts-expect-error - no params
           await initializeWallet();
@@ -207,7 +205,7 @@ export const WalletsAndBackup = () => {
         }
       },
     });
-  }, [dispatch, initializeWallet, navigate, walletTypeCount.phrase, backupProvider]);
+  }, [initializeWallet, navigate, walletTypeCount.phrase, backupProvider]);
 
   const onPressLearnMoreAboutCloudBackups = useCallback(() => {
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
