@@ -381,6 +381,7 @@ function SwipeNavigatorScreens() {
         return {
           animationEnabled: false,
           swipeEnabled: (!isOnBrowserTab && !isCoinListEdited) || IS_TEST,
+          lazy: true,
         };
       }}
       tabBar={({ descriptors, jumpTo, navigation, state: { index, routes } }) => (
