@@ -85,7 +85,6 @@ export type RootStackParamList = {
     type: string;
     [key: string]: any;
   };
-  [Routes.PORTAL]: PortalSheetProps;
   [Routes.WALLET_SCREEN]: {
     initialized?: boolean;
     emptyWallet?: boolean;

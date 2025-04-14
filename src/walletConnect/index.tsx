@@ -26,20 +26,18 @@ import WalletTypes from '@/helpers/walletTypes';
 import { getRequestDisplayDetails } from '@/parsers/requests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
-import { IS_DEV, IS_ANDROID, IS_IOS } from '@/env';
+import { IS_DEV, IS_IOS } from '@/env';
 import { loadWallet } from '@/model/wallet';
 import * as portal from '@/screens/Portal';
 import * as explain from '@/screens/Explain';
-import { Box } from '@/design-system';
 import {
-  AuthRequestAuthenticateSignature,
   AuthRequestResponseErrorReason,
   RPCMethod,
   RPCPayload,
   WalletconnectApprovalSheetRouteParams,
   WalletconnectRequestData,
 } from '@/walletConnect/types';
-import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
+import { AuthRequestBody, AuthRequestFooter } from '@/walletConnect/sheets/AuthRequest';
 import { getProvider } from '@/handlers/web3';
 import { uniq } from 'lodash';
 import { fetchDappMetadata } from '@/resources/metadata/dapp';
@@ -49,6 +47,7 @@ import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } fr
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
+import { useWcAuthStore } from '@/state/walletConnect/wcAuthStore';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
@@ -270,37 +269,34 @@ export function isSupportedMethod(method: RPCMethod) {
  * shows the text configured by the `reason` string, which is a key of the
  * `explainers` object in `ExplainSheet`
  */
-function showErrorSheet({
+export function showErrorSheet({
   title,
   body,
   cta,
   onClose,
-  sheetHeight,
 }: {
   title: string;
   body: string;
   cta?: string;
   onClose?: () => void;
-  sheetHeight?: number;
+  sheetHeight: number;
 }) {
-  explain.open(
-    () => (
-      <>
-        <explain.Title>{title}</explain.Title>
-        <explain.Body>{body}</explain.Body>
-        <Box paddingTop="8px">
-          <explain.Button
-            label={cta || lang.t(T.errors.go_back)}
-            onPress={() => {
-              explain.close();
-              onClose?.();
-            }}
-          />
-        </Box>
-      </>
+  explain.open({
+    key: 'wallet-connect-error',
+    title: () => <explain.Title>{title}</explain.Title>,
+    body: () => <explain.Body>{body}</explain.Body>,
+    footer: () => (
+      <explain.Footer>
+        <explain.Button
+          label={cta || lang.t(T.errors.go_back)}
+          onPress={() => {
+            explain.close();
+            onClose?.();
+          }}
+        />
+      </explain.Footer>
     ),
-    { sheetHeight }
-  );
+  });
 }
 
 async function rejectProposal({
@@ -845,17 +841,31 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
   trackTopicHandler(event);
 
   const client = await getWalletKitClient();
+  const initialAccountAddress = store.getState().settings.accountAddress;
+
+  useWcAuthStore.getState().initialize(initialAccountAddress);
 
   logger.debug(`[walletConnect]: auth_request`, { event }, logger.DebugContext.walletconnect);
 
-  const authenticate: AuthRequestAuthenticateSignature = async ({ address }) => {
+  const url = event?.verifyContext?.verified?.origin || event.params.requester.metadata.url;
+  const metadata = await fetchDappMetadata({ url, status: true });
+  const isScam = metadata.status === DAppStatus.Scam;
+  const accentColor = isScam ? 'red' : 'blue';
+
+  const authenticate = async (): Promise<{ success: boolean; reason?: AuthRequestResponseErrorReason }> => {
+    // Read address directly from store when function is called
+    const address = useWcAuthStore.getState().address;
+    if (!address) {
+      logger.error(new RainbowError(`[walletConnect]: authenticate called with undefined address from store`));
+      return { success: false, reason: AuthRequestResponseErrorReason.Unknown };
+    }
+
     try {
       const { wallets } = store.getState().wallets;
       const selectedWallet = findWalletWithAccount(wallets || {}, address);
       const isHardwareWallet = selectedWallet?.type === WalletTypes.bluetooth;
       const iss = `did:pkh:eip155:1:${address}`;
 
-      // exit early if possible
       if (selectedWallet?.type === WalletTypes.readOnly) {
         await client.respondSessionRequest({
           topic: event.topic,
@@ -869,34 +879,28 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
           },
         });
 
+        useWcAuthStore.getState().clearAddress(); // Clear store on rejection
         return {
           success: false,
           reason: AuthRequestResponseErrorReason.ReadOnly,
         };
       }
 
-      /**
-       * Locally scoped to this `authenticate` function. Simply here to
-       * encapsulate reused code.
-       */
       const loadWalletAndSignMessage = async () => {
         const provider = getProvider({ chainId: ChainId.mainnet });
         const wallet = await loadWallet({ address, showErrorIfNotLoaded: false, provider });
 
         if (!wallet) {
           logger.error(new RainbowError(`[walletConnect]: could not loadWallet to sign auth_request`));
-
           return undefined;
         }
         const message = client.formatAuthMessage({
           iss,
           request: event.params.authPayload,
         });
-        // prompt the user to sign the message
         return wallet.signMessage(message);
       };
 
-      // Get signature either directly, or via hardware wallet flow
       const signature = await (isHardwareWallet
         ? new Promise<Awaited<ReturnType<typeof loadWalletAndSignMessage>>>((y, n) => {
             Navigation.handleAction(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
@@ -912,13 +916,13 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
         : loadWalletAndSignMessage());
 
       if (!signature) {
+        useWcAuthStore.getState().clearAddress(); // Clear store on signing failure
         return {
           success: false,
           reason: AuthRequestResponseErrorReason.Unknown,
         };
       }
 
-      // respond to WC
       await client.respondSessionRequest({
         topic: event.topic,
         response: {
@@ -933,32 +937,42 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
         },
       });
 
-      // only handled on success
       maybeGoBackAndClearHasPendingRedirect({ delay: 300 });
 
+      portal.close();
+      useWcAuthStore.getState().clearAddress(); // Clear store on success
+      if (isHardwareWallet) {
+        Navigation.goBack();
+      }
+
       return { success: true };
-    } catch (e: any) {
-      logger.error(new RainbowError(`[walletConnect]: an unknown error occurred when signing auth_request`), {
-        message: e.message,
+    } catch (error) {
+      if (error instanceof Error) {
+        logger.error(new RainbowError(`[walletConnect]: an unknown error occurred when signing auth_request`), {
+          message: error.message,
+        });
+      } else {
+        logger.error(new RainbowError(`[walletConnect]: an unknown error occurred when signing auth_request`), {
+          message: 'Unknown error',
+        });
+      }
+
+      Alert({
+        title: lang.t(lang.l.walletconnect.auth.error_alert_title),
+        message: lang.t(lang.l.walletconnect.auth.error_alert_description),
       });
+      useWcAuthStore.getState().clearAddress(); // Clear store on error
       return { success: false, reason: AuthRequestResponseErrorReason.Unknown };
     }
   };
 
-  // need to prefetch dapp metadata since portal is static
-  const url = event?.verifyContext?.verified?.origin || event.params.requester.metadata.url;
-  const metadata = await fetchDappMetadata({ url, status: true });
-
-  const isScam = metadata.status === DAppStatus.Scam;
-  portal.open(
-    () =>
-      AuthRequest({
-        authenticate,
-        requesterMeta: event.params.requester.metadata,
-        verifiedData: event?.verifyContext.verified,
-      }),
-    { sheetHeight: IS_ANDROID ? 560 : 520 + (isScam ? 40 : 0) }
-  );
+  portal.open({
+    key: 'wallet-connect-auth-request',
+    title: () => <explain.Title>{lang.t(lang.l.walletconnect.auth.signin_title)}</explain.Title>,
+    body: () => <AuthRequestBody requesterMeta={event.params.requester.metadata} isScam={isScam} />,
+    footer: () => <AuthRequestFooter auth={authenticate} accentColor={accentColor} />,
+    onDismiss: () => useWcAuthStore.getState().clearAddress(),
+  });
 }
 
 /**

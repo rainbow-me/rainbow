@@ -40,6 +40,8 @@ import { BackupsSync } from '@/state/sync/BackupsSync';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
 import { PerformanceProfiler } from '@shopify/react-native-performance';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { Portal } from './screens/Portal';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -88,6 +90,7 @@ function App({ walletReady }: AppProps) {
       <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
       <BackupsSync />
       <AbsolutePortalRoot />
+      <Portal />
     </>
   );
 }
@@ -209,13 +212,15 @@ function Root() {
               <SafeAreaProvider initialMetrics={initialWindowMetrics}>
                 <MainThemeProvider>
                   <GestureHandlerRootView style={sx.container}>
-                    <RainbowContextWrapper>
-                      <SharedValuesProvider>
-                        <ErrorBoundary>
-                          <AppWithRedux walletReady={false} />
-                        </ErrorBoundary>
-                      </SharedValuesProvider>
-                    </RainbowContextWrapper>
+                    <BottomSheetModalProvider>
+                      <RainbowContextWrapper>
+                        <SharedValuesProvider>
+                          <ErrorBoundary>
+                            <AppWithRedux walletReady={false} />
+                          </ErrorBoundary>
+                        </SharedValuesProvider>
+                      </RainbowContextWrapper>
+                    </BottomSheetModalProvider>
                   </GestureHandlerRootView>
                 </MainThemeProvider>
               </SafeAreaProvider>

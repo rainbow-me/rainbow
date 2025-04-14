@@ -1,77 +1,111 @@
-import React from 'react';
-import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
+import React, { useCallback, useLayoutEffect, useMemo } from 'react';
+import { BottomSheetModal, BottomSheetScrollView, BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
+import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import { colors } from '@/styles';
 
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import { Box } from '@/design-system';
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { Box, useBackgroundColor } from '@/design-system';
+import { OpenProps, usePortalStore } from '@/state/portal/portalStore';
+import { useDimensions } from '@/hooks';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type PortalSheetProps = {
   sheetHeight?: number;
   children: React.FC;
-};
-
-type NavigationRouteParams = {
-  Portal: PortalSheetProps;
+  Footer?: React.ReactNode;
 };
 
 /**
  * The core Portal sheet
  */
 export function Portal() {
-  const { goBack } = useNavigation();
-  const { params } = useRoute<RouteProp<NavigationRouteParams, 'Portal'>>();
+  const {
+    ref,
+    key,
+    close,
+    title: TitleComponent,
+    body: BodyComponent,
+    footer: FooterComponent,
+    containerProps,
+    scrollViewProps,
+    onDismiss,
+  } = usePortalStore();
 
-  if (!params) {
-    goBack();
-    return null;
-  }
+  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
+
+  const { top } = useSafeAreaInsets();
+  const { height } = useDimensions();
+
+  useLayoutEffect(() => {
+    console.log('key', key);
+    if (key) {
+      ref?.current?.present();
+    } else if (!key) {
+      ref?.current?.dismiss();
+    }
+  }, [ref, key]);
+
+  const handleClose = useCallback(() => {
+    close();
+    onDismiss?.();
+  }, [close, onDismiss]);
 
   return (
-    <SimpleSheet backgroundColor="white" scrollEnabled={false}>
-      <Box paddingVertical="44px" paddingHorizontal="32px" height="full" background="surfaceSecondary">
-        {params.children({})}
+    <BottomSheetModal
+      ref={ref}
+      key={key}
+      onDismiss={handleClose}
+      backdropComponent={CustomBackdrop}
+      backgroundStyle={{ backgroundColor: colors.alpha(colors.black, 0.9) }}
+      {...containerProps}
+    >
+      <Box
+        gap={12}
+        borderRadius={30}
+        overflow="hidden"
+        paddingVertical="44px"
+        paddingHorizontal="32px"
+        height="full"
+        background={surfacePrimaryElevated}
+      >
+        {TitleComponent && <TitleComponent />}
+        <BottomSheetScrollView style={{ flex: 1, maxHeight: height - top }} {...scrollViewProps}>
+          {BodyComponent && <BodyComponent />}
+        </BottomSheetScrollView>
+        {FooterComponent && <FooterComponent />}
       </Box>
-    </SimpleSheet>
+    </BottomSheetModal>
   );
 }
 
-/**
- * Returns a util used to navigate to and render components within the Portal
- * sheet. This file also exports components that should be used for the sheet's
- * children.
- *
- *    `import * as p from '@/screens/Portal';`
- *
- *    `const { open } = p.useOpen()`
- *    `open(() => <p.Title>...</p.Title>, { ...options })`
- */
-export function useOpen() {
-  const { navigate } = useNavigation();
-
-  const open = React.useCallback((children: React.FC, options: Omit<PortalSheetProps, 'children'> = {}) => {
-    navigate(Routes.PORTAL, {
-      children,
-      ...options,
-    });
-  }, []);
-
-  return {
-    open,
-  };
-}
-
-/**
- * Use `useOpen` where possible. This util exists for limited use
- * outside a React component.
- */
-export function open(children: React.FC, options: Omit<PortalSheetProps, 'children'> = {}) {
-  Navigation.handleAction(Routes.PORTAL, {
-    children,
-    ...options,
-  });
+export function open(props: OpenProps) {
+  usePortalStore.getState().open(props);
 }
 
 export function close() {
-  Navigation.goBack();
+  usePortalStore.getState().close();
 }
+
+const CustomBackdrop = ({ animatedPosition, style }: BottomSheetBackdropProps) => {
+  const { height } = useDimensions();
+
+  const containerAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(animatedPosition.value, [0, height], [0.9, 0], Extrapolation.CLAMP),
+    };
+  });
+
+  const containerStyle = useMemo(
+    () => [
+      style,
+      {
+        backgroundColor: colors.black,
+      },
+      containerAnimatedStyle,
+    ],
+    [style, containerAnimatedStyle]
+  );
+
+  return <Animated.View style={containerStyle} />;
+};
+
+export default CustomBackdrop;

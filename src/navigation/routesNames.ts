@@ -35,7 +35,6 @@ const Routes = {
   EXPANDED_ASSET_SHEET: 'ExpandedAssetSheet',
   EXPANDED_ASSET_SHEET_V2: 'ExpandedAssetSheetV2',
   EXPLAIN_SHEET: 'ExplainSheet',
-  PORTAL: 'Portal',
   EXTERNAL_LINK_WARNING_SHEET: 'ExternalLinkWarningSheet',
   HARDWARE_WALLET_TX_NAVIGATOR: 'HardwareWalletTxNavigator',
   IMPORT_OR_WATCH_WALLET_SHEET: 'ImportOrWatchWalletSheet',

@@ -66,7 +66,6 @@ import {
   transactionDetailsConfig,
   addWalletNavigatorConfig,
   opRewardsSheetConfig,
-  portalSheetConfig,
   walletDiagnosticsSheetConfig,
   positionSheetConfig,
   appIconUnlockSheetConfig,
@@ -93,7 +92,6 @@ import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { AirdropsSheet } from '@/screens/Airdrops/AirdropsSheet';
 import { ClaimAirdropSheet } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
-import { Portal } from '@/screens/Portal';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
@@ -236,7 +234,6 @@ function NativeStackNavigator() {
         {...hardwareWalletTxNavigatorConfig}
       />
       <NativeStack.Screen component={AddWalletNavigator} name={Routes.ADD_WALLET_NAVIGATOR} {...addWalletNavigatorConfig} />
-      <NativeStack.Screen component={Portal} name={Routes.PORTAL} {...portalSheetConfig} />
       {profilesEnabled && (
         <>
           <NativeStack.Screen component={RegisterENSNavigator} name={Routes.REGISTER_ENS_NAVIGATOR} {...registerENSNavigatorConfig} />

@@ -75,7 +75,6 @@ import { AirdropsSheet } from '@/screens/Airdrops/AirdropsSheet';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { SettingsSheet } from '@/screens/SettingsSheet/SettingsSheet';
 import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
-import { Portal } from '@/screens/Portal';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import ShowSecretView from '@/screens/SettingsSheet/components/Backups/ShowSecretView';
@@ -112,7 +111,6 @@ function MainNavigator() {
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} options={expandedPreset} />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
       <Stack.Screen component={ConnectedDappsSheet} name={Routes.CONNECTED_DAPPS} options={expandedPreset} />
-      <Stack.Screen component={Portal} name={Routes.PORTAL} options={expandedPreset} />
       <Stack.Screen component={PositionSheet} name={Routes.POSITION_SHEET} options={expandedPreset} />
       <Stack.Screen
         component={SpeedUpAndCancelSheet}
