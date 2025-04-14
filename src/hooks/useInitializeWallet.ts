@@ -155,7 +155,7 @@ export default function useInitializeWallet() {
         logger.error(new RainbowError('[useInitializeWallet]: Error while initializing wallet', error), {
           walletStatus,
         });
-        analyticsV2.track(event.walletInitializationFailed, {
+        analytics.track(event.walletInitializationFailed, {
           error: error.message,
           walletStatus,
         });

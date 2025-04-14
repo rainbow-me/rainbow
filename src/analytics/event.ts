@@ -244,10 +244,9 @@ export const event = {
   networkStatusOffline: 'network_status.offline',
   networkStatusReconnected: 'network_status.reconnected',
 
-
   // wallet initialization
   walletInitializationFailed: 'wallet_initialization.failed',
-  
+
   // performance
   performanceReport: 'performance.report',
   performanceInitializeWallet: 'Performance Wallet Initialize Time',
