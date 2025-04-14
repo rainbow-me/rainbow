@@ -63,7 +63,7 @@ import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { RequestData } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { getAccountProfileInfo, getWalletWithAccount, useWalletsStore } from '../redux/wallets';
+import { getAccountProfileInfo, getWalletWithAccount, useWalletsStore } from '@/state/wallets/wallets';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;

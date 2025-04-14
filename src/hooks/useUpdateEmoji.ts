@@ -1,4 +1,4 @@
-import { updateWallets, useWalletsStore } from '@/redux/wallets';
+import { updateWallets, useWalletsStore } from '@/state/wallets/wallets';
 import { useTheme } from '@/theme';
 import { getNextEmojiWithColor } from '@/utils/profileUtils';
 import { useCallback } from 'react';

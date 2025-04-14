@@ -10,7 +10,7 @@ import React, { useCallback } from 'react';
 import ENSAvatarGrid from '../../assets/ensAvatarGrid.png';
 import ENSIcon from '../../assets/ensIcon.png';
 import { useNavigation } from '../../navigation/Navigation';
-import { useWalletsStore } from '../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import ImgixImage from '../images/ImgixImage';
 import { GenericCard, Gradient } from './GenericCard';
 import { ORB_SIZE } from './reusables/IconOrb';

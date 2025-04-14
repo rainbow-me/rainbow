@@ -6,7 +6,7 @@ import { ensOwnerQueryKey, fetchENSOwner } from './useENSOwner';
 import { ensRecordsQueryKey, fetchENSRecords } from './useENSRecords';
 import { ensRegistrantQueryKey, fetchENSRegistrant } from './useENSRegistrant';
 import { ensResolverQueryKey, fetchENSResolver } from './useENSResolver';
-import { useWalletsStore } from '@/redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { getENSProfile, saveENSProfile } from '@/handlers/localstorage/ens';
 import { queryClient, QueryConfigDeprecated, UseQueryData } from '@/react-query';
 import { fetchENSAddress } from '@/resources/ens/ensAddressQuery';

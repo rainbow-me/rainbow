@@ -56,7 +56,7 @@ import { SendButton } from '../components/send';
 import { SheetTitle, SlackSheet } from '../components/sheet';
 import { Text as OldText } from '../components/text';
 import { ENSProfile } from '../entities/ens';
-import { useWalletsStore } from '../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { address } from '../utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
 

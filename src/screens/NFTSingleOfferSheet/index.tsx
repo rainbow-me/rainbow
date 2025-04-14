@@ -27,7 +27,7 @@ import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings, useGas } from '@/hooks';
-import { useWalletsStore } from '@/redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities';
 import { analytics } from '@/analytics';
 import { BigNumber } from '@ethersproject/bignumber';

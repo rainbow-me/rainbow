@@ -4,7 +4,7 @@ import store from '@/redux/store';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { PaginatedTransactions } from '@/resources/transactions/transaction';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { getAccountAddress } from '../../../redux/wallets';
+import { getAccountAddress } from '@/state/wallets/wallets';
 
 // Rainbow Router
 const RAINBOW_ROUTER_ADDRESS: EthereumAddress = '0x00000000009726632680fb29d3f7a9734e3010e2';

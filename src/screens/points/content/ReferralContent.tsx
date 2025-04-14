@@ -34,7 +34,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Keyboard, TextInput } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { useWalletsStore } from '../../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 
 const keyboardSpringConfig = {

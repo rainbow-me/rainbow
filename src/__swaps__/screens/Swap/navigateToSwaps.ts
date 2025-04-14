@@ -7,9 +7,9 @@ import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
 import { ChainId } from '@/state/backendNetworks/types';
 import { SwapsState, useSwapsStore } from '@/state/swaps/swapsStore';
+import { getIsReadOnlyWallet } from '@/state/wallets/wallets';
 import { watchingAlert } from '@/utils';
-import { getIsReadOnlyWallet } from '../../../redux/wallets';
-import { setSelectedGasSpeed } from './hooks/useSelectedGas';
+import { setSelectedGasSpeed } from './hooks/useSele∏tedGas';
 
 export type SwapsParams = Partial<
   Pick<SwapsState, 'inputAsset' | 'outputAsset' | 'percentageToSell' | 'slippage'> & {

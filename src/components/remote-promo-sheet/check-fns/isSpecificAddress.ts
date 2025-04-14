@@ -1,6 +1,6 @@
 import { ActionFn } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 import { EthereumAddress } from '@/entities';
-import { getAccountAddress } from '../../../redux/wallets';
+import { getAccountAddress } from '@/state/wallets/wallets';
 
 type props = {
   addresses: EthereumAddress[];

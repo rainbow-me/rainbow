@@ -6,7 +6,7 @@ import { getLocalENSRegistrations, saveLocalENSRegistrations } from '@/handlers/
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import { omitFlatten } from '@/helpers/utilities';
 import { Network } from '@/state/backendNetworks/types';
-import { getAccountAddress } from './wallets';
+import { getAccountAddress } from '@/state/wallets/wallets';
 
 const ENS_REGISTRATION_SET_CHANGED_RECORDS = 'ensRegistration/ENS_REGISTRATION_SET_CHANGED_RECORDS';
 const ENS_REGISTRATION_SET_INITIAL_RECORDS = 'ensRegistration/ENS_REGISTRATION_SET_INITIAL_RECORDS';

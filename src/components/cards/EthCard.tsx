@@ -20,7 +20,7 @@ import { deviceUtils } from '@/utils';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useWalletsStore } from '../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';

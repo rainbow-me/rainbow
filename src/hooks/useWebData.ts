@@ -8,7 +8,7 @@ import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPreference, PreferenceActionType, setPreference } from '../model/preferences';
-import { getWalletWithAccount, useWalletsStore } from '../redux/wallets';
+import { getWalletWithAccount, useWalletsStore } from '@/state/wallets/wallets';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 

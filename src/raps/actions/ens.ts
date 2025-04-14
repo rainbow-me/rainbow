@@ -15,7 +15,7 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Logger } from '@ethersproject/logger';
-import { getAccountAddress } from '../../redux/wallets';
+import { getAccountAddress } from '@/state/wallets/wallets';
 import {
   createCommitENSRap,
   createRegisterENSRap,

@@ -7,7 +7,7 @@ import { padding } from '@/styles';
 import lang from 'i18n-js';
 import React, { Fragment } from 'react';
 import { Share } from 'react-native';
-import { useWalletsStore } from '../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { ButtonPressAnimation } from '../animations';
 import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
 import { ContextMenu } from '../context-menu';
@@ -76,7 +76,7 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
       <SavingsListHeader
         emoji="whale"
         isOpen={false}
-        onPress={() => {}}
+        onPress={() => { }}
         savingsSumValue={totalValue}
         showSumValue
         title={lang.t('pools.pools_title')}

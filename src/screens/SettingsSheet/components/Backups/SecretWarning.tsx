@@ -10,7 +10,7 @@ import { useNavigation } from '@/navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import { useWalletsStore } from '../../../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
 
 const MIN_HEIGHT = 740;

@@ -30,7 +30,7 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { loadWallets, useWalletsStore } from '@/redux/wallets';
+import { loadWallets, useWalletsStore } from '@/state/wallets/wallets';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();

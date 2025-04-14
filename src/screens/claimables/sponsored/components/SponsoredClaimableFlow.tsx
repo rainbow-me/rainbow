@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 import React, { useCallback, useMemo } from 'react';
-import { useWalletsStore } from '../../../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { ClaimButton } from '../../shared/components/ClaimButton';
 import { ClaimPanel } from '../../shared/components/ClaimPanel';
 import { ClaimValueDisplay } from '../../shared/components/ClaimValueDisplay';

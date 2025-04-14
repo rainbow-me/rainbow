@@ -41,7 +41,7 @@ import lang from 'i18n-js';
 import { cloneDeep, isEmpty, isString, replace } from 'lodash';
 import { InteractionManager } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
-import { getAccountAddress } from '../redux/wallets';
+import { getAccountAddress } from '@/state/wallets/wallets';
 import { openInBrowser } from './openInBrowser';
 
 /**

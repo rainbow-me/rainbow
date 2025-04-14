@@ -4,7 +4,7 @@ import { AccentColorProvider, Box, Inline, Text, TextShadow } from '@/design-sys
 import { deviceUtils, watchingAlert } from '@/utils';
 import { debounce } from 'lodash';
 import React from 'react';
-import { useWalletsStore } from '../../../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 
 const BUTTON_WIDTH = deviceUtils.dimensions.width - 52;
 

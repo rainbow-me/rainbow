@@ -4,7 +4,7 @@ import MoreButton from './MoreButton';
 import SendButton from './SendButton';
 import WatchButton from './WatchButton';
 import { Inline } from '@/design-system';
-import { useWalletsStore } from '@/redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 
 export default function ActionButtons({
   address: primaryAddress,

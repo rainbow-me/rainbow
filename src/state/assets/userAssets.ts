@@ -1,5 +1,5 @@
+import { getAccountAddress, useWalletsStore } from '@/state/wallets/wallets';
 import { Address } from 'viem';
-import { getAccountAddress, useWalletsStore } from '../../redux/wallets';
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { QueryEnabledUserAssetsState } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';

@@ -22,7 +22,7 @@ import * as keychain from '@/model/keychain';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { AppDispatch } from '@/redux/store';
-import { setAllWalletsWithIdsAsBackedUp } from '@/redux/wallets';
+import { setAllWalletsWithIdsAsBackedUp } from '@/state/wallets/wallets';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { allWalletsKey, identifierForVendorKey, pinKey, privateKeyKey, seedPhraseKey, selectedWalletKey } from '@/utils/keychainConstants';
 import { openInBrowser } from '@/utils/openInBrowser';

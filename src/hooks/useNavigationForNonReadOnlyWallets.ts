@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 
-import { useWalletsStore } from '@/redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';

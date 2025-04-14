@@ -9,7 +9,7 @@ import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
 import { BlendColor, Circle, Group, ImageSVG, LinearGradient, Mask, Paint, Rect, Shadow, vec } from '@shopify/react-native-skia';
 import React, { memo, useCallback, useState } from 'react';
-import { getIsReadOnlyWallet } from '../../../redux/wallets';
+import { getIsReadOnlyWallet } from '@/state/wallets/wallets';
 import { DEFAULT_CARD_SIZE, SkiaCard, SkiaCardProps } from './SkiaCard';
 import { plusButtonSvg, stars } from './cardSvgs';
 

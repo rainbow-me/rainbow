@@ -1,7 +1,7 @@
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { logger, RainbowError } from '@/logger';
 import { useCallback } from 'react';
-import { setWalletBackedUp } from '../redux/wallets';
+import { setWalletBackedUp } from '@/state/wallets/wallets';
 
 export default function useWalletManualBackup() {
   const onManuallyBackupWalletId = useCallback(async (walletId: string) => {

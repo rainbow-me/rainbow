@@ -32,7 +32,7 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { isAddress } from 'viem';
 import { setSelectedWallet } from '../model/wallet';
-import { getWallets, setSelectedAddress } from '../redux/wallets';
+import { getWallets, setSelectedAddress } from '@/state/wallets/wallets';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
   url: string;

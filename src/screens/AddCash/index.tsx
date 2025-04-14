@@ -23,7 +23,7 @@ import { Coinbase } from '@/screens/AddCash/providers/Coinbase';
 import { Moonpay } from '@/screens/AddCash/providers/Moonpay';
 import { FiatProviderName } from '@/entities/f2c';
 import * as lang from '@/languages';
-import { useWalletsStore } from '../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = StatusBar.currentHeight || 0;

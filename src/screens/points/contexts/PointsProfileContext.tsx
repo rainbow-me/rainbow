@@ -15,7 +15,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { delay } from '@/utils/delay';
 import { noop } from 'lodash';
 import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { useWalletsStore } from '../../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { RainbowPointsFlowSteps, buildTwitterIntentMessage } from '../constants';
 
 type PointsProfileContext = {

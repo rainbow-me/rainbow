@@ -10,7 +10,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 import { ClaimableType } from '@/resources/addys/claimables/types';
-import { useWalletsStore } from '../../../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 
 export function TransactionClaimableFlow() {
   const {

@@ -8,7 +8,7 @@ import { coverMetadataAtom } from '../components/ens-registration/RegistrationCo
 import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import usePendingTransactions from './usePendingTransactions';
 import { useAccountSettings, useENSRegistration, useWalletENSAvatar } from '.';
-import { useWalletsStore } from '@/redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { PendingTransaction, Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@/handlers/ens';
 import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';

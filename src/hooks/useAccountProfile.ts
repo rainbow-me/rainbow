@@ -1,4 +1,4 @@
-import { useWalletsStore } from '../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { useTheme } from '../theme';
 
 export default function useAccountProfile() {

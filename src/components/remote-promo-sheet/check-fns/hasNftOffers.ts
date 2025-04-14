@@ -1,5 +1,5 @@
 import { fetchNftOffers } from '@/resources/reservoir/nftOffersQuery';
-import { getAccountAddress } from '../../../redux/wallets';
+import { getAccountAddress } from '@/state/wallets/wallets';
 
 export async function hasNftOffers(): Promise<boolean> {
   const accountAddress = getAccountAddress();

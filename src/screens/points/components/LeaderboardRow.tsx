@@ -19,7 +19,7 @@ import { noop } from 'lodash';
 import React, { memo, useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useWalletsStore } from '../../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',

@@ -9,7 +9,7 @@ import { logger } from '@/logger';
 import { RainbowAccount } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { checkKeychainIntegrity, getSelectedWallet, getWallets } from '@/redux/wallets';
+import { checkKeychainIntegrity, getSelectedWallet, getWallets } from '@/state/wallets/wallets';
 import { backupsStore, LoadingStates, oneWeekInMs } from '@/state/backups/backups';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';

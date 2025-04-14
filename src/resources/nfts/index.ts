@@ -6,7 +6,7 @@ import { fetchSimpleHashNFTListing } from '@/resources/nfts/simplehash';
 import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { ChainId } from '@/state/backendNetworks/types';
 import { QueryFunction, useQuery } from '@tanstack/react-query';
-import { isImportedWallet } from '../../redux/wallets';
+import { isImportedWallet } from '@/state/wallets/wallets';
 
 const NFTS_STALE_TIME = 600000; // 10 minutes
 const NFTS_CACHE_TIME_EXTERNAL = 3600000; // 1 hour

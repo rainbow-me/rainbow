@@ -33,7 +33,7 @@ import { useMutation } from '@tanstack/react-query';
 import React, { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { useWalletsStore } from '../../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { RewardsActionButton } from '../components/RewardsActionButton';
 import { EthRewardsCoinIcon } from '../content/PointsContent';
 

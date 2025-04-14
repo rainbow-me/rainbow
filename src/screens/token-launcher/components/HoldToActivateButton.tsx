@@ -11,7 +11,7 @@ import { StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { useWalletsStore } from '../../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 
 const BUTTON_HEIGHT = 56;
 

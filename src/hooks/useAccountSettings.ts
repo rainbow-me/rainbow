@@ -15,7 +15,7 @@ import {
   settingsChangeNativeCurrency as changeNativeCurrency,
   settingsChangeTestnetsEnabled as changeTestnetsEnabled,
 } from '../redux/settings';
-import { useWalletsStore } from '../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 
 const languageSelector = (state: AppState) => state.settings.language;
 

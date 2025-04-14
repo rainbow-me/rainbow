@@ -2,8 +2,8 @@ import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { OperationForScreen, PerformanceLog, Screen } from '@/state/performance/operations';
+import { getSelectedWallet } from '@/state/wallets/wallets';
 import { runOnJS } from 'react-native-reanimated';
-import { getSelectedWallet } from '../../redux/wallets';
 
 type AnyFunction = (...args: any[]) => any;
 

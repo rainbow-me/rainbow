@@ -23,7 +23,7 @@ import RoutesWithPlatformDifferences from '@/navigation/routesNames';
 import { backupsStore } from '@/state/backups/backups';
 import { InteractionManager } from 'react-native';
 import { Source } from 'react-native-fast-image';
-import { useWalletsStore } from '../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { ImgixImage } from '../images';
 import { SheetActionButton } from '../sheet';
 

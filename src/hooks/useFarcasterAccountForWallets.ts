@@ -7,7 +7,7 @@ import { isLowerCaseMatch } from '@/utils';
 import { isEmpty } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import { Address } from 'viem';
-import { useWalletsStore } from '../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import useAccountSettings from './useAccountSettings';
 
 type SummaryData = ReturnType<typeof useAddysSummary>['data'];

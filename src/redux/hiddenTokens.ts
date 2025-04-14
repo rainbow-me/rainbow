@@ -3,7 +3,7 @@ import { concat, without } from 'lodash';
 import { Dispatch } from 'redux';
 import { getPreference } from '../model/preferences';
 import { AppGetState } from './store';
-import { getAccountAddress, getIsReadOnlyWallet, useWalletsStore } from './wallets';
+import { getAccountAddress, getIsReadOnlyWallet, useWalletsStore } from '@/state/wallets/wallets';
 
 const HIDDEN_TOKENS_LOAD_SUCCESS = 'hiddenTokens/HIDDEN_TOKENS_LOAD_SUCCESS';
 const HIDDEN_TOKENS_FETCH_SUCCESS = 'hiddenTokens/HIDDEN_TOKENS_FETCH_SUCCESS';

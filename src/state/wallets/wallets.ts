@@ -7,13 +7,13 @@ import { lightModeThemeColors } from '@/styles';
 import { captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty, keys } from 'lodash';
-import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
-import { getWalletNames, saveWalletNames } from '../handlers/localstorage/walletNames';
-import { ensureValidHex } from '../handlers/web3';
-import { removeFirstEmojiFromString, returnStringFirstEmoji } from '../helpers/emojiHandler';
-import { fetchENSAvatar } from '../hooks/useENSAvatar';
-import { hasKey } from '../model/keychain';
-import { PreferenceActionType, setPreference } from '../model/preferences';
+import { saveKeychainIntegrityState } from '../../handlers/localstorage/globalSettings';
+import { getWalletNames, saveWalletNames } from '../../handlers/localstorage/walletNames';
+import { ensureValidHex } from '../../handlers/web3';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '../../helpers/emojiHandler';
+import { fetchENSAvatar } from '../../hooks/useENSAvatar';
+import { hasKey } from '../../model/keychain';
+import { PreferenceActionType, setPreference } from '../../model/preferences';
 import {
   AllRainbowWallets,
   generateAccount,
@@ -25,12 +25,12 @@ import {
   saveAddress,
   saveAllWallets,
   setSelectedWallet as setWalletSelectedWallet,
-} from '../model/wallet';
-import { createRainbowStore } from '../state/internal/createRainbowStore';
-import { address } from '../utils/abbreviations';
-import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
-import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '../utils/profileUtils';
-import { updateWebDataEnabled } from './showcaseTokens';
+} from '../../model/wallet';
+import { createRainbowStore } from '../internal/createRainbowStore';
+import { address } from '../../utils/abbreviations';
+import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '../../utils/keychainConstants';
+import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '../../utils/profileUtils';
+import { updateWebDataEnabled } from '../../redux/showcaseTokens';
 
 interface WalletsState {
   selected: RainbowWallet | null;

@@ -8,7 +8,7 @@ import * as keychain from '@/model/keychain';
 import * as ls from '@/storage';
 import { analyticsUserIdentifier } from '@/utils/keychainConstants';
 import { computeHmac, SupportedAlgorithm } from '@ethersproject/sha2';
-import { useWalletsStore } from '../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 
 /**
  * Returns the device id in a type-safe manner. It will throw if no device ID

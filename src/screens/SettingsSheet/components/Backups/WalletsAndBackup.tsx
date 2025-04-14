@@ -20,7 +20,7 @@ import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { RainbowAccount, createWallet } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { loadWallets, useWalletsStore } from '@/redux/wallets';
+import { loadWallets, useWalletsStore } from '@/state/wallets/wallets';
 import { CloudBackupState, backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { useTheme } from '@/theme';

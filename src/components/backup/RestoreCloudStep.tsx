@@ -18,7 +18,7 @@ import {
 import { Navigation, useNavigation } from '@/navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
-import { loadWallets, setAllWalletsWithIdsAsBackedUp, useWalletsStore } from '@/redux/wallets';
+import { loadWallets, setAllWalletsWithIdsAsBackedUp, useWalletsStore } from '@/state/wallets/wallets';
 import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';

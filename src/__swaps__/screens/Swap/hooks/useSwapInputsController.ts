@@ -1,15 +1,8 @@
-import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { ChainId } from '@/state/backendNetworks/types';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
-import {
-  convertAmountToNativeDisplayWorklet,
-  convertRawAmountToDecimalFormat,
-  handleSignificantDecimalsWorklet,
-} from '@/helpers/utilities';
 import {
   addCommasToNumber,
   addSymbolToNativeDisplayWorklet,
@@ -20,9 +13,14 @@ import {
 } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import {
+  convertAmountToNativeDisplayWorklet,
+  convertRawAmountToDecimalFormat,
+  handleSignificantDecimalsWorklet,
+} from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
-import { logger, RainbowError } from '@/logger';
+import { RainbowError, logger } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { queryClient } from '@/react-query';
 import store from '@/redux/store';
@@ -32,16 +30,18 @@ import {
   externalTokenQueryKey,
   fetchExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
+import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { ChainId } from '@/state/backendNetworks/types';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { useWalletsStore } from '@/state/wallets/wallets';
+import { deepEqual } from '@/worklets/comparisons';
 import { CrosschainQuote, Quote, QuoteError, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
 import { useCallback } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useDebouncedCallback } from 'use-debounce';
-import { NavigationSteps } from './useSwapNavigation';
-import { deepEqual } from '@/worklets/comparisons';
 import { analyticsTrackQuoteFailed } from './analyticsTrackQuoteFailed';
-import { useWalletsStore } from '../../../../redux/wallets';
+import { NavigationSteps } from './useSwapNavigation';
 
 const REMOTE_CONFIG = getRemoteConfig();
 

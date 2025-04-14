@@ -16,7 +16,7 @@ import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from
 import { WalletKitTypes } from '@reown/walletkit';
 import { Verify } from '@walletconnect/types';
 import { Address } from 'viem';
-import { useWalletsStore } from '../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 
 export function AuthRequest({
   requesterMeta,

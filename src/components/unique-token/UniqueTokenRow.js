@@ -4,7 +4,7 @@ import { padding, position } from '@/styles';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useNavigation } from '../../navigation/Navigation';
-import { useWalletsStore } from '../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { magicMemo } from '../../utils';
 import { Row } from '../layout';
 import { CardSize, UniqueTokenCardMargin, UniqueTokenRowPadding } from './CardSize';

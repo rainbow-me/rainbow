@@ -10,7 +10,7 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createWallet, RainbowAccount, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
-import { createAccount, loadWallets, useWalletsStore } from '@/redux/wallets';
+import { createAccount, loadWallets, useWalletsStore } from '@/state/wallets/wallets';
 import { useTheme } from '@/theme';
 import { profileUtils } from '@/utils';
 import { abbreviateEnsForDisplay, formatAddressForDisplay } from '@/utils/abbreviations';

@@ -17,7 +17,7 @@ import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
 import { AssetListType } from '..';
 import { BooleanMap } from '../../../../hooks/useCoinListEditOptions';
-import { useWalletsStore } from '../../../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { useRecyclerAssetListPosition } from './Contexts';
 import { ExternalENSProfileScrollViewWithRef, ExternalSelectNFTScrollViewWithRef } from './ExternalENSProfileScrollView';
 import ExternalScrollViewWithRef from './ExternalScrollView';

@@ -29,7 +29,7 @@ import { RainbowError, logger } from '@/logger';
 import { loadPrivateKey } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useWalletsStore } from '@/redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

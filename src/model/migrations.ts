@@ -35,7 +35,7 @@ import { getMigrationVersion, setMigrationVersion } from '../handlers/localstora
 import WalletTypes from '../helpers/walletTypes';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import store from '../redux/store';
-import { getSelectedWallet, getWallets, updateWallets } from '../redux/wallets';
+import { getSelectedWallet, getWallets, updateWallets } from '@/state/wallets/wallets';
 import { RB_TOKEN_LIST_CACHE, RB_TOKEN_LIST_ETAG } from '../references/rainbow-token-list';
 import colors, { getRandomColor } from '../styles/colors';
 import {

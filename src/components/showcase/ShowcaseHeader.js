@@ -8,7 +8,7 @@ import { colors, padding } from '@/styles';
 import { abbreviations, profileUtils } from '@/utils';
 import lang from 'i18n-js';
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
-import { useWalletsStore } from '../../redux/wallets';
+import { useWalletsStore } from '@/state/wallets/wallets';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
 import SheetHandle from '../sheet/SheetHandle';
@@ -148,7 +148,7 @@ export function Header() {
     <HeaderWrapper height={350} testID="showcase-header-wrapper">
       <SheetHandle />
       <Spacer />
-      <AvatarCircle image={null} onPress={() => {}} showcaseAccountColor={color} showcaseAccountSymbol={emoji} />
+      <AvatarCircle image={null} onPress={() => { }} showcaseAccountColor={color} showcaseAccountSymbol={emoji} />
       <ENSAddress address={mainText} as={isHexString(mainText) && TruncatedAddress}>
         {mainText}
       </ENSAddress>
