@@ -14,7 +14,7 @@ import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
 import { appStateUpdate } from '../redux/appState';
 import { settingsLoadNetwork } from '../redux/settings';
-import { loadWallets, updateAccountAddress } from '@/state/wallets/walletsStore';
+import { loadWallets, setAccountAddress } from '@/state/wallets/walletsStore';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useLoadAccountData from './useLoadAccountData';
@@ -22,6 +22,18 @@ import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useOpenSmallBalances from './useOpenSmallBalances';
 import { PerformanceTracking } from '../performance/tracking';
 import { ensureValidHex } from '../handlers/web3';
+
+type WalletStatus = 'unknown' | 'new' | 'imported' | 'old';
+
+function getWalletStatus(isNew: boolean, isImporting: boolean): WalletStatus {
+  if (isNew) {
+    return 'new';
+  } else if (isImporting) {
+    return 'imported';
+  } else {
+    return 'old';
+  }
+}
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -31,18 +43,6 @@ export default function useInitializeWallet() {
   const { network } = useAccountSettings();
   const hideSplashScreen = useHideSplashScreen();
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
-
-  type WalletStatus = 'unknown' | 'new' | 'imported' | 'old';
-
-  function getWalletStatus(isNew: boolean, isImporting: boolean): WalletStatus {
-    if (isNew) {
-      return 'new';
-    } else if (isImporting) {
-      return 'imported';
-    } else {
-      return 'old';
-    }
-  }
 
   const initializeWallet = useCallback(
     async (
@@ -129,7 +129,7 @@ export default function useInitializeWallet() {
           logger.debug('[useInitializeWallet]: loaded global data...');
         }
 
-        updateAccountAddress(ensureValidHex(walletAddress));
+        setAccountAddress(ensureValidHex(walletAddress));
         logger.debug('[useInitializeWallet]: updated wallet address', {
           walletAddress,
         });
@@ -178,7 +178,7 @@ export default function useInitializeWallet() {
         return null;
       }
     },
-    [dispatch, getWalletStatus, hideSplashScreen, loadAccountData, loadGlobalEarlyData, network, setIsSmallBalancesOpen]
+    [dispatch, hideSplashScreen, loadAccountData, loadGlobalEarlyData, network, setIsSmallBalancesOpen]
   );
 
   return initializeWallet;
