@@ -246,10 +246,9 @@ export function toCompactNotation({
     }
 
     if (currency) {
-      const formattedValue = convertAmountToNativeDisplayWorklet(absNumericString, currency, false, true).replace(
-        supportedNativeCurrencies[currency].symbol,
-        ''
-      );
+      const nativeDisplay = convertAmountToNativeDisplayWorklet(absNumericString, currency, false, true);
+      // if the prefix is the same as the currency symbol, we need to remove it so it doesn't display twice
+      const formattedValue = prefix === supportedNativeCurrencies[currency].symbol ? nativeDisplay.replace(prefix, '') : nativeDisplay;
       return prefix ? `${prefix}${sign}${formattedValue}` : `${sign}${formattedValue}`;
     }
 
