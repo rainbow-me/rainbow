@@ -298,7 +298,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             image,
             true
           );
-          loadWallets();
+          await loadWallets();
           handleSetImporting(false);
         } else {
           const previousWalletCount = keys(wallets).length;
