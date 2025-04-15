@@ -52,18 +52,22 @@ jobs:
           name: sandbox
           key: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
 
-      - name: Setup env and scripts
+      - name: Setup env
         env:
-          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
-          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
         run: |
-          git clone git@github.com:rainbow-me/rainbow-env.git
-          mv rainbow-env/dotenv .env
-          mv rainbow-env/android/app/google-services.json android/app/google-services.json
-          rm -rf rainbow-env
-          sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
-          
-          eval $CI_SCRIPTS
+            git clone git@github.com:rainbow-me/rainbow-env.git
+            mv rainbow-env/dotenv .env
+            mv rainbow-env/android/app/google-services.json android/app/google-services.json
+            rm -rf rainbow-env
+            sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
+
+      - name: Setup scripts
+        env:
+            CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+            SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+        run: |
+            eval $CI_SCRIPTS
 
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
