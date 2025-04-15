@@ -24,7 +24,6 @@ import { getProvider } from '@/handlers/web3';
 import { AppState } from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
 import { Network, ChainId } from '@/state/backendNetworks/types';
-import { Address } from 'viem';
 
 // -- Constants ------------------------------------------------------------- //
 const SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS = 'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS';
