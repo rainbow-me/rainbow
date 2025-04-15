@@ -80,7 +80,17 @@ export default function useInitializeWallet() {
         // Load the network first
         await dispatch(settingsLoadNetwork());
 
-        const { isNew, walletAddress } = await walletInit(seedPhrase, color, name, overwrite, checkedWallet, network, image, silent);
+        const { isNew, walletAddress } = await walletInit(
+          seedPhrase,
+          color,
+          name,
+          overwrite,
+          checkedWallet,
+          network,
+          image,
+          silent,
+          userPin
+        );
         walletStatus = getWalletStatus(isNew, isImporting);
 
         logger.debug('[useInitializeWallet]: walletInit returned', {
