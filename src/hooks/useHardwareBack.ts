@@ -28,9 +28,9 @@ export default function useHardwareBack(cb: () => boolean | void, shouldSkip = f
       return handleValue;
     };
 
-    BackHandler.addEventListener('hardwareBackPress', handler);
+    const subscription = BackHandler.addEventListener('hardwareBackPress', handler);
 
-    return () => BackHandler.removeEventListener('hardwareBackPress', handler);
+    return () => subscription.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps.concat(shouldSkip));
 
@@ -49,9 +49,9 @@ export function useHardwareBackOnFocus(cb: () => boolean | undefined, shouldSkip
       return handleValue;
     };
 
-    BackHandler.addEventListener('hardwareBackPress', handler);
+    const subscription = BackHandler.addEventListener('hardwareBackPress', handler);
 
-    return () => BackHandler.removeEventListener('hardwareBackPress', handler);
+    return () => subscription.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps.concat(shouldSkip));
 

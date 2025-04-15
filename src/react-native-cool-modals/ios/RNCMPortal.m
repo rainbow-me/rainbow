@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTViewManager.h>
 #import <React/RCTView.h>
-#import "AppDelegate.h"
 
 
 @interface WindowPortalManager : RCTViewManager
@@ -67,7 +66,7 @@ RCT_EXPORT_VIEW_PROPERTY(blockTouches, BOOL)
 -(void)addSubview:(UIView *)view {
   self.window = [[CustomUIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
      self.window.rootViewController = [[UIViewController alloc] init];
-     [self.window setWindowLevel:((AppDelegate* )UIApplication.sharedApplication.delegate).window.windowLevel + 1];
+     [self.window setWindowLevel:UIApplication.sharedApplication.delegate.window.windowLevel + 1];
      [self.window makeKeyAndVisible];
      self.window.rootViewController.view = [[UIView alloc] init];
      ((CustomUIWindow *) self.window).portalView = self;

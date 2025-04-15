@@ -215,7 +215,7 @@ const GasSpeedButton = ({
     [loading, gasPriceReady, nativeCurrency]
   );
 
-  const openCustomOptionsRef = useRef<any>();
+  const openCustomOptionsRef = useRef<any>(undefined);
 
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady) return;

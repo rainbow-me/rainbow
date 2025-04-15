@@ -6,8 +6,8 @@ import Tooltips from 'react-native-tooltips';
 
 const CopyTooltip = ({ children, textToCopy, tooltipText }) => {
   const [visible, setVisible] = useState(false);
-  const parent = useRef();
-  const target = useRef();
+  const parent = useRef(undefined);
+  const target = useRef(undefined);
   const { colors } = useTheme();
 
   return (

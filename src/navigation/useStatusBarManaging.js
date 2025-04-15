@@ -4,7 +4,7 @@ import { useNavigation } from './Navigation';
 
 export default function useStatusBarManaging() {
   const navigation = useNavigation();
-  const ref = useRef();
+  const ref = useRef(undefined);
   useLayoutEffect(() => {
     const unsubscribe = navigation.addListener('transitionStart', ({ data: { closing } }) => {
       if (closing) {

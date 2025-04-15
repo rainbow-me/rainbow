@@ -68,7 +68,7 @@ let _id = Number.MIN_SAFE_INTEGER;
  * @returns {Function} - function that returns object with getter and setter for value property
  */
 export function useWorkletValue() {
-  const idRef = useRef<number>();
+  const idRef = useRef<number>(undefined);
 
   if (!idRef.current) {
     // TODO: use some uuid here
