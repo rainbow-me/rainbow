@@ -108,12 +108,6 @@ export default function useWalletSectionsData({
   const walletAddresses = selectedWallet ? walletsWithBalancesAndNames[selectedWallet.id]?.addresses : null;
   const accountWithBalance = walletAddresses?.find(address => address.address.toLowerCase() === accountAddress.toLowerCase());
 
-  console.info('selectedWallet', selectedWallet);
-  console.info('walletsWithBalancesAndNames', walletsWithBalancesAndNames);
-  console.info('accountWithBalance', accountWithBalance);
-  console.info('walletAddresses', walletAddresses);
-  console.info('accountAddress', accountAddress);
-
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
 
