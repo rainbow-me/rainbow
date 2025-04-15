@@ -246,7 +246,10 @@ export function toCompactNotation({
     }
 
     if (currency) {
-      const formattedValue = convertAmountToNativeDisplayWorklet(absNumericString, currency, false, true);
+      const formattedValue = convertAmountToNativeDisplayWorklet(absNumericString, currency, false, true).replace(
+        supportedNativeCurrencies[currency].symbol,
+        ''
+      );
       return prefix ? `${prefix}${sign}${formattedValue}` : `${sign}${formattedValue}`;
     }
 
