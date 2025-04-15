@@ -84,7 +84,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   const startImportProfile = useCallback(
     (name: any, forceColor: any, address: any = null, avatarUrl: any) => {
-      const importWallet = (color: number, name: string, image?: string) =>
+      const importWallet = (color: number | null, name: string, image?: string) =>
         InteractionManager.runAfterInteractions(() => {
           if (color !== null) setColor(color);
           if (name) setName(name);

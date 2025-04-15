@@ -37,6 +37,14 @@ import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { ChartTime } from '@/hooks/charts/useChartInfo';
 import { ScrollView } from 'react-native';
 
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace ReactNavigation {
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface RootParamList extends RootStackParamList {}
+  }
+}
+
 export type PortalSheetProps = {
   sheetHeight?: number;
   children: React.FC;
@@ -98,12 +106,15 @@ interface ExplainSheetNativeAssetInfo {
   iconURL?: string;
   colors?: TokenColors;
 }
+
 interface ExplainSheetCurrencyInfo {
   chainId: ChainId;
   symbol: string;
   icon_url?: string;
+  iconURL?: string;
   colors?: TokenColors;
 }
+
 interface ExplainSheetTokenAllocationSection {
   title: string;
   value: string;
@@ -196,14 +207,6 @@ export type ExplainSheetRouteParams = {
   [K in ExplainSheetType]: ExplainSheetParams<K>;
 }[ExplainSheetType];
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace ReactNavigation {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface RootParamList extends RootStackParamList {}
-  }
-}
-
 type AddWalletNavigatorParams = {
   type?: 'import' | 'watch';
   isFirstWallet: boolean;
@@ -222,9 +225,9 @@ export type ModalParams = {
   actionType?: 'Import' | 'Create';
   additionalPadding?: boolean;
   address?: string | undefined;
-  asset?: any[]; // TODO: Fix this
+  asset?: (ParsedAddressAsset | UniqueAsset)[];
   color?: number | null;
-  forceColor?: string | number | null;
+  forceColor?: string | null;
   isNewProfile?: boolean;
   contact?: Contact | undefined;
   ens?: string | undefined;
@@ -233,7 +236,7 @@ export type ModalParams = {
   type: 'contact_profile' | 'wallet_profile' | 'send' | 'request' | 'new_wallet_group';
   onRefocusInput?: () => void;
   onCloseModal?: ({ color, name, image }: { color: number; name: string; image?: string }) => void;
-  profile?: { image?: string; name: string; color?: string | number | null };
+  profile?: { image?: string; name: string; color?: number | null };
   withoutStatusBar?: boolean;
   isFromSettings?: boolean;
   onCancel?: () => void;
@@ -618,24 +621,5 @@ export type RootStackParamList = {
   [Routes.POAP_SHEET]: {
     event: PoapEvent;
   };
-  [Routes.MODAL_SCREEN]: {
-    actionType?: 'Import' | 'Create';
-    additionalPadding?: boolean;
-    address?: string | undefined;
-    asset?: any[]; // TODO: Fix this
-    color?: number | null;
-    forceColor?: string | number | null;
-    isNewProfile?: boolean;
-    contact?: Contact | undefined;
-    ens?: string | undefined;
-    numWalletGroups?: number;
-    nickname?: string | undefined;
-    type: 'contact_profile' | 'wallet_profile' | 'send' | 'request' | 'new_wallet_group';
-    onRefocusInput?: () => void;
-    onCloseModal?: ({ color, name, image }: { color: number; name: string; image?: string }) => void;
-    profile?: { image?: string; name: string; color?: string | number | null };
-    withoutStatusBar?: boolean;
-    isFromSettings?: boolean;
-    onCancel?: () => void;
-  };
+  [Routes.MODAL_SCREEN]: ModalParams;
 } & UntypedRoutes;

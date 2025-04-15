@@ -352,7 +352,7 @@ export default function ChangeWalletSheet() {
               }
             },
             profile: {
-              color: account?.color,
+              color: account?.color || null,
               image: account?.image || ``,
               name: account?.label || ``,
             },
