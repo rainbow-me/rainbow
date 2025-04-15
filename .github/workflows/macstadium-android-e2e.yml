@@ -97,12 +97,14 @@ jobs:
 
       - name: Install Anvil
         run: |
-          curl -L https://foundry.paradigm.xyz | bash
+          mkdir -p $HOME/.foundry/bin
+          curl -L https://github.com/foundry-rs/foundry/releases/download/v0.10.0/foundry_nightly_linux_amd64.tar.gz > foundry.tar.gz
+          tar -xzf foundry.tar.gz -C $HOME/.foundry/bin
+          chmod +x $HOME/.foundry/bin/*
           export PATH="$HOME/.foundry/bin:$PATH"
-          bash -c "source $HOME/.bashrc && foundryup"
           echo "$HOME/.foundry/bin" >> $GITHUB_PATH
-          ls -la $HOME/.foundry/bin || echo "Foundry bin directory not found"
-          $HOME/.foundry/bin/anvil --version || echo "Anvil not available"
+          ls -la $HOME/.foundry/bin
+          $HOME/.foundry/bin/anvil --version || echo "Anvil not found in extracted binaries"
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
