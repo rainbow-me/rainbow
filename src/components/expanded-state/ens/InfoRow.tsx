@@ -12,7 +12,8 @@ import { ImgixImage } from '@/components/images';
 import Routes from '@/navigation/routesNames';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 import { CardSize } from '@/components/unique-token/CardSize';
-import { useExternalNftsStore, useUserNftsStore } from '@/state/nfts';
+import { useUserNftsStore } from '@/state/nfts/userNfts';
+import { useExternalNftsStore } from '@/state/nfts/externalNfts';
 
 export function InfoRowSkeleton() {
   const { colors } = useTheme();

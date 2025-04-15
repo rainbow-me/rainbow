@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
-import { useUserNftsStore, useExternalNftsStore } from '@/state/nfts';
+import { useExternalNftsStore } from '@/state/nfts/externalNfts';
+import { useUserNftsStore } from '@/state/nfts/userNfts';
 
-export default function useCollectible(uniqueId: string, externalAddress?: string) {
+export function useCollectible(uniqueId: string, externalAddress?: string) {
   const isExternal = Boolean(externalAddress);
   const asset = useUserNftsStore(s => s.getNft(uniqueId));
   const externalAsset = useExternalNftsStore(s => s.getNft(uniqueId));

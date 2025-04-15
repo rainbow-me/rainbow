@@ -16,7 +16,7 @@ import { useENSAvatar, useENSCover, useENSRecords, useOpenENSNFTHandler } from '
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
-import { useExternalNftsStore } from '@/state/nfts';
+import { useExternalNftsStore } from '@/state/nfts/externalNfts';
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,
