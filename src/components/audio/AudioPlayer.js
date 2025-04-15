@@ -29,7 +29,7 @@ const buildPlayerUrl = options => {
 };
 
 export default function AudioPlayer({ fontColor, imageColor, uri }) {
-  const webviewRef = useRef();
+  const webviewRef = useRef(undefined);
   const { colors } = useTheme();
   const [ready, setReady] = useState(false);
   const [closed, setClosed] = useState(false);

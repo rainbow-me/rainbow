@@ -120,9 +120,9 @@ const SwipeableList = ({ components, height, speed, testID }) => {
     },
   });
 
-  const panRef = useRef();
-  const lpRef = useRef();
-  const tapRef = useRef();
+  const panRef = useRef(undefined);
+  const lpRef = useRef(undefined);
+  const tapRef = useRef(undefined);
   const onHandlerStateChangeAndroid = useCallback(
     event => {
       if (event.nativeEvent.state === 3 || event.nativeEvent.state === 5) {
