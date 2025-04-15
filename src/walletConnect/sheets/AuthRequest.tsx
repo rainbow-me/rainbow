@@ -1,6 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-
 import { Alert } from '@/components/alerts';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
@@ -10,13 +7,15 @@ import { DAppStatus } from '@/graphql/__generated__/metadata';
 import * as lang from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { useDappMetadata } from '@/resources/metadata/dapp';
+import { getAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { initials } from '@/utils/formatters';
 import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from '@/walletConnect/types';
+import { useNavigation } from '@react-navigation/native';
 import { WalletKitTypes } from '@reown/walletkit';
 import { Verify } from '@walletconnect/types';
+import React from 'react';
 import { Address } from 'viem';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 export function AuthRequest({
   requesterMeta,
@@ -36,7 +35,7 @@ export function AuthRequest({
   const [address, setAddress] = React.useState(accountAddress);
 
   const { accountSymbol, accountColor, accountImage, accountName, isHardwareWallet } = React.useMemo(() => {
-    const profileInfo = useWalletsStore.getState().getAccountProfileInfo({
+    const profileInfo = getAccountProfileInfo({
       address,
     });
     return {

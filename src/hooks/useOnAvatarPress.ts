@@ -13,7 +13,6 @@ import { openInBrowser } from '@/utils/openInBrowser';
 import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { ImageOrVideo } from 'react-native-image-crop-picker';
-import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountAsset from './useAccountAsset';
@@ -34,7 +33,6 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const wallets = useWalletsStore(state => state.wallets);
   const selectedWallet = useWalletsStore(state => state.selected);
   const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
-  const dispatch = useDispatch();
   const { navigate } = useNavigation();
   const { accountAddress, accountColor, accountName, accountImage, accountENS } = useAccountProfileInfo();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -42,11 +40,11 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
 
   const profileEnabled = Boolean(accountENS);
 
-  const { isOwner } = useENSOwner(accountENS, {
+  const { isOwner } = useENSOwner(accountENS || '', {
     enabled: profileEnabled && profilesEnabled,
   });
 
-  const { data: avatar } = useENSAvatar(accountENS, {
+  const { data: avatar } = useENSAvatar(accountENS || '', {
     enabled: profileEnabled && profilesEnabled,
   });
   const hasENSAvatar = Boolean(avatar?.imageUrl);
@@ -118,6 +116,8 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   }, [navigate]);
 
   const onAvatarWebProfile = useCallback(() => {
+    if (!accountENS) return;
+
     const rainbowURL = buildRainbowUrl(null, accountENS, accountAddress);
     if (rainbowURL) {
       openInBrowser(rainbowURL);
@@ -125,6 +125,8 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   }, [accountAddress, accountENS]);
 
   const onAvatarViewProfile = useCallback(() => {
+    if (!accountENS) return;
+
     analytics.track(analytics.event.viewedEnsProfile, {
       category: 'profiles',
       ens: accountENS,
@@ -137,6 +139,8 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   }, [accountENS, navigate]);
 
   const onAvatarEditProfile = useCallback(() => {
+    if (!accountENS) return;
+
     startRegistration(accountENS, REGISTRATION_MODES.EDIT);
     navigate(Routes.REGISTER_ENS_NAVIGATOR, {
       ensName: accountENS,

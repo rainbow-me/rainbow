@@ -74,10 +74,10 @@ interface WalletsState {
   getAccountProfileInfo: (props?: { address: string; wallet?: RainbowWallet }) => {
     accountAddress: string;
     accountColor: number;
-    accountENS: string;
-    accountImage: string | null;
-    accountName: string;
-    accountSymbol: string | false;
+    accountENS?: string;
+    accountImage?: string | null;
+    accountName?: string;
+    accountSymbol?: string | false;
   };
 }
 
@@ -566,16 +566,11 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
     const wallet = props?.wallet || (props ? getWalletWithAccount(props.address) : null) || selected;
     const accountAddress = props?.address || get().accountAddress;
 
-    if (!wallet) {
-      // TODO the type here was bad pre-refactor, so need to fix it
-      return {} as any;
-      // throw new Error(`No wallet`);
-    }
-    if (!accountAddress) {
-      throw new Error(`No accountAddress`);
-    }
-    if (!wallet?.addresses?.length) {
-      throw new Error(`No addresses`);
+    if (!wallet || !accountAddress || !wallet?.addresses?.length) {
+      return {
+        accountAddress,
+        accountColor: 0,
+      };
     }
 
     const accountENS = walletNames?.[accountAddress];
@@ -583,9 +578,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
     const selectedAccount = wallet.addresses?.find((account: RainbowAccount) => account.address?.toLowerCase() === lowerCaseAccountAddress);
 
     if (!selectedAccount) {
-      // TODO the type here was bad pre-refactor, so need to fix it
-      return {} as any;
-      // throw new Error(`No selectedAccount`);
+      return {
+        accountAddress,
+        accountColor: 0,
+      };
     }
 
     const { label, color, image } = selectedAccount;
@@ -637,7 +633,7 @@ export const useAccountProfileInfo = () => {
   return {
     ...info,
     accountAddress: ensureValidHex(accountAddress),
-    accountColorString: colors.avatarBackgrounds[info.accountColor],
+    accountColorString: info?.accountColor ? colors.avatarBackgrounds[info.accountColor] : '',
   };
 };
 
