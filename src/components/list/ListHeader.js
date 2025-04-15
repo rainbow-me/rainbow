@@ -76,7 +76,7 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
       <SavingsListHeader
         emoji="whale"
         isOpen={false}
-        onPress={() => { }}
+        onPress={() => {}}
         savingsSumValue={totalValue}
         showSumValue
         title={lang.t('pools.pools_title')}
