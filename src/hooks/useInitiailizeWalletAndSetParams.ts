@@ -1,8 +1,11 @@
 import { useInitializeWallet } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { RootStackParamList } from '@/navigation/types';
+import { ReviewPromptAction } from '@/storage/schema';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useEffect, useRef } from 'react';
+import { InteractionManager } from 'react-native';
 
 enum WalletLoadingStates {
   IDLE = 0,
@@ -25,6 +28,12 @@ export const useInitializeWalletAndSetParams = () => {
       await initializeWallet(null, null, null, !params?.emptyWallet);
       walletState.current = WalletLoadingStates.INITIALIZED;
       setParams({ emptyWallet: false });
+
+      setTimeout(() => {
+        InteractionManager.runAfterInteractions(() => {
+          handleReviewPromptAction(ReviewPromptAction.ViewedWalletScreen);
+        });
+      }, 3_000);
     };
 
     if (

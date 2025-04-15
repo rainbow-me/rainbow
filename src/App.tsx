@@ -30,7 +30,6 @@ import { logger, RainbowError } from '@/logger';
 import * as ls from '@/storage';
 import { migrate } from '@/migrations';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
-import { ReviewPromptAction } from '@/storage/schema';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
@@ -122,21 +121,6 @@ function Root() {
       Sentry.setUser({ id: deviceId });
       analytics.setDeviceId(deviceId);
       analytics.identify();
-
-      const isReviewInitialized = ls.review.get(['initialized']);
-      if (!isReviewInitialized) {
-        ls.review.set(['hasReviewed'], false);
-        ls.review.set(
-          ['actions'],
-          Object.values(ReviewPromptAction).map(action => ({
-            id: action,
-            numOfTimesDispatched: 0,
-          }))
-        );
-
-        ls.review.set(['timeOfLastPrompt'], 0);
-        ls.review.set(['initialized'], true);
-      }
 
       /**
        * We previously relied on the existence of a deviceId on keychain to
