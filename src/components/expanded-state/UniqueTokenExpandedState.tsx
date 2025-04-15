@@ -256,9 +256,6 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     [offer]
   );
 
-  console.log('asset', asset);
-  return <Box></Box>;
-
   const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.chainId);
 
   const [isRefreshMetadataToastActive, setIsRefreshMetadataToastActive] = useState(false);
