@@ -31,6 +31,9 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
 import walletTypes from '@/helpers/walletTypes';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
+import { InteractionManager } from 'react-native';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import { ReviewPromptAction } from '@/storage/schema';
 
 enum WalletLoadingStates {
   IDLE = 0,
@@ -138,6 +141,12 @@ function WalletScreen() {
       await initializeWallet(null, null, null, !params?.emptyWallet);
       walletState.current = WalletLoadingStates.INITIALIZED;
       setParams({ emptyWallet: false });
+
+      setTimeout(() => {
+        InteractionManager.runAfterInteractions(() => {
+          handleReviewPromptAction(ReviewPromptAction.ViewedWalletScreen);
+        });
+      }, 3_000);
     };
 
     if (
