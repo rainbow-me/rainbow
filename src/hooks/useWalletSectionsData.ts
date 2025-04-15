@@ -105,12 +105,14 @@ export default function useWalletSectionsData({
   }, [claimables]);
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
+  const walletAddresses = selectedWallet ? walletsWithBalancesAndNames[selectedWallet.id]?.addresses : null;
+  const accountWithBalance = walletAddresses?.find(address => address.address.toLowerCase() === accountAddress.toLowerCase());
 
-  const accountWithBalance = selectedWallet
-    ? walletsWithBalancesAndNames[selectedWallet.id]?.addresses.find(
-        address => address.address.toLowerCase() === accountAddress.toLowerCase()
-      )
-    : undefined;
+  console.info('selectedWallet', selectedWallet);
+  console.info('walletsWithBalancesAndNames', walletsWithBalancesAndNames);
+  console.info('accountWithBalance', accountWithBalance);
+  console.info('walletAddresses', walletAddresses);
+  console.info('accountAddress', accountAddress);
 
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
