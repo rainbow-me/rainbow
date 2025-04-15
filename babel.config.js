@@ -21,7 +21,7 @@ module.exports = function (api) {
   api.cache(true);
 
   const plugins = [
-    ...(data ? [data] : []),
+    // ...(data ? [data] : []),
     [
       'module-resolver',
       {
@@ -32,7 +32,6 @@ module.exports = function (api) {
     ],
     '@babel/plugin-transform-export-namespace-from',
     'babel-plugin-styled-components',
-    '@babel/plugin-proposal-numeric-separator',
     'date-fns',
     'graphql-tag',
     ['lodash', { id: ['lodash', 'recompact'] }],
@@ -51,7 +50,7 @@ module.exports = function (api) {
   return {
     env: {
       development: {
-        plugins: [...plugins, ['transform-remove-console', { exclude: ['disableYellowBox', 'error', 'info', 'log'] }]],
+        plugins: [...plugins],
         presets: presets,
       },
       production: {
