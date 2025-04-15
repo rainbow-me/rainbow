@@ -4,19 +4,15 @@ inputs:
   api-level:
     description: 'API level to use for the emulator'
     required: true
-    default: '30'
   profile:
     description: 'The profile to use for the emulator'
-    required: false
-    default: 'pixel_5'
+    required: true
   ram-size:
     description: 'The RAM size to use for the emulator'
-    required: false
-    default: '2048M'
+    required: true
   arch:
     description: 'The architecture to use for the emulator'
-    required: false
-    default: 'x86_64'
+    required: true
   emulators:
     description: 'The number of emulators to run'
     default: 1
