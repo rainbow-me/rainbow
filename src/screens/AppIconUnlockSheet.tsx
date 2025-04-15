@@ -12,7 +12,7 @@ import * as i18n from '@/languages';
 import { delay } from '@/utils/delay';
 import Routes from '@/navigation/routesNames';
 import { SheetActionButton } from '@/components/sheet';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { IS_ANDROID } from '@/env';
 
@@ -38,11 +38,11 @@ export default function AppIconUnlockSheet() {
     navigate(Routes.SETTINGS_SHEET);
     await delay(500);
     navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
-    analyticsV2.track(analyticsV2.event.appIconUnlockSheetCTAPressed, { appIcon: appIconKey });
+    analytics.track(analytics.event.appIconUnlockSheetCTAPressed, { appIcon: appIconKey });
   }, [appIconKey, goBack, navigate]);
 
   useEffect(() => {
-    analyticsV2.track(analyticsV2.event.appIconUnlockSheetViewed, { appIcon: appIconKey });
+    analytics.track(analytics.event.appIconUnlockSheetViewed, { appIcon: appIconKey });
     return () => {
       remotePromoSheetsStore.setState({ isShown: false });
     };

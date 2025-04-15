@@ -27,7 +27,7 @@ import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from
 import { ChainId } from '@/state/backendNetworks/types';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { clamp, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -59,6 +59,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import showWalletErrorAlert from '@/helpers/support';
+import { QuickBuyAnalyticalData } from '@/analytics/event';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -135,6 +136,23 @@ const SwapContext = createContext<SwapContextType | undefined>(undefined);
 interface SwapProviderProps {
   children: ReactNode;
 }
+
+const determineIfUserQuickBought = (
+  quickBuyAnalyticalData: QuickBuyAnalyticalData | undefined,
+  inputAsset: ExtendedAnimatedAssetWithColors | ParsedSearchAsset | null,
+  outputAsset: ExtendedAnimatedAssetWithColors | ParsedSearchAsset | null
+) => {
+  if (!quickBuyAnalyticalData || !inputAsset || !outputAsset) {
+    return undefined;
+  }
+
+  const { assetUniqueId } = quickBuyAnalyticalData;
+  if (assetUniqueId !== outputAsset.uniqueId) {
+    return undefined;
+  }
+
+  return quickBuyAnalyticalData;
+};
 
 const getInitialSliderXPosition = ({
   inputAmount,
@@ -214,14 +232,17 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const getCommonAnalyticsParameters = () => {
-    const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
-    const inputAsset = internalSelectedInputAsset.value;
-    const outputAsset = internalSelectedOutputAsset.value;
-    const isDegenModeEnabled = swapsStore.getState().degenMode;
-    const isSwappingToPopularAsset = swapsStore.getState().outputAsset?.sectionId === 'popular';
+    const { inputAsset, outputAsset, lastNavigatedTrendingToken, quickBuyAnalyticalData } = swapsStore.getState();
+    const isBridge = inputAsset?.mainnetAddress === outputAsset?.mainnetAddress;
+    const isSwappingToPopularAsset = outputAsset?.sectionId === 'popular';
+    const isSwappingToTrendingAsset =
+      lastNavigatedTrendingToken === outputAsset?.uniqueId || lastNavigatedTrendingToken === inputAsset?.uniqueId;
+
+    const quickBuyData = determineIfUserQuickBought(quickBuyAnalyticalData, inputAsset, outputAsset);
 
     return {
       isBridge: isBridge,
+      sectionId: outputAsset?.sectionId,
       inputAssetSymbol: inputAsset?.symbol || '',
       inputAssetName: inputAsset?.name || '',
       inputAssetAddress: inputAsset?.address as AddressOrEth,
@@ -232,8 +253,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       outputAssetAddress: outputAsset?.address as AddressOrEth,
       outputAssetChainId: outputAsset?.chainId || ChainId.mainnet,
       outputAssetType: outputAsset?.type || '',
-      degenMode: isDegenModeEnabled,
       isSwappingToPopularAsset,
+      isSwappingToTrendingAsset,
+      quickBuyData,
     };
   };
 
@@ -251,10 +273,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const provider = getProvider({ chainId: parameters.chainId });
       const connectedToAnvil = useConnectedToAnvilStore.getState().connectedToAnvil;
 
-      const isDegenModeEnabled = swapsStore.getState().degenMode;
-      const lastNavigatedTrendingToken = swapsStore.getState().lastNavigatedTrendingToken;
-      const isSwappingToTrendingAsset =
-        lastNavigatedTrendingToken === parameters.assetToBuy.uniqueId || lastNavigatedTrendingToken === parameters.assetToSell.uniqueId;
+      const { degenMode } = swapsStore.getState();
 
       const selectedGas = getSelectedGas(parameters.chainId);
       if (!selectedGas) {
@@ -268,7 +287,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.KeychainRead,
         metadata: {
-          degenMode: isDegenModeEnabled,
+          degenMode,
         },
       })({
         address: parameters.quote.from,
@@ -278,7 +297,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           screen: Screens.SWAPS,
           operation: TimeToSignOperation.Authentication,
           metadata: {
-            degenMode: isDegenModeEnabled,
+            degenMode,
           },
         },
       });
@@ -316,7 +335,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.SignTransaction,
         metadata: {
-          degenMode: isDegenModeEnabled,
+          degenMode,
         },
       })(wallet, type, {
         ...parameters,
@@ -331,7 +350,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       if (errorMessage) {
         SwapInputController.quoteFetchingInterval.start();
 
-        analyticsV2.track(analyticsV2.event.swapsFailed, {
+        analytics.track(analytics.event.swapsFailed, {
           ...getCommonAnalyticsParameters(),
           type,
           inputAssetAmount: parameters.quote.sellAmount as number,
@@ -340,9 +359,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
             ? parameters.assetToBuy.address
             : parameters.assetToSell.mainnetAddress) as AddressOrEth,
           tradeAmountUSD: parameters.quote.tradeAmountUSD,
-          degenMode: isDegenModeEnabled,
-          isSwappingToTrendingAsset,
           errorMessage,
+          degenMode,
           isHardwareWallet,
         });
 
@@ -383,11 +401,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         operation: TimeToSignOperation.SheetDismissal,
         endOfOperation: true,
         metadata: {
-          degenMode: isDegenModeEnabled,
+          degenMode,
         },
       })();
 
-      analyticsV2.track(analyticsV2.event.swapsSubmitted, {
+      analytics.track(analytics.event.swapsSubmitted, {
         ...getCommonAnalyticsParameters(),
         type,
         inputAssetAmount: parameters.quote.sellAmount as number,
@@ -396,7 +414,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           ? parameters.assetToBuy.address
           : parameters.assetToSell.mainnetAddress) as AddressOrEth,
         tradeAmountUSD: parameters.quote.tradeAmountUSD,
-        isSwappingToTrendingAsset,
+        degenMode,
         isHardwareWallet,
       });
     } catch (error) {
@@ -411,11 +429,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         },
       });
     }
-
-    // reset the last navigated trending token after a swap has taken place
-    swapsStore.setState({
-      lastNavigatedTrendingToken: undefined,
-    });
   };
 
   const executeSwap = performanceTracking.getState().executeFn({
@@ -682,7 +695,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       logger.debug(`[setAsset]: Setting ${type} asset to ${extendedAsset?.name} on ${extendedAsset?.chainId}`);
 
-      analyticsV2.track(analyticsV2.event.swapsSelectedAsset, {
+      analytics.track(analytics.event.swapsSelectedAsset, {
         asset,
         otherAsset: otherSelectedAsset,
         type,

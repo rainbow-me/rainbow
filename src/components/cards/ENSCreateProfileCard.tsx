@@ -11,7 +11,7 @@ import { watchingAlert } from '@/utils';
 import { GenericCard, Gradient } from './GenericCard';
 import { ORB_SIZE } from './reusables/IconOrb';
 import * as i18n from '@/languages';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useRoute } from '@react-navigation/native';
 
 const ASPECT_RATIO = 112 / 350;
@@ -42,7 +42,7 @@ export const ENSCreateProfileCard = () => {
         prefetchENSRecords(uniqueDomain.name);
       }
 
-      analyticsV2.track(analyticsV2.event.cardPressed, {
+      analytics.track(analytics.event.cardPressed, {
         cardName: 'ENSCreateProfileCard',
         routeName,
         cardType,

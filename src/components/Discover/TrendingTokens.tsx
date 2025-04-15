@@ -3,7 +3,7 @@ import { globalColors, IconContainer, Text, TextIcon, useBackgroundColor, useCol
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
 import RainbowTokenFilter from '@/assets/RainbowTokenFilter.png';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
@@ -167,7 +167,7 @@ function ReportAnalytics() {
     const isEmpty = (trendingTokens?.length ?? 0) === 0;
     const isLimited = !isEmpty && (trendingTokens?.length ?? 0) < 6;
 
-    analyticsV2.track(analyticsV2.event.viewRankedCategory, {
+    analytics.track(analytics.event.viewRankedCategory, {
       category,
       chainId,
       isLimited,
@@ -401,7 +401,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
       chainId: token.chainId,
     });
 
-    analyticsV2.track(analyticsV2.event.viewTrendingToken, {
+    analytics.track(analytics.event.viewTrendingToken, {
       address: token.address,
       chainId: token.chainId,
       symbol: token.symbol,

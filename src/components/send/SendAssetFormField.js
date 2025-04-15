@@ -62,9 +62,9 @@ const SendAssetFormField = (
   const { isTinyPhone, isSmallPhone, width } = useDimensions();
   const { colors } = useTheme();
   const handlePressMax = useCallback(
-    event => {
-      analytics.track('Clicked "Max" in Send flow input');
-      onPressButton?.(event);
+    e => {
+      analytics.track(analytics.event.sendMaxPressed);
+      onPressButton?.(e);
     },
     [onPressButton]
   );

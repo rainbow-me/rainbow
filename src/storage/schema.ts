@@ -37,16 +37,11 @@ export type Account = {
 
 export enum ReviewPromptAction {
   UserPrompt = 'UserPrompt', // this is a special action that we use if the user manually prompts for review
-  TimesLaunchedSinceInstall = 'TimesLaunchedSinceInstall',
-  SuccessfulFiatToCryptoPurchase = 'SuccessfulFiatToCryptoPurchase',
-  DappConnections = 'DappConnections',
-  Swap = 'Swap',
-  BridgeToL2 = 'BridgeToL2',
   AddingContact = 'AddingContact',
   EnsNameSearch = 'EnsNameSearch',
   EnsNameRegistration = 'EnsNameRegistration',
-  WatchWallet = 'WatchWallet',
   NftFloorPriceVisit = 'NftFloorPriceVisit',
+  ViewedWalletScreen = 'ViewedWalletScreen',
 }
 
 export type Action = {
@@ -61,10 +56,8 @@ export type Action = {
  * NOTE: if a user has already reviewed, we don't want to prompt them again
  */
 export type Review = {
-  initialized: boolean;
-  hasReviewed: boolean;
-  timeOfLastPrompt: number;
   actions: Action[];
+  promptTimestamps: number[];
 };
 
 type CampaignKeys = {

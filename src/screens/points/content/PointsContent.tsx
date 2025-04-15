@@ -41,7 +41,7 @@ import { IS_ANDROID, IS_TEST } from '@/env';
 import { LeaderboardRow } from '../components/LeaderboardRow';
 import { Skeleton } from '../components/Skeleton';
 import { InfoCard } from '../components/InfoCard';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { usePoints } from '@/resources/points';
@@ -632,7 +632,7 @@ export function PointsContent() {
 
   useFocusEffect(
     useCallback(() => {
-      analyticsV2.track(analyticsV2.event.pointsViewedPointsScreen);
+      analytics.track(analytics.event.pointsViewedPointsScreen);
     }, [])
   );
 
@@ -652,7 +652,7 @@ export function PointsContent() {
       }
       onNewEmoji();
       referralCode && setClipboard(referralCode);
-      analyticsV2.track(analyticsV2.event.pointsPointsScreenPressedCopyReferralCodeButton);
+      analytics.track(analytics.event.pointsPointsScreenPressedCopyReferralCodeButton);
     },
     [isToastActive, referralCode, setClipboard, setToastActive]
   );
@@ -797,7 +797,7 @@ export function PointsContent() {
                             <ButtonPressAnimation
                               onPress={() => {
                                 if (referralUrl) {
-                                  analyticsV2.track(analyticsV2.event.pointsPointsScreenPressedShareReferralLinkButton);
+                                  analytics.track(analytics.event.pointsPointsScreenPressedShareReferralLinkButton);
                                   Share.share(
                                     IS_ANDROID
                                       ? {

@@ -253,7 +253,7 @@ export function WalletConnectApprovalSheet() {
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      analytics.track('Shown Walletconnect session request');
+      analytics.track(analytics.event.shownWalletconnectSessionRequest);
     });
     // Reject if the modal is dismissed
     return () => {
@@ -291,7 +291,7 @@ export function WalletConnectApprovalSheet() {
   useEffect(() => {
     const waitingTime = (Date.now() - receivedTimestamp) / 1000;
     InteractionManager.runAfterInteractions(() => {
-      analytics.track('Received wc connection', {
+      analytics.track(analytics.event.receivedWcConnection, {
         dappName,
         dappUrl,
         waitingTime: isNaN(waitingTime) ? 'Error calculating waiting time.' : waitingTime,

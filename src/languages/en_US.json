@@ -2894,6 +2894,7 @@
         "sending_title": "Sending",
         "you_own_this_wallet": "You own this wallet",
         "first_time_send": "First time send",
+        "previous_send": "%{number} previous send",
         "previous_sends": "%{number} previous sends"
       },
       "wallet_connect": {

@@ -8,7 +8,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { deviceUtils } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { ETH_ADDRESS } from '@/references';
 import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
 import Labels from '../value-chart/ExtremeLabels';
@@ -67,7 +67,7 @@ export const EthCard = () => {
 
       navigate(Routes.ADD_CASH_SHEET);
 
-      analyticsV2.track(analyticsV2.event.buyButtonPressed, {
+      analytics.track(analytics.event.buyButtonPressed, {
         componentName: 'EthCard',
         routeName,
       });
@@ -81,7 +81,7 @@ export const EthCard = () => {
       address: ETH_ADDRESS,
       chainId: ChainId.mainnet,
     });
-    analyticsV2.track(analyticsV2.event.cardPressed, {
+    analytics.track(analytics.event.cardPressed, {
       cardName: 'EthCard',
       routeName,
       cardType,

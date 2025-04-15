@@ -1,4 +1,4 @@
-import { analytics, analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { MinimalNotification } from '@/notifications/types';
 import { getPermissionStatus } from '@/notifications/permissions';
 import messaging from '@react-native-firebase/messaging';
@@ -7,30 +7,26 @@ import {
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
   GroupSettings,
-  WalletNotificationRelationshipType,
   GlobalNotificationTopicType,
   WalletNotificationSettings,
   notificationSettingsStorage,
 } from '@/notifications/settings';
 
 export const trackTappedPushNotification = (notification: MinimalNotification | undefined) => {
-  analytics.track('Tapped Push Notification', {
-    campaign: {
-      name: notification?.data?.type ?? 'default',
-      medium: 'Push',
-    },
+  analytics.track(analytics.event.notificationsPromoTapped, {
+    campaign: `${notification?.data?.type ?? 'default'}`,
   });
 };
 
 export const trackChangedGlobalNotificationSettings = (topic: GlobalNotificationTopicType, enableTopic: boolean) => {
-  analytics.track('Changed Global Notification Settings', {
+  analytics.track(analytics.event.notificationsPromoNotificationSettingsChanged, {
     topic,
     action: enableTopic ? 'subscribe' : 'unsubscribe',
   });
 };
 
 export const trackPushNotificationPermissionStatus = async (status: PushNotificationPermissionStatus) => {
-  analyticsV2.identify({ notificationsPermissionStatus: status });
+  analytics.identify({ notificationsPermissionStatus: status });
 };
 
 type PushNotificationPermissionStatus = 'enabled' | 'disabled' | 'never asked';
@@ -124,7 +120,7 @@ const countWalletsWithNotificationsTurnedOn = (wallets: WalletNotificationSettin
 };
 
 const trackNumberOfWalletsWithNotificationsTurnedOn = async (imported: number, watched: number) => {
-  analyticsV2.identify({
+  analytics.identify({
     numberOfImportedWalletsWithNotificationsTurnedOn: imported,
     numberOfWatchedWalletsWithNotificationsTurnedOn: watched,
   });
