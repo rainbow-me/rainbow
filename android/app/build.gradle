@@ -111,6 +111,9 @@ react {
     entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", rootDir.getAbsoluteFile().getParentFile().getAbsolutePath(), "android", "absolute"].execute(null, rootDir).text.trim())
     cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
     bundleCommand = "export:embed"
+
+    /* Autolinking */
+    autolinkLibrariesWithApp()
 }
 
 /**
@@ -176,10 +179,6 @@ android {
         manifestPlaceholders = [
             BRANCH_KEY: env.get('BRANCH_KEY')
         ]
-
-        ndk {
-            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
-        }
     }
 
     signingConfigs {
@@ -271,6 +270,3 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.implementation
     into 'libs'
 }
-
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
-
