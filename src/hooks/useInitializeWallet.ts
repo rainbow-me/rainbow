@@ -69,7 +69,7 @@ export default function useInitializeWallet() {
 
         if (shouldRunMigrations && !seedPhrase) {
           logger.debug('[useInitializeWallet]: shouldRunMigrations && !seedPhrase? => true');
-          loadWallets();
+          await loadWallets();
           logger.debug('[useInitializeWallet]: walletsLoadState call #1');
           await runMigrations();
           logger.debug('[useInitializeWallet]: done with migrations');
