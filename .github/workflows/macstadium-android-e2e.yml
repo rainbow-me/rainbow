@@ -95,6 +95,12 @@ jobs:
         run: |
           yarn install && yarn setup
 
+      - name: Install Anvil
+        run: |
+          curl -L https://foundry.paradigm.xyz | bash
+          $HOME/.foundry/bin/foundryup
+          echo "$HOME/.foundry/bin" >> $GITHUB_PATH
+
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
 

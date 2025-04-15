@@ -42,11 +42,13 @@ if [ -n "$ANVIL_PID" ]; then
 fi
 sleep 1
 
-# Start Anvil in the background
-echo "Starting Anvil..."
-yarn anvil --host 0.0.0.0 &
+echo "Starting anvil..."
+# Start Anvil in the background (show logs in terminal + save to file)
+yarn anvil --host 0.0.0.0 2>&1 | grep -v "eth_" | tee anvil.log &
+ANVIL_PID=$!
+echo "Anvil started (PID: $ANVIL_PID)"
 
-echo "Waiting 5 seconds for Anvil to start..."
+# Wait for Anvil to initialize
 sleep 5
 
 # Run the tests
@@ -62,9 +64,13 @@ for DEVICE in $DEVICES; do
   fi
 done
 
-ANVIL_PID=$(lsof -t -i:8545 -c anvil 2>/dev/null)
-if [ -n "$ANVIL_PID" ]; then
-  kill $ANVIL_PID
-fi
+# Kill the Anvil process
+echo "Killing Anvil (PID: $ANVIL_PID)"
+kill "$ANVIL_PID" 2>/dev/null || true
+# kill any other processes using port 8545
+kill $(lsof -t -i:8545) 2>/dev/null || true
+
+# Remove the Anvil log file
+rm -rf anvil.log
 
 exit $TEST_STATUS
