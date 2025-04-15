@@ -1,6 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import lang from 'i18n-js';
-import React, { useCallback, useContext, useState } from 'react';
 import { ImgixImage } from '@/components/images';
 import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
 import { IS_DEV } from '@/env';
@@ -17,10 +14,13 @@ import { Navigation } from '@/navigation';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
+import { updateWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isAuthenticated } from '@/utils/authentication';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
+import lang from 'i18n-js';
+import React, { useCallback, useContext, useState } from 'react';
 // @ts-expect-error - react-native-restart is not typed
 import Restart from 'react-native-restart';
 import Menu from './Menu';
@@ -92,7 +92,7 @@ const DevSection = () => {
       delete newWallets[key].backupType;
     });
 
-    useWalletsStore.getState().updateWallets(newWallets);
+    updateWallets(newWallets);
 
     // Delete all backups (debugging)
     await deleteAllBackups();

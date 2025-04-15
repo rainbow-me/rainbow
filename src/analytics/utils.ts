@@ -5,10 +5,10 @@ import type { Address } from 'viem';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import * as keychain from '@/model/keychain';
+import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 import * as ls from '@/storage';
 import { analyticsUserIdentifier } from '@/utils/keychainConstants';
 import { computeHmac, SupportedAlgorithm } from '@ethersproject/sha2';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 /**
  * Returns the device id in a type-safe manner. It will throw if no device ID
@@ -94,7 +94,7 @@ export async function getWalletContext(address: Address): Promise<WalletContext>
   if (!address || address === ('' as Address)) return {};
 
   // walletType maybe undefined after initial wallet creation
-  const wallet = useWalletsStore.getState().getWalletWithAccount(address);
+  const wallet = getWalletWithAccount(address);
 
   const walletType = (
     {

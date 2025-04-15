@@ -21,10 +21,10 @@ import { RainbowWallet } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
+import { getAccountProfileInfo, getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { WalletconnectMeta } from '@/walletConnect/types';
@@ -138,7 +138,7 @@ export function WalletConnectApprovalSheet() {
       return { address: accountAddressAsAddress, wallet: selectedWallet };
     }
 
-    const wallet = useWalletsStore.getState().getWalletWithAccount(params?.meta?.proposedAddress);
+    const wallet = getWalletWithAccount(params?.meta?.proposedAddress);
     if (!wallet) {
       return { address: accountAddressAsAddress, wallet: selectedWallet };
     }
@@ -197,7 +197,7 @@ export function WalletConnectApprovalSheet() {
   const approvalAccountInfo = useMemo(() => {
     if (!approvalAccount.wallet) return;
 
-    const approvalAccountInfo = useWalletsStore.getState().getAccountProfileInfo({
+    const approvalAccountInfo = getAccountProfileInfo({
       wallet: approvalAccount.wallet,
       address: approvalAccount.address,
     });

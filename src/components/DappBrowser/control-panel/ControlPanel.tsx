@@ -33,7 +33,6 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import store from '@/redux/store';
-import { setSelectedAddress, setSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -41,6 +40,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { getWalletWithAccount, setSelectedAddress, setSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { deviceUtils, safeAreaInsetValues, watchingAlert } from '@/utils';
@@ -415,7 +415,7 @@ const HomePanel = memo(function HomePanel({
   const runWalletChecksBeforeSwapOrBridge = useCallback(async () => {
     if (!selectedWallet || !wallets) return false;
     // check if read only
-    const walletInPanel = useWalletsStore.getState().getWalletWithAccount(selectedWallet.uniqueId);
+    const walletInPanel = getWalletWithAccount(selectedWallet.uniqueId);
     if (!walletInPanel) return false;
     if (walletInPanel?.type === WalletTypes.readOnly) {
       // show alert

@@ -7,12 +7,12 @@ import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { getSupportedBiometryType } from '@/keychain';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
+import { setWalletBackedUp, useWalletsStore } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { values } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { backupWalletToCloud } from '../model/backup';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { cloudPlatform } from '../utils/platform';
 
 export function getUserError(e: Error) {
@@ -149,7 +149,7 @@ export default function useWalletCloudBackup() {
 
       try {
         logger.debug('[useWalletCloudBackup]: backup completed!');
-        useWalletsStore.getState().setWalletBackedUp(walletId, WalletBackupTypes.cloud, updatedBackupFile);
+        setWalletBackedUp(walletId, WalletBackupTypes.cloud, updatedBackupFile);
         logger.debug('[useWalletCloudBackup]: backup saved everywhere!');
         !!onSuccess && onSuccess(password);
         return true;
