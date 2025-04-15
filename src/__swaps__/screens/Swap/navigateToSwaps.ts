@@ -101,7 +101,25 @@ export type SwapsParams = InputAmountsToSet & {
 };
 
 export function getSwapsNavigationParams(): SwapsParams {
-  return Navigation.getActiveRoute()?.params || {};
+  let params: SwapsParams | undefined = Navigation.getActiveRoute()?.params;
+  if (!params) params = getFallbackParams();
+  return params;
+}
+
+function getFallbackParams(): SwapsParams {
+  const inputAsset = getInputAsset(null);
+  const chainId = inputAsset?.chainId ?? store.getState().settings.chainId;
+  return {
+    focusedInput: 'inputAmount',
+    goBackOnSwapSubmit: false,
+    inputAsset,
+    inputMethod: 'inputAmount',
+    lastTypedInput: 'inputAmount',
+    outputAsset: null,
+    quickBuyMetadata: undefined,
+    slippage: getDefaultSlippage(chainId, getRemoteConfig().default_slippage_bips_chainId),
+    ...getInputAmounts({ inputAsset }),
+  };
 }
 
 // ============ Helper Types =================================================== //
