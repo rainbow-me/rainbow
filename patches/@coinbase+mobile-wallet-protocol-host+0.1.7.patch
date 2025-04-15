@@ -1,0 +1,22 @@
+diff --git a/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/PackageManagerSignaturesExt.kt b/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/PackageManagerSignaturesExt.kt
+index 6b482fa..89ef7c3 100644
+--- a/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/PackageManagerSignaturesExt.kt
++++ b/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/PackageManagerSignaturesExt.kt
+@@ -7,7 +7,7 @@ import java.security.MessageDigest
+ fun PackageManager.getApplicationSignatures(packageName: String): List<String> {
+     try {
+         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+-            val signingInfo = getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES).signingInfo
++            val signingInfo = getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES).signingInfo ?: return emptyList()
+             if (signingInfo.hasMultipleSigners()) {
+                 // Send all with apkContentSigners
+                 signingInfo.apkContentsSigners.map { sha256(it.toByteArray()) }
+@@ -16,7 +16,7 @@ fun PackageManager.getApplicationSignatures(packageName: String): List<String> {
+                 signingInfo.signingCertificateHistory.map { sha256(it.toByteArray()) }
+             }
+         } else {
+-            val signatures = getPackageInfo(packageName, PackageManager.GET_SIGNATURES).signatures
++            val signatures = getPackageInfo(packageName, PackageManager.GET_SIGNATURES).signatures ?: return emptyList()
+             signatures.map { sha256(it.toByteArray()) }
+         }
+     } catch (e: Throwable) {

@@ -140,7 +140,7 @@ const MintSheet = () => {
   const [gasError, setGasError] = useState(false);
   const [ensName, setENSName] = useState<string>('');
   const [mintStatus, setMintStatus] = useState<'none' | 'minting' | 'minted' | 'error'>('none');
-  const txRef = useRef<string>();
+  const txRef = useRef<string>(undefined);
   const [isGasReady, setIsGasReady] = useState<boolean>(false);
 
   const { data: ensAvatar } = useENSAvatar(ensName, {
@@ -196,7 +196,7 @@ const MintSheet = () => {
 
   const imageColor = usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
 
-  const sheetRef = useRef();
+  const sheetRef = useRef(undefined);
   const yPosition = useSharedValue(0);
 
   useFocusEffect(() => {

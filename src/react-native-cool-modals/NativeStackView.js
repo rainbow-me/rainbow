@@ -15,7 +15,7 @@ const { RNCMScreenManager } = NativeModules;
 
 function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
   const { options, render: renderScene } = descriptors[route.key];
-  const ref = useRef();
+  const ref = useRef(undefined);
   const {
     allowsDragToDismiss,
     allowsTapToDismiss,

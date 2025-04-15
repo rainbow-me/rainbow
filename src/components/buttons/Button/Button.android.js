@@ -47,11 +47,11 @@ const Button = ({
   color,
   containerStyles,
   onPress,
-  showShadow,
-  size,
+  showShadow = true,
+  size = 'default',
   style,
   textProps,
-  type,
+  type = ButtonShapeTypes.pill,
   borderColor,
   borderOpacity,
   borderWidth,
@@ -101,12 +101,6 @@ Button.propTypes = {
   style: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   textProps: PropTypes.object,
   type: PropTypes.oneOf(Object.keys(ButtonShapeTypes)),
-};
-
-Button.defaultProps = {
-  showShadow: true,
-  size: 'default',
-  type: ButtonShapeTypes.pill,
 };
 
 export default Button;

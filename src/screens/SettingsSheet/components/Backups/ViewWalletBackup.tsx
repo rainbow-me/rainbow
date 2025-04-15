@@ -123,7 +123,7 @@ const ViewWalletBackup = () => {
   const status = backupsStore(state => state.status);
 
   const { walletId, title: incomingTitle } = params;
-  const creatingWallet = useRef<boolean>();
+  const creatingWallet = useRef<boolean>(undefined);
   const isDamaged = useIsDamagedWallet();
   const wallet = useWallet(walletId);
 
