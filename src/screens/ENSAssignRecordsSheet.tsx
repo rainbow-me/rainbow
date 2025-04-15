@@ -1,6 +1,6 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -35,15 +35,15 @@ import {
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { RootStackParamList } from '@/navigation/types';
 import { ENSRoutes } from '@/navigation/RegisterENSNavigator';
+import { RootStackParamList } from '@/navigation/types';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
 const ExtraBottomPadding = 55;
 
 export default function ENSAssignRecordsSheet() {
-  const { params } = useRoute<any>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.REGISTER_ENS_NAVIGATOR>>();
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();
   const { name } = useENSRegistration();
@@ -107,14 +107,14 @@ export default function ENSAssignRecordsSheet() {
         layout: { y },
       },
     }: LayoutChangeEvent) => {
-      params?.sheetRef.current.scrollTo({ y });
+      params?.sheetRef?.current?.scrollTo({ y });
     },
     [params?.sheetRef]
   );
 
   const handleError = useCallback(
     ({ yOffset }: { yOffset: number }) => {
-      params?.sheetRef.current.scrollTo({ y: yOffset });
+      params?.sheetRef?.current?.scrollTo({ y: yOffset });
     },
     [params?.sheetRef]
   );
@@ -255,7 +255,7 @@ export function ENSAssignRecordsBottomActions({
 
   const navigateToAdditionalRecords = useCallback(() => {
     android && Keyboard.dismiss();
-    navigate(Routes.ENS_ADDITIONAL_RECORDS_SHEET, {});
+    navigate(Routes.ENS_ADDITIONAL_RECORDS_SHEET);
   }, [navigate]);
 
   const [visible, setVisible] = useState(false);

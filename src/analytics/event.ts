@@ -12,6 +12,7 @@ import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { ENSRapActionType } from '../raps/common';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
+import { PairHardwareWalletNavigatorParams } from '@/navigation/types';
 
 /**
  * All events, used by `analytics.track()`
@@ -467,13 +468,8 @@ export type EventProperties = {
      */
     sessionId?: string;
   };
-  [event.pairHwWalletNavEntered]: {
-    entryPoint: string;
-    isFirstWallet: boolean;
-  };
-  [event.pairHwWalletNavExited]: {
-    entryPoint: string;
-    isFirstWallet: boolean;
+  [event.pairHwWalletNavEntered]: PairHardwareWalletNavigatorParams;
+  [event.pairHwWalletNavExited]: PairHardwareWalletNavigatorParams & {
     step: string;
   };
   [event.rewardsViewedSheet]: undefined;

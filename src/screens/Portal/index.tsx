@@ -5,22 +5,14 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { Box } from '@/design-system';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-
-export type PortalSheetProps = {
-  sheetHeight?: number;
-  children: React.FC;
-};
-
-type NavigationRouteParams = {
-  Portal: PortalSheetProps;
-};
+import { PortalSheetProps, RootStackParamList } from '@/navigation/types';
 
 /**
  * The core Portal sheet
  */
 export function Portal() {
   const { goBack } = useNavigation();
-  const { params } = useRoute<RouteProp<NavigationRouteParams, 'Portal'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PORTAL>>();
 
   if (!params) {
     goBack();

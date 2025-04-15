@@ -23,12 +23,18 @@ import { getSheetHeight as getSendConfirmationSheetHeight } from '@/screens/Send
 import { onWillPop } from '@/navigation/Navigation';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/HardwareWalletTxNavigator';
 import { StackNavigationOptions } from '@react-navigation/stack';
-import { ExplainSheetRouteParams, ExplainSheetType, PartialNavigatorConfigOptions, RootStackParamList } from '@/navigation/types';
+import {
+  ExplainSheetRouteParams,
+  ExplainSheetType,
+  PartialNavigatorConfigOptions,
+  RootStackParamList,
+  SignTransactionSheetParams,
+} from '@/navigation/types';
 import { BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
 import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { SignTransactionSheetRouteProp } from '@/screens/SignTransactionSheet';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
+import Routes from './routesNames';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -55,7 +61,7 @@ export type CoolModalConfigOptions = StackNavigationOptions & {
   transitionDuration?: number;
 };
 
-type CoolModalConfigParams = {
+export type CoolModalConfigParams = {
   type?: ExplainSheetType;
   backgroundColor?: string;
   backgroundOpacity?: number;
@@ -348,7 +354,7 @@ export const swapConfig = {
 };
 
 export const signTransactionSheetConfig = {
-  options: ({ route }: { route: SignTransactionSheetRouteProp }) => ({
+  options: ({ route }: { route: RouteProp<RootStackParamList, typeof Routes.CONFIRM_REQUEST> }) => ({
     ...buildCoolModalConfig({
       ...route.params,
       backgroundOpacity: [RequestSource.WALLETCONNECT, RequestSource.MOBILE_WALLET_PROTOCOL].includes(route?.params?.source) ? 1 : 0.7,

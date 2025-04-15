@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { InteractionManager, View } from 'react-native';
@@ -17,6 +17,7 @@ import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import ContextMenu from '@/components/context-menu/ContextMenu.android';
+import { RootStackParamList } from '@/navigation/types';
 
 enum AnotherENSEnum {
   search = 'search',
@@ -108,7 +109,7 @@ const ContextMenuRenderer = ({ children, handleSelectExistingName, handleNavigat
 export default function ENSIntroSheet() {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
-  const { params } = useRoute<any>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_INTRO_SHEET>>();
 
   const { controlledDomains, isLoading, isFetched, nonPrimaryDomains, uniqueDomain } = useAccountENSDomains();
   const { data: ensRecords } = useENSRecords(uniqueDomain?.name || '', {

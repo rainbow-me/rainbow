@@ -211,7 +211,6 @@ export default function RestoreCloudStep() {
             Routes.SWIPE_LAYOUT,
             {
               screen: Routes.WALLET_SCREEN,
-              params: {},
             },
             true
           );

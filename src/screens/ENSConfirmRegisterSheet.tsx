@@ -92,7 +92,7 @@ function TransactionActionRow({
 }
 
 export default function ENSConfirmRegisterSheet() {
-  const { params } = useRoute<RouteProp<RootStackParamList, 'ENSConfirmRegisterSheet'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_CONFIRM_REGISTER_SHEET>>();
   const { name: ensName, mode } = useENSRegistration();
   const {
     changedRecords,

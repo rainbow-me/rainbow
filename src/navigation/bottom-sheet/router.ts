@@ -1,5 +1,6 @@
 import {
   CommonNavigationAction,
+  PartialState,
   Router,
   StackActionType,
   StackNavigationState,
@@ -15,7 +16,7 @@ export const router = (
   const stackRouter = StackRouter(routerOptions);
 
   return {
-    ...stackRouter,
+    ...(stackRouter as Router<StackNavigationState<RootStackParamList>, CommonNavigationAction | StackActionType>),
 
     actionCreators: {
       ...stackRouter.actionCreators,
@@ -26,7 +27,10 @@ export const router = (
       switch (action.type) {
         // TODO
         default:
-          return stackRouter.getStateForAction(state, action, options);
+          return stackRouter.getStateForAction(state, action, options) as
+            | StackNavigationState<RootStackParamList>
+            | PartialState<StackNavigationState<RootStackParamList>>
+            | null;
       }
     },
   };

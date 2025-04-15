@@ -23,7 +23,7 @@ export const ProfileSheetConfigContext = createContext<{
 });
 
 export default function ProfileSheet() {
-  const { params, name } = useRoute<RouteProp<RootStackParamList, 'ProfileSheet' | 'ProfilePreviewSheet'>>();
+  const { params, name } = useRoute<RouteProp<RootStackParamList, typeof Routes.PROFILE_SHEET | typeof Routes.PROFILE_PREVIEW_SHEET>>();
   const { colors } = useTheme();
   const { accountAddress } = useAccountSettings();
 
@@ -65,7 +65,7 @@ export default function ProfileSheet() {
     if (profileAddress && accountAddress) {
       analytics.track(analytics.event.viewedProfile, {
         category: 'profiles',
-        fromRoute: params?.fromRoute,
+        fromRoute: params.fromRoute,
         name: profileAddress !== accountAddress ? ensName : '',
       });
     }

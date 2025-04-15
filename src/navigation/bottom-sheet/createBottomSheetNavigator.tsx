@@ -7,6 +7,8 @@ import {
   StackNavigationState,
   StackRouterOptions,
   useNavigationBuilder,
+  ParamListBase,
+  RouteProp,
 } from '@react-navigation/native';
 import React from 'react';
 import { router } from './router';
@@ -33,7 +35,10 @@ const BottomSheetNavigator = ({ initialRouteName, children, screenOptions, ...re
   >(router, {
     children,
     initialRouteName,
-    screenOptions,
+    screenOptions: screenOptions as
+      | BottomSheetNavigationOptions
+      | ((props: { route: RouteProp<ParamListBase, string>; navigation: any }) => BottomSheetNavigationOptions)
+      | undefined,
   });
 
   React.useEffect(

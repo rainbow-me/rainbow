@@ -4,6 +4,7 @@ import {
   StackActions,
   useIsFocused,
   type NavigationContainerRef,
+  type NavigatorScreenParams,
 } from '@react-navigation/native';
 import { StackNavigationOptions, type StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
@@ -37,46 +38,161 @@ export function onDidPop() {
   }
 }
 
-type NavigateFunction = {
-  <RouteName extends keyof RootStackParamList>(routeName: RouteName, params: RootStackParamList[RouteName], replace?: boolean): void;
-  <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
-    routeName: RouteName,
-    params: RootStackParamList[InnerRouteName] extends undefined
-      ? { screen: InnerRouteName; params?: undefined } // params optional and must be undefined
-      : never
-  ): void;
-  <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
-    routeName: RouteName,
-    params: RootStackParamList[InnerRouteName] extends undefined
-      ? never
-      : { screen: InnerRouteName; params: RootStackParamList[InnerRouteName] } // params REQUIRED
-  ): void;
+type AreAllPropertiesOptional<T> = undefined extends T ? true : object extends T ? true : false;
+
+export type NavigateFunction = {
+  <RouteName extends keyof RootStackParamList>(routeName: RouteName, params: RootStackParamList[RouteName], replace: true): void;
+
   <RouteName extends keyof RootStackParamList>(
     routeName: RouteName,
-    params?: RootStackParamList[RouteName] extends undefined ? undefined : RootStackParamList[RouteName]
+    ...params: AreAllPropertiesOptional<RootStackParamList[RouteName]> extends true
+      ? [params?: RootStackParamList[RouteName]]
+      : [params: RootStackParamList[RouteName]]
+  ): void;
+
+  // 2a. Nested Target: Inner params are undefined OR all optional -> Inner `params` key is optional at call site.
+  <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
+    routeName: RouteName,
+    // Check if the target route is a NavigatorScreenParams type AND the inner route's params are all optional/undefined
+    ...rest: RootStackParamList[RouteName] extends NavigatorScreenParams<infer P> | undefined // Infer Params type P if it's NavigatorScreenParams
+      ? InnerRouteName extends keyof P // Ensure InnerRouteName is a valid screen key within P
+        ? P[InnerRouteName] extends infer InnerParams // Infer the specific inner params type
+          ? InnerParams extends undefined // Case 1: Inner type is undefined
+            ? [params: { screen: InnerRouteName; params?: undefined; initial?: boolean }]
+            : InnerParams extends object // Case 2: Inner type is object
+              ? AreAllPropertiesOptional<InnerParams> extends true // All props optional?
+                ? [params: { screen: InnerRouteName; params?: InnerParams; initial?: boolean }] // `params` key optional
+                : never // Has required props, handled by 2b
+              : never // Inner type not object/undefined
+          : never
+        : never
+      : never
+  ): void;
+
+  // 2b. Nested Target: Inner params have required properties -> Inner `params` key is required at call site.
+  <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
+    routeName: RouteName,
+    ...rest: RootStackParamList[RouteName] extends NavigatorScreenParams<infer P> | undefined
+      ? InnerRouteName extends keyof P
+        ? P[InnerRouteName] extends infer InnerParams
+          ? InnerParams extends object
+            ? AreAllPropertiesOptional<InnerParams> extends false // Has required props?
+              ? [params: { screen: InnerRouteName; params: InnerParams; initial?: boolean }] // `params` key required
+              : never // All optional, handled by 2a
+            : InnerParams extends undefined // Handled by 2a
+              ? never
+              : [params: { screen: InnerRouteName; params: InnerParams; initial?: boolean }] // Non-object/non-undefined treated as required
+          : never
+        : never
+      : never
+  ): void;
+
+  // === Non-Nested Target Routes (Defined in RootStackParamList WITHOUT NavigatorScreenParams) ===
+
+  // 3a. Non-Nested Target: Type is undefined -> `params` arg is optional undefined.
+  <RouteName extends keyof RootStackParamList>(
+    ...args: RootStackParamList[RouteName] extends undefined
+      ? RootStackParamList[RouteName] extends NavigatorScreenParams<any> // Ensure not nested
+        ? never
+        : [routeName: RouteName, params?: undefined]
+      : never
+  ): void;
+
+  // 3b. Non-Nested Target: Type is object with ALL optional props -> `params` arg is optional object.
+  <RouteName extends keyof RootStackParamList>(
+    ...args: RootStackParamList[RouteName] extends object
+      ? RootStackParamList[RouteName] extends NavigatorScreenParams<any> // Ensure not nested
+        ? never
+        : AreAllPropertiesOptional<RootStackParamList[RouteName]> extends true
+          ? [routeName: RouteName, params?: RootStackParamList[RouteName]] // params arg is optional
+          : never // Has required props, handled by 3c
+      : never
+  ): void;
+
+  // 3c. Non-Nested Target: Type requires properties -> `params` arg is required.
+  <RouteName extends keyof RootStackParamList>(
+    ...args: RootStackParamList[RouteName] extends undefined | NavigatorScreenParams<any>
+      ? never // Exclude undefined and nested types
+      : RootStackParamList[RouteName] extends object
+        ? AreAllPropertiesOptional<RootStackParamList[RouteName]> extends true
+          ? [routeName: RouteName, params?: RootStackParamList[RouteName]] // Exclude all-optional objects (handled by 3b)
+          : [routeName: RouteName, params: RootStackParamList[RouteName]] // Required object arg
+        : [routeName: RouteName, params: RootStackParamList[RouteName]] // Required non-object arg
   ): void;
 };
 
-type HandleActionFunction = {
+// --- HandleActionFunction (Following the same logic) ---
+export type HandleActionFunction = {
+  // 1. Replace = true
   <RouteName extends keyof RootStackParamList>(name: RouteName, params: RootStackParamList[RouteName], replace?: boolean): void;
+
+  // === Nested Target Routes ===
+  // 2a. Inner params all optional/undefined -> Inner `params` key optional
   <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
     name: RouteName,
-    params: RootStackParamList[InnerRouteName] extends undefined
-      ? { screen: InnerRouteName; params?: undefined } // params optional and must be undefined
-      : never,
-    replace?: boolean
+    ...rest: RootStackParamList[RouteName] extends NavigatorScreenParams<infer P> | undefined
+      ? InnerRouteName extends keyof P
+        ? P[InnerRouteName] extends infer InnerParams
+          ? InnerParams extends undefined
+            ? [params: { screen: InnerRouteName; params?: undefined }, replace?: boolean]
+            : InnerParams extends object
+              ? AreAllPropertiesOptional<InnerParams> extends true
+                ? [params: { screen: InnerRouteName; params?: InnerParams }, replace?: boolean]
+                : never
+              : never
+          : never
+        : never
+      : never
   ): void;
+
+  // 2b. Inner params have required properties -> Inner `params` key required
   <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
     name: RouteName,
-    params: RootStackParamList[InnerRouteName] extends undefined
-      ? never
-      : { screen: InnerRouteName; params: RootStackParamList[InnerRouteName] },
-    replace?: boolean
+    ...rest: RootStackParamList[RouteName] extends NavigatorScreenParams<infer P> | undefined
+      ? InnerRouteName extends keyof P
+        ? P[InnerRouteName] extends infer InnerParams
+          ? InnerParams extends object
+            ? AreAllPropertiesOptional<InnerParams> extends false
+              ? [params: { screen: InnerRouteName; params: InnerParams }, replace?: boolean]
+              : never
+            : InnerParams extends undefined
+              ? never
+              : [params: { screen: InnerRouteName; params: InnerParams }, replace?: boolean]
+          : never
+        : never
+      : never
   ): void;
+
+  // === Non-Nested Target Routes ===
+  // 3a. Type is undefined -> `params` arg optional undefined
   <RouteName extends keyof RootStackParamList>(
-    name: RouteName,
-    params?: RootStackParamList[RouteName] extends undefined ? undefined : RootStackParamList[RouteName],
-    replace?: boolean
+    ...args: RootStackParamList[RouteName] extends undefined
+      ? RootStackParamList[RouteName] extends NavigatorScreenParams<any>
+        ? never
+        : [name: RouteName, params?: undefined, replace?: false]
+      : never
+  ): void;
+
+  // 3b. Type is object with ALL optional props -> `params` arg optional object
+  <RouteName extends keyof RootStackParamList>(
+    ...args: RootStackParamList[RouteName] extends object
+      ? RootStackParamList[RouteName] extends NavigatorScreenParams<any>
+        ? never
+        : AreAllPropertiesOptional<RootStackParamList[RouteName]> extends true
+          ? [name: RouteName, params?: RootStackParamList[RouteName], replace?: false]
+          : never
+      : never
+  ): void;
+
+  // 3c. Type requires properties -> `params` arg required
+  <RouteName extends keyof RootStackParamList>(
+    ...args: RootStackParamList[RouteName] extends undefined | NavigatorScreenParams<any>
+      ? never
+      : RootStackParamList[RouteName] extends object
+        ? AreAllPropertiesOptional<RootStackParamList[RouteName]> extends true
+          ? never
+          : [name: RouteName, params: RootStackParamList[RouteName], replace?: false]
+        : [name: RouteName, params: RootStackParamList[RouteName], replace?: false]
   ): void;
 };
 
@@ -96,14 +212,21 @@ export function useNavigation<RouteName extends keyof RootStackParamList>() {
 
   const handleNavigate: NavigateFunction = useCallbackOne(
     (routeName: keyof RootStackParamList, params?: any, replace?: boolean) => {
-      navigate(navigation.navigate, routeName, params, replace);
+      // Casting navigation.navigate to any to satisfy the complex NavigateFunction type internally.
+      // The external usage is correctly typed by NavigateFunction.
+      if (replace) {
+        (navigation.navigate as any)(routeName, params, replace);
+      } else {
+        (navigation.navigate as any)(routeName, params);
+      }
     },
     [navigation.navigate]
   );
 
   const handleReplace: NavigateFunction = useCallbackOne(
     (routeName: keyof RootStackParamList, params?: any) => {
-      navigation.replace(routeName, params);
+      // Cast replace to any to satisfy the complex NavigateFunction type internally.
+      (navigation.replace as any)(routeName, params);
     },
     [navigation.replace]
   );

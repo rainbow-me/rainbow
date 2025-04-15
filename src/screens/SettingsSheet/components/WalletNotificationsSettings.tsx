@@ -20,6 +20,8 @@ import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/Set
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { DEFAULT_ENABLED_TOPIC_SETTINGS } from '@/notifications/settings/constants';
+import { RootStackParamList } from '@/navigation/types';
+import Routes from '@/navigation/routesNames';
 
 const makeTopicRowsData = (colors: ThemeContextProps['colors']) => [
   {
@@ -73,17 +75,10 @@ const makeTopicRowsData = (colors: ThemeContextProps['colors']) => [
   },
 ];
 
-type RouteParams = {
-  WalletNotificationsSettings: {
-    address: string;
-    notificationSettings: WalletNotificationSettings;
-  };
-};
-
 const WalletNotificationsSettings = () => {
   const { colors } = useTheme();
   const topicRowsData = useMemo(() => makeTopicRowsData(colors), [colors]);
-  const route = useRoute<RouteProp<RouteParams, 'WalletNotificationsSettings'>>();
+  const route = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_NOTIFICATIONS_SETTINGS>>();
   const { isConnected } = useNetInfo();
   const { address, notificationSettings } = route.params;
 

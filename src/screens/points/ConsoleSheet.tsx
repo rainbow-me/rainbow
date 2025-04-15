@@ -15,6 +15,8 @@ import { Share } from './content/console/share';
 import { Review } from './content/console/review';
 import { ViewWeeklyEarnings } from './content/console/view-weekly-earnings';
 import { RequireWalletBalance } from './content/console/require-wallet-balance';
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
 
 type ConsoleSheetParams = {
   ConsoleSheet: {
@@ -25,10 +27,10 @@ type ConsoleSheetParams = {
 };
 
 export const ConsoleSheet = () => {
-  const { params } = useRoute<RouteProp<ConsoleSheetParams, 'ConsoleSheet'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CONSOLE_SHEET>>();
   const referralCode = params?.referralCode;
-  const deeplinked = params?.deeplinked;
-  const viewWeeklyEarnings = params?.viewWeeklyEarnings;
+  const deeplinked = params?.deeplinked ?? false;
+  const viewWeeklyEarnings = params?.viewWeeklyEarnings ?? false;
 
   const { animationKey, setReferralCode, setProfile, setAnimationKey, setStep, setIntent, setDeeplinked } = usePointsProfileContext();
 

@@ -65,6 +65,7 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { useNavigation } from '@/navigation';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
+import Routes from '@/navigation/routesNames';
 
 type RouteParams = RouteProp<RootStackParamList, 'NetworkSelector'>['params'];
 
@@ -967,7 +968,7 @@ export function NetworkSelector() {
       fillPinnedSection = false,
       actionButton,
     },
-  } = useRoute<RouteProp<RootStackParamList, 'NetworkSelector'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.NETWORK_SELECTOR>>();
 
   const editing = useSharedValue(false);
   const expanded = useSharedValue(false);

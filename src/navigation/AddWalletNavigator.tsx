@@ -2,9 +2,9 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React, { useState } from 'react';
 import Routes from '@/navigation/routesNames';
 import { deviceUtils } from '@/utils';
-import { AddWalletSheet, AddWalletSheetParams } from '@/screens/AddWalletSheet';
+import { AddWalletSheet } from '@/screens/AddWalletSheet';
 import { ChooseWalletGroup } from '@/screens/ChooseWalletGroup';
-import { ImportOrWatchWalletSheet, ImportOrWatchWalletSheetParams } from '@/screens/ImportOrWatchWalletSheet';
+import { ImportOrWatchWalletSheet } from '@/screens/ImportOrWatchWalletSheet';
 import { BackgroundProvider } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
@@ -15,7 +15,7 @@ const Swipe = createMaterialTopTabNavigator();
 export const AddWalletNavigator = () => {
   const {
     params: { isFirstWallet, type },
-  } = useRoute<RouteProp<RootStackParamList, 'AddWalletNavigator'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.ADD_WALLET_SHEET>>();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
 

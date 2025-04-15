@@ -43,7 +43,7 @@ export function useWebViewHandlers({
 }: UseWebViewHandlersParams) {
   const { activeTabRef, loadProgress, resetScrollHandlers } = useBrowserContext();
   const { updateTabUrlWorklet } = useBrowserWorkletsContext();
-  const { setParams } = useNavigation();
+  const { setParams } = useNavigation<typeof Routes.DAPP_BROWSER_SCREEN>();
 
   const currentMessengerRef = useRef<MessengerWithUrl | null>(null);
   const logoRef = useRef<string | null>(null);

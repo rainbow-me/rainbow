@@ -77,7 +77,7 @@ export interface AddressItem {
 }
 
 export default function ChangeWalletSheet() {
-  const { params = {} } = useRoute<RouteProp<RootStackParamList, 'ChangeWalletSheet'>>();
+  const { params = {} } = useRoute<RouteProp<RootStackParamList, typeof Routes.CHANGE_WALLET_SHEET>>();
 
   const { onChangeWallet, watchOnly = false, currentAccountAddress, hideReadOnlyWallets = false } = params;
   const { selectedWallet, wallets } = useWallets();
@@ -467,7 +467,6 @@ export default function ChangeWalletSheet() {
         navigate(Routes.SETTINGS_SHEET, {
           params: {
             walletId: wallet.id,
-            initialRoute: SettingsPages.backup,
           },
           screen: SettingsPages.backup.key,
         });

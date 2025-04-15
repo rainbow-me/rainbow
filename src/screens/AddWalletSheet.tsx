@@ -32,7 +32,7 @@ type RouteParams = {
 export const AddWalletSheet = () => {
   const {
     params: { isFirstWallet },
-  } = useRoute<RouteProp<RootStackParamList, 'AddWalletNavigator'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.ADD_WALLET_SHEET>>();
 
   const { goBack, navigate } = useNavigation();
 

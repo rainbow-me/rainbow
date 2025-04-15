@@ -15,7 +15,7 @@ export type SwapsParams = Partial<
   Pick<SwapsState, 'inputAsset' | 'outputAsset' | 'percentageToSell' | 'slippage'> & {
     inputAmount: string;
     outputAmount: string;
-    gasSpeed: GasSpeed;
+    gasSpeed?: GasSpeed;
   }
 >;
 

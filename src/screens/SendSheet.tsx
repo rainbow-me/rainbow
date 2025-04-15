@@ -167,7 +167,7 @@ export default function SendSheet() {
   const prevChainId = usePrevious(currentChainId);
   const [currentInput, setCurrentInput] = useState('');
 
-  const { params } = useRoute<RouteProp<RootStackParamList, 'SendSheet'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SEND_SHEET>>();
   const assetOverride = params?.asset;
   const prevAssetOverride = usePrevious(assetOverride);
 

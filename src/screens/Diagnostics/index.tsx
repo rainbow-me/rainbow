@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { loadAllKeys } from '@/model/keychain';
 import { useNavigation } from '@/navigation';
@@ -19,12 +19,13 @@ import { createAndShareStateDumpFile } from './helpers/createAndShareStateDumpFi
 import { haptics } from '@/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { RootStackParamList } from '@/navigation/types';
 
 const encryptor = new AesEncryptor();
 
 export const WalletDiagnosticsSheet = () => {
   const { navigate, goBack } = useNavigation();
-  const { params } = useRoute<any>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.DIAGNOSTICS_SHEET>>();
 
   const [keys, setKeys] = useState<UserCredentials[] | undefined>();
   const [userPin, setUserPin] = useState(params?.userPin);

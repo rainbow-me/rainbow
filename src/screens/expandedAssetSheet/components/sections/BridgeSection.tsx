@@ -106,9 +106,9 @@ function BridgeButton({ chainId }: { chainId: ChainId }) {
     <ButtonPressAnimation
       onPress={() =>
         navigate(Routes.SWAP, {
-          // @ts-expect-error - FIXME: Need to convert to ParsedSearchAsset here - disabling for now since this section isn't used yet
+          // @ts-expect-error - need to convert to ParsedSearchAsset
           inputAsset: asset,
-          // @ts-expect-error - FIXME: Need to convert to ParsedSearchAsset here - disabling for now since this section isn't used yet
+          // @ts-expect-error - need to convert to ParsedSearchAsset
           outputAsset: assetToBridge,
         })
       }

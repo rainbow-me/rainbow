@@ -1,6 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import Routes from '@/navigation/routesNames';
-import { PortalSheetProps } from '@/screens/Portal';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 import { ParsedAddressAsset, PendingTransaction, RainbowTransaction, UniqueAsset } from '@/entities';
@@ -20,11 +19,28 @@ import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { Checkbox } from '@/screens/SendConfirmationSheet';
 import { ENSProfile } from '@/entities/ens';
 import { SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { BackupFile } from '@/model/backup';
+import { BackupFile, CloudBackups } from '@/model/backup';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
-import { GetPoapEventBySecretWordQuery } from '@/graphql/__generated__/arc';
+import { GetPoapEventBySecretWordQuery, NftOffer, PoapEvent, ReservoirCollection } from '@/graphql/__generated__/arc';
 import { Contact } from '@/redux/contacts';
+import { NavigatorScreenParams } from '@react-navigation/native';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import { LearnCardKey, LearnCategory } from '@/components/cards/utils/types';
+import { CardType } from '@/components/cards/GenericCard';
+import { MutableRefObject } from 'react';
+import { ActiveTabRef } from '@/components/DappBrowser/types';
+import { WalletNotificationSettings } from '@/notifications/settings';
+import { LEDGER_ERROR_CODES } from '@/utils/ledger';
+import { BigNumberish } from '@ethersproject/bignumber';
+import { UnlockableAppIconKey } from '@/appIcons/appIcons';
+import { ChartTime } from '@/hooks/charts/useChartInfo';
+import { ScrollView } from 'react-native';
+
+export type PortalSheetProps = {
+  sheetHeight?: number;
+  children: React.FC;
+};
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -193,22 +209,105 @@ type AddWalletNavigatorParams = {
   isFirstWallet: boolean;
 };
 
+export type HardwareWalletTxParams = {
+  submit: () => Promise<void> | void;
+};
+
+export type PairHardwareWalletNavigatorParams = {
+  entryPoint?: typeof Routes.ADD_WALLET_SHEET | typeof Routes.IMPORT_OR_WATCH_WALLET_SHEET;
+  isFirstWallet?: boolean;
+};
+
+export type ModalParams = {
+  actionType?: 'Import' | 'Create';
+  additionalPadding?: boolean;
+  address?: string | undefined;
+  asset?: any[]; // TODO: Fix this
+  color?: number | null;
+  forceColor?: string | number | null;
+  isNewProfile?: boolean;
+  contact?: Contact | undefined;
+  ens?: string | undefined;
+  numWalletGroups?: number;
+  nickname?: string | undefined;
+  type: 'contact_profile' | 'wallet_profile' | 'send' | 'request' | 'new_wallet_group';
+  onRefocusInput?: () => void;
+  onCloseModal?: ({ color, name, image }: { color: number; name: string; image?: string }) => void;
+  profile?: { image?: string; name: string; color?: string | number | null };
+  withoutStatusBar?: boolean;
+  isFromSettings?: boolean;
+  onCancel?: () => void;
+};
+
+export type SignTransactionSheetParams = {
+  transactionDetails: RequestData;
+  onSuccess: (result: string) => Promise<void> | void;
+  onCancel: (error?: Error) => Promise<void> | void;
+  onCloseScreen: (canceled: boolean) => void;
+  chainId: ChainId;
+  address: string | undefined;
+  source: RequestSource;
+};
+
 type UntypedRoutes = {
   [key: string]: undefined;
 };
 
-export type RootStackParamList = {
-  [Routes.SEND_SHEET]: {
-    asset?: ParsedAddressAsset | UniqueAsset;
-    address?: string;
-    nativeAmount?: string;
-    fromProfile?: boolean;
+export type SettingsStackParams = {
+  [Routes.SETTINGS_SECTION]: undefined;
+  [Routes.SETTINGS_SECTION_APP_ICON]: undefined;
+  [Routes.SETTINGS_SECTION_BACKUP]: {
+    walletId?: string;
+    initialRoute?: string;
   };
+  [Routes.SETTINGS_SECTION_CURRENCY]: undefined;
+  [Routes.SETTINGS_SECTION_DEV]: undefined;
+  [Routes.SETTINGS_SECTION_LANGUAGE]: undefined;
+  [Routes.SETTINGS_SECTION_NETWORK]: undefined;
+  [Routes.SETTINGS_SECTION_NOTIFICATIONS]: undefined;
+  [Routes.SETTINGS_SECTION_PRIVACY]: undefined;
+  [Routes.SECRET_WARNING]: {
+    title: string;
+    walletId: string;
+    privateKeyAddress?: string;
+    isBackingUp?: boolean;
+    backupType?: keyof typeof WalletBackupTypes;
+  };
+  [Routes.WALLET_NOTIFICATIONS_SETTINGS]: {
+    address: string;
+    title: string;
+    notificationSettings: WalletNotificationSettings;
+  };
+};
+
+export type SendParams = {
+  asset?: ParsedAddressAsset | UniqueAsset;
+  address?: string;
+  nativeAmount?: string;
+  fromProfile?: boolean;
+  shouldShowChecks?: boolean;
+};
+
+export type WalletScreenParams = {
+  initialized?: boolean;
+  emptyWallet?: boolean;
+};
+
+export type SettingsSheetParams = {
+  initialRoute?: keyof SettingsStackParams;
+};
+
+export type RootStackParamList = {
   [Routes.CHANGE_WALLET_SHEET]: {
     watchOnly?: boolean;
     currentAccountAddress?: string;
     onChangeWallet?: (address: Address, wallet: RainbowWallet) => void;
     hideReadOnlyWallets?: boolean;
+  };
+  [Routes.WALLET_NOTIFICATIONS_SETTINGS]: {
+    address: string;
+    title: string;
+    notificationSettings: WalletNotificationSettings;
   };
   [Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET]: {
     accentColor?: string;
@@ -220,7 +319,9 @@ export type RootStackParamList = {
     tx: PendingTransaction;
     type: 'speed_up' | 'cancel';
   };
-  [Routes.SWIPE_LAYOUT]: undefined;
+  [Routes.SWIPE_LAYOUT]: NavigatorScreenParams<{
+    [Routes.WALLET_SCREEN]: WalletScreenParams;
+  }>;
   [Routes.SETTINGS_SECTION_BACKUP]: {
     walletId?: string;
     initialRoute?: string;
@@ -239,7 +340,6 @@ export type RootStackParamList = {
     step: string;
     walletId: string;
   };
-  [Routes.SETTINGS_BACKUP_VIEW]: undefined;
   [Routes.SEND_CONFIRMATION_SHEET]: {
     amountDetails: {
       assetAmount: string;
@@ -260,12 +360,7 @@ export type RootStackParamList = {
   };
   [Routes.EXPLAIN_SHEET]: ExplainSheetRouteParams;
   [Routes.PORTAL]: PortalSheetProps;
-  [Routes.WALLET_SCREEN]: {
-    initialized?: boolean;
-    emptyWallet?: boolean;
-  };
-  [Routes.PROFILE_SCREEN]: undefined;
-  [Routes.WELCOME_SCREEN]: undefined;
+  [Routes.WALLET_SCREEN]: WalletScreenParams;
   [Routes.ENS_CONFIRM_REGISTER_SHEET]: {
     externalAvatarUrl?: string | null;
     longFormHeight?: number;
@@ -273,19 +368,67 @@ export type RootStackParamList = {
     name?: string;
     ensName?: string;
   };
+  [Routes.ENS_INTRO_SHEET]: {
+    contentHeight?: number;
+    onSearchForNewName?: () => void;
+    onSelectExistingName?: () => void;
+  };
+  [Routes.SHOWCASE_SHEET]: {
+    address: string;
+    fromRoute: string;
+  };
   [Routes.PROFILE_SHEET]: {
     address: string;
     fromRoute: string;
   };
+  [Routes.PROFILE_PREVIEW_SHEET]: {
+    address: string;
+    descriptionProfilePreviewHeight: number;
+    fromRoute: string;
+  };
+  [Routes.AVATAR_BUILDER_WALLET]: {
+    initialAccountColor: number;
+    initialAccountName: string;
+  };
+  [Routes.AVATAR_BUILDER]: {
+    initialAccountColor: number;
+    initialAccountName: string;
+  };
   [Routes.TRANSACTION_DETAILS]: {
     transaction: RainbowTransaction;
-    longFormHeight: number;
+    longFormHeight?: number;
   };
   [Routes.REGISTER_ENS_NAVIGATOR]: {
     ensName?: string;
-    mode: REGISTRATION_MODES;
+    mode?: REGISTRATION_MODES;
     autoFocusKey?: string;
     externalAvatarUrl?: string | null;
+    sheetRef?: MutableRefObject<ScrollView>;
+  };
+  [Routes.MINT_SHEET]: {
+    collection: ReservoirCollection;
+    pricePerMint: BigNumberish | undefined;
+  };
+  [Routes.SELECT_UNIQUE_TOKEN_SHEET]: {
+    onSelect: (asset: UniqueAsset) => void;
+    springDamping?: number;
+    topOffset?: number;
+  };
+  [Routes.EXTERNAL_LINK_WARNING_SHEET]: {
+    url: string;
+    onClose?: () => void;
+  };
+  [Routes.APP_ICON_UNLOCK_SHEET]: {
+    longFormHeight?: number;
+    appIconKey: UnlockableAppIconKey;
+  };
+  [Routes.CUSTOM_GAS_SHEET]: {
+    asset?: Partial<ParsedAddressAsset>;
+    fallbackColor?: string;
+    focusTo: string | null;
+    openCustomOptions: (focusTo: string) => void;
+    speeds: string[];
+    type: 'custom_gas';
   };
   [Routes.REMOTE_PROMO_SHEET]: CampaignCheckResult;
   [Routes.CHECK_IDENTIFIER_SCREEN]: {
@@ -304,6 +447,17 @@ export type RootStackParamList = {
   };
   [Routes.WALLET_CONNECT_REDIRECT_SHEET]: {
     type: WalletconnectResultType;
+    cb?: () => void;
+  };
+  [Routes.CONSOLE_SHEET]: {
+    referralCode?: string;
+    deeplinked?: boolean;
+    viewWeeklyEarnings?: boolean;
+  };
+  [Routes.PIN_AUTHENTICATION_SCREEN]: {
+    onCancel: () => void;
+    onSuccess: (pin: string | undefined) => void;
+    validPin: string | undefined;
   };
   [Routes.EXPANDED_ASSET_SHEET]: {
     longFormHeight?: number;
@@ -316,12 +470,14 @@ export type RootStackParamList = {
     topOffset?: number;
     transitionDuration?: number;
     focusTo?: 'focusToMinerTip';
+    chartType?: ChartTime;
   };
   [Routes.EXPANDED_ASSET_SHEET_V2]: {
     address: string;
     chainId: ChainId;
     asset: ExpandedSheetParamAsset;
     hideClaimSection?: boolean;
+    chartType?: ChartTime;
   };
   [Routes.POSITION_SHEET]: {
     position: RainbowPosition;
@@ -355,42 +511,112 @@ export type RootStackParamList = {
       message: string;
     }[];
   };
-  [Routes.ADD_CASH_SHEET]: undefined;
-  [Routes.SEND_FLOW]: {
-    asset?: ParsedAddressAsset | UniqueAsset;
-    address?: string;
-    nativeAmount?: string;
-    fromProfile?: boolean;
+  [Routes.SEND_SHEET]: SendParams;
+  [Routes.SEND_FLOW]:
+    | NavigatorScreenParams<{
+        [Routes.SEND_SHEET]: SendParams;
+        [Routes.MODAL_SCREEN]: ModalParams;
+      }>
+    | SendParams;
+  [Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET]: HardwareWalletTxParams;
+  [Routes.HARDWARE_WALLET_TX_NAVIGATOR]:
+    | HardwareWalletTxParams
+    | NavigatorScreenParams<{
+        [Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET]: {
+          errorType: LEDGER_ERROR_CODES;
+          deviceId?: string;
+        };
+      }>;
+  [Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET]: {
+    shouldGoBack?: boolean;
   };
-  [Routes.HARDWARE_WALLET_TX_NAVIGATOR]: {
-    submit: () => Promise<void> | void;
+  [Routes.DIAGNOSTICS_SHEET]: {
+    userPin?: string;
   };
-  [Routes.CONFIRM_REQUEST]: {
-    transactionDetails: RequestData;
-    onSuccess: (result: string) => Promise<void> | void;
-    onCancel: () => Promise<void> | void;
-    onCloseScreen: (canceled: boolean) => void;
-    chainId: ChainId;
-    address: string | undefined;
-    source: RequestSource;
+  [Routes.SELECT_ENS_SHEET]: {
+    onSelectENS: (ensName: string) => void;
+  };
+  [Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET]: {
+    errorType: LEDGER_ERROR_CODES;
+    deviceId?: string;
+  };
+  [Routes.CONFIRM_REQUEST]: SignTransactionSheetParams;
+  [Routes.SETTINGS_SHEET]: undefined | NavigatorScreenParams<SettingsStackParams>;
+  [Routes.SECRET_WARNING]: {
+    title: string;
+    privateKeyAddress?: string;
+    isBackingUp?: boolean;
+    backupType?: keyof typeof WalletBackupTypes;
+    walletId: string;
+    secretText?: string;
+  };
+  [Routes.SHOW_SECRET]: {
+    title: string;
+    privateKeyAddress?: string;
+    isBackingUp?: boolean;
+    backupType?: keyof typeof WalletBackupTypes;
+    walletId: string;
+    secretText?: string;
+  };
+  [Routes.RESTORE_CLOUD_SHEET]: {
+    selectedBackup: BackupFile;
+  };
+
+  [Routes.TOKEN_LAUNCHER_SCREEN]: {
+    gestureEnabled?: boolean;
+  };
+
+  [Routes.LEARN_WEB_VIEW_SCREEN]: {
+    category: LearnCategory;
+    url: string;
+    displayType: CardType;
+    routeName: string;
+    key: LearnCardKey;
+  };
+
+  [Routes.NFT_SINGLE_OFFER_SHEET]: {
+    offer: NftOffer;
+    longFormHeight?: number;
+  };
+
+  [Routes.VIEW_CLOUD_BACKUPS]: {
+    backups: CloudBackups;
+    title: string;
+  };
+
+  [Routes.VIEW_WALLET_BACKUP]: {
+    imported?: boolean;
+    title: string;
+    walletId: string;
   };
 
   [Routes.RESTORE_SHEET]: {
     fromSettings?: boolean;
   };
-  [Routes.PAIR_HARDWARE_WALLET_NAVIGATOR]: {
-    entryPoint?: typeof Routes.ADD_WALLET_SHEET | typeof Routes.IMPORT_OR_WATCH_WALLET_SHEET;
-    isFirstWallet?: boolean;
-  };
-  [Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET]: undefined;
-  [Routes.ADD_WALLET_NAVIGATOR]: AddWalletNavigatorParams;
+  [Routes.PAIR_HARDWARE_WALLET_NAVIGATOR]:
+    | NavigatorScreenParams<{
+        [Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET]: { shouldGoBack?: boolean };
+        [Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET]: undefined;
+      }>
+    | PairHardwareWalletNavigatorParams;
+  [Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET]: PairHardwareWalletNavigatorParams;
+  [Routes.ADD_WALLET_NAVIGATOR]:
+    | NavigatorScreenParams<{
+        [Routes.ADD_WALLET_SHEET]: AddWalletNavigatorParams;
+        [Routes.IMPORT_OR_WATCH_WALLET_SHEET]: AddWalletNavigatorParams;
+      }>
+    | AddWalletNavigatorParams;
+  [Routes.ADD_WALLET_SHEET]: AddWalletNavigatorParams;
   [Routes.IMPORT_OR_WATCH_WALLET_SHEET]: AddWalletNavigatorParams;
   [Routes.DAPP_BROWSER_SCREEN]: {
     url?: string;
   };
+  [Routes.DAPP_BROWSER_CONTROL_PANEL]: {
+    activeTabRef: MutableRefObject<ActiveTabRef | null>;
+  };
   [Routes.CHOOSE_WALLET_GROUP]: undefined;
   [Routes.POAP_SHEET]: {
-    event?: GetPoapEventBySecretWordQuery['getPoapEventBySecretWord'];
+    event: PoapEvent;
   };
   [Routes.MODAL_SCREEN]: {
     actionType?: 'Import' | 'Create';

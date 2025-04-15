@@ -1,5 +1,5 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 import ChooseBackupStep from '@/components/backup/ChooseBackupStep';
 import Routes from '@/navigation/routesNames';
@@ -19,7 +19,9 @@ const NativeStack = createStackNavigator();
 export function RestoreSheet() {
   const { top } = useSafeAreaInsets();
   const { height: deviceHeight } = useDimensions();
-  const { params: { fromSettings = false } = {} } = useRoute<RouteProp<RootStackParamList, 'RestoreSheet'>>();
+  const {
+    params: { fromSettings = false },
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.RESTORE_SHEET>>();
 
   const { colors } = useTheme();
   const memoSettingsOptions = useMemo(() => settingsOptions(colors, fromSettings), [colors, fromSettings]);

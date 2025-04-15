@@ -17,6 +17,7 @@ import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl'
 import { cloudPlatformAccountName } from '@/utils/platform';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
+import Routes from '@/navigation/routesNames';
 
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -638,7 +639,7 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
 const ExplainSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeAreaInsets();
-  const { params } = useRoute<RouteProp<RootStackParamList, 'ExplainSheet'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPLAIN_SHEET>>();
 
   const theme = useTheme();
   const { goBack, navigate } = useNavigation();

@@ -8,8 +8,10 @@ import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { Colors } from '../styles/colors';
 import { Box } from '@/design-system';
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
+import { RootStackParamList } from '@/navigation/types';
+import Routes from '@/navigation/routesNames';
 
 const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: { colors: Colors } }) => ({
   align: 'center',
@@ -24,7 +26,7 @@ const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: { colors: C
 const WalletConnectRedirectSheet = () => {
   const { colors } = useTheme();
   const { goBack } = useNavigation();
-  const { params } = useRoute();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_CONNECT_REDIRECT_SHEET>>();
 
   useEffect(() => {
     analytics.track(analytics.event.wcRequestFailed, {
@@ -34,7 +36,7 @@ const WalletConnectRedirectSheet = () => {
   }, []);
 
   const handleOnPress = useCallback(() => {
-    (params as { cb?: () => void })?.cb?.();
+    params?.cb?.();
     goBack();
   }, [goBack, params]);
 

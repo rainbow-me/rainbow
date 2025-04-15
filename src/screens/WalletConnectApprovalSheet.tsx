@@ -127,7 +127,7 @@ const NetworkPill = ({ chainIds, onPress }: { chainIds: ChainId[]; onPress: () =
 export function WalletConnectApprovalSheet() {
   const { colors, isDarkMode } = useTheme();
   const { goBack } = useNavigation();
-  const { params } = useRoute<RouteProp<RootStackParamList, 'WalletConnectApprovalSheet'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_CONNECT_APPROVAL_SHEET>>();
   const { chainId: settingsChainId, accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
   const { selectedWallet, walletNames, wallets } = useWallets();
