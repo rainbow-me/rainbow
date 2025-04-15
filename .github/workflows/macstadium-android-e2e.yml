@@ -98,7 +98,8 @@ jobs:
       - name: Install Anvil
         run: |
           curl -L https://foundry.paradigm.xyz | bash
-          $HOME/.foundry/bin/foundryup
+          source /home/runner/.bashrc
+          foundryup
           echo "$HOME/.foundry/bin" >> $GITHUB_PATH
 
       - name: Check for frozen lockfile
