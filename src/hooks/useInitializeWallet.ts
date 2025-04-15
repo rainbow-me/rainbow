@@ -1,12 +1,10 @@
-import { captureException } from '@sentry/react-native';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
-import { PerformanceTracking } from '../performance/tracking';
-import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
+import { PerformanceTracking } from '@/performance/tracking';
 import { appStateUpdate } from '../redux/appState';
 import { settingsLoadNetwork, settingsUpdateAccountAddress } from '../redux/settings';
 import { walletsLoadState } from '../redux/wallets';
@@ -17,11 +15,12 @@ import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useOpenSmallBalances from './useOpenSmallBalances';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
-import { RainbowError, logger } from '@/logger';
+import { RainbowError, ensureError, logger } from '@/logger';
 import { getOrCreateDeviceId, getWalletContext } from '@/analytics/utils';
 import * as Sentry from '@sentry/react-native';
 import { analytics } from '@/analytics';
 import { Address } from 'viem';
+import { event } from '@/analytics/event';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -32,7 +31,9 @@ export default function useInitializeWallet() {
   const hideSplashScreen = useHideSplashScreen();
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
 
-  const getWalletStatusForPerformanceMetrics = (isNew: boolean, isImporting: boolean): string => {
+  type WalletStatus = 'unknown' | 'new' | 'imported' | 'old';
+
+  function getWalletStatus(isNew: boolean, isImporting: boolean): WalletStatus {
     if (isNew) {
       return 'new';
     } else if (isImporting) {
@@ -40,7 +41,7 @@ export default function useInitializeWallet() {
     } else {
       return 'old';
     }
-  };
+  }
 
   const initializeWallet = useCallback(
     async (
@@ -57,8 +58,9 @@ export default function useInitializeWallet() {
       image,
       silent = false
     ) => {
+      let walletStatus: WalletStatus = 'unknown';
       try {
-        PerformanceTracking.startMeasuring(PerformanceMetrics.useInitializeWallet);
+        PerformanceTracking.startMeasuring(event.performanceInitializeWallet);
         logger.debug('[useInitializeWallet]: Start wallet setup');
 
         const isImporting = !!seedPhrase;
@@ -78,6 +80,7 @@ export default function useInitializeWallet() {
         await dispatch(settingsLoadNetwork());
 
         const { isNew, walletAddress } = await walletInit(seedPhrase, color, name, overwrite, checkedWallet, network, image, silent);
+        walletStatus = getWalletStatus(isNew, isImporting);
 
         logger.debug('[useInitializeWallet]: walletInit returned', {
           isNew,
@@ -113,7 +116,7 @@ export default function useInitializeWallet() {
 
         if (isNil(walletAddress)) {
           logger.debug('[useInitializeWallet]: walletAddress is nil');
-          Alert.alert(lang.t('wallet.import_failed_invalid_private_key'));
+          Alert.alert(i18n.t(i18n.l.wallet.import_failed_invalid_private_key));
           if (!isImporting) {
             dispatch(appStateUpdate({ walletReady: true }));
           }
@@ -138,26 +141,23 @@ export default function useInitializeWallet() {
           });
         }
 
-        try {
-          hideSplashScreen();
-        } catch (err) {
-          logger.error(new RainbowError('[useInitializeWallet]: Error while hiding splash screen'), {
-            error: err,
-          });
-        }
-
         dispatch(appStateUpdate({ walletReady: true }));
         logger.debug('[useInitializeWallet]: 💰 Wallet initialized');
 
-        PerformanceTracking.finishMeasuring(PerformanceMetrics.useInitializeWallet, {
-          walletStatus: getWalletStatusForPerformanceMetrics(isNew, isImporting),
+        PerformanceTracking.finishMeasuring(event.performanceInitializeWallet, {
+          walletStatus,
         });
 
         return walletAddress;
-      } catch (error) {
-        PerformanceTracking.clearMeasure(PerformanceMetrics.useInitializeWallet);
-        logger.error(new RainbowError('[useInitializeWallet]: Error while initializing wallet'), {
-          error,
+      } catch (e) {
+        const error = ensureError(e);
+        PerformanceTracking.clearMeasure(event.performanceInitializeWallet);
+        logger.error(new RainbowError('[useInitializeWallet]: Error while initializing wallet', error), {
+          walletStatus,
+        });
+        analytics.track(event.walletInitializationFailed, {
+          error: error.message,
+          walletStatus,
         });
         // TODO specify error states more granular
         if (!switching) {
@@ -172,8 +172,7 @@ export default function useInitializeWallet() {
           });
         }
 
-        captureException(error);
-        Alert.alert(lang.t('wallet.something_went_wrong_importing'));
+        Alert.alert(i18n.t(i18n.l.wallet.something_went_wrong_importing));
         dispatch(appStateUpdate({ walletReady: true }));
         return null;
       }

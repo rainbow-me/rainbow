@@ -207,7 +207,6 @@ export const event = {
 
   addFavoriteToken: 'add_favorite_token',
   watchWallet: 'watch_wallet',
-  watchedWalletCohort: 'watched_wallet_cohort',
 
   // claimables
   claimClaimableSucceeded: 'claim_claimable.succeeded',
@@ -245,6 +244,16 @@ export const event = {
   // network status
   networkStatusOffline: 'network_status.offline',
   networkStatusReconnected: 'network_status.reconnected',
+
+  // wallet initialization
+  walletInitializationFailed: 'wallet_initialization.failed',
+
+  // performance
+  performanceReport: 'performance.report',
+  performanceInitializeWallet: 'Performance Wallet Initialize Time',
+
+  // discover screen
+  timeSpentOnDiscoverScreen: 'Time spent on the Discover screen',
 
   // ens
   ensInitiatedRegistration: 'Initiated ENS registration',
@@ -288,6 +297,9 @@ export const event = {
 
   // discover screen
   discoverTapSearch: 'Tapped Search',
+
+  // app store review
+  appStoreReviewPrompted: 'app_store_review.prompted',
 } as const;
 
 export type QuickBuyAnalyticalData =
@@ -762,11 +774,6 @@ export type EventProperties = {
     address: string;
   };
 
-  [event.watchedWalletCohort]: {
-    numWatchedWallets: number;
-    watchedWalletsAddresses: string[];
-  };
-
   [event.claimClaimableSucceeded]: {
     claimableId: string;
     claimableType: 'transaction' | 'sponsored' | 'rainbowCoin';
@@ -918,6 +925,31 @@ export type EventProperties = {
   [event.networkStatusOffline]: undefined;
   [event.networkStatusReconnected]: undefined;
 
+  // wallet initialization
+  [event.walletInitializationFailed]: {
+    error: string;
+    walletStatus: string;
+  };
+
+  // performance
+  [event.performanceInitializeWallet]: {
+    walletStatus: string;
+    durationInMs: number;
+    performanceTrackingVersion: number;
+  };
+  [event.performanceReport]: {
+    reportName: string;
+    segments: Record<string, number>;
+    durationInMs: number;
+    performanceTrackingVersion: number;
+    data: Record<string, unknown>;
+  };
+
+  // discover screen
+  [event.timeSpentOnDiscoverScreen]: {
+    durationInMs: number;
+  };
+
   [event.ensInitiatedRegistration]: { category: string };
   [event.ensEditedRecords]: { category: string };
   [event.ensCompletedRegistration]: { category: string };
@@ -1052,4 +1084,8 @@ export type EventProperties = {
     appIcon: string;
   };
   [event.tappedImportButton]: undefined;
+  [event.appStoreReviewPrompted]: {
+    action: string;
+    promptCount: number;
+  };
 };

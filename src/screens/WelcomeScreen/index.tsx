@@ -31,6 +31,7 @@ import { logger } from '@/logger';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { PerformanceMeasureView } from '@shopify/react-native-performance';
 
 const Container = styled(View)({
   ...position.coverAsObject,
@@ -202,52 +203,61 @@ export default function WelcomeScreen() {
   });
 
   return (
-    <Container testID="welcome-screen">
-      <RainbowsBackground shouldAnimate={shouldAnimateRainbows} />
-      <ContentWrapper style={contentStyle}>
-        {IS_ANDROID && IS_TEST ? (
-          <RainbowText colors={colors} />
-        ) : (
-          <MaskedView maskElement={<RainbowText colors={colors} />}>
-            <RainbowTextMask style={textStyle} />
-          </MaskedView>
-        )}
+    <PerformanceMeasureView interactive={true} screenName="WelcomeScreen">
+      <Container testID="welcome-screen">
+        <RainbowsBackground shouldAnimate={shouldAnimateRainbows} />
+        <ContentWrapper style={contentStyle}>
+          {IS_ANDROID && IS_TEST ? (
+            <RainbowText colors={colors} />
+          ) : (
+            <MaskedView maskElement={<RainbowText colors={colors} />}>
+              <RainbowTextMask style={textStyle} />
+            </MaskedView>
+          )}
 
-        <ButtonWrapper style={buttonStyle}>
-          <WelcomeScreenRainbowButton
-            emoji="castle"
-            height={54 + (ios ? 0 : 6)}
-            onPress={onCreateWallet}
-            shadowStyle={createWalletButtonAnimatedShadowStyle}
-            style={createWalletButtonAnimatedStyle}
-            testID="new-wallet-button"
-            text={lang.t('wallet.new.get_new_wallet')}
-            textColor={isDarkMode ? colors.dark : colors.white}
-          />
-        </ButtonWrapper>
-        <ButtonWrapper>
-          <WelcomeScreenRainbowButton
-            darkShadowStyle={sx.existingWalletShadow}
-            emoji="old_key"
-            height={56}
-            onPress={showRestoreSheet}
-            shadowStyle={sx.existingWalletShadow}
-            style={[sx.existingWallet, { backgroundColor: colors.blueGreyDarkLight }]}
-            testID="already-have-wallet-button"
-            text={lang.t('wallet.new.already_have_wallet')}
-            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
-          />
-        </ButtonWrapper>
-      </ContentWrapper>
-      <TermsOfUse bottomInset={insets.bottom}>
-        <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.5)} lineHeight="loose" size="smedium" weight="semibold">
-          {lang.t('wallet.new.terms')}
-          <Text color={colors.paleBlue} lineHeight="loose" onPress={handlePressTerms} size="smedium" suppressHighlighting weight="semibold">
-            {lang.t('wallet.new.terms_link')}
+          <ButtonWrapper style={buttonStyle}>
+            <WelcomeScreenRainbowButton
+              emoji="castle"
+              height={54 + (ios ? 0 : 6)}
+              onPress={onCreateWallet}
+              shadowStyle={createWalletButtonAnimatedShadowStyle}
+              style={createWalletButtonAnimatedStyle}
+              testID="new-wallet-button"
+              text={lang.t('wallet.new.get_new_wallet')}
+              textColor={isDarkMode ? colors.dark : colors.white}
+            />
+          </ButtonWrapper>
+          <ButtonWrapper>
+            <WelcomeScreenRainbowButton
+              darkShadowStyle={sx.existingWalletShadow}
+              emoji="old_key"
+              height={56}
+              onPress={showRestoreSheet}
+              shadowStyle={sx.existingWalletShadow}
+              style={[sx.existingWallet, { backgroundColor: colors.blueGreyDarkLight }]}
+              testID="already-have-wallet-button"
+              text={lang.t('wallet.new.already_have_wallet')}
+              textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+            />
+          </ButtonWrapper>
+        </ContentWrapper>
+        <TermsOfUse bottomInset={insets.bottom}>
+          <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.5)} lineHeight="loose" size="smedium" weight="semibold">
+            {lang.t('wallet.new.terms')}
+            <Text
+              color={colors.paleBlue}
+              lineHeight="loose"
+              onPress={handlePressTerms}
+              size="smedium"
+              suppressHighlighting
+              weight="semibold"
+            >
+              {lang.t('wallet.new.terms_link')}
+            </Text>
           </Text>
-        </Text>
-      </TermsOfUse>
-    </Container>
+        </TermsOfUse>
+      </Container>
+    </PerformanceMeasureView>
   );
 }
 

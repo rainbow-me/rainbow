@@ -18,6 +18,7 @@
 #import "RNSplashScreen.h"
 #import <AVFoundation/AVFoundation.h>
 #import <mach/mach.h>
+#import <ReactNativePerformance/ReactNativePerformance.h>
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
 @end
@@ -58,6 +59,7 @@ RCT_EXPORT_METHOD(hideAnimated) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [ReactNativePerformance onAppStarted];
   self.moduleName = @"Rainbow";
   // Add custom initial props in the dictionary below. These are passed to the React Native ViewController.
   self.initialProps = @{};

@@ -8,8 +8,6 @@ import { logger, RainbowError } from '@/logger';
 import { device } from '@/storage';
 import { WalletContext } from './utils';
 import { IS_ANDROID, IS_TEST } from '@/env';
-import { PerformanceMetricsType } from '../performance/tracking/types/PerformanceMetrics';
-
 export class Analytics {
   client: typeof rudderClient;
   deviceId?: string;
@@ -66,15 +64,6 @@ export class Analytics {
   }
 
   /**
-   * Carve out for performance events to support the existing usage.
-   */
-  trackPerformance(event: PerformanceMetricsType, params: Record<string, string | number>) {
-    if (this.disabled) return;
-    const metadata = this.getDefaultMetadata();
-    this.client.track(event, { ...metadata, ...params });
-  }
-
-  /**
    * Sends an event. Param `event` must exist in
    * `@/analytics/event`, and if properties are associated with it, they must
    * be defined as part of `EventProperties` in the same file
@@ -105,6 +94,7 @@ export class Analytics {
     try {
       await rudderClient.setup(REACT_NATIVE_RUDDERSTACK_WRITE_KEY, {
         dataPlaneUrl: RUDDERSTACK_DATA_PLANE_URL,
+        trackAppLifecycleEvents: !IS_TEST,
       });
     } catch (error) {
       logger.error(new RainbowError('[Analytics]: Unable to initialize Rudderstack'), { error });
