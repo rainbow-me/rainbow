@@ -1,8 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const blacklist = require('metro-config/src/defaults/exclusionList');
-const { getDefaultConfig } = require('expo/metro-config');
 const { mergeConfig } = require('@react-native/metro-config');
-const { withSentryConfig } = require('@sentry/react-native/metro');
+const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
 
 // Deny list is a function that takes an array of regexes and combines
@@ -30,6 +29,12 @@ if (process.env.CI) {
   transformer.babelTransformerPath = require.resolve('./metro.transform.js');
 }
 
+/**
+ * Metro configuration
+ * https://reactnative.dev/docs/metro
+ *
+ * @type {import('@react-native/metro-config').MetroConfig}
+ */
 const rainbowConfig = {
   resolver: {
     blacklistRE,
@@ -76,13 +81,20 @@ const rainbowConfig = {
       } catch (error) {
         console.warn('\n5️⃣ getDefaultConfig cannot resolve: ', moduleName);
       }
+
+      throw new Error(`Unable to resolve module: ${moduleName}`);
     },
   },
   transformer,
 };
-const config = mergeConfig(getDefaultConfig(__dirname), rainbowConfig);
-const sentryConfig = withSentryConfig(config, {
-  annotateReactComponents: true,
-});
+const config = mergeConfig(
+  getSentryExpoConfig(__dirname, {
+    annotateReactComponents: true,
+  }),
+  rainbowConfig
+);
 
-module.exports = wrapWithReanimatedMetroConfig(sentryConfig);
+// Need support for import.meta to enable this.
+config.resolver.unstable_enablePackageExports = false;
+
+module.exports = wrapWithReanimatedMetroConfig(config);

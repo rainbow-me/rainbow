@@ -93,7 +93,7 @@ const PoapSheet = () => {
 
   const imageColor = usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
 
-  const sheetRef = useRef();
+  const sheetRef = useRef(undefined);
   const yPosition = useSharedValue(0);
 
   const claimPoapByQrHash = useCallback(async () => {

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Svg, { Defs, Path, RadialGradient, Stop } from 'react-native-svg';
 
-const EmojiAnimalsIcon = ({ color, ...props }) => (
+const EmojiAnimalsIcon = ({ color = null, ...props }) => (
   <Svg height="30" viewBox="0 0 30 30" width="30" {...props}>
     <Defs>
       <RadialGradient cx="100%" cy="49.9814195%" fx="100%" fy="49.9814195%" id="rainbow" r="108.068849%">
@@ -21,10 +21,6 @@ const EmojiAnimalsIcon = ({ color, ...props }) => (
 
 EmojiAnimalsIcon.propTypes = {
   color: PropTypes.string,
-};
-
-EmojiAnimalsIcon.defaultProps = {
-  color: null,
 };
 
 export default EmojiAnimalsIcon;

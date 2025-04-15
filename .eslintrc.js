@@ -55,6 +55,7 @@ module.exports = {
     'jest/no-disabled-tests': 'off',
     'no-await-in-loop': 'off',
     'no-nested-ternary': 'off',
+    'react/react-in-jsx-scope': 'off',
     'react-hooks/exhaustive-deps': [
       'warn',
       {

@@ -5,7 +5,7 @@ import ToolTip from 'react-native-tooltip';
 function CopyTooltip({ textToCopy, activeOpacity, tooltipText, ...props }) {
   const handleCopy = useCallback(() => Clipboard.setString(textToCopy), [textToCopy]);
   const { colors } = useTheme();
-  const ref = useRef();
+  const ref = useRef(undefined);
   useEffect(() => ref.current.hideMenu, []);
   return (
     <ToolTip

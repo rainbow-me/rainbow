@@ -63,7 +63,6 @@ export default function ContextMenuAndroid({
       onPressAction={onPressAction}
       shouldOpenOnLongPress={shouldOpenOnLongPress}
       style={style}
-      // @ts-expect-error This is missing from the type defs, but works.
       testID={testID}
     >
       {children}

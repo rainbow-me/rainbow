@@ -50,7 +50,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
   const pinnedAddresses = usePinnedWalletsStore(state => state.pinnedAddresses);
   const unpinnedAddresses = usePinnedWalletsStore(state => state.unpinnedAddresses);
 
-  const pinnedWalletsGridGestureRef = useRef<PanGesture>();
+  const pinnedWalletsGridGestureRef = useRef<PanGesture>(undefined);
 
   // it would be more efficient to map the addresses to the wallet items, but the wallet items should be the source of truth
   const pinnedWalletItems = useMemo(() => {

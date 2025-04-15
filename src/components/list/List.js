@@ -12,7 +12,7 @@ const getListItemLayout = (data, index) => ({
   offset: ListItem.height * index,
 });
 
-const List = ({ getItemLayout, items, renderItem, ...props }) => {
+const List = ({ getItemLayout = getListItemLayout, items, renderItem, ...props }) => {
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
   const ListComponent = isInsideBottomSheet ? BottomSheetFlatList : FlatList;
   return (
@@ -36,10 +36,6 @@ List.propTypes = {
     })
   ).isRequired,
   renderItem: PropTypes.func.isRequired,
-};
-
-List.defaultProps = {
-  getItemLayout: getListItemLayout,
 };
 
 export default List;
