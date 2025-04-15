@@ -52,22 +52,18 @@ jobs:
           name: sandbox
           key: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
 
-      - name: Setup env
+      - name: Setup env and scripts
         env:
-            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
         run: |
-            git clone git@github.com:rainbow-me/rainbow-env.git
-            mv rainbow-env/dotenv .env
-            mv rainbow-env/android/app/google-services.json android/app/google-services.json
-            rm -rf rainbow-env
-            sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
-
-      - name: Setup scripts
-        env:
-            CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
-            SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
-        run: |
-            eval $CI_SCRIPTS
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env
+          mv rainbow-env/android/app/google-services.json android/app/google-services.json
+          rm -rf rainbow-env
+          sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
+          
+          eval $CI_SCRIPTS
 
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
@@ -95,12 +91,20 @@ jobs:
         run: |
           yarn install && yarn setup
 
-      - name: Install Anvil
+      - name: Setup Anvil path
         run: |
-          curl -L https://foundry.paradigm.xyz | bash
-          export PATH="$HOME/.foundry/bin:$PATH"
-          $HOME/.foundry/bin/foundryup
-          echo "$HOME/.foundry/bin" >> $GITHUB_PATH
+          if [ -d "$HOME/.foundry/bin" ]; then
+            echo "$HOME/.foundry/bin" >> $GITHUB_PATH
+            export PATH="$HOME/.foundry/bin:$PATH"
+          fi
+          
+          ANVIL_PATH=$(which anvil || echo "")
+          if [ -n "$ANVIL_PATH" ]; then
+            echo "Found anvil at: $ANVIL_PATH"
+            echo "$(dirname $ANVIL_PATH)" >> $GITHUB_PATH
+          else
+            echo "Anvil not found in PATH"
+          fi
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
