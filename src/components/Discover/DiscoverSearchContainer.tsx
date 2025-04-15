@@ -1,55 +1,39 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useEffect } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Column, Row } from '@/components/layout';
-import { Text } from '@/components/text';
+import { Box, Inline, Text } from '@/design-system';
 import DiscoverSearchInput from '@/components/Discover/DiscoverSearchInput';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { deviceUtils } from '@/utils';
 import { useDelayedValueWithLayoutAnimation } from '@/hooks';
-import styled from '@/styled-thing';
-import { ThemeContextProps } from '@/theme';
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { NAVBAR_HORIZONTAL_INSET, navbarHeight } from '../navbar/Navbar';
 
-const CancelButton = styled(ButtonPressAnimation)({
-  marginTop: 9,
-});
-
-type WithThemeProps = {
-  theme: ThemeContextProps;
-};
-
-const CancelText = styled(Text).attrs(({ theme: { colors } }: WithThemeProps) => ({
-  align: 'right',
-  color: colors.appleBlue,
-  letterSpacing: 'roundedMedium',
-  size: 'large',
-  weight: 'semibold',
-}))({
-  ...(ios ? {} : { marginTop: -5 }),
-  marginLeft: -3,
-  marginRight: 15,
-});
+// const CancelText = styled(Text).attrs(({ theme: { colors } }: WithThemeProps) => ({
+//   align: 'right',
+//   color: colors.appleBlue,
+//   letterSpacing: 'roundedMedium',
+//   size: 'large',
+//   weight: 'semibold',
+// }))({
+//   ...(ios ? {} : { marginTop: -5 }),
+//   marginLeft: -3,
+//   marginRight: 15,
+// });
 
 const placeholderText = deviceUtils.isNarrowPhone
-  ? lang.t('discover.search.search_ethereum_short')
-  : lang.t('discover.search.search_ethereum');
+  ? i18n.t(i18n.l.discover.search.search_ethereum_short)
+  : i18n.t(i18n.l.discover.search.search_ethereum);
 
-export let discoverOpenSearchFnRef: () => void = () => null;
-
-function DiscoverSearchContainer({ children }: { children: React.ReactNode }) {
+function DiscoverSearchContainer() {
   const { onTapSearch, cancelSearch } = useDiscoverScreenContext();
   const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
   const delayedShowSearch = useDelayedValueWithLayoutAnimation(isSearching);
 
-  useEffect(() => {
-    discoverOpenSearchFnRef = onTapSearch;
-  }, [onTapSearch]);
-
   return (
-    <>
-      <Row>
-        <Column flex={1} marginHorizontal={4}>
+    <Box height={navbarHeight} width="full" justifyContent="center" paddingHorizontal={{ custom: NAVBAR_HORIZONTAL_INSET }}>
+      <Inline alignVertical="center" space={'16px'}>
+        <Box justifyContent="center" style={{ flex: 1 }}>
           <DiscoverSearchInput
             clearTextOnFocus={false}
             isDiscover
@@ -57,13 +41,16 @@ function DiscoverSearchContainer({ children }: { children: React.ReactNode }) {
             placeholderText={placeholderText}
             testID="discover-search"
           />
-        </Column>
-        <CancelButton onPress={cancelSearch} testID="done-button">
-          {delayedShowSearch && <CancelText>{lang.t('button.done')}</CancelText>}
-        </CancelButton>
-      </Row>
-      {children}
-    </>
+        </Box>
+        <ButtonPressAnimation onPress={cancelSearch} testID="done-button">
+          {delayedShowSearch && (
+            <Text color="blue" size="17pt" weight="semibold">
+              {i18n.t(i18n.l.button.done)}
+            </Text>
+          )}
+        </ButtonPressAnimation>
+      </Inline>
+    </Box>
   );
 }
 

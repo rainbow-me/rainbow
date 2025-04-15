@@ -10,7 +10,7 @@ import { Text } from '@/components/text';
 import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
-import { margin, padding } from '@/styles';
+import { padding } from '@/styles';
 import { deviceUtils } from '@/utils';
 import { ThemeContextProps } from '@/theme';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
@@ -28,7 +28,6 @@ type ContainerProps = {
 };
 
 const Container = styled(Row)(({ isSearching, theme: { colors } }: ContainerProps) => ({
-  ...margin.object(0, 15, isSearching ? 8 : 0),
   ...(isSearching ? padding.object(0, 37, 0, 12) : padding.object(0)),
   backgroundColor: colors.transparent,
   borderRadius: SearchHeight / 2,
@@ -217,6 +216,7 @@ const DiscoverSearchInput = ({
         placeholder={placeholder}
         ref={searchInputRef}
         value={searchQuery}
+        autoFocus
         testID={testID + '-input'}
       />
       <ClearInputDecorator

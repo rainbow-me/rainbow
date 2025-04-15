@@ -28,7 +28,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { abbreviations, deviceUtils, magicMemo } from '@/utils';
-import { Box, Text } from '@/design-system';
+import { Box, globalColors, Text } from '@/design-system';
 import { colors, Colors } from '@/styles';
 import ExchangeTokenRow from '@/components/ExchangeTokenRow';
 import { SwappableAsset } from '@/entities';
@@ -48,12 +48,14 @@ export interface EnrichedExchangeAsset extends SwappableAsset {
 
 const deviceWidth = deviceUtils.dimensions.width;
 
-const HeaderBackground = styled(LinearGradient).attrs(({ theme: { colors } }: { theme: { colors: Colors } }) => ({
-  colors: [colors.white, colors.alpha(colors.white, 0)],
-  end: { x: 0.5, y: 1 },
-  locations: [0.65, 1],
-  start: { x: 0.5, y: 0 },
-}))({
+const HeaderBackground = styled(LinearGradient).attrs(
+  ({ theme: { colors, isDarkMode } }: { theme: { colors: Colors; isDarkMode: boolean } }) => ({
+    colors: [isDarkMode ? globalColors.grey100 : '#FBFCFD', colors.alpha(isDarkMode ? globalColors.grey100 : '#FBFCFD', 0)],
+    end: { x: 0.5, y: 1 },
+    locations: [0.65, 1],
+    start: { x: 0.5, y: 0 },
+  })
+)({
   height: 40,
   position: 'absolute',
   width: deviceWidth,
