@@ -66,9 +66,9 @@ export const SwapSlider = ({
     swapInfo,
   } = useSwapContext();
 
-  const panRef = useRef();
-  const tapRef = useRef();
-  const maxButtonRef = useRef();
+  const panRef = useRef(undefined);
+  const tapRef = useRef(undefined);
+  const maxButtonRef = useRef(undefined);
 
   const fillSecondary = useForegroundColor('fillSecondary');
   const labelSecondary = useForegroundColor('labelSecondary');

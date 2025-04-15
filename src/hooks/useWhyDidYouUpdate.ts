@@ -15,7 +15,7 @@ import { useEffect, useRef } from 'react';
 export default function useWhyDidYouUpdate(name: string, props: Record<string, any>) {
   // Get a mutable ref object where we can store props ...
   // ... for comparison next time this hook runs.
-  const previousProps = useRef() as any;
+  const previousProps = useRef(undefined) as any;
 
   useEffect(() => {
     if (previousProps.current) {

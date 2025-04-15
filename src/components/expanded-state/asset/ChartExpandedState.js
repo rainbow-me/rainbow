@@ -78,7 +78,7 @@ const ReadMoreButton = styled(Text).attrs(({ theme: { colors } }) => ({
 
 function CarouselWrapper({ style, isAnyItemVisible, isAnyItemLoading, setCarouselHeight, ...props }) {
   const [visible, setVisible] = useState(true);
-  const timeout = useRef();
+  const timeout = useRef(undefined);
   useEffect(() => {
     clearTimeout(timeout.current);
     if (!isAnyItemVisible) {
