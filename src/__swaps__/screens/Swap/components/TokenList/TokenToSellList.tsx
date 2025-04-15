@@ -15,6 +15,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
+import { shallowEqual } from '@/worklets/comparisons';
 
 export const SELL_LIST_HEADER_HEIGHT = 20 + 10 + 14; // paddingTop + height + paddingBottom
 
@@ -38,7 +39,7 @@ const isInitialInputAssetNull = () => {
 };
 
 export const TokenToSellList = () => {
-  const [skipDelayedMount] = useState(isInitialInputAssetNull());
+  const [skipDelayedMount] = useState(() => isInitialInputAssetNull());
   const shouldMount = useDelayedMount({ skipDelayedMount });
 
   return shouldMount ? <TokenToSellListComponent /> : null;
@@ -49,7 +50,7 @@ const MemoizedCoinRow = memo(CoinRow);
 const TokenToSellListComponent = () => {
   const { inputProgress, internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset } = useSwapContext();
 
-  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
+  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds(), shallowEqual);
   const userAssets = useUserAssetsStore(state => state.userAssets);
 
   const searchResultsMap = useMemo(() => {

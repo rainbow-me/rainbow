@@ -13,13 +13,13 @@ import { globalColors } from '@/design-system';
 import { ForegroundColor, palettes } from '@/design-system/color/palettes';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
-import { DEFAULT_CONFIG, RainbowConfig } from '@/model/remoteConfig';
+import { DEFAULT_SLIPPAGE_BIPS_CHAINID, RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
 import { supportedNativeCurrencies } from '@/references';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteParams } from '@rainbow-me/swaps';
+import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteError, QuoteParams } from '@rainbow-me/swaps';
 import { swapsStore } from '../../state/swaps/swapsStore';
 import {
   divWorklet,
@@ -34,7 +34,7 @@ import {
   toFixedWorklet,
 } from '@/safe-math/SafeMath';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
-import { inputKeys } from '../types/swap';
+import { InputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -45,6 +45,7 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { IS_APK_BUILD } from 'react-native-dotenv';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import isTestFlight from '@/helpers/isTestFlight';
+import { NativeCurrencyKey } from '@/entities';
 
 const DEFAULT_SLIPPAGE_BIPS = 500;
 
@@ -57,13 +58,6 @@ export const opacity = (color: string, opacity: number): string => {
 export type ResponseByTheme<T> = {
   light: T;
   dark: T;
-};
-
-export const getColorValueForTheme = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean) => {
-  if (!values) {
-    return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
-  }
-  return isDarkMode ? values.dark : values.light;
 };
 
 export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean) => {
@@ -139,7 +133,6 @@ export const getTintedBackgroundColor = (colors: ResponseByTheme<string>): Respo
     dark: c.mix(colors.dark === ETH_COLOR ? ETH_COLOR_DARK : colors.dark, darkModeColorToMix, 0.9875).hex(),
   };
 };
-
 //
 // /---- END color functions ----/ //
 
@@ -247,10 +240,35 @@ export function stripNonDecimalNumbers(value: string) {
   return value.replace(/[^0-9.]/g, '');
 }
 
-export function trimTrailingZeros(value: string) {
+export function trimTrailingZeros(value: string): string {
   'worklet';
-  const withTrimmedZeros = value.replace(/0+$/, '');
+  if (!value.includes('.')) return value;
+  const withTrimmedZeros = value.replace(/\.?0+$/, '');
   return withTrimmedZeros.endsWith('.') ? withTrimmedZeros.slice(0, -1) : withTrimmedZeros;
+}
+
+/**
+ * Trims redundant trailing zeros from a currency string's fractional part.
+ * Accommodates both native currencies and ETH values.
+ *
+ * - Removes `.00` entirely (e.g. `2.00` → `2`).
+ * - Leaves two decimals intact when needed (e.g. `2.10` → `2.10`).
+ * - For values with more than two decimals, trims trailing zeros (e.g. `2.100` → `2.1`, `2.5000` → `2.5`).
+ *
+ * @example
+ * trimCurrencyZeros('2.00')  // '2'
+ * trimCurrencyZeros('2.10')  // '2.10'
+ * trimCurrencyZeros('2.100') // '2.1'
+ *
+ * @param value - The currency value as a string.
+ * @param currency - The currency to use to format the value.
+ * @returns The trimmed currency string.
+ */
+export function trimCurrencyZeros(value: string | number, currency: NativeCurrencyKey): string {
+  'worklet';
+  const currencyDecimals = Math.min(supportedNativeCurrencies[currency].decimals, 6);
+  const valueToTrim = toFixedWorklet(value, currencyDecimals);
+  return valueToTrim.replace(/(\.(?=\d{3,})\d*?[1-9])0+$|\.0{2,}$/, '$1');
 }
 
 export function niceIncrementFormatter({
@@ -354,24 +372,14 @@ export const slippageInBipsToStringWorklet = (slippageInBips: number) => {
   return (slippageInBips / 100).toFixed(1);
 };
 
-export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
-  const amount = +(
-    (config.default_slippage_bips_chainId as unknown as { [key: number]: number })[chainId] ||
-    DEFAULT_CONFIG.default_slippage_bips_chainId[chainId] ||
-    DEFAULT_SLIPPAGE_BIPS
-  );
-
+export const getDefaultSlippage = (chainId: ChainId, slippageConfig: RainbowConfig['default_slippage_bips_chainId']) => {
+  const amount = +(slippageConfig[chainId] || DEFAULT_SLIPPAGE_BIPS_CHAINID[chainId] || DEFAULT_SLIPPAGE_BIPS);
   return slippageInBipsToString(amount);
 };
 
-export const getDefaultSlippageWorklet = (chainId: ChainId, config: RainbowConfig) => {
+export const getDefaultSlippageWorklet = (chainId: ChainId, slippageConfig: RainbowConfig['default_slippage_bips_chainId']) => {
   'worklet';
-  const amount = +(
-    (config.default_slippage_bips_chainId as unknown as { [key: number]: number })[chainId] ||
-    DEFAULT_CONFIG.default_slippage_bips_chainId[chainId] ||
-    DEFAULT_SLIPPAGE_BIPS
-  );
-
+  const amount = +(slippageConfig[chainId] || DEFAULT_SLIPPAGE_BIPS_CHAINID[chainId] || DEFAULT_SLIPPAGE_BIPS);
   return slippageInBipsToStringWorklet(amount);
 };
 
@@ -538,9 +546,7 @@ export const parseAssetAndExtend = ({
   asset,
   insertUserAssetBalance,
 }: ParseAssetAndExtendProps): ExtendedAnimatedAssetWithColors | null => {
-  if (!asset) {
-    return null;
-  }
+  if (!asset) return null;
 
   const isAssetEth = asset.isNativeAsset && asset.symbol === 'ETH';
   const colors = extractColorValueForColors({
@@ -548,20 +554,47 @@ export const parseAssetAndExtend = ({
   });
 
   const uniqueId = getUniqueId(asset.address, asset.chainId);
-  const balance = insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(uniqueId)?.balance || asset.balance : asset.balance;
+  let balance = asset.balance;
+  let bridging = asset.bridging;
+
+  if (insertUserAssetBalance) {
+    const { balance: newBalance, bridging: newBridging } = userAssetsStore.getState().getUserAsset(uniqueId) || {};
+    if (newBalance) balance = newBalance;
+    if (newBridging) bridging = newBridging;
+  }
 
   return {
     ...asset,
     ...colors,
-    maxSwappableAmount: balance.amount,
-    nativePrice: asset.price?.value,
     balance,
-
-    // For some reason certain assets have a unique ID in the format of `${address}_mainnet` rather than
-    // `${address}_${chainId}`, so at least for now we ensure consistency by reconstructing the unique ID here.
+    bridging,
+    maxSwappableAmount: trimTrailingZeros(balance.amount),
+    nativePrice: asset.price?.value,
     uniqueId,
   };
 };
+
+export function getQuotePrice(
+  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>,
+  quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>,
+  type: 'input' | 'output'
+): number | null {
+  'worklet';
+  const assetKey = type === 'input' ? 'sellTokenAsset' : 'buyTokenAsset';
+  const currentAsset = asset.value;
+  const currentQuote = quote.value;
+  const quoteExists = !!currentQuote && !('error' in currentQuote) && assetKey in currentQuote;
+  const quotePrice = quoteExists ? currentQuote[assetKey]?.price.value : null;
+
+  if (!quoteExists || !quotePrice || !currentAsset?.chainId) return null;
+
+  const quoteChainId = currentQuote[assetKey]?.chainId;
+  const quoteAddress = quoteChainId ? currentQuote[assetKey]?.networks[quoteChainId]?.address : null;
+  const doAddressesMatch = quoteAddress === currentAsset.address;
+  const shouldUseQuotePrice = doAddressesMatch && !!quoteChainId && currentAsset.chainId.toString() === quoteChainId?.toString();
+
+  return shouldUseQuotePrice ? quotePrice : null;
+}
 
 type BuildQuoteParamsProps = {
   currentAddress: string;
@@ -569,7 +602,7 @@ type BuildQuoteParamsProps = {
   outputAmount: BigNumberish;
   inputAsset: ExtendedAnimatedAssetWithColors | null;
   outputAsset: ExtendedAnimatedAssetWithColors | null;
-  lastTypedInput: inputKeys;
+  lastTypedInput: InputKeys;
 };
 
 /**

@@ -605,6 +605,7 @@
         "expires_in": "Expires in %{minutes}m",
         "from_divider": "from",
         "to_divider": "to",
+        "token": "Token",
         "view_on": "View on %{blockExplorerName}",
         "view_on_etherscan": "View on Etherscan",
         "copy_contract_address": "Copy Contract Address"
@@ -648,16 +649,14 @@
         },
         "unknown_price": {
           "title": "Market Value Unknown",
-          "description": "If you decide to continue, be sure that you are satisfied receiving the quoted amount."
+          "description": "If you decide to continue, be sure you are satisfied with the quoted amounts"
         },
         "losing_prefix": "Losing",
         "small_market": "Small Market",
         "small_market_try_smaller_amount": "Small market — try a smaller amount",
         "you_are_losing": "You're losing %{priceImpact}",
         "you_are_losing_prefix": "You're losing",
-        "no_data": "Market Value Unknown",
-        "label": "Possible loss",
-        "no_data_subtitle": "If you decide to continue, be sure that you are satisfied with the quoted amount"
+        "label": "Possible loss"
       },
       "source": {
         "rainbow": "Auto",
