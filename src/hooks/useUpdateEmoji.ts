@@ -1,8 +1,7 @@
-import { updateWallets, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { setSelectedWallet, updateWallets, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { getNextEmojiWithColor } from '@/utils/profileUtils';
 import { useCallback } from 'react';
-import { setSelectedWallet } from '../model/wallet';
 import { useWebData } from './index';
 import useAccountSettings from './useAccountSettings';
 

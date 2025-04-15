@@ -19,13 +19,13 @@ import {
   AllRainbowWallets,
   generateAccount,
   getAllWallets,
-  getSelectedWallet as getKeychainSelectedWallet,
+  getSelectedWalletFromStorage as getKeychainSelectedWallet,
   loadAddress,
   RainbowAccount,
   RainbowWallet,
   saveAddress,
   saveAllWallets,
-  setSelectedWallet as setWalletSelectedWallet,
+  setSelectedWalletToStorage as setWalletSelectedWallet,
 } from '../../model/wallet';
 import { updateWebDataEnabled } from '../../redux/showcaseTokens';
 import { useTheme } from '../../theme';
@@ -37,7 +37,7 @@ import { createRainbowStore } from '../internal/createRainbowStore';
 
 interface WalletsState {
   selected: RainbowWallet | null;
-  setSelectedWallet: (wallet: RainbowWallet) => Promise<void>;
+  setSelectedWallet: (wallet: RainbowWallet, address?: string) => Promise<void>;
 
   walletNames: { [address: string]: string };
   updateWalletNames: (names: { [address: string]: string }) => void;
@@ -89,11 +89,14 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     getIsHardwareWallet: () => !!get().selected?.deviceId,
 
     selected: null,
-    async setSelectedWallet(wallet) {
+    async setSelectedWallet(wallet, address) {
       await setWalletSelectedWallet(wallet);
       set({
         selected: wallet,
       });
+      if (address) {
+        setSelectedAddress(address);
+      }
     },
 
     walletNames: {},
@@ -109,6 +112,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({
         wallets,
       });
+    },
+
+    setSelectedAddress: (address: string) => {
+      saveAddress(address);
     },
 
     accountAddress: `0x`,
@@ -321,10 +328,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({
         wallets: newWallets,
       });
-    },
-
-    setSelectedAddress: (address: string) => {
-      saveAddress(address);
     },
 
     refreshWalletENSAvatars: async () => {

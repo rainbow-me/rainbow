@@ -19,7 +19,7 @@ import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteD
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { review } from '@/storage';
+import { getSelectedWallet, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
 import { ethereumUtils, profileUtils } from '@/utils';
 import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import { captureException } from '@sentry/react-native';
@@ -35,7 +35,6 @@ import { getMigrationVersion, setMigrationVersion } from '../handlers/localstora
 import WalletTypes from '../helpers/walletTypes';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import store from '../redux/store';
-import { getSelectedWallet, getWallets, updateWallets } from '@/state/wallets/walletsStore';
 import { RB_TOKEN_LIST_CACHE, RB_TOKEN_LIST_ETAG } from '../references/rainbow-token-list';
 import colors, { getRandomColor } from '../styles/colors';
 import {
@@ -49,7 +48,7 @@ import {
   signingWalletAddress,
 } from '../utils/keychainConstants';
 import { hasKey, loadString, publicAccessControlOptions, saveString } from './keychain';
-import { DEFAULT_WALLET_NAME, loadAddress, RainbowAccount, RainbowWallet, saveAddress, setSelectedWallet } from './wallet';
+import { DEFAULT_WALLET_NAME, loadAddress, RainbowAccount, RainbowWallet, saveAddress } from './wallet';
 
 export default async function runMigrations() {
   // get current version

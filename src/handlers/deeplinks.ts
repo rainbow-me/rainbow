@@ -30,9 +30,8 @@ import { clamp } from '@/__swaps__/utils/swaps';
 import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { getWallets, setSelectedWallet } from '@/state/wallets/walletsStore';
 import { isAddress } from 'viem';
-import { setSelectedWallet } from '../model/wallet';
-import { getWallets, setSelectedAddress } from '@/state/wallets/walletsStore';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
   url: string;
@@ -387,8 +386,7 @@ async function setFromWallet(address: string | undefined) {
 
   if (!wallet) return;
 
-  setSelectedWallet(wallet);
-  setSelectedAddress(address);
+  setSelectedWallet(wallet, address);
 }
 
 function isNumericString(value: string | undefined): value is string {

@@ -16,12 +16,12 @@ import { useAccountSettings, useInitializeWallet, useWalletsWithBalancesAndNames
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { cleanUpWalletKeys, RainbowWallet, setSelectedWallet } from '@/model/wallet';
+import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
-import { setSelectedAddress, useWalletsStore } from '@/state/wallets/walletsStore';
+import { setSelectedAddress, setSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { WalletList } from '@/screens/change-wallet/components/WalletList';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
@@ -249,8 +249,7 @@ export default function ChangeWalletSheet() {
       try {
         setCurrentAddress(address);
         setCurrentSelectedWallet(wallet);
-        setSelectedWallet(wallet);
-        setSelectedAddress(address);
+        setSelectedWallet(wallet, address);
         remotePromoSheetsStore.setState({ isShown: false });
         // @ts-expect-error initializeWallet is not typed correctly
         initializeWallet(null, null, null, false, false, null, true);

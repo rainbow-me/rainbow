@@ -865,7 +865,7 @@ export const createWallet = async ({
 
     if (!silent) {
       logger.debug('[wallet]: setting selected wallet', {}, DebugContext.wallet);
-      await setSelectedWallet(allWallets[id]);
+      await setSelectedWalletToStorage(allWallets[id]);
     }
 
     logger.debug('[wallet]: saving all wallets', {}, DebugContext.wallet);
@@ -1083,7 +1083,7 @@ export const getSeedPhrase = async (
   }
 };
 
-export const setSelectedWallet = async (wallet: RainbowWallet): Promise<void> => {
+export const setSelectedWalletToStorage = async (wallet: RainbowWallet): Promise<void> => {
   const val = {
     version: selectedWalletVersion,
     wallet,
@@ -1092,7 +1092,7 @@ export const setSelectedWallet = async (wallet: RainbowWallet): Promise<void> =>
   return keychain.saveObject(selectedWalletKey, val, keychain.publicAccessControlOptions);
 };
 
-export const getSelectedWallet = async (): Promise<null | RainbowSelectedWalletData> => {
+export const getSelectedWalletFromStorage = async (): Promise<null | RainbowSelectedWalletData> => {
   try {
     const selectedWalletData = await keychain.loadObject(selectedWalletKey);
     if (selectedWalletData) {
@@ -1242,7 +1242,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
       logger.debug('[wallet]: new pkey saved', {}, DebugContext.wallet);
     }
 
-    const selectedWalletData = await getSelectedWallet();
+    const selectedWalletData = await getSelectedWalletFromStorage();
     const wallet: undefined | RainbowWallet = selectedWalletData?.wallet;
     if (!wallet) {
       return null;
