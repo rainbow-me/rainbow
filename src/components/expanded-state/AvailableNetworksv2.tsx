@@ -46,6 +46,7 @@ const AvailableNetworksv2 = ({
     },
   };
 
+  const { goBack } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
 
   const convertAssetAndNavigate = useCallback(

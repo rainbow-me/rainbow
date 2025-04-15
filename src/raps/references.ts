@@ -6,6 +6,7 @@ import { ParsedAsset } from '@/__swaps__/types/assets';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { TransactionClaimableTxPayload } from '@/screens/claimables/transaction/types';
+import { SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 
 export enum SwapModalField {
   input = 'inputAmount',
@@ -62,7 +63,7 @@ export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | '
   assetToSell: ParsedAsset;
   assetToBuy: ParsedAsset;
   gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
-  gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
+  gasFeeParamsBySpeed: SwapsGasFeeParamsBySpeed | (GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed);
   nonce?: number;
   quote: QuoteTypeMap[T];
   address?: Address;
@@ -158,7 +159,7 @@ export interface ActionProps<T extends RapActionTypes> {
   wallet: Signer;
   currentRap: Rap;
   gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
-  gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
+  gasFeeParamsBySpeed: SwapsGasFeeParamsBySpeed | GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }
 
 export interface WalletExecuteRapProps {
