@@ -95,20 +95,14 @@ jobs:
         run: |
           yarn install && yarn setup
 
-      - name: Setup Anvil path
+      - name: Install Anvil
         run: |
-          if [ -d "$HOME/.foundry/bin" ]; then
-            echo "$HOME/.foundry/bin" >> $GITHUB_PATH
-            export PATH="$HOME/.foundry/bin:$PATH"
-          fi
-          
-          ANVIL_PATH=$(which anvil || echo "")
-          if [ -n "$ANVIL_PATH" ]; then
-            echo "Found anvil at: $ANVIL_PATH"
-            echo "$(dirname $ANVIL_PATH)" >> $GITHUB_PATH
-          else
-            echo "Anvil not found in PATH"
-          fi
+          curl -L https://foundry.paradigm.xyz | bash
+          export PATH="$HOME/.foundry/bin:$PATH"
+          bash -c "source $HOME/.bashrc && foundryup"
+          echo "$HOME/.foundry/bin" >> $GITHUB_PATH
+          ls -la $HOME/.foundry/bin || echo "Foundry bin directory not found"
+          $HOME/.foundry/bin/anvil --version || echo "Anvil not available"
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
