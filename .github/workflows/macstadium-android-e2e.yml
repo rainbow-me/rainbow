@@ -96,15 +96,9 @@ jobs:
           yarn install && yarn setup
 
       - name: Install Anvil
-        run: |
-          mkdir -p $HOME/.foundry/bin
-          curl -L https://github.com/foundry-rs/foundry/releases/download/v0.10.0/foundry_nightly_linux_amd64.tar.gz > foundry.tar.gz
-          tar -xzf foundry.tar.gz -C $HOME/.foundry/bin
-          chmod +x $HOME/.foundry/bin/*
-          export PATH="$HOME/.foundry/bin:$PATH"
-          echo "$HOME/.foundry/bin" >> $GITHUB_PATH
-          ls -la $HOME/.foundry/bin
-          $HOME/.foundry/bin/anvil --version || echo "Anvil not found in extracted binaries"
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
