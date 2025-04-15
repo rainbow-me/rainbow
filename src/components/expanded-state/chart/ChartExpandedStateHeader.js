@@ -53,6 +53,7 @@ export default function ChartExpandedStateHeader({
         value: latestPrice,
         prefix: supportedNativeCurrencies[nativeCurrency].symbol,
         decimalPlaces: supportedNativeCurrencies[nativeCurrency].decimals,
+        currency: nativeCurrency,
       }),
     // we need to make sure we recreate this value only when chart's data change
     // eslint-disable-next-line react-hooks/exhaustive-deps

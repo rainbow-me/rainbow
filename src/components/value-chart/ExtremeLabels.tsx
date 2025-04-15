@@ -87,6 +87,7 @@ const Labels = ({ color, width, isCard }: { color: string; width: number; isCard
             value: smallestY.y,
             prefix: nativeSelected.symbol,
             decimalPlaces: nativeSelected.decimals,
+            currency: nativeCurrency,
           })}
         </CenteredLabel>
       ) : null}
@@ -102,6 +103,7 @@ const Labels = ({ color, width, isCard }: { color: string; width: number; isCard
             value: greatestY.y,
             prefix: nativeSelected.symbol,
             decimalPlaces: nativeSelected.decimals,
+            currency: nativeCurrency,
           })}
         </CenteredLabel>
       ) : null}

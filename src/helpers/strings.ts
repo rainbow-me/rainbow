@@ -15,6 +15,7 @@ import {
   toFixedWorklet as safeToFixedWorklet,
   toStringWorklet as safeToStringWorklet,
 } from '../safe-math/SafeMath';
+
 /**
  * @desc subtracts two numbers
  * @param  {String}   str
@@ -89,43 +90,47 @@ type CurrencyFormatterOptions = {
   currency: NativeCurrencyKey;
 };
 
+const subscriptDigits: { [key: string]: string } = {
+  '0': '₀',
+  '1': '₁',
+  '2': '₂',
+  '3': '₃',
+  '4': '₄',
+  '5': '₅',
+  '6': '₆',
+  '7': '₇',
+  '8': '₈',
+  '9': '₉',
+};
+
+const superscriptDigits: { [key: string]: string } = {
+  '0': '⁰',
+  '1': '¹',
+  '2': '²',
+  '3': '³',
+  '4': '⁴',
+  '5': '⁵',
+  '6': '⁶',
+  '7': '⁷',
+  '8': '⁸',
+  '9': '⁹',
+  '-': '⁻',
+};
+
 const toSubscript = (digit: string): string => {
   'worklet';
-  if (digit.length !== 1 || !/^[0-9]$/.test(digit)) {
-    return digit;
+  if (digit.length !== 1) {
+    throw new Error('toSubscript expects a single character digit [0-9]');
   }
-  const subscriptDigits: { [key: string]: string } = {
-    '0': '₀',
-    '1': '₁',
-    '2': '₂',
-    '3': '₃',
-    '4': '₄',
-    '5': '₅',
-    '6': '₆',
-    '7': '₇',
-    '8': '₈',
-    '9': '₉',
-  };
   return subscriptDigits[digit] || digit;
 };
 
-const toSuperscript = (str: string | number): string => {
+const toSuperscript = (digit: string): string => {
   'worklet';
-  const char = String(str);
-  const superscriptDigits: { [key: string]: string } = {
-    '0': '⁰',
-    '1': '¹',
-    '2': '²',
-    '3': '³',
-    '4': '⁴',
-    '5': '⁵',
-    '6': '⁶',
-    '7': '⁷',
-    '8': '⁸',
-    '9': '⁹',
-    '-': '⁻',
-  };
-  return superscriptDigits[char] || char;
+  if (digit.length !== 1) {
+    throw new Error('toSuperscript expects a single character digit [0-9]');
+  }
+  return superscriptDigits[digit] || digit;
 };
 
 /*
@@ -133,51 +138,6 @@ const toSuperscript = (str: string | number): string => {
 */
 function toDecimalString(num: number): string {
   return num.toFixed(20).replace(/\.?0+$/, '');
-}
-
-/*
-  formats a numeric string like 0000069 to 0₅69
-*/
-export function formatFraction(fraction: string) {
-  const leadingZeros = fraction.match(/^[0]+/)?.[0].length || 0;
-  if (+fraction === 0) return '00';
-
-  const significantDigits = fraction.slice(leadingZeros, leadingZeros + 2);
-  if (+significantDigits === 0) return '00';
-
-  if (leadingZeros >= 4) {
-    const subscript = leadingZeros.toString().split('').map(toSubscript).join('');
-    return `0${subscript}${significantDigits}`;
-  }
-  return `${'0'.repeat(leadingZeros)}${significantDigits}`;
-}
-
-export function formatCurrency(value: string | number, { valueIfNaN = '', currency }: CurrencyFormatterOptions): string {
-  const numericString = typeof value === 'number' ? toDecimalString(value) : String(value);
-  if (isNaN(+numericString)) return valueIfNaN;
-
-  const currencySymbol = supportedNativeCurrencies[currency].symbol;
-  const [whole, fraction = ''] = numericString.split('.');
-
-  const numericalWholeNumber = +whole;
-  if (numericalWholeNumber > 0) {
-    // if the fraction is empty and the numeric string is less than 6 characters, we can just run it through our native currency display worklet
-    if (whole.length <= 6) {
-      return convertAmountToNativeDisplayWorklet(numericString, currency, false, true);
-    }
-
-    const decimals = supportedNativeCurrencies[currency].decimals;
-    // otherwise for > 6 figs native value we need to format in compact notation
-    const formattedWhole = formatNumber(numericString, { decimals, useOrderSuffix: true });
-    return `${currencySymbol}${formattedWhole}`;
-  }
-
-  const formattedWhole = formatNumber(whole, { decimals: 0, useOrderSuffix: true });
-  const formattedFraction = formatFraction(fraction);
-  // if it ends with a non-numeric character, it's in compact notation like '1.2K'
-  if (isNaN(+formattedWhole[formattedWhole.length - 1])) return `${currencySymbol}${formattedWhole}`;
-
-  return `${currencySymbol}${formattedWhole}.${formattedFraction}`;
 }
 
 export function formatFractionWorklet(fraction: string): string {
@@ -209,16 +169,48 @@ export function formatFractionWorklet(fraction: string): string {
   return `${'0'.repeat(leadingZeros)}${significantDigits}`;
 }
 
+export function formatCurrency(value: string | number, { valueIfNaN = '', currency }: CurrencyFormatterOptions): string {
+  const numericString = typeof value === 'number' ? toDecimalString(value) : String(value);
+  if (isNaN(+numericString)) return valueIfNaN;
+
+  const currencySymbol = supportedNativeCurrencies[currency].symbol;
+  const [whole, fraction = ''] = numericString.split('.');
+
+  const numericalWholeNumber = +whole;
+  if (numericalWholeNumber > 0) {
+    // if the fraction is empty and the numeric string is less than 6 characters, we can just run it through our native currency display worklet
+    if (whole.length <= 6) {
+      return convertAmountToNativeDisplayWorklet(numericString, currency, false, true);
+    }
+
+    const decimals = supportedNativeCurrencies[currency].decimals;
+    // otherwise for > 6 figs native value we need to format in compact notation
+    const formattedWhole = formatNumber(numericString, { decimals, useOrderSuffix: true });
+    return `${currencySymbol}${formattedWhole}`;
+  }
+
+  const formattedWhole = formatNumber(whole, { decimals: 0, useOrderSuffix: true });
+  const formattedFraction = formatFractionWorklet(fraction);
+  // if it ends with a non-numeric character, it's in compact notation like '1.2K'
+  if (isNaN(+formattedWhole[formattedWhole.length - 1])) return `${currencySymbol}${formattedWhole}`;
+
+  return `${currencySymbol}${formattedWhole}.${formattedFraction}`;
+}
+
 const SUBSCRIPT_THRESHOLD_MAGNITUDE = -4;
+
+const zeroFormattedRegex = /^[-+]?0+(\.0+)?$/;
 
 export function toCompactNotation({
   value,
   prefix,
   decimalPlaces,
+  currency,
 }: {
   value: string | number;
   prefix?: string;
   decimalPlaces?: number;
+  currency?: NativeCurrencyKey;
 }): string {
   'worklet';
   const valueString = safeToStringWorklet(value);
@@ -253,6 +245,11 @@ export function toCompactNotation({
         : `${sign}${formattedMantissa}×10${superscriptExponent}`;
     }
 
+    if (currency) {
+      const formattedValue = convertAmountToNativeDisplayWorklet(absNumericString, currency, false, true);
+      return prefix ? `${prefix}${sign}${formattedValue}` : `${sign}${formattedValue}`;
+    }
+
     // Fixed decimal for 1 <= abs < 1,000,000
     const formattedValue = safeToFixedWorklet(absNumericString, decimalPlaces ?? 2);
     return prefix ? `${prefix}${sign}${formattedValue}` : `${sign}${formattedValue}`;
@@ -262,14 +259,14 @@ export function toCompactNotation({
     const targetDecimalPlaces = decimalPlaces ?? 2;
     let formattedValue = safeToFixedWorklet(absNumericString, targetDecimalPlaces);
 
-    const isZeroFormatted = /^[-+]?0+(\.0+)?$/.test(formattedValue);
+    const isZeroFormatted = zeroFormattedRegex.test(formattedValue);
     const isActuallyZero = safeEqualWorklet(absNumericString, '0');
 
     if (isZeroFormatted && !isActuallyZero) {
       const precisionNeeded = Math.abs(magnitude) + 1;
       const adjustedPrecision = Math.max(targetDecimalPlaces, precisionNeeded);
       const morePreciseValue = safeToFixedWorklet(absNumericString, adjustedPrecision);
-      if (!/^[-+]?0+(\.0+)?$/.test(morePreciseValue)) {
+      if (!zeroFormattedRegex.test(morePreciseValue)) {
         formattedValue = morePreciseValue;
       }
     }

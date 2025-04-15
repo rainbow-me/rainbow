@@ -100,6 +100,7 @@ export default function ChartPriceLabel({
         value,
         prefix: nativeSelected.symbol,
         decimalPlaces: nativeSelected.decimals,
+        currency: nativeCurrency,
       });
     },
     [nativeSelected, priceValue]
