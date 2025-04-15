@@ -50,7 +50,7 @@ const MemoizedCoinRow = memo(CoinRow);
 const TokenToSellListComponent = () => {
   const { inputProgress, internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset } = useSwapContext();
 
-  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds(), shallowEqual);
+  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
   const userAssets = useUserAssetsStore(state => state.userAssets);
 
   const searchResultsMap = useMemo(() => {
