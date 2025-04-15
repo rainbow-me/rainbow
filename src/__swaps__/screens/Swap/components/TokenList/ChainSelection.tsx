@@ -17,7 +17,6 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import Routes from '@/navigation/routesNames';
 import { Navigation } from '@/navigation';
 import { TokenToBuyListItem } from '@/__swaps__/types/search';
-import { shallowEqual } from '@/worklets/comparisons';
 import { GestureHandlerButton } from '../GestureHandlerButton';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
 
@@ -35,10 +34,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
 
   // chains sorted by balance on output, chains without balance hidden on input
-  const balanceSortedChainList = useUserAssetsStore(
-    state => (output ? state.getBalanceSortedChainList() : state.getChainsWithBalance()),
-    shallowEqual
-  );
+  const balanceSortedChainList = useUserAssetsStore(state => (output ? state.getBalanceSortedChainList() : state.getChainsWithBalance()));
 
   const [initialFilter] = useState(() => {
     const filter = useUserAssetsStore.getState().filter;
