@@ -3,7 +3,7 @@ import { ScrollView } from 'react-native';
 import { Box, Inset, Space, Stack } from '@/design-system';
 
 interface MenuContainerProps {
-  scrollviewRef?: React.RefObject<ScrollView>;
+  scrollviewRef?: React.RefObject<ScrollView | null>;
   children: React.ReactNode;
   Footer?: React.ReactNode;
   testID?: string;

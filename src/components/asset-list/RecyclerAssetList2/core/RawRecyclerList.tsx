@@ -15,7 +15,7 @@ import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { NativeCurrencyKey, UniqueAsset } from '@/entities';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
-import { useAccountSettings, useCoinListEdited, useCoinListEditOptions, useWallets } from '@/hooks';
+import { useAccountSettings, useCoinListEdited, useCoinListEditOptions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -83,7 +83,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const { setScrollToTopRef } = useRecyclerListViewScrollToTopContext();
 
   const topMarginRef = useRef<number>(0);
-  const ref = useRef<RecyclerListViewRef>();
+  const ref = useRef<RecyclerListViewRef>(undefined);
 
   useEffect(() => {
     if (ios) {

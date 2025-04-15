@@ -1,0 +1,37 @@
+diff --git a/node_modules/react-native-pager-view/android/src/fabric/java/com/reactnativepagerview/PagerViewViewManager.kt b/node_modules/react-native-pager-view/android/src/fabric/java/com/reactnativepagerview/PagerViewViewManager.kt
+index 8ec286a..db87d75 100644
+--- a/node_modules/react-native-pager-view/android/src/fabric/java/com/reactnativepagerview/PagerViewViewManager.kt
++++ b/node_modules/react-native-pager-view/android/src/fabric/java/com/reactnativepagerview/PagerViewViewManager.kt
+@@ -47,6 +47,7 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>(), RNCViewPa
+         host.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+         host.isSaveEnabled = false
+         val vp = ViewPager2(reactContext)
++        vp.setOffscreenPageLimit(4);
+         vp.adapter = ViewPagerAdapter()
+         //https://github.com/callstack/react-native-viewpager/issues/183
+         vp.isSaveEnabled = false
+diff --git a/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt b/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt
+index 66ad7b6..f3baa9a 100644
+--- a/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt
++++ b/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt
+@@ -31,6 +31,7 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
+         host.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+         host.isSaveEnabled = false
+         val vp = ViewPager2(reactContext)
++        vp.setOffscreenPageLimit(4);
+         vp.adapter = ViewPagerAdapter()
+         //https://github.com/callstack/react-native-viewpager/issues/183
+         vp.isSaveEnabled = false
+diff --git a/node_modules/react-native-pager-view/ios/RNCPagerView.m b/node_modules/react-native-pager-view/ios/RNCPagerView.m
+index 507b45d..58f0a85 100644
+--- a/node_modules/react-native-pager-view/ios/RNCPagerView.m
++++ b/node_modules/react-native-pager-view/ios/RNCPagerView.m
+@@ -106,7 +106,7 @@ - (void)embed {
+ #if !TARGET_OS_VISION
+             ((UIScrollView *)subview).keyboardDismissMode = _dismissKeyboard;
+ #endif
+-            ((UIScrollView *)subview).delaysContentTouches = YES;
++            ((UIScrollView *)subview).delaysContentTouches = NO;
+             self.scrollView = (UIScrollView *)subview;
+         }
+     }
