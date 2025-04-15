@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react';
-import Animated, { useAnimatedProps, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import { View } from 'react-native';
+import { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
-import { useChainBadges } from '@/components/coin-icon/ChainBadgeContext';
 import { getChainBadgeStyles } from '@/components/coin-icon/ChainImage';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
+import { useColorMode } from '@/design-system';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapContext } from '../providers/swap-provider';
 
@@ -18,15 +20,15 @@ export function AnimatedChainImage({
   size?: number;
 }) {
   const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
-  const chainBadges = useChainBadges();
+  const networkBadges = useBackendNetworksStore(state => state.getChainsBadge());
 
   const url = useDerivedValue(() => {
     const asset = assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset;
     const chainId = asset?.value?.chainId;
 
-    let url = '';
+    let url = 'eth';
     if (chainId !== undefined && !(!showMainnetBadge && chainId === ChainId.mainnet)) {
-      url = size > 20 ? chainBadges[chainId]?.uncropped?.largeURL ?? '' : chainBadges[chainId]?.uncropped?.smallURL ?? '';
+      url = networkBadges[chainId];
     }
     return url;
   });
@@ -39,18 +41,17 @@ export function AnimatedChainImage({
     },
   }));
 
+  const { isDarkMode } = useColorMode();
   const { containerStyle, iconStyle } = useMemo(
-    () => getChainBadgeStyles({ badgeXPosition: -size / 2, badgeYPosition: 0, position: 'absolute', shadow: false, size }),
-    [size]
+    () => getChainBadgeStyles({ badgeXPosition: -size / 2, badgeYPosition: 0, isDarkMode, position: 'absolute', size }),
+    [isDarkMode, size]
   );
 
-  const opacityStyle = useAnimatedStyle(() => ({ opacity: url.value ? 1 : 0 }));
-
   return (
-    <Animated.View style={[containerStyle, opacityStyle]}>
+    <View style={containerStyle}>
       {/* ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error */}
       {/* @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps */}
       <AnimatedFasterImage style={iconStyle} animatedProps={animatedIconSource} />
-    </Animated.View>
+    </View>
   );
 }

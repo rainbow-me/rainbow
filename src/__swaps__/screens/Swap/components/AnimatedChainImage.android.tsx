@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import React, { useMemo } from 'react';
 import { Image, View } from 'react-native';
-import { useChainBadges } from '@/components/coin-icon/ChainBadgeContext';
 import { getChainBadgeStyles } from '@/components/coin-icon/ChainImage';
+import { useColorMode } from '@/design-system';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 
@@ -15,24 +15,23 @@ export function AnimatedChainImage({
   showMainnetBadge?: boolean;
   size?: number;
 }) {
-  const chainBadges = useChainBadges();
   const chainIdState = useSwapsStore(state => state[assetType === 'input' ? 'inputAsset' : 'outputAsset']?.chainId);
 
   const iconSource = useMemo(() => {
     let source = { uri: '' };
     if (chainIdState !== undefined && !(!showMainnetBadge && chainIdState === ChainId.mainnet)) {
-      source = {
-        uri: size > 20 ? chainBadges[chainIdState]?.uncropped?.largeURL ?? '' : chainBadges[chainIdState]?.uncropped?.smallURL ?? '',
-      };
+      source = { uri: useBackendNetworksStore.getState().getChainsBadge()[chainIdState] };
     } else {
       source = { uri: '' };
     }
-    return source;
-  }, [chainBadges, chainIdState, showMainnetBadge, size]);
 
+    return source;
+  }, [chainIdState, showMainnetBadge]);
+
+  const { isDarkMode } = useColorMode();
   const { containerStyle, iconStyle } = useMemo(
-    () => getChainBadgeStyles({ badgeXPosition: -size / 2, badgeYPosition: 0, position: 'absolute', shadow: false, size }),
-    [size]
+    () => getChainBadgeStyles({ badgeXPosition: -size / 2, badgeYPosition: 0, isDarkMode, position: 'absolute', size }),
+    [isDarkMode, size]
   );
 
   return (
