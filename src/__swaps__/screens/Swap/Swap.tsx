@@ -1,15 +1,19 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
-import Animated, { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
-
+import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { Page } from '@/components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { safeAreaInsetValues } from '@/utils';
-
+import { useDelayedMount } from '@/hooks/useDelayedMount';
+import { UserAssetsParams } from '@/state/assets/types';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { ExchangeRateBubble } from '@/__swaps__/screens/Swap/components/ExchangeRateBubble';
 import { FlipButton } from '@/__swaps__/screens/Swap/components/FlipButton';
 import { SliderAndKeyboard } from '@/__swaps__/screens/Swap/components/SliderAndKeyboard';
@@ -18,18 +22,13 @@ import { SwapBottomPanel } from '@/__swaps__/screens/Swap/components/SwapBottomP
 import { SwapInputAsset } from '@/__swaps__/screens/Swap/components/SwapInputAsset';
 import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
 import { SwapOutputAsset } from '@/__swaps__/screens/Swap/components/SwapOutputAsset';
-import { ChainId } from '@/state/backendNetworks/types';
 import { SwapAssetType } from '@/__swaps__/types/swap';
-import { parseSearchAsset } from '@/__swaps__/utils/assets';
-import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
-import { useAccountSettings } from '@/hooks';
-import { useDelayedMount } from '@/hooks/useDelayedMount';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
+import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { safeAreaInsetValues, time } from '@/utils';
+import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
 import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
-import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
 import { useSwapsSearchStore } from './resources/search/searchV2';
 import { ReviewButton } from './components/ReviewButton';
 
@@ -94,47 +93,32 @@ export function SwapScreen() {
 }
 
 const MountAndUnmountHandlers = () => {
-  useMountSignal();
   useCleanupOnUnmount();
-
   return null;
-};
-
-const useMountSignal = () => {
-  useEffect(() => {
-    useSwapsStore.setState(state => ({
-      ...state,
-      isSwapsOpen: true,
-      selectedOutputChainId: state?.inputAsset?.chainId ?? state?.preferredNetwork ?? state?.selectedOutputChainId ?? ChainId.mainnet,
-    }));
-  }, []);
 };
 
 const useCleanupOnUnmount = () => {
   useEffect(() => {
     return () => {
       const highestValueEth = userAssetsStore.getState().getHighestValueNativeAsset();
-      const preferredNetwork = swapsStore.getState().preferredNetwork;
-      const parsedAsset = highestValueEth
-        ? parseSearchAsset({
-            assetWithPrice: undefined,
-            searchAsset: highestValueEth,
-            userAsset: highestValueEth,
-          })
-        : null;
 
-      useSwapsStore.setState({
-        inputAsset: parsedAsset,
-        isSwapsOpen: false,
-        outputAsset: null,
-        quote: null,
-        selectedOutputChainId: parsedAsset?.chainId ?? preferredNetwork ?? ChainId.mainnet,
-        quickBuyAnalyticalData: undefined,
-        lastNavigatedTrendingToken: undefined,
+      useSwapsStore.setState(state => {
+        const didInputAssetChange = state.inputAsset?.uniqueId !== highestValueEth?.uniqueId;
+        const inputAsset = didInputAssetChange ? parseAssetAndExtend({ asset: highestValueEth }) : state.inputAsset;
+        return {
+          inputAsset,
+          isSwapsOpen: false,
+          lastNavigatedTrendingToken: undefined,
+          outputAsset: null,
+          quote: null,
+          selectedOutputChainId: inputAsset?.chainId ?? state.preferredNetwork ?? ChainId.mainnet,
+        };
       });
 
-      useSwapsSearchStore.setState({ searchQuery: '' });
-      userAssetsStore.setState({ filter: 'all', inputSearchQuery: '' });
+      useSwapsSearchStore.setState(state => (state.searchQuery.length ? { searchQuery: '' } : state));
+      userAssetsStore.setState(state =>
+        state.filter === 'all' && !state.inputSearchQuery.length ? state : { filter: 'all', inputSearchQuery: '' }
+      );
 
       clearCustomGasSettings();
     };
@@ -142,38 +126,35 @@ const useCleanupOnUnmount = () => {
 };
 
 const WalletAddressObserver = () => {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = userAssetsStoreManager(state => state.address);
+  const lastAccountAddress = useRef(accountAddress);
   const { setAsset } = useSwapContext();
 
-  const setNewInputAsset = useCallback(() => {
-    const newHighestValueEth = userAssetsStore.getState().getHighestValueNativeAsset();
+  const setNewInputAsset = useCallback(
+    (params: Partial<UserAssetsParams> | undefined) => {
+      const { fetch, filter, getHighestValueNativeAsset, userAssets } = userAssetsStore.getState();
 
-    if (userAssetsStore.getState().filter !== 'all') {
-      userAssetsStore.setState({ filter: 'all' });
-    }
+      fetch(params, { skipStoreUpdates: 'withCache', staleTime: time.seconds(20) });
 
-    setAsset({
-      type: SwapAssetType.inputAsset,
-      asset: newHighestValueEth,
-    });
+      if (filter !== 'all') userAssetsStore.setState({ filter: 'all' });
+      const hasAssets = userAssets.size > 0;
 
-    if (userAssetsStore.getState().userAssets.size === 0) {
       setAsset({
-        type: SwapAssetType.outputAsset,
-        asset: null,
+        asset: hasAssets ? getHighestValueNativeAsset() : null,
+        forceUpdate: true,
+        insertUserAssetBalance: hasAssets,
+        type: SwapAssetType.inputAsset,
       });
-    }
-  }, [setAsset]);
-
-  useAnimatedReaction(
-    () => accountAddress,
-    (current, previous) => {
-      const didWalletAddressChange = previous && current !== previous;
-
-      if (didWalletAddressChange) runOnJS(setNewInputAsset)();
     },
-    []
+    [setAsset]
   );
+
+  useEffect(() => {
+    if (accountAddress !== lastAccountAddress.current) {
+      lastAccountAddress.current = accountAddress;
+      setNewInputAsset(accountAddress ? { address: accountAddress } : undefined);
+    }
+  }, [accountAddress, setNewInputAsset]);
 
   return null;
 };
@@ -184,7 +165,7 @@ const areBothAssetsPrefilled = () => {
 };
 
 const SliderAndKeyboardAndBottomControls = () => {
-  const skipDelayedMount = useMemo(() => areBothAssetsPrefilled(), []);
+  const [skipDelayedMount] = useState(() => areBothAssetsPrefilled());
   const shouldMount = useDelayedMount({ skipDelayedMount });
 
   const { AnimatedSwapStyles } = useSwapContext();

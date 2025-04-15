@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import {
   divWorklet,
+  equalWorklet,
   greaterThanWorklet,
   isNumberStringWorklet,
   lessThanOrEqualToWorklet,
@@ -139,7 +140,11 @@ const getHasEnoughFundsForGasWorklet = ({
 };
 
 export function SyncGasStateToSharedValues() {
-  const { hasEnoughFundsForGas, internalSelectedInputAsset } = useSwapContext();
+  const {
+    SwapInputController: { updateMaxSwappableAmount },
+    hasEnoughFundsForGas,
+    internalSelectedInputAsset,
+  } = useSwapContext();
 
   const [initialInfo] = useState(() => {
     const params = getSwapsNavigationParams();
@@ -172,6 +177,14 @@ export function SyncGasStateToSharedValues() {
       },
     }),
     (current, previous) => {
+      const isNativeAsset = current.inputAsset.isNativeAsset;
+      if (!isNativeAsset) {
+        if (gasFeeRange.value && current.inputAsset.chainId !== previous?.inputAsset?.chainId) {
+          gasFeeRange.value = null;
+        }
+        return;
+      }
+
       const { inputAsset: currInputAsset, bufferRange: currBufferRange } = current;
       const { inputAsset: prevInputAsset, bufferRange: prevBufferRange } = previous || {};
 
@@ -180,18 +193,17 @@ export function SyncGasStateToSharedValues() {
 
       if (currInputAsset?.chainId !== prevInputAsset?.chainId) {
         // reset gas fee range when input chain changes
-        gasFeeRange.value = null;
-      } else if (currBuffer && (currBuffer !== prevBuffer || currInputAsset?.uniqueId !== prevInputAsset?.uniqueId)) {
-        // update maxSwappableAmount when gas fee range is set and there is a change to input asset or gas fee range
-        if (currInputAsset?.isNativeAsset) {
-          internalSelectedInputAsset.modify(asset => {
-            if (!asset) return asset;
-            const maxSwappableAmount = subWorklet(asset.balance.amount, currBuffer);
-            return {
-              ...asset,
-              maxSwappableAmount: lessThanWorklet(maxSwappableAmount, 0) ? '0' : maxSwappableAmount,
-            };
-          });
+        if (gasFeeRange.value) gasFeeRange.value = null;
+      } else if (isNativeAsset && currBuffer && currBuffer !== prevBuffer) {
+        /* || currInputAsset?.uniqueId !== prevInputAsset?.uniqueId)) */ // update maxSwappableAmount when gas fee range is set and there is a change to input asset or gas fee range
+        const assetBalance = internalSelectedInputAsset.value?.balance.amount;
+        if (!assetBalance) return;
+
+        const prevMaxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
+        const newMaxSwappableAmount = subWorklet(assetBalance, currBuffer);
+
+        if (!prevMaxSwappableAmount || !equalWorklet(newMaxSwappableAmount, prevMaxSwappableAmount)) {
+          updateMaxSwappableAmount(newMaxSwappableAmount);
         }
       }
     },
@@ -220,9 +232,7 @@ export function SyncGasStateToSharedValues() {
       }
 
       const gasFee = calculateGasFeeWorklet(gasSettings, estimatedGasLimit);
-      if (isNaN(Number(gasFee))) {
-        return;
-      }
+      if (isNaN(Number(gasFee))) return;
 
       const nativeGasFee = divWorklet(gasFee, powWorklet(10, userNativeNetworkAsset.decimals));
 
@@ -244,10 +254,6 @@ export function SyncGasStateToSharedValues() {
         quoteValue: safeQuoteValue,
       });
     })();
-
-    return () => {
-      hasEnoughFundsForGas.value = undefined;
-    };
   }, [
     estimatedGasLimit,
     gasFeeRange,

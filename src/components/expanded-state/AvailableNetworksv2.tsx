@@ -5,7 +5,6 @@ import Divider from '../Divider';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box, Column, Columns, Inline, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import { colors, position } from '@/styles';
 import { watchingAlert } from '@/utils';
 import { useWallets } from '@/hooks';
@@ -18,10 +17,9 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { InteractionManager } from 'react-native';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 
 const NOOP = () => null;
 
@@ -48,7 +46,6 @@ const AvailableNetworksv2 = ({
     },
   };
 
-  const { goBack, navigate } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
 
   const convertAssetAndNavigate = useCallback(
@@ -102,18 +99,17 @@ const AvailableNetworksv2 = ({
         .getState()
         .getUserAssets()
         .find(userAsset => userAsset.chainId === asset.chainId && userAsset.address !== newAsset.address);
-      if (largestBalanceSameChainUserAsset) {
-        swapsStore.setState({ inputAsset: largestBalanceSameChainUserAsset });
-      } else {
-        swapsStore.setState({ inputAsset: null });
-      }
-      swapsStore.setState({ outputAsset: parsedAsset });
 
-      InteractionManager.runAfterInteractions(() => {
-        navigate(Routes.SWAP);
-      });
+      if (largestBalanceSameChainUserAsset) {
+        navigateToSwaps({
+          inputAsset: largestBalanceSameChainUserAsset,
+          outputAsset: parsedAsset,
+        });
+      } else {
+        navigateToSwaps({ inputAsset: null, outputAsset: parsedAsset });
+      }
     },
-    [asset, goBack, isReadOnlyWallet, navigate, networks]
+    [asset, goBack, isReadOnlyWallet, networks]
   );
 
   const handlePressContextMenu = useCallback((chainId: string) => convertAssetAndNavigate(+chainId), [convertAssetAndNavigate]);

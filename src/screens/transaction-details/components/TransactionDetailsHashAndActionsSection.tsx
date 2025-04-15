@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import WalletTypes from '@/helpers/walletTypes';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -46,8 +47,8 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
 
     // TODO: Add retry swap logic back for swaps
-    Navigation.handleAction(Routes.SWAP, {});
-  }, [retrySwapMetadata]);
+    navigateToSwaps();
+  }, []);
 
   if (!hash || !network) {
     return null;
