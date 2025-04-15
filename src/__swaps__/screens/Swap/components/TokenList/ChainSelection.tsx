@@ -29,7 +29,7 @@ type ChainSelectionProps = {
 export const ChainSelection = memo(function ChainSelection({ allText, animatedRef, output }: ChainSelectionProps) {
   const { isDarkMode } = useColorMode();
   const { accentColor: accountColor } = useAccountAccentColor();
-  const { selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
+  const { inputSearchRef, isNetworkSelectorOpen, outputSearchRef, selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
 
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
 
@@ -54,22 +54,24 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
   const chainName = useDerivedValue(() => {
     return output
       ? chainLabels[selectedOutputChainId.value]
-      : inputListFilter.value === undefined
+      : !inputListFilter.value || inputListFilter.value === 'all'
         ? allText
-        : chainLabels[inputListFilter.value as ChainId];
+        : chainLabels[inputListFilter.value];
   });
 
   const handleSelectChain = useCallback(
     (chainId: ChainId | undefined) => {
+      isNetworkSelectorOpen.current = false;
+      if (output) outputSearchRef.current?.focus();
+      else inputSearchRef.current?.focus();
+
       animatedRef.current?.scrollToOffset({ animated: true, offset: 0 });
 
       if (output && chainId) {
         setSelectedOutputChainId(chainId);
       } else {
         inputListFilter.value = chainId;
-        userAssetsStore.setState({
-          filter: chainId === undefined ? 'all' : chainId,
-        });
+        userAssetsStore.setState({ filter: chainId === undefined ? 'all' : chainId });
       }
 
       analytics.track(analytics.event.swapsChangedChainId, {
@@ -78,10 +80,14 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
         chainId,
       });
     },
-    [animatedRef, inputListFilter, output, setSelectedOutputChainId]
+    [animatedRef, inputListFilter, inputSearchRef, isNetworkSelectorOpen, output, outputSearchRef, setSelectedOutputChainId]
   );
 
   const navigateToNetworkSelector = useCallback(() => {
+    isNetworkSelectorOpen.current = true;
+    if (output) outputSearchRef.current?.blur();
+    else inputSearchRef.current?.blur();
+
     Navigation.handleAction(Routes.NETWORK_SELECTOR, {
       selected: output ? selectedOutputChainId : inputListFilter,
       setSelected: handleSelectChain,
@@ -90,7 +96,16 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
       canEdit: false,
       allowedNetworks: balanceSortedChainList,
     });
-  }, [balanceSortedChainList, handleSelectChain, inputListFilter, output, selectedOutputChainId]);
+  }, [
+    balanceSortedChainList,
+    handleSelectChain,
+    inputListFilter,
+    inputSearchRef,
+    isNetworkSelectorOpen,
+    output,
+    outputSearchRef,
+    selectedOutputChainId,
+  ]);
 
   return (
     <Box as={Animated.View} paddingBottom={output ? '8px' : { custom: 14 }} paddingHorizontal="20px" paddingTop="20px">

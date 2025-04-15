@@ -35,7 +35,7 @@ export const SearchInput = ({
   output: boolean;
 }) => {
   const { isDarkMode } = useColorMode();
-  const { inputProgress, inputSearchRef, outputProgress, outputSearchRef } = useSwapContext();
+  const { inputProgress, inputSearchRef, isNetworkSelectorOpen, outputProgress, outputSearchRef } = useSwapContext();
 
   const fillTertiary = useForegroundColor('fillTertiary');
   const label = useForegroundColor('label');
@@ -68,6 +68,10 @@ export const SearchInput = ({
   );
 
   const onBlur = useCallback(() => {
+    if (isNetworkSelectorOpen.current) {
+      isNetworkSelectorOpen.current = false;
+      return;
+    }
     if (isSearchFocused.value) {
       if (output) {
         if (useSwapsSearchStore.getState().searchQuery !== '') {
@@ -79,7 +83,7 @@ export const SearchInput = ({
         }
       }
     }
-  }, [isSearchFocused, output]);
+  }, [isNetworkSelectorOpen, isSearchFocused, output]);
 
   const onFocus = useCallback(() => runOnUI(handleFocusSearchWorklet)(), [handleFocusSearchWorklet]);
 
@@ -127,7 +131,6 @@ export const SearchInput = ({
                   onFocus={onFocus}
                   placeholder={output ? FIND_A_TOKEN_TO_BUY_LABEL : SEARCH_YOUR_TOKENS_LABEL}
                   placeholderTextColor={placeholderTextColor}
-                  selectTextOnFocus
                   ref={output ? outputSearchRef : inputSearchRef}
                   spellCheck={false}
                   style={inputStyles}
