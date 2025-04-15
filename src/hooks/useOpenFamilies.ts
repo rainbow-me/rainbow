@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
-import { useExternalNftCollectionsStore, useExternalProfileStore, useUserNftCollectionsStore } from '@/state/nfts';
+import { useExternalNftCollectionsStore, useUserNftCollectionsStore } from '@/state/nfts';
+import { useExternalProfileStore } from '@/state/nfts/externalNfts';
 
 export default function useOpenFamilies(external?: boolean) {
   const { accountAddress } = useAccountSettings();

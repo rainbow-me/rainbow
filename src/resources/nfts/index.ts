@@ -68,6 +68,7 @@ export const fetchUserNfts = async ({
     return {
       nfts: [],
       nftsMap,
+      address,
     };
   }
   const queryResponse = await arcClient.getNFTs({ walletAddress: address, sortBy, sortDirection });
@@ -121,6 +122,7 @@ export const fetchUserNftsByCollection = async ({ address, collectionId }: { add
   if (!address || !collectionId) {
     return {
       nfts: new Map<string, UniqueAsset>(),
+      address,
     };
   }
   const response = await arcClient.getNFTsByCollection({
@@ -132,6 +134,7 @@ export const fetchUserNftsByCollection = async ({ address, collectionId }: { add
   const nfts = new Map<string, UniqueAsset>();
   response?.nftsByCollection?.forEach(nft => {
     const uniqueAsset = simpleHashNFTToUniqueAsset(nft, address);
+    nfts.set(uniqueAsset.uniqueId, uniqueAsset);
     nfts.set(uniqueAsset.fullUniqueId, uniqueAsset);
   });
   return {

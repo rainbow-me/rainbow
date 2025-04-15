@@ -19,7 +19,6 @@ import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
-import { UniqueAsset } from '@/entities';
 import useUniqueTokens from './useUniqueTokens';
 
 export interface WalletSectionsResult {
@@ -40,6 +39,7 @@ export default function useWalletSectionsData({
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { selectedWallet, isReadOnlyWallet } = useWallets();
   const { showcaseTokens } = useShowcaseTokens();
+  console.log('show case tokens: ', showcaseTokens);
   const { hiddenTokens } = useHiddenTokens();
   const remoteConfig = useRemoteConfig();
   const experimentalConfig = useExperimentalConfig();
