@@ -3,7 +3,7 @@ import * as i18n from '@/languages';
 import { useDimensions } from '@/hooks';
 import { SkiaCard, SkiaCardProps } from './SkiaCard';
 import { Blur, Group, Image, useImage, vec } from '@shopify/react-native-skia';
-import { Box, globalColors, Inline, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText, Box, globalColors, Inline, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
@@ -14,6 +14,8 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import { useDerivedValue } from 'react-native-reanimated';
+import { useAnimatedCountdown } from '@/hooks/reanimated/useAnimatedCountdown';
 
 // TODO: Test data, replace with requests when available
 const token = {
@@ -114,6 +116,21 @@ type KingOfHillKing = {
   kingSince: number;
 };
 
+function AnimatedCountdownText({ targetUnixTimestamp }: { targetUnixTimestamp: number }) {
+  const countdown = useAnimatedCountdown(targetUnixTimestamp);
+
+  const timeString = useDerivedValue(() => {
+    'worklet';
+    return `${countdown.value} LEFT`;
+  });
+
+  return (
+    <AnimatedText color="label" tabularNumbers size="11pt" weight="heavy">
+      {timeString}
+    </AnimatedText>
+  );
+}
+
 function KingOfHillCard({ king }: { king: KingOfHillKing }) {
   const { navigate } = useNavigation();
   const separatorColor = useForegroundColor('separator');
@@ -181,11 +198,14 @@ function KingOfHillCard({ king }: { king: KingOfHillKing }) {
               </Text>
             </Box>
             <Box style={{ flex: 1 }} gap={12}>
-              <TextShadow blur={8} shadowOpacity={0.24} color={token.colors.primary}>
-                <Text color={{ custom: token.colors.primary }} size="11pt" weight="black">
-                  {i18n.t(i18n.l.king_of_hill.current_king)}
-                </Text>
-              </TextShadow>
+              <Inline wrap={false} alignVertical="center" alignHorizontal="justify" space={'8px'}>
+                <TextShadow blur={8} shadowOpacity={0.24} color={token.colors.primary}>
+                  <Text color={{ custom: token.colors.primary }} size="11pt" weight="black">
+                    {i18n.t(i18n.l.king_of_hill.current_king)}
+                  </Text>
+                </TextShadow>
+                <AnimatedCountdownText targetUnixTimestamp={1744872044} />
+              </Inline>
               <Inline wrap={false} alignHorizontal="justify" space={'8px'}>
                 <Box style={{ flex: 1 }} flexDirection="row" alignItems="center" gap={6}>
                   <Text numberOfLines={1} ellipsizeMode="tail" color="label" size="17pt" weight="heavy" style={{ flexShrink: 1 }}>
