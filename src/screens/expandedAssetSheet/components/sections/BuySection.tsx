@@ -122,7 +122,7 @@ export const BuyContent = memo(function BuySection() {
                   </Text>
                 </TextShadow>
               </IconContainer>
-              <TextShadow containerStyle={{ flex: 1 }} blur={12} shadowOpacity={0.24}>
+              <TextShadow blur={12} shadowOpacity={0.24}>
                 <Text weight="semibold" size="17pt" color="accent">
                   {i18n.t(i18n.l.expanded_state.sections.buy.pay_with)}
                 </Text>
