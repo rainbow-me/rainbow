@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ChainId } from '@/state/backendNetworks/types';
-import { TokenToReceive } from '../types';
+import { TokenToReceive, TransactionClaimableTxPayload } from '../types';
 import { CrosschainQuote, ETH_ADDRESS, getCrosschainQuote, getQuote, Quote, QuoteParams } from '@rainbow-me/swaps';
 import { Claimable, ClaimableType, TransactionClaimable } from '@/resources/addys/claimables/types';
 import { logger, RainbowError } from '@/logger';
@@ -41,7 +41,6 @@ import { estimateClaimUnlockSwapGasLimit } from '../estimateGas';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import showWalletErrorAlert from '@/helpers/support';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { useClaimableCacheStore } from '@/state/claimables/claimableCacheStore';
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
@@ -77,7 +76,6 @@ type TransactionClaimableContextType = {
   quoteState: QuoteState;
   swapEnabled: boolean;
   requiresSwap: boolean;
-  currentIndex: number;
 
   setClaimStatus: Dispatch<SetStateAction<ClaimStatus>>;
   setOutputConfig: Dispatch<SetStateAction<OutputConfig>>;
@@ -105,7 +103,6 @@ export function TransactionClaimableContextProvider({
   children: React.ReactNode;
 }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
-  const currentIndex = useClaimableCacheStore(state => state.getClaimableIndex(claimable.uniqueId)) || 0;
 
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('notReady');
   const [quoteState, setQuoteState] = useState<QuoteState>({
@@ -234,10 +231,9 @@ export function TransactionClaimableContextProvider({
         return;
       }
 
-      const currentAction = claimable.action[currentIndex];
       const gasLimit = await estimateClaimUnlockSwapGasLimit({
         chainId: claimable.chainId,
-        claim: { to: currentAction.to, from: accountAddress, data: currentAction.data },
+        claim: claimable.action.map(action => ({ to: action.to, from: accountAddress, data: action.data })),
         quote: quoteState.quote,
       });
 
@@ -361,18 +357,22 @@ export function TransactionClaimableContextProvider({
         : { gasPrice: gasSettings.gasPrice };
 
       const gasFeeParamsBySpeed = getGasSettingsBySpeed(claimable.chainId);
-      const currentAction = claimable.action[currentIndex];
 
-      const txPayload = {
-        value: '0x0' as const,
-        data: currentAction.data,
-        from: accountAddress,
-        chainId: claimable.chainId,
-        nonce: await getNextNonce({ address: accountAddress, chainId: claimable.chainId }),
-        to: currentAction.to,
-        gasLimit: gasState.gasLimit,
-        ...gasParams,
-      };
+      const claimTxns: TransactionClaimableTxPayload[] = [];
+      let currentNonce = await getNextNonce({ address: accountAddress, chainId: claimable.chainId });
+      for (const action of claimable.action) {
+        claimTxns.push({
+          value: '0x0' as const,
+          data: action.data,
+          from: accountAddress,
+          chainId: claimable.chainId,
+          nonce: currentNonce,
+          to: action.to,
+          gasLimit: gasState.gasLimit,
+          ...gasParams,
+        });
+        currentNonce++; // Increment nonce for next transaction
+      }
 
       try {
         if (requiresSwap) {
@@ -405,7 +405,7 @@ export function TransactionClaimableContextProvider({
             // @ts-expect-error - collision between old gas types and new
             gasFeeParamsBySpeed,
             quote: quoteState.quote,
-            additionalParams: { claimTx: txPayload },
+            additionalParams: { claimTxns },
           });
 
           if (errorMessage) {
@@ -456,35 +456,26 @@ export function TransactionClaimableContextProvider({
         } else {
           await executeClaim({
             asset: claimable.asset,
-            claimTx: txPayload,
+            claimTxns,
             wallet,
           });
         }
 
-        // process next claimable action if there is one
-        // or mark claim as successful and remove from claimables list
-        const nextIndex = currentIndex + 1;
-        if (nextIndex < claimable.action.length) {
-          setClaimStatus('ready');
-          useClaimableCacheStore.getState().setClaimableIndex(claimable.uniqueId, nextIndex);
-        } else {
-          setClaimStatus('success');
-          useClaimableCacheStore.getState().removeClaimable(claimable.uniqueId);
+        setClaimStatus('success');
 
-          analytics.track(analytics.event.claimClaimableSucceeded, {
-            claimableType: claimable.actionType,
-            claimableId: claimable.analyticsId,
-            chainId: claimable.chainId,
-            asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-            amount: claimable.value.claimAsset.amount,
-            usdValue: claimable.value.usd,
-            isSwapping: requiresSwap,
-            outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
-            outputChainId: outputConfig.chainId,
-          });
+        analytics.track(analytics.event.claimClaimableSucceeded, {
+          claimableType: claimable.actionType,
+          claimableId: claimable.analyticsId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
+          isSwapping: requiresSwap,
+          outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
+          outputChainId: outputConfig.chainId,
+        });
 
-          queryClient.setQueryData(queryKey, (oldData: Claimable[] | undefined) => oldData?.filter(c => c.uniqueId !== claimable.uniqueId));
-        }
+        queryClient.setQueryData(queryKey, (oldData: Claimable[] | undefined) => oldData?.filter(c => c.uniqueId !== claimable.uniqueId));
       } catch (e) {
         haptics.notificationError();
         setClaimStatus('recoverableError');
@@ -548,9 +539,6 @@ export function TransactionClaimableContextProvider({
       }
     },
     onSettled: () => {
-      const nextIndex = currentIndex + 1;
-      if (nextIndex < claimable.action.length) return;
-
       // Clear and refresh claimables data 20s after claim button is pressed, regardless of success or failure
       setTimeout(() => queryClient.invalidateQueries(queryKey), 20_000);
     },
@@ -566,7 +554,6 @@ export function TransactionClaimableContextProvider({
         gasState,
         swapEnabled,
         requiresSwap,
-        currentIndex,
         setClaimStatus,
         setOutputConfig,
         setQuoteState,

@@ -6,19 +6,7 @@ import React from 'react';
 import { ClaimPanelHeader } from './ClaimPanelHeader';
 import { ClaimStatus } from '../../shared/types';
 
-export function ClaimPanel({
-  children,
-  claimStatus,
-  iconUrl,
-  currentIndex,
-  totalActions,
-}: {
-  children: React.ReactNode;
-  claimStatus: ClaimStatus;
-  iconUrl: string;
-  currentIndex?: number;
-  totalActions?: number;
-}) {
+export function ClaimPanel({ children, claimStatus, iconUrl }: { children: React.ReactNode; claimStatus: ClaimStatus; iconUrl: string }) {
   return (
     <>
       <Box
@@ -28,7 +16,7 @@ export function ClaimPanel({
         ]}
       >
         <Panel>
-          <ClaimPanelHeader currentIndex={currentIndex} totalActions={totalActions} claimStatus={claimStatus} iconUrl={iconUrl} />
+          <ClaimPanelHeader claimStatus={claimStatus} iconUrl={iconUrl} />
           <Box alignItems="center" paddingTop="44px" paddingBottom="24px" gap={42}>
             {children}
           </Box>

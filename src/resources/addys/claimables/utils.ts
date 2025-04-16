@@ -57,7 +57,7 @@ export const parseClaimables = <C extends Claimable>(
             to: action.address_to,
             data: action.calldata,
           })),
-        } as C; // Cast needed because specific return types depend on C
+        };
       } else if (claimable.claim_action_type === 'sponsored') {
         // claimable is AddysSponsoredClaimable
         const specificClaimable = claimable as Extract<AddysClaimable, { claim_action_type: 'sponsored' }>;
@@ -65,7 +65,7 @@ export const parseClaimables = <C extends Claimable>(
           ...baseClaimable,
           actionType: 'sponsored',
           action: { method: specificClaimable.claim_action[0].method, url: specificClaimable.claim_action[0].url },
-        } as C;
+        };
       }
 
       return undefined;

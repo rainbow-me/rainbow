@@ -17,7 +17,6 @@ export function TransactionClaimableFlow() {
     claimable,
     outputConfig: { chainId: outputChainId, token: outputToken },
     claimStatus,
-    currentIndex,
     setClaimStatus,
     gasState,
     quoteState,
@@ -96,7 +95,7 @@ export function TransactionClaimableFlow() {
   }, [claim, claimStatus, goBack, isReadOnlyWallet, setClaimStatus]);
 
   return (
-    <ClaimPanel currentIndex={currentIndex} totalActions={claimable.action.length} claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
+    <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
       <Box gap={20} alignItems="center">
         <ClaimValueDisplay
           label={requiresSwap ? quoteState.nativeValueDisplay : claimable.value.nativeAsset.display}

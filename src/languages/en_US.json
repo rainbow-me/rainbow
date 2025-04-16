@@ -470,10 +470,7 @@
         "select_a_network": "Select a Network",
         "select_a_token": "Select a Token",
         "amount_to_claim_on_network": "%{amount} to claim on %{network}",
-        "claim": {
-          "single": "Claim",
-          "multiple": "Claim %{currentIndex} of %{totalActions}"
-        },
+        "claim": "Claim",
         "claiming": "Claiming",
         "claim_in_progress": "Claim in Progress...",
         "claimed": "Claimed!",
