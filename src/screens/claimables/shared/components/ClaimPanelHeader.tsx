@@ -6,12 +6,29 @@ import * as i18n from '@/languages';
 import { TextColor } from '@/design-system/color/palettes';
 import { ClaimStatus } from '../../shared/types';
 
-export function ClaimPanelHeader({ claimStatus, iconUrl }: { claimStatus: ClaimStatus; iconUrl: string }) {
+export function ClaimPanelHeader({
+  claimStatus,
+  iconUrl,
+  currentIndex,
+  totalActions,
+}: {
+  claimStatus: ClaimStatus;
+  iconUrl: string;
+  currentIndex?: number;
+  totalActions?: number;
+}) {
   const panelTitle = useMemo(() => {
     switch (claimStatus) {
       case 'notReady':
       case 'ready':
-        return i18n.t(i18n.l.claimables.panel.claim);
+        if (currentIndex !== undefined && totalActions !== undefined) {
+          return i18n.t(i18n.l.claimables.panel.claim.multiple, {
+            currentIndex: currentIndex + 1,
+            totalActions,
+          });
+        } else {
+          return i18n.t(i18n.l.claimables.panel.claim.single);
+        }
       case 'claiming':
         return i18n.t(i18n.l.claimables.panel.claiming);
       case 'pending':
@@ -23,7 +40,7 @@ export function ClaimPanelHeader({ claimStatus, iconUrl }: { claimStatus: ClaimS
       default:
         return i18n.t(i18n.l.claimables.panel.claiming_failed);
     }
-  }, [claimStatus]);
+  }, [claimStatus, currentIndex, totalActions]);
 
   const panelTitleColor: TextColor = useMemo(() => {
     switch (claimStatus) {

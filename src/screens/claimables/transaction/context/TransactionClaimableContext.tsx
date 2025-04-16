@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction, createContext, useCallback, useContext
 import { ChainId } from '@/state/backendNetworks/types';
 import { TokenToReceive } from '../types';
 import { CrosschainQuote, ETH_ADDRESS, getCrosschainQuote, getQuote, Quote, QuoteParams } from '@rainbow-me/swaps';
-import { Claimable, TransactionClaimable } from '@/resources/addys/claimables/types';
+import { Claimable, ClaimableType, TransactionClaimable } from '@/resources/addys/claimables/types';
 import { logger, RainbowError } from '@/logger';
 import { useAccountSettings } from '@/hooks';
 import {
@@ -41,6 +41,7 @@ import { estimateClaimUnlockSwapGasLimit } from '../estimateGas';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import showWalletErrorAlert from '@/helpers/support';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { useClaimableCacheStore } from '@/state/claimables/claimableCacheStore';
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
@@ -71,10 +72,12 @@ interface QuoteState {
 type TransactionClaimableContextType = {
   outputConfig: OutputConfig;
   claimStatus: ClaimStatus;
-  claimable: Claimable;
+  claimable: TransactionClaimable;
   gasState: GasState;
   quoteState: QuoteState;
+  swapEnabled: boolean;
   requiresSwap: boolean;
+  currentIndex: number;
 
   setClaimStatus: Dispatch<SetStateAction<ClaimStatus>>;
   setOutputConfig: Dispatch<SetStateAction<OutputConfig>>;
@@ -102,6 +105,7 @@ export function TransactionClaimableContextProvider({
   children: React.ReactNode;
 }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
+  const currentIndex = useClaimableCacheStore(state => state.getClaimableIndex(claimable.uniqueId)) || 0;
 
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('notReady');
   const [quoteState, setQuoteState] = useState<QuoteState>({
@@ -132,8 +136,9 @@ export function TransactionClaimableContextProvider({
 
   // chain-specific address for output token
   const outputTokenAddress = outputConfig.chainId ? outputConfig.token?.networks[outputConfig.chainId]?.address : undefined;
-
+  const swapEnabled = claimable.type !== ClaimableType.RainbowSuperTokenCreatorFees && claimable.actionType !== 'multi_transaction';
   const requiresSwap = !!(
+    swapEnabled &&
     outputConfig.token &&
     outputConfig.chainId &&
     (outputConfig.token.symbol !== claimable.asset.symbol || outputConfig.chainId !== claimable.chainId)
@@ -229,9 +234,10 @@ export function TransactionClaimableContextProvider({
         return;
       }
 
+      const currentAction = claimable.action[currentIndex];
       const gasLimit = await estimateClaimUnlockSwapGasLimit({
         chainId: claimable.chainId,
-        claim: { to: claimable.action.to, from: accountAddress, data: claimable.action.data },
+        claim: { to: currentAction.to, from: accountAddress, data: currentAction.data },
         quote: quoteState.quote,
       });
 
@@ -277,17 +283,7 @@ export function TransactionClaimableContextProvider({
       }
       logger.warn('[TransactionClaimableContext]: Failed to estimate gas', { error: e });
     }
-  }, [
-    canEstimateGas,
-    claimable.chainId,
-    claimable.action.to,
-    claimable.action.data,
-    accountAddress,
-    quoteState.quote,
-    gasSettings,
-    gasState.status,
-    nativeCurrency,
-  ]);
+  }, [canEstimateGas, claimable.chainId, claimable.action, accountAddress, quoteState.quote, gasSettings, gasState.status, nativeCurrency]);
 
   useEffect(() => {
     // estimate gas if it hasn't been estimated yet or if 10 seconds have passed since last estimate
@@ -365,142 +361,150 @@ export function TransactionClaimableContextProvider({
         : { gasPrice: gasSettings.gasPrice };
 
       const gasFeeParamsBySpeed = getGasSettingsBySpeed(claimable.chainId);
+      const currentAction = claimable.action[currentIndex];
 
       const txPayload = {
         value: '0x0' as const,
-        data: claimable.action.data,
+        data: currentAction.data,
         from: accountAddress,
         chainId: claimable.chainId,
         nonce: await getNextNonce({ address: accountAddress, chainId: claimable.chainId }),
-        to: claimable.action.to,
+        to: currentAction.to,
         gasLimit: gasState.gasLimit,
         ...gasParams,
       };
 
-      if (requiresSwap) {
-        // need to get yet another output asset type for raps compatibility
-        const outputAsset = await queryClient.fetchQuery({
-          queryKey: externalTokenQueryKey({ address: outputTokenAddress, chainId: outputConfig.chainId, currency: nativeCurrency }),
-          queryFn: externalTokenQueryFunction,
-        });
+      try {
+        if (requiresSwap) {
+          // need to get yet another output asset type for raps compatibility
+          const outputAsset = await queryClient.fetchQuery({
+            queryKey: externalTokenQueryKey({ address: outputTokenAddress, chainId: outputConfig.chainId, currency: nativeCurrency }),
+            queryFn: externalTokenQueryFunction,
+          });
 
-        if (!outputAsset) {
-          haptics.notificationError();
-          setClaimStatus('recoverableError');
-          logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to error fetching output asset'));
-          return;
-        }
-
-        const swapData = {
-          amount: claimable.value.claimAsset.amount,
-          sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
-          chainId: claimable.chainId,
-          toChainId: outputConfig.chainId,
-          assetToSell: claimable.asset.isNativeAsset ? { ...claimable.asset, address: ETH_ADDRESS } : claimable.asset,
-          assetToBuy: outputAsset.isNativeAsset ? { ...outputAsset, address: ETH_ADDRESS } : outputAsset,
-          address: accountAddress,
-        };
-
-        const { errorMessage } = await walletExecuteRap(wallet, 'claimClaimable', {
-          ...swapData,
-          gasParams,
-          // @ts-expect-error - collision between old gas types and new
-          gasFeeParamsBySpeed,
-          quote: quoteState.quote,
-          additionalParams: { claimTx: txPayload },
-        });
-
-        if (errorMessage) {
-          haptics.notificationError();
-          if (errorMessage.includes('[CLAIM-CLAIMABLE]')) {
-            // Claim error (retry possible)
+          if (!outputAsset) {
+            haptics.notificationError();
             setClaimStatus('recoverableError');
-            logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.CLAIM_ERROR}`), {
-              message: errorMessage,
-              recoverable: true,
-            });
-            analytics.track(analytics.event.claimClaimableFailed, {
-              claimableType: 'transaction',
-              claimableId: claimable.analyticsId,
-              chainId: claimable.chainId,
-              asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-              amount: claimable.value.claimAsset.amount,
-              usdValue: claimable.value.usd,
-              isSwapping: requiresSwap,
-              outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
-              outputChainId: outputConfig.chainId,
-              failureStep: 'claim',
-              errorMessage: ErrorMessages.CLAIM_ERROR,
-            });
-          } else {
-            // Bridge error (retry not possible)
-            setClaimStatus('unrecoverableError');
-            logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.SWAP_ERROR}`), {
-              message: errorMessage,
-              recoverable: false,
-            });
-            analytics.track(analytics.event.claimClaimableFailed, {
-              claimableType: 'transaction',
-              claimableId: claimable.analyticsId,
-              chainId: claimable.chainId,
-              asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-              amount: claimable.value.claimAsset.amount,
-              usdValue: claimable.value.usd,
-              isSwapping: requiresSwap,
-              outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
-              outputChainId: outputConfig.chainId,
-              failureStep: 'swap',
-              errorMessage: ErrorMessages.SWAP_ERROR,
-            });
+            logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to error fetching output asset'));
+            return;
           }
-          return;
-        }
-      } else {
-        try {
+
+          const swapData = {
+            amount: claimable.value.claimAsset.amount,
+            sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
+            chainId: claimable.chainId,
+            toChainId: outputConfig.chainId,
+            assetToSell: claimable.asset.isNativeAsset ? { ...claimable.asset, address: ETH_ADDRESS } : claimable.asset,
+            assetToBuy: outputAsset.isNativeAsset ? { ...outputAsset, address: ETH_ADDRESS } : outputAsset,
+            address: accountAddress,
+          };
+
+          const { errorMessage } = await walletExecuteRap(wallet, 'claimClaimable', {
+            ...swapData,
+            gasParams,
+            // @ts-expect-error - collision between old gas types and new
+            gasFeeParamsBySpeed,
+            quote: quoteState.quote,
+            additionalParams: { claimTx: txPayload },
+          });
+
+          if (errorMessage) {
+            haptics.notificationError();
+            if (errorMessage.includes('[CLAIM-CLAIMABLE]')) {
+              // Claim error (retry possible)
+              setClaimStatus('recoverableError');
+              logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.CLAIM_ERROR}`), {
+                message: errorMessage,
+                recoverable: true,
+              });
+              analytics.track(analytics.event.claimClaimableFailed, {
+                claimableType: 'transaction',
+                claimableId: claimable.analyticsId,
+                chainId: claimable.chainId,
+                asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+                amount: claimable.value.claimAsset.amount,
+                usdValue: claimable.value.usd,
+                isSwapping: requiresSwap,
+                outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
+                outputChainId: outputConfig.chainId,
+                failureStep: 'claim',
+                errorMessage: ErrorMessages.CLAIM_ERROR,
+              });
+            } else {
+              // Bridge error (retry not possible)
+              setClaimStatus('unrecoverableError');
+              logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.SWAP_ERROR}`), {
+                message: errorMessage,
+                recoverable: false,
+              });
+              analytics.track(analytics.event.claimClaimableFailed, {
+                claimableType: 'transaction',
+                claimableId: claimable.analyticsId,
+                chainId: claimable.chainId,
+                asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+                amount: claimable.value.claimAsset.amount,
+                usdValue: claimable.value.usd,
+                isSwapping: requiresSwap,
+                outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
+                outputChainId: outputConfig.chainId,
+                failureStep: 'swap',
+                errorMessage: ErrorMessages.SWAP_ERROR,
+              });
+            }
+            return;
+          }
+        } else {
           await executeClaim({
             asset: claimable.asset,
             claimTx: txPayload,
             wallet,
           });
-        } catch (e) {
-          haptics.notificationError();
-          setClaimStatus('recoverableError');
-          logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.CLAIM_ERROR}`), {
-            message: (e as Error)?.message,
-          });
-          analytics.track(analytics.event.claimClaimableFailed, {
-            claimableType: 'transaction',
+        }
+
+        // process next claimable action if there is one
+        // or mark claim as successful and remove from claimables list
+        const nextIndex = currentIndex + 1;
+        if (nextIndex < claimable.action.length) {
+          setClaimStatus('ready');
+          useClaimableCacheStore.getState().setClaimableIndex(claimable.uniqueId, nextIndex);
+        } else {
+          setClaimStatus('success');
+          useClaimableCacheStore.getState().removeClaimable(claimable.uniqueId);
+
+          analytics.track(analytics.event.claimClaimableSucceeded, {
+            claimableType: claimable.actionType,
             claimableId: claimable.analyticsId,
             chainId: claimable.chainId,
             asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
             amount: claimable.value.claimAsset.amount,
             usdValue: claimable.value.usd,
             isSwapping: requiresSwap,
-            outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-            outputChainId: claimable.chainId,
-            failureStep: 'claim',
-            errorMessage: ErrorMessages.CLAIM_ERROR,
+            outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
+            outputChainId: outputConfig.chainId,
           });
+
+          queryClient.setQueryData(queryKey, (oldData: Claimable[] | undefined) => oldData?.filter(c => c.uniqueId !== claimable.uniqueId));
         }
+      } catch (e) {
+        haptics.notificationError();
+        setClaimStatus('recoverableError');
+        logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.CLAIM_ERROR}`), {
+          message: (e as Error)?.message,
+        });
+        analytics.track(analytics.event.claimClaimableFailed, {
+          claimableType: 'transaction',
+          claimableId: claimable.analyticsId,
+          chainId: claimable.chainId,
+          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          amount: claimable.value.claimAsset.amount,
+          usdValue: claimable.value.usd,
+          isSwapping: requiresSwap,
+          outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
+          outputChainId: claimable.chainId,
+          failureStep: 'claim',
+          errorMessage: ErrorMessages.CLAIM_ERROR,
+        });
       }
-
-      haptics.notificationSuccess();
-      setClaimStatus('success');
-
-      analytics.track(analytics.event.claimClaimableSucceeded, {
-        claimableType: 'transaction',
-        claimableId: claimable.analyticsId,
-        chainId: claimable.chainId,
-        asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-        amount: claimable.value.claimAsset.amount,
-        usdValue: claimable.value.usd,
-        isSwapping: requiresSwap,
-        outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
-        outputChainId: outputConfig.chainId,
-      });
-
-      // Immediately remove the claimable from cached data
-      queryClient.setQueryData(queryKey, (oldData: Claimable[] | undefined) => oldData?.filter(c => c.uniqueId !== claimable.uniqueId));
     },
     onError: e => {
       haptics.notificationError();
@@ -544,6 +548,9 @@ export function TransactionClaimableContextProvider({
       }
     },
     onSettled: () => {
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < claimable.action.length) return;
+
       // Clear and refresh claimables data 20s after claim button is pressed, regardless of success or failure
       setTimeout(() => queryClient.invalidateQueries(queryKey), 20_000);
     },
@@ -557,8 +564,9 @@ export function TransactionClaimableContextProvider({
         claimable,
         quoteState,
         gasState,
+        swapEnabled,
         requiresSwap,
-
+        currentIndex,
         setClaimStatus,
         setOutputConfig,
         setQuoteState,

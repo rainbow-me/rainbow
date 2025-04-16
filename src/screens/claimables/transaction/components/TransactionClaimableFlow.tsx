@@ -10,7 +10,6 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { useWallets } from '@/hooks';
 import { watchingAlert } from '@/utils';
-import { ClaimableType } from '@/resources/addys/claimables/types';
 
 export function TransactionClaimableFlow() {
   const {
@@ -18,9 +17,11 @@ export function TransactionClaimableFlow() {
     claimable,
     outputConfig: { chainId: outputChainId, token: outputToken },
     claimStatus,
+    currentIndex,
     setClaimStatus,
     gasState,
     quoteState,
+    swapEnabled,
     requiresSwap,
   } = useTransactionClaimableContext();
   const { goBack } = useNavigation();
@@ -95,7 +96,7 @@ export function TransactionClaimableFlow() {
   }, [claim, claimStatus, goBack, isReadOnlyWallet, setClaimStatus]);
 
   return (
-    <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
+    <ClaimPanel currentIndex={currentIndex} totalActions={claimable.action.length} claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
       <Box gap={20} alignItems="center">
         <ClaimValueDisplay
           label={requiresSwap ? quoteState.nativeValueDisplay : claimable.value.nativeAsset.display}
@@ -103,7 +104,7 @@ export function TransactionClaimableFlow() {
           tokenSymbol={outputToken?.symbol}
           chainId={outputChainId}
         />
-        {claimable.type !== ClaimableType.RainbowSuperTokenCreatorFees && <ClaimCustomization />}
+        {swapEnabled && <ClaimCustomization />}
       </Box>
       <Box alignItems="center" width="full">
         <ClaimButton onPress={onPress} disabled={disabled} shimmer={shimmer} biometricIcon={shouldShowClaimText} label={buttonLabel} />

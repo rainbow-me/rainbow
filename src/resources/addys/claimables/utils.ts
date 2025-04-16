@@ -3,7 +3,12 @@ import { convertRawAmountToBalance, convertRawAmountToNativeDisplay } from '@/he
 import { parseAsset } from '@/resources/assets/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { Network } from '@/state/backendNetworks/types';
-import { AddysClaimable, BaseClaimable, Claimable, RainbowClaimable } from './types';
+import { acceptedClaimableTypes, AddysClaimable, BaseClaimable, Claimable, RainbowClaimable, AcceptedClaimableType } from './types';
+
+function isAcceptedClaimableType(type: AddysClaimable['claim_action_type']): type is AcceptedClaimableType {
+  if (!type || type === 'unknown') return false;
+  return acceptedClaimableTypes.includes(type);
+}
 
 export const parseClaimables = <C extends Claimable>(
   claimables: AddysClaimable[],
@@ -12,11 +17,7 @@ export const parseClaimables = <C extends Claimable>(
 ): C[] => {
   return claimables
     .map(claimable => {
-      if (
-        !(claimable.claim_action_type === 'transaction' || claimable.claim_action_type === 'sponsored') ||
-        !claimable.claim_action?.length ||
-        prune?.[claimable.unique_id]
-      ) {
+      if (!isAcceptedClaimableType(claimable.claim_action_type) || !claimable.claim_action?.length || prune?.[claimable.unique_id]) {
         return undefined;
       }
 
@@ -42,25 +43,32 @@ export const parseClaimables = <C extends Claimable>(
         },
       };
 
-      if (claimable.claim_action_type === 'transaction') {
-        if ('creator_address' in claimable) {
-          Object.assign<BaseClaimable, Partial<RainbowClaimable>>(baseClaimable, { creatorAddress: claimable.creator_address });
+      // Type is narrowed by the predicate above
+      if (claimable.claim_action_type === 'transaction' || claimable.claim_action_type === 'multi_transaction') {
+        // claimable is AddysTransactionClaimable or AddysRainbowClaimable
+        const specificClaimable = claimable as Extract<AddysClaimable, { claim_action_type: 'transaction' }>;
+        if ('creator_address' in specificClaimable) {
+          Object.assign<BaseClaimable, Partial<RainbowClaimable>>(baseClaimable, { creatorAddress: specificClaimable.creator_address });
         }
         return {
           ...baseClaimable,
-          actionType: 'transaction',
-          action: {
-            to: claimable.claim_action[0].address_to,
-            data: claimable.claim_action[0].calldata,
-          },
-        };
+          actionType: claimable.claim_action_type,
+          action: specificClaimable.claim_action.map(action => ({
+            to: action.address_to,
+            data: action.calldata,
+          })),
+        } as C; // Cast needed because specific return types depend on C
       } else if (claimable.claim_action_type === 'sponsored') {
+        // claimable is AddysSponsoredClaimable
+        const specificClaimable = claimable as Extract<AddysClaimable, { claim_action_type: 'sponsored' }>;
         return {
           ...baseClaimable,
           actionType: 'sponsored',
-          action: { method: claimable.claim_action[0].method, url: claimable.claim_action[0].url },
-        };
+          action: { method: specificClaimable.claim_action[0].method, url: specificClaimable.claim_action[0].url },
+        } as C;
       }
+
+      return undefined;
     })
     .filter((c): c is C => !!c);
 };
