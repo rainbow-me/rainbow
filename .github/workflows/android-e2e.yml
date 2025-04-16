@@ -14,7 +14,7 @@ jobs:
       # and installed locally. It will also record a video of the test run. Note
       # that the video is limited to 3 minutes.
       DEBUG: false
-      SHARDS: 2
+      SHARDS: 1
       ANDROID_EMULATOR_API_LEVEL: 33
       ANDROID_EMULATOR_PROFILE: pixel_6
       ANDROID_EMULATOR_RAM_SIZE: 4096M
