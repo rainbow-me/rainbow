@@ -21,7 +21,7 @@ const token = {
   address: '0x348c4395f04b19ad2a26c3b450bb265fd0d063c7',
   chainId: '8453',
   name: 'Token',
-  symbol: 'TKN',
+  symbol: 'BABYDENGBABY',
   iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
   colors: {
     primary: 'orange',
@@ -29,8 +29,8 @@ const token = {
     shadow: 'blue',
   },
   price: {
-    value: 0.0032,
-    relativeChange24h: 1.23,
+    value: 0.00032,
+    relativeChange24h: 35.23,
   },
 };
 
@@ -151,7 +151,7 @@ function KingOfHillCard({ king }: { king: KingOfHillKing }) {
       onPress={onPress}
       // shadowColor={CARD_PROPS.shadowColor}
       borderRadius={32}
-      skiaBackground={<Group></Group>}
+      skiaBackground={<Group />}
       skiaForeground={
         <Group>
           <Image fit="cover" height={84} image={coinIconImage} opacity={1} width={cardWidth} x={0} y={0} />
@@ -160,7 +160,7 @@ function KingOfHillCard({ king }: { king: KingOfHillKing }) {
       }
       foregroundComponent={
         <Box width="full" height="full" justifyContent="center" paddingVertical={'16px'} paddingHorizontal={'20px'}>
-          <Inline alignVertical="center" space={'12px'}>
+          <Inline wrap={false} alignVertical="center" space={'12px'}>
             <Box justifyContent="center" alignItems="center" width={48} height={48}>
               {sizedIconUrl && <ShinyCoinIcon imageUrl={sizedIconUrl} size={40} />}
               <Box
@@ -181,13 +181,13 @@ function KingOfHillCard({ king }: { king: KingOfHillKing }) {
                 {'👑'}
               </Text>
             </Box>
-            <Box flexGrow={1} gap={12}>
+            <Box style={{ flex: 1 }} gap={12}>
               <Text color="label" size="11pt" weight="black">
                 {'CURRENT KING'}
               </Text>
-              <Inline>
-                <Box flexGrow={1} flexDirection="row" alignItems="center" gap={6}>
-                  <Text color="label" size="17pt" weight="heavy">
+              <Inline wrap={false} alignHorizontal="justify" space={'8px'}>
+                <Box style={{ flex: 1 }} flexDirection="row" alignItems="center" gap={6}>
+                  <Text numberOfLines={1} ellipsizeMode="tail" color="label" size="17pt" weight="heavy" style={{ flexShrink: 1 }}>
                     {token.symbol}
                   </Text>
                   <Box flexDirection="row" alignItems="center" gap={3}>
