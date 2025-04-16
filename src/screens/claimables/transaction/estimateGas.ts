@@ -93,6 +93,8 @@ export const estimateClaimUnlockSwapGasLimit = async ({
     }
   }
 
+  console.log('transactions', transactions);
+
   try {
     const response = await metadataPOSTClient.simulateTransactions({
       chainId,

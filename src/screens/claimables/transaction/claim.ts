@@ -23,7 +23,7 @@ export async function executeClaim({
 }): Promise<RapActionResult[]> {
   const results: RapActionResult[] = [];
 
-  for (const [index, claimTx] of claimTxns.entries()) {
+  for (const claimTx of claimTxns) {
     const provider = getProvider({ chainId: claimTx.chainId });
     const chainsName = useBackendNetworksStore.getState().getChainsName();
 

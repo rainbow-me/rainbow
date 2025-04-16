@@ -71,7 +71,7 @@ interface QuoteState {
 type TransactionClaimableContextType = {
   outputConfig: OutputConfig;
   claimStatus: ClaimStatus;
-  claimable: TransactionClaimable;
+  claimable: Claimable;
   gasState: GasState;
   quoteState: QuoteState;
   swapEnabled: boolean;
