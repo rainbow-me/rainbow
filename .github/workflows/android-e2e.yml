@@ -61,14 +61,12 @@ jobs:
             mv rainbow-env/android/app/google-services.json android/app/google-services.json
             rm -rf rainbow-env
             sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
-
       - name: Setup scripts
         env:
             CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
             SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
         run: |
             eval $CI_SCRIPTS
-
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
@@ -83,7 +81,6 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-
       - name: Cache Gradle build
         uses: useblacksmith/setup-gradle/setup-gradle@v5
         with:
@@ -94,12 +91,6 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
         run: |
           yarn install && yarn setup
-
-      - name: Install Anvil
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: stable
-
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
 
