@@ -29,7 +29,7 @@ type ChainSelectionProps = {
 export const ChainSelection = memo(function ChainSelection({ allText, animatedRef, output }: ChainSelectionProps) {
   const { isDarkMode } = useColorMode();
   const { accentColor: accountColor } = useAccountAccentColor();
-  const { inputSearchRef, isNetworkSelectorOpen, outputSearchRef, selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
+  const { inputSearchRef, outputSearchRef, selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
 
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
 
@@ -61,10 +61,6 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
 
   const handleSelectChain = useCallback(
     (chainId: ChainId | undefined) => {
-      isNetworkSelectorOpen.current = false;
-      if (output) outputSearchRef.current?.focus();
-      else inputSearchRef.current?.focus();
-
       animatedRef.current?.scrollToOffset({ animated: true, offset: 0 });
 
       if (output && chainId) {
@@ -80,32 +76,22 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
         chainId,
       });
     },
-    [animatedRef, inputListFilter, inputSearchRef, isNetworkSelectorOpen, output, outputSearchRef, setSelectedOutputChainId]
+    [animatedRef, inputListFilter, output, setSelectedOutputChainId]
   );
 
   const navigateToNetworkSelector = useCallback(() => {
-    isNetworkSelectorOpen.current = true;
     if (output) outputSearchRef.current?.blur();
     else inputSearchRef.current?.blur();
 
     Navigation.handleAction(Routes.NETWORK_SELECTOR, {
-      selected: output ? selectedOutputChainId : inputListFilter,
-      setSelected: handleSelectChain,
+      allowedNetworks: balanceSortedChainList,
+      canEdit: false,
       canSelectAllNetworks: !output,
       goBackOnSelect: true,
-      canEdit: false,
-      allowedNetworks: balanceSortedChainList,
+      selected: output ? selectedOutputChainId : inputListFilter,
+      setSelected: handleSelectChain,
     });
-  }, [
-    balanceSortedChainList,
-    handleSelectChain,
-    inputListFilter,
-    inputSearchRef,
-    isNetworkSelectorOpen,
-    output,
-    outputSearchRef,
-    selectedOutputChainId,
-  ]);
+  }, [balanceSortedChainList, handleSelectChain, inputListFilter, inputSearchRef, output, outputSearchRef, selectedOutputChainId]);
 
   return (
     <Box as={Animated.View} paddingBottom={output ? '8px' : { custom: 14 }} paddingHorizontal="20px" paddingTop="20px">

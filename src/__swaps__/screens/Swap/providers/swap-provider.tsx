@@ -1,5 +1,5 @@
 // @refresh
-import React, { MutableRefObject, ReactNode, createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { InteractionManager, NativeModules, StyleProp, TextInput, TextStyle } from 'react-native';
 import {
   AnimatedRef,
@@ -91,7 +91,6 @@ interface SwapContextType {
   isQuoteStale: SharedValue<number>;
 
   inputSearchRef: AnimatedRef<TextInput>;
-  isNetworkSelectorOpen: MutableRefObject<boolean>;
   outputSearchRef: AnimatedRef<TextInput>;
 
   inputProgress: SharedValue<number>;
@@ -182,7 +181,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const inputSearchRef = useAnimatedRef<TextInput>();
   const outputSearchRef = useAnimatedRef<TextInput>();
-  const isNetworkSelectorOpen = useRef(false);
 
   const lastTypedInput = useSharedValue<InputKeys>(initialValues.lastTypedInput);
   const focusedInput = useSharedValue<InputKeys>(initialValues.focusedInput);
@@ -876,7 +874,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         isQuoteStale,
 
         inputSearchRef,
-        isNetworkSelectorOpen,
         outputSearchRef,
 
         inputProgress,

@@ -11,7 +11,9 @@ import Animated, {
 import { Input } from '@/components/inputs';
 import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
+import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { INPUT_PADDING, LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/__swaps__/utils/swaps';
@@ -35,7 +37,8 @@ export const SearchInput = ({
   output: boolean;
 }) => {
   const { isDarkMode } = useColorMode();
-  const { inputProgress, inputSearchRef, isNetworkSelectorOpen, outputProgress, outputSearchRef } = useSwapContext();
+  const { inputProgress, inputSearchRef, outputProgress, outputSearchRef } = useSwapContext();
+  const animatedActiveRoute = useNavigationStore(state => state.animatedActiveRoute);
 
   const fillTertiary = useForegroundColor('fillTertiary');
   const label = useForegroundColor('label');
@@ -67,33 +70,28 @@ export const SearchInput = ({
     [isDarkMode, label, labelQuaternary]
   );
 
-  const onBlur = useCallback(() => {
-    if (isNetworkSelectorOpen.current) {
-      isNetworkSelectorOpen.current = false;
-      return;
-    }
-    if (isSearchFocused.value) {
-      if (output) {
-        if (useSwapsSearchStore.getState().searchQuery !== '') {
-          useSwapsSearchStore.setState({ searchQuery: '' });
-        }
-      } else {
-        if (useUserAssetsStore.getState().inputSearchQuery !== '') {
-          useUserAssetsStore.getState().setSearchQuery('');
-        }
-      }
-    }
-  }, [isNetworkSelectorOpen, isSearchFocused, output]);
-
   const onFocus = useCallback(() => runOnUI(handleFocusSearchWorklet)(), [handleFocusSearchWorklet]);
 
+  const onCloseNetworkSelector = useCallback(() => {
+    if (output) outputSearchRef.current?.focus();
+    else inputSearchRef.current?.focus();
+  }, [inputSearchRef, output, outputSearchRef]);
+
+  const networkSelectorRoute = Routes.NETWORK_SELECTOR;
+
   useAnimatedReaction(
-    () => isSearchFocused.value,
-    (focused, prevFocused) => {
-      if (focused === false && prevFocused === true) {
+    () => ({
+      isFocused: isSearchFocused.value,
+      isNetworkSelectorOpen: animatedActiveRoute.value === networkSelectorRoute,
+    }),
+    (current, previous) => {
+      if (previous?.isFocused && !current.isFocused) {
         pastedSearchInputValue.value = '';
         if (output) runOnJS(onOutputSearchQueryChange)('');
         else runOnJS(onInputSearchQueryChange)('');
+      }
+      if (previous?.isNetworkSelectorOpen && !current.isNetworkSelectorOpen && current.isFocused) {
+        runOnJS(onCloseNetworkSelector)();
       }
     },
     []
@@ -127,7 +125,6 @@ export const SearchInput = ({
                 <AnimatedInput
                   animatedProps={searchInputValue}
                   onChangeText={output ? onOutputSearchQueryChange : onInputSearchQueryChange}
-                  onBlur={onBlur}
                   onFocus={onFocus}
                   placeholder={output ? FIND_A_TOKEN_TO_BUY_LABEL : SEARCH_YOUR_TOKENS_LABEL}
                   placeholderTextColor={placeholderTextColor}
@@ -141,10 +138,10 @@ export const SearchInput = ({
         </Box>
         <Column width="content">
           <SearchInputButton
+            handleExitSearchWorklet={handleExitSearchWorklet}
+            isSearchFocused={isSearchFocused}
             output={output}
             pastedSearchInputValue={pastedSearchInputValue}
-            isSearchFocused={isSearchFocused}
-            handleExitSearchWorklet={handleExitSearchWorklet}
           />
         </Column>
       </Columns>
