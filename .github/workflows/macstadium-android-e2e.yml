@@ -98,7 +98,7 @@ jobs:
       - name: Install Anvil
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: latest
+          version: stable
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
