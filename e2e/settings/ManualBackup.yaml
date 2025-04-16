@@ -9,8 +9,8 @@ tags:
     arguments:
       isE2ETest: true
 - runFlow: ../utils/ImportWalletWithKey.yaml
-# There is some flakeyness here sometimes and the menu doesn't
-# open so allow retries.
+
+# Navigate to settings and backup section
 - retry:
     maxRetries: 3
     commands:
@@ -34,3 +34,17 @@ tags:
     commands:
       - assertVisible: 'iCloud Not Enabled'
       - tapOn: 'No thanks'
+- assertVisible: 'Wallets & Backup'
+- assertVisible: 'Enable Cloud Backups'
+
+# Navigate to manual backup screen
+- tapOn: 'Private Key 1'
+- assertVisible: 'Not backed up'
+- tapOn:
+    id: back-up-manually
+- tapOn:
+    id: show-secret-button
+- runFlow: ../utils/MaybeSetupPin.yaml
+- tapOn:
+    id: saved-these-words
+- assertVisible: 'Wallets & Backup'
