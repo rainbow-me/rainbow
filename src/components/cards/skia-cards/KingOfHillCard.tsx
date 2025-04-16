@@ -2,20 +2,18 @@ import React, { useCallback, useMemo } from 'react';
 import * as i18n from '@/languages';
 import { useDimensions } from '@/hooks';
 import { SkiaCard, SkiaCardProps } from './SkiaCard';
-import { BlendColor, Blur, Group, Paint, Image, useImage, vec, RoundedRect, rect, Rect } from '@shopify/react-native-skia';
-import LinearGradient from 'react-native-linear-gradient';
-import { Box, globalColors, Inline, Separator, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { Blur, Group, Image, useImage, vec } from '@shopify/react-native-skia';
+import { Box, globalColors, Inline, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import FastImage from 'react-native-fast-image';
 import { getSizedImageUrl } from '@/handlers/imgix';
-import MaskedView from '@react-native-masked-view/masked-view';
-import { StyleSheet, View, ViewStyle } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 
 // TODO: Test data, replace with requests when available
 const token = {
@@ -183,9 +181,11 @@ function KingOfHillCard({ king }: { king: KingOfHillKing }) {
               </Text>
             </Box>
             <Box style={{ flex: 1 }} gap={12}>
-              <Text color="label" size="11pt" weight="black">
-                {i18n.t(i18n.l.king_of_hill.current_king)}
-              </Text>
+              <TextShadow blur={8} shadowOpacity={0.24} color={token.colors.primary}>
+                <Text color={{ custom: token.colors.primary }} size="11pt" weight="black">
+                  {i18n.t(i18n.l.king_of_hill.current_king)}
+                </Text>
+              </TextShadow>
               <Inline wrap={false} alignHorizontal="justify" space={'8px'}>
                 <Box style={{ flex: 1 }} flexDirection="row" alignItems="center" gap={6}>
                   <Text numberOfLines={1} ellipsizeMode="tail" color="label" size="17pt" weight="heavy" style={{ flexShrink: 1 }}>
@@ -252,39 +252,48 @@ function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfHillKin
   return (
     <Box flexDirection="row" justifyContent="space-between" paddingHorizontal={'10px'}>
       <ButtonPressAnimation onPress={navigateToLastWinner}>
-        <Box
-          height={26}
+        <GradientBorderView
+          borderGradientColors={['rgba(245,248,255,0.08)', 'transparent']}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
           borderRadius={13}
-          justifyContent="center"
-          alignItems="center"
-          paddingLeft={'10px'}
-          paddingRight={{ custom: 5 }}
-          borderWidth={THICK_BORDER_WIDTH}
+          backgroundColor={isDarkMode ? globalColors.grey100 : '#FBFCFD'}
+          style={{ height: 26 }}
         >
-          <Inline alignVertical="center" space={'6px'}>
-            <Text color="labelQuaternary" size="11pt" weight="bold">
-              {i18n.t(i18n.l.king_of_hill.last_winner)}
-            </Text>
-            <Box height={16} width={1} backgroundColor={isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR} />
-            <Text color="labelTertiary" size="11pt" weight="heavy">
-              {lastWinnerToken.symbol}
-            </Text>
-            <FastImage source={{ uri: sizedIconUrl }} style={{ width: 16, height: 16, borderRadius: 8 }} />
-          </Inline>
-        </Box>
+          <Box height="full" justifyContent="center" paddingLeft={'10px'} paddingRight={{ custom: 5 }}>
+            <Inline alignVertical="center" space={'6px'}>
+              <Text color="labelQuaternary" size="11pt" weight="bold">
+                {i18n.t(i18n.l.king_of_hill.last_winner)}
+              </Text>
+              <Box height={16} width={1} backgroundColor={isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR} />
+              <Text color="labelTertiary" size="11pt" weight="heavy">
+                {lastWinnerToken.symbol}
+              </Text>
+              <FastImage source={{ uri: sizedIconUrl }} style={{ width: 16, height: 16, borderRadius: 8 }} />
+            </Inline>
+          </Box>
+        </GradientBorderView>
       </ButtonPressAnimation>
-      <Box
-        height={26}
-        borderRadius={13}
-        borderWidth={THICK_BORDER_WIDTH}
-        justifyContent="center"
-        alignItems="center"
-        paddingHorizontal={'10px'}
+      <ButtonPressAnimation
+        onPress={() => {
+          // TODO: need a how it works sheet
+        }}
       >
-        <Text color="labelQuaternary" size="13pt" weight="bold">
-          {i18n.t(i18n.l.king_of_hill.how_it_works)}
-        </Text>
-      </Box>
+        <GradientBorderView
+          borderGradientColors={['rgba(245,248,255,0.08)', 'rgba(0,0,0,0)']}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          borderRadius={13}
+          backgroundColor={isDarkMode ? globalColors.grey100 : '#FBFCFD'}
+          style={{ height: 26 }}
+        >
+          <Box height="full" justifyContent="center" paddingHorizontal={'10px'}>
+            <Text color="labelQuaternary" size="13pt" weight="bold">
+              {i18n.t(i18n.l.king_of_hill.how_it_works)}
+            </Text>
+          </Box>
+        </GradientBorderView>
+      </ButtonPressAnimation>
     </Box>
   );
 }
