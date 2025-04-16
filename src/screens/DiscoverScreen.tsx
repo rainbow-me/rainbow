@@ -19,7 +19,7 @@ import Routes from '@/navigation/routesNames';
 import { safeAreaInsetValues } from '@/utils';
 import { PullToRefresh } from './Airdrops/AirdropsSheet';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import DiscoverSearchContainer from '@/components/Discover/DiscoverSearchContainer';
+import { DiscoverSearchBar } from '@/components/Discover/DiscoverSearchBar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Content = () => {
@@ -45,7 +45,7 @@ const Content = () => {
   return (
     <Box height="full" style={{ flex: 1, backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}>
       <Box paddingTop={{ custom: topInset }}>
-        {isSearching && <DiscoverSearchContainer />}
+        {isSearching && <DiscoverSearchBar />}
         {!isSearching && (
           <Navbar
             leftComponent={
