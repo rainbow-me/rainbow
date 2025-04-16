@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
+import * as i18n from '@/languages';
 import { useDimensions } from '@/hooks';
 import { SkiaCard, SkiaCardProps } from './SkiaCard';
 import { BlendColor, Blur, Group, Paint, Image, useImage, vec, RoundedRect, rect, Rect } from '@shopify/react-native-skia';
@@ -21,7 +22,7 @@ const token = {
   address: '0x348c4395f04b19ad2a26c3b450bb265fd0d063c7',
   chainId: '8453',
   name: 'Token',
-  symbol: 'BABYDENGBABY',
+  symbol: 'DENG',
   iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
   colors: {
     primary: 'orange',
@@ -183,7 +184,7 @@ function KingOfHillCard({ king }: { king: KingOfHillKing }) {
             </Box>
             <Box style={{ flex: 1 }} gap={12}>
               <Text color="label" size="11pt" weight="black">
-                {'CURRENT KING'}
+                {i18n.t(i18n.l.king_of_hill.current_king)}
               </Text>
               <Inline wrap={false} alignHorizontal="justify" space={'8px'}>
                 <Box style={{ flex: 1 }} flexDirection="row" alignItems="center" gap={6}>
@@ -212,7 +213,7 @@ function KingOfHillCard({ king }: { king: KingOfHillKing }) {
               >
                 <Inline space="4px">
                   <Text color="labelQuaternary" size="11pt" weight="bold">
-                    {'VOL'}
+                    {i18n.t(i18n.l.market_data.vol)}
                   </Text>
                   <Text color="labelTertiary" size="11pt" weight="bold">
                     {volume}
@@ -220,7 +221,7 @@ function KingOfHillCard({ king }: { king: KingOfHillKing }) {
                 </Inline>
                 <Inline space="4px">
                   <Text color="labelQuaternary" size="11pt" weight="bold">
-                    {'MCAP'}
+                    {i18n.t(i18n.l.market_data.mcap)}
                   </Text>
                   <Text color="labelTertiary" size="11pt" weight="bold">
                     {marketCap}
@@ -262,7 +263,7 @@ function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfHillKin
         >
           <Inline alignVertical="center" space={'6px'}>
             <Text color="labelQuaternary" size="11pt" weight="bold">
-              {'Last Winner'}
+              {i18n.t(i18n.l.king_of_hill.last_winner)}
             </Text>
             <Box height={16} width={1} backgroundColor={isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR} />
             <Text color="labelTertiary" size="11pt" weight="heavy">
@@ -281,7 +282,7 @@ function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfHillKin
         paddingHorizontal={'10px'}
       >
         <Text color="labelQuaternary" size="13pt" weight="bold">
-          {'How it Works'}
+          {i18n.t(i18n.l.king_of_hill.how_it_works)}
         </Text>
       </Box>
     </Box>

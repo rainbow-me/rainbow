@@ -3368,6 +3368,16 @@
     },
     "done": "Done",
     "copy": "Copy",
-    "paste": "Paste"
+    "paste": "Paste",
+    "market_data": {
+      "vol": "VOL",
+      "price": "PRICE",
+      "mcap": "MCAP"
+    },
+    "king_of_hill": {
+      "current_king": "CURRENT KING",
+      "last_winner": "LAST WINNER",
+      "how_it_works": "How It Works"
+    }
   }
 }
