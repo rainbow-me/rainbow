@@ -1,4 +1,0 @@
-flows:
-  - auth/*
-  - backup/*
-  - home/*

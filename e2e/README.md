@@ -8,7 +8,7 @@
 
 2. Build and run the app in release mode: `yarn ios --mode Release`. It is also possible to run it in development mode to make debugging easier, but will diverge from what is ran on CI.
 
-3. Run `./scripts/e2e-ios.sh` to run the full test suite. It is also possible to run a specific test by using the `--flow <path_to_file>` flag. For example to only run the import wallet test use `./scripts/e2e-ios.sh --flow ./e2e-new/auth/ImportWallet.yaml`.
+3. Run `./scripts/e2e-ios.sh` to run the full test suite. It is also possible to run a specific test by using the `--flow <path_to_file>` flag. For example to only run the import wallet test use `./scripts/e2e-ios.sh --flow ./e2e/auth/ImportWallet.yaml`.
 
 #### Android
 
@@ -16,7 +16,7 @@
 
 2. Build and run the app in release mode: `yarn android --extra-params "-PisE2E=true" --mode Release`. It is also possible to run it in development mode to make debugging easier, but will diverge from what is ran on CI.
 
-3. Run `./scripts/e2e-android.sh` to run the full test suite. It is also possible to run a specific test by using the `--flow <path_to_file>` flag. For example to only run the import wallet test use `./scripts/e2e-android.sh --flow ./e2e-new/auth/ImportWallet.yaml`.
+3. Run `./scripts/e2e-android.sh` to run the full test suite. It is also possible to run a specific test by using the `--flow <path_to_file>` flag. For example to only run the import wallet test use `./scripts/e2e-android.sh --flow ./e2e/auth/ImportWallet.yaml`.
 
 ### Debug CI failures
 
@@ -36,7 +36,7 @@ To speedup getting the app into a specific state, we implement some commands. Th
 - openLink: rainbow://e2e/<command>?param1=value1&param2=value2
 ```
 
-It is recommended that those commands are extracted to a flow for reuse. See `e2e-new/utils/ImportWalletWithKey.yaml` for an example.
+It is recommended that those commands are extracted to a flow for reuse. See `e2e/utils/ImportWalletWithKey.yaml` for an example.
 
 ### Troubleshooting
 

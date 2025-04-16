@@ -1,4 +1,5 @@
 name: Setup Android Emulator
+description: 'Sets up and configures Android emulator for testing'
 
 inputs:
   api-level:
@@ -15,7 +16,7 @@ inputs:
     required: true
   emulators:
     description: 'The number of emulators to run'
-    default: 1
+    default: '1'
 
 runs:
   using: "composite"
