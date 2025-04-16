@@ -87,12 +87,7 @@ export default function DiscoverHome() {
           )}
           <KingOfHillSection />
           <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} thickness={1} />
-          {trendingTokensEnabled && (
-            <>
-              <TrendingTokens />
-              <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} thickness={1} />
-            </>
-          )}
+          {trendingTokensEnabled && <TrendingTokens />}
           <RemoteCardCarousel />
           {mintsEnabled && (
             <Stack space="20px">
