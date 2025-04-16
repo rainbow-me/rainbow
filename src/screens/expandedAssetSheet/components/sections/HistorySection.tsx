@@ -63,6 +63,10 @@ const moreButtonStyles = {
   justifyContent: 'center' as const,
 };
 
+const buttonWrapperStyles = {
+  gap: LIST_ITEM_GAP,
+};
+
 interface MoreButtonProps {
   tokenInteractions: TokenInteraction[];
 }
@@ -229,7 +233,7 @@ export const ListItem = memo(function ListItem({ index, item, nativeCurrency, li
 
   return (
     <Box as={Animated.View} style={isVisibleStyles} height={ROW_HEIGHT}>
-      <Box as={ButtonPressAnimation} scaleTo={0.94} onPress={navigateToTransaction} gap={LIST_ITEM_GAP}>
+      <Box as={ButtonPressAnimation} scaleTo={0.94} onPress={navigateToTransaction} style={buttonWrapperStyles}>
         <Box flexDirection="row" justifyContent="space-between" alignItems="center">
           <Box flexDirection="row" alignItems="center" gap={ICON_TEXT_GAP}>
             <Text size="icon 11px" color={{ custom: iconColor }} weight="bold">
