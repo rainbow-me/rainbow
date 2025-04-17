@@ -69,9 +69,9 @@ import { ReviewButton } from './components/ReviewButton';
  */
 
 export function SwapScreen() {
+  useCleanupOnUnmount();
   return (
     <SwapProvider>
-      <MountAndUnmountHandlers />
       <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
         <SwapBackground />
         <Box alignItems="center" height="full" paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) + 29 }} width="full">
@@ -90,11 +90,6 @@ export function SwapScreen() {
     </SwapProvider>
   );
 }
-
-const MountAndUnmountHandlers = () => {
-  useCleanupOnUnmount();
-  return null;
-};
 
 const useCleanupOnUnmount = () => {
   useEffect(() => {
