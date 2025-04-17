@@ -371,7 +371,7 @@ export function TransactionClaimableContextProvider({
           gasLimit: gasState.gasLimit,
           ...gasParams,
         });
-        currentNonce++; // Increment nonce for next transaction
+        currentNonce++;
       }
 
       try {

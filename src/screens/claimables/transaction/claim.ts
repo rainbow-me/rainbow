@@ -22,18 +22,23 @@ export async function executeClaim({
   wallet: Signer;
 }): Promise<RapActionResult[]> {
   const results: RapActionResult[] = [];
+  const chainsName = useBackendNetworksStore.getState().getChainsName();
 
-  for (const claimTx of claimTxns) {
+  const sendPromises = claimTxns.map(async claimTx => {
     const provider = getProvider({ chainId: claimTx.chainId });
-    const chainsName = useBackendNetworksStore.getState().getChainsName();
+    return sendTransaction({ transaction: claimTx, existingWallet: wallet, provider });
+  });
 
-    const result = await sendTransaction({ transaction: claimTx, existingWallet: wallet, provider });
+  const sendResults = await Promise.all(sendPromises);
 
+  for (const [index, result] of sendResults.entries()) {
     if (!result?.result || !!result.error || !result.result.hash) {
       const error = new RainbowError('[CLAIM-CLAIMABLE]: failed to execute claim transaction');
       logger.error(error);
       throw error;
     }
+
+    const claimTx = claimTxns[index];
 
     const parsedAsset = {
       ...asset,
