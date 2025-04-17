@@ -28,11 +28,10 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { clamp } from '@/__swaps__/utils/swaps';
 import { isAddress } from 'viem';
-import { navigateToSwaps, SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { navigateToSwaps, NavigateToSwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
 import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { ChainId } from '@/state/backendNetworks/types';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
   url: string;
@@ -382,7 +381,7 @@ function isValidGasSpeed(s: string | undefined): s is GasSpeed {
 async function setFromWallet(address: string | undefined) {
   if (!address || !isAddress(address)) return;
 
-  const userWallets = store.getState().wallets.wallets!;
+  const userWallets = store.getState().wallets.wallets || {};
   const wallet = Object.values(userWallets).find(w => w.addresses.some(a => a.address === address));
 
   if (!wallet) return;
@@ -402,7 +401,7 @@ async function handleSwapsDeeplink(url: string) {
 
   await setFromWallet(query.from);
 
-  const params: SwapsParams = {};
+  const params: NavigateToSwapsParams = {};
 
   const inputAsset = querySwapAsset(query.inputAsset?.toLowerCase());
   const outputAsset = querySwapAsset(query.outputAsset?.toLowerCase());
@@ -415,17 +414,23 @@ async function handleSwapsDeeplink(url: string) {
     params.percentageToSell = clamp(+query.percentageToSell, 0, 1);
   } else if (isNumericString(query.inputAmount)) {
     params.inputAmount = query.inputAmount;
-  } else if (isNumericString(query.outputAmount)) {
-    params.outputAmount = query.outputAmount;
   }
+  // Output-based quotes aren't currently supported
+  // else if (isNumericString(query.outputAmount)) {
+  //   params.outputAmount = query.outputAmount;
+  // }
 
   const gasSpeed = query.gasSpeed?.toLowerCase();
   if (isValidGasSpeed(gasSpeed)) {
     params.gasSpeed = gasSpeed;
   }
 
-  params.inputAsset = await inputAsset;
-  params.outputAsset = await outputAsset;
+  const inputAssetToSet = await inputAsset;
+  const outputAssetToSet = await outputAsset;
+
+  if (inputAssetToSet) params.inputAsset = inputAssetToSet;
+  if (outputAssetToSet) params.outputAsset = outputAssetToSet;
+
   navigateToSwaps(params);
 }
 

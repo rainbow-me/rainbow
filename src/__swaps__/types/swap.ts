@@ -1,10 +1,10 @@
 import { ExtendedAnimatedAssetWithColors } from './assets';
 
-export type inputKeys = 'inputAmount' | 'inputNativeValue' | 'outputAmount' | 'outputNativeValue';
-export type inputMethods = inputKeys | 'slider';
-export type inputValuesType = { [key in inputKeys]: number | string };
+export type InputKeys = 'inputAmount' | 'inputNativeValue' | 'outputAmount' | 'outputNativeValue';
+export type InputMethods = InputKeys | 'slider';
+export type InputValues = { [key in InputKeys]: number | string };
 
-export type settingsKeys = 'swapFee' | 'slippage';
+export type SettingsKeys = 'swapFee' | 'slippage';
 
 export enum SortMethod {
   token = 'token',
@@ -19,9 +19,9 @@ export enum SwapAssetType {
 export interface RequestNewQuoteParams {
   assetToBuyUniqueId: string | undefined;
   assetToSellUniqueId: string | undefined;
-  inputAmount: inputValuesType['inputAmount'];
-  lastTypedInput: inputKeys;
-  outputAmount: inputValuesType['outputAmount'];
+  inputAmount: InputValues['inputAmount'];
+  lastTypedInput: InputKeys;
+  outputAmount: InputValues['outputAmount'];
 }
 
 export type RecentSwap = {

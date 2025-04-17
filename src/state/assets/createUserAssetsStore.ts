@@ -42,7 +42,6 @@ export const createUserAssetsStore = (address: Address | string) =>
             }
           : null,
 
-      enabled: $ => $(useSwapsStore, state => !state.isSwapsOpen),
       keepPreviousData: true,
       params: {
         address,

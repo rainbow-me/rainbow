@@ -1,20 +1,20 @@
-/* eslint-disable no-nested-ternary */
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { InteractionManager, StyleSheet } from 'react-native';
 import Animated, { runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 import { analytics } from '@/analytics';
-import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
-import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
-import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
-import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
-import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { SwapAssetType } from '@/__swaps__/types/swap';
-import { GestureHandlerButton } from './GestureHandlerButton';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { SwapAssetType } from '@/__swaps__/types/swap';
+import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
+import { GestureHandlerButton } from './GestureHandlerButton';
 
 export const FlipButton = () => {
   const { isDarkMode } = useColorMode();
@@ -22,69 +22,104 @@ export const FlipButton = () => {
   const {
     AnimatedSwapStyles,
     SwapInputController,
-    handleProgressNavigation,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
+    isQuoteStale,
     selectedOutputChainId,
+    setAsset,
   } = useSwapContext();
 
   const chainSetTimeoutId = useRef<NodeJS.Timeout | null>(null);
 
-  const flipStoreAssets = useCallback(() => {
-    const { inputAsset: newOutputAsset, outputAsset: newInputAsset } = useSwapsStore.getState();
+  const flipWithTracking = useCallback(
+    ({
+      assetChainId,
+      assetToSet,
+      assetTypeToSet,
+      inputAmount,
+      outputChainId,
+    }: {
+      assetChainId: ChainId | undefined;
+      assetToSet: ExtendedAnimatedAssetWithColors | null;
+      assetTypeToSet: SwapAssetType;
+      inputAmount: string | number;
+      outputChainId: ChainId;
+    }) => {
+      setAsset({ asset: assetToSet, type: assetTypeToSet });
 
-    useSwapsStore.setState({
-      inputAsset: newInputAsset,
-      outputAsset: newOutputAsset,
-    });
+      let shouldUpdateSelectedOutputChainId = false;
+      let newInputChainId: ChainId | null = null;
+      let previousInputAsset: { address: string; chainId: ChainId; symbol: string } | null = null;
+      let previousOutputAsset: { address: string; chainId: ChainId; symbol: string } | null = null;
 
-    const shouldUpdateSelectedOutputChainId = useSwapsStore.getState().selectedOutputChainId !== newInputAsset?.chainId;
-    const shouldUpdateAnimatedSelectedOutputChainId = selectedOutputChainId.value !== internalSelectedInputAsset.value?.chainId;
+      useSwapsStore.setState(state => {
+        const { outputAsset: newInputAsset, inputAsset: newOutputAsset } = state;
 
-    if (newInputAsset && (shouldUpdateSelectedOutputChainId || shouldUpdateAnimatedSelectedOutputChainId)) {
-      if (chainSetTimeoutId.current) {
-        clearTimeout(chainSetTimeoutId.current);
+        if (newInputAsset) {
+          shouldUpdateSelectedOutputChainId = state.selectedOutputChainId !== newInputAsset.chainId;
+          newInputChainId = newInputAsset.chainId;
+          previousOutputAsset = { address: newInputAsset.address, chainId: newInputAsset.chainId, symbol: newInputAsset.symbol };
+        }
+        if (newOutputAsset) {
+          previousInputAsset = { address: newOutputAsset.address, chainId: newOutputAsset.chainId, symbol: newOutputAsset.symbol };
+        }
+        return {
+          inputAsset: newInputAsset,
+          outputAsset: newOutputAsset,
+        };
+      });
+
+      const shouldUpdateAnimatedSelectedOutputChainId = outputChainId !== assetChainId;
+
+      if (newInputChainId !== null && (shouldUpdateSelectedOutputChainId || shouldUpdateAnimatedSelectedOutputChainId)) {
+        if (chainSetTimeoutId.current) {
+          clearTimeout(chainSetTimeoutId.current);
+        }
+
+        // This causes a heavy re-render in the output token list, so we delay updating the selected output chain until
+        // the animation is most likely complete.
+        chainSetTimeoutId.current = setTimeout(() => {
+          InteractionManager.runAfterInteractions(() => {
+            if (shouldUpdateSelectedOutputChainId) {
+              useSwapsStore.setState(state => ({
+                selectedOutputChainId: state.inputAsset?.chainId ?? ChainId.mainnet,
+              }));
+            }
+            if (shouldUpdateAnimatedSelectedOutputChainId) {
+              selectedOutputChainId.value = newInputChainId ?? ChainId.mainnet;
+            }
+          });
+        }, 750);
       }
 
-      // This causes a heavy re-render in the output token list, so we delay updating the selected output chain until
-      // the animation is most likely complete.
-      chainSetTimeoutId.current = setTimeout(() => {
-        InteractionManager.runAfterInteractions(() => {
-          if (shouldUpdateSelectedOutputChainId) {
-            useSwapsStore.setState({
-              selectedOutputChainId: newInputAsset?.chainId ?? ChainId.mainnet,
-            });
-          }
-          if (shouldUpdateAnimatedSelectedOutputChainId) {
-            selectedOutputChainId.value = newInputAsset?.chainId ?? ChainId.mainnet;
-          }
-        });
-      }, 750);
-    }
-
-    analytics.track(analytics.event.swapsFlippedAssets, {
-      inputAmount: SwapInputController.inputValues.value.inputAmount,
-      previousInputAsset: internalSelectedInputAsset.value,
-      previousOutputAsset: internalSelectedOutputAsset.value,
-    });
-  }, [SwapInputController.inputValues, internalSelectedInputAsset, internalSelectedOutputAsset, selectedOutputChainId]);
+      analytics.track(analytics.event.swapsFlippedAssets, { inputAmount, previousInputAsset, previousOutputAsset });
+    },
+    [selectedOutputChainId, setAsset]
+  );
 
   const handleFlipAssets = useCallback(() => {
     'worklet';
     if (internalSelectedInputAsset.value || internalSelectedOutputAsset.value) {
+      isQuoteStale.value = 1;
       const assetTypeToSet = internalSelectedInputAsset.value ? SwapAssetType.outputAsset : SwapAssetType.inputAsset;
+      const assetToSet = assetTypeToSet === SwapAssetType.inputAsset ? internalSelectedOutputAsset.value : internalSelectedInputAsset.value;
 
-      // Flip shared value assets and navigate ahead of time because it's faster than waiting for setAsset
-      const newOutputAsset = internalSelectedInputAsset.value;
-      const newInputAsset = internalSelectedOutputAsset.value;
-
-      internalSelectedInputAsset.value = newInputAsset;
-      internalSelectedOutputAsset.value = newOutputAsset;
-      handleProgressNavigation({ type: assetTypeToSet });
-
-      runOnJS(flipStoreAssets)();
+      runOnJS(flipWithTracking)({
+        assetChainId: assetToSet?.chainId,
+        assetToSet,
+        assetTypeToSet,
+        inputAmount: SwapInputController.inputValues.value.inputAmount,
+        outputChainId: selectedOutputChainId.value,
+      });
     }
-  }, [flipStoreAssets, handleProgressNavigation, internalSelectedInputAsset, internalSelectedOutputAsset]);
+  }, [
+    SwapInputController.inputValues,
+    flipWithTracking,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    isQuoteStale,
+    selectedOutputChainId,
+  ]);
 
   const flipButtonInnerStyles = useAnimatedStyle(() => {
     return {
@@ -93,6 +128,14 @@ export const FlipButton = () => {
         : getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.mixedShadowColor, false),
     };
   });
+
+  useEffect(() => {
+    return () => {
+      if (chainSetTimeoutId.current) {
+        clearTimeout(chainSetTimeoutId.current);
+      }
+    };
+  }, []);
 
   return (
     <Box

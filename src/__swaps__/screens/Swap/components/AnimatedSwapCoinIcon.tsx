@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import React, { memo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { borders } from '@/styles';
@@ -9,10 +8,11 @@ import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFas
 import { AnimatedChainImage } from './AnimatedChainImage';
 import { fadeConfig } from '../constants';
 import { SwapCoinIconTextFallback } from './SwapCoinIconTextFallback';
-import { Box } from '@/design-system';
+import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
 import { useSwapContext } from '../providers/swap-provider';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 
 export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
   assetType,
@@ -25,7 +25,8 @@ export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
   chainSize?: number;
   showBadge?: boolean;
 }) {
-  const { isDarkMode, colors } = useTheme();
+  const { isDarkMode } = useColorMode();
+  const { colors } = useTheme();
   const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
   const asset = assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset;
@@ -53,9 +54,20 @@ export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
     return { showCoinIcon, showEmptyState, showFallback };
   });
 
-  const animatedCoinIconWrapperStyles = useAnimatedStyle(() => ({
-    shadowColor: visibility.value.showCoinIcon ? (isDarkMode ? colors.shadow : asset.value?.shadowColor['light']) : 'transparent',
-  }));
+  const animatedCoinIconWrapperStyles = useAnimatedStyle(() => {
+    const assetBackgroundColor = (assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset).value
+      ?.tintedBackgroundColor;
+    const backgroundColor = assetBackgroundColor
+      ? isDarkMode
+        ? getColorValueForThemeWorklet(assetBackgroundColor, isDarkMode)
+        : globalColors.white100
+      : 'transparent';
+
+    return {
+      backgroundColor,
+      shadowColor: visibility.value.showCoinIcon ? (isDarkMode ? colors.shadow : asset.value?.shadowColor['light']) : 'transparent',
+    };
+  });
 
   const animatedCoinIconStyles = useAnimatedStyle(() => ({
     display: visibility.value.showCoinIcon ? 'flex' : 'none',

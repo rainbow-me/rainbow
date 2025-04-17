@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import {
   BASE_INPUT_HEIGHT,
   BOTTOM_ACTION_BAR_HEIGHT,
@@ -53,7 +52,7 @@ export function useAnimatedSwapStyles({
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   isFetching: SharedValue<boolean>;
   outputProgress: SharedValue<number>;
-  swapInfo: DerivedValue<{ areBothAssetsSet: boolean; isBridging: boolean }>;
+  swapInfo: DerivedValue<{ areAllInputsZero: boolean; areBothAssetsSet: boolean; isBridging: boolean }>;
 }) {
   const { isDarkMode } = useColorMode();
 

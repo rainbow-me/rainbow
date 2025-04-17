@@ -116,7 +116,7 @@ export const TokenToBuyList = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, outputProgress, setAsset } = useSwapContext();
   const { results: sections, isLoading } = useSearchCurrencyLists();
 
-  const [supportedChainsBooleanMap] = useState(
+  const [supportedChainsBooleanMap] = useState(() =>
     useBackendNetworksStore
       .getState()
       .getSupportedChainIds()

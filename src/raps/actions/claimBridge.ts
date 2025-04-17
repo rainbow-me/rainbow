@@ -45,7 +45,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     sellTokenAddress: AddressZero,
     buyTokenAddress: AddressZero,
     sellAmount: sellAmount,
-    slippage: +getDefaultSlippageWorklet(chainId, getRemoteConfig()),
+    slippage: +getDefaultSlippageWorklet(chainId, getRemoteConfig().default_slippage_bips_chainId),
     currency,
   });
 
@@ -104,7 +104,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
       sellTokenAddress: AddressZero,
       buyTokenAddress: AddressZero,
       sellAmount: maxBridgeableAmount,
-      slippage: +getDefaultSlippageWorklet(chainId, getRemoteConfig()),
+      slippage: +getDefaultSlippageWorklet(chainId, getRemoteConfig().default_slippage_bips_chainId),
       currency,
     });
 

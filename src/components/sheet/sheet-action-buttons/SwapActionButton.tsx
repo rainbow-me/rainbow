@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import SheetActionButton from './SheetActionButton';
-import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { RainbowToken } from '@/entities';
 import { containsEmoji } from '@/helpers/strings';
@@ -9,12 +8,11 @@ import { ethereumUtils } from '@/utils';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
-import { swapsStore } from '@/state/swaps/swapsStore';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import useNavigationForNonReadOnlyWallets from '@/hooks/useNavigationForNonReadOnlyWallets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import {} from '@/__swaps__/utils/swaps';
 import { Inline, Text, TextIcon } from '@/design-system';
+import { NavigateToSwapsParams, navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
@@ -29,7 +27,6 @@ type SwapActionButtonProps = {
 
 function SwapActionButton({ asset, color: givenColor, height, icon, inputType, label, weight = 'heavy', ...props }: SwapActionButtonProps) {
   const { colors } = useTheme();
-  const navigate = useNavigationForNonReadOnlyWallets();
 
   const color = givenColor || colors.swapPurple;
   const symbolHasEmoji = useMemo(() => (label ? containsEmoji(label) : false), [label]);
@@ -68,15 +65,17 @@ function SwapActionButton({ asset, color: givenColor, height, icon, inputType, l
       userAsset,
     });
 
+    const params: NavigateToSwapsParams = {};
+
     if (inputType === SwapAssetType.inputAsset) {
-      swapsStore.setState({ inputAsset: parseAssetAndExtend({ asset: userAsset || parsedAsset }) });
+      params.inputAsset = userAsset || parsedAsset;
 
       const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork({ chainId });
       if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
         const userOutputAsset = userAssetsStore.getState().getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
 
         if (userOutputAsset) {
-          swapsStore.setState({ outputAsset: parseAssetAndExtend({ asset: userOutputAsset }) });
+          params.outputAsset = userOutputAsset;
         } else {
           const outputAsset = {
             ...nativeAssetForChain,
@@ -106,7 +105,7 @@ function SwapActionButton({ asset, color: givenColor, height, icon, inputType, l
             },
           } satisfies ParsedSearchAsset;
 
-          swapsStore.setState({ outputAsset: parseAssetAndExtend({ asset: outputAsset }) });
+          params.outputAsset = outputAsset;
         }
       }
     } else {
@@ -116,17 +115,16 @@ function SwapActionButton({ asset, color: givenColor, height, icon, inputType, l
         .find(userAsset => userAsset.chainId === chainId && userAsset.address !== asset.address);
 
       if (largestBalanceSameChainUserAsset) {
-        swapsStore.setState({
-          inputAsset: parseAssetAndExtend({ asset: largestBalanceSameChainUserAsset }),
-          outputAsset: parseAssetAndExtend({ asset: parsedAsset }),
-        });
+        params.inputAsset = largestBalanceSameChainUserAsset;
+        params.outputAsset = parsedAsset;
       } else {
-        swapsStore.setState({ inputAsset: null, outputAsset: parseAssetAndExtend({ asset: parsedAsset }) });
+        params.inputAsset = null;
+        params.outputAsset = parsedAsset;
       }
     }
 
-    navigate(Routes.SWAP);
-  }, [asset, inputType, navigate]);
+    navigateToSwaps(params);
+  }, [asset, inputType]);
 
   return (
     <SheetActionButton

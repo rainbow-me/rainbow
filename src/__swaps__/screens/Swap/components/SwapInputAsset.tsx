@@ -113,7 +113,7 @@ function InputAssetBalanceBadge() {
   });
 
   return (
-    <GestureHandlerButton onPressWorklet={SwapInputController.setValueToMaxSwappableAmount}>
+    <GestureHandlerButton hitSlop={6} onPressWorklet={SwapInputController.setValueToMaxSwappableAmount}>
       <BalanceBadge label={label} />
     </GestureHandlerButton>
   );

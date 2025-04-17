@@ -48,8 +48,8 @@ export function useSearchCurrencyLists() {
     return [isContract, isContract ? ADDRESS_SEARCH_KEY : NAME_SYMBOL_SEARCH_KEYS];
   }, [query]);
 
-  const unfilteredFavorites: FavoritedAsset[] = useMemo(() => {
-    return Object.values(favorites)
+  const unfilteredFavorites = useMemo(() => {
+    const filtered = Object.values(favorites)
       .filter(token => token.networks[toChainId]?.address)
       .map<FavoritedAsset>(favToken => {
         const networks: SearchAsset['networks'] = favToken.networks;
@@ -70,43 +70,47 @@ export function useSearchCurrencyLists() {
           uniqueId: getUniqueId(address, toChainId),
         };
       });
+    return filtered.length ? filtered : undefined;
   }, [favorites, toChainId]);
 
   const filteredBridgeAsset = useMemo(() => {
     if (!bridgedInputAsset) return null;
-
     return filterBridgeAsset({ asset: bridgedInputAsset, filter: query, isAddress: isContractSearch })
       ? {
           ...bridgedInputAsset,
-          favorite: unfilteredFavorites.some(fav => fav.networks?.[toChainId]?.address === bridgedInputAsset.address),
+          favorite: !!unfilteredFavorites?.some(fav => fav.networks?.[toChainId]?.address === bridgedInputAsset.address),
         }
       : null;
   }, [bridgedInputAsset, isContractSearch, query, toChainId, unfilteredFavorites]);
 
-  const favoritesList = useDeepCompareMemo(() => {
+  const favoritesList = useMemo(() => {
     if (query === '') return unfilteredFavorites;
-    else
-      return filterList(unfilteredFavorites || [], isContractSearch ? addHexPrefix(query).toLowerCase() : query, keys, {
+    else {
+      const filtered = filterList(unfilteredFavorites || [], isContractSearch ? addHexPrefix(query).toLowerCase() : query, keys, {
         threshold: isContractSearch ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
       });
+      return filtered.length ? filtered : undefined;
+    }
   }, [isContractSearch, keys, query, unfilteredFavorites]);
 
-  const recentsForChain = useDeepCompareMemo(() => {
-    return filterList(recentSwaps, query, keys, {
+  const recentsForChain = useMemo(() => {
+    const filtered = filterList(recentSwaps, query, keys, {
       threshold: isContractSearch ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
       sorter: matchItems => matchItems.sort((a, b) => b.item.swappedAt - a.item.swappedAt),
     });
+    return filtered.length ? filtered : undefined;
   }, [query, isContractSearch, keys, recentSwaps]);
 
-  const popularAssetsForChain = useDeepCompareMemo(() => {
-    if (!popularAssets) return [];
+  const popularAssetsForChain = useMemo(() => {
+    if (!popularAssets) return undefined;
     if (!query) return popularAssets;
-    return filterList(popularAssets, query, keys, {
+    const filtered = filterList(popularAssets, query, keys, {
       threshold: isContractSearch ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
     });
+    return filtered.length ? filtered : undefined;
   }, [isContractSearch, keys, popularAssets, query]);
 
-  const data = useMemo(() => {
+  const data = useDeepCompareMemo(() => {
     return {
       isLoading: false,
       results: buildListSectionsData({

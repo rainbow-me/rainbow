@@ -1,4 +1,4 @@
-import { RainbowError, logger } from '@/logger';
+import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
@@ -6,11 +6,10 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { time } from '@/utils';
 import { parseTokenSearchResults } from './utils';
-import { TOKEN_SEARCH_URL } from 'react-native-dotenv';
 
 let tokenSearchHttp: RainbowFetchClient | undefined;
 
-const getTokenSearchHttp = () => {
+const getTokenSearchHttp = (): RainbowFetchClient => {
   const clientUrl = tokenSearchHttp?.baseURL;
   const baseUrl = TOKEN_SEARCH_URL;
   if (!tokenSearchHttp || clientUrl !== baseUrl) {
@@ -32,13 +31,8 @@ export type PopularTokensParams = {
 
 async function popularTokensQueryFunction({ chainId }: PopularTokensParams, abortController: AbortController | null) {
   const url = `/v3/trending/swaps/${chainId}`;
-  try {
-    const tokenSearch = await getTokenSearchHttp().get<{ data: SearchAsset[] }>(url, { abortController });
-    return parseTokenSearchResults(tokenSearch.data.data, chainId);
-  } catch (e) {
-    logger.error(new RainbowError('[popularTokensQueryFunction]: Popular tokens failed'), { url });
-    return [];
-  }
+  const tokenSearch = await getTokenSearchHttp().get<{ data: SearchAsset[] }>(url, { abortController });
+  return parseTokenSearchResults(tokenSearch.data.data, chainId);
 }
 
 export const usePopularTokensStore = createQueryStore<SearchAsset[], PopularTokensParams>(

@@ -44,6 +44,9 @@ export const SLIDER_WIDTH = deviceUtils.dimensions.width - 40;
 export const INITIAL_SLIDER_POSITION = 0.5;
 export const SCRUBBER_WIDTH = 16;
 
+export const SLIDER_ROUND_THRESHOLD_START = SLIDER_WIDTH * 0.01;
+export const SLIDER_ROUND_THRESHOLD_END = SLIDER_WIDTH * 0.99;
+
 export const SEPARATOR_COLOR = 'rgba(245, 248, 255, 0.03)';
 export const LIGHT_SEPARATOR_COLOR = 'rgba(9, 17, 31, 0.03)';
 

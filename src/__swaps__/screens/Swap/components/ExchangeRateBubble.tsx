@@ -11,10 +11,18 @@ import { ETH_ADDRESS } from '@/references';
 import { GestureHandlerButton } from './GestureHandlerButton';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
+import { StyleSheet } from 'react-native';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const ExchangeRateBubble = () => {
   const { isDarkMode } = useColorMode();
-  const { AnimatedSwapStyles, internalSelectedInputAsset, internalSelectedOutputAsset, isFetching } = useSwapContext();
+  const {
+    AnimatedSwapStyles,
+    SwapInputController: { inputNativePrice, outputNativePrice },
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    isFetching,
+  } = useSwapContext();
   const { nativeCurrency: currentCurrency } = useAccountSettings();
 
   const rotatingIndex = useSharedValue(0);
@@ -52,11 +60,14 @@ export const ExchangeRateBubble = () => {
       rotatingIndex: rotatingIndex.value,
     }),
     (current, previous) => {
+      const inputAssetPrice = inputNativePrice.value;
+      const outputAssetPrice = outputNativePrice.value;
+
       if (
         !internalSelectedInputAsset.value ||
         !internalSelectedOutputAsset.value ||
-        !internalSelectedInputAsset.value.nativePrice ||
-        !internalSelectedOutputAsset.value.nativePrice ||
+        !inputAssetPrice ||
+        !outputAssetPrice ||
         current.inputAssetUniqueId !== previous?.inputAssetUniqueId ||
         current.outputAssetUniqueId !== previous?.outputAssetUniqueId
       ) {
@@ -68,8 +79,8 @@ export const ExchangeRateBubble = () => {
         return;
       }
 
-      const { symbol: inputAssetSymbol, nativePrice: inputAssetPrice, type: inputAssetType } = internalSelectedInputAsset.value;
-      const { symbol: outputAssetSymbol, nativePrice: outputAssetPrice, type: outputAssetType } = internalSelectedOutputAsset.value;
+      const { symbol: inputAssetSymbol, type: inputAssetType } = internalSelectedInputAsset.value;
+      const { symbol: outputAssetSymbol, type: outputAssetType } = internalSelectedOutputAsset.value;
 
       const isInputAssetStablecoin = inputAssetType === 'stablecoin';
       const isOutputAssetStablecoin = outputAssetType === 'stablecoin';
@@ -105,7 +116,7 @@ export const ExchangeRateBubble = () => {
         }
         case 1: {
           const formattedRate = valueBasedDecimalFormatter({
-            amount: outputAssetPrice / inputAssetPrice,
+            amount: inputAssetPrice / outputAssetPrice,
             nativePrice: inputAssetPrice,
             roundingMode: 'up',
             precisionAdjustment: -1,
@@ -147,9 +158,10 @@ export const ExchangeRateBubble = () => {
 
   return (
     <GestureHandlerButton
+      hapticTrigger="tap-end"
+      hitSlop={{ left: 24, right: 24, top: 12, bottom: 12 }}
       onPressWorklet={onChangeIndex}
       scaleTo={0.9}
-      hitSlop={{ left: 24, right: 24, top: 12, bottom: 12 }}
       style={pointerEventsStyle}
     >
       <Box as={Animated.View} alignItems="center" justifyContent="center" style={AnimatedSwapStyles.hideWhenInputsExpandedOrPriceImpact}>
@@ -189,3 +201,16 @@ export const ExchangeRateBubble = () => {
     </GestureHandlerButton>
   );
 };
+
+const styles = StyleSheet.create({
+  buttonPadding: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+  },
+  buttonPosition: {
+    alignSelf: 'center',
+    minWidth: DEVICE_WIDTH * 0.6,
+    position: 'absolute',
+    top: 4,
+  },
+});

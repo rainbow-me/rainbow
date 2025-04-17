@@ -7,10 +7,9 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Row } from '../shared/Row';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { InteractionManager } from 'react-native';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
-import { convertAmountToNativeDisplay, convertNumberToString, convertStringToNumber, roundToSignificant1or5 } from '@/helpers/utilities';
+import { convertAmountToNativeDisplay, convertStringToNumber, roundToSignificant1or5 } from '@/helpers/utilities';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { IS_DEV } from '@/env';
@@ -18,7 +17,6 @@ import isTestFlight from '@/helpers/isTestFlight';
 import { isL2Chain } from '@/handlers/web3';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { swapsStore } from '@/state/swaps/swapsStore';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
 import Animated from 'react-native-reanimated';
@@ -175,30 +173,14 @@ export const BuyContent = memo(function BuySection() {
                 key={currencyAmount}
                 currencyAmount={currencyAmount}
                 numberOfButtons={instantBuyNativeCurrencyAmounts.length}
-                onPress={() => {
-                  InteractionManager.runAfterInteractions(async () => {
-                    const priceOfBuyWithAsset = buyWithAsset.price?.value;
-
-                    if (!priceOfBuyWithAsset) return;
-
-                    const inputAssetAmount = currencyAmount / priceOfBuyWithAsset;
-
-                    swapsStore.setState({
-                      quickBuyAnalyticalData: {
-                        assetAmount: inputAssetAmount,
-                        currencyAmount,
-                        assetUniqueId: asset.uniqueId,
-                        buyWithAssetUniqueId: buyWithAsset.uniqueId,
-                      },
-                    });
-
-                    navigateToSwaps({
-                      inputAsset: transformRainbowTokenToParsedSearchAsset(buyWithAsset),
-                      outputAsset: transformRainbowTokenToParsedSearchAsset(asset),
-                      inputAmount: convertNumberToString(inputAssetAmount),
-                    });
-                  });
-                }}
+                onPress={() =>
+                  navigateToSwaps({
+                    inputAsset: transformRainbowTokenToParsedSearchAsset(buyWithAsset),
+                    inputNativeValue: currencyAmount,
+                    outputAsset: transformRainbowTokenToParsedSearchAsset(asset),
+                    trackQuickBuyMetadata: true,
+                  })
+                }
               />
             ))}
           </ScrollView>

@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import * as i18n from '@/languages';
@@ -39,7 +38,6 @@ import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 type SwapSliderProps = {
   dualColor?: boolean;
   height?: number;
-  initialPercentage?: number;
   snapPoints?: number[];
   width?: number;
 };
@@ -47,18 +45,18 @@ type SwapSliderProps = {
 const SWAP_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.swap);
 const BRIDGE_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.bridge);
 const MAX_LABEL = i18n.t(i18n.l.swap.max);
+const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
 
 export const SwapSlider = ({
   dualColor,
   height = SLIDER_HEIGHT,
-  initialPercentage = 0,
   snapPoints = [0, 0.25, 0.5, 0.75, 1], // 0%, 25%, 50%, 75%, 100%
   width = SLIDER_WIDTH,
 }: SwapSliderProps) => {
   const { isDarkMode } = useColorMode();
   const {
     AnimatedSwapStyles,
-    SwapInputController,
+    SwapInputController: { inputMethod, inputValues, onChangedPercentage, quoteFetchingInterval, setValueToMaxSwappableAmount },
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
     isFetching,
@@ -82,9 +80,9 @@ export const SwapSlider = ({
   // Callback function to handle percentage change once slider is at rest
   const onChangeWrapper = useCallback(
     (percentage: number) => {
-      SwapInputController.onChangedPercentage(percentage);
+      onChangedPercentage(percentage);
     },
-    [SwapInputController]
+    [onChangedPercentage]
   );
 
   const colors = useDerivedValue(() => ({
@@ -115,18 +113,22 @@ export const SwapSlider = ({
     return xPercentage.value * (1 - SCRUBBER_WIDTH / width);
   });
 
+  const hasBalance = useDerivedValue(() => {
+    return !!internalSelectedInputAsset.value && greaterThanWorklet(internalSelectedInputAsset.value.maxSwappableAmount, 0);
+  });
+
   const percentageText = useDerivedValue(() => {
-    return `${Math.round((xPercentage.value ?? initialPercentage) * 100)}%`;
+    return hasBalance.value ? `${Math.round(xPercentage.value * 100)}%` : NO_BALANCE_LABEL;
   });
 
   useAnimatedReaction(
-    () => ({ x: sliderXPosition.value }),
+    () => sliderXPosition.value,
     (current, previous) => {
-      if (current !== previous && SwapInputController.inputMethod.value === 'slider') {
-        if (current.x >= width * 0.995 && previous?.x && previous?.x < width * 0.995) {
+      if (previous !== null && current !== previous && inputMethod.value === 'slider') {
+        if (current >= width * 0.995 && previous < width * 0.995) {
           triggerHaptics('impactMedium');
         }
-        if (current.x < width * 0.005 && previous?.x && previous?.x >= width * 0.005) {
+        if (current < width * 0.005 && previous >= width * 0.005) {
           triggerHaptics('impactLight');
         }
       }
@@ -137,7 +139,8 @@ export const SwapSlider = ({
   const onPressDown = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onStart: () => {
       sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
-      SwapInputController.quoteFetchingInterval.stop();
+      quoteFetchingInterval.stop();
+      triggerHaptics('soft');
     },
     onActive: () => {
       sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, SPRING_CONFIGS.sliderConfig);
@@ -149,10 +152,13 @@ export const SwapSlider = ({
       ctx.exceedsMax = undefined;
       ctx.startX = sliderXPosition.value;
       sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
-      SwapInputController.inputMethod.value = 'slider';
+      if (!hasBalance.value) return;
 
+      inputMethod.value = 'slider';
+
+      // Check if the slider is at the right limit
       if (ctx.startX >= width) {
-        const currentInputValue = SwapInputController.inputValues.value.inputAmount;
+        const currentInputValue = inputValues.value.inputAmount;
         const maxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
         const exceedsMax = maxSwappableAmount ? greaterThanWorklet(currentInputValue, maxSwappableAmount) : false;
 
@@ -170,11 +176,13 @@ export const SwapSlider = ({
       if (!IS_IOS) isQuoteStale.value = 1;
     },
     onActive: (event, ctx: { exceedsMax?: boolean; startX: number }) => {
-      if (IS_IOS && sliderXPosition.value > 0 && isQuoteStale.value !== 1) {
+      const hasSwappableBalance = hasBalance.value;
+
+      if (IS_IOS && sliderXPosition.value > 0 && isQuoteStale.value !== 1 && hasSwappableBalance) {
         isQuoteStale.value = 1;
       }
 
-      const rawX = ctx.startX + event.translationX || 0;
+      const rawX = ctx.startX + event.translationX;
 
       const calculateOvershoot = (distance: number, maxOverscroll: number): number => {
         if (distance === 0) return 0;
@@ -186,7 +194,7 @@ export const SwapSlider = ({
         return adjustedMovement;
       };
 
-      if (ctx.startX === width && !ctx.exceedsMax && clamp(rawX, 0, width) >= width * 0.995) {
+      if (ctx.startX === width && !ctx.exceedsMax && clamp(rawX, 0, width) >= width * 0.995 && hasSwappableBalance) {
         isQuoteStale.value = 0;
       }
 
@@ -205,34 +213,46 @@ export const SwapSlider = ({
       }
     },
     onFinish: (event, ctx: { exceedsMax?: boolean; startX: number }) => {
+      const hasSwappableBalance = hasBalance.value;
+
       const onFinished = () => {
         overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
 
-        if (xPercentage.value >= 0.995) {
-          if (isQuoteStale.value === 1) {
-            runOnJS(onChangeWrapper)(1);
+        if (hasSwappableBalance) {
+          if (xPercentage.value >= 0.995) {
+            if (isQuoteStale.value === 1) {
+              runOnJS(onChangeWrapper)(1);
+            }
+            sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig);
+          } else if (event.state === State.FAILED) {
+            quoteFetchingInterval.start();
+            return;
+          } else if (xPercentage.value < 0.005) {
+            runOnJS(onChangeWrapper)(0);
+            sliderXPosition.value = withSpring(0, SPRING_CONFIGS.snappySpringConfig);
+            isQuoteStale.value = 0;
+            isFetching.value = false;
+          } else if (ctx.startX !== sliderXPosition.value) {
+            runOnJS(onChangeWrapper)(xPercentage.value);
+          } else {
+            quoteFetchingInterval.start();
           }
-          sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig);
-        } else if (event.state === State.FAILED) {
-          SwapInputController.quoteFetchingInterval.start();
-          return;
-        } else if (xPercentage.value < 0.005) {
-          runOnJS(onChangeWrapper)(0);
-          sliderXPosition.value = withSpring(0, SPRING_CONFIGS.snappySpringConfig);
-          isQuoteStale.value = 0;
-          isFetching.value = false;
-        } else if (ctx.startX !== sliderXPosition.value) {
-          runOnJS(onChangeWrapper)(xPercentage.value);
-        } else {
-          SwapInputController.quoteFetchingInterval.start();
         }
       };
 
       sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, SPRING_CONFIGS.sliderConfig);
 
+      if (!hasSwappableBalance) {
+        if (sliderXPosition.value > 0) triggerHaptics('notificationError');
+        overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
+        sliderXPosition.value = withSpring(0, SPRING_CONFIGS.slowSpring);
+        isQuoteStale.value = 0;
+        return;
+      }
+
       if (snapPoints) {
         // If snap points are provided and velocity is high enough, snap to the nearest point
-        const rawX = ctx.startX + event.translationX || 0;
+        const rawX = ctx.startX + event.translationX;
 
         // Skip snapping if the slider is already at 0% or 100% and the user is overscrolling
         const needsToSnap =
@@ -255,7 +275,7 @@ export const SwapSlider = ({
                 break;
               }
             }
-            nextSnapPoint = nextSnapPoint || width;
+            nextSnapPoint = nextSnapPoint ?? width;
           } else {
             // If velocity is negative, find the next snap point to the left
             for (let i = adjustedSnapPoints.length - 1; i >= 0; i--) {
@@ -264,7 +284,7 @@ export const SwapSlider = ({
                 break;
               }
             }
-            nextSnapPoint = nextSnapPoint || 0;
+            nextSnapPoint = nextSnapPoint ?? 0;
           }
 
           overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
@@ -272,10 +292,6 @@ export const SwapSlider = ({
 
           // Animate to the next snap point
           sliderXPosition.value = withSpring(nextSnapPoint, SPRING_CONFIGS.snappierSpringConfig);
-
-          // if (nextSnapPoint === 0) {
-          //   SwapInputController.isQuoteStale.value = 0;
-          // }
         } else {
           // For low-velocity drags, skip snap points and let the slider rest at current position
           onFinished();
@@ -304,14 +320,13 @@ export const SwapSlider = ({
       height: interpolate(sliderPressProgress.value, [collapsedPercentage, 1], [SLIDER_COLLAPSED_HEIGHT, height]),
       transform: [
         {
-          translateX: (overshoot.value ?? 0) * 0.75,
+          translateX: overshoot.value * 0.75,
         },
         {
-          scaleX: interpolate(sliderPressProgress.value, [collapsedPercentage, 1], [1, 1.025]) + Math.abs(overshoot.value ?? 0) / width,
+          scaleX: interpolate(sliderPressProgress.value, [collapsedPercentage, 1], [1, 1.025]) + Math.abs(overshoot.value) / width,
         },
         {
-          scaleY:
-            interpolate(sliderPressProgress.value, [collapsedPercentage, 1], [1, 1.025]) - (Math.abs(overshoot.value ?? 0) / width) * 3,
+          scaleY: interpolate(sliderPressProgress.value, [collapsedPercentage, 1], [1, 1.025]) - (Math.abs(overshoot.value) / width) * 3,
         },
       ],
     };
@@ -363,39 +378,30 @@ export const SwapSlider = ({
   });
 
   const percentageTextStyle = useAnimatedStyle(() => {
-    const isAdjustingOutputValue =
-      SwapInputController.inputMethod.value === 'outputAmount' || SwapInputController.inputMethod.value === 'outputNativeValue';
+    const isAdjustingOutputValue = inputMethod.value === 'outputAmount' || inputMethod.value === 'outputNativeValue';
+    const isStale = isQuoteStale.value === 1 && isAdjustingOutputValue;
+    const sliderPosition = sliderXPosition.value;
 
-    const isStale = isQuoteStale.value === 1 && isAdjustingOutputValue ? 1 : 0;
-    const opacity = isStale ? pulsingOpacity.value : withSpring(1, SPRING_CONFIGS.sliderConfig);
+    const useDimColor =
+      !hasBalance.value || isStale || (inputMethod.value === 'slider' ? sliderPosition < 0.005 * width : sliderPosition === 0);
 
     return {
-      color: withTiming(
-        interpolateColor(
-          isStale,
-          [0, 1],
-          [
-            (SwapInputController.inputMethod.value === 'slider' ? xPercentage.value < 0.005 : sliderXPosition.value === 0)
-              ? zeroAmountColor
-              : labelSecondary,
-            zeroAmountColor,
-          ]
-        ),
-        TIMING_CONFIGS.slowFadeConfig
-      ),
-      opacity,
+      color: withTiming(useDimColor ? zeroAmountColor : labelSecondary, TIMING_CONFIGS.slowFadeConfig),
+      opacity: isStale ? pulsingOpacity.value : withSpring(1, SPRING_CONFIGS.sliderConfig),
     };
   });
 
-  const sellingOrBridgingLabel = useDerivedValue(() => {
-    return swapInfo.value.isBridging ? BRIDGE_TITLE_LABEL : SWAP_TITLE_LABEL;
-  });
+  const sellingOrBridgingLabel = useDerivedValue(() =>
+    hasBalance.value ? (swapInfo.value.isBridging ? BRIDGE_TITLE_LABEL : SWAP_TITLE_LABEL) : ''
+  );
 
-  const maxTextColor = useAnimatedStyle(() => {
-    return {
-      color: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
-    };
-  });
+  const maxTextColor = useAnimatedStyle(() => ({
+    color: hasBalance.value
+      ? getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode)
+      : zeroAmountColor,
+  }));
+
+  const sellingOrBridgingLabelStyle = useAnimatedStyle(() => ({ marginRight: hasBalance.value ? 3 : 0 }));
 
   return (
     <PanGestureHandler
@@ -418,7 +424,7 @@ export const SwapSlider = ({
                     <AnimatedText
                       color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'}
                       size="15pt"
-                      style={{ marginRight: 3 }}
+                      style={sellingOrBridgingLabelStyle}
                       weight="bold"
                     >
                       {sellingOrBridgingLabel}
@@ -430,7 +436,7 @@ export const SwapSlider = ({
                 </Inline>
                 <Column width="content">
                   <GestureHandlerV1Button
-                    onPressWorklet={SwapInputController.setValueToMaxSwappableAmount}
+                    onPressWorklet={setValueToMaxSwappableAmount}
                     ref={maxButtonRef}
                     style={{ margin: -12, padding: 12 }}
                   >

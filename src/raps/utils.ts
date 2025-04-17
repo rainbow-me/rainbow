@@ -12,6 +12,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { gasUnits } from '@/references';
 import { toHexNoLeadingZeros } from '@/handlers/web3';
 import { BigNumber } from '@ethersproject/bignumber';
+import { SwapsGasFeeParamsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 
 export const CHAIN_IDS_WITH_TRACE_SUPPORT: ChainId[] = [mainnet.id];
 export const SWAP_GAS_PADDING = 1.1;
@@ -27,7 +28,7 @@ export const overrideWithFastSpeedIfNeeded = ({
 }: {
   gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
   chainId: number;
-  gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
+  gasFeeParamsBySpeed: SwapsGasFeeParamsBySpeed | GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }): TransactionGasParamAmounts | LegacyTransactionGasParamAmounts => {
   if (chainId !== ChainId.mainnet) {
     return gasParams;
@@ -53,7 +54,6 @@ export const overrideWithFastSpeedIfNeeded = ({
 const getStateDiff = async (provider: Provider, quote: Quote | CrosschainQuote): Promise<unknown> => {
   const tokenAddress = quote.sellTokenAddress;
   const fromAddr = quote.from;
-  const { chainId } = await provider.getNetwork();
   const toAddr = quote.swapType === 'normal' ? getTargetAddress(quote) : (quote as CrosschainQuote).allowanceTarget;
   const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
 

@@ -1,6 +1,6 @@
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
 import MaskedView from '@react-native-masked-view/masked-view';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import Animated, { runOnJS, useAnimatedReaction, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
@@ -19,7 +19,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -127,27 +127,26 @@ function OutputAssetBalanceBadge() {
   return <BalanceBadge label={label} />;
 }
 
+function handleTapWhileDisabled() {
+  const { inputAsset, outputAsset } = useSwapsStore.getState();
+  const inputTokenSymbol = inputAsset?.symbol;
+  const outputTokenSymbol = outputAsset?.symbol;
+  const isCrosschainSwap = inputAsset?.chainId !== outputAsset?.chainId;
+  const isBridgeSwap = inputTokenSymbol === outputTokenSymbol;
+
+  Navigation.handleAction(Routes.EXPLAIN_SHEET, {
+    inputToken: inputTokenSymbol,
+    fromChainId: inputAsset?.chainId ?? ChainId.mainnet,
+    toChainId: outputAsset?.chainId ?? ChainId.mainnet,
+    isCrosschainSwap,
+    isBridgeSwap,
+    outputToken: outputTokenSymbol,
+    type: 'output_disabled',
+  });
+}
+
 export function SwapOutputAsset() {
   const { outputProgress, inputProgress, AnimatedSwapStyles, internalSelectedOutputAsset, SwapNavigation } = useSwapContext();
-  const { navigate } = useNavigation();
-
-  const handleTapWhileDisabled = useCallback(() => {
-    const { inputAsset, outputAsset } = useSwapsStore.getState();
-    const inputTokenSymbol = inputAsset?.symbol;
-    const outputTokenSymbol = outputAsset?.symbol;
-    const isCrosschainSwap = inputAsset?.chainId !== outputAsset?.chainId;
-    const isBridgeSwap = inputTokenSymbol === outputTokenSymbol;
-
-    navigate(Routes.EXPLAIN_SHEET, {
-      inputToken: inputTokenSymbol,
-      fromChainId: inputAsset?.chainId ?? ChainId.mainnet,
-      toChainId: outputAsset?.chainId ?? ChainId.mainnet,
-      isCrosschainSwap,
-      isBridgeSwap,
-      outputToken: outputTokenSymbol,
-      type: 'output_disabled',
-    });
-  }, [navigate]);
 
   return (
     <SwapInput asset={internalSelectedOutputAsset} bottomInput otherInputProgress={inputProgress} progress={outputProgress}>

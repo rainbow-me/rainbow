@@ -11,6 +11,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useForegroundColor } from '@/design-system';
+import { useCleanup } from '@/hooks/useCleanup';
 
 export const spinnerExitConfig = {
   duration: 400,
@@ -71,6 +72,8 @@ export const AnimatedSpinner = ({
     },
     []
   );
+
+  useCleanup(() => spinnerImage?.dispose?.(), [spinnerImage]);
 
   return (
     <Animated.View pointerEvents="none" style={[spinnerStyle, { height: size, width: size }]}>

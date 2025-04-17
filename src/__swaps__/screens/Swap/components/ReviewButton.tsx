@@ -1,19 +1,20 @@
 import React from 'react';
-import * as i18n from '@/languages';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Box, Text, TextIcon, useColorMode } from '@/design-system';
+import * as i18n from '@/languages';
 import { GestureHandlerButton } from './GestureHandlerButton';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
 import { useSwapContext } from '../providers/swap-provider';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 export function ReviewButton() {
   const { isDarkMode } = useColorMode();
-  const { SwapNavigation, AnimatedSwapStyles, isFetching } = useSwapContext();
+  const { AnimatedSwapStyles, SwapNavigation, confirmButtonProps, isFetching } = useSwapContext();
 
   const disabledWrapper = useAnimatedStyle(() => {
+    const shouldDisable = isFetching.value || confirmButtonProps.value.disabled;
     return {
-      pointerEvents: isFetching && isFetching?.value ? 'none' : 'auto',
-      opacity: isFetching && isFetching?.value ? 0.6 : 1,
+      pointerEvents: shouldDisable ? 'none' : 'auto',
+      opacity: shouldDisable ? 0.4 : 1,
     };
   });
 
@@ -34,7 +35,6 @@ export function ReviewButton() {
             height={30}
             paddingHorizontal={'10px'}
             borderRadius={15}
-            background="surfacePrimary"
             gap={4}
             style={[{ borderColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR, borderWidth: THICK_BORDER_WIDTH }]}
           >

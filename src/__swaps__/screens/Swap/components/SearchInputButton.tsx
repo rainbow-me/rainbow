@@ -39,7 +39,7 @@ export const SearchInputButton = ({
 
   const { hasClipboardData } = useClipboard();
 
-  const btnText = useDerivedValue(() => {
+  const buttonText = useDerivedValue(() => {
     if (
       (inputProgress.value === NavigationSteps.SEARCH_FOCUSED && !output) ||
       (outputProgress.value === NavigationSteps.SEARCH_FOCUSED && output)
@@ -57,9 +57,9 @@ export const SearchInputButton = ({
   const onPaste = useCallback(() => {
     Clipboard.getString().then(text => {
       // Slice the pasted text to the length of an ETH address
-      const v = text.trim().slice(0, 42);
-      pastedSearchInputValue.value = v;
-      useSwapsSearchStore.setState({ searchQuery: v });
+      const pastedText = text.trim().slice(0, 42);
+      pastedSearchInputValue.value = pastedText;
+      useSwapsSearchStore.setState({ searchQuery: pastedText });
     });
   }, [pastedSearchInputValue]);
 
@@ -133,7 +133,7 @@ export const SearchInputButton = ({
             size="17pt"
             weight="heavy"
           >
-            {btnText}
+            {buttonText}
           </AnimatedText>
         </Box>
       </GestureHandlerButton>

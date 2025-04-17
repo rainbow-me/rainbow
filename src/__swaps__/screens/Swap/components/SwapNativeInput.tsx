@@ -1,11 +1,9 @@
-import { AnimatedText } from '@/design-system';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { runOnJS, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-
-import { equalWorklet } from '@/safe-math/SafeMath';
-import { SwapInputValuesCaret } from '@/__swaps__/screens/Swap/components/SwapInputValuesCaret';
+import { AnimatedText } from '@/design-system';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { SwapInputValuesCaret } from '@/__swaps__/screens/Swap/components/SwapInputValuesCaret';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 export function SwapNativeInput({
@@ -17,30 +15,24 @@ export function SwapNativeInput({
 }) {
   const {
     focusedInput,
-    internalSelectedInputAsset,
-    internalSelectedOutputAsset,
     outputQuotesAreDisabled,
     SwapTextStyles,
-    SwapInputController,
+    SwapInputController: { formattedInputNativeValue, formattedOutputNativeValue, inputNativePrice, outputNativePrice },
   } = useSwapContext();
 
-  const formattedNativeInput =
-    nativeInputType === 'inputNativeValue' ? SwapInputController.formattedInputNativeValue : SwapInputController.formattedOutputNativeValue;
+  const formattedNativeInput = nativeInputType === 'inputNativeValue' ? formattedInputNativeValue : formattedOutputNativeValue;
 
   const textStyle = nativeInputType === 'inputNativeValue' ? SwapTextStyles.inputNativeValueStyle : SwapTextStyles.outputNativeValueStyle;
 
-  const nativeCurrencySymbol = formattedNativeInput.value.slice(0, 1);
-  const formattedNativeValue = useDerivedValue(() => {
-    return formattedNativeInput.value.slice(1);
-  });
+  const nativeCurrencySymbol = useDerivedValue(() => formattedNativeInput.value.slice(0, 1));
+  const formattedNativeValue = useDerivedValue(() => formattedNativeInput.value.slice(1));
 
   const disabled = useDerivedValue(() => {
     if (nativeInputType === 'outputNativeValue' && outputQuotesAreDisabled.value) return true;
 
     // disable caret and pointer events for native inputs when corresponding asset is missing price
-    const asset = nativeInputType === 'inputNativeValue' ? internalSelectedInputAsset : internalSelectedOutputAsset;
-    const assetPrice = asset.value?.nativePrice || asset.value?.price?.value || 0;
-    return !assetPrice || equalWorklet(assetPrice, 0);
+    const assetPrice = nativeInputType === 'inputNativeValue' ? inputNativePrice.value : outputNativePrice.value;
+    return !assetPrice;
   });
 
   const pointerEventsStyle = useAnimatedStyle(() => {
@@ -53,6 +45,7 @@ export function SwapNativeInput({
     <GestureHandlerButton
       disableHaptics
       disableScale
+      hitSlop={8}
       onPressWorklet={() => {
         'worklet';
         if (outputQuotesAreDisabled.value && handleTapWhileDisabled && nativeInputType === 'outputNativeValue') {
