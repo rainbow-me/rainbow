@@ -126,9 +126,9 @@ const useCleanupOnUnmount = () => {
 };
 
 const WalletAddressObserver = () => {
+  const { hasEnoughFundsForGas, setAsset } = useSwapContext();
   const accountAddress = userAssetsStoreManager(state => state.address);
   const lastAccountAddress = useRef(accountAddress);
-  const { setAsset } = useSwapContext();
 
   const setNewInputAsset = useCallback(
     (params: Partial<UserAssetsParams> | undefined) => {
@@ -141,8 +141,7 @@ const WalletAddressObserver = () => {
 
       setAsset({
         asset: hasAssets ? getHighestValueNativeAsset() : null,
-        forceUpdate: true,
-        insertUserAssetBalance: hasAssets,
+        didWalletChange: true,
         type: SwapAssetType.inputAsset,
       });
     },
@@ -151,10 +150,11 @@ const WalletAddressObserver = () => {
 
   useEffect(() => {
     if (accountAddress !== lastAccountAddress.current) {
+      hasEnoughFundsForGas.value = undefined;
       lastAccountAddress.current = accountAddress;
       setNewInputAsset(accountAddress ? { address: accountAddress } : undefined);
     }
-  }, [accountAddress, setNewInputAsset]);
+  }, [accountAddress, hasEnoughFundsForGas, setNewInputAsset]);
 
   return null;
 };

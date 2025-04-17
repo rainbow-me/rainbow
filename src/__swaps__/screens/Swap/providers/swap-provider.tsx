@@ -29,10 +29,10 @@ import { NavigationSteps, useSwapNavigation } from '@/__swaps__/screens/Swap/hoo
 import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset, ParsedUserAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { SwapAssetType, InputKeys } from '@/__swaps__/types/swap';
-import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { clamp, getDefaultSlippageWorklet, parseAssetAndExtend, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { analytics } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getProvider } from '@/handlers/web3';
@@ -45,7 +45,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
 import { RapSwapActionParameters } from '@/raps/references';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getNextNonce } from '@/state/nonces';
 import { CrosschainQuote, Quote, QuoteError, SwapType } from '@rainbow-me/swaps';
@@ -57,13 +57,13 @@ import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './Sync
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import showWalletErrorAlert from '@/helpers/support';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
 import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -111,12 +111,12 @@ interface SwapContextType {
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   setAsset: ({
     asset,
-    forceUpdate,
+    didWalletChange,
     insertUserAssetBalance,
     type,
   }: {
     asset: ParsedSearchAsset | null;
-    forceUpdate?: boolean;
+    didWalletChange?: boolean;
     insertUserAssetBalance?: boolean;
     type: SwapAssetType;
   }) => void;
@@ -169,18 +169,18 @@ const getInitialSliderXPosition = ({
 const SLIPPAGE_CONFIG = getRemoteConfig().default_slippage_bips_chainId;
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
-  const [{ currentCurrency, nativeChainAssets }] = useState(() => ({
+  const [{ currentCurrency, initialValues, nativeChainAssets }] = useState(() => ({
     currentCurrency: userAssetsStoreManager.getState().currency,
+    initialValues: getSwapsNavigationParams(),
     nativeChainAssets: useBackendNetworksStore.getState().getChainsNativeAsset(),
   }));
-  const [initialValues] = useState(() => getSwapsNavigationParams());
+
+  const inputSearchRef = useAnimatedRef<TextInput>();
+  const outputSearchRef = useAnimatedRef<TextInput>();
 
   const isFetching = useSharedValue(false);
   const isQuoteStale = useSharedValue(0); // TODO: Convert this to a boolean
   const isSwapping = useSharedValue(false);
-
-  const inputSearchRef = useAnimatedRef<TextInput>();
-  const outputSearchRef = useAnimatedRef<TextInput>();
 
   const lastTypedInput = useSharedValue<InputKeys>(initialValues.lastTypedInput);
   const focusedInput = useSharedValue<InputKeys>(initialValues.focusedInput);
@@ -188,6 +188,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const internalSelectedInputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(initialValues.inputAsset);
   const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(initialValues.outputAsset);
 
+  const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
   const sliderXPosition = useSharedValue(
     getInitialSliderXPosition({
       inputAmount: initialValues.inputAmount,
@@ -195,21 +196,19 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       percentageToSell: initialValues.percentageToSell,
     })
   );
-  const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
 
-  const selectedOutputChainId = useSharedValue<ChainId>(initialValues.inputAsset?.chainId || ChainId.mainnet);
+  const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
+  const selectedOutputChainId = useSharedValue<ChainId>(initialValues.inputAsset?.chainId || ChainId.mainnet);
+  const slippage = useSharedValue(initialValues.slippage);
+
+  const configProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
   const inputProgress = useSharedValue(
     initialValues.outputAsset && !initialValues.inputAsset ? NavigationSteps.TOKEN_LIST_FOCUSED : NavigationSteps.INPUT_ELEMENT_FOCUSED
   );
   const outputProgress = useSharedValue(
     initialValues.outputAsset ? NavigationSteps.INPUT_ELEMENT_FOCUSED : NavigationSteps.TOKEN_LIST_FOCUSED
   );
-  const configProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
-
-  const slippage = useSharedValue(initialValues.slippage);
-
-  const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
 
   const SwapInputController = useSwapInputsController({
     currentCurrency,
@@ -613,29 +612,37 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const setAsset = useCallback(
     ({
       asset,
-      forceUpdate,
-      insertUserAssetBalance: insertUserAssetBalanceParam,
+      didWalletChange = false,
+      insertUserAssetBalance = true,
       type,
     }: {
       asset: ParsedSearchAsset | null;
-      forceUpdate?: boolean;
+      didWalletChange?: boolean;
       insertUserAssetBalance?: boolean;
       type: SwapAssetType;
     }) => {
-      const insertUserAssetBalance =
-        typeof insertUserAssetBalanceParam === 'boolean' ? insertUserAssetBalanceParam : type !== SwapAssetType.inputAsset;
-      const extendedAsset = parseAssetAndExtend({ asset, insertUserAssetBalance });
+      const extendedAsset = parseAssetAndExtend({ asset, insertUserAssetBalance: insertUserAssetBalance || didWalletChange });
+      const isSettingInputAsset = type === SwapAssetType.inputAsset;
+
+      let otherAssetBalance: ParsedUserAsset['balance'] | undefined = undefined;
+      let otherAssetUniqueId: ParsedUserAsset['uniqueId'] | undefined = undefined;
+
+      if (didWalletChange) {
+        const oppositeAssetBalance = getOppositeAssetBalance(extendedAsset, type);
+        otherAssetBalance = oppositeAssetBalance.otherAssetBalance;
+        otherAssetUniqueId = oppositeAssetBalance.otherAssetUniqueId;
+      }
 
       runOnUI(() => {
-        const otherSelectedAsset = type === SwapAssetType.inputAsset ? internalSelectedOutputAsset.value : internalSelectedInputAsset.value;
+        const otherSelectedAsset = (isSettingInputAsset ? internalSelectedOutputAsset : internalSelectedInputAsset).value;
         const didSelectedAssetChange =
-          forceUpdate ||
-          (type === SwapAssetType.inputAsset
+          didWalletChange ||
+          (isSettingInputAsset
             ? internalSelectedInputAsset.value?.uniqueId !== extendedAsset?.uniqueId
             : internalSelectedOutputAsset.value?.uniqueId !== extendedAsset?.uniqueId);
 
-        const didInputAssetChange = didSelectedAssetChange && type === SwapAssetType.inputAsset;
-        const didOutputAssetChange = didSelectedAssetChange && type === SwapAssetType.outputAsset;
+        const didInputAssetChange = didSelectedAssetChange && isSettingInputAsset;
+        const didOutputAssetChange = didSelectedAssetChange && !isSettingInputAsset;
         const [currentInputChainId, previousInputChainId] = didInputAssetChange
           ? [extendedAsset?.chainId, internalSelectedInputAsset.value?.chainId]
           : [];
@@ -644,21 +651,28 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         let didFlipAssets = false;
 
         if (didSelectedAssetChange) {
-          const otherSelectedAsset =
-            type === SwapAssetType.inputAsset ? internalSelectedOutputAsset.value : internalSelectedInputAsset.value;
           didFlipAssets = !!(otherSelectedAsset && otherSelectedAsset.uniqueId === extendedAsset?.uniqueId);
 
           if (didFlipAssets) {
             const inputPrice = outputNativePrice.value;
             const outputPrice = inputNativePrice.value;
 
-            flippedAssetOrNull = type === SwapAssetType.inputAsset ? internalSelectedInputAsset.value : internalSelectedOutputAsset.value;
+            flippedAssetOrNull = (isSettingInputAsset ? internalSelectedInputAsset : internalSelectedOutputAsset).value;
+
+            if (otherAssetBalance && flippedAssetOrNull && otherAssetUniqueId === flippedAssetOrNull.uniqueId) {
+              flippedAssetOrNull = {
+                ...flippedAssetOrNull,
+                balance: otherAssetBalance,
+                maxSwappableAmount: trimTrailingZeros(otherAssetBalance.amount),
+              };
+            }
 
             updateAssetValue({
-              type: type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset,
               asset: flippedAssetOrNull,
+              type: isSettingInputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset,
             });
-            updateAssetValue({ type, asset: otherSelectedAsset });
+
+            updateAssetValue({ asset: extendedAsset, type });
 
             updateInputValuesAfterFlip({
               areAllInputsZero: swapInfo.value.areAllInputsZero,
@@ -670,11 +684,20 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
               internalSelectedOutputAsset,
               lastTypedInput: lastTypedInput.value,
               outputNativePrice: outputPrice,
-              resetValuesToZeroWorklet: resetValuesToZeroWorklet,
+              resetValuesToZeroWorklet,
               sliderXPosition,
             });
           } else {
             updateAssetValue({ type, asset: extendedAsset });
+
+            if (otherAssetBalance && otherSelectedAsset) {
+              const assetToUpdate = isSettingInputAsset ? internalSelectedOutputAsset : internalSelectedInputAsset;
+              assetToUpdate.modify(asset =>
+                !asset || otherAssetUniqueId !== otherSelectedAsset.uniqueId
+                  ? asset
+                  : { ...asset, balance: otherAssetBalance, maxSwappableAmount: trimTrailingZeros(otherAssetBalance.amount) }
+              );
+            }
           }
         } else if (!swapInfo.value.areAllInputsZero && swapInfo.value.areBothAssetsSet) {
           quoteFetchingInterval.start();
@@ -697,7 +720,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           asset: extendedAsset,
           didFlipAssets,
           didSelectedAssetChange,
-          insertUserAssetBalance: type !== SwapAssetType.inputAsset,
+          insertUserAssetBalance: !isSettingInputAsset,
           flippedAssetOrNull,
           newSlippage,
           otherSelectedAsset,
@@ -711,7 +734,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         clearTimeout(chainSetTimeoutId.current);
       }
 
-      if (type === SwapAssetType.inputAsset) {
+      if (isSettingInputAsset) {
         // This causes a heavy re-render in the output token list, so we delay updating the selected output chain until
         // the animation is most likely complete.
         chainSetTimeoutId.current = setTimeout(() => {
@@ -920,6 +943,31 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   );
 };
 
+function getOppositeAssetBalance(
+  extendedAsset: ExtendedAnimatedAssetWithColors | null,
+  type: SwapAssetType
+): {
+  otherAssetBalance: ExtendedAnimatedAssetWithColors['balance'] | undefined;
+  otherAssetUniqueId: ExtendedAnimatedAssetWithColors['uniqueId'] | undefined;
+} {
+  const isSettingInputAsset = type === SwapAssetType.inputAsset;
+  const { inputAsset, outputAsset } = swapsStore.getState();
+
+  let otherAssetBalance: ExtendedAnimatedAssetWithColors['balance'] | undefined = undefined;
+  let otherAssetUniqueId = isSettingInputAsset ? outputAsset?.uniqueId : inputAsset?.uniqueId;
+
+  const isFlipping = otherAssetUniqueId === extendedAsset?.uniqueId;
+  if (isFlipping) otherAssetUniqueId = (isSettingInputAsset ? inputAsset : outputAsset)?.uniqueId;
+
+  const { balance: updatedAssetBalance, symbol: otherAssetSymbol }: Partial<ExtendedAnimatedAssetWithColors> =
+    (otherAssetUniqueId && useUserAssetsStore.getState().getUserAsset(otherAssetUniqueId)) || {};
+
+  if (updatedAssetBalance) otherAssetBalance = updatedAssetBalance;
+  else otherAssetBalance = { amount: '0', display: `0 ${otherAssetSymbol}` };
+
+  return { otherAssetBalance, otherAssetUniqueId };
+}
+
 function setStoreAssets({
   asset,
   didFlipAssets,
@@ -943,7 +991,7 @@ function setStoreAssets({
     const assetToSet = insertUserAssetBalance
       ? {
           ...asset,
-          balance: (asset && userAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance) || asset?.balance,
+          balance: (asset && useUserAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance) || asset?.balance,
         }
       : asset;
 

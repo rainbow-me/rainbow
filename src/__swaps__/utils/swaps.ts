@@ -16,7 +16,7 @@ import * as i18n from '@/languages';
 import { DEFAULT_SLIPPAGE_BIPS_CHAINID, RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
 import { supportedNativeCurrencies } from '@/references';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteError, QuoteParams } from '@rainbow-me/swaps';
@@ -558,9 +558,10 @@ export const parseAssetAndExtend = ({
   let bridging = asset.bridging;
 
   if (insertUserAssetBalance) {
-    const { balance: newBalance, bridging: newBridging } = userAssetsStore.getState().getUserAsset(uniqueId) || {};
+    const { balance: newBalance, bridging: newBridging } = useUserAssetsStore.getState().getUserAsset(uniqueId) || {};
     if (newBalance) balance = newBalance;
-    if (newBridging) bridging = newBridging;
+    else balance = { amount: '0', display: `0 ${asset.symbol}` };
+    bridging = newBridging;
   }
 
   return {
