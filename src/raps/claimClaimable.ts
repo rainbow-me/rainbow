@@ -11,16 +11,18 @@ export async function createClaimClaimableRap(parameters: RapSwapActionParameter
   const { sellAmount, assetToBuy, quote, chainId, toChainId, assetToSell, meta, gasFeeParamsBySpeed, gasParams, additionalParams } =
     parameters;
 
-  if (!additionalParams?.claimTx) {
-    logger.error(new RainbowError('[raps/claimClaimable]: claimTx is undefined'));
+  if (!additionalParams?.claimTxns.length) {
+    logger.error(new RainbowError('[raps/claimClaimable]: claimTxns is undefined'));
     return { actions: [] };
   }
 
-  const claim = createNewAction('claimClaimable', {
-    claimTx: additionalParams.claimTx,
-    asset: assetToSell,
-  });
-  actions = actions.concat(claim);
+  for (const claimTx of additionalParams.claimTxns) {
+    const claim = createNewAction('claimClaimable', {
+      claimTx,
+      asset: assetToSell,
+    });
+    actions = actions.concat(claim);
+  }
 
   const {
     from: accountAddress,
