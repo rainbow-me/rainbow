@@ -91,6 +91,12 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
         run: |
           yarn install && yarn setup
+
+      - name: Install Anvil
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+      
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
 
