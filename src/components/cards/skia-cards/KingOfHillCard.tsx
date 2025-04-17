@@ -16,48 +16,7 @@ import Routes from '@/navigation/routesNames';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useAnimatedCountdown } from '@/hooks/reanimated/useAnimatedCountdown';
-
-// TODO: Test data, replace with requests when available
-const token = {
-  address: '0x348c4395f04b19ad2a26c3b450bb265fd0d063c7',
-  chainId: '8453',
-  name: 'Token',
-  symbol: 'DENG',
-  iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1740085064/token-launcher/tokens/qa1okeas3qkofjdbbrgr.jpg',
-  colors: {
-    primary: 'orange',
-    secondary: 'red',
-    shadow: 'blue',
-  },
-  price: {
-    value: 0.00032,
-    relativeChange24h: 35.23,
-  },
-};
-
-const kingOfHillData = {
-  currentKing: {
-    token: token,
-    window: {
-      start: 1718217600000,
-      end: 1718217600000,
-    },
-    marketStats: {
-      '24hVol': 123123,
-    },
-    kingSince: 1718217600000,
-  },
-  lastWinner: {
-    token: {
-      ...token,
-      symbol: 'ZUMI',
-    },
-    window: {
-      start: 1718217600000,
-      end: 1718217600000,
-    },
-  },
-};
+import { KingOfTheHillKing, KingOfTheHillToken, useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
 
 const CARD_HEIGHT = 84;
 const DEFAULT_CARD_SIZE = 300;
@@ -131,7 +90,7 @@ function AnimatedCountdownText({ targetUnixTimestamp }: { targetUnixTimestamp: n
   );
 }
 
-function KingOfHillCard({ king }: { king: KingOfHillKing }) {
+function KingOfHillCard({ king }: { king: KingOfTheHillKing }) {
   const { navigate } = useNavigation();
   const separatorColor = useForegroundColor('separator');
   const { token } = king;
@@ -144,19 +103,19 @@ function KingOfHillCard({ king }: { king: KingOfHillKing }) {
 
   const { marketCap, price, priceChange24h, volume } = useMemo(
     () => ({
-      marketCap: formatNumber(100_412, { useOrderSuffix: true, decimals: 1, style: '$' }),
+      marketCap: formatNumber(token.market.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' }),
       price: formatCurrency(token.price.value),
       priceChange24h: `${formatNumber(token.price.relativeChange24h, { decimals: 2, useOrderSuffix: true })}%`,
-      volume: formatNumber(king.marketStats['24hVol'], { useOrderSuffix: true, decimals: 1, style: '$' }),
+      volume: formatNumber(token.market.volume.h24, { useOrderSuffix: true, decimals: 1, style: '$' }),
     }),
-    [token.price, token.price.relativeChange24h, king.marketStats['24hVol']]
+    [token.price, token.price.relativeChange24h, token.market.volume.h24, token.market.marketCap]
   );
 
   const onPress = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset: token,
       address: token.address,
-      chainId: token.chainId,
+      chainId: token.chainID,
     });
   }, [navigate, token]);
 
@@ -256,7 +215,7 @@ function KingOfHillCard({ king }: { king: KingOfHillKing }) {
   );
 }
 
-function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfHillKing['token'] }) {
+function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfTheHillToken }) {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
   const sizedIconUrl = getSizedImageUrl(lastWinnerToken.iconUrl, 16);
@@ -265,7 +224,7 @@ function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfHillKin
     navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset: lastWinnerToken,
       address: lastWinnerToken.address,
-      chainId: lastWinnerToken.chainId,
+      chainId: lastWinnerToken.chainID,
     });
   }, [lastWinnerToken, navigate]);
 
@@ -319,10 +278,16 @@ function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfHillKin
 }
 
 export function KingOfHillSection() {
+  const kingOfTheHill = useKingOfTheHillStore(store => store.getData());
+
+  if (!kingOfTheHill) {
+    return null;
+  }
+
   return (
     <Box gap={6}>
-      <LastWinnerSection lastWinnerToken={kingOfHillData.lastWinner.token} />
-      <KingOfHillCard king={kingOfHillData.currentKing} />
+      <LastWinnerSection lastWinnerToken={kingOfTheHill.lastWinner.token} />
+      <KingOfHillCard king={kingOfTheHill.currentKing} />
     </Box>
   );
 }
