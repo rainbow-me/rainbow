@@ -88,9 +88,9 @@ RCT_EXPORT_METHOD(hideAnimated) {
                                              object:nil];
   
   BOOL success = [super application:application didFinishLaunchingWithOptions:launchOptions];
-  BOOL isDetox = [[[NSProcessInfo processInfo] arguments] containsObject:@"-IS_TEST"];
+  BOOL isE2E = [[[NSProcessInfo processInfo] arguments] containsObject:@"isE2ETest"];
   
-  if (isDetox) return success;
+  if (isE2E) return success;
 
   if (success) {
       UIView *rootView = self.window.rootViewController.view;

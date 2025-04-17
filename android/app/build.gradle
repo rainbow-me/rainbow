@@ -33,9 +33,12 @@ import com.android.build.OutputFile
 
 def isE2E = project.getProperties().get("isE2E") == "true"
 
+println("isE2E: " + isE2E + " " + project.getProperties().get("isE2E"))
+
 apply plugin: "com.facebook.react"
 
 if (!isE2E) {
+    println("Applying Sentry Gradle plugin")
     apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 }
 
@@ -147,7 +150,6 @@ android {
         renderscriptSupportModeEnabled true
         multiDexEnabled true
         testBuildType System.getProperty('testBuildType', 'debug')
-        missingDimensionStrategy 'detox', 'full'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         manifestPlaceholders = [
@@ -192,8 +194,6 @@ android {
                 minifyEnabled enableProguardInReleaseBuilds
             }
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            // Detox-specific additions to pro-guard
-            proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
         }
     }
 
@@ -242,10 +242,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-
-    // DETOX
-    androidTestImplementation('com.wix:detox:+') { transitive = true }
-    androidTestImplementation(project(path: ":detox"))
 }
 
 // Run this once to be able to run the application with BUCK
