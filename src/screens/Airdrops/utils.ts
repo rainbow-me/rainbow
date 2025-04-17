@@ -171,13 +171,14 @@ export async function executeAirdropClaim({
  * Extracts transaction data from a claimable.
  */
 function getClaimableTransactionData(claimable: RainbowClaimable): ClaimableTransactionData {
+  const [action] = claimable.action;
   return {
     airdropId: claimable.uniqueId,
     amount: claimable.value.claimAsset.amount,
     chainId: claimable.chainId,
-    data: claimable.action.data,
+    data: action.data,
     symbol: claimable.asset.symbol,
-    to: claimable.action.to,
+    to: action.to,
     usdValue: claimable.value.usd,
   };
 }
@@ -253,6 +254,7 @@ function buildClaimTransaction({
   nonce: number;
   txHash: string;
 }): { address: Address | string; chainId: ChainId; transaction: NewTransaction } {
+  const [action] = claimable.action;
   return {
     address: accountAddress,
     chainId,
@@ -266,7 +268,7 @@ function buildClaimTransaction({
       network: useBackendNetworksStore.getState().getChainsName()[chainId],
       nonce,
       status: TransactionStatus.pending,
-      to: claimable.action.to,
+      to: action.to,
       type: 'claim',
     },
   };
