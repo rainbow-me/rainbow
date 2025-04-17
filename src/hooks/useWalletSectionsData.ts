@@ -38,8 +38,7 @@ export default function useWalletSectionsData({
   const { nftSort } = useNftSort();
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { selectedWallet, isReadOnlyWallet } = useWallets();
-  const { showcaseTokens } = useShowcaseTokens();
-  console.log('show case tokens: ', showcaseTokens);
+  const { showcaseTokens } = useShowcaseTokens(type === 'ens-profile');
   const { hiddenTokens } = useHiddenTokens();
   const remoteConfig = useRemoteConfig();
   const experimentalConfig = useExperimentalConfig();

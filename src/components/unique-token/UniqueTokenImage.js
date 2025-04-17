@@ -34,7 +34,7 @@ const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
   zIndex: 1,
 });
 
-const UniqueTokenImage = ({ backgroundColor: givenBackgroundColor, imageUrl, item, isCard = false, size, transformSvgs = true }) => {
+const UniqueTokenImage = ({ backgroundColor: givenBackgroundColor, imageUrl, item, isCard = false, transformSvgs = true }) => {
   const isENS = item.asset_contract?.address?.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
   const isSVG = isSVGImage(imageUrl);
   const [error, setError] = useState(null);
@@ -61,14 +61,7 @@ const UniqueTokenImage = ({ backgroundColor: givenBackgroundColor, imageUrl, ite
         />
       ) : imageUrl && !error ? (
         <Fragment>
-          <ImageTile
-            onError={handleError}
-            onLoad={onLoad}
-            retryOnError
-            size={size}
-            source={{ uri: imageUrl }}
-            style={position.coverAsObject}
-          />
+          <ImageTile onError={handleError} onLoad={onLoad} retryOnError source={{ uri: imageUrl }} style={position.coverAsObject} />
           {!loadedImg && <ImageTile playing={false} source={{ uri: item.lowResUrl }} style={position.coverAsObject} />}
         </Fragment>
       ) : (

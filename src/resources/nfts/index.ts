@@ -71,13 +71,13 @@ export const fetchUserNfts = async ({
       address,
     };
   }
+
+  console.log('fetchUserNfts: ', address, sortBy, sortDirection);
+
   const queryResponse = await arcClient.getNFTs({ walletAddress: address, sortBy, sortDirection });
   const nfts = queryResponse?.nftsV2?.map(nft => simpleHashNFTToUniqueAsset(nft, address));
 
-  // ⚠️ TODO: Delete this and rework the code that uses it
   nfts?.forEach(nft => {
-    // Track down why these both exist - we should not be doing this
-    nftsMap.set(nft.uniqueId, nft);
     nftsMap.set(nft.fullUniqueId, nft);
   });
 
@@ -134,7 +134,6 @@ export const fetchUserNftsByCollection = async ({ address, collectionId }: { add
   const nfts = new Map<string, UniqueAsset>();
   response?.nftsByCollection?.forEach(nft => {
     const uniqueAsset = simpleHashNFTToUniqueAsset(nft, address);
-    nfts.set(uniqueAsset.uniqueId, uniqueAsset);
     nfts.set(uniqueAsset.fullUniqueId, uniqueAsset);
   });
   return {

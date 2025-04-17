@@ -22,11 +22,12 @@ export const useExternalNftsStore = createQueryStore<UserNftsResponse, UserNftsP
     cacheTime: time.weeks(1),
     fetcher: fetchUserNfts,
     setData: ({ data, set }) => {
+      const { nftsMap, nfts } = data;
       set(state => {
         return {
           ...state,
-          nftsMap: new Map([...state.nftsMap, ...data.nftsMap]),
-          nfts: data.nfts,
+          nftsMap,
+          nfts,
         };
       });
     },

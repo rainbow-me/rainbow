@@ -10,12 +10,16 @@ import { userAssetsStoreManager } from '../assets/userAssetsStoreManager';
 interface UserNftsStoreManagerState {
   cachedAddress: string | null;
   cachedStore: UserNftsStoreType | null;
+  // Used to determine if we need to grab nfts by open collection while we wait
+  // Adds an additional concern to getOrCreateStore but saves us from a messy attach value otherwise
+  hasCompletedInitialFetch: boolean;
 }
 
 export const userNftsStoreManager = createRainbowStore<UserNftsStoreManagerState>(
   () => ({
     cachedStore: null,
     cachedAddress: null,
+    hasCompletedInitialFetch: false,
   }),
   {
     storageKey: 'userNftsStoreManager',
@@ -33,17 +37,10 @@ export const createUserNftsStore = ({ address, external = false }: CreateNftColl
       enabled: !!address && address !== '',
       cacheTime: time.weeks(1),
       fetcher: fetchUserNfts,
-      setData: ({ data, set }) => {
-        set(state => {
-          return {
-            ...state,
-            nftsMap: new Map([...state.nftsMap, ...data.nftsMap]),
-            nfts: data.nfts,
-          };
-        });
-      },
+      onFetched: () => userNftsStoreManager.setState({ hasCompletedInitialFetch: true }),
+      setData: ({ data: { nftsMap }, set }) => set(state => ({ ...state, nftsMap })),
       params: {
-        address: address as string,
+        address,
         sortBy: NftCollectionSortCriterion.MostRecent,
         sortDirection: SortDirection.Desc,
       },
@@ -54,10 +51,7 @@ export const createUserNftsStore = ({ address, external = false }: CreateNftColl
         nftsMap: new Map<string, UniqueAsset>(),
         nfts: [],
         getNfts: () => Array.from(get().nftsMap.values()),
-        getNft: (uniqueId: string) => {
-          const nft = get().nftsMap.get(uniqueId);
-          return nft;
-        },
+        getNft: (uniqueId: string) => get().nftsMap.get(uniqueId),
         getNftsForSale: () => get().nfts.filter(nft => nft.currentPrice),
       };
     },
@@ -72,9 +66,18 @@ export const createUserNftsStore = ({ address, external = false }: CreateNftColl
 function getOrCreateStore(address?: string | null): ReturnType<typeof createUserNftsStore> {
   const { cachedAddress, cachedStore } = userNftsStoreManager.getState();
   const addressToUse = address || cachedAddress;
+
   if (cachedStore && cachedAddress === addressToUse) return cachedStore;
+
   const newStore = createUserNftsStore({ address: addressToUse });
-  userNftsStoreManager.setState({ cachedStore: newStore, cachedAddress: addressToUse });
+  const newState = newStore.getState();
+
+  userNftsStoreManager.setState({
+    cachedStore: newStore,
+    cachedAddress: addressToUse,
+    hasCompletedInitialFetch: newState.getNfts().length > 0,
+  });
+
   return newStore;
 }
 
