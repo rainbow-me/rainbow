@@ -91,22 +91,22 @@ interface TypedData {
   message: object;
 }
 
-interface ReadOnlyWallet {
+export interface ReadOnlyWallet {
   address: EthereumAddress;
-  privateKey: null;
+  privateKey: null | string;
 }
 
-interface EthereumWalletFromSeed {
+export interface EthereumWalletFromSeed {
   hdnode: null | HDNode;
   isHDWallet: boolean;
   wallet: null | EthereumWallet;
   type: EthereumWalletType;
   walletType: WalletLibraryType;
-  root: EthereumHDKey;
+  root: null | EthereumHDKey;
   address: EthereumAddress;
 }
 
-type EthereumWallet = Wallet | ReadOnlyWallet;
+export type EthereumWallet = Wallet | ReadOnlyWallet;
 
 export interface RainbowAccount {
   index: number;
