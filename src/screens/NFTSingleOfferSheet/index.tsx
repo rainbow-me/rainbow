@@ -52,11 +52,8 @@ import { metadataPOSTClient } from '@/graphql';
 import { ethUnits } from '@/references';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-<<<<<<< HEAD
 import { openInBrowser } from '@/utils/openInBrowser';
-=======
 import { useUserNftsStore } from '@/state/nfts';
->>>>>>> be57cfb73 (chore: self code review tweaks / clean up)
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
