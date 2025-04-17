@@ -33,14 +33,11 @@ import com.android.build.OutputFile
 
 def isE2E = project.getProperties().get("isE2E") == "true"
 
-println("isE2E: " + isE2E + " " + project.getProperties().get("isE2E"))
-
 apply plugin: "com.facebook.react"
 
-if (!isE2E) {
-    println("Applying Sentry Gradle plugin")
-    apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
-}
+// if (!isE2E) {
+//     apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
+// }
 
 react {
 	    /* Folders */
