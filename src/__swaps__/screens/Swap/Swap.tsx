@@ -9,7 +9,6 @@ import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
-import { UserAssetsParams } from '@/state/assets/types';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -24,7 +23,7 @@ import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
 import { SwapOutputAsset } from '@/__swaps__/screens/Swap/components/SwapOutputAsset';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
-import { safeAreaInsetValues, time } from '@/utils';
+import { safeAreaInsetValues } from '@/utils';
 import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
 import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
@@ -130,29 +129,24 @@ const WalletAddressObserver = () => {
   const accountAddress = userAssetsStoreManager(state => state.address);
   const lastAccountAddress = useRef(accountAddress);
 
-  const setNewInputAsset = useCallback(
-    (params: Partial<UserAssetsParams> | undefined) => {
-      const { fetch, filter, getHighestValueNativeAsset, userAssets } = userAssetsStore.getState();
+  const setNewInputAsset = useCallback(() => {
+    const { filter, getHighestValueNativeAsset, userAssets } = userAssetsStore.getState();
 
-      fetch(params, { skipStoreUpdates: 'withCache', staleTime: time.seconds(20) });
+    if (filter !== 'all') userAssetsStore.setState({ filter: 'all' });
+    const hasAssets = userAssets.size > 0;
 
-      if (filter !== 'all') userAssetsStore.setState({ filter: 'all' });
-      const hasAssets = userAssets.size > 0;
-
-      setAsset({
-        asset: hasAssets ? getHighestValueNativeAsset() : null,
-        didWalletChange: true,
-        type: SwapAssetType.inputAsset,
-      });
-    },
-    [setAsset]
-  );
+    setAsset({
+      asset: hasAssets ? getHighestValueNativeAsset() : null,
+      didWalletChange: true,
+      type: SwapAssetType.inputAsset,
+    });
+  }, [setAsset]);
 
   useEffect(() => {
     if (accountAddress !== lastAccountAddress.current) {
       hasEnoughFundsForGas.value = undefined;
       lastAccountAddress.current = accountAddress;
-      setNewInputAsset(accountAddress ? { address: accountAddress } : undefined);
+      setNewInputAsset();
     }
   }, [accountAddress, hasEnoughFundsForGas, setNewInputAsset]);
 
