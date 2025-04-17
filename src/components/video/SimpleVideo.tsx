@@ -9,7 +9,7 @@ import { logger, RainbowError } from '@/logger';
 export type SimpleVideoProps = {
   readonly style?: ViewStyle;
   readonly uri: string;
-  readonly posterUri?: string;
+  readonly posterUri?: string | null;
   readonly loading: boolean;
   readonly setLoading: (isLoading: boolean) => void;
 };

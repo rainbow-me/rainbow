@@ -11,19 +11,16 @@ import {
   NftsByCollectionParams,
   NftsByCollectionResponse,
   UserNftCollectionsState,
-  UserNftsParams,
-  UserNftsResponse,
   UserNftsState,
 } from './types';
-import { useUserNftsStore } from './userNfts';
+import { userNftsStoreManager, useUserNftsStore } from './userNfts';
+import { UniqueAsset } from '@/entities/uniqueAssets';
 
-// Create stores for the current user
 export const { collectionsStore: useUserNftCollectionsStore } = createNftCollectionsStore({
   getAddress: $ => $(userAssetsStoreManager, state => state.address || null),
   shouldPersist: true,
 });
 
-// Create stores for external profiles
 export const { collectionsStore: useExternalNftCollectionsStore } = createNftCollectionsStore({
   getAddress: $ => $(useExternalProfileStore, state => state.externalProfile || null),
   shouldPersist: false,
@@ -60,27 +57,27 @@ function createNftCollectionsStore(config: {
       },
       getOpenFamilies: () => {
         const address = get().getActiveAddress();
-        return get().openFamilies[address] || {};
+        return get().openFamilies[address];
       },
       updateOpenFamilies: updates => {
-        const address = get().getActiveAddress() || '';
+        const address = get().getActiveAddress();
         set(state => ({
           ...state,
           openFamilies: {
             ...state.openFamilies,
             [address]: {
-              ...(state.openFamilies[address] || {}),
+              ...state.openFamilies[address],
               ...updates,
             },
           },
         }));
       },
       getUserOpenFamilies: () => {
-        const address = get().getActiveAddress() || '';
-        return get().getOpenFamilies(address);
+        const address = get().getActiveAddress();
+        return get().getOpenFamilies(address) || {};
       },
       getUserExpandedFamilies: () => {
-        const openFamilies = get().getUserOpenFamilies() || {};
+        const openFamilies = get().getUserOpenFamilies();
         return Object.entries(openFamilies)
           .filter(([, isOpen]) => isOpen)
           .map(([family]) => family);
@@ -106,27 +103,15 @@ function createNftCollectionsStore(config: {
     {
       abortInterruptedFetches: false,
       cacheTime: shouldPersist ? time.weeks(1) : time.days(1),
+      enabled: $ => $(userNftsStoreManager, s => !s.hasCompletedInitialFetch || !shouldPersist),
       fetcher: fetchUserNftsByCollection,
       keepPreviousData: true,
       params: {
         address: $ => getAddress($),
-        collectionId: $ =>
-          $(collectionsStore, s => {
-            const collections = s.getCollections();
-            const expandedFamilies = s.getUserExpandedFamilies();
-            return collections
-              ?.filter(c => expandedFamilies.includes(c.familyName))
-              .map(c => c.collectionId)
-              .join(',');
-          }),
+        collectionId: $ => $(collectionsStore, s => s.getUserExpandedCollectionIds()),
       },
-      setData: ({ data, set }) => {
-        set(state => ({
-          ...state,
-          nftsMap: new Map([...state.nftsMap, ...data.nfts]),
-        }));
-      },
-      onFetched: async ({ data, params }) => {
+      setData: ({ data: { nfts }, set }) => set(state => ({ ...state, nftsMap: nfts })),
+      onFetched: ({ data, params }) => {
         const addressFromParams = params.address;
         const addressFromStore = shouldPersist
           ? userAssetsStoreManager.getState().address
@@ -142,7 +127,7 @@ function createNftCollectionsStore(config: {
     },
     (_, get) => ({
       nfts: [],
-      nftsMap: new Map(),
+      nftsMap: new Map<string, UniqueAsset>(),
       getNfts: () => Array.from(get().nftsMap.values()),
       getNft: (uniqueId: string) => get().nftsMap.get(uniqueId),
       getNftsForSale: () => get().nfts.filter(nft => nft.currentPrice),
@@ -150,7 +135,7 @@ function createNftCollectionsStore(config: {
     shouldPersist
       ? {
           storageKey: `nftsByCollection`,
-          version: 1,
+          version: 0,
         }
       : undefined
   );
