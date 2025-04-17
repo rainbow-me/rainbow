@@ -101,7 +101,7 @@ jobs:
         run: ./scripts/e2e-android-build.sh
 
       - name: Install Maestro
-        run: curl -fsSL "https://get.maestro.mobile.dev" | bash
+        run: export MAESTRO_VERSION=1.39.13; curl -fsSL "https://get.maestro.mobile.dev" | bash
 
       - name: Setup Android Emulator
         id: android-emulator

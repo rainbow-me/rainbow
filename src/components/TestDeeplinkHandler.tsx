@@ -6,6 +6,9 @@ import { useEffect } from 'react';
 import { Linking } from 'react-native';
 import URL from 'url-parse';
 
+/**
+ * Handles E2E test commands. See e2e/README.md:31 for usage.
+ */
 export function TestDeeplinkHandler() {
   const initializeWallet = useInitializeWallet();
 
