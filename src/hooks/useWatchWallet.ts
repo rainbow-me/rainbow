@@ -38,9 +38,11 @@ export default function useWatchWallet({
       try {
         setSelectedWallet(wallet);
         setSelectedAddress(address);
-
-        // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 7.
-        initializeWallet(null, null, null, false, false, null, true);
+        initializeWallet({
+          shouldRunMigrations: false,
+          overwrite: false,
+          switching: true,
+        });
       } catch (e) {
         logger.error(new RainbowError(`[useWatchWallet]: error while switching account`), {
           error: (e as Error)?.message || 'Unknown error',

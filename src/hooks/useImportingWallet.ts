@@ -287,32 +287,26 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         });
 
         if (!showImportModal) {
-          await walletInit(
-            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | null' is not assignable... Remove this comment to see the full error message
-            input,
+          await walletInit({
+            seedPhrase: input,
             color,
-            name ? name : '',
-            false,
+            name: name ? name : '',
+            overwrite: false,
             checkedWallet,
-            undefined,
             image,
-            true
-          );
+            silent: true,
+          });
           await loadWallets();
           handleSetImporting(false);
         } else {
           const previousWalletCount = keys(wallets).length;
-          initializeWallet(
-            input,
-            // @ts-expect-error Initialize wallet is not typed properly now, will be fixed with a refactoring. TODO: remove comment when changing intializeWallet
+          initializeWallet({
+            seedPhrase: input,
             color,
-            name ? name : '',
-            false,
-            false,
-            checkedWallet,
-            undefined,
-            image
-          )
+            name: name ? name : '',
+            image,
+          });
+          initializeWallet({})
             .then(success => {
               ios && handleSetImporting(false);
               if (success) {
@@ -361,8 +355,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                 // Wait for error messages then refocus
                 setTimeout(() => {
                   inputRef.current?.focus();
-                  // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 0.
-                  initializeWallet();
+                  initializeWallet({});
                 }, 100);
               }
             })
@@ -372,8 +365,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               logger.error(new RainbowError(`[useImportingWallet]: Error importing seed phrase: ${error}`));
               setTimeout(() => {
                 inputRef.current?.focus();
-                // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 0.
-                initializeWallet();
+                initializeWallet({});
               }, 100);
             });
         }

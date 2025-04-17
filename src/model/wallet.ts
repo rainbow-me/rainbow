@@ -201,17 +201,37 @@ export const getHdPath = ({ type, index }: { type: WalletLibraryType; index: num
   }
 };
 
-export const walletInit = async (
+type CreateWalletParams = {
+  seed?: null | EthereumSeed;
+  color?: null | number;
+  name?: null | string;
+  isRestoring?: boolean;
+  overwrite?: boolean;
+  checkedWallet?: null | EthereumWalletFromSeed;
+  image?: null | string;
+  silent?: boolean;
+  clearCallbackOnStartCreation?: boolean;
+  userPin?: string;
+};
+
+export type InitializeWalletParams = CreateWalletParams & {
+  network?: string;
+  seedPhrase?: string;
+  shouldRunMigrations?: boolean;
+  switching?: boolean;
+};
+
+export const walletInit = async ({
   seedPhrase = undefined,
   color = null,
   name = null,
   overwrite = false,
   checkedWallet = null,
-  network: string,
+  network,
   image = null,
   // Import the wallet "silently" in the background (i.e. no "loading" prompts).
-  silent = false
-): Promise<WalletInitialized> => {
+  silent = false,
+}: InitializeWalletParams): Promise<WalletInitialized> => {
   let walletAddress = null;
 
   // When the `seedPhrase` is not defined in the args, then
@@ -584,19 +604,6 @@ export const identifyWalletType = (walletSeed: EthereumWalletSeed): EthereumWall
   }
   // seed
   return EthereumWalletType.seed;
-};
-
-type CreateWalletParams = {
-  seed?: null | EthereumSeed;
-  color?: null | number;
-  name?: null | string;
-  isRestoring?: boolean;
-  overwrite?: boolean;
-  checkedWallet?: null | EthereumWalletFromSeed;
-  image?: null | string;
-  silent?: boolean;
-  clearCallbackOnStartCreation?: boolean;
-  userPin?: string;
 };
 
 export const createWallet = async ({

@@ -135,8 +135,9 @@ function WalletScreen() {
   useEffect(() => {
     const initializeAndSetParams = async () => {
       walletState.current = WalletLoadingStates.INITIALIZING;
-      // @ts-expect-error messed up initializeWallet types
-      await initializeWallet(null, null, null, !params?.emptyWallet);
+      await initializeWallet({
+        shouldRunMigrations: !params?.emptyWallet,
+      });
       walletState.current = WalletLoadingStates.INITIALIZED;
       setParams({ emptyWallet: false });
 

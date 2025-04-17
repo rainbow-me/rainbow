@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 
-import appState from './appState';
 import charts from './charts';
 import contacts from './contacts';
 
@@ -15,7 +14,6 @@ import showcaseTokens from './showcaseTokens';
 import transactionSignatures from './transactionSignatures';
 
 export default combineReducers({
-  appState,
   charts,
   contacts,
   editOptions,

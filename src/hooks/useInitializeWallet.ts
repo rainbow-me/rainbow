@@ -11,7 +11,7 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { Address } from 'viem';
 import runMigrations from '../model/migrations';
-import { walletInit } from '../model/wallet';
+import { InitializeWalletParams, walletInit } from '../model/wallet';
 import { settingsLoadNetwork } from '../redux/settings';
 import { loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
 import useAccountSettings from './useAccountSettings';
@@ -44,20 +44,17 @@ export default function useInitializeWallet() {
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
 
   const initializeWallet = useCallback(
-    async (
-      // @ts-expect-error This callback will be refactored to use a single object param with full TS typings
+    async ({
       seedPhrase,
       color = null,
       name = null,
       shouldRunMigrations = false,
       overwrite = false,
       checkedWallet = null,
-      // @ts-expect-error This callback will be refactored to use a single object param with full TS typings
       switching,
-      // @ts-expect-error This callback will be refactored to use a single object param with full TS typings
       image,
-      silent = false
-    ) => {
+      silent = false,
+    }: InitializeWalletParams) => {
       let walletStatus: WalletStatus = 'unknown';
       try {
         PerformanceTracking.startMeasuring(event.performanceInitializeWallet);
@@ -79,7 +76,17 @@ export default function useInitializeWallet() {
         // Load the network first
         await dispatch(settingsLoadNetwork());
 
-        const { isNew, walletAddress } = await walletInit(seedPhrase, color, name, overwrite, checkedWallet, network, image, silent);
+        const { isNew, walletAddress } = await walletInit({
+          seedPhrase,
+          color,
+          name,
+          overwrite,
+          checkedWallet,
+          network,
+          image,
+          silent,
+        });
+
         walletStatus = getWalletStatus(isNew, isImporting);
 
         logger.debug('[useInitializeWallet]: walletInit returned', {
