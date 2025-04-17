@@ -29,7 +29,7 @@ export default function useRefreshAccountData() {
   );
 
   const fetchAccountData = useCallback(async () => {
-    userAssetsStore.getState().fetch(undefined, { staleTime: time.seconds(5) });
+    userAssetsStore.getState().fetch(undefined, { staleTime: 0 });
     useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) });
     usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) });
     useClaimablesStore.getState().fetch(undefined, { staleTime: time.seconds(5) });
