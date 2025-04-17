@@ -35,9 +35,7 @@ def isE2E = project.getProperties().get("isE2E") == "true"
 
 apply plugin: "com.facebook.react"
 
-// if (!isE2E) {
-//     apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
-// }
+// apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 
 react {
 	    /* Folders */
@@ -249,3 +247,7 @@ task copyDownloadableDepsToLibs(type: Copy) {
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+project.plugins.each {
+   println it
+}
