@@ -114,7 +114,7 @@ export const BuyContent = memo(function BuySection() {
       <Stack space="4px">
         <Box style={{ opacity: hasBuyOptions ? 1 : 0.5 }}>
           <Row highlighted>
-            <Box alignItems="center" flexDirection="row" gap={12} width={'full'}>
+            <Box alignItems="center" flexDirection="row" gap={12}>
               <IconContainer height={10} width={20}>
                 <TextShadow blur={12} shadowOpacity={0.24}>
                   <Text weight="medium" align="center" size="15pt" color="accent">
@@ -122,25 +122,25 @@ export const BuyContent = memo(function BuySection() {
                   </Text>
                 </TextShadow>
               </IconContainer>
-              <TextShadow containerStyle={{ flex: 1 }} blur={12} shadowOpacity={0.24}>
+              <TextShadow blur={12} shadowOpacity={0.24}>
                 <Text weight="semibold" size="17pt" color="accent">
                   {i18n.t(i18n.l.expanded_state.sections.buy.pay_with)}
                 </Text>
               </TextShadow>
-              <Box alignItems="center" flexDirection="row" gap={8}>
-                <RainbowCoinIcon
-                  size={16}
-                  chainId={buyWithAsset.chainId}
-                  color={buyWithAsset.color}
-                  icon={buyWithAsset.icon_url}
-                  symbol={buyWithAsset.symbol}
-                />
-                <TextShadow blur={12} shadowOpacity={0.24}>
-                  <Text align="right" weight="semibold" size="17pt" color="accent">
-                    {buyWithAsset.symbol}
-                  </Text>
-                </TextShadow>
-              </Box>
+            </Box>
+            <Box alignItems="center" flexDirection="row" gap={8}>
+              <RainbowCoinIcon
+                size={16}
+                chainId={buyWithAsset.chainId}
+                color={buyWithAsset.color}
+                icon={buyWithAsset.icon_url}
+                symbol={buyWithAsset.symbol}
+              />
+              <TextShadow blur={12} shadowOpacity={0.24}>
+                <Text align="right" weight="semibold" size="17pt" color="accent">
+                  {buyWithAsset.symbol}
+                </Text>
+              </TextShadow>
             </Box>
           </Row>
         </Box>
