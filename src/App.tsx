@@ -1,6 +1,6 @@
 import '@/languages';
 import * as Sentry from '@sentry/react-native';
-import React, { useCallback, useEffect, useState, memo } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native';
 import { Toaster } from 'sonner-native';
 import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
@@ -9,7 +9,7 @@ import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
-import { connect, Provider as ReduxProvider, shallowEqual } from 'react-redux';
+import { Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import ErrorBoundary from '@/components/error-boundary/ErrorBoundary';
 import { OfflineToast } from '@/components/toasts';
@@ -19,7 +19,7 @@ import { Playground } from '@/design-system/playground/Playground';
 import RainbowContextWrapper from '@/helpers/RainbowContext';
 import { Navigation } from '@/navigation';
 import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
-import store, { AppDispatch, type AppState } from '@/redux/store';
+import store from '@/redux/store';
 import { MainThemeProvider } from '@/theme/ThemeContext';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
@@ -39,6 +39,7 @@ import { BackupsSync } from '@/state/sync/BackupsSync';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
 import { PerformanceProfiler } from '@shopify/react-native-performance';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
+import { useWalletsStore } from './state/wallets/walletsStore';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -54,11 +55,8 @@ const sx = StyleSheet.create({
   },
 });
 
-interface AppProps {
-  walletReady: boolean;
-}
-
-function App({ walletReady }: AppProps) {
+function App() {
+  const walletReady = useWalletsStore(state => state.walletReady);
   const { initialRoute } = useApplicationSetup();
   const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
     Navigation.setTopLevelNavigator(ref);
@@ -90,21 +88,6 @@ function App({ walletReady }: AppProps) {
     </>
   );
 }
-
-const AppWithRedux = connect<AppProps, AppDispatch, AppProps, AppState>(
-  state => ({
-    walletReady: state.appState.walletReady,
-  }),
-  null,
-  null,
-  {
-    areStatesEqual: (next, prev) => {
-      // Only update if walletReady actually changed
-      return next.appState.walletReady === prev.appState.walletReady;
-    },
-    areOwnPropsEqual: shallowEqual,
-  }
-)(memo(App));
 
 function Root() {
   const [initializing, setInitializing] = useState(true);
@@ -196,7 +179,7 @@ function Root() {
                     <RainbowContextWrapper>
                       <SharedValuesProvider>
                         <ErrorBoundary>
-                          <AppWithRedux walletReady={false} />
+                          <App />
                         </ErrorBoundary>
                       </SharedValuesProvider>
                     </RainbowContextWrapper>

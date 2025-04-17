@@ -23,7 +23,7 @@ import {
   TransactionNotificationData,
 } from '@/notifications/types';
 import store, { AppState } from '@/redux/store';
-import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getAccountAddress, getWalletReady, useWalletsStore } from '@/state/wallets/walletsStore';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { isLowerCaseMatch } from '@/utils';
 import notifee, { EventType, Event as NotifeeEvent } from '@notifee/react-native';
@@ -109,7 +109,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
     trackTappedPushNotification(notification);
     // Need to call getState() directly, because the event handler
     // has the old value reference in its closure
-    if (!store.getState().appState.walletReady) {
+    if (!getWalletReady()) {
       NotificationStorage.deferNotification(notification);
       return;
     }

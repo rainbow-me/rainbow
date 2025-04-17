@@ -12,9 +12,8 @@ import { useDispatch } from 'react-redux';
 import { Address } from 'viem';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
-import { appStateUpdate } from '../redux/appState';
 import { settingsLoadNetwork } from '../redux/settings';
-import { loadWallets, setAccountAddress } from '@/state/wallets/walletsStore';
+import { loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useLoadAccountData from './useLoadAccountData';
@@ -119,7 +118,7 @@ export default function useInitializeWallet() {
           logger.debug('[useInitializeWallet]: walletAddress is nil');
           Alert.alert(i18n.t(i18n.l.wallet.import_failed_invalid_private_key));
           if (!isImporting) {
-            dispatch(appStateUpdate({ walletReady: true }));
+            setWalletReady();
           }
           return null;
         }
@@ -142,7 +141,7 @@ export default function useInitializeWallet() {
           });
         }
 
-        dispatch(appStateUpdate({ walletReady: true }));
+        setWalletReady();
         logger.debug('[useInitializeWallet]: 💰 Wallet initialized');
 
         PerformanceTracking.finishMeasuring(event.performanceInitializeWallet, {
@@ -174,7 +173,7 @@ export default function useInitializeWallet() {
         }
 
         Alert.alert(i18n.t(i18n.l.wallet.something_went_wrong_importing));
-        dispatch(appStateUpdate({ walletReady: true }));
+        setWalletReady();
         return null;
       }
     },
