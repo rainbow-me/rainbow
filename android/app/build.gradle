@@ -35,9 +35,11 @@ def isE2E = project.getProperties().get("isE2E") == "true"
 
 apply plugin: "com.facebook.react"
 
-// apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
+if (!isE2E) {
+    apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
+    apply plugin: "io.sentry.android.gradle"
+}
 
-apply plugin: "io.sentry.android.gradle"
 sentry {
     // Enables or disables the automatic configuration of Native Symbols
     // for Sentry. This executes sentry-cli automatically so
