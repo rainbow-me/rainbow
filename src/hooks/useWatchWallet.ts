@@ -2,7 +2,7 @@ import { useDeleteWallet, useImportingWallet, useInitializeWallet } from '@/hook
 import { logger, RainbowError } from '@/logger';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
-import { setSelectedAddress, setSelectedWallet, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { setSelectedWallet, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import { doesWalletsContainAddress } from '@/utils';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
@@ -36,8 +36,7 @@ export default function useWatchWallet({
     async (walletId: string, address: string) => {
       const wallet = (wallets || {})[walletId];
       try {
-        setSelectedWallet(wallet);
-        setSelectedAddress(address);
+        setSelectedWallet(wallet, address);
         initializeWallet({
           shouldRunMigrations: false,
           overwrite: false,

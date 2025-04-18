@@ -62,8 +62,6 @@ interface WalletsState {
 
   clearAllWalletsBackupStatus: () => void;
 
-  setSelectedAddress: (address: string) => void;
-
   accountAddress: `0x${string}`;
   setAccountAddress: (address: `0x${string}`) => void;
 
@@ -103,7 +101,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         selected: wallet,
       });
       if (address) {
-        setSelectedAddress(address);
+        saveAddress(address);
       }
     },
 
@@ -120,10 +118,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({
         wallets,
       });
-    },
-
-    setSelectedAddress: (address: string) => {
-      saveAddress(address);
     },
 
     accountAddress: `0x`,
@@ -672,7 +666,6 @@ export const {
   refreshWalletENSAvatars,
   refreshWalletNames,
   setAllWalletsWithIdsAsBackedUp,
-  setSelectedAddress,
   setSelectedWallet,
   setWalletBackedUp,
   setWalletReady,

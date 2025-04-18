@@ -1,4 +1,4 @@
-import { toChecksumAddress } from '@/handlers/web3';
+import { ensureChecksumAddress } from '@/handlers/web3';
 import { RainbowAccount } from '@/model/wallet';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import useInitializeWallet from './useInitializeWallet';
@@ -8,16 +8,17 @@ export default function useSwitchWallet() {
   const wallets = useWalletsStore(state => state.wallets);
 
   const switchToWalletWithAddress = async (address: string): Promise<string | null> => {
-    const walletKey = Object.keys(wallets!).find(key => {
+    if (!wallets) return null;
+
+    const walletKey = Object.keys(wallets).find(key => {
       // Addresses
-      return wallets![key].addresses.find((account: RainbowAccount) => account.address.toLowerCase() === address.toLowerCase());
+      return wallets[key].addresses.find((account: RainbowAccount) => account.address.toLowerCase() === address.toLowerCase());
     });
 
     if (!walletKey) return null;
 
-    const { setSelectedWallet, setSelectedAddress } = useWalletsStore.getState();
-    setSelectedWallet(wallets![walletKey]);
-    setSelectedAddress(toChecksumAddress(address)!);
+    const { setSelectedWallet } = useWalletsStore.getState();
+    setSelectedWallet(wallets[walletKey], ensureChecksumAddress(address));
 
     return initializeWallet({
       shouldRunMigrations: false,
