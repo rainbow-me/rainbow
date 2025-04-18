@@ -58,7 +58,7 @@ interface AppProps {
   walletReady: boolean;
 }
 
-function App({ walletReady }: AppProps) {
+function App() {
   const { initialRoute } = useApplicationSetup();
   const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
     Navigation.setTopLevelNavigator(ref);
@@ -83,15 +83,15 @@ function App({ walletReady }: AppProps) {
         <OfflineToast />
         <Toaster />
       </View>
-      <NotificationsHandler walletReady={walletReady} />
-      <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
+      <NotificationsHandler />
+      <DeeplinkHandler initialRoute={initialRoute} />
       <BackupsSync />
       <AbsolutePortalRoot />
     </>
   );
 }
 
-const AppWithRedux = connect<AppProps, AppDispatch, AppProps, AppState>(
+const AppWithRedux = connect<AppProps, AppDispatch, Record<string, never>, AppState>(
   state => ({
     walletReady: state.appState.walletReady,
   }),
@@ -196,7 +196,7 @@ function Root() {
                     <RainbowContextWrapper>
                       <SharedValuesProvider>
                         <ErrorBoundary>
-                          <AppWithRedux walletReady={false} />
+                          <AppWithRedux />
                         </ErrorBoundary>
                       </SharedValuesProvider>
                     </RainbowContextWrapper>

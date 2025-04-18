@@ -25,7 +25,6 @@ import { formatUnits } from 'viem';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { haptics } from '@/utils';
 import { queryClient } from '@/react-query';
-import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
 import { externalTokenQueryFunction, externalTokenQueryKey } from '@/resources/assets/externalAssetsQuery';
@@ -41,6 +40,7 @@ import { estimateClaimUnlockSwapGasLimit } from '../estimateGas';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import showWalletErrorAlert from '@/helpers/support';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { useClaimablesStore } from '@/state/claimables/claimables';
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
@@ -314,8 +314,6 @@ export function TransactionClaimableContextProvider({
     }
   }, [claimStatus, outputConfig.chainId, outputConfig.token, quoteState.status, requiresSwap, gasState.isSufficientGas, gasState.status]);
 
-  const queryKey = claimablesQueryKey({ address: accountAddress, currency: nativeCurrency });
-
   const { mutate: claim } = useMutation({
     mutationFn: async () => {
       if (
@@ -475,7 +473,7 @@ export function TransactionClaimableContextProvider({
           outputChainId: outputConfig.chainId,
         });
 
-        queryClient.setQueryData(queryKey, (oldData: Claimable[] | undefined) => oldData?.filter(c => c.uniqueId !== claimable.uniqueId));
+        useClaimablesStore.getState().markClaimed(claimable.uniqueId);
       } catch (e) {
         haptics.notificationError();
         setClaimStatus('recoverableError');
@@ -540,7 +538,7 @@ export function TransactionClaimableContextProvider({
     },
     onSettled: () => {
       // Clear and refresh claimables data 20s after claim button is pressed, regardless of success or failure
-      setTimeout(() => queryClient.invalidateQueries(queryKey), 20_000);
+      setTimeout(() => useClaimablesStore.getState().fetch(undefined, { staleTime: 0 }), 20_000);
     },
   });
 
