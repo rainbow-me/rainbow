@@ -4,7 +4,6 @@ import { Keyboard } from 'react-native';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { DiscoverScreenContent } from '@/components/Discover/DiscoverScreenContent';
 import DiscoverScreenProvider, { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
-import { Page } from '@/components/layout';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -84,9 +83,7 @@ const Content = () => {
         ref={scrollViewRef}
         as={Animated.ScrollView}
         automaticallyAdjustsScrollIndicatorInsets={false}
-        // contentContainerStyle={isSearching ? { height: '100%' } : {}}
         onScroll={scrollHandler}
-        // TODO: change to shared value
         scrollEnabled={!isSearching}
         refreshControl={IS_IOS ? <PullToRefresh /> : undefined}
         removeClippedSubviews

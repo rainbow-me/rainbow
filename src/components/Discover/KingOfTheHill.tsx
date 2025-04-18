@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import * as i18n from '@/languages';
-import { Box, globalColors, Inline, Text, useColorMode } from '@/design-system';
+import { Box, globalColors, Inline, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import FastImage from 'react-native-fast-image';
 import { getSizedImageUrl } from '@/handlers/imgix';
@@ -10,10 +10,13 @@ import Routes from '@/navigation/routesNames';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { KingOfTheHillToken, useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
 import { KingOfTheHillCard } from '@/components/cards/skia-cards/KingOfTheHillCard';
+import { Skeleton } from '@/screens/points/components/Skeleton';
 
-function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfTheHillToken }) {
+const LastWinnerSection = React.memo(function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfTheHillToken }) {
+  console.log('LAST WINNER SECTION');
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
+  const fillTertiaryColor = useBackgroundColor('fillTertiary');
   const sizedIconUrl = getSizedImageUrl(lastWinnerToken.iconUrl, 16);
 
   const navigateToLastWinner = useCallback(() => {
@@ -28,8 +31,7 @@ function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfTheHill
     <Box flexDirection="row" justifyContent="space-between" paddingHorizontal={'10px'}>
       <ButtonPressAnimation onPress={navigateToLastWinner}>
         <GradientBorderView
-          // TODO: light mode
-          borderGradientColors={['rgba(245,248,255,0.08)', 'transparent']}
+          borderGradientColors={[fillTertiaryColor, 'transparent']}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
           borderRadius={13}
@@ -56,8 +58,7 @@ function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfTheHill
         }}
       >
         <GradientBorderView
-          // TODO: light mode
-          borderGradientColors={['rgba(245,248,255,0.08)', 'rgba(0,0,0,0)']}
+          borderGradientColors={[fillTertiaryColor, 'transparent']}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
           borderRadius={13}
@@ -73,13 +74,13 @@ function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfTheHill
       </ButtonPressAnimation>
     </Box>
   );
-}
+});
 
 export function KingOfTheHill() {
   const kingOfTheHill = useKingOfTheHillStore(store => store.getData());
 
   if (!kingOfTheHill) {
-    return null;
+    return <Skeleton width={'100%'} height={84 + 26 + 6} />;
   }
 
   return (

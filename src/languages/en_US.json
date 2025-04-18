@@ -3377,7 +3377,9 @@
     "king_of_hill": {
       "current_king": "CURRENT KING",
       "last_winner": "LAST WINNER",
-      "how_it_works": "How It Works"
+      "how_it_works": "How It Works",
+      "starting_next_round": "Starting next round",
+      "left": "LEFT"
     }
   }
 }
