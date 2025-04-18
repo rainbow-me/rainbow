@@ -243,6 +243,9 @@ export const toChecksumAddress = (address: string): string | null => {
   }
 };
 
+// Ensures an address is a checksummed address (just a helper for naming consistency)
+export const ensureChecksumAddress = (address: string): string => getAddress(address);
+
 /**
  * @desc estimate gas limit
  * @param estimateGasData The transaction request to use for the estimate.

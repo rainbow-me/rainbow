@@ -205,9 +205,8 @@ export default function RestoreCloudStep() {
           const firstAddress = firstWallet ? (firstWallet.addresses || [])[0].address : undefined;
 
           if (firstWallet && firstAddress) {
-            const { setSelectedAddress, setSelectedWallet } = useWalletsStore.getState();
-            setSelectedWallet(firstWallet);
-            setSelectedAddress(firstAddress);
+            const { setSelectedWallet } = useWalletsStore.getState();
+            setSelectedWallet(firstWallet, firstAddress);
             await initializeWallet(null, null, null, false, false, null, true, null);
           }
         });

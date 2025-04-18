@@ -24,7 +24,7 @@ export function ProfileAvatarRow({ size = ProfileAvatarSize }: { size?: number }
   // ////////////////////////////////////////////////////
   // Account
 
-  const { accountAddress, accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
+  const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
 
   const { avatarContextMenuConfig, onAvatarPressProfile, onSelectionCallback } = useOnAvatarPress({ screenType: 'wallet' });
 
