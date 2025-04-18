@@ -26,7 +26,7 @@ export const useClaimablesStore = createQueryStore<ClaimablesStore, ClaimablesAr
     },
     keepPreviousData: true,
     enabled: $ => $(userAssetsStoreManager, state => !!state.address),
-    staleTime: time.seconds(10),
+    staleTime: time.minutes(10),
   },
   set => ({
     markClaimed: (uniqueId: string) => {
