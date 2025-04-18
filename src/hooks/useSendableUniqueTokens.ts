@@ -2,15 +2,7 @@ import { groupBy } from 'lodash';
 import { useAccountSettings } from '.';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useNftSort } from './useNFTsSortBy';
-import { UniqueAsset } from '@/entities';
 import { useMemo } from 'react';
-
-type SendableUniqueToken = {
-  data: UniqueAsset[];
-  familyId: number;
-  familyImage: string | null;
-  name: string;
-};
 
 export default function useUniqueTokens() {
   const { nftSort, nftSortDirection } = useNftSort();

@@ -74,7 +74,7 @@ export { default as useSafeImageUri } from './useSafeImageUri';
 export { default as useScanner } from './useScanner';
 export { default as useSelectImageMenu } from './useSelectImageMenu';
 export { default as useSendSheetInputRefs } from './useSendSheetInputRefs';
-export { default as useUniqueTokens } from './useUniqueTokens';
+export { default as useSendableUniqueTokens } from './useSendableUniqueTokens';
 export { default as useSendFeedback } from './useSendFeedback';
 export { default as useShakeAnimation } from './useShakeAnimation';
 export { default as useShowcaseTokens } from './useShowcaseTokens';

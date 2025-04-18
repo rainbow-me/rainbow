@@ -8,7 +8,6 @@ import { RainbowConfig } from '@/model/remoteConfig';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { Language } from '@/languages';
 import { Network } from '@/state/backendNetworks/types';
-import useUniqueTokens from '@/hooks/useUniqueTokens';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
@@ -63,7 +62,7 @@ export type WalletSectionsState = {
   remoteConfig: RainbowConfig;
   experimentalConfig: ReturnType<typeof useExperimentalConfig>;
   showcaseTokens: string[];
-  uniqueTokens: ReturnType<typeof useUniqueTokens>['uniqueTokens'];
+  uniqueTokens: UniqueAsset[];
   isFetchingNfts: boolean;
   positions: RainbowPositions | null;
   claimables: ClaimablesStore | null;
@@ -194,7 +193,7 @@ const withBriefBalanceSection = (
   isCoinListEdited: boolean,
   pinnedCoins: BooleanMap,
   hiddenAssets: Set<UniqueId>,
-  collectibles: ReturnType<typeof useUniqueTokens>['uniqueTokens'],
+  collectibles: UniqueAsset[],
   remoteCards: string[]
 ): BalanceSectionResult => {
   const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);
