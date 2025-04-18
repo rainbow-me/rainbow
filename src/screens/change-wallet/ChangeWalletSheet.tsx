@@ -251,8 +251,11 @@ export default function ChangeWalletSheet() {
         setCurrentSelectedWallet(wallet);
         setSelectedWallet(wallet, address);
         remotePromoSheetsStore.setState({ isShown: false });
-        // @ts-expect-error initializeWallet is not typed correctly
-        initializeWallet(null, null, null, false, false, null, true);
+        initializeWallet({
+          shouldRunMigrations: false,
+          overwrite: false,
+          switching: true,
+        });
         if (!fromDeletion) {
           goBack();
         }

@@ -20,8 +20,11 @@ export default function useSwitchWallet() {
     const { setSelectedWallet } = useWalletsStore.getState();
     setSelectedWallet(wallets[walletKey], ensureChecksumAddress(address));
 
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 7.
-    return initializeWallet(null, null, null, false, false, null, true);
+    return initializeWallet({
+      shouldRunMigrations: false,
+      overwrite: false,
+      switching: true,
+    });
   };
 
   return {

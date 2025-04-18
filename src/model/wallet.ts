@@ -91,22 +91,22 @@ interface TypedData {
   message: object;
 }
 
-interface ReadOnlyWallet {
+export interface ReadOnlyWallet {
   address: EthereumAddress;
-  privateKey: null;
+  privateKey: null | string;
 }
 
-interface EthereumWalletFromSeed {
+export interface EthereumWalletFromSeed {
+  address: EthereumAddress;
   hdnode: null | HDNode;
   isHDWallet: boolean;
-  wallet: null | EthereumWallet;
+  root: null | EthereumHDKey;
   type: EthereumWalletType;
+  wallet: null | EthereumWallet;
   walletType: WalletLibraryType;
-  root: EthereumHDKey;
-  address: EthereumAddress;
 }
 
-type EthereumWallet = Wallet | ReadOnlyWallet;
+export type EthereumWallet = Wallet | ReadOnlyWallet | LibWallet;
 
 export interface RainbowAccount {
   index: number;
@@ -183,6 +183,26 @@ const authenticationPrompt = lang.t('wallet.authenticate.please');
 
 export const createdWithBiometricError = 'createdWithBiometricError';
 
+export function ensureEthereumWallet(wallet: EthereumWallet): asserts wallet is Wallet {
+  if ('getPrivateKey' in wallet) {
+    throw new Error(`Not expected: LibWallet not Wallet`);
+  }
+  if ('signTransaction' in wallet) {
+    return wallet as any;
+  }
+  throw new Error(`Not expected: ReadOnly not Wallet`);
+}
+
+export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWallet {
+  if ('signTransaction' in wallet) {
+    throw new Error(`Not expected: Wallet not LibWallet`);
+  }
+  if ('getPrivateKey' in wallet) {
+    return wallet as any;
+  }
+  throw new Error(`Not expected: ReadOnly not LibWallet`);
+}
+
 const isHardwareWalletKey = (key: string | null) => {
   const data = key?.split('/');
   if (data && data.length > 1) {
@@ -201,17 +221,37 @@ export const getHdPath = ({ type, index }: { type: WalletLibraryType; index: num
   }
 };
 
-export const walletInit = async (
+type CreateWalletParams = {
+  seed?: null | EthereumSeed;
+  color?: null | number;
+  name?: null | string;
+  isRestoring?: boolean;
+  overwrite?: boolean;
+  checkedWallet?: null | EthereumWalletFromSeed;
+  image?: null | string;
+  silent?: boolean;
+  clearCallbackOnStartCreation?: boolean;
+  userPin?: string;
+};
+
+export type InitializeWalletParams = CreateWalletParams & {
+  network?: string;
+  seedPhrase?: string;
+  shouldRunMigrations?: boolean;
+  switching?: boolean;
+};
+
+export const walletInit = async ({
   seedPhrase = undefined,
   color = null,
   name = null,
   overwrite = false,
   checkedWallet = null,
-  network: string,
+  network,
   image = null,
   // Import the wallet "silently" in the background (i.e. no "loading" prompts).
-  silent = false
-): Promise<WalletInitialized> => {
+  silent = false,
+}: InitializeWalletParams): Promise<WalletInitialized> => {
   let walletAddress = null;
 
   // When the `seedPhrase` is not defined in the args, then
@@ -237,6 +277,8 @@ export const walletInit = async (
 
   if (!walletAddress) {
     const wallet = await createWallet({});
+    if (!wallet) throw new Error(`No wallet`);
+    ensureEthereumWallet(wallet);
     if (!wallet?.address) {
       throw new RainbowError('Error creating wallet address');
     }
@@ -586,19 +628,6 @@ export const identifyWalletType = (walletSeed: EthereumWalletSeed): EthereumWall
   return EthereumWalletType.seed;
 };
 
-type CreateWalletParams = {
-  seed?: null | EthereumSeed;
-  color?: null | number;
-  name?: null | string;
-  isRestoring?: boolean;
-  overwrite?: boolean;
-  checkedWallet?: null | EthereumWalletFromSeed;
-  image?: null | string;
-  silent?: boolean;
-  clearCallbackOnStartCreation?: boolean;
-  userPin?: string;
-};
-
 export const createWallet = async ({
   seed = null,
   color = null,
@@ -632,9 +661,10 @@ export const createWallet = async ({
     const isHardwareWallet = type === EthereumWalletType.bluetooth;
     let pkey = walletSeed;
     if (!walletResult || !address) return null;
+    ensureLibWallet(walletResult);
     const walletAddress = address;
     if (isHDWallet) {
-      pkey = addHexPrefix((walletResult as LibWallet).getPrivateKey().toString('hex'));
+      pkey = addHexPrefix(walletResult.getPrivateKey().toString('hex'));
     } else if (isHardwareWallet) {
       // hardware pkey format is ${bluetooth device id}/${index}
       pkey = `${seed}/0`;
@@ -734,9 +764,13 @@ export const createWallet = async ({
         let nextWallet: any = null;
         if (isHardwareWallet) {
           const walletObj = await deriveAccountFromBluetoothHardwareWallet(seed, index);
+          if (!walletObj.wallet) {
+            throw new Error(`No wallet`);
+          }
+          ensureEthereumWallet(walletObj.wallet);
           nextWallet = {
-            address: walletObj.wallet.address,
-            privateKey: walletObj.wallet.privateKey,
+            address: walletObj.wallet?.address,
+            privateKey: walletObj.wallet?.privateKey,
           };
         } else {
           const child = root?.deriveChild(index);
@@ -873,7 +907,7 @@ export const createWallet = async ({
 
     if (walletResult && walletAddress) {
       const walletRes =
-        walletType === WalletLibraryType.ethers || walletType === WalletLibraryType.ledger ? (walletResult as Wallet) : new Wallet(pkey);
+        walletType === WalletLibraryType.ethers || walletType === WalletLibraryType.ledger ? walletResult : new Wallet(pkey);
 
       return walletRes;
     }
@@ -1161,6 +1195,7 @@ export const generateAccount = async (id: RainbowWallet['id'], index: number): P
     }
     const { wallet: ethereumJSWallet } = await deriveAccountFromMnemonic(seedphrase, index);
     if (!ethereumJSWallet) return null;
+    ensureLibWallet(ethereumJSWallet);
     const walletAddress = addHexPrefix(toChecksumAddress(ethereumJSWallet.getAddress().toString('hex')));
     const walletPkey = addHexPrefix(ethereumJSWallet.getPrivateKey().toString('hex'));
 
@@ -1211,6 +1246,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
         {
           const { wallet: ethereumJSWallet } = await deriveAccountFromMnemonic(seedphrase);
           if (!ethereumJSWallet) return null;
+          ensureLibWallet(ethereumJSWallet);
           const walletPkey = addHexPrefix(ethereumJSWallet.getPrivateKey().toString('hex'));
 
           existingAccount = new Wallet(walletPkey);

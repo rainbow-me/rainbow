@@ -30,7 +30,7 @@ import { clamp } from '@/__swaps__/utils/swaps';
 import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { getWallets, setSelectedWallet } from '@/state/wallets/walletsStore';
+import { getWalletReady, getWallets, setSelectedWallet } from '@/state/wallets/walletsStore';
 import { isAddress } from 'viem';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
@@ -53,7 +53,7 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
   /**
    * We need to wait till the wallet is ready to handle any deeplink
    */
-  while (!store.getState().appState.walletReady) {
+  while (!getWalletReady()) {
     logger.debug(`[handleDeeplink]: Waiting for wallet to be ready`);
     await delay(50);
   }

@@ -427,7 +427,11 @@ const HomePanel = memo(function HomePanel({
     if (selectedWallet.uniqueId !== accountAddress) {
       // switch to selected wallet
       setSelectedWallet(walletInPanel, selectedWallet.uniqueId);
-      initializeWallet(null, null, null, false, false, null, true, null);
+      initializeWallet({
+        shouldRunMigrations: false,
+        overwrite: false,
+        switching: true,
+      });
     }
     return true;
   }, [accountAddress, initializeWallet, selectedWallet, wallets]);

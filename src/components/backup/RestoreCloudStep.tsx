@@ -207,7 +207,11 @@ export default function RestoreCloudStep() {
           if (firstWallet && firstAddress) {
             const { setSelectedWallet } = useWalletsStore.getState();
             setSelectedWallet(firstWallet, firstAddress);
-            await initializeWallet(null, null, null, false, false, null, true, null);
+            await initializeWallet({
+              shouldRunMigrations: false,
+              overwrite: false,
+              switching: true,
+            });
           }
         });
 

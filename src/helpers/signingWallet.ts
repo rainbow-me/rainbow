@@ -1,10 +1,9 @@
 import { verifyMessage, Wallet } from '@ethersproject/wallet';
 import { generateMnemonic } from 'bip39';
-import { default as LibWallet } from 'ethereumjs-wallet';
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import { loadString, publicAccessControlOptions, saveString } from '../model/keychain';
 import { ChainId } from '@/state/backendNetworks/types';
-import { loadWallet } from '../model/wallet';
+import { ensureLibWallet, loadWallet } from '../model/wallet';
 import { signingWalletAddress, signingWallet as signingWalletKeychain } from '../utils/keychainConstants';
 import { EthereumAddress } from '@/entities';
 import AesEncryptor from '@/handlers/aesEncryption';
@@ -12,7 +11,7 @@ import { addHexPrefix, getProvider } from '@/handlers/web3';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger, RainbowError } from '@/logger';
 
-export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<EthereumAddress> {
+export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<EthereumAddress | null> {
   let alreadyExistingWallet = await loadString(signingWalletAddress);
 
   if (typeof alreadyExistingWallet !== 'string') {
@@ -21,11 +20,11 @@ export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): P
 
     if (!wallet || !address) {
       logger.error(new RainbowError('[signingWallet]: wallet or address undefined'));
-      // @ts-ignore need to handle types in case wallet or address are null
       return null;
     }
 
-    const privateKey = addHexPrefix((wallet as LibWallet).getPrivateKey().toString('hex'));
+    ensureLibWallet(wallet);
+    const privateKey = addHexPrefix(wallet.getPrivateKey().toString('hex'));
 
     const encryptor = new AesEncryptor();
     const encryptedPrivateKey = (await encryptor.encrypt(RAINBOW_MASTER_KEY, privateKey)) as string;
@@ -43,6 +42,7 @@ export async function getSignatureForSigningWalletAndCreateSignatureIfNeeded(add
   let alreadyExistingEncodedSignature = await loadString(`signature_${address}`, publicAccessControlOptions);
   if (alreadyExistingEncodedSignature) {
     const publicKeyForTheSigningWallet = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
+    if (!publicKeyForTheSigningWallet) return;
     const encryptor = new AesEncryptor();
     const decryptedSignature = await encryptor.decrypt(RAINBOW_MASTER_KEY, alreadyExistingEncodedSignature);
     if (address === verifyMessage(publicKeyForTheSigningWallet, decryptedSignature)) {
@@ -70,6 +70,7 @@ export async function signWithSigningWallet(messageToSign: string): Promise<stri
 export async function createSignature(address: EthereumAddress, privateKey: string | null = null) {
   logger.debug('[signingWallet]: Creating a signature');
   const publicKeyForTheSigningWallet = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
+  if (!publicKeyForTheSigningWallet) return;
 
   const provider = getProvider({ chainId: ChainId.mainnet });
   const mainWallet = privateKey ? new Wallet(privateKey) : await loadWallet({ address, provider, showErrorIfNotLoaded: false });
