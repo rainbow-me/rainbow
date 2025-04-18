@@ -26,7 +26,7 @@ Logs of the test run are saved in Github Actions artifacts. To access them go to
 
 The APK used to run the tests is also saved in the Artifacts section.
 
-To get more debug output in CI, set `DEBUG=true` in `.github/workflows/android-e2e.yml`. This will also record a video of the test runs. Unfortunately the video is limited to 3 minutes, so it might not always be useful.
+To get more debug output in CI, set `DEBUG=true` in `.github/workflows/android-e2e.yml`. This will also record logcat logs and a video of the test runs. Unfortunately the video is limited to 3 minutes, so it might not always be useful. Note that we've seen logcat cause adb to crash when running on CI so if this happens try disabling it (`scripts/e2e-android-ci.sh`).
 
 ### E2E test commands
 

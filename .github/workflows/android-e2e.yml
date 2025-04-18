@@ -3,7 +3,7 @@ name: Android e2e tests
 on: [pull_request]
 jobs:
   android-e2e:
-    runs-on: blacksmith-16vcpu-ubuntu-2204
+    runs-on: blacksmith-8vcpu-ubuntu-2204
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -11,8 +11,8 @@ jobs:
     env:
       # Can be used to help debug test failures. This will cause the apk to be
       # built for all architectures so it can be downloaded from the artifacts
-      # and installed locally. It will also record a video of the test run. Note
-      # that the video is limited to 3 minutes.
+      # and installed locally. It will also record logcat logs and a video of
+      # the test run. Note that the video is limited to 3 minutes.
       DEBUG: false
       SHARDS: 1
       ANDROID_EMULATOR_API_LEVEL: 33
