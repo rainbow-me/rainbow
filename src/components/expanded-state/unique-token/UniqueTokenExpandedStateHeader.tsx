@@ -469,6 +469,7 @@ const UniqueTokenExpandedStateHeader = ({
             {/* NOTE: Necessary since other context menu overflows off screen on android */}
             {IS_ANDROID && (
               <ContextCircleButton
+                testID="unique-token-expanded-state-context-menu-button"
                 options={assetMenuOptions}
                 onPressActionSheet={(index: number) => {
                   const actionItems = (assetMenuConfig?.menuItems || []).filter(item => 'actionTitle' in item);

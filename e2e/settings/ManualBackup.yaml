@@ -1,0 +1,50 @@
+appId: ${APP_ID}
+tags:
+  - backup
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/ImportWalletWithKey.yaml
+
+# Navigate to settings and backup section
+- retry:
+    maxRetries: 3
+    commands:
+      - tapOn:
+          id: settings-menu
+      - tapOn: 'Settings'
+- tapOn:
+    id: backup-section
+- tapOn:
+    id: backup-now-button
+# This part of the test is different for iOS and Android.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible: '(Sign in|Choose an account)'
+      - back
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible: 'iCloud Not Enabled'
+      - tapOn: 'No thanks'
+- assertVisible: 'Wallets & Backup'
+- assertVisible: 'Enable Cloud Backups'
+
+# Navigate to manual backup screen
+- tapOn: 'Private Key 1'
+- assertVisible: 'Not backed up'
+- tapOn:
+    id: back-up-manually
+- tapOn:
+    id: show-secret-button
+- runFlow: ../utils/MaybeSetupPin.yaml
+- tapOn:
+    id: saved-these-words
+- assertVisible: 'Wallets & Backup'

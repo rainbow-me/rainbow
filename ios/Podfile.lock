@@ -1947,7 +1947,7 @@ PODS:
   - TOCropViewController (2.7.4)
   - ToolTipMenu (5.2.1):
     - React
-  - TurboHaptics (1.0.4):
+  - TurboHaptics (1.0.5):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1968,11 +1968,11 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - VisionCamera (4.4.2):
-    - VisionCamera/Core (= 4.4.2)
-    - VisionCamera/React (= 4.4.2)
-  - VisionCamera/Core (4.4.2)
-  - VisionCamera/React (4.4.2):
+  - VisionCamera (4.6.4):
+    - VisionCamera/Core (= 4.6.4)
+    - VisionCamera/React (= 4.6.4)
+  - VisionCamera/Core (4.6.4)
+  - VisionCamera/React (4.6.4):
     - React-Core
   - Yoga (0.0.0)
 
@@ -2639,8 +2639,8 @@ SPEC CHECKSUMS:
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
-  TurboHaptics: 6381613d33ab97aeb30d9b15c3df94dc616a25e4
-  VisionCamera: 2af28201c3de77245f8c58b7a5274d5979df70df
+  TurboHaptics: 7e828d882aa98ccc6f68818b0c1fa2cf3c596a60
+  VisionCamera: 168f46071274ce58c50adef4c82ae3367b2ba2a6
   Yoga: 04f1db30bb810187397fa4c37dd1868a27af229c
 
 PODFILE CHECKSUM: 98c3fc206d7041ac7388693bb0753109d1884b57
