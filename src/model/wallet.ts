@@ -97,16 +97,16 @@ export interface ReadOnlyWallet {
 }
 
 export interface EthereumWalletFromSeed {
+  address: EthereumAddress;
   hdnode: null | HDNode;
   isHDWallet: boolean;
-  wallet: null | EthereumWallet;
-  type: EthereumWalletType;
-  walletType: WalletLibraryType;
   root: null | EthereumHDKey;
-  address: EthereumAddress;
+  type: EthereumWalletType;
+  wallet: null | EthereumWallet;
+  walletType: WalletLibraryType;
 }
 
-export type EthereumWallet = Wallet | ReadOnlyWallet;
+export type EthereumWallet = Wallet | ReadOnlyWallet | LibWallet;
 
 export interface RainbowAccount {
   index: number;
@@ -182,6 +182,26 @@ export const DEFAULT_WALLET_NAME = 'My Wallet';
 const authenticationPrompt = lang.t('wallet.authenticate.please');
 
 export const createdWithBiometricError = 'createdWithBiometricError';
+
+export function ensureEthereumWallet(wallet: EthereumWallet): asserts wallet is Wallet {
+  if ('getPrivateKey' in wallet) {
+    throw new Error(`Not expected: LibWallet not Wallet`);
+  }
+  if ('signTransaction' in wallet) {
+    return wallet as any;
+  }
+  throw new Error(`Not expected: ReadOnly not Wallet`);
+}
+
+export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWallet {
+  if ('signTransaction' in wallet) {
+    throw new Error(`Not expected: Wallet not LibWallet`);
+  }
+  if ('getPrivateKey' in wallet) {
+    return wallet as any;
+  }
+  throw new Error(`Not expected: ReadOnly not LibWallet`);
+}
 
 const isHardwareWalletKey = (key: string | null) => {
   const data = key?.split('/');
@@ -639,9 +659,10 @@ export const createWallet = async ({
     const isHardwareWallet = type === EthereumWalletType.bluetooth;
     let pkey = walletSeed;
     if (!walletResult || !address) return null;
+    ensureLibWallet(walletResult);
     const walletAddress = address;
     if (isHDWallet) {
-      pkey = addHexPrefix((walletResult as LibWallet).getPrivateKey().toString('hex'));
+      pkey = addHexPrefix(walletResult.getPrivateKey().toString('hex'));
     } else if (isHardwareWallet) {
       // hardware pkey format is ${bluetooth device id}/${index}
       pkey = `${seed}/0`;
@@ -742,8 +763,8 @@ export const createWallet = async ({
         if (isHardwareWallet) {
           const walletObj = await deriveAccountFromBluetoothHardwareWallet(seed, index);
           nextWallet = {
-            address: walletObj.wallet.address,
-            privateKey: walletObj.wallet.privateKey,
+            address: walletObj.wallet?.address,
+            privateKey: walletObj.wallet?.privateKey,
           };
         } else {
           const child = root?.deriveChild(index);
