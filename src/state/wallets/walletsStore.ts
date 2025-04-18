@@ -17,6 +17,7 @@ import { hasKey } from '../../model/keychain';
 import { PreferenceActionType, setPreference } from '../../model/preferences';
 import {
   AllRainbowWallets,
+  ensureEthereumWallet,
   generateAccount,
   getAllWallets,
   getSelectedWalletFromStorage as getKeychainSelectedWallet,
@@ -226,6 +227,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       if (!account) {
         throw new Error(`No account generated`);
       }
+      ensureEthereumWallet(account);
 
       const walletColorIndex = color !== null ? color : addressHashedColorIndex(account.address);
       if (walletColorIndex == null) {

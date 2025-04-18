@@ -60,7 +60,7 @@ export const deriveAccountFromMnemonic = async (mnemonic: string, index = 0): Pr
     isHDWallet: true,
     root,
     type: WalletTypes.mnemonic,
-    // @ts-expect-error TODO fix this type
+    hdnode: null,
     wallet,
     walletType: WalletLibraryType.bip39,
   };
