@@ -32,6 +32,7 @@ import { IS_IOS, IS_TEST } from '@/env';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { RAINBOW_TRENDING_TOKENS_LIST, useExperimentalFlag } from '@/config';
 import { shallowEqual } from '@/worklets/comparisons';
+import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 
 const t = i18n.l.trending_tokens;
 
@@ -379,16 +380,16 @@ function getTextWidths(symbol: string, price: string) {
   };
 }
 
-function TrendingTokenRow({ token }: { token: TrendingToken }) {
+function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency: NativeCurrencyKey }) {
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
   const { marketCap, price, volume } = useMemo(
     () => ({
       marketCap: formatNumber(token.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' }),
-      price: formatCurrency(token.price),
+      price: formatCurrency(token.price, { currency }),
       volume: formatNumber(token.volume, { useOrderSuffix: true, decimals: 1, style: '$' }),
     }),
-    [token.marketCap, token.price, token.volume]
+    [token.marketCap, token.price, token.volume, currency]
   );
 
   const { minPriceWidth, nameWidth, symbolWidth } = useMemo(() => getTextWidths(token.symbol, price), [token.symbol, price]);
@@ -689,7 +690,14 @@ function TrendingTokensLoader() {
 }
 
 function TrendingTokenData() {
+  const { nativeCurrency } = useAccountSettings();
   const { data: trendingTokens, isLoading } = useTrendingTokensData();
+
+  const renderItem = useCallback(
+    ({ item }: { item: TrendingToken }) => <TrendingTokenRow token={item} currency={nativeCurrency} />,
+    [nativeCurrency]
+  );
+
   if (isLoading) return <TrendingTokensLoader />;
 
   return (
@@ -698,7 +706,7 @@ function TrendingTokenData() {
       contentContainerStyle={{ gap: 28, paddingHorizontal: 20, paddingVertical: 12 }}
       ListEmptyComponent={<NoResults />}
       data={trendingTokens}
-      renderItem={({ item }) => <TrendingTokenRow token={item} />}
+      renderItem={renderItem}
     />
   );
 }

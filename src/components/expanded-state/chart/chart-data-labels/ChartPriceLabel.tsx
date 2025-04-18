@@ -4,6 +4,7 @@ import { useAccountSettings } from '@/hooks';
 import { ChartYLabel } from '@/react-native-animated-charts/src';
 import { SupportedCurrency, supportedNativeCurrencies } from '@/references';
 import { orderOfMagnitudeWorklet, significantDecimalsWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { toCompactNotation } from '@/helpers/strings';
 
 function calculateDecimalPlaces({
   amount,
@@ -94,10 +95,12 @@ export default function ChartPriceLabel({
   const formatWorklet = useCallback(
     (value: string) => {
       'worklet';
-      return formatNative({
-        defaultPriceValue: priceValue,
-        nativeSelected,
+      if (!value) return priceValue;
+      return toCompactNotation({
         value,
+        prefix: nativeSelected.symbol,
+        decimalPlaces: nativeSelected.decimals,
+        currency: nativeCurrency,
       });
     },
     [nativeSelected, priceValue]

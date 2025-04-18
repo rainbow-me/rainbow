@@ -7,7 +7,6 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { RAINBOW_COIN_EFFECT, useExperimentalFlag } from '@/config';
 import { Stack, Text, TextShadow, Bleed, Box } from '@/design-system';
 import ChartTypes from '@/helpers/chartTypes';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
 import { useChartData } from '@/react-native-animated-charts/src';
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
@@ -15,6 +14,8 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ColumnWithMargins } from '../../layout';
 import { ChartPercentChangeLabel, ChartPriceLabel, ChartDateLabel } from './chart-data-labels';
+import { toCompactNotation } from '@/helpers/strings';
+import { supportedNativeCurrencies } from '@/references';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -47,7 +48,13 @@ export default function ChartExpandedStateHeader({
   }, [data]);
 
   const price = useMemo(
-    () => convertAmountToNativeDisplay(latestPrice, nativeCurrency),
+    () =>
+      toCompactNotation({
+        value: latestPrice,
+        prefix: supportedNativeCurrencies[nativeCurrency].symbol,
+        decimalPlaces: supportedNativeCurrencies[nativeCurrency].decimals,
+        currency: nativeCurrency,
+      }),
     // we need to make sure we recreate this value only when chart's data change
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [data, latestPrice, nativeCurrency]

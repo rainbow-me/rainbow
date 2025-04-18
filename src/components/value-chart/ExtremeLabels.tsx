@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { LayoutChangeEvent, StyleProp, View, ViewStyle } from 'react-native';
-import { formatNative } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
 import { useChartData } from '@/react-native-animated-charts/src';
 import { Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { supportedNativeCurrencies } from '@/references';
 import { useTheme } from '@/theme';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
+import { toCompactNotation } from '@/helpers/strings';
 
 function trim(val: number) {
   return Math.min(Math.max(val, 0.05), 0.95);
@@ -83,10 +83,11 @@ const Labels = ({ color, width, isCard }: { color: string; width: number; isCard
           style={{ bottom: isCard ? -24 : -40 }}
           width={width}
         >
-          {formatNative({
-            defaultPriceValue: null,
-            nativeSelected,
-            value: smallestY.y.toString(),
+          {toCompactNotation({
+            value: smallestY.y,
+            prefix: nativeSelected.symbol,
+            decimalPlaces: nativeSelected.decimals,
+            currency: nativeCurrency,
           })}
         </CenteredLabel>
       ) : null}
@@ -98,10 +99,11 @@ const Labels = ({ color, width, isCard }: { color: string; width: number; isCard
           style={{ top: -20, left: isCard ? 0 : 40 }}
           width={width}
         >
-          {formatNative({
-            defaultPriceValue: null,
-            nativeSelected,
-            value: greatestY.y.toString(),
+          {toCompactNotation({
+            value: greatestY.y,
+            prefix: nativeSelected.symbol,
+            decimalPlaces: nativeSelected.decimals,
+            currency: nativeCurrency,
           })}
         </CenteredLabel>
       ) : null}
