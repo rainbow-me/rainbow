@@ -146,6 +146,10 @@ interface ListItemProps {
   totalItemCount: number;
 }
 
+const flexStyles = {
+  flex: 1,
+};
+
 const calculateContainerHeight = (interactions: TokenInteraction[], isExpanded: boolean) => {
   'worklet';
 
@@ -247,18 +251,24 @@ export const ListItem = memo(function ListItem({ index, item, nativeCurrency, li
             {shortenedMonth}
           </Text>
         </Box>
-        <Box flexDirection="row" justifyContent="space-between" alignItems="center">
-          <Box flexDirection="row" alignItems="center" gap={ICON_TEXT_GAP}>
-            <Text size={item.direction === TokenInteractionDirection.Out ? 'icon 17px' : 'icon 11px'} color="labelSecondary" weight="bold">
-              {symbol}
-            </Text>
-            <Box flexDirection="row" alignItems="center">
-              <Text size="17pt" color="labelSecondary" weight="medium">
-                {currencyAmount}
+        <Box flexDirection="row" gap={12} justifyContent="space-between" alignItems="center">
+          <Box style={flexStyles} overflow="hidden">
+            <Box flexDirection="row" alignItems="center" gap={ICON_TEXT_GAP}>
+              <Text
+                size={item.direction === TokenInteractionDirection.Out ? 'icon 17px' : 'icon 11px'}
+                color="labelSecondary"
+                weight="bold"
+              >
+                {symbol}
               </Text>
-              <Text size="17pt" color="labelQuaternary" weight="medium">
-                {asset.symbol}
-              </Text>
+              <Box flexDirection="row" alignItems="center" style={flexStyles}>
+                <Text size="17pt" color="labelSecondary" weight="medium">
+                  {currencyAmount}
+                </Text>
+                <Text size="17pt" ellipsizeMode="tail" numberOfLines={1} color="labelQuaternary" weight="medium" style={flexStyles}>
+                  {asset.symbol}
+                </Text>
+              </Box>
             </Box>
           </Box>
           <Text size="17pt" color="labelSecondary" weight="medium">
