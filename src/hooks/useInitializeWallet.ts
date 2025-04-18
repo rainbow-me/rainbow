@@ -1,26 +1,39 @@
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
+import { getOrCreateDeviceId, getWalletContext } from '@/analytics/utils';
+import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
+import { RainbowError, ensureError, logger } from '@/logger';
+import * as Sentry from '@sentry/react-native';
 import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import { Address } from 'viem';
 import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
-import { PerformanceTracking } from '@/performance/tracking';
 import { appStateUpdate } from '../redux/appState';
-import { settingsLoadNetwork, settingsUpdateAccountAddress } from '../redux/settings';
-import { walletsLoadState } from '../redux/wallets';
+import { settingsLoadNetwork } from '../redux/settings';
+import { loadWallets, setAccountAddress } from '@/state/wallets/walletsStore';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useOpenSmallBalances from './useOpenSmallBalances';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
-import { RainbowError, ensureError, logger } from '@/logger';
-import { getOrCreateDeviceId, getWalletContext } from '@/analytics/utils';
-import * as Sentry from '@sentry/react-native';
-import { analytics } from '@/analytics';
-import { Address } from 'viem';
-import { event } from '@/analytics/event';
+import { PerformanceTracking } from '../performance/tracking';
+import { ensureValidHex } from '../handlers/web3';
+
+type WalletStatus = 'unknown' | 'new' | 'imported' | 'old';
+
+function getWalletStatus(isNew: boolean, isImporting: boolean): WalletStatus {
+  if (isNew) {
+    return 'new';
+  } else if (isImporting) {
+    return 'imported';
+  } else {
+    return 'old';
+  }
+}
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -30,18 +43,6 @@ export default function useInitializeWallet() {
   const { network } = useAccountSettings();
   const hideSplashScreen = useHideSplashScreen();
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
-
-  type WalletStatus = 'unknown' | 'new' | 'imported' | 'old';
-
-  function getWalletStatus(isNew: boolean, isImporting: boolean): WalletStatus {
-    if (isNew) {
-      return 'new';
-    } else if (isImporting) {
-      return 'imported';
-    } else {
-      return 'old';
-    }
-  }
 
   const initializeWallet = useCallback(
     async (
@@ -68,7 +69,7 @@ export default function useInitializeWallet() {
 
         if (shouldRunMigrations && !seedPhrase) {
           logger.debug('[useInitializeWallet]: shouldRunMigrations && !seedPhrase? => true');
-          await dispatch(walletsLoadState());
+          await loadWallets();
           logger.debug('[useInitializeWallet]: walletsLoadState call #1');
           await runMigrations();
           logger.debug('[useInitializeWallet]: done with migrations');
@@ -111,7 +112,7 @@ export default function useInitializeWallet() {
 
         if (seedPhrase || isNew) {
           logger.debug('[useInitializeWallet]: walletsLoadState call #2');
-          await dispatch(walletsLoadState());
+          await loadWallets();
         }
 
         if (isNil(walletAddress)) {
@@ -128,8 +129,8 @@ export default function useInitializeWallet() {
           logger.debug('[useInitializeWallet]: loaded global data...');
         }
 
-        await dispatch(settingsUpdateAccountAddress(walletAddress));
-        logger.debug('[useInitializeWallet]: updated settings address', {
+        setAccountAddress(ensureValidHex(walletAddress));
+        logger.debug('[useInitializeWallet]: updated wallet address', {
           walletAddress,
         });
 

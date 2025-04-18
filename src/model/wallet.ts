@@ -1,4 +1,32 @@
+import { EthereumAddress } from '@/entities';
+import { IS_ANDROID } from '@/env';
+import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
+import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { createSignature } from '@/helpers/signingWallet';
+import showWalletErrorAlert from '@/helpers/support';
+import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import * as kc from '@/keychain';
+import { logger, RainbowError } from '@/logger';
+import { DebugContext } from '@/logger/debugContext';
+import * as keychain from '@/model/keychain';
+import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
+import {
+  AddressWithRelationship,
+  initializeNotificationSettingsForAddresses,
+  WalletNotificationRelationship,
+} from '@/notifications/settings';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import store from '@/redux/store';
+import { Network } from '@/state/backendNetworks/types';
+import { ExecuteFnParamsWithoutFn, performanceTracking, Screen } from '@/state/performance/performance';
+import { ethereumUtils } from '@/utils';
+import { sanitizeTypedData } from '@/utils/signingUtils';
+import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
 import { TransactionRequest } from '@ethersproject/abstract-provider';
+import { Signer } from '@ethersproject/abstract-signer';
 import { arrayify } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
 import { Provider, StaticJsonRpcProvider } from '@ethersproject/providers';
@@ -10,6 +38,7 @@ import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import { hdkey as EthereumHDKey, default as LibWallet } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
 import { findKey, isEmpty } from 'lodash';
+import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
@@ -21,36 +50,7 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import profileUtils, { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
-import * as keychain from '@/model/keychain';
-import * as kc from '@/keychain';
 import { PreferenceActionType, setPreference } from './preferences';
-import { LedgerSigner } from '@/handlers/LedgerSigner';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { EthereumAddress } from '@/entities';
-import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
-import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
-import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
-import { createSignature } from '@/helpers/signingWallet';
-import showWalletErrorAlert from '@/helpers/support';
-import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import { updateWebDataEnabled } from '@/redux/showcaseTokens';
-import store from '@/redux/store';
-import { ethereumUtils } from '@/utils';
-import { logger, RainbowError } from '@/logger';
-import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
-import {
-  AddressWithRelationship,
-  initializeNotificationSettingsForAddresses,
-  WalletNotificationRelationship,
-} from '@/notifications/settings';
-import { DebugContext } from '@/logger/debugContext';
-import { IS_ANDROID } from '@/env';
-import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
-import { Signer } from '@ethersproject/abstract-signer';
-import { sanitizeTypedData } from '@/utils/signingUtils';
-import { ExecuteFnParamsWithoutFn, performanceTracking, Screen } from '@/state/performance/performance';
-import { Network } from '@/state/backendNetworks/types';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -269,8 +269,7 @@ export const loadWallet = async <S extends Screen>({
   }
 
   // checks if the address is a hardware wallet for proper handling
-  const { wallets } = store.getState().wallets;
-  const selectedWallet = findWalletWithAccount(wallets!, addressToUse);
+  const selectedWallet = getWalletWithAccount(addressToUse);
   const isHardwareWallet = selectedWallet?.type === walletTypes.bluetooth;
 
   let privateKey: Awaited<ReturnType<typeof loadPrivateKey>>;
@@ -866,7 +865,7 @@ export const createWallet = async ({
 
     if (!silent) {
       logger.debug('[wallet]: setting selected wallet', {}, DebugContext.wallet);
-      await setSelectedWallet(allWallets[id]);
+      await setSelectedWalletToStorage(allWallets[id]);
     }
 
     logger.debug('[wallet]: saving all wallets', {}, DebugContext.wallet);
@@ -1084,7 +1083,7 @@ export const getSeedPhrase = async (
   }
 };
 
-export const setSelectedWallet = async (wallet: RainbowWallet): Promise<void> => {
+export const setSelectedWalletToStorage = async (wallet: RainbowWallet): Promise<void> => {
   const val = {
     version: selectedWalletVersion,
     wallet,
@@ -1093,7 +1092,7 @@ export const setSelectedWallet = async (wallet: RainbowWallet): Promise<void> =>
   return keychain.saveObject(selectedWalletKey, val, keychain.publicAccessControlOptions);
 };
 
-export const getSelectedWallet = async (): Promise<null | RainbowSelectedWalletData> => {
+export const getSelectedWalletFromStorage = async (): Promise<null | RainbowSelectedWalletData> => {
   try {
     const selectedWalletData = await keychain.loadObject(selectedWalletKey);
     if (selectedWalletData) {
@@ -1243,7 +1242,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
       logger.debug('[wallet]: new pkey saved', {}, DebugContext.wallet);
     }
 
-    const selectedWalletData = await getSelectedWallet();
+    const selectedWalletData = await getSelectedWalletFromStorage();
     const wallet: undefined | RainbowWallet = selectedWalletData?.wallet;
     if (!wallet) {
       return null;

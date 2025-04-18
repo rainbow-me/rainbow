@@ -1,16 +1,17 @@
+import { analytics } from '@/analytics';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { useShowcaseTokens, useWebData } from '@/hooks';
+import * as i18n from '@/languages';
+import { logger } from '@/logger';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { device } from '@/storage';
 import React, { useCallback, useReducer } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { useAccountProfile, useShowcaseTokens, useWebData } from '@/hooks';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { device } from '@/storage';
-import * as i18n from '@/languages';
-import { analytics } from '@/analytics';
-import { logger } from '@/logger';
 
 const TRANSLATIONS = i18n.l.settings.privacy_section;
 
@@ -18,7 +19,7 @@ const PrivacySection = () => {
   const { showcaseTokens } = useShowcaseTokens();
   const { webDataEnabled, initWebData, wipeWebData } = useWebData();
   const { navigate } = useNavigation();
-  const { accountENS } = useAccountProfile();
+  const { accountENS } = useAccountProfileInfo();
 
   const [publicShowCase, togglePublicShowcase] = useReducer(publicShowCase => !publicShowCase, webDataEnabled);
   const [analyticsEnabled, toggleAnalytics] = useReducer(

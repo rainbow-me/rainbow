@@ -1,13 +1,12 @@
+import { useDeleteWallet, useImportingWallet, useInitializeWallet } from '@/hooks';
+import { logger, RainbowError } from '@/logger';
+import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
+import Routes from '@/navigation/routesNames';
+import { setSelectedWallet, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { doesWalletsContainAddress } from '@/utils';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { useDispatch } from 'react-redux';
-import { useAccountProfile, useDeleteWallet, useImportingWallet, useInitializeWallet, useWallets } from '@/hooks';
-import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
-import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
-import Routes from '@/navigation/routesNames';
-import { doesWalletsContainAddress } from '@/utils';
-import { RainbowError, logger } from '@/logger';
 
 export default function useWatchWallet({
   address: primaryAddress,
@@ -20,9 +19,8 @@ export default function useWatchWallet({
   avatarUrl?: string | null;
   showImportModal?: boolean;
 }) {
-  const dispatch = useDispatch();
   const { goBack, navigate } = useNavigation();
-  const { wallets } = useWallets();
+  const wallets = useWalletsStore(state => state.wallets);
 
   const watchingWallet = useMemo(() => {
     return Object.values<RainbowWallet>(wallets || {}).find(wallet =>
@@ -38,9 +36,7 @@ export default function useWatchWallet({
     async (walletId: string, address: string) => {
       const wallet = (wallets || {})[walletId];
       try {
-        const p1 = dispatch(walletsSetSelected(wallet));
-        const p2 = dispatch(addressSetSelected(address));
-        await Promise.all([p1, p2]);
+        setSelectedWallet(wallet, address);
 
         // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 7.
         initializeWallet(null, null, null, false, false, null, true);
@@ -50,10 +46,10 @@ export default function useWatchWallet({
         });
       }
     },
-    [dispatch, initializeWallet, wallets]
+    [initializeWallet, wallets]
   );
 
-  const { accountAddress } = useAccountProfile();
+  const { accountAddress } = useAccountProfileInfo();
   const { isImporting, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({
     showImportModal,
   });

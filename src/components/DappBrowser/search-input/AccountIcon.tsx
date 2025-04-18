@@ -1,26 +1,22 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAccountSettings, useWallets } from '@/hooks';
-import { useNavigation } from '@/navigation';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import Routes from '@/navigation/routesNames';
-import { ContactAvatar } from '@/components/contacts';
-import { Bleed, useColorMode } from '@/design-system';
-
-import { useAppSessionsStore } from '@/state/appSessions';
-import { getDappHost } from '../handleProviderRequest';
 import { ButtonPressAnimation } from '@/components/animations';
+import { ContactAvatar } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { Bleed, useColorMode } from '@/design-system';
+import { useAccountSettings } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { useAppSessionsStore } from '@/state/appSessions';
 import { useBrowserStore } from '@/state/browser/browserStore';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useBrowserContext } from '../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
+import { getDappHost } from '../handleProviderRequest';
 
 export const AccountIcon = React.memo(function AccountIcon() {
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const { isDarkMode } = useColorMode();
-  const { wallets, walletNames } = useWallets();
-
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
 
   const { activeTabRef } = useBrowserContext();
@@ -52,12 +48,13 @@ export const AccountIcon = React.memo(function AccountIcon() {
   }, [accountAddress, activeTabHost, currentSession, hostSessions?.activeSessionAddress, isOnHomepage]);
 
   const accountInfo = useMemo(() => {
-    const selectedWallet = findWalletWithAccount(wallets || {}, currentAddress);
-    const profileInfo = getAccountProfileInfo(selectedWallet, walletNames, currentAddress);
+    const profileInfo = getAccountProfileInfo({
+      address: currentAddress,
+    });
     return {
       ...profileInfo,
     };
-  }, [wallets, currentAddress, walletNames]);
+  }, [currentAddress]);
 
   const handleOnPress = useCallback(() => {
     navigate(Routes.DAPP_BROWSER_CONTROL_PANEL, {

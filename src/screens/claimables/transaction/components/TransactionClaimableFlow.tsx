@@ -8,8 +8,8 @@ import { GasDetails } from './GasDetails';
 import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
-import { useWallets } from '@/hooks';
 import { watchingAlert } from '@/utils';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 export function TransactionClaimableFlow() {
   const {
@@ -24,7 +24,7 @@ export function TransactionClaimableFlow() {
     requiresSwap,
   } = useTransactionClaimableContext();
   const { goBack } = useNavigation();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
 
   // BUTTON PROPS
   const shouldShowClaimText = !!(claimStatus === 'ready' && outputChainId && outputToken);

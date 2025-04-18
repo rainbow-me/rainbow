@@ -1,22 +1,21 @@
-import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { noop } from 'lodash';
-import Routes from '@/navigation/routesNames';
-import { pointsQueryKey } from '@/resources/points';
-import * as i18n from '@/languages';
-import { RainbowPointsFlowSteps, buildTwitterIntentMessage } from '../constants';
-import { OnboardPointsMutation, PointsOnboardingCategory, PointsErrorType } from '@/graphql/__generated__/metadataPOST';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-
-import { metadataPOSTClient } from '@/graphql';
-import { useAccountProfile, useWallets } from '@/hooks';
-import { loadWallet, signPersonalMessage } from '@/model/wallet';
-import { RainbowError, logger } from '@/logger';
-import { queryClient } from '@/react-query';
-import { useNavigation } from '@/navigation';
-import { getProvider } from '@/handlers/web3';
 import { analytics } from '@/analytics';
-import { delay } from '@/utils/delay';
+import { metadataPOSTClient } from '@/graphql';
+import { OnboardPointsMutation, PointsErrorType, PointsOnboardingCategory } from '@/graphql/__generated__/metadataPOST';
+import { getProvider } from '@/handlers/web3';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import * as i18n from '@/languages';
+import { RainbowError, logger } from '@/logger';
+import { loadWallet, signPersonalMessage } from '@/model/wallet';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { queryClient } from '@/react-query';
+import { pointsQueryKey } from '@/resources/points';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { delay } from '@/utils/delay';
+import { noop } from 'lodash';
+import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { RainbowPointsFlowSteps, buildTwitterIntentMessage } from '../constants';
 
 type PointsProfileContext = {
   step: RainbowPointsFlowSteps;
@@ -82,8 +81,8 @@ const PointsProfileContext = createContext<PointsProfileContext>({
 export const usePointsProfileContext = () => useContext(PointsProfileContext);
 
 export const PointsProfileProvider = ({ children }: { children: React.ReactNode }) => {
-  const { accountAddress } = useAccountProfile();
-  const { isHardwareWallet } = useWallets();
+  const { accountAddress } = useAccountProfileInfo();
+  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
   const { navigate, goBack } = useNavigation();
 
   const [step, setStep] = useState<RainbowPointsFlowSteps>(RainbowPointsFlowSteps.Initialize);

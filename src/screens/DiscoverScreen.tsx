@@ -1,29 +1,29 @@
+import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { ButtonPressAnimation } from '@/components/animations';
+import { ContactAvatar } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import DiscoverScreenContent from '@/components/Discover/DiscoverScreenContent';
+import DiscoverScreenProvider, { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
+import { Page } from '@/components/layout';
+import { Navbar } from '@/components/navbar/Navbar';
+import { Box } from '@/design-system';
+import { IS_IOS } from '@/env';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { safeAreaInsetValues } from '@/utils';
 import { useIsFocused } from '@react-navigation/native';
 import React, { memo, useEffect } from 'react';
 import { Keyboard } from 'react-native';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
-import DiscoverScreenContent from '@/components/Discover/DiscoverScreenContent';
-import DiscoverScreenProvider, { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
-import { Page } from '@/components/layout';
-import { ButtonPressAnimation } from '@/components/animations';
-import { ContactAvatar } from '@/components/contacts';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { Navbar } from '@/components/navbar/Navbar';
-import { Box } from '@/design-system';
-import { IS_IOS } from '@/env';
-import { useAccountProfile } from '@/hooks';
-import * as i18n from '@/languages';
-import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { safeAreaInsetValues } from '@/utils';
 import { PullToRefresh } from './Airdrops/AirdropsSheet';
 
 export let discoverScrollToTopFnRef: () => number | null = () => null;
 
 const Content = () => {
   const { navigate } = useNavigation();
-  const { accountSymbol, accountColor, accountImage } = useAccountProfile();
+  const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
 
   const { scrollToTop, scrollViewRef } = useDiscoverScreenContext();
   const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);

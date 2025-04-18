@@ -1,7 +1,3 @@
-import delay from 'delay';
-import { useCallback, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { Address } from 'viem';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
@@ -11,17 +7,17 @@ import { addysSummaryQueryKey } from '@/resources/summary/summary';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { time } from '@/utils';
-import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
+import delay from 'delay';
+import { useCallback, useMemo, useState } from 'react';
+import { Address } from 'viem';
+import { refreshWalletENSAvatars, refreshWalletNames, useWalletsStore } from '@/state/wallets/walletsStore';
 import useAccountSettings from './useAccountSettings';
-import useWallets from './useWallets';
 
 export default function useRefreshAccountData() {
-  const dispatch = useDispatch();
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
-
-  const { wallets } = useWallets();
+  const wallets = useWalletsStore(state => state.wallets);
 
   const allAddresses = useMemo(
     () => Object.values(wallets || {}).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address)),
@@ -40,8 +36,9 @@ export default function useRefreshAccountData() {
     ]);
 
     try {
-      const getWalletNames = dispatch(fetchWalletNames());
-      const getWalletENSAvatars = profilesEnabled ? dispatch(fetchWalletENSAvatars()) : null;
+      const getWalletNames = refreshWalletNames();
+      const getWalletENSAvatars = profilesEnabled ? refreshWalletENSAvatars() : null;
+
       return Promise.all([
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
         getWalletNames,
@@ -51,7 +48,7 @@ export default function useRefreshAccountData() {
       logger.error(new RainbowError(`[useRefreshAccountData]: Error refreshing data: ${error}`));
       throw error;
     }
-  }, [accountAddress, allAddresses, dispatch, nativeCurrency, profilesEnabled]);
+  }, [accountAddress, allAddresses, nativeCurrency, profilesEnabled]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;
