@@ -9,7 +9,6 @@ import { useTransactionClaimableContext } from '../context/TransactionClaimableC
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
-import { ClaimableType } from '@/resources/addys/claimables/types';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 export function TransactionClaimableFlow() {
@@ -21,6 +20,7 @@ export function TransactionClaimableFlow() {
     setClaimStatus,
     gasState,
     quoteState,
+    swapEnabled,
     requiresSwap,
   } = useTransactionClaimableContext();
   const { goBack } = useNavigation();
@@ -103,7 +103,7 @@ export function TransactionClaimableFlow() {
           tokenSymbol={outputToken?.symbol}
           chainId={outputChainId}
         />
-        {claimable.type !== ClaimableType.RainbowSuperTokenCreatorFees && <ClaimCustomization />}
+        {swapEnabled && <ClaimCustomization />}
       </Box>
       <Box alignItems="center" width="full">
         <ClaimButton onPress={onPress} disabled={disabled} shimmer={shimmer} biometricIcon={shouldShowClaimText} label={buttonLabel} />
