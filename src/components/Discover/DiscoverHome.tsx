@@ -34,7 +34,7 @@ import Routes from '@/navigation/routesNames';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
 import { isTestnetChain } from '@/handlers/web3';
-import { KingOfHillSection } from '../cards/skia-cards/KingOfHillCard';
+import { KingOfTheHill } from './KingOfTheHill';
 
 export const HORIZONTAL_PADDING = 20;
 
@@ -85,7 +85,7 @@ export default function DiscoverHome() {
               {isProfilesEnabled && <ENSSearchCard />}
             </Inline>
           )}
-          <KingOfHillSection />
+          <KingOfTheHill />
           <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} thickness={1} />
           {trendingTokensEnabled && <TrendingTokens />}
           <RemoteCardCarousel />
