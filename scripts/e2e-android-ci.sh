@@ -24,7 +24,7 @@ wait
 for DEVICE in $DEVICES; do
   ADB_LOG_FILE=$ARTIFACTS_FOLDER/adb/log_$DEVICE.log
   mkdir -p "$(dirname $ADB_LOG_FILE)"
-  adb -s $DEVICE logcat -v time > $ADB_LOG_FILE &
+  # adb -s $DEVICE logcat -v time > $ADB_LOG_FILE &
 
   if [ $DEBUG = "true" ]; then
     adb -s $DEVICE shell "screenrecord --bugreport /data/local/tmp/recording.mp4 & echo \$! > /data/local/tmp/recording_pid_$DEVICE.txt" &
