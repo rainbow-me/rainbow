@@ -29,7 +29,7 @@ export function showLogSheet(params: ShowLogSheetParams) {
 export const LogSheet = () => {
   const {
     params: { data },
-  } = useRoute<RouteProp<RootStackParamList, 'LogSheet'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.LOG_SHEET>>();
 
   return (
     <View style={styles.container}>

@@ -5,11 +5,11 @@ import { SponsoredClaimableFlow } from './sponsored/components/SponsoredClaimabl
 import { RootStackParamList } from '@/navigation/types';
 import { TransactionClaimableContextProvider } from './transaction/context/TransactionClaimableContext';
 import { SponsoredClaimableContextProvider } from './sponsored/context/SponsoredClaimableContext';
-
+import Routes from '@/navigation/routesNames';
 export const ClaimClaimablePanel = () => {
   const {
     params: { claimable },
-  } = useRoute<RouteProp<RootStackParamList, 'ClaimClaimablePanel'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.CLAIM_CLAIMABLE_PANEL>>();
 
   switch (claimable.actionType) {
     case 'multi_transaction':

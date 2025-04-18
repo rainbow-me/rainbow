@@ -9,19 +9,12 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { getHeightForStep } from '@/navigation/config';
 import CloudBackupPrompt from './CloudBackupPrompt';
 import { backupsStore } from '@/state/backups/backups';
-
-type BackupSheetParams = {
-  BackupSheet: {
-    longFormHeight?: number;
-    missingPassword?: boolean;
-    step?: string;
-    walletId?: string;
-    nativeScreen?: boolean;
-  };
-};
+import { RootStackParamList } from '@/navigation/types';
+import Routes from '@/navigation/routesNames';
 
 export default function BackupSheet() {
-  const { params: { step = WalletBackupStepTypes.backup_prompt } = {} } = useRoute<RouteProp<BackupSheetParams, 'BackupSheet'>>();
+  const { params: { step = WalletBackupStepTypes.backup_prompt } = {} } =
+    useRoute<RouteProp<RootStackParamList, typeof Routes.BACKUP_SHEET>>();
 
   const renderStep = useCallback(() => {
     switch (step) {

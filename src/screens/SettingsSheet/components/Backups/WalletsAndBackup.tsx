@@ -22,7 +22,6 @@ import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
 import { backupsCard } from '@/components/cards/utils/constants';
 import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
-import { SETTINGS_BACKUP_ROUTES } from './routes';
 import { RainbowAccount, createWallet } from '@/model/wallet';
 import { useDispatch } from 'react-redux';
 import { walletsLoadState } from '@/redux/wallets';
@@ -39,6 +38,7 @@ import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { FlatList, ScrollView } from 'react-native';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { useRoute } from '@react-navigation/native';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -101,6 +101,7 @@ export const WalletsAndBackup = () => {
   const { navigate } = useNavigation();
   const { wallets } = useWallets();
   const dispatch = useDispatch();
+  const { name: routeName } = useRoute();
 
   const scrollviewRef = useRef<ScrollView>(null);
 
@@ -163,7 +164,7 @@ export const WalletsAndBackup = () => {
   }, [createBackup, wallets]);
 
   const onViewCloudBackups = useCallback(async () => {
-    navigate(SETTINGS_BACKUP_ROUTES.VIEW_CLOUD_BACKUPS, {
+    navigate(Routes.VIEW_CLOUD_BACKUPS, {
       backups,
       title: 'My Cloud Backups',
     });
@@ -212,17 +213,18 @@ export const WalletsAndBackup = () => {
   const onPressLearnMoreAboutCloudBackups = useCallback(() => {
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
       ...backupsCard,
-      type: 'square',
+      displayType: 'square',
+      routeName,
     });
-  }, [navigate]);
+  }, [navigate, routeName]);
 
   const onNavigateToWalletView = useCallback(
     (walletId: string, name: string) => {
       const wallet = wallets?.[walletId];
 
       const title = wallet?.imported && wallet.type === WalletTypes.privateKey ? (wallet.addresses || [])[0].label : name;
-      navigate(SETTINGS_BACKUP_ROUTES.VIEW_WALLET_BACKUP, {
-        imported: wallet?.imported,
+      navigate(Routes.VIEW_WALLET_BACKUP, {
+        imported: wallet?.imported ?? false,
         title,
         walletId,
       });
@@ -310,12 +312,7 @@ export const WalletsAndBackup = () => {
                       cloudPlatform,
                     })}
                     linkText={i18n.t(i18n.l.wallet.back_ups.cloud_backup_link)}
-                    onPress={() =>
-                      navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
-                        ...backupsCard,
-                        type: 'square',
-                      })
-                    }
+                    onPress={onPressLearnMoreAboutCloudBackups}
                   />
                 }
               />
@@ -428,12 +425,7 @@ export const WalletsAndBackup = () => {
                     allBackedUp ? (
                       <MenuHeader.Label
                         linkText={i18n.t(i18n.l.wallet.back_ups.cloud_backup_link)}
-                        onPress={() =>
-                          navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
-                            ...backupsCard,
-                            type: 'square',
-                          })
-                        }
+                        onPress={onPressLearnMoreAboutCloudBackups}
                         text={
                           allBackedUp
                             ? i18n.t(i18n.l.wallet.back_ups.backed_up_to_cloud_message, {

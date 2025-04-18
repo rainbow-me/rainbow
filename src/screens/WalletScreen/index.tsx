@@ -28,7 +28,7 @@ import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolL
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/Routes';
+import Routes from '@/navigation/routesNames';
 import walletTypes from '@/helpers/walletTypes';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
@@ -42,8 +42,8 @@ enum WalletLoadingStates {
 }
 
 function WalletScreen() {
-  const { params } = useRoute<RouteProp<RootStackParamList, 'WalletScreen'>>();
-  const { setParams, getState: dangerouslyGetState, getParent: dangerouslyGetParent } = useNavigation();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_SCREEN>>();
+  const { setParams, getState: dangerouslyGetState, getParent: dangerouslyGetParent } = useNavigation<typeof Routes.WALLET_SCREEN>();
   const removeFirst = useRemoveFirst();
   const walletState = useRef(WalletLoadingStates.IDLE);
   const initializeWallet = useInitializeWallet();

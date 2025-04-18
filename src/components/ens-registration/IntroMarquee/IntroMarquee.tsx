@@ -46,7 +46,7 @@ export default function IntroMarquee({ isSmallPhone }: { isSmallPhone: boolean }
       navigate(Routes.PROFILE_PREVIEW_SHEET, {
         address: ensName,
         descriptionProfilePreviewHeight: estimateDescriptionProfilePreviewHeight(description),
-        fromDiscover: true,
+        fromRoute: Routes.DISCOVER_SCREEN,
       });
     },
     [navigate]

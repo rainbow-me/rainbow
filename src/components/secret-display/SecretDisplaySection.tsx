@@ -22,9 +22,10 @@ import { SheetActionButton } from '../sheet';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useNavigation } from '@/navigation';
 import { ImgixImage } from '../images';
-import RoutesWithPlatformDifferences from '@/navigation/routesNames';
+import Routes from '@/navigation/routesNames';
 import { Source } from 'react-native-fast-image';
 import { backupsStore } from '@/state/backups/backups';
+import { RootStackParamList } from '@/navigation/types';
 
 const MIN_HEIGHT = 740;
 
@@ -61,7 +62,7 @@ type SecretDisplaySectionParams = {
 export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }: Props) {
   const { height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
-  const { params } = useRoute<RouteProp<SecretDisplaySectionParams, 'SecretDisplaySection'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SHOW_SECRET>>();
   const { selectedWallet, wallets } = useWallets();
   const { backupProvider } = backupsStore(state => ({
     backupProvider: state.backupProvider,
@@ -130,7 +131,7 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
       if (!backupProvider) {
         backupsStore.getState().setBackupProvider(WalletBackupTypes.manual);
       }
-      navigate(RoutesWithPlatformDifferences.SETTINGS_SECTION_BACKUP);
+      navigate(Routes.SETTINGS_SECTION_BACKUP);
     }
   }, [backupType, onManuallyBackupWalletId, walletId, backupProvider, navigate]);
 

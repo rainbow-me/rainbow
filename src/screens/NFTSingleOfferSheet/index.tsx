@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import lang from 'i18n-js';
 import { View } from 'react-native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import {
   AccentColorProvider,
@@ -54,6 +54,7 @@ import { ethUnits } from '@/references';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { RootStackParamList } from '@/navigation/types';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -84,8 +85,8 @@ function Row({ symbol, label, value }: { symbol: string; label: string; value: R
 }
 
 export function NFTSingleOfferSheet() {
-  const { params } = useRoute();
-  const { navigate, setParams } = useNavigation();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.NFT_SINGLE_OFFER_SHEET>>();
+  const { navigate, setParams } = useNavigation<typeof Routes.NFT_SINGLE_OFFER_SHEET>();
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const { isReadOnlyWallet } = useWallets();
   const theme = useTheme();
@@ -94,7 +95,7 @@ export function NFTSingleOfferSheet() {
     data: { nftsMap },
   } = useLegacyNFTs({ address: accountAddress });
 
-  const { offer } = params as { offer: NftOffer };
+  const { offer } = params;
   const offerChainId = useBackendNetworksStore.getState().getChainsIdByName()[offer.network as Network];
   const { data: externalAsset } = useExternalToken({
     address: offer.paymentToken.address,

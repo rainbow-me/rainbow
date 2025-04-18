@@ -159,9 +159,7 @@ const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation 
         index={index}
         onClose={handleOnClose}
         ref={ref}
-        simultaneousHandlers={[]}
         snapPoints={snapPoints}
-        waitFor={[]}
       >
         <View style={screenContainerStyle}>{render()}</View>
       </BottomSheet>

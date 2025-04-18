@@ -68,7 +68,7 @@ export interface WalletconnectRequestData extends RequestData {
     sessionRequestEvent: SignClientTypes.EventArguments['session_request'];
     address: string;
     chainId: number;
-    onComplete?: (type: string) => void;
+    onComplete?: (type: WalletconnectResultType) => void;
   };
 }
 
@@ -108,7 +108,6 @@ export interface WalletconnectApprovalSheetRouteParams {
   meta?: WalletconnectMeta;
   timeout?: ReturnType<typeof setTimeout> | null;
   timedOut?: boolean;
-  failureExplainSheetVariant?: string;
   verifiedData?: Verify.Context['verified'];
   source?: RequestSource;
 }

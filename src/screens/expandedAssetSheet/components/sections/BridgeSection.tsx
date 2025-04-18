@@ -14,6 +14,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import useAsset from '@/hooks/useAsset';
 import { Address } from 'viem';
+import { ParsedUserAsset } from '@/__swaps__/types/assets';
 
 // Constants for layout
 const GRID_GAP = 9;
@@ -98,14 +99,16 @@ function BridgeButton({ chainId }: { chainId: ChainId }) {
   const { accentColors } = useExpandedAssetSheetContext();
   const chainsLabels = useBackendNetworksStore.getState().getChainsLabel();
 
-  const assetToBridge = useAsset({ address: asset.address as Address, chainId: chainId });
+  const assetToBridge = useAsset({ address: asset.address as Address, chainId });
 
   return (
     // TODO: Add nav params after user assets pr is merged in
     <ButtonPressAnimation
       onPress={() =>
         navigate(Routes.SWAP, {
+          // @ts-expect-error - need to convert to ParsedSearchAsset
           inputAsset: asset,
+          // @ts-expect-error - need to convert to ParsedSearchAsset
           outputAsset: assetToBridge,
         })
       }

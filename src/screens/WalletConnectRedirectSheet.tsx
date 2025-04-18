@@ -9,7 +9,7 @@ import { useAppState } from '@/hooks';
 import styled from '@/styled-thing';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { RootStackParamList } from '@/navigation/types';
-
+import Routes from '@/navigation/routesNames';
 const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: ThemeContextProps }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.6),
@@ -44,7 +44,7 @@ function WalletConnectRedirectSheet() {
   const { colors } = useTheme();
   const { goBack } = useNavigation();
   const { appState } = useAppState();
-  const { params } = useRoute<RouteProp<RootStackParamList, 'WalletConnectRedirectSheet'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_CONNECT_REDIRECT_SHEET>>();
 
   const type = params?.type;
 

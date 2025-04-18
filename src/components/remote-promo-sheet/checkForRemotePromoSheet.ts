@@ -69,7 +69,7 @@ export const triggerCampaign = async ({ campaignKey, sys: { id: campaignId } }: 
       remotePromoSheetsStore.getState().showSheet(campaignId);
       Navigation.handleAction(Routes.REMOTE_PROMO_SHEET, {
         campaignId,
-        campaignKey,
+        campaignKey: campaignKey ?? '',
       });
     });
   }, TIMEOUT_TO_SHOW_PROMO);

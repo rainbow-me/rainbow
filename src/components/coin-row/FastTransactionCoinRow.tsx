@@ -428,13 +428,13 @@ export default React.memo(function TransactionCoinRow({
   theme: ThemeContextProps;
 }) {
   const { colors } = theme;
-  const navigation = useNavigation();
+  const { navigate } = useNavigation();
 
   const onPress = useCallback(() => {
-    navigation.navigate(Routes.TRANSACTION_DETAILS, {
+    navigate(Routes.TRANSACTION_DETAILS, {
       transaction: item,
     });
-  }, [item, navigation]);
+  }, [item, navigate]);
 
   const [topValue] = activityValues(item, nativeCurrency) ?? [];
 

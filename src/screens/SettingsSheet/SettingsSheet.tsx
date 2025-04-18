@@ -1,8 +1,7 @@
-import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { InteractionManager, StatusBar } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { StatusBar } from 'react-native';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
 import { BackgroundProvider } from '@/design-system';
@@ -18,9 +17,9 @@ import { settingsOptions, sharedCoolModalTopOffset } from '@/navigation/config';
 import ViewCloudBackups from './components/Backups/ViewCloudBackups';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { useDimensions } from '@/hooks';
-import { SETTINGS_BACKUP_ROUTES } from './components/Backups/routes';
 import { IS_ANDROID } from '@/env';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Routes from '@/navigation/routesNames';
 
 const Stack = createStackNavigator();
 
@@ -28,25 +27,16 @@ export function SettingsSheet() {
   const { height: deviceHeight } = useDimensions();
   const { goBack, navigate } = useNavigation();
   const { top } = useSafeAreaInsets();
-  const { params } = useRoute<any>();
   const { colors } = useTheme();
 
-  const sectionOnPressFactory = (section: any) => () => {
-    navigate(section.key, params);
+  const sectionOnPressFactory = (section: (typeof SettingsPages)[keyof typeof SettingsPages]['key']) => () => {
+    navigate(section);
   };
 
   const renderHeaderRight = useCallback(
     () => <ModalHeaderButton label={lang.t('settings.done')} onPress={goBack} side="right" />,
     [goBack]
   );
-
-  useEffect(() => {
-    if (params?.initialRoute) {
-      InteractionManager.runAfterInteractions(() => {
-        navigate(params?.initialRoute);
-      });
-    }
-  }, [navigate, params]);
 
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
 
@@ -67,7 +57,7 @@ export function SettingsSheet() {
             }}
           >
             <Stack.Screen
-              name="SettingsSection"
+              name={Routes.SETTINGS_SECTION}
               options={{
                 cardStyleInterpolator: settingsCardStyleInterpolator,
                 title: lang.t('settings.label'),
@@ -76,14 +66,14 @@ export function SettingsSheet() {
               {() => (
                 <SettingsSection
                   onCloseModal={goBack}
-                  onPressAppIcon={sectionOnPressFactory(SettingsPages.appIcon)}
-                  onPressBackup={sectionOnPressFactory(SettingsPages.backup)}
-                  onPressCurrency={sectionOnPressFactory(SettingsPages.currency)}
-                  onPressDev={sectionOnPressFactory(SettingsPages.dev)}
-                  onPressLanguage={sectionOnPressFactory(SettingsPages.language)}
-                  onPressNetwork={sectionOnPressFactory(SettingsPages.network)}
-                  onPressNotifications={sectionOnPressFactory(SettingsPages.notifications)}
-                  onPressPrivacy={sectionOnPressFactory(SettingsPages.privacy)}
+                  onPressAppIcon={sectionOnPressFactory(SettingsPages.appIcon.key)}
+                  onPressBackup={sectionOnPressFactory(SettingsPages.backup.key)}
+                  onPressCurrency={sectionOnPressFactory(SettingsPages.currency.key)}
+                  onPressDev={sectionOnPressFactory(SettingsPages.dev.key)}
+                  onPressLanguage={sectionOnPressFactory(SettingsPages.language.key)}
+                  onPressNetwork={sectionOnPressFactory(SettingsPages.network.key)}
+                  onPressNotifications={sectionOnPressFactory(SettingsPages.notifications.key)}
+                  onPressPrivacy={sectionOnPressFactory(SettingsPages.privacy.key)}
                 />
               )}
             </Stack.Screen>
@@ -105,7 +95,7 @@ export function SettingsSheet() {
             )}
             <Stack.Screen
               component={WalletNotificationsSettings}
-              name="WalletNotificationsSettings"
+              name={Routes.WALLET_NOTIFICATIONS_SETTINGS}
               options={({ route }: any) => ({
                 cardStyleInterpolator: settingsCardStyleInterpolator,
                 title: route.params?.title,
@@ -113,7 +103,7 @@ export function SettingsSheet() {
             />
             <Stack.Screen
               component={WiewWalletBackup}
-              name={SETTINGS_BACKUP_ROUTES.VIEW_WALLET_BACKUP}
+              name={Routes.VIEW_WALLET_BACKUP}
               options={({ route }: any) => ({
                 cardStyleInterpolator: settingsCardStyleInterpolator,
                 title: route.params?.title,
@@ -121,7 +111,7 @@ export function SettingsSheet() {
             />
             <Stack.Screen
               component={ViewCloudBackups}
-              name={SETTINGS_BACKUP_ROUTES.VIEW_CLOUD_BACKUPS}
+              name={Routes.VIEW_CLOUD_BACKUPS}
               options={({ route }: any) => ({
                 cardStyleInterpolator: settingsCardStyleInterpolator,
                 title: route.params?.title,
@@ -129,7 +119,7 @@ export function SettingsSheet() {
             />
             <Stack.Screen
               component={SecretWarning}
-              name={SETTINGS_BACKUP_ROUTES.SECRET_WARNING}
+              name={Routes.SECRET_WARNING}
               options={({ route }: any) => ({
                 cardStyleInterpolator: settingsCardStyleInterpolator,
                 title: route.params?.title,
@@ -137,7 +127,7 @@ export function SettingsSheet() {
             />
             <Stack.Screen
               component={ShowSecretView}
-              name={SETTINGS_BACKUP_ROUTES.SHOW_SECRET}
+              name={Routes.SHOW_SECRET}
               options={({ route }: any) => ({
                 cardStyleInterpolator: settingsCardStyleInterpolator,
                 title: route.params?.title,

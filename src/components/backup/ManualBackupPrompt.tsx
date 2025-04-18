@@ -9,9 +9,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useWallets } from '@/hooks';
 import walletTypes from '@/helpers/walletTypes';
-import { SETTINGS_BACKUP_ROUTES } from '@/screens/SettingsSheet/components/Backups/routes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { backupsStore } from '@/state/backups/backups';
 
 const imageSize = 72;
 
@@ -27,7 +25,7 @@ export default function ManualBackupPrompt() {
 
     goBack();
     navigate(Routes.SETTINGS_SHEET, {
-      screen: SETTINGS_BACKUP_ROUTES.SECRET_WARNING,
+      screen: Routes.SECRET_WARNING,
       params: {
         isBackingUp: true,
         title,

@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
@@ -13,6 +13,8 @@ import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 import { ListRenderItem, View } from 'react-native';
 import { BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
+import { RootStackParamList } from '@/navigation/types';
+import Routes from '@/navigation/routesNames';
 
 export const SelectENSSheetHeight = 400;
 
@@ -27,7 +29,7 @@ export default function SelectENSSheet() {
   const secondary06 = useForegroundColor('secondary06 (Deprecated)');
 
   const { goBack } = useNavigation();
-  const { params } = useRoute<any>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SELECT_ENS_SHEET>>();
 
   const handleSelectENS = useCallback(
     (ensName: string) => {

@@ -23,12 +23,13 @@ import { getButtonDisabledBgColor, getButtonShadows } from './helpers/buttonStyl
 import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import { ThemeContextProps } from '@/theme';
+import { ThemeContextProps, useTheme } from '@/theme';
 import { haptics } from '@/utils';
 import ShadowStack from 'react-native-shadow-stack';
 import * as lang from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { useDimensions } from '@/hooks';
 
 const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
 
@@ -103,7 +104,12 @@ function HoldToAuthorizeButtonContent2({
   ...props
 }: Props) {
   const { navigate } = useNavigation();
+  const { colors: _colors } = useTheme();
+  const { width: _width } = useDimensions();
   const [isAuthorizingState, setIsAuthorizing] = useState(false);
+
+  const deviceWidth = deviceDimensions?.width ?? _width;
+  const themeColors = colors ?? _colors;
 
   const longPressProgress = useSharedValue(0);
   const buttonScale = useSharedValue(1);
@@ -132,11 +138,13 @@ function HoldToAuthorizeButtonContent2({
 
   const isAuthorizing = isAuthorizingProp || isAuthorizingState;
 
-  const bgColor = disabled ? disabledBackgroundColor ?? getButtonDisabledBgColor(colors)[theme] : backgroundColor ?? colors.appleBlue;
+  const bgColor = disabled
+    ? disabledBackgroundColor ?? getButtonDisabledBgColor(themeColors)[theme]
+    : backgroundColor ?? themeColors.appleBlue;
 
   const height = tinyButton ? TINY_BUTTON_HEIGHT : smallButton ? SMALL_BUTTON_HEIGHT : BUTTON_HEIGHT;
 
-  const width = deviceDimensions.width - parentHorizontalPadding * 2;
+  const width = deviceWidth - parentHorizontalPadding * 2;
 
   const handlePress = () => {
     if (!isAuthorizingState && onLongPress) {
@@ -221,7 +229,7 @@ function HoldToAuthorizeButtonContent2({
             backgroundColor={bgColor}
             borderRadius={height}
             height={height}
-            shadows={shadows ?? getButtonShadows(colors)[disabled ? 'disabled' : 'default']}
+            shadows={shadows ?? getButtonShadows(themeColors)[disabled ? 'disabled' : 'default']}
             width={width}
           >
             <Content backgroundColor={bgColor} height={height} smallButton={smallButton} tinyButton={tinyButton}>
@@ -238,7 +246,7 @@ function HoldToAuthorizeButtonContent2({
                   />
                 </Fragment>
               )}
-              <ShimmerAnimation color={colors.whiteLabel} enabled={!disableShimmerAnimation && !disabled} width={width} />
+              <ShimmerAnimation color={themeColors.whiteLabel} enabled={!disableShimmerAnimation && !disabled} width={width} />
               {!hideInnerBorder && <InnerBorder radius={height} />}
             </Content>
           </ShadowStack>

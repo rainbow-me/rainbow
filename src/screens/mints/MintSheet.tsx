@@ -23,7 +23,7 @@ import { abbreviations, ethereumUtils, watchingAlert } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import { ReservoirCollection } from '@/graphql/__generated__/arcDev';
 import { format } from 'date-fns';
 import { NewTransaction, TransactionStatus } from '@/entities';
@@ -56,6 +56,7 @@ import { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { RootStackParamList } from '@/navigation/types';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -124,8 +125,8 @@ const getFormattedDate = (date: string) => {
 };
 
 const MintSheet = () => {
-  const params = useRoute();
-  const { collection: mintCollection, pricePerMint } = params.params as MintSheetProps;
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.MINT_SHEET>>();
+  const { collection: mintCollection, pricePerMint } = params;
   const chainId = mintCollection.chainId;
   const { accountAddress } = useAccountProfile();
   const { nativeCurrency } = useAccountSettings();
@@ -163,7 +164,13 @@ const MintSheet = () => {
       ? mintCollection.publicMintInfo?.price?.currency?.decimals
       : 18;
 
-  const price = convertRawAmountToBalance(mintCollection.publicMintInfo?.price?.amount?.raw || pricePerMint || '0', {
+  const rawAmountInput = mintCollection.publicMintInfo?.price?.amount?.raw ?? pricePerMint ?? '0';
+  const stringAmountInput =
+    typeof rawAmountInput === 'object' && rawAmountInput !== null && 'toString' in rawAmountInput
+      ? rawAmountInput.toString() // Handle BigNumber object from ethers
+      : String(rawAmountInput); // Convert other types (string, number) to string
+
+  const price = convertRawAmountToBalance(stringAmountInput, {
     decimals,
     symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
   });

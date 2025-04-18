@@ -68,25 +68,15 @@ import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { buildTransaction } from '@/helpers/buildTransaction';
-
-type SignTransactionSheetParams = {
-  transactionDetails: RequestData;
-  onSuccess: (hash: string) => void;
-  onCancel: (error?: Error) => void;
-  onCloseScreen: (canceled: boolean) => void;
-  chainId: ChainId;
-  address: string;
-  source: RequestSource;
-};
-
-export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: SignTransactionSheetParams }, 'SignTransactionSheet'>;
+import { RootStackParamList } from '@/navigation/types';
+import Routes from '@/navigation/routesNames';
 
 export const SignTransactionSheet = () => {
   const { goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
-  const { params: routeParams } = useRoute<SignTransactionSheetRouteProp>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CONFIRM_REQUEST>>();
   const { wallets, walletNames } = useWallets();
   const { switchToWalletWithAddress } = useSwitchWallet();
   const {
@@ -98,7 +88,7 @@ export const SignTransactionSheet = () => {
     address: specifiedAddress,
     // for request type specific handling
     source,
-  } = routeParams;
+  } = params;
 
   const addressToUse = specifiedAddress ?? accountAddress;
 

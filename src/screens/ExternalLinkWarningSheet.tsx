@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,7 +13,8 @@ import { useTheme } from '@/theme';
 import { formatURLForDisplay } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { openInBrowser } from '@/utils/openInBrowser';
-
+import { RootStackParamList } from '@/navigation/types';
+import Routes from '@/navigation/routesNames';
 export const ExternalLinkWarningSheetHeight = 380 + (IS_ANDROID ? 20 : 0);
 
 const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeight, height }) => ({
@@ -24,8 +25,9 @@ const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeigh
 const ExternalLinkWarningSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeAreaInsets();
-  // @ts-expect-error
-  const { params: { url, onClose } = {} } = useRoute();
+  const {
+    params: { url, onClose },
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXTERNAL_LINK_WARNING_SHEET>>();
   const { colors } = useTheme();
   const { goBack } = useNavigation();
 

@@ -36,6 +36,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import { Address } from 'viem';
 
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 
@@ -76,7 +77,7 @@ export interface AddressItem {
 }
 
 export default function ChangeWalletSheet() {
-  const { params = {} } = useRoute<RouteProp<RootStackParamList, 'ChangeWalletSheet'>>();
+  const { params = {} } = useRoute<RouteProp<RootStackParamList, typeof Routes.CHANGE_WALLET_SHEET>>();
 
   const { onChangeWallet, watchOnly = false, currentAccountAddress, hideReadOnlyWallets = false } = params;
   const { selectedWallet, wallets } = useWallets();
@@ -236,7 +237,7 @@ export default function ChangeWalletSheet() {
   }, [walletsWithBalancesAndNames]);
 
   const onChangeAccount = useCallback(
-    async (walletId: string, address: string, fromDeletion = false) => {
+    async (walletId: string, address: Address, fromDeletion = false) => {
       if (editMode && !fromDeletion) return;
       const wallet = wallets?.[walletId];
       if (!wallet) return;
@@ -313,47 +314,45 @@ export default function ChangeWalletSheet() {
           navigate(Routes.MODAL_SCREEN, {
             address,
             asset: [],
-            onCloseModal: async (args: any) => {
-              if (args) {
-                if ('name' in args) {
-                  analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: args.name });
+            onCloseModal: async ({ name, color }) => {
+              if (name) {
+                analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: name });
 
-                  const walletAddresses = wallets[walletId].addresses;
-                  const walletAddressIndex = walletAddresses.findIndex(account => account.address === address);
-                  const walletAddress = walletAddresses[walletAddressIndex];
+                const walletAddresses = wallets[walletId].addresses;
+                const walletAddressIndex = walletAddresses.findIndex(account => account.address === address);
+                const walletAddress = walletAddresses[walletAddressIndex];
 
-                  const updatedWalletAddress = {
-                    ...walletAddress,
-                    color: args.color,
-                    label: args.name,
-                  };
-                  const updatedWalletAddresses = [...walletAddresses];
-                  updatedWalletAddresses[walletAddressIndex] = updatedWalletAddress;
+                const updatedWalletAddress = {
+                  ...walletAddress,
+                  color,
+                  label: name,
+                };
+                const updatedWalletAddresses = [...walletAddresses];
+                updatedWalletAddresses[walletAddressIndex] = updatedWalletAddress;
 
-                  const updatedWallet = {
-                    ...wallets[walletId],
-                    addresses: updatedWalletAddresses,
-                  };
-                  const updatedWallets = {
-                    ...wallets,
-                    [walletId]: updatedWallet,
-                  };
+                const updatedWallet = {
+                  ...wallets[walletId],
+                  addresses: updatedWalletAddresses,
+                };
+                const updatedWallets = {
+                  ...wallets,
+                  [walletId]: updatedWallet,
+                };
 
-                  if (currentSelectedWallet.id === walletId) {
-                    setCurrentSelectedWallet(updatedWallet);
-                    dispatch(walletsSetSelected(updatedWallet));
-                  }
-
-                  updateWebProfile(address, args.name, colors.avatarBackgrounds[args.color]);
-
-                  dispatch(walletsUpdate(updatedWallets));
-                } else {
-                  analytics.track(analytics.event.tappedCancelEditingWallet);
+                if (currentSelectedWallet.id === walletId) {
+                  setCurrentSelectedWallet(updatedWallet);
+                  dispatch(walletsSetSelected(updatedWallet));
                 }
+
+                updateWebProfile(address, name, colors.avatarBackgrounds[color]);
+
+                dispatch(walletsUpdate(updatedWallets));
+              } else {
+                analytics.track(analytics.event.tappedCancelEditingWallet);
               }
             },
             profile: {
-              color: account?.color,
+              color: account?.color || null,
               image: account?.image || ``,
               name: account?.label || ``,
             },
@@ -438,7 +437,7 @@ export default function ChangeWalletSheet() {
                     wallets,
                   }) || {};
                 if (foundWallet && key) {
-                  await onChangeAccount(key, foundWallet.address, true);
+                  await onChangeAccount(key, foundWallet.address as Address, true);
                 }
               }
             }
@@ -468,7 +467,6 @@ export default function ChangeWalletSheet() {
         navigate(Routes.SETTINGS_SHEET, {
           params: {
             walletId: wallet.id,
-            initialRoute: SettingsPages.backup,
           },
           screen: SettingsPages.backup.key,
         });
@@ -507,7 +505,7 @@ export default function ChangeWalletSheet() {
         });
         return;
       }
-      onChangeAccount(wallet.id, address);
+      onChangeAccount(wallet.id, address as Address);
     },
     [onChangeAccount, walletsByAddress]
   );
