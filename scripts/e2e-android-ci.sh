@@ -23,6 +23,7 @@ wait
 # Setup logs and recordings
 for DEVICE in $DEVICES; do
   if [ $DEBUG = "true" ]; then
+    echo "Debug mode enabled for $DEVICE"
     ADB_LOG_FILE=$ARTIFACTS_FOLDER/adb/log_$DEVICE.log
     mkdir -p "$(dirname $ADB_LOG_FILE)"
     adb -s $DEVICE logcat -v time > $ADB_LOG_FILE &
