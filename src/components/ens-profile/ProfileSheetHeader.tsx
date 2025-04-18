@@ -16,7 +16,7 @@ import { useENSAvatar, useENSCover, useENSRecords, useOpenENSNFTHandler } from '
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
-import { useLegacyNFTs } from '@/resources/nfts';
+import { useExternalNftsStore } from '@/state/nfts/externalNfts';
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,
@@ -50,11 +50,7 @@ export default function ProfileSheetHeader({
   });
   const isImagesFetched = isAvatarFetched && isCoverFetched;
 
-  const {
-    data: { nfts: uniqueTokens },
-  } = useLegacyNFTs({
-    address: profileAddress ?? '',
-  });
+  const uniqueTokens = useExternalNftsStore(s => s.getNfts());
 
   const avatarUrl = avatar?.imageUrl;
   const { onPress: onPressAvatar } = useOpenENSNFTHandler({

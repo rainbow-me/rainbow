@@ -1,11 +1,12 @@
 import { AssetType } from '@/entities';
-import { UniqueAsset } from '@/entities/uniqueAssets';
+import { UniqueAsset, UniqueAssetFamily } from '@/entities/uniqueAssets';
 import {
   ValidatedSimpleHashNFT,
   SimpleHashFloorPrice,
   SimpleHashMarketplaceId,
   SimpleHashTrait,
   SimpleHashMarketplace,
+  SimpleHashCollectionDetailsFragment,
 } from '@/resources/nfts/simplehash/types';
 import { ENS_NFT_CONTRACT_ADDRESS, ETH_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
@@ -24,6 +25,7 @@ import { Network } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 const ENS_COLLECTION_NAME = 'ENS';
+const SIMPLEHASH_ENS_COLLECTION_NAME = 'ENS: Ethereum Name Service';
 const SVG_MIME_TYPE = 'image/svg+xml';
 const pixelRatio = PixelRatio.get();
 const deviceWidth = deviceUtils.dimensions.width;
@@ -140,6 +142,30 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
     },
     model_url: nft.model_url ?? null,
     model_properties: { size: nft.model_properties?.size ?? null, mime_type: nft.model_properties?.mime_type ?? null },
+  };
+}
+
+export function simpleHashNftIdToUniqueId(nftId: string): string {
+  const [simplehashNetwork, contractAddress, tokenId] = nftId.split('.');
+  const network = simplehashNetwork === 'ethereum' ? 'mainnet' : simplehashNetwork;
+  return `${network}_${contractAddress}_${tokenId}`;
+}
+
+export function parseUniqueAssetUniqueId(uniqueId = ''): { collectionId: string; tokenId: string } {
+  const [_, collectionId, tokenId] = uniqueId.split('_');
+  return { collectionId, tokenId };
+}
+
+export function simpleHashCollectionToUniqueAssetFamily(collection: SimpleHashCollectionDetailsFragment): UniqueAssetFamily {
+  const isENS = collection.collection_details.name === SIMPLEHASH_ENS_COLLECTION_NAME;
+  return {
+    collectionId: collection.collection_id,
+    distinctNftsOwned: collection.distinct_nfts_owned ?? '0',
+    familyImage: collection.collection_details.image_url ?? '',
+    familyName: isENS ? ENS_COLLECTION_NAME : collection.collection_details.name ?? '',
+    lastAcquiredDate: collection.last_acquired_date ?? null,
+    nftIds: collection.nft_ids.map(nftId => simpleHashNftIdToUniqueId(nftId)),
+    totalCopiesOwned: collection.total_copies_owned ?? '0',
   };
 }
 

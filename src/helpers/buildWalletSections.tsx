@@ -64,6 +64,7 @@ export type WalletSectionsState = {
   experimentalConfig: ReturnType<typeof useExperimentalConfig>;
   showcaseTokens: string[];
   uniqueTokens: ReturnType<typeof useUniqueTokens>['uniqueTokens'];
+  uniqueTokenFamilies: ReturnType<typeof useUniqueTokens>['uniqueTokenFamilies'];
   isFetchingNfts: boolean;
   positions: RainbowPositions | null;
   claimables: ClaimablesStore | null;
@@ -83,7 +84,8 @@ const pinnedCoinsSelector = (state: WalletSectionsState) => state.pinnedCoins;
 const sellingTokensSelector = (state: WalletSectionsState) => state.sellingTokens;
 const showcaseTokensSelector = (state: WalletSectionsState) => state.showcaseTokens;
 const hiddenTokensSelector = (state: WalletSectionsState) => state.hiddenTokens;
-const uniqueTokensSelector = (state: WalletSectionsState) => state.uniqueTokens;
+const uniqueTokensSelector = (state: WalletSectionsState) => state.uniqueTokens || [];
+const uniqueTokenFamiliesSelector = (state: WalletSectionsState) => state.uniqueTokenFamilies || [];
 const isFetchingNftsSelector = (state: WalletSectionsState) => state.isFetchingNfts;
 const listTypeSelector = (state: WalletSectionsState) => state.listType;
 const positionsSelector = (state: WalletSectionsState) => state.positions;
@@ -315,6 +317,7 @@ const withBriefBalanceSection = (
 const briefUniqueTokenDataSelector = createSelector(
   [
     uniqueTokensSelector,
+    uniqueTokenFamiliesSelector,
     showcaseTokensSelector,
     sellingTokensSelector,
     hiddenTokensSelector,

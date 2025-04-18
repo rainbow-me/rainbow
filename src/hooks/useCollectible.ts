@@ -1,19 +1,11 @@
 import { useMemo } from 'react';
-import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountSettings } from '.';
+import { useExternalNftsStore } from '@/state/nfts/externalNfts';
+import { useUserNftsStore } from '@/state/nfts/userNfts';
 
-export default function useCollectible(uniqueId: string, externalAddress?: string) {
-  const { accountAddress } = useAccountSettings();
-
+export function useCollectible(uniqueId: string, externalAddress?: string) {
   const isExternal = Boolean(externalAddress);
-  const address = isExternal ? externalAddress ?? '' : accountAddress;
-
-  const { data: asset } = useLegacyNFTs({
-    address,
-    config: {
-      select: data => data.nftsMap[uniqueId],
-    },
-  });
-
-  return useMemo(() => ({ ...asset, isExternal }), [asset, isExternal]);
+  const asset = useUserNftsStore(s => s.getNft(uniqueId));
+  const externalAsset = useExternalNftsStore(s => s.getNft(uniqueId));
+  const uniqueToken = isExternal ? externalAsset : asset;
+  return useMemo(() => ({ ...uniqueToken, isExternal }), [uniqueToken, isExternal]);
 }

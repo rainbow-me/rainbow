@@ -6,11 +6,11 @@ import useWallets from './useWallets';
 import useWebData from './useWebData';
 import { AppState } from '@/redux/store';
 
-export default function useShowcaseTokens() {
+export default function useShowcaseTokens(external?: boolean) {
   const dispatch = useDispatch();
   const { updateWebShowcase } = useWebData();
   const { isReadOnlyWallet } = useWallets();
-  const { updateOpenFamilies } = useOpenFamilies();
+  const { updateOpenFamilies } = useOpenFamilies(external);
 
   const showcaseTokens = useSelector((state: AppState) => state.showcaseTokens.showcaseTokens);
 

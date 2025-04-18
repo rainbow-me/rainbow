@@ -11,10 +11,10 @@ import { buildUniqueTokenList } from '@/helpers/assets';
 import { useAccountSettings, useWallets } from '@/hooks';
 import styled from '@/styled-thing';
 import { ThemeContextProps, useTheme } from '@/theme';
-import { useLegacyNFTs } from '@/resources/nfts';
 import { View } from 'react-native';
 import { RootStackParamList } from '@/navigation/types';
 import { RecyclerAssetListSection } from '@/components/asset-list/RecyclerAssetList';
+import { useUserNftsStore } from '@/state/nfts';
 
 const tokenFamilyItem = (item: ComponentProps<typeof CollectibleTokenFamily>) => <CollectibleTokenFamily {...item} />;
 
@@ -65,15 +65,8 @@ export default function ShowcaseScreen() {
 
   const { network } = useAccountSettings();
 
-  const {
-    data: { nfts: uniqueTokens },
-    isInitialLoading,
-  } = useLegacyNFTs({
-    config: {
-      enabled: !!accountAddress,
-    },
-    address: accountAddress ?? '',
-  });
+  const uniqueTokens = useUserNftsStore.getState().getNfts();
+  const isInitialLoading = useUserNftsStore.getState().getStatus().isInitialLoading;
 
   const { layout } = useContext(ModalContext) || {};
 

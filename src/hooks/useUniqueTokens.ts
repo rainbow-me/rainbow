@@ -1,9 +1,7 @@
 import { groupBy } from 'lodash';
-import { useAccountSettings } from '.';
-import { useLegacyNFTs } from '@/resources/nfts';
-import { useNftSort } from './useNFTsSortBy';
 import { UniqueAsset } from '@/entities';
 import { useMemo } from 'react';
+import { useUserNftCollectionsStore, useUserNftsStore } from '@/state/nfts';
 
 type SendableUniqueToken = {
   data: UniqueAsset[];
@@ -13,21 +11,8 @@ type SendableUniqueToken = {
 };
 
 export default function useUniqueTokens() {
-  const { nftSort, nftSortDirection } = useNftSort();
-  const { accountAddress } = useAccountSettings();
-  const {
-    data: { nfts: uniqueTokens },
-    isLoading: isFetchingNfts,
-  } = useLegacyNFTs({
-    address: accountAddress,
-    sortBy: nftSort,
-    sortDirection: nftSortDirection,
-    config: {
-      enabled: !!accountAddress,
-    },
-  });
-
-  const sendableUniqueTokens = useMemo(() => {
+  const uniqueTokens = useUserNftsStore(s => s.getNfts());
+  const sendableUniqueTokens: SendableUniqueToken[] = useMemo(() => {
     if (!uniqueTokens?.length) return [];
 
     const sendableTokens = uniqueTokens.filter(uniqueToken => uniqueToken.isSendable);
@@ -42,9 +27,15 @@ export default function useUniqueTokens() {
     }));
   }, [uniqueTokens]);
 
+  const uniqueTokenFamilies = useUserNftCollectionsStore(s => s.getCollections());
+  const isInitialLoading = useUserNftCollectionsStore(s => s.getStatus().isInitialLoading);
+  const isFetchingNfts = useUserNftCollectionsStore(s => s.getStatus().isFetching);
+
   return {
     sendableUniqueTokens,
     uniqueTokens,
+    uniqueTokenFamilies,
     isFetchingNfts,
+    isInitialLoading,
   };
 }

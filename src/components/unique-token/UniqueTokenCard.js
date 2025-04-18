@@ -38,8 +38,6 @@ const UniqueTokenCard = ({
   usePersistentAspectRatio(item.lowResUrl);
   usePersistentDominantColorFromImage(item.lowResUrl);
 
-  const isSVG = isSVGImage(item.image_url);
-
   const handlePress = useCallback(() => {
     if (onPress) {
       onPress(item);
