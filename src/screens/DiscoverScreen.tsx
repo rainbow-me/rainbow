@@ -60,7 +60,7 @@ const Content = () => {
             rightComponent={
               <ButtonPressAnimation onPress={onTapSearch} scaleTo={0.8} overflowMargin={50}>
                 <Box
-                  background="surfaceSecondary"
+                  background="fillSecondary"
                   width={36}
                   height={36}
                   borderRadius={18}

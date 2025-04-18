@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '../../../animations';
 import { CoinRowHeight } from '../../../coin-row';
 import { FloatingEmojis } from '../../../floating-emojis';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Text } from '@/design-system';
+import { Text, TextIcon } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -38,19 +38,14 @@ export function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
         }
         style={[sx.gradient, sx.starGradient]}
       >
-        <RNText
-          ellipsizeMode="tail"
-          numberOfLines={1}
-          style={[
-            sx.star,
-            {
-              color: colors.alpha(colors.blueGreyDark, 0.2),
-            },
-            favorite && sx.starFavorite,
-          ]}
+        <TextIcon
+          color={{ custom: favorite ? colors.yellowFavorite : colors.alpha(colors.blueGreyDark, 0.2) }}
+          size="icon 13px"
+          weight="bold"
+          containerSize={30}
         >
-          􀋃
-        </RNText>
+          {'􀋃'}
+        </TextIcon>
       </SafeRadialGradient>
     </ButtonPressAnimation>
   );
@@ -68,9 +63,9 @@ export function Info({ contextMenuProps, showFavoriteButton, theme }: InfoProps)
     <ContextMenuButton onPressMenuItem={contextMenuProps.handlePressMenuItem} {...contextMenuProps} style={showFavoriteButton && sx.info}>
       <ButtonPressAnimation>
         <SafeRadialGradient center={[0, 15]} colors={colors.gradients.lightestGrey} style={[sx.gradient, sx.igradient]}>
-          <Text color={{ custom: colors.alpha(colors.blueGreyDark, 0.3) }} size="16px / 22px (Deprecated)" weight="bold">
-            􀅳
-          </Text>
+          <TextIcon color={{ custom: colors.alpha(colors.blueGreyDark, 0.3) }} size="icon 16px" weight="bold" containerSize={30}>
+            {'􀅳'}
+          </TextIcon>
         </SafeRadialGradient>
       </ButtonPressAnimation>
     </ContextMenuButton>
@@ -241,9 +236,8 @@ const sx = StyleSheet.create({
     width: 30,
   },
   igradient: {
-    paddingBottom: IS_IOS ? 0 : 2.5,
-    paddingLeft: 2.5,
-    paddingTop: IS_IOS ? 1 : 0,
+    paddingLeft: 1,
+    paddingTop: 1,
   },
   info: {
     paddingRight: 4,
@@ -283,10 +277,8 @@ const sx = StyleSheet.create({
     color: colors.yellowFavorite,
   },
   starGradient: {
-    paddingBottom: IS_IOS ? 3 : 5,
-    paddingLeft: IS_IOS ? 1 : 0,
-    paddingTop: 3,
-    width: 30,
+    paddingTop: IS_IOS ? 1 : 3,
+    paddingLeft: 1,
   },
   symbol: {
     fontSize: getFontSize(fonts.size.smedium),
