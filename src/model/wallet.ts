@@ -277,6 +277,8 @@ export const walletInit = async ({
 
   if (!walletAddress) {
     const wallet = await createWallet({});
+    if (!wallet) throw new Error(`No wallet`);
+    ensureEthereumWallet(wallet);
     if (!wallet?.address) {
       throw new RainbowError('Error creating wallet address');
     }
@@ -762,6 +764,10 @@ export const createWallet = async ({
         let nextWallet: any = null;
         if (isHardwareWallet) {
           const walletObj = await deriveAccountFromBluetoothHardwareWallet(seed, index);
+          if (!walletObj.wallet) {
+            throw new Error(`No wallet`);
+          }
+          ensureEthereumWallet(walletObj.wallet);
           nextWallet = {
             address: walletObj.wallet?.address,
             privateKey: walletObj.wallet?.privateKey,
@@ -901,7 +907,7 @@ export const createWallet = async ({
 
     if (walletResult && walletAddress) {
       const walletRes =
-        walletType === WalletLibraryType.ethers || walletType === WalletLibraryType.ledger ? (walletResult as Wallet) : new Wallet(pkey);
+        walletType === WalletLibraryType.ethers || walletType === WalletLibraryType.ledger ? walletResult : new Wallet(pkey);
 
       return walletRes;
     }
@@ -1189,6 +1195,7 @@ export const generateAccount = async (id: RainbowWallet['id'], index: number): P
     }
     const { wallet: ethereumJSWallet } = await deriveAccountFromMnemonic(seedphrase, index);
     if (!ethereumJSWallet) return null;
+    ensureLibWallet(ethereumJSWallet);
     const walletAddress = addHexPrefix(toChecksumAddress(ethereumJSWallet.getAddress().toString('hex')));
     const walletPkey = addHexPrefix(ethereumJSWallet.getPrivateKey().toString('hex'));
 
@@ -1239,6 +1246,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
         {
           const { wallet: ethereumJSWallet } = await deriveAccountFromMnemonic(seedphrase);
           if (!ethereumJSWallet) return null;
+          ensureLibWallet(ethereumJSWallet);
           const walletPkey = addHexPrefix(ethereumJSWallet.getPrivateKey().toString('hex'));
 
           existingAccount = new Wallet(walletPkey);
