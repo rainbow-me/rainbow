@@ -56,6 +56,7 @@ function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfTheHill
         }}
       >
         <GradientBorderView
+          // TODO: light mode
           borderGradientColors={['rgba(245,248,255,0.08)', 'rgba(0,0,0,0)']}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}

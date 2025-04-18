@@ -663,16 +663,16 @@ query kingOfTheHill($currency: String) {
           fallback
           shadow
         }
-      }
-      market {
-        volume {
-          h24
+        market {
+          volume {
+            h24
+          }
+          marketCap
         }
-        marketCap
-      }
-      price {
-        value
-        relativeChange24h
+        price {
+          value
+          relativeChange24h
+        }
       }
       window {
         start
@@ -693,16 +693,16 @@ query kingOfTheHill($currency: String) {
           fallback
           shadow
         }
-      }
-      market {
-        volume {
-          h24
+        market {
+          volume {
+            h24
+          }
+          marketCap
         }
-        marketCap
-      }
-      price {
-        value
-        relativeChange24h
+        price {
+          value
+          relativeChange24h
+        }
       }
       window {
         start
