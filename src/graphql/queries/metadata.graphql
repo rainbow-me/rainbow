@@ -646,3 +646,68 @@ query interactionsWithToken($chainID: Int!, $address: String!, $tokenAddress: St
     explorerURL
   }
 }
+
+query kingOfTheHill($currency: String) {
+  kingOfTheHill(currency: $currency) {
+    currentKing {
+      token {
+        name
+        address
+        symbol
+        iconUrl
+        decimals
+        chainID
+        network
+        colors {
+          primary
+          fallback
+          shadow
+        }
+        market {
+          volume {
+            h24
+          }
+          marketCap
+        }
+        price {
+          value
+          relativeChange24h
+        }
+      }
+      window {
+        start
+        end
+      }
+    }
+    lastWinner {
+      token {
+        name
+        address
+        symbol
+        iconUrl
+        decimals
+        chainID
+        network
+        colors {
+          primary
+          fallback
+          shadow
+        }
+        market {
+          volume {
+            h24
+          }
+          marketCap
+        }
+        price {
+          value
+          relativeChange24h
+        }
+      }
+      window {
+        start
+        end
+      }
+    }
+  }
+}

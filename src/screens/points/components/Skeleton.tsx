@@ -2,8 +2,9 @@ import React from 'react';
 import { ShimmerAnimation } from '@/components/animations';
 import { AccentColorProvider, Box, useBackgroundColor, useColorMode } from '@/design-system';
 import { opacity } from '@/__swaps__/utils/swaps';
+import { DimensionValue } from 'react-native';
 
-export const Skeleton = ({ width, height }: { width: number; height: number }) => {
+export const Skeleton = ({ width, height }: { width: DimensionValue; height: DimensionValue }) => {
   const { isDarkMode } = useColorMode();
 
   const fill = useBackgroundColor('fill');
@@ -13,7 +14,7 @@ export const Skeleton = ({ width, height }: { width: number; height: number }) =
 
   return (
     <AccentColorProvider color={skeletonColor}>
-      <Box background="accent" height={{ custom: height }} width={{ custom: width }} borderRadius={18} style={{ overflow: 'hidden' }}>
+      <Box background="accent" borderRadius={18} style={{ overflow: 'hidden', width, height }}>
         <ShimmerAnimation color={shimmerColor} gradientColor={shimmerColor} />
       </Box>
     </AccentColorProvider>

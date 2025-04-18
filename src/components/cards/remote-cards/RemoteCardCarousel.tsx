@@ -10,6 +10,8 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { FlashList } from '@shopify/flash-list';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import Routes from '@/navigation/routesNames';
+import { Separator, useColorMode } from '@/design-system';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 
 type RenderItemProps = {
   item: string;
@@ -25,6 +27,7 @@ export const getGutterSizeForCardAmount = (amount: number) => {
 };
 
 export const RemoteCardCarousel = () => {
+  const { isDarkMode } = useColorMode();
   const carouselRef = useRef<FlashList<string>>(null);
   const { name } = useRoute();
   const config = useRemoteConfig();
@@ -45,21 +48,22 @@ export const RemoteCardCarousel = () => {
   }
 
   return (
-    <CarouselCard
-      key={name as string}
-      data={cardIds}
-      carouselItem={{
-        carouselRef,
-        renderItem: _renderItem,
-        keyExtractor: item => item,
-        placeholder: null,
-        width: width - gutterSize,
-        height: 80,
-        padding: 16,
-        verticalOverflow: 12,
-      }}
-    />
+    <>
+      <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} thickness={1} />
+      <CarouselCard
+        key={name as string}
+        data={cardIds}
+        carouselItem={{
+          carouselRef,
+          renderItem: _renderItem,
+          keyExtractor: item => item,
+          placeholder: null,
+          width: width - gutterSize,
+          height: 80,
+          padding: 16,
+          verticalOverflow: 12,
+        }}
+      />
+    </>
   );
 };
-
-export default RemoteCardCarousel;
