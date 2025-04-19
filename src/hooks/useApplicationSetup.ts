@@ -12,6 +12,8 @@ import isTestFlight from '@/helpers/isTestFlight';
 import { PerformanceReports, PerformanceTracking } from '@/performance/tracking';
 
 export function useApplicationSetup() {
+  "use no memo";
+  
   const [initialRoute, setInitialRoute] = useState<InitialRoute>(null);
 
   const setup = useCallback(async () => {

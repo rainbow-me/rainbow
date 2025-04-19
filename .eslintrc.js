@@ -24,8 +24,10 @@ module.exports = {
   parserOptions: {
     project: ['./tsconfig.json'],
   },
+  plugins: ['eslint-plugin-react-compiler'],
   globals: globalVars,
   rules: {
+    'react-compiler/react-compiler': 'warn',
     'no-restricted-imports': [
       'warn',
       {
