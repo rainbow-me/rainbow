@@ -3,7 +3,7 @@ name: Android e2e tests
 on: [pull_request]
 jobs:
   android-e2e:
-    runs-on: blacksmith-16vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
