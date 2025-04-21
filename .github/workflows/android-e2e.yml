@@ -3,7 +3,7 @@ name: Android e2e tests
 on: [pull_request]
 jobs:
   android-e2e:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-16vcpu-ubuntu-2204
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -17,7 +17,7 @@ jobs:
       SHARDS: 1
       ANDROID_EMULATOR_API_LEVEL: 31
       ANDROID_EMULATOR_PROFILE: pixel_5
-      ANDROID_EMULATOR_RAM_SIZE: 2048
+      ANDROID_EMULATOR_RAM_SIZE: 6144
       ARTIFACTS_FOLDER: e2e-artifacts
       ARCH: x86_64
 
@@ -125,18 +125,17 @@ jobs:
           arch: ${{ env.ARCH }}
 
       - name: Run tests
-        uses: rainbow-me/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@v2
         id: e2e_test
         with:
-          emulators: ${{ env.SHARDS }}
           api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
           target: google_apis
           arch: ${{ env.ARCH }}
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-metrics
-          disable-animations: true
-          emulator-port: 5554
+          disable-animations: false
           profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
+          cores: 4
           ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
           script: ./scripts/e2e-android-ci.sh
 

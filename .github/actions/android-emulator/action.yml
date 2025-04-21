@@ -39,9 +39,8 @@ runs:
 
     - name: Create AVD and Generate Snapshot for Caching
       if: steps.avd-cache.outputs.cache-hit != 'true'
-      uses: rainbow-me/android-emulator-runner@v2
+      uses: reactivecircus/android-emulator-runner@v2
       with:
-        emulators: ${{ inputs.emulators }}
         api-level: ${{ inputs.api-level }}
         target: google_apis
         arch: ${{ inputs.arch }}
@@ -49,6 +48,7 @@ runs:
         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-metrics
         disable-animations: false
         profile: ${{ inputs.profile }}
+        cores: 4
         ram-size: ${{ inputs.ram-size }}
         script: |
           echo "Generated AVD snapshot for caching."
