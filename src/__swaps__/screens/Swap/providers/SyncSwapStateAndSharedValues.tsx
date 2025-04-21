@@ -34,24 +34,24 @@ import { getSwapsNavigationParams } from '../navigateToSwaps';
 const BUFFER_RATIO = 0.5;
 
 type InternalSyncedSwapState = {
-  assetToBuy: ExtendedAnimatedAssetWithColors | undefined;
   assetToSell: ExtendedAnimatedAssetWithColors | undefined;
   chainId: ChainId | undefined;
   quote: Quote | CrosschainQuote | QuoteError | null;
 };
+
 export const useSyncedSwapQuoteStore = create<InternalSyncedSwapState>(() => ({
-  assetToBuy: undefined,
   assetToSell: undefined,
   chainId: undefined,
   quote: null,
 }));
+
 const setInternalSyncedSwapStore = debounce((state: InternalSyncedSwapState) => useSyncedSwapQuoteStore.setState(state), 100, {
   leading: false,
   trailing: true,
 });
 
 export const SyncQuoteSharedValuesToState = () => {
-  const { internalSelectedInputAsset: assetToSell, internalSelectedOutputAsset: assetToBuy, quote } = useSwapContext();
+  const { internalSelectedInputAsset: assetToSell, quote } = useSwapContext();
 
   // Updates the state as a single block in response to quote changes to ensure the gas fee is cleanly updated once
   useAnimatedReaction(
@@ -73,7 +73,6 @@ export const SyncQuoteSharedValuesToState = () => {
 
       if (!deepEqual(current, prev)) {
         runOnJS(setInternalSyncedSwapStore)({
-          assetToBuy: assetToBuy.value ?? undefined,
           assetToSell: assetToSell.value,
           chainId: assetToSell.value?.chainId,
           quote: current.quote,
@@ -159,8 +158,7 @@ export function SyncGasStateToSharedValues() {
   const { assetToSell = initialInfo.assetToSell, chainId = initialInfo.chainId, quote } = useSyncedSwapQuoteStore();
   const gasSettings = useSelectedGas(chainId);
 
-  const nativeAssets = useBackendNetworksStore(state => state.getChainsNativeAsset());
-  const nativeCurrencyUniqueId = useMemo(() => getUniqueId(nativeAssets[chainId]?.address, chainId), [chainId, nativeAssets]);
+  const nativeCurrencyUniqueId = useBackendNetworksStore(state => getUniqueId(state.getChainsNativeAsset()[chainId]?.address, chainId));
 
   const isLoadingNativeNetworkAsset = useUserAssetsStore(state => state.getStatus().isInitialLoading);
   const userNativeNetworkAsset = useUserAssetsStore(state => state.getLegacyUserAsset(nativeCurrencyUniqueId));
@@ -182,7 +180,7 @@ export function SyncGasStateToSharedValues() {
     (current, previous) => {
       const isNativeAsset = current.inputAsset.isNativeAsset;
       if (!isNativeAsset) {
-        if (gasFeeRange.value && current.inputAsset.chainId !== previous?.inputAsset?.chainId) {
+        if (current.bufferRange && current.inputAsset.chainId !== previous?.inputAsset?.chainId) {
           gasFeeRange.value = null;
         }
         return;
@@ -196,12 +194,13 @@ export function SyncGasStateToSharedValues() {
 
       if (currInputAsset?.chainId !== prevInputAsset?.chainId) {
         // reset gas fee range when input chain changes
-        if (gasFeeRange.value) gasFeeRange.value = null;
+        hasEnoughFundsForGas.value = undefined;
+        if (currBuffer) gasFeeRange.value = null;
       } else if (isNativeAsset && currBuffer && (currBuffer !== prevBuffer || currInputAsset?.balance !== prevInputAsset?.balance)) {
         // update maxSwappableAmount when gas fee range is set and there is a change to input asset or gas fee range
         if (!currInputAsset.balance) return;
 
-        hasEnoughFundsForGas.value = undefined;
+        if (hasEnoughFundsForGas.value === false) hasEnoughFundsForGas.value = undefined;
 
         const prevMaxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
         const newMaxSwappableAmount = subWorklet(currInputAsset.balance, currBuffer);
@@ -234,13 +233,13 @@ export function SyncGasStateToSharedValues() {
   }, [quote]);
 
   useEffect(() => {
-    if (!gasFee || !safeQuoteValue || isLoadingNativeNetworkAsset) {
-      hasEnoughFundsForGas.value = undefined;
+    if (!userNativeNetworkAsset) {
+      hasEnoughFundsForGas.value = false;
       return;
     }
 
-    if (!userNativeNetworkAsset) {
-      hasEnoughFundsForGas.value = false;
+    if (!gasFee || !safeQuoteValue || isLoadingNativeNetworkAsset) {
+      hasEnoughFundsForGas.value = undefined;
       return;
     }
 
@@ -268,16 +267,7 @@ export function SyncGasStateToSharedValues() {
         userNativeAssetDecimals,
       });
     })();
-  }, [
-    chainId,
-    gasFee,
-    gasFeeRange,
-    hasEnoughFundsForGas,
-    internalSelectedInputAsset,
-    isLoadingNativeNetworkAsset,
-    safeQuoteValue,
-    userNativeNetworkAsset,
-  ]);
+  }, [gasFee, gasFeeRange, hasEnoughFundsForGas, isLoadingNativeNetworkAsset, safeQuoteValue, userNativeNetworkAsset]);
 
   return null;
 }

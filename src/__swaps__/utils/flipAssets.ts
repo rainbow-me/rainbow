@@ -101,10 +101,10 @@ export const updateInputValuesAfterFlip = ({
   };
 
   const hasNonZeroBalance = hasInputBalance && greaterThanWorklet(inputBalance, 0);
-  const exceedsNonZeroBalance = hasNonZeroBalance && greaterThanWorklet(newInputValues.inputAmount, inputBalance);
   const wasSetToMax =
     outputBalance && greaterThanWorklet(outputBalance, 0) ? equalWorklet(inputValues.value.inputAmount, outputBalance) : false;
-  const shouldSetToMax = (wasSetToMax && hasNonZeroBalance) || exceedsNonZeroBalance;
+  const shouldSetToMax =
+    hasNonZeroBalance && (wasSetToMax || greaterThanWorklet(newInputValues.inputAmount, mulWorklet(inputBalance, 0.99)));
 
   inputMethod.value = lastTypedInput === 'inputNativeValue' && !shouldSetToMax && inputNativePrice ? 'inputNativeValue' : 'inputAmount';
 

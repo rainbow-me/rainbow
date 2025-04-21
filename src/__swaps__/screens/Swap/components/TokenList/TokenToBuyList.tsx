@@ -144,8 +144,9 @@ export const TokenToBuyList = () => {
       });
 
       setAsset({
-        type: SwapAssetType.outputAsset,
         asset: parsedAsset,
+        insertUserAssetBalance: false,
+        type: SwapAssetType.outputAsset,
       });
 
       const { searchQuery } = useSwapsSearchStore.getState();

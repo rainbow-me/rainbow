@@ -613,7 +613,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     ({
       asset,
       didWalletChange = false,
-      insertUserAssetBalance = true,
+      insertUserAssetBalance = false,
       type,
     }: {
       asset: ParsedSearchAsset | null;
