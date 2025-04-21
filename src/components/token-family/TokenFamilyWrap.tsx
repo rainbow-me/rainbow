@@ -11,7 +11,7 @@ type Props = {
   isHeader?: boolean;
   isOpen?: boolean;
   item: any;
-  familyImage: string;
+  familyImage?: string;
   onToggle: () => void;
   renderItem: (i: number) => JSX.Element;
   theme: ThemeContextProps;

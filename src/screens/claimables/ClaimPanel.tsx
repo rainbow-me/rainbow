@@ -12,6 +12,7 @@ export const ClaimClaimablePanel = () => {
   } = useRoute<RouteProp<RootStackParamList, 'ClaimClaimablePanel'>>();
 
   switch (claimable.actionType) {
+    case 'multi_transaction':
     case 'transaction':
       return (
         <TransactionClaimableContextProvider claimable={claimable}>
