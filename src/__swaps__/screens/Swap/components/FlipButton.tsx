@@ -159,7 +159,7 @@ export const FlipButton = () => {
           },
         ]}
       >
-        <GestureHandlerButton onPressWorklet={handleFlipAssets} scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
+        <GestureHandlerButton onPressWorklet={handleFlipAssets} scaleTo={0.8} style={{ paddingHorizontal: 10 }}>
           <Box alignItems="center" justifyContent="center" style={styles.flipButtonContainer}>
             <AnimatedBlurView
               blurIntensity={10}
