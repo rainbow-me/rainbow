@@ -30,7 +30,6 @@ import { logger, RainbowError } from '@/logger';
 import * as ls from '@/storage';
 import { migrate } from '@/migrations';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
-import { ReviewPromptAction } from '@/storage/schema';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
@@ -59,7 +58,7 @@ interface AppProps {
   walletReady: boolean;
 }
 
-function App({ walletReady }: AppProps) {
+function App() {
   const { initialRoute } = useApplicationSetup();
   const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
     Navigation.setTopLevelNavigator(ref);
@@ -84,15 +83,15 @@ function App({ walletReady }: AppProps) {
         <OfflineToast />
         <Toaster />
       </View>
-      <NotificationsHandler walletReady={walletReady} />
-      <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
+      <NotificationsHandler />
+      <DeeplinkHandler initialRoute={initialRoute} />
       <BackupsSync />
       <AbsolutePortalRoot />
     </>
   );
 }
 
-const AppWithRedux = connect<AppProps, AppDispatch, AppProps, AppState>(
+const AppWithRedux = connect<AppProps, AppDispatch, Record<string, never>, AppState>(
   state => ({
     walletReady: state.appState.walletReady,
   }),
@@ -122,21 +121,6 @@ function Root() {
       Sentry.setUser({ id: deviceId });
       analytics.setDeviceId(deviceId);
       analytics.identify();
-
-      const isReviewInitialized = ls.review.get(['initialized']);
-      if (!isReviewInitialized) {
-        ls.review.set(['hasReviewed'], false);
-        ls.review.set(
-          ['actions'],
-          Object.values(ReviewPromptAction).map(action => ({
-            id: action,
-            numOfTimesDispatched: 0,
-          }))
-        );
-
-        ls.review.set(['timeOfLastPrompt'], 0);
-        ls.review.set(['initialized'], true);
-      }
 
       /**
        * We previously relied on the existence of a deviceId on keychain to
@@ -212,7 +196,7 @@ function Root() {
                     <RainbowContextWrapper>
                       <SharedValuesProvider>
                         <ErrorBoundary>
-                          <AppWithRedux walletReady={false} />
+                          <AppWithRedux />
                         </ErrorBoundary>
                       </SharedValuesProvider>
                     </RainbowContextWrapper>

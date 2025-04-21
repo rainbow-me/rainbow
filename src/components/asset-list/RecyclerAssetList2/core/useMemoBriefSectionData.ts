@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
 import { AssetListType } from '..';
-import { CellType, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
+import { CellType, CellTypes, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
 import { useCoinListEdited, useExternalWalletSectionsData, useOpenFamilies, useOpenSmallBalances, useWalletSectionsData } from '@/hooks';
 import useOpenPositionCards from '@/hooks/useOpenPositionCards';
 import useOpenClaimables from '@/hooks/useOpenClaimables';
@@ -19,9 +19,9 @@ export default function useMemoBriefSectionData({
 }: {
   externalAddress?: string;
   type?: AssetListType;
-  briefSectionsData?: any[];
+  briefSectionsData?: CellTypes[];
 } = {}) {
-  let sectionsDataToUse: any[];
+  let sectionsDataToUse: CellTypes[];
 
   if (type === 'ens-profile') {
     // `type` is a static prop, so hooks will always execute in order.
@@ -117,10 +117,13 @@ export default function useMemoBriefSectionData({
   const memoizedResult = useDeepCompareMemo(() => result, [result]);
   const additionalData = useDeepCompareMemo(
     () =>
-      sectionsDataToUse.reduce((acc, data) => {
-        acc[data.uid] = data;
-        return acc;
-      }, {}),
+      sectionsDataToUse.reduce(
+        (acc, data) => {
+          acc[data.uid] = data;
+          return acc;
+        },
+        {} as Record<string, CellTypes>
+      ),
     [sectionsDataToUse]
   );
   return { additionalData, memoizedResult };

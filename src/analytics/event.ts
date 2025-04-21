@@ -245,6 +245,9 @@ export const event = {
   networkStatusOffline: 'network_status.offline',
   networkStatusReconnected: 'network_status.reconnected',
 
+  // wallet initialization
+  walletInitializationFailed: 'wallet_initialization.failed',
+
   // performance
   performanceReport: 'performance.report',
   performanceInitializeWallet: 'Performance Wallet Initialize Time',
@@ -294,6 +297,9 @@ export const event = {
 
   // discover screen
   discoverTapSearch: 'Tapped Search',
+
+  // app store review
+  appStoreReviewPrompted: 'app_store_review.prompted',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -766,7 +772,7 @@ export type EventProperties = {
 
   [event.claimClaimableSucceeded]: {
     claimableId: string;
-    claimableType: 'transaction' | 'sponsored' | 'rainbowCoin';
+    claimableType: 'transaction' | 'multi_transaction' | 'sponsored' | 'rainbowCoin';
     chainId: ChainId;
     asset: {
       symbol: string;
@@ -804,7 +810,7 @@ export type EventProperties = {
 
   [event.claimablePanelOpened]: {
     claimableId: string;
-    claimableType: 'transaction' | 'sponsored' | 'rainbowCoin';
+    claimableType: 'transaction' | 'multi_transaction' | 'sponsored' | 'rainbowCoin';
     chainId: ChainId;
     asset: {
       symbol: string;
@@ -914,6 +920,12 @@ export type EventProperties = {
 
   [event.networkStatusOffline]: undefined;
   [event.networkStatusReconnected]: undefined;
+
+  // wallet initialization
+  [event.walletInitializationFailed]: {
+    error: string;
+    walletStatus: string;
+  };
 
   // performance
   [event.performanceInitializeWallet]: {
@@ -1068,4 +1080,8 @@ export type EventProperties = {
     appIcon: string;
   };
   [event.tappedImportButton]: undefined;
+  [event.appStoreReviewPrompted]: {
+    action: string;
+    promptCount: number;
+  };
 };

@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { logger } from '@/logger';
 import { InteractionManager } from 'react-native';
-import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { ReviewPromptAction } from '@/storage/schema';
 import { loadAddress } from '@/model/wallet';
 import { InitialRoute } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
@@ -21,12 +19,6 @@ export function useApplicationSetup() {
     initWalletConnectPushNotifications();
 
     if (address) {
-      setTimeout(() => {
-        InteractionManager.runAfterInteractions(() => {
-          handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
-        });
-      }, 10_000);
-
       InteractionManager.runAfterInteractions(checkIdentifierOnLaunch);
     }
 
