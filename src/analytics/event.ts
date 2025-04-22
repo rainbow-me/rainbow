@@ -780,7 +780,7 @@ export type EventProperties = {
 
   [event.claimClaimableSucceeded]: {
     claimableId: string;
-    claimableType: 'transaction' | 'multi_transaction' | 'sponsored' | 'rainbowCoin';
+    claimableType: 'transaction' | 'sponsored' | 'rainbowCoin';
     chainId: ChainId;
     asset: {
       symbol: string;
@@ -818,7 +818,7 @@ export type EventProperties = {
 
   [event.claimablePanelOpened]: {
     claimableId: string;
-    claimableType: 'transaction' | 'multi_transaction' | 'sponsored' | 'rainbowCoin';
+    claimableType: 'transaction' | 'sponsored' | 'rainbowCoin';
     chainId: ChainId;
     asset: {
       symbol: string;

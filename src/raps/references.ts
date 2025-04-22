@@ -47,7 +47,7 @@ type AdditionalParamsMap = {
   swap: undefined;
   crosschainSwap: undefined;
   claimBridge: undefined;
-  claimClaimable: { claimTxns: TransactionClaimableTxPayload[] };
+  claimClaimable: { claimTx: TransactionClaimableTxPayload };
 };
 
 export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | 'claimBridge' | 'claimClaimable'> {
