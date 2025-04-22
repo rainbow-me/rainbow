@@ -49,7 +49,9 @@ const isZeroWorklet = (value: string): boolean => {
 export const scaleUpWorklet = (bigIntNum: bigint, decimalPlaces: number): bigint => {
   'worklet';
   const scaleFactor = BigInt(10) ** BigInt(20);
-  return (bigIntNum * scaleFactor) / BigInt(10) ** BigInt(decimalPlaces);
+  return decimalPlaces >= 0
+    ? (bigIntNum * scaleFactor) / BigInt(10) ** BigInt(decimalPlaces)
+    : bigIntNum * scaleFactor * BigInt(10) ** BigInt(-decimalPlaces);
 };
 
 // Utility function to format the result with 20 decimal places and remove trailing zeros

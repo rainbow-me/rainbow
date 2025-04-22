@@ -22,7 +22,7 @@ import { SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { BackupFile, CloudBackups } from '@/model/backup';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
-import { GetPoapEventBySecretWordQuery, NftOffer, PoapEvent, ReservoirCollection } from '@/graphql/__generated__/arc';
+import { NftOffer, PoapEvent, ReservoirCollection } from '@/graphql/__generated__/arc';
 import { Contact } from '@/redux/contacts';
 import { NavigatorScreenParams } from '@react-navigation/native';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';

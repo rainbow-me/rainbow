@@ -8,15 +8,15 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { IS_IOS } from '@/env';
 
 export const SwapInput = ({
-  children,
   asset,
   bottomInput,
+  children,
   otherInputProgress,
   progress,
 }: {
-  children?: ReactNode;
   asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   bottomInput?: boolean;
+  children?: ReactNode;
   otherInputProgress: SharedValue<number>;
   progress: SharedValue<number>;
 }) => {

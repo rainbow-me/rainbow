@@ -119,7 +119,6 @@ export function GestureHandlerButton({
       .minDuration(longPressDuration)
       .onStart(() => {
         if (!disableScale) isPressed.value = true;
-        if (!disableHaptics) triggerHaptics(hapticType);
         onLongPressWorklet?.();
         if (onLongPressJS) runOnJS(onLongPressJS)();
       })

@@ -1,6 +1,6 @@
 import chroma from 'chroma-js';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -43,9 +43,7 @@ import * as i18n from '@/languages';
 import { useDispatch } from 'react-redux';
 import store from '@/redux/store';
 import { getDappHost } from '@/utils/connectedApps';
-import WebView from 'react-native-webview';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import { address } from '@/utils/abbreviations';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { useAppSessionsStore } from '@/state/appSessions';
@@ -55,12 +53,12 @@ import WalletTypes from '@/helpers/walletTypes';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { userAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { RootStackParamList } from '@/navigation/types';
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import Routes from '@/navigation/routesNames';
 
 const PAGES = {
   HOME: 'home',
@@ -373,7 +371,6 @@ const HomePanel = memo(function HomePanel({
   const { wallets } = useWallets();
   const initializeWallet = useInitializeWallet();
   const dispatch = useDispatch();
-  const { navigate } = useNavigation();
 
   const actionButtonList = useMemo(() => {
     const walletIcon = selectedWallet?.IconComponent || <></>;
@@ -435,17 +432,15 @@ const HomePanel = memo(function HomePanel({
     const valid = await runWalletChecksBeforeSwapOrBridge();
     if (!valid) return;
 
-    swapsStore.setState({ inputAsset: userAssetsStore.getState().getHighestValueNativeAsset() });
-    InteractionManager.runAfterInteractions(() => navigate(Routes.SWAP));
-  }, [navigate, runWalletChecksBeforeSwapOrBridge]);
+    navigateToSwaps();
+  }, [runWalletChecksBeforeSwapOrBridge]);
 
   const handleOnPressBridge = useCallback(async () => {
     const valid = await runWalletChecksBeforeSwapOrBridge();
     if (!valid) return;
 
-    swapsStore.setState({ inputAsset: userAssetsStore.getState().getHighestValueNativeAsset() });
-    InteractionManager.runAfterInteractions(() => navigate(Routes.SWAP));
-  }, [navigate, runWalletChecksBeforeSwapOrBridge]);
+    navigateToSwaps();
+  }, [runWalletChecksBeforeSwapOrBridge]);
 
   const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || RAINBOW_HOME) === RAINBOW_HOME);
 

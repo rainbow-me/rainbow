@@ -280,8 +280,13 @@ export function navigate(navigationAction: (...args: any[]) => void, ...args: an
   }
 }
 
-export function getActiveRoute() {
-  return TopLevelNavigationRef?.getCurrentRoute();
+export function getActiveRoute<T extends keyof RootStackParamList>() {
+  const activeRoute = TopLevelNavigationRef?.getCurrentRoute();
+  if (!activeRoute) return null;
+  return {
+    ...activeRoute,
+    params: activeRoute.params as RootStackParamList[T],
+  };
 }
 
 function getActiveOptions() {

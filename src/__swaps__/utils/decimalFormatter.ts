@@ -54,7 +54,7 @@ export function valueBasedDecimalFormatter({
       maximumDecimalPlaces = Math.max(minBasedOnOrderOfMag, minDecimalsForOneCent - orderOfMagnitude);
     }
 
-    let adjustedMaximumDecimalPlaces = Math.max(
+    const adjustedMaximumDecimalPlaces = Math.max(
       maximumDecimalPlaces + (precisionAdjustment ?? 0),
       niceIncrementMinimumDecimals ? niceIncrementMinimumDecimals + 1 : 0,
       minimumDecimalPlaces
@@ -84,8 +84,8 @@ export function valueBasedDecimalFormatter({
   }
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: minimumDecimalPlaces,
-    maximumFractionDigits: maximumDecimalPlaces,
+    minimumFractionDigits: Math.min(minimumDecimalPlaces, 20),
+    maximumFractionDigits: Math.min(maximumDecimalPlaces, 20),
     useGrouping: !stripSeparators,
   });
 

@@ -20,6 +20,9 @@ interface ClaimActionTransaction {
   chain_id: ChainId;
 }
 
+export const acceptedClaimableTypes = ['transaction', 'sponsored', 'multi_transaction'] as const;
+export type AcceptedClaimableType = (typeof acceptedClaimableTypes)[number];
+
 type ClaimAction = ClaimActionTransaction | ClaimActionSponsored;
 
 interface DApp {
@@ -75,12 +78,22 @@ interface AddysSponsoredClaimable extends AddysBaseClaimable {
   claim_action: ClaimActionSponsored[];
 }
 
+interface AddysMultiTransactionClaimable extends AddysBaseClaimable {
+  claim_action_type: 'multi_transaction';
+  claim_action: ClaimActionTransaction[];
+}
+
 interface AddysUnsupportedClaimable extends AddysBaseClaimable {
   claim_action_type?: 'unknown' | null;
   claim_action?: ClaimAction[];
 }
 
-export type AddysClaimable = AddysTransactionClaimable | AddysRainbowClaimable | AddysSponsoredClaimable | AddysUnsupportedClaimable;
+export type AddysClaimable =
+  | AddysTransactionClaimable
+  | AddysRainbowClaimable
+  | AddysSponsoredClaimable
+  | AddysMultiTransactionClaimable
+  | AddysUnsupportedClaimable;
 
 interface ConsolidatedClaimablesPayloadResponse {
   claimables: AddysClaimable[];
@@ -117,8 +130,8 @@ export interface BaseClaimable {
 }
 
 export interface TransactionClaimable extends BaseClaimable {
-  actionType: 'transaction';
-  action: { to: Address; data: string };
+  actionType: 'transaction' | 'multi_transaction';
+  action: { to: Address; data: string }[];
 }
 
 export interface RainbowClaimable extends TransactionClaimable {

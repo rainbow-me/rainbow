@@ -152,5 +152,5 @@ export type RainbowPosition = {
 export type RainbowPositions = {
   totals: PositionsTotals & { total: NativeDisplay };
   positionTokens: string[];
-  positions: RainbowPosition[];
+  positions: Record<string, RainbowPosition>;
 };

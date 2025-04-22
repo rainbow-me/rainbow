@@ -106,11 +106,6 @@ workflows:
           inputs:
             - command: global add @sentry/cli
           title: Install Sentry CLI
-      - fastlane@2.7:
-          inputs:
-            - work_dir: '$BITRISE_SOURCE_DIR/ios'
-            - lane: refresh_dsyms
-          title: Fastlane - Upload debug symbols and sourcemaps
       - script@1.1.6:
           title: Expose version number to ENV vars
           inputs:
