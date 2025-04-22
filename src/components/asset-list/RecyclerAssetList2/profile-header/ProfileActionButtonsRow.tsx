@@ -1,5 +1,5 @@
 import Clipboard from '@react-native-clipboard/clipboard';
-import lang from 'i18n-js';
+import * as lang from '@/languages';
 import * as React from 'react';
 import { PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
