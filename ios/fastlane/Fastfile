@@ -13,6 +13,18 @@
 default_platform(:ios)
 
 platform :ios do
+  desc "Refresh dSYMs"
+  lane :refresh_dsyms do
+
+    api_key = app_store_connect_api_key(
+      key_id: "AU3T8TCRLN",
+      issuer_id: "95830311-9e99-47b0-95ac-d628a3e4215e",
+      key_filepath: "fastlane/AuthKey_AU3T8TCRLN.p8",
+      duration: 1200, # optional
+      in_house: false, # optional but may be required if using match/sigh
+    )
+  end
+
   desc "Submit a new Beta build to Apple TestFlight"
   lane :beta do
 
