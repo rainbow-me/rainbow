@@ -116,7 +116,7 @@ export const TokenToBuyList = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, outputProgress, setAsset } = useSwapContext();
   const { results: sections, isLoading } = useSearchCurrencyLists();
 
-  const [supportedChainsBooleanMap] = useState(
+  const [supportedChainsBooleanMap] = useState(() =>
     useBackendNetworksStore
       .getState()
       .getSupportedChainIds()
@@ -144,8 +144,9 @@ export const TokenToBuyList = () => {
       });
 
       setAsset({
-        type: SwapAssetType.outputAsset,
         asset: parsedAsset,
+        insertUserAssetBalance: false,
+        type: SwapAssetType.outputAsset,
       });
 
       const { searchQuery } = useSwapsSearchStore.getState();

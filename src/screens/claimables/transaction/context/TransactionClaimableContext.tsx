@@ -41,6 +41,7 @@ import { estimateClaimUnlockSwapGasLimit } from '../estimateGas';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import showWalletErrorAlert from '@/helpers/support';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
@@ -156,7 +157,7 @@ export function TransactionClaimableContextProvider({
         sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
         buyTokenAddress: outputConfig.token.isNativeAsset ? ETH_ADDRESS : outputTokenAddress,
         sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
-        slippage: +getDefaultSlippageWorklet(claimable.chainId, getRemoteConfig()),
+        slippage: +getDefaultSlippageWorklet(claimable.chainId, getRemoteConfig().default_slippage_bips_chainId),
         refuel: false,
         toChainId: outputConfig.chainId,
         currency: nativeCurrency,
@@ -389,20 +390,39 @@ export function TransactionClaimableContextProvider({
             return;
           }
 
+          if (!quoteState.quote) {
+            haptics.notificationError();
+            setClaimStatus('recoverableError');
+            logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to undefined quote'));
+            return;
+          }
+
+          // const swapData = {
+          //   amount: claimable.value.claimAsset.amount,
+          //   sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
+          //   chainId: claimable.chainId,
+          //   toChainId: outputConfig.chainId,
+          //   assetToSell: claimable.asset.isNativeAsset ? { ...claimable.asset, address: ETH_ADDRESS } : claimable.asset,
+          //   assetToBuy: outputAsset.isNativeAsset ? { ...outputAsset, address: ETH_ADDRESS } : outputAsset,
+          //   address: accountAddress,
+          // };
+
           const swapData = {
             amount: claimable.value.claimAsset.amount,
             sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
             chainId: claimable.chainId,
             toChainId: outputConfig.chainId,
-            assetToSell: claimable.asset.isNativeAsset ? { ...claimable.asset, address: ETH_ADDRESS } : claimable.asset,
+            assetToSell: transformRainbowTokenToParsedSearchAsset(
+              claimable.asset.isNativeAsset ? { ...claimable.asset, address: ETH_ADDRESS } : claimable.asset
+            ),
             assetToBuy: outputAsset.isNativeAsset ? { ...outputAsset, address: ETH_ADDRESS } : outputAsset,
             address: accountAddress,
           };
 
+          // @ts-expect-error - TODO: assetToBuy is not typed correctly
           const { errorMessage } = await walletExecuteRap(wallet, 'claimClaimable', {
             ...swapData,
             gasParams,
-            // @ts-expect-error - collision between old gas types and new
             gasFeeParamsBySpeed,
             quote: quoteState.quote,
             additionalParams: { claimTxns },

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import React, { useMemo } from 'react';
 import { Image, View } from 'react-native';
 import { getChainBadgeStyles } from '@/components/coin-icon/ChainImage';

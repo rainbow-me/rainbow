@@ -16,6 +16,7 @@ import { ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/Ex
 import { TextProps } from '@/design-system';
 import { Checkbox } from '@/screens/SendConfirmationSheet';
 import { ENSProfile } from '@/entities/ens';
+import { SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -106,7 +107,7 @@ export type RootStackParamList = {
     onSuccess: () => Promise<void>;
     onFailure: () => Promise<void>;
   };
-  [Routes.SWAP]: {
+  [Routes.SWAP]: SwapsParams & {
     action?: 'open_swap_settings';
   };
   [Routes.CLAIM_CLAIMABLE_PANEL]: {
