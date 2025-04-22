@@ -324,6 +324,7 @@ export const buildBriefUniqueTokenList = (
       const uniqueIds = collection.nftIds.filter((uniqueId: string) => !hiddenUniqueTokensSet.has(uniqueId));
       if (uniqueIds.length > 0) {
         result.push({
+          // @ts-expect-error "image" does not exist in type.
           image: collection.familyImage,
           name: collection.familyName,
           total: collection.distinctNftsOwned,
@@ -333,7 +334,7 @@ export const buildBriefUniqueTokenList = (
         });
         for (let index = 0; index < uniqueIds.length; index++) {
           const uniqueId = uniqueIds[index];
-
+          // @ts-expect-error "index" does not exist in type.
           result.push({ index, type: CellType.NFT, uid: uniqueId, uniqueId });
         }
         result.push({ type: CellType.NFT_SPACE_AFTER, uid: `${collection.familyName}-space-after` });
