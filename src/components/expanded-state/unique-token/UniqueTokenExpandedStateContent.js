@@ -6,7 +6,7 @@ import { AudioPlayer } from '../../audio';
 import { UniqueTokenImage } from '../../unique-token';
 import { SimpleVideo } from '../../video';
 import { ZoomableWrapper } from './ZoomableWrapper';
-import { usePersistentAspectRatio, useUniqueToken } from '@/hooks';
+import { usePersistentAspectRatio } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 
@@ -35,7 +35,9 @@ const UniqueTokenExpandedStateContent = ({
   onContentFocus,
   onContentBlur,
 }) => {
-  const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
+  const supports3d = !!asset?.model_url;
+  const supportsAudio = !!asset?.audio_url;
+  const supportsVideo = !!asset?.video_url;
 
   const supportsAnythingExceptImageAnd3d = supportsVideo || supportsAudio;
 

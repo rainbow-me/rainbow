@@ -63,7 +63,6 @@ export { default as useLongPressEvents } from './useLongPressEvents';
 export { default as useMagicAutofocus } from './useMagicAutofocus';
 export { default as useManageCloudBackups } from './useManageCloudBackups';
 export { default as useMaxInputBalance } from './useMaxInputBalance';
-export { default as useUniqueToken } from './useUniqueToken';
 export { default as useOpenENSNFTHandler } from './useOpenENSNFTHandler';
 export { default as useOpenSmallBalances } from './useOpenSmallBalances';
 export { default as useOpenFamilies } from './useOpenFamilies';

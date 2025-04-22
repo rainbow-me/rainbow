@@ -2,7 +2,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import c from 'chroma-js';
 import lang from 'i18n-js';
 import React, { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Linking, Share, View } from 'react-native';
+import { InteractionManager, Share, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import URL from 'url-parse';
@@ -15,7 +15,6 @@ import ImgixImage from '../images/ImgixImage';
 import { SendActionButton, SheetActionButton, SheetHandle, SlackSheet } from '../sheet';
 import { Toast, ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
-import { CardSize } from '../unique-token/CardSize';
 import ConfigurationSection from './ens/ConfigurationSection';
 import ProfileInfoSection from './ens/ProfileInfoSection';
 import { UniqueTokenExpandedStateContent, UniqueTokenExpandedStateHeader } from './unique-token';
@@ -70,6 +69,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analytics } from '@/analytics';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
+import { openInBrowser } from '@/utils/openInBrowser';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -224,14 +224,12 @@ const getIsSupportedOnRainbowWeb = (chainId: ChainId) => {
   }
 };
 
-const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenExpandedStateProps) => {
+const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateProps) => {
   const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
-  const collectible = useCollectible(passedAsset?.fullUniqueId);
-  const asset = external ? passedAsset : collectible;
   const {
     data: { nftOffers },
   } = useNFTOffers({
@@ -364,8 +362,8 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     }
   }, [colors.whiteLabel, imageColor]);
 
-  const handlePressMarketplaceName = useCallback(() => Linking.openURL(asset.permalink), [asset.permalink]);
-  const handlePressParty = useCallback(() => Linking.openURL(asset.external_link!), [asset.external_link]);
+  const handlePressMarketplaceName = useCallback(() => openInBrowser(asset.permalink), [asset.permalink]);
+  const handlePressParty = useCallback(() => openInBrowser(asset.external_link!), [asset.external_link]);
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
@@ -435,7 +433,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
       {IS_IOS && (
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
-            <UniqueTokenImage backgroundColor={asset.background || imageColor} imageUrl={asset.lowResUrl} item={asset} size={CardSize} />
+            <UniqueTokenImage backgroundColor={asset.background || imageColor} imageUrl={asset.lowResUrl} item={asset} />
             <BackgroundBlur />
           </BackgroundImage>
         </BlurWrapper>
