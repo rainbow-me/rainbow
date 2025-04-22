@@ -1,13 +1,12 @@
 import VersionNumber from 'react-native-version-number';
-import { useState } from 'react';
-function formatAppVersion(appVersion = VersionNumber.appVersion) {
-  const version = `${appVersion} (${VersionNumber.buildVersion})`;
+
+function getFormattedAppVersion(appVersion = VersionNumber.appVersion): string {
+  const version = `${appVersion} (${VersionNumber})`;
   return version;
 }
 
-const defaultAppVersion = formatAppVersion();
+export const CURRENT_APP_VERSION = getFormattedAppVersion();
 
 export default function useAppVersion(): string {
-  const [version] = useState(defaultAppVersion);
-  return version;
+  return CURRENT_APP_VERSION;
 }
