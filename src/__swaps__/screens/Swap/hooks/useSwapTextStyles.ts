@@ -11,7 +11,7 @@ import {
 import { useColorMode, useForegroundColor } from '@/design-system';
 
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
-import { inputMethods, inputValuesType } from '@/__swaps__/types/swap';
+import { InputMethods, InputValues } from '@/__swaps__/types/swap';
 import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { equalWorklet } from '@/safe-math/SafeMath';
@@ -25,8 +25,8 @@ export function useSwapTextStyles({
   isFetching,
   isQuoteStale,
 }: {
-  inputMethod: SharedValue<inputMethods>;
-  inputValues: SharedValue<inputValuesType>;
+  inputMethod: SharedValue<InputMethods>;
+  inputValues: SharedValue<InputValues>;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   isFetching: SharedValue<boolean>;

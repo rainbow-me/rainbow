@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import chroma from 'chroma-js';
 import React, { useState } from 'react';
 import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
