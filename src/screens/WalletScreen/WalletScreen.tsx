@@ -40,7 +40,7 @@ const ToastComponent = memo(function ToastComponent() {
   );
 });
 
-const DataLoadingHooks = memo(function DataLoadingHooks() {
+const WalletScreenEffects = memo(function WalletScreenEffects() {
   useRemoveScreen(Routes.WELCOME_SCREEN);
   useInitializeWalletAndSetParams();
   useLoadDeferredWalletData();
@@ -92,7 +92,7 @@ function WalletScreen() {
         />
         <ToastComponent />
         <UtilityComponents />
-        <DataLoadingHooks />
+        <WalletScreenEffects />
       </Box>
     </PerformanceMeasureView>
   );
