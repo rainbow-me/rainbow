@@ -1,6 +1,6 @@
 name: Android e2e tests
 
-on: [pull_request]
+on: [pull_request_target]
 jobs:
   android-e2e:
     runs-on: blacksmith-8vcpu-ubuntu-2204
