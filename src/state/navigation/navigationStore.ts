@@ -24,6 +24,7 @@ interface NavigationStore {
   activeSwipeRoute: SwipeRoute;
   animatedActiveRoute: SharedValue<string>;
   animatedActiveSwipeRoute: SharedValue<SwipeRoute>;
+  isWalletScreenMounted: boolean;
   isRouteActive: (route: string) => boolean;
   setActiveRoute: (route: string) => void;
 }
@@ -33,6 +34,7 @@ export const useNavigationStore = createRainbowStore<NavigationStore>((set, get)
   activeSwipeRoute: Routes.WALLET_SCREEN,
   animatedActiveRoute: makeMutable<string>(Routes.WALLET_SCREEN),
   animatedActiveSwipeRoute: makeMutable<SwipeRoute>(Routes.WALLET_SCREEN),
+  isWalletScreenMounted: false,
 
   isRouteActive: (route: string) => route === get().activeRoute,
 
