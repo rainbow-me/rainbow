@@ -29,8 +29,8 @@ jobs:
       - name: Setup Java environment
         uses: useblacksmith/setup-java@v5
         with:
-          distribution: 'corretto'
-          java-version: '22'
+          distribution: 'zulu'
+          java-version: '17'
 
       - name: Install secret tools
         run: sudo apt install libsecret-tools
