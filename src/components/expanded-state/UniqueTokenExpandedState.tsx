@@ -2,7 +2,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import c from 'chroma-js';
 import lang from 'i18n-js';
 import React, { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Share, View } from 'react-native';
+import { InteractionManager, Linking, Share, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import URL from 'url-parse';
@@ -70,7 +70,6 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analytics } from '@/analytics';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -365,8 +364,8 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     }
   }, [colors.whiteLabel, imageColor]);
 
-  const handlePressMarketplaceName = useCallback(() => openInBrowser(asset.permalink), [asset.permalink]);
-  const handlePressParty = useCallback(() => openInBrowser(asset.external_link!), [asset.external_link]);
+  const handlePressMarketplaceName = useCallback(() => Linking.openURL(asset.permalink), [asset.permalink]);
+  const handlePressParty = useCallback(() => Linking.openURL(asset.external_link!), [asset.external_link]);
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {

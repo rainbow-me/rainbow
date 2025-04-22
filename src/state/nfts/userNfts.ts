@@ -53,6 +53,7 @@ export const createUserNftsStore = ({ address, external = false }: CreateNftColl
         getNfts: () => Array.from(get().nftsMap.values()),
         getNft: (uniqueId: string) => get().nftsMap.get(uniqueId),
         getNftsForSale: () => get().nfts.filter(nft => nft.currentPrice),
+        getSendableUniqueTokens: () => get().nfts.filter(nft => nft.isSendable),
       };
     },
     address?.length && !external

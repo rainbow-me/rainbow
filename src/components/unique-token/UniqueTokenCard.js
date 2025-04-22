@@ -6,7 +6,6 @@ import UniqueTokenImage from './UniqueTokenImage';
 import { usePersistentAspectRatio } from '@/hooks';
 import styled from '@/styled-thing';
 import { shadow as shadowUtil } from '@/styles';
-import isSVGImage from '@/utils/isSVG';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 const UniqueTokenCardBorderRadius = 20;

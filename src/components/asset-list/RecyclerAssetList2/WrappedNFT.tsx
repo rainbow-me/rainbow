@@ -35,7 +35,8 @@ export default React.memo(function WrappedNFT({
 
   const handleItemPress = useCallback(
     // @ts-expect-error passed to an untyped JS component
-    asset =>
+    asset => {
+      if (!asset.chainId) return; // we know we've fetched the asset by now
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset,
         backgroundOpacity: 1,
@@ -45,7 +46,8 @@ export default React.memo(function WrappedNFT({
         topOffset: 0,
         transitionDuration: 0.25,
         type: 'unique_token',
-      }),
+      });
+    },
     [assetCollectible?.isExternal, navigate]
   );
 

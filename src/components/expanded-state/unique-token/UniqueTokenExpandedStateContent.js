@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
@@ -9,7 +9,6 @@ import { ZoomableWrapper } from './ZoomableWrapper';
 import { usePersistentAspectRatio, useUniqueToken } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { UniqueAsset } from '@/entities';
 
 const ModelView = styled(SimpleModelView)(position.sizeAsObject('100%'));
 
@@ -22,27 +21,13 @@ const LoadingWrapper = styled(View)({
   position: 'absolute',
 });
 
-interface UniqueTokenExpandedStateContentProps {
-  animationProgress: number;
-  asset: UniqueAsset;
-  borderRadius: number;
-  horizontalPadding?: number;
-  imageColor?: string;
-  resizeMode?: 'cover' | 'contain' | 'stretch' | 'center';
-  textColor?: string;
-  disablePreview?: boolean;
-  opacity: number;
-  yPosition: number;
-  onContentFocus?: () => void;
-  onContentBlur?: () => void;
-}
-
-const UniqueTokenExpandedStateContent: React.FC<UniqueTokenExpandedStateContentProps> = ({
+const UniqueTokenExpandedStateContent = ({
   animationProgress,
   asset,
   borderRadius,
   horizontalPadding = 24,
   imageColor,
+  resizeMode = 'cover',
   textColor,
   disablePreview,
   opacity,
@@ -54,14 +39,14 @@ const UniqueTokenExpandedStateContent: React.FC<UniqueTokenExpandedStateContentP
 
   const supportsAnythingExceptImageAnd3d = supportsVideo || supportsAudio;
 
-  const aspectRatio = usePersistentAspectRatio(asset.lowResUrl ?? '');
+  const aspectRatio = usePersistentAspectRatio(asset.lowResUrl);
   const aspectRatioWithFallback = supports3d || supportsAudio ? 0.88 : aspectRatio.result || 1;
 
-  const [loading, setLoading] = useState<boolean>(supports3d || supportsVideo);
+  // default to showing a loading spinner for 3D/video assets
+  const [loading, setLoading] = React.useState(supports3d || supportsVideo);
 
   return (
     <ZoomableWrapper
-      // @ts-expect-error
       animationProgress={animationProgress}
       aspectRatio={aspectRatioWithFallback}
       borderRadius={borderRadius}
@@ -78,17 +63,23 @@ const UniqueTokenExpandedStateContent: React.FC<UniqueTokenExpandedStateContentP
             loading={loading}
             posterUri={asset.image_url}
             setLoading={setLoading}
-            style={StyleSheet.flatten(StyleSheet.absoluteFill)}
-            uri={asset.animation_url || asset.image_url || ''}
+            style={StyleSheet.absoluteFill}
+            uri={asset.animation_url || asset.image_url}
           />
         ) : supports3d ? (
           <ModelView fallbackUri={asset.image_url} loading={loading} setLoading={setLoading} uri={asset.animation_url || asset.image_url} />
         ) : supportsAudio ? (
           <AudioPlayer fontColor={textColor} imageColor={imageColor} uri={asset.animation_url || asset.image_url} />
         ) : (
-          <UniqueTokenImage backgroundColor={asset.background} imageUrl={asset.image_url} item={asset} transformSvgs={false} />
+          <UniqueTokenImage
+            backgroundColor={asset.background}
+            imageUrl={asset.image_url}
+            item={asset}
+            resizeMode={resizeMode}
+            transformSvgs={false}
+          />
         )}
-        {loading && (
+        {!!loading && (
           <LoadingWrapper>
             <ActivityIndicator />
           </LoadingWrapper>

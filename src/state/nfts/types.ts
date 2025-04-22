@@ -16,6 +16,7 @@ export type UserNftsState = {
   getNfts: () => UniqueAsset[];
   getNft: (uniqueId: string) => UniqueAsset | undefined;
   getNftsForSale: () => UniqueAsset[];
+  getSendableUniqueTokens: () => UniqueAsset[];
 };
 
 export type UserNftCollectionsState = {
@@ -28,6 +29,11 @@ export type UserNftCollectionsState = {
   getUserOpenFamilies: () => Record<string, boolean>;
   getUserExpandedFamilies: () => string[];
   getUserExpandedCollectionIds: () => string | undefined;
+};
+
+export type OpenNftCollectionsState = {
+  nftsMap: Map<string, UniqueAsset>;
+  nfts: UniqueAsset[];
 };
 
 export type NftsByCollectionParams = {

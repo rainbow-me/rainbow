@@ -10,8 +10,8 @@ import {
   NftCollectionsResponse,
   NftsByCollectionParams,
   NftsByCollectionResponse,
+  OpenNftCollectionsState,
   UserNftCollectionsState,
-  UserNftsState,
 } from './types';
 import { userNftsStoreManager, useUserNftsStore } from './userNfts';
 import { UniqueAsset } from '@/entities/uniqueAssets';
@@ -99,7 +99,7 @@ function createNftCollectionsStore(config: {
       : undefined
   );
 
-  const openCollectionNftsStore = createQueryStore<NftsByCollectionResponse, NftsByCollectionParams, UserNftsState>(
+  const openCollectionNftsStore = createQueryStore<NftsByCollectionResponse, NftsByCollectionParams, OpenNftCollectionsState>(
     {
       abortInterruptedFetches: false,
       cacheTime: shouldPersist ? time.weeks(1) : time.days(1),
@@ -125,12 +125,9 @@ function createNftCollectionsStore(config: {
       },
       staleTime: time.minutes(10),
     },
-    (_, get) => ({
+    () => ({
       nfts: [],
       nftsMap: new Map<string, UniqueAsset>(),
-      getNfts: () => Array.from(get().nftsMap.values()),
-      getNft: (uniqueId: string) => get().nftsMap.get(uniqueId),
-      getNftsForSale: () => get().nfts.filter(nft => nft.currentPrice),
     }),
     shouldPersist
       ? {

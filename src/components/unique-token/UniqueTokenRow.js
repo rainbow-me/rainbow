@@ -27,7 +27,8 @@ const UniqueTokenRow = magicMemo(({ item, external = false }) => {
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(
-    asset =>
+    asset => {
+      if (!asset || !asset.chainId) return;
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset,
         backgroundOpacity: 1,
@@ -38,7 +39,8 @@ const UniqueTokenRow = magicMemo(({ item, external = false }) => {
         topOffset: 0,
         transitionDuration: 0.25,
         type: 'unique_token',
-      }),
+      });
+    },
     [external, isReadOnlyWallet, navigate]
   );
 

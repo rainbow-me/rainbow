@@ -34,24 +34,6 @@ export const nftListingQueryKey = ({
   chainId: Omit<ChainId, ChainId.goerli>;
 }) => createQueryKey('nftListing', { contractAddress, tokenId, chainId });
 
-const walletsSelector = (state: AppState) => state.wallets?.wallets;
-
-const isImportedWalletSelector = createSelector(
-  walletsSelector,
-  (_: AppState, address: string) => address,
-  (wallets, address) => {
-    if (!wallets) {
-      return false;
-    }
-    for (const wallet of Object.values(wallets)) {
-      if ((wallet.addresses || []).some(account => account.address === address)) {
-        return true;
-      }
-    }
-    return false;
-  }
-);
-
 export const fetchUserNfts = async ({
   address,
   sortBy,
@@ -71,8 +53,6 @@ export const fetchUserNfts = async ({
       address,
     };
   }
-
-  console.log('fetchUserNfts: ', address, sortBy, sortDirection);
 
   const queryResponse = await arcClient.getNFTs({ walletAddress: address, sortBy, sortDirection });
   const nfts = queryResponse?.nftsV2?.map(nft => simpleHashNFTToUniqueAsset(nft, address));

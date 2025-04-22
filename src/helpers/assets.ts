@@ -256,12 +256,12 @@ export const buildBriefUniqueTokenList = (
   isFetchingNfts = false
 ) => {
   const hiddenUniqueTokensIds = uniqueTokens
-    .filter(({ fullUniqueId }) => hiddenTokens.includes(fullUniqueId))
+    ?.filter(({ fullUniqueId }) => hiddenTokens.includes(fullUniqueId))
     .map(({ fullUniqueId }) => fullUniqueId);
   const hiddenUniqueTokensSet = new Set(hiddenUniqueTokensIds);
-  const nonHiddenUniqueTokens = uniqueTokens.filter(({ fullUniqueId }) => !hiddenUniqueTokensSet.has(fullUniqueId));
+  const nonHiddenUniqueTokens = uniqueTokens?.filter(({ fullUniqueId }) => !hiddenUniqueTokensSet.has(fullUniqueId));
   const uniqueTokensInShowcaseIds = nonHiddenUniqueTokens
-    .filter(({ uniqueId }) => selectedShowcaseTokens.includes(uniqueId))
+    ?.filter(({ uniqueId }) => selectedShowcaseTokens.includes(uniqueId))
     .map(({ fullUniqueId }) => fullUniqueId);
 
   const result = [
@@ -272,7 +272,7 @@ export const buildBriefUniqueTokenList = (
     },
     { type: CellType.NFTS_HEADER_SPACE_AFTER, uid: 'nfts-header-space-after' },
   ];
-  if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
+  if (uniqueTokensInShowcaseIds?.length > 0 && listType !== 'select-nft') {
     result.push({
       name: i18n.t(i18n.l.account.tab_showcase),
       total: uniqueTokensInShowcaseIds.length,
