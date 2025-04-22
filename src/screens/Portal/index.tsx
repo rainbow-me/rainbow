@@ -32,7 +32,7 @@ export function Portal() {
   return (
     <Box style={styles.container}>
       <TapToDismiss />
-      <Panel height={params.sheetHeight} innerBorderWidth={0} outerBorderWidth={2.5} style={styles.panel}>
+      <Panel height={params.sheetHeight} innerBorderWidth={0} outerBorderWidth={0} style={styles.panel}>
         {params.children({})}
       </Panel>
     </Box>
